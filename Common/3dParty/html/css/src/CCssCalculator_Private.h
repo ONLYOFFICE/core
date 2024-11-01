@@ -20,7 +20,6 @@ namespace NSCSS
 	{
 		unsigned short int m_nDpi;
 		unsigned short int m_nCountNodes;
-		UnitMeasure m_UnitMeasure;
 
 		std::list<std::wstring> m_arFiles;
 
@@ -34,8 +33,6 @@ namespace NSCSS
 
 		std::vector<TPageData> m_arPageDatas;
 
-		std::map<StatistickElement, unsigned int> *m_mStatictics; // Количество повторений свойств id и style у селекторов
-
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
 		
@@ -45,7 +42,7 @@ namespace NSCSS
 		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
 
 		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
-		std::vector<CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes, bool bIsSettings);
+		std::vector<CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
 		#endif
 
 		std::wstring m_sEncoding;
@@ -72,8 +69,8 @@ namespace NSCSS
 		~CCssCalculator_Private();
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
-		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point);
+		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors);
+		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors);
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
@@ -83,11 +80,8 @@ namespace NSCSS
 		void AddStyles(const std::wstring& wsStyle);
 		void AddStylesFromFile(const std::wstring& wsFileName);
 
-		void SetUnitMeasure(const UnitMeasure& nType);
 		void SetDpi(unsigned short int nValue);
-		void SetBodyTree(const CTree &oTree);
 
-		UnitMeasure GetUnitMeasure() const;
 		std::wstring GetEncoding() const;
 		unsigned short int GetDpi() const;
 

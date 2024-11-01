@@ -16,28 +16,6 @@ namespace NSCSS
 		ScalingDirectionY = 2
 	} ScalingDirection;
 
-	struct StatistickElement
-	{
-		enum TypeElement
-		{
-			IsStyle = 0,
-			IsId
-		} m_enType;
-		std::wstring sValue;
-
-		bool operator<(const StatistickElement& oStatistickElement) const;
-	};
-
-	struct CTree
-	{
-		NSCSS::CNode m_oNode;
-		std::vector<CTree> m_arrChild;
-
-		void Clear();
-
-		static void CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics);
-	};
-
 	namespace NSConstValues
 	{
 		extern const std::map<std::wstring, std::wstring> COLORS;

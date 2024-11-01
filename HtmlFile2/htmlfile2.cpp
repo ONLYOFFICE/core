@@ -1432,8 +1432,6 @@ public:
 	std::wstring m_sBase; // Полный базовый адрес
 	std::wstring m_sCore; // Путь до корневого файла (используется для работы с Epub)
 
-	NSCSS::CTree m_oTree; // Дерево body html-файла
-
 private:
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
@@ -1913,7 +1911,7 @@ public:
 			std::wstring sName = m_oLightReader.GetName();
 
 			if(sName == L"body")
-				readStyle2(m_oTree);
+				readStyle2();
 			else
 			{
 				// Стиль по ссылке
@@ -1956,7 +1954,7 @@ public:
 		}
 	}
 
-	void readStyle2(NSCSS::CTree& oTree)
+	void readStyle2()
 	{
 		std::wstring sName = m_oLightReader.GetName();
 		// Стиль по ссылке
@@ -1994,31 +1992,11 @@ public:
 		else if(sName == L"style")
 			m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
 
-		oTree.m_oNode.m_wsName = sName;
-		// Стиль по атрибуту
-		while(m_oLightReader.MoveToNextAttribute())
-		{
-			std::wstring sNameA  = m_oLightReader.GetName();
-			if(sNameA == L"class")
-				oTree.m_oNode.m_wsClass  = m_oLightReader.GetText();
-			else if(sNameA == L"id")
-				oTree.m_oNode.m_wsId = m_oLightReader.GetText();
-			else if(sNameA == L"style")
-				oTree.m_oNode.m_wsStyle += m_oLightReader.GetText();
-			else
-				oTree.m_oNode.m_mAttributes[sNameA] = m_oLightReader.GetText();
-		}
-		m_oLightReader.MoveToElement();
-
 		int nDeath = m_oLightReader.GetDepth();
 		while(m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			if(!m_oLightReader.IsEmptyNode())
-			{
-				NSCSS::CTree oChildTree;
-				readStyle2(oChildTree);
-				oTree.m_arrChild.push_back(oChildTree);
-			}
+				readStyle2();
 		}
 	}
 
@@ -4292,12 +4270,10 @@ private:
 		if (m_oState.m_bWasPStyle)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting{m_oStylesCalculator.GetCompiledStyle(sSelectors, true)};
-		NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
+		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-
-		oStyleSetting += oTS.oAdditionalStyle;
 
 		std::wstring sPStyle = GetStyle(oStyle, true);
 
@@ -4332,10 +4308,7 @@ private:
 		if (!m_oState.m_bInP)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-
-		oStyleSetting += oTS.oAdditionalStyle;
-
+		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
@@ -4709,8 +4682,6 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 	m_internal->CreateDocxEmpty(oParams);
 	m_internal->readStyle();
 
-	m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
-
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())
 		return S_FALSE;
@@ -4732,9 +4703,6 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 	m_internal->m_sDst = sDst;
 	m_internal->CreateDocxEmpty(oParams);
 	m_internal->readStyle();
-
-	m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
-	m_internal->m_oTree.Clear();
 
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())
@@ -4763,8 +4731,6 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 		if(!IsHtmlFile(sS))
 			continue;
 		m_internal->readStyle();
-
-		m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
 
 		// Переходим в начало
 		if(m_internal->m_oLightReader.MoveToStart())

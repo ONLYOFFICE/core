@@ -2,29 +2,6 @@
 
 namespace NSCSS
 {
-	bool StatistickElement::operator<(const StatistickElement &oStatistickElement) const
-	{
-		return sValue < oStatistickElement.sValue;
-	}
-
-	void CTree::Clear()
-	{
-		m_arrChild.clear();
-		m_oNode.Clear();
-	}
-
-	void CTree::CountingNumberRepetitions(const CTree &oTree, std::map<StatistickElement, unsigned int> &mStatictics)
-	{
-		if (!oTree.m_oNode.m_wsId.empty())
-			++mStatictics[StatistickElement{StatistickElement::IsId, L'#' + oTree.m_oNode.m_wsId}];
-				if (!oTree.m_oNode.m_wsStyle.empty())
-					++mStatictics[StatistickElement{StatistickElement::IsStyle, oTree.m_oNode.m_wsStyle}];
-
-		if (!oTree.m_arrChild.empty())
-			for (const CTree& oChildren : oTree.m_arrChild)
-				CountingNumberRepetitions(oChildren, mStatictics);
-	}
-
 	namespace NSConstValues
 	{
 		const std::map<std::wstring, std::wstring> COLORS

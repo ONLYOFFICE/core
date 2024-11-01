@@ -761,7 +761,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+		{
+			CEmfInterpretatorSvg *pEmfInterpretatorSvg = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pEmfInterpretatorSvg;
+		}
 	}
 
 	CEmfInterpretatorBase* CEmfParserBase::GetInterpretator()

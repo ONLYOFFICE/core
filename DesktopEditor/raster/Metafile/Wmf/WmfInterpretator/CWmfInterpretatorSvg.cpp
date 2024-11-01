@@ -110,6 +110,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -136,6 +137,7 @@ namespace MetaFile
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -189,6 +191,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -215,6 +218,7 @@ namespace MetaFile
 		                               {L"y2", ConvertToWString(shY)}};
 
 		AddStroke(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -236,6 +240,7 @@ namespace MetaFile
 		                               {L"height",	ConvertToWString(shH)}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -260,6 +265,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -280,6 +286,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -300,6 +307,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -327,6 +335,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -351,6 +360,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -375,6 +385,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 

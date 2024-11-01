@@ -77,6 +77,14 @@ namespace MetaFile
 		bool m_bStartClip;
 	};
 
+	enum class EShapeRendering
+	{
+		Auto,
+		OptimizeSpeed,
+		CrispEdges,
+		GeometricPrecision
+	};
+
 	class CInterpretatorSvgBase : public IOutputDevice
 	{
 	public:
@@ -89,6 +97,8 @@ namespace MetaFile
 
 		void SetXmlWriter(XmlUtils::CXmlWriter* pXmlWriter);
 		XmlUtils::CXmlWriter* GetXmlWriter();
+
+		void SetShapeRendering(EShapeRendering eShapeRenderingType);
 
 		std::wstring GetFile();
 		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm *pTransform);
@@ -115,6 +125,7 @@ namespace MetaFile
 		void CloseClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
+		void AddShapeRendering(NodeAttributes &arAttributes) const;
 
 		void AddLineCaps(NodeAttributes &arAttributes, const CPath* pMainPath);
 
@@ -140,6 +151,8 @@ namespace MetaFile
 
 		bool                 m_bUpdatedClip;
 		CSvgClip             m_oClip;
+
+		EShapeRendering      m_eShapeRendering;
 
 		friend class CEmfInterpretatorSvg;
 		friend class CWmfInterpretatorSvg;

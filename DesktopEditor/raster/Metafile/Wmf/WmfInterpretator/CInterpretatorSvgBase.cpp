@@ -75,7 +75,8 @@ namespace MetaFile
 	};
 
 	CInterpretatorSvgBase::CInterpretatorSvgBase(IMetaFileBase *pParser, double dWidth, double dHeight)
-	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser), m_pXmlWriter(new XmlUtils::CXmlWriter()), m_bExternXmlWriter(false), m_bUpdatedClip(true)
+	    : m_oSizeWindow(dWidth, dHeight), m_unNumberDefs(0), m_pParser(pParser), m_pXmlWriter(new XmlUtils::CXmlWriter()),
+	      m_bExternXmlWriter(false), m_bUpdatedClip(true), m_eShapeRendering(EShapeRendering::Auto)
 	{}
 
 	CInterpretatorSvgBase::~CInterpretatorSvgBase()
@@ -125,6 +126,11 @@ namespace MetaFile
 	XmlUtils::CXmlWriter *CInterpretatorSvgBase::GetXmlWriter()
 	{
 		return m_pXmlWriter;
+	}
+
+	void CInterpretatorSvgBase::SetShapeRendering(EShapeRendering eShapeRenderingType)
+	{
+		m_eShapeRendering = eShapeRenderingType;
 	}
 
 	std::wstring CInterpretatorSvgBase::GetFile()
@@ -256,12 +262,16 @@ namespace MetaFile
 			WriteNodeBegin(L"g", {});
 			bWriteG = true;
 
-			WriteNode(L"rect", {{L"x",      ConvertToWString(oBounds.Left)},
-			                    {L"y",      ConvertToWString(oBounds.Top)},
-			                    {L"width",  ConvertToWString(oBounds.Right - oBounds.Left)},
-			                    {L"height", ConvertToWString(oBounds.Bottom - oBounds.Top)},
-			                    {L"fill",   wsFillRect},
-			                    {L"stroke", L"none"}});
+			NodeAttributes arRectAttributes{{L"x",      ConvertToWString(oBounds.Left)},
+			                                {L"y",      ConvertToWString(oBounds.Top)},
+			                                {L"width",  ConvertToWString(oBounds.Right - oBounds.Left)},
+			                                {L"height", ConvertToWString(oBounds.Bottom - oBounds.Top)},
+			                                {L"fill",   wsFillRect},
+			                                {L"stroke", L"none"}};
+
+			AddShapeRendering(arRectAttributes);
+
+			WriteNode(L"rect", arNodeAttributes);
 		}
 
 		int nColor = m_pParser->GetTextColor();
@@ -894,6 +904,30 @@ namespace MetaFile
 	void CInterpretatorSvgBase::AddNoneFill(NodeAttributes &arAttributes) const
 	{
 		arAttributes.push_back({L"fill", L"none"});
+	}
+
+	void CInterpretatorSvgBase::AddShapeRendering(NodeAttributes& arAttributes) const
+	{
+		switch (m_eShapeRendering)
+		{
+			case EShapeRendering::OptimizeSpeed:
+			{
+				arAttributes.push_back({L"shape-rendering", L"optimizeSpeed"});
+				break;
+			}
+			case EShapeRendering::CrispEdges:
+			{
+				arAttributes.push_back({L"shape-rendering", L"crispEdges"});
+				break;
+			}
+			case EShapeRendering::GeometricPrecision:
+			{
+				arAttributes.push_back({L"shape-rendering", L"geometricPrecision"});
+				break;
+			}
+			default:
+				break;
+		}
 	}
 
 	TPointD GetFirstPoint(const CPathCommandBase* pPathCommand)

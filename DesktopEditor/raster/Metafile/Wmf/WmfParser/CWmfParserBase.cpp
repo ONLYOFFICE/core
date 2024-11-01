@@ -194,7 +194,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+		{
+			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pWmfInterpretatorSvg;
+		}
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)

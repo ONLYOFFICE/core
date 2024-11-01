@@ -117,6 +117,7 @@ namespace MetaFile
 
 		AddClip();
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 
 		WriteNode(L"path" , arAttributes);
@@ -175,6 +176,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 
 		if (AD_COUNTERCLOCKWISE == m_pParser->GetArcDirection())
 		{
@@ -238,6 +240,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 
 		if (AD_COUNTERCLOCKWISE == m_pParser->GetArcDirection())
 		{
@@ -292,6 +295,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 
 		if (AD_COUNTERCLOCKWISE == m_pParser->GetArcDirection())
 		{
@@ -325,6 +329,7 @@ namespace MetaFile
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -365,6 +370,7 @@ namespace MetaFile
 		                               {L"y2", ConvertToWString(oPoint.Y)}};
 
 		AddStroke(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -388,6 +394,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -410,6 +417,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -432,6 +440,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -454,6 +463,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -476,6 +486,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -526,6 +537,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -576,6 +588,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -596,6 +609,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -616,6 +630,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -636,6 +651,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -658,6 +674,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -680,6 +697,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -702,6 +720,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -729,6 +748,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -758,6 +778,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -787,6 +808,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -816,6 +838,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -835,6 +858,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes, oNewRect.Right - oNewRect.Left, oNewRect.Bottom - oNewRect.Top);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -854,6 +878,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -889,6 +914,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes, std::fabs(oBounds.Right - oBounds.Left), std::fabs(oBounds.Bottom - oBounds.Top));
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -914,6 +940,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -928,6 +955,7 @@ namespace MetaFile
 		NodeAttributes arAttributes;
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -979,6 +1007,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1008,6 +1037,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1085,6 +1115,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 
 		if (AD_COUNTERCLOCKWISE == m_pParser->GetArcDirection())
 		{
@@ -1119,6 +1150,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1234,6 +1266,7 @@ namespace MetaFile
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1254,6 +1287,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1275,6 +1309,7 @@ namespace MetaFile
 		AddStroke(arAttributes);
 		AddLineCaps(arAttributes, pPath);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1307,6 +1342,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1333,6 +1369,7 @@ namespace MetaFile
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1354,6 +1391,7 @@ namespace MetaFile
 		TRectD oPathRect = pPath->GetBounds();
 
 		AddFill(arAttributes, std::fabs(oPathRect.Right - oPathRect.Left), std::fabs(oPathRect.Bottom - oPathRect.Top));
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -1378,6 +1416,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"points", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 
 		NodeAttributes arGAttributes;
@@ -1413,6 +1452,7 @@ namespace MetaFile
 
 		AddTransform(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddClip();
 
 		WriteNode(L"path", arAttributes);

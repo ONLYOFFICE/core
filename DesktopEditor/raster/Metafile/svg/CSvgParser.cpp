@@ -1,6 +1,7 @@
 #include "CSvgParser.h"
 
 #include <algorithm>
+#include <cctype>
 
 #include "CSvgFile.h"
 
@@ -60,12 +61,12 @@ namespace SVG
 		if (unEncodingBegin >= wsContent.length() || ('\'' != wsContent[unEncodingBegin] && '"' != wsContent[unEncodingBegin]))
 			return std::string();
 
-		std::string::const_iterator itEncodingValueBegin = std::find_if(wsContent.cbegin() + unEncodingBegin + 1, wsContent.cend(), [](const char& chElement){ return !std::isspace(chElement);});
+		std::string::const_iterator itEncodingValueBegin = std::find_if(wsContent.cbegin() + unEncodingBegin + 1, wsContent.cend(), [](char chElement){ return !isspace(chElement);});
 
 		if (wsContent.cend() == itEncodingValueBegin)
 			return std::string();
 
-		std::string::const_iterator itEncodingValueEnd = std::find_if(itEncodingValueBegin, wsContent.cend(), [](const char& chElement){ return std::isspace(chElement) || '\'' == chElement || '\"' == chElement;});
+		std::string::const_iterator itEncodingValueEnd = std::find_if(itEncodingValueBegin, wsContent.cend(), [](char chElement){ return isspace(chElement) || '\'' == chElement || '\"' == chElement;});
 
 		if (wsContent.cend() == itEncodingValueEnd)
 			return std::string();

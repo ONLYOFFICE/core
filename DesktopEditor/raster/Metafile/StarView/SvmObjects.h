@@ -448,6 +448,14 @@ public:
 		arDatas = NULL;
 		unSize  = 0;
 	}
+	const ILineCap* GetStartLineCap() const override
+	{
+		return NULL;
+	}
+	const ILineCap* GetEndLineCap()   const override
+	{
+		return NULL;
+	}
 public:
 	unsigned short	PenStyle;
 	int				Width;

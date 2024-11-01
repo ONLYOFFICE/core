@@ -896,6 +896,76 @@ namespace MetaFile
 		arAttributes.push_back({L"fill", L"none"});
 	}
 
+	TPointD GetFirstPoint(const CPathCommandBase* pPathCommand)
+	{
+		if (NULL == pPathCommand)
+			return {0., 0.};
+
+		switch (pPathCommand->GetType())
+		{
+			case EPathCommandType::PATH_COMMAND_MOVETO:
+			{
+				CPathCommandMoveTo* pMoveTo{(CPathCommandMoveTo*)pPathCommand};
+				return {pMoveTo->GetX(), pMoveTo->GetY()};
+			}
+			case EPathCommandType::PATH_COMMAND_LINETO:
+			{
+				CPathCommandLineTo* pLineTo{(CPathCommandLineTo*)pPathCommand};
+				return {pLineTo->GetX(), pLineTo->GetY()};
+			}
+			default:
+				return {0., 0.};
+		}
+	}
+
+	void CInterpretatorSvgBase::AddLineCaps(NodeAttributes& arAttributes, const CPath* pMainPath)
+	{
+		if (NULL == m_pParser || NULL == m_pParser->GetPen() || NULL == pMainPath)
+			return;
+
+		const IPen *pPen = m_pParser->GetPen();
+		const std::vector<CPathCommandBase *> arCommands{pMainPath->GetCommands()};
+		const CLineCapData* pStartLineCap = dynamic_cast<const CLineCapData*>(pPen->GetStartLineCap());
+
+		if (NULL != pStartLineCap)
+		{
+			double dAngle = 0.;
+
+			if (arCommands.size() > 1)
+			{
+				const TPointD oFirstPoint {GetFirstPoint(arCommands[0])};
+				const TPointD oSecondPoint{GetFirstPoint(arCommands[1])};
+
+				dAngle = (atan2((oSecondPoint.Y - oFirstPoint.Y), (oSecondPoint.X - oFirstPoint.X))) / M_PI * 180. + 90.;
+			}
+
+			const std::wstring wsStartLineCapId{CreateLineCap(pStartLineCap, dAngle)};
+
+			if (!wsStartLineCapId.empty())
+				arAttributes.push_back({L"marker-start", L"url(#" + wsStartLineCapId + L')'});
+		}
+
+		const CLineCapData* pEndLineCap = dynamic_cast<const CLineCapData*>(pPen->GetEndLineCap());
+
+		if (NULL != pEndLineCap)
+		{
+			double dAngle = 0.;
+
+			if (arCommands.size() > 1)
+			{
+				const TPointD oFirstPoint {GetFirstPoint(arCommands[arCommands.size() - 1])};
+				const TPointD oSecondPoint{GetFirstPoint(arCommands[arCommands.size() - 2])};
+
+				dAngle = (atan2((oSecondPoint.Y - oFirstPoint.Y), (oSecondPoint.X - oFirstPoint.X))) / M_PI * 180. + 90.;
+			}
+
+			const std::wstring wsEndLineCapId{CreateLineCap(pEndLineCap, dAngle)};
+
+			if (!wsEndLineCapId.empty())
+				arAttributes.push_back({L"marker-end", L"url(#" + wsEndLineCapId + L')'});
+		}
+	}
+
 	TPointD CInterpretatorSvgBase::GetCutPos() const
 	{
 		if (NULL != m_pParser)
@@ -904,7 +974,7 @@ namespace MetaFile
 		return TPointD(m_oViewport.dLeft, m_oViewport.dRight);
 	}
 
-	std::wstring CInterpretatorSvgBase::CreatePath(const CPath& oPath, const TXForm *pTransform)
+	std::wstring CInterpretatorSvgBase::CreatePath(const CPath& oPath, const TXForm *pTransform) const
 	{
 		if (NULL == m_pParser || oPath.Empty())
 			return std::wstring();
@@ -1234,6 +1304,46 @@ namespace MetaFile
 			            L"</radialGradient>";
 
 			return wsStyleId;
+		}
+
+		return std::wstring();
+	}
+
+	std::wstring CInterpretatorSvgBase::CreateLineCap(const CLineCapData* pLineCap, const double& dAngle)
+	{
+		if (NULL == pLineCap)
+			return std::wstring();
+
+		CustomLineCapDataType enLineCapDataType = pLineCap->GetType();
+
+		if (CustomLineCapDataType::CustomLineCapDataTypeDefault == enLineCapDataType)
+		{
+			const TEmfPlusCustomLineCapData* pCustomLineCap = dynamic_cast<const TEmfPlusCustomLineCapData*>(pLineCap);
+
+			if (NULL == pCustomLineCap)
+				return std::wstring();
+
+			const std::wstring wsPath = CreatePath(*pCustomLineCap->pPath);
+
+			if (wsPath.empty())
+				return std::wstring();
+
+			const std::wstring wsMarkerId {L"CUSTOM_MARKER_" + std::to_wstring(++m_unNumberDefs)};
+			const TRectD       oPathBounds{pCustomLineCap->pPath->GetBounds()};
+			const double       dWidth     {std::abs(oPathBounds.Right  - oPathBounds.Left)};
+			const double       dHeight    {std::abs(oPathBounds.Bottom - oPathBounds.Top)};
+			const std::wstring wsWidth    {ConvertToWString(dWidth)};
+			const std::wstring wsHeight   {ConvertToWString(dHeight)};
+			const std::wstring wsViewBox  {L"viewBox=\"" + ConvertToWString(oPathBounds.Left) + L' ' + ConvertToWString(oPathBounds.Top) +
+			                               L' ' + wsWidth + L' ' + wsHeight + L'\"'};
+
+			const double dRefY = -dHeight * (std::min)(3. / dWidth, 3. / dHeight);
+
+			m_wsDefs += L"<marker id=\"" + wsMarkerId + L"\" " + wsViewBox + L" markerWidth=\"" +
+			            wsWidth + L"\" markerHeight=\"" + wsHeight + L"\" refY=\"" + ConvertToWString(dRefY) +
+			            L"\" orient=\"" + std::to_wstring(dAngle) + L"\"><path d=\"" + wsPath + L"\"/></marker>";
+
+			return wsMarkerId;
 		}
 
 		return std::wstring();

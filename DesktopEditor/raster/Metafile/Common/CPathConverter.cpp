@@ -59,7 +59,7 @@ namespace MetaFile
 				{
 					CPathCommandArcTo *pCommandArcTo = (CPathCommandArcTo*)pCommand;
 
-                                        oNewPath.ArcTo(pCommandArcTo->GetLeft(),       pCommandArcTo->GetTop(),
+					oNewPath.ArcTo(pCommandArcTo->GetLeft(),       pCommandArcTo->GetTop(),
 					               pCommandArcTo->GetRight(),      pCommandArcTo->GetBottom(),
 					               pCommandArcTo->GetStartAngle(), pCommandArcTo->GetSweepAngle());
 

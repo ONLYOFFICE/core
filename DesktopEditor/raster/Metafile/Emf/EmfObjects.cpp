@@ -271,6 +271,16 @@ namespace MetaFile
 		unSize  = 0;
 	}
 
+	const ILineCap* CEmfLogPen::GetStartLineCap() const
+	{
+		return NULL;
+	}
+
+	const ILineCap* CEmfLogPen::GetEndLineCap() const
+	{
+		return NULL;
+	}
+
 	CEmfLogPalette::CEmfLogPalette() : ushNumberOfEntries(0), pPaletteEntries(NULL)
 	{}
 

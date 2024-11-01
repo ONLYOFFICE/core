@@ -19,6 +19,7 @@ METAFILE_PATH = $$PWD/../../raster/Metafile
 		\
 		$$METAFILE_PATH/Emf/EmfTypes.h \
 		$$METAFILE_PATH/Emf/EmfObjects.h \
+		$$METAFILE_PATH/Emf/EmfPlusObjects.h \
 		$$METAFILE_PATH/Emf/EmfPlayer.h \
 		$$METAFILE_PATH/Emf/EmfFile.h \
 		$$METAFILE_PATH/Wmf/WmfObjects.h \

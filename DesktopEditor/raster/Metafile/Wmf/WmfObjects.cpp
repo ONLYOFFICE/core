@@ -281,6 +281,16 @@ namespace MetaFile
 		unSize  = 0;
 	}
 
+	const ILineCap* CWmfPen::GetStartLineCap() const
+	{
+		return NULL;
+	}
+
+	const ILineCap* CWmfPen::GetEndLineCap() const
+	{
+		return NULL;
+	}
+
 	CWmfRegion::CWmfRegion() : pScans(NULL)
 	{}
 

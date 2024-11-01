@@ -327,6 +327,13 @@ namespace MetaFile
 		if (NULL == pCommand)
 			return false;
 		
+		if (PATH_COMMAND_MOVETO == pCommand->GetType() && !m_arCommands.empty() && PATH_COMMAND_MOVETO == m_arCommands.back()->GetType())
+		{
+			CPathCommandBase* pLastCommand = m_arCommands.back();
+			m_arCommands.pop_back();
+			delete pLastCommand;
+		}
+
 		m_arCommands.push_back(pCommand);
 		return true;
 	}

@@ -116,13 +116,16 @@ namespace MetaFile
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
 
+		void AddLineCaps(NodeAttributes &arAttributes, const CPath* pMainPath);
+
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL);
+		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(const IBrush* pBrush);
 		std::wstring CreatePatternStyle(const IBrush* pBrush);
 		std::wstring CreateGradient(const IBrush *pBrush);
+		std::wstring CreateLineCap(const CLineCapData* pLineCap, const double& dAngle);
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;

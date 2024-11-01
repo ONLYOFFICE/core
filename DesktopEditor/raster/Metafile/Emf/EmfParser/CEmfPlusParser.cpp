@@ -2274,16 +2274,21 @@ namespace MetaFile
 			if (NULL != pEmfPlusPen->pBrush)
 				m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
-			CPathConverter oPathConverter;
-			CPath oNewPath, oLineCapPath;
-
-			oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
-
-			oNewPath.DrawOn(m_pInterpretator, true, false);
-			oLineCapPath.DrawOn(m_pInterpretator, false, true);
-
 			if (NULL != m_pInterpretator)
-				m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, &oNewPath);
+			{
+				CPathConverter oPathConverter;
+				CPath oNewPath, oLineCapPath;
+
+				oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
+
+				if (InterpretatorType::Render == m_pInterpretator->GetType())
+				{
+					oNewPath.DrawOn(m_pInterpretator, true, false);
+					oLineCapPath.DrawOn(m_pInterpretator, false, true);
+				}
+				else
+					m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, pPath);
+			}
 
 			if (NULL != pEmfPlusPen->pBrush)
 				m_pDC->RemoveBrush(pEmfPlusPen->pBrush);

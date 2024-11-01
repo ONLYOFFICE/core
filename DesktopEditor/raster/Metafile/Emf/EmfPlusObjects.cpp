@@ -90,7 +90,7 @@ namespace MetaFile
 		RELEASEOBJECT(pBrush)
 		RELEASEARRAYOBJECTS(pDataDash)
 		RELEASEOBJECT(pLineStartCapData)
-				RELEASEOBJECT(pLineEndCapData)
+		RELEASEOBJECT(pLineEndCapData)
 	}
 
 	EEmfObjectType CEmfPlusPen::GetType() const
@@ -146,6 +146,16 @@ namespace MetaFile
 	{
 		arDatas = pDataDash;
 		unSize  = unSizeDash;
+	}
+
+	const ILineCap* CEmfPlusPen::GetStartLineCap() const
+	{
+		return pLineStartCapData;
+	}
+
+	const ILineCap* CEmfPlusPen::GetEndLineCap() const
+	{
+		return pLineEndCapData;
 	}
 
 	CEmfPlusFont::CEmfPlusFont()

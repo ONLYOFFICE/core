@@ -68,7 +68,7 @@ LocalInfo getLocalInfo(const _INT32 lcid)
 //LocalInfo methods
 
 //todo сборка кода формата из сокращенного формата и разделителя
-std::wstring LocalInfo::GetshorDateFormat()
+std::wstring LocalInfo::GetShortDateFormat()
 {
     std::wstring result;
     for(auto i = 0; i < ShortDatePattern.size(); i++ )
@@ -107,12 +107,19 @@ std::vector<std::wstring> LocalInfo::GetMonthNames(const _INT16 &index)
     return std::vector<std::wstring>{};
 }
 
-_INT16 LocalInfo::GetsMonthNumber(const std::wstring &monthName)
+_INT16 LocalInfo::GetMonthNumber(const std::wstring &monthName)
 {
     auto months = GetMonthNames(MonthNamesIndex);
     for(auto i = 0; i < months.size(); i++)
         if(months.at(i) == monthName)
             return i;
     return -1;
+}
+std::wstring LocalInfo::GetLocMonthName(const _INT16 &index)
+{
+    auto months = GetMonthNames(MonthNamesIndex);
+    if(months.size() > index)
+        return months.at(index);
+    return L"";
 }
 }

@@ -517,7 +517,7 @@ bool DateReader::parseMonthName(std::vector<wchar_t> &stringBuf, tm &date)
     auto locInf = lcInfo::getLocalInfo(lcid_);
     std::wstring monthName(stringBuf.begin(), stringBuf.end());
 
-    auto monthindex = locInf.GetsMonthNumber(monthName)+ 1;
+    auto monthindex = locInf.GetMonthNumber(monthName)+ 1;
     if(monthindex <= 0)
         return false;
     if(date.tm_mon != 0 && date.tm_mday == 0)

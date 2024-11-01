@@ -457,6 +457,11 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 						{
 							output += std::to_wstring(month);
 						}
+                        else if(m_nLcid > 0)
+                        {
+                            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+                            output+= locInf.GetLocMonthName(month-1);
+                        }
 						else
 						{
 							std::shared_ptr<boost::gregorian::date_facet> df;
@@ -898,7 +903,7 @@ void CSVWriter::Impl::GetDefaultFormatCode(int numFmt, std::wstring & format_cod
         else
         {
             auto locInf = lcInfo::getLocalInfo(m_nLcid);
-            format_code = locInf.GetshorDateFormat();
+            format_code = locInf.GetShortDateFormat();
         }
         format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 

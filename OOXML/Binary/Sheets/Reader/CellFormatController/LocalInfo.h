@@ -47,7 +47,7 @@ public:
 
     /// @brief собрать короткий формат даты из шаблона
     /// @return шаблон из номеров определяющих порядок элементов даты где 0-1 дни 2-3 месяцы 4-5 годы
-    std::wstring GetshorDateFormat();
+    std::wstring GetShortDateFormat();
 
     /// @brief получить имена месяцев в этой локали
     /// @return вектор имен месяцев начинающихся с января
@@ -55,7 +55,12 @@ public:
 
     /// @brief собрать короткий формат даты из шаблона
     /// @return номер месяца начиная от нуля, в случае успеха, отрицательное число в случае неудачи
-    _INT16 GetsMonthNumber(const std::wstring &monthName);
+    _INT16 GetMonthNumber(const std::wstring &monthName);
+
+    /// @brief получить строковое имя месяца в этой локали
+    /// @param index номер запрашиваемого месяца
+    /// @return имя месяца
+    std::wstring GetLocMonthName(const _INT16 &index);
 
     /// @brief id локали
     _INT32 lcid;

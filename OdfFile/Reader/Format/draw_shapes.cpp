@@ -681,6 +681,26 @@ bool convert_equation(const std::wstring& formula, std::wstring &result)
 	}
 	else
 	{
+		if (operators == L"+")
+		{
+			operators = L"+-";
+			values.push_back(L"0");
+		}
+		else if (operators == L"*")
+		{
+			operators = L"*/";
+			values.push_back(L"1");
+		}
+		else if (operators == L"/")
+		{
+			operators = L"*/";
+			values.insert(values.begin(), L"1");
+		}
+		else if (operators == L"-")
+		{
+			operators = L"+-";
+			values.insert(values.begin(), L"0");
+		}		
 		result = function.empty() ? operators : function;
 	}
 
@@ -946,7 +966,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			props.push_back(odf_reader::_property(L"custom_path_h", h));
 		}
 	}
-	if (attlist_.draw_modifiers_ && set_shape && bOoxType_)
+	if (attlist_.draw_modifiers_)
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}

@@ -459,8 +459,17 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 						}
                         else if(m_nLcid > 0)
                         {
+
                             auto locInf = lcInfo::getLocalInfo(m_nLcid);
-                            output+= locInf.GetLocMonthName(month-1);
+                            if(symbol_size == 3)
+                            {
+                                output+= locInf.GetLocMonthName(month-1, true);
+
+                            }
+                            else
+                            {
+                                output+= locInf.GetLocMonthName(month-1);
+                            }
                         }
 						else
 						{

@@ -274,7 +274,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
             elementType = DateElemTypes::space;
         else if(charElement >= L'0' && charElement<= L'9')
             elementType = DateElemTypes::digit;
-        else if(charElement == locInf.DateSeparator.at(0) || charElement == L'.' || charElement == L':')
+        else if(charElement == locInf.DateSeparator.at(0) || charElement == L':')
             elementType = DateElemTypes::delimeter;
         else
             elementType = DateElemTypes::letter;
@@ -370,6 +370,8 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                         {
                             if(parseMonthName(StringBuf, result))
                                 Bmonth = true;
+                            else
+                                bError = true;
                         }
                        StringBuf.clear();
                     }
@@ -515,9 +517,14 @@ bool DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
 bool DateReader::parseMonthName(std::vector<wchar_t> &stringBuf, tm &date)
 {
     auto locInf = lcInfo::getLocalInfo(lcid_);
+    if(stringBuf.at(stringBuf.size()-1) == '.')
+        stringBuf.pop_back();
     std::wstring monthName(stringBuf.begin(), stringBuf.end());
 
-    auto monthindex = locInf.GetMonthNumber(monthName)+ 1;
+    bool isShort = false;
+    if(monthName.size() <= locInf.MonthAbrvLen)
+        isShort = true;
+    auto monthindex = locInf.GetMonthNumber(monthName, isShort)+ 1;
     if(monthindex <= 0)
         return false;
     if(date.tm_mon != 0 && date.tm_mday == 0)

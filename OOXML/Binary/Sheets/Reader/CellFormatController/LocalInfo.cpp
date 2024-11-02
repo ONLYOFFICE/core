@@ -48,17 +48,17 @@ std::vector<std::vector<std::wstring>> MonthNames
 
 std::vector<std::vector<std::wstring>> ShortMonthNames
 {
-    {L"янв", L"фев", L"мар", L"апр", L"май", L"июн", L"июл", L"авг", L"сен", L"окт", L"ноя", L"дек"},
     {L"jan", L"feb", L"mar", L"apr", L"may", L"jun", L"jul", L"aug", L"sep", L"oct", L"nov", L"dec"},
-    {L"ene.", L"feb.", L"mar.", L"abr.", L"may.", L"jun.", L"jul.", L"ago.", L"sep.", L"oct.", L"nov.", L"dic."}
+    {L"янв", L"фев", L"мар", L"апр", L"май", L"июн", L"июл", L"авг", L"сен", L"окт", L"ноя", L"дек"},
+    {L"ene", L"feb", L"mar", L"abr", L"may", L"jun", L"jul", L"ago", L"sep", L"oct", L"nov", L"dic"}
 };
 
 std::map<_INT32, LocalInfo> InfoMap
 {
-    {-1, LocalInfo{-1, L"default", L".", L"135", L"%d %B %Y", 0}},
-    {25, LocalInfo{25, L"ru", L".", L"135", L"%d %B %Y г.", 1}},
-    {9, LocalInfo{9, L"en", L"/", L"205", L"%A, %B %d, %Y", 0}},
-    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", L"%A, %d de %B de %Y", 2}}
+    {-1, LocalInfo{-1, L"default", L".", L"135", L"%d %B %Y", 0, 3}},
+    {25, LocalInfo{25, L"ru", L".", L"135", L"%d %B %Y г.", 1, 3}},
+    {9, LocalInfo{9, L"en", L"/", L"205", L"%A, %B %d, %Y", 0, 3}},
+    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", L"%A, %d de %B de %Y", 2, 3}}
 };
 
 
@@ -130,11 +130,15 @@ _INT16 LocalInfo::GetMonthNumber(const std::wstring &monthName, const bool isSho
 std::wstring LocalInfo::GetLocMonthName(const _INT16 &index, bool shortName)
 {
     std::vector<std::wstring> months;
-    if(shortName)
-        months =
+    std::wstring monthName = L"";
     months = GetMonthNames(MonthNamesIndex, shortName);
     if(months.size() > index)
-        return months.at(index);
-    return L"";
+        monthName = months.at(index);
+    if(shortName)
+    {
+        if (MonthNamesIndex == 2)
+                monthName+= L".";
+    }
+    return monthName;
 }
 }

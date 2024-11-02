@@ -837,7 +837,7 @@ BYTE* CPdfReader::GetStructure()
 }
 BYTE* CPdfReader::GetLinks(int nPageIndex)
 {
-	if (!m_pPDFDocument)
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
 
 	nPageIndex++;
@@ -1408,6 +1408,35 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	BYTE* bRes = oRes.GetBuffer();
 	oRes.ClearWithoutAttack();
 	return bRes;
+}
+BYTE* CPdfReader::GetGlyphs(int nPageIndex)
+{
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+		return NULL;
+
+	nPageIndex++;
+	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+	if (!pPage)
+		return NULL;
+
+	int nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+
+	TextOutputControl textOutControl;
+	textOutControl.mode = textOutRawOrder;
+	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
+	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
+
+	TextWordList* pWordList = pTextOut->makeWordList();
+	for (int i = 0; i < pWordList->getLength(); i++)
+	{
+		TextWord* pWord = pWordList->get(i);
+		if (!pWord)
+			continue;
+	}
+	RELEASEOBJECT(pWordList);
+	RELEASEOBJECT(pTextOut);
+
+	return NULL;
 }
 void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
 {

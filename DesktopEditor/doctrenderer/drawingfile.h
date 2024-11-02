@@ -54,6 +54,7 @@ private:
 
 	IOfficeDrawingFile* m_pFile;
 	int m_nType = -1;
+	BYTE* m_pPdfText;
 
 	bool m_bIsExternalFile;
 
@@ -73,12 +74,14 @@ public:
 		m_pImageStorage = NULL;
 
 		m_pFile = NULL;
+		m_pPdfText = NULL;
 		m_bIsExternalFile = false;
 	}
 	~CDrawingFile()
 	{
 		if (!m_bIsExternalFile)
 			RELEASEOBJECT(m_pFile);
+		RELEASEOBJECT(m_pPdfText);
 		RELEASEOBJECT(m_pTextRenderer);
 		RELEASEOBJECT(m_pFontManager);
 		RELEASEINTERFACE(m_pApplicationFonts);
@@ -287,6 +290,12 @@ public:
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
+		if (m_nType == 0)
+		{
+			m_pPdfText = ((CPdfFile*)m_pFile)->GetGlyphs(nPageIndex);
+			return m_pPdfText;
+		}
+
 		if (NULL == m_pTextRenderer)
 			m_pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
 
@@ -381,6 +390,7 @@ public:
 
 	void DestroyTextInfo()
 	{
+		RELEASEOBJECT(m_pPdfText);
 		RELEASEOBJECT(m_pTextRenderer);
 	}
 	bool IsNeedCMap()

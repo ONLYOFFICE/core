@@ -33,6 +33,7 @@
 #include "DateReader.h"
 #include "LocalInfo.h"
 
+#include <set>
 #include <iostream>
 #include <string>
 #include <chrono>
@@ -241,6 +242,8 @@ std::wstring spaceCut(const std::wstring &str)
         return str.substr(first, last - first + 1);
 }
 
+std::set<wchar_t> separators = {L'.', L'/', L'-', L':'};
+
 bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime)
 {
     bool bError = false;
@@ -274,7 +277,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
             elementType = DateElemTypes::space;
         else if(charElement >= L'0' && charElement<= L'9')
             elementType = DateElemTypes::digit;
-        else if(charElement == locInf.DateSeparator.at(0) || charElement == L':')
+        else if(separators.find(charElement) != separators.end())
             elementType = DateElemTypes::delimeter;
         else
             elementType = DateElemTypes::letter;
@@ -316,13 +319,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                             return false;
                         }
                         StringBuf.clear();
-                        if(charElement == locInf.DateSeparator.at(0))
-                        {
-                            Hasdate = true;
-                            parsingNow = ParsingElem::date;
-                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
-                        }
-                        else if(charElement == timeSeparator)
+                        if(charElement == timeSeparator)
                         {
                             Hastime = true;
                             parsingNow = ParsingElem::time;
@@ -330,18 +327,33 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                         }
                         else
                         {
-                            bError = true;
+                            Hasdate = true;
+                            parsingNow = ParsingElem::date;
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
                         }
+
                     }
+                    ///todo вариант когда и дата и время разделяются "."
                 }
-                if(CurrentElementType == DateElemTypes::delimeter)
+                if(CurrentElementType == DateElemTypes::letter && elementType == DateElemTypes::delimeter)
+                {
+                    if(!parseAmPm(StringBuf, result))
+                    {
+                        if(parseMonthName(StringBuf, result))
+                            Bmonth = true;
+                        else
+                            bError = true;
+                    }
+                    StringBuf.clear();
+                }
+                else if((CurrentElementType == DateElemTypes::delimeter || CurrentElementType == DateElemTypes::space) && elementType != DateElemTypes::space)
                 {
                     //просто добавляем в буфер то что было за разделителем
                     StringBuf.push_back(charElement);
                 }
-                if(CurrentElementType == DateElemTypes::space)
+                else if(elementType== DateElemTypes::space)
                 {
-                    if(PrevType == DateElemTypes::digit)
+                    if(CurrentElementType == DateElemTypes::digit)
                     {
                         _INT32 datePart;
                         if(!tryGetInt(StringBuf, datePart))
@@ -363,7 +375,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                             SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
                         }
                      }
-                    if(PrevType == DateElemTypes::letter)
+                    if(CurrentElementType == DateElemTypes::letter)
                     {
                         // если это не am pm то в дате может быть буквенным только имя месяца
                         if(!parseAmPm(StringBuf, result))
@@ -375,8 +387,6 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                         }
                        StringBuf.clear();
                     }
-                    if(elementType == DateElemTypes::letter || elementType == DateElemTypes::digit)
-                        StringBuf.push_back(charElement);
                 }
                 //анализируем собранный элемент
                 PrevType = CurrentElementType;

@@ -50,17 +50,20 @@ public:
     std::wstring GetShortDateFormat();
 
     /// @brief получить имена месяцев в этой локали
+    /// @param index номер из списка месяцев
+    /// @param shortName запрашивается ли сокращенное имя
     /// @return вектор имен месяцев начинающихся с января
-    std::vector<std::wstring> GetMonthNames(const _INT16 &index);
+    std::vector<std::wstring> GetMonthNames(const _INT16 &index, const bool isShortName = false);
 
     /// @brief собрать короткий формат даты из шаблона
     /// @return номер месяца начиная от нуля, в случае успеха, отрицательное число в случае неудачи
-    _INT16 GetMonthNumber(const std::wstring &monthName);
+    _INT16 GetMonthNumber(const std::wstring &monthName,  const bool isShortName = false);
 
     /// @brief получить строковое имя месяца в этой локали
     /// @param index номер запрашиваемого месяца
+    /// @param shortName запрашивается ли сокращенное имя
     /// @return имя месяца
-    std::wstring GetLocMonthName(const _INT16 &index);
+    std::wstring GetLocMonthName(const _INT16 &index, bool shortName = false);
 
     /// @brief id локали
     _INT32 lcid;

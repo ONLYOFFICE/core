@@ -46,6 +46,12 @@ std::vector<std::vector<std::wstring>> MonthNames
     {L"enero", L"febrero", L"marzo", L"abril", L"mayo", L"junio", L"julio", L"agosto", L"septiembre", L"octubre", L"noviembre", L"diciembre"}
 };
 
+std::vector<std::vector<std::wstring>> ShortMonthNames
+{
+    {L"янв", L"фев", L"мар", L"апр", L"май", L"июн", L"июл", L"авг", L"сен", L"окт", L"ноя", L"дек"},
+    {L"jan", L"feb", L"mar", L"apr", L"may", L"jun", L"jul", L"aug", L"sep", L"oct", L"nov", L"dec"},
+    {L"ene.", L"feb.", L"mar.", L"abr.", L"may.", L"jun.", L"jul.", L"ago.", L"sep.", L"oct.", L"nov.", L"dic."}
+};
 
 std::map<_INT32, LocalInfo> InfoMap
 {
@@ -100,24 +106,33 @@ std::wstring LocalInfo::GetShortDateFormat()
         return result;
 }
 
-std::vector<std::wstring> LocalInfo::GetMonthNames(const _INT16 &index)
+std::vector<std::wstring> LocalInfo::GetMonthNames(const _INT16 &index, const bool isShortName)
 {
+    if(isShortName)
+    {
+        if(index < ShortMonthNames.size() && index >= 0)
+            return ShortMonthNames.at(index);
+        return std::vector<std::wstring>{};
+    }
     if(index < MonthNames.size() && index >= 0)
         return MonthNames.at(index);
     return std::vector<std::wstring>{};
 }
 
-_INT16 LocalInfo::GetMonthNumber(const std::wstring &monthName)
+_INT16 LocalInfo::GetMonthNumber(const std::wstring &monthName, const bool isShortName)
 {
-    auto months = GetMonthNames(MonthNamesIndex);
+    auto months = GetMonthNames(MonthNamesIndex, isShortName);
     for(auto i = 0; i < months.size(); i++)
         if(months.at(i) == monthName)
             return i;
     return -1;
 }
-std::wstring LocalInfo::GetLocMonthName(const _INT16 &index)
+std::wstring LocalInfo::GetLocMonthName(const _INT16 &index, bool shortName)
 {
-    auto months = GetMonthNames(MonthNamesIndex);
+    std::vector<std::wstring> months;
+    if(shortName)
+        months =
+    months = GetMonthNames(MonthNamesIndex, shortName);
     if(months.size() > index)
         return months.at(index);
     return L"";

@@ -1,6 +1,7 @@
 #include "CSvgParser.h"
 
 #include <algorithm>
+#include <cctype>
 
 #include "CSvgFile.h"
 

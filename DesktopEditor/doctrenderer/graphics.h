@@ -119,7 +119,6 @@ namespace NSGraphics
 		CBgraFrame m_oFrame;
 
 	private:
-		NSFonts   ::IApplicationFonts* m_pApplicationFonts;
 		NSGraphics::IGraphicsRenderer* m_pRenderer;
 		CGrState   m_oGrState;
 
@@ -137,12 +136,10 @@ namespace NSGraphics
 		void Destroy()
 		{
 			int w, h;
-			if (m_pAppImage->GetBits(w, h))
+			if (m_pAppImage && m_pAppImage->GetBits(w, h))
 				m_oFrame.put_Data(NULL);
 
 			RELEASEINTERFACE(m_pRenderer);
-			RELEASEINTERFACE(m_pApplicationFonts);
-
 			RELEASEOBJECT(m_pAppImage);
 		}
 		void EndDraw() {}

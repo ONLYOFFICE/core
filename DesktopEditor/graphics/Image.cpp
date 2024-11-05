@@ -105,6 +105,18 @@ namespace Aggplus
 		m_Status = Ok;
 	}
 
+    bool CImage::GetInsideFrom(const std::wstring &file_inp, const std::wstring &file_out)
+    {
+        Destroy();
+
+        CBgraFrame oFrame;
+
+        if (oFrame.GetSpecializedGIFInfo(file_inp))
+                return oFrame.SaveGetInsideFromFile(file_out);
+
+        return false;
+    }
+
 	bool CImage::SaveFile(const std::wstring& strFileName, UINT nFileType)
 	{
 		CBgraFrame oBgraFrame;

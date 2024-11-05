@@ -34,12 +34,7 @@
 #include "LocalInfo.h"
 
 #include <set>
-#include <iostream>
 #include <string>
-#include <chrono>
-#include <locale>
-#include <sstream>
-#include <iomanip>
 #include <vector>
 #include <cmath>
 #include <cwctype>
@@ -47,114 +42,47 @@
 DateReader::DateReader(_INT32 lcid):lcid_{lcid}
 {}
 
- // Определение основных форматов даты
-std::vector<std::wstring> DateFormats = {
-
-    L"%X %p",
-
-    L"%d %B %Y %X", L"%d %B, %Y %X", L"%d %b %Y %X",
-    L"%d %b, %Y %X", L"%B %d %Y %X", L"%B %d, %Y %X", L"%b %d %Y %X",
-    L"%b %d, %Y %X",
-
-    L"%d.%m.%Y %X %p", L"%d.%m.%y %X %p", L"%Y-%m-%d %X %p", L"%Y-%m-%d %X %p", L"%d/%m/%Y %X %p",L"%d/%m/%y %X %p",
-    L"%m/%d/%Y %X %p", L"%m/%d/%y %X %p", L"%Y/%m/%d %X %p", L"%Y/%d/%m %X %p", L"%m-%d-%Y %X %p",
-    L"%m-%d-%y %X %p", L"%d-%m-%Y %X %p", L"%d-%m-%y %X %p",
-
-    L"%d %B %Y %X %p", L"%d %B, %Y %X %p", L"%d %b %Y %X %p",
-    L"%d %b, %Y %X %p", L"%B %d %Y %X %p", L"%B %d, %Y %X %p", L"%b %d %Y %X %p",
-    L"%b %d, %Y %X %p",
-
-    L"%d.%m.%Y %X", L"%d.%m.%y %X", L"%Y-%m-%d %X", L"%Y-%m-%d %X", L"%d/%m/%Y %X",L"%d/%m/%y %X", L"%m/%d/%Y %X",
-    L"%m/%d/%y %X", L"%Y/%m/%d %X", L"%Y/%d/%m %X", L"%m-%d-%Y %X",
-    L"%m-%d-%y %X", L"%d-%m-%Y %X", L"%d-%m-%y %X",
-
-    L"%d %B %Y", L"%d %B, %Y", L"%d %b %Y",
-    L"%d %b, %Y", L"%B %d %Y", L"%B %d, %Y", L"%b %d %Y",
-    L"%b %d, %Y"
-};
-
-// короткие форматы
-std::vector<std::wstring> DateFormatsShort = {
-
-   L"%X",
-
-   L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d", L"%Y-%m-%d", L"%d/%m/%Y",L"%d/%m/%y", L"%m/%d/%Y",
-   L"%m/%d/%y", L"%Y/%m/%d", L"%Y/%d/%m", L"%m-%d-%Y",
-   L"%m-%d-%y", L"%d-%m-%Y", L"%d-%m-%y", L"%x"
-};
-
 bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime)
 {
 
     tm time = {};
     //если известна локаль парсим даты отдельно согласно ей
-    if(lcid_ != -1)
-    {
-        auto res =  parseLocalDate(date, time, Hasdate, Hastime );
-        if(!res)
-            return false;
-    }
-    else
-    {
+    auto res =  parseLocalDate(date, time, Hasdate, Hastime );
+    if(!res)
+        return false;
 
-        //делим форматы на длинные и короткие для уменьшения перебора
-        std::vector<std::wstring> * requiredFormats;
-        if(date.size() > 10)
-            requiredFormats = &DateFormats;
+    //дата без времени
+    if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
+    {
+        //определяем стандартная ли дата
+        if(time.tm_year >= 70)
+            result = getStandartDate(time);
         else
-            requiredFormats = &DateFormatsShort;
-
-        bool found = false;
-        // Перебор форматов даты, пока не найдется подходящий
-        for (const auto& format : *requiredFormats)
-        {
-            std::wistringstream ss(date);
-
-            // Пытаемся спарсить дату в локальном формате
-            ss >> std::get_time(&time, format.c_str());
-
-            if (ss.fail()) {
-                continue;
-            }
-            found = true;
-
-        }
-        // Если не найден подходящий формат даты, возвращаем false
-        if(!found)
-            return false;
+          result = getNonUnixDate(time);
+        Hasdate = true;
+        Hastime = false;
+        return true;
     }
-        //дата без времени
-        if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
-        {
-            //определяем стандартная ли дата
-            if(time.tm_year >= 70)
-                result = getStandartDate(time);
-            else
-              result = getNonUnixDate(time);
-            Hasdate = true;
-            Hastime = false;
-            return true;
-        }
-        //время без даты
-        else if(time.tm_year == 0 && time.tm_mday == 0 && time.tm_mon == 0)
-        {
-            result = getStandartTime(time);
-            Hasdate = false;
-            Hastime = true;
-            return true;
-        }
-        else //дата и время
-        {
+    //время без даты
+    else if(time.tm_year == 0 && time.tm_mday == 0 && time.tm_mon == 0)
+    {
+        result = getStandartTime(time);
+        Hasdate = false;
+        Hastime = true;
+        return true;
+    }
+    else //дата и время
+    {
 
-            if(time.tm_year >= 70)
-                result = getStandartDate(time);
-            else
-              result = getNonUnixDate(time);
-            result += getStandartTime(time);
-            Hasdate = true;
-            Hastime = true;
-            return true;
-        }
+        if(time.tm_year >= 70)
+            result = getStandartDate(time);
+        else
+          result = getNonUnixDate(time);
+        result += getStandartTime(time);
+        Hasdate = true;
+        Hastime = true;
+        return true;
+    }
     }
 bool tryGetInt(std::vector<wchar_t> &data, _INT32 &value)
 {

@@ -218,14 +218,6 @@ namespace MetaFile
 		return m_bBanEmfProcessing;
 	}
 
-	void CEmfPlusParser::UpdateTransform()
-	{
-		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
-
-		m_pDC->MultiplyTransform(m_oTransform, MWT_SET);
-		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_RIGHTMULTIPLY);
-	}
-
 	void CEmfPlusParser::RegisterObject(CEmfPlusObject *pObject, unsigned int unIndex)
 	{
 		if (NULL == pObject) return;
@@ -3138,16 +3130,14 @@ namespace MetaFile
 
 		m_oStream >> oMatrix;
 
-		m_oTransform.Multiply(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateTransform();
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
 	{
 		m_bBanEmfProcessing = true;
 
-		m_oTransform.Init();
-		UpdateTransform();
+		m_pDC->ResetTransform();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3165,8 +3155,7 @@ namespace MetaFile
 
 		TEmfPlusXForm oMatrix(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, 0, 0);
 
-		m_oTransform.Multiply(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateTransform();
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3180,8 +3169,7 @@ namespace MetaFile
 
 		TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
 
-		m_oTransform.Multiply(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateTransform();
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
@@ -3196,16 +3184,19 @@ namespace MetaFile
 		m_dPageTransformX = dUnitKoef * GetUnitToPixel(m_unLogicalDpiX, static_cast<EEmfPlusUnitType>(shPageUnit));
 		m_dPageTransformY = dUnitKoef * GetUnitToPixel(m_unLogicalDpiY, static_cast<EEmfPlusUnitType>(shPageUnit));
 
-		UpdateTransform();
+		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
+		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
 	{
 		TEmfPlusXForm oMatrix;
 
-		m_oStream >> m_oTransform;
+		m_oStream >> oMatrix;
 
-		UpdateTransform();
+		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
+		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
+		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3217,8 +3208,7 @@ namespace MetaFile
 
 		TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
 
-		m_oTransform.Multiply(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateTransform();
+		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()

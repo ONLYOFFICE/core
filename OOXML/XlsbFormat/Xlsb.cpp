@@ -259,16 +259,16 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
         XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
+        //XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
-        proc.SetRecordPosition(dataPosition);
+        reader->SetRecordPosition(dataPosition);
 
-        proc.mandatory(*cell_table_temlate.get());
-        delete[] m_pStream;
+        //proc.mandatory(*cell_table_temlate.get());
+
 
         //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
-
+        worksheet->m_oSheetData->fromBin(reader);
+        delete[] m_pStream;
         //для оптимизации по памяти сразу записываем в файл все листы
         if(m_bWriteToXlsx)
         {

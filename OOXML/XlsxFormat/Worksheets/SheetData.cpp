@@ -3059,6 +3059,23 @@ namespace OOX
                 m_arrItems.push_back(pCell);
             }*/
         }
+        void CRow::fromBin(XLS::StreamCacheReaderPtr & reader)
+        {
+            auto type = reader->getNextRecordType();
+            if(type == XLSB::rt_ACBegin)
+            {
+                reader->SkipRecord(false);
+                type = reader->getNextRecordType();
+                reader->SkipRecord(false);
+                type = reader->getNextRecordType();
+                reader->SkipRecord(false);
+                type = reader->getNextRecordType();
+            }
+            if(type != XLSB::rt_RowHdr)
+                return;
+            auto rowHeaderRecord = reader->getNextRecord(XLSB::rt_RowHdr);
+            ReadAttributes(rowHeaderRecord);
+        }
 		XLS::BaseObjectPtr CRow::toBin(sharedFormula &sharedFormulas)
 		{
 			std::vector<XLS::CellRangeRef> shared_formulas_locations_ref;
@@ -3373,6 +3390,38 @@ namespace OOX
                 }
             }
         }
+        void CRow::ReadAttributes(XLS::CFRecordPtr& record)
+        {
+            {
+                _INT32 row;
+                *record >> row;
+                m_oR = row +1;
+            }
+            {
+                _UINT32 style;
+                *record >> style;
+                m_oS = style;
+            }
+            {
+                _INT16 miyRw;
+                *record >> miyRw;
+                m_oHt = miyRw/20.;
+            }
+            _UINT16 flags;
+            BYTE  flags2;
+            *record >> flags >> flags2;
+
+            m_oThickTop      = GETBIT(flags, 0);
+            m_oThickBot      = GETBIT(flags, 1);
+            m_oOutlineLevel	= GETBITS(flags, 8, 10);
+            m_oCollapsed	= GETBIT(flags, 11);
+            m_oHidden 	= GETBIT(flags, 12);
+            m_oCustomHeight   = GETBIT(flags, 13);
+            m_oCustomFormat = GETBIT(flags, 14);
+
+            m_oPh	= GETBIT(flags2, 0);
+
+        }
 		EElementType CRow::getType () const
 		{
 			return et_x_Row;
@@ -3677,6 +3726,19 @@ namespace OOX
 				m_arrItems.push_back(pRow);
 			}*/
 		}
+        void CSheetData::fromBin(XLS::StreamCacheReaderPtr & reader)
+        {
+            if(reader->getNextRecordType() == XLSB::rt_BeginSheetData)
+                reader->SkipRecord(false);
+            else
+                return;
+            while (reader->getNextRecordType() != XLSB::rt_EndSheetData)
+            {
+                CRow *pRow = new CRow(m_pMainDocument);
+                pRow->fromBin(reader);
+                m_arrItems.push_back(pRow);
+            }
+        }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{
 			auto ptr(new XLSB::CELLTABLE);

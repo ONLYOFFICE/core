@@ -34,6 +34,7 @@
 #include "../SharedStrings/Si.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
 
 namespace NSBinPptxRW
 {
@@ -294,12 +295,14 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
                         void fromBin(XLS::BaseObjectPtr& obj);
+                        void fromBin(XLS::StreamCacheReaderPtr& reader);
 						XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
 
@@ -336,6 +339,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
             void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;

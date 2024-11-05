@@ -666,13 +666,10 @@ namespace MetaFile
 
 		double dStrokeWidth = std::fabs(m_pParser->GetPen()->GetWidth());
 
-		if (Equals(0, dStrokeWidth) || (Equals(1, dStrokeWidth) && PS_COSMETIC == (m_pParser->GetPen()->GetStyle() & PS_TYPE_MASK)))
+		if (Equals(0., dStrokeWidth))
 		{
-			dStrokeWidth = 1;
-			arAttributes.push_back({L"vector-effect", L"non-scaling-stroke"});
-
-			wsLineCap  = L"butt";
-			wsLineJoin = L"miter";
+			dStrokeWidth = 1.;
+			arAttributes.Add(L"vector-effect", L"non-scaling-stroke");
 		}
 
 		arAttributes.Add(L"stroke-width",      dStrokeWidth);

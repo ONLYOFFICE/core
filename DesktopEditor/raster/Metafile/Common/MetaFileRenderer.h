@@ -100,6 +100,8 @@ namespace MetaFile
 			m_bStartedPath = false;
 			m_bUpdatedClip = true;
 
+			m_pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+
 			//int alpha = 0xff;
 			//m_pRenderer->put_BrushAlpha1(alpha);
 			//m_pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -1217,22 +1219,8 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			double dWidth = pPen->GetWidth();
-
-			if (Equals(0, dWidth) || (Equals(1, dWidth) && PS_COSMETIC == ulPenType))
-			{
-				double dRendererDpiX;
-				m_pRenderer->get_DpiX(&dRendererDpiX);
-
-				dWidth = 25.4 / 96. * m_pFile->GetDpi() / dRendererDpiX;
-
-				nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
-				nJoinStyle = Aggplus::LineJoinMiter;
-			}
-			else
-				dWidth *= m_dScaleX;
-
-			double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
+			const double dWidth = pPen->GetWidth() * m_dScaleX;
+			const double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
 			BYTE nDashStyle = Aggplus::DashStyleSolid;
 

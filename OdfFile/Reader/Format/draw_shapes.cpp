@@ -813,7 +813,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		set_shape = true;
 	}
 	std::vector<std::pair<std::wstring, std::wstring>> equations;
-	if (false == draw_equations_.empty())
+	if (false == draw_equations_.empty() && !draw_type_oox_index_)
 	{
 		for (size_t i = 0; i < draw_equations_.size(); i++)
 		{
@@ -966,7 +966,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			props.push_back(odf_reader::_property(L"custom_path_h", h));
 		}
 	}
-	if (attlist_.draw_modifiers_)
+	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equations.empty())))
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}

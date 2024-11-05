@@ -2443,6 +2443,18 @@ namespace OOX
         {
             ReadAttributes(obj);
         }
+        bool CCell::fromBin(XLS::StreamCacheReaderPtr& reader)
+        {
+            auto recordType = reader->getNextRecordType();
+            if(recordType >= XLSB::rt_CellBlank && recordType <= XLSB::rt_CellIsst)
+            {
+                auto cellRecord = reader->getNextRecord(recordType);
+                ReadCellInfo(cellRecord);
+                ReadValue(cellRecord, recordType);
+                return true;
+            }
+            return false;
+        }
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar( oReader )
@@ -2668,6 +2680,66 @@ namespace OOX
                         }
                     }
                 }
+            }
+        }
+        void CCell::ReadCellInfo(XLS::CFRecordPtr& record)
+        {
+            {
+                _INT32 col;
+                *record >> col;
+                m_oCol = col;
+            }
+            _UINT32 flags;
+            *record >> flags;
+            m_oStyle   = GETBITS(flags, 0, 23);
+            m_oShowPhonetic = GETBIT(flags, 24);
+        }
+        void CCell::ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId)
+        {
+            switch(typeId)
+            {
+                case XLSB::rt_CellBlank:
+                    break;
+                case XLSB::rt_CellRk:
+                {
+                    m_oValue.Init();
+                    XLS::RkNumber number;
+                    *record >> number;
+                    m_oValue->m_sText = number.value();
+                    break;
+                }
+                case XLSB::rt_CellReal:
+                {
+                    m_oValue.Init();
+                    XLS::Xnum number;
+                    *record >> number;
+                    m_oValue->m_sText = OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(number.data.value);
+                    break;
+                }
+                case XLSB::rt_CellIsst:
+                {
+                    m_oType.Init();
+                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+                    m_oValue.Init();
+
+                    _UINT32 number;
+                    *record >> number;
+                    m_oValue->m_sText = std::to_wstring(number);
+                    break;
+                }
+                case XLSB::rt_CellSt:
+                {
+                    m_oType.Init();
+                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+                    m_oValue.Init();
+
+                    XLSB::XLWideString wstr;
+                    *record >> wstr;
+                    m_oValue->m_sText = wstr;
+                    break;
+                }
+                default:
+                    break;
             }
         }
 		EElementType CCell::getType () const
@@ -3075,6 +3147,24 @@ namespace OOX
                 return;
             auto rowHeaderRecord = reader->getNextRecord(XLSB::rt_RowHdr);
             ReadAttributes(rowHeaderRecord);
+            while(1)
+            {
+                CCell *pCell = new CCell(m_pMainDocument);
+                if(pCell->fromBin(reader))
+                    m_arrItems.push_back(pCell);
+                else
+                {
+                    delete pCell;
+                    break;
+                }
+            }
+            type = reader->getNextRecordType();
+            if(type == XLS::rt_Begin)
+            {
+                reader->SkipRecord();
+                reader->getNextRecordType();
+                reader->SkipRecord();
+            }
         }
 		XLS::BaseObjectPtr CRow::toBin(sharedFormula &sharedFormulas)
 		{

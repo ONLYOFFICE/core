@@ -2708,6 +2708,7 @@ namespace OOX
                     m_oValue->m_sText = number.value();
                     break;
                 }
+                case XLSB::rt_FmlaNum:
                 case XLSB::rt_CellReal:
                 {
                     m_oValue.Init();
@@ -2727,15 +2728,48 @@ namespace OOX
                     m_oValue->m_sText = std::to_wstring(number);
                     break;
                 }
+                case XLSB::rt_FmlaString:
                 case XLSB::rt_CellSt:
                 {
                     m_oType.Init();
-                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
+                    m_oType->SetValue(XLSB::rt_CellSt == typeId ? SimpleTypes::Spreadsheet::celltypeInlineStr : SimpleTypes::Spreadsheet::celltypeStr);
                     m_oValue.Init();
 
                     XLSB::XLWideString wstr;
                     *record >> wstr;
                     m_oValue->m_sText = wstr;
+                    break;
+                }
+                case XLSB::rt_FmlaBool:
+                case XLSB::rt_CellBool:
+                {
+                    m_oType.Init();
+                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+                    m_oValue.Init();
+                    byte value;
+                    *record >> value;
+                    m_oValue->m_sText = value ? L"1" : L"0";
+                    break;
+                }
+                case XLSB::rt_FmlaError:
+                case XLSB::rt_CellError:
+                {
+                    byte errCode;
+                     *record >> errCode;
+                    m_oType.Init();
+                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);
+                    m_oValue.Init();
+                    switch(errCode)
+                    {
+                        case 0x00: m_oValue->m_sText = L"#NULL!"; break;
+                        case 0x07: m_oValue->m_sText = L"#DIV/0!"; break;
+                        case 0x0F: m_oValue->m_sText = L"#VALUE!"; break;
+                        case 0x17: m_oValue->m_sText = L"#REF!"; break;
+                        case 0x1D: m_oValue->m_sText = L"#NAME?"; break;
+                        case 0x24: m_oValue->m_sText = L"#NUM!"; break;
+                        case 0x2A: m_oValue->m_sText = L"#N/A"; break;
+                        case 0x2B: m_oValue->m_sText = L"#GETTING_DATA"; break;
+                    }
                     break;
                 }
                 default:

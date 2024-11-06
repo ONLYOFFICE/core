@@ -2475,6 +2475,11 @@ namespace OOX
         bool CCell::fromBin(XLS::StreamCacheReaderPtr& reader)
         {
             auto recordType = reader->getNextRecordType();
+            if(recordType == XLSB::rt_Table)
+            {
+				ReadTableBinPart(reader);
+                recordType = reader->getNextRecordType();
+            }
             if(recordType >= XLSB::rt_CellBlank && recordType <= XLSB::rt_CellIsst)
             {
                 auto cellRecord = reader->getNextRecord(recordType);
@@ -2718,6 +2723,49 @@ namespace OOX
                         }
                     }
                 }
+            }
+        }
+        void CCell::ReadTableBinPart(XLS::StreamCacheReaderPtr& reader)
+        {
+            auto cellRecord = reader->getNextRecord(XLSB::rt_Table);
+            m_oFormula.Init();
+            m_oFormula->m_oT.Init();
+            m_oFormula->m_oT->SetValue(SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable);
+            {
+                XLS::RFX ref;
+                *cellRecord >> ref;
+                m_oFormula->m_oRef = ref.toString();
+            }
+            {
+                UncheckedRw  rwInput1;
+                UncheckedCol colInput1;
+                UncheckedRw  rwInput2;
+                UncheckedCol colInput2;
+                BYTE flags;
+                *cellRecord >> rwInput1 >> colInput1 >> rwInput2 >> colInput2 >> flags;
+
+                if(GETBIT(flags, 0))
+                    m_oFormula->m_oDtr = true;
+                if(GETBIT(flags, 1))
+                {
+                    m_oFormula->m_oDt2D = true;
+                    rwInput2 = colInput2 = 0;
+                }
+                if(GETBIT(flags, 2))
+                {
+                    m_oFormula->m_oDel1 = true;
+                    rwInput1 = colInput1 = 0;
+                }
+                if(GETBIT(flags, 3))
+                {
+                    m_oFormula->m_oDel2 = true;
+                    rwInput2 = colInput2 = 0;
+                }
+                if(GETBIT(flags, 4))
+                    m_oFormula->m_oAca = true;
+
+                m_oFormula->m_oR1 = static_cast<std::wstring >(CellRef(rwInput1, colInput1, true, true));
+                m_oFormula->m_oR2 = static_cast<std::wstring >(CellRef(rwInput2, colInput2, true, true));
             }
         }
         void CCell::ReadCellInfo(XLS::CFRecordPtr& record)

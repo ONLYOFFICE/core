@@ -246,6 +246,7 @@ namespace OOX
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
+            void ReadTableBinPart(XLS::StreamCacheReaderPtr& reader);
             void ReadCellInfo(XLS::CFRecordPtr& record);
             void ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId);
             void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);

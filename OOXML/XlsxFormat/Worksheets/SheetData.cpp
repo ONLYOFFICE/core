@@ -61,6 +61,7 @@
 #include "../../XlsbFormat/Biff12_records/ValueMeta.h"
 #include "../../XlsbFormat/Biff12_records/Cell.h"
 #include "../../XlsbFormat/Biff12_records/Fmla.h"
+#include "../../XlsbFormat/Biff12_structures/GrbitFmla.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgRef.h"
@@ -1122,6 +1123,34 @@ namespace OOX
                     break;
 
             }
+        }
+        void CFormula::fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record)
+        {
+            //читаем остатки данных в записи ячейки
+            {
+                XLSB::GrbitFmla flags;
+                *record >> flags;
+                if(flags.fAlwaysCalc)
+                    m_oAca = true;
+            }
+
+            auto recordType = reader->getNextRecordType();
+            if(recordType == XLSB::rt_ShrFmla)
+            {
+                return;
+                //todo парсинг шареной формулы
+            }
+            else if(recordType == XLSB::rt_ArrFmla)
+            {
+                return;
+                //todo парсинг массива формул
+            }
+            {
+                XLS::CellParsedFormula BinFmla(false);
+                *record >> BinFmla;
+                m_sText = BinFmla.getAssembledFormula();
+            }
+
         }
 		void CFormula::toBin(XLS::BaseObjectPtr& obj)
 		{
@@ -2451,6 +2480,15 @@ namespace OOX
                 auto cellRecord = reader->getNextRecord(recordType);
                 ReadCellInfo(cellRecord);
                 ReadValue(cellRecord, recordType);
+                return true;
+            }
+            else if(recordType >= XLSB::rt_FmlaString && recordType <= XLSB::rt_FmlaError)
+            {
+                auto cellRecord = reader->getNextRecord(recordType);
+                ReadCellInfo(cellRecord);
+                ReadValue(cellRecord, recordType);
+                m_oFormula.Init();
+                m_oFormula->fromBin(reader, cellRecord);
                 return true;
             }
             return false;

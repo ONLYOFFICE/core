@@ -290,11 +290,13 @@ public:
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
+		/*
 		if (m_nType == 0)
 		{
 			m_pPdfText = ((CPdfFile*)m_pFile)->GetGlyphs(nPageIndex);
 			return m_pPdfText;
 		}
+		*/
 
 		if (NULL == m_pTextRenderer)
 			m_pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();

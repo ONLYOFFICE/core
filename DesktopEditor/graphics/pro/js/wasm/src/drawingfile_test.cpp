@@ -1090,11 +1090,33 @@ int main(int argc, char* argv[])
 	{
 		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
+		nLength = READ_INT(pGlyphs);
+		int i = 4;
+
+		int nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << "TextRenderer: Length " << nLength << ", Paragraphs " << nPathLength << ", Words ";
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << nPathLength << ", Symbols ";
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << nPathLength << ", Spaces ";
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << nPathLength << std::endl;
+
+		nLength -= 20;
+		while (i < nLength)
+		{
+			i++;
+		}
+
 		DestroyTextInfo(pGrFile);
 	}
 
 	// INTERACTIVE FORMS
-	if (true)
+	if (false)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1209,7 +1231,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (true)
+	if (false)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -1855,7 +1877,7 @@ int main(int argc, char* argv[])
 	}
 
 	// SCAN PAGE
-	if (true)
+	if (false)
 	{
 		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
 		if (pScan)

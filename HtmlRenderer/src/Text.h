@@ -722,7 +722,7 @@ namespace NSHtmlRenderer
 				m_oLine.m_shy = m_pTransform->shy();
 				m_oLine.m_sy = m_pTransform->sy();
 
-				m_oMeta.WriteBYTE(CMetafile::ctCommandTextTransform);
+				m_oMeta.WriteCommandType(CMetafile::ctCommandTextTransform);
 				//m_oMeta.WriteDouble(_dst->sx);
 				//m_oMeta.WriteDouble(_dst->shy);
 				//m_oMeta.WriteDouble(_dst->shx);
@@ -738,7 +738,7 @@ namespace NSHtmlRenderer
 				m_pLastBrush->Color1 = m_pBrush->Color1;
 				m_pLastBrush->Alpha1 = m_pBrush->Alpha1;
 
-				m_oMeta.WriteBYTE(CMetafile::ctBrushColor1);
+				m_oMeta.WriteCommandType(CMetafile::ctBrushColor1);
 
 				LONG lBGR = m_pBrush->Color1;
 				m_oMeta.WriteBYTE((BYTE)(lBGR & 0xFF));

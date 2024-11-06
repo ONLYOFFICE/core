@@ -218,7 +218,6 @@ namespace NSHtmlRenderer
 		m_pInternal->m_oPage.WriteLONG(0);
 		m_pInternal->m_oPage.WriteLONG(0);
 		m_pInternal->m_oPage.WriteLONG(0);
-
 	}
 
 	BYTE* CHTMLRendererText::GetBuffer()

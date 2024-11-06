@@ -73,8 +73,6 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <algorithm>
-
 #ifndef MININT32
 #define MAXUINT32   ((uint32_t)~((uint32_t)0))
 #define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
@@ -3919,14 +3917,14 @@ namespace OOX
 			//ReadAttributes(obj);
 			auto ptr = static_cast<XLSB::CELLTABLE*>(obj.get());
 
-            while(!ptr->m_arParenthesis_CELLTABLE.empty())
+			for (auto it = ptr->m_arParenthesis_CELLTABLE.begin(); it != ptr->m_arParenthesis_CELLTABLE.end();)
 			{
 			  CRow *pRow = new CRow(m_pMainDocument);
-              pRow->fromBin(ptr->m_arParenthesis_CELLTABLE.back());
+			  pRow->fromBin(*it);
 			  m_arrItems.push_back(pRow);
-              ptr->m_arParenthesis_CELLTABLE.pop_back();
+
+			  it = ptr->m_arParenthesis_CELLTABLE.erase(it);
 			}
-            std::reverse(m_arrItems.begin(), m_arrItems.end());
 
 			/*for(auto &Parenthesis_CELLTABLE : ptr->m_arParenthesis_CELLTABLE)
 			{

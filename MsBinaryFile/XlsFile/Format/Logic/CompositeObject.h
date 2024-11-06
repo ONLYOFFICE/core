@@ -46,7 +46,6 @@ public:
 	~CompositeObject();
 
 	const bool read							(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory) override; // Read self and children
-    const bool quickread                    (StreamCacheReaderPtr reader, BaseObject* parent, BaseObjectPtr memory, const bool mandatory)override;
 	const bool write						(StreamCacheWriterPtr writer, BaseObject* parent) override;						  // Write self and children
 	virtual const bool loadContent			(BinProcessor& proc) = 0;
 	virtual const bool saveContent			(BinProcessor& proc) { return false; }// = 0;

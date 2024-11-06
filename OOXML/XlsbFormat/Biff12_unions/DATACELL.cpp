@@ -59,18 +59,16 @@ namespace XLSB
         {
             case rt_CellBlank:
             {
-                CellBlank* cellBlankRaw(new CellBlank);
-                BaseObjectPtr cellptr(cellBlankRaw);
-                proc.quick(cellptr);
-                m_Col = cellBlankRaw->cell.column;
+                CellBlank   cellBlank;
+                proc.optional(cellBlank);
+                m_Col = cellBlank.cell.column;
                 break;
             }
             case rt_CellRk:
             {
-                CellRk* cellBlankRaw(new CellRk);
-                BaseObjectPtr cellptr(cellBlankRaw);
-                proc.quick(cellptr);
-                m_Col = cellBlankRaw->cell.column;
+                CellRk		cellRk;
+                proc.optional(cellRk);
+                m_Col = cellRk.cell.column;
                 break;
             }
             case rt_CellError:
@@ -89,26 +87,23 @@ namespace XLSB
             }
             case rt_CellReal:
             {
-                CellReal* cellBlankRaw(new CellReal);
-                BaseObjectPtr cellptr(cellBlankRaw);
-                proc.quick(cellptr);
-                m_Col = cellBlankRaw->cell.column;
+                CellReal	cellReal;
+                proc.optional(cellReal);
+                m_Col = cellReal.cell.column;
                 break;
             }
             case rt_CellSt:
             {
-                CellSt* cellBlankRaw(new CellSt);
-                BaseObjectPtr cellptr(cellBlankRaw);
-                proc.quick(cellptr);
-                m_Col = cellBlankRaw->cell.column;
+                CellSt		cellSt;
+                proc.optional(cellSt);
+                m_Col = cellSt.cell.column;
                 break;
             }
             case rt_CellIsst:
             {
-                CellIsst* cellBlankRaw(new CellIsst);
-                BaseObjectPtr cellptr(cellBlankRaw);
-                proc.quick(cellptr);
-                m_Col = cellBlankRaw->cell.column;
+                CellIsst    cellIsst;
+                proc.optional(cellIsst);
+                m_Col = cellIsst.cell.column;
                 break;
             }
             default:

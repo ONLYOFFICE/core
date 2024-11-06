@@ -94,8 +94,7 @@ namespace XLSB
             }
             else if(type >= rt_CellBlank)
             {
-                auto datacellptr = BaseObjectPtr(new DATACELL);
-                proc.quick(datacellptr);
+                proc.optional<DATACELL>();
                 //m_DATACELL = elements_.back();  
                 m_source = elements_.back();
                 elements_.pop_back();

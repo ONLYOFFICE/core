@@ -68,18 +68,14 @@ namespace XLSB
 		else
 			m_bBrtBeginSheetData = false;
 
+        Parenthesis_CELLTABLE cell_group(shared_formulas_locations_ref_);
         /*while(proc.optional(cell_group))
         {
             m_arParenthesis_CELLTABLE.insert(m_arParenthesis_CELLTABLE.begin(), elements_.back());
             elements_.pop_back();
         }*/
-        int countParenthesis_CELLTABLE = 0;
-        for(countParenthesis_CELLTABLE; countParenthesis_CELLTABLE < 1048576; countParenthesis_CELLTABLE++)
-        {
-            auto row = BaseObjectPtr(new Parenthesis_CELLTABLE(shared_formulas_locations_ref_));
-            if(!proc.quick(row))
-                break;
-        }
+
+        int countParenthesis_CELLTABLE = proc.repeated(cell_group, 0, 1048576);
 
         m_arParenthesis_CELLTABLE.reserve(countParenthesis_CELLTABLE);
         std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arParenthesis_CELLTABLE));
@@ -133,36 +129,27 @@ namespace XLSB
         auto type = proc.getNextRecordType();
         if (type == rt_ACBegin)
         {
-            BaseObjectPtr acptr(new ACCELLTABLE);
-            proc.quick(acptr);
+            proc.optional<ACCELLTABLE>();
             m_ACCELLTABLE = elements_.back();
             elements_.pop_back();
-            type = proc.getNextRecordType();
         }
-        if(type == rt_RowHdr)
+        if(proc.optional<RowHdr>())
         {
-            BaseObjectPtr hdrPtr(new RowHdr);
-            proc.quick(hdrPtr);
             m_BrtRowHdr = std::move(elements_.back());
             elements_.pop_back();
         }
         else return false;
 
 
+        CELL cell(static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1, shared_formulas_locations_ref_);
+
         /*while(proc.optional(cell))
         {
             m_arCELL.insert(m_arCELL.begin(), elements_.back());
             elements_.pop_back();
         }*/
-        int countCELL = 0;
-        _INT32 cellRow = static_cast<RowHdr*>(m_BrtRowHdr.get())->rw + 1;
-        for(countCELL; countCELL < 16384; countCELL++)
-        {
-            auto cell = BaseObjectPtr(new CELL(cellRow, shared_formulas_locations_ref_));
-            if(!proc.quick(cell))
-                break;
-        }
-        //int countCELL = proc.repeated(cell, 0, 16384);
+
+        int countCELL = proc.repeated(cell, 0, 16384);
 
         /*while(countCELL > 0)
         {

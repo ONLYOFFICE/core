@@ -64,8 +64,6 @@ public:
 
 	virtual const bool read(StreamCacheReaderPtr reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
 
-    virtual const bool quickread(StreamCacheReaderPtr reader, BaseObject* parent, BaseObjectPtr memory, const bool mandatory) = 0; // Read self and children without cloning
-
 	virtual const bool write(StreamCacheWriterPtr writer, BaseObject* parent) = 0; // Write self and children
 
 	virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter

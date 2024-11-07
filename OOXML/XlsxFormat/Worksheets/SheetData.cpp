@@ -1126,6 +1126,10 @@ namespace OOX
 
             }
         }
+        namespace  SharedFormulasRef
+        {
+            std::unique_ptr<std::vector<std::pair<_INT32,_INT32>>> sharedRefsLocations;
+        }
         void CFormula::fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record)
         {
             //читаем остатки данных в записи ячейки
@@ -1139,8 +1143,29 @@ namespace OOX
             auto recordType = reader->getNextRecordType();
             if(recordType == XLSB::rt_ShrFmla)
             {
+                {
+                    XLS::CellParsedFormula BinFmla(false);
+                    *record >> BinFmla;
+                    if(!BinFmla.rgce.isEmpty() && BinFmla.rgce.sequence.begin()->get()->ptg_id.get() == 1 && !BinFmla.rgcb.isEmpty())
+                    {
+                        auto rowPart = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get());
+                        auto ColumnPart = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get());
+                        if(!SharedFormulasRef::sharedRefsLocations)
+                            SharedFormulasRef::sharedRefsLocations = std::make_unique<std::vector<std::pair<_INT32,_INT32>>>();
+                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair(rowPart->rowXlsb, ColumnPart->col));
+                        m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size() - 1;
+                    }
+                }
+                auto fmlaRecord = reader->getNextRecord(XLSB::rt_ShrFmla);
+                {
+                    XLSB::UncheckedRfX fmlaRef;
+                    *fmlaRecord >>fmlaRef;
+                    m_oRef = fmlaRef.toString();
+                }
+                XLS::CellParsedFormula BinFmla(false);
+                *fmlaRecord >> BinFmla;
+                m_sText = BinFmla.getAssembledFormula();
                 return;
-                //todo парсинг шареной формулы
             }
             else if(recordType == XLSB::rt_ArrFmla)
             {
@@ -1150,7 +1175,22 @@ namespace OOX
             {
                 XLS::CellParsedFormula BinFmla(false);
                 *record >> BinFmla;
-                m_sText = BinFmla.getAssembledFormula();
+                //случай если в формуле есть ссылка на другую
+                if(!BinFmla.rgce.isEmpty() && BinFmla.rgce.sequence.begin()->get()->ptg_id.get() == 1 && !BinFmla.rgcb.isEmpty())
+                {
+                    auto rowPart = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get());
+                    auto ColumnPart = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get());
+                    if(!SharedFormulasRef::sharedRefsLocations)
+                        return;
+                    for(auto i = 0; i <SharedFormulasRef::sharedRefsLocations->size(); i++)
+                    {
+                        if(SharedFormulasRef::sharedRefsLocations->at(i).first == rowPart->rowXlsb &&
+                            SharedFormulasRef::sharedRefsLocations->at(i).second == ColumnPart->col)
+                            m_oSi = i;
+                    }
+                }
+                else
+                    m_sText = BinFmla.getAssembledFormula();
             }
 
         }
@@ -4014,6 +4054,8 @@ namespace OOX
                 pRow->fromBin(reader);
                 m_arrItems.push_back(pRow);
             }
+            if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
         }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{

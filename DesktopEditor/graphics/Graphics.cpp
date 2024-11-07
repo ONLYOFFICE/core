@@ -1403,19 +1403,13 @@ namespace Aggplus
 		}
 		else if (m_pSoftMask)
 		{
-			switch(m_pSoftMask->GetDataType())
-			{
-			case EMaskDataType::ImageBuffer:
-			{
+			ESoftMaskType nType = m_pSoftMask->GetDataType();
+			if (nType == ESoftMaskType::RGBGrayBuffer)
+				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<0, 1, 2>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
+			else if (nType == ESoftMaskType::BGRGrayBuffer)
 				Aggplus::BlendTo<agg::rgb_to_gray_mask_u8<2, 1, 0>>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer(), m_pSoftMask->GetStep());
-				break;
-			}
-			case EMaskDataType::Alpha4Buffer:
-			{
+			else if (nType == ESoftMaskType::Alpha4Buffer)
 				Aggplus::BlendTo<agg::one_component_mask_u8>(pCurrentGraphicsLayer, m_frame_buffer.pixfmt(), m_pSoftMask->GetBuffer() + 3, m_pSoftMask->GetStep());
-				break;
-			}
-			}
 		}
 		else
 		{
@@ -1550,7 +1544,15 @@ namespace Aggplus
 	void CGraphics::render_scanlines_2(Rasterizer& ras, Renderer& ren)
 	{
 		if (m_pSoftMask)
-			return m_pSoftMask->render_scanlines_2(m_oClip, ras, ren);
+		{
+			ESoftMaskType nType = m_pSoftMask->GetDataType();
+			if (nType == ESoftMaskType::RGBGrayBuffer)
+				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineRGBGray());
+			if (nType == ESoftMaskType::BGRGrayBuffer)
+				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineBGRGray());
+			if (nType == ESoftMaskType::Alpha4Buffer)
+				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineAlpha4());
+		}
 		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}
 

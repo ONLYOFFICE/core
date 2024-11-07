@@ -5,15 +5,24 @@
 #include "aggplustypes.h"
 #include "../common/IGrObject.h"
 #include "./config.h"
-#include "Clip.h"
+
+namespace agg
+{
+template<class AlphaMask>
+class scanline_u8_am;
+template<unsigned R, unsigned G, unsigned B>
+struct rgb_to_gray_mask_u8;
+struct one_component_mask_u8;
+template<unsigned Step=1, unsigned Offset=0, class MaskF=one_component_mask_u8>
+class alpha_mask_u8;
+}
 
 namespace Aggplus
 {
 	enum class EMaskDataType
 	{
 		ImageBuffer,
-		AlphaBuffer,
-		Alpha4Buffer
+		AlphaBuffer
 	};
 
 	class GRAPHICS_DECL CAlphaMask : public IGrObject
@@ -35,6 +44,13 @@ namespace Aggplus
 		bool          m_bExternalBuffer;
 	};
 
+	enum class ESoftMaskType
+	{
+		RGBGrayBuffer,
+		BGRGrayBuffer,
+		Alpha4Buffer
+	};
+
 	class CSoftMask_private;
 	class GRAPHICS_DECL CSoftMask : public IGrObject
 	{
@@ -46,10 +62,11 @@ namespace Aggplus
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
 		BYTE* GetBuffer();
-		EMaskDataType GetDataType();
+		ESoftMaskType GetDataType();
 
-		template<class Rasterizer, class Renderer>
-		void render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren);
+		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<2, 1, 0> > >& GetScanlineBGRGray();
+		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<0, 1, 2> > >& GetScanlineRGBGray();
+		agg::scanline_u8_am<agg::alpha_mask_u8<4, 3> >& GetScanlineAlpha4();
 
 	private:
 		CSoftMask_private* m_pInternal;

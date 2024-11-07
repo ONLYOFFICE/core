@@ -5,8 +5,6 @@
 #include "../agg-2.4/include/agg_scanline_u.h"
 #include "../agg-2.4/include/agg_alpha_mask_u8.h"
 
-#include "Graphics.h"
-
 namespace Aggplus
 {
 	CAlphaMask::CAlphaMask()
@@ -39,7 +37,6 @@ namespace Aggplus
 		{
 		case EMaskDataType::ImageBuffer: return 4;
 		case EMaskDataType::AlphaBuffer: return 1;
-		case EMaskDataType::Alpha4Buffer: return 4;
 		}
 	}
 
@@ -92,11 +89,8 @@ namespace Aggplus
 		unsigned int GetHeight() const { return m_unHeight; }
 		BYTE* GetBuffer() { return m_oRenderingBuffer.buf(); }
 
-		virtual EMaskDataType GetDataType() const { return EMaskDataType::ImageBuffer; }
+		virtual ESoftMaskType GetDataType() const = 0;
 		virtual bool GetSwapRGB() const { return true; };
-
-		template<class Rasterizer, class Renderer>
-		void render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren) {}
 
 	protected:
 		CSoftMask_private(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
@@ -113,24 +107,6 @@ namespace Aggplus
 		unsigned int          m_unHeight;
 	};
 
-	template<class Rasterizer, class Renderer, class Scanline>
-	void _render_scanlines_3(CClipMulti& oClip, Rasterizer& ras, Renderer& ren, Scanline& sl)
-	{
-		if (!oClip.IsClip())
-			agg::render_scanlines(ras, sl, ren);
-		else
-		{
-			typedef agg::scanline_p8 sbool_scanline_type;
-			sbool_scanline_type sl1;
-			sbool_scanline_type sl2;
-
-			if (!oClip.IsClip2())
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, oClip.m_rasterizer, sl1, sl2, sl, ren);
-			else
-				agg::sbool_combine_shapes_aa(agg::sbool_and, ras, (1 == oClip.m_lCurStorage) ? oClip.m_storage1 : oClip.m_storage2, sl1, sl2, sl, ren);
-		}
-	}
-
 	class CSoftMaskBGRAgray : public CSoftMask_private
 	{
 	public:
@@ -138,11 +114,7 @@ namespace Aggplus
 			: CSoftMask_private(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
 
 		agg::scanline_u8_am<agg::alpha_mask_bgra32gray>& GetScanline() { return m_oScanLine; }
-		template<class Rasterizer, class Renderer>
-		void render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren)
-		{
-			_render_scanlines_3(oClip, ras, ren, m_oScanLine);
-		}
+		virtual ESoftMaskType GetDataType() const override { return ESoftMaskType::BGRGrayBuffer; }
 
 	private:
 		agg::alpha_mask_bgra32gray                      m_oAlphaMask;
@@ -157,11 +129,7 @@ namespace Aggplus
 
 		agg::scanline_u8_am<agg::alpha_mask_rgba32gray>& GetScanline() { return m_oScanLine; }
 		virtual bool GetSwapRGB() const override { return false; };
-		template<class Rasterizer, class Renderer>
-		void render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren)
-		{
-			_render_scanlines_3(oClip, ras, ren, m_oScanLine);
-		}
+		virtual ESoftMaskType GetDataType() const override { return ESoftMaskType::RGBGrayBuffer; }
 
 	private:
 		agg::alpha_mask_rgba32gray                      m_oAlphaMask;
@@ -175,12 +143,7 @@ namespace Aggplus
 			: CSoftMask_private(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
 
 		agg::scanline_u8_am<agg::alpha_mask_rgba32a>& GetScanline() { return m_oScanLine; }
-		virtual EMaskDataType GetDataType() const override { return EMaskDataType::Alpha4Buffer; }
-		template<class Rasterizer, class Renderer>
-		void render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren)
-		{
-			_render_scanlines_3(oClip, ras, ren, m_oScanLine);
-		}
+		virtual ESoftMaskType GetDataType() const override { return ESoftMaskType::Alpha4Buffer; }
 
 	private:
 		agg::alpha_mask_rgba32a                      m_oAlphaMask;
@@ -208,13 +171,18 @@ namespace Aggplus
 	unsigned int CSoftMask::GetWidth() const { return m_pInternal->GetWidth(); }
 	unsigned int CSoftMask::GetHeight() const { return m_pInternal->GetHeight(); }
 	BYTE* CSoftMask::GetBuffer() { return m_pInternal->GetBuffer(); }
-	EMaskDataType CSoftMask::GetDataType() { return m_pInternal->GetDataType(); }
+	ESoftMaskType CSoftMask::GetDataType() { return m_pInternal->GetDataType(); }
 
-	// TODO Ошибки линковки - unresolved external symbol
-	// тело шаблонных функций следует определять в заголовочных файлах...
-	template<class Rasterizer, class Renderer>
-	void CSoftMask::render_scanlines_2(CClipMulti& oClip, Rasterizer& ras, Renderer& ren)
+	agg::scanline_u8_am<agg::alpha_mask_bgra32gray>& CSoftMask::GetScanlineBGRGray()
 	{
-		m_pInternal->render_scanlines_2(oClip, ras, ren);
+		return ((CSoftMaskBGRAgray*)m_pInternal)->GetScanline();
+	}
+	agg::scanline_u8_am<agg::alpha_mask_rgba32gray>& CSoftMask::GetScanlineRGBGray()
+	{
+		return ((CSoftMaskRGBAgray*)m_pInternal)->GetScanline();
+	}
+	agg::scanline_u8_am<agg::alpha_mask_rgba32a>& CSoftMask::GetScanlineAlpha4()
+	{
+		return ((CSoftMaskAlpha*)m_pInternal)->GetScanline();
 	}
 }

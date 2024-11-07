@@ -2512,6 +2512,22 @@ namespace OOX
 				ReadTableBinPart(reader);
                 recordType = reader->getNextRecordType();
             }
+            if(recordType == XLSB::rt_CellMeta)
+            {
+                auto metaRecord = reader->getNextRecord(XLSB::rt_CellMeta);
+                _INT32 metavalue;
+                *metaRecord >> metavalue;
+                m_oCellMetadata = metavalue;
+                recordType = reader->getNextRecordType();
+            }
+            if(recordType == XLSB::rt_ValueMeta)
+            {
+                auto metaRecord = reader->getNextRecord(XLSB::rt_ValueMeta);
+                _INT32 metavalue;
+                *metaRecord >> metavalue;
+                m_oValueMetadata = metavalue;
+                recordType = reader->getNextRecordType();
+            }
             if(recordType >= XLSB::rt_CellBlank && recordType <= XLSB::rt_CellIsst)
             {
                 auto cellRecord = reader->getNextRecord(recordType);

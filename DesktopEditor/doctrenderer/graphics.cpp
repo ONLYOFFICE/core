@@ -1260,7 +1260,7 @@ namespace NSGraphics
 				else if (NSFile::CFileBinary::Exists(sName + L"emf") && src.find(L"display") == 0)
 					strImage = sName + L"emf";
 
-				MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pApplicationFonts);
+				MetaFile::IMetaFile* pMetafile = MetaFile::Create(m_pAppImage->GetFonts());
 				pMetafile->LoadFromFile(strImage.c_str());
 
 				double x = 0, y = 0, w = 0, h = 0;

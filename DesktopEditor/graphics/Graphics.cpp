@@ -1297,21 +1297,16 @@ namespace Aggplus
 		RELEASEINTERFACE(pCurrentGraphicsLayer);
 		RELEASEINTERFACE(m_pSoftMask);
 
-		double dWidth = m_frame_buffer.ren_buf().width(), dHeight = m_frame_buffer.ren_buf().height();
+		unsigned int dWidth = m_frame_buffer.ren_buf().width(), dHeight = m_frame_buffer.ren_buf().height();
 		bool bFlip = m_frame_buffer.ren_buf().stride() < 0;
-		if (m_bSwapRGB)
-		{
-			if (bAlpha)
-				m_pSoftMask = new _CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32a>(pBuffer, dWidth, dHeight, false, bFlip);
-			else
-				m_pSoftMask = new _CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32gray>(pBuffer, dWidth, dHeight, false, bFlip);
-		}
+		if (bAlpha)
+			m_pSoftMask = new _CSoftMask<agg::alpha_mask_rgba32a>(pBuffer, dWidth, dHeight, false, bFlip);
 		else
 		{
-			if (bAlpha)
-				m_pSoftMask = new _CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32a>(pBuffer, dWidth, dHeight, false, bFlip);
+			if (m_bSwapRGB)
+				m_pSoftMask = new _CSoftMask<agg::alpha_mask_bgra32gray>(pBuffer, dWidth, dHeight, false, bFlip);
 			else
-				m_pSoftMask = new _CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32gray>(pBuffer, dWidth, dHeight, false, bFlip);
+				m_pSoftMask = new _CSoftMask<agg::alpha_mask_rgba32gray>(pBuffer, dWidth, dHeight, false, bFlip);
 		}
 
 		pBuffer = m_arLayers.empty() ? m_pPixels : m_arLayers.top()->GetBuffer();
@@ -1565,20 +1560,15 @@ namespace Aggplus
 		if (m_pSoftMask)
 		{
 			EMaskDataType nType = m_pSoftMask->GetDataType();
-			if (m_bSwapRGB)
+			if (nType == EMaskDataType::ImageBuffer)
 			{
-				if (nType == EMaskDataType::ImageBuffer)
-					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32gray>*)m_pSoftMask)->GetScanline());
+				if (m_bSwapRGB)
+					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::alpha_mask_bgra32gray>*)m_pSoftMask)->GetScanline());
 				else
-					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32a>*)m_pSoftMask)->GetScanline());
+					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::alpha_mask_rgba32gray>*)m_pSoftMask)->GetScanline());
 			}
 			else
-			{
-				if (nType == EMaskDataType::ImageBuffer)
-					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32gray>*)m_pSoftMask)->GetScanline());
-				else
-					return render_scanlines_3(ras, ren, ((_CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32a>*)m_pSoftMask)->GetScanline());
-			}
+				return render_scanlines_3(ras, ren, ((_CSoftMask<agg::alpha_mask_bgra32a>*)m_pSoftMask)->GetScanline());
 		}
 		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}

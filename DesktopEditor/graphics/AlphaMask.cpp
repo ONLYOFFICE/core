@@ -65,13 +65,30 @@ namespace Aggplus
 		return Ok;
 	}
 
-	CSoftMask::CSoftMask(unsigned int unWidth, unsigned int unHeight) : m_unWidth(unWidth), m_unHeight(unHeight) {}
+	CSoftMask::CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
+	{
+		m_bExternalBuffer = bExternalBuffer;
+		m_unWidth         = unWidth;
+		m_unHeight        = unHeight;
+		m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
+	}
+	CSoftMask::~CSoftMask()
+	{
+		BYTE* pBuffer = m_oRenderingBuffer.buf();
+		if (NULL != pBuffer)
+		{
+			if (!m_bExternalBuffer)
+				RELEASEARRAYOBJECTS(pBuffer);
+
+			m_oRenderingBuffer.attach(NULL, 0, 0, 0);
+		}
+	}
 	unsigned int CSoftMask::GetStep() const { return 4; }
 	unsigned int CSoftMask::GetWidth() const { return m_unWidth; }
 	unsigned int CSoftMask::GetHeight() const { return m_unHeight; }
+	BYTE* CSoftMask::GetBuffer() { return m_oRenderingBuffer.buf(); }
 
-	template<> EMaskDataType _CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32a>::GetDataType() const { return EMaskDataType::Alpha4Buffer; }
-	template<> EMaskDataType _CSoftMask<agg::pixfmt_rgba32, agg::alpha_mask_rgba32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
-	template<> EMaskDataType _CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32a>::GetDataType() const { return EMaskDataType::Alpha4Buffer; }
-	template<> EMaskDataType _CSoftMask<agg::pixfmt_bgra32, agg::alpha_mask_bgra32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
+	template<> EMaskDataType _CSoftMask<agg::alpha_mask_rgba32a>::GetDataType() const { return EMaskDataType::Alpha4Buffer; }
+	template<> EMaskDataType _CSoftMask<agg::alpha_mask_rgba32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
+	template<> EMaskDataType _CSoftMask<agg::alpha_mask_bgra32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
 }

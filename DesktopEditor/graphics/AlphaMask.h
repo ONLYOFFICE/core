@@ -42,56 +42,37 @@ namespace Aggplus
 	class GRAPHICS_DECL CSoftMask : public IGrObject
 	{
 	public:
+		virtual ~CSoftMask();
+
 		unsigned int GetStep() const;
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
+		BYTE* GetBuffer();
 
 		virtual EMaskDataType GetDataType() const = 0;
-		virtual BYTE* GetBuffer() = 0;
 
 	protected:
-		CSoftMask(unsigned int unWidth, unsigned int unHeight);
+		CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip);
 
-		unsigned int m_unWidth;
-		unsigned int m_unHeight;
+		agg::rendering_buffer m_oRenderingBuffer;
+		bool                  m_bExternalBuffer;
+		unsigned int          m_unWidth;
+		unsigned int          m_unHeight;
 	};
 
-	template <class PixelFormat, class AlphaMask>
+	template <class AlphaMask>
 	class GRAPHICS_DECL _CSoftMask : public CSoftMask
 	{
 	public:
-		_CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer = true, bool bFlip = false) : CSoftMask(unWidth, unHeight), m_oScanLine(m_oAlphaMask)
-		{
-			m_bExternalBuffer = bExternalBuffer;
-			m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
-			m_oPixfmt.attach(m_oRenderingBuffer);
-			m_oRendererBase.attach(m_oPixfmt);
-			m_oAlphaMask.attach(m_oRenderingBuffer);
-		}
-		virtual ~_CSoftMask()
-		{
-			BYTE* pBuffer = m_oRenderingBuffer.buf();
-			if (NULL != pBuffer)
-			{
-				if (!m_bExternalBuffer)
-					RELEASEARRAYOBJECTS(pBuffer);
-
-				m_oRenderingBuffer.attach(NULL, 0, 0, 0);
-			}
-		}
+		_CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
+			: CSoftMask(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
 
 		agg::scanline_u8_am<AlphaMask>& GetScanline() { return m_oScanLine; }
 		virtual EMaskDataType GetDataType() const override;
-		virtual BYTE* GetBuffer() override { return m_oRenderingBuffer.buf(); }
 
 	private:
-		bool                            m_bExternalBuffer;
-
-		agg::rendering_buffer           m_oRenderingBuffer;
-		PixelFormat                     m_oPixfmt;
-		agg::renderer_base<PixelFormat> m_oRendererBase;
-		AlphaMask                       m_oAlphaMask;
-		agg::scanline_u8_am<AlphaMask>  m_oScanLine;
+		AlphaMask                      m_oAlphaMask;
+		agg::scanline_u8_am<AlphaMask> m_oScanLine;
 	};
 }
 

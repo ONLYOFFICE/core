@@ -2814,8 +2814,10 @@ namespace OOX
             }
             _UINT32 flags;
             *record >> flags;
-            m_oStyle   = GETBITS(flags, 0, 23);
-            m_oShowPhonetic = GETBIT(flags, 24);
+            if(GETBITS(flags, 0, 23))
+                m_oStyle   = GETBITS(flags, 0, 23);
+            if(GETBIT(flags, 24))
+                m_oShowPhonetic = true;
         }
         void CCell::ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId)
         {
@@ -3310,6 +3312,7 @@ namespace OOX
             while(1)
             {
                 CCell *pCell = new CCell(m_pMainDocument);
+                pCell->m_oRow = m_oR->GetValue();
                 if(pCell->fromBin(reader))
                     m_arrItems.push_back(pCell);
                 else
@@ -3661,15 +3664,22 @@ namespace OOX
             BYTE  flags2;
             *record >> flags >> flags2;
 
-            m_oThickTop      = GETBIT(flags, 0);
-            m_oThickBot      = GETBIT(flags, 1);
-            m_oOutlineLevel	= GETBITS(flags, 8, 10);
-            m_oCollapsed	= GETBIT(flags, 11);
-            m_oHidden 	= GETBIT(flags, 12);
-            m_oCustomHeight   = GETBIT(flags, 13);
-            m_oCustomFormat = GETBIT(flags, 14);
-
-            m_oPh	= GETBIT(flags2, 0);
+            if(GETBIT(flags, 0))
+                m_oThickTop = true;
+            if(GETBIT(flags, 1))
+                m_oThickBot = true;
+            if(GETBITS(flags, 8, 10))
+                m_oOutlineLevel	= GETBITS(flags, 8, 10);
+            if(GETBIT(flags, 11))
+                m_oCollapsed = true;
+            if(GETBIT(flags, 12))
+                m_oHidden 	= true;
+            if(GETBIT(flags, 13))
+                m_oCustomHeight   = true;
+            if(GETBIT(flags, 14))
+                m_oCustomFormat = true;
+            if(GETBIT(flags2, 0))
+                m_oPh = true;
 
         }
 		EElementType CRow::getType () const

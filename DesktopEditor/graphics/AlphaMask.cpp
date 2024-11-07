@@ -87,8 +87,4 @@ namespace Aggplus
 	unsigned int CSoftMask::GetWidth() const { return m_unWidth; }
 	unsigned int CSoftMask::GetHeight() const { return m_unHeight; }
 	BYTE* CSoftMask::GetBuffer() { return m_oRenderingBuffer.buf(); }
-
-	template<> EMaskDataType _CSoftMask<agg::alpha_mask_rgba32a>::GetDataType() const { return EMaskDataType::Alpha4Buffer; }
-	template<> EMaskDataType _CSoftMask<agg::alpha_mask_rgba32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
-	template<> EMaskDataType _CSoftMask<agg::alpha_mask_bgra32gray>::GetDataType() const { return EMaskDataType::ImageBuffer; }
 }

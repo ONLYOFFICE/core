@@ -6,8 +6,7 @@
 #include "../common/IGrObject.h"
 #include "./config.h"
 
-#include "../agg-2.4/include/agg_renderer_base.h"
-#include "../agg-2.4/include/agg_pixfmt_rgba.h"
+#include "../agg-2.4/include/agg_rendering_buffer.h"
 #include "../agg-2.4/include/agg_scanline_u.h"
 #include "../agg-2.4/include/agg_alpha_mask_u8.h"
 
@@ -60,19 +59,46 @@ namespace Aggplus
 		unsigned int          m_unHeight;
 	};
 
-	template <class AlphaMask>
-	class GRAPHICS_DECL _CSoftMask : public CSoftMask
+	class GRAPHICS_DECL CSoftMaskBGRAgray : public CSoftMask
 	{
 	public:
-		_CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
+		CSoftMaskBGRAgray(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
 			: CSoftMask(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
 
-		agg::scanline_u8_am<AlphaMask>& GetScanline() { return m_oScanLine; }
-		virtual EMaskDataType GetDataType() const override;
+		agg::scanline_u8_am<agg::alpha_mask_bgra32gray>& GetScanline() { return m_oScanLine; }
+		virtual EMaskDataType GetDataType() const override { return EMaskDataType::ImageBuffer; }
 
 	private:
-		AlphaMask                      m_oAlphaMask;
-		agg::scanline_u8_am<AlphaMask> m_oScanLine;
+		agg::alpha_mask_bgra32gray                      m_oAlphaMask;
+		agg::scanline_u8_am<agg::alpha_mask_bgra32gray> m_oScanLine;
+	};
+
+	class GRAPHICS_DECL CSoftMaskRGBAgray : public CSoftMask
+	{
+	public:
+		CSoftMaskRGBAgray(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
+			: CSoftMask(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
+
+		agg::scanline_u8_am<agg::alpha_mask_rgba32gray>& GetScanline() { return m_oScanLine; }
+		virtual EMaskDataType GetDataType() const override { return EMaskDataType::ImageBuffer; }
+
+	private:
+		agg::alpha_mask_rgba32gray                      m_oAlphaMask;
+		agg::scanline_u8_am<agg::alpha_mask_rgba32gray> m_oScanLine;
+	};
+
+	class GRAPHICS_DECL CSoftMaskAlpha : public CSoftMask
+	{
+	public:
+		CSoftMaskAlpha(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer, bool bFlip)
+			: CSoftMask(pBuffer, unWidth, unHeight, bExternalBuffer, bFlip), m_oAlphaMask(m_oRenderingBuffer), m_oScanLine(m_oAlphaMask) {}
+
+		agg::scanline_u8_am<agg::alpha_mask_rgba32a>& GetScanline() { return m_oScanLine; }
+		virtual EMaskDataType GetDataType() const override { return EMaskDataType::Alpha4Buffer; }
+
+	private:
+		agg::alpha_mask_rgba32a                      m_oAlphaMask;
+		agg::scanline_u8_am<agg::alpha_mask_rgba32a> m_oScanLine;
 	};
 }
 

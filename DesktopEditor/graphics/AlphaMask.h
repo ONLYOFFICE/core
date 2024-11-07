@@ -39,56 +39,59 @@ namespace Aggplus
 		bool          m_bExternalBuffer;
 	};
 
-	template <class PixelFormat, class AlphaMask>
-	struct TAlphaMaskData
-	{
-		TAlphaMaskData(agg::rendering_buffer& oRenderingBuffer) : m_oPixfmt(oRenderingBuffer), m_oScanLine(m_oAlphaMask) {};
-
-		PixelFormat                     m_oPixfmt;
-		agg::renderer_base<PixelFormat> m_oRendererBase;
-		AlphaMask                       m_oAlphaMask;
-		agg::scanline_u8_am<AlphaMask>  m_oScanLine;
-	};
-
-	typedef agg::renderer_base<agg::pixfmt_bgra32>          RenBaseBGRA32;
-	typedef agg::scanline_u8_am<agg::alpha_mask_bgra32gray> ScanlineBGRA32Gray;
-	typedef agg::scanline_u8_am<agg::alpha_mask_bgra32a>    ScanlineBGRA32A;
-
 	class GRAPHICS_DECL CSoftMask : public IGrObject
 	{
 	public:
-		CSoftMask();
-		CSoftMask(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true, bool bFlip = false);
-		virtual ~CSoftMask();
-
-		EMaskDataType GetDataType() const;
 		unsigned int GetStep() const;
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
 
-		void SetType(EMaskDataType enDataType);
-		Status Create(UINT unWidth, UINT unHeight, EMaskDataType enDataType);
-		Status LoadFromBuffer(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bExternalBuffer = true, bool bFlip = false);
+		virtual EMaskDataType GetDataType() const = 0;
+		virtual BYTE* GetBuffer() = 0;
 
-		agg::rendering_buffer& GetRenderingBuffer();
-		RenBaseBGRA32&         GetRendererBaseImage();
-		ScanlineBGRA32Gray&    GetScanlineImage();
-		ScanlineBGRA32A&       GetScanlineABuffer();
-		BYTE*                  GetBuffer();
+	protected:
+		CSoftMask(unsigned int unWidth, unsigned int unHeight);
+
+		unsigned int m_unWidth;
+		unsigned int m_unHeight;
+	};
+
+	template <class PixelFormat, class AlphaMask>
+	class GRAPHICS_DECL _CSoftMask : public CSoftMask
+	{
+	public:
+		_CSoftMask(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, bool bExternalBuffer = true, bool bFlip = false) : CSoftMask(unWidth, unHeight), m_oScanLine(m_oAlphaMask)
+		{
+			m_bExternalBuffer = bExternalBuffer;
+			m_oRenderingBuffer.attach(pBuffer, unWidth, unHeight, (bFlip ? -1 : 1) * GetStep() * unWidth);
+			m_oPixfmt.attach(m_oRenderingBuffer);
+			m_oRendererBase.attach(m_oPixfmt);
+			m_oAlphaMask.attach(m_oRenderingBuffer);
+		}
+		virtual ~_CSoftMask()
+		{
+			BYTE* pBuffer = m_oRenderingBuffer.buf();
+			if (NULL != pBuffer)
+			{
+				if (!m_bExternalBuffer)
+					RELEASEARRAYOBJECTS(pBuffer);
+
+				m_oRenderingBuffer.attach(NULL, 0, 0, 0);
+			}
+		}
+
+		agg::scanline_u8_am<AlphaMask>& GetScanline() { return m_oScanLine; }
+		virtual EMaskDataType GetDataType() const override;
+		virtual BYTE* GetBuffer() override { return m_oRenderingBuffer.buf(); }
+
 	private:
-		void Set(BYTE* pBuffer, UINT unWidth, UINT unHeight, EMaskDataType enDataType, bool bFlip = false);
+		bool                            m_bExternalBuffer;
 
-		agg::rendering_buffer m_oRenderingBuffer;
-		EMaskDataType         m_enDataType;
-		bool                  m_bExternalBuffer;
-		unsigned int          m_unWidth;
-		unsigned int          m_unHeight;
-
-		typedef TAlphaMaskData<agg::pixfmt_bgra32, agg::alpha_mask_bgra32gray> AMaskFromImage;
-		typedef TAlphaMaskData<agg::pixfmt_bgra32, agg::alpha_mask_bgra32a>    AMaskFromABuffer;
-
-		AMaskFromImage*   m_pImageData;
-		AMaskFromABuffer* m_pAlphaBufferData;
+		agg::rendering_buffer           m_oRenderingBuffer;
+		PixelFormat                     m_oPixfmt;
+		agg::renderer_base<PixelFormat> m_oRendererBase;
+		AlphaMask                       m_oAlphaMask;
+		agg::scanline_u8_am<AlphaMask>  m_oScanLine;
 	};
 }
 

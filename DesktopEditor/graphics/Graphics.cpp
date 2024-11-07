@@ -1297,17 +1297,9 @@ namespace Aggplus
 		RELEASEINTERFACE(pCurrentGraphicsLayer);
 		RELEASEINTERFACE(m_pSoftMask);
 
-		unsigned int dWidth = m_frame_buffer.ren_buf().width(), dHeight = m_frame_buffer.ren_buf().height();
+		unsigned int unWidth = m_frame_buffer.ren_buf().width(), unHeight = m_frame_buffer.ren_buf().height();
 		bool bFlip = m_frame_buffer.ren_buf().stride() < 0;
-		if (bAlpha)
-			m_pSoftMask = new CSoftMaskAlpha(pBuffer, dWidth, dHeight, false, bFlip);
-		else
-		{
-			if (m_bSwapRGB)
-				m_pSoftMask = new CSoftMaskBGRAgray(pBuffer, dWidth, dHeight, false, bFlip);
-			else
-				m_pSoftMask = new CSoftMaskRGBAgray(pBuffer, dWidth, dHeight, false, bFlip);
-		}
+		m_pSoftMask = new CSoftMask(pBuffer, unWidth, unHeight, bFlip, m_bSwapRGB, bAlpha);
 
 		pBuffer = m_arLayers.empty() ? m_pPixels : m_arLayers.top()->GetBuffer();
 		if (!pBuffer)
@@ -1316,7 +1308,7 @@ namespace Aggplus
 			return NULL;
 		}
 
-		m_frame_buffer.ren_buf().attach(pBuffer, dWidth, dHeight, m_frame_buffer.ren_buf().stride());
+		m_frame_buffer.ren_buf().attach(pBuffer, unWidth, unHeight, m_frame_buffer.ren_buf().stride());
 
 		return m_pSoftMask;
 	}
@@ -1558,18 +1550,7 @@ namespace Aggplus
 	void CGraphics::render_scanlines_2(Rasterizer& ras, Renderer& ren)
 	{
 		if (m_pSoftMask)
-		{
-			EMaskDataType nType = m_pSoftMask->GetDataType();
-			if (nType == EMaskDataType::ImageBuffer)
-			{
-				if (m_bSwapRGB)
-					return render_scanlines_3(ras, ren, ((CSoftMaskBGRAgray*)m_pSoftMask)->GetScanline());
-				else
-					return render_scanlines_3(ras, ren, ((CSoftMaskRGBAgray*)m_pSoftMask)->GetScanline());
-			}
-			else
-				return render_scanlines_3(ras, ren, ((CSoftMaskAlpha*)m_pSoftMask)->GetScanline());
-		}
+			return m_pSoftMask->render_scanlines_2(m_oClip, ras, ren);
 		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}
 

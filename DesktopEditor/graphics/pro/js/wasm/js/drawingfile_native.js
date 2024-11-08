@@ -144,7 +144,7 @@ CFile.prototype._getInteractiveFormsInfo = function()
 
 CFile.prototype._getAnnotationsInfo = function(pageIndex)
 {
-	g_module_pointer.ptr = g_native_drawing_file["GetAnnotationsInfo"](pageIndex);
+	g_module_pointer.ptr = g_native_drawing_file["GetAnnotationsInfo"](pageIndex === undefined ? -1 : pageIndex);
 	return g_module_pointer;
 };
 

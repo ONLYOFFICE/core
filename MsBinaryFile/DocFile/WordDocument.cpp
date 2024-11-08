@@ -950,6 +950,10 @@ namespace DocFileFormat
 		{
 			RELEASEOBJECT( intVector );
 		}
+		else 
+		{
+			intVector->push_back(fcMax);
+		}
 
 		return intVector;
 	}

@@ -56,10 +56,13 @@ namespace NExtractTools
 		CSVReader csvReader;
         _UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter, lcid);
 
-		oXlsx.PrepareToWrite();
+		if (SUCCEEDED_X2T(nRes))
+		{
+			oXlsx.PrepareToWrite();
 
-		OOX::CContentTypes oContentTypes;
-		nRes = oXlsx.Write(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
+			OOX::CContentTypes oContentTypes;
+				nRes = oXlsx.Write(sTo, oContentTypes) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
+		}
 
 		return nRes;
 	}

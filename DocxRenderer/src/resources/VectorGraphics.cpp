@@ -129,8 +129,8 @@ namespace NSDocxRenderer
 	{
 		m_dLeft = std::numeric_limits<double>().max();
 		m_dTop = std::numeric_limits<double>().max();
-		m_dRight = std::numeric_limits<double>().min();
-		m_dBottom = std::numeric_limits<double>().min();
+		m_dRight = std::numeric_limits<double>::lowest();
+		m_dBottom = std::numeric_limits<double>::lowest();
 	}
 
 	double CVectorGraphics::GetLeft() const noexcept

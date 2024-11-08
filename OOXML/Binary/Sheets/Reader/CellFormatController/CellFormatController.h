@@ -49,7 +49,7 @@ public:
     /// @brief обрабатывает вставляемые в ячейку таблицы данные, переводя их в нужный тип, и заполняет ими ячейку
     /// @param pCell указатель на ячейку
     /// @param value вставляемые в ячейку данные в строковом типе
-    void ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
+    int ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
 
 private:
 

@@ -13,7 +13,7 @@ class scanline_u8_am;
 template<unsigned R, unsigned G, unsigned B>
 struct rgb_to_gray_mask_u8;
 struct one_component_mask_u8;
-template<unsigned Step=1, unsigned Offset=0, class MaskF=one_component_mask_u8>
+template<unsigned Step, unsigned Offset, class MaskF>
 class alpha_mask_u8;
 }
 
@@ -66,7 +66,7 @@ namespace Aggplus
 
 		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<2, 1, 0> > >& GetScanlineBGRGray();
 		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<0, 1, 2> > >& GetScanlineRGBGray();
-		agg::scanline_u8_am<agg::alpha_mask_u8<4, 3> >& GetScanlineAlpha4();
+		agg::scanline_u8_am<agg::alpha_mask_u8<4, 3, agg::one_component_mask_u8> >& GetScanlineAlpha4();
 
 	private:
 		CSoftMask_private* m_pInternal;

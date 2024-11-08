@@ -2595,7 +2595,7 @@ namespace OOX
                 auto cellRecord = reader->getNextRecord(recordType);
                 ReadCellInfo(cellRecord);
                 ReadValue(cellRecord, recordType);
-                return true;
+
             }
             else if(recordType >= XLSB::rt_FmlaString && recordType <= XLSB::rt_FmlaError)
             {
@@ -2604,9 +2604,17 @@ namespace OOX
                 ReadValue(cellRecord, recordType);
                 m_oFormula.Init();
                 m_oFormula->fromBin(reader, cellRecord);
-                return true;
             }
-            return false;
+            else
+                return false;
+            recordType = reader->getNextRecordType();
+            if(recordType == XLSB::rt_FRTBegin)
+            {
+                reader->SkipRecord(false);
+                recordType = reader->getNextRecordType();
+                reader->SkipRecord(false);
+            }
+            return true;
         }
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -3402,11 +3410,11 @@ namespace OOX
                 }
             }
             type = reader->getNextRecordType();
-            if(type == XLS::rt_Begin)
+            if(type == XLSB::rt_FRTBegin)
             {
-                reader->SkipRecord();
+                reader->SkipRecord(false);
                 reader->getNextRecordType();
-                reader->SkipRecord();
+                reader->SkipRecord(false);
             }
         }
 		XLS::BaseObjectPtr CRow::toBin(sharedFormula &sharedFormulas)

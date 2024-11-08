@@ -1141,18 +1141,21 @@ namespace OOX
             }
 
             auto recordType = reader->getNextRecordType();
+            recordType = reader->getNextRecordType();
             if(recordType == XLSB::rt_ShrFmla)
             {
+                _INT32 rowRef = 0;
+                _INT32 ColumnRef = 0;
                 {
                     XLS::CellParsedFormula BinFmla(false);
                     *record >> BinFmla;
                     if(!BinFmla.rgce.isEmpty() && BinFmla.rgce.sequence.begin()->get()->ptg_id.get() == 1 && !BinFmla.rgcb.isEmpty())
                     {
-                        auto rowPart = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get());
-                        auto ColumnPart = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get());
+                        rowRef = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get())->rowXlsb;
+                        ColumnRef = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get())->col;
                         if(!SharedFormulasRef::sharedRefsLocations)
                             SharedFormulasRef::sharedRefsLocations = std::make_unique<std::vector<std::pair<_INT32,_INT32>>>();
-                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair(rowPart->rowXlsb, ColumnPart->col));
+                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair(rowRef, ColumnRef));
                         m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size() - 1;
                     }
                 }
@@ -1160,17 +1163,33 @@ namespace OOX
                 {
                     XLSB::UncheckedRfX fmlaRef;
                     *fmlaRecord >>fmlaRef;
-                    m_oRef = fmlaRef.toString();
+                    m_oRef = fmlaRef.toString(true, true);
                 }
                 XLS::CellParsedFormula BinFmla(false);
+                BinFmla.rgce.cell_base_ref.column = ColumnRef;
+                BinFmla.rgce.cell_base_ref.row = rowRef;
                 *fmlaRecord >> BinFmla;
                 m_sText = BinFmla.getAssembledFormula();
+                m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared;
                 return;
             }
             else if(recordType == XLSB::rt_ArrFmla)
             {
+                auto fmlaRecord = reader->getNextRecord(XLSB::rt_ArrFmla);
+                {
+                    XLSB::UncheckedRfX fmlaRef;
+                    *fmlaRecord >>fmlaRef;
+                    m_oRef = fmlaRef.toString(true, true);
+                }
+                byte flags;
+                *fmlaRecord >>flags;
+                if(GETBIT(flags,0))
+                    m_oAca = true;
+                XLS::CellParsedFormula BinFmla(false);
+                *fmlaRecord >> BinFmla;
+                m_sText = BinFmla.getAssembledFormula();
+                m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray;
                 return;
-                //todo парсинг массива формул
             }
             {
                 XLS::CellParsedFormula BinFmla(false);
@@ -1186,7 +1205,10 @@ namespace OOX
                     {
                         if(SharedFormulasRef::sharedRefsLocations->at(i).first == rowPart->rowXlsb &&
                             SharedFormulasRef::sharedRefsLocations->at(i).second == ColumnPart->col)
+                        {
                             m_oSi = i;
+                            m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared;
+                        }
                     }
                 }
                 else
@@ -3363,8 +3385,10 @@ namespace OOX
             }
             if(type != XLSB::rt_RowHdr)
                 return;
-            auto rowHeaderRecord = reader->getNextRecord(XLSB::rt_RowHdr);
-            ReadAttributes(rowHeaderRecord);
+            {
+                auto rowHeaderRecord = reader->getNextRecord(XLSB::rt_RowHdr);
+                ReadAttributes(rowHeaderRecord);
+            }
             while(1)
             {
                 CCell *pCell = new CCell(m_pMainDocument);

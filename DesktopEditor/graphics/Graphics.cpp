@@ -1547,11 +1547,11 @@ namespace Aggplus
 		{
 			ESoftMaskType nType = m_pSoftMask->GetDataType();
 			if (nType == ESoftMaskType::RGBGrayBuffer)
-				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineRGBGray());
+				return render_scanlines_3(ras, ren, ((CSoftMaskRGBAgray*)m_pSoftMask->m_pInternal)->GetScanline());
 			if (nType == ESoftMaskType::BGRGrayBuffer)
-				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineBGRGray());
+				return render_scanlines_3(ras, ren, ((CSoftMaskBGRAgray*)m_pSoftMask->m_pInternal)->GetScanline());
 			if (nType == ESoftMaskType::Alpha4Buffer)
-				return render_scanlines_3(ras, ren, m_pSoftMask->GetScanlineAlpha4());
+				return render_scanlines_3(ras, ren, ((CSoftMaskAlpha*)m_pSoftMask->m_pInternal)->GetScanline());
 		}
 		render_scanlines_3(ras, ren, m_rasterizer.get_scanline());
 	}

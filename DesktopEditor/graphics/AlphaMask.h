@@ -1,21 +1,9 @@
 #ifndef _BUILD_ALPHAMASK_H_
 #define _BUILD_ALPHAMASK_H_
 
-#include <string>
 #include "aggplustypes.h"
 #include "../common/IGrObject.h"
 #include "./config.h"
-
-namespace agg
-{
-template<class AlphaMask>
-class scanline_u8_am;
-template<unsigned R, unsigned G, unsigned B>
-struct rgb_to_gray_mask_u8;
-struct one_component_mask_u8;
-template<unsigned Step, unsigned Offset, class MaskF>
-class alpha_mask_u8;
-}
 
 namespace Aggplus
 {
@@ -64,12 +52,10 @@ namespace Aggplus
 		BYTE* GetBuffer();
 		ESoftMaskType GetDataType();
 
-		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<2, 1, 0> > >& GetScanlineBGRGray();
-		agg::scanline_u8_am<agg::alpha_mask_u8<4, 0, agg::rgb_to_gray_mask_u8<0, 1, 2> > >& GetScanlineRGBGray();
-		agg::scanline_u8_am<agg::alpha_mask_u8<4, 3, agg::one_component_mask_u8> >& GetScanlineAlpha4();
-
 	private:
 		CSoftMask_private* m_pInternal;
+
+		friend class CGraphics;
 	};
 }
 

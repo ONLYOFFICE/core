@@ -1426,17 +1426,109 @@ BYTE* CPdfReader::GetGlyphs(int nPageIndex)
 	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
 	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 
-	TextWordList* pWordList = pTextOut->makeWordList();
-	for (int i = 0; i < pWordList->getLength(); i++)
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	unsigned int nParagraphs = 0, nWords = 0, nSymbols = 0, nSpaces = 0;
+	oRes.AddInt(nParagraphs);
+	oRes.AddInt(nWords);
+	oRes.AddInt(nSymbols);
+	oRes.AddInt(nSpaces);
+
+	double dR = -1, dG = -1, dB = -1;
+	bool bInvisible = false;
+
+	TextPage* pText = pTextOut->takeText();
+	GList* pColumns = pText->makeColumns();
+	for (int nColId = 0; nColId < pColumns->getLength(); ++nColId)
 	{
-		TextWord* pWord = pWordList->get(i);
-		if (!pWord)
-			continue;
+		TextColumn* pColumn = (TextColumn*)pColumns->get(nColId);
+		GList* pParagraphs = pColumn->getParagraphs();
+		nParagraphs += pParagraphs->getLength();
+		for (int nParId = 0; nParId < pParagraphs->getLength(); ++nParId)
+		{
+			TextParagraph* pParagraph = (TextParagraph*)pParagraphs->get(nParId);
+			GList* pLines = pParagraph->getLines();
+			for (int nLineId = 0; nLineId < pLines->getLength(); ++nLineId)
+			{
+				TextLine* pLine = (TextLine*)pLines->get(nLineId);
+				GList* pWords = pLine->getWords();
+				nWords += pWords->getLength();
+				nSpaces += pWords->getLength() - 1;
+
+				BYTE mask = 0x01;
+				oRes.WriteBYTE(160); // ctCommandTextLine
+				oRes.WriteBYTE(mask);
+				oRes.WriteDouble(pLine->getXMin());
+				oRes.WriteDouble(pLine->getYMin());
+				// TODO
+				if ((mask & 0x01) == 0)
+				{
+					oRes.WriteDouble(0); // ex
+					oRes.WriteDouble(0); // ey
+				}
+				oRes.WriteDouble(0); // Ascent
+				oRes.WriteDouble(0); // Descent
+				if (mask & 0x04)
+					oRes.WriteDouble(0); // LineWidth
+
+				bool bFirst = true;
+				for (int nWordId = 0; nWordId < pWords->getLength(); ++nWordId)
+				{
+					TextWord* pWord = (TextWord*)pWords->get(nWordId);
+
+					double _dR, _dG, _dB;
+					bool _bInvisible = pWord->isInvisible();
+					pWord->getColor(&_dR, &_dG, &_dB);
+					if (_dR != dR || _dG != dG || _dB != dB || _bInvisible != bInvisible)
+					{
+						dR = _dR;
+						dG = _dG;
+						dB = _dB;
+						bInvisible = _bInvisible;
+						oRes.WriteBYTE(22); // ctBrushColor1
+						oRes.WriteBYTE(_dB * 255.0);
+						oRes.WriteBYTE(_dG * 255.0);
+						oRes.WriteBYTE(_dR * 255.0);
+						oRes.WriteBYTE(bInvisible ? 0 : 255);
+					}
+
+					nSymbols += pWord->getLength();
+					for (int nCharId = 0; nCharId < pWord->getLength(); ++nCharId)
+					{
+						oRes.WriteBYTE(80); // ctDrawText
+						// TODO
+						if (bFirst)
+							bFirst = false;
+						else
+							oRes.WriteUSHORT(1); // charX
+
+						// TODO int т.к. unicode
+						oRes.WriteUSHORT(pWord->getChar(nCharId));
+						// gid никто не использует mask & 0x02
+						// TODO
+						oRes.WriteUSHORT(0); // width
+					}
+				}
+
+				oRes.WriteBYTE(162); // ctCommandTextLineEnd
+			}
+		}
 	}
-	RELEASEOBJECT(pWordList);
+
+	deleteGList(pColumns, TextColumn);
+	RELEASEOBJECT(pText);
 	RELEASEOBJECT(pTextOut);
 
-	return NULL;
+	oRes.AddInt(nParagraphs, 4);
+	oRes.AddInt(nWords, 8);
+	oRes.AddInt(nSymbols, 12);
+	oRes.AddInt(nSpaces, 16);
+
+	oRes.WriteLen();
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
 }
 void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
 {

@@ -74,6 +74,8 @@ SOURCES += \
     $$PWD/../../libxml2/valid.c \
      $$PWD/../../libxml2/parser.c
 }
+
+!core_only_libxml {
 SOURCES +=  \
     $$PWD/../../src/xmlwriter.cpp \
     $$PWD/../../src/xmllight.cpp \
@@ -85,3 +87,4 @@ HEADERS += \
 HEADERS += \
     $$PWD/../../include/xmlutils.h \
     $$PWD/../../include/xmlwriter.h
+}

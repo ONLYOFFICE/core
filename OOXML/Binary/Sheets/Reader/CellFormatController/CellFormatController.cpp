@@ -94,8 +94,9 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles):
 	createFormatStyle(DefaultPercentFormat);
 }
 
-void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
+int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
 {
+	int result = 0; // ok
 
 	pCell_ = pCell;
 	/// формат для булева значения в верхнем регистре
@@ -107,13 +108,16 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		auto tempValue = value;
 		std::transform(tempValue.begin(), tempValue.end(), tempValue.begin(),
                  [](unsigned char c) { return std::toupper(c); });
+		
 		pText->m_sText = tempValue;
 		pCell_->m_oRichText->m_arrItems.push_back(pText);
-		return;
+		
+		return result;
 	}
 	DigitReader digits = {};
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
+	
 	if(digits.ReadScientific(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
@@ -128,7 +132,6 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		}
 		else
 		{
-
 			if (!m_pStyles->m_oNumFmts.IsInit())
 			{
 				m_pStyles->m_oNumFmts.Init();
@@ -143,14 +146,14 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		{
 			pCell_->m_oStyle = 1;
 		}
-		return;
+		return result;
 	}
 	else if(digits.ReadDigit(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
 			pCell_->m_oValue.Init();
-        }//
+        }
 		pCell_->m_oValue->m_sText = digitValue;
 		std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(digitFormat);
 		if (pFind != mapDataNumber_.end())
@@ -174,7 +177,7 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 		{
 			pCell_->m_oStyle = 1;
 		}
-		return;
+		return result;
 	}
 
 	DateReader dateReader = {};
@@ -219,7 +222,16 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 			pCell_->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
 			pCell_->m_oRichText.Init();
 			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
+			
+			if (value.length() > 32767)
+			{
+				pText->m_sText = value.substr(0, 32767);
+				result = 1; // limit
+			}
+			else
+			{
 			pText->m_sText = value;
+			}
 			pCell_->m_oRichText->m_arrItems.push_back(pText);
 		}
 	}
@@ -228,7 +240,7 @@ void CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const
 	{
 		pCell_->m_oStyle = 1;
 	}
-
+	return result;
 }
 
 void CellFormatController::createFormatStyle(const std::wstring &format)

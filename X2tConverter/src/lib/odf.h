@@ -69,7 +69,7 @@ namespace NExtractTools
 		{
 			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTo, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
 
-			params.m_bMacro = false; // todooo сделать поддержку макросов odf
+			params.m_bMacro = false; // todooo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ odf
 			nRes = processEncryptionError(nRes, sFrom, params);
 		}
 		else
@@ -98,7 +98,7 @@ namespace NExtractTools
 
 			nRes = ConvertODF2OOXml(sTempUnpackedOdf, sTempUnpackedOox, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
 			
-			params.m_bMacro = false; // todooo сделать поддержку макросов odf
+			params.m_bMacro = false; // todooo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ odf
 			
 			nRes = processEncryptionError(nRes, sFrom, params);
 			if (SUCCEEDED_X2T(nRes))
@@ -165,7 +165,7 @@ namespace NExtractTools
 	_UINT32 odf_flat2oox_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTo, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
-		params.m_bMacro = false; // todooo сделать поддержку макросов odf
+		params.m_bMacro = false; // todooo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ odf
 		
 		nRes = processEncryptionError(nRes, sFrom, params);
 		return nRes;
@@ -180,7 +180,7 @@ namespace NExtractTools
 		NSDirectory::CreateDirectory(sTempUnpackedOox);
 
 		_UINT32 nRes = ConvertODF2OOXml(sFrom, sTempUnpackedOox, params.getFontPath(), convertParams.m_sTempDir, params.getPassword());
-		params.m_bMacro = false; // todooo сделать поддержку макросов odf
+		params.m_bMacro = false; // todooo пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ odf
 
 		nRes = processEncryptionError(nRes, sFrom, params);
 		if (SUCCEEDED_X2T(nRes))
@@ -324,7 +324,7 @@ namespace NExtractTools
 		if (SUCCEEDED_X2T(nRes))
 		{
 			COfficeUtils oCOfficeUtils(NULL);
-			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOdf, sTo, true)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+			nRes = (S_OK == oCOfficeUtils.CompressFileOrDirectory(sTempUnpackedOdf, sTo, true)) ? nRes : AVS_FILEUTILS_ERROR_CONVERT;
 		}
 		return nRes;
 	}

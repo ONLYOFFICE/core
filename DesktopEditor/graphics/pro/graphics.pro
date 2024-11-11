@@ -59,7 +59,8 @@ SOURCES += \
 
 # alpha mask
 HEADERS += \
-	./../AlphaMask.h
+	./../AlphaMask.h \
+	./../AlphaMask_p.h
 
 SOURCES += \
 	./../AlphaMask.cpp

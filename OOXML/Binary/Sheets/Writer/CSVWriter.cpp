@@ -335,21 +335,77 @@ std::wstring CSVWriter::Impl::convert_date_time(const std::wstring & sValue, std
 
 			if (bDate)
 			{
-				std::wstringstream wss;
-				wss.imbue(loc_);
-
+                //std::wstringstream wss;
+                //wss.imbue(loc_);
 
 				std::time_t now = std::time(nullptr);
     			std::tm* currentTime = std::localtime(&now);
+                currentTime->tm_year = date_.year();
+                currentTime->tm_mon = date_.month();
+                currentTime->tm_mday = date_.day();
 
-				currentTime->tm_year = date_.year() - 1900;  // Устанавливаем год
-				currentTime->tm_mon = date_.month() - 1;     // Устанавливаем месяц (от 0 до 11)
-				currentTime->tm_mday = date_.day();          // Устанавливаем день
+                auto locInf = lcInfo::getLocalInfo(m_nLcid);
+                for(auto part: locInf.ShortDatePattern)
+                {
+                    switch(part)
+                    {
+                        case L'0':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_mday);
+                            break;
+                        }
+                        case L'1':
+                        {
+                            if(currentTime->tm_mday < 10)
+                                date_str+= L'0';
+                            date_str += std::to_wstring(currentTime->tm_mday);
+                            break;
+                        }
+                        case L'2':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_mon);
+                            break;
+                        }
+                        case L'3':
+                        {
+                            if(currentTime->tm_mon < 10)
+                                date_str+= L'0';
+                            date_str += std::to_wstring(currentTime->tm_mon);
+                            break;
+                        }
+                        case L'4':
+                        {
+                            if (currentTime->tm_year >= 1000)
+                            {
+                                auto sringYear = std::to_wstring(currentTime->tm_year);
+                                auto lastTwoChars = sringYear.substr(sringYear.length() - 2);
+                                date_str += sringYear;
+                            }
+                            else
+                                date_str += std::to_wstring(currentTime->tm_year);
+                            break;
+                        }
+                        case L'5':
+                        {
+                            date_str += std::to_wstring(currentTime->tm_year);
+                            break;
+                        }
+                        default:
+                            break;
+                    }
+                    if(part != locInf.ShortDatePattern.back())
+                        date_str += locInf.DateSeparator;
+
+                }
+
+                //currentTime->tm_year = date_.year() - 1900;  // Устанавливаем год
+                //currentTime->tm_mon = date_.month() - 1;     // Устанавливаем месяц (от 0 до 11)
+                //currentTime->tm_mday = date_.day();          // Устанавливаем день
 
 
-				wss << std::put_time(currentTime, L"%x");  // Формат "%x" - формат даты для текущей локали
+                //wss << std::put_time(currentTime, L"%x");  // Формат "%x" - формат даты для текущей локали
 
-				date_str = wss.str();
+                //date_str = wss.str();
 			}
 
 			if (bTime)

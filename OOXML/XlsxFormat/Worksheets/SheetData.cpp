@@ -74,6 +74,8 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <memory>
+
 #ifndef MININT32
 #define MAXUINT32   ((uint32_t)~((uint32_t)0))
 #define MAXINT32    ((int32_t)(MAXUINT32 >> 1))
@@ -1154,7 +1156,7 @@ namespace OOX
                         rowRef = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get())->rowXlsb;
                         ColumnRef = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get())->col;
                         if(!SharedFormulasRef::sharedRefsLocations)
-                            SharedFormulasRef::sharedRefsLocations = std::make_unique<std::vector<std::pair<_INT32,_INT32>>>();
+                            SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::vector<std::pair<_INT32,_INT32>>>(new std::vector<std::pair<_INT32,_INT32>>);
                         SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair(rowRef, ColumnRef));
                         m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size() - 1;
                     }
@@ -1181,7 +1183,7 @@ namespace OOX
                     *fmlaRecord >>fmlaRef;
                     m_oRef = fmlaRef.toString(true, true);
                 }
-                byte flags;
+                BYTE flags;
                 *fmlaRecord >>flags;
                 if(GETBIT(flags,0))
                     m_oAca = true;
@@ -2957,7 +2959,7 @@ namespace OOX
                     m_oType.Init();
                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
                     m_oValue.Init();
-                    byte value;
+                    BYTE value;
                     *record >> value;
                     m_oValue->m_sText = value ? L"1" : L"0";
                     break;
@@ -2965,7 +2967,7 @@ namespace OOX
                 case XLSB::rt_FmlaError:
                 case XLSB::rt_CellError:
                 {
-                    byte errCode;
+                    BYTE errCode;
                      *record >> errCode;
                     m_oType.Init();
                     m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeError);

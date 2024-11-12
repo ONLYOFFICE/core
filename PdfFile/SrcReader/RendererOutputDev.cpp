@@ -1677,10 +1677,10 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		xMin = nX0 * dXStep;
-		yMin = nY0 * dYStep;
-		xMax = nX1 * dXStep;
-		yMax = nY1 * dYStep;
+		xMin = nX0 * dXStep + pBBox[0];
+		yMin = nY0 * dYStep + pBBox[1];
+		xMax = nX1 * dXStep + pBBox[0];
+		yMax = nY1 * dYStep + pBBox[1];
 		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
 		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
 		pGState->moveTo(xMin, yMin);
@@ -3407,8 +3407,8 @@ namespace PdfReader
 				}
 			}
 
-			if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
-				m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
+			// if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
+			// 	m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
 		}
 
 		m_sCS.pop_back();

@@ -105,6 +105,14 @@ namespace PdfWriter
 		{
 			return dict_type_PAGE;
 		}
+		CStream* GetStream() const
+		{
+			return m_pStream;
+		}
+		void SetStream(CStream* pStream)
+		{
+			m_pStream = pStream;
+		}
 		void      BeforeWrite();
 
 		void      MoveTo(double dX, double dY);

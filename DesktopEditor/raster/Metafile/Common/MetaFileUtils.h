@@ -47,6 +47,7 @@
 namespace MetaFile
 {
 	bool Equals(double dFirst, double dSecond, double dEpsilon = DBL_EPSILON);
+	std::wstring ConvertToUnicode(const unsigned char* pText, unsigned long unLength, unsigned short uchCharSet);
 
 	struct TRgbQuad
 	{

@@ -6,6 +6,9 @@
 #include "./../resources/resources.h"
 #endif
 
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CLAMP_ALPHA(x) CLAMP(x, 0, 255)
+
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
@@ -92,7 +95,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::put_PenAlpha(LONG lAlpha)
 	{
-		m_oPen.Alpha = lAlpha;
+		m_oPen.Alpha = CLAMP_ALPHA(lAlpha);
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenSize(double* dSize)
@@ -212,7 +215,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::put_BrushAlpha1(LONG lAlpha)
 	{
-		m_oBrush.Alpha1 = lAlpha;
+		m_oBrush.Alpha1 = CLAMP_ALPHA(lAlpha);;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushColor2(LONG* lColor)
@@ -232,7 +235,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::put_BrushAlpha2(LONG lAlpha)
 	{
-		m_oBrush.Alpha2 = lAlpha;
+		m_oBrush.Alpha2 = CLAMP_ALPHA(lAlpha);;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushTexturePath(std::wstring* sPath)
@@ -262,7 +265,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::put_BrushTextureAlpha(LONG lTxAlpha)
 	{
-		m_oBrush.TextureAlpha = lTxAlpha;
+		m_oBrush.TextureAlpha = CLAMP_ALPHA(lTxAlpha);
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushLinearAngle(double* dAngle)
@@ -303,6 +306,7 @@ namespace NSDocxRenderer
 			color.position = (long)(pPositions[i] * 65536);
 			m_oBrush.m_arrSubColors.push_back(color);
 		}
+		m_oCurrentPage.m_bIsGradient = true;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)

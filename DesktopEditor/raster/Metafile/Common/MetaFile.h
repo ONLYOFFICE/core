@@ -45,7 +45,7 @@ namespace MetaFile
 	{
 	public:
 		IMetaFileBase()
-		    : m_pOutput(NULL), m_pBufferData(NULL), m_bIsExternalBuffer(false), m_bError(false), m_pParent(NULL)
+		    : m_pOutput(NULL), m_pParent(NULL), m_pBufferData(NULL), m_bIsExternalBuffer(false), m_bError(false)
 		{
 			m_oStream.SetStream(NULL, 0);
 		}

@@ -68,7 +68,6 @@ namespace NSDocxRenderer
 			const double& x2, const double& y2,
 			const double& x3, const double& y3);
 		void Close();
-		void End();
 
 		void Add(const PathCommand& command);
 		void Join(CVectorGraphics&& other);
@@ -81,7 +80,7 @@ namespace NSDocxRenderer
 		void Transform(const Aggplus::CMatrix& matrix);
 		void DrawOnRenderer(IRenderer* renderer) const noexcept;
 
-		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType);
+		static CVectorGraphics CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType = c_nWindingFillMode);
 
 	private:
 		std::list<PathCommand> m_arData;

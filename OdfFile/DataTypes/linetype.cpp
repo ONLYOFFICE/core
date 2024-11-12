@@ -41,13 +41,13 @@ std::wostream & operator << (std::wostream & _Wostream, const line_type & _Val)
     switch(_Val.get_type())
     {
     case line_type::None:
-        _Wostream << "none";
+        _Wostream << L"none";
         break;
     case line_type::Single:
-        _Wostream << "single";
+        _Wostream << L"single";
         break;
     case line_type::Double:
-        _Wostream << "double";
+        _Wostream << L"double";
         break;
     default:
         break;

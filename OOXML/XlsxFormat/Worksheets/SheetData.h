@@ -177,7 +177,7 @@ namespace OOX
 		{
 		public:
 			WritingElement_AdditionMethods(CData)
-			CData();
+			CData(bool bFormulaPresent);
 			virtual ~CData();
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
@@ -201,7 +201,7 @@ namespace OOX
 			nullable_bool	bSuperscript;
 			nullable_string sColor;
 			nullable_int	nFontSize;
-
+			bool bFormula = false;
 
 		public:
 			nullable<SimpleTypes::Spreadsheet::CCellTypeType>	m_oType;

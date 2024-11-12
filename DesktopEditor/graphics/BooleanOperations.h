@@ -107,7 +107,7 @@ namespace Aggplus
 	class CBooleanOperations
 	{
 	public:
-		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op);
+		CBooleanOperations(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode);
 		~CBooleanOperations();
 		CGraphicsPath&& GetResult();
 
@@ -158,6 +158,9 @@ namespace Aggplus
 
 		bool Close1 = true;
 		bool Close2 = true;
+
+		// c_nStroke, c_nWindingFillMode, c_nEvenOddFillMode
+		long FillType = c_nWindingFillMode;
 
 		CGraphicsPath Path1;
 		CGraphicsPath Path2;

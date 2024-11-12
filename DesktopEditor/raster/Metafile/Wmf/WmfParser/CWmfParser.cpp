@@ -52,7 +52,7 @@ namespace MetaFile
 			m_oStream.SetCurrentBlockSize(m_unRecordSize);
 
 			if (NULL != m_pInterpretator)
-				PRINT_WMF_RECORD(ushType)
+				PRINT_WMF_RECORD(ushType);
 
 			switch (ushType)
 			{

@@ -184,6 +184,7 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage(CPage* pFakePage);
+		CAnnotAppearanceObject* StartAP();
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
@@ -444,9 +445,10 @@ namespace PdfWriter
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void APFromFakePage(CPage* pFakePage);
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP();
+		CAnnotAppearanceObject* StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};
@@ -533,6 +535,7 @@ namespace PdfWriter
 		double m_dHeight;
 		int m_nTI;
 		std::vector<int> m_arrIndex;
+		bool m_bAPV;
 	public:
 		CChoiceWidget(CXref* pXref);
 
@@ -542,12 +545,14 @@ namespace PdfWriter
 		void SetI(const std::vector<int>& arrI);
 		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
+		void SetAPV() { m_bAPV = true; }
 
 		std::wstring GetValue(const std::wstring& wsExportV);
 		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
 		double GetListBoxHeight() { return m_dHeight; }
 		std::wstring SetListBoxIndex(const std::vector<std::wstring>& arrV);
 		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
+		bool HaveAPV() { return m_bAPV; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

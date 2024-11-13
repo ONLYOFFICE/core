@@ -51,7 +51,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 		return false;
     }
 
-	if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) < 3))
+    if ((0 == *pEndPtr) || (pEndPtr != value.c_str() && (value.c_str() + length  - pEndPtr) <= 4))
 	{
 	std::wstring postfix;
 	auto length = value.length();

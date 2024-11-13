@@ -81,11 +81,16 @@ namespace DocFileFormat
 			//NormalTable
 			writeNormalTableStyle();
 		}
-
+		int count_styles = 0;
 		for ( size_t i = 0; i < sheet->Styles->size(); ++i)
 		{
 			StyleSheetDescription* style = sheet->Styles->at(i);
 			if (!style) continue;
+
+			count_styles++;
+			
+			if (count_styles > 4080) // todooo - skip/remap equal styles
+				break;
 
 			m_pXmlWriter->WriteNodeBegin(L"w:style", true);
 
@@ -101,15 +106,30 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute(L"w:styleId", FormatUtils::XmlEncode(MakeStyleId(style)));
 			m_pXmlWriter->WriteNodeEnd(L"", true, false);
 
-			// <w:name val="" />
+			std::wstring sAliases;
 			std::wstring sName = FormatUtils::XmlEncode(getStyleName(style), true);
 			m_pXmlWriter->WriteNodeBegin(L"w:name", true);
 			if (style->sti == StyleIdentifier::Normal)
 				m_pXmlWriter->WriteAttribute(L"w:val", L"Normal");
 			else
+			{
+				std::size_t pos = sName.find(L",");
+				if (pos != std::wstring::npos)
+				{
+					sAliases = sName.substr(pos + 1);
+					sName = sName.substr(0, pos);
+				}
 				m_pXmlWriter->WriteAttribute(L"w:val", sName);
+			}
 			m_pXmlWriter->WriteNodeEnd(L"", true);
 
+			if (false == sAliases.empty())
+			{
+				m_pXmlWriter->WriteNodeBegin(L"w:aliases", true);
+				m_pXmlWriter->WriteAttribute(L"w:val", sAliases);
+				m_pXmlWriter->WriteNodeEnd(L"", true);
+			}
+			else
 			if (style->sti == StyleIdentifier::Normal) // ??? < sti < 159
 			{
 				m_pXmlWriter->WriteNodeBegin(L"w:aliases", true);
@@ -117,7 +137,6 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 
-			// <w:basedOn val="" />
 			if ((style->istdBase != 4095) && (style->istdBase < sheet->Styles->size()))
 			{
 				m_pXmlWriter->WriteNodeBegin(L"w:basedOn", true);
@@ -125,7 +144,6 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 
-			// <w:next val="" />
 			if (style->istdNext < sheet->Styles->size())
 			{
 				m_pXmlWriter->WriteNodeBegin(L"w:next", true);
@@ -133,7 +151,6 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteNodeEnd(L"", true);
 			}
 
-			// <w:link val="" />
 			if (style->istdLink < sheet->Styles->size())
 			{
 				m_pXmlWriter->WriteNodeBegin(L"w:link", true);

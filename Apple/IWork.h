@@ -1,5 +1,5 @@
-#ifndef _FB2FILE_FB2FILE_H
-#define _FB2FILE_FB2FILE_H
+#ifndef _IWORKFILE_IWORKFILE_H
+#define _IWORKFILE_IWORKFILE_H
 
 #include <string>
 
@@ -33,4 +33,4 @@ public:
 	void SetTmpDirectory(const std::wstring& sFolder);
 };
 
-#endif // _FB2FILE_FB2FILE_H
+#endif // _IWORKFILE_IWORKFILE_H

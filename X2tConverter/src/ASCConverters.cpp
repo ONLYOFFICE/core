@@ -52,6 +52,8 @@
 #include "lib/pdf_image.h"
 #include "lib/pdf_oform.h"
 
+#include "lib/iwork.h"
+
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../MsBinaryFile/Common/Vba/VbaReader.h"
 
@@ -544,6 +546,17 @@ namespace NExtractTools
 				}
 			}
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES == nFormatFrom)
+		{
+			std::wstring wsTempFile = combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf");
+
+			int nIntermediateResult = pages2odf(sFrom, wsTempFile, params, convertParams);
+
+			if (S_OK != nIntermediateResult)
+				return nIntermediateResult;
+
+			nRes = fromDocument(wsTempFile, AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT, params, convertParams);
+		}
 		else
 		{
 			std::wstring sDocxDir = combinePath(convertParams.m_sTempDir, L"docx_unpacked");
@@ -1015,6 +1028,17 @@ namespace NExtractTools
 			{
 				nRes = xml2xlsx_dir(sFrom, sXlsxDir, params, convertParams);
 			}
+			else if (AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS == nFormatFrom)
+			{
+				std::wstring wsTempFile = combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf");
+
+				int nIntermediateResult = numbers2odf(sFrom, wsTempFile, params, convertParams);
+
+				if (S_OK != nIntermediateResult)
+					return nIntermediateResult;
+
+				nRes = fromSpreadsheet(wsTempFile, AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS_FLAT, params, convertParams);
+			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			
@@ -1300,6 +1324,17 @@ namespace NExtractTools
 		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX_PACKAGE == nFormatFrom)
 		{
 			nRes = package2ooxml_dir(sFrom, sPptxDir, params, convertParams);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY == nFormatFrom)
+		{
+			std::wstring wsTempFile = combinePath(convertParams.m_sTempDir, L"IntermediateFile.odf");
+
+			int nIntermediateResult = key2odf(sFrom, wsTempFile, params, convertParams);
+
+			if (S_OK != nIntermediateResult)
+				return nIntermediateResult;
+
+			nRes = fromPresentation(wsTempFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT, params, convertParams);
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

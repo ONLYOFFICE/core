@@ -141,11 +141,29 @@ std::wstring CurrencyReader::GetCurrencyFormat(const std::wstring &inputFormat,c
     std::wstring format;
     if(!inputFormat.empty())
     {
-        format = inputFormat + currency;
+        format = inputFormat;
+        if(currency.at(0) >= L'\u0600' &&  currency.at(0) <= L'\u06FF')
+        {
+
+            format += + L'\u200E';
+            format += currency + L'\u200F';
+            //format+= L'\u200E';
+        }
+        else
+            format += currency;
     }
     else
     {
-        format = CurrencyFormatTemplate + currency;
+        format = CurrencyFormatTemplate;
+        if(currency.at(0) >= L'\u0600' &&  currency.at(0) <= L'\u06FF')
+        {
+
+            format += + L'\u200E';
+            format += currency + L'\u200F';
+            //format+= L'\u200E';
+        }
+        else
+            format += currency;
     }
     return format;
 }

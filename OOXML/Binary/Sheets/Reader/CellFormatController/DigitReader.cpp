@@ -73,7 +73,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 			}
 		}
 
-        auto data_format = createFractionFormat(value, pEndPtr);
+        auto data_format = createFractionFormat(value, postfix);
 		double fractionValue = 0;
 
 		if (0 != *pEndPtr)
@@ -108,7 +108,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 						digit.erase(lastNonZeroPos + 2);
 					}
 
-					data_format = createFractionFormat(digit, pEndPtr);
+                    data_format = createFractionFormat(digit, postfix);
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];
@@ -132,19 +132,19 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
     return false;
 }
 
-std::wstring DigitReader::createFractionFormat(const std::wstring &value, wchar_t *pEndPtr)
+std::wstring DigitReader::createFractionFormat(const std::wstring &value, std::wstring &postfix)
 {
     size_t pos = value.find(L".");
     auto length = value.length();
     std::wstring data_format = L"";
-		if (pos != std::wstring::npos)
+        if (pos != std::wstring::npos && pos < (value.size() - postfix.size() - 1))
 		{
-			size_t fraction = length - pos - ((0 != *pEndPtr) ? 2 : 1);
+            size_t fraction = length - pos - 1 - postfix.size();
 			for (size_t i = 0; i < fraction && fraction != std::wstring::npos; ++i)
 				data_format += L"0";
 		}
 		if (false == data_format.empty()) data_format = L"." + data_format;
-		if(pos != std::string::npos)
+        if(pos != std::string::npos && pos < (value.size() - postfix.size() - 1))
 		{
             std::wstring wholePart(pos, '0');
 			data_format = wholePart + data_format;

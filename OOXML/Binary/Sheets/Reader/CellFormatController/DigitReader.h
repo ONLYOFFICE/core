@@ -55,7 +55,7 @@ public:
     bool ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format);
 
 private:
-    std::wstring createFractionFormat(const std::wstring &value, wchar_t *endPtr);
+    std::wstring createFractionFormat(const std::wstring &value, std::wstring &postfix);
 
     bool checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format);
 };

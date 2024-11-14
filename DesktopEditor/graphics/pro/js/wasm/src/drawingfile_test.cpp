@@ -1092,7 +1092,6 @@ int main(int argc, char* argv[])
 	// GLYPHS
 	if (true && nPagesCount > 0)
 	{
-		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);
 		int i = 4;
@@ -1134,6 +1133,11 @@ int main(int argc, char* argv[])
 				std::cout << " A " << nPathLength;
 				break;
 			}
+			case 32: // ctBrushChange
+			{
+				std::cout << "Brush change";
+				break;
+			}
 			case 41: // ctFontName
 			{
 				nPathLength = READ_INT(pGlyphs + i);
@@ -1155,6 +1159,11 @@ int main(int argc, char* argv[])
 				std::cout << " size " << (double)nPathLength / 10000.0;
 				break;
 			}
+			case 47: // ctFontChange
+			{
+				std::cout << "Font change";
+				break;
+			}
 			case 80: // ctDrawText
 			{
 				int nCharX = 0;
@@ -1165,7 +1174,7 @@ int main(int argc, char* argv[])
 				}
 				nPathLength = READ_SHORT(pGlyphs + i);
 				i += 2;
-				std::cout << "  Unicode " << nPathLength;
+				std::cout << "  Code " << nPathLength;
 				if (nMask & 0x02)
 				{
 					nPathLength = READ_SHORT(pGlyphs + i);
@@ -1176,9 +1185,25 @@ int main(int argc, char* argv[])
 				i += 2;
 				std::cout << " width " << (double)nPathLength / 100.0;
 				if (nCharX)
-				{
 					std::cout << " charX " << (double)nPathLength / 100.0;
+				break;
+			}
+			case 84: // ctDrawTextU
+			{
+				int nCharX = 0;
+				if (nIndex++)
+				{
+					nCharX = READ_SHORT(pGlyphs + i);
+					i += 2;
 				}
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << "  Unicode " << nPathLength;
+				nPathLength = READ_SHORT(pGlyphs + i);
+				i += 2;
+				std::cout << " width " << (double)nPathLength / 100.0;
+				if (nCharX)
+					std::cout << " charX " << (double)nPathLength / 100.0;
 				break;
 			}
 			case 160: // ctCommandTextLine

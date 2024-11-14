@@ -116,6 +116,8 @@ public:
 
   // Get the width of the 'm' character, if available.
   double getMWidth() { return mWidth; }
+  double getAscent() { return ascent; }
+  double getDescent() { return descent; }
 
   Ref getFontID() { return fontID; }
 

@@ -1420,11 +1420,11 @@ BYTE* CPdfReader::GetGlyphs(int nPageIndex)
 		return NULL;
 
 	int nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
-
 	TextOutputControl textOutControl;
 	textOutControl.mode = textOutRawOrder;
 	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
 	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
+	auto PDFCoordsToMM = [](double tX) { return tX / 72.0 * 25.4; };
 
 	NSWasm::CData oRes;
 	oRes.SkipLen();
@@ -1435,8 +1435,9 @@ BYTE* CPdfReader::GetGlyphs(int nPageIndex)
 	oRes.AddInt(nSymbols);
 	oRes.AddInt(nSpaces);
 
-	double dR = -1, dG = -1, dB = -1;
-	bool bInvisible = false;
+	TextFontInfo* pLastFont = NULL;
+	double dLastFontSize = -1, dLastR = -1, dLastG = -1, dLastB = -1;
+	bool bLastInvisible = false;
 
 	TextPage* pText = pTextOut->takeText();
 	GList* pColumns = pText->makeColumns();
@@ -1456,60 +1457,78 @@ BYTE* CPdfReader::GetGlyphs(int nPageIndex)
 				nWords += pWords->getLength();
 				nSpaces += pWords->getLength() - 1;
 
-				BYTE mask = 0x01;
+				BYTE mask = 0x05;
 				oRes.WriteBYTE(160); // ctCommandTextLine
 				oRes.WriteBYTE(mask);
-				oRes.WriteDouble(pLine->getXMin());
-				oRes.WriteDouble(pLine->getYMin());
+				oRes.WriteDouble(PDFCoordsToMM(pLine->getXMin()));
+				oRes.WriteDouble(PDFCoordsToMM(pLine->getBaseline()));
 				// TODO
 				if ((mask & 0x01) == 0)
 				{
 					oRes.WriteDouble(0); // ex
 					oRes.WriteDouble(0); // ey
 				}
-				oRes.WriteDouble(0); // Ascent
-				oRes.WriteDouble(0); // Descent
-				if (mask & 0x04)
-					oRes.WriteDouble(0); // LineWidth
+				// Ascent и Descent просто наибольший в линии
+				double dMaxAscent = 0.0, dMaxDescent = 0.0;
+				int nAscentPos = oRes.GetSize();
+				oRes.AddInt(0); // Ascent
+				oRes.AddInt(0); // Descent
+				oRes.WriteDouble(PDFCoordsToMM(pLine->getXMax() - pLine->getXMin())); // LineWidth
 
 				bool bFirst = true;
 				for (int nWordId = 0; nWordId < pWords->getLength(); ++nWordId)
 				{
 					TextWord* pWord = (TextWord*)pWords->get(nWordId);
+					TextFontInfo* pFont = pWord->getFontInfo();
 
-					double _dR, _dG, _dB;
-					bool _bInvisible = pWord->isInvisible();
-					pWord->getColor(&_dR, &_dG, &_dB);
-					if (_dR != dR || _dG != dG || _dB != dB || _bInvisible != bInvisible)
+					double dAscent = pFont->getAscent(), dDescent = pFont->getDescent();
+					if (dAscent > dMaxAscent)
+						dMaxAscent = dAscent;
+					if (dDescent > dMaxDescent)
+						dMaxDescent = dDescent;
+
+					// Смена цвета и шрифта интересует только copySelection для создания другого span
+					// Там просто проверка - сменился? true/false
+					double dFontSize = pWord->getFontSize();
+					if (pLastFont != pFont || dLastFontSize != dFontSize)
 					{
-						dR = _dR;
-						dG = _dG;
-						dB = _dB;
-						bInvisible = _bInvisible;
-						oRes.WriteBYTE(22); // ctBrushColor1
-						oRes.WriteBYTE(_dB * 255.0);
-						oRes.WriteBYTE(_dG * 255.0);
-						oRes.WriteBYTE(_dR * 255.0);
-						oRes.WriteBYTE(bInvisible ? 0 : 255);
+						pLastFont = pFont;
+						dLastFontSize = dFontSize;
+						oRes.WriteBYTE(47); // ctFontChange
+					}
+
+					double dR, dG, dB;
+					bool bInvisible = pWord->isInvisible() == gTrue;
+					pWord->getColor(&dR, &dG, &dB);
+					if (dR != dLastR || dG != dLastG || dB != dLastB || bInvisible != bLastInvisible)
+					{
+						dLastR = dR;
+						dLastG = dG;
+						dLastB = dB;
+						bLastInvisible = bInvisible;
+						oRes.WriteBYTE(32); // ctBrushChange
 					}
 
 					nSymbols += pWord->getLength();
 					for (int nCharId = 0; nCharId < pWord->getLength(); ++nCharId)
 					{
-						oRes.WriteBYTE(80); // ctDrawText
-						// TODO
+						double x1, y1, x2, y2;
+						pWord->getCharBBox(nCharId, &x1, &y1, &x2, &y2);
+
+						oRes.WriteBYTE(84); // ctDrawTextU
 						if (bFirst)
 							bFirst = false;
 						else
-							oRes.WriteUSHORT(1); // charX
+							oRes.WriteDouble2(x1);
+						pWord->getCharLen();
 
-						// TODO int т.к. unicode
-						oRes.WriteUSHORT(pWord->getChar(nCharId));
-						// gid никто не использует mask & 0x02
-						// TODO
-						oRes.WriteUSHORT(0); // width
+						oRes.AddInt(pWord->getChar(nCharId));
+						oRes.WriteDouble2(PDFCoordsToMM(x2 - x1));
 					}
 				}
+
+				oRes.AddInt(dMaxAscent  * 10000, nAscentPos);
+				oRes.AddInt(dMaxDescent * 10000, nAscentPos + 4);
 
 				oRes.WriteBYTE(162); // ctCommandTextLineEnd
 			}

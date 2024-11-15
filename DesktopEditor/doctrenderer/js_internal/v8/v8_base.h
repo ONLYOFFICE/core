@@ -54,9 +54,9 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
 #ifdef __ANDROID__
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #define ANDROID_LOGS
-#endif
+//#endif
 
 #ifdef ANDROID_LOGS
 #include <android/log.h>

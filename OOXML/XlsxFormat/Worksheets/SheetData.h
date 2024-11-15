@@ -277,6 +277,8 @@ namespace OOX
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
 //-----------------------------
+            //число повторов чтобы хранить одинаковые в одной
+            nullable_uint           m_oTimes;
 			nullable_string			m_oCacheValue;
 		};
 

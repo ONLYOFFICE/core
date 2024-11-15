@@ -3293,6 +3293,18 @@ namespace OOX
 				if (  m_arrItems[i] )
 				{
 					m_arrItems[i]->toXML(writer);
+                    if(m_arrItems[i]->m_oTimes.IsInit())
+                    {
+                        _INT32 cellTimes = m_arrItems[i]->m_oTimes.get() - 1;
+                        while(cellTimes > 0)
+                        {
+                            if(m_arrItems[i]->m_oCol.IsInit())
+                                m_arrItems[i]->m_oCol = m_arrItems[i]->m_oCol.get() + 1;
+                            m_arrItems[i]->toXML(writer);
+                            cellTimes--;
+                        }
+
+                    }
 				}
 			}
 
@@ -3404,7 +3416,34 @@ namespace OOX
                 CCell *pCell = new CCell(m_pMainDocument);
                 pCell->m_oRow = m_oR->GetValue();
                 if(pCell->fromBin(reader))
+                {
+                    //сжимаем пустые клетки
+                    if(!pCell->m_oValue.IsInit() && !m_arrItems.empty())
+                    {
+                        auto prevCell = m_arrItems.back();
+                        if(!prevCell->m_oTimes.IsInit())
+                        {
+                            prevCell->m_oTimes = 1;
+                        }
+
+                        if(!prevCell->m_oValue.IsInit())
+                        {
+                            if((!prevCell->m_oCol.IsInit()&& !pCell->m_oCol.IsInit())
+                                ||(prevCell->m_oCol.IsInit()&& pCell->m_oCol.IsInit() && (prevCell->m_oCol.get() + prevCell->m_oTimes.get()) == pCell->m_oCol.get()))
+                            {
+                                if((!prevCell->m_oStyle.IsInit() && !pCell->m_oStyle.IsInit())
+                                    || (prevCell->m_oStyle.IsInit() && pCell->m_oStyle.IsInit() && prevCell->m_oStyle.get() == pCell->m_oStyle.get()))
+                                {
+                                    prevCell->m_oTimes = prevCell->m_oTimes.get() + 1;
+                                    delete pCell;
+                                    continue;
+                                }
+                            }
+                        }
+                        prevCell->m_oTimes.reset();
+                    }
                     m_arrItems.push_back(pCell);
+                }
                 else
                 {
                     delete pCell;

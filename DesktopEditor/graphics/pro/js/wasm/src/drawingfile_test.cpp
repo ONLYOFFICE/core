@@ -1244,16 +1244,16 @@ int main(int argc, char* argv[])
 			{
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << "sx " << nPathLength;
+				std::cout << "sx " << (double)nPathLength / 10000.0;
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << " shx " << nPathLength;
+				std::cout << " shx " << (double)nPathLength / 10000.0;
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << " shy " << nPathLength;
+				std::cout << " shy " << (double)nPathLength / 10000.0;
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << " sy " << nPathLength;
+				std::cout << " sy " << (double)nPathLength / 10000.0;
 				break;
 			}
 			case 162: // ctCommandTextLineEnd

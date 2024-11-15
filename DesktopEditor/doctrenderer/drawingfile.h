@@ -38,7 +38,8 @@
 #include "../../PdfFile/PdfFile.h"
 #include "../../XpsFile/XpsFile.h"
 #include "../../DjVuFile/DjVu.h"
-#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../graphics/pro/js/wasm/src/serialize.h"
+#include "../graphics/pro/js/wasm/src/HtmlText.h"
 #include "../../HtmlRenderer/include/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
 
@@ -54,9 +55,10 @@ private:
 
 	IOfficeDrawingFile* m_pFile;
 	int m_nType = -1;
-	BYTE* m_pPdfText;
 
 	bool m_bIsExternalFile;
+
+	HText::CHText* m_pPdfText;
 
 public:
 	CDrawingFile(NSFonts::IApplicationFonts* pFonts)
@@ -290,14 +292,6 @@ public:
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{
-		/*
-		if (m_nType == 0)
-		{
-			m_pPdfText = ((CPdfFile*)m_pFile)->GetGlyphs(nPageIndex);
-			return m_pPdfText;
-		}
-		*/
-
 		if (NULL == m_pTextRenderer)
 			m_pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
 
@@ -390,6 +384,17 @@ public:
 		return ((CPdfFile*)m_pFile)->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
 	}
 
+	BYTE* GetGlyphs2(int nPageIndex)
+	{
+		if (m_nType == 0)
+		{
+			m_pPdfText = new HText::CHText();
+			return ((CPdfFile*)m_pFile)->GetGlyphs(nPageIndex);
+		}
+
+		//BYTE* pGlyphs = GetGlyphs(nPageIndex);
+		return NULL;
+	}
 	void DestroyTextInfo()
 	{
 		RELEASEOBJECT(m_pPdfText);

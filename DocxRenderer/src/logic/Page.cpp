@@ -1677,7 +1677,7 @@ namespace NSDocxRenderer
 					is_first_line = false;
 
 				// первая строка может быть с отступом
-				if (is_first_line && line_bot->m_dLeft < line_top->m_dLeft)
+				if (is_first_line && (line_bot->m_dLeft < line_top->m_dLeft))
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1692,8 +1692,33 @@ namespace NSDocxRenderer
 				}
 
 				bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
+				bool bullet_skip = false;
 				if (is_unknown)
-					ar_delims[index] = true;
+				{
+					// bullet paragraphs
+					if (!ar_delims[index])
+					{
+						const auto& first_sym = line_top->m_arConts.front()->GetText().at(0);
+						if (CContText::IsUnicodeBullet(first_sym))
+						{
+							double left_no_first = 0;
+							bool out = false;
+							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
+								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
+									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(index)))
+									{
+										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(index);
+										out = true;
+										break;
+									}
+
+							if (out && fabs(left_no_first - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+								bullet_skip = true;
+						}
+					}
+					if (!bullet_skip)
+						ar_delims[index] = true;
+				}
 			}
 
 			// gap check

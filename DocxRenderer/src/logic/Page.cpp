@@ -936,12 +936,12 @@ namespace NSDocxRenderer
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;
-							// if (!pCurrCont->m_pFontStyle.get()->bBold)
-							// {
-							// 	CFontStyle font_style = *pCurrCont->m_pFontStyle;
-							// 	font_style.bBold = true;
-							// 	pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(font_style);
-							// }
+							if (!pCurrCont->m_pFontStyle.get()->bBold)
+							{
+								CFontStyle font_style = *pCurrCont->m_pFontStyle;
+								font_style.bBold = true;
+								pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(font_style);
+							}
 						}
 					}
 					if (pNextLine && pNextLine->IsCanBeDeleted())

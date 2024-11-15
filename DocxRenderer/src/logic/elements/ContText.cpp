@@ -532,13 +532,9 @@ namespace NSDocxRenderer
 	{
 		return m_oText == pCont->m_oText &&
 			   eVType == eVerticalCrossingType::vctDublicate &&
-			   eHType == eHorizontalCrossingType::hctDublicate;
-
-		// return m_oText == pCont->m_oText &&
-		// 	   eVType == eVerticalCrossingType::vctDublicate &&
-		// 	   (eHType == eHorizontalCrossingType::hctDublicate ||
-		// 		eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
-		// 		eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
+			   (eHType == eHorizontalCrossingType::hctDublicate ||
+				eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
+				eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
 	}
 
 	bool CContText::IsOnlySpaces() const

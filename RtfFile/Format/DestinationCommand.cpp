@@ -1718,8 +1718,12 @@ void RtfOldShapeReader::ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 }
 bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter)
 {
-	if ( "do" == sCommand )
+	if ("do" == sCommand)
+	{
+		m_oShape.m_bLayoutInCell = 0;
+		m_oShape.m_nZOrderRelative = 1;
 		return true;
+	}
 	else if ( "doinst" == sCommand )
 		return true;
 	else if ( "dorslt" == sCommand )
@@ -1754,19 +1758,66 @@ bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 	else if ( "dolockanchor"	== sCommand )	m_oShape.m_bLockAnchor	= true;
 	else if ( "dplinehollow"	== sCommand )	m_oShape.m_bLine		= false;
 
+	else if ("dplinecor" == sCommand)
+	{
+		if (m_oShape.m_nLineColor == PROP_DEF) m_oShape.m_nLineColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nLineColor, 0, 7, parameter);
+	}
+	else if ("dplinecog" == sCommand)
+	{
+		if (m_oShape.m_nLineColor == PROP_DEF) m_oShape.m_nLineColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nLineColor, 8, 15, parameter);
+	}
+	else if ("dplinecob" == sCommand)
+	{
+		if (m_oShape.m_nLineColor == PROP_DEF) m_oShape.m_nLineColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nLineColor, 16, 23, parameter);
+	}
+	else if ("dpfillbgcr" == sCommand)
+	{
+		if (m_oShape.m_nFillColor == PROP_DEF) m_oShape.m_nFillColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor, 0, 7, parameter);
+	}
+	else if ("dpfillbgcg" == sCommand)
+	{
+		if (m_oShape.m_nFillColor == PROP_DEF) m_oShape.m_nFillColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor, 8, 15, parameter);
+	}
+	else if ("dpfillbgcb" == sCommand)
+	{
+		if (m_oShape.m_nFillColor == PROP_DEF) m_oShape.m_nFillColor = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor, 16, 23, parameter);
+	}
+	else if ("dpfillfgcr" == sCommand)
+	{
+		if (m_oShape.m_nFillColor2 == PROP_DEF) m_oShape.m_nFillColor2 = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor2, 0, 7, parameter);
+	}
+	else if ("dpfillfgcg" == sCommand)
+	{
+		if (m_oShape.m_nFillColor2 == PROP_DEF) m_oShape.m_nFillColor2 = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor2, 8, 15, parameter);
+	}
+	else if ("dpfillfgcb" == sCommand)
+	{
+		if (m_oShape.m_nFillColor2 == PROP_DEF) m_oShape.m_nFillColor2 = 0xFFFFFF;
+		SETBITS(m_oShape.m_nFillColor2, 16, 23, parameter);
+	}
 	else if ( hasParameter)
 	{
 		if		( "dpx"			== sCommand )	m_oShape.m_nLeft			= parameter;
-		else if ( "dpx"			== sCommand )	m_oShape.m_nLeft			= parameter;
 		else if ( "dpy"			== sCommand )	m_oShape.m_nTop				= parameter;
-		else if ( "dpysize"		== sCommand )	m_oShape.m_nBottom			= parameter + m_oShape.m_nTop;
 		else if ( "dpxsize"		== sCommand )	m_oShape.m_nRight			= parameter + m_oShape.m_nLeft;
+		else if ( "dpysize"		== sCommand )	m_oShape.m_nBottom			= parameter + m_oShape.m_nTop;
 		else if ( "doz"			== sCommand )	m_oShape.m_nZOrder			= parameter;
 		else if ( "dofhdr"		== sCommand )	m_oShape.m_nHeader			= parameter;
 		else if ( "dowr"		== sCommand )	m_oShape.m_nWrapType		= parameter;
 		else if ( "dowrk"		== sCommand )	m_oShape.m_nWrapSideType	= parameter;
 		else if ( "dofblwtxt"	== sCommand	)	m_oShape.m_nZOrderRelative	= parameter;
-		else if ( "dplinew"		== sCommand )	m_oShape.m_nLineWidth		= parameter;
+		else if ( "dplinew"		== sCommand )	m_oShape.m_nLineWidth		= RtfUtility::Pt2Emu(parameter); 
+		else if ( "dplinehollow"== sCommand )	m_oShape.m_bLine = false;
+		else if ( "dplinedot"	== sCommand )	m_oShape.m_nLineDashing = 5;
+		else if ( "dplinedash"	== sCommand )	m_oShape.m_nLineDashing = 6;
 		else if ( "dodhgt"		== sCommand )	m_oShape.m_nZOrder			= parameter;
 		else if ( "dptxbxmar"	== sCommand )
 		{
@@ -1774,8 +1825,14 @@ bool RtfOldShapeReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReade
 		}
 		else if ( "dpfillpat"	== sCommand )
 		{
-			m_oShape.m_nFillType = parameter;
-			if (m_oShape.m_nFillType == 0) m_oShape.m_bFilled = false;
+			switch(parameter)
+			{
+			case 0: m_oShape.m_bFilled = false; break;
+			case 1: m_oShape.m_nFillType = 0; break; //solid
+			default:
+				m_oShape.m_nFillType = 2; // pattern
+				break;
+			}
 		}
 	}
 	else

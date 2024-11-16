@@ -1606,27 +1606,30 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
             sResult += L"<w:fitText w:id=\"" + poOOXWriter->m_nCurFitId + L"\" w:val=\"" + std::to_wstring(poOOXWriter->m_nCurFitWidth) + L"\"/>";
 		}
 	}
-	if( PROP_DEF == m_nFont)
+	if (RENDER_TO_OOX_PARAM_UNKNOWN != oRenderParameter.nType)
 	{
-		if (RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
-			m_nFont = poRtfDocument->m_oProperty.m_nDefMathFont;
-		else
-			m_nFont = poRtfDocument->m_oProperty.m_nDefFont;
-	}
-	if (PROP_DEF == m_nLanguage)
-	{
-		m_nLanguage = poRtfDocument->m_oProperty.m_nDefLang;
-	}
-	if (PROP_DEF == m_nLanguageAsian)
-	{
-		m_nLanguageAsian = poRtfDocument->m_oProperty.m_nDefLangAsian;
+		if (PROP_DEF == m_nFont)
+		{
+			if (RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
+				m_nFont = poRtfDocument->m_oProperty.m_nDefMathFont;
+			else
+				m_nFont = poRtfDocument->m_oProperty.m_nDefFont;
+		}
+		if (PROP_DEF == m_nLanguage)
+		{
+			m_nLanguage = poRtfDocument->m_oProperty.m_nDefLang;
+		}
+		if (PROP_DEF == m_nLanguageAsian)
+		{
+			m_nLanguageAsian = poRtfDocument->m_oProperty.m_nDefLangAsian;
+		}
 	}
 	if (PROP_DEF != m_nFont)
 	{
 		RtfFont oCurFont;
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		if( true == poRtfDocument->m_oFontTable.GetFont(m_nFont,oCurFont) )
+		if( true == poRtfDocument->m_oFontTable.GetFont(m_nFont, oCurFont) )
 		{
 			sResult += oCurFont.RenderToOOX(oNewParam);
 		}
@@ -1863,6 +1866,32 @@ void RtfListLevelProperty::SetDefault()
 
 	m_oTabs.SetDefault();
 	m_oCharProp.SetDefault();
+}
+void RtfListLevelProperty::Merge(RtfListLevelProperty& oListLevel)
+{
+	MERGE_PROPERTY( m_nSpace, oListLevel)
+	MERGE_PROPERTY( m_nLevel, oListLevel)
+	MERGE_PROPERTY( m_nNumberType, oListLevel)
+	MERGE_PROPERTY( m_bTentative, oListLevel)
+	MERGE_PROPERTY( m_nJustification, oListLevel)
+	MERGE_PROPERTY( m_nFollow, oListLevel)
+	MERGE_PROPERTY( m_nStart, oListLevel)
+
+	if (!oListLevel.m_sText.empty())
+		m_sText = oListLevel.m_sText;
+
+	if (!oListLevel.m_sNumber.empty())
+		m_sNumber = oListLevel.m_sNumber;
+
+	MERGE_PROPERTY( m_nNoRestart, oListLevel)
+	MERGE_PROPERTY( m_nLegal, oListLevel)
+	MERGE_PROPERTY( m_nPictureIndex, oListLevel)
+	MERGE_PROPERTY( m_nFirstIndent, oListLevel)
+	MERGE_PROPERTY( m_nIndent, oListLevel)
+	MERGE_PROPERTY( m_nIndentStart, oListLevel)
+
+	m_oTabs.Merge(oListLevel.m_oTabs);
+	m_oCharProp.Merge(oListLevel.m_oCharProp);
 }
 std::wstring RtfListLevelProperty::GetFormat( int nNumFormat)
 {
@@ -2283,10 +2312,7 @@ std::wstring RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevels()
 {
 }
-RtfListOverrideProperty::ListOverrideLevels::ListOverrideLevels( const ListOverrideLevels& oOverLevel )
-{
-	(*this) = oOverLevel;
-}
+
 RtfListOverrideProperty::ListOverrideLevels& RtfListOverrideProperty::ListOverrideLevels::operator=( const ListOverrideLevels& oOverLevel )
 {
 	m_aOverrideLevels.clear();
@@ -2950,6 +2976,7 @@ std::wstring RtfTab::RenderToOOX(RenderParameter oRenderParameter)
 		case tk_tqdec:	sTab += L" w:val=\"decimal\"";	break;
 		case tk_tqbar:	sTab += L" w:val=\"bar\"";		break;
 		case tk_tqclear:sTab += L" w:val=\"clear\"";	break;
+		case tk_tqnum:	sTab += L" w:val=\"num\"";		break;
 		default:
 			break;
 	}
@@ -2965,15 +2992,7 @@ RtfTabs::RtfTabs()
 {
 	SetDefault();
 }
-RtfTabs::RtfTabs( const RtfTabs& oTabs )
-{
-	SetDefault();
-}
-const RtfTabs& RtfTabs::operator=( const RtfTabs& oTabs )
-{
-	Merge( oTabs );
-	return (*this);
-}
+
 void RtfTabs::Merge( const RtfTabs& oTabs )
 {
 	m_aTabs.clear();
@@ -2995,7 +3014,7 @@ std::wstring RtfTabs::RenderToRtf(RenderParameter oRenderParameter)
 std::wstring RtfTabs::RenderToOOX(RenderParameter oRenderParameter)
 {
 	std::wstring sTabs;
-	for (size_t i = 0; i < (int)m_aTabs.size(); i++ )
+	for (size_t i = 0; i < m_aTabs.size(); i++ )
 	{
 		sTabs += m_aTabs[i].RenderToOOX( oRenderParameter );
 	}
@@ -3356,7 +3375,7 @@ void RtfParagraphProperty::SetDefault()
 	m_oCharProperty.SetDefault();
 
 	m_bHidden			= false;
-	m_bOldList			= false;
+	m_bList			= false;
 	m_pOldParagraphProp = RtfParagraphPropertyPtr();
 }
 void RtfParagraphProperty::Merge( RtfParagraphProperty& oParPr )
@@ -3739,7 +3758,7 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
         if( m_nIndFirstLine >= 0 )	sIndent += L" w:firstLine=\"" + std::to_wstring(m_nIndFirstLine) + L"\"";
         else						sIndent += L" w:hanging=\"" + std::to_wstring(-m_nIndFirstLine) + L"\"";
 	}
-	else if (m_bOldList && PROP_DEF != m_nIndLeft)
+	else if ((m_bList || (PROP_DEF != m_nListId && PROP_DEF != m_nListLevel)) && PROP_DEF != m_nIndLeft)
         sIndent += L" w:firstLine=\"0\"";	
 
     if( !sIndent.empty() )

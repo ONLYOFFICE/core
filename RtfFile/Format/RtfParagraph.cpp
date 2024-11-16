@@ -157,7 +157,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		sResult += L"><w:pPr>";
 		
-		m_oProperty.m_bOldList = (NULL != m_oOldList);
+		m_oProperty.m_bList = (NULL != m_oOldList) || m_oProperty.m_bList;
 		
 		bool bRenderProps = false;
 		if ( PROP_DEF != m_oProperty.m_nTableStyle && m_oProperty.m_bInTable > 0)

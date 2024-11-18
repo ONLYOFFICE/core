@@ -720,17 +720,17 @@ SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/DocxRenderer.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/resources/resources.cpp
 
-HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
+HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h \
+	$$CORE_ROOT_DIR/HtmlRenderer/src/Common3.h \
+	$$CORE_ROOT_DIR/HtmlRenderer/src/HtmlText.h
 SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
 HEADERS += $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/drawingfile.h
 
 HEADERS += \
-	../wasm/src/serialize.h \
-	../wasm/src/HtmlText.h
+	../wasm/src/serialize.h
 
 SOURCES += \
 	../wasm/src/pdfwriter.cpp \
 	../wasm/src/drawingfile.cpp \
-	../wasm/src/drawingfile_test.cpp \
-	../wasm/src/HtmlText.cpp
+	../wasm/src/drawingfile_test.cpp

@@ -30,7 +30,8 @@
  *
  */
 #include "../include/HTMLRendererText.h"
-#include "./Text.h"
+#include "Text.h"
+#include "HtmlText.h"
 
 namespace NSHtmlRenderer
 {
@@ -64,6 +65,8 @@ namespace NSHtmlRenderer
 		int  m_nTempUnicodesLen;
 
 		bool m_bIsFontsInit;
+
+		NSHtmlRenderer2::CHText m_oHtmlText2;
 
 	public:
 		CHTMLRendererText_Private()
@@ -147,6 +150,10 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pInternal);
 	}
 
+	void CHTMLRendererText::AddPage(int nPageIndex)
+	{
+
+	}
 	void CHTMLRendererText::Init(IOfficeDrawingFile* pFile, int nCacheSize)
 	{
 		m_pInternal->m_oBrush.SetDefaultParams();
@@ -400,8 +407,7 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CHTMLRendererText::put_FontStyle(const LONG& lStyle)
 	{
-		LONG lOld = m_pInternal->m_oFont.GetStyle();
-		if (lOld != lStyle)
+		if (m_pInternal->m_oFont.GetStyle() != lStyle)
 		{
 			m_pInternal->m_oFont.SetStyle(lStyle);
 			m_pInternal->m_bIsChangedFontParamBetweenDrawText = true;

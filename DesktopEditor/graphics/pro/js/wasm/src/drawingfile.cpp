@@ -165,10 +165,6 @@ WASM_EXPORT void DestroyTextInfo(CDrawingFile* pFile)
 {
 	return pFile->DestroyTextInfo();
 }
-WASM_EXPORT BYTE* GetGlyphs2(CDrawingFile* pFile, int nPageIndex)
-{
-	return pFile->GetGlyphs2(nPageIndex);
-}
 WASM_EXPORT int  IsNeedCMap(CDrawingFile* pFile)
 {
 	return pFile->IsNeedCMap() ? 1 : 0;

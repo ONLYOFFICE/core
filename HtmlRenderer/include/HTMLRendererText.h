@@ -52,6 +52,7 @@ namespace NSHtmlRenderer
 		virtual ~CHTMLRendererText();
 
 	public:
+		void AddPage(int nPageIndex);
 		void Init(IOfficeDrawingFile* pFile, int nCacheSize = 0);
 		BYTE* GetBuffer();
 

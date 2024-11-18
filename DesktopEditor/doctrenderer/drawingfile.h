@@ -39,7 +39,6 @@
 #include "../../XpsFile/XpsFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../graphics/pro/js/wasm/src/serialize.h"
-#include "../graphics/pro/js/wasm/src/HtmlText.h"
 #include "../../HtmlRenderer/include/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
 
@@ -58,8 +57,6 @@ private:
 
 	bool m_bIsExternalFile;
 
-	HText::CHText* m_pPdfText;
-
 public:
 	CDrawingFile(NSFonts::IApplicationFonts* pFonts)
 	{
@@ -76,14 +73,12 @@ public:
 		m_pImageStorage = NULL;
 
 		m_pFile = NULL;
-		m_pPdfText = NULL;
 		m_bIsExternalFile = false;
 	}
 	~CDrawingFile()
 	{
 		if (!m_bIsExternalFile)
 			RELEASEOBJECT(m_pFile);
-		RELEASEOBJECT(m_pPdfText);
 		RELEASEOBJECT(m_pTextRenderer);
 		RELEASEOBJECT(m_pFontManager);
 		RELEASEINTERFACE(m_pApplicationFonts);
@@ -300,6 +295,17 @@ public:
 
 		return m_pTextRenderer->GetBuffer();
 	}
+	void GetGlyphs2(int nPageIndex)
+	{
+		if (NULL == m_pTextRenderer)
+		{
+			m_pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
+			m_pTextRenderer->Init(m_pFile, 8);
+		}
+
+		m_pTextRenderer->AddPage(nPageIndex);
+		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
+	}
 	BYTE* GetLinks(int nPageIndex)
 	{
 		return m_pFile->GetLinks(nPageIndex);
@@ -384,20 +390,8 @@ public:
 		return ((CPdfFile*)m_pFile)->GetAPAnnots(nRasterW, nRasterH, nBackgroundColor, nPageIndex, nAnnot, sView);
 	}
 
-	BYTE* GetGlyphs2(int nPageIndex)
-	{
-		if (m_nType == 0)
-		{
-			m_pPdfText = new HText::CHText();
-			return ((CPdfFile*)m_pFile)->GetGlyphs(nPageIndex);
-		}
-
-		//BYTE* pGlyphs = GetGlyphs(nPageIndex);
-		return NULL;
-	}
 	void DestroyTextInfo()
 	{
-		RELEASEOBJECT(m_pPdfText);
 		RELEASEOBJECT(m_pTextRenderer);
 	}
 	bool IsNeedCMap()

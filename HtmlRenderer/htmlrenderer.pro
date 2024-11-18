@@ -42,6 +42,3 @@ HEADERS += \
     include/HTMLRenderer3.h \
     src/Common2.h \
     src/Meta.h
-
-#HEADERS += $$PWD/include/HTMLRendererText.h
-#SOURCES += $$PWD/src/HTMLRendererText.cpp

@@ -278,7 +278,7 @@ namespace OOX
 			nullable<CText>			m_oValue;
 //-----------------------------
             //число повторов чтобы хранить одинаковые в одной
-            nullable_uint           m_oTimes;
+            nullable_uint           m_oRepeated;
 			nullable_string			m_oCacheValue;
 		};
 
@@ -327,7 +327,7 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
             //число повторов для сжатия пустых строк
-            nullable_uint           m_oTimes;
+            nullable_uint           m_oRepeated;
 		};
 
 		class CSheetData  : public WritingElementWithChilds<CRow>

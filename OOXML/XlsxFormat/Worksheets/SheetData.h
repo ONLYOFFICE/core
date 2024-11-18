@@ -326,6 +326,8 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>					m_oThickBot;
 			nullable<SimpleTypes::COnOff>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
+            //число повторов для сжатия пустых строк
+            nullable_uint           m_oTimes;
 		};
 
 		class CSheetData  : public WritingElementWithChilds<CRow>

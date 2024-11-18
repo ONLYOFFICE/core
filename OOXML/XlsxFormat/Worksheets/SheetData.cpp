@@ -3296,6 +3296,7 @@ namespace OOX
                     if(m_arrItems[i]->m_oTimes.IsInit())
                     {
                         _INT32 cellTimes = m_arrItems[i]->m_oTimes.get() - 1;
+                        auto originalCol = m_arrItems[i]->m_oCol;
                         while(cellTimes > 0)
                         {
                             if(m_arrItems[i]->m_oCol.IsInit())
@@ -3303,7 +3304,7 @@ namespace OOX
                             m_arrItems[i]->toXML(writer);
                             cellTimes--;
                         }
-
+                        m_arrItems[i]->m_oCol = originalCol;
                     }
 				}
 			}
@@ -3837,6 +3838,20 @@ namespace OOX
 				if (  m_arrItems[i] )
 				{
 					m_arrItems[i]->toXML(writer);
+                    if(m_arrItems[i]->m_oTimes.IsInit())
+                    {
+                        _INT32 rowTimes = m_arrItems[i]->m_oTimes.get() - 1;
+                        while(rowTimes > 0)
+                        {
+                            if(m_arrItems[i]->m_oR.IsInit())
+                                m_arrItems[i]->m_oR = m_arrItems[i]->m_oR->GetValue() + 1;
+                            if(!m_arrItems[i]->m_arrItems.empty() && m_arrItems[i]->m_arrItems.at(0)->m_oRow.IsInit())
+                                m_arrItems[i]->m_arrItems.at(0)->m_oRow = m_arrItems[i]->m_oR->GetValue();
+                            m_arrItems[i]->toXML(writer);
+                            rowTimes--;
+                        }
+
+                    }
 				}
 			}
 			toXMLEnd(writer);
@@ -4125,6 +4140,31 @@ namespace OOX
             {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(reader);
+                //проверяем можно ли сжать пустые строки
+                if(pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oTimes.IsInit() && !m_arrItems.empty())
+                {
+                    auto prevRow = m_arrItems.back();
+                    if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oTimes.IsInit()
+                            && pRow->m_arrItems.back()->m_oTimes.get() ==  prevRow->m_arrItems.back()->m_oTimes.get())
+                    {
+                        if(!prevRow->m_oTimes.IsInit())
+                            prevRow->m_oTimes = 1;
+                        if(prevRow->m_oR->GetValue() + prevRow->m_oTimes.get() == pRow->m_oR->GetValue() && prevRow->m_oHt == pRow->m_oHt)
+                        {
+                            auto nullvalue = 0;
+                            auto pcell = pRow->m_arrItems.back();
+                            auto prevCell = prevRow->m_arrItems.back();
+                            if(pcell->m_oStyle.get_value_or(nullvalue) == prevCell->m_oStyle.get_value_or(nullvalue)
+                                    && pcell->m_oCol.get_value_or(nullvalue) == prevCell->m_oCol.get_value_or(nullvalue))
+                            {
+                                prevRow->m_oTimes = prevRow->m_oTimes.get() + 1;
+                                delete pRow;
+                                continue;
+                            }
+                        }
+                        prevRow->m_oTimes.reset();
+                    }
+                }
                 m_arrItems.push_back(pRow);
             }
             if(SharedFormulasRef::sharedRefsLocations)

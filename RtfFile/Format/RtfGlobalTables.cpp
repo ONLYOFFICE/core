@@ -64,15 +64,20 @@ bool RtfFontTable::GetFont( std::wstring sName, RtfFont& oFont )
 }
 std::wstring RtfFontTable::RenderToOOX(RenderParameter oRenderParameter)
 {
-	std::wstring sResult;
-	if( !m_aArray.empty())
-	{
-		for (size_t i = 0; i < m_aArray.size(); i++)
-		{
-			if (m_aArray[i].m_bUsed)
-				sResult += m_aArray[i].RenderToOOX(oRenderParameter);
-		}
+	if (m_aArray.empty()) return L"";
 
+	std::wstring sResult;
+	std::map<std::wstring, bool> mapFontsDouble;	
+	
+	for (size_t i = 0; i < m_aArray.size(); i++)
+	{
+		std::map<std::wstring, bool>::iterator pFind = mapFontsDouble.find(m_aArray[i].m_sName);
+		if (pFind == mapFontsDouble.end())
+		{
+			//if (m_aArray[i].m_bUsed)
+			sResult += m_aArray[i].RenderToOOX(oRenderParameter);
+			mapFontsDouble.insert(std::make_pair(m_aArray[i].m_sName, m_aArray[i].m_bUsed));
+		}
 	}
 	return sResult;
 }

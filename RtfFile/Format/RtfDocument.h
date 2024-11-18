@@ -96,7 +96,7 @@ private:
 public: 
 	MS_LCID_converter m_lcidConverter;
 
-	int GetZIndex();
+	int GetZIndex(bool bReverse = false);
 	void SetZIndex(int val);
 
 	IdGenerator m_oIdGenerator;

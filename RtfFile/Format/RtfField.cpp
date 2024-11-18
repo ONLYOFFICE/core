@@ -303,13 +303,13 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			m_pInsert->m_oCharProperty.m_nDeleted = PROP_DEF;
 		}
 		//поверяем на наличие гиперссылки
-		RenderParameter oNewParam	= oRenderParameter;
-		oNewParam.nType				= RENDER_TO_OOX_PARAM_PLAIN;
+		RenderParameter oNewParam = oRenderParameter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
 		
         std::wstring sInsertText = m_pInsert->m_pTextItems->RenderToOOX( oNewParam );
 		
         size_t nIndex = sInsertText.find( L"HYPERLINK" );
-		if( std::wstring::npos != nIndex )
+		if ( std::wstring::npos != nIndex && (m_pResult) && (m_pResult->m_pTextItems) && m_pResult->m_pTextItems->GetCount() < 2)
 		{
             std::wstring sHyperlink = sInsertText;
             sHyperlink.erase( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );

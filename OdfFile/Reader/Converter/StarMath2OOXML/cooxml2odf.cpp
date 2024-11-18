@@ -162,10 +162,52 @@ namespace StarMath
 	{
 		if(pMathPara == nullptr)
 			return;
-		for(OOX::WritingElement* pNode:pMathPara->m_arrItems)
-			NodeDefinition(pNode);
+		bool bNewLine(false);
+		if(pMathPara->m_arrItems.size() > 1)
+		{
+			bNewLine = true;
+			m_pXmlWrite->WriteNodeBegin(L"mtable",false);
+			m_pXmlWrite->WriteNodeBegin(L"mtr",false);
+			m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+		}
+		for(unsigned int i = 0; i < pMathPara->m_arrItems.size();i++)
+		{
+			switch (i)
+			{
+			case 0:
+			break;
+			case 1:
+			{
+				if(pMathPara->m_arrItems[0]->getType() != OOX::EElementType::et_m_oMathParaPr)
+				{
+					m_wsAnnotationStarMath += L"newline ";
+					m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+					m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
+					m_pXmlWrite->WriteNodeBegin(L"mtr",false);
+					m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+				}
+				break;
+			}
+			default:
+			{
+				m_wsAnnotationStarMath += L"newline ";
+				m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+				m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
+				m_pXmlWrite->WriteNodeBegin(L"mtr",false);
+				m_pXmlWrite->WriteNodeBegin(L"mtd",false);
+				break;
+			}
+			}
+			NodeDefinition(pMathPara->m_arrItems[i]);
+		}
+		if(bNewLine)
+		{
+			m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
+			m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
+			m_pXmlWrite->WriteNodeEnd(L"mtable",false,false);
+		}
 	}
-	std::vector<COneElement*> COOXml2Odf::ConversionMT(OOX::Logic::CMText *pMt,const StValuePr* pValue)
+	std::vector<COneElement*> COOXml2Odf::ConversionMT(OOX::Logic::CMText *pMt, const StValuePr* pValue, const bool& bMRpr)
 	{
 		std::vector<COneElement*> arLine;
 		if(pMt == nullptr)
@@ -509,7 +551,7 @@ namespace StarMath
 		if(pMRun->m_oMRPr.GetPointer() != nullptr)
 			ConversionMRunProperties(pMRun->m_oMRPr.GetPointer(),stRpr);
 		if(pMRun->m_oMText.GetPointer() != nullptr)
-			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr);
+			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr,pMRun->m_oMRPr.GetPointer());
 		if(stRpr != nullptr && !arLine.empty())
 		{
 			if(!m_stAttribute.empty())
@@ -729,25 +771,7 @@ namespace StarMath
 			stTempPr->m_iSize = pRPr->m_oSz.GetPointer()->m_oVal.GetPointer()->GetValue();
 		}
 		if(pRPr->m_oRFonts.GetPointer()!= nullptr)
-		{
-			std::wstring wsFont = pRPr->m_oRFonts.GetPointer()->m_sAscii.get();
-			if(L"Liberation Sans" == wsFont)
-			{
-				stTempPr->m_enFont = StarMath::TypeFont::sans;
-				bRpr = true;
-			}
-			else if(L"Liberation Serif" == wsFont) 
-			{
-				stTempPr->m_enFont = StarMath::TypeFont::serif;
-				bRpr = true;
-			}
-			else if(L"Liberation Mono" == wsFont)
-			{
-				stTempPr->m_enFont = StarMath::TypeFont::fixed;
-				bRpr = true;
-			}
-			else stTempPr->m_enFont = StarMath::TypeFont::empty;
-		}
+			stTempPr->m_enFont = FontCheck(pRPr->m_oRFonts.GetPointer()->m_sAscii.get(),bRpr);
 		if(pRPr->m_oStrike.GetPointer()!=nullptr && pRPr->m_oStrike.GetPointer()->m_oVal.GetValue() == SimpleTypes::EOnOff::onoffTrue)
 		{
 			stTempPr->m_bStrike = true;
@@ -774,23 +798,126 @@ namespace StarMath
 			return nullptr;
 		}
 	}
-	void COOXml2Odf::ConversionMRunProperties(OOX::Logic::CMRPr *pMRpr, StValuePr *pValue)
+	void COOXml2Odf::ConversionMRunProperties(OOX::Logic::CMRPr *pMRpr, StValuePr*&pValue)
 	{
 		if(pMRpr == nullptr)
 			return ;
-		if(pMRpr->m_oSty.GetPointer() != nullptr)
+		if(pMRpr->m_oSty.GetPointer() != nullptr && pMRpr->m_oSty.GetPointer()->m_val.GetPointer()->GetValue() != SimpleTypes::EStyle::stylePlain)
 		{
 			if(pValue == nullptr)
 				pValue = new StValuePr;
 			pValue->m_enStyle = pMRpr->m_oSty.GetPointer()->m_val.GetPointer()->GetValue();
 		}
 	}
-	void COOXml2Odf::ConversionARpr(PPTX::Logic::RunProperties *pARpr, StValuePr *pValue)
+	void COOXml2Odf::ConversionARpr(PPTX::Logic::RunProperties *pARpr, StValuePr *&pValue)
 	{
 		if(pARpr == nullptr)
 			return;
 		if(pValue == nullptr)
 			pValue = new StValuePr;
+		bool bAttribute{false};
+		if(pARpr->b.get())
+		{
+			if(pARpr->i.get())
+				pValue->m_enStyle = SimpleTypes::EStyle::styleBoldItalic;
+			else
+				pValue->m_enStyle = SimpleTypes::EStyle::styleBold;
+			bAttribute = true;
+		}
+		else if(pARpr->i.get())
+		{
+			pValue->m_enStyle = SimpleTypes::EStyle::styleItalic;
+			bAttribute = true;
+		}
+		if(pARpr->sz.IsInit())
+		{
+			pValue->m_iSize = pARpr->sz.get();
+			bAttribute = true;
+		}
+		if(pARpr->latin.IsInit() && !pARpr->latin->typeface.empty())
+			pValue->m_enFont = FontCheck(pARpr->latin->typeface,bAttribute);
+	}
+	StarMath::TypeFont COOXml2Odf::FontCheck(const std::wstring &wsFont, bool &bAttribute)
+	{
+		if(!wsFont.empty())
+		{
+			if(L"Liberation Serif" == wsFont)
+			{
+				bAttribute = true;
+				return StarMath::TypeFont::serif;
+			}
+			else if(L"Liberation Sans" == wsFont)
+			{
+				bAttribute = true;
+				return StarMath::TypeFont::sans;
+			}
+			else if(L"Liberation Mono" == wsFont)
+			{
+				bAttribute = true;
+				return StarMath::TypeFont::fixed;
+			}
+			else
+				return StarMath::TypeFont::empty;
+		}
+		else 
+			return StarMath::TypeFont::empty;
+	}
+	bool COOXml2Odf::ColorCheck(const std::wstring &wsColor, std::wstring &wsRecordColor)
+	{
+		if(!wsColor.empty())
+		{
+			if(L"0000FF" == wsColor)
+				wsRecordColor = L"blue";
+			else if(L"00FF00" == wsColor)
+				wsRecordColor = L"green";
+			else if(L"FF0000" == wsColor)
+				wsRecordColor = L"red";
+			else if(L"ED0DD9" == wsColor)
+				wsRecordColor = L"fuchsia";
+			else if(L"30D5C8" == wsColor)
+				wsRecordColor = L"aqua";
+			else if(L"FFFF00" == wsColor)
+				wsRecordColor = L"yellow";
+			else if(L"808080" == wsColor)
+				wsRecordColor = L"gray";
+			else if(L"800000" == wsColor)
+				wsRecordColor = L"maroon";
+			else if(L"000080" == wsColor)
+				wsRecordColor = L"navy";
+			else if(L"808000" == wsColor)
+				wsRecordColor = L"olive";
+			else if(L"800080" == wsColor)
+				wsRecordColor = L"purple";
+			else if(L"C0C0C0" == wsColor)
+				wsRecordColor = L"silver";
+			else if(L"008080" == wsColor)
+				wsRecordColor = L"teal";
+			else if(L"FF7F50" == wsColor)
+				wsRecordColor = L"coral";
+			else if(L"191970" == wsColor)
+				wsRecordColor = L"midnightblue";
+			else if(L"DC143C" == wsColor)
+				wsRecordColor = L"crimson";
+			else if(L"EE82EE" == wsColor)
+				wsRecordColor = L"violet";
+			else if(L"FFA500" == wsColor)
+				wsRecordColor = L"orange";
+			else if(L"FF4500" == wsColor)
+				wsRecordColor = L"orangered";
+			else if(L"2E8B57" == wsColor)
+				wsRecordColor = L"seagreen";
+			else if(L"4B0082" == wsColor)
+				wsRecordColor = L"indigo";
+			else if(L"FF69B4" == wsColor)
+				wsRecordColor = L"hotpink";
+			else if(L"FFF0F5" == wsColor)
+				wsRecordColor = L"lavender";
+			else
+				return false;
+			return true;
+		}
+		else
+			return false;
 	}
 	void COOXml2Odf::ConversionTextVector(std::vector<COneElement *> &arLine, std::vector<COneElement *> &arNewLine)
 	{
@@ -1352,10 +1479,16 @@ namespace StarMath
 		if(!pAttribute->m_wsColor.empty())
 		{
 			pXmlWrite->WriteNodeBegin(L"mstyle",true);
-			std::wstring wsColor = L"#" + pAttribute->m_wsColor;
+			std::wstring wsColor;
+			bool bColorName = COOXml2Odf::ColorCheck(pAttribute->m_wsColor,wsColor);
+			if(!bColorName)
+				wsColor = L"#" + pAttribute->m_wsColor;
 			pXmlWrite->WriteAttribute(L"mathcolor",wsColor);
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
-			wsAnnotation += L"color hex " + pAttribute->m_wsColor + L" ";
+			if(bColorName)
+				wsAnnotation += L"color " + wsColor + L" ";
+			else
+				wsAnnotation += L"color hex " + pAttribute->m_wsColor + L" ";
 			stStyle.m_iStyle++;
 		}
 		if(pAttribute->m_iSize != 0)

@@ -59,7 +59,7 @@ namespace StarMath
 		void ConversionMathPara(OOX::Logic::COMathPara* pMathPara);
 		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
-		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt, const StValuePr* pValue);
+		std::vector<COneElement *> ConversionMT(OOX::Logic::CMText* pMt, const StValuePr* pValue, const bool &bMRpr = false);
 		void ConversionMF(OOX::Logic::CFraction* pMf);
 		StStyleMenClose ConversionCtrlPr(OOX::Logic::CCtrlPr* pCtrlPr, const bool& bDelimiter = false);
 		StStyleMenClose ConversionCMPr(OOX::Logic::CMPr* pMPr);
@@ -100,8 +100,8 @@ namespace StarMath
 		void ConversionEqArr(OOX::Logic::CEqArr* pEqArr);
 		void ConversionSubSup(OOX::Logic::CSSubSup* pSubSup);
 		StValuePr *ConversionRunProperties(OOX::Logic::CRunProperty* pRPr);
-		void ConversionMRunProperties(OOX::Logic::CMRPr* pMRpr, StValuePr* pValue);
-		void ConversionARpr(PPTX::Logic::RunProperties* pARpr,StValuePr* pValue);
+		void ConversionMRunProperties(OOX::Logic::CMRPr* pMRpr, StValuePr*&pValue);
+		void ConversionARpr(PPTX::Logic::RunProperties* pARpr, StValuePr*&pValue);
 		StValuePr ConversionMdPr(OOX::Logic::CDelimiterPr* pDelPr, StStyleMenClose &stStyle);
 		StValuePr ConversionNaryPr(OOX::Logic::CNaryPr* pNaryPr, StStyleMenClose &stStyle);
 		std::wstring ConversionBegBracket(OOX::Logic::CBegChr* pBegChr);
@@ -117,6 +117,8 @@ namespace StarMath
 		static void StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter* pXmlWrite);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
+		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
+		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();

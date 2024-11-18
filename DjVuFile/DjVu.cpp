@@ -93,7 +93,7 @@ void CDjVuFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, d
 	if (m_pImplementation)
 		m_pImplementation->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void CDjVuFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams)
 {
 	if (m_pImplementation)
 		m_pImplementation->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);

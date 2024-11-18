@@ -11,10 +11,14 @@ if not base.is_dir("mdds"):
     base.cmd("git", ["clone", "https://github.com/kohei-us/mdds.git"])
     base.cmd_in_dir("mdds", "git", ["checkout", "0783158939c6ce4b0b1b89e345ab983ccb0f0ad0"])
 
+    #the linux code uses an implementation for c++ 17, so we just put this implementation
+    if ("linux" == base.host_platform()):
+        base.replaceInFile("./mdds/include/mdds/global.hpp", "namespace mdds {", "namespace std { template<bool __v> using bool_constant = integral_constant<bool, __v>; }\n\nnamespace mdds {")
+
 if not base.is_dir("librevenge"):
     base.cmd("git", ["clone", "https://github.com/Distrotech/librevenge.git"])
     base.cmd_in_dir("librevenge", "git", ["checkout", "becd044b519ab83893ad6398e3cbb499a7f0aaf4"])
-    
+
     stat_windows = ""
     stat_windows += "#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)\n"
     stat_windows += "#define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)\n"

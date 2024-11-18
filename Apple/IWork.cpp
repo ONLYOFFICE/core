@@ -80,6 +80,8 @@ int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutp
 	if (libetonyek::EtonyekDocument::CONFIDENCE_NONE == confidence)
 		return -1;
 
+	const std::string sOutputFileA = U_TO_UTF8(sOutputFile);
+
 	switch (type)
 	{
 	case libetonyek::EtonyekDocument::TYPE_PAGES:
@@ -92,7 +94,7 @@ int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutp
 		if (!bRes)
 			return 1;
 
-		std::wofstream output(sOutputFile);
+		std::wofstream output(sOutputFileA.c_str());
 		output << content.cstr();
 		return 0;
 	}
@@ -106,7 +108,7 @@ int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutp
 		if (!bRes)
 			return 1;
 
-		std::wofstream output(sOutputFile.c_str());
+		std::wofstream output(sOutputFileA.c_str());
 		output << content.cstr();
 		return 0;
 	}
@@ -120,7 +122,7 @@ int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutp
 		if (!bRes)
 			return 1;
 
-		std::wofstream output(sOutputFile.c_str());
+		std::wofstream output(sOutputFileA.c_str());
 		output << content.cstr();
 		return 0;
 	}

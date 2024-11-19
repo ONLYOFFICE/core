@@ -295,17 +295,6 @@ public:
 
 		return m_pTextRenderer->GetBuffer();
 	}
-	void GetGlyphs2(int nPageIndex)
-	{
-		if (NULL == m_pTextRenderer)
-		{
-			m_pTextRenderer = new NSHtmlRenderer::CHTMLRendererText();
-			m_pTextRenderer->Init(m_pFile, 8);
-		}
-
-		m_pTextRenderer->AddPage(nPageIndex);
-		m_pFile->DrawPageOnRenderer(m_pTextRenderer, nPageIndex, NULL);
-	}
 	BYTE* GetLinks(int nPageIndex)
 	{
 		return m_pFile->GetLinks(nPageIndex);

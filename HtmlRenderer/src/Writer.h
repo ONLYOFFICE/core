@@ -2154,7 +2154,7 @@ namespace NSHtmlRenderer
 			m_bIsGids = false;
 			m_lCurrentDumpSize = 0;
 
-			m_oSmartText.SetParams(this);
+			// m_oSmartText.SetParams(this);
 
 			m_oSmartText.m_lCountParagraphs = 0;
 			m_oSmartText.m_lCountWords = 0;

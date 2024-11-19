@@ -34,7 +34,8 @@
 
 #include "FontManager.h"
 #include "../../Common/OfficeFileFormats.h"
-#include "Meta.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+// #include "Meta.h"
 
 #ifdef min
 #undef min
@@ -240,7 +241,6 @@ namespace NSHtmlRenderer
 	};
 
 	const BYTE g_lfHorizontal	= 0x01;
-	const BYTE g_lfGids			= 0x02;
 	const BYTE g_lfWidth		= 0x04;
 
 	class CHFontInfo
@@ -469,20 +469,13 @@ namespace NSHtmlRenderer
 		CFontManagerWrapper	m_oFontManager;
 
 		CHLine m_oLine;
-		CMetafile* m_pMeta;
 
-		NSStructures::CBrush*	m_pBrush;
 		NSStructures::CFont*	m_pFont;
-
-		NSStructures::CBrush*	m_pLastBrush;
 
 		Aggplus::CMatrix*		m_pTransform;
 		Aggplus::CMatrix*		m_pLastTransform;
 
-		CMetafile				m_oMeta;
-		CMetafile*				m_pPageMeta;
-
-		double					m_dTextSpaceEps;
+		NSWasm::CData* m_pPageMeta;
 
 		LONG m_lCountParagraphs;
 		LONG m_lCountWords;
@@ -492,8 +485,6 @@ namespace NSHtmlRenderer
 	public:
 		CHText() : m_oFontManager(), m_oLine()
 		{
-			m_dTextSpaceEps = 0.1;
-
 			m_lCountParagraphs = 0;
 			m_lCountWords = 0;
 			m_lCountSymbols = 0;
@@ -512,40 +503,10 @@ namespace NSHtmlRenderer
 			m_lCountSpaces = 0;
 		}
 
-		template<typename T>
-		void SetParams(T writer)
-		{
-			m_oFontManager.m_pFont = writer->m_pFont;
-
-			m_pBrush	= writer->m_pBrush;
-			m_pFont		= writer->m_pFont;
-
-			m_pLastBrush	= &writer->m_oLastBrush;
-
-			m_pTransform		= writer->m_pTransform;
-			m_pLastTransform	= &writer->m_oLastTransform;
-
-			m_pPageMeta			= &writer->m_oPage;
-
-			switch (writer->m_lSrcFileType)
-			{
-			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
-			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
-				break;
-			default:
-				m_dTextSpaceEps = 0.1;
-				break;
-			}
-		}
-
 		~CHText()
 		{
 		}
 
-		void NewPage()
-		{
-			m_oMeta.ClearNoAttack();
-		}
 		void ClosePage()
 		{
 			LONG nCount = m_oLine.GetCountChars();
@@ -642,8 +603,6 @@ namespace NSHtmlRenderer
 						pSpaceChar->unicode = 0xFFFF;
 						pSpaceChar->gid = 0xFFFF;
 						dOffsetX -= pLastChar->width;
-
-						m_oMeta.WriteBYTE(0);
 					}
 				}
 				else
@@ -674,18 +633,6 @@ namespace NSHtmlRenderer
 			if (bIsTransform)
 				bIsDumpFont = true;
 
-			bool bIsColor = ((m_pBrush->Color1 != m_pLastBrush->Color1) || (m_pBrush->Alpha1 != m_pLastBrush->Alpha1));
-
-			BYTE nLenMetaCommands = 0;
-			if (bIsColor)
-				nLenMetaCommands += 5;
-			if (bIsTransform)
-				nLenMetaCommands += 17;
-			if (bIsDumpFont)
-				nLenMetaCommands += 13;
-
-			m_oMeta.WriteBYTE(nLenMetaCommands);
-
 			double _dumpSize = writer->m_dCurrentFontSize;
 			double _dumpMtx[4];
 			_dumpMtx[0] = m_pTransform->sx();
@@ -705,13 +652,6 @@ namespace NSHtmlRenderer
 				_dumpMtx[3] /= dTextScale;
 			}
 
-			if (bIsDumpFont)
-			{
-				m_oMeta.WriteCommandType(CMetafile::ctFontName);
-				m_oMeta.WriteLONG(writer->m_lCurrentFont);
-				m_oMeta.WriteLONG(writer->m_pFont->GetStyle());
-				m_oMeta.WriteDouble(_dumpSize/*writer->m_dCurrentFontSize*/);
-			}
 			if (bIsTransform)
 			{
 				m_pLastTransform->SetElements(m_pTransform->sx(), m_pTransform->shy(), m_pTransform->shx(), m_pTransform->sy(), m_pLastTransform->tx(), m_pLastTransform->ty());
@@ -721,30 +661,6 @@ namespace NSHtmlRenderer
 				m_oLine.m_shx = m_pTransform->shx();
 				m_oLine.m_shy = m_pTransform->shy();
 				m_oLine.m_sy = m_pTransform->sy();
-
-				m_oMeta.WriteCommandType(CMetafile::ctCommandTextTransform);
-				//m_oMeta.WriteDouble(_dst->sx);
-				//m_oMeta.WriteDouble(_dst->shy);
-				//m_oMeta.WriteDouble(_dst->shx);
-				//m_oMeta.WriteDouble(_dst->sy);
-
-				m_oMeta.WriteDouble(_dumpMtx[0]);
-				m_oMeta.WriteDouble(_dumpMtx[1]);
-				m_oMeta.WriteDouble(_dumpMtx[2]);
-				m_oMeta.WriteDouble(_dumpMtx[3]);
-			}
-			if (bIsColor)
-			{
-				m_pLastBrush->Color1 = m_pBrush->Color1;
-				m_pLastBrush->Alpha1 = m_pBrush->Alpha1;
-
-				m_oMeta.WriteCommandType(CMetafile::ctBrushColor1);
-
-				LONG lBGR = m_pBrush->Color1;
-				m_oMeta.WriteBYTE((BYTE)(lBGR & 0xFF));
-				m_oMeta.WriteBYTE((BYTE)((lBGR >> 8) & 0xFF));
-				m_oMeta.WriteBYTE((BYTE)((lBGR >> 16) & 0xFF));
-				m_oMeta.WriteBYTE((BYTE)m_pBrush->Alpha1);
 			}
 
 			// все, baseline установлен. теперь просто продолжаем линию
@@ -816,9 +732,6 @@ namespace NSHtmlRenderer
 
 					pChar->width = dW * dAbsVec;
 
-					if (0 != lIndex)
-						m_oMeta.WriteBYTE(0);
-
 					if (lIndex == (lTextLen - 1))
 					{
 						m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
@@ -847,17 +760,10 @@ namespace NSHtmlRenderer
 			LONG lCountWords = 0;
 			bool bIsLastSymbol = false;
 
-			bool bIsGidExist = false;
-
 			LONG nCount = m_oLine.GetCountChars();
 			for (LONG i = 0; i < nCount; ++i)
 			{
 				CHChar* pChar = &m_oLine.m_pChars[i];
-				if (pChar->gid != 0xFFFF)
-				{
-					mask |= g_lfGids;
-					bIsGidExist = true;
-				}
 
 				if (0xFFFF == pChar->unicode || ((WCHAR)' ') == pChar->unicode || ((WCHAR)'\t') == pChar->unicode)
 				{
@@ -881,7 +787,6 @@ namespace NSHtmlRenderer
 			if (0 == nCount)
 			{
 				m_oLine.Clear();
-				m_oMeta.ClearNoAttack();
 				return;
 			}
 
@@ -893,63 +798,48 @@ namespace NSHtmlRenderer
 			if (nCount > 1)
 				mask |= g_lfWidth;
 
-			m_pPageMeta->CheckBufferSize(60);
+			m_pPageMeta->AddSize(60);
 
-			m_pPageMeta->WriteBYTE_nocheck(CMetafile::ctCommandTextLine);
-			m_pPageMeta->WriteBYTE_nocheck(mask);
+			m_pPageMeta->WriteBYTE(mask);
 
-			m_pPageMeta->WriteDouble_nocheck(m_oLine.m_dX);
-			m_pPageMeta->WriteDouble_nocheck(m_oLine.m_dY);
+			m_pPageMeta->WriteDouble(m_oLine.m_dX);
+			m_pPageMeta->WriteDouble(m_oLine.m_dY);
 
 			if ((mask & g_lfHorizontal) == 0)
 			{
-				m_pPageMeta->WriteDouble_nocheck(m_oLine.m_ex);
-				m_pPageMeta->WriteDouble_nocheck(m_oLine.m_ey);
+				m_pPageMeta->WriteDouble(m_oLine.m_ex);
+				m_pPageMeta->WriteDouble(m_oLine.m_ey);
 			}
 
-			m_pPageMeta->WriteDouble_nocheck(m_oLine.m_dAscent);
-			m_pPageMeta->WriteDouble_nocheck(m_oLine.m_dDescent);
+			m_pPageMeta->WriteDouble(m_oLine.m_dAscent);
+			m_pPageMeta->WriteDouble(m_oLine.m_dDescent);
 
 			LONG _position = 0;
 			if (nCount > 1)
-			{
-				_position = m_pPageMeta->GetPosition();
-				m_pPageMeta->WriteLONG_nocheck(0);
+			{ // width
+				_position = m_pPageMeta->GetSize();
+				m_pPageMeta->AddInt(0);
 			}
 
-			BYTE* pBufferMeta = m_oMeta.GetData();
 			double dWidthLine = 0;
-
 			double dCurrentGlyphLineOffset = 0;
+			m_pPageMeta->AddInt(nCount);
 			for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
 			{
 				CHChar* pChar = &m_oLine.m_pChars[lIndexChar];
 
-				// все настроки буквы (m_oMeta)
-				BYTE lLen = *pBufferMeta;
-				++pBufferMeta;
-				if (lLen > 0)
-				{
-					m_pPageMeta->Write(pBufferMeta, lLen);
-				}
-				pBufferMeta += lLen;
 				// смещение относительно предыдущей буквы (у всех, кроме первой)
 				// юникодное значение
 				// гид (если bIsGidExist == true)
 				// ширина буквы
 
-				m_pPageMeta->CheckBufferSize(20);
+				m_pPageMeta->AddSize(20);
 
-				m_pPageMeta->WriteBYTE_nocheck(CMetafile::ctDrawText);
-				if (0 != lIndexChar)
-				{
-					m_pPageMeta->WriteDouble2_nocheck(pChar->x);
-				}
+				if (lIndexChar)
+					m_pPageMeta->WriteDouble(pChar->x);
 
-				m_pPageMeta->WriteWCHAR_nocheck2(pChar->unicode);
-				if (bIsGidExist)
-					m_pPageMeta->WriteUSHORT_nocheck(pChar->gid);
-				m_pPageMeta->WriteDouble2_nocheck(pChar->width);
+				m_pPageMeta->AddInt(pChar->unicode);
+				m_pPageMeta->WriteDouble(pChar->width);
 
 				if (lIndexChar != 0)
 					dCurrentGlyphLineOffset += pChar->x;
@@ -961,13 +851,10 @@ namespace NSHtmlRenderer
 			if (nCount > 1)
 			{
 				int nWidthBuf = (int)(dWidthLine * 10000);
-				memcpy(m_pPageMeta->GetData() + _position, &nWidthBuf, 4);
+				m_pPageMeta->AddInt(nWidthBuf, _position);
 			}
 
 			m_oLine.Clear();
-			m_oMeta.ClearNoAttack();
-
-			m_pPageMeta->WriteBYTE(CMetafile::ctCommandTextLineEnd);
 		}
 	};
 }

@@ -31,7 +31,6 @@
  */
 #include "../include/HTMLRendererText.h"
 #include "Text.h"
-#include "HtmlText.h"
 
 namespace NSHtmlRenderer
 {
@@ -41,47 +40,29 @@ namespace NSHtmlRenderer
 		double m_dWidth;
 		double m_dHeght;
 
-		NSStructures::CBrush m_oBrush;
-		NSStructures::CBrush m_oLastBrush;
-
 		NSStructures::CFont m_oFont;
-		NSStructures::CFont* m_pFont;
 		NSStructures::CFont	m_oInstalledFont;
-		LONG m_lCurrentFont;
-		double m_dCurrentFontSize;
 
 		Aggplus::CMatrix m_oTransform;
 		Aggplus::CMatrix m_oLastTransform;
 
-		bool m_bIsChangedFontParamBetweenDrawText;
-		LONG m_lCurrentCommandType;
-		LONG m_lSrcFileType;
-
 		CHText m_oSmartText;
-		CMetafile m_oPage;
+		NSWasm::CData m_oPage;
 
-		int* m_pTempUnicodes;
-		int  m_nTempUnicodesAlloc;
-		int  m_nTempUnicodesLen;
+		int* m_pTempUnicodes; // массив юникодов
+		int  m_nTempUnicodesAlloc; // размер выделенной памяти
+		int  m_nTempUnicodesLen; // размер используемой памяти
 
 		bool m_bIsFontsInit;
-
-		NSHtmlRenderer2::CHText m_oHtmlText2;
 
 	public:
 		CHTMLRendererText_Private()
 		{
-			m_bIsChangedFontParamBetweenDrawText = true;
-			m_lSrcFileType = 0;
 			m_pTempUnicodes = NULL;
 			m_nTempUnicodesLen = 0;
 			m_nTempUnicodesAlloc = 0;
 
 			m_bIsFontsInit = false;
-
-			m_lCurrentFont = 0;
-			m_dCurrentFontSize = 0;
-			m_pFont = &m_oFont;
 		}
 		~CHTMLRendererText_Private()
 		{
@@ -126,15 +107,13 @@ namespace NSHtmlRenderer
 		}
 
 		void WriteText(const int* pUnicodes, const int* pGids, const int& nCount, const double& x, const double& y,
-					   const double& width, const double& height, const bool& bIsChangedFontParamBetweenDrawText)
+					   const double& width, const double& height)
 		{
 			bool bIsDumpFont = false;
 			if (!m_oInstalledFont.IsEqual(&m_oFont))
 			{
 				m_oInstalledFont = m_oFont;
 				bIsDumpFont = true;
-
-				m_dCurrentFontSize = m_oInstalledFont.Size;
 			}
 
 			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, this);
@@ -150,15 +129,8 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pInternal);
 	}
 
-	void CHTMLRendererText::AddPage(int nPageIndex)
-	{
-
-	}
 	void CHTMLRendererText::Init(IOfficeDrawingFile* pFile, int nCacheSize)
 	{
-		m_pInternal->m_oBrush.SetDefaultParams();
-		m_pInternal->m_oLastBrush.SetDefaultParams();
-
 		m_pInternal->m_oFont.SetDefaultParams();
 		m_pInternal->m_oInstalledFont.SetDefaultParams();
 		m_pInternal->m_oInstalledFont.Name = L"";
@@ -166,20 +138,11 @@ namespace NSHtmlRenderer
 		m_pInternal->m_oTransform.Reset();
 		m_pInternal->m_oLastTransform.Reset();
 
-		m_pInternal->m_oLastBrush.Color1 = -1;
-		m_pInternal->m_dCurrentFontSize	= 0.0;
-
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = false;
-		m_pInternal->m_lCurrentCommandType = -1;
-
 		m_pInternal->m_oSmartText.NewPage();
 
 		if (!m_pInternal->m_bIsFontsInit)
 		{
 			m_pInternal->m_oSmartText.m_oFontManager.m_pFont = &m_pInternal->m_oFont;
-
-			m_pInternal->m_oSmartText.m_pLastBrush = &m_pInternal->m_oLastBrush;
-			m_pInternal->m_oSmartText.m_pBrush = &m_pInternal->m_oBrush;
 
 			m_pInternal->m_oSmartText.m_pFont = &m_pInternal->m_oFont;
 
@@ -188,62 +151,34 @@ namespace NSHtmlRenderer
 
 			m_pInternal->m_oSmartText.m_pPageMeta = &m_pInternal->m_oPage;
 
-			OfficeDrawingFileType eType = pFile->GetType();
-			switch (eType)
-			{
-			case odftPDF:
-			{
-				m_pInternal->m_lSrcFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
-				m_pInternal->m_oSmartText.m_dTextSpaceEps = 0.1;
-				break;
-			}
-			case odftDJVU:
-			{
-				m_pInternal->m_lSrcFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
-				m_pInternal->m_oSmartText.m_dTextSpaceEps = 0.1;
-				break;
-			}
-			case odftXPS:
-			{
-				m_pInternal->m_lSrcFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
-				m_pInternal->m_oSmartText.m_dTextSpaceEps = 0.1;
-				break;
-			}
-			default:
-				break;
-			}
-
 			m_pInternal->m_bIsFontsInit = true;
 			m_pInternal->m_oSmartText.Init(pFile->GetFonts(), nCacheSize);
 		}
 
 		m_pInternal->m_oPage.ClearNoAttack();
-		m_pInternal->m_oPage.WriteLONG(0);
+		m_pInternal->m_oPage.SkipLen();
 
 		// статистика
-		m_pInternal->m_oPage.WriteLONG(0);
-		m_pInternal->m_oPage.WriteLONG(0);
-		m_pInternal->m_oPage.WriteLONG(0);
-		m_pInternal->m_oPage.WriteLONG(0);
+		m_pInternal->m_oPage.AddInt(0);
+		m_pInternal->m_oPage.AddInt(0);
+		m_pInternal->m_oPage.AddInt(0);
+		m_pInternal->m_oPage.AddInt(0);
 	}
 
 	BYTE* CHTMLRendererText::GetBuffer()
 	{
 		m_pInternal->m_oSmartText.ClosePage();
-		LONG lPos = m_pInternal->m_oPage.GetPosition();
-		m_pInternal->m_oPage.Seek(0);
+		LONG lPos = m_pInternal->m_oPage.GetSize();
 		// len
-		m_pInternal->m_oPage.WriteLONG(lPos);
+		m_pInternal->m_oPage.WriteLen();
 		// stat
-		m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountParagraphs);
-		m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountWords);
-		m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountSymbols);
-		m_pInternal->m_oPage.WriteLONG(m_pInternal->m_oSmartText.m_lCountSpaces);
-		// seek to end
-		m_pInternal->m_oPage.Seek(lPos);
+		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountParagraphs, 4);
+		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountWords, 8);
+		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountSymbols, 12);
+		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountSpaces, 16);
 
 		m_pInternal->m_oSmartText.ClearStatistics();
-		return m_pInternal->m_oPage.GetData();
+		return m_pInternal->m_oPage.GetBuffer();
 	}
 
 	HRESULT CHTMLRendererText::get_Type(LONG* lType)
@@ -253,10 +188,7 @@ namespace NSHtmlRenderer
 	}
 
 	//-------- Функции для работы со страницей --------------------------------------------------
-	HRESULT CHTMLRendererText::NewPage()
-	{
-		return S_OK;
-	}
+	HRESULT CHTMLRendererText::NewPage() { return S_OK; }
 	HRESULT CHTMLRendererText::get_Height(double* dHeight)
 	{
 		*dHeight = m_pInternal->m_dHeght;
@@ -317,36 +249,12 @@ namespace NSHtmlRenderer
 	HRESULT CHTMLRendererText::put_BrushTransform(const Aggplus::CMatrix& oMatrix) { return S_OK; }
 
 	// brush ------------------------------------------------------------------------------------
-	HRESULT CHTMLRendererText::get_BrushType(LONG* lType)
-	{
-		*lType = m_pInternal->m_oBrush.Type;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::put_BrushType(const LONG& lType)
-	{
-		m_pInternal->m_oBrush.Type = lType;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::get_BrushColor1(LONG* lColor)
-	{
-		*lColor = m_pInternal->m_oBrush.Color1;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::put_BrushColor1(const LONG& lColor)
-	{
-		m_pInternal->m_oBrush.Color1 = lColor;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::get_BrushAlpha1(LONG* lAlpha)
-	{
-		*lAlpha = m_pInternal->m_oBrush.Alpha1;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::put_BrushAlpha1(const LONG& lAlpha)
-	{
-		m_pInternal->m_oBrush.Alpha1 = lAlpha;
-		return S_OK;
-	}
+	HRESULT CHTMLRendererText::get_BrushType(LONG* lType) { return S_OK; }
+	HRESULT CHTMLRendererText::put_BrushType(const LONG& lType) { return S_OK; }
+	HRESULT CHTMLRendererText::get_BrushColor1(LONG* lColor) { return S_OK; }
+	HRESULT CHTMLRendererText::put_BrushColor1(const LONG& lColor) { return S_OK; }
+	HRESULT CHTMLRendererText::get_BrushAlpha1(LONG* lAlpha) { return S_OK; }
+	HRESULT CHTMLRendererText::put_BrushAlpha1(const LONG& lAlpha) { return S_OK; }
 	HRESULT CHTMLRendererText::get_BrushColor2(LONG* lColor) { return S_OK; }
 	HRESULT CHTMLRendererText::put_BrushColor2(const LONG& lColor) { return S_OK; }
 	HRESULT CHTMLRendererText::get_BrushAlpha2(LONG* lAlpha) { return S_OK; }
@@ -372,7 +280,6 @@ namespace NSHtmlRenderer
 	HRESULT CHTMLRendererText::put_FontName(const std::wstring& bsName)
 	{
 		m_pInternal->m_oFont.Name = bsName;
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = true;
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::get_FontPath(std::wstring* bsName)
@@ -383,7 +290,6 @@ namespace NSHtmlRenderer
 	HRESULT CHTMLRendererText::put_FontPath(const std::wstring& bsName)
 	{
 		m_pInternal->m_oFont.Path = bsName;
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = true;
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::get_FontSize(double* dSize)
@@ -393,11 +299,7 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CHTMLRendererText::put_FontSize(const double& dSize)
 	{
-		if (m_pInternal->m_oFont.Size != dSize)
-		{
-			m_pInternal->m_oFont.Size = dSize;
-			m_pInternal->m_bIsChangedFontParamBetweenDrawText = true;
-		}
+		m_pInternal->m_oFont.Size = dSize;
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::get_FontStyle(LONG* lStyle)
@@ -407,11 +309,7 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CHTMLRendererText::put_FontStyle(const LONG& lStyle)
 	{
-		if (m_pInternal->m_oFont.GetStyle() != lStyle)
-		{
-			m_pInternal->m_oFont.SetStyle(lStyle);
-			m_pInternal->m_bIsChangedFontParamBetweenDrawText = true;
-		}
+		m_pInternal->m_oFont.SetStyle(lStyle);
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::get_FontStringGID(INT* bGID)
@@ -448,58 +346,34 @@ namespace NSHtmlRenderer
 	//-------- Функции для вывода текста --------------------------------------------------------
 	HRESULT CHTMLRendererText::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
-		if (c_nHyperlinkType == m_pInternal->m_lCurrentCommandType)
-			return S_OK;
-
 		int _c = (int)c;
-		m_pInternal->WriteText(&_c, NULL, 1, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = false;
+		m_pInternal->WriteText(&_c, NULL, 1, x, y, w, h);
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 	{
-		if (c_nHyperlinkType == m_pInternal->m_lCurrentCommandType)
-			return S_OK;
-
 		m_pInternal->GetUnicodes(bsText);
-		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, NULL, m_pInternal->m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = false;
+		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, NULL, m_pInternal->m_nTempUnicodesLen, x, y, w, h);
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
-		if (c_nHyperlinkType == m_pInternal->m_lCurrentCommandType)
-			return S_OK;
-
 		int _c = (int)c;
 		int _g = (int)gid;
 
-		m_pInternal->WriteText(&_c, &_g, 1, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = false;
+		m_pInternal->WriteText(&_c, &_g, 1, x, y, w, h);
 		return S_OK;
 	}
 	HRESULT CHTMLRendererText::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
-		if (c_nHyperlinkType == m_pInternal->m_lCurrentCommandType)
-			return S_OK;
-
 		m_pInternal->GetUnicodes(bsUnicodeText);
-		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, (const int*)pGids, m_pInternal->m_nTempUnicodesLen, x, y, w, h, m_pInternal->m_bIsChangedFontParamBetweenDrawText);
-		m_pInternal->m_bIsChangedFontParamBetweenDrawText = false;
+		m_pInternal->WriteText(m_pInternal->m_pTempUnicodes, (const int*)pGids, m_pInternal->m_nTempUnicodesLen, x, y, w, h);
 		return S_OK;
 	}
 
 	//-------- Маркеры для команд ---------------------------------------------------------------
-	HRESULT CHTMLRendererText::BeginCommand(const DWORD& lType)
-	{
-		m_pInternal->m_lCurrentCommandType = lType;
-		return S_OK;
-	}
-	HRESULT CHTMLRendererText::EndCommand(const DWORD& lType)
-	{
-		m_pInternal->m_lCurrentCommandType = -1;
-		return S_OK;
-	}
+	HRESULT CHTMLRendererText::BeginCommand(const DWORD& lType) { return S_OK; }
+	HRESULT CHTMLRendererText::EndCommand(const DWORD& lType) { return S_OK; }
 
 	//-------- Функции для работы с Graphics Path -----------------------------------------------
 	HRESULT CHTMLRendererText::PathCommandMoveTo(const double& x, const double& y) { return S_OK; }

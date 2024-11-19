@@ -4979,6 +4979,18 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), sJsaProject.GetPath(), L"", &lId);
 		m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(sJsaProject.GetExtention(false));
 	}
+	else if (c_oSerParType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+	}
+	else if (c_oSerParType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5755,8 +5767,8 @@ int Binary_DocumentTableReader::ReadPermStart(BYTE type, long length, void* poRe
 	}
 	else if (c_oSerPermission::Ed == type)
 	{
-		pPerm->m_sId.Init();
-		*pPerm->m_sId = m_oBufferedStream.GetString3(length);
+		pPerm->m_sEd.Init();
+		*pPerm->m_sEd = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerPermission::EdGroup == type)
 	{

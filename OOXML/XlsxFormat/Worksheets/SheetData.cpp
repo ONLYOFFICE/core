@@ -3418,33 +3418,11 @@ namespace OOX
                 pCell->m_oRow = m_oR->GetValue();
                 if(pCell->fromBin(reader))
                 {
-                    //сжимаем пустые клетки
-                    if(!pCell->m_oValue.IsInit() && !m_arrItems.empty())
-                    {
-                        auto prevCell = m_arrItems.back();
-                        if(!prevCell->m_oRepeated.IsInit())
-                        {
-                            prevCell->m_oRepeated = 1;
-                        }
-
-                        if(!prevCell->m_oValue.IsInit())
-                        {
-                            if((!prevCell->m_oCol.IsInit()&& !pCell->m_oCol.IsInit())
-                                ||(prevCell->m_oCol.IsInit()&& pCell->m_oCol.IsInit() && (prevCell->m_oCol.get() + prevCell->m_oRepeated.get()) == pCell->m_oCol.get()))
-                            {
-                                if((!prevCell->m_oStyle.IsInit() && !pCell->m_oStyle.IsInit())
-                                    || (prevCell->m_oStyle.IsInit() && pCell->m_oStyle.IsInit() && prevCell->m_oStyle.get() == pCell->m_oStyle.get()))
-                                {
-                                    prevCell->m_oRepeated = prevCell->m_oRepeated.get() + 1;
-                                    delete pCell;
-                                    continue;
-                                }
-                            }
-                        }
-                        if(prevCell->m_oRepeated.get() == 1)
-                            prevCell->m_oRepeated.reset();
-                    }
-                    m_arrItems.push_back(pCell);
+                    //пытаемся сжать пустые клетки
+                    if(!compressCell(pCell))
+                        m_arrItems.push_back(pCell);
+                    else
+                        delete pCell;
                 }
                 else
                 {
@@ -3813,6 +3791,34 @@ namespace OOX
                 m_oPh = true;
 
         }
+        bool CRow::compressCell(CCell* pCell)
+        {
+            if(!pCell->m_oValue.IsInit() && !m_arrItems.empty())
+            {
+                auto prevCell = m_arrItems.back();
+                if(!prevCell->m_oRepeated.IsInit())
+                {
+                    prevCell->m_oRepeated = 1;
+                }
+
+                if(!prevCell->m_oValue.IsInit())
+                {
+                    if((!prevCell->m_oCol.IsInit()&& !pCell->m_oCol.IsInit())
+                        ||(prevCell->m_oCol.IsInit()&& pCell->m_oCol.IsInit() && (prevCell->m_oCol.get() + prevCell->m_oRepeated.get()) == pCell->m_oCol.get()))
+                    {
+                        if((!prevCell->m_oStyle.IsInit() && !pCell->m_oStyle.IsInit())
+                            || (prevCell->m_oStyle.IsInit() && pCell->m_oStyle.IsInit() && prevCell->m_oStyle.get() == pCell->m_oStyle.get()))
+                        {
+                            prevCell->m_oRepeated = prevCell->m_oRepeated.get() + 1;
+                            return true;
+                        }
+                    }
+                }
+                if(prevCell->m_oRepeated.get() == 1)
+                    prevCell->m_oRepeated.reset();
+            }
+            return false;
+        }
 		EElementType CRow::getType () const
 		{
 			return et_x_Row;
@@ -4142,32 +4148,10 @@ namespace OOX
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(reader);
                 //проверяем можно ли сжать пустые строки
-                if(pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oRepeated.IsInit() && !m_arrItems.empty())
-                {
-                    auto prevRow = m_arrItems.back();
-                    if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
-                            && pRow->m_arrItems.back()->m_oRepeated.get() ==  prevRow->m_arrItems.back()->m_oRepeated.get())
-                    {
-                        if(!prevRow->m_oRepeated.IsInit())
-                            prevRow->m_oRepeated = 1;
-                        if(prevRow->m_oR->GetValue() + prevRow->m_oRepeated.get() == pRow->m_oR->GetValue() && prevRow->m_oHt == pRow->m_oHt)
-                        {
-                            auto nullvalue = 0;
-                            auto pcell = pRow->m_arrItems.back();
-                            auto prevCell = prevRow->m_arrItems.back();
-                            if(pcell->m_oStyle.get_value_or(nullvalue) == prevCell->m_oStyle.get_value_or(nullvalue)
-                                    && pcell->m_oCol.get_value_or(nullvalue) == prevCell->m_oCol.get_value_or(nullvalue))
-                            {
-                                prevRow->m_oRepeated = prevRow->m_oRepeated.get() + 1;
-                                delete pRow;
-                                continue;
-                            }
-                        }
-                        if(prevRow->m_oRepeated.get() == 1)
-                            prevRow->m_oRepeated.reset();
-                    }
-                }
-                m_arrItems.push_back(pRow);
+                if(!compressRow(pRow))
+                    m_arrItems.push_back(pRow);
+                else
+                    delete pRow;
             }
             if(SharedFormulasRef::sharedRefsLocations)
                 SharedFormulasRef::sharedRefsLocations.reset();
@@ -4186,6 +4170,38 @@ namespace OOX
 
 			return objectPtr;
 		}
+    bool CSheetData::compressRow(CRow* pRow)
+    {
+        if(pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oRepeated.IsInit() && !m_arrItems.empty())
+        {
+            auto prevRow = m_arrItems.back();
+            if((!prevRow->m_oS.IsInit() && !pRow->m_oS.IsInit()) || (prevRow->m_oS.IsInit() && pRow->m_oS.IsInit()
+                && prevRow->m_oS->GetValue() == pRow->m_oS->GetValue()))
+            {
+                if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
+                        && pRow->m_arrItems.back()->m_oRepeated.get() ==  prevRow->m_arrItems.back()->m_oRepeated.get())
+                {
+                    if(!prevRow->m_oRepeated.IsInit())
+                        prevRow->m_oRepeated = 1;
+                    if(prevRow->m_oR->GetValue() + prevRow->m_oRepeated.get() == pRow->m_oR->GetValue() && prevRow->m_oHt == pRow->m_oHt)
+                    {
+                        auto nullvalue = 0;
+                        auto pcell = pRow->m_arrItems.back();
+                        auto prevCell = prevRow->m_arrItems.back();
+                        if(pcell->m_oStyle.get_value_or(nullvalue) == prevCell->m_oStyle.get_value_or(nullvalue)
+                                && pcell->m_oCol.get_value_or(nullvalue) == prevCell->m_oCol.get_value_or(nullvalue))
+                        {
+                            prevRow->m_oRepeated = prevRow->m_oRepeated.get() + 1;
+                            return true;
+                        }
+                    }
+                    if(prevRow->m_oRepeated.get() == 1)
+                        prevRow->m_oRepeated.reset();
+                }
+            }
+        }
+        return false;
+    }
 		EElementType CSheetData::getType () const
 		{
 			return et_x_SheetData;

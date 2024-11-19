@@ -312,6 +312,7 @@ namespace OOX
             void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
+            bool compressCell(CCell* pCell);
 
 		public:
 			nullable<SimpleTypes::COnOff>					m_oCollapsed;
@@ -363,8 +364,8 @@ namespace OOX
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter, bool bLastRow = false);
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            bool compressRow(CRow* pRow);
 
 	// spreadsheets 2003
 

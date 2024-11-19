@@ -34,7 +34,7 @@
 
 #include <unordered_map>
 
-namespace NSHtmlRenderer
+namespace NSHtmlRenderer2
 {
 
 unsigned int PUNCTUATION_FLAG_BASE               = 0x0001;

@@ -32,6 +32,8 @@
 #ifndef _HTMLTEXT_H
 #define _HTMLTEXT_H
 
+#include "Common3.h"
+
 #include <vector>
 
 namespace NSHtmlRenderer2
@@ -43,6 +45,19 @@ struct CHPos
 	int nLine = -1;
 	int nWord = -1;
 	int nChar = -1;
+
+	void Reset()
+	{
+		nPage = -1;
+		nLine = -1;
+		nWord = -1;
+		nChar = -1;
+	}
+
+	bool operator ==(const CHPos& oPos) const
+	{
+		return nPage == oPos.nPage && nLine == oPos.nLine && nWord == oPos.nWord && nChar == oPos.nChar;
+	}
 };
 
 struct CHSelect
@@ -50,6 +65,13 @@ struct CHSelect
 	bool bIsSelection = false;
 	CHPos oPos1;
 	CHPos oPos2;
+
+	void Reset()
+	{
+		bIsSelection = false;
+		oPos1.Reset();
+		oPos2.Reset();
+	}
 };
 
 struct CHChar
@@ -64,6 +86,11 @@ struct CHWord
 	double m_dX1, m_dX2;
 
 	std::vector<CHChar*> m_arrChars;
+
+	int GetChar(int nIndex)
+	{
+		return m_arrChars[nIndex]->nUnicode;
+	}
 };
 
 struct CHLine
@@ -88,9 +115,17 @@ public:
 	CHText(unsigned int nPages) : m_arrPages(nPages, NULL) {}
 
 public:
-	void GetPage(unsigned int nPageIndex);
+	CHWord* GetWord(int nPage, int nLine, int nWord)
+	{
+		return m_arrPages[nPage]->m_arrLines[nLine]->m_arrWords[nWord];
+	}
+	CHLine* GetLine(int nPage, int nLine)
+	{
+		return m_arrPages[nPage]->m_arrLines[nLine];
+	}
 
-	CHPos GetNearestPos(unsigned int nPageIndex, double dX, double dY, bool bExcludeSpaces = false)
+	// TODO Не горизонтальная линия
+	CHPos GetNearestPos(int nPageIndex, double dX, double dY, bool bExcludeSpaces = false)
 	{
 		CHPos oRes;
 		oRes.nPage = nPageIndex;
@@ -124,7 +159,7 @@ public:
 								else
 								{
 									oRes.nWord = iWord - 1;
-									oRes.nChar = pLine->m_arrWords[iWord - 1]->m_arrChars.size();
+									oRes.nChar = pLine->m_arrWords[iWord - 1]->m_arrChars.size() - 1;
 								}
 								return oRes;
 							}
@@ -172,7 +207,7 @@ public:
 									else
 									{
 										oRes.nWord = iWord - 1;
-										oRes.nChar = pLine->m_arrWords[iWord - 1]->m_arrChars.size();
+										oRes.nChar = pLine->m_arrWords[iWord - 1]->m_arrChars.size() - 1;
 									}
 									break;
 								}
@@ -203,7 +238,43 @@ public:
 
 		return oRes;
 	}
-	void SelectWholeWord(unsigned int nPageIndex, double dX, double dY)
+
+	void RemoveSelection()
+	{
+		m_oSelect.Reset();
+	}
+	bool IsSelectionUse()
+	{
+		return !(m_oSelect.oPos1 == m_oSelect.oPos2);
+	}
+	void OnMouseDown(int nPageIndex, double dX, double dY)
+	{
+		CHPos oNearesPos = GetNearestPos(nPageIndex, dX, dY);
+		if (oNearesPos.nChar < 0)
+			return;
+
+		m_oSelect.bIsSelection = true;
+		m_oSelect.oPos1.nPage = nPageIndex;
+		m_oSelect.oPos2.nPage = nPageIndex;
+		m_oSelect.oPos1.nLine = oNearesPos.nLine;
+		m_oSelect.oPos2.nLine = oNearesPos.nLine;
+		m_oSelect.oPos1.nWord = oNearesPos.nWord;
+		m_oSelect.oPos2.nWord = oNearesPos.nWord;
+		m_oSelect.oPos1.nChar = oNearesPos.nChar;
+		m_oSelect.oPos2.nChar = oNearesPos.nChar;
+	}
+	void OnMouseMove(int nPageIndex, double dX, double dY)
+	{
+		if (!m_oSelect.bIsSelection)
+			return;
+
+		CHPos oNearesPos = GetNearestPos(nPageIndex, dX, dY);
+		if (oNearesPos.nChar < 0)
+			return;
+
+		m_oSelect.oPos2 = { nPageIndex, oNearesPos.nLine, oNearesPos.nWord, oNearesPos.nChar};
+	}
+	void SelectWholeWord(int nPageIndex, double dX, double dY)
 	{
 		CHPos oNearesPos = GetNearestPos(nPageIndex, dX, dY, true);
 		if (oNearesPos.nChar < 0)
@@ -217,12 +288,73 @@ public:
 		m_oSelect.oPos1.nWord = oNearesPos.nWord;
 		m_oSelect.oPos2.nWord = oNearesPos.nWord;
 
-		CHWord* pWord = m_arrPages[nPageIndex]->m_arrLines[oNearesPos.nLine]->m_arrWords[oNearesPos.nWord];
-		bool bIsOnSpace = pWord->m_arrChars[oNearesPos.nChar]->nUnicode == 32;
-		bool bIsOnPuctuation = false;
+		CHWord* pWord = GetWord(nPageIndex, oNearesPos.nLine, oNearesPos.nWord);
+		int nUChar = pWord->GetChar(oNearesPos.nChar);
+		bool bIsOnSpace = nUChar == 32;
+		bool bIsOnPuctuation = isPuctuation(nUChar);
+
+		if (bIsOnPuctuation)
+			m_oSelect.oPos1.nChar = oNearesPos.nChar;
+		else
+		{
+			m_oSelect.oPos1.nChar = 0;
+			for (int i = oNearesPos.nChar - 1; i >= 0; --i)
+			{
+				nUChar = pWord->GetChar(i);
+				if (nUChar == 32 || isPuctuation(nUChar))
+				{
+					m_oSelect.oPos1.nChar = i + 1;
+					break;
+				}
+			}
+		}
+
+		if (bIsOnSpace)
+			m_oSelect.oPos2.nChar = oNearesPos.nChar;
+		else if (bIsOnPuctuation)
+			m_oSelect.oPos2.nChar = oNearesPos.nChar + 1;
+		else
+		{
+			m_oSelect.oPos2.nChar = pWord->m_arrChars.size();
+			for (int i = oNearesPos.nChar + 1; i < pWord->m_arrChars.size(); ++i)
+			{
+				nUChar = pWord->GetChar(i);
+				if (nUChar == 32 || isPuctuation(nUChar))
+				{
+					m_oSelect.oPos2.nChar = i;
+					break;
+				}
+			}
+		}
 	}
-	CHSelect SelectWholeRow(unsigned int nPageIndex, double dX, double dY);
-	CHSelect SelectWholePage(unsigned int nPageIndex);
+	void SelectWholeRow(int nPageIndex, double dX, double dY)
+	{
+		CHPos oNearesPos = GetNearestPos(nPageIndex, dX, dY, true);
+		if (oNearesPos.nChar < 0)
+			return;
+
+		m_oSelect.bIsSelection = true;
+		m_oSelect.oPos1.nPage = nPageIndex;
+		m_oSelect.oPos2.nPage = nPageIndex;
+		m_oSelect.oPos1.nLine = oNearesPos.nLine;
+		m_oSelect.oPos2.nLine = oNearesPos.nLine;
+		m_oSelect.oPos1.nWord = 0;
+		m_oSelect.oPos2.nWord = GetLine(nPageIndex, oNearesPos.nLine)->m_arrWords.size() - 1;
+		m_oSelect.oPos1.nChar = 0;
+		m_oSelect.oPos2.nChar = GetWord(nPageIndex, oNearesPos.nLine, m_oSelect.oPos2.nWord)->m_arrChars.size();
+	}
+	void SelectWholePage(int nPageIndex)
+	{
+		m_oSelect.bIsSelection = true;
+		m_oSelect.oPos1.nPage = nPageIndex;
+		m_oSelect.oPos2.nPage = nPageIndex;
+		m_oSelect.oPos1.nLine = 0;
+		m_oSelect.oPos2.nLine = m_arrPages[nPageIndex]->m_arrLines.size() - 1;
+		m_oSelect.oPos1.nWord = 0;
+		m_oSelect.oPos2.nWord = GetLine(nPageIndex, m_oSelect.oPos2.nLine)->m_arrWords.size() - 1;
+		m_oSelect.oPos1.nChar = 0;
+		m_oSelect.oPos2.nChar = GetWord(nPageIndex, m_oSelect.oPos2.nLine, m_oSelect.oPos2.nWord)->m_arrChars.size();
+	}
 
 private:
 	CHSelect m_oSelect;

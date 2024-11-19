@@ -8665,6 +8665,18 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
 	}
+	else if (c_oSerParType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
+	else if (c_oSerParType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

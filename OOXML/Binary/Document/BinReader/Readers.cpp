@@ -6046,6 +6046,18 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}	
+	else if (c_oSer_OMathContentType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
+	else if (c_oSer_OMathContentType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8665,13 +8677,13 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
 	}
-	else if (c_oSerParType::PermStart == type)
+	else if (c_oSerDocTableType::PermStart == type)
 	{
 		OOX::Logic::CPermStart oPerm;
 		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
 		pCStringWriter->WriteString(oPerm.toXML());
 	}
-	else if (c_oSerParType::PermEnd == type)
+	else if (c_oSerDocTableType::PermEnd == type)
 	{
 		OOX::Logic::CPermEnd oPerm;
 		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
@@ -8749,6 +8761,18 @@ int Binary_DocumentTableReader::ReadRowContent(BYTE type, long length, void* poR
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if (c_oSerDocTableType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
+	else if (c_oSerDocTableType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

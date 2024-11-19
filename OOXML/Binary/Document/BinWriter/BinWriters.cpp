@@ -3606,7 +3606,17 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 				Write(static_cast<OOX::Logic::CDocParts*>(item));
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}break;
-		default:
+			case OOX::et_w_permStart:
+			{
+				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+				WritePermission(pPermStart);
+			}break;
+			case OOX::et_w_permEnd:
+			{
+				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+				WritePermission(pPermEnd);
+			}break;
+			default:
 			break;
 		}
 	}

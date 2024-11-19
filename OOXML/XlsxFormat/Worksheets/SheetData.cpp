@@ -4172,18 +4172,25 @@ namespace OOX
 		}
     bool CSheetData::compressRow(CRow* pRow)
     {
-        if(pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oRepeated.IsInit() && !m_arrItems.empty())
+        if((pRow->m_arrItems.empty() || (pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oRepeated.IsInit())) && !m_arrItems.empty())
         {
             auto prevRow = m_arrItems.back();
             if((!prevRow->m_oS.IsInit() && !pRow->m_oS.IsInit()) || (prevRow->m_oS.IsInit() && pRow->m_oS.IsInit()
                 && prevRow->m_oS->GetValue() == pRow->m_oS->GetValue()))
             {
-                if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
-                        && pRow->m_arrItems.back()->m_oRepeated.get() ==  prevRow->m_arrItems.back()->m_oRepeated.get())
+                if(!prevRow->m_oRepeated.IsInit())
+                    prevRow->m_oRepeated = 1;
+                if(prevRow->m_oR->GetValue() + prevRow->m_oRepeated.get() == pRow->m_oR->GetValue() && prevRow->m_oHt == pRow->m_oHt)
                 {
-                    if(!prevRow->m_oRepeated.IsInit())
-                        prevRow->m_oRepeated = 1;
-                    if(prevRow->m_oR->GetValue() + prevRow->m_oRepeated.get() == pRow->m_oR->GetValue() && prevRow->m_oHt == pRow->m_oHt)
+                    //случай с пустыми строками
+                    if(prevRow->m_arrItems.empty() && pRow->m_arrItems.empty())
+                    {
+                        prevRow->m_oRepeated = prevRow->m_oRepeated.get() + 1;
+                        return true;
+                    }
+                    //случай со строками заполненными однотипными сжатыми клетками
+                    if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
+                            && pRow->m_arrItems.back()->m_oRepeated.get() ==  prevRow->m_arrItems.back()->m_oRepeated.get())
                     {
                         auto nullvalue = 0;
                         auto pcell = pRow->m_arrItems.back();
@@ -4195,9 +4202,9 @@ namespace OOX
                             return true;
                         }
                     }
-                    if(prevRow->m_oRepeated.get() == 1)
-                        prevRow->m_oRepeated.reset();
                 }
+                if(prevRow->m_oRepeated.get() == 1)
+                    prevRow->m_oRepeated.reset();
             }
         }
         return false;

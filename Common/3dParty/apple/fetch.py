@@ -40,12 +40,14 @@ if not base.is_dir("libetonyek"):
 
     base.replaceInFile("./libetonyek/src/lib/IWORKTable.cpp", "is_tree_valid", "valid_tree")
 
-base_gperf_args = ["--compare-strncmp", "--enum", "--null-strings", "--readonly-tables", "--language", "C++"]
-base_gperf_files = ["IWORKToken.gperf", "KEY1Token.gperf", "KEY2Token.gperf", "NUM1Token.gperf", "PAG1Token.gperf"]
+if len(sys.argv) > 1 and "true" == sys.argv[1].lower():
+    base_gperf_args = ["--compare-strncmp", "--enum", "--null-strings", "--readonly-tables", "--language", "C++"]
+    base_gperf_files = ["IWORKToken.gperf", "KEY1Token.gperf", "KEY2Token.gperf", "NUM1Token.gperf", "PAG1Token.gperf"]
 
-for file in base_gperf_files:
-    base.cmd_in_dir("./libetonyek/src/lib", "gperf", base_gperf_args + [file, "--output-file", file[0:file.find(".")] + ".inc"])
-
+    for file in base_gperf_files:
+        base.cmd_in_dir("./libetonyek/src/lib", "gperf", base_gperf_args + [file, "--output-file", file[0:file.find(".")] + ".inc"])
+else:
+    base.copy_dir_content("./headers", "./libetonyek/src/lib")
 
 
 

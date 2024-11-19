@@ -7678,7 +7678,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 	int nCurPos			= 0;
 	int nCurRowIndex	= 0;
 
-	for(size_t i = 0; i < content.size(); ++i)
+	for (size_t i = 0; i < content.size(); ++i)
 	{
 		OOX::WritingElement* item = content[i];
 
@@ -7753,6 +7753,17 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 			WriteMoveRangeEnd(*pMoveToRangeEnd);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
+		else if (OOX::et_w_permStart == item->getType())
+		{
+			OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+			WritePermission(pPermStart);
+		}
+		else if (OOX::et_w_permEnd == item->getType())
+		{
+			OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+			WritePermission(pPermEnd);
+		}
+
 	}
 }
 void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)

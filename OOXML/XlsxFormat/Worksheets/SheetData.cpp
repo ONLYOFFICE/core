@@ -4172,7 +4172,7 @@ namespace OOX
                 reader->SkipRecord(false);
             else
                 return;
-            while (reader->getNextRecordType() != XLSB::rt_EndSheetData)
+            while (reader->getNextRecordType() == XLSB::rt_ACBegin || reader->getNextRecordType() == XLSB::rt_RowHdr)
             {
                 CRow *pRow = new CRow(m_pMainDocument);
                 pRow->fromBin(reader);

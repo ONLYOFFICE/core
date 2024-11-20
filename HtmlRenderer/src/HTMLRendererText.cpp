@@ -85,7 +85,7 @@ namespace NSHtmlRenderer
 
 			if (sizeof(wchar_t) == 2)
 			{
-				for (int nIndex = 0, nGlyphIndex = 0; nIndex < nLen; ++nIndex, ++nGlyphIndex)
+				for (int nIndex = 0; nIndex < nLen; ++nIndex)
 				{
 					int code = (int)pWchars[nIndex];
 					if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < nLen)
@@ -99,10 +99,8 @@ namespace NSHtmlRenderer
 			}
 			else
 			{
-				for ( int nIndex = 0; nIndex < nLen; ++nIndex )
-				{
+				for (int nIndex = 0; nIndex < nLen; ++nIndex)
 					m_pTempUnicodes[m_nTempUnicodesLen++] = (int)pWchars[nIndex];
-				}
 			}
 		}
 
@@ -116,7 +114,7 @@ namespace NSHtmlRenderer
 				bIsDumpFont = true;
 			}
 
-			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, this);
+			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, m_oInstalledFont.Size);
 		}
 	};
 
@@ -138,12 +136,9 @@ namespace NSHtmlRenderer
 		m_pInternal->m_oTransform.Reset();
 		m_pInternal->m_oLastTransform.Reset();
 
-		m_pInternal->m_oSmartText.NewPage();
-
 		if (!m_pInternal->m_bIsFontsInit)
 		{
 			m_pInternal->m_oSmartText.m_oFontManager.m_pFont = &m_pInternal->m_oFont;
-
 			m_pInternal->m_oSmartText.m_pFont = &m_pInternal->m_oFont;
 
 			m_pInternal->m_oSmartText.m_pTransform = &m_pInternal->m_oTransform;
@@ -168,10 +163,9 @@ namespace NSHtmlRenderer
 	BYTE* CHTMLRendererText::GetBuffer()
 	{
 		m_pInternal->m_oSmartText.ClosePage();
-		LONG lPos = m_pInternal->m_oPage.GetSize();
-		// len
+
 		m_pInternal->m_oPage.WriteLen();
-		// stat
+
 		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountParagraphs, 4);
 		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountWords, 8);
 		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountSymbols, 12);

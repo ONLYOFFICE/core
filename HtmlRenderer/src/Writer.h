@@ -39,6 +39,8 @@
 #include "Text.h"
 #include "Document.h"
 #include "../../DesktopEditor/fontengine/FontConverter.h"
+#include "FontManager.h"
+#include "../../Common/OfficeFileFormats.h"
 
 namespace NSHtmlRenderer
 {
@@ -1378,7 +1380,7 @@ namespace NSHtmlRenderer
 			if (NULL != pGids)
 				m_bIsGids = true;
 
-			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, this);
+			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, m_dCurrentFontSize);
 			return;
 		}
 

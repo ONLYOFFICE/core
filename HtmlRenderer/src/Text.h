@@ -32,70 +32,36 @@
 #ifndef _ASC_HTMLRENDERER_TEXT_H_
 #define _ASC_HTMLRENDERER_TEXT_H_
 
-#include "FontManager.h"
-#include "../../Common/OfficeFileFormats.h"
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
-// #include "Meta.h"
-
-#ifdef min
-#undef min
-#endif
-#include <algorithm>
 
 namespace NSHtmlRenderer
 {
-	class CHChar
+	struct CHChar
 	{
-	public:
-		int 	unicode;	// юникодное значение
-		int 	gid;		// индекс глифа в файле
-		double	x;			// сдвиг по baseline
-		double	width;		// ширина символа (сдвиг до след буквы)
-		double* matrix;		// матрица преобразования (!!! без сдвига)
+		int unicode; // юникодное значение
+		double x; // сдвиг по baseline
+		double width; // ширина символа (сдвиг до след буквы)
 
-	public:
-		CHChar()
-		{
-			unicode = 0;
-			gid = 0;
-			width = 0;
-			matrix = NULL;
-		}
-		CHChar(const CHChar& oSrc)
-		{
-			*this = oSrc;
-		}
+		CHChar() : unicode(0), x(0), width(0) {}
+		CHChar(const CHChar& oSrc) { *this = oSrc; }
 		CHChar& operator=(const CHChar& oSrc)
 		{
 			unicode	= oSrc.unicode;
-			gid		= oSrc.gid;
-			width	= oSrc.width;
-			matrix	= NULL;
-			if (NULL != oSrc.matrix)
-			{
-				matrix = new double[4];
-				memcpy(matrix, oSrc.matrix, 4 * sizeof(double));
-			}
+			x = oSrc.x;
+			width = oSrc.width;
 			return *this;
-		}
-		~CHChar()
-		{
-			RELEASEARRAYOBJECTS(matrix);
 		}
 
 		inline void Clear()
 		{
 			unicode = 0;
-			gid = 0;
+			x = 0;
 			width = 0;
-
-			RELEASEARRAYOBJECTS(matrix);
 		}
 	};
 
-	class CHLine
+	struct CHLine
 	{
-	public:
 		double m_dAscent;
 		double m_dDescent;
 		double m_dX;
@@ -124,20 +90,19 @@ namespace NSHtmlRenderer
 		double m_shx;
 		double m_shy;
 
-	public:
 		CHLine()
 		{
-			m_dAscent	= 0;
-			m_dDescent	= 0;
-			m_dX		= 0;
-			m_dY		= 0;
+			m_dAscent = 0;
+			m_dDescent = 0;
+			m_dX = 0;
+			m_dY = 0;
 
-			m_dK		= 0;
-			m_dB		= 0;
+			m_dK = 0;
+			m_dB = 0;
 			m_bIsConstX	= false;
 
-			m_ex		= 0;
-			m_ey		= 0;
+			m_ex = 0;
+			m_ey = 0;
 
 			m_lSizeChars = 1000;
 			m_lCharsTail = 0;
@@ -151,13 +116,13 @@ namespace NSHtmlRenderer
 		}
 		CHLine& operator=(const CHLine& oLine)
 		{
-			m_dAscent	= oLine.m_dAscent;
-			m_dDescent	= oLine.m_dDescent;
-			m_dX		= oLine.m_dX;
-			m_dY		= oLine.m_dY;
+			m_dAscent = oLine.m_dAscent;
+			m_dDescent = oLine.m_dDescent;
+			m_dX = oLine.m_dX;
+			m_dY = oLine.m_dY;
 
-			m_dK		= oLine.m_dK;
-			m_dB		= oLine.m_dB;
+			m_dK = oLine.m_dK;
+			m_dB = oLine.m_dB;
 
 			m_lSizeChars = oLine.m_lSizeChars;
 			m_lCharsTail = oLine.m_lCharsTail;
@@ -183,17 +148,17 @@ namespace NSHtmlRenderer
 
 		inline void Clear()
 		{
-			m_dAscent	= 0;
-			m_dDescent	= 0;
-			m_dX		= 0;
-			m_dY		= 0;
+			m_dAscent = 0;
+			m_dDescent = 0;
+			m_dX = 0;
+			m_dY = 0;
 
-			m_dK		= 0;
-			m_dB		= 0;
+			m_dK = 0;
+			m_dB = 0;
 			m_bIsConstX	= false;
 
-			m_ex		= 0;
-			m_ey		= 0;
+			m_ex = 0;
+			m_ey = 0;
 
 			m_lCharsTail = 0;
 
@@ -210,9 +175,7 @@ namespace NSHtmlRenderer
 			{
 				CHChar* pNews = new CHChar[2 * m_lSizeChars];
 				for (LONG i = 0; i < m_lSizeChars; ++i)
-				{
 					pNews[i] = m_pChars[i];
-				}
 
 				RELEASEARRAYOBJECTS(m_pChars);
 				m_pChars = pNews;
@@ -228,10 +191,7 @@ namespace NSHtmlRenderer
 
 		inline CHChar* GetTail()
 		{
-			if (0 == m_lCharsTail)
-				return NULL;
-
-			return &m_pChars[m_lCharsTail - 1];
+			return m_lCharsTail ? &m_pChars[m_lCharsTail - 1] : NULL;
 		}
 
 		inline LONG GetCountChars()
@@ -240,67 +200,22 @@ namespace NSHtmlRenderer
 		}
 	};
 
-	const BYTE g_lfHorizontal	= 0x01;
-	const BYTE g_lfWidth		= 0x04;
-
 	class CHFontInfo
 	{
 	public:
-		USHORT m_lAscent;
-		USHORT m_lDescent;
-		USHORT m_lLineHeight;
-		USHORT m_lUnitsPerEm;
+		int m_lAscent;
+		int m_lDescent;
+		int m_lUnitsPerEm;
 
 	public:
-		CHFontInfo()
-		{
-			m_lAscent		= 0;
-			m_lDescent		= 0;
-			m_lLineHeight	= 0;
-			m_lUnitsPerEm	= 0;
-		}
-
-		CHFontInfo(const CHFontInfo& oSrc)
-		{
-			m_lAscent		= oSrc.m_lAscent;
-			m_lDescent		= oSrc.m_lDescent;
-			m_lLineHeight	= oSrc.m_lLineHeight;
-			m_lUnitsPerEm	= oSrc.m_lUnitsPerEm;
-		}
+		CHFontInfo() : m_lAscent(0), m_lDescent(0), m_lUnitsPerEm(0) {}
+		CHFontInfo(const CHFontInfo& oSrc) : m_lAscent(oSrc.m_lAscent), m_lDescent(oSrc.m_lDescent), m_lUnitsPerEm(oSrc.m_lUnitsPerEm) {}
 
 		CHFontInfo& operator=(const CHFontInfo& oSrc)
 		{
-			m_lAscent		= oSrc.m_lAscent;
-			m_lDescent		= oSrc.m_lDescent;
-			m_lLineHeight	= oSrc.m_lLineHeight;
-			m_lUnitsPerEm	= oSrc.m_lUnitsPerEm;
-
-			return *this;
-		}
-	};
-
-	class CFontMapInfo
-	{
-	public:
-		std::wstring Path;
-		int FaceIndex;
-
-	public:
-		CFontMapInfo()
-		{
-			Path = L"";
-			FaceIndex = 0;
-		}
-		CFontMapInfo(const CFontMapInfo& oSrc)
-		{
-			Path = oSrc.Path;
-			FaceIndex = oSrc.FaceIndex;
-		}
-		CFontMapInfo& operator=(const CFontMapInfo& oSrc)
-		{
-			Path = oSrc.Path;
-			FaceIndex = oSrc.FaceIndex;
-
+			m_lAscent = oSrc.m_lAscent;
+			m_lDescent = oSrc.m_lDescent;
+			m_lUnitsPerEm = oSrc.m_lUnitsPerEm;
 			return *this;
 		}
 	};
@@ -310,9 +225,9 @@ namespace NSHtmlRenderer
 	private:
 		NSFonts::IFontManager*	m_pManager;
 	public:
-		CHFontInfo m_oCurrentInfo;
-		NSStructures::CFont*			m_pFont;
+		NSStructures::CFont* m_pFont;
 
+		CHFontInfo m_oCurrentInfo;
 		std::map<std::wstring, CHFontInfo> m_mapInfos;
 
 	public:
@@ -344,8 +259,7 @@ namespace NSHtmlRenderer
 			m_pManager->SetStringGID(bGid);
 		}
 
-	public:
-		inline void LoadCurrentFont(bool bIsAttack, int lFaceIndex = 0)
+		inline void LoadCurrentFont()
 		{
 			if (m_pFont->Path.empty())
 			{
@@ -353,16 +267,7 @@ namespace NSHtmlRenderer
 
 				std::map<std::wstring, CHFontInfo>::const_iterator pPair = m_mapInfos.find(sFind);
 				if (m_mapInfos.end() != pPair)
-				{
-					if (bIsAttack)
-					{
-						LoadFontByName(m_pFont->Name, m_pFont->Size, m_pFont->GetStyle());
-					}
-					else
-					{
-						m_oCurrentInfo = pPair->second;
-					}
-				}
+					LoadFontByName(m_pFont->Name, m_pFont->Size, m_pFont->GetStyle());
 				else
 				{
 					LoadFontByName(m_pFont->Name, m_pFont->Size, m_pFont->GetStyle());
@@ -373,19 +278,10 @@ namespace NSHtmlRenderer
 			{
 				std::map<std::wstring, CHFontInfo>::const_iterator pPair = m_mapInfos.find(m_pFont->Path);
 				if (m_mapInfos.end() != pPair)
-				{
-					if (bIsAttack)
-					{
-						LoadFontByFile(m_pFont->Path, m_pFont->Size, lFaceIndex);
-					}
-					else
-					{
-						m_oCurrentInfo = pPair->second;
-					}
-				}
+					LoadFontByFile(m_pFont->Path, m_pFont->Size);
 				else
 				{
-					LoadFontByFile(m_pFont->Path, m_pFont->Size, lFaceIndex);
+					LoadFontByFile(m_pFont->Path, m_pFont->Size);
 					m_mapInfos.insert(std::pair<std::wstring, CHFontInfo>(m_pFont->Path, m_oCurrentInfo));
 				}
 			}
@@ -393,13 +289,13 @@ namespace NSHtmlRenderer
 
 		inline void LoadFontByName(const std::wstring& strName, const double& dSize, const LONG& lStyle)
 		{
-			m_pManager->LoadFontByName(strName, dSize, lStyle, c_dDpi, c_dDpi);
+			m_pManager->LoadFontByName(strName, dSize, lStyle, 72.0, 72.0);
 			LoadFontMetrics();
 		}
 
-		inline void LoadFontByFile(const std::wstring& strPath, const double& dSize, const int& lFaceIndex)
+		inline void LoadFontByFile(const std::wstring& strPath, const double& dSize)
 		{
-			m_pManager->LoadFontFromFile(strPath, lFaceIndex, dSize, c_dDpi, c_dDpi);
+			m_pManager->LoadFontFromFile(strPath, 0, dSize, 72.0, 72.0);
 			LoadFontMetrics();
 		}
 
@@ -412,28 +308,23 @@ namespace NSHtmlRenderer
 			dBoxWidth	= 0;
 			dBoxHeight	= 0;
 
-			if (NULL == m_pManager)
+			if (!m_pManager)
 				return 0;
 
 			m_pManager->LoadString1(symbols, count, (float)x, (float)y);
 
 			TBBox _box  = m_pManager->MeasureString2();
 
-			dBoxX		= (double)(_box.fMinX);
-			dBoxY		= (double)(_box.fMinY);
-			dBoxWidth	= (double)(_box.fMaxX - _box.fMinX);
-			dBoxHeight	= (double)(_box.fMaxY - _box.fMinY);
+			double dPixToMM = 25.4 / 72.0;
+			dBoxX      = (double)(_box.fMinX) * dPixToMM;
+			dBoxY      = (double)(_box.fMinY) * dPixToMM;
+			dBoxWidth  = (double)(_box.fMaxX - _box.fMinX) * dPixToMM;
+			dBoxHeight = (double)(_box.fMaxY - _box.fMinY) * dPixToMM;
 
 			if (dBoxWidth < 0)
 				dBoxWidth = -dBoxWidth;
 			if (dBoxHeight < 0)
 				dBoxHeight = -dBoxHeight;
-
-			// переводим в миллиметры
-			dBoxX		*= c_dPixToMM;
-			dBoxY		*= c_dPixToMM;
-			dBoxWidth	*= c_dPixToMM;
-			dBoxHeight	*= c_dPixToMM;
 
 			return dBoxWidth;
 		}
@@ -444,22 +335,18 @@ namespace NSHtmlRenderer
 			m_pManager->AfterLoad();
 			int lA = m_pManager->GetAscender();
 			int lD = m_pManager->GetDescender();
-			int lL = m_pManager->GetLineHeight();
 			int lU = m_pManager->GetUnitsPerEm();
 
 			if (lA < 0)
 				lA = -lA;
 			if (lD < 0)
 				lD = -lD;
-			if (lL < 0)
-				lL = -lL;
 			if (lU < 0)
 				lU = -lU;
 
-			m_oCurrentInfo.m_lAscent = (USHORT)(lA);
-			m_oCurrentInfo.m_lDescent = (USHORT)(lD);
-			m_oCurrentInfo.m_lLineHeight = (USHORT)(lL);
-			m_oCurrentInfo.m_lUnitsPerEm = (USHORT)(lU);
+			m_oCurrentInfo.m_lAscent = lA;
+			m_oCurrentInfo.m_lDescent = lD;
+			m_oCurrentInfo.m_lUnitsPerEm = lU;
 		}
 	};
 
@@ -470,10 +357,10 @@ namespace NSHtmlRenderer
 
 		CHLine m_oLine;
 
-		NSStructures::CFont*	m_pFont;
+		NSStructures::CFont* m_pFont;
 
-		Aggplus::CMatrix*		m_pTransform;
-		Aggplus::CMatrix*		m_pLastTransform;
+		Aggplus::CMatrix* m_pTransform;
+		Aggplus::CMatrix* m_pLastTransform;
 
 		NSWasm::CData* m_pPageMeta;
 
@@ -515,9 +402,8 @@ namespace NSHtmlRenderer
 		}
 
 	public:
-		template<typename T>
 		void CommandText(const int* pUnicodes, const int* pGids, const int& nCount,
-						 const double& x, const double& y, const double& width, const double& height, bool bIsDumpFont, T writer)
+						 const double& x, const double& y, const double& width, const double& height, bool bIsDumpFont, double dCurrentFontSize)
 		{
 			// 1) сначала определяем точку отсчета и направление baseline
 			double _x1 = x;
@@ -549,7 +435,7 @@ namespace NSHtmlRenderer
 
 			bool bIsNewLine = true;
 
-			if (0 != nCountChars)
+			if (nCountChars)
 			{
 				if (_isConstX && m_oLine.m_bIsConstX && fabs(_b - m_oLine.m_dB) < 0.001)
 					bIsNewLine = false;
@@ -557,14 +443,13 @@ namespace NSHtmlRenderer
 					bIsNewLine = false;
 			}
 
-			if (bIsNewLine && (0 != nCountChars))
+			if (bIsNewLine && nCountChars)
 			{
 				// не совпала baseline. поэтому просто скидываем линию в поток
 				DumpLine();
 			}
 
 			// теперь нужно определить сдвиг по baseline относительно destination точки
-			nCountChars = m_oLine.GetCountChars();
 			double dOffsetX = 0;
 			if (0 == nCountChars)
 			{
@@ -587,7 +472,7 @@ namespace NSHtmlRenderer
 				double sy = _y1 - m_oLine.m_dEndY;
 				double len = sqrt(sx*sx + sy*sy);
 
-				if (sx*m_oLine.m_ex >= 0 && sy*m_oLine.m_ey >= 0)
+				if (sx * m_oLine.m_ex >= 0 && sy * m_oLine.m_ey >= 0)
 				{
 					// продолжаем линию
 					dOffsetX = len;
@@ -601,7 +486,6 @@ namespace NSHtmlRenderer
 						pSpaceChar->x = pLastChar->width;
 						pSpaceChar->width = dOffsetX - pLastChar->width;
 						pSpaceChar->unicode = 0xFFFF;
-						pSpaceChar->gid = 0xFFFF;
 						dOffsetX -= pLastChar->width;
 					}
 				}
@@ -629,11 +513,10 @@ namespace NSHtmlRenderer
 			}
 
 			// смотрим, совпадает ли главная часть матрицы.
-			bool bIsTransform = !IsEqualMain(m_pLastTransform, m_pTransform);
+			bool bIsTransform = !Aggplus::CMatrix::IsEqual(m_pLastTransform, m_pTransform, 0.001, true);
 			if (bIsTransform)
 				bIsDumpFont = true;
 
-			double _dumpSize = writer->m_dCurrentFontSize;
 			double _dumpMtx[4];
 			_dumpMtx[0] = m_pTransform->sx();
 			_dumpMtx[1] = m_pTransform->shy();
@@ -642,10 +525,8 @@ namespace NSHtmlRenderer
 
 			double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
 
-			if ((_dumpSize < 0.1 && dTextScale > 10) || (_dumpSize > 10 && dTextScale < 0.1))
+			if ((dCurrentFontSize < 0.1 && dTextScale > 10) || (dCurrentFontSize > 10 && dTextScale < 0.1))
 			{
-				_dumpSize *= dTextScale;
-
 				_dumpMtx[0] /= dTextScale;
 				_dumpMtx[1] /= dTextScale;
 				_dumpMtx[2] /= dTextScale;
@@ -665,16 +546,8 @@ namespace NSHtmlRenderer
 
 			// все, baseline установлен. теперь просто продолжаем линию
 			LONG lTextLen = nCount;
-			bool bIsLoadFontAttack = true;
-
-			// плохие значения приходят из пдф
-			/*
-			if (1 == lTextLen && 0 <= width)
-				bIsLoadFontAttack = false;
-			*/
-
 			if (bIsDumpFont)
-				m_oFontManager.LoadCurrentFont(bIsLoadFontAttack);
+				m_oFontManager.LoadCurrentFont();
 
 			double dKoef = m_oFontManager.m_pFont->Size * 25.4 / (72 * m_oFontManager.m_oCurrentInfo.m_lUnitsPerEm);
 			double dKoefMetr = dAbsVec;
@@ -686,63 +559,56 @@ namespace NSHtmlRenderer
 			if (m_oLine.m_dDescent < dDescender)
 				m_oLine.m_dDescent = dDescender;
 
-			if (!bIsLoadFontAttack)
+			const int* input = NULL;
+			if (NULL != pGids)
 			{
-				CHChar* pChar = m_oLine.AddTail();
-
-				pChar->unicode = pUnicodes[0];
-				pChar->gid = (NULL == pGids) ? 0xFFFF : pGids[0];
-				pChar->width = width;
-				pChar->x = dOffsetX;
+				input = pGids;
+				m_oFontManager.SetStringGID(TRUE);
 			}
 			else
 			{
-				double dPlusOffset = 0;
+				input = pUnicodes;
+				m_oFontManager.SetStringGID(FALSE);
+			}
 
-				const int* input = NULL;
-				if (NULL != pGids)
+			double dPlusOffset = 0;
+			double dBoxX = 0;
+			double dBoxY = 0;
+			double dBoxW = 0;
+			double dBoxH = 0;
+
+			double dPrevW = dOffsetX;
+			for (LONG lIndex = 0; lIndex < lTextLen; ++lIndex)
+			{
+				double dW = m_oFontManager.MeasureString((const unsigned int*)(input + lIndex), 1, 0, 0, dBoxX, dBoxY, dBoxW, dBoxH);
+
+				CHChar* pChar = m_oLine.AddTail();
+				pChar->unicode = pUnicodes[lIndex];
+
+				pChar->x = dPrevW;
+				if (lIndex != 0)
+					dPlusOffset += dPrevW;
+				dPrevW = dW;
+
+				pChar->width = dW * dAbsVec;
+
+				if (lIndex == (lTextLen - 1))
 				{
-					input = pGids;
-					m_oFontManager.SetStringGID(TRUE);
-				}
-				else
-				{
-					input = pUnicodes;
-					m_oFontManager.SetStringGID(FALSE);
-				}
-
-				double dBoxX = 0;
-				double dBoxY = 0;
-				double dBoxW = 0;
-				double dBoxH = 0;
-
-				double dPrevW = dOffsetX;
-				for (LONG lIndex = 0; lIndex < lTextLen; ++lIndex)
-				{
-					double dW = m_oFontManager.MeasureString((const unsigned int*)(input + lIndex), 1, 0, 0, dBoxX, dBoxY, dBoxW, dBoxH);
-
-					CHChar* pChar = m_oLine.AddTail();
-					pChar->unicode = pUnicodes[lIndex];
-					pChar->gid = (NULL == pGids) ? 0xFFFF : pGids[lIndex];
-
-					pChar->x = dPrevW;
-					if (lIndex != 0)
-						dPlusOffset += dPrevW;
-					dPrevW = dW;
-
-					pChar->width = dW * dAbsVec;
-
-					if (lIndex == (lTextLen - 1))
-					{
-						m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
-						m_oLine.m_dEndY += dPlusOffset * m_oLine.m_ey;
-					}
+					m_oLine.m_dEndX += dPlusOffset * m_oLine.m_ex;
+					m_oLine.m_dEndY += dPlusOffset * m_oLine.m_ey;
 				}
 			}
 		}
 
 		void DumpLine()
 		{
+			LONG nCount = m_oLine.GetCountChars();
+			if (!nCount)
+			{
+				m_oLine.Clear();
+				return;
+			}
+
 			if (m_oLine.m_bIsSetUpTransform)
 			{
 				// выставится трансформ!!!
@@ -750,17 +616,11 @@ namespace NSHtmlRenderer
 				m_pLastTransform->SetElements(m_oLine.m_sx, m_oLine.m_shy, m_oLine.m_shx, m_oLine.m_sy);
 			}
 
-			// скидываем линию в поток pMeta
-			BYTE mask = 0;
-			if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
-				mask |= g_lfHorizontal;
-
 			LONG lCountSpaces = 0;
 			LONG lCountSymbols = 0;
 			LONG lCountWords = 0;
 			bool bIsLastSymbol = false;
 
-			LONG nCount = m_oLine.GetCountChars();
 			for (LONG i = 0; i < nCount; ++i)
 			{
 				CHChar* pChar = &m_oLine.m_pChars[i];
@@ -784,28 +644,22 @@ namespace NSHtmlRenderer
 			if (bIsLastSymbol)
 				lCountWords++;
 
-			if (0 == nCount)
-			{
-				m_oLine.Clear();
-				return;
-			}
-
 			m_lCountParagraphs += 1;
 			m_lCountWords += lCountWords;
 			m_lCountSymbols += lCountSymbols;
 			m_lCountSpaces += lCountSpaces;
 
-			if (nCount > 1)
-				mask |= g_lfWidth;
-
+			// скидываем линию в поток pMeta
 			m_pPageMeta->AddSize(60);
-
-			m_pPageMeta->WriteBYTE(mask);
 
 			m_pPageMeta->WriteDouble(m_oLine.m_dX);
 			m_pPageMeta->WriteDouble(m_oLine.m_dY);
 
-			if ((mask & g_lfHorizontal) == 0)
+			bool bHorizontal = false;
+			if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
+				bHorizontal = true;
+			m_pPageMeta->WriteBYTE(bHorizontal ? 1 : 0);
+			if (bHorizontal)
 			{
 				m_pPageMeta->WriteDouble(m_oLine.m_ex);
 				m_pPageMeta->WriteDouble(m_oLine.m_ey);
@@ -814,46 +668,32 @@ namespace NSHtmlRenderer
 			m_pPageMeta->WriteDouble(m_oLine.m_dAscent);
 			m_pPageMeta->WriteDouble(m_oLine.m_dDescent);
 
-			LONG _position = 0;
-			if (nCount > 1)
-			{ // width
-				_position = m_pPageMeta->GetSize();
-				m_pPageMeta->AddInt(0);
-			}
+			// width
+			LONG _position = m_pPageMeta->GetSize();
+			m_pPageMeta->AddInt(0);
 
 			double dWidthLine = 0;
 			double dCurrentGlyphLineOffset = 0;
+			m_pPageMeta->AddSize(12 * nCount);
 			m_pPageMeta->AddInt(nCount);
+			CHChar* pChar = NULL;
 			for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
 			{
-				CHChar* pChar = &m_oLine.m_pChars[lIndexChar];
-
-				// смещение относительно предыдущей буквы (у всех, кроме первой)
-				// юникодное значение
-				// гид (если bIsGidExist == true)
-				// ширина буквы
-
-				m_pPageMeta->AddSize(20);
+				pChar = &m_oLine.m_pChars[lIndexChar];
 
 				if (lIndexChar)
+				{ // смещение относительно предыдущей буквы (у всех, кроме первой)
 					m_pPageMeta->WriteDouble(pChar->x);
-
-				m_pPageMeta->AddInt(pChar->unicode);
-				m_pPageMeta->WriteDouble(pChar->width);
-
-				if (lIndexChar != 0)
 					dCurrentGlyphLineOffset += pChar->x;
+				}
 
-				if (lIndexChar == (nCount - 1))
-					dWidthLine = dCurrentGlyphLineOffset + pChar->width;
+				m_pPageMeta->AddInt(pChar->unicode); // юникодное значение
+				m_pPageMeta->WriteDouble(pChar->width); // ширина буквы
 			}
 
-			if (nCount > 1)
-			{
-				int nWidthBuf = (int)(dWidthLine * 10000);
-				m_pPageMeta->AddInt(nWidthBuf, _position);
-			}
-
+			if (pChar)
+				dWidthLine = dCurrentGlyphLineOffset + pChar->width;
+			m_pPageMeta->AddInt(dWidthLine * 10000, _position);
 			m_oLine.Clear();
 		}
 	};

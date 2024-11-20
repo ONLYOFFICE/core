@@ -721,8 +721,7 @@ SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/src/resources/resources.cpp
 
 HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h \
-	$$CORE_ROOT_DIR/HtmlRenderer/src/Common3.h \
-	$$CORE_ROOT_DIR/HtmlRenderer/src/HtmlText.h
+	$$CORE_ROOT_DIR/HtmlRenderer/src/Text.h
 SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
 
 HEADERS += $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/drawingfile.h

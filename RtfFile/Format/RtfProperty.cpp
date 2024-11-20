@@ -1002,6 +1002,54 @@ std::wstring RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 		m_nValue = 0;
 
     std::wstring sShading;
+	if (PROP_DEF != m_nValue)
+	{
+		std::wstring sValue;
+		if (0 <= m_nValue && m_nValue <= 2)		sShading += L" w:val=\"clear\"";
+		else if (2 < m_nValue && m_nValue <= 7)	sShading += L" w:val=\"pct5\"";
+		else if (7 < m_nValue && m_nValue <= 11)	sShading += L" w:val=\"pct10\"";
+		else if (11 < m_nValue && m_nValue <= 13)	sShading += L" w:val=\"pct12\"";
+		else if (13 < m_nValue && m_nValue <= 17)	sShading += L" w:val=\"pct15\"";
+		else if (17 < m_nValue && m_nValue <= 22)	sShading += L" w:val=\"pct20\"";
+		else if (22 < m_nValue && m_nValue <= 27)	sShading += L" w:val=\"pct25\"";
+		else if (27 < m_nValue && m_nValue <= 32)	sShading += L" w:val=\"pct30\"";
+		else if (32 < m_nValue && m_nValue <= 36)	sShading += L" w:val=\"pct35\"";
+		else if (36 < m_nValue && m_nValue <= 38)	sShading += L" w:val=\"pct37\"";
+		else if (38 < m_nValue && m_nValue <= 42)	sShading += L" w:val=\"pct40\"";
+		else if (42 < m_nValue && m_nValue <= 47)	sShading += L" w:val=\"pct45\"";
+		else if (47 < m_nValue && m_nValue <= 52)	sShading += L" w:val=\"pct50\"";
+		else if (52 < m_nValue && m_nValue <= 57)	sShading += L" w:val=\"pct55\"";
+		else if (57 < m_nValue && m_nValue <= 61)	sShading += L" w:val=\"pct60\"";
+		else if (61 < m_nValue && m_nValue <= 63)	sShading += L" w:val=\"pct62\"";
+		else if (63 < m_nValue && m_nValue <= 70)	sShading += L" w:val=\"pct65\"";
+		else if (70 < m_nValue && m_nValue <= 80)	sShading += L" w:val=\"pct75\"";
+		else if (80 < m_nValue && m_nValue <= 86)	sShading += L" w:val=\"pct85\"";
+		else if (86 < m_nValue && m_nValue <= 88)	sShading += L" w:val=\"pct87\"";
+		else if (88 < m_nValue && m_nValue <= 92)	sShading += L" w:val=\"pct90\"";
+		else if (92 < m_nValue && m_nValue <= 97)	sShading += L" w:val=\"pct95\"";
+		else if (97 < m_nValue && m_nValue <= 100)	sShading += L" w:val=\"solid\"";
+	}
+	else
+	{
+		switch (m_eType)
+		{
+		case st_clshdrawnil:	sShading += L" w:val=\"nil\"";						break;
+		case st_chbghoriz:		sShading += L" w:val=\"thinHorzStripehorzStripe\"";	break;
+		case st_chbgvert:		sShading += L" w:val=\"thinVertStripe\"";			break;
+		case st_chbgfdiag:		sShading += L" w:val=\"thinReverseDiagStripe\"";	break;
+		case st_chbgbdiag:		sShading += L" w:val=\"thinDiagStripe\"";			break;
+		case st_chbgcross:		sShading += L" w:val=\"thinHorzCross\"";			break;
+		case st_chbgdcross:		sShading += L" w:val=\"thinDiagCross\"";			break;
+		case st_chbgdkhoriz:	sShading += L" w:val=\"horzStripe\"";				break;
+		case st_chbgdkvert:		sShading += L" w:val=\"vertStripe\"";				break;
+		case st_chbgdkfdiag:	sShading += L" w:val=\"reverseDiagStripe\"";		break;
+		case st_chbgdkbdiag:	sShading += L" w:val=\"diagStripe\"";				break;
+		case st_chbgdkcross:	sShading += L" w:val=\"horzCross\"";				break;
+		case st_chbgdkdcross:	sShading += L" w:val=\"diagCross\"";				break;
+		default:
+			break;
+		}
+	}
 	if( PROP_DEF != m_nForeColor )
 	{
 		RtfColor oForeColor;
@@ -1013,54 +1061,6 @@ std::wstring RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 		RtfColor oBackColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nBackColor, oBackColor ) )
             sShading += L" w:fill=\"" + oBackColor.RenderToOOX(oNewParam) + L"\"";
-	}
-	if( PROP_DEF != m_nValue )
-	{
-        std::wstring sValue;
-		if( 0 <= m_nValue &&  m_nValue <= 2 )		sShading += L" w:val=\"clear\"";
-		else if( 2 < m_nValue && m_nValue <= 7 )	sShading += L" w:val=\"pct5\"";
-		else if( 7 < m_nValue && m_nValue <= 11 )	sShading += L" w:val=\"pct10\"";
-		else if( 11 < m_nValue && m_nValue <= 13 )	sShading += L" w:val=\"pct12\"";
-		else if( 13 < m_nValue && m_nValue <= 17 )	sShading += L" w:val=\"pct15\"";
-		else if( 17 < m_nValue && m_nValue <= 22 )	sShading += L" w:val=\"pct20\"";
-		else if( 22 < m_nValue && m_nValue <= 27 )	sShading += L" w:val=\"pct25\"";
-		else if( 27 < m_nValue && m_nValue <= 32 )	sShading += L" w:val=\"pct30\"";
-		else if( 32 < m_nValue && m_nValue <= 36 )	sShading += L" w:val=\"pct35\"";
-		else if( 36 < m_nValue && m_nValue <= 38 )	sShading += L" w:val=\"pct37\"";
-		else if( 38 < m_nValue && m_nValue <= 42 )	sShading += L" w:val=\"pct40\"";
-		else if( 42 < m_nValue && m_nValue <= 47 )	sShading += L" w:val=\"pct45\"";
-		else if( 47 < m_nValue && m_nValue <= 52 )	sShading += L" w:val=\"pct50\"";
-		else if( 52 < m_nValue && m_nValue <= 57 )	sShading += L" w:val=\"pct55\"";
-		else if( 57 < m_nValue && m_nValue <= 61 )	sShading += L" w:val=\"pct60\"";
-		else if( 61 < m_nValue && m_nValue <= 63 )	sShading += L" w:val=\"pct62\"";
-		else if( 63 < m_nValue && m_nValue <= 70 )	sShading += L" w:val=\"pct65\"";
-		else if( 70 < m_nValue && m_nValue <= 80 )	sShading += L" w:val=\"pct75\"";
-		else if( 80 < m_nValue && m_nValue <= 86 )	sShading += L" w:val=\"pct85\"";
-		else if( 86 < m_nValue && m_nValue <= 88 )	sShading += L" w:val=\"pct87\"";
-		else if( 88 < m_nValue && m_nValue <= 92 )	sShading += L" w:val=\"pct90\"";
-		else if( 92 < m_nValue && m_nValue <= 97 )	sShading += L" w:val=\"pct95\"";
-		else if( 97 < m_nValue && m_nValue <= 100 )	sShading += L" w:val=\"solid\"";
-	}
-	else
-	{
-		switch( m_eType )
-		{
-			case st_clshdrawnil:	sShading += L" w:val=\"nil\"";						break;
-			case st_chbghoriz:		sShading += L" w:val=\"thinHorzStripehorzStripe\"";	break;
-			case st_chbgvert:		sShading += L" w:val=\"thinVertStripe\"";			break;
-			case st_chbgfdiag:		sShading += L" w:val=\"thinReverseDiagStripe\"";	break;
-			case st_chbgbdiag:		sShading += L" w:val=\"thinDiagStripe\"";			break;
-			case st_chbgcross:		sShading += L" w:val=\"thinHorzCross\"";			break;
-			case st_chbgdcross:		sShading += L" w:val=\"thinDiagCross\"";			break;
-			case st_chbgdkhoriz:	sShading += L" w:val=\"horzStripe\"";				break;
-			case st_chbgdkvert:		sShading += L" w:val=\"vertStripe\"";				break;
-			case st_chbgdkfdiag:	sShading += L" w:val=\"reverseDiagStripe\"";		break;
-			case st_chbgdkbdiag:	sShading += L" w:val=\"diagStripe\"";				break;
-			case st_chbgdkcross:	sShading += L" w:val=\"horzCross\"";				break;
-			case st_chbgdkdcross:	sShading += L" w:val=\"diagCross\"";				break;
-			default:
-				break;
-		}
 	}
     if( false == sShading.empty() )
 		sResult = L"<w:shd " + sShading + L"/>";
@@ -1077,7 +1077,7 @@ bool RtfBorder::operator==( const RtfBorder& oChar )
 }
 bool RtfBorder::IsValid()
 {
-	return bt_none != m_eType;
+	return PROP_DEF != m_eType;
 }
 int RtfBorder::GetType()
 {
@@ -1093,7 +1093,8 @@ void RtfBorder::SetDefaultOOX( )
 }
 void RtfBorder::SetDefault( )
 {
-	DEFAULT_PROPERTY_DEF( m_eType, bt_none )
+	DEFAULT_PROPERTY	(m_eType)
+	//DEFAULT_PROPERTY_DEF( m_eType, bt_none )
 	DEFAULT_PROPERTY	( m_nWidth )
 	DEFAULT_PROPERTY	( m_nSpace )
 	DEFAULT_PROPERTY	( m_nColor )
@@ -1108,7 +1109,7 @@ void RtfBorder::SetEmpty( )
 void RtfBorder::Merge( RtfBorder& oBorPr )
 {
 	//свойство должно быть как единое целое, поэтому если oBorPr задано, то переписыватся целиком
-	if ( bt_none != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
+	if (PROP_DEF != oBorPr.m_eType || PROP_DEF != oBorPr.m_nWidth || PROP_DEF != oBorPr.m_nSpace || PROP_DEF != oBorPr.m_nColor )
 	{
 		m_eType		= oBorPr.m_eType;
 		m_nWidth	= oBorPr.m_nWidth;
@@ -4260,10 +4261,11 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nWidth )
 	{
 		if( mu_Percent ==  m_eWidthUnit )
-            sResult += L"<w:tcW w:type=\"pct\" w:w=\"" + std::to_wstring(m_nWidth) + L"%\"/>";
+            sResult += L"<w:tcW w:w=\"" + std::to_wstring(m_nWidth) + L"%\" w:type=\"pct\"/>";
 		else if( mu_Twips ==  m_eWidthUnit )
-            sResult += L"<w:tcW w:type=\"dxa\" w:w=\"" + std::to_wstring(m_nWidth) + L"\"/>";
+            sResult += L"<w:tcW w:w=\"" + std::to_wstring(m_nWidth) + L"\" w:type=\"dxa\"/>";
 	}
+	RENDER_OOX_INT(m_nSpan, sResult, L"w:gridSpan");
 	RENDER_OOX_BOOL( m_bHideMark, sResult, L"w:hideMark" )
 
 	RenderParameter oNewParam = oRenderParameter;
@@ -4280,25 +4282,25 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		oNewParam.sValue = L"w:tr2bl";
 		sBorder +=  m_oBorderDiagonalRL.RenderToOOX(oNewParam);
 	}
+	if( true == m_oBorderTop.IsValid() )
+	{
+		oNewParam.sValue = L"w:top";
+		sBorder +=  m_oBorderTop.RenderToOOX(oNewParam);
+	}	
 	if( true == m_oBorderLeft.IsValid() )
 	{
 		oNewParam.sValue = L"w:left";
 		sBorder +=  m_oBorderLeft.RenderToOOX(oNewParam);
 	}
-	if( true == m_oBorderTop.IsValid() )
+	if( true == m_oBorderBottom.IsValid() )
 	{
-		oNewParam.sValue = L"w:top";
-		sBorder +=  m_oBorderTop.RenderToOOX(oNewParam);
+		oNewParam.sValue = L"w:bottom";
+		sBorder +=  m_oBorderBottom.RenderToOOX(oNewParam);
 	}
 	if( true == m_oBorderRight.IsValid() )
 	{
 		oNewParam.sValue = L"w:right";
 		sBorder +=  m_oBorderRight.RenderToOOX(oNewParam);
-	}
-	if( true == m_oBorderBottom.IsValid() )
-	{
-		oNewParam.sValue = L"w:bottom";
-		sBorder +=  m_oBorderBottom.RenderToOOX(oNewParam);
 	}
 	if( true == m_oBorderInsideH.IsValid() )
 	{
@@ -4346,8 +4348,6 @@ std::wstring RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		default:
 			break;
 	}
-
-	RENDER_OOX_INT( m_nSpan, sResult, L"w:gridSpan" );
 
     //std::wstring scnfStyle;
 	//RENDER_OOX_BOOL_ATTRIBUTE( m_bStyleFirstRow, scnfStyle, L"w:firstRow" )

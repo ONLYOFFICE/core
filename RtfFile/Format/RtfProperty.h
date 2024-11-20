@@ -304,7 +304,7 @@ class RtfBorder
 {
 public: 
 	enum _BorderType
-	{ 
+	{
 		bt_none,
 		bt_brdrs,			//brdrs	Single-thickness border.
 		bt_brdrth,			//brdrth	Double-thickness border.
@@ -335,8 +335,8 @@ public:
 		bt_brdrdashdotstr,	//brdrdashdotstr	Striped border.
 		bt_brdremboss,		//brdremboss	Embossed border.
 		bt_brdrengrave,		//brdrengrave	Engraved border.
-	}	m_eType;
-	
+	};
+	_INT32 m_eType;
 	_INT32 m_nWidth;
 	_INT32 m_nSpace;
 	_INT32 m_nColor;
@@ -425,17 +425,17 @@ public:
 	_INT32 m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
 
 	_INT32 m_bBold;			//b*	Bold.
-	_INT32 m_bCaps;			//caps*	All capitals.
+	_INT32 m_bCaps;				//caps*	All capitals.
 	_INT32 m_nScalex;			//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
 	_INT32 m_nCharStyle;		//csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
-	_INT32 m_nDown;			//dnN	Move down N half-points (default is 6).
-	_INT32 m_bEmbo;			//embo*	Emboss.
-	_INT32 m_nCharacterSpacing;//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
+	_INT32 m_nDown;				//dnN	Move down N half-points (default is 6).
+	_INT32 m_bEmbo;				//embo*	Emboss.
+	_INT32 m_nCharacterSpacing;	//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
 	_INT32 m_nFitText;			//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
-	_INT32 m_nFont;			//fN	Font number. N refers to an entry in the font table.
+	_INT32 m_nFont;				//fN	Font number. N refers to an entry in the font table.
 	_INT32 m_nFont2; 
 	_INT32 m_nFont3; 
-	_INT32 m_nFontSize;		//fsN	Font size in half-points (default is 24).
+	_INT32 m_nFontSize;			//fsN	Font size in half-points (default is 24).
 	_INT32 m_bItalic;			//i*	Italic.
 	_INT32 m_bImprint;			//impr*	Engrave (imprint).
 	_INT32 m_nKerning;			//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
@@ -875,10 +875,10 @@ public:
 	_INT32 m_nSpacingBottom;
 	_INT32 m_eSpacingBottomUnit;
 
-	_INT32				m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
-	_INT32				m_eWidthUnit;		//clftsWidthN	Units for \clwWidthN:
+	_INT32 m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
+	_INT32 m_eWidthUnit;		//clftsWidthN	Units for \clwWidthN:
 
-	_INT32				m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
+	_INT32 m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
 
 	RtfBorder m_oBorderDiagonalLR;
 	RtfBorder m_oBorderDiagonalRL;
@@ -890,7 +890,7 @@ public:
 	RtfBorder m_oBorderInsideV;
 
 	RtfShadingCell	m_oShading;
-	_INT32				m_nShadingPctFrom;
+	_INT32			m_nShadingPctFrom;
 
 	typedef enum{ ca_none, 
 					ca_Top,	//clvertalt	Text is top-aligned in cell (the default).

@@ -5,11 +5,11 @@ import os
 
 if not base.is_dir("glm"):
     base.cmd("git", ["clone", "https://github.com/g-truc/glm.git"])
-    base.cmd_in_dir("glm", "git", ["checkout", "33b4a621a697a305bc3a7610d290677b96beb181"])
+    base.cmd_in_dir("glm", "git", ["checkout", "33b4a621a697a305bc3a7610d290677b96beb181", "--quiet"])
 
 if not base.is_dir("mdds"):
     base.cmd("git", ["clone", "https://github.com/kohei-us/mdds.git"])
-    base.cmd_in_dir("mdds", "git", ["checkout", "0783158939c6ce4b0b1b89e345ab983ccb0f0ad0"])
+    base.cmd_in_dir("mdds", "git", ["checkout", "0783158939c6ce4b0b1b89e345ab983ccb0f0ad0"], "--quiet")
 
     #the linux code uses an implementation for c++ 17, so we just put this implementation
     if ("linux" == base.host_platform()):
@@ -17,7 +17,7 @@ if not base.is_dir("mdds"):
 
 if not base.is_dir("librevenge"):
     base.cmd("git", ["clone", "https://github.com/Distrotech/librevenge.git"])
-    base.cmd_in_dir("librevenge", "git", ["checkout", "becd044b519ab83893ad6398e3cbb499a7f0aaf4"])
+    base.cmd_in_dir("librevenge", "git", ["checkout", "becd044b519ab83893ad6398e3cbb499a7f0aaf4", "--quiet"])
 
     stat_windows = ""
     stat_windows += "#if !defined(S_ISREG) && defined(S_IFMT) && defined(S_IFREG)\n"
@@ -32,15 +32,22 @@ if not base.is_dir("librevenge"):
 
 if not base.is_dir("libodfgen"):
     base.cmd("git", ["clone", "https://github.com/Distrotech/libodfgen.git"])
-    base.cmd_in_dir("libodfgen", "git", ["checkout", "8ef8c171ebe3c5daebdce80ee422cf7bb96aa3bc"])
+    base.cmd_in_dir("libodfgen", "git", ["checkout", "8ef8c171ebe3c5daebdce80ee422cf7bb96aa3bc", "--quiet"])
 
 if not base.is_dir("libetonyek"):
     base.cmd("git", ["clone", "https://github.com/LibreOffice/libetonyek.git"])
-    base.cmd_in_dir("libetonyek", "git", ["checkout", "cb396b4a9453a457469b62a740d8fb933c9442c3"])
+    base.cmd_in_dir("libetonyek", "git", ["checkout", "cb396b4a9453a457469b62a740d8fb933c9442c3", "--quiet"])
 
     base.replaceInFile("./libetonyek/src/lib/IWORKTable.cpp", "is_tree_valid", "valid_tree")
 
-if len(sys.argv) > 1 and "true" == sys.argv[1].lower():
+cmd_args  = sys.argv[1:]
+use_gperf = False
+
+for arg in cmd_args:
+    if '--gperf' == arg:
+        use_gperf = True
+
+if use_gperf:
     base_gperf_args = ["--compare-strncmp", "--enum", "--null-strings", "--readonly-tables", "--language", "C++"]
     base_gperf_files = ["IWORKToken.gperf", "KEY1Token.gperf", "KEY2Token.gperf", "NUM1Token.gperf", "PAG1Token.gperf"]
 

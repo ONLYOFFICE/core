@@ -2627,6 +2627,10 @@ namespace OOX
 				if (strcmp("r", wsName) == 0)
 				{
 					m_oRef = oReader.GetTextA();
+                    std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
+                    XLS::CellRef cellref = XLS::CellRef(wstringRef);
+                    m_oCol = cellref.column;
+                    m_oRow = cellref.row;
 				}
 				else if (strcmp("ss:Formula", wsName) == 0)
 				{
@@ -3350,8 +3354,12 @@ namespace OOX
 					CCell *pCell = new CCell(m_pMainDocument);
 					if (pCell)
 					{
-						m_arrItems.push_back(pCell);
+						 //пытаемся сжать пустые клетки
 						pCell->fromXML(oReader);
+						if(!compressCell(pCell))
+							m_arrItems.push_back(pCell);
+						else
+							delete pCell;
 					}
 				}
 			}
@@ -3447,7 +3455,25 @@ namespace OOX
 			for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
 			{
 				ptr->m_arCELL.push_back((*it)->toBin(sharedFormulas));
-				it = m_arrItems.erase(it);
+                 if((*it)->m_oRepeated.IsInit())
+                    {
+                        auto pcell =*it;
+                        _INT32 cellTimes = pcell->m_oRepeated.get() - 1;
+                        _INT32 originalCol = 0;
+                        if(pcell->m_oCol.IsInit())
+                            originalCol = pcell->m_oCol.get();
+                        while(cellTimes > 0)
+                        {
+                            if(pcell->m_oCol.IsInit())
+                                pcell->m_oCol = pcell->m_oCol.get() + 1;
+                            ptr->m_arCELL.push_back(pcell->toBin(sharedFormulas));
+                            cellTimes--;
+                        }
+                        if(pcell->m_oCol.IsInit())
+                            pcell->m_oCol = originalCol;
+
+                    }
+                it++;
 			}
 
 			if(m_oCollapsed.IsInit() || m_oCustomFormat.IsInit() || m_oCustomHeight.IsInit() || m_oHidden.IsInit() || m_oHt.IsInit()
@@ -3942,8 +3968,11 @@ namespace OOX
 						CRow *pRow = new CRow(m_pMainDocument);
 						if (pRow)
 						{
-							m_arrItems.push_back(pRow);
 							pRow->fromXML(oReader);
+                            if(!compressRow(pRow))
+                                m_arrItems.push_back(pRow);
+                            else
+                                delete pRow;
 						}
 					}
 					else if (strcmp("Column", sName) == 0)
@@ -4165,6 +4194,21 @@ namespace OOX
 			for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
 			{
 				ptr->m_arParenthesis_CELLTABLE.push_back((*it)->toBin(fmlaStruct));
+                if((*it)->m_oRepeated.IsInit())
+                {
+                    auto prow = *it;
+                    _INT32 rowTimes = prow->m_oRepeated.get() - 1;
+                    while(rowTimes > 0)
+                    {
+                        if(prow->m_oR.IsInit())
+                            prow->m_oR = prow->m_oR->GetValue() + 1;
+                        if(!prow->m_arrItems.empty() && prow->m_arrItems.at(0)->m_oRow.IsInit())
+                            prow->m_arrItems.at(0)->m_oRow = prow->m_oR->GetValue();
+                        ptr->m_arParenthesis_CELLTABLE.push_back(prow->toBin(fmlaStruct));
+                        rowTimes--;
+                    }
+
+                }
 				it = m_arrItems.erase(it);
 			}
 

@@ -68,16 +68,6 @@ CFile.prototype.unlockPageNumForFontsLoader = function()
 	drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 };
 
-CFile.prototype.getOriginPage = function(originIndex)
-{
-	for (let i = 0; i < this.pages.length; ++i)
-	{
-		if (this.pages[i]["originIndex"] == originIndex)
-			return i;
-	}
-	return -1;
-};
-
 CFile.prototype["getPages"] = function()
 {
 	return this.pages;
@@ -236,18 +226,17 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let i = this.getOriginPage(pageIndex);
-	if (i < 0)
-		return null;
-	let page = this.pages[i];
-	if (!page || page.fonts.length > 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
+		return [];
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
-	let res = this._getGlyphs(pageIndex);
+	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	let ptr = this._getGlyphs(page.originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -256,14 +245,94 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts
-		res = null;
+		ptr.ptr = 0;
 		return null;
 	}
 
-	if (res && this.onUpdateStatistics)
-		this.onUpdateStatistics(res.info[0], res.info[1], res.info[2], res.info[3]);
+	let reader = ptr.getReader();
+	if (!reader) return [];
+	ptr.ptr = 0;
 
-	return res.result || null;
+	let nParagraphs = 0;
+	let nWords = 0;
+	let nSymbols = 0;
+	let nSpaces = 0;
+	let res = [];
+	while (reader.isValid())
+	{
+		nParagraphs++;
+
+		let oLine  = {};
+		oLine["X"] = reader.readDouble2();
+		oLine["Y"] = reader.readDouble2();
+		oLine["Ex"] = 1;
+		oLine["Ey"] = 0;
+		if (reader.readByte())
+		{
+			oLine["Ex"] = reader.readDouble2();
+			oLine["Ey"] = reader.readDouble2();
+		}
+		oLine["Ascent"]  = reader.readDouble2();
+		oLine["Descent"] = reader.readDouble2();
+		oLine["Width"]   = reader.readDouble2();
+		oLine["Words"]   = [];
+		let n = reader.readInt();
+		let oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false };
+		for (let i = 0; i < n; ++i)
+		{
+			let oChar = {};
+			if (i)
+				oChar["X"] = reader.readDouble2();
+			oChar["Char"]  = reader.readInt();
+			oChar["Width"] = reader.readDouble2();
+
+			if (oChar["Char"] == 0xFFFF || oChar["Char"] == ' ' || oChar["Char"] == '\t')
+			{
+				nSpaces++;
+				if (oWord["Chars"].length)
+				{
+					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
+						nWords++;
+					oLine["Words"].push(oWord);
+				}
+				oWord = { "Chars" : [oChar], "IsSpace" : true, "IsPunctuation" : false };
+			}
+			else if (this.isPunctuation && undefined != this.isPunctuation(oChar["Char"]))
+			{
+				nSymbols++;
+				if (oWord["Chars"].length)
+				{
+					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
+						nWords++;
+					oLine["Words"].push(oWord);
+				}
+				oWord = { "Chars" : [oChar], "IsSpace" : false, "IsPunctuation" : true };
+			}
+			else
+			{
+				nSymbols++;
+				if (oWord["IsSpace"] || oWord["IsPunctuation"])
+				{
+					oLine["Words"].push(oWord);
+					oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false };
+				}
+				oWord["Chars"].push(oChar);
+			}
+		}
+		if (oWord["Chars"].length)
+		{
+			if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
+				nWords++;
+			oLine["Words"].push(oWord);
+		}
+
+		res.push(oLine);
+	}
+
+	if (this.onUpdateStatistics)
+		this.onUpdateStatistics(nParagraphs, nWords, nSymbols, nSpaces);
+
+	return res;
 };
 CFile.prototype["destroyTextInfo"] = function()
 {
@@ -1386,18 +1455,17 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let i = this.getOriginPage(pageIndex);
-	if (i < 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
 		return null;
-	let page = this.pages[i];
-	if (!page || page.fonts.length > 0)
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
-	let ptr = this._getPixmap(pageIndex, width, height, backgroundColor);
+	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	let ptr = this._getPixmap(page.originIndex, width, height, backgroundColor);
 	this.unlockPageNumForFontsLoader();
 
 	if (page.fonts.length > 0)

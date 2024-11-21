@@ -1095,175 +1095,57 @@ int main(int argc, char* argv[])
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);
 		int i = 4;
+		nLength -= 4;
 
-		int nPathLength = READ_INT(pGlyphs + i);
-		i += 4;
-		std::cout << "TextRenderer: Length " << nLength << ", Paragraphs " << nPathLength << ", Words ";
-		nPathLength = READ_INT(pGlyphs + i);
-		i += 4;
-		std::cout << nPathLength << ", Symbols ";
-		nPathLength = READ_INT(pGlyphs + i);
-		i += 4;
-		std::cout << nPathLength << ", Spaces ";
-		nPathLength = READ_INT(pGlyphs + i);
-		i += 4;
-		std::cout << nPathLength << std::endl;
-
-		int nIndex = 0;
-		int nMask = 0;
 		while (i < nLength)
 		{
+			int nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << "Line X " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Y " << (double)nPathLength / 10000.0;
 			nPathLength = READ_BYTE(pGlyphs + i);
 			i += 1;
-			switch (nPathLength)
-			{
-			case 22: // ctBrushColor1
-			{
-				nPathLength = READ_BYTE(pGlyphs + i);
-				i += 1;
-				std::cout << "B " << nPathLength;
-				nPathLength = READ_BYTE(pGlyphs + i);
-				i += 1;
-				std::cout << " G " << nPathLength;
-				nPathLength = READ_BYTE(pGlyphs + i);
-				i += 1;
-				std::cout << " R " << nPathLength;
-				nPathLength = READ_BYTE(pGlyphs + i);
-				i += 1;
-				std::cout << " A " << nPathLength;
-				break;
-			}
-			case 32: // ctBrushChange
-			{
-				std::cout << "Brush change";
-				break;
-			}
-			case 41: // ctFontName
+			if (nPathLength)
 			{
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << "Font " << nPathLength;
+				std::cout << " Ex " << (double)nPathLength / 10000.0;
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
-				std::cout << " style";
-				if (nPathLength & (1 << 0))
-					std::cout << " bold";
-				if (nPathLength & (1 << 1))
-					std::cout << " italic";
-				if (nPathLength & (1 << 2))
-					std::cout << " underline";
-				if (nPathLength & (1 << 7))
-					std::cout << " strikeout";
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " size " << (double)nPathLength / 10000.0;
-				break;
+				std::cout << " Ey " << (double)nPathLength / 10000.0;
 			}
-			case 47: // ctFontChange
-			{
-				std::cout << "Font change";
-				break;
-			}
-			case 80: // ctDrawText
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Ascent " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Descent " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " LineWidth " << (double)nPathLength / 10000.0;
+			int nCharLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Chars:" << std::endl;
+			for (int j = 0; j < nCharLength; ++j)
 			{
 				int nCharX = 0;
-				if (nIndex++)
+				if (j)
 				{
-					nCharX = READ_SHORT(pGlyphs + i);
-					i += 2;
-				}
-				nPathLength = READ_SHORT(pGlyphs + i);
-				i += 2;
-				std::cout << "  Code " << nPathLength;
-				if (nMask & 0x02)
-				{
-					nPathLength = READ_SHORT(pGlyphs + i);
-					i += 2;
-					std::cout << " GID " << nPathLength;
-				}
-				nPathLength = READ_SHORT(pGlyphs + i);
-				i += 2;
-				std::cout << " width " << (double)nPathLength / 100.0;
-				if (nCharX)
-					std::cout << " charX " << (double)nPathLength / 100.0;
-				break;
-			}
-			case 84: // ctDrawTextU
-			{
-				int nCharX = 0;
-				if (nIndex++)
-				{
-					nCharX = READ_SHORT(pGlyphs + i);
-					i += 2;
+					nCharX = READ_INT(pGlyphs + i);
+					i += 4;
 				}
 				nPathLength = READ_INT(pGlyphs + i);
 				i += 4;
 				std::cout << "  Unicode " << nPathLength;
-				nPathLength = READ_SHORT(pGlyphs + i);
-				i += 2;
-				std::cout << " width " << (double)nPathLength / 100.0;
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << " width " << (double)nPathLength / 10000.0;
 				if (nCharX)
-					std::cout << " charX " << (double)nPathLength / 100.0;
-				break;
+					std::cout << " charX " << (double)nCharX / 10000.0;
+				std::cout << std::endl;
 			}
-			case 160: // ctCommandTextLine
-			{
-				nMask = READ_BYTE(pGlyphs + i);
-				i += 1;
-				std::cout << "TextLine ";
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " LineX " << (double)nPathLength / 10000.0;
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " LineY " << (double)nPathLength / 10000.0;
-				if ((nMask & 0x01) == 0)
-				{
-					nPathLength = READ_INT(pGlyphs + i);
-					i += 4;
-					std::cout << " Ex " << (double)nPathLength / 10000.0;
-					nPathLength = READ_INT(pGlyphs + i);
-					i += 4;
-					std::cout << " Ey " << (double)nPathLength / 10000.0;
-				}
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " Ascent " << (double)nPathLength / 10000.0;
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " Descent " << (double)nPathLength / 10000.0;
-				if (nMask & 0x04)
-				{
-					nPathLength = READ_INT(pGlyphs + i);
-					i += 4;
-					std::cout << " LineWidth " << (double)nPathLength / 10000.0;
-				}
-				break;
-			}
-			case 161: // ctCommandTextTransform
-			{
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << "sx " << (double)nPathLength / 10000.0;
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " shx " << (double)nPathLength / 10000.0;
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " shy " << (double)nPathLength / 10000.0;
-				nPathLength = READ_INT(pGlyphs + i);
-				i += 4;
-				std::cout << " sy " << (double)nPathLength / 10000.0;
-				break;
-			}
-			case 162: // ctCommandTextLineEnd
-			default:
-			{
-				nIndex = 0;
-				break;
-			}
-			}
-			std::cout << std::endl;
 		}
 
 		DestroyTextInfo(pGrFile);

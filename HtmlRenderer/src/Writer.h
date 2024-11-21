@@ -1575,10 +1575,10 @@ namespace NSHtmlRenderer
 		{
 			m_oSmartText.ClosePage();
 
-			paragraphs = (int)m_oSmartText.m_lCountParagraphs;
-			words = (int)m_oSmartText.m_lCountWords;
-			spaces = (int)m_oSmartText.m_lCountSpaces;
-			symbols = (int)m_oSmartText.m_lCountSymbols;
+			paragraphs = (int)0;
+			words = (int)0;
+			spaces = (int)0;
+			symbols = (int)0;
 			sBase64Data = "";
 
 			if (m_lPagesCount > 0)
@@ -2057,10 +2057,10 @@ namespace NSHtmlRenderer
 		{
 			CMetafile oDocInfo;
 			oDocInfo.WriteLONG(m_lPagesCount);
-			oDocInfo.WriteLONG(m_oSmartText.m_lCountParagraphs);
-			oDocInfo.WriteLONG(m_oSmartText.m_lCountWords);
-			oDocInfo.WriteLONG(m_oSmartText.m_lCountSymbols);
-			oDocInfo.WriteLONG(m_oSmartText.m_lCountSpaces);
+			oDocInfo.WriteLONG(0);
+			oDocInfo.WriteLONG(0);
+			oDocInfo.WriteLONG(0);
+			oDocInfo.WriteLONG(0);
 
 			oDocInfo.WriteLONG(m_oDstFontGenerator.m_lCountFonts);
 
@@ -2155,13 +2155,6 @@ namespace NSHtmlRenderer
 			m_arrPages.clear();
 			m_bIsGids = false;
 			m_lCurrentDumpSize = 0;
-
-			// m_oSmartText.SetParams(this);
-
-			m_oSmartText.m_lCountParagraphs = 0;
-			m_oSmartText.m_lCountWords = 0;
-			m_oSmartText.m_lCountSymbols = 0;
-			m_oSmartText.m_lCountSpaces = 0;
 		}
 	};
 }

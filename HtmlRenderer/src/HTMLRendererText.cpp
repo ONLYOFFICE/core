@@ -152,26 +152,17 @@ namespace NSHtmlRenderer
 
 		m_pInternal->m_oPage.ClearNoAttack();
 		m_pInternal->m_oPage.SkipLen();
-
-		// статистика
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
 	}
 
 	BYTE* CHTMLRendererText::GetBuffer()
 	{
 		m_pInternal->m_oSmartText.ClosePage();
 
+		unsigned int nSize = m_pInternal->m_oPage.GetSize();
+		if (nSize < 5)
+			return NULL;
+
 		m_pInternal->m_oPage.WriteLen();
-
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountParagraphs, 4);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountWords, 8);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountSymbols, 12);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_lCountSpaces, 16);
-
-		m_pInternal->m_oSmartText.ClearStatistics();
 		return m_pInternal->m_oPage.GetBuffer();
 	}
 

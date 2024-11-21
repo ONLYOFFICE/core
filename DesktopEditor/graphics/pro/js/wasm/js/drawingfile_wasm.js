@@ -256,27 +256,8 @@ CFile.prototype._getImageBase64 = function(rId)
 // TEXT
 CFile.prototype._getGlyphs = function(pageIndex)
 {
-	let ptr = Module["_GetGlyphs"](this.nativeFile, pageIndex);
-	if (!ptr)
-		return null;
-
-	let ptrArray = new Int32Array(Module["HEAP8"].buffer, ptr, 5);
-	let len = ptrArray[0];
-	len -= 20;
-
-	let res = {};
-	res.info = [ptrArray[1], ptrArray[2], ptrArray[3], ptrArray[4]];
-
-	if (len > 0)
-	{
-		let textCommandsSrc = new Uint8Array(Module["HEAP8"].buffer, ptr + 20, len);
-		res.result = new Uint8Array(len);
-		res.result.set(textCommandsSrc);
-	}
-	else
-		res.result = [];
-
-	return res;
+	g_module_pointer.ptr = Module["_GetGlyphs"](this.nativeFile, pageIndex);
+	return g_module_pointer;
 };
 
 CFile.prototype._destroyTextInfo = function()

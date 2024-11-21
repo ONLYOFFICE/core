@@ -364,30 +364,11 @@ namespace NSHtmlRenderer
 
 		NSWasm::CData* m_pPageMeta;
 
-		LONG m_lCountParagraphs;
-		LONG m_lCountWords;
-		LONG m_lCountSymbols;
-		LONG m_lCountSpaces;
-
 	public:
-		CHText() : m_oFontManager(), m_oLine()
-		{
-			m_lCountParagraphs = 0;
-			m_lCountWords = 0;
-			m_lCountSymbols = 0;
-			m_lCountSpaces = 0;
-		}
+		CHText() : m_oFontManager(), m_oLine() {}
 		void Init(NSFonts::IApplicationFonts* pApplicationFonts, int nCacheSize = 0)
 		{
 			m_oFontManager.Init(pApplicationFonts, nCacheSize);
-		}
-
-		void ClearStatistics()
-		{
-			m_lCountParagraphs = 0;
-			m_lCountWords = 0;
-			m_lCountSymbols = 0;
-			m_lCountSpaces = 0;
 		}
 
 		~CHText()
@@ -451,6 +432,7 @@ namespace NSHtmlRenderer
 
 			// теперь нужно определить сдвиг по baseline относительно destination точки
 			double dOffsetX = 0;
+			nCountChars = m_oLine.GetCountChars();
 			if (0 == nCountChars)
 			{
 				m_oLine.m_bIsConstX = _isConstX;
@@ -616,39 +598,6 @@ namespace NSHtmlRenderer
 				m_pLastTransform->SetElements(m_oLine.m_sx, m_oLine.m_shy, m_oLine.m_shx, m_oLine.m_sy);
 			}
 
-			LONG lCountSpaces = 0;
-			LONG lCountSymbols = 0;
-			LONG lCountWords = 0;
-			bool bIsLastSymbol = false;
-
-			for (LONG i = 0; i < nCount; ++i)
-			{
-				CHChar* pChar = &m_oLine.m_pChars[i];
-
-				if (0xFFFF == pChar->unicode || ((WCHAR)' ') == pChar->unicode || ((WCHAR)'\t') == pChar->unicode)
-				{
-					lCountSpaces++;
-					if (bIsLastSymbol)
-					{
-						bIsLastSymbol = false;
-						lCountWords++;
-					}
-				}
-				else
-				{
-					lCountSymbols++;
-					bIsLastSymbol = true;
-				}
-			}
-
-			if (bIsLastSymbol)
-				lCountWords++;
-
-			m_lCountParagraphs += 1;
-			m_lCountWords += lCountWords;
-			m_lCountSymbols += lCountSymbols;
-			m_lCountSpaces += lCountSpaces;
-
 			// скидываем линию в поток pMeta
 			m_pPageMeta->AddSize(60);
 
@@ -658,8 +607,8 @@ namespace NSHtmlRenderer
 			bool bHorizontal = false;
 			if (fabs(m_oLine.m_ex - 1.0) < 0.001 && fabs(m_oLine.m_ey) < 0.001)
 				bHorizontal = true;
-			m_pPageMeta->WriteBYTE(bHorizontal ? 1 : 0);
-			if (bHorizontal)
+			m_pPageMeta->WriteBYTE(!bHorizontal ? 1 : 0);
+			if (!bHorizontal)
 			{
 				m_pPageMeta->WriteDouble(m_oLine.m_ex);
 				m_pPageMeta->WriteDouble(m_oLine.m_ey);

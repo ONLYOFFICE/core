@@ -1163,8 +1163,6 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "langfe",		charProps->m_nLanguageAsian,sCommand, hasParameter, parameter)
 	
-	COMMAND_RTF_INT("alang", charProps->m_nLanguage, sCommand, hasParameter, parameter)
-
 	COMMAND_RTF_BOOL( "outl",		charProps->m_bOutline,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "scaps",		charProps->m_bScaps,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "shad",		charProps->m_bShadow,		sCommand, hasParameter, parameter)
@@ -1178,7 +1176,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		if ( hasParameter )
 			charProps->m_nForeColor = parameter;
 		else
-			charProps->m_nForeColor= PROP_DEF;
+			charProps->m_nForeColor = PROP_DEF; //auto?
 	}
 	else if ( "ul" == sCommand )
 	{
@@ -1432,8 +1430,7 @@ bool RtfTableCellPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	COMMAND_RTF_BOOL( "clvmrg",		cellProps->m_bMergeVertical,		sCommand, hasParameter, parameter )
 	COMMAND_RTF_BOOL( "clFitText",	cellProps->m_bFitText,				sCommand, hasParameter, parameter )
 	COMMAND_RTF_BOOL( "clNoWrap",	cellProps->m_bNoWrap,				sCommand, hasParameter, parameter )
-
-			//https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
+//https://www.office-forums.com/threads/rtf-file-weirdness-clpadt-vs-clpadl.2163500/
 	COMMAND_RTF_INT ( "clpadft",	cellProps->m_ePaddingLeftUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
 	COMMAND_RTF_INT ( "clpadt",		cellProps->m_nPaddingLeft,			sCommand, hasParameter, parameter )	//перепутаны top & left
 	COMMAND_RTF_INT ( "clpadfl",	cellProps->m_ePaddingTopUnit,		sCommand, hasParameter, parameter )	//перепутаны top & left
@@ -4055,7 +4052,7 @@ void RtfParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oRe
 	{
 		if ( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
 		{
-			if (bEndRow) EndRows(oReader); //ê¡ñ¿ó¿ñπá½∞¡á∩ »α«úαá¼¼á.rtf
+			if (bEndRow) EndRows(oReader); 
 
 			RtfTablePtr oNewTable ( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;

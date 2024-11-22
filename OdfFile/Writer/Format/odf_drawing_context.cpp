@@ -1663,7 +1663,8 @@ void odf_drawing_context::add_path_element(std::wstring command, std::wstring st
 {
 	XmlUtils::replace_all(strE, L"gd", L"?f");
 	
-	if (command != impl_->current_drawing_state_.path_last_command_)
+	if (command != impl_->current_drawing_state_.path_last_command_ 
+		|| command == L"M") // NOTE: Две последовательые команды "Move" должны быть записаны без сокращений (включая команду "M" для каждого мува)
 	{
 		impl_->current_drawing_state_.path_ += command;
 		if (!strE.empty())
@@ -1712,10 +1713,10 @@ int GetFormulaType2(const WCHAR& c1, const WCHAR& c2)
 
 static std::wstring replace_textarea(std::wstring textarea_coord)
 {
-	XmlUtils::replace_all(textarea_coord, L"t", L"top");
-	XmlUtils::replace_all(textarea_coord, L"l", L"left");
-	XmlUtils::replace_all(textarea_coord, L"r", L"right");
-	XmlUtils::replace_all(textarea_coord, L"b", L"bottom");
+	XmlUtils::replace_all(textarea_coord, L"t", L"0");
+	XmlUtils::replace_all(textarea_coord, L"l", L"0");
+	XmlUtils::replace_all(textarea_coord, L"r", L"logwidth");
+	XmlUtils::replace_all(textarea_coord, L"b", L"logheight");
 
 	return textarea_coord;
 }
@@ -1861,8 +1862,8 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	}
 
 	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
-	XmlUtils::replace_all(odf_fmla, L"h", L"(bottom-top)");
-	XmlUtils::replace_all(odf_fmla, L"w", L"(right-left)");
+	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
+	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
 	//XmlUtils::replace_all(name, L"gd", L"f");
 
@@ -1904,8 +1905,7 @@ void odf_drawing_context::set_flip_V(bool bVal)
 
 void odf_drawing_context::set_rotate(double dVal)
 {
-	if (dVal > 180) dVal = dVal - 360;
-	double dRotate = dVal / 180. * 3.14159265358979323846;
+	double dRotate = -dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle_ = dRotate;
 }
 

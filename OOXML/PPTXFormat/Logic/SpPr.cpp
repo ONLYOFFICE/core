@@ -181,6 +181,8 @@ namespace PPTX
 				spPr.Fill = Fill;//.fromXML(Fill.toXML());
 			if(ln.IsInit())
 				ln->Merge(spPr.ln);
+			
+			EffectList.Merge(spPr.EffectList);
 		}
 		void SpPr::FillParentPointersForChilds()
 		{

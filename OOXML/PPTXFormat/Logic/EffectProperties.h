@@ -145,6 +145,15 @@ namespace PPTX
 					List->toXmlWriter(pWriter);
 			}
 
+			void Merge(EffectProperties& effectProperties) const
+			{
+				if (List.IsInit() && List.is<EffectLst>())
+				{
+					effectProperties.List.reset(new EffectLst());
+					List.as<EffectLst>().Merge(effectProperties.List.as<EffectLst>());
+				}
+			}
+
 			nullable<WrapperWritingElement> List;
 		protected:
 			virtual void FillParentPointersForChilds(){};

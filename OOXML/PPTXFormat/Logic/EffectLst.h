@@ -72,6 +72,9 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			void Merge(EffectLst& effectLst) const;
+
 		public:
 			nullable<Blur>			blur;
 			nullable<FillOverlay>	fillOverlay;

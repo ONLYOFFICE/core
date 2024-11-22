@@ -12,12 +12,14 @@ if not base.is_dir("mdds"):
     base.cmd_in_dir("mdds", "git", ["checkout", "0783158939c6ce4b0b1b89e345ab983ccb0f0ad0"], "--quiet")
 
     linux_cpp_version  = "#if __cplusplus < 201402L\n"
+    linux_cpp_version += "#ifndef _MSC_VER\n"
     linux_cpp_version += "namespace std {\n"
     linux_cpp_version += "  template<bool __v>\n"
     linux_cpp_version += "  using bool_constant = integral_constant<bool, __v>;\n\n"
     linux_cpp_version += "  template <class... _Types>\n"
     linux_cpp_version += "  using void_t = void;\n"
-    linux_cpp_version += "}\n #endif\n\n"
+    linux_cpp_version += "}\n#endif\n"
+    linux_cpp_version += "#endif\n\n"
     linux_cpp_version += "namespace mdds {"
 
     base.replaceInFile("./mdds/include/mdds/global.hpp", "namespace mdds {", linux_cpp_version)

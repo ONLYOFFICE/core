@@ -277,12 +277,16 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 		oLine["Width"]   = reader.readDouble2();
 		oLine["Words"]   = [];
 		let n = reader.readInt();
-		let oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false };
+		let oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false, "X" : 0, "Width" : 0 };
+		let dCurCharX = 0, dWordX = 0;
 		for (let i = 0; i < n; ++i)
 		{
-			let oChar = {};
+			let oChar = { "X" : 0 };
 			if (i)
-				oChar["X"] = reader.readDouble2();
+			{
+				dCurCharX += reader.readDouble2();
+				oChar["X"] = dCurCharX;
+			}
 			oChar["Char"]  = reader.readInt();
 			oChar["Width"] = reader.readDouble2();
 
@@ -293,9 +297,11 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 				{
 					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
 						nWords++;
+					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
+									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
 					oLine["Words"].push(oWord);
 				}
-				oWord = { "Chars" : [oChar], "IsSpace" : true, "IsPunctuation" : false };
+				oWord = { "Chars" : [oChar], "IsSpace" : true, "IsPunctuation" : false, "X" : dCurCharX, "Width" : 0 };
 			}
 			else if (this.isPunctuation && undefined != this.isPunctuation(oChar["Char"]))
 			{
@@ -304,15 +310,19 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 				{
 					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
 						nWords++;
+					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
+									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
 					oLine["Words"].push(oWord);
 				}
-				oWord = { "Chars" : [oChar], "IsSpace" : false, "IsPunctuation" : true };
+				oWord = { "Chars" : [oChar], "IsSpace" : false, "IsPunctuation" : true, "X" : dCurCharX, "Width" : 0 };
 			}
 			else
 			{
 				nSymbols++;
 				if (oWord["IsSpace"] || oWord["IsPunctuation"])
 				{
+					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
+									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
 					oLine["Words"].push(oWord);
 					oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false };
 				}
@@ -323,6 +333,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 		{
 			if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
 				nWords++;
+			oWord["Width"] = dCurCharX + oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
 			oLine["Words"].push(oWord);
 		}
 

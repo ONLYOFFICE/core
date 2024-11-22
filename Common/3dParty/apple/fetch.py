@@ -13,7 +13,16 @@ if not base.is_dir("mdds"):
 
     #the linux code uses an implementation for c++ 17, so we just put this implementation
     if ("linux" == base.host_platform()):
-        base.replaceInFile("./mdds/include/mdds/global.hpp", "namespace mdds {", "namespace std { template<bool __v> using bool_constant = integral_constant<bool, __v>; }\n\nnamespace mdds {")
+        linux_cpp_version  = "#if __cplusplus < 201402L\n"
+        linux_cpp_version += "namespace std {\n"
+        linux_cpp_version += "  template<bool __v>\n"
+        linux_cpp_version += "    using bool_constant = integral_constant<bool, __v>;\n\n"
+        linux_cpp_version += "  template <class... _Types>\n"
+        linux_cpp_version += "    using void_t = void;\n"
+        linux_cpp_version += "}\n #endif\n\n"
+        linux_cpp_version += "namespace mdds {"
+
+        base.replaceInFile("./mdds/include/mdds/global.hpp", "namespace mdds {", linux_cpp_version)
 
 if not base.is_dir("librevenge"):
     base.cmd("git", ["clone", "https://github.com/Distrotech/librevenge.git"])

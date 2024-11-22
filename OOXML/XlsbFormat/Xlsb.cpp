@@ -95,6 +95,23 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+XLS::StreamCacheReaderPtr OOX::Spreadsheet::CXlsb::GetFileReader(const CPath& oFilePath, BYTE* &streamBuf)
+{
+    NSFile::CFileBinary oFile;
+    if (oFile.OpenFile(oFilePath.GetPath()) == false)
+        return nullptr;
+
+    auto m_lStreamLen = (LONG)oFile.GetFileSize();
+    streamBuf = new BYTE[m_lStreamLen];
+    DWORD dwRead = 0;
+    oFile.ReadFile(streamBuf, (DWORD)m_lStreamLen, dwRead);
+    oFile.CloseFile();
+
+    m_binaryReader->Init(streamBuf, 0, dwRead);
+
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
+    return reader;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
 {
     if (NULL == m_pWorkbook)

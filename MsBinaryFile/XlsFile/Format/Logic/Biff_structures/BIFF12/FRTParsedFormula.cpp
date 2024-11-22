@@ -81,6 +81,7 @@ void FRTParsedFormula::save(XLS::CFRecord& record)
 	record.RollRdPtrBack(cce + 8);
 	record << cce;
 	record.skipNunBytes(cce + 4);
+    this->cce = cce;
 
 }
 

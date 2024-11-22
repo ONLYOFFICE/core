@@ -21,7 +21,7 @@ namespace SVG
 		SetFill(mAttributes, ushLevel, bHardMode);
 	}
 
-	bool CCircle::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles) const
+	bool CCircle::Draw(IRenderer *pRenderer, const CSvgFile *pFile, CommandeMode oMode, const TSvgStyles *pOtherStyles, const CRenderedObject* pContexObject) const
 	{
 		Aggplus::CMatrix oOldTransform;
 
@@ -37,17 +37,17 @@ namespace SVG
 		pRenderer->PathCommandMoveTo(dX + dR, dY);
 		pRenderer->PathCommandArcTo(dX - dR, dY - dR, dR * 2.0, dR * 2.0, 0, 360);
 
-		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles);
+		EndPath(pRenderer, pFile, oOldTransform, oMode, pOtherStyles, pContexObject);
 
 		return true;
 	}
 
-	void CCircle::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath) const
+	void CCircle::ApplyStyle(IRenderer *pRenderer, const TSvgStyles *pStyles, const CSvgFile *pFile, int &nTypePath, const CRenderedObject* pContexObject) const
 	{
-		if (ApplyStroke(pRenderer, &pStyles->m_oStroke))
+		if (ApplyStroke(pRenderer, &pStyles->m_oStroke, false, pContexObject))
 			nTypePath += c_nStroke;
 
-		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true))
+		if (ApplyFill(pRenderer, &pStyles->m_oFill, pFile, true, pContexObject))
 			nTypePath += c_nWindingFillMode;
 	}
 

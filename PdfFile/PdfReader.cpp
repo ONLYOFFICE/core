@@ -398,10 +398,8 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -440,10 +438,8 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	m_pFontList->Clear();
 
-#ifdef BUILDING_WASM_MODULE
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
-#endif
 
 	return true;
 }
@@ -596,12 +592,6 @@ void CPdfReader::ChangeLength(DWORD nLength)
 	m_nFileLength = nLength;
 }
 
-void EscapingCharacter(std::wstring& sValue)
-{
-	NSStringExt::Replace(sValue, L"\\", L"\\\\");
-	NSStringExt::Replace(sValue, L"\"", L"\\\"");
-	sValue.erase(std::remove_if(sValue.begin(), sValue.end(), [] (const wchar_t& wc) { return wc < 0x20; } ), sValue.end());
-}
 std::wstring CPdfReader::GetInfo()
 {
 	if (!m_pPDFDocument)
@@ -625,7 +615,9 @@ std::wstring CPdfReader::GetInfo()
 				TextString* s = new TextString(obj1.getString());
 				std::wstring sValue = NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength());
 				delete s;
-				EscapingCharacter(sValue);
+				NSStringExt::Replace(sValue, L"\\", L"\\\\");
+				NSStringExt::Replace(sValue, L"\"", L"\\\"");
+				sValue.erase(std::remove_if(sValue.begin(), sValue.end(), [] (const wchar_t& wc) { return wc < 0x20; } ), sValue.end());
 				if (!sValue.empty())
 				{
 					sRes += L"\"";
@@ -665,7 +657,9 @@ std::wstring CPdfReader::GetInfo()
 					sDate += (L".000" + sNoDate.substr(16, 3) + L':' + sNoDate.substr(20, 2));
 				else
 					sDate += L"Z";
-				EscapingCharacter(sDate);
+				NSStringExt::Replace(sDate, L"\\", L"\\\\");
+				NSStringExt::Replace(sDate, L"\"", L"\\\"");
+				sDate.erase(std::remove_if(sDate.begin(), sDate.end(), [] (const wchar_t& wc) { return wc < 0x20; } ), sDate.end());
 				sRes += L"\"";
 				sRes += wsName;
 				sRes += L"\":\"";
@@ -752,17 +746,15 @@ std::wstring CPdfReader::GetInfo()
 
 	return sRes;
 }
-std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName)
+std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 {
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
-	return oIter != m_mFonts.end() ? oIter->second : L"";
+	return oIter == m_mFonts.end() ? std::wstring() : oIter->second;
 }
 void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
 {
 	LinkAction* pLinkAction = pOutlineItem->getAction();
-	if (!pLinkAction)
-		return;
-	if (pLinkAction->getKind() != actionGoTo)
+	if (!pLinkAction || pLinkAction->getKind() != actionGoTo)
 		return;
 
 	GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
@@ -892,6 +884,9 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 					}
 					else
 						pg = pLinkDest->getPageNum();
+					if (0 == pg)
+						++pg;
+
 					std::string sLink = "#" + std::to_string(pg - 1);
 					str = new GString(sLink.c_str());
 					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
@@ -1480,7 +1475,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		}
 		else if (sType == "Stamp")
 		{
-
+			pAnnot = new PdfReader::CAnnotStamp(pdfDoc, &oAnnotRef, nPageIndex);
 		}
 		else if (sType == "Caret")
 		{
@@ -1617,7 +1612,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			sType = oObj.getName();
 		oObj.free(); oAnnot.free();
 
-		if (sType == "Widget" || sType == "Highlight")
+		if (sType == "Widget")
 		{
 			oAnnotRef.free();
 			continue;

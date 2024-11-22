@@ -82,7 +82,9 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
 			void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin14(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const;
 
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
@@ -108,8 +110,12 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
+            void fromBin14(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType() const;
+
+            bool pivotCaches14 = false;
 		};
 
 //-----------------------------------------------------------------------------------------------------------

@@ -22,6 +22,8 @@ namespace NSCSS
 
 		bool Empty() const;
 
+		void Clear();
+
 		std::vector<std::wstring> GetData() const;
 		bool operator< (const CNode& oNode) const;
 		bool operator== (const CNode& oNode) const;

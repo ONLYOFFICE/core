@@ -108,6 +108,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin(const bool isIcon = false);
+            XLS::BaseObjectPtr toBin14(const bool isIcon = false);
 
 			virtual EElementType getType () const;
 			bool isExtended ();
@@ -169,6 +170,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -203,6 +205,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -256,6 +259,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
 
 			virtual EElementType getType () const;
 
@@ -301,6 +305,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin(const  XLS::CellRef &cellRef);
+            XLS::BaseObjectPtr toBin14(const  XLS::CellRef &cellRef);
 
 			virtual EElementType getType () const;
 			bool isValid () const;
@@ -313,7 +318,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr WriteAttributes(const  XLS::CellRef &cellRef);
-
+			XLS::BaseObjectPtr WriteAttributes14(const  XLS::CellRef &cellRef);
 
 		public:
 			nullable<CDxf>										m_oDxf;
@@ -362,6 +367,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toBin14();
+
 
 			virtual EElementType getType () const;
 			bool IsUsage();

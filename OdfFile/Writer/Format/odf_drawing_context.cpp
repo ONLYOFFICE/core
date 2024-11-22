@@ -201,6 +201,7 @@ struct odf_drawing_state
 		
 		presentation_class_ = boost::none;
 		presentation_placeholder_id_ = boost::none;
+		placeholder_replacing = false;
 
 		rotateAngle_		= boost::none;
 		text_rotateAngle_	= boost::none;
@@ -249,6 +250,7 @@ struct odf_drawing_state
 	
 	_CP_OPT(presentation_class)	presentation_class_;
 	_CP_OPT(std::wstring)		presentation_placeholder_id_;
+	bool						placeholder_replacing;
 
 	std::wstring				program_;
 	std::wstring				replacement_;
@@ -294,6 +296,7 @@ public:
 		is_header_		= false;
 		is_footer_		= false;
 		is_background_	= false;
+		placeholder_replacing = false;
 	  //некоторые свойства для объектов графики не поддерживаюися в редакторах Libre && OpenOffice.net
 									//в MS Office и в нашем - проблем таких нет.
 	} 
@@ -309,6 +312,7 @@ public:
 	bool			is_footer_;
 	bool			is_header_;
 	bool			is_background_;
+	bool			placeholder_replacing;
 	_CP_OPT(int)	is_presentation_;
 
 	void				create_draw_base(eOdfDrawElements type);
@@ -1515,6 +1519,7 @@ void odf_drawing_context::set_placeholder_type (int val)
 		case 13:	impl_->current_drawing_state_.presentation_class_ = presentation_class::subtitle;	break;
 		case 14:	impl_->current_drawing_state_.presentation_class_ = presentation_class::table;		break;
 		case 15:	impl_->current_drawing_state_.presentation_class_ = presentation_class::title;		break;
+		case 16:	impl_->current_drawing_state_.presentation_class_ = presentation_class::body;		break;
 		default:		
 			impl_->current_drawing_state_.presentation_class_ = presentation_class::outline; 			break;
 	}
@@ -1658,7 +1663,8 @@ void odf_drawing_context::add_path_element(std::wstring command, std::wstring st
 {
 	XmlUtils::replace_all(strE, L"gd", L"?f");
 	
-	if (command != impl_->current_drawing_state_.path_last_command_)
+	if (command != impl_->current_drawing_state_.path_last_command_ 
+		|| command == L"M") // NOTE: Две последовательые команды "Move" должны быть записаны без сокращений (включая команду "M" для каждого мува)
 	{
 		impl_->current_drawing_state_.path_ += command;
 		if (!strE.empty())
@@ -1707,10 +1713,10 @@ int GetFormulaType2(const WCHAR& c1, const WCHAR& c2)
 
 static std::wstring replace_textarea(std::wstring textarea_coord)
 {
-	XmlUtils::replace_all(textarea_coord, L"t", L"top");
-	XmlUtils::replace_all(textarea_coord, L"l", L"left");
-	XmlUtils::replace_all(textarea_coord, L"r", L"right");
-	XmlUtils::replace_all(textarea_coord, L"b", L"bottom");
+	XmlUtils::replace_all(textarea_coord, L"t", L"0");
+	XmlUtils::replace_all(textarea_coord, L"l", L"0");
+	XmlUtils::replace_all(textarea_coord, L"r", L"logwidth");
+	XmlUtils::replace_all(textarea_coord, L"b", L"logheight");
 
 	return textarea_coord;
 }
@@ -1835,6 +1841,9 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 		case 4:
 			odf_fmla = L"abs(" + val[0] + L")";
 			break;
+		case 5:
+			odf_fmla = L"(10800000 * atan2(" + val[1] + L", " + val[0] + L"))/pi";
+			break;
 		case 7:
 			odf_fmla = val[0] + L"*cos(pi*(" + val[1] + L")/10800000)";
 			break;
@@ -1853,8 +1862,8 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	}
 
 	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
-	XmlUtils::replace_all(odf_fmla, L"h", L"(bottom-top)");
-	XmlUtils::replace_all(odf_fmla, L"w", L"(right-left)");
+	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
+	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
 	//XmlUtils::replace_all(name, L"gd", L"f");
 
@@ -1896,8 +1905,7 @@ void odf_drawing_context::set_flip_V(bool bVal)
 
 void odf_drawing_context::set_rotate(double dVal)
 {
-	if (dVal > 180) dVal = dVal - 360;
-	double dRotate = dVal / 180. * 3.14159265358979323846;
+	double dRotate = -dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle_ = dRotate;
 }
 
@@ -2592,18 +2600,47 @@ void odf_drawing_context::set_paragraph_properties(paragraph_format_properties *
 			}
 			else
 			{
-				//??? find by name
+				/// find by name
+				if (!draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_->empty())
+				{
+					style* found_style;
+
+					impl_->styles_context_->find_odf_style(
+						*draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.draw_text_style_name_,
+						odf_types::style_family::Paragraph,
+						found_style);
+
+					if (found_style)
+						impl_->current_paragraph_properties = found_style->content_.add_get_style_paragraph_properties();
+				}
 			}
 		}
 	}
 	if (impl_->current_paragraph_properties && paragraph_properties)
-		impl_->current_paragraph_properties ->apply_from(*paragraph_properties);
+		impl_->current_paragraph_properties->apply_from(*paragraph_properties);
 }
 void odf_drawing_context::set_graphic_properties(style_graphic_properties *graphic_properties)
 {
 	if (impl_->current_graphic_properties && graphic_properties)
 		impl_->current_graphic_properties->apply_from(graphic_properties->content_);
 }
+
+void odf_drawing_context::set_graphic_properties(graphic_format_properties* graphic_properties)
+{
+	if (impl_->current_graphic_properties && graphic_properties)
+		impl_->current_graphic_properties->apply_from(*graphic_properties);
+}
+
+void odf_drawing_context::placeholder_replacing(bool replacing)
+{
+	impl_->current_drawing_state_.placeholder_replacing = replacing;
+}
+
+bool odf_drawing_context::placeholder_replacing()
+{
+	return impl_->current_drawing_state_.placeholder_replacing;
+}
+
 graphic_format_properties* odf_drawing_context::get_graphic_properties()
 {
 	return impl_->current_graphic_properties;

@@ -5115,6 +5115,73 @@ void BinaryDocumentTableWriter::WriteMathRunContent(OOX::Logic::CMRun* pMRun)
 		WriteMathIns(pMRun->m_oIns.get());
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
+	if (pMRun->m_oNoBreakHyphen.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::NoBreakHyphen);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oSoftHyphen.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::SoftHyphen);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oTab.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::Tab);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oSym.IsInit())
+	{
+		wchar_t ch = 0x0FFF & pMRun->m_oSym->m_oChar->GetValue();
+		std::wstring sText(&ch, 1);
+
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Sym);
+		m_oBcw.m_oStream.WriteStringW(sText);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oAnnotationRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::AnnotationRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oCommentReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::CommentReference);
+		WriteComment(OOX::et_w_commentReference, pMRun->m_oCommentReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oCr.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::Cr);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oEndnoteRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::EndnoteRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oEndnoteReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::EndnoteReference);
+		WriteNoteRef(pMRun->m_oEndnoteReference->m_oCustomMarkFollows, pMRun->m_oEndnoteReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}	
+	if (pMRun->m_oFootnoteRef.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::FootnoteRef);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
+	if (pMRun->m_oFootnoteReference.IsInit())
+	{
+		int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::FootnoteReference);
+		WriteNoteRef(pMRun->m_oFootnoteReference->m_oCustomMarkFollows, pMRun->m_oFootnoteReference->m_oId);
+		m_oBcw.WriteItemEnd(nCurPos2);
+	}
+	if (pMRun->m_oLastRenderedPageBreak.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathContentType::LastRenderedPageBreak);
+		m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
+	}
 }
 void BinaryDocumentTableWriter::WriteMathAccPr(const OOX::Logic::CAccPr &pAccPr)
 {
@@ -8029,6 +8096,12 @@ void BinaryDocumentTableWriter::WriteSdtPicture(const OOX::Logic::CSdtPicture& o
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrShiftY);
 		m_oBcw.m_oStream.WriteDoubleReal(*oSdtPicture.m_oShiftY);
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
+	if (oSdtPicture.m_oSignature.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerSdt::PictureFormPrSignature);
+		m_oBcw.m_oStream.WriteBOOL(*oSdtPicture.m_oSignature);
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }

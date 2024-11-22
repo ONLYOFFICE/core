@@ -1,11 +1,11 @@
 ﻿#pragma once
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+
 #include "elements/Paragraph.h"
 #include "elements/Shape.h"
+#include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
-#include "styles/ParagraphStyle.h"
-#include "elements/DropCap.h"
+#include "../../convert_params.h"
 
 namespace NSDocxRenderer
 {
@@ -15,7 +15,9 @@ namespace NSDocxRenderer
 		double m_dWidth {0.0};
 		double m_dHeight {0.0};
 
-		LONG m_lCurrentCommand {0};
+		LONG m_lCurrentCommand{0};
+		LONG m_lClipMode{0};
+		bool m_bIsGradient = false;
 
 		TextAssociationType m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
 
@@ -31,16 +33,18 @@ namespace NSDocxRenderer
 		Aggplus::CMatrix*                      m_pTransform              {nullptr};
 		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter{nullptr};
 
+		CImageManager*              m_pImageManager         {nullptr};
 		CFontStyleManager*          m_pFontStyleManager     {nullptr};
 		CParagraphStyleManager*     m_pParagraphStyleManager{nullptr};
 		CFontManager*               m_pFontManager          {nullptr};
 		CFontSelector*				m_pFontSelector         {nullptr};
-		CVectorGraphics             m_oVector;
+
+		CVectorGraphics             m_oCurrVectorGraphics;
+		CVectorGraphics				m_oClipVectorGraphics;
 
 		std::vector<std::shared_ptr<CContText>>	 m_arConts;
 		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
 		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
-		std::vector<std::shared_ptr<CShape>>     m_arImages;
 		std::vector<std::shared_ptr<CShape>>     m_arShapes;
 
 		std::vector<std::wstring>   m_arCompleteObjectsXml;
@@ -48,24 +52,26 @@ namespace NSDocxRenderer
 
 		bool m_bIsDeleteTextClipPage {true};
 		bool m_bIsRecalcFontSize {true};
-		LONG m_lLastCommand = 0;
 
 		CPage();
 		~CPage();
 
-		void Init(NSStructures::CFont* pFont,
-				  NSStructures::CPen* pPen,
-				  NSStructures::CBrush* pBrush,
-				  NSStructures::CShadow* pShadow,
-				  NSStructures::CEdgeText* pEdge,
-				  Aggplus::CMatrix* pMatrix,
-				  Aggplus::CGraphicsPathSimpleConverter* pSimple,
-				  CFontStyleManager* pStyleManager,
-				  CFontManager *pFontManager,
-				  CFontSelector* pFontSelector,
-				  CParagraphStyleManager* pParagraphStyleManager);
+		void Init(
+			NSStructures::CFont* pFont,
+			NSStructures::CPen* pPen,
+			NSStructures::CBrush* pBrush,
+			NSStructures::CShadow* pShadow,
+			NSStructures::CEdgeText* pEdge,
+			Aggplus::CMatrix* pMatrix,
+			Aggplus::CGraphicsPathSimpleConverter* pSimple,
+			CImageManager* pImageManager,
+			CFontStyleManager* pStyleManager,
+			CFontManager *pFontManager,
+			CFontSelector* pFontSelector,
+			CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
+		void EndCommand(DWORD lType);
 		void Clear();
 
 		// удаляем то, что выходит за границы страницы
@@ -85,17 +91,19 @@ namespace NSDocxRenderer
 		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
-		void CollectTextData(const PUINT pUnicodes,
-							 const PUINT pGids,
-							 const UINT& nCount,
-							 const double& fX,
-							 const double& fY,
-							 const double& fWidth,
-							 const double& fHeight,
-							 const double& fBaseLineOffset);
+		void CollectTextData(
+			const PUINT pUnicodes,
+			const PUINT pGids,
+			const UINT& nCount,
+			const double& fX,
+			const double& fY,
+			const double& fWidth,
+			const double& fHeight,
+			const double& fBaseLineOffset);
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
+		void ReorderShapesForPptx();
 
 	private:
 
@@ -110,6 +118,7 @@ namespace NSDocxRenderer
 		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
 
 		void MergeShapes();
+		void CalcShapesRotation();
 
 		// strikeouts, underlines, highlights, outline
 		void AnalyzeEffects();
@@ -144,7 +153,6 @@ namespace NSDocxRenderer
 		std::shared_ptr<CContText> m_pCurrCont {nullptr};
 		NSStructures::CFont m_oPrevFont;
 		NSStructures::CBrush m_oPrevBrush;
-
 		size_t m_nShapeOrder = 0;
 	};
 }

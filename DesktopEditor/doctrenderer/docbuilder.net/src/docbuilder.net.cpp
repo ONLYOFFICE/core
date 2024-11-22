@@ -138,6 +138,10 @@ namespace docbuilder_net
 	{
 		return m_internal->IsUndefined();
 	}
+	bool CDocBuilderValue::IsBool()
+	{
+		return m_internal->IsBool();
+	}
 	bool CDocBuilderValue::IsInt()
 	{
 		return m_internal->IsInt();

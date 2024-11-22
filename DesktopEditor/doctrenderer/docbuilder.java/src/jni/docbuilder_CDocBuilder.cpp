@@ -162,6 +162,12 @@ jlong Java_docbuilder_CDocBuilder_c_1GetContext(JNIEnv* env, jclass cls, jlong s
 	return reinterpret_cast<jlong>(new CDocBuilderContext(pSelf->GetContext()));
 }
 
+jlong Java_docbuilder_CDocBuilder_c_1GetContextWithEnterParam(JNIEnv* env, jclass cls, jlong self, jboolean enterContext)
+{
+	CDocBuilder* pSelf = reinterpret_cast<CDocBuilder*>(self);
+	return reinterpret_cast<jlong>(new CDocBuilderContext(pSelf->GetContext((bool)enterContext)));
+}
+
 void Java_docbuilder_CDocBuilder_c_1Initialize(JNIEnv* env, jclass cls)
 {
 	CDocBuilder::Initialize();

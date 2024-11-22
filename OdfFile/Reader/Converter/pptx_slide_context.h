@@ -66,7 +66,7 @@ public:
 	void set_scale		(double cx_pt, double cy_pt);
 	void set_rotate		(double angle, bool translate = false);
 
-	void set_name		(std::wstring const & name);
+	void set_name		(std::wstring name);
 	void set_id			(std::wstring const & id);
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
 	void set_property	(odf_reader::_property p);

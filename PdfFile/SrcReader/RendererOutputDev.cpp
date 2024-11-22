@@ -513,14 +513,14 @@ namespace PdfReader
 		}
 		else
 		{
+			double* dDash = new double[nSize];
 			for (int nIndex = 0; nIndex < nSize; ++nIndex)
-			{
-				pDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
-			}
+				dDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
 
-			m_pRenderer->PenDashPattern(pDash, (long)nSize);
+			m_pRenderer->PenDashPattern(dDash, (long)nSize);
 			m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
 			m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
+			RELEASEARRAYOBJECTS(dDash);
 		}
 		if (bOffCopy)
 			delete[] pDash;
@@ -586,58 +586,57 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateBlendMode(GfxState* pGState)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
+		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
 			return;
 
 		switch (pGState->getBlendMode())
 		{
 		case gfxBlendNormal:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		case gfxBlendMultiply:
-			GRenderer->put_BlendMode(14);
+			m_pRenderer->put_BlendMode(14);
 			// agg::comp_op_multiply
 			break;
 		case gfxBlendScreen:
-			GRenderer->put_BlendMode(15);
+			m_pRenderer->put_BlendMode(15);
 			// agg::comp_op_screen
 			break;
 		case gfxBlendOverlay:
-			GRenderer->put_BlendMode(16);
+			m_pRenderer->put_BlendMode(16);
 			// agg::comp_op_overlay
 			break;
 		case gfxBlendDarken:
-			GRenderer->put_BlendMode(17);
+			m_pRenderer->put_BlendMode(17);
 			// agg::comp_op_darken
 			break;
 		case gfxBlendLighten:
-			GRenderer->put_BlendMode(18);
+			m_pRenderer->put_BlendMode(18);
 			// agg::comp_op_lighten
 			break;
 		case gfxBlendColorDodge:
-			GRenderer->put_BlendMode(19);
+			m_pRenderer->put_BlendMode(19);
 			// agg::comp_op_color_dodge
 			break;
 		case gfxBlendColorBurn:
-			GRenderer->put_BlendMode(20);
+			m_pRenderer->put_BlendMode(20);
 			// agg::comp_op_color_burn
 			break;
 		case gfxBlendHardLight:
-			GRenderer->put_BlendMode(21);
+			m_pRenderer->put_BlendMode(21);
 			// agg::comp_op_hard_light
 			break;
 		case gfxBlendSoftLight:
-			GRenderer->put_BlendMode(22);
+			m_pRenderer->put_BlendMode(22);
 			// agg::comp_op_soft_light
 			break;
 		case gfxBlendDifference:
-			GRenderer->put_BlendMode(23);
+			m_pRenderer->put_BlendMode(23);
 			// agg::comp_op_difference
 			break;
 		case gfxBlendExclusion:
-			GRenderer->put_BlendMode(24);
+			m_pRenderer->put_BlendMode(24);
 			// agg::comp_op_exclusion
 			break;
 		case gfxBlendHue:
@@ -645,7 +644,7 @@ namespace PdfReader
 		case gfxBlendColor:
 		case gfxBlendLuminosity:
 		default:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		}
@@ -1622,7 +1621,7 @@ namespace PdfReader
 			return;
 		}
 
-		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
+		if (fabs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || fabs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
 		double dWidth, dHeight, dDpiX, dDpiY;
@@ -1678,14 +1677,12 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		Transform(pMatrix, pBBox[0], pBBox[1], &xMin, &yMin);
-		Transform(pMatrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		double dW = xMax - xMin;
-		double dH = yMax - yMin;
-		xMin += (double)nX0 * dW;
-		xMax += (double)nX1 * dW;
-		yMin += (double)nY0 * dH;
-		yMax += (double)nY1 * dH;
+		xMin = nX0 * dXStep;
+		yMin = nY0 * dYStep;
+		xMax = nX1 * dXStep;
+		yMax = nY1 * dYStep;
+		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
+		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -1895,11 +1892,8 @@ namespace PdfReader
 			cur_y += delta_y;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
@@ -1953,11 +1947,8 @@ namespace PdfReader
 			t+=delta;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 
@@ -2009,11 +2000,9 @@ namespace PdfReader
 			t+=delta;
 		}
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
 		pGState->clearPath();
@@ -2051,11 +2040,9 @@ namespace PdfReader
 
 		NSStructures::GradientInfo info = NSStructures::GInfoConstructor::get_triangle(pixel_points, rgba8_colors, {}, false);
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
+
 		pGState->clearPath();
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);
@@ -2107,11 +2094,8 @@ namespace PdfReader
 																						   false
 																						   );
 
-		if (NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer))
-		{
-			GRenderer->put_BrushGradInfo(info);
-			m_pRenderer->DrawPath(c_nWindingFillMode);
-		}
+		m_pRenderer->put_BrushGradInfo(&info);
+		m_pRenderer->DrawPath(c_nWindingFillMode);
 
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->put_BrushType(brush);

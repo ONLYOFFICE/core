@@ -74,12 +74,19 @@ text_list_style::text_list_style(const text_list_style& other)
 
 	for (auto& val : other.content_)
 	{
-		text_list_level_style_number* ptr = dynamic_cast<text_list_level_style_number*>(val.get());
-		if(!ptr)
-			continue;
+		text_list_level_style_number* style_number_ptr = dynamic_cast<text_list_level_style_number*>(val.get());
+		text_list_level_style_bullet* style_bullet_ptr = dynamic_cast<text_list_level_style_bullet*>(val.get());
 
-		boost::shared_ptr<text_list_level_style_number> style_num = boost::make_shared<text_list_level_style_number>(*ptr);
-		content_.push_back(style_num);
+		if (style_number_ptr)
+		{
+			boost::shared_ptr<text_list_level_style_number> style_number = boost::make_shared<text_list_level_style_number>(*style_number_ptr);
+			content_.push_back(style_number);
+		}
+		else if (style_bullet_ptr)
+		{
+			boost::shared_ptr<text_list_level_style_bullet> style_bullet = boost::make_shared<text_list_level_style_bullet>(*style_bullet_ptr);
+			content_.push_back(style_bullet);
+		}
 	}
 }
 
@@ -153,6 +160,14 @@ void text_list_level_style_bullet_attr::add_attributes( const xml::attributes_wc
     CP_APPLY_ATTR(L"text:bullet-char", text_bullet_char_);
     common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"text:bullet-relative-size", text_bullet_relative_size_);
+}
+
+void text_list_level_style_bullet_attr::apply_from(const text_list_level_style_bullet_attr& Other)
+{
+	_CP_APPLY_PROP2(text_style_name_);
+	_CP_APPLY_PROP2(text_bullet_char_);
+	common_num_format_prefix_suffix_attlist_.apply_from(Other.common_num_format_prefix_suffix_attlist_);
+	_CP_APPLY_PROP2(text_bullet_relative_size_);
 }
 
 //  text_list_level_style_image_attr
@@ -289,6 +304,12 @@ void style_list_level_label_alignment::add_child_element( xml::sax * Reader, con
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_list_level_style_bullet::ns = L"text";
 const wchar_t * text_list_level_style_bullet::name = L"list-level-style-bullet";
+
+text_list_level_style_bullet::text_list_level_style_bullet(const text_list_level_style_bullet& other)
+{
+	text_list_level_style_attr_.apply_from(other.text_list_level_style_attr_);
+	text_list_level_style_bullet_attr_.apply_from(other.text_list_level_style_bullet_attr_);
+}
 
 void text_list_level_style_bullet::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
@@ -790,8 +811,6 @@ void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & C
 		}
 	}
 }
-
-
 
 void text_list_level_style_image::docx_convert(oox::docx_conversion_context & Context) 
 {    

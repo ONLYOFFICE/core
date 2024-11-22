@@ -51,7 +51,6 @@ namespace PPTX
 			virtual OOX::EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void GetJoinFrom(XmlUtils::CXmlNode& element);
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
@@ -60,8 +59,8 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-			eJoin			type = Logic::JoinEmpty;
-			nullable_int	lim;
+			eJoin type = Logic::JoinEmpty;
+			nullable_int lim;
 
 		protected:
 			virtual void FillParentPointersForChilds();

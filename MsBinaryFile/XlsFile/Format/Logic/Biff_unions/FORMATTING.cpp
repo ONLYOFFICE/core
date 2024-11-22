@@ -196,6 +196,9 @@ void FORMATTING::update_xfs()
 		}
 	}
 	xfs->RegisterFillBorder();
+	
+	global_info->cellXfs_count = xfs->m_arCellXFs.size();
+	global_info->cellStyleXfs_count = xfs->m_arCellStyles.size();
 }
 void FORMATTING::concatinate(FORMATTING* ext)
 {

@@ -651,6 +651,36 @@ namespace NExtractTools
 		return nRes;
 	}
 
+	bool applyCompiledChangesPdf(CPdfFile* pFile, const std::wstring& sCompiledChangesPath, CConvertFromBinParams& oConvertParams, const std::wstring& sTo)
+	{
+		bool bRes = false;
+		NSFile::CFileBinary oFile;
+		if (oFile.OpenFile(sCompiledChangesPath))
+		{
+			char signature[4];
+			if (oFile.ReadFile((BYTE*)signature, 4))
+			{
+				if ('%' == signature[0] && 'P' == signature[1] && 'D' == signature[2] && 'F' == signature[3])
+				{
+					DWORD dwChangesSize = (DWORD)(oFile.GetFileSize() - 4);
+					BYTE* pChangesData = new BYTE[dwChangesSize];
+
+					if (oFile.ReadFile(pChangesData, dwChangesSize))
+					{
+						if (!pFile->EditPdf(sTo))
+							return false;
+
+						bRes = (S_OK == pFile->AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams));
+						RELEASEARRAYOBJECTS(pChangesData);
+					}
+				}
+			}
+
+			oFile.CloseFile();
+		}
+		return bRes;
+	}
+
 	bool applyChangesPdf(const std::wstring& sFrom, const std::wstring& sTo,
 						 NSFonts::IApplicationFonts* pApplicationFonts,
 						 InputParams& params, ConvertParams& convertParams,
@@ -669,12 +699,42 @@ namespace NExtractTools
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 			return false;
 
-		if (!oPdfResult.EditPdf(sTo))
-			return false;
-
 		CConvertFromBinParams oConvertParams;
 		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);
 		oConvertParams.m_sMediaDirectory = oConvertParams.m_sInternalMediaDirectory;
+
+		bool bIsCompiledChanges = false;
+		if (changes.size() > 0)
+		{
+			bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, changes[0], oConvertParams, sTo);
+
+			if (!bIsCompiledChanges)
+			{
+				NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
+
+				std::wstring sPdfFileCompiledChanges = NSFile::CFileBinary::CreateTempFileWithUniqueName(convertParams.m_sTempDir, L"PDF_");
+				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
+					NSFile::CFileBinary::Remove(sPdfFileCompiledChanges);
+
+				std::wstring sXml = getDoctXml(NSDoctRenderer::DoctRendererFormat::PDF,
+											   NSDoctRenderer::DoctRendererFormat::PDF,
+											   sFrom, sPdfFileCompiledChanges,
+											   oConvertParams.m_sInternalMediaDirectory, convertParams.m_sThemesDir,
+											   -1, L"", params);
+
+				std::wstring sResult = L"";
+				oDoctRenderer.SetAdditionalParam(NSDoctRenderer::AdditionalParamType::DRAWINGFILE, (void*)&oPdfResult);
+				oDoctRenderer.Execute(sXml, sResult);
+
+				if (NSFile::CFileBinary::Exists(sPdfFileCompiledChanges))
+					bIsCompiledChanges = applyCompiledChangesPdf(&oPdfResult, sPdfFileCompiledChanges, oConvertParams, sTo);
+				else
+				{
+					// changes is exist but compiled file does not changed (compiled changes returns null in js)
+					oPdfResult.EditPdf(sTo);
+				}
+			}
+		}
 
 		if (!sResultDirectory.empty() && !params.getDontSaveAdditional())
 		{
@@ -689,9 +749,6 @@ namespace NExtractTools
 					//add changes to zip
 					std::wstring sFilename = NSSystemPath::GetFileName(*i);
 					oFolderWithChanges.write(sFilename, pChangesData, dwChangesSize);
-					//apply changes
-					oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
-					RELEASEARRAYOBJECTS(pChangesData);
 				}
 			}
 			//add images
@@ -716,19 +773,6 @@ namespace NExtractTools
 			oFile.WriteFile(pBuffer->Buffer, pBuffer->Size);
 			oFile.CloseFile();
 			RELEASEOBJECT(pBuffer);
-		}
-		else
-		{
-			for (std::vector<std::wstring>::const_iterator i = changes.begin(); i != changes.end(); i++)
-			{
-				BYTE* pChangesData = NULL;
-				DWORD dwChangesSize = 0;
-				if (NSFile::CFileBinary::ReadAllBytes(*i, &pChangesData, dwChangesSize))
-				{
-					oPdfResult.AddToPdfFromBinary(pChangesData, (unsigned int)dwChangesSize, &oConvertParams);
-					RELEASEARRAYOBJECTS(pChangesData);
-				}
-			}
 		}
 
 		oPdfResult.Close();
@@ -1021,12 +1065,14 @@ namespace NExtractTools
 				if (!NSDirectory::Exists(sTempDirOut))
 					NSDirectory::CreateDirectory(sTempDirOut);
 
-				oDocxRenderer.SetTempFolder(sTempDirOut);
-				bool bIsOutCompress = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX == nFormatTo && !params.hasSavePassword();
+				std::wstring sTempDirOutTmp = combinePath(convertParams.m_sTempDir, L"output_tmp");
+				if (!NSDirectory::Exists(sTempDirOutTmp))
+					NSDirectory::CreateDirectory(sTempDirOutTmp);
 
-				nRes = oDocxRenderer.Convert(pReader, sTo, bIsOutCompress);
+				oDocxRenderer.SetTempFolder(sTempDirOutTmp);
+				nRes = oDocxRenderer.Convert(pReader, sTempDirOut, false);
 
-				if (nRes == S_OK && !bIsOutCompress)
+				if (nRes == S_OK)
 					nRes = fromDocxDir(sTempDirOut, sTo, nFormatTo, params, convertParams);
 			}
 			else

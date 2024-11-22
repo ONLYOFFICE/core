@@ -43,19 +43,54 @@
 
  // Определение основных форматов даты
 std::vector<std::wstring> DateFormats = {
-    L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d",L"%d/%m/%Y",L"%d/%m/%y", L"%m/%d/%Y",
-    L"%m/%d/%y", L"%d %B %Y", L"%d %B, %Y", L"%d %b %Y",
+
+    L"%X %p",
+
+    L"%d %B %Y %X", L"%d %B, %Y %X", L"%d %b %Y %X",
+    L"%d %b, %Y %X", L"%B %d %Y %X", L"%B %d, %Y %X", L"%b %d %Y %X",
+    L"%b %d, %Y %X",
+
+    L"%d.%m.%Y %X %p", L"%d.%m.%y %X %p", L"%Y-%m-%d %X %p", L"%Y-%m-%d %X %p", L"%d/%m/%Y %X %p",L"%d/%m/%y %X %p",
+    L"%m/%d/%Y %X %p", L"%m/%d/%y %X %p", L"%Y/%m/%d %X %p", L"%Y/%d/%m %X %p", L"%m-%d-%Y %X %p",
+    L"%m-%d-%y %X %p", L"%d-%m-%Y %X %p", L"%d-%m-%y %X %p",
+
+    L"%d %B %Y %X %p", L"%d %B, %Y %X %p", L"%d %b %Y %X %p",
+    L"%d %b, %Y %X %p", L"%B %d %Y %X %p", L"%B %d, %Y %X %p", L"%b %d %Y %X %p",
+    L"%b %d, %Y %X %p",
+
+    L"%d.%m.%Y %X", L"%d.%m.%y %X", L"%Y-%m-%d %X", L"%Y-%m-%d %X", L"%d/%m/%Y %X",L"%d/%m/%y %X", L"%m/%d/%Y %X",
+    L"%m/%d/%y %X", L"%Y/%m/%d %X", L"%Y/%d/%m %X", L"%m-%d-%Y %X",
+    L"%m-%d-%y %X", L"%d-%m-%Y %X", L"%d-%m-%y %X",
+
+    L"%d %B %Y", L"%d %B, %Y", L"%d %b %Y",
     L"%d %b, %Y", L"%B %d %Y", L"%B %d, %Y", L"%b %d %Y",
-    L"%b %d, %Y", L"%Y/%m/%d", L"%Y/%d/%m", L"%m-%d-%Y",
-    L"%m-%d-%y", L"%d-%m-%Y", L"%d-%m-%y"
+    L"%b %d, %Y"
 };
 
-bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
+// короткие форматы
+std::vector<std::wstring> DateFormatsShort = {
+
+   L"%X",
+
+   L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d", L"%Y-%m-%d", L"%d/%m/%Y",L"%d/%m/%y", L"%m/%d/%Y",
+   L"%m/%d/%y", L"%Y/%m/%d", L"%Y/%d/%m", L"%m-%d-%Y",
+   L"%m-%d-%y", L"%d-%m-%Y", L"%d-%m-%y", L"%x"
+};
+
+bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime)
 {
+    //делим форматы на длинные и короткие для уменьшения перебора
+    std::vector<std::wstring> * requiredFormats;
+    if(date.size() > 10)
+        requiredFormats = &DateFormats;
+    else
+        requiredFormats = &DateFormatsShort;
+
     // Перебор форматов даты, пока не найдется подходящий
-    for (const auto& format : DateFormats) {
+    for (const auto& format : *requiredFormats) {
         std::wistringstream ss(date);
 
+        // Пытаемся спарсить дату в локальном формате
         tm time = {};
         ss >> std::get_time(&time, format.c_str());
 
@@ -63,14 +98,36 @@ bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
             continue;
         }
 
-        //определяем стандартная ли дата
-
-        if(time.tm_year > 0)
+        //дата без времени
+        if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
         {
+            //определяем стандартная ли дата
             if(time.tm_year >= 70)
                 result = getStandartDate(time);
             else
               result = getNonUnixDate(time);
+            Hasdate = true;
+            Hastime = false;
+            return true;
+        }
+        //время без даты
+        else if(time.tm_year == 0 && time.tm_mday == 0 && time.tm_mon == 0)
+        {
+            result = getStandartTime(time);
+            Hasdate = false;
+            Hastime = true;
+            return true;
+        }
+        else //дата и время
+        {
+
+            if(time.tm_year >= 70)
+                result = getStandartDate(time);
+            else
+              result = getNonUnixDate(time);
+            result += getStandartTime(time);
+            Hasdate = true;
+            Hastime = true;
             return true;
         }
         return false;
@@ -80,8 +137,12 @@ bool DateReader::GetDigitalDate(const std::wstring &date, _INT32 &result)
     return false;
 }
 
-_INT32 DateReader::getStandartDate(tm &date)
+_INT32 DateReader::getStandartDate(tm date)
 {
+    // обнуление времени, чтобы оно не влияло на дату
+    date.tm_hour = 0;
+    date.tm_min = 0;
+    date.tm_sec = 0;
     // Преобразование даты в формат excel
     auto timeT = mktime(&date);
     auto tp = std::chrono::system_clock::from_time_t(timeT);
@@ -96,12 +157,21 @@ _INT32 DateReader::getStandartDate(tm &date)
     return tempTime;
 }
 
+double DateReader::getStandartTime(tm date)
+{
+    if(date.tm_hour == 24)
+        date.tm_hour = 0;
+    double result = ((date.tm_sec + (60 * date.tm_min) + (3600*date.tm_hour))/ 86400.0);
+    return result;
+}
+
+
 // Функция для определения високосного года
 bool isLeapYear(int year) {
     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
 }
 
-_INT32 DateReader::getNonUnixDate(tm &date)
+_INT32 DateReader::getNonUnixDate(tm date)
 {
     const int daysInMonth[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 

@@ -55,14 +55,32 @@ namespace StarMath
 		if(!pReader->EmptyString())
 		{
 			if(pReader->GetLocalType() == TypeElement::newline)
-			{
-																																																																																																																																																																																																																																																																																																																																																																											m_arEquation.push_back(new CElementSpecialSymbol(pReader->GetLocalType(),pReader->GetTypeConversion()));
+			{																																																																																																																																																																																																																																																																																																																																																																											m_arEquation.push_back(new CElementSpecialSymbol(pReader->GetLocalType(),pReader->GetTypeConversion()));
 				pReader->ClearReader();
 			}
 			CElement* pTempElement = ParseElement(pReader);
 			if(nullptr != pTempElement)
 					m_arEquation.push_back(pTempElement);
 		}
+		TFormulaSize tSize;
+		for(CElement* pElement:m_arEquation)
+		{
+			if(pElement->GetBaseType() == TypeElement::SpecialSymbol)
+			{
+				CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pElement);
+				if(pSpecial->GetType() == TypeElement::newline)
+				{
+					m_qSize.push(tSize);
+					tSize.Zeroing();
+				}
+				else
+					ComparisonByHeight(tSize,pElement->GetSize());			
+			}
+			else
+				ComparisonByHeight(tSize,pElement->GetSize());
+		}
+		if(tSize.m_iHeight != 0 && tSize.m_iWidth != 0)
+			m_qSize.push(tSize);
 		return m_arEquation;
 	}
 
@@ -274,6 +292,24 @@ namespace StarMath
 			CElementBinOperator::UnaryCheck(pReader,arElements.back());
 		CElement* pTempElement = ParseElement(pReader);
 		AddingAnElementToAnArray(arElements,pTempElement,pReader);
+	}
+	std::queue<TFormulaSize> CParserStarMathString::GetFormulaSize()
+	{
+		return m_qSize;
+	}
+	void CParserStarMathString::ComparisonByHeight(TFormulaSize &tLeftSize, const TFormulaSize &tRightSize)
+	{
+		if(tLeftSize.m_iHeight < tRightSize.m_iHeight)
+			tLeftSize.m_iHeight = tRightSize.m_iHeight;
+		if(tRightSize.m_iWidth != 0)
+			tLeftSize.m_iWidth += tRightSize.m_iWidth;
+	}
+	void CParserStarMathString::ComparisonByWidth(TFormulaSize &tLeftSize, const TFormulaSize &tRightSize)
+	{
+		if(tRightSize.m_iHeight != 0)
+			tLeftSize.m_iHeight += tRightSize.m_iHeight;
+		if(tLeftSize.m_iWidth < tRightSize.m_iWidth)
+			tLeftSize.m_iWidth = tRightSize.m_iWidth;
 	}
 //class methods CAttribute
 	CAttribute::CAttribute(): m_bBold(false),m_bItal(false),m_bPhantom(false),m_bStrike(false),m_bParent(false),m_iSize(0),m_iAlignment(0),m_unCount(0)
@@ -878,6 +914,16 @@ namespace StarMath
 	{
 		SetBaseAttribute(pAttribute);
 	}
+	TFormulaSize CElementString::GetSize()
+	{
+		TFormulaSize tSize;
+		if(!m_wsString.empty())
+		{
+			tSize.m_iHeight = 1;
+			tSize.m_iWidth = m_wsString.size();
+		}
+		return tSize;
+	}
 //class methods CElementBinOperator
 	CElementBinOperator::CElementBinOperator(const TypeElement& enType,const TypeConversion &enTypeConversion)
 		:CElement(TypeElement::BinOperator,enTypeConversion),m_pLeftArgument(nullptr) , m_pRightArgument(nullptr),m_enTypeBinOp(enType)
@@ -1114,6 +1160,29 @@ namespace StarMath
 	{
 		return m_enTypeBinOp;
 	}
+	TFormulaSize CElementBinOperator::GetSize()
+	{
+		TFormulaSize tSize;
+		if(m_pLeftArgument != nullptr)
+			tSize = m_pLeftArgument->GetSize();
+		switch(m_enTypeBinOp)
+		{
+		case TypeElement::over:
+		case TypeElement::wideslash:
+		case TypeElement::frac:
+		{
+			if(m_pRightArgument!= nullptr)
+				CParserStarMathString::ComparisonByWidth(tSize,m_pRightArgument->GetSize());
+			tSize.m_iHeight += 1;
+			return tSize;
+		}
+		default:
+			if(m_pRightArgument != nullptr)
+				CParserStarMathString::ComparisonByHeight(tSize,m_pRightArgument->GetSize());
+			tSize.m_iWidth+= 1;
+			return tSize;
+		}
+	}
 //class methods CElementBracket
 	CElementBracket::CElementBracket(const TypeElement& enType,const TypeConversion &enTypeConversion,const bool& bScalability)
 		:CElement(TypeElement::Bracket,enTypeConversion),m_enTypeBracket(enType),m_bScalability(bScalability)
@@ -1326,6 +1395,94 @@ namespace StarMath
 			default:
 				return L"";
 		}
+	}
+	TFormulaSize CElementBracket::GetSize()
+	{
+		TFormulaSize tSize;
+		std::vector<TFormulaSize> arSizeLine;
+		std::vector<TFormulaSize> arSizeColumn;
+		for(CElement* pElement:m_arBrecketValue)
+		{
+			if(pElement != nullptr)
+			{
+				if(pElement->GetBaseType() == TypeElement::SpecialSymbol)
+				{
+					CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pElement);
+					if(pSpecial->GetType() == TypeElement::grid)
+					{
+						arSizeLine.push_back(tSize);
+						tSize.Zeroing();
+					}
+					else if(pSpecial->GetType() == TypeElement::transition)
+					{
+						arSizeLine.push_back(tSize);
+						tSize.Zeroing();
+						for(TFormulaSize tTempSize:arSizeLine)
+							CParserStarMathString::ComparisonByHeight(tSize,tTempSize);
+						tSize.m_iWidth += 0.5;
+						arSizeColumn.push_back(tSize);
+						arSizeLine.clear();
+						tSize.Zeroing();
+					}
+					else
+						CParserStarMathString::ComparisonByHeight(tSize,pElement->GetSize());
+				}
+				else
+					CParserStarMathString::ComparisonByHeight(tSize,pElement->GetSize());
+			}
+		}
+		if(tSize.m_iHeight != 0 && tSize.m_iWidth != 0 )
+		{
+			if(!arSizeLine.empty())
+			{
+				arSizeLine.push_back(tSize);
+				tSize.Zeroing();
+				if(!arSizeColumn.empty())
+				{
+					for(int i = 0 ; i < arSizeLine.size();i++)
+					{
+						CParserStarMathString::ComparisonByHeight(tSize,arSizeLine[i]);
+						if(i != 0)
+							tSize.m_iWidth += 1;
+					}
+					arSizeLine.clear();
+					arSizeColumn.push_back(tSize);
+					tSize.Zeroing();
+					for(int i = 0;i < arSizeColumn.size();i++)
+					{
+						CParserStarMathString::ComparisonByWidth(tSize,arSizeColumn[i]);
+						if(i != 0)
+							tSize.m_iHeight += 0.5;
+					}
+					arSizeColumn.clear();
+				}
+				else
+				{
+					for(int i = 0;i < arSizeLine.size();i++)
+					{
+						CParserStarMathString::ComparisonByWidth(tSize,arSizeLine[i]);
+						if(i != 0)
+							tSize.m_iHeight += 0.5;
+					}
+					arSizeLine.clear();
+				}
+			}
+			else if(!arSizeColumn.empty())
+			{
+				arSizeColumn.push_back(tSize);
+				tSize.Zeroing();
+				for(int i = 0; i < arSizeColumn.size();i++)
+				{
+					CParserStarMathString::ComparisonByWidth(tSize,arSizeColumn[i]);
+					if(i != 0)
+						tSize.m_iHeight += 0.5;
+				}
+				arSizeColumn.clear();
+			}
+		}
+		if(m_enTypeBracket != TypeElement::brace)
+			tSize.m_iWidth += 1;
+		return tSize;
 	}
 //class methods CElementSpecialSymbol
 	CElementSpecialSymbol::CElementSpecialSymbol(const TypeElement &enType,const TypeConversion &enTypeConversion)
@@ -1835,6 +1992,34 @@ namespace StarMath
 		break;
 		}
 	}
+	TFormulaSize CElementSpecialSymbol::GetSize()
+	{
+		TFormulaSize tSize;
+		if(TypeElement::fact == m_enTypeSpecial || TypeElement::abs == m_enTypeSpecial)
+		{
+			if(m_pValue!= nullptr)
+			{
+				tSize = m_pValue->GetSize();
+				tSize.m_iWidth += 1;
+			}
+			else
+			{
+				tSize.m_iHeight = 1;
+				tSize.m_iWidth = 1;
+			}
+		}
+		else if(TypeElement::emptiness == m_enTypeSpecial)
+		{
+			tSize.m_iHeight = 1;
+			tSize.m_iWidth = 4;
+		}
+		else if(TypeElement::newline != m_enTypeSpecial && TypeElement::grid != m_enTypeSpecial && TypeElement::mline != m_enTypeSpecial)
+		{
+			tSize.m_iHeight = 1;
+			tSize.m_iWidth = 1;
+		}
+		return tSize;
+	}
 //class methods CElementSetOperations
 	CElementSetOperations::CElementSetOperations(const TypeElement &enType,const TypeConversion &enTypeConversion)
 		:CElement(TypeElement::SetOperations,enTypeConversion),m_pLeftArgument(nullptr), m_pRightArgument(nullptr),m_enTypeSet(enType)
@@ -1962,6 +2147,16 @@ namespace StarMath
 	{
 		return m_enTypeSet;
 	}
+	TFormulaSize CElementSetOperations::GetSize()
+	{
+		TFormulaSize tSize;
+		if(m_pLeftArgument != nullptr)
+			tSize = m_pLeftArgument->GetSize();
+		if(m_pRightArgument != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSize,m_pRightArgument->GetSize());
+		tSize.m_iWidth += 1;
+		return tSize;
+	}
 //class methods CElementConnection
 	CElementConnection::CElementConnection(const TypeElement& enType,const TypeConversion &enTypeConversion)
 		:CElement(TypeElement::Connection,enTypeConversion),m_pLeftArgument(nullptr), m_pRightArgument(nullptr),m_enTypeCon(enType)
@@ -2008,13 +2203,13 @@ namespace StarMath
 		switch(m_enTypeCon)
 		{
 			case TypeElement::equals:
-				pXmlWrite->WriteString(L"=");
+				pXmlWrite->WriteString(L"\u003D");
 				break;
 			case TypeElement::notequals:
 				pXmlWrite->WriteString(L"\u2260");
 				break;
 			case TypeElement::learrow:
-				pXmlWrite->WriteString(L"&lt;");
+				pXmlWrite->WriteString(L"\u0026lt;");
 				break;
 			case TypeElement::learrowequals:
 				pXmlWrite->WriteString(L"\u2264");
@@ -2023,7 +2218,7 @@ namespace StarMath
 				pXmlWrite->WriteString(L"\u2A7D");
 				break;
 			case TypeElement::riarrow:
-				pXmlWrite->WriteString(L"&gt;");
+				pXmlWrite->WriteString(L"\u0026gt;");
 				break;
 			case TypeElement::riarrowequals:
 				pXmlWrite->WriteString(L"\u2265");
@@ -2165,6 +2360,16 @@ namespace StarMath
 	const TypeElement& CElementConnection::GetType()
 	{
 		return m_enTypeCon;
+	}
+	TFormulaSize CElementConnection::GetSize()
+	{
+		TFormulaSize tSize;
+		if(m_pLeftArgument != nullptr)
+			tSize = m_pLeftArgument->GetSize();
+		if(m_pRightArgument != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSize,m_pRightArgument->GetSize());
+		tSize.m_iWidth += 1;
+		return tSize;
 	}
 //class methods CIndex
 	CElementIndex::CElementIndex(const TypeElement& enType,const TypeConversion &enTypeConversion)
@@ -2453,6 +2658,29 @@ namespace StarMath
 	{
 		return m_enTypeIndex;
 	}
+	TFormulaSize CElementIndex::GetSize()
+	{
+		TFormulaSize tSizeIndex,tLeftArgSize;
+		if(m_pLeftArg!= nullptr)
+			tLeftArgSize = m_pLeftArg->GetSize();
+		if(m_pCsubIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pCsubIndex->GetSize());
+		else if(m_pCsupIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pCsupIndex->GetSize());
+		else if(m_pLowerIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pLowerIndex->GetSize());
+		else if(m_pUpperIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pUpperIndex->GetSize());
+		else if(m_pLsubIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pLsubIndex->GetSize());
+		else if(m_pLsupIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pLsupIndex->GetSize());
+		else if(m_pValueIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeIndex,m_pValueIndex->GetSize());
+		tSizeIndex.m_iHeight += tLeftArgSize.m_iHeight;
+		tSizeIndex.m_iWidth += tLeftArgSize.m_iWidth;
+		return tSizeIndex;
+	}
 //class methods CElementFunction
 	CElementFunction::CElementFunction(const TypeElement &enType, const TypeConversion &enTypeConversion ,const std::wstring &wsNameFunc)
 		:CElement(TypeElement::Function,enTypeConversion), m_pValue(nullptr),m_pIndex(nullptr),m_enTypeFunction(enType)
@@ -2637,6 +2865,17 @@ namespace StarMath
 		if(m_pValue != nullptr)
 			m_pValue->SetAttribute(pAttribute);
 	}
+	TFormulaSize CElementFunction::GetSize()
+	{
+		TFormulaSize tSize;
+		if(m_pValue != nullptr)
+			tSize = m_pValue->GetSize();
+		if(m_pIndex != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSize,m_pIndex->GetSize());
+		if(!m_wsNameFunc.empty())
+			tSize.m_iWidth += m_wsNameFunc.size();
+		return tSize;
+	}
 //class methods CElementOperation
 	CElementOperator::CElementOperator(const TypeElement &enType, const TypeConversion &enTypeConversion,const std::wstring& wsNameOp)
 		:CElement(TypeElement::Operator,enTypeConversion), m_pValueFrom(nullptr), m_pValueTo(nullptr), m_pValueOperator(nullptr),m_pUpperIndex(nullptr),m_pLowerIndex(nullptr),m_enTypeOperator(enType),m_wsName(wsNameOp)
@@ -2820,6 +3059,33 @@ namespace StarMath
 			m_pLowerIndex->SetAttribute(pAttribute);
 		if(m_pUpperIndex!=nullptr)
 			m_pUpperIndex->SetAttribute(pAttribute);
+	}
+	TFormulaSize CElementOperator::GetSize()
+	{
+		TFormulaSize tSizeTo,tSizeFrom;
+		if(m_pValueTo != nullptr && m_pUpperIndex != nullptr)
+		{
+			tSizeTo = m_pValueTo->GetSize();
+			CParserStarMathString::ComparisonByHeight(tSizeTo,m_pUpperIndex->GetSize());
+		}
+		else if(m_pUpperIndex != nullptr)
+			tSizeTo = m_pUpperIndex->GetSize();
+		else if(m_pValueTo != nullptr)
+			tSizeTo = m_pValueTo->GetSize();
+		if(m_pValueFrom != nullptr && m_pLowerIndex != nullptr)
+		{
+			tSizeFrom = m_pValueFrom->GetSize();
+			CParserStarMathString::ComparisonByHeight(tSizeFrom,m_pLowerIndex->GetSize());
+		}
+		else if(m_pLowerIndex != nullptr)
+			tSizeFrom = m_pLowerIndex->GetSize();
+		else if(m_pValueFrom != nullptr)
+			tSizeFrom = m_pValueFrom->GetSize();
+		CParserStarMathString::ComparisonByWidth(tSizeTo,tSizeFrom);
+		tSizeTo.m_iHeight += 1;
+		if(m_pValueOperator != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeTo,m_pValueOperator->GetSize());
+		return tSizeTo;
 	}
 // class methods CStarMathReader
 	CStarMathReader::CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion)
@@ -3044,7 +3310,7 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
+			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart)||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
 			{
 				return m_wsElement;
 			}
@@ -3322,6 +3588,16 @@ namespace StarMath
 	{
 		return m_enTypeBracketWithIndex;
 	}
+	TFormulaSize CElementBracketWithIndex::GetSize()
+	{
+		TFormulaSize tSize,tSizeFrom;
+		if(m_pLeftArg != nullptr)
+			tSize = m_pLeftArg->GetSize();
+		if(m_pValue != nullptr)
+			tSizeFrom = m_pValue->GetSize();
+		CParserStarMathString::ComparisonByWidth(tSize,tSizeFrom);
+		return tSize;
+	}
 //class methods CElementGrade
 	CElementGrade::CElementGrade(const TypeConversion &enTypeConversion)
 		:CElement(TypeElement::Grade,enTypeConversion),m_pValueGrade(nullptr), m_pValueFrom(nullptr), m_pValueTo(nullptr)
@@ -3418,6 +3694,19 @@ namespace StarMath
 			m_pValueFrom->SetAttribute(pAttribute);
 		if(m_pValueTo!=nullptr)
 			m_pValueTo->SetAttribute(pAttribute);
+	}
+	TFormulaSize CElementGrade::GetSize()
+	{
+		TFormulaSize tSizeTo,tSizeFrom;
+		if(m_pValueFrom != nullptr)
+			tSizeFrom = m_pValueFrom->GetSize();
+		if(m_pValueTo != nullptr)
+			tSizeTo = m_pValueTo->GetSize();
+		CParserStarMathString::ComparisonByWidth(tSizeTo,tSizeFrom);
+		tSizeTo.m_iHeight += 1;
+		if(m_pValueGrade != nullptr)
+			CParserStarMathString::ComparisonByHeight(tSizeTo,m_pValueGrade->GetSize());
+		return tSizeTo;
 	}
 //class methods CElementMatrix
 	CElementMatrix::CElementMatrix(const TypeElement &enType,const TypeConversion &enTypeConversion)
@@ -3556,6 +3845,20 @@ namespace StarMath
 		if(m_pSecondArgument != nullptr)
 			m_pSecondArgument->SetAttribute(pAttribute);
 	}
+	TFormulaSize CElementMatrix::GetSize()
+	{
+		TFormulaSize tSize;
+		if(m_pFirstArgument!= nullptr)
+			tSize = m_pFirstArgument->GetSize();
+		if(m_pSecondArgument != nullptr)
+			CParserStarMathString::ComparisonByWidth(tSize,m_pSecondArgument->GetSize());
+		else if(m_pFirstArgument!= nullptr && m_pFirstArgument->GetBaseType() != TypeElement::Bracket)
+		{
+			tSize.m_iHeight += 1.5;
+			tSize.m_iWidth += 2;
+		}
+		return tSize;
+	}
 //class CElementDiacriticalMark
 	CElementDiacriticalMark::CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion)
 		:CElement(TypeElement::Mark,enTypeConversion),m_pValueMark(nullptr),m_enTypeMark(enType)
@@ -3683,6 +3986,13 @@ namespace StarMath
 		SetBaseAttribute(pAttribute);
 		if(m_pValueMark != nullptr)
 			m_pValueMark->SetAttribute(pAttribute);
+	}
+	TFormulaSize CElementDiacriticalMark::GetSize()
+	{
+		TFormulaSize tSize;
+		tSize = m_pValueMark->GetSize();
+		tSize.m_iHeight += 1;
+		return tSize;
 	}
 }
 

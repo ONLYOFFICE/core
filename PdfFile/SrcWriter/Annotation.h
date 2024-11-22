@@ -180,6 +180,7 @@ namespace PdfWriter
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
+		void SetOUserID(const std::wstring& wsOUserID);
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage(CPage* pFakePage);
@@ -193,6 +194,8 @@ namespace PdfWriter
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
+		double GetPageX() { return m_dPageX; }
+		double GetPageH() { return m_dPageH; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -380,6 +383,17 @@ namespace PdfWriter
 
 		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
+	};
+	class CStampAnnotation : public CMarkupAnnotation
+	{
+	public:
+		CStampAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotStamp;
+		}
+
+		void SetName(const std::wstring& wsName);
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{

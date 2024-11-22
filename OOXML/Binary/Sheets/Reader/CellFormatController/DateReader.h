@@ -44,17 +44,22 @@ public:
     /// @param date дата в строковом формате
     /// @param result результат в формате excel
     /// @param return true в случае успешной конвертации, иначе false
-    bool GetDigitalDate(const std::wstring &date, _INT32 &result);
+    bool GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime);
 
 private:
     /// @brief получение даты в виде числа в формате excel из дат позднее 1900 года
     /// @param datetime структура с датой
     /// @return дата в формате excel
-    _INT32 getStandartDate(tm &date);
+    _INT32 getStandartDate(tm date);
+
+    /// @brief получение времени в виде десятичной части double
+    /// @param datetime структура с датой и временем
+    /// @return время в виде десятичной части double числа
+    double getStandartTime(tm date);
 
     /// @brief получение даты в виде числа в формате excel из дат от 1900 года и до 1970
     /// @param datetime структура с датой
     /// @return дата в формате excel
-    _INT32 getNonUnixDate(tm &date);
+    _INT32 getNonUnixDate(tm date);
 };
 

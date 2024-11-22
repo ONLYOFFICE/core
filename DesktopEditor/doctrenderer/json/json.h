@@ -123,6 +123,14 @@ namespace NSJSON
 		operator std::string() const;
 		operator std::wstring() const;
 
+	public:
+		// JSON CONVERSION
+		/**
+		 * Converts this value to a JSON-string.
+		 * @return The JSON-string or empty string in case of errors.
+		 */
+		std::string ToJSON();
+
 	protected:
 		// Creates a value from primitive types
 		IValue(bool value);
@@ -258,6 +266,14 @@ namespace NSJSON
 		 * Creates and returns null value.
 		 */
 		static CValue CreateNull();
+
+		// JSON CONVERSION
+		/**
+		 * Creates and returns new value from JSON-string.
+		 * @param jsonString The JSON-string from which new value will be created.
+		 * @returns created value. If JSON-string is invalid, value will be undefined.
+		 */
+		static CValue FromJSON(const std::string& jsonString);
 
 		friend class CValueRef;
 	};

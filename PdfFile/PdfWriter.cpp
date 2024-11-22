@@ -108,7 +108,13 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 		if (NULL == pMeta || !pMeta->LoadFromFile(wsPath.c_str()))
 			return new Aggplus::CImage(wsPath);
 
-		if (0 < dWidth || 0 < dHeight)
+		bool bUseMax = false;
+		if (dWidth > 5000 || dHeight > 5000)
+			bUseMax = true;
+		else if (dWidth <= 0 && dHeight <= 0)
+			bUseMax = true;
+
+		if (!bUseMax)
 			pMeta->ConvertToRaster(wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, MM_2_PT(dWidth), MM_2_PT(dHeight));
 		else
 			MetaFile::ConvertToRasterMaxSize(pMeta, wsTempDirectory.c_str(), _CXIMAGE_FORMAT_PNG, 2000);
@@ -183,6 +189,13 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	// TODO: Переделать на код ошибки
 	if (!IsValid())
 		return 1;
+
+	if (!m_pFont && !m_pFont14)
+	{
+		m_bNeedUpdateTextFont = false;
+		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
+		CommandDrawTextCHAR(32, 0, 0, 0, 0);
+	}
 
 	m_oCommandManager.Flush();
 
@@ -1668,7 +1681,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	PdfWriter::CPage* pPage = m_pPage;
 
 	int nID = oInfo.GetID();
-	pAnnot = m_pDocument->GetAnnot(nID);
+	if (nID > 0)
+		pAnnot = m_pDocument->GetAnnot(nID);
 
 	if (pAnnot && pOrigPage && pPage != pOrigPage)
 	{
@@ -1792,6 +1806,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 5))
 		pAnnot->SetLM(oInfo.GetLM());
 	bool bRender = (nFlags >> 6) & 1;
+	if (nFlags & (1 << 7))
+		pAnnot->SetOUserID(oInfo.GetOUserID());
 
 	if (oInfo.IsMarkup())
 	{
@@ -2064,6 +2080,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
+		}
+		else if (oInfo.IsStamp())
+		{
+			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
+			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
+
+			pStampAnnot->SetName(pPr->GetName());
 		}
 	}
 	else if (oInfo.IsPopup())
@@ -3570,6 +3593,7 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
@@ -3643,7 +3667,7 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = (pFontTT->m_dAscent + std::abs(pFontTT->m_dDescent)) * dKoef;
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		pTextWidget->StartAP();
 
@@ -3852,7 +3876,7 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 		m_oLinesManager.Init(pCodes2, pWidths, unLen, ushSpaceCode, ushNewLineCode, pFontTT->GetLineHeight(), pFontTT->GetAscent());
 
-		m_oLinesManager.CalculateLines(dFontSize, dWidth);
+		m_oLinesManager.CalculateLines(dFontSize, dWidth - dShiftBorder * 4);
 
 		double dKoef = dFontSize / pFontTT->m_dUnitsPerEm;
 		double dLineHeight = pFontTT->m_dHeight * dKoef;

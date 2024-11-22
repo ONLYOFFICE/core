@@ -28,12 +28,12 @@ namespace MetaFile
 		m_pXmlWriter->WriteAttribute(L"xmlns", L"http://www.w3.org/2000/svg");
 		m_pXmlWriter->WriteAttribute(L"xmlns:xlink", L"http://www.w3.org/1999/xlink");
 
-		TRectL *pBounds = m_pParser->GetDCBounds();
+		const TRectL& oBounds{m_pParser->GetDCBounds()};
 
-		m_oViewport.dLeft   = std::min(pBounds->Left, pBounds->Right );
-		m_oViewport.dTop    = std::min(pBounds->Top,  pBounds->Bottom);
-		m_oViewport.dRight  = std::max(pBounds->Left, pBounds->Right );
-		m_oViewport.dBottom = std::max(pBounds->Top,  pBounds->Bottom);
+		m_oViewport.dLeft   = std::min(oBounds.Left, oBounds.Right );
+		m_oViewport.dTop    = std::min(oBounds.Top,  oBounds.Bottom);
+		m_oViewport.dRight  = std::max(oBounds.Left, oBounds.Right );
+		m_oViewport.dBottom = std::max(oBounds.Top,  oBounds.Bottom);
 
 		UpdateSize();
 
@@ -144,7 +144,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_EXTTEXTOUT(short shY, short shX, short shStringLength, unsigned short ushFwOptions, const TRectL &oRectangle, unsigned char *pString, short *pDx)
 	{
-		IFont* pFont = NULL;
+		const IFont* pFont = NULL;
 
 		if (NULL != m_pParser)
 			pFont = m_pParser->GetFont();
@@ -213,7 +213,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_FILLREGION(unsigned short ushRegionIndex, unsigned short ushBrushIndex)
 	{
-		CWmfRegion *pRegion = dynamic_cast<CWmfRegion*>(m_pParser->GetRegion());
+		const CWmfRegion *pRegion = dynamic_cast<const CWmfRegion*>(m_pParser->GetRegion());
 
 		if (NULL == pRegion)
 			return;
@@ -438,7 +438,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_TEXTOUT(short shStringLength, unsigned char *pString, short shX, short shY)
 	{
-		IFont* pFont = NULL;
+		const IFont* pFont = NULL;
 
 		if (NULL != m_pParser)
 			pFont = m_pParser->GetFont();

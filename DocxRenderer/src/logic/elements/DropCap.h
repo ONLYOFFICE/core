@@ -1,6 +1,4 @@
-#ifndef DROPCAP_H
-#define DROPCAP_H
-
+#pragma once
 #include "BaseItem.h"
 
 namespace NSDocxRenderer
@@ -26,5 +24,3 @@ namespace NSDocxRenderer
 		void BuildXml(NSStringUtils::CStringBuilder& oWriter, const std::wstring& wsTag) const;
 	};
 }
-
-#endif // DROPCAP_H

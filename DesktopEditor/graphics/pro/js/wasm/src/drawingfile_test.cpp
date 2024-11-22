@@ -267,6 +267,13 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "YES AP, ";
 	else
 		std::cout << "NO AP, ";
+	if (nFlags & (1 << 7))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+		i += nPathLength;
+	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -821,7 +828,7 @@ void ReadFileAttachment(BYTE* pAnnots, int& i, int n)
 	RELEASEARRAYOBJECTS(res);
 }
 
-void ReadInteractiveFormsFonts(CGraphicsFileDrawing* pGrFile, int nType)
+void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 {
 	BYTE* pFonts = GetInteractiveFormsFonts(pGrFile, nType);
 	int nLength = READ_INT(pFonts);
@@ -923,7 +930,7 @@ int main(int argc, char* argv[])
 	if (!NSFile::CFileBinary::ReadAllBytes(sFilePath, &pFileData, nFileDataLen))
 		return 1;
 
-	CGraphicsFileDrawing* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
+	CDrawingFile* pGrFile = Open(pFileData, (LONG)nFileDataLen, "");
 	int nError = GetErrorCode(pGrFile);
 
 	if (nError != 0)
@@ -983,13 +990,16 @@ int main(int argc, char* argv[])
 	}
 
 	int i = nTestPage;
-	for (int i = 0; i < nPagesCount; ++i)
+	//for (int i = 0; i < nPagesCount; ++i)
 	{
 		// RASTER
 		if (true)
 		{
 			nWidth  = READ_INT(pInfo + i * 16 + 12);
 			nHeight = READ_INT(pInfo + i * 16 + 16);
+
+			//nWidth  *= 3;
+			//nHeight *= 3;
 
 			BYTE* res = NULL;
 			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
@@ -1084,7 +1094,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (false)
+	if (true)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1199,7 +1209,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (false)
+	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -1780,6 +1790,49 @@ int main(int argc, char* argv[])
 					i += nPathLength;
 				}
 			}
+			else if (sType == "Stamp")
+			{
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Icon " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+				i += nPathLength;
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Rotate " << nPathLength << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X4 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y4 " << (double)nPathLength / 10000.0 << ", ";
+			}
 
 			std::cout << std::endl << std::endl;
 		}
@@ -1799,6 +1852,14 @@ int main(int argc, char* argv[])
 
 		if (pAnnotAP)
 			free(pAnnotAP);
+	}
+
+	// SCAN PAGE
+	if (true)
+	{
+		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
+		if (pScan)
+			free(pScan);
 	}
 
 	Close(pGrFile);

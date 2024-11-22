@@ -55,6 +55,12 @@ namespace NSDoctRenderer
 			INVALID = 255
 		};
 	}
+
+	enum class AdditionalParamType
+	{
+		DRAWINGFILE = 0,
+		INVALID = 255
+	};
 }
 
 namespace NSDoctRenderer
@@ -72,6 +78,8 @@ namespace NSDoctRenderer
 		std::vector<std::wstring> GetImagesInChanges();
 		void CreateCache(const std::wstring& sAllFontsPath, const std::wstring& sCacheDir);
 		void CreateSnapshots();
+
+		void SetAdditionalParam(const AdditionalParamType& type, void* data);
 
 	private:
 		CDoctRenderer_Private* m_pInternal;

@@ -11,14 +11,39 @@
 
 #include "../EmfInterpretator/CEmfInterpretatorBase.h"
 
+
+#if defined(DrawText)
+#undef DrawText
+#endif
+
+#define PRINT_LOG(text)     do {} while(false)
+#define GO_DOWN_LEVEL_BELOW do {} while (false)
+#define GO_UP_LEVEL         do {} while (false)
+
 #ifdef _DEBUG
 #include <iostream>
 #include  <algorithm>
 #include <cstdlib>
-#endif
 
-#if defined(DrawText)
-#undef DrawText
+#define LOG_EMF_RECORDS 0
+
+#ifdef LOG_EMF_RECORDS
+	#if 1 == LOG_EMF_RECORDS
+		#define PRINTING_EMF_RECORDS      1
+		#define PRINTING_EMF_PLUS_RECORDS 1
+
+		extern unsigned int unFileLevel;
+
+		#define GO_DOWN_LEVEL_BELOW \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] -> [" << --::unFileLevel << L"]" << std::endl
+
+		#define GO_UP_LEVEL \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] -> [" << ++::unFileLevel << L"]" << std::endl
+
+		#define PRINT_LOG(text) \
+			std::wcout << L"LEVEL [" << unFileLevel << L"] [LOG] " << text << std::endl
+	#endif
+#endif
 #endif
 
 namespace MetaFile
@@ -54,37 +79,38 @@ namespace MetaFile
 		virtual void            PlayFile()                      = 0;
 		virtual void            Scan()                          = 0;
 
-		virtual EmfParserType   GetType()                       = 0;
+		virtual EmfParserType   GetType()               const   = 0;
 
-		void            PlayMetaFile()                   override;
-		void            ClearFile()                      override;
-		TRectL*         GetDCBounds()                    override;
-		CClip*          GetClip()                        override;
-		double          GetPixelHeight()                 override;
-		double          GetPixelWidth()                  override;
-		int             GetTextColor()                   override;
-		IFont*          GetFont()                        override;
-		IBrush*         GetBrush()                       override;
-		IPen*           GetPen()                         override;
-		unsigned int    GetTextAlign()                   override;
-		unsigned int    GetTextBgMode()                  override;
-		int             GetTextBgColor()                 override;
-		unsigned int    GetFillMode()                    override;
-		TPointD         GetCurPos()                      override;
-		TXForm*         GetInverseTransform()            override;
-		TXForm*         GetTransform(int = GM_ADVANCED)  override;
-		unsigned int    GetMiterLimit()                  override;
-		unsigned int    GetRop2Mode()                    override;
-		int             GetCharSpace()                   override;
-		bool            IsWindowFlippedY()               override;
-		bool            IsWindowFlippedX()               override;
-		unsigned int    GetMapMode()                     override;
-		USHORT          GetDpi()                         override;
-		IRegion*        GetRegion()                      override;
-		unsigned int    GetArcDirection()                override;
-		CPath*          GetPath()                        override;
-		bool            IsViewportFlippedY();
-		bool            IsViewportFlippedX();
+		void            PlayMetaFile()                        override;
+		void            ClearFile()                           override;
+		const TRectL&   GetDCBounds()                   const override;
+		const CClip*    GetClip()                       const override;
+		double          GetPixelHeight()                const override;
+		double          GetPixelWidth()                 const override;
+		int             GetTextColor()                  const override;
+		const IFont*    GetFont()                       const override;
+		const IBrush*   GetBrush()                      const override;
+		const IPen*     GetPen()                        const override;
+		unsigned int    GetTextAlign()                  const override;
+		unsigned int    GetTextBgMode()                 const override;
+		int             GetTextBgColor()                const override;
+		unsigned int    GetFillMode()                   const override;
+		TPointD         GetCurPos()                     const override;
+		const TXForm&   GetInverseTransform()           const override;
+		const TXForm&   GetTransform(int = GM_ADVANCED)       override;
+		unsigned int    GetMiterLimit()                 const override;
+		unsigned int    GetRop2Mode()                   const override;
+		int             GetCharSpace()                  const override;
+		bool            IsWindowFlippedY()              const override;
+		bool            IsWindowFlippedX()              const override;
+		unsigned int    GetMapMode()                    const override;
+		USHORT          GetDpi()                        const override;
+		const IRegion*  GetRegion()                     const override;
+		unsigned int    GetArcDirection()               const override;
+		const CPath*    GetPath()                       const override;
+
+		bool            IsViewportFlippedY() const;
+		bool            IsViewportFlippedX() const;
 
 		void            SetInterpretator(IOutputDevice* pOutput);
 		void            SetInterpretator(const wchar_t *wsFilePath, InterpretatorType oInterpretatorType, unsigned int unWidth = 0, unsigned int unHeight = 0);
@@ -93,9 +119,11 @@ namespace MetaFile
 
 		CEmfInterpretatorBase* GetInterpretator();
 
-		CEmfDC*     GetDC();
-		TRectL*     GetBounds();
-		CPath*      GetPath() const;
+		TXForm CalculateCurrentTransform() const override;
+
+		CEmfDC*       GetDC();
+		const TRectL& GetBounds() const;
+		CPath*        GetPath();
 	private:
 		//Работа с изображениями
 		void ImageProcessing(const TEmfAlphaBlend       &oTEmfAlphaBlend);
@@ -107,8 +135,8 @@ namespace MetaFile
 		void DrawImage(int nX, int nY, int nW, int nH, BYTE *pImageBuffer, unsigned int unImageW, unsigned int unImageH);
 		//----------------------
 
-		void TranslatePoint(TPointL &oPoint, double &dX, double &dY);
-		void TranslatePoint(int nX, int nY, double &dX, double &dY);
+		void TranslatePoint(TPointL &oPoint, double &dX, double &dY) const;
+		void TranslatePoint(int nX, int nY, double &dX, double &dY)  const;
 
 		void UpdateOutputDC();
 		void ClosePath();
@@ -151,13 +179,16 @@ namespace MetaFile
 		CPath*            m_pPath;
 		TEmfXForm         m_oTransform;
 
-		CEmfInterpretatorBase   *m_pInterpretator;
+		CEmfInterpretatorBase* m_pInterpretator;
 
 		bool              m_bEof;
 	private:
 		virtual bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight) = 0;
 
-		TPointL GetStartPointForArc(const TRectL &oBox, double dStartAngle);
+		TPointL GetStartPointForArc(const TRectL &oBox, double dStartAngle) const;
+
+		void SaveDC();
+		void RestoreDC(int nIndex);
 
 		void HANDLE_EMR_HEADER(TEmfHeader& oTEmfHeader);
 		void HANDLE_EMR_ALPHABLEND(TEmfAlphaBlend& oTEmfAlphaBlend);
@@ -397,6 +428,5 @@ namespace MetaFile
 		void HANDLE_EMR_FRAMERGN(const TRectL& oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader& oRegionDataHeader, const std::vector<TRectL>& arRects);
 
 	};
-
 }
 #endif // CEMFPARSERBASE_H

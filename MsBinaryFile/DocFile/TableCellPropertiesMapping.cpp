@@ -94,7 +94,7 @@ namespace DocFileFormat
 		}
 
 		bool bPresentDefTable = false;
-		for (std::vector<SinglePropertyModifier>::reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
+		for (std::vector<SinglePropertyModifier>::iterator iter = tapx->grpprl->begin(); iter != tapx->grpprl->end(); ++iter)
 		{
 			switch (iter->OpCode)
 			{				
@@ -295,16 +295,20 @@ namespace DocFileFormat
 					unsigned char brc80[size];
 
 					memcpy(brc80, iter->Arguments, size);
-					_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+					if (!_brcTop)
+						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
 
 					memcpy(brc80, (iter->Arguments + 4), size);
-					_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+					if (!_brcLeft)
+						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
 
 					memcpy(brc80, (iter->Arguments + 8), size);
-					_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+					if (!_brcBottom)
+						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
 
 					memcpy(brc80, (iter->Arguments + 12), size);
-					_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
+					if (!_brcRight)
+						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
 
 					//memcpy(brc80, (iter->Arguments + 16), size);
 					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc80, size));
@@ -319,16 +323,20 @@ namespace DocFileFormat
 					unsigned char brc[size];
 
 					memcpy(brc, iter->Arguments, size);
-					_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+					if (!_brcTop)
+						_brcTop = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
 
 					memcpy(brc, (iter->Arguments + 8), size);
-					_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+					if (!_brcLeft)
+						_brcLeft = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
 
 					memcpy(brc, (iter->Arguments + 16), size);
-					_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+					if (!_brcBottom)
+						_brcBottom = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
 
 					memcpy(brc, (iter->Arguments + 24), size);
-					_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
+					if (!_brcRight)
+						_brcRight = std::shared_ptr<BorderCode>(new BorderCode(brc, size));
 
 					//memcpy(brc, (iter->Arguments + 32), size);
 					//_brcHorz = std::shared_ptr<BorderCode>(new BorderCode(brc, size));

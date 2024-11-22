@@ -179,6 +179,9 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
 			
 			CP_XML_NODE(L"p:cSld")
             {
+				if (!name.empty())
+					CP_XML_ATTR(L"name", name);
+
 				CP_XML_NODE(L"p:spTree")
 				{
 					CP_XML_STREAM() << strmData_.str();
@@ -202,6 +205,11 @@ void pptx_xml_slideLayout::write_to(std::wostream & strm)
 			}
 		}
 	}
+}
+
+void pptx_xml_slideLayout::set_name(const std::wstring& layout_name)
+{
+	name = layout_name;
 }
 
 //---------------------------------------------------------------------------------------------------------

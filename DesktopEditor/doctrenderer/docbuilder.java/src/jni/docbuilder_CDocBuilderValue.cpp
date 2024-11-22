@@ -49,6 +49,12 @@ jboolean Java_docbuilder_CDocBuilderValue_c_1IsUndefined(JNIEnv* env, jclass cls
 	return (jboolean)pSelf->IsUndefined();
 }
 
+jboolean Java_docbuilder_CDocBuilderValue_c_1IsBool(JNIEnv* env, jclass cls, jlong self)
+{
+	CDocBuilderValue* pSelf = reinterpret_cast<CDocBuilderValue*>(self);
+	return (jboolean)pSelf->IsBool();
+}
+
 jboolean Java_docbuilder_CDocBuilderValue_c_1IsInt(JNIEnv* env, jclass cls, jlong self)
 {
 	CDocBuilderValue* pSelf = reinterpret_cast<CDocBuilderValue*>(self);

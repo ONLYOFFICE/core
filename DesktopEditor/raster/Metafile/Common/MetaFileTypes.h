@@ -549,8 +549,13 @@ namespace MetaFile
 		void Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0);
 		void Copy(const TRGBA &oRGBA);
 
-		int ToInt();
+		int ToInt() const;
 		void SwapToBGR();
+
+		unsigned char GetRed()   const;
+		unsigned char GetGreen() const;
+		unsigned char GetBlue()  const;
+		unsigned char GetAlpha() const;
 	};
 
 	struct TXForm
@@ -568,8 +573,9 @@ namespace MetaFile
 
 		void Init();
 		void Copy(const TXForm* pOther);
-		void Multiply(TXForm &oOther, unsigned int ulMode);
-		void Apply(double& dX, double& dY);
+		void Copy(const TXForm& oOther);
+		void Multiply(const TXForm& oOther, unsigned int ulMode);
+		void Apply(double& dX, double& dY) const;
 	};
 }
 

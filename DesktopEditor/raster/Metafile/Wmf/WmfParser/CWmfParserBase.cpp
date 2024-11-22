@@ -29,82 +29,67 @@ namespace MetaFile
 		m_bEof = false;
 	}
 
-	TRectL *CWmfParserBase::GetDCBounds()
+	const TRectL& CWmfParserBase::GetDCBounds() const
 	{
-		m_oDCRect = GetBoundingBox();
-		return &m_oDCRect;
+		return m_oDCRect;
 	}
 	
-	CClip *CWmfParserBase::GetClip()
+	const CClip *CWmfParserBase::GetClip() const
 	{
 		return m_pDC->GetClip();
 	}
 
-	double CWmfParserBase::GetPixelHeight()
+	double CWmfParserBase::GetPixelHeight() const
 	{
 		return m_pDC->GetPixelHeight();
 	}
 
-	double CWmfParserBase::GetPixelWidth()
+	double CWmfParserBase::GetPixelWidth() const
 	{
 		return m_pDC->GetPixelWidth();
 	}
 
-	int CWmfParserBase::GetTextColor()
+	int CWmfParserBase::GetTextColor() const
 	{
-		TRGBA& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
+		return m_pDC->GetTextColor().ToInt();
 	}
 
-	IFont *CWmfParserBase::GetFont()
+	const IFont *CWmfParserBase::GetFont() const
 	{
-		CWmfFont* pFont = m_pDC->GetFont();
-		if (!pFont)
-			return NULL;
-
-		return (IFont*)pFont;
+		return m_pDC->GetFont();
 	}
 
-	IBrush *CWmfParserBase::GetBrush()
+	const IBrush *CWmfParserBase::GetBrush() const
 	{
-		CWmfBrush* pBrush = m_pDC->GetBrush();
-		if (!pBrush)
-			return NULL;
-
-		return (IBrush*)pBrush;
+		return m_pDC->GetBrush();
 	}
 
-	IPen *CWmfParserBase::GetPen()
+	const IPen *CWmfParserBase::GetPen() const
 	{
-		CWmfPen* pPen = m_pDC->GetPen();
-		if (!pPen)
-			return NULL;
-
-		return (IPen*)pPen;
+		return m_pDC->GetPen();
 	}
 
-	unsigned int CWmfParserBase::GetTextAlign()
+	unsigned int CWmfParserBase::GetTextAlign() const
 	{
 		return (unsigned int)m_pDC->GetTextAlign();
 	}
 
-	unsigned int CWmfParserBase::GetTextBgMode()
+	unsigned int CWmfParserBase::GetTextBgMode() const
 	{
 		return (unsigned int)m_pDC->GetTextBgMode();
 	}
 
-	int CWmfParserBase::GetTextBgColor()
+	int CWmfParserBase::GetTextBgColor() const
 	{
-		TRGBA& oColor = m_pDC->GetTextBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b, 0);
+		return m_pDC->GetTextBgColor().ToInt();
 	}
 
-	unsigned int CWmfParserBase::GetFillMode()
+	unsigned int CWmfParserBase::GetFillMode() const
 	{
 		return (unsigned int)m_pDC->GetPolyFillMode();
 	}
 
-	TPointD CWmfParserBase::GetCurPos()
+	TPointD CWmfParserBase::GetCurPos() const
 	{
 		TPointL oPoint = m_pDC->GetCurPos();
 		double dX, dY;
@@ -112,71 +97,69 @@ namespace MetaFile
 		return TPointD(dX, dY);
 	}
 
-	TXForm *CWmfParserBase::GetInverseTransform()
+	const TXForm& CWmfParserBase::GetInverseTransform() const
 	{
 		return m_pDC->GetInverseTransform();
 	}
 
-	TXForm *CWmfParserBase::GetTransform(int iGraphicsMode)
+	const TXForm& CWmfParserBase::GetTransform(int iGraphicsMode)
 	{
-		TRectL* pBounds = GetDCBounds();
-		double dT = pBounds->Top;
-		double dL = pBounds->Left;
+		const TRectL& oBounds{GetDCBounds()};
+		double dT = oBounds.Top;
+		double dL = oBounds.Left;
 
 		TXForm oShiftXForm(1, 0, 0, 1, -dL, -dT);
 		m_oTransform.Copy(m_pDC->GetFinalTransform(iGraphicsMode));
 		m_oTransform.Multiply(oShiftXForm, MWT_RIGHTMULTIPLY);
-		return &m_oTransform;
+		return m_oTransform;
 	}
 
-	unsigned int CWmfParserBase::GetMiterLimit()
+	unsigned int CWmfParserBase::GetMiterLimit() const
 	{
 		return m_pDC->GetMiterLimit();
 	}
 
-	unsigned int CWmfParserBase::GetRop2Mode()
+	unsigned int CWmfParserBase::GetRop2Mode() const
 	{
 		return (unsigned int)m_pDC->GetRop2Mode();
 	}
 
-	int CWmfParserBase::GetCharSpace()
+	int CWmfParserBase::GetCharSpace() const
 	{
 		return m_pDC->GetCharSpacing();
 	}
 
-	bool CWmfParserBase::IsWindowFlippedY()
+	bool CWmfParserBase::IsWindowFlippedY() const
 	{
-		TWmfWindow* pWindow = m_pDC->GetWindow();
-		return (pWindow->h < 0);
+		return m_pDC->GetWindow().h < 0;
 	}
 
-	bool CWmfParserBase::IsWindowFlippedX()
+	bool CWmfParserBase::IsWindowFlippedX() const
 	{
-		TWmfWindow* pWindow = m_pDC->GetWindow();
-		return (pWindow->w < 0);
+		return m_pDC->GetWindow().w < 0;
 	}
 
-	unsigned int CWmfParserBase::GetMapMode()
+	unsigned int CWmfParserBase::GetMapMode() const
 	{
 		return m_pDC->GetMapMode();
 	}
 
-	USHORT CWmfParserBase::GetDpi()
+	USHORT CWmfParserBase::GetDpi() const
 	{
 		return (0 != m_oPlaceable.ushInch) ? m_oPlaceable.ushInch : 96;
 	}
 
-	IRegion *CWmfParserBase::GetRegion()
+	const IRegion *CWmfParserBase::GetRegion() const
 	{
 		return m_pDC->GetRegion();
 	}
 
-	unsigned int CWmfParserBase::GetArcDirection()
+	unsigned int CWmfParserBase::GetArcDirection() const
 	{
 		return AD_CLOCKWISE;
 	}
 	
-	CPath *CWmfParserBase::GetPath()
+	const CPath *CWmfParserBase::GetPath() const
 	{
 		return NULL;
 	}
@@ -221,8 +204,7 @@ namespace MetaFile
 
 	TRectD CWmfParserBase::GetBounds()
 	{
-		TRectL oBoundsBox = GetBoundingBox();
-		TRectD oBounds(oBoundsBox);
+		TRectD oBounds(m_oDCRect);
 		return oBounds;
 	}
 
@@ -235,63 +217,60 @@ namespace MetaFile
 		m_oStream.SeekBack(1);
 	}
 
-	void CWmfParserBase::TranslatePoint(short shX, short shY, double &dX, double &dY)
+	void CWmfParserBase::TranslatePoint(short shX, short shY, double &dX, double &dY) const
 	{
 		dX = (double)shX;
 		dY = (double)shY;
 	}
 
-	TRectL CWmfParserBase::GetBoundingBox()
+	void CWmfParserBase::UpdateDCRect()
 	{
-		if (IsPlaceable())
+		if (!IsPlaceable())
 		{
-			TRectL oBB;
-
-			oBB = m_oPlaceable.oBoundingBox;
-
-			const USHORT ushFileDpi = GetDpi();
-			const USHORT ushRendererDpi = 96;
-
-			if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
-			{
-				const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
-
-				oBB.Left   = std::round(oBB.Left   * dKoef);
-				oBB.Top    = std::round(oBB.Top    * dKoef);
-				oBB.Right  = std::round(oBB.Right  * dKoef);
-				oBB.Bottom = std::round(oBB.Bottom * dKoef);
-			}
-
-			// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
-			if (abs(oBB.Right - oBB.Left) <= 1)
-			{
-				oBB.Right = m_oBoundingBox.Right;
-				oBB.Left  = m_oBoundingBox.Left;
-			}
-			if (abs(oBB.Bottom - oBB.Top) <= 1)
-			{
-				oBB.Top    = m_oBoundingBox.Top;
-				oBB.Bottom = m_oBoundingBox.Bottom;
-			}
-
-			return oBB;
+			m_oDCRect = m_oBoundingBox;
+			return;
 		}
-		else
-			return m_oBoundingBox;
+
+		m_oDCRect = m_oPlaceable.oBoundingBox;
+
+		const USHORT ushFileDpi = GetDpi();
+		const USHORT ushRendererDpi = 96;
+
+		if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
+		{
+			const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
+
+			m_oDCRect.Left   = std::round(m_oDCRect.Left   * dKoef);
+			m_oDCRect.Top    = std::round(m_oDCRect.Top    * dKoef);
+			m_oDCRect.Right  = std::round(m_oDCRect.Right  * dKoef);
+			m_oDCRect.Bottom = std::round(m_oDCRect.Bottom * dKoef);
+		}
+
+		// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
+		if (abs(m_oDCRect.Right - m_oDCRect.Left) <= 1)
+		{
+			m_oDCRect.Right = m_oBoundingBox.Right;
+			m_oDCRect.Left  = m_oBoundingBox.Left;
+		}
+		if (abs(m_oDCRect.Bottom - m_oDCRect.Top) <= 1)
+		{
+			m_oDCRect.Top    = m_oBoundingBox.Top;
+			m_oDCRect.Bottom = m_oBoundingBox.Bottom;
+		}
 	}
 
-	bool CWmfParserBase::IsPlaceable()
+	bool CWmfParserBase::IsPlaceable() const
 	{
 		return (0x9AC6CDD7 == m_oPlaceable.unKey);
 	}
 
-	int CWmfParserBase::GetRecordRemainingBytesCount()
+	int CWmfParserBase::GetRecordRemainingBytesCount() const
 	{
-		unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
+		const unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
 		return (m_unRecordSize - unReadedSize);
 	}
 
-	double CWmfParserBase::GetSweepAngle(const double &dStartAngle, const double &dEndAngle)
+	double CWmfParserBase::GetSweepAngle(const double &dStartAngle, const double &dEndAngle) const
 	{
 		return (dEndAngle - dStartAngle);
 	}
@@ -373,7 +352,7 @@ namespace MetaFile
 			nY = m_pDC->GetCurPos().Y;
 		}
 
-		IFont* pFont = GetFont();
+		const IFont* pFont = GetFont();
 		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
 		if (pFont)
 		{
@@ -453,7 +432,7 @@ namespace MetaFile
 				}
 			}
 
-			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetTransform()->M11, GetTransform()->M22);
+			m_pInterpretator->DrawString(wsText, unCharsCount, dX, dY, pdDx, 1, GetTransform().M11, GetTransform().M22);
 
 			RELEASEARRAYOBJECTS(pdDx);
 		}
@@ -755,6 +734,10 @@ namespace MetaFile
 				if (oDestRect != oSrcRect)
 				{
 					TRectL oClip = oSrcRect;
+
+					oClip.Right  = oClip.Left + (std::min)(oClip.Right  - oClip.Left, (int)unWidth ) - 1;
+					oClip.Bottom = oClip.Top  + (std::min)(oClip.Bottom - oClip.Top,  (int)unHeight) - 1;
+
 					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
 
 					if (NULL != pNewBuffer)
@@ -854,12 +837,10 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 		{
-			m_oRect = GetBoundingBox();
-
-			m_pDC->SetWindowOrg(m_oRect.Left, m_oRect.Top);
-			m_pDC->SetWindowExt(m_oRect.Right - m_oRect.Left, m_oRect.Bottom - m_oRect.Top);
-			m_pDC->SetViewportOrg(m_oRect.Left, m_oRect.Top);
-			m_pDC->SetViewportExt(m_oRect.Right - m_oRect.Left, m_oRect.Bottom - m_oRect.Top);
+			m_pDC->SetWindowOrg(m_oDCRect.Left, m_oDCRect.Top);
+			m_pDC->SetWindowExt(m_oDCRect.Right - m_oDCRect.Left, m_oDCRect.Bottom - m_oDCRect.Top);
+			m_pDC->SetViewportOrg(m_oDCRect.Left, m_oDCRect.Top);
+			m_pDC->SetViewportExt(m_oDCRect.Right - m_oDCRect.Left, m_oDCRect.Bottom - m_oDCRect.Top);
 
 			if (IsPlaceable() && 0 != m_oPlaceable.ushInch)
 			{
@@ -1036,7 +1017,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 			m_pInterpretator->HANDLE_META_FILLREGION(ushRegionIndex, ushBrushIndex);
 
-		CWmfRegion *pRegion = m_pDC->GetRegion();
+		const CWmfRegion *pRegion = m_pDC->GetRegion();
 
 		if (NULL != pRegion)
 		{
@@ -1066,7 +1047,7 @@ namespace MetaFile
 
 		m_oPlayer.SelectObject(ushRegionIndex);
 
-		CWmfRegion *pRegion = m_pDC->GetRegion();
+		const CWmfRegion *pRegion = m_pDC->GetRegion();
 
 		if (NULL != pRegion)
 		{
@@ -1113,7 +1094,7 @@ namespace MetaFile
 
 		m_oPlayer.SelectObject(ushRegionIndex);
 
-		CWmfRegion *pRegion = m_pDC->GetRegion();
+		const CWmfRegion *pRegion = m_pDC->GetRegion();
 
 		if (NULL != pRegion)
 		{
@@ -1436,11 +1417,11 @@ namespace MetaFile
 		TranslatePoint(shLeft, shTop, oClip.Left, oClip.Top);
 		TranslatePoint(shRight, shBottom, oClip.Right, oClip.Bottom);
 
-		TWmfWindow* pWindow = m_pDC->GetWindow();
+		const TWmfWindow& oWindow{m_pDC->GetWindow()};
 		TRectD oBB;
 
-		TranslatePoint(pWindow->x, pWindow->y, oBB.Left, oBB.Top);
-		TranslatePoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h, oBB.Right, oBB.Bottom);
+		TranslatePoint(oWindow.x, oWindow.y, oBB.Left, oBB.Top);
+		TranslatePoint(oWindow.x + oWindow.w, oWindow.y + oWindow.h, oBB.Right, oBB.Bottom);
 
 		m_pDC->GetClip()->Exclude(oClip, oBB);
 		UpdateOutputDC();
@@ -1502,9 +1483,9 @@ namespace MetaFile
 
 		if (NULL == m_pInterpretator)
 		{
-			TWmfWindow *pWindow = m_pDC->GetWindow();
-			RegisterPoint(pWindow->x             , pWindow->y             );
-			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+			const TWmfWindow& oWindow{m_pDC->GetWindow()};
+			RegisterPoint(oWindow.x            , oWindow.y            );
+			RegisterPoint(oWindow.x + oWindow.w, oWindow.y + oWindow.h);
 		}
 	}
 
@@ -1683,8 +1664,8 @@ namespace MetaFile
 
 		if (NULL == m_pInterpretator)
 		{
-			TWmfWindow *pWindow = m_pDC->GetWindow();
-			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+			const TWmfWindow& oWindow{m_pDC->GetWindow()};
+			RegisterPoint(oWindow.x + oWindow.w, oWindow.y + oWindow.h);
 		}
 	}
 
@@ -1698,16 +1679,19 @@ namespace MetaFile
 
 		if (NULL == m_pInterpretator)
 		{
-			TWmfWindow *pWindow = m_pDC->GetWindow();
-			RegisterPoint(pWindow->x             , pWindow->y             );
-			RegisterPoint(pWindow->x + pWindow->w, pWindow->y + pWindow->h);
+			const TWmfWindow& oWindow{m_pDC->GetWindow()};
+			RegisterPoint(oWindow.x            , oWindow.y            );
+			RegisterPoint(oWindow.x + oWindow.w, oWindow.y + oWindow.h);
 		}
 	}
 
 	void CWmfParserBase::HANDLE_META_ESCAPE(unsigned short ushEscapeFunction, unsigned short ushByteCount)
 	{
 		if (NULL != m_pInterpretator)
+		{
 			m_pInterpretator->HANDLE_META_ESCAPE(ushEscapeFunction, ushByteCount);
+			PRINT_WMF_LOG("Escape function type: " << ushEscapeFunction << " size: " << ushByteCount);
+		}
 
 		if (WMF_META_ESCAPE_ENHANCED_METAFILE == ushEscapeFunction)
 		{
@@ -1766,7 +1750,7 @@ namespace MetaFile
 				if (NULL == m_pInterpretator)
 				{
 					if (!IsPlaceable())
-						m_oBoundingBox = *oEmfParser.GetDCBounds();
+						m_oBoundingBox = oEmfParser.GetDCBounds();
 
 					HANDLE_META_EOF();
 				}
@@ -1785,11 +1769,11 @@ namespace MetaFile
 
 					XmlUtils::CXmlWriter *pXmlWriter = ((CWmfInterpretatorSvg*)GetInterpretator())->GetXmlWriter();
 
-					TRectL *pEmfRect    = oEmfParser.GetDCBounds();
-					TRectL *pCurentRect = GetDCBounds();
+					const TRectL& oEmfRect{oEmfParser.GetDCBounds()};
+					const TRectL& oCurentRect{GetDCBounds()};
 
-					const double dScaleX = std::abs((pCurentRect->Right - pCurentRect->Left) / (pEmfRect->Right  - pEmfRect->Left));
-					const double dScaleY = std::abs((pCurentRect->Bottom - pCurentRect->Top) / (pEmfRect->Bottom - pEmfRect->Top));
+					const double dScaleX = std::abs((oCurentRect.Right  - oCurentRect.Left) / (oEmfRect.Right  - oEmfRect.Left));
+					const double dScaleY = std::abs((oCurentRect.Bottom - oCurentRect.Top)  / (oEmfRect.Bottom - oEmfRect.Top));
 
 					const bool bAddGElement = !Equals(1., dScaleX) || !Equals(1., dScaleY);
 

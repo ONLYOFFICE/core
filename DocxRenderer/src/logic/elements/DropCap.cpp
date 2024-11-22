@@ -1,4 +1,5 @@
 #include "DropCap.h"
+
 #include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
@@ -24,7 +25,9 @@ namespace NSDocxRenderer
 		oWriter.AddInt(nFontSize);
 		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</" + wsTag + L":rPr>");
-		oWriter.WriteString(L"<" + wsTag + L":t xml:space=\"preserve\">" + wsText + L"</" + wsTag + L":t>");
+		oWriter.WriteString(L"<" + wsTag + L":t xml:space=\"preserve\">");
+		oWriter.WriteEncodeXmlString(wsText);
+		oWriter.WriteString(L"</" + wsTag + L":t>");
 		oWriter.WriteString(L"</" + wsTag + L":r>");
 		oWriter.WriteString(L"</" + wsTag + L":p>");
 	}

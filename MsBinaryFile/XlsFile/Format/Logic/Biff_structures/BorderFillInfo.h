@@ -141,7 +141,7 @@ struct FontInfo
 	unsigned short bls = 0;
 	unsigned short sss = 0;
 	unsigned short scheme = 0;
-	unsigned char	uls;
+	unsigned char	uls = 0xff;
 	unsigned char	bFamily = 0;
 	unsigned char	bCharSet = 0;
 

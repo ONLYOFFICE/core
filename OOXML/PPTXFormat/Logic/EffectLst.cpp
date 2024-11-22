@@ -198,6 +198,26 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}	
 
+		void EffectLst::Merge(EffectLst& effectLst) const
+		{
+			if (blur.IsInit())
+				effectLst.blur = blur;
+			if (fillOverlay.IsInit())
+				effectLst.fillOverlay = fillOverlay;
+			if (glow.IsInit())
+				effectLst.glow = glow;
+			if (innerShdw.IsInit())
+				effectLst.innerShdw = innerShdw;
+			if (outerShdw.IsInit())
+				effectLst.outerShdw = outerShdw;
+			if (prstShdw.IsInit())
+				effectLst.prstShdw = prstShdw;
+			if (reflection.IsInit())
+				effectLst.reflection = reflection;
+			if (softEdge.IsInit())
+				effectLst.softEdge = softEdge;
+		}
+
 		void EffectLst::FillParentPointersForChilds()
 		{
 			if(blur.IsInit())

@@ -153,10 +153,10 @@ namespace OOX
 					auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
 					ptr->fRichStr = true;
 					USHORT ind = 0;
+                    XLSB::StrRun run;
+                    run.ich = ptr->str.value().size();
 					ptr->str = ptr->str.value() + crunPtr->toBin(ind);
-					XLSB::StrRun run;
 					run.ifnt = ind;
-					run.ich = ptr->str.value().size();
 					ptr->rgsStrRun.push_back(run);
 					continue;
 				}

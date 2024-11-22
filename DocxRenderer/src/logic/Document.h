@@ -1,9 +1,11 @@
 ﻿#pragma once
-#include "Page.h"
 #include "../../../DesktopEditor/common/Directory.h"
+
+#include "Page.h"
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
 #include "managers/ParagraphStyleManager.h"
+
 
 namespace NSDocxRenderer
 {
@@ -28,9 +30,7 @@ namespace NSDocxRenderer
 		CFontSelector					m_oFontSelector;
 
 		CPage							m_oCurrentPage;
-
 		LONG							m_lCurrentCommandType {0};
-		LONG							m_lClipMode;
 
 		double							m_dWidth  {0.0};
 		double							m_dHeight {0.0};
@@ -105,6 +105,9 @@ namespace NSDocxRenderer
 		HRESULT get_BrushLinearAngle(double* dAngle);
 		HRESULT put_BrushLinearAngle(double dAngle);
 		HRESULT BrushRect(bool val, double left, double top, double width, double height);
+		HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
+		HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
+		HRESULT put_BrushGradInfo(void* pGradInfo);
 		// font -------------------------------------------------------------------------------------
 		HRESULT get_FontName(std::wstring* sName);
 		HRESULT put_FontName(std::wstring sName);

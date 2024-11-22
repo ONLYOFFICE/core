@@ -135,6 +135,10 @@ int main(int argc, char *argv[])
 		std::wstring sAff = sDictionariesDir + L"/" + sName + L"/" + sName + L".aff";
 		std::wstring sDic = sDictionariesDir + L"/" + sName + L"/" + sName + L".dic";
 
+		// skip check diffs if dictionary is not exists
+		if (!NSFile::CFileBinary::Exists(sAff) || !NSFile::CFileBinary::Exists(sDic))
+			continue;
+
 		std::string sAffA = U_TO_UTF8(sAff);
 		std::string sDicA = U_TO_UTF8(sDic);
 

@@ -1,4 +1,5 @@
-#include "./resources.h"
+#include "resources.h"
+
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"

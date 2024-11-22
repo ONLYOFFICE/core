@@ -1061,7 +1061,20 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 68,
 		MoveFromRangeEnd = 69,
 		MoveToRangeStart = 70,
-		MoveToRangeEnd = 71
+		MoveToRangeEnd = 71,
+		AnnotationRef = 72,
+		CommentReference = 73,
+		ContentPart = 74,
+		Cr = 75,
+		EndnoteRef = 76,
+		EndnoteReference = 77,
+		FootnoteRef = 78,
+		FootnoteReference = 79,
+		LastRenderedPageBreak = 80,
+		NoBreakHyphen = 81,
+		SoftHyphen = 82,
+		Sym = 83,
+		Tab = 84
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -1277,6 +1290,7 @@ extern int g_nCurFormatVersion;
 		PictureFormPrRespectBorders = 63,
 		PictureFormPrShiftX = 64,
 		PictureFormPrShiftY = 65,
+		PictureFormPrSignature = 66,
 		FormPrBorder = 70,
 		FormPrShd = 71,
 		TextFormPrCombWRule = 72,

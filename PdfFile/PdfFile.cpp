@@ -429,6 +429,12 @@ std::wstring CPdfFile::GetFontPath(const std::wstring& wsFontName)
 {
 	if (!m_pInternal->pReader)
 		return L"";
+	return m_pInternal->pReader->GetFontPath(wsFontName, false);
+}
+std::wstring CPdfFile::GetEmbeddedFontPath(const std::wstring& wsFontName)
+{
+	if (!m_pInternal->pReader)
+		return L"";
 	return m_pInternal->pReader->GetFontPath(wsFontName);
 }
 BYTE* CPdfFile::GetAnnots(int nPageIndex)

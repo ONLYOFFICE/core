@@ -82,7 +82,7 @@ CFile.prototype._getUint8ClampedArray = function(ptr, len)
 // FILE
 CFile.prototype._openFile = function(buffer, password)
 {
-	if (this.stream && buffer)
+	if (buffer)
 	{
 		let data = new Uint8Array(buffer);
 		this.stream_size = data.length;
@@ -94,7 +94,7 @@ CFile.prototype._openFile = function(buffer, password)
 	if (password)
 	{
 		let passwordBuf = password.toUtf8();
-		let passwordPtr = Module["_malloc"](passwordBuf.length);
+		passwordPtr = Module["_malloc"](passwordBuf.length);
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 
@@ -273,6 +273,8 @@ CFile.prototype._getGlyphs = function(pageIndex)
 		res.result = new Uint8Array(len);
 		res.result.set(textCommandsSrc);
 	}
+	else
+		res.result = [];
 
 	return res;
 };

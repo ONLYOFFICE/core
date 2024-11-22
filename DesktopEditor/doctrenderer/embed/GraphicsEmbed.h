@@ -31,6 +31,8 @@ public:
 
 private:
 	CGraphicsAppImage_private* m_internal;
+
+	friend class CGraphicsEmbed;
 };
 
 namespace NSGraphics { class CGraphics; }

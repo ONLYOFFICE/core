@@ -313,7 +313,10 @@ namespace NSGraphics
 	}
 	void CGraphics::drawImage(const std::wstring& img, double x, double y, double w, double h, BYTE alpha)
 	{
-		std::wstring strImage = (0 == img.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + img;
+		std::wstring strImage = img;
+		if (!NSFile::CFileBinary::Exists(img))
+			strImage = (0 == img.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + img;
+
 #ifdef ENABLE_GR_LOGS
 		std::wcout << L"drawImage " << strImage << L"  " << x << "  " << y << L"  " << w << L"  " << h << L"  " << alpha << std::endl;
 #endif
@@ -1250,7 +1253,10 @@ namespace NSGraphics
 		}
 		else
 		{
-			std::wstring strImage = (0 == src.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + src;
+			std::wstring strImage = src;
+			if (!NSFile::CFileBinary::Exists(src))
+				strImage = (0 == src.find(L"theme") ? m_pAppImage->GetThemesDirectory() : m_pAppImage->GetImagesDirectory()) + L'/' + src;
+
 			std::wstring sName = strImage.substr(0, strImage.rfind(L'.') + 1);
 			std::wstring sExt = src.substr(src.rfind(L'.') + 1);
 			if (sExt == L"svg")

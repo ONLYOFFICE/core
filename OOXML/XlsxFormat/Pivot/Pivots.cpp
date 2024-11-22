@@ -7517,9 +7517,56 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         }
         else if(recordType == XLSB::rt_PCRRecord)
         {
-            reader->SkipRecord(false);
-            recordType = reader->getNextRecordType();
-            recordType = reader->getNextRecordType();
+            auto record = reader->getNextRecord(XLSB::rt_PCRRecord);
+            if (record->checkFitReadSafe(1))
+            {
+                auto arrPivotCacheRecordType = record->getGlobalWorkbookInfo()->pivotCacheRecordType.find(record->getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
+                if (arrPivotCacheRecordType != record->getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+                {
+                    for(const auto& item : arrPivotCacheRecordType->second)
+                    switch (item)
+                    {
+                        case XLS::typePCDIIndex:
+                        {
+                            _UINT32 iitem;
+                            *record >>iitem;
+                            auto IndexValue = new CSharedItemsIndex;
+                            IndexValue->m_oV = iitem;
+                            m_arrItems.push_back(IndexValue);
+                            break;
+                        }
+                        case XLS::typePCDINumber:
+                        {
+                            XLS::Xnum number;
+                            *record >>number;
+                            auto numValue = new CPivotNumericValue;
+                            numValue->m_oValue = number.data.value;
+                            m_arrItems.push_back(numValue);
+                            break;
+                        }
+                        case XLS::typePCDIDatetime:
+                        {
+                            XLSB::PCDIDateTime DateVal;
+                            *record >>DateVal;
+                            auto DatetimeValue = new CPivotDateTimeValue;
+                            DatetimeValue->m_oValue = DateVal.value();
+                            m_arrItems.push_back(DatetimeValue);
+                            break;
+                        }
+                        case XLS::typePCDIString:
+                        {
+                             XLSB::XLWideString StringVal;
+                             *record >>StringVal;
+                             auto CharacterValue = new CPivotCharacterValue;
+                             CharacterValue->m_oValue = StringVal;
+                             m_arrItems.push_back(CharacterValue);
+                             break;
+                        }
+                        default:
+                            break;
+                    }
+                }
+            }
         }
     }
     void CSharedItemsIndex::ReadAttributes(XLS::BaseObjectPtr& obj)

@@ -899,6 +899,12 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
 	else if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml") || 0 == sExt.compare(L".rtf")	|| 0 == sExt.compare(L".doc") || 0 == sExt.compare(L".docx") || 0 == sExt.compare(L".md"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
+	else if (0 == sExt.compare(L".pages"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+	else if (0 == sExt.compare(L".numbers"))
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
+	else if (0 == sExt.compare(L".key"))
+		nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;

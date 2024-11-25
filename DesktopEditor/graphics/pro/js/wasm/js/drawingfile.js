@@ -278,7 +278,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 		oLine["Words"]   = [];
 		let n = reader.readInt();
 		let oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false, "X" : 0, "Width" : 0 };
-		let dCurCharX = 0, dWordX = 0;
+		let dCurCharX = 0;
 		for (let i = 0; i < n; ++i)
 		{
 			let oChar = { "X" : 0 };

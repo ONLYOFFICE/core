@@ -4233,7 +4233,7 @@ namespace OOX
                         return true;
                     }
                     //случай со строками заполненными однотипными сжатыми клетками
-                    if(prevRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
+                    if(prevRow->m_arrItems.size() == 1 && pRow->m_arrItems.size() == 1 && prevRow->m_arrItems.back()->m_oRepeated.IsInit()
                             && pRow->m_arrItems.back()->m_oRepeated.get() ==  prevRow->m_arrItems.back()->m_oRepeated.get())
                     {
                         auto nullvalue = 0;

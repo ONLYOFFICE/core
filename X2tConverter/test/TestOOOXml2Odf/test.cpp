@@ -23,7 +23,7 @@ TEST(OOXml2OdfTest,MathPara)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mn>1</mn><annotation encoding=\"StarMath 5.0\">1 </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mtable><mtr><mtd><mn>1</mn></mtd></mtr></mtable><annotation encoding=\"StarMath 5.0\">1 </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Math)
@@ -82,8 +82,8 @@ TEST(OOXml2OdfTest,MTextHardAttribute)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mstyle mathcolor=\"#FF0000\"><mn>20</mn></mstyle><mspace /><mstyle mathcolor=\"#ED7D31\"><mn>2</mn></mstyle><mrow><mstyle mathcolor=\"#70AD47\"><mo stretchy=\"false\">-</mo><mstyle mathcolor=\"#1F4E79\"><mn>3</mn></mstyle></mstyle></mrow>";
-	StCorrect.m_wsAnnotation = L"color hex FF0000 20 ` color hex ED7D31 2 color hex 70AD47 - color hex 1F4E79 3 ";
+	StCorrect.m_wsSemantic = L"<mstyle mathcolor=\"red\"><mn>20</mn></mstyle><mspace /><mstyle mathcolor=\"#ED7D31\"><mn>2</mn></mstyle><mrow><mstyle mathcolor=\"#70AD47\"><mo stretchy=\"false\">-</mo><mstyle mathcolor=\"#1F4E79\"><mn>3</mn></mstyle></mstyle></mrow>";
+	StCorrect.m_wsAnnotation = L"color red 20 ` color hex ED7D31 2 color hex 70AD47 - color hex 1F4E79 3 ";
 	EXPECT_EQ(StResult,StCorrect);
 }
 TEST(OOXml2OdfTest,FractionOver)
@@ -442,17 +442,6 @@ TEST(OOXml2OdfTest,Example2)
 	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mi mathvariant=\"italic\">x</mi><mo stretchy=\"false\">=</mo></mrow><mfrac><mrow><mrow><mo stretchy=\"false\">-</mo><mi mathvariant=\"italic\">b</mi></mrow><mo stretchy=\"false\">\u00B1</mo></mrow><sqrt><msup><mi mathvariant=\"italic\">b</mi><mn>2</mn></msup><mrow><mo stretchy=\"false\">-</mo><mn>4</mn></mrow><mi mathvariant=\"italic\">ac</mi></sqrt><mn>2a</mn></mfrac></mrow><annotation encoding=\"StarMath 5.0\">x =  { - b +- sqrt { b ^ {2 } - 4 ac } } over { 2a } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
-//TEST(OOXml2OdfTest,Example5)
-//{
-//	XmlUtils::CXmlLiteReader oReader;
-//	OOX::WritingElement* pElement = new OOX::Logic::COMath();
-//	if(oReader.FromString(L"<m:oMath> <m:sSup> <m:sSupPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:sSupPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>e</m:t> </m:r> </m:e> <m:sup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>x</m:t> </m:r> </m:sup> </m:sSup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>=1+</m:t> </m:r> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>x</m:t> </m:r> </m:num> <m:den> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1\u0021</m:t> </m:r> </m:den> </m:f> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>+</m:t> </m:r> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num> <m:sSup> <m:sSupPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:sSupPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>x</m:t> </m:r> </m:e> <m:sup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>2</m:t> </m:r> </m:sup> </m:sSup> </m:num> <m:den> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>2\u0021</m:t> </m:r> </m:den> </m:f> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>+</m:t> </m:r> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num> <m:sSup> <m:sSupPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:bCs/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:sSupPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>x</m:t> </m:r> </m:e> <m:sup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>3</m:t> </m:r> </m:sup> </m:sSup> </m:num> <m:den> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>3\u0021</m:t> </m:r> </m:den> </m:f> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>+…,</m:t> </m:r> <m:r> <m:rPr> <m:sty m:val=\"p\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t xml:space=\"preserve\"> </m:t> </m:r> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>-\u221E\u003Cx\u003C\u221E</m:t> </m:r> </m:oMath>") && oReader.ReadNextNode())
-//		pElement->fromXML(oReader);
-//	StarMath::COOXml2Odf oTest;
-//	oTest.StartConversion(pElement);
-//	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msup><mi mathvariant=\"italic\">e</mi><mi mathvariant=\"italic\">x</mi></msup><mrow><mrow><mo stretchy=\"false\">=</mo><mn>1</mn></mrow><mo stretchy=\"false\">+</mo></mrow><mfrac><mi mathvariant=\"italic\">x</mi><mn>1</mn><mtext>\u0021</mtext></mfrac><mrow><mo stretchy=\"false\">+</mo></mrow><mfrac><msup><mi mathvariant=\"italic\">x</mi><mn>2</mn></msup><mn>2</mn><mtext>\u0021</mtext></mfrac><mrow><mo stretchy=\"false\">+</mo></mrow><mfrac><msup><mi mathvariant=\"italic\">x</mi><mn>3</mn></msup><mn>3</mn><mtext>\u0021</mtext></mfrac><mrow><mo stretchy=\"false\">+</mo><mi mathvariant=\"normal\">…</mi></mrow><mtext>,</mtext><mspace /><mspace /><mrow><mrow><mrow><mo stretchy=\"false\">-</mo><mi mathvariant=\"normal\">\u221E</mi></mrow><mo stretchy=\"false\">&lt;</mo><mi mathvariant=\"italic\">x</mi></mrow><mo stretchy=\"false\">&lt;</mo><mi mathvariant=\"normal\">\u221E</mi></mrow></mrow><annotation encoding=\"StarMath 5.0\">e ^ {x } =  1 + { x } over { 1 &quot;\u0021&quot; } + { x ^ {2 } } over { 2 &quot;\u0021&quot; } + { x ^ {3 } } over { 3 &quot;\u0021&quot; } + dotslow &quot;,&quot; ` ` - infinity &lt; x &lt; infinity </annotation></semantics></math>";
-//	EXPECT_EQ(oTest.GetOdf(),wsOdf);
-//}
 TEST(OOXml2OdfTest,Example1)
 {
 	XmlUtils::CXmlLiteReader oReader;
@@ -494,7 +483,7 @@ TEST(OOXml2OdfTest,HarmonicSeries)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><msup><mstyle mathcolor=\"#FF0000\"><mstyle mathvariant=\"italic\"><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mn>1</mn><mstyle mathcolor=\"#70AD47\"><mtext>+</mtext></mstyle><mfrac><mn>1</mn><mi mathvariant=\"italic\">n</mi></mfrac></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mstyle></mstyle><mstyle mathcolor=\"#FF0000\"><mi mathvariant=\"italic\">n</mi></mstyle></msup><annotation encoding=\"StarMath 5.0\">color hex FF0000 ital left ( 1 color hex 70AD47 &quot;+&quot;{ 1 } over { n } right ) ^ {color hex FF0000 n } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><msup><mstyle mathcolor=\"red\"><mstyle mathvariant=\"italic\"><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mn>1</mn><mstyle mathcolor=\"#70AD47\"><mtext>+</mtext></mstyle><mfrac><mn>1</mn><mi mathvariant=\"italic\">n</mi></mfrac></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mstyle></mstyle><mstyle mathcolor=\"red\"><mi mathvariant=\"italic\">n</mi></mstyle></msup><annotation encoding=\"StarMath 5.0\">color red ital left ( 1 color hex 70AD47 &quot;+&quot;{ 1 } over { n } right ) ^ {color red n } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Example8)
@@ -530,33 +519,102 @@ TEST(OOXml2OdfTest,Example9)
 	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mi mathvariant=\"italic\">cos</mi><mi mathvariant=\"normal\">\u03B1</mi></mrow><mrow><mo stretchy=\"false\">+</mo></mrow><mrow><mi mathvariant=\"italic\">cos</mi><mi mathvariant=\"normal\">\u03B2</mi></mrow><mrow><mo stretchy=\"false\">=</mo><mn>2</mn></mrow><mrow><mi mathvariant=\"italic\">cos</mi><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\u03B1</mi><mo stretchy=\"false\">+</mo><mi mathvariant=\"normal\">\u03B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow><mrow><mi mathvariant=\"italic\">cos</mi><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\u03B1</mi><mo stretchy=\"false\">-</mo><mi mathvariant=\"normal\">\u03B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow></mrow><annotation encoding=\"StarMath 5.0\">cos %alpha + cos %beta =  2 cos { 1 } over { 2 } left ( %alpha + %beta right ) cos { 1 } over { 2 } left ( %alpha - %beta right ) </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
-//TEST(OOXml2OdfTest,MathTemp)
-//{
-//	XmlUtils::CXmlLiteReader oReader;
-//	OOX::WritingElement* pElement = new OOX::Logic::COMathPara();
-//	if(oReader.FromString(L"<m:oMathPara> <m:oMath> <m:sSup> <m:sSupPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:i/> </w:rPr> </m:ctrlPr> </m:sSupPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> <m:sup> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>2</m:t> </m:r> </m:sup> </m:sSup> </m:oMath> </m:oMathPara>") && oReader.ReadNextNode())
-//		pElement->fromXML(oReader);
-//	StarMath::COOXml2Odf oTest;
-//	oTest.StartConversion(pElement);
-//	NSFile::CFileBinary oOriginal;
-//	oOriginal.CreateFile(L"X:/Rabotka/Original.txt");
-//	oOriginal.WriteStringUTF8(oTest.GetOdf());
-//	oOriginal.WriteStringUTF8(oTest.GetAnnotation());
-//	StMath StCorrect,StResult;
-//	StResult.m_wsSemantic = oTest.GetOdf();
-//	StResult.m_wsAnnotation = oTest.GetAnnotation();
-//	StCorrect.m_wsSemantic = L"<mrow><mn>1</mn><mo stretchy=\"false\">/</mo><mn>2</mn></mrow>";
-//	StCorrect.m_wsAnnotation = L"{1} / {2} ";
-//	EXPECT_EQ(StResult,StCorrect);
-//}
-//TEST(OOXml2OdfTest,MathTest)
-//{
-//	XmlUtils::CXmlLiteReader oReader;
-//	OOX::WritingElement* pElement = new OOX::Logic::COMath();
-//	if(oReader.FromString(L"<m:oMath> <m:sSup> <m:sSupPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:b/> <w:i/> <w:strike/> <w:color w:val=\"000000\" w:themeColor=\"text1\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> </m:ctrlPr> </m:sSupPr> <m:e> <m:d> <m:dPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:b/> <w:i/> <w:strike/> <w:color w:val=\"000000\" w:themeColor=\"text1\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> </m:ctrlPr> </m:dPr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:strike/> <w:color w:val=\"C00000\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> <m:t>1+</m:t> </m:r> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:b/> <w:i/> <w:strike/> <w:color w:val=\"000000\" w:themeColor=\"text1\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:strike/> <w:color w:val=\"C00000\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:num> <m:den> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:strike/> <w:color w:val=\"C00000\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> <m:t>n</m:t> </m:r> </m:den> </m:f> </m:e> </m:d> </m:e> <m:sup> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:eastAsia=\"Cambria Math\" w:hAnsi=\"Cambria Math\" w:cs=\"Cambria Math\"/> <w:strike/> <w:color w:val=\"C00000\"/> <w:highlight w:val=\"cyan\"/> <w:u w:val=\"single\"/> </w:rPr> <m:t>n</m:t> </m:r> </m:sup> </m:sSup> </m:oMath>") && oReader.ReadNextNode())
-//		pElement->fromXML(oReader);
-//	StarMath::COOXml2Odf oTest;
-//	oTest.StartConversion(pElement);
-//	std::wstring wsOdf = L"";
-//	EXPECT_EQ(oTest.GetOdf(),wsOdf);
-//}
+TEST(OOXml2OdfTest,TextMrPr)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> </w:rPr> <m:t>1+3</m:t> </m:r> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mn>1</mn></mstyle><mrow><mstyle mathvariant=\"bold-italic\"><mo stretchy=\"false\">+</mo><mn>3</mn></mstyle></mrow><annotation encoding=\"StarMath 5.0\">bold ital 1 bold ital + 3 </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,ColorByName)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:i/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:color w:val=\"191970\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>q</m:t> </m:r> </m:num> <m:den> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:color w:val=\"FF4500\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>b</m:t> </m:r> </m:den> </m:f> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mstyle mathcolor=\"midnightblue\"><mi mathvariant=\"italic\">q</mi></mstyle><mstyle mathcolor=\"orangered\"><mi mathvariant=\"italic\">b</mi></mstyle></mfrac><annotation encoding=\"StarMath 5.0\">{ color midnightblue q } over { color orangered b } </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,EmptyNumerator)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:f> <m:fPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:fPr> <m:num/> <m:den> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>2</m:t> </m:r> </m:den> </m:f> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mn>2</mn></mfrac><annotation encoding=\"StarMath 5.0\">{ } over { 2 } </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,IdentityMatrixDiagonally)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:m> <m:mPr> <m:mcs> <m:mc> <m:mcPr> <m:count m:val=\"3\"/> <m:mcJc m:val=\"center\"/> </m:mcPr> </m:mc> </m:mcs> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:mPr> <m:mr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> </m:mr> <m:mr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> </m:mr> <m:mr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>0</m:t> </m:r> </m:e> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> </m:mr> </m:m> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mtable><mtr><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd><mtd><mn>0</mn></mtd></mtr><mtr><mtd><mn>0</mn></mtd><mtd><mn>0</mn></mtd><mtd><mn>1</mn></mtd></mtr></mtable></mstyle><annotation encoding=\"StarMath 5.0\">bold ital matrix{1 # 0 # 0 ## 0 # 1 # 0 ## 0 # 0 # 1 } </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,ExceptionsDiacritics)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:acc> <m:accPr> <m:chr m:val=\"\u2194\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:accPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> </m:acc> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t xml:space=\"preserve\"> </m:t> </m:r> <m:acc> <m:accPr> <m:chr m:val=\"\u2190\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:accPr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>2</m:t> </m:r> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>b</m:t> </m:r> </m:e> </m:acc> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t xml:space=\"preserve\"> </m:t> </m:r> <m:acc> <m:accPr> <m:chr m:val=\"\u21BC\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:accPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>abc</m:t> </m:r> </m:e> </m:acc> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover><mn>1</mn><mtext>\u2194</mtext></mover><mspace /><mover><mstyle mathvariant=\"bold-italic\"><mn>2b</mn></mstyle><mtext>\u2190</mtext></mover><mspace /><mover><mi mathvariant=\"italic\">abc</mi><mtext>\u21BC</mtext></mover></mrow><annotation encoding=\"StarMath 5.0\">1 csup &quot;\u2194&quot; ` bold ital { 2b } csup &quot;\u2190&quot; ` abc csup &quot;\u21BC&quot; </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,ExceptionsGroupChr)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:box> <m:boxPr> <m:opEmu m:val=\"1\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:boxPr> <m:e> <m:groupChr> <m:groupChrPr> <m:chr m:val=\"\u2194\"/> <m:vertJc m:val=\"bot\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:groupChrPr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>1</m:t> </m:r> </m:e> </m:groupChr> </m:e> </m:box> <m:box> <m:boxPr> <m:opEmu m:val=\"1\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:boxPr> <m:e> <m:groupChr> <m:groupChrPr> <m:chr m:val=\"\u21D4\"/> <m:vertJc m:val=\"bot\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:groupChrPr> <m:e> <m:r> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>2b</m:t> </m:r> </m:e> </m:groupChr> </m:e> </m:box> <m:box> <m:boxPr> <m:opEmu m:val=\"1\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:boxPr> <m:e> <m:groupChr> <m:groupChrPr> <m:chr m:val=\"\u21D0\"/> <m:vertJc m:val=\"bot\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:groupChrPr> <m:e> <m:r> <m:rPr> <m:sty m:val=\"bi\"/> </m:rPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:lang w:val=\"en-US\"/> </w:rPr> <m:t>dia</m:t> </m:r> </m:e> </m:groupChr> </m:e> </m:box> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><munder><mstyle mathvariant=\"bold-italic\"><mn>1</mn></mstyle><mtext>\u2194</mtext></munder><munder><mn>2b</mn><mtext>\u21D4</mtext></munder><munder><mstyle mathvariant=\"bold-italic\"><mi mathvariant=\"italic\">dia</mi></mstyle><mtext>\u21D0</mtext></munder></mrow><annotation encoding=\"StarMath 5.0\">bold ital 1 csub &quot;\u2194&quot; 2b csub &quot;\u21D4&quot; bold ital dia csub &quot;\u21D0&quot; </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,EmptyMatrix)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:m> <m:mPr> <m:mcs> <m:mc> <m:mcPr> <m:count m:val=\"3\"/> <m:mcJc m:val=\"center\"/> </m:mcPr> </m:mc> </m:mcs> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:mPr> <m:mr> <m:e/> <m:e/> <m:e/> </m:mr> <m:mr> <m:e/> <m:e/> <m:e/> </m:mr> <m:mr> <m:e/> <m:e/> <m:e/> </m:mr> </m:m> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mtable><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr></mtable></mstyle><annotation encoding=\"StarMath 5.0\">bold ital matrix{# # ## # # ## # # } </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,EmptyNary)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:nary> <m:naryPr> <m:chr m:val=\"\u2211\"/> <m:limLoc m:val=\"undOvr\"/> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:naryPr> <m:sub/> <m:sup/> <m:e/> </m:nary> </m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><munderover><mo stretchy=\"false\">\u2211</mo></munderover></mstyle><annotation encoding=\"StarMath 5.0\">bold ital sum from {} to {} </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}
+TEST(OOXml2OdfTest,EmptyRoot)
+{
+	XmlUtils::CXmlLiteReader oReader;
+	OOX::WritingElement* pElement = new OOX::Logic::COMath();
+	if(oReader.FromString(L"<m:oMath> <m:rad> <m:radPr> <m:ctrlPr> <w:rPr> <w:rFonts w:ascii=\"Cambria Math\" w:hAnsi=\"Cambria Math\"/> <w:b/> <w:bCs/> <w:i/> <w:iCs/> <w:lang w:val=\"en-US\"/> </w:rPr> </m:ctrlPr> </m:radPr> <m:deg/> <m:e/> </m:rad></m:oMath>") && oReader.ReadNextNode())
+		pElement->fromXML(oReader);
+	StarMath::COOXml2Odf oTest;
+	oTest.StartConversion(pElement);
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mroot></mroot></mstyle><annotation encoding=\"StarMath 5.0\">bold ital nroot { } { } </annotation></semantics></math>";
+	EXPECT_EQ(oTest.GetOdf(),wsOdf);
+}

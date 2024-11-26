@@ -740,13 +740,33 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 	if (OfficeUtils.IsArchive(fileName) == S_OK && (false == isPdfFormatFile(bufferDetect, dwDetectdBytes, sDocumentID)))
 	{
 		if (isOOXFormatFile(fileName))
+        {
+            if (bufferDetect)
+                delete[] bufferDetect;
+            bufferDetect = NULL;
 			return true;
+        }
 		else if (isOpenOfficeFormatFile(fileName, sDocumentID))
-			return true;
+        {
+            if (bufferDetect)
+                delete[] bufferDetect;
+            bufferDetect = NULL;
+            return true;
+        }
 		else if (isOnlyOfficeFormatFile(fileName))
-			return true;
+        {
+            if (bufferDetect)
+                delete[] bufferDetect;
+            bufferDetect = NULL;
+            return true;
+        }
 		else if (isXpsFile(fileName))
-			return true;
+        {
+            if (bufferDetect)
+                delete[] bufferDetect;
+            bufferDetect = NULL;
+            return true;
+        }
 	}
 
 	//-----------------------------------------------------------------------------------------------

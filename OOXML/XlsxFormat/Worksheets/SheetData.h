@@ -34,6 +34,7 @@
 #include "../SharedStrings/Si.h"
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
 
 namespace NSBinPptxRW
 {
@@ -148,6 +149,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream);
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
+            void fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
             void toBin(XLS::BaseObjectPtr& obj);
 
@@ -224,6 +226,7 @@ namespace OOX
 
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, _UINT32 nRow);
             void fromBin(XLS::BaseObjectPtr& obj);
+            bool fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
@@ -243,7 +246,10 @@ namespace OOX
 			void PrepareForBinaryWriter();
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
-			void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
+            void ReadTableBinPart(XLS::StreamCacheReaderPtr& reader);
+            void ReadCellInfo(XLS::CFRecordPtr& record);
+            void ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId);
+            void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 			bool checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas);
 
 			void AfterRead();
@@ -271,6 +277,8 @@ namespace OOX
 			nullable<CSi>			m_oRichText;
 			nullable<CText>			m_oValue;
 //-----------------------------
+            //число повторов чтобы хранить одинаковые в одной
+            nullable_uint           m_oRepeated;
 			nullable_string			m_oCacheValue;
 		};
 
@@ -294,14 +302,17 @@ namespace OOX
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
                         void fromBin(XLS::BaseObjectPtr& obj);
+                        void fromBin(XLS::StreamCacheReaderPtr& reader);
 						XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
 
 			virtual EElementType getType () const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void CheckIndex();
+            bool compressCell(CCell* pCell);
 
 		public:
 			nullable<SimpleTypes::COnOff>					m_oCollapsed;
@@ -316,6 +327,8 @@ namespace OOX
 			nullable<SimpleTypes::COnOff>					m_oThickBot;
 			nullable<SimpleTypes::COnOff>					m_oThickTop;
 			nullable<SimpleTypes::CDouble>					m_oDyDescent;
+            //число повторов для сжатия пустых строк
+            nullable_uint           m_oRepeated;
 		};
 
 		class CSheetData  : public WritingElementWithChilds<CRow>
@@ -336,6 +349,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
             void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
 
 			virtual EElementType getType () const;
@@ -350,8 +364,8 @@ namespace OOX
 			void fromXLSBToXmlCell (CCell& pCell, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowStart (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter);
 			void fromXLSBToXmlRowEnd (CRow* pRow, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter, bool bLastRow = false);
-
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            bool compressRow(CRow* pRow);
 
 	// spreadsheets 2003
 

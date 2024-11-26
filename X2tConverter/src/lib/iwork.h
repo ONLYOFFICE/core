@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,44 +31,33 @@
  */
 #pragma once
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/RectAlign.h"
-#include "./../../Limit/Flip.h"
+#include "../../../Apple/IWork.h"
+#include "common.h"
 
-namespace PPTX
+namespace NExtractTools
 {
-	namespace Logic
+	_UINT32 iworkformat2odf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams, IWorkFileType eVerificationType)
 	{
+		CIWorkFile oFile;
+		oFile.SetTmpDirectory(convertParams.m_sTempDir);
 
-		class Tile : public WrapperWritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(Tile)
-			PPTX_LOGIC_BASE2(Tile)
+		if (eVerificationType != oFile.GetType(sFrom))
+			return AVS_FILEUTILS_ERROR_CONVERT;
 
-			Tile& operator=(const Tile& oSrc);
-			virtual OOX::EElementType getType() const;
+		return (S_OK == oFile.Convert2Odf(sFrom, sTo)) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
+	}
+	_UINT32 pages2odf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return iworkformat2odf(sFrom, sTo, params, convertParams, IWorkFileType::Pages);
+	}
 
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
+	_UINT32 numbers2odf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return iworkformat2odf(sFrom, sTo, params, convertParams, IWorkFileType::Numbers);
+	}
 
-			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-
-			nullable_limit<Limit::RectAlign>	algn;
-			nullable_limit<Limit::Flip>			flip;
-			nullable_int						sx;
-			nullable_int						sy;
-			nullable_int						tx;
-			nullable_int						ty;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace Logic
-} // namespace PPTX
-
+	_UINT32 key2odf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return iworkformat2odf(sFrom, sTo, params, convertParams, IWorkFileType::Keynote);
+	}
+}

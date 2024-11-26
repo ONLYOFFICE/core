@@ -107,9 +107,14 @@ namespace NSThreads
 		{
 			if (i->ID == nThreadId)
 			{
+				CBaseThreadInfo last;
+				last.ID = i->ID;
+				last.Instance = i->Instance;
+
 				m_listThreads.erase(i);
-				m_listThreads.insert(m_listThreads.begin(), *i);
-				return i->Instance;
+				m_listThreads.insert(m_listThreads.begin(), last);
+				
+				return last.Instance;
 			}
 			i++;
 		}

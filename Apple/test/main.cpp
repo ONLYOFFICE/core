@@ -29,46 +29,17 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "./../../WrapperWritingElement.h"
-#include "./../../Limit/RectAlign.h"
-#include "./../../Limit/Flip.h"
+#include "../IWork.h"
+#include "../../DesktopEditor/common/File.h"
 
-namespace PPTX
+int main(int argc, char *argv[])
 {
-	namespace Logic
-	{
+	CIWorkFile oFile;
 
-		class Tile : public WrapperWritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(Tile)
-			PPTX_LOGIC_BASE2(Tile)
+	std::wstring sExamplesDir = NSFile::GetProcessDirectory() + L"/../examples";
+	oFile.Convert2Odf(sExamplesDir + L"/new.pages", sExamplesDir + L"/out_new.odt");
+	oFile.Convert2Odf(sExamplesDir + L"/old.pages", sExamplesDir + L"/out_old.odt");
 
-			Tile& operator=(const Tile& oSrc);
-			virtual OOX::EElementType getType() const;
-
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-
-			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-
-			nullable_limit<Limit::RectAlign>	algn;
-			nullable_limit<Limit::Flip>			flip;
-			nullable_int						sx;
-			nullable_int						sy;
-			nullable_int						tx;
-			nullable_int						ty;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace Logic
-} // namespace PPTX
-
+	return 0;
+}

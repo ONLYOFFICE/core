@@ -311,6 +311,7 @@ enum class TypeElement{
 	dotslow,
 	newline,
 	emptySquare,
+	slash,
 	//function
 	abs,
 	fact,

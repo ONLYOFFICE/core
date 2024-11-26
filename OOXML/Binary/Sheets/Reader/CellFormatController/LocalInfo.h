@@ -76,9 +76,6 @@ public:
 
     /// @brief сокращенная дата
     std::wstring ShortDatePattern;
-    
-    /// @brief полное представление даты
-    std::wstring LongDatePattern;
 
     /// @brief локальные имена месяцев
     _INT16 MonthNamesIndex;

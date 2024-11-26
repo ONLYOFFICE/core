@@ -870,7 +870,7 @@ namespace StarMath
 				wsRecordColor = L"blue";
 			else if(L"00FF00" == wsColor)
 				wsRecordColor = L"lime";
-			else if(L"008000" = wsColor)
+			else if(L"008000" == wsColor)
 				wsRecordColor = L"green";
 			else if(L"FF0000" == wsColor)
 				wsRecordColor = L"red";

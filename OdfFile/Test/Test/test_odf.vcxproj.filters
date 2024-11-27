@@ -41,6 +41,9 @@
     <ClCompile Include="src\tests\Test59708.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\tests\Test69238.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Common.h">
@@ -52,5 +55,6 @@
     <ClInclude Include="src\tests\Test57197.h" />
     <ClInclude Include="src\tests\Test61364.h" />
     <ClInclude Include="src\tests\Test59708.h" />
+    <ClInclude Include="src\tests\Test69238.h" />
   </ItemGroup>
 </Project>

@@ -47,6 +47,9 @@
 #include "../../../../OdfFile/Reader/Format/odf_document.h"
 #include "../../../../OdfFile/Reader/Format/odf_document_impl.h"
 #include "../../../../OdfFile/Reader/Format/office_document.h"
+#include "../../../../OdfFile/Reader/Format/office_body.h"
+#include "../../../../OdfFile/Reader/Format/office_presentation.h"
+#include "../../../../OdfFile/Reader/Format/draw_page.h"
 
 class ODT2DOCX_ConversionEnvironment : public testing::Environment
 {
@@ -77,5 +80,23 @@ public:
 
 private:
 	std::wstring mFilename;
-	cpdoccore::odf_reader::odf_document* mOdf;
+	boost::shared_ptr<cpdoccore::odf_reader::odf_document> mOdf;
+};
+
+class PPTX2ODP_ConversionEnvironment : public testing::Environment
+{
+public:
+	PPTX2ODP_ConversionEnvironment(const std::wstring& filename);
+
+	cpdoccore::odf_reader::odf_document*			GetDocument();
+	cpdoccore::odf_reader::office_document_content* GetContent();
+	cpdoccore::odf_reader::office_body*				GetBody();
+	cpdoccore::odf_reader::draw_page*				GetPage(size_t page_index);
+
+	virtual void SetUp() override;
+	virtual void TearDown() override;
+
+private:
+	std::wstring mFilename;
+	boost::shared_ptr<cpdoccore::odf_reader::odf_document> mOdf;
 };

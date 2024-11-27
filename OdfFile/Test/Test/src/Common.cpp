@@ -112,6 +112,20 @@ boost::optional<std::wstring> get_conversion_destination_path(const std::wstring
 	}
 }
 
+std::wstring get_oox_to_odf_conversion_type(const std::wstring& filename)
+{
+	COfficeFileFormatChecker fileChecker(filename);
+
+	if (fileChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
+		return L"text";
+	else if (fileChecker.nFileType & AVS_OFFICESTUDIO_FILE_SPREADSHEET)
+		return L"spreadsheet";
+	else if (fileChecker.nFileType & AVS_OFFICESTUDIO_FILE_PRESENTATION)
+		return L"presentation";
+
+	return L"";
+}
+
 std::wstring create_unique_name_with_prefix(const std::wstring& strFolderPathRoot, const std::wstring& prefix)
 {
 #if defined(_WIN32) || defined (_WIN64)
@@ -194,6 +208,36 @@ boost::optional<std::wstring> convert_odf_to_ooxml(const std::wstring& srcFileNa
 	return nResult == 0 ? boost::optional<std::wstring>(dstTempPath) : boost::none;
 }
 
+boost::shared_ptr<cpdoccore::odf_reader::odf_document> convert_ooxml_to_odf(const std::wstring& srcFileName)
+{
+	boost::shared_ptr<cpdoccore::odf_reader::odf_document> odf = nullptr;
+
+	const std::wstring ooxUnpackedPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(srcFileName));
+
+	COfficeUtils oCOfficeUtils(nullptr);
+	if (S_OK == oCOfficeUtils.ExtractToDirectory(srcFileName, ooxUnpackedPath, NULL, 0))
+	{
+		const std::wstring dstPath = create_unique_name_with_prefix(NSDirectory::GetFolderPath(srcFileName), NSFile::GetFileName(srcFileName));
+		std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(srcFileName));
+
+		Oox2Odf::Converter converter(ooxUnpackedPath, get_oox_to_odf_conversion_type(srcFileName), L"", false, tempPath);
+
+		converter.convert();
+		converter.write(dstPath, tempPath, L"", L"");
+
+		NSDirectory::DeleteDirectory(tempPath);
+
+		tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(srcFileName));
+		odf.reset(new cpdoccore::odf_reader::odf_document(dstPath, tempPath, L""));
+
+		NSDirectory::DeleteDirectory(tempPath);
+	}
+
+	NSDirectory::DeleteDirectory(ooxUnpackedPath);
+
+	return odf;
+}
+
 ODT2DOCX_ConversionEnvironment::ODT2DOCX_ConversionEnvironment(const std::wstring& filename)
 	: mFilename(filename),
 	mDocx(nullptr)
@@ -229,7 +273,7 @@ DOCX2ODT_ConvertsionEnvironment::DOCX2ODT_ConvertsionEnvironment(const std::wstr
 
 cpdoccore::odf_reader::odf_document* DOCX2ODT_ConvertsionEnvironment::GetDocument()
 {
-	return mOdf;
+	return mOdf.get();
 }
 cpdoccore::odf_reader::office_document_content* DOCX2ODT_ConvertsionEnvironment::GetContent()
 {
@@ -247,36 +291,74 @@ cpdoccore::odf_reader::office_body* DOCX2ODT_ConvertsionEnvironment::GetBody()
 
 void DOCX2ODT_ConvertsionEnvironment::SetUp()
 {
-	const std::wstring docxUnpackedPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
-
-	COfficeUtils oCOfficeUtils(nullptr);
-	if (S_OK == oCOfficeUtils.ExtractToDirectory(mFilename, docxUnpackedPath, NULL, 0))
-	{
-		const std::wstring dstPath = create_unique_name_with_prefix(NSDirectory::GetFolderPath(mFilename), NSFile::GetFileName(mFilename));
-		std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
-
-		Oox2Odf::Converter converter(docxUnpackedPath, L"text", L"", false, tempPath);
-
-		converter.convert();
-		converter.write(dstPath, tempPath, L"", L"");
-
-		NSDirectory::DeleteDirectory(tempPath);
-
-		tempPath = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetFolderPath(mFilename));
-		mOdf = new cpdoccore::odf_reader::odf_document(dstPath, tempPath, L"");
-
-		NSDirectory::DeleteDirectory(tempPath);
-	}
-
-	NSDirectory::DeleteDirectory(docxUnpackedPath);
+	mOdf = convert_ooxml_to_odf(mFilename);
 }
 
 void DOCX2ODT_ConvertsionEnvironment::TearDown()
 {
 	if (mOdf)
-	{
 		NSDirectory::DeleteDirectory(mOdf->get_folder());
+}
 
-		delete mOdf;
+PPTX2ODP_ConversionEnvironment::PPTX2ODP_ConversionEnvironment(const std::wstring& filename)
+	: mFilename(filename),
+	mOdf(nullptr)
+{}
+
+cpdoccore::odf_reader::odf_document* PPTX2ODP_ConversionEnvironment::GetDocument()
+{
+	return mOdf.get();
+}
+
+cpdoccore::odf_reader::office_document_content* PPTX2ODP_ConversionEnvironment::GetContent()
+{
+	return dynamic_cast<cpdoccore::odf_reader::office_document_content*>(mOdf->get_impl()->get_content());
+}
+
+cpdoccore::odf_reader::office_body* PPTX2ODP_ConversionEnvironment::GetBody()
+{
+	using namespace cpdoccore::odf_reader;
+
+	office_document_content* content = GetContent();
+	if (content)
+	{
+		office_body* body = dynamic_cast<office_body*>(content->office_body_.get());
+		return body;
 	}
+
+	return nullptr;
+}
+
+cpdoccore::odf_reader::draw_page* PPTX2ODP_ConversionEnvironment::GetPage(size_t page_index)
+{
+	using namespace cpdoccore::odf_reader;
+
+	cpdoccore::odf_reader::office_body* body = GetBody();
+
+	if (body)
+	{
+		office_presentation* presentation = dynamic_cast<office_presentation*>(body->content_.get());
+
+		if (presentation)
+		{
+			if (page_index >= presentation->pages_.size())
+				return nullptr;
+
+			draw_page* page = dynamic_cast<draw_page*>(presentation->pages_[page_index].get());
+			return page;
+		}
+	}
+
+	return nullptr;
+}
+
+void PPTX2ODP_ConversionEnvironment::SetUp()
+{
+	mOdf = convert_ooxml_to_odf(mFilename);
+}
+
+void PPTX2ODP_ConversionEnvironment::TearDown()
+{
+	if (mOdf)
+		NSDirectory::DeleteDirectory(mOdf->get_folder());
 }

@@ -6547,9 +6547,18 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_DrawingType::pptxDrawing);
 		int nCurPos = m_oBcw.WriteItemWithLengthStart();
+			
 			m_oBcw.m_oStream.StartRecord(0);
 			m_oBcw.m_oStream.WriteRecord2(1, pCellAnchor->m_oElement->GetElem());
 			m_oBcw.m_oStream.EndRecord();
+
+			if (pCellAnchor->m_oElement->GetElemAlternative().IsInit())
+			{
+				m_oBcw.m_oStream.StartRecord(0x99);
+				m_oBcw.m_oStream.WriteRecord2(1, pCellAnchor->m_oElement->GetElemAlternative());
+				m_oBcw.m_oStream.EndRecord();
+			}
+
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 
 		m_oBcw.m_oStream.SetRels(oldRels);
@@ -8613,7 +8622,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 		}break;
 	}		
-	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result)
+	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result && AVS_FILEUTILS_ERROR_CONVERT_CELLLIMITS != result)
 	{
 		RELEASEOBJECT(pXlsx);
 		return result;

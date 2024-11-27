@@ -50,6 +50,7 @@ public:
 
 	void Close();
 
+	void SetParams(COfficeDrawingPageParams* pParams);
 	std::wstring GetTempDirectory();
 	void SetTempDirectory(const std::wstring& directory);
 
@@ -83,6 +84,7 @@ public:
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
 	std::map<std::wstring, std::wstring> GetAnnotFonts(Object* pRefAnnot);
+	std::map<std::wstring, std::wstring> GetFonts() { return m_mFonts; }
 
 private:
 	PDFDoc*                m_pPDFDocument;

@@ -269,6 +269,11 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(pdfoform2doct);
 	DECLARE_CONVERT_FUNC(doct2pdfoform);
 
+	// iWork
+	DECLARE_CONVERT_FUNC(pages2odf);
+	DECLARE_CONVERT_FUNC(numbers2odf);
+	DECLARE_CONVERT_FUNC(key2odf);
+
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	_UINT32 convertmailmerge(const InputParamsMailMerge& oMailMergeSend, const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams);
 

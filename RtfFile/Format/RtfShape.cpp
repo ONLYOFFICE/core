@@ -1160,19 +1160,23 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
         sStyle += L"rotation:" + std::to_wstring(m_nRelRotation / 65536) + L";";
 
 	int nZIndex = PROP_DEF;
-	if( PROP_DEF != m_nRelZOrder )
-		nZIndex = m_nRelZOrder;
-	else if( PROP_DEF != m_nZOrder )
-		nZIndex = m_nZOrder;
+	if (PROP_DEF != m_nRelZOrder)
+	{
+		if (0 == m_nZOrderRelative) nZIndex = m_nRelZOrder;
+		else nZIndex = -m_nRelZOrder;
+	}
+	else if (PROP_DEF != m_nZOrder)
+	{
+		if (0 == m_nZOrderRelative) nZIndex = m_nZOrder;
+		else nZIndex = -m_nZOrder;
+	}
 	else if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2)
 	{
-		nZIndex = poRtfDocument->GetZIndex();
+		nZIndex = poRtfDocument->GetZIndex(0 != m_nZOrderRelative);
 	}
 
 	if( PROP_DEF != m_nZOrderRelative && PROP_DEF != nZIndex)
 	{
-		if( 0 == m_nZOrderRelative )	nZIndex = abs(nZIndex);
-		else							nZIndex = -abs(nZIndex);
 	}
 	if (PROP_DEF != nZIndex)
         sStyle += L"z-index:" + std::to_wstring(nZIndex) + L";";

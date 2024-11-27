@@ -731,17 +731,24 @@ void Annot::generateFreeTextAppearance() {
   if (annotObj.dictLookup("CA", &obj1)->isNum()) {
     gfxStateDict.initDict(doc->getXRef());
     gfxStateDict.dictAdd(copyString("ca"), obj1.copy(&obj2));
+	gfxStateDict.dictAdd(copyString("CA"), obj1.copy(&obj2));
     appearBuf->append("/GS1 gs\n");
   }
   obj1.free();
 
-  //----- draw the border
   lineWidth = 0;
   if (borderStyle && borderStyle->getWidth() != 0) {
-    setLineStyle(borderStyle, &lineWidth);
-    appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re s\n",
-        0.5 * lineWidth, 0.5 * lineWidth,
-        xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+	lineWidth = 0.1;
+	if (borderStyle->getWidth() > 0) {
+	  lineWidth = borderStyle->getWidth();
+	}
+  }
+
+  if (annotObj.dictLookup("C", &obj1)->isArray()) {
+	setFillColor(&obj1);
+	appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re f\n",
+		0.5 * lineWidth, 0.5 * lineWidth,
+		xMax - xMin - lineWidth, yMax - yMin - lineWidth);
   }
 
   //----- draw the text
@@ -757,7 +764,7 @@ void Annot::generateFreeTextAppearance() {
     quadding = 0;
   }
   obj1.free();
-  if (annotObj.dictLookup("RC", &appearDict)->isString() && annotObj.dictLookup("DA", &obj1)->isString()) {
+  if (annotObj.dictLookup("DA", &obj1)->isString()) {
     da = obj1.getString()->copy();
   } else {
     da = new GString();
@@ -774,6 +781,15 @@ void Annot::generateFreeTextAppearance() {
   drawText(text, da, quadding, lineWidth, rot);
   delete text;
   delete da;
+
+  //----- draw the border
+  if (lineWidth != 0) {
+	setLineStyle(borderStyle, &lineWidth);
+	appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re S\n",
+		0.5 * lineWidth, 0.5 * lineWidth,
+		xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+	obj1.free();
+  }
 
   //----- build the appearance stream dictionary
   appearDict.initDict(doc->getXRef());
@@ -1049,8 +1065,8 @@ void Annot::setLineStyle(AnnotBorderStyle *bs, double *lineWidth) {
   int dashLength, i;
 
   w = 0.1;
-  if (borderStyle && (w = borderStyle->getWidth()) <= 0) {
-    w = 0.1;
+  if (borderStyle && borderStyle->getWidth() > 0) {
+	w = borderStyle->getWidth();
   }
   *lineWidth = w;
   appearBuf->appendf("{0:.4f} w\n", w);
@@ -1379,7 +1395,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   const char *charName;
   double dx, dy, fontSize, fontSize2, x, y, w;
   Gushort charWidth;
-  int tfPos, tmPos, i, j, c;
+  int rgPos, i, j, c;
 
   // check for a Unicode string
   //~ this currently drops all non-Latin1 characters
@@ -1399,7 +1415,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   }
 
   // parse the default appearance string
-  tfPos = tmPos = -1;
+  rgPos = -1;
   if (da) {
     daToks = new GList();
     i = 0;
@@ -1415,33 +1431,13 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 	i = j;
       }
     }
-    for (i = 2; i < daToks->getLength(); ++i) {
-      if (i >= 2 && !((GString *)daToks->get(i))->cmp("Tf")) {
-	tfPos = i - 2;
-      } else if (i >= 6 && !((GString *)daToks->get(i))->cmp("Tm")) {
-	tmPos = i - 6;
-      }
+	for (i = 0; i < daToks->getLength(); ++i) {
+	  if (i >= 3 && !((GString *)daToks->get(i))->cmp("rg")) {
+	rgPos = i - 3;
+	  }
     }
   } else {
     daToks = new GList();
-  }
-
-  // get the font and font size
-  fontSize = 0;
-  if (tfPos >= 0) {
-    //~ where do we look up the font?
-    tok = (GString *)daToks->get(tfPos);
-    tok->clear();
-    tok->append("/xpdf_default_font");
-    tok = (GString *)daToks->get(tfPos + 1);
-    fontSize = atof(tok->getCString());
-  } else {
-    error(errSyntaxError, -1,
-	  "Missing 'Tf' operator in annotation's DA string");
-    daToks->append(new GString("/xpdf_default_font"));
-    daToks->append(new GString("14"));
-    daToks->append(new GString("Tf"));
-    fontSize = 14;
   }
 
   // setup
@@ -1477,22 +1473,8 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
     }
   }
 
-  // compute font autosize
-  if (fontSize == 0) {
-    fontSize = dy - 2 * margin;
-    fontSize2 = (dx - 2 * margin) / w;
-    if (fontSize2 < fontSize) {
-      fontSize = fontSize2;
-    }
-    fontSize = floor(fontSize);
-    if (tfPos >= 0) {
-      tok = (GString *)daToks->get(tfPos + 1);
-      tok->clear();
-      tok->appendf("{0:.4f}", fontSize);
-    }
-  }
-
   // compute text start position
+  fontSize = 14;
   w *= fontSize;
   switch (quadding) {
   case 0:
@@ -1507,28 +1489,18 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
     break;
   }
   y = dy - margin - 2 - 0.789571 * fontSize;
-
-  // set the font matrix
-  if (tmPos >= 0) {
-    tok = (GString *)daToks->get(tmPos + 4);
-    tok->clear();
-    tok->appendf("{0:.4f}", x);
-    tok = (GString *)daToks->get(tmPos + 5);
-    tok->clear();
-    tok->appendf("{0:.4f}", y);
-  }
   
   // write the DA string
-  if (daToks) {
-    for (i = 0; i < daToks->getLength(); ++i) {
-      appearBuf->append((GString *)daToks->get(i))->append(' ');
-    }
+  appearBuf->append("/xpdf_default_font 14 Tf\n");
+  if (rgPos > 0) {
+	appearBuf->append((GString *)daToks->get(rgPos))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 1))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 2))->append(' ');
+	appearBuf->append("rg\n");
   }
 
-  // write the font matrix (if not part of the DA string)
-  if (tmPos < 0) {
-    appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
-  }
+  // write the font matrix
+  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
 
   // write the text string
   appearBuf->append('(');
@@ -1548,6 +1520,13 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   // cleanup
   appearBuf->append("ET\n");
   appearBuf->append("Q\n");
+
+  if (rgPos > 0) {
+	appearBuf->append((GString *)daToks->get(rgPos))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 1))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 2))->append(' ');
+	appearBuf->append("RG\n");
+  }
 
   if (daToks) {
     deleteGList(daToks, GString);

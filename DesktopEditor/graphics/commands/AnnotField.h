@@ -86,6 +86,7 @@ public:
 			const std::wstring& GetV();
 			const std::wstring& GetRV();
 			const std::wstring& GetAPV();
+			BYTE* GetRender(LONG& nLen);
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -94,6 +95,8 @@ public:
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
 			std::wstring m_wsAPV;
+			LONG         m_nRenderLen;
+			BYTE*        m_pRender;
 		};
 
 		class GRAPHICS_DECL CChoiceWidgetPr
@@ -105,6 +108,7 @@ public:
 			const std::vector<int>& GetI();
 			const std::vector<std::wstring>& GetArrV();
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
+			BYTE* GetRender(LONG& nLen);
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -115,6 +119,8 @@ public:
 			std::vector<int> m_arrI;
 			std::vector<std::wstring> m_arrV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+			LONG         m_nRenderLen;
+			BYTE*        m_pRender;
 		};
 
 		class GRAPHICS_DECL CSignatureWidgetPr
@@ -402,11 +408,13 @@ public:
 	class GRAPHICS_DECL CStampAnnotPr
 	{
 	public:
+		int GetRotate();
 		const std::wstring& GetName();
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
 	private:
+		int m_nRotate;
 		std::wstring m_wsName;
 	};
 

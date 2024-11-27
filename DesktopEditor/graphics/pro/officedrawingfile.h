@@ -43,6 +43,18 @@ enum OfficeDrawingFileType
     odftUndefined = 255
 };
 
+struct COfficeDrawingPageParams
+{
+	bool m_bNeedDrawAnnotation;
+
+	COfficeDrawingPageParams() : m_bNeedDrawAnnotation(true){}
+
+	void SetDrawAnnotation(bool bDraw)
+	{
+		m_bNeedDrawAnnotation = bDraw;
+	}
+};
+
 class GRAPHICS_DECL IOfficeDrawingFile
 {
 public:
@@ -70,7 +82,7 @@ public:
     // Pages info/draw
     virtual int GetPagesCount() = 0;
     virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) = 0;
-    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak) = 0;
+    virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams = NULL) = 0;
 
     // Common methods/wrappers on GetPageInfo + DrawPageOnRenderer
     virtual unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH,

@@ -382,11 +382,12 @@ bool CPdfFile::ValidMetaData()
 		return false;
 	return m_pInternal->pReader->ValidMetaData();
 }
-void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void CPdfFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams)
 {
 	if (!m_pInternal->pReader)
 		return;
 	pRenderer->CommandLong(c_nPenWidth0As1px, 1);
+	m_pInternal->pReader->SetParams(pParams);
 	m_pInternal->pReader->DrawPageOnRenderer(pRenderer, nPageIndex, pBreak);
 }
 std::wstring CPdfFile::GetInfo()

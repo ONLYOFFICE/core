@@ -1345,7 +1345,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 	
 	//если  фейковый предыдущий уровень (для сохранения порядка выше) - привязывааем к уровню выше
 
-	for (int i = impl_->current_level_.size() - 1; elm && i >= 0; i--)
+	for (int i = (int)impl_->current_level_.size() - 1; elm && i >= 0; i--)
 	{
 		if (impl_->current_level_[i].elm)
 		{
@@ -1653,7 +1653,7 @@ int odf_drawing_context::get_formulas_count()
 	if (!impl_->current_drawing_state_.oox_shape_)
 		return 0;
 
-	return impl_->current_drawing_state_.oox_shape_->equations.size();
+	return (int)impl_->current_drawing_state_.oox_shape_->equations.size();
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
@@ -1767,6 +1767,11 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	size_t nStart = 0;
 	size_t nCurrent = 0;
 
+	XmlUtils::replace_all(fmla, L" * ", L"*");
+	XmlUtils::replace_all(fmla, L" - ", L"-");
+	XmlUtils::replace_all(fmla, L" + ", L"+");
+	XmlUtils::replace_all(fmla, L" / ", L"/");
+
     const wchar_t* pData = fmla.c_str();
 
 	int nFound = 0, x = 0, y = 0;
@@ -1792,7 +1797,10 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 				}
 				else
 				{
-					val[nFound-1] = std::wstring( pData + nStart, (ULONG)(nCurrent - nStart));
+					if (nFound > 4) 
+						return; // !
+
+					val[nFound - 1] = std::wstring(pData + nStart, (ULONG)(nCurrent - nStart));
 				}
 				nStart = nCurrent + 1;
 				++nFound;
@@ -1837,7 +1845,7 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 			{
 				odf_fmla += val[i] + L",";
 			}
-			odf_fmla += val[nFound-1] + L")"; break;
+			odf_fmla += val[nFound - 1] + L")"; break;
 		case 4:
 			odf_fmla = L"abs(" + val[0] + L")";
 			break;
@@ -1865,7 +1873,6 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
 	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
-	//XmlUtils::replace_all(name, L"gd", L"f");
 
 	impl_->current_drawing_state_.oox_shape_->add(name, odf_fmla);
 }

@@ -54,9 +54,9 @@ v8::Local<v8::String> CreateV8String(v8::Isolate* i, const std::string& str);
 
 #ifdef __ANDROID__
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #define ANDROID_LOGS
-#endif
+//#endif
 
 #ifdef ANDROID_LOGS
 #include <android/log.h>
@@ -488,7 +488,11 @@ namespace NSJSBase
 
 		virtual CJSEmbedObject* getNative()
 		{
+			if (0 == value->InternalFieldCount())
+				return NULL;
 			v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(value->GetInternalField(0));
+			if (field.IsEmpty())
+				return NULL;
 			return (CJSEmbedObject*)field->Value();
 		}
 

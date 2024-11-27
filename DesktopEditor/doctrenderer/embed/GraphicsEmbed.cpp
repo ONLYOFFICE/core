@@ -1,8 +1,178 @@
-#include "GraphicsEmbed.h"
+#include "../graphics.h"
+#include <map>
+#include "../../../Common/Network/FileTransporter/include/FileTransporter.h"
+
+// APPLICATION INFO
+class CGraphicsAppImage_private
+{
+public:
+	NSFonts::IApplicationFonts* m_pFonts;
+	std::wstring m_sFontsDirectory;
+	std::wstring m_sImagesDirectory;
+	std::wstring m_sThemesDirectory;
+	bool m_bIsRgba;
+
+	std::map<std::wstring, std::wstring> m_mapDownloads;
+
+	CGraphicsAppImage_private()
+	{
+		m_pFonts = NULL;
+		m_sFontsDirectory = L"";
+		m_sImagesDirectory = L"";
+		m_sThemesDirectory = L"";
+		m_bIsRgba = false;
+	}
+	~CGraphicsAppImage_private()
+	{
+		RELEASEINTERFACE(m_pFonts);
+
+		for (std::map<std::wstring, std::wstring>::iterator i = m_mapDownloads.begin(); i != m_mapDownloads.end(); i++)
+		{
+			std::wstring sTmp = i->second;
+			if (NSFile::CFileBinary::Exists(sTmp))
+				NSFile::CFileBinary::Remove(sTmp);
+		}
+	}
+
+	bool IsNeedDownload(const std::wstring& sUrl)
+	{
+		if ((0 == sUrl.find(L"www.")) ||
+			(0 == sUrl.find(L"http://")) ||
+			(0 == sUrl.find(L"https://")))
+			return true;
+		return false;
+	}
+
+	std::wstring GetImagePath(const std::wstring& sUrl)
+	{
+		std::map<std::wstring, std::wstring>::iterator find = m_mapDownloads.find(sUrl);
+		if (find != m_mapDownloads.end())
+			return find->second;
+
+		NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
+
+		std::wstring sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"IMG");
+		if (NSFile::CFileBinary::Exists(sTmpFile))
+			NSFile::CFileBinary::Remove(sTmpFile);
+		sTmpFile = sTmpFile + L".png";
+
+		oDownloader.SetFilePath(sTmpFile);
+		oDownloader.Start(0);
+		while ( oDownloader.IsRunned() )
+		{
+			NSThreads::Sleep( 10 );
+		}
+		bool bIsDownloaded = oDownloader.IsFileDownloaded();
+
+		if (bIsDownloaded)
+		{
+			m_mapDownloads.insert(std::pair<std::wstring, std::wstring>(sUrl, sTmpFile));
+			return sTmpFile;
+		}
+
+		return sUrl;
+	}
+};
+
+CGraphicsAppImage::CGraphicsAppImage()
+{
+	m_internal = new CGraphicsAppImage_private();
+}
+CGraphicsAppImage::~CGraphicsAppImage()
+{
+	delete m_internal;
+}
+
+void CGraphicsAppImage::SetFontsDirectory(const std::wstring& dir)
+{
+	m_internal->m_sFontsDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetFontsDirectory()
+{
+	return m_internal->m_sFontsDirectory;
+}
+
+void CGraphicsAppImage::SetImagesDirectory(const std::wstring& dir)
+{
+	m_internal->m_sImagesDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetImagesDirectory()
+{
+	return m_internal->m_sImagesDirectory;
+}
+
+void CGraphicsAppImage::SetThemesDirectory(const std::wstring& dir)
+{
+	m_internal->m_sThemesDirectory = dir;
+}
+std::wstring CGraphicsAppImage::GetThemesDirectory()
+{
+	return m_internal->m_sThemesDirectory;
+}
+
+void CGraphicsAppImage::SetFonts(NSFonts::IApplicationFonts* fonts)
+{
+	m_internal->m_pFonts = fonts;
+	ADDREFINTERFACE(fonts);
+}
+NSFonts::IApplicationFonts* CGraphicsAppImage::GetFonts()
+{
+	return m_internal->m_pFonts;
+}
+
+void CGraphicsAppImage::SetRgba(const bool& isRgba)
+{
+	m_internal->m_bIsRgba = isRgba;
+}
+bool CGraphicsAppImage::GetRgba()
+{
+	return m_internal->m_bIsRgba;
+}
+
+unsigned char* CGraphicsAppImage::GetBits(int& w, int& h)
+{
+	return NULL;
+}
+unsigned char* CGraphicsAppImage::AllocBits(const int& w, const int& h)
+{
+	return new unsigned char[4 * w * h];
+}
+
+// APPLICATION INFO END
+
+CGraphicsEmbed::CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics())
+{
+}
+CGraphicsEmbed::~CGraphicsEmbed()
+{
+	RELEASEOBJECT(m_pInternal);
+}
+
+CGraphicsAppImage* CGraphicsEmbed::GetAppImage()
+{
+	return m_pInternal->m_pAppImage;
+}
+
+void CGraphicsEmbed::SetAppImage(CGraphicsAppImage* appImage)
+{
+	m_pInternal->m_pAppImage = appImage;
+}
 
 JSSmart<CJSValue> CGraphicsEmbed::create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm)
 {
-	m_pInternal->init((NSNativeControl::CNativeControl*)Native->toObject()->getNative()->getObject(), width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
+	NSNativeControl::CNativeControl* pControl = NULL;
+	if (!Native->isNull())
+	{
+		pControl = (NSNativeControl::CNativeControl*)Native->toObject()->getNative()->getObject();
+
+		if (m_pInternal->m_pAppImage)
+			delete m_pInternal->m_pAppImage;
+		m_pInternal->m_pAppImage = new CGraphicsAppImage();
+		m_pInternal->m_pAppImage->SetFontsDirectory(pControl->m_strFontsDirectory);
+		m_pInternal->m_pAppImage->SetImagesDirectory(pControl->m_strImagesDirectory);
+	}
+
+	m_pInternal->init(width_px->toDouble(), height_px->toDouble(), width_mm->toDouble(), height_mm->toDouble());
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::Destroy()
@@ -150,11 +320,19 @@ JSSmart<CJSValue> CGraphicsEmbed::ClearLastFont()
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawImage2(JSSmart<CJSValue> img, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> alpha, JSSmart<CJSValue> srcRect)
 {
-	m_pInternal->drawImage(img->toStringW(), x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), alpha->toInt32());
+	std::wstring sUrl = img->toStringW();
+	if (m_pInternal->m_pAppImage && m_pInternal->m_pAppImage->m_internal->IsNeedDownload(sUrl))
+		sUrl = m_pInternal->m_pAppImage->m_internal->GetImagePath(sUrl);
+
+	m_pInternal->drawImage(sUrl, x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), alpha->toInt32());
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::drawImage (JSSmart<CJSValue> img, JSSmart<CJSValue> x, JSSmart<CJSValue> y, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> alpha, JSSmart<CJSValue> srcRect, JSSmart<CJSValue> nativeImage)
 {
+	std::wstring sUrl = img->toStringW();
+	if (m_pInternal->m_pAppImage && m_pInternal->m_pAppImage->m_internal->IsNeedDownload(sUrl))
+		sUrl = m_pInternal->m_pAppImage->m_internal->GetImagePath(sUrl);
+
 	m_pInternal->drawImage(img->toStringW(), x->toDouble(), y->toDouble(), w->toDouble(), h->toDouble(), alpha->toInt32());
 	return NULL;
 }
@@ -459,7 +637,11 @@ JSSmart<CJSValue> CGraphicsEmbed::GetBrushColor()
 }
 JSSmart<CJSValue> CGraphicsEmbed::put_brushTexture(JSSmart<CJSValue> src, JSSmart<CJSValue> type)
 {
-	m_pInternal->put_brushTexture(src->toStringW(), type->toInt32());
+	std::wstring sUrl = src->toStringW();
+	if (m_pInternal->m_pAppImage && m_pInternal->m_pAppImage->m_internal->IsNeedDownload(sUrl))
+		sUrl = m_pInternal->m_pAppImage->m_internal->GetImagePath(sUrl);
+
+	m_pInternal->put_brushTexture(sUrl, type->toInt32());
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::put_brushTextureMode(JSSmart<CJSValue> mode)

@@ -1,20 +1,56 @@
 #ifndef _BUILD_NATIVE_GRAPHICS_EMBED_H_
 #define _BUILD_NATIVE_GRAPHICS_EMBED_H_
 
-#include "../graphics.h"
+#include "../../graphics/pro/Fonts.h"
 #include "../js_internal/js_base.h"
 
+class CGraphicsAppImage_private;
+class JS_DECL CGraphicsAppImage
+{
+public:
+	CGraphicsAppImage();
+	virtual ~CGraphicsAppImage();
+public:
+	void SetFontsDirectory(const std::wstring& dir);
+	std::wstring GetFontsDirectory();
+
+	void SetImagesDirectory(const std::wstring& dir);
+	std::wstring GetImagesDirectory();
+
+	void SetThemesDirectory(const std::wstring& dir);
+	std::wstring GetThemesDirectory();
+
+	void SetFonts(NSFonts::IApplicationFonts* fonts);
+	NSFonts::IApplicationFonts* GetFonts();
+
+	void SetRgba(const bool& isRgba);
+	bool GetRgba();
+
+	virtual unsigned char* GetBits(int& w, int& h);
+	virtual unsigned char* AllocBits(const int& w, const int& h);
+
+private:
+	CGraphicsAppImage_private* m_internal;
+
+	friend class CGraphicsEmbed;
+};
+
+namespace NSGraphics { class CGraphics; }
+
 using namespace NSJSBase;
-class CGraphicsEmbed : public CJSEmbedObject
+class JS_DECL CGraphicsEmbed : public CJSEmbedObject
 {
 public:
 	NSGraphics::CGraphics* m_pInternal;
 
 public:
-	CGraphicsEmbed() : m_pInternal(new NSGraphics::CGraphics()) {}
-	~CGraphicsEmbed() { RELEASEOBJECT(m_pInternal); }
+	CGraphicsEmbed();
+	~CGraphicsEmbed();
 
 	virtual void* getObject() override { return (void*)m_pInternal; }
+
+	CGraphicsAppImage* GetAppImage();
+	void SetAppImage(CGraphicsAppImage* appImage);
 
 public:
 	JSSmart<CJSValue> create(JSSmart<CJSValue> Native, JSSmart<CJSValue> width_px, JSSmart<CJSValue> height_px, JSSmart<CJSValue> width_mm, JSSmart<CJSValue> height_mm);

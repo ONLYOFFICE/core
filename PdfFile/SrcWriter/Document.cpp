@@ -1513,7 +1513,7 @@ namespace PdfWriter
 	}
 	CPage* CDocument::CreateFakePage()
 	{
-		return new CPage(this, m_pXref);
+		return new CPage(this, NULL);
 	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
@@ -1864,5 +1864,6 @@ namespace PdfWriter
 	void CDocument::ClearPage()
 	{
 		m_pCurPage->ClearContent(m_pXref);
+		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
 	}
 }

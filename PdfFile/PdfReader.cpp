@@ -82,7 +82,7 @@ CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
 #else
 	globalParams->setDrawFormFields(gFalse);
-	//globalParams->setDrawAnnotations(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
 	SetCMapMemory(NULL, 0);
 #endif
 
@@ -447,6 +447,15 @@ void CPdfReader::Close()
 {
 	RELEASEOBJECT(m_pPDFDocument);
 	m_mFonts.clear();
+}
+void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
+{
+	if (!pParams)
+		return;
+
+	GBool bDraw = pParams->m_bNeedDrawAnnotation ? gTrue : gFalse;
+	globalParams->setDrawFormFields(bDraw);
+	globalParams->setDrawAnnotations(bDraw);
 }
 
 int CPdfReader::GetError()

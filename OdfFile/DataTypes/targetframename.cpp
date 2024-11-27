@@ -45,16 +45,16 @@ std::wostream & operator << (std::wostream & _Wostream, const target_frame_name 
     {
     default:
     case target_frame_name::Self:
-        _Wostream << "_self";
+        _Wostream << L"_self";
         break;
     case target_frame_name::Blank:
-        _Wostream << "_blank";
+        _Wostream << L"_blank";
         break;
     case target_frame_name::Parent:
-        _Wostream << "_parent";
+        _Wostream << L"_parent";
         break;
     case target_frame_name::Top:
-        _Wostream << "_top";
+        _Wostream << L"_top";
         break;
     case target_frame_name::String:
         _Wostream << _Val.get_name();

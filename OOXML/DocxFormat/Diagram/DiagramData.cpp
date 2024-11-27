@@ -37,8 +37,11 @@
 #include "../../Common/SimpleTypes_Shared.h"
 
 #include "../Drawing/DrawingExt.h"
-#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
 
+#include "../Document.h"
+#include "../../XlsxFormat/Xlsx.h"
+
+#include "../../PPTXFormat/Logic/SpTree.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
@@ -443,6 +446,8 @@ namespace OOX
 
 	void Diagram::CVariableList::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		node_name = oReader.GetName();
+
 		if (oReader.IsEmptyNode())
 			return;
 
@@ -1701,6 +1706,8 @@ namespace OOX
 
 	void Diagram::CText::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		node_name = oReader.GetName();
+
 		ReadAttributes(oReader);
 
 		if (oReader.IsEmptyNode())
@@ -1751,17 +1758,25 @@ namespace OOX
 
 //-------------------------------------------------------------------------------------------
 
-	CDiagramData::CDiagramData(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	CDiagramData::CDiagramData(OOX::Document* pMain, bool bDocument) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = bDocument;
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 	}
 
 	CDiagramData::CDiagramData(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(uri.GetDirectory(), uri);
 	}
 
 	CDiagramData::CDiagramData(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read( oRootPath, oPath );
 	}
 
@@ -1828,7 +1843,10 @@ namespace OOX
 
 	const CPath CDiagramData::DefaultDirectory() const
 	{
-		return type().DefaultDirectory();
+		if (m_bDocument)
+			return type().DefaultDirectory();
+		else
+			return L"../" + type().DefaultDirectory();
 	}
 
 	const CPath CDiagramData::DefaultFileName() const

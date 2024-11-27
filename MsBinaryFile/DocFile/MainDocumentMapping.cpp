@@ -162,7 +162,7 @@ namespace DocFileFormat
 				//// Read the chars
 				//std::vector<wchar_t>* chars =	m_document->GetChars (fc, fcEnd, fc);
 
-				writeParagraph(cp, countTextRel, false, true );
+				writeParagraph(cp, countTextRel, false, true, START_END_PARAGRAPH);
 
 				cp = m_document->FIB->m_RgLw97.ccpText;
 			}

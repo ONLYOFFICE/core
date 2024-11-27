@@ -89,6 +89,15 @@ namespace PdfWriter
 			x   = 0;
 			y   = 0;
 		}
+		CMatrix(double d1, double d2, double d3, double d4, double d5, double d6)
+		{
+			m11 = d1;
+			m12 = d2;
+			m21 = d3;
+			m22 = d4;
+			x   = d5;
+			y   = d6;
+		}
 
 		void Reset()
 		{

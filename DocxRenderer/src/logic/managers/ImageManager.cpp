@@ -154,11 +154,11 @@ namespace NSDocxRenderer
 
 	std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(Aggplus::CImage* pImage)
 	{
-		if (m_pExternalStorage)
-			return m_pExternalStorage->GenerateImageID(pImage);
-
 		if (pImage->GetStride() > 0)
 			FlipY(pImage);
+
+		if (m_pExternalStorage)
+			return m_pExternalStorage->GenerateImageID(pImage);
 
 		int size = pImage->GetStride() * pImage->GetHeight();
 		if (size < 0)

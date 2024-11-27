@@ -182,7 +182,8 @@ namespace MetaFile
 
 	std::wstring CWmfFont::GetFaceName() const
 	{
-		return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)uchFacename, 32).c_str());
+		const std::wstring wsFontName(ConvertToUnicode((const unsigned char*)uchFacename, 32, uchCharSet));
+		return wsFontName.substr(0, wsFontName.find(L'\0'));
 	}
 
 	int CWmfFont::GetWeight() const

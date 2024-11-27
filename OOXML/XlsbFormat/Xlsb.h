@@ -78,6 +78,7 @@ namespace OOX
 
 			bool IsWriteToXlsx();
 			void WriteToXlsx(bool isXlsx);
+            XLS::StreamCacheReaderPtr GetFileReader(const CPath& oFilePath, BYTE* &streamBuf);
             
             std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
             

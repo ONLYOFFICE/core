@@ -3,7 +3,7 @@
 
 namespace HWP
 {
-typedef unsigned char BYTE;
+typedef char BYTE;
 
 class CHWPStream
 {
@@ -17,6 +17,11 @@ public:
 	void SetStream(BYTE* pBuffer, unsigned int unSize);
 
 	BYTE* GetCurPtr();
+
+	bool ReadInt(int& nValue);
+	bool ReadColor(int& nValue);
+	bool ReadShort(short& shValue);
+	bool ReadByte(BYTE& chValue);
 
 	void Skip(unsigned int unStep);
 

@@ -38,7 +38,7 @@ class CHwpFileHeader
 public:
 	CHwpFileHeader();
 
-	bool Parse(unsigned char* pBuffer);
+	bool Parse(CHWPStream& oBuffer);
 };
 }
 

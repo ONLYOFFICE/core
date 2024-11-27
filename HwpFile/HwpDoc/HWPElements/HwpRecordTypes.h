@@ -3,6 +3,7 @@
 
 namespace HWP
 {
+
 enum class ELineStyle1
 {
 	SOLID,
@@ -24,6 +25,33 @@ enum class ELineStyle1
 	SOLID_3D_REVERS_LI
 };
 
+ELineStyle1 GetLineStyle1(int nValue)
+{
+	switch(static_cast<ELineStyle1>(nValue))
+	{
+		case ELineStyle1::SOLID:
+		case ELineStyle1::DASH:
+		case ELineStyle1::DOT:
+		case ELineStyle1::DASH_DOT:
+		case ELineStyle1::DASH_DOT_DOT:
+		case ELineStyle1::LONG_DASH:
+		case ELineStyle1::CIRCLE:
+		case ELineStyle1::DOUBLE_SLIM:
+		case ELineStyle1::SLIM_THICK:
+		case ELineStyle1::THICK_SLIM:
+		case ELineStyle1::SLIM_THICK_SLIM:
+		case ELineStyle1::WAVE:
+		case ELineStyle1::DOUBLE_WAVE:
+		case ELineStyle1::THICK_3D:
+		case ELineStyle1::THICK_3D_REVERS_LI:
+		case ELineStyle1::SOLID_3D:
+		case ELineStyle1::SOLID_3D_REVERS_LI:
+			return static_cast<ELineStyle1>(nValue);
+		default:
+			return ELineStyle1::SOLID;
+	}
+}
+
 enum class ELineStyle2
 {
 	NONE,
@@ -39,6 +67,27 @@ enum class ELineStyle2
 	THICK_SLIM,
 	SLIM_THICK_SLIM
 };
+
+ELineStyle2 GetLineStyle2(int nValue)
+{
+	switch(static_cast<ELineStyle2>(nValue))
+	{
+		case ELineStyle2::SOLID:
+		case ELineStyle2::DASH:
+		case ELineStyle2::DOT:
+		case ELineStyle2::DASH_DOT:
+		case ELineStyle2::DASH_DOT_DOT:
+		case ELineStyle2::LONG_DASH:
+		case ELineStyle2::CIRCLE:
+		case ELineStyle2::DOUBLE_SLIM:
+		case ELineStyle2::SLIM_THICK:
+		case ELineStyle2::THICK_SLIM:
+		case ELineStyle2::SLIM_THICK_SLIM:
+			return static_cast<ELineStyle2>(nValue);
+		default:
+			return ELineStyle2::NONE;
+	}
+}
 
 enum class ENumberShape1
 {
@@ -58,6 +107,31 @@ enum class ENumberShape1
 	IDEOGRAPH,
 	CIRCLED_IDEOGRAPH
 };
+
+ENumberShape1 GetNumberShape1(int nValue)
+{
+	switch (static_cast<ENumberShape1>(nValue))
+	{
+		case ENumberShape1::DIGIT:
+		case ENumberShape1::CIRCLE_DIGIT:
+		case ENumberShape1::ROMAN_CAPITAL:
+		case ENumberShape1::ROMAN_SMALL:
+		case ENumberShape1::LATIN_CAPITAL:
+		case ENumberShape1::LATIN_SMALL:
+		case ENumberShape1::CIRCLED_LATIN_CAPITAL:
+		case ENumberShape1::CIRCLED_LATIN_SMALL:
+		case ENumberShape1::HANGLE_SYLLABLE:
+		case ENumberShape1::CIRCLED_HANGUL_SYLLABLE:
+		case ENumberShape1::HANGUL_JAMO:
+		case ENumberShape1::CIRCLED_HANGUL_JAMO:
+		case ENumberShape1::HANGUL_PHONETIC:
+		case ENumberShape1::IDEOGRAPH:
+		case ENumberShape1::CIRCLED_IDEOGRAPH:
+			return static_cast<ENumberShape1>(nValue);
+		default:
+			return ENumberShape1::DIGIT;
+	}
+}
 
 enum class ENumberShape2
 {
@@ -81,6 +155,35 @@ enum class ENumberShape2
 	SYMBOL = 0x80,
 	USER_CHAR = 0x81
 };
+
+ENumberShape2 GetNumberShape2(int nValue)
+{
+	switch (static_cast<ENumberShape2>(nValue))
+	{
+		case ENumberShape2::DIGIT:
+		case ENumberShape2::CIRCLE_DIGIT:
+		case ENumberShape2::ROMAN_CAPITAL:
+		case ENumberShape2::ROMAN_SMALL:
+		case ENumberShape2::LATIN_CAPITAL:
+		case ENumberShape2::LATIN_SMALL:
+		case ENumberShape2::CIRCLED_LATIN_CAPITAL:
+		case ENumberShape2::CIRCLED_LATIN_SMALL:
+		case ENumberShape2::HANGLE_SYLLABLE:
+		case ENumberShape2::CIRCLED_HANGUL_SYLLABLE:
+		case ENumberShape2::HANGUL_JAMO:
+		case ENumberShape2::CIRCLED_HANGUL_JAMO:
+		case ENumberShape2::HANGUL_PHONETIC:
+		case ENumberShape2::IDEOGRAPH:
+		case ENumberShape2::CIRCLED_IDEOGRAPH:
+		case ENumberShape2::DECAGON_CIRCLE:
+		case ENumberShape2::DECAGON_CRICLE_HANGJA:
+		case ENumberShape2::SYMBOL:
+		case ENumberShape2::USER_CHAR:
+			return static_cast<ENumberShape2>(nValue);
+		default:
+			return ENumberShape2::DIGIT;
+	}
+}
 
 enum class ELineArrowStyle
 {
@@ -126,6 +229,26 @@ enum class ELineArrowSize
 	LARGE_MEDIUM,
 	LARGE_LARGE
 };
+
+ELineArrowSize GetLineArrowSize(int nValue)
+{
+	switch(static_cast<ELineArrowSize>(nValue))
+	{
+		case ELineArrowSize::SMALL_SMALL:
+		case ELineArrowSize::SMALL_MEDIUM:
+		case ELineArrowSize::SMALL_LARGE:
+		case ELineArrowSize::MEDIUM_SMALL:
+		case ELineArrowSize::MEDIUM_MEDIUM:
+		case ELineArrowSize::MEDIUM_LARGE:
+		case ELineArrowSize::LARGE_SMALL:
+		case ELineArrowSize::LARGE_MEDIUM:
+		case ELineArrowSize::LARGE_LARGE:
+			return static_cast<ELineArrowSize>(nValue);
+		default:
+			return ELineArrowSize::SMALL_SMALL;
+	}
+}
+
 }
 
 #endif // HWPRECORDTYPES_H

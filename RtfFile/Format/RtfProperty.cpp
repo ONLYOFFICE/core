@@ -1179,45 +1179,57 @@ std::wstring RtfBorder::RenderToRtf(RenderParameter oRenderParameter)
         sResult += L"\\brdrcf" + std::to_wstring(m_nColor );
 	return sResult;
 }
+std::wstring RtfBorder::GetBorderType()
+{
+	std::wstring val;
+	switch (m_eType)
+	{
+	case bt_brdrs:			val = L"single"; break;
+	case bt_brdrth:			val = L"thick"; break;
+	case bt_brdrsh:			val = L"thin"; break;
+	case bt_brdrdb:			val = L"double"; break;
+	case bt_brdrdot:		val = L"dotted"; break;
+	case bt_brdrdash:		val = L"dashed"; break;
+	case bt_brdrhair:		val = L"hair"; break;
+	case bt_brdrdashsm:		val = L"dashSmallGap"; break;
+	case bt_brdrdashd:		val = L"dotDash"; break;
+	case bt_brdrdashdd:		val = L"dotDotDash"; break;
+	case bt_brdrinset:		val = L"inset"; break;
+	case bt_brdrnone:		val = L"nil"; break;
+	case bt_brdroutset:		val = L"outset"; break;
+	case bt_brdrtriple:		val = L"triple"; break;
+	case bt_brdrtnthsg:		val = L"thinThickSmallGap"; break;
+	case bt_brdrthtnsg:		val = L"thickThinSmallGap"; break;
+	case bt_brdrtnthtnsg:	val = L"thinThickThinSmallGap"; break;
+	case bt_brdrtnthtnmg:	val = L"thinThickThinMediumGap"; break;
+	case bt_brdrtnthmg:		val = L"thinThickMediumGap"; break;
+	case bt_brdrthtnmg:		val = L"thickThinMediumGap"; break;
+	case bt_brdrtnthlg:		val = L"thinThickLargeGap"; break;
+	case bt_brdrthtnlg:		val = L"thickThinLargeGap"; break;
+	case bt_brdrtnthtnlg:	val = L"thinThickThinLargeGap"; break;
+	case bt_brdrwavy:		val = L"wave"; break;
+	case bt_brdrwavydb:		val = L"doubleWave"; break;
+	case bt_brdrdashdotstr: val = L"dashDotStroked"; break;
+	case bt_brdremboss:		val = L"threeDEmboss"; break;
+	case bt_brdrengrave:	val = L"threeDEngrave"; break;
+	default:
+		break;
+	}
+	return val;
+}
 std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 {
-	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
     std::wstring  sResult;
 
-	switch( m_eType )
+	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	
+	std::wstring val = GetBorderType();
+	if (false == val.empty())
 	{
-		case bt_brdrs:			sResult += L" w:val=\"single\"";				break;
-		case bt_brdrth:			sResult += L" w:val=\"thick\"";					break;
-		case bt_brdrsh:			sResult += L" w:val=\"thin";					break;
-		case bt_brdrdb:			sResult += L" w:val=\"double\"";				break;
-		case bt_brdrdot:		sResult += L" w:val=\"dotted\"";				break;
-		case bt_brdrdash:		sResult += L" w:val=\"dashed\"";				break;
-		case bt_brdrhair:		sResult += L" w:val=\"hair\"";					break;
-		case bt_brdrdashsm:		sResult += L" w:val=\"dashSmallGap\"";			break;
-		case bt_brdrdashd:		sResult += L" w:val=\"dotDash\"";				break;
-		case bt_brdrdashdd:		sResult += L" w:val=\"dotDotDash\"";			break;
-		case bt_brdrinset:		sResult += L" w:val=\"inset\"";					break;
-		case bt_brdrnone:		sResult += L" w:val=\"nil\"";					break;
-		case bt_brdroutset:		sResult += L" w:val=\"outset\"";				break;
-		case bt_brdrtriple:		sResult += L" w:val=\"triple\"";				break;
-		case bt_brdrtnthsg:		sResult += L" w:val=\"thinThickSmallGap\"";		break;
-		case bt_brdrthtnsg:		sResult += L" w:val=\"thickThinSmallGap\"";		break;
-		case bt_brdrtnthtnsg:	sResult += L" w:val=\"thinThickThinSmallGap\""; break;
-		case bt_brdrtnthtnmg:	sResult += L" w:val=\"thinThickThinMediumGap\"";break;
-		case bt_brdrtnthmg:		sResult += L" w:val=\"thinThickMediumGap\"";	break;
-		case bt_brdrthtnmg:		sResult += L" w:val=\"thickThinMediumGap\"";	break;
-		case bt_brdrtnthlg:		sResult += L" w:val=\"thinThickLargeGap\"";		break;
-		case bt_brdrthtnlg:		sResult += L" w:val=\"thickThinLargeGap\"";		break;
-		case bt_brdrtnthtnlg:	sResult += L" w:val=\"thinThickThinLargeGap\"";	break;
-		case bt_brdrwavy:		sResult += L" w:val=\"wave\"";					break;
-		case bt_brdrwavydb:		sResult += L" w:val=\"doubleWave\"";			break;
-		case bt_brdrdashdotstr: sResult += L" w:val=\"dashDotStroked\"";		break;
-		case bt_brdremboss:		sResult += L" w:val=\"threeDEmboss\"";			break;
-		case bt_brdrengrave:	sResult += L" w:val=\"threeDEngrave\"";			break;
-		default:
-			break;
+		sResult += L" w:val=\"" + val + L"\"";
+		val.clear();
 	}
-	if( PROP_DEF != m_nColor )
+	if ( PROP_DEF != m_nColor )
 	{
 		RtfColor oColor;
 		RenderParameter oNewParam = oRenderParameter;
@@ -1226,28 +1238,78 @@ std::wstring RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 		if (m_nColor == -1)
 		{
 			oColor.m_bAuto = true;
-            sResult += L" w:color=\"auto\"";
+            val = L"auto";
 		}
-		else if( true == poRtfDocument->m_oColorTable.GetColor( m_nColor, oColor ) )
-            sResult += L" w:color=\"" + oColor.RenderToOOX(oNewParam) + L"\"";
+		else if (true == poRtfDocument->m_oColorTable.GetColor(m_nColor, oColor))
+		{
+			val = oColor.RenderToOOX(oNewParam);
+		}
 	}
-	if( PROP_DEF != m_nWidth ) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
+	if (false == val.empty())
 	{
-        sResult += L" w:sz=\"" + std::to_wstring(2 * m_nWidth / 5 ) + L"\"";
+		sResult += L" w:color=\"" + val + L"\"";
+		val.clear();
 	}
-	if( PROP_DEF != m_nSpace )
+	if ( PROP_DEF != m_nWidth ) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
 	{
-        sResult += L" w:space=\"" + std::to_wstring((int)RtfUtility::Twip2pt( m_nSpace )) + L"\"";
+		sResult += L" w:sz=\"" + std::to_wstring(2 * m_nWidth / 5) + L"\"";
 	}
-
-    if( false == sResult.empty() )
+	if ( PROP_DEF != m_nSpace )
 	{
-		if( RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE == oRenderParameter.nType )
+		sResult +=  L" w:space=\"" + std::to_wstring((int)RtfUtility::Twip2pt(m_nSpace)) + L"\"";
+	}
+    if ( false == sResult.empty() )
+	{
+		if ( RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE == oRenderParameter.nType)
 			;
-		else if( RENDER_TO_OOX_PARAM_BORDER_TAG == oRenderParameter.nType )
+		else if ( RENDER_TO_OOX_PARAM_BORDER_TAG == oRenderParameter.nType )
 			sResult = L"<" + oRenderParameter.sValue + sResult + L"/>";
 		else
 			sResult = L"<w:bdr" + sResult + L"/>";
+	}
+	return sResult;
+}
+std::wstring RtfBorder::RenderToShapeOOX(RenderParameter oRenderParameter)
+{
+	std::wstring  sResult;
+
+	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+
+	std::wstring val = GetBorderType();
+	if (false == val.empty())
+	{
+		sResult += L" type=\"" + val + L"\"";
+		val.clear();
+	}
+	if (PROP_DEF != m_nColor)
+	{
+		RtfColor oColor;
+		RenderParameter oNewParam = oRenderParameter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_COLOR_VALUE;
+
+		if (m_nColor == -1)
+		{
+			oColor.m_bAuto = true;
+			val = L"auto";
+		}
+		else if (true == poRtfDocument->m_oColorTable.GetColor(m_nColor, oColor))
+		{
+			val = oColor.RenderToOOX(oNewParam);
+		}
+	}
+	if (false == val.empty())
+	{
+		sResult += L" color=\"" + val + L"\"";
+		val.clear();
+	}
+	if (PROP_DEF != m_nWidth) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
+	{
+		sResult += L" width=\"" + std::to_wstring(2 * m_nWidth / 5) + L"\"";
+	}
+
+	if (false == sResult.empty())
+	{
+		sResult = L"<" + oRenderParameter.sValue + sResult + L"/>";
 	}
 	return sResult;
 }
@@ -3854,19 +3916,19 @@ std::wstring RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		if( true == m_oBorderTop.IsValid() )
 		{
-			sBorder += L"<w:top ";		sBorder += m_oBorderTop.RenderToOOX(oNewParam);		sBorder += L" />";
+			sBorder += L"<w:top " + m_oBorderTop.RenderToOOX(oNewParam) + L"/>";
 		}
 		if( true == m_oBorderLeft.IsValid() )
 		{
-			sBorder += L"<w:left ";		sBorder += m_oBorderLeft.RenderToOOX(oNewParam);	sBorder += L" />";
+			sBorder += L"<w:left " + m_oBorderLeft.RenderToOOX(oNewParam) + L"/>";
 		}
 		if( true == m_oBorderBottom.IsValid() )
 		{
-			sBorder += L"<w:bottom ";	sBorder += m_oBorderBottom.RenderToOOX(oNewParam);	sBorder += L" />";
+			sBorder += L"<w:bottom " + m_oBorderBottom.RenderToOOX(oNewParam) + L"/>";
 		}
 		if( true == m_oBorderRight.IsValid() )
 		{
-			sBorder += L"<w:right ";		sBorder += m_oBorderRight.RenderToOOX(oNewParam);	sBorder += L" />";
+			sBorder += L"<w:right " + m_oBorderRight.RenderToOOX(oNewParam) + L"/>";
 		}
 	}
 

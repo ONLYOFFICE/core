@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
@@ -56,7 +56,18 @@ std::vector<std::vector<std::wstring>> MonthNames
     {L"1月", L"2月", L"3月", L"4月", L"5月", L"6月", L"7月", L"8月", L"9月", L"10月", L"11月", L"12月"},
     {L"1월", L"2월", L"3월", L"4월", L"5월", L"6월", L"7월", L"8월", L"9월", L"10월", L"11월", L"12월"},
     {L"styczeń", L"luty", L"marzec", L"kwiecień", L"maj", L"czerwiec", L"lipiec", L"sierpień", L"wrzesień", L"październik", L"listopad", L"grudzień"},
-    {L"janeiro", L"fevereiro", L"março", L"abril", L"maio", L"junho", L"julho", L"agosto", L"setembro", L"outubro", L"novembro", L"dezembro"}
+    {L"janeiro", L"fevereiro", L"março", L"abril", L"maio", L"junho", L"julho", L"agosto", L"setembro", L"outubro", L"novembro", L"dezembro"},
+    {L"januari", L"februari", L"mars", L"april", L"maj", L"juni", L"juli", L"augusti", L"september", L"oktober", L"november", L"december"},
+    {L"Ocak", L"Şubat", L"Mart", L"Nisan", L"Mayıs", L"Haziran", L"Temmuz", L"Ağustos", L"Eylül", L"Ekim", L"Kasım", L"Aralık"},
+    {L"Januari", L"Februari", L"Maret", L"April", L"Mei", L"Juni", L"Juli", L"Agustus", L"September", L"Oktober", L"November", L"Desember"},
+    {L"січень", L"лютий", L"березень", L"квітень", L"травень", L"червень", L"липень", L"серпень", L"вересень", L"жовтень", L"листопад", L"грудень"},
+    {L"januar", L"februar", L"marec", L"april", L"maj", L"junij", L"julij", L"avgust", L"september", L"oktober", L"november", L"december"},
+    {L"janvāris", L"februāris", L"marts", L"aprīlis", L"maijs", L"jūnijs", L"jūlijs", L"augusts", L"septembris", L"oktobris", L"novembris", L"decembris"},
+    {L"sausis", L"vasaris", L"kovas", L"balandis", L"gegužė", L"birželis", L"liepa", L"rugpjūtis", L"rugsėjis", L"spalis", L"lapkritis", L"gruodis"},
+    {L"Tháng Giêng", L"Tháng Hai", L"Tháng Ba", L"Tháng Tư", L"Tháng Năm", L"Tháng Sáu", L"Tháng Bảy", L"Tháng Tám", L"Tháng Chín", L"Tháng Mười", L"Tháng Mười Một", L"Tháng Mười Hai"},
+    {L"Yanvar", L"Fevral", L"Mart", L"Aprel", L"May", L"İyun", L"İyul", L"Avqust", L"Sentyabr", L"Oktyabr", L"Noyabr", L"Dekabr"},
+    {L"Қаңтар", L"Ақпан", L"Наурыз", L"Сәуір", L"Мамыр", L"Маусым", L"Шілде", L"Тамыз", L"Қыркүйек", L"Қазан", L"Қараша", L"Желтоқсан"},
+    {L"Нэгдүгээр сар", L"Хоёрдугаар сар", L"Гуравдугаар сар", L"Дөрөвдүгээр сар", L"Тавдугаар сар", L"Зургаадугаар сар", L"Долоодугаар сар", L"Наймдугаар сар", L"Есдүгээр сар", L"Аравдугаар сар", L"Арван нэгдүгээр сар", L"Арван хоёрдугаар сар"}
 };
 
 std::vector<std::vector<std::wstring>> ShortMonthNames
@@ -76,7 +87,18 @@ std::vector<std::vector<std::wstring>> ShortMonthNames
     {L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"10", L"11", L"12"},
     {L"1", L"2", L"3", L"4", L"5", L"6", L"7", L"8", L"9", L"10", L"11", L"12"},
     {L"sty", L"lut", L"mar", L"kwi", L"maj", L"cze", L"lip", L"sie", L"wrz", L"paź", L"lis", L"gru"},
-    {L"jan", L"fev", L"mar", L"abr", L"mai", L"jun", L"jul", L"ago", L"set", L"out", L"nov", L"dez"}
+    {L"jan", L"fev", L"mar", L"abr", L"mai", L"jun", L"jul", L"ago", L"set", L"out", L"nov", L"dez"},
+    {L"jan", L"feb", L"mar", L"apr", L"maj", L"jun", L"jul", L"aug", L"sep", L"okt", L"nov", L"dec"},
+    {L"Oca", L"Şub", L"Mar", L"Nis", L"May", L"Haz", L"Tem", L"Ağu", L"Eyl", L"Eki", L"Kas", L"Ara"},
+    {L"Jan", L"Feb", L"Mar", L"Apr", L"Mei", L"Jun", L"Jul", L"Agu", L"Sep", L"Okt", L"Nov", L"Des"},
+    {L"Січ", L"Лют", L"Бер", L"Кві", L"Тра", L"Чер", L"Лип", L"Сер", L"Вер", L"Жов", L"Лис", L"Гру"},
+    {L"jan", L"feb", L"mar", L"apr", L"maj", L"jun", L"jul", L"avg", L"sep", L"okt", L"nov", L"dec"},
+    {L"janv", L"febr", L"marts", L"apr", L"maijs", L"jūn", L"jūl", L"aug", L"sept", L"okt", L"nov", L"dec"},
+    {L"saus", L"vas", L"kov", L"bal", L"geg", L"birž", L"liep", L"rugp", L"rugs", L"spal", L"lapkr", L"gruod"},
+    {L"Thg1", L"Thg2", L"Thg3", L"Thg4", L"Thg5", L"Thg6", L"Thg7", L"Thg8", L"Thg9", L"Thg10", L"Thg11", L"Thg12"},
+    {L"yan", L"fev", L"mar", L"apr", L"may", L"iyn", L"iyl", L"avq", L"sen", L"okt", L"noy", L"dek"},
+    {L"қаң", L"ақп", L"нау", L"сәу", L"мам", L"мау", L"шіл", L"там", L"қыр", L"қаз", L"қар", L"жел"},
+    {L"1-р сар", L"2-р сар", L"3-р сар", L"4-р сар", L"5-р сар", L"6-р сар", L"7-р сар", L"8-р сар", L"9-р сар", L"10-р сар", L"11-р сар", L"12-р сар"}
 };
 
 std::map<_INT32, LocalInfo> InfoMap
@@ -98,6 +120,17 @@ std::map<_INT32, LocalInfo> InfoMap
     {21, LocalInfo{21, L"pl", L".", L"135", 14, 3}},
     {22, LocalInfo{22, L"pt", L"/", L"135", 15, 3}},
     {25, LocalInfo{25, L"ru", L".", L"135", 1, 3}},
+    {29, LocalInfo{29, L"sv", L"-", L"531", 16, 3}},
+    {31, LocalInfo{31, L"tr", L".", L"035", 17, 3}},
+    {33, LocalInfo{33, L"id", L"/", L"135", 18, 3}},
+    {34, LocalInfo{34, L"uk", L".", L"135", 19, 3}},
+    {36, LocalInfo{36, L"sl", L".", L"035", 20, 3}},
+    {38, LocalInfo{38, L"lv", L".", L"135", 21, 5}},
+    {39, LocalInfo{39, L"lt", L"-", L"531", 22, 5}},
+    {42, LocalInfo{42, L"vi", L"/", L"135", 23, 5}},
+    {44, LocalInfo{44, L"az", L".", L"135", 24, 3}},
+    {63, LocalInfo{63, L"kk", L".", L"135", 25, 3}},
+    {80, LocalInfo{80, L"mn", L".", L"531", 26, 8}},
 
     {12298, LocalInfo{12298, L"es-EC", L"/", L"025", 2, 3}}
 };
@@ -177,7 +210,7 @@ std::wstring LocalInfo::GetLocMonthName(const _INT16 &index, bool shortName)
         monthName = months.at(index);
     if(shortName)
     {
-        if (MonthNamesIndex == 2 && MonthNamesIndex == 10)
+        if (MonthNamesIndex == 2 || MonthNamesIndex == 10 || MonthNamesIndex == 20|| MonthNamesIndex == 22 || MonthNamesIndex == 25)
                 monthName+= L".";
     }
     return monthName;

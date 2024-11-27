@@ -324,7 +324,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
 									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
 					oLine["Words"].push(oWord);
-					oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false };
+					oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false, "X" : dCurCharX, "Width" : 0 };
 				}
 				oWord["Chars"].push(oChar);
 			}

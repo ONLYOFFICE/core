@@ -32,7 +32,10 @@
 #ifndef _ASC_HTMLRENDERER_TEXT_H_
 #define _ASC_HTMLRENDERER_TEXT_H_
 
+#include <algorithm>
+
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../../DesktopEditor/graphics/structures.h"
 
 namespace NSHtmlRenderer
 {

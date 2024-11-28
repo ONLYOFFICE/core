@@ -39,7 +39,7 @@
 #include "../../XpsFile/XpsFile.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../graphics/pro/js/wasm/src/serialize.h"
-#include "../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../graphics/pro/js/wasm/src/HTMLRendererText.h"
 #include "../../DocxRenderer/DocxRenderer.h"
 
 #define CHECKER_FILE_BUFFER_LEN 4096

@@ -295,7 +295,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 			oChar["Char"]  = reader.readInt();
 			oChar["Width"] = reader.readDouble2();
 
-			if (oChar["Char"] == 0xFFFF || oChar["Char"] == ' ' || oChar["Char"] == '\t')
+			if (oChar["Char"] == 0xFFFF || oChar["Char"] == 32 || oChar["Char"] == 9)
 			{
 				nSpaces++;
 				if (oWord["Chars"].length)

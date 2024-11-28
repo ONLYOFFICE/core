@@ -7014,8 +7014,37 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             auto wstringData = prepareData();
             reader.FromString(wstringData);
             reader.ReadNextNode();
-            records.fromXML(reader);
-            records.toBin(writer);
+            records.ReadAttributes(reader);
+            {
+                auto record = writer->getNextRecord(XLSB::rt_BeginPivotCacheRecords);
+                _UINT32 size = 0;
+                if(records.m_oCount.IsInit())
+                    size = records.m_oCount->GetValue();
+                *record << size;
+                 writer->storeNextRecord(record);
+            }
+            if ( reader.IsEmptyNode() )
+                return;
+            int nCurDepth = reader.GetDepth();
+            while( reader.ReadNextSiblingNode( nCurDepth ) )
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(reader.GetName());
+
+                if (L"r" == sName)
+                {
+                    CPivotCacheRecord pPivotCacheRecord;
+                    pPivotCacheRecord.fromXML(reader);
+                    pPivotCacheRecord.toBin(writer);
+
+                }
+                else if (L"extLst" == sName)
+                    records.m_oExtLst = reader;
+            }
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndPivotCacheRecords);
+                writer->storeNextRecord(record);
+            }
+
         }
     }
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)

@@ -597,6 +597,7 @@ namespace PdfWriter
 			pN->DrawTextParagraph(sColor);
 			pR->AddBBox(0, 0, 20, 20);
 			pR->DrawTextParagraph(sColor);
+			break;
 		}
 		case 12:
 		{
@@ -604,6 +605,7 @@ namespace PdfWriter
 			pN->DrawTextRightArrow(sColor);
 			pR->AddBBox(0, 0, 20, 20);
 			pR->DrawTextRightArrow(sColor);
+			break;
 		}
 		case 13:
 		{
@@ -611,6 +613,7 @@ namespace PdfWriter
 			pN->DrawTextRightPointer(sColor);
 			pR->AddBBox(0, 0, 20, 17);
 			pR->DrawTextRightPointer(sColor);
+			break;
 		}
 		case 14:
 		{
@@ -618,6 +621,7 @@ namespace PdfWriter
 			pN->DrawTextStar(sColor);
 			pR->AddBBox(0, 0, 20, 19);
 			pR->DrawTextStar(sColor);
+			break;
 		}
 		case 15:
 		{
@@ -625,6 +629,7 @@ namespace PdfWriter
 			pN->DrawTextUpArrow(sColor);
 			pR->AddBBox(0, 0, 17, 20);
 			pR->DrawTextUpArrow(sColor);
+			break;
 		}
 		case 16:
 		{
@@ -632,6 +637,7 @@ namespace PdfWriter
 			pN->DrawTextUpLeftArrow(sColor);
 			pR->AddBBox(0, 0, 17, 17);
 			pR->DrawTextUpLeftArrow(sColor);
+			break;
 		}
 		case 10:
 		default:

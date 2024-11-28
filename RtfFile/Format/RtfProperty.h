@@ -304,7 +304,7 @@ class RtfBorder
 {
 public: 
 	enum _BorderType
-	{ 
+	{
 		bt_none,
 		bt_brdrs,			//brdrs	Single-thickness border.
 		bt_brdrth,			//brdrth	Double-thickness border.
@@ -335,8 +335,8 @@ public:
 		bt_brdrdashdotstr,	//brdrdashdotstr	Striped border.
 		bt_brdremboss,		//brdremboss	Embossed border.
 		bt_brdrengrave,		//brdrengrave	Engraved border.
-	}	m_eType;
-	
+	};
+	_INT32 m_eType;
 	_INT32 m_nWidth;
 	_INT32 m_nSpace;
 	_INT32 m_nColor;
@@ -347,6 +347,8 @@ public:
 	bool IsValid();
 	_INT32 GetType();
 
+	std::wstring GetBorderType();
+
 	void SetDefaultRtf( );
 	void SetDefaultOOX( );
 	void SetDefault( );
@@ -356,6 +358,7 @@ public:
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
+	std::wstring RenderToShapeOOX(RenderParameter oRenderParameter);
 	
 	static bool GetStringRtfByType( _BorderType nValue, std::wstring& sValue );
 	static std::wstring GetStringOOXByType( _BorderType nValue, std::wstring& sValue );
@@ -379,7 +382,8 @@ public:
 		tk_tqc,		//tqc	Centered tab.
 		tk_tqdec,	//tqdec	Decimal tab.
 		tk_tqbar,	//tbN	Bar tab position in twips from the left margin.
-		tk_tqclear
+		tk_tqclear,
+		tk_tqnum
 	}	m_eKind;
 	
 	_INT32 m_nTab;		//tbN or \txN	Tab position in twips from the left margin.
@@ -400,9 +404,6 @@ public:
 	std::vector<RtfTab> m_aTabs;
 
 	RtfTabs();
-	RtfTabs( const RtfTabs& oTabs );
-
-	const RtfTabs& operator=( const RtfTabs& oTabs );
 
 	void Merge( const RtfTabs& oTabs );
 	void SetDefault();
@@ -419,24 +420,25 @@ typedef boost::shared_ptr<RtfCharProperty> RtfCharPropertyPtr;
 class RtfCharProperty: public IRenderableProperty
 {
 public: 
-	bool m_bListLevel;
+	bool m_bListLevel = false;
+	bool m_bAssociated = false;
 
 	enum _UnderlineStyle {uls_none, uls_Single, uls_Dotted,uls_Dashed ,uls_Dash_dotted,uls_Dash_dot_dotted,uls_Double,uls_Heavy_wave,uls_Long_dashe,uls_Stops_all,uls_Thick,uls_Thick_dotted,uls_Thick_dashed,uls_Thick_dash_dotted,uls_Thick_dash_dot_dotted,uls_Thick_long_dashed,uls_Double_wave,uls_Word,uls_Wave};
 
 	_INT32 m_nAnimated;		//animtextN	Animated text properties (note: Word 2007 ignores this control word):
 
 	_INT32 m_bBold;			//b*	Bold.
-	_INT32 m_bCaps;			//caps*	All capitals.
+	_INT32 m_bCaps;				//caps*	All capitals.
 	_INT32 m_nScalex;			//charscalexN 	Character scaling value. The N argument is a value representing a percentage (default is 100).
 	_INT32 m_nCharStyle;		//csN	Designates character style. If a character style is specified, style properties must be specified with the character run. N refers to an entry in the style table.
-	_INT32 m_nDown;			//dnN	Move down N half-points (default is 6).
-	_INT32 m_bEmbo;			//embo*	Emboss.
-	_INT32 m_nCharacterSpacing;//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
+	_INT32 m_nDown;				//dnN	Move down N half-points (default is 6).
+	_INT32 m_bEmbo;				//embo*	Emboss.
+	_INT32 m_nCharacterSpacing;	//expndtwN	Expansion or compression of the space between characters in twips; a negative value compresses. For backward compatibility, both \expndtwN and \expndN should be emitted.		
 	_INT32 m_nFitText;			//fittextN	Fit the text in the current group in N twips. When N is set to -1 (\fittext-1), it indicates a continuation of the previous \fittextN run. In other words, {\fittext1000 Fit this} {\fittext-1 text} fits the string “Fit this text” in 1000 twips.
-	_INT32 m_nFont;			//fN	Font number. N refers to an entry in the font table.
+	_INT32 m_nFont;				//fN	Font number. N refers to an entry in the font table.
 	_INT32 m_nFont2; 
 	_INT32 m_nFont3; 
-	_INT32 m_nFontSize;		//fsN	Font size in half-points (default is 24).
+	_INT32 m_nFontSize;			//fsN	Font size in half-points (default is 24).
 	_INT32 m_bItalic;			//i*	Italic.
 	_INT32 m_bImprint;			//impr*	Engrave (imprint).
 	_INT32 m_nKerning;			//kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
@@ -454,24 +456,24 @@ public:
 	_INT32 m_bHidden;			//v*	Hidden text.
 	_INT32 m_nHightlited; 
 
-	_INT32				m_nForeColor; 
+	_INT32 m_nForeColor; 
 
-	_INT32				m_nCrAuth;
-	_INT32				m_nCrDate;
+	_INT32 m_nCrAuth;
+	_INT32 m_nCrDate;
 
-	_INT32				m_nDeleted;
-	_INT32				m_nRevised;
-	_INT32				m_nRevauth;
-	_INT32				m_nRevdttm;
-	_INT32				m_nRevauthDel;
-	_INT32				m_nRevdttmDel;
+	_INT32 m_nDeleted;
+	_INT32 m_nRevised;
+	_INT32 m_nRevauth;
+	_INT32 m_nRevdttm;
+	_INT32 m_nRevauthDel;
+	_INT32 m_nRevdttmDel;
 
-	_INT32				m_nInsrsid;
+	_INT32 m_nInsrsid;
 
-//	_INT32				m_bUnderline;					//ul*	Continuous underline. \ul0 turns off all underlining.
+//	_INT32 m_bUnderline;				//ul*	Continuous underline. \ul0 turns off all underlining.
 	_UnderlineStyle	m_eUnderStyle;		//
-	_INT32				m_nUnderlineColor;	//
-	_INT32				m_nUp;				//upN	Move up N half-points (default is 6).
+	_INT32 m_nUnderlineColor;			//
+	_INT32 m_nUp;						//upN	Move up N half-points (default is 6).
 
 	RtfCharPropertyPtr	m_pOldCharProp;
 	RtfBorder			m_poBorder;
@@ -506,14 +508,14 @@ public:
 	_INT32		m_nNoRestart;		//levelnorestartN	1 if this level does not restart its count each time a super ordinate level is incremented; 0 if this level does restart its count each time a super ordinate level is incremented.
 	_INT32		m_nLegal;			//levellegalN	1 if any list numbers from previous levels should be converted to Arabic numbers; 0 if they should be left with the format specified by their own level’s definition.
 	_INT32		m_nPictureIndex;	//levelpictureN	Determines which picture bullet from the \listpicture destination should be applied.
-
-	RtfTabs m_oTabs;			//ParagraphProp
+//ParagraphProp
+	RtfTabs		m_oTabs;	
 	_INT32		m_nFirstIndent;
 	_INT32		m_nIndent;
 	_INT32		m_nIndentStart;
-	_INT32		m_nSpace;
-	
-	RtfCharProperty m_oCharProp; //Char
+	_INT32		m_nSpace;	
+
+	RtfCharProperty m_oCharProp;
 
 	RtfListLevelProperty();
 
@@ -521,7 +523,9 @@ public:
 	std::wstring GenerateListText();
 	void SetDefault();
 
-    std::wstring RenderToRtf(RenderParameter oRenderParameter);
+	void Merge(RtfListLevelProperty& oListLevel);
+	
+	std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
     std::wstring RenderToOOX2(RenderParameter oRenderParameter, _INT32 lvl = PROP_DEF);
 
@@ -571,7 +575,6 @@ public:
 		std::vector<ListOverrideLevel> m_aOverrideLevels;
 
 		ListOverrideLevels();
-		ListOverrideLevels( const ListOverrideLevels& oOverLevel );
 		ListOverrideLevels& operator=( const ListOverrideLevels& oOverLevel );
 
 		void SetDefault();
@@ -875,10 +878,10 @@ public:
 	_INT32 m_nSpacingBottom;
 	_INT32 m_eSpacingBottomUnit;
 
-	_INT32				m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
-	_INT32				m_eWidthUnit;		//clftsWidthN	Units for \clwWidthN:
+	_INT32 m_nWidth;			//clwWidthN	Preferred cell width. Overrides \trautofitN.
+	_INT32 m_eWidthUnit;		//clftsWidthN	Units for \clwWidthN:
 
-	_INT32				m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
+	_INT32 m_bHideMark;		//clhidemark	This control word specifies whether the end of cell glyph shall influence the height of the given table row in the table. If it is specified, then only printing characters in this cell shall be used to determine the row height.
 
 	RtfBorder m_oBorderDiagonalLR;
 	RtfBorder m_oBorderDiagonalRL;
@@ -890,7 +893,7 @@ public:
 	RtfBorder m_oBorderInsideV;
 
 	RtfShadingCell	m_oShading;
-	_INT32				m_nShadingPctFrom;
+	_INT32			m_nShadingPctFrom;
 
 	typedef enum{ ca_none, 
 					ca_Top,	//clvertalt	Text is top-aligned in cell (the default).
@@ -1005,8 +1008,9 @@ typedef boost::shared_ptr<RtfParagraphProperty>		RtfParagraphPropertyPtr;
 class RtfParagraphProperty: public IRenderableProperty
 {
 public: 
-	bool					m_bHidden;
-	bool					m_bOldList;
+	bool m_bHidden = false;
+	bool m_bList = false;
+
 	RtfParagraphPropertyPtr m_pOldParagraphProp;
 //-------------
 	_INT32		m_bAutoHyphenation;	//hyphpar	Switches automatic hyphenation for the paragraph. Append 1 or nothing to toggle property on; append 0 to turn it off.
@@ -1076,9 +1080,9 @@ public:
 		tbw_txbxtwfirstlast,	//txbxtwfirstlast
 		tbw_txbxtwfirst,		//txbxtwfirst
 		tbw_txbxtwlast,			//txbxtwlast
-	}			m_eTextBoxWrap;
-	_INT32			m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
-	_INT32			m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
+	} m_eTextBoxWrap;
+	_INT32 m_nListId;					//lsN	Should exactly match the \lsN for one of the list overrides in the List Override table.
+	_INT32 m_nListLevel;				//ilvlN	The 0-based level of the list to which the paragraph belongs. For all simple lists, N should always be 0. For multilevel lists, it can be 0 through 8. The value 9 is never used. The values 10 through 12 have the special meanings for documents generated by Word 6: 10 = ilvlBullet (a bulleted paragraph in Word 6), 11 = ilvlList (a numbered paragraph in Word 6), 12 = ilvlContinue (a paragraph that was not itself numbered, but took its indenting scheme from its numbering properties and did not “break” numbering (that in Word 6 required otherwise contiguous paragraphs).
 
 	RtfShadingPar m_oShading;
 
@@ -1089,8 +1093,8 @@ public:
 	RtfBorder m_oBorderBox;
 	RtfBorder m_oBorderBar;
 
-	RtfFrame	m_oFrame;
-	_INT32			m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
+	RtfFrame m_oFrame;
+	_INT32 m_bOverlap;				//1\absnoovrlpN	Allow overlap with other frames or objects with similar wrapping:
 	enum _TextFollow
 	{
 		tf_none,
@@ -1099,8 +1103,8 @@ public:
 		tf_frmtxbtlr,		//frmtxbtlr	Frame box flows left to right and bottom to top.
 		tf_frmtxlrtbv,		//frmtxlrtbv	Frame box flows left to right and top to bottom, vertical.
 		tf_frmtxtbrlv		//frmtxtbrlv	Frame box flows top to bottom and right to left, vertical.
-	}			m_eTextFollow;
-	RtfTabs		m_oTabs;
+	} m_eTextFollow;
+	RtfTabs m_oTabs;
 
 //Table Style Specific
 	_INT32 m_nTableStyle;			// ytsN	Designates the table style handle that was applied to the row/cell.
@@ -1120,9 +1124,9 @@ public:
 	_INT32 m_nPrAuth;
 	_INT32 m_nPrDate;
 	
-	RtfCharProperty		m_oCharProperty;
+	RtfCharProperty m_oCharProperty;
 
-	//--------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
 
 	RtfParagraphProperty();
 	bool IsValid();

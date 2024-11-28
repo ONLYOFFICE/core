@@ -93,7 +93,7 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 
 		sResult += L"<w:background w:color=\"" + color.ToHexColor() + L"\">";
 		{
-			oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+			oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_CHILD;
 			sResult += m_oDocument.m_pBackground->RenderToOOX(oNewParam);
 			oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		}
@@ -274,7 +274,7 @@ bool OOXDocumentWriter::SaveBySection()
 		RtfParagraph *para = dynamic_cast<RtfParagraph *>(m_oDocument[0].props->operator[](i).get());
 		bParaCurrEmpty = (para) ? (para->GetCount() < 1) : true;
 
-		sXml = m_oDocument[0].props->operator[](i)->RenderToOOX(oNewParam);
+		sXml = m_oDocument[0].props->operator[](i)->RenderToOOX(oNewParam); 
 
 		if (!sXml.empty() || !sXmlSectProp.empty())
 		{
@@ -292,24 +292,30 @@ bool OOXDocumentWriter::SaveBySection()
 					}
 					else
 					{
-						size_t nFind, nFindPict, pos = sXml.size();
+						size_t nFindPPr, nFindP, nFindPictStart, nFindPictEnd, pos = sXml.size();
 
 						do
 						{
-							nFindPict	= sXml.rfind(L"<w:pict>", pos);
-							nFind		= sXml.rfind(L"</w:pPr>", pos);
-							pos = nFindPict - 1;
-						}while(nFind != std::wstring::npos && nFindPict != std::wstring::npos && nFind > nFindPict);
+							nFindPictStart = sXml.rfind(L"<w:pict>", pos);
+							nFindPictEnd = sXml.rfind(L"/w:pict>", pos);
+							nFindPPr = sXml.rfind(L"</w:pPr>", pos);
+							nFindP = sXml.rfind(L"<w:p>", pos);
 
-						if( nFind != std::wstring::npos)
+							pos = nFindPictStart - 1;
+
+							if (nFindPictStart == std::wstring::npos)
+								break;
+
+						} while (true);
+
+						if (nFindPPr != std::wstring::npos)
 						{
-							sXml.insert( nFind, sXmlSectProp );
+							sXml.insert(nFindPPr, sXmlSectProp );
 						}
-						else
+						else if (nFindP != std::wstring::npos)
 						{
-							nFind = sXml.rfind( L"<w:p>" );
-							if( std::wstring::npos != nFind )
-								sXml.insert( nFind + 5, L"<w:pPr>" + sXmlSectProp + L"</w:pPr>" );
+							if( std::wstring::npos != nFindP)
+								sXml.insert(nFindP + 5, L"<w:pPr>" + sXmlSectProp + L"</w:pPr>" );
 						}
 					}
 				}	

@@ -95,6 +95,7 @@ namespace PPTX
 						pWriter->WriteULONG((_UINT32)spTree.SpTreeElems.size());
 						for (size_t i = 0; i < spTree.SpTreeElems.size(); i++)
 						{
+							pWriter->m_bInGroup = false;
 							pWriter->WriteRecord1(0, spTree.SpTreeElems[i]);
 						}
 					pWriter->EndRecord();

@@ -1567,6 +1567,7 @@ namespace StarMath
 			else if(L"dotsup" == wsToken) return TypeElement::dotsup;
 			else if(L"dotsdown" == wsToken) return TypeElement::dotsdown;
 			else if(L"newline" == wsToken) return TypeElement::newline;
+			else if(L"\\" == wsToken) return TypeElement::slash; 
 		}
 		else if(wsToken[0] == L'%')
 		{
@@ -1669,6 +1670,7 @@ namespace StarMath
 			break;
 		}
 		case TypeElement::newline:
+		case TypeElement::slash:
 		{
 			break;
 		}
@@ -3752,6 +3754,7 @@ namespace StarMath
 		pXmlWrite->WriteNodeBegin(L"m:m",false);
 		CConversionSMtoOOXML::PropertiesMPr(pXmlWrite,m_enTypeMatrix,GetAttribute(),GetTypeConversion());
 		pXmlWrite->WriteNodeBegin(L"m:mr",false);
+		bool bNormal(false);
 		switch(m_enTypeMatrix)
 		{
 			case TypeElement::matrix:
@@ -3763,30 +3766,57 @@ namespace StarMath
 				{
 					CElementBracket* pTempBracket = dynamic_cast<CElementBracket*>(m_pFirstArgument);
 					std::vector<CElement*> pTempValue = pTempBracket->GetBracketValue();
+					pXmlWrite->WriteNodeBegin(L"m:e",false);
 					for(CElement* pOneElement:pTempValue)
 					{
-						if(pOneElement->GetBaseType() != TypeElement::undefine && pOneElement->GetBaseType() != TypeElement::SpecialSymbol && m_enTypeMatrix == TypeElement::stack)
-						{
-							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
-							pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
-							pXmlWrite->WriteNodeBegin(L"m:mr",false);
-						}
-						else if(pOneElement->GetBaseType() != TypeElement::SpecialSymbol && pOneElement->GetBaseType()!= TypeElement::undefine && m_enTypeMatrix == TypeElement::matrix)
-						{
-							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
-						}
-						else if(pOneElement->GetBaseType()!= TypeElement::undefine && pOneElement->GetBaseType() == TypeElement::SpecialSymbol && m_enTypeMatrix == TypeElement::matrix)
+						if(pOneElement->GetBaseType() != TypeElement::undefine && pOneElement->GetBaseType() != TypeElement::SpecialSymbol)
+							pOneElement->ConversionToOOXML(pXmlWrite);
+//						{
+//							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
+//							pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+//							pXmlWrite->WriteNodeBegin(L"m:mr",false);
+//						}
+//						else if(pOneElement->GetBaseType() != TypeElement::SpecialSymbol && pOneElement->GetBaseType()!= TypeElement::undefine && m_enTypeMatrix == TypeElement::matrix)
+//						{
+//							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
+//						}
+						else if(pOneElement->GetBaseType()!= TypeElement::undefine && pOneElement->GetBaseType() == TypeElement::SpecialSymbol)
 						{
 							CElementSpecialSymbol* pTempSpecial = dynamic_cast<CElementSpecialSymbol*>(pOneElement);
-							if(pTempSpecial->GetType() == TypeElement::transition)
+							if(pTempSpecial->GetType() == TypeElement::transition && m_enTypeMatrix == TypeElement::matrix)
 							{
+								pXmlWrite->WriteNodeEnd(L"m:e",false,false);
 								pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
 								pXmlWrite->WriteNodeBegin(L"m:mr",false);
+								pXmlWrite->WriteNodeBegin(L"m:e",false);
 							}
-							else if(pTempSpecial->GetType() != TypeElement::grid)
-								CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
+							else if(pTempSpecial->GetType() == TypeElement::grid)
+							{
+								switch(m_enTypeMatrix)
+								{
+								case TypeElement::stack:
+								{
+									pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+									pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
+									pXmlWrite->WriteNodeBegin(L"m:mr",false);
+									pXmlWrite->WriteNodeBegin(L"m:e",false);
+									break;
+								}
+								case TypeElement::matrix:
+								{
+									pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+									pXmlWrite->WriteNodeBegin(L"m:e",false);
+									break;
+								}
+								default:
+								break;
+								}
+							}
+							else if(pTempSpecial->GetType() != TypeElement::grid && pTempSpecial->GetType() != TypeElement::transition)
+								pOneElement->ConversionToOOXML(pXmlWrite);
 						}
 					}
+					bNormal = true;
 				}
 				else if(m_enTypeMatrix == TypeElement::matrix)
 				{
@@ -3834,6 +3864,8 @@ namespace StarMath
 				break;
 			}
 		}
+		if(bNormal)
+			pXmlWrite->WriteNodeEnd(L"m:e",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:m",false,false);
 	}

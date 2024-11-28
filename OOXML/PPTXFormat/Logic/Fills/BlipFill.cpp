@@ -185,20 +185,7 @@ namespace PPTX
 			pWriter->EndAttributes();
 
 			pWriter->Write(blip);
-
-			if (srcRect.is_init())
-			{
-				pWriter->StartNode(L"a:srcRect");
-
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(L"l", srcRect->l);
-				pWriter->WriteAttribute(L"t", srcRect->t);
-				pWriter->WriteAttribute(L"r", srcRect->r);
-				pWriter->WriteAttribute(L"b", srcRect->b);
-				pWriter->EndAttributes();
-
-				pWriter->EndNode(L"a:srcRect");
-			}
+			pWriter->Write(srcRect);
 
 			pWriter->Write(tile);
 			pWriter->Write(stretch);
@@ -455,31 +442,26 @@ namespace PPTX
 								}
 							}
 						}
-
-						pReader->Seek(_e2);
-						break;
-					}
+						pReader->Seek(_e2);						
+					}break;
 					case 1:
 					{
 						srcRect = new PPTX::Logic::Rect();
-						srcRect->fromPPTY(pReader);
-						break;
-					}
+						srcRect->m_name = L"a:srcRect";
+						srcRect->fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						tile = new PPTX::Logic::Tile();
-						tile->fromPPTY(pReader);
-						break;
-					}
+						tile->fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						stretch = new PPTX::Logic::Stretch();
-						pReader->SkipRecord();
-						break;
-					}
+						stretch->fromPPTY(pReader);						
+					}break;
 					default:
 					{
-						// пока никаких настроек градиента нет
 						pReader->SkipRecord();
 					}
 				}

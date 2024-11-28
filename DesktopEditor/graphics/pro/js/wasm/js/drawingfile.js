@@ -116,6 +116,11 @@ CFile.prototype["loadFromDataWithPassword"] = function(password)
 	return error;
 };
 
+CFile.prototype["getType"] = function()
+{
+	return this.type;
+};
+
 CFile.prototype["close"] = function()
 {
 	this._closeFile();

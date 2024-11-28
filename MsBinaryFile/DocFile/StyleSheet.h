@@ -43,14 +43,8 @@ namespace DocFileFormat
 	{
 	public:  
 		virtual ~StyleSheet();
-		/// Parses the streams to retrieve a StyleSheet.
 		StyleSheet(FileInformationBlock* fib, POLE::Stream* tableStream, POLE::Stream* dataStream);
-
-	public:  
-
-		/// The StyleSheetInformation of the stylesheet.
 		StyleSheetInformation*			stshi;
-		/// The list contains all styles.
 		std::vector<StyleSheetDescription*>*	Styles;
 	};
 }

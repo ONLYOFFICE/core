@@ -95,7 +95,9 @@ HEADERS += \
 	../../src/lib/odf.h \
 	\
 	../../src/lib/pdf_image.h \
-	../../src/lib/pdf_oform.h
+	../../src/lib/pdf_oform.h \
+	\
+	../../src/lib/iwork.h
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
@@ -127,7 +129,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer, IWorkFile)
 
 
 #####################################################

@@ -3407,8 +3407,8 @@ namespace PdfReader
 				}
 			}
 
-			if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
-				m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
+			// if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
+			// 	m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
 		}
 
 		m_sCS.pop_back();

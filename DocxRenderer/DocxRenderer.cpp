@@ -46,11 +46,9 @@ public:
 
 public:
 	CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
-	{
-	}
+	{}
 	~CDocxRenderer_Private()
-	{
-	}
+	{}
 };
 
 CDocxRenderer::CDocxRenderer(NSFonts::IApplicationFonts* pAppFonts)
@@ -122,7 +120,6 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 {
 	m_pInternal->m_oDocument.Clear();
 	m_pInternal->m_oDocument.Init(false);
-
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_bIsSupportShapeCommands = false;
@@ -151,7 +148,6 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 {
 	m_pInternal->m_oDocument.Clear();
 	m_pInternal->m_oDocument.Init(false);
-
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
@@ -258,17 +254,13 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 	return S_FALSE;
 }
 
-//----------------------------------------------------------------------------------------
-// Тип рендерера
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::get_Type(LONG* lType)
 {
 	*lType = c_nDocxWriter;
 	return S_OK;
 }
-//----------------------------------------------------------------------------------------
-// Функции для работы со страницей
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::NewPage()
 {
 	return m_pInternal->m_oDocument.NewPage();
@@ -297,9 +289,7 @@ HRESULT CDocxRenderer::get_DpiY(double* dDpiY)
 {
 	return m_pInternal->m_oDocument.get_DpiY(dDpiY);
 }
-//----------------------------------------------------------------------------------------
-// Функции для работы с Pen
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::get_PenColor(LONG* lColor)
 {
 	return m_pInternal->m_oDocument.get_PenColor(lColor);
@@ -384,9 +374,7 @@ HRESULT CDocxRenderer::PenDashPattern(double* pPattern, LONG lCount)
 {
 	return m_pInternal->m_oDocument.PenDashPattern(pPattern, lCount);
 }
-//----------------------------------------------------------------------------------------
-// Функции для работы с Brush
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::get_BrushType(LONG* lType)
 {
 	return m_pInternal->m_oDocument.get_BrushType(lType);
@@ -473,18 +461,18 @@ HRESULT CDocxRenderer::put_BrushGradientColors(LONG* pColors, double* pPositions
 }
 HRESULT CDocxRenderer::get_BrushTextureImage(Aggplus::CImage** pImage)
 {
-	*pImage = m_pInternal->m_oDocument.m_oBrush.Image;
+	*pImage = m_pInternal->m_oDocument.m_oCurrentPage.m_oBrush.Image;
 	return S_OK;
 }
 HRESULT CDocxRenderer::put_BrushTextureImage(Aggplus::CImage* pImage)
 {
-	RELEASEINTERFACE(m_pInternal->m_oDocument.m_oBrush.Image);
+	RELEASEINTERFACE(m_pInternal->m_oDocument.m_oCurrentPage.m_oBrush.Image);
 
 	if (NULL == pImage)
 		return S_FALSE;
 
-	m_pInternal->m_oDocument.m_oBrush.Image = pImage;
-	m_pInternal->m_oDocument.m_oBrush.Image->AddRef();
+	m_pInternal->m_oDocument.m_oCurrentPage.m_oBrush.Image = pImage;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_oBrush.Image->AddRef();
 
 	return S_OK;
 }
@@ -500,9 +488,7 @@ void CDocxRenderer::put_BrushGradInfo(void* pGradInfo)
 {
 	m_pInternal->m_oDocument.put_BrushGradInfo(pGradInfo);
 }
-//----------------------------------------------------------------------------------------
-// Функции для работы со шрифтами
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::get_FontName(std::wstring* wsName)
 {
 	return m_pInternal->m_oDocument.get_FontName(wsName);
@@ -559,9 +545,7 @@ HRESULT CDocxRenderer::put_FontFaceIndex(const int& lFaceIndex)
 {
 	return m_pInternal->m_oDocument.put_FontFaceIndex(lFaceIndex);
 }
-//----------------------------------------------------------------------------------------
-// Функции для вывода текста
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	return m_pInternal->m_oDocument.CommandDrawTextCHAR((int)lUnicode, dX, dY, dW, dH);
@@ -578,9 +562,7 @@ HRESULT CDocxRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, cons
 {
 	return m_pInternal->m_oDocument.CommandDrawTextEx(wsUnicodeText, pGids, nGidsCount, dX, dY, dW, dH);
 }
-//----------------------------------------------------------------------------------------
-// Маркеры команд
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::BeginCommand(const DWORD& lType)
 {
 	return m_pInternal->m_oDocument.BeginCommand(lType);
@@ -589,9 +571,7 @@ HRESULT CDocxRenderer::EndCommand(const DWORD& lType)
 {
 	return m_pInternal->m_oDocument.EndCommand(lType);
 }
-//----------------------------------------------------------------------------------------
-// Функции для работы с патом
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::PathCommandMoveTo(const double& dX, const double& dY)
 {
 	return m_pInternal->m_oDocument.PathCommandMoveTo(dX, dY);
@@ -652,9 +632,7 @@ HRESULT CDocxRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, cons
 {
 	return m_pInternal->m_oDocument.PathCommandTextEx(wsUnicodeText, pGids, nGidsCount, dX, dY, dW, dH);
 }
-//----------------------------------------------------------------------------------------
-// Функции для вывода изображений
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	return m_pInternal->m_oDocument.DrawImage(pImage, dX, dY, dW, dH);
@@ -663,9 +641,7 @@ HRESULT CDocxRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const 
 {
 	return m_pInternal->m_oDocument.DrawImageFromFile(wsImagePath,dX, dY, dW, dH);
 }
-//----------------------------------------------------------------------------------------
-// Функции для выставления преобразования
-//----------------------------------------------------------------------------------------
+
 HRESULT CDocxRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
 	return m_pInternal->m_oDocument.SetTransform(dM11, dM12, dM21, dM22, dX, dY);
@@ -679,9 +655,6 @@ HRESULT CDocxRenderer::ResetTransform()
 	return m_pInternal->m_oDocument.ResetTransform();
 }
 
-//----------------------------------------------------------------------------------------
-// Тип клипа
-//----------------------------------------------------------------------------------------
 HRESULT CDocxRenderer::get_ClipMode(LONG* lMode)
 {
 	return m_pInternal->m_oDocument.get_ClipMode(lMode);
@@ -691,22 +664,19 @@ HRESULT CDocxRenderer::put_ClipMode(const LONG& lMode)
 	return m_pInternal->m_oDocument.put_ClipMode(lMode);
 }
 
-//----------------------------------------------------------------------------------------
-// Дополнительные функции
-//----------------------------------------------------------------------------------------
 HRESULT CDocxRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
 	if (c_nSupportPathTextAsText == lType)
 	{
-		NSStructures::CBrush* pBrush = &m_pInternal->m_oDocument.m_oBrush;
+		NSStructures::CBrush* pBrush = &m_pInternal->m_oDocument.m_oCurrentPage.m_oBrush;
 		if (c_BrushTypeSolid != pBrush->Type)
 			return S_FALSE;
 
-		NSStructures::CPen* pPen = &m_pInternal->m_oDocument.m_oPen;
+		NSStructures::CPen* pPen = &m_pInternal->m_oDocument.m_oCurrentPage.m_oPen;
 		if (pBrush->Color1 != pPen->Color || pBrush->Alpha1 != pPen->Alpha)
 			return S_FALSE;
 
-		Aggplus::CMatrix* pTransform = &m_pInternal->m_oDocument.m_oTransform;
+		Aggplus::CMatrix* pTransform = &m_pInternal->m_oDocument.m_oCurrentPage.m_oTransform;
 		if (std::abs(pTransform->z_Rotation()) > 1.0 || pTransform->sx() < 0 || pTransform->sy() < 0)
 			return S_FALSE;
 

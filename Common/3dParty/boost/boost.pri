@@ -29,7 +29,10 @@ core_windows {
     VS_VERSION=140
     VS_DEBUG=
     VS_ARCH=x64
-    core_debug:VS_DEBUG=gd-
+    core_debug {
+        VS_DEBUG=gd-
+        build_xp:VS_DEBUG=sgd-
+    }
     core_win_32:VS_ARCH=x32
     vs2019:VS_VERSION=142
 

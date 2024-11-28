@@ -12,86 +12,74 @@ namespace NSDocxRenderer
 	class CPage
 	{
 	public:
+		struct CManagers
+		{
+			CManagers() = default;
+			CManagers(const CManagers& other) = default;
+			~CManagers() = default;
+
+			CImageManager*             pImageManager;
+			CFontStyleManager*         pFontStyleManager;
+			CParagraphStyleManager*    pParagraphStyleManager;
+			CFontManager*              pFontManager;
+			CFontSelector*			   pFontSelector;
+		};
+
 		double m_dWidth {0.0};
 		double m_dHeight {0.0};
 
 		LONG m_lCurrentCommand{0};
 		LONG m_lClipMode{0};
-		bool m_bIsGradient = false;
 
-		TextAssociationType m_eTextAssociationType {TextAssociationType::tatPlainParagraph};
+		TextAssociationType m_eTextAssociationType{TextAssociationType::tatPlainParagraph};
+		NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
 
-		bool m_bUseDefaultFont{false};
-		bool m_bWriteStyleRaw {false};
+		NSStructures::CFont     m_oFont;
+		NSStructures::CPen      m_oPen;
+		NSStructures::CBrush    m_oBrush;
+		NSStructures::CShadow   m_oShadow;
+		NSStructures::CEdgeText m_oEdgeText;
 
-		NSStructures::CFont*        m_pFont      {nullptr};
-		NSStructures::CPen*         m_pPen       {nullptr};
-		NSStructures::CBrush*       m_pBrush     {nullptr};
-		NSStructures::CShadow*      m_pShadow    {nullptr};
-		NSStructures::CEdgeText*    m_pEdgeText  {nullptr};
+		Aggplus::CMatrix m_oTransform;
+		CManagers        m_oManagers;
 
-		Aggplus::CMatrix*                      m_pTransform              {nullptr};
-		Aggplus::CGraphicsPathSimpleConverter* m_pSimpleGraphicsConverter{nullptr};
+		CVectorGraphics  m_oCurrVectorGraphics, m_oClipVectorGraphics;
+		CContTextBuilder m_oContBuilder;
 
-		CImageManager*              m_pImageManager         {nullptr};
-		CFontStyleManager*          m_pFontStyleManager     {nullptr};
-		CParagraphStyleManager*     m_pParagraphStyleManager{nullptr};
-		CFontManager*               m_pFontManager          {nullptr};
-		CFontSelector*				m_pFontSelector         {nullptr};
-
-		CVectorGraphics             m_oCurrVectorGraphics;
-		CVectorGraphics				m_oClipVectorGraphics;
-
-		std::vector<std::shared_ptr<CContText>>	 m_arConts;
-		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
-		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
-		std::vector<std::shared_ptr<CShape>>     m_arShapes;
+		std::vector<std::shared_ptr<CContText>> m_arConts;
+		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
+		std::vector<std::shared_ptr<CContText>> m_arDiacriticalSymbols;
+		std::vector<std::shared_ptr<CShape>>    m_arShapes;
 
 		std::vector<std::wstring>   m_arCompleteObjectsXml;
 		std::vector<std::shared_ptr<CBaseItem>>  m_arOutputObjects;
 
-		bool m_bIsDeleteTextClipPage {true};
-		bool m_bIsRecalcFontSize {true};
+		bool m_bIsDeleteTextClipPage{true};
+		bool m_bIsRecalcFontSize    {true};
+		bool m_bIsGradient          {false};
+		bool m_bUseDefaultFont      {false};
+		bool m_bWriteStyleRaw       {false};
 
-		CPage();
+		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
-
-		void Init(
-			NSStructures::CFont* pFont,
-			NSStructures::CPen* pPen,
-			NSStructures::CBrush* pBrush,
-			NSStructures::CShadow* pShadow,
-			NSStructures::CEdgeText* pEdge,
-			Aggplus::CMatrix* pMatrix,
-			Aggplus::CGraphicsPathSimpleConverter* pSimple,
-			CImageManager* pImageManager,
-			CFontStyleManager* pStyleManager,
-			CFontManager *pFontManager,
-			CFontSelector* pFontSelector,
-			CParagraphStyleManager* pParagraphStyleManager);
 
 		void BeginCommand(DWORD lType);
 		void EndCommand(DWORD lType);
-		void Clear();
 
-		// удаляем то, что выходит за границы страницы
+		void Clear();
 		void DeleteTextClipPage();
 
-		// image commands
 		void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
-		// path commands
-		void MoveTo(double& dX, double& dY);
-		void LineTo(double& dX, double& dY);
-		void CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3);
+		void PathMoveTo(double& dX, double& dY);
+		void PathLineTo(double& dX, double& dY);
+		void PathCurveTo(double& dX1, double& dY1, double& dX2, double& dY2, double& dX3, double& dY3);
 		void PathStart();
 		void PathEnd();
 		void PathClose();
 
-		//набивается содержимым вектор m_arShapes
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
-
-		void CollectTextData(
+		void AddText(
 			const PUINT pUnicodes,
 			const PUINT pGids,
 			const UINT& nCount,
@@ -106,8 +94,6 @@ namespace NSDocxRenderer
 		void ReorderShapesForPptx();
 
 	private:
-
-		// methods to build text lines
 		void BuildDiacriticalSymbols();
 		void BuildTextLines();
 		void AnalyzeTextLines();
@@ -150,9 +136,6 @@ namespace NSDocxRenderer
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 
-		std::shared_ptr<CContText> m_pCurrCont {nullptr};
-		NSStructures::CFont m_oPrevFont;
-		NSStructures::CBrush m_oPrevBrush;
 		size_t m_nShapeOrder = 0;
 	};
 }

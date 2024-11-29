@@ -232,6 +232,7 @@ double Curve::GetTimeOf(const PointD& point) const noexcept
 				if (getDistance(point, GetPoint(u)) <= GEOMETRIC_EPSILON)
 					return u;
 			}
+			roots.clear();
 		}
 	}
 	bool firstDist = d0 <= GEOMETRIC_EPSILON,
@@ -995,7 +996,7 @@ void CBooleanOperations::TracePaths()
 			start = true;
 		while (valid)
 		{
-			if (!start || (Op == Intersection && s.Inters))
+			if (!start || (Op == Intersection && s.Inters && !GetNextSegment(s).Inters))
 				SetVisited(s);
 
 			if (start)

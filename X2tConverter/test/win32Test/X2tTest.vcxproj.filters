@@ -55,6 +55,9 @@
     <ClInclude Include="..\..\src\lib\docx.h">
       <Filter>libs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\lib\iwork.h">
+      <Filter>libs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="libs">

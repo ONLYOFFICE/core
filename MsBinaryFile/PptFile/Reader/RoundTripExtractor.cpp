@@ -38,7 +38,7 @@ using namespace PPT;
 
 RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt, const std::wstring& tempPath) : m_roundTripRecord(rt), m_hasError(false)
 {
-    m_tempPath = NSDirectory::CreateDirectoryWithUniqueName(tempPath) + FILE_SEPARATOR_STR;
+    m_tempPath = tempPath;
     m_hasError = !extract();
 }
 
@@ -77,7 +77,7 @@ bool RoundTripExtractor::extract()
     if (!m_roundTripRecord)
         return false;
 
-    std::wstring tempZipPath = m_tempPath + FILE_SEPARATOR_STR + L"RoundTrip.zip";
+    std::wstring tempZipPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"RndT") + L".zip";
 
     BYTE* zipData = m_roundTripRecord->data.first.get();
     ULONG zipDataLen = m_roundTripRecord->data.second;

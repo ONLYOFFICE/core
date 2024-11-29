@@ -67,7 +67,12 @@ std::vector<std::vector<std::wstring>> MonthNames
     {L"Tháng Giêng", L"Tháng Hai", L"Tháng Ba", L"Tháng Tư", L"Tháng Năm", L"Tháng Sáu", L"Tháng Bảy", L"Tháng Tám", L"Tháng Chín", L"Tháng Mười", L"Tháng Mười Một", L"Tháng Mười Hai"},
     {L"Yanvar", L"Fevral", L"Mart", L"Aprel", L"May", L"İyun", L"İyul", L"Avqust", L"Sentyabr", L"Oktyabr", L"Noyabr", L"Dekabr"},
     {L"Қаңтар", L"Ақпан", L"Наурыз", L"Сәуір", L"Мамыр", L"Маусым", L"Шілде", L"Тамыз", L"Қыркүйек", L"Қазан", L"Қараша", L"Желтоқсан"},
-    {L"Нэгдүгээр сар", L"Хоёрдугаар сар", L"Гуравдугаар сар", L"Дөрөвдүгээр сар", L"Тавдугаар сар", L"Зургаадугаар сар", L"Долоодугаар сар", L"Наймдугаар сар", L"Есдүгээр сар", L"Аравдугаар сар", L"Арван нэгдүгээр сар", L"Арван хоёрдугаар сар"}
+    {L"Нэгдүгээр сар", L"Хоёрдугаар сар", L"Гуравдугаар сар", L"Дөрөвдүгээр сар", L"Тавдугаар сар", L"Зургаадугаар сар", L"Долоодугаар сар", L"Наймдугаар сар", L"Есдүгээр сар", L"Аравдугаар сар", L"Арван нэгдүгээр сар", L"Арван хоёрдугаар сар"},
+    {L"януари", L"февруари", L"март", L"април", L"май", L"юни", L"юли", L"август", L"септември", L"октомври", L"ноември", L"декември"},
+    {L"ذو الحجة", L"ذو القعدة", L"شوال", L"رمضان", L"شعبان", L"رجب", L"جمادى الثانية", L"جمادى الأولى", L"ربيع الثاني", L"ربيع الأول", L"صفر", L"محرم"},
+    {L"januari", L"februari", L"maart", L"april", L"mei", L"juni", L"juli", L"augustus", L"september", L"oktober", L"november", L"december"},
+    {L"siječanj", L"veljača", L"ožujak", L"travanj", L"svibanj", L"lipanj", L"srpanj", L"kolovoz", L"rujan", L"listopad", L"studeni", L"prosinac"},
+    {L"január", L"február", L"marec", L"apríl", L"máj", L"jún", L"júl", L"august", L"september", L"október", L"november", L"december"}
 };
 
 std::vector<std::vector<std::wstring>> ShortMonthNames
@@ -98,12 +103,18 @@ std::vector<std::vector<std::wstring>> ShortMonthNames
     {L"Thg1", L"Thg2", L"Thg3", L"Thg4", L"Thg5", L"Thg6", L"Thg7", L"Thg8", L"Thg9", L"Thg10", L"Thg11", L"Thg12"},
     {L"yan", L"fev", L"mar", L"apr", L"may", L"iyn", L"iyl", L"avq", L"sen", L"okt", L"noy", L"dek"},
     {L"қаң", L"ақп", L"нау", L"сәу", L"мам", L"мау", L"шіл", L"там", L"қыр", L"қаз", L"қар", L"жел"},
-    {L"1-р сар", L"2-р сар", L"3-р сар", L"4-р сар", L"5-р сар", L"6-р сар", L"7-р сар", L"8-р сар", L"9-р сар", L"10-р сар", L"11-р сар", L"12-р сар"}
+    {L"1-р сар", L"2-р сар", L"3-р сар", L"4-р сар", L"5-р сар", L"6-р сар", L"7-р сар", L"8-р сар", L"9-р сар", L"10-р сар", L"11-р сар", L"12-р сар"},
+    {L"яну", L"фев", L"мар", L"апр", L"май", L"юни", L"юли", L"авг", L"сеп", L"окт", L"ное", L"дек"},
+    {L"ذو الحجة", L"ذو القعدة", L"شوال", L"رمضان", L"شعبان", L"رجب", L"جمادى الثانية", L"جمادى الأولى", L"ربيع الثاني", L"ربيع الأول", L"صفر", L"محرم"},
+    {L"jan", L"feb", L"mrt", L"apr", L"mei", L"jun", L"jul", L"aug", L"sep", L"okt", L"nov", L"dec"},
+    {L"sij", L"vlj", L"ožu", L"tra", L"svi", L"lip", L"srp", L"kol", L"ruj", L"lis", L"stu", L"pro"},
+    {L"jan", L"feb", L"mar", L"apr", L"máj", L"jún", L"júl", L"aug", L"sep", L"okt", L"nov", L"dec"}
 };
 
 std::map<_INT32, LocalInfo> InfoMap
 {
     {-1, LocalInfo{-1, L"default", L"-", L"215", 0, 3}},
+    {1, LocalInfo{1, L"ar", L"/", L"134", 28, 13}},
     {4, LocalInfo{4, L"zh-Hans", L"/", L"520", 3, 3}},
     {5, LocalInfo{5, L"cs", L".", L"135", 4, 3}},
     {6, LocalInfo{6, L"da", L"-", L"135",  5, 3}},
@@ -131,6 +142,37 @@ std::map<_INT32, LocalInfo> InfoMap
     {44, LocalInfo{44, L"az", L".", L"135", 24, 3}},
     {63, LocalInfo{63, L"kk", L".", L"135", 25, 3}},
     {80, LocalInfo{80, L"mn", L".", L"531", 26, 8}},
+    {1025, LocalInfo{1025, L"ar-SA", L"/", L"134", 28, 13}},
+    {1026, LocalInfo{1026, L"bg-BG", L".", L"025", 27, 3}},
+    {1028, LocalInfo{1028, L"zh-TW", L"/", L"520", 3, 2}},
+    {1029, LocalInfo{1029, L"cs-CZ", L",", L"135", 4, 3}},
+    {1030, LocalInfo{1030, L"da-DK", L"-", L"135", 5, 3}},
+    {1031, LocalInfo{1031, L"de-DE", L"-", L"135", 6, 3}},
+    {1032, LocalInfo{1032, L"el-GR", L"/", L"025", 7, 3}},
+    {1033, LocalInfo{1033, L"en-US", L"/", L"205", 0, 3}},
+    {1035, LocalInfo{1035, L"fi-FI", L".", L"025", 8, 3}},
+    {1036, LocalInfo{1036, L"fr-FR", L"/", L"135", 9, 4}},
+    {1038, LocalInfo{1038, L"hu-HU", L".", L"531", 10, 3}},
+    {1040, LocalInfo{1040, L"it-IT", L"/", L"135", 11, 3}},
+    {1041, LocalInfo{1041, L"ja-JP", L"/", L"135", 12, 2}},
+    {1042, LocalInfo{1042, L"ko-KR", L"-", L"531", 13, 2}},
+    {1043, LocalInfo{1043, L"nl-NL", L"-", L"025", 29, 3}},
+    {1045, LocalInfo{1045, L"pl-PL", L".", L"135", 14, 3}},
+    {1046, LocalInfo{1046, L"pt-BR", L"/", L"135", 15, 3}},
+    {1049, LocalInfo{1049, L"ru-RU", L".", L"135", 1, 3}},
+    {1050, LocalInfo{1050, L"hr-HR", L".", L"025", 30, 3}},
+    {1051, LocalInfo{1051, L"sk-SK", L".", L"025", 31, 3}},
+    {1053, LocalInfo{1053, L"sv-SE", L"-", L"531", 16, 3}},
+    {1055, LocalInfo{1055, L"tr-TR", L".", L"035", 17, 3}},
+    {1057, LocalInfo{1057, L"id-ID", L"/", L"135", 18, 3}},
+    {1058, LocalInfo{1058, L"uk-UA", L".", L"135", 19, 3}},
+    {1060, LocalInfo{1060, L"sl-SI", L".", L"035", 20, 3}},
+    {1062, LocalInfo{1062, L"lv-LV", L".", L"135", 21, 5}},
+    {1063, LocalInfo{1063, L"lt-LT", L"-", L"531", 22, 5}},
+    {1066, LocalInfo{1066, L"vi-VN", L"/", L"135", 23, 5}},
+    {1068, LocalInfo{1068, L"az-Latn-AZ", L".", L"135", 24, 3}},
+    {1087, LocalInfo{1087, L"kk-KZ", L".", L"135", 25, 3}},
+    {1104, LocalInfo{1104, L"mn-MN", L".", L"531", 26, 3}},
 
     {12298, LocalInfo{12298, L"es-EC", L"/", L"025", 2, 3}}
 };

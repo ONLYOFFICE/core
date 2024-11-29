@@ -5741,6 +5741,28 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
 			pSpPr->ln->Fill.Fill = pSolid;
 		}
 	}
+	else
+	{
+		nullable_string sStrokeColor, sStrokeOpacity;
+		XmlMacroReadAttributeBase(oNode, L"o:bordertopcolor", sStrokeColor);
+		XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"w10:bordertop");
+		
+		if (oNodeStroke.IsValid() && sStrokeColor.is_init())
+		{
+			if (!pSpPr->ln.IsInit())
+				pSpPr->ln.Init();
+
+			pPPTShape->m_bIsStroked = true;
+
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = L"a";
+
+			ConvertColor(pSolid->Color, sStrokeColor, sStrokeOpacity);
+
+			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+			pSpPr->ln->Fill.Fill = pSolid;
+		}
+	}
 }
 
 HRESULT CDrawingConverter::LoadClrMap(const std::wstring& bsXml)

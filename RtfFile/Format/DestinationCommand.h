@@ -269,7 +269,6 @@ class RtfPictureReader :  public RtfAbstractReader
 		DWORD Reserved;      /* Reserved (always 0) */
 		WORD  Checksum;      /* Checksum value for previous 10 WORDs */
 
-	public:
 		PLACEABLEMETAHEADER();
 
 		void CalculateChecksum();
@@ -277,16 +276,24 @@ class RtfPictureReader :  public RtfAbstractReader
 		std::wstring ToString();
 		std::wstring ByteToString( BYTE* pbData, int nSize, bool bLittleEnd = true );
 	};
+public:
 
-private: 
+	enum _InternalState {
+		is_normal, is_charBorder, is_borderTop, is_borderLeft, is_borderBottom, is_borderRight, is_borderBox, is_borderBar,
+		is_borderCellLeft, is_borderCellTop, is_borderCellRight, is_borderCellBottom, is_borderCellLR, is_borderCellRL,
+		is_borderRowLeft, is_borderRowTop, is_borderRowRight, is_borderRowBottom, is_borderRowVer, is_borderRowHor
+	};
+	//только для определения бордера
+
+private:
+	_InternalState	m_eInternalState; private:
 	RtfShape&		m_oShape;
 	std::wstring	m_sFile;
 	std::wstring	m_sData;
 	bool			m_bBin;
 	BYTE*			m_pbBin;
 	size_t			m_nBinLength;
-
-public: 
+public:
 	RtfPictureReader( RtfReader& oReader, RtfShape& oShape );
 	~RtfPictureReader();
 	bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, std::string sCommand, bool hasParameter, int parameter);

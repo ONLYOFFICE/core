@@ -111,7 +111,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
                           L"\" w:dyaOrig=\"" + std::to_wstring(m_nHeight) + L"\">";
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
-		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_CHILD;
 
 		if (m_oResultShape)
 		{

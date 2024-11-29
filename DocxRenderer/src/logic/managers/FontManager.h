@@ -81,7 +81,7 @@ namespace NSDocxRenderer
 
 		void SelectFont(const CFontSelectParams& oFontSelectParams,
 						const CFontMetrics& oFontMetrics,
-						NSStringUtils::CStringUTF32& oText);
+						const NSStringUtils::CStringUTF32& oText);
 		std::wstring GetSelectedName() const noexcept;
 		bool IsSelectedBold() const noexcept;
 		bool IsSelectedItalic() const noexcept;

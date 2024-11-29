@@ -93,7 +93,7 @@ mc:Ignorable=\"w14 w15 w16se wp14\">";
 
 		sResult += L"<w:background w:color=\"" + color.ToHexColor() + L"\">";
 		{
-			oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+			oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_CHILD;
 			sResult += m_oDocument.m_pBackground->RenderToOOX(oNewParam);
 			oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		}

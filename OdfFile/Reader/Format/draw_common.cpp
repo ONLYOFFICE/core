@@ -437,9 +437,10 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 			}
 		}
 	}
-	if (props.draw_image_opacity_) 
-		fill.opacity = props.draw_image_opacity_->get_value();
-
+	if (props.draw_image_opacity_)
+	{
+		fill.image_opacity = props.draw_image_opacity_->get_value();
+	}
 ////////////////////////////////////////////////////////////
 	if (props.draw_fill_color_)
 	{

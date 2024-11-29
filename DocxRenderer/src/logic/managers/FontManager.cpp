@@ -320,12 +320,12 @@ namespace NSDocxRenderer
 
 	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams,
 								   const CFontMetrics& oFontMetrics,
-								   NSStringUtils::CStringUTF32& oText)
+								   const NSStringUtils::CStringUTF32& oText)
 	{
 		BYTE lRangeNum	= 0xFF;
 		BYTE lRange		= 0xFF;
 
-		m_oRanges.CheckRange(oText[0], lRange, lRangeNum);
+		m_oRanges.CheckRange(oText.at(0), lRange, lRangeNum);
 
 		for(auto it = m_arParamsCache.begin(); it != m_arParamsCache.end(); it++)
 		{

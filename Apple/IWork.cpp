@@ -35,22 +35,30 @@ CIWorkFile::~CIWorkFile()
 	delete m_internal;
 }
 
-IWorkFileType CIWorkFile::GetType(const std::wstring& sFile)
+bool GetRVNGInputStream(const std::string& sFileA, std::shared_ptr<librevenge::RVNGInputStream>& oRVNGInputStream, libetonyek::EtonyekDocument::Type& oDocumentType)
+{
+	if (librevenge::RVNGDirectoryStream::isDirectory(sFileA.c_str()))
+		oRVNGInputStream.reset(new librevenge::RVNGDirectoryStream(sFileA.c_str()));
+	else
+		oRVNGInputStream.reset(new librevenge::RVNGFileStream(sFileA.c_str()));
+
+	oDocumentType = libetonyek::EtonyekDocument::TYPE_UNKNOWN;
+	const libetonyek::EtonyekDocument::Confidence confidence = libetonyek::EtonyekDocument::isSupported(oRVNGInputStream.get(), &oDocumentType);
+
+	return libetonyek::EtonyekDocument::CONFIDENCE_NONE != confidence;
+}
+
+IWorkFileType CIWorkFile::GetType(const std::wstring& sFile) const
 {
 	std::string sFileA = U_TO_UTF8(sFile);
+
 	std::shared_ptr<librevenge::RVNGInputStream> input;
-	if (librevenge::RVNGDirectoryStream::isDirectory(sFileA.c_str()))
-		input.reset(new librevenge::RVNGDirectoryStream(sFileA.c_str()));
-	else
-		input.reset(new librevenge::RVNGFileStream(sFileA.c_str()));
+	libetonyek::EtonyekDocument::Type oDocumentType;
 
-	libetonyek::EtonyekDocument::Type type = libetonyek::EtonyekDocument::TYPE_UNKNOWN;
-	const libetonyek::EtonyekDocument::Confidence confidence = libetonyek::EtonyekDocument::isSupported(input.get(), &type);
-
-	if (libetonyek::EtonyekDocument::CONFIDENCE_NONE == confidence)
+	if (!GetRVNGInputStream(sFileA, input, oDocumentType))
 		return IWorkFileType::None;
 
-	switch (type)
+	switch (oDocumentType)
 	{
 	case libetonyek::EtonyekDocument::TYPE_PAGES:
 		return IWorkFileType::Pages;
@@ -65,67 +73,42 @@ IWorkFileType CIWorkFile::GetType(const std::wstring& sFile)
 	return IWorkFileType::None;
 }
 
-int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutputFile)
+template<class Generator>
+int Convert(const std::wstring& wsOutputFile, std::shared_ptr<librevenge::RVNGInputStream>& ptrInput, const std::wstring& wsPassword = L"", const std::wstring& wsTempDirectory = L"")
 {
-	std::string sFileA = U_TO_UTF8(sFile);
-	std::shared_ptr<librevenge::RVNGInputStream> input;
-	if (librevenge::RVNGDirectoryStream::isDirectory(sFileA.c_str()))
-		input.reset(new librevenge::RVNGDirectoryStream(sFileA.c_str()));
-	else
-		input.reset(new librevenge::RVNGFileStream(sFileA.c_str()));
+	StringDocumentHandler content;
+	Generator generator;
+	generator.addDocumentHandler(&content, ODF_FLAT_XML);
 
-	libetonyek::EtonyekDocument::Type type = libetonyek::EtonyekDocument::TYPE_UNKNOWN;
-	const libetonyek::EtonyekDocument::Confidence confidence = libetonyek::EtonyekDocument::isSupported(input.get(), &type);
+	bool bRes = libetonyek::EtonyekDocument::parse(ptrInput.get(), &generator);
+	if (!bRes)
+		return 1;
 
-	if (libetonyek::EtonyekDocument::CONFIDENCE_NONE == confidence)
+	const std::string sOutputFileA = U_TO_UTF8(wsOutputFile);
+	std::ofstream output(sOutputFileA.c_str());
+	output << content.cstr();
+
+	if (output.bad())
 		return -1;
 
-	const std::string sOutputFileA = U_TO_UTF8(sOutputFile);
+	return 0;
+}
 
-	switch (type)
+int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutputFile) const
+{
+	std::string sFileA = U_TO_UTF8(sFile);
+
+	std::shared_ptr<librevenge::RVNGInputStream> input;
+	libetonyek::EtonyekDocument::Type oDocumentType;
+
+	if (!GetRVNGInputStream(sFileA, input, oDocumentType))
+		return -1;
+
+	switch (oDocumentType)
 	{
-	case libetonyek::EtonyekDocument::TYPE_PAGES:
-	{
-		StringDocumentHandler content;
-		OdtGenerator generator;
-		generator.addDocumentHandler(&content, ODF_FLAT_XML);
-
-		bool bRes = libetonyek::EtonyekDocument::parse(input.get(), &generator);
-		if (!bRes)
-			return 1;
-
-		std::wofstream output(sOutputFileA.c_str());
-		output << content.cstr();
-		return 0;
-	}
-	case libetonyek::EtonyekDocument::TYPE_NUMBERS:
-	{
-		StringDocumentHandler content;
-		OdsGenerator generator;
-		generator.addDocumentHandler(&content, ODF_FLAT_XML);
-
-		bool bRes = libetonyek::EtonyekDocument::parse(input.get(), &generator);
-		if (!bRes)
-			return 1;
-
-		std::wofstream output(sOutputFileA.c_str());
-		output << content.cstr();
-		return 0;
-	}
-	case libetonyek::EtonyekDocument::TYPE_KEYNOTE:
-	{
-		StringDocumentHandler content;
-		OdpGenerator generator;
-		generator.addDocumentHandler(&content, ODF_FLAT_XML);
-
-		bool bRes = libetonyek::EtonyekDocument::parse(input.get(), &generator);
-		if (!bRes)
-			return 1;
-
-		std::wofstream output(sOutputFileA.c_str());
-		output << content.cstr();
-		return 0;
-	}
+	case libetonyek::EtonyekDocument::TYPE_PAGES:   return Convert<OdtGenerator>(sOutputFile, input);
+	case libetonyek::EtonyekDocument::TYPE_NUMBERS: return Convert<OdsGenerator>(sOutputFile, input);
+	case libetonyek::EtonyekDocument::TYPE_KEYNOTE: return Convert<OdpGenerator>(sOutputFile, input);
 	default:
 		break;
 	}

@@ -31,6 +31,8 @@ public:
 
 	BYTE operator[](unsigned int unPosition) const;
 };
+
+#define CHECK_FLAG(value, flag) (value & flag) == flag
 }
 
 #endif // HWPSTREAM_H

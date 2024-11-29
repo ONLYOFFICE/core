@@ -2,8 +2,6 @@
 
 namespace HWP
 {
-#define CHECK_FLAG(value, flag) (value & flag) == flag
-
 EImageFillType GetImageFillType(int nType)
 {
 	switch (static_cast<EImageFillType>(nType))

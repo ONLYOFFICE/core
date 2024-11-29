@@ -19,6 +19,9 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
     HwpDoc/HWPElements/HWPRecordBorderFill.cpp \
+    HwpDoc/HWPElements/HWPRecordBullet.cpp \
+    HwpDoc/HWPElements/HWPRecordCharShape.cpp \
+    HwpDoc/HWPElements/HWPRecordNumbering.cpp \
     HwpDoc/HWPFile.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HwpFileHeader.cpp
@@ -29,6 +32,9 @@ HEADERS += \
     HwpDoc/HWPElements/HWPRecord.h \
     HwpDoc/HWPElements/HWPRecordBinData.h \
     HwpDoc/HWPElements/HWPRecordBorderFill.h \
+    HwpDoc/HWPElements/HWPRecordBullet.h \
+    HwpDoc/HWPElements/HWPRecordCharShape.h \
+    HwpDoc/HWPElements/HWPRecordNumbering.h \
     HwpDoc/HWPElements/HWPTag.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
     HwpDoc/HWPFile.h \

@@ -1,5 +1,6 @@
 #include "IWork.h"
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 
 #include <libetonyek/libetonyek.h>
 #include <libodfgen/OdtGenerator.hxx>
@@ -8,7 +9,6 @@
 #include <libodfgen/test/StringDocumentHandler.hxx>
 
 #include <memory>
-#include <iostream>
 #include <fstream>
 
 class CIWorkFile_Private
@@ -35,12 +35,15 @@ CIWorkFile::~CIWorkFile()
 	delete m_internal;
 }
 
-bool GetRVNGInputStream(const std::string& sFileA, std::shared_ptr<librevenge::RVNGInputStream>& oRVNGInputStream, libetonyek::EtonyekDocument::Type& oDocumentType)
+#if !defined(_WIN32) && !defined(_WIN64)
+	#define DATA_TYPE_INPUTFILE std::string
+#else
+	#define DATA_TYPE_INPUTFILE std::wstring
+#endif
+
+bool GetRVNGInputStream(const DATA_TYPE_INPUTFILE& sFile, std::shared_ptr<librevenge::RVNGInputStream>& oRVNGInputStream, libetonyek::EtonyekDocument::Type& oDocumentType)
 {
-	if (librevenge::RVNGDirectoryStream::isDirectory(sFileA.c_str()))
-		oRVNGInputStream.reset(new librevenge::RVNGDirectoryStream(sFileA.c_str()));
-	else
-		oRVNGInputStream.reset(new librevenge::RVNGFileStream(sFileA.c_str()));
+	oRVNGInputStream.reset(new librevenge::RVNGFileStream(sFile.c_str()));
 
 	oDocumentType = libetonyek::EtonyekDocument::TYPE_UNKNOWN;
 	const libetonyek::EtonyekDocument::Confidence confidence = libetonyek::EtonyekDocument::isSupported(oRVNGInputStream.get(), &oDocumentType);
@@ -50,13 +53,21 @@ bool GetRVNGInputStream(const std::string& sFileA, std::shared_ptr<librevenge::R
 
 IWorkFileType CIWorkFile::GetType(const std::wstring& sFile) const
 {
-	std::string sFileA = U_TO_UTF8(sFile);
+	//TODO:: так как на данный момент мы работает только напрямую с файлом, то работа с директорией нам пока не нужна
+	if (NSDirectory::PathIsDirectory(sFile))
+		return IWorkFileType::None;
 
 	std::shared_ptr<librevenge::RVNGInputStream> input;
 	libetonyek::EtonyekDocument::Type oDocumentType;
 
+	#if !defined(_WIN32) && !defined(_WIN64)
+	std::string sFileA = U_TO_UTF8(sFile);
 	if (!GetRVNGInputStream(sFileA, input, oDocumentType))
 		return IWorkFileType::None;
+	#else
+	if (!GetRVNGInputStream(sFile, input, oDocumentType))
+		return IWorkFileType::None;
+	#endif
 
 	switch (oDocumentType)
 	{
@@ -96,13 +107,21 @@ int Convert(const std::wstring& wsOutputFile, std::shared_ptr<librevenge::RVNGIn
 
 int CIWorkFile::Convert2Odf(const std::wstring& sFile, const std::wstring& sOutputFile) const
 {
-	std::string sFileA = U_TO_UTF8(sFile);
+	//TODO:: так как на данный момент мы работает только напрямую с файлом, то работа с директорией нам пока не нужна
+	if (NSDirectory::PathIsDirectory(sFile))
+		return -1;
 
 	std::shared_ptr<librevenge::RVNGInputStream> input;
 	libetonyek::EtonyekDocument::Type oDocumentType;
 
-	if (!GetRVNGInputStream(sFileA, input, oDocumentType))
-		return -1;
+	#if !defined(_WIN32) && !defined(_WIN64)
+		std::string sFileA = U_TO_UTF8(sFile);
+		if (!GetRVNGInputStream(sFileA, input, oDocumentType))
+			return -1;
+	#else
+		if (!GetRVNGInputStream(sFile, input, oDocumentType))
+			return -1;
+	#endif
 
 	switch (oDocumentType)
 	{

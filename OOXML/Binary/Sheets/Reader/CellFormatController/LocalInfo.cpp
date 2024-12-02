@@ -77,7 +77,8 @@ std::vector<std::vector<std::wstring>> MonthNames
     {L"jанвар", L"феврал", L"март", L"апрел", L"мај", L"ијун", L"ијул", L"август", L"сентјабр", L"октјабр", L"нојабр", L"декабр"},
     {L"ᠨᠢᠭᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠬᠤᠶ᠋ᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠭᠤᠷᠪᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠦᠷᠪᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠠᠪᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠵᠢᠷᠭᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠤᠯᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠨᠠᠢᠮᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠶᠢᠰᠦᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠨ ᠨᠢᠭᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠨ ᠬᠤᠶ᠋ᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ"},
     {L"ديسمبر", L"نوفمبر", L"أكتوبر", L"سبتمبر", L"أغسطس", L"يوليو", L"يونيو", L"مايو", L"أبريل", L"مارس", L"فبراير", L"يناير"},
-    {L"januar", L"februar", L"mart", L"april", L"maj", L"jun", L"jul", L"avgust", L"septembar", L"oktobar", L"novembar", L"decembar"}
+    {L"januar", L"februar", L"mart", L"april", L"maj", L"jun", L"jul", L"avgust", L"septembar", L"oktobar", L"novembar", L"decembar"},
+    {L"јануар", L"фебруар", L"март", L"април", L"мај", L"јун", L"јул", L"август", L"септембар", L"октобар", L"новембар", L"децембар"}
 };
 
 std::vector<std::vector<std::wstring>> ShortMonthNames
@@ -118,7 +119,8 @@ std::vector<std::vector<std::wstring>> ShortMonthNames
     {L"Јан", L"Фев", L"Мар", L"Апр", L"Мај", L"Ијун", L"Ијул", L"Авг", L"Сен", L"Окт", L"Ноя", L"Дек"},
     {L"ᠨᠢᠭᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠬᠤᠶ᠋ᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠭᠤᠷᠪᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠦᠷᠪᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠠᠪᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠵᠢᠷᠭᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠲᠤᠯᠤᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠨᠠᠢᠮᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠶᠢᠰᠦᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠨ ᠨᠢᠭᠡᠳᠦᠭᠡᠷ ᠰᠠᠷ᠎ᠠ", L"ᠠᠷᠪᠠᠨ ᠬᠤᠶ᠋ᠠᠳᠤᠭᠠᠷ ᠰᠠᠷ᠎ᠠ"},
     {L"ديسمبر", L"نوفمبر", L"أكتوبر", L"سبتمبر", L"أغسطس", L"يوليو", L"يونيو", L"مايو", L"أبريل", L"مارس", L"فبراير", L"يناير"},
-    {L"jan", L"feb", L"mar", L"apr", L"maj", L"jun", L"jul", L"avg", L"sep", L"okt", L"nov", L"dec"}
+    {L"jan", L"feb", L"mar", L"apr", L"maj", L"jun", L"jul", L"avg", L"sep", L"okt", L"nov", L"dec"},
+    {L"јан.", L"феб.", L"март", L"апр.", L"мај", L"јун", L"јул", L"авг.", L"септ.", L"окт.", L"нов.", L"дец."}
 };
 
 std::map<_INT32, LocalInfo> InfoMap
@@ -230,9 +232,50 @@ std::map<_INT32, LocalInfo> InfoMap
     {9225, LocalInfo{9225, L"en-029", L"/", L"135", 0, 3}},
     {9226, LocalInfo{9226, L"es-CO", L"/", L"035", 2, 3}},
     {9228, LocalInfo{9228, L"fr-CD", L"/", L"135", 9, 4}},
-    {9242, LocalInfo{9242, L"sr-Latn-RS", L".", L"025", 36, 3}},
-
-    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", 2, 3}}
+    {9242, LocalInfo{9242, L"sr-Latn-RS", L".", L"025", 36, 4}},
+    {10250, LocalInfo{10250, L"es-PE", L"/", L"035", 2, 3}},
+    {10252, LocalInfo{10252, L"fr-SN", L"/", L"135", 9, 4}},
+    {10266, LocalInfo{10266, L"sr-Cyrl-RS", L".", L"135", 37, 4}},
+    {11265, LocalInfo{11265, L"ar-JO", L"/", L"135", 32, 4}},
+    {11273, LocalInfo{11273, L"en-TT", L"/", L"135", 0, 3}},
+    {11274, LocalInfo{11274, L"es-AR", L"/", L"025", 2, 3}},
+    {11276, LocalInfo{11276, L"fr-CM", L"/", L"135", 9, 4}},
+    {12289, LocalInfo{12289, L"ar-LB", L"/", L"135", 32, 4}},
+    {12297, LocalInfo{12297, L"en-ZW", L"/", L"025", 0, 3}},
+    {12298, LocalInfo{12298, L"es-EC", L"/", L"025", 2, 3}},
+    {12300, LocalInfo{12300, L"fr-CI", L"/", L"135", 9, 4}},
+    {13313, LocalInfo{13313, L"ar-KW", L"/", L"135", 35, 4}},
+    {13321, LocalInfo{13321, L"en-PH", L"/", L"135", 0, 3}},
+    {13322, LocalInfo{13322, L"es-EC", L"-", L"135", 2, 3}},
+    {13324, LocalInfo{13324, L"fr-ML", L"/", L"135", 9, 4}},
+    {14337, LocalInfo{14337, L"ar-AE", L"/", L"135", 35, 4}},
+    {14345, LocalInfo{14345, L"en-ID", L"/", L"135", 0, 3}},
+    {14346, LocalInfo{14346, L"es-UY", L"/", L"025", 2, 3}},
+    {14348, LocalInfo{14348, L"fr-MA", L"/", L"135", 9, 4}},
+    {15361, LocalInfo{15361, L"ar-BH", L"/", L"135", 35, 4}},
+    {15369, LocalInfo{15369, L"en-HK", L"/", L"025", 0, 3}},
+    {15370, LocalInfo{15370, L"es-PY", L"/", L"025", 2, 3}},
+    {15372, LocalInfo{15372, L"fr-HT", L"/", L"135", 9, 4}},
+    {16385, LocalInfo{16385, L"ar-QA", L"/", L"135", 35, 4}},
+    {16393, LocalInfo{16393, L"en-IN", L"-", L"135", 0, 3}},
+    {16394, LocalInfo{16394, L"es-BO", L"/", L"025", 2, 3}},
+    {17417, LocalInfo{17417, L"en-MY", L"/", L"025", 0, 3}},
+    {17418, LocalInfo{17418, L"es-SV", L"/", L"025", 2, 3}},
+    {18441, LocalInfo{18441, L"en-SG", L"/", L"025", 0, 3}},
+    {18442, LocalInfo{18442, L"es-HN", L"/", L"025", 2, 3}},
+    {19466, LocalInfo{19466, L"es-NI", L"/", L"025", 2, 3}},
+    {20490, LocalInfo{20490, L"es-PR", L"/", L"315", 2, 3}},
+    {21514, LocalInfo{21514, L"es-US", L"/", L"205", 2, 3}},
+    {22538, LocalInfo{22538, L"es-419", L"/", L"025", 2, 3}},
+    {23562, LocalInfo{23562, L"es-CU", L"/", L"025", 2, 3}},
+    {27674, LocalInfo{27674, L"sr-Cyrl", L".", L"135", 37, 4}},
+    {27674, LocalInfo{27674, L"sr-Latn", L".", L"025", 36, 4}},
+    {29740, LocalInfo{29740, L"az-Cyrl", L".", L"135", 33, 4}},
+    {30724, LocalInfo{30724, L"zh", L"/", L"520", 3, 3}},
+    {30764, LocalInfo{30764, L"az-Latn", L".", L"135", 24, 3}},
+    {30800, LocalInfo{30800, L"mn-Cyrl", L".", L"531", 26, 8}},
+    {31748, LocalInfo{31748, L"zh-Hant", L"/", L"025", 3, 3}},
+    {31824, LocalInfo{31824, L"mn-Mong", L"/", L"520", 34, 22}}
 };
 
 

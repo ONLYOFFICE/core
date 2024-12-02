@@ -54,6 +54,7 @@ namespace Aggplus
 
 		std::vector<double> GetXValues() const noexcept;
 		std::vector<double> GetYValues() const noexcept;
+		std::vector<double> GetBound() const noexcept;
 		std::vector<double> GetPeeks() const;
 		double GetLength(double a = 0, double b = 1) const;
 		double GetSquaredLineLength() const noexcept;
@@ -81,7 +82,6 @@ namespace Aggplus
 		void Flip() noexcept;
 
 		bool IsStraight()	const noexcept;
-		bool HasHandle()	const noexcept;
 		bool operator==(const Curve& other) const noexcept;
 		bool operator!=(const Curve& other) const noexcept;
 	};
@@ -128,12 +128,10 @@ namespace Aggplus
 		void	SetVisited(const Segment& segment);
 
 		// Bounds
-		std::vector<std::vector<double>> GetBoundsForCurves(const std::vector<Curve>& curves) const noexcept;
 		std::vector<std::vector<int>>	 FindBoundsCollisions();
 
 		// Intersection
 		bool IsCrossing(std::shared_ptr<Location> loc) noexcept;
-		bool FilterIntersections(std::shared_ptr<Location> loc) noexcept;
 		bool IntersectsBounds() noexcept;
 		void GetIntersection();
 		void GetCurveIntersection(const Curve& curve1, const Curve& curve2);

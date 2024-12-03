@@ -56,7 +56,7 @@ private:
     /// @param date дата в строковом формате
     /// @param result в формате tm
     /// @param return true в случае успешной конвертации, иначе false
-    bool parseStandartDate(const std::wstring &date, tm &result);
+    bool parseIsoDate(const std::wstring &date, tm &result);
 
     /// @brief парсинг строковой даты с известной локалью
     /// @param date дата в строковом формате

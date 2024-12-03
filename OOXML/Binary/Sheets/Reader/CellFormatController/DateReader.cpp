@@ -46,7 +46,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
 {
 
     tm time = {};
-    if(!parseStandartDate(date,time))
+    if(!parseIsoDate(date,time))
     {
         if(!parseLocalDate(date, time, Hasdate, Hastime ))
             return false;
@@ -377,69 +377,39 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
 
     return true;
 }
-bool DateReader::parseStandartDate(const std::wstring &date, tm &result)
+bool DateReader::parseIsoDate(const std::wstring &date, tm &result)
 {
-    if(date.size() < 1 || date.at(0) < L'0'|| date.at(0) > L'9')
+    //проверка размера строки и разделителей
+    if(date.size() != 20 || date[4] != L'-' || date[7] != L'-' ||
+            date[10] != L'T' || date[13] != L':' ||
+            date[16] != L':' || date[19] != L'Z')
         return false;
-    _UINT32 DigitPos = 0;
-    bool year = false;
-    bool month = false;
-    bool day = false;
-    bool hour = false;
-    bool min = false;
-    bool sec = false;
-    for(auto i = 0; i < date.size(); i++)
-    {
-        if (date[i] >= L'0' && date[i] <= L'9')
-            continue;
-        if(date[i-1] < L'0' || date[i-1] > L'9')
+    //проверка того что между разделителями стоят только цифры
+    for(auto i = 0; i < 4; i++)
+        if(!std::iswdigit(date[i]))
             return false;
-        auto dateNumber = 0;
-        try
-        {
-            dateNumber  = std::stoi(date.substr(DigitPos, i - DigitPos));
-        }
-         catch (std::exception)
-        {
+    for(auto i = 5; i < 7; i++)
+        if(!std::iswdigit(date[i]))
             return false;
-        }
-        if(!year)
-        {
-            result.tm_year = dateNumber;
-            year = true;
-        }
-        else if(!month)
-        {
-           result.tm_mon = dateNumber;
-           month = true;
-        }
-        else if (!day)
-        {
-            result.tm_mday = dateNumber;
-            day = true;
-        }
-        else if (!hour)
-        {
-            result.tm_hour = dateNumber;
-            hour = true;
-        }
-        else if(!min)
-        {
-            result.tm_min = dateNumber;
-            min = true;
-        }
-        else if(!sec)
-        {
-            result.tm_sec = dateNumber;
-            sec = true;
-        }
-        else
+    for(auto i = 8; i < 10; i++)
+        if(!std::iswdigit(date[i]))
             return false;
-        if(i+1 < date.size() && date[i+1] >= L'0' && date[i+1] <= L'9')
-            DigitPos = i +1;
-    }
-    result.tm_mon--;
-    result.tm_year = normalizeYear(result.tm_year);
+    for(auto i = 11; i < 13; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 14; i < 16; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 17; i < 19; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    _INT16 year = std::stoi(date.substr(0,4));
+    result.tm_year = normalizeYear(year);
+    result.tm_mon = std::stoi(date.substr(5,2)) - 1;
+    result.tm_mday = std::stoi(date.substr(8,2));
+    result.tm_hour = std::stoi(date.substr(11,2));
+    result.tm_min = std::stoi(date.substr(14,2));
+    result.tm_sec = std::stoi(date.substr(17,2));
     return true;
 }
 _INT32 DateReader::getStandartDate(tm date)

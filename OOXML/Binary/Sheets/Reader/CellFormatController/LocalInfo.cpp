@@ -311,10 +311,10 @@ std::wstring LocalInfo::GetShortDateFormat()
                 result+= L"dd";
                 break;
             case L'2':
-                result+= L"mm";
+                result+= L"m";
                 break;
             case L'3':
-                result+= L"mmm";
+                result+= L"mm";
                 break;
             case L'4':
                 result+= L"yy";

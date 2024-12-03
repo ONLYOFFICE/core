@@ -972,15 +972,53 @@ void CSVWriter::Impl::GetDefaultFormatCode(int numFmt, std::wstring & format_cod
         }
         format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 
-	case 15:	format_code = L"d-mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
-	case 16:	format_code = L"d-mmm";				format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
-	case 17:	format_code = L"mmm-yy";			format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 15:
+        if(m_nLcid <= 0)
+            format_code = L"d-mmm-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"d";
+            if(locInf.ShortDatePattern.find(L"1") != std::wstring::npos)
+                format_code += L"d";
+            format_code += locInf.DateSeparator + L"mmm" + locInf.DateSeparator + L"yy";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 16:
+        if(m_nLcid <= 0)
+            format_code = L"d-mmm";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"d";
+            if(locInf.ShortDatePattern.find(L"1") != std::wstring::npos)
+                format_code += L"d";
+            format_code += locInf.DateSeparator + L"mmm";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
+    case 17:
+        if(m_nLcid <= 0)
+            format_code = L"mmm-yy";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = L"mmm" + locInf.DateSeparator + L"yy";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDate; break;
 
 	case 18:	format_code = L"h:mm AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 19:	format_code = L"h:mm:ss AM/PM";		format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 20:	format_code = L"h:mm";				format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
 	case 21:	format_code = L"h:mm:ss";			format_type = SimpleTypes::Spreadsheet::celltypeTime; break;
-	case 22:	format_code = L"m/d/yy h:mm";		format_type = SimpleTypes::Spreadsheet::celltypeDateTime; break;
+    case 22:
+        if(m_nLcid <= 0)
+        format_code = L"m/d/yy h:mm";
+        else
+        {
+            auto locInf = lcInfo::getLocalInfo(m_nLcid);
+            format_code = locInf.GetShortDateFormat() + L" h:mm";
+        }
+        format_type = SimpleTypes::Spreadsheet::celltypeDateTime; break;
 
 	case 37:	format_code = L"#,##0 ;(#,##0)";		format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;
 	case 38:	format_code = L"#,##0 ;[Red](#,##0)";	format_type = SimpleTypes::Spreadsheet::celltypeNumber; break;

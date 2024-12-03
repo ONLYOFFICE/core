@@ -68,6 +68,8 @@ EShadow GetShadow(int nValue)
 CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
+	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
 		short shFontID;
@@ -96,5 +98,42 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	{
 		m_arCharOffset[nIndex] = (BYTE)((*oBuffer.GetCurPtr()) & 0x00FF);
 	}
+
+	oBuffer.ReadInt(m_nHeight);
+
+	int nAttrBits;
+	oBuffer.ReadInt(nAttrBits);
+
+	// Attributes
+	m_bItalic = CHECK_FLAG(nAttrBits, 0x01);
+	m_bBold = CHECK_FLAG(nAttrBits, 0x02);
+	m_eUnderline = GetUnderline((nAttrBits >> 2) & 0x03);
+	m_eUnderLineShape = GetLineStyle1((nAttrBits >> 4) & 0x0F);
+	m_eOutline = GetOutline((nAttrBits >> 8) & 0x07);
+	m_eShadow = GetShadow((nAttrBits >> 11) & 0x03);
+	m_bEmboss = CHECK_FLAG(nAttrBits, 0x2000);
+	m_bEngrave = CHECK_FLAG(nAttrBits, 0x4000);
+	m_bSuperScript = CHECK_FLAG(nAttrBits, 0x8000);
+	m_bSubScript = CHECK_FLAG(nAttrBits, 0xF000);
+	m_chStrikeOut = (BYTE)((nAttrBits >> 18) & 0x07);
+	m_eSymMark = GetAccent((nAttrBits >> 21) & 0x0F);
+	m_bUseFontSpace = CHECK_FLAG(nAttrBits, 0x2000000);
+	m_eStrikeOutShape = GetLineStyle2((nAttrBits >> 26) & 0x0F);
+	m_bUseKerning =  CHECK_FLAG(nAttrBits, 0x40000000);
+
+	oBuffer.ReadByte(m_chShadowOffsetX);
+	oBuffer.ReadByte(m_chShadowOffsetY);
+	oBuffer.ReadColor(m_nTextColor);
+	oBuffer.ReadColor(m_nUnderlineColor);
+	oBuffer.ReadColor(m_nShadeColor);
+	oBuffer.ReadColor(m_nShadeColor);
+
+	#define CHECK_SIZE (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
+
+	if (CHECK_SIZE)
+		oBuffer.ReadShort(m_shBorderFillIDRef);
+
+	if (nVersion > 5030 && CHECK_SIZE)
+		oBuffer.ReadColor(m_nStrikeOutColor);
 }
 }

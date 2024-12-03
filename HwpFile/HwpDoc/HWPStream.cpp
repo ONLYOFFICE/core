@@ -24,6 +24,13 @@ BYTE* CHWPStream::GetCurPtr()
 	return m_pCur;
 }
 
+bool CHWPStream::ReadDouble(double& dValue)
+{
+	//TODO:: реализовать
+	Skip(8);
+	return 0;
+}
+
 bool CHWPStream::ReadInt(int& nValue)
 {
 	if (m_pCur + 4 >= m_pEnd)
@@ -57,6 +64,17 @@ bool CHWPStream::ReadShort(short& shValue)
 	return true;
 }
 
+short CHWPStream::ReadShort()
+{
+	if (m_pCur + 2 >= m_pEnd)
+		return 0;
+
+	short shValue = (short)(((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[0] & 0x000000FF));
+	m_pCur += 2;
+
+	return shValue;
+}
+
 bool CHWPStream::ReadByte(BYTE& chValue)
 {
 	if (m_pCur + 1 >= m_pEnd)
@@ -68,12 +86,51 @@ bool CHWPStream::ReadByte(BYTE& chValue)
 	return true;
 }
 
+BYTE CHWPStream::ReadByte()
+{
+	if (m_pCur + 1 >= m_pEnd)
+		return 0;
+
+	BYTE chValue = m_pCur[0]++;
+	++m_pCur;
+
+	return chValue;
+}
+
+bool CHWPStream::ReadString(std::string& sValue)
+{
+	sValue.clear();
+
+	short shLen;
+	if (!ReadShort(shLen))
+		return false;
+
+	if (0 == shLen)
+		return true;
+
+	int nLen = (int)shLen * 2;
+
+	if (!CanRead(nLen))
+		nLen = m_pEnd - GetCurPtr();
+
+	sValue = std::string(GetCurPtr(), nLen); //TODO:: StandardCharsets.UTF_16LE
+
+	Skip(nLen);
+
+	return true;
+}
+
 void CHWPStream::Skip(unsigned int unStep)
 {
 	if (m_pCur + unStep >= m_pEnd)
 		m_pCur = m_pEnd;
 	else
 		m_pCur += unStep;
+}
+
+bool CHWPStream::CanRead(int nSize) const
+{
+	return m_pCur + nSize <= m_pEnd;
 }
 
 bool CHWPStream::IsValid() const

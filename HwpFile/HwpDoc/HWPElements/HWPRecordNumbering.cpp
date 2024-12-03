@@ -5,6 +5,8 @@ namespace HWP
 CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
     : CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
+	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+
 	for (int nIndex = 0; nIndex < 7; ++nIndex)
 	{
 		int nTypeBits;
@@ -18,22 +20,20 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shWidthAdjust);
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shTextOffset);
 		oBuffer.ReadInt(m_arNumbering[nIndex].m_nCharShape);
-
-		short shLen;
-		oBuffer.ReadShort(shLen);
-		m_arNumbering[nIndex].m_sNumFormat = std::string(oBuffer.GetCurPtr(), shLen); //TODO:: исправить на реализацию с StandardCharsets.UTF_16LE
-		oBuffer.Skip(shLen);
+		oBuffer.ReadString(m_arNumbering[nIndex].m_sNumFormat);
 	}
 
 	oBuffer.ReadShort(m_shStart);
 
-	if (nVersion > 5025 && true) //TODO:: добавить проверку offset-off < size
+	#define CHECK_SIZE (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
+
+	if (nVersion > 5025 && CHECK_SIZE) //TODO:: добавить проверку offset-off < size
 	{
 		for (int nIndex = 0; nIndex < 7; ++nIndex)
 			oBuffer.ReadInt(m_arNumbering[nIndex].m_nStartNumber);
 	}
 
-	if (nVersion > 5100 && true) //TODO:: добавить проверку offset-off < size
+	if (nVersion > 5100 && CHECK_SIZE) //TODO:: добавить проверку offset-off < size
 	{
 		for (int nIndex = 0; nIndex < 3; ++nIndex)
 		{

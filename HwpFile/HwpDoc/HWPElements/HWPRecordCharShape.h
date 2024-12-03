@@ -106,7 +106,7 @@ class CHWPRecordCharShape : public CHWPRecord
 	bool m_bUseKerning;
 
 	BYTE m_chShadowOffsetX;
-
+	BYTE m_chShadowOffsetY;
 	int m_nTextColor;
 	int m_nShadeColor;
 	int m_nShadowColor;

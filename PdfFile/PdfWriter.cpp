@@ -3294,11 +3294,13 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
 		int nImageH = 0;
+		bool bHasImage = false;
 		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
 		{
 			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
 			nImageH = pImage->GetHeight();
 			nImageW = pImage->GetWidth();
+			bHasImage = true;
 		}
 		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
 		{
@@ -3372,7 +3374,7 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 
 		if (pImage)
 		{
-			if (0xFF != nAlpha)
+			if (0xFF != nAlpha && !bHasImage)
 				pImage->AddTransparency(nAlpha);
 
 			LONG lTextureMode = m_oBrush.GetTextureMode();

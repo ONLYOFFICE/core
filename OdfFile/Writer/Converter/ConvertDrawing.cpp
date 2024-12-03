@@ -1092,7 +1092,7 @@ void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 	}
 }
 
-static std::wstring process_gd_formula(const PPTX::Logic::Gd& gd, std::vector<std::pair<std::wstring, std::wstring>>& deferred_formulas, size_t& last_gd_index)
+static std::wstring process_gd_formula(const PPTX::Logic::Gd& gd, odf_writer::odf_drawing_context* drawing_context, size_t& last_gd_index)
 {
 	std::vector<std::wstring> args;
 	boost::algorithm::split(args, gd.fmla.get_value_or(L""), boost::is_any_of("\t "), boost::token_compress_on);
@@ -1111,8 +1111,8 @@ static std::wstring process_gd_formula(const PPTX::Logic::Gd& gd, std::vector<st
 
 			last_gd_index += 2;
 
-			deferred_formulas.push_back(std::make_pair(abs_name, abs_fmla));
-			deferred_formulas.push_back(std::make_pair(cmp_name, cmp_fmla));
+			drawing_context->add_formula(abs_name, abs_fmla);
+			drawing_context->add_formula(cmp_name, cmp_fmla);
 
 			args[3] = cmp_name;
 
@@ -1129,20 +1129,16 @@ void OoxConverter::convert(PPTX::Logic::CustGeom *oox_cust_geom)
 
 	if (oox_cust_geom->gdLst.size())
 	{
- 		std::vector<std::pair<std::wstring, std::wstring>> deferred_formulas; 
 		size_t last_gd_index = oox_cust_geom->gdLst.size() - 1;
 
 		for (size_t i = 0; i < oox_cust_geom->gdLst.size(); i++)
 		{
 			const PPTX::Logic::Gd& gd = oox_cust_geom->gdLst[i];
 
-			const std::wstring fmla = process_gd_formula(gd, deferred_formulas, last_gd_index);
+			const std::wstring fmla = process_gd_formula(gd, odf_context()->drawing_context(), last_gd_index);
 
 			odf_context()->drawing_context()->add_formula(gd.name.get_value_or(L""), fmla);
 		}
-
-		for (const auto& gd : deferred_formulas)
-			odf_context()->drawing_context()->add_formula(gd.first, gd.second);
 	}
 
 	for (size_t i = 0; i < oox_cust_geom->pathLst.size(); i++)

@@ -1100,7 +1100,7 @@ namespace svg_path
                         nY += L"+" + nLastY;
                     }
 
-                    aCurrPoly.command = L"a:ArcTo";
+                    aCurrPoly.command = L"a:arcTo";
                     // append curved edge
                     aCurrPoly.points.push_back(_pointS(nX, nY));
                     aCurrPoly.points.push_back(_pointS(A1, A2));

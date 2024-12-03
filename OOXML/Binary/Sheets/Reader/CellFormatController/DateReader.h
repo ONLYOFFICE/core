@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -51,6 +51,12 @@ public:
     bool GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime);
 
 private:
+
+    /// @brief парсинг стандартизированной даты
+    /// @param date дата в строковом формате
+    /// @param result в формате tm
+    /// @param return true в случае успешной конвертации, иначе false
+    bool parseStandartDate(const std::wstring &date, tm &result);
 
     /// @brief парсинг строковой даты с известной локалью
     /// @param date дата в строковом формате

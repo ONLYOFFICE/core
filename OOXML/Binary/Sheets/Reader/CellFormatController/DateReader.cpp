@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -46,10 +46,16 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
 {
 
     tm time = {};
-    //если известна локаль парсим даты отдельно согласно ей
-    auto res =  parseLocalDate(date, time, Hasdate, Hastime );
-    if(!res)
-        return false;
+    if(!parseStandartDate(date,time))
+    {
+        if(!parseLocalDate(date, time, Hasdate, Hastime ))
+            return false;
+    }
+    else
+    {
+        Hasdate = true;
+        Hastime = true;
+    }
 
     //дата без времени
     if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
@@ -84,6 +90,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
         return true;
     }
     }
+
 bool tryGetInt(std::vector<wchar_t> &data, _INT32 &value)
 {
     try
@@ -365,10 +372,76 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         result.tm_mon--;
         result.tm_year = normalizeYear(result.tm_year);
     }
+    if(!Hasdate && !Hastime)
+        return false;
 
     return true;
 }
-
+bool DateReader::parseStandartDate(const std::wstring &date, tm &result)
+{
+    if(date.size() < 1 || date.at(0) < L'0'|| date.at(0) > L'9')
+        return false;
+    _UINT32 DigitPos = 0;
+    bool year = false;
+    bool month = false;
+    bool day = false;
+    bool hour = false;
+    bool min = false;
+    bool sec = false;
+    for(auto i = 0; i < date.size(); i++)
+    {
+        if (date[i] >= L'0' && date[i] <= L'9')
+            continue;
+        if(date[i-1] < L'0' || date[i-1] > L'9')
+            return false;
+        auto dateNumber = 0;
+        try
+        {
+            dateNumber  = std::stoi(date.substr(DigitPos, i - DigitPos));
+        }
+         catch (std::exception)
+        {
+            return false;
+        }
+        if(!year)
+        {
+            result.tm_year = dateNumber;
+            year = true;
+        }
+        else if(!month)
+        {
+           result.tm_mon = dateNumber;
+           month = true;
+        }
+        else if (!day)
+        {
+            result.tm_mday = dateNumber;
+            day = true;
+        }
+        else if (!hour)
+        {
+            result.tm_hour = dateNumber;
+            hour = true;
+        }
+        else if(!min)
+        {
+            result.tm_min = dateNumber;
+            min = true;
+        }
+        else if(!sec)
+        {
+            result.tm_sec = dateNumber;
+            sec = true;
+        }
+        else
+            return false;
+        if(i+1 < date.size() && date[i+1] >= L'0' && date[i+1] <= L'9')
+            DigitPos = i +1;
+    }
+    result.tm_mon--;
+    result.tm_year = normalizeYear(result.tm_year);
+    return true;
+}
 _INT32 DateReader::getStandartDate(tm date)
 {
     // обнуление времени, чтобы оно не влияло на дату

@@ -3625,6 +3625,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	std::wstring::size_type n2 = sUrl.find(L"http://");
 	std::wstring::size_type n3 = sUrl.find(L"ftp://");
 	std::wstring::size_type n4 = sUrl.find(L"https://");
+	std::wstring::size_type n5 = sUrl.find(L"file://");
 	std::wstring::size_type nMax = 3;
 
 	bool bIsNeedDownload = false;
@@ -3635,6 +3636,8 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	else if (n3 != std::wstring::npos && n3 < nMax)
 		bIsNeedDownload = true;
 	else if (n4 != std::wstring::npos && n4 < nMax)
+		bIsNeedDownload = true;
+	else if (n5 != std::wstring::npos && n5 < nMax)
 		bIsNeedDownload = true;
 
 	if (!bIsNeedDownload)

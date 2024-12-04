@@ -228,6 +228,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             bool fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
 
@@ -248,6 +249,7 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
             void ReadTableBinPart(XLS::StreamCacheReaderPtr& reader);
             void ReadCellInfo(XLS::CFRecordPtr& record);
+            void WriteCellInfo(XLS::CFRecordPtr& record);
             void ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId);
             void ReadComment(XmlUtils::CXmlLiteReader& oReader, CCommentItem* pComment);
 			bool checkArrayCell(XLS::CellRef &cellref, const sharedFormula& ArrFmlas);
@@ -301,9 +303,11 @@ namespace OOX
 			void fromXMLToXLSB(XmlUtils::CXmlLiteReader& oReader, NSBinPptxRW::CXlsbBinaryWriter& oStream, CCellXLSB& oCell);
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
-                        void fromBin(XLS::BaseObjectPtr& obj);
-                        void fromBin(XLS::StreamCacheReaderPtr& reader);
-						XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+
+            void fromBin(XLS::BaseObjectPtr& obj);
+            void fromBin(XLS::StreamCacheReaderPtr& reader);
+            XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
 
@@ -311,6 +315,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
+            void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
 			void CheckIndex();
             bool compressCell(CCell* pCell);
 
@@ -351,6 +356,7 @@ namespace OOX
             void fromBin(XLS::BaseObjectPtr& obj);
             void fromBin(XLS::StreamCacheReaderPtr& reader);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
 

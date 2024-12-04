@@ -44,6 +44,7 @@
 #include "../Comments/ThreadedComments.h"
 #include "../ComplexTypes_Spreadsheet.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
 #include "../../../DesktopEditor/common/StreamWriter.h"
@@ -2564,6 +2565,195 @@ namespace OOX
 				oCell->iStyleRef = 0;
 			return objectPtr;
 		}
+        void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            ///todo реализовать tablecell и fmlacell
+
+            if((!m_oRow.IsInit() || !m_oCol.IsInit()))
+            {
+                if(m_oRef.IsInit())
+                {
+                    std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
+                    auto cellref = XLS::CellRef(wstringRef);
+                    m_oRow = cellref.row;
+                    m_oCol = cellref.column;
+                }
+                else
+                {
+                    m_oRow = (_UINT32)0;
+                    m_oCol = (_UINT32)0;
+                }
+            }
+
+            bool isReal = false;
+            _INT32 intCache = 0;
+            double realCache = 0;
+            if(!m_oType.IsInit())
+            {
+                m_oType.Init();
+                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+                if(m_oValue.IsInit())
+                {
+                    if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
+                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
+                    else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10 && m_oValue->m_sText.size() > 0)
+                    {
+                        if(m_oValue->m_sText.size() < 10 )
+                        {
+                            intCache = std::stoi(m_oValue->m_sText);
+                            m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                        }
+                        else if(m_oValue->m_sText.size() == 10)
+                        {
+                            _INT64 tempVal = std::stoll(m_oValue->m_sText);
+                            if(tempVal < MAXINT32 && tempVal > MININT32)
+                            {
+                                intCache = tempVal;
+                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                            }
+                        }
+                    }
+
+                    if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L"."))
+                        && m_oValue->m_sText.size() <=17 && m_oValue->m_sText.size() > 0)
+                    {
+                        if(m_oValue->m_sText.size() < 17)
+                        {
+                            wchar_t *tail;
+                            double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
+                            if(*tail == L'\0')
+                            {
+                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                isReal = true;
+                                realCache = tempVal;
+                            }
+                        }
+                        else
+                        {
+                            wchar_t *tail;
+                            long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+                            if(*tail == L'\0')
+                                if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
+                                {
+                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                    realCache = tempVal;
+                                    isReal = true;
+                                }
+                        }
+                    }
+                    else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
+                    {
+                        wchar_t *tail;
+                        long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
+                        if(*tail == L'\0')
+                            if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
+                            {
+                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
+                                realCache = tempVal;
+                                isReal = true;
+                            }
+                    }
+
+                }
+            }
+            auto cellType = m_oType->GetValue();
+            switch(cellType)
+            {
+                case SimpleTypes::Spreadsheet::celltypeNumber:
+                {
+                    if(isReal)
+                    {
+                         auto record = writer->getNextRecord(XLSB::rt_CellReal);
+                         WriteCellInfo(record);
+                         XLS::Xnum number;
+                         number.data.value = realCache;
+                         *record << number;
+                         writer->storeNextRecord(record);
+                    }
+                    else
+                    {
+                        auto record = writer->getNextRecord(XLSB::rt_CellRk);
+                        WriteCellInfo(record);
+                        XLS::RkNumber cellRk;
+                        cellRk.fInt = 1;
+                        cellRk.fX100 = 0;
+                        cellRk.num = intCache;
+                        *record << cellRk;
+                        writer->storeNextRecord(record);
+                    }
+                    break;
+                }
+                case SimpleTypes::Spreadsheet::celltypeBool:
+                {
+                    auto record = writer->getNextRecord(XLSB::rt_CellBool);
+                    WriteCellInfo(record);
+                    BYTE cellval = 0;
+                    if(m_oValue.IsInit())
+                        cellval = m_oValue->m_sText == L"1" ? true : false;
+                    *record << cellval;
+                    writer->storeNextRecord(record);
+                    break;
+                }
+                case SimpleTypes::Spreadsheet::celltypeError:
+                {
+                    auto record = writer->getNextRecord(XLSB::rt_CellError);
+                    WriteCellInfo(record);
+                    BYTE cellval = 0;
+                    if(m_oValue.IsInit())
+                    {
+                        if(m_oValue->m_sText == L"#NULL!")
+                            cellval =  0x00;
+                        else if (m_oValue->m_sText == L"#DIV/0!")
+                            cellval =  0x07;
+                        else if (m_oValue->m_sText == L"#VALUE!")
+                            cellval =  0x0F;
+                        else if (m_oValue->m_sText == L"#REF!")
+                            cellval =  0x17;
+                        else if (m_oValue->m_sText == L"#NAME?")
+                            cellval =  0x1D;
+                        else if (m_oValue->m_sText == L"#NUM!")
+                            cellval =  0x24;
+                        else if (m_oValue->m_sText == L"#N/A")
+                            cellval =  0x2A;
+                        else if (m_oValue->m_sText == L"#GETTING_DATA")
+                            cellval =  0x2B;
+                    }
+                    *record << cellval;
+                    writer->storeNextRecord(record);
+                    break;
+                }
+                case SimpleTypes::Spreadsheet::celltypeSharedString:
+                {
+                    auto record = writer->getNextRecord(XLSB::rt_CellIsst);
+                    WriteCellInfo(record);
+                    _UINT32 isst = 0;
+                    if(m_oValue.IsInit())
+                        isst = std::stoi(m_oValue->m_sText);
+                    *record << isst;
+                    writer->storeNextRecord(record);
+                    break;
+                }
+                case SimpleTypes::Spreadsheet::celltypeStr:
+                {
+                    if(m_oValue.IsInit())
+                    {
+                        auto record = writer->getNextRecord(XLSB::rt_CellSt);
+                        WriteCellInfo(record);
+                        XLSB::XLWideString str;
+                        str = m_oValue->m_sText;
+                        *record << str;
+                        writer->storeNextRecord(record);
+                    }
+                    else
+                    {
+                        auto record = writer->getNextRecord(XLSB::rt_CellBlank);
+                        WriteCellInfo(record);
+                        writer->storeNextRecord(record);
+                    }
+                    break;
+                }
+            }
+        }
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);
@@ -2910,6 +3100,19 @@ namespace OOX
                 m_oStyle   = GETBITS(flags, 0, 23);
             if(GETBIT(flags, 24))
                 m_oShowPhonetic = true;
+        }
+        void CCell::WriteCellInfo(XLS::CFRecordPtr& record)
+        {
+            _INT32 col = 0;
+            if(m_oCol.IsInit())
+               col = m_oCol.get();
+            *record << col;
+            _UINT32 flags = 0;
+            if(m_oStyle.IsInit())
+               SETBITS(flags, 0, 23, m_oStyle.get())
+            if(m_oShowPhonetic.IsInit())
+                SETBIT(flags, 24, m_oShowPhonetic->GetValue())
+            *record << flags;
         }
         void CCell::ReadValue(XLS::CFRecordPtr& record, XLS::CFRecordType::TypeId typeId)
         {
@@ -3530,6 +3733,59 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CRow::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            WriteAttributes(writer);
+            for(auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
+            {
+                (*it)->toBin(writer);
+            }
+        }
+        void CRow::WriteAttributes(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_RowHdr);
+            {
+                _INT32 rw = 0;
+                if(m_oR.IsInit())
+                    rw = m_oR->GetValue() - 1;
+                *record << rw;
+            }
+            {
+                _UINT32 ixfe = 0xffffffff;
+                if(m_oS.IsInit())
+                ixfe = m_oS->GetValue();
+                *record << ixfe;
+            }
+            {
+                _UINT16 miyRw  = 240;
+                if(m_oHt.IsInit())
+                    miyRw = m_oHt->GetValue() * 20.;
+                *record << miyRw;
+            }
+            {
+                _UINT16 flags = 0;
+                BYTE	flags2 = 0;
+                _UINT32 collspanSIze = 0;
+                if(m_oThickTop.IsInit())
+                    SETBIT(flags, 0, m_oThickTop->GetValue())
+                if(m_oThickBot.IsInit())
+                    SETBIT(flags, 1, m_oThickBot->GetValue())
+                if(m_oOutlineLevel.IsInit())
+                    SETBITS(flags, 8, 10, m_oOutlineLevel->GetValue())
+                if(m_oCollapsed.IsInit())
+                    SETBIT(flags, 11, m_oCollapsed->GetValue())
+                if(m_oHidden.IsInit())
+                    SETBIT(flags, 12, m_oHidden->GetValue())
+                if(m_oCustomHeight.IsInit())
+                    SETBIT(flags, 13, m_oCustomHeight->GetValue())
+                if(m_oCustomFormat.IsInit())
+                    SETBIT(flags, 14, m_oCustomFormat->GetValue())
+                if(m_oPh.IsInit())
+                    SETBIT(flags2, 0, m_oPh->GetValue())
+               * record << flags << flags2 << collspanSIze;
+            }
+            writer->storeNextRecord(record);
+        }
 		void CRow::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType)
 		{
 			LONG nEnd = oStream.XlsbReadRecordLength() + oStream.GetPos();
@@ -4214,6 +4470,24 @@ namespace OOX
 
 			return objectPtr;
 		}
+    void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        {
+            auto record = writer->getNextRecord(XLSB::rt_BeginSheetData);
+             writer->storeNextRecord(record);
+        }
+        for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
+        {
+            (*it)->toBin(writer);
+            it = m_arrItems.erase(it);
+        }
+
+        {
+            auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
+             writer->storeNextRecord(record);
+        }
+
+    }
     bool CSheetData::compressRow(CRow* pRow)
     {
         if((pRow->m_arrItems.empty() || (pRow->m_arrItems.size() == 1 && pRow->m_arrItems.back()->m_oRepeated.IsInit())) && !m_arrItems.empty())

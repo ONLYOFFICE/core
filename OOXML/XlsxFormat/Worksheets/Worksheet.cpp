@@ -50,6 +50,7 @@
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -358,6 +359,19 @@ namespace OOX
 			}
 
 		}
+        void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const
+        {
+            {
+                auto record = writer->getNextRecord(XLSB::rt_BeginSheet);
+                 writer->storeNextRecord(record);
+            }
+            if ( m_oSheetData.IsInit())
+                m_oSheetData->toBin(writer);
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndSheet);
+                 writer->storeNextRecord(record);
+            }
+        }
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -723,8 +737,9 @@ namespace OOX
 				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 				if ((xlsb) && (xlsb->m_bWriteToXlsb))
 				{
-					XLS::BaseObjectPtr object = WriteBin();
-					xlsb->WriteBin(oPath, object.get());
+                    auto writerCache = xlsb->GetFileWriter(oPath);
+                    WriteBin(writerCache);
+                    xlsb->WriteSreamCache(writerCache);
 				}
 				else
 				{

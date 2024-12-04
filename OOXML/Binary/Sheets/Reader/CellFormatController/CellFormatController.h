@@ -44,7 +44,7 @@ class CellFormatController
 public:
     /// @brief конструктор
     /// @param styles стили из таблицы
-    CellFormatController(OOX::Spreadsheet::CStyles *styles);
+    CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid);
 
     /// @brief обрабатывает вставляемые в ячейку таблицы данные, переводя их в нужный тип, и заполняет ими ячейку
     /// @param pCell указатель на ячейку
@@ -68,5 +68,8 @@ private:
 
     /// @brief указатель на полученное строковое значение
     const std::wstring *value_;
+
+    /// @brief идентификатор локали
+    _INT32 lcid_;
 
 };

@@ -241,7 +241,7 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let ptr = this._getGlyphs(page.originIndex);
+	let res = this._getGlyphs(page.originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -250,105 +250,14 @@ CFile.prototype["getGlyphs"] = function(pageIndex)
 	if (page.fonts.length > 0)
 	{
 		// waiting fonts
-		ptr.ptr = 0;
+		res = null;
 		return null;
 	}
 
-	let reader = ptr.getReader();
-	if (!reader) return [];
-	ptr.ptr = 0;
+	if (res && this.onUpdateStatistics)
+		this.onUpdateStatistics(res.info[0], res.info[1], res.info[2], res.info[3]);
 
-	let nParagraphs = 0;
-	let nWords = 0;
-	let nSymbols = 0;
-	let nSpaces = 0;
-	let res = [];
-	while (reader.isValid())
-	{
-		nParagraphs++;
-
-		let oLine  = {};
-		oLine["X"] = reader.readDouble2();
-		oLine["Y"] = reader.readDouble2();
-		oLine["Ex"] = 1;
-		oLine["Ey"] = 0;
-		if (reader.readByte())
-		{
-			oLine["Ex"] = reader.readDouble2();
-			oLine["Ey"] = reader.readDouble2();
-		}
-		oLine["Ascent"]  = reader.readDouble2();
-		oLine["Descent"] = reader.readDouble2();
-		oLine["Width"]   = reader.readDouble2();
-		oLine["Words"]   = [];
-		let n = reader.readInt();
-		let oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false, "X" : 0, "Width" : 0 };
-		let dCurCharX = 0;
-		for (let i = 0; i < n; ++i)
-		{
-			let oChar = { "X" : 0 };
-			if (i)
-			{
-				dCurCharX += reader.readDouble2();
-				oChar["X"] = dCurCharX;
-			}
-			oChar["Char"]  = reader.readInt();
-			oChar["Width"] = reader.readDouble2();
-
-			if (oChar["Char"] == 0xFFFF || oChar["Char"] == 32 || oChar["Char"] == 9)
-			{
-				nSpaces++;
-				if (oWord["Chars"].length)
-				{
-					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
-						nWords++;
-					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
-									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
-					oLine["Words"].push(oWord);
-				}
-				oWord = { "Chars" : [oChar], "IsSpace" : true, "IsPunctuation" : false, "X" : dCurCharX, "Width" : 0 };
-			}
-			else if (this.isPunctuation && undefined != this.isPunctuation(oChar["Char"]))
-			{
-				nSymbols++;
-				if (oWord["Chars"].length)
-				{
-					if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
-						nWords++;
-					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
-									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
-					oLine["Words"].push(oWord);
-				}
-				oWord = { "Chars" : [oChar], "IsSpace" : false, "IsPunctuation" : true, "X" : dCurCharX, "Width" : 0 };
-			}
-			else
-			{
-				nSymbols++;
-				if (oWord["IsSpace"] || oWord["IsPunctuation"])
-				{
-					oWord["Width"] = oWord["Chars"][oWord["Chars"].length - 1]["X"] + 
-									 oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
-					oLine["Words"].push(oWord);
-					oWord = { "Chars" : [], "IsSpace" : false, "IsPunctuation" : false, "X" : dCurCharX, "Width" : 0 };
-				}
-				oWord["Chars"].push(oChar);
-			}
-		}
-		if (oWord["Chars"].length)
-		{
-			if (!oWord["IsSpace"] && !oWord["IsPunctuation"])
-				nWords++;
-			oWord["Width"] = dCurCharX + oWord["Chars"][oWord["Chars"].length - 1]["Width"] - oWord["X"];
-			oLine["Words"].push(oWord);
-		}
-
-		res.push(oLine);
-	}
-
-	if (this.onUpdateStatistics)
-		this.onUpdateStatistics(nParagraphs, nWords, nSymbols, nSpaces);
-
-	return res;
+	return res.result || null;
 };
 CFile.prototype["destroyTextInfo"] = function()
 {

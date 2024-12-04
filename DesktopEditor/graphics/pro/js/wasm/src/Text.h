@@ -135,12 +135,31 @@ namespace NSHtmlRenderer
 		NSWasm::CHLine m_oLine;
 		NSWasm::CData* m_pPageMeta;
 
+		int m_nCountParagraphs;
+		int m_nCountWords;
+		int m_nCountSymbols;
+		int m_nCountSpaces;
+
+		CHText()
+		{
+			m_nCountParagraphs = 0;
+			m_nCountWords = 0;
+			m_nCountSymbols = 0;
+			m_nCountSpaces = 0;
+		}
+
+		void ClearStatistics()
+		{
+			m_nCountParagraphs = 0;
+			m_nCountWords = 0;
+			m_nCountSymbols = 0;
+			m_nCountSpaces = 0;
+		}
 		void ClosePage()
 		{
 			if (m_oLine.GetCountChars())
 				DumpLine();
 		}
-
 		void CommandText(const int* pUnicodes, const int* pGids, const int& nCount, const double& x, const double& y, bool bIsDumpFont)
 		{
 			// 1) сначала определяем точку отсчета и направление baseline
@@ -303,7 +322,6 @@ namespace NSHtmlRenderer
 				}
 			}
 		}
-
 		void DumpLine()
 		{
 			LONG nCount = m_oLine.GetCountChars();
@@ -337,6 +355,8 @@ namespace NSHtmlRenderer
 			m_pPageMeta->WriteDouble(m_oLine.m_dAscent);
 			m_pPageMeta->WriteDouble(m_oLine.m_dDescent);
 
+			m_nCountParagraphs++;
+
 			// width
 			LONG _position = m_pPageMeta->GetSize();
 			m_pPageMeta->AddInt(0);
@@ -345,6 +365,7 @@ namespace NSHtmlRenderer
 			double dCurrentGlyphLineOffset = 0;
 			m_pPageMeta->AddInt(nCount);
 			NSWasm::CHChar* pChar = NULL;
+			bool bIsLastSymbol = false;
 			for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
 			{
 				pChar = &m_oLine.m_pChars[lIndexChar];
@@ -355,9 +376,26 @@ namespace NSHtmlRenderer
 					dCurrentGlyphLineOffset += pChar->x;
 				}
 
+				if (pChar->unicode == 0xFFFF || pChar->unicode == ' ' || pChar->unicode == '\t')
+				{
+					m_nCountSpaces++;
+					if (bIsLastSymbol)
+					{
+						bIsLastSymbol = false;
+						m_nCountWords++;
+					}
+				}
+				else
+				{
+					m_nCountSymbols++;
+					bIsLastSymbol = true;
+				}
+
 				m_pPageMeta->AddInt(pChar->unicode); // юникодное значение
 				m_pPageMeta->WriteDouble(pChar->width); // ширина буквы
 			}
+			if (bIsLastSymbol)
+				m_nCountWords++;
 
 			if (pChar)
 				dWidthLine = dCurrentGlyphLineOffset + pChar->width;

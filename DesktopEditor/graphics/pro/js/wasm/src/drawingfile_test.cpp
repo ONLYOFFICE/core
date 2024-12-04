@@ -750,11 +750,11 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 
 	int nPathLength = READ_INT(pWidgetsAP + i);
 	i += 4;
-	std::cout << "X " << nPathLength << ", ";
+	std::cout << "X " << (double)nPathLength / 100.0 << ", ";
 
 	nPathLength = READ_INT(pWidgetsAP + i);
 	i += 4;
-	std::cout << "Y " << nPathLength << ", ";
+	std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
 
 	int nWidgetWidth = READ_INT(pWidgetsAP + i);
 	i += 4;

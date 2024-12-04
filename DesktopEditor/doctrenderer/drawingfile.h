@@ -542,8 +542,8 @@ private:
 		}
 		if (m_nType == 0)
 			nRotate = ((CPdfFile*)m_pFile)->GetRotate(nPageIndex);
-		nWidth    = dWidth;
-		nHeight   = dHeight;
+		nWidth    = round(dWidth);
+		nHeight   = round(dHeight);
 		nPageDpiX = dPageDpiX;
 	}
 

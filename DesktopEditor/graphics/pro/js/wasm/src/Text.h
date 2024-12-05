@@ -235,6 +235,7 @@ namespace NSHtmlRenderer
 					{
 						// вставляем пробел. Пробел у нас будет не совсем пробел. А специфический
 						NSWasm::CHChar* pSpaceChar = m_oLine.AddTail();
+						pLastChar = &m_oLine.m_pChars[m_oLine.m_lCharsTail - 2];
 						pSpaceChar->x = pLastChar->width;
 						pSpaceChar->width = dOffsetX - pLastChar->width;
 						pSpaceChar->unicode = 0xFFFF;
@@ -371,12 +372,12 @@ namespace NSHtmlRenderer
 				pChar = &m_oLine.m_pChars[lIndexChar];
 
 				if (lIndexChar)
-				{ // смещение относительно предыдущей буквы (у всех, кроме первой)
+				{
 					m_pPageMeta->WriteDouble(pChar->x);
 					dCurrentGlyphLineOffset += pChar->x;
 				}
 
-				if (pChar->unicode == 0xFFFF || pChar->unicode == ' ' || pChar->unicode == '\t')
+				if (pChar->unicode == 0xFFFF || pChar->unicode == 32 || pChar->unicode == 9)
 				{
 					m_nCountSpaces++;
 					if (bIsLastSymbol)

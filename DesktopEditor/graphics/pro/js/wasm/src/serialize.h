@@ -360,6 +360,17 @@ namespace NSWasm
 
 		inline CHChar* GetTail()
 		{
+			if (m_lCharsTail >= m_lSizeChars)
+			{
+				CHChar* pNews = new CHChar[2 * m_lSizeChars];
+				for (LONG i = 0; i < m_lSizeChars; ++i)
+					pNews[i] = m_pChars[i];
+
+				RELEASEARRAYOBJECTS(m_pChars);
+				m_pChars = pNews;
+				m_lSizeChars *= 2;
+			}
+
 			return m_lCharsTail ? &m_pChars[m_lCharsTail - 1] : NULL;
 		}
 

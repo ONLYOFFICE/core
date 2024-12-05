@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -105,10 +105,10 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 					if (dotPos != std::wstring::npos)
 					{
 						size_t lastNonZeroPos = digit.find_last_not_of(L'0');
-						digit.erase(lastNonZeroPos + 2);
+                        if(lastNonZeroPos+3 < digit.size())
+                            digit.erase(lastNonZeroPos + 2);
 					}
-
-                    data_format = createFractionFormat(digit, postfix);
+                    data_format = createFractionFormat(digit, L"");
 					for (size_t i = 0; i < postfix.size(); ++i)
 					{
 						data_format += std::wstring(L"\\") + postfix[i];
@@ -132,7 +132,7 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
     return false;
 }
 
-std::wstring DigitReader::createFractionFormat(const std::wstring &value, std::wstring &postfix)
+std::wstring DigitReader::createFractionFormat(const std::wstring &value, const std::wstring &postfix)
 {
     size_t pos = value.find(L".");
     auto length = value.length();

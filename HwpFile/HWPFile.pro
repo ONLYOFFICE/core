@@ -39,7 +39,12 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlClick.cpp \
     HwpDoc/Paragraph/CtrlColumnDef.cpp \
     HwpDoc/Paragraph/CtrlCommon.cpp \
+    HwpDoc/Paragraph/CtrlGeneralShape.cpp \
     HwpDoc/Paragraph/CtrlObjElement.cpp \
+    HwpDoc/Paragraph/CtrlPageNumPos.cpp \
+    HwpDoc/Paragraph/CtrlShapeArc.cpp \
+    HwpDoc/Paragraph/CtrlShapeEllipse.cpp \
+    HwpDoc/Paragraph/CtrlShapeLine.cpp \
     HwpDoc/Paragraph/HWPPargraph.cpp \
     HwpDoc/Paragraph/LineSeg.cpp
 
@@ -73,7 +78,12 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlClick.h \
     HwpDoc/Paragraph/CtrlColumnDef.h \
     HwpDoc/Paragraph/CtrlCommon.h \
+    HwpDoc/Paragraph/CtrlGeneralShape.h \
     HwpDoc/Paragraph/CtrlObjElement.h \
+    HwpDoc/Paragraph/CtrlPageNumPos.h \
+    HwpDoc/Paragraph/CtrlShapeArc.h \
+    HwpDoc/Paragraph/CtrlShapeEllipse.h \
+    HwpDoc/Paragraph/CtrlShapeLine.h \
     HwpDoc/Paragraph/HWPPargraph.h \
     HwpDoc/Paragraph/LineSeg.h \
     HwpDoc/Paragraph/Point.h \

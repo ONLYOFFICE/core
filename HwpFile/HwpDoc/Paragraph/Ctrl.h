@@ -15,6 +15,8 @@ public:
 	CCtrl();
 	CCtrl(const std::string& sCtrlID);
 
+	std::string GetID() const;
+
 	virtual int GetSize() = 0;
 };
 }

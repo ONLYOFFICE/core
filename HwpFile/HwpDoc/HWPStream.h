@@ -28,6 +28,7 @@ public:
 	bool ReadByte(BYTE& chValue);
 	BYTE ReadByte();
 	bool ReadString(std::string& sValue);
+	bool ReadString(std::string& sValue, int nLength);
 
 	void Skip(unsigned int unStep);
 
@@ -39,7 +40,7 @@ public:
 	BYTE operator[](unsigned int unPosition) const;
 };
 
-#define CHECK_FLAG(value, flag) (value & flag) == flag
+#define CHECK_FLAG(value, flag) ((value) & flag) == flag
 }
 
 #endif // HWPSTREAM_H

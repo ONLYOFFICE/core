@@ -120,6 +120,23 @@ bool CHWPStream::ReadString(std::string& sValue)
 	return true;
 }
 
+bool CHWPStream::ReadString(std::string& sValue, int nLength)
+{
+	sValue.clear();
+
+	if (0 == nLength)
+		return true;
+
+	if (!CanRead(nLength))
+		nLength = m_pEnd - GetCurPtr();
+
+	sValue = std::string(GetCurPtr(), nLength); //TODO:: StandardCharsets.UTF_16LE
+
+	Skip(nLength);
+
+	return true;
+}
+
 void CHWPStream::Skip(unsigned int unStep)
 {
 	if (m_pCur + unStep >= m_pEnd)

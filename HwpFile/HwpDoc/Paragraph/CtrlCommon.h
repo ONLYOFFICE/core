@@ -108,6 +108,8 @@ class CCtrlCommon : public CCtrl
 	std::list<CCapParagraph*> m_arCaption;
 
 	EVertAlign m_eTextVerAlign;
+
+	friend class CCtrlGeneralShape;
 public:
 	CCtrlCommon();
 	CCtrlCommon(const std::string& sCtrlID);

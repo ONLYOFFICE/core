@@ -144,7 +144,6 @@ namespace NSHtmlRenderer
 
 		m_pInternal->m_oPage.ClearNoAttack();
 		m_pInternal->m_oPage.SkipLen();
-
 		// статистика
 		m_pInternal->m_oPage.AddInt(0);
 		m_pInternal->m_oPage.AddInt(0);
@@ -154,10 +153,6 @@ namespace NSHtmlRenderer
 	BYTE* CHTMLRendererText::GetBuffer()
 	{
 		m_pInternal->m_oSmartText.ClosePage();
-
-		unsigned int nSize = m_pInternal->m_oPage.GetSize();
-		if (nSize < 5)
-			return NULL;
 
 		m_pInternal->m_oPage.WriteLen();
 		// статистика

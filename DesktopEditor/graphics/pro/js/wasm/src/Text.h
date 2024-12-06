@@ -135,12 +135,12 @@ namespace NSHtmlRenderer
 		NSWasm::CHLine m_oLine;
 		NSWasm::CData* m_pPageMeta;
 
-		int m_nCountParagraphs;
-		int m_nCountWords;
-		int m_nCountSymbols;
-		int m_nCountSpaces;
+		LONG m_nCountParagraphs;
+		LONG m_nCountWords;
+		LONG m_nCountSymbols;
+		LONG m_nCountSpaces;
 
-		CHText()
+		CHText() : m_oFontManager(), m_oLine()
 		{
 			m_nCountParagraphs = 0;
 			m_nCountWords = 0;

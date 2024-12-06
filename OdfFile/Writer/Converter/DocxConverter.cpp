@@ -3805,6 +3805,7 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 
 	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindParaDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeParagraph);
 	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindRunDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeCharacter);
+	std::map<SimpleTypes::EStyleType, size_t>::iterator pFindTableDefault = styles->m_mapStyleDefaults.find(SimpleTypes::styletypeTable);
 
 	if (def_style->m_oParPr.IsInit() || pFindParaDefault != styles->m_mapStyleDefaults.end())
 	{
@@ -3884,6 +3885,22 @@ void DocxConverter::convert(OOX::CDocDefaults *def_style, OOX::CStyles *styles)
 		if (para_text_properties && !para_text_properties->fo_font_size_)
 		{
 			para_text_properties->fo_font_size_ = odf_types::font_size(odf_types::length(10,odf_types::length::pt));
+		}
+	}
+
+	if (pFindTableDefault != styles->m_mapStyleDefaults.end())
+	{
+		OOX::CStyle* style = styles->m_arrStyle[pFindTableDefault->second];
+		if (style->m_oTblPr.IsInit() && style->m_oTblPr->m_oTblCellMar.IsInit())
+		{
+			_CP_OPT(odf_types::length) left, right, top, bottom;
+
+			convert(style->m_oTblPr->m_oTblCellMar->m_oStart.GetPointer(), left);
+			convert(style->m_oTblPr->m_oTblCellMar->m_oEnd.GetPointer(), right);
+			convert(style->m_oTblPr->m_oTblCellMar->m_oTop.GetPointer(), top);
+			convert(style->m_oTblPr->m_oTblCellMar->m_oBottom.GetPointer(), bottom);
+
+			odt_context->table_context()->set_default_cell_paddings(left, right, top, bottom);
 		}
 	}
 
@@ -5349,6 +5366,21 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 		odt_context->styles_context()->table_styles().get_paragraph_properties	(col, row, paragraph_properties);
 	}
 	cell_properties->apply_from(parent_cell_properties);
+
+	{
+		// Default table style from styles.xml
+		_CP_OPT(odf_types::length) left, right, top, bottom;
+		odt_context->table_context()->get_default_cell_paddings(left, right, top, bottom);
+
+		if (!cell_properties->content_.common_padding_attlist_.fo_padding_left_)
+			cell_properties->content_.common_padding_attlist_.fo_padding_left_ = left;
+		if (!cell_properties->content_.common_padding_attlist_.fo_padding_right_)
+			cell_properties->content_.common_padding_attlist_.fo_padding_right_ = right;
+		if (!cell_properties->content_.common_padding_attlist_.fo_padding_top_)
+			cell_properties->content_.common_padding_attlist_.fo_padding_top_ = top;
+		if (!cell_properties->content_.common_padding_attlist_.fo_padding_bottom_)
+			cell_properties->content_.common_padding_attlist_.fo_padding_bottom_ = bottom;
+	}
 
 //check for inside cell or not
 

@@ -183,11 +183,11 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 				else
 					CP_XML_ATTR(L"r:link", val.bitmap->rId );
 
-				if (val.opacity)
+				if (val.image_opacity)
 				{
 					CP_XML_NODE(ns + L":alphaModFix")
 					{
-						CP_XML_ATTR2(ns_att + L"amt", (int)(*val.opacity * 1000));
+						CP_XML_ATTR2(ns_att + L"amt", (int)(*val.image_opacity * 1000));
 					}
 				}
 				if (val.bitmap->bGrayscale)

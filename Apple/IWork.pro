@@ -19,6 +19,8 @@ ADD_DEPENDENCY(kernel, UnicodeConverter)
 INCLUDEPATH += \
 	$$PWD
 
+core_android:DEFINES += NOT_USE_PTHREAD_CANCEL USE_FILE32API
+
 # BOOST
 CONFIG += core_boost_regex
 include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)

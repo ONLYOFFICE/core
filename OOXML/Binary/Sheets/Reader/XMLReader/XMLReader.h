@@ -47,6 +47,7 @@ public:
     /// @brief Вторая версия считывающего метода
     /// @param FileName имя xml файла который будет считан
     /// @param oXlsx объект Xlsx таблицы в которую считается xml
+    /// @param идентификатор локали для определения форматов дат
     /// @return код выполнения операции
-	_UINT32 Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx);
+    _UINT32 Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _INT32 lcid = -1);
 };

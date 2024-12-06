@@ -3294,11 +3294,13 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
 		int nImageH = 0;
+		bool bHasImage = false;
 		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
 		{
 			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
 			nImageH = pImage->GetHeight();
 			nImageW = pImage->GetWidth();
+			bHasImage = true;
 		}
 		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
 		{
@@ -3372,7 +3374,7 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 
 		if (pImage)
 		{
-			if (0xFF != nAlpha)
+			if (0xFF != nAlpha && !bHasImage)
 				pImage->AddTransparency(nAlpha);
 
 			LONG lTextureMode = m_oBrush.GetTextureMode();
@@ -3625,6 +3627,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	std::wstring::size_type n2 = sUrl.find(L"http://");
 	std::wstring::size_type n3 = sUrl.find(L"ftp://");
 	std::wstring::size_type n4 = sUrl.find(L"https://");
+	std::wstring::size_type n5 = sUrl.find(L"file://");
 	std::wstring::size_type nMax = 3;
 
 	bool bIsNeedDownload = false;
@@ -3635,6 +3638,8 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	else if (n3 != std::wstring::npos && n3 < nMax)
 		bIsNeedDownload = true;
 	else if (n4 != std::wstring::npos && n4 < nMax)
+		bIsNeedDownload = true;
+	else if (n5 != std::wstring::npos && n5 < nMax)
 		bIsNeedDownload = true;
 
 	if (!bIsNeedDownload)

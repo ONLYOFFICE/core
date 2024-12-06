@@ -68,7 +68,7 @@ namespace NSImageReSaver
         oFile.CloseFile();
         RELEASEARRAYOBJECTS(data);
 
-        if (std::string::npos != sFind.find("Photoshop") || std::string::npos != sFind.find("photoshop"))
+        if (std::string::npos != sFind.find("Adobe") || std::string::npos != sFind.find("Photoshop") || std::string::npos != sFind.find("photoshop"))
         {
             CBgraFrame oFrame;
             if (!oFrame.OpenFile(wsFileName))

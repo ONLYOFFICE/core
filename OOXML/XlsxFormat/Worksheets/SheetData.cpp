@@ -1338,39 +1338,53 @@ namespace OOX
 		}
         void CFormula::toBin(XLS::CFRecordPtr& record)
         {
-            //пишем флаги для формулы
+            XLS::CellParsedFormula BinFmla(false);
+            if(m_oT->GetValue() != SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)
             {
-                XLSB::GrbitFmla flags;
-                if(m_oAca.IsInit() && m_oAca->GetValue())
-                    flags.fAlwaysCalc = true;
-                *record << flags;
-
+                BinFmla = m_sText;
+                if(!BinFmla.rgce.sequence.empty())
+                {
+                    auto lastValType = GETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                    if(lastValType == 1 || lastValType == 3)
+                    {
+                        SETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+                    }
+                    else if(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+                    {
+                        auto list = static_cast<XLS::PtgList*>(BinFmla.rgce.sequence.rbegin()->get());
+                        list->type_ = 1;
+                    }
+                }
             }
-            if(!m_oT.IsInit())
-                m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal;
             switch(m_oT->GetValue())
             {
                 case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal:
                 {
-                    XLS::CellParsedFormula BinFmla(false);
-                    BinFmla = m_sText;
-                    if(!BinFmla.rgce.sequence.empty())
+                    //пишем флаги для формулы
                     {
-                        auto lastValType = GETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
-                        if(lastValType == 1 || lastValType == 3)
-                        {
-                            SETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
-                        }
-                        else if(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
-                        {
-                            auto list = static_cast<XLS::PtgList*>(BinFmla.rgce.sequence.rbegin()->get());
-                            list->type_ = 1;
-                        }
+                        XLSB::GrbitFmla flags;
+                        if(m_oAca.IsInit() && m_oAca->GetValue())
+                            flags.fAlwaysCalc = true;
+                        *record << flags;
                     }
                     *record << BinFmla;
-
+                    break;
                 }
-            break;
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared:
+                {
+                    XLSB::UncheckedRfX fmlaRef;
+                    fmlaRef.rowFirst = 0;
+                    fmlaRef.rowLast = 0;
+                    fmlaRef.columnFirst = 0;
+                    fmlaRef.columnLast = 0;
+                    if(m_oRef.IsInit())
+                        fmlaRef.fromString(m_oRef.get());
+                    *record << fmlaRef;
+                    *record << BinFmla;
+                    break;
+                }
+            default:
+                break;
             }
         }
 		EElementType CFormula::getType () const
@@ -2693,7 +2707,10 @@ namespace OOX
                 }
             }
             auto cellType = m_oType->GetValue();
+            //основная запись ячейки
             CFRecordPtr CellRecord;
+            // дополнительная запись для shared, array и table формул
+            CFRecordPtr ExtraRecord;
             switch(cellType)
             {
                 case SimpleTypes::Spreadsheet::celltypeNumber:
@@ -2795,10 +2812,52 @@ namespace OOX
                     break;
                 }
             }
+
             if(m_oFormula.IsInit())
-                m_oFormula->toBin(CellRecord);
+            {
+                if(!m_oFormula->m_oT.IsInit())
+                        m_oFormula->m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal;
+                if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal)
+                    m_oFormula->toBin(CellRecord);
+                else if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
+                {
+                    if(!SharedFormulasRef::sharedRefsLocations)
+                        SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::vector<std::pair<_INT32,_INT32>>>(new std::vector<std::pair<_INT32,_INT32>>);
+                    if(!m_oFormula->m_sText.empty())
+                    {
+                        ExtraRecord = writer->getNextRecord(XLSB::rt_ShrFmla);
+                        m_oFormula->toBin(ExtraRecord);
+                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair<_INT32,_INT32>(m_oRow.get(),m_oCol.get()));
+                    }
+                    if(m_oFormula->m_oSi.IsInit() && m_oFormula->m_oSi->GetValue() < SharedFormulasRef::sharedRefsLocations->size())
+                    {
+                        auto shrFmlaRef = SharedFormulasRef::sharedRefsLocations->at(m_oFormula->m_oSi->GetValue());
+                        XLS::CellParsedFormula BinFmla(false);
+                        //пишем флаги для формулы
+                        {
+                            XLSB::GrbitFmla flags;
+                            if(m_oFormula->m_oAca.IsInit() && m_oFormula->m_oAca->GetValue())
+                                flags.fAlwaysCalc = true;
+                            *CellRecord << flags;
+                        }
+                        auto rowPos = new XLS::PtgExp;
+                        rowPos->rowXlsb = shrFmlaRef.first;
+                        auto colPos = new XLS::PtgExtraCol;
+                        colPos->col = shrFmlaRef.second;
+                        BinFmla.rgce.addPtg(PtgPtr{rowPos});
+                        BinFmla.rgcb.addPtg(PtgPtr{colPos});
+                        *CellRecord << BinFmla;
+
+                    }
+                }
+            }
+            if(ExtraRecord && m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)
+                writer->storeNextRecord(ExtraRecord);
             if(CellRecord)
                 writer->storeNextRecord(CellRecord);
+            if(ExtraRecord && (m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared
+                || m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray))
+                writer->storeNextRecord(ExtraRecord);
         }
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
         {

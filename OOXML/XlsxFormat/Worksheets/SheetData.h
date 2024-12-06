@@ -35,6 +35,7 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CellRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace NSBinPptxRW
 {
@@ -152,6 +153,7 @@ namespace OOX
             void fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
             void toBin(XLS::BaseObjectPtr& obj);
+            void toBin(XLS::CFRecordPtr& record);
 
 			virtual EElementType getType () const;
 

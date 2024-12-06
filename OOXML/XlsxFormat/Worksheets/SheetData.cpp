@@ -44,7 +44,6 @@
 #include "../Comments/ThreadedComments.h"
 #include "../ComplexTypes_Spreadsheet.h"
 
-#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../../Binary/Sheets/Writer/CSVWriter.h"
 #include "../../../DesktopEditor/common/StreamWriter.h"
@@ -1337,6 +1336,43 @@ namespace OOX
                     break;
 			}
 		}
+        void CFormula::toBin(XLS::CFRecordPtr& record)
+        {
+            //пишем флаги для формулы
+            {
+                XLSB::GrbitFmla flags;
+                if(m_oAca.IsInit() && m_oAca->GetValue())
+                    flags.fAlwaysCalc = true;
+                *record << flags;
+
+            }
+            if(!m_oT.IsInit())
+                m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal;
+            switch(m_oT->GetValue())
+            {
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal:
+                {
+                    XLS::CellParsedFormula BinFmla(false);
+                    BinFmla = m_sText;
+                    if(!BinFmla.rgce.sequence.empty())
+                    {
+                        auto lastValType = GETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                        if(lastValType == 1 || lastValType == 3)
+                        {
+                            SETBITS(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+                        }
+                        else if(BinFmla.rgce.sequence.rbegin()->get()->ptg_id.get() == 6424)
+                        {
+                            auto list = static_cast<XLS::PtgList*>(BinFmla.rgce.sequence.rbegin()->get());
+                            list->type_ = 1;
+                        }
+                    }
+                    *record << BinFmla;
+
+                }
+            break;
+            }
+        }
 		EElementType CFormula::getType () const
 		{
 			return et_x_Formula;
@@ -2657,47 +2693,54 @@ namespace OOX
                 }
             }
             auto cellType = m_oType->GetValue();
+            CFRecordPtr CellRecord;
             switch(cellType)
             {
                 case SimpleTypes::Spreadsheet::celltypeNumber:
                 {
-                    if(isReal)
+                    if(isReal || m_oFormula.IsInit())
                     {
-                         auto record = writer->getNextRecord(XLSB::rt_CellReal);
-                         WriteCellInfo(record);
+                         if(!m_oFormula.IsInit())
+                            CellRecord = writer->getNextRecord(XLSB::rt_CellReal);
+                         else
+                             CellRecord = writer->getNextRecord(XLSB::rt_FmlaNum);
+                         WriteCellInfo(CellRecord);
                          XLS::Xnum number;
                          number.data.value = realCache;
-                         *record << number;
-                         writer->storeNextRecord(record);
+                         *CellRecord << number;
                     }
                     else
                     {
-                        auto record = writer->getNextRecord(XLSB::rt_CellRk);
-                        WriteCellInfo(record);
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellRk);
+                        WriteCellInfo(CellRecord);
                         XLS::RkNumber cellRk;
                         cellRk.fInt = 1;
                         cellRk.fX100 = 0;
                         cellRk.num = intCache;
-                        *record << cellRk;
-                        writer->storeNextRecord(record);
+                        *CellRecord << cellRk;
                     }
                     break;
                 }
                 case SimpleTypes::Spreadsheet::celltypeBool:
                 {
-                    auto record = writer->getNextRecord(XLSB::rt_CellBool);
-                    WriteCellInfo(record);
+                    if(!m_oFormula.IsInit())
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellBool);
+                    else
+                        CellRecord = writer->getNextRecord(XLSB::rt_FmlaBool);
+                    WriteCellInfo(CellRecord);
                     BYTE cellval = 0;
                     if(m_oValue.IsInit())
                         cellval = m_oValue->m_sText == L"1" ? true : false;
-                    *record << cellval;
-                    writer->storeNextRecord(record);
+                    *CellRecord << cellval;
                     break;
                 }
                 case SimpleTypes::Spreadsheet::celltypeError:
                 {
-                    auto record = writer->getNextRecord(XLSB::rt_CellError);
-                    WriteCellInfo(record);
+                    if(!m_oFormula.IsInit())
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellError);
+                    else
+                        CellRecord = writer->getNextRecord(XLSB::rt_FmlaError);
+                    WriteCellInfo(CellRecord);
                     BYTE cellval = 0;
                     if(m_oValue.IsInit())
                     {
@@ -2718,41 +2761,44 @@ namespace OOX
                         else if (m_oValue->m_sText == L"#GETTING_DATA")
                             cellval =  0x2B;
                     }
-                    *record << cellval;
-                    writer->storeNextRecord(record);
+                    *CellRecord << cellval;
                     break;
                 }
                 case SimpleTypes::Spreadsheet::celltypeSharedString:
                 {
-                    auto record = writer->getNextRecord(XLSB::rt_CellIsst);
-                    WriteCellInfo(record);
+                    CellRecord = writer->getNextRecord(XLSB::rt_CellIsst);
+                    WriteCellInfo(CellRecord);
                     _UINT32 isst = 0;
                     if(m_oValue.IsInit())
                         isst = std::stoi(m_oValue->m_sText);
-                    *record << isst;
-                    writer->storeNextRecord(record);
+                    *CellRecord << isst;
                     break;
                 }
                 case SimpleTypes::Spreadsheet::celltypeStr:
                 {
                     if(m_oValue.IsInit())
                     {
-                        auto record = writer->getNextRecord(XLSB::rt_CellSt);
-                        WriteCellInfo(record);
+                        if(!m_oFormula.IsInit())
+                            CellRecord = writer->getNextRecord(XLSB::rt_CellSt);
+                        else
+                            CellRecord = writer->getNextRecord(XLSB::rt_FmlaString);
+                        WriteCellInfo(CellRecord);
                         XLSB::XLWideString str;
                         str = m_oValue->m_sText;
-                        *record << str;
-                        writer->storeNextRecord(record);
+                        *CellRecord << str;
                     }
                     else
                     {
-                        auto record = writer->getNextRecord(XLSB::rt_CellBlank);
-                        WriteCellInfo(record);
-                        writer->storeNextRecord(record);
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellBlank);
+                        WriteCellInfo(CellRecord);
                     }
                     break;
                 }
             }
+            if(m_oFormula.IsInit())
+                m_oFormula->toBin(CellRecord);
+            if(CellRecord)
+                writer->storeNextRecord(CellRecord);
         }
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
         {

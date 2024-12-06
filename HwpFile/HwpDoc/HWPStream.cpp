@@ -24,11 +24,18 @@ BYTE* CHWPStream::GetCurPtr()
 	return m_pCur;
 }
 
+bool CHWPStream::ReadFloat(float& fValue)
+{
+	//TODO:: реализовать
+	Skip(4);
+	return true;
+}
+
 bool CHWPStream::ReadDouble(double& dValue)
 {
 	//TODO:: реализовать
 	Skip(8);
-	return 0;
+	return true;
 }
 
 bool CHWPStream::ReadInt(int& nValue)

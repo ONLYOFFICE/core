@@ -1,0 +1,23 @@
+#include "CtrlShapeTextArt.h"
+
+namespace HWP
+{
+CCtrlShapeTextArt::CCtrlShapeTextArt(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
+{}
+
+int CCtrlShapeTextArt::ParseElement(CCtrlShapeTextArt& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+{
+	// TODO:: проверить
+
+	// [HWP ambiguous] following 120bytes are unknown.
+	// Document doesn't mention about this at all.
+
+	return nSize;
+}
+
+int CCtrlShapeTextArt::ParseCtrl(CCtrlShapeTextArt& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+{
+	return CCtrlGeneralShape::ParseCtrl(oObj, nSize, oBuffer, nOff, nVersion);
+}
+}

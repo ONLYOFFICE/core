@@ -20,6 +20,7 @@ public:
 
 	BYTE* GetCurPtr();
 
+	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
 	bool ReadInt(int& nValue);
 	bool ReadColor(int& nValue);

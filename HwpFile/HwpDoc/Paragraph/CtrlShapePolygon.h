@@ -1,0 +1,22 @@
+#ifndef CTRLSHAPEPOLYGON_H
+#define CTRLSHAPEPOLYGON_H
+
+#include "CtrlGeneralShape.h"
+#include "Point.h"
+
+namespace HWP
+{
+class CCtrlShapePolygon : public CCtrlGeneralShape
+{
+	int m_nPoints;
+	std::list<TPoint> m_arPoints;
+public:
+	CCtrlShapePolygon(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	static int ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int ParseCtrl(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+};
+}
+
+#endif // CTRLSHAPEPOLYGON_H

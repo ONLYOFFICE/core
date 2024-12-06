@@ -110,6 +110,9 @@ class CCtrlCommon : public CCtrl
 	EVertAlign m_eTextVerAlign;
 
 	friend class CCtrlGeneralShape;
+	friend class CCtrlShapeVideo;
+	friend class CCtrlEqEdit;
+	friend class CCtrlTalbe;
 public:
 	CCtrlCommon();
 	CCtrlCommon(const std::string& sCtrlID);

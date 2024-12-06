@@ -10,9 +10,9 @@ CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 
 }
 
-CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
-	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile)
-{}
+// CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
+// 	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile)
+// {}
 
 CHWPDocInfo::CHWPDocInfo(CHWPFile* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile)

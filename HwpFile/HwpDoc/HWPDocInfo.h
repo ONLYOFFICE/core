@@ -14,7 +14,7 @@ namespace HWP
 class CHWPDocInfo
 {
 	EHanType   m_eHanType;
-	CHWPXFile *m_pParentHWPX;
+	// CHWPXFile *m_pParentHWPX;
 	CHWPFile  *m_pParentHWP;
 	std::list<CHWPRecord*> m_lRecords;
 
@@ -28,11 +28,11 @@ class CHWPDocInfo
 	std::list<CHWPRecord*> m_lStyles;
 	std::list<CHWPRecord*> m_lTabDefs;
 
-	CCompatDoc m_oCompatibleDoc;
+	// CCompatDoc m_oCompatibleDoc;
 
 public:
 	CHWPDocInfo(EHanType eHanType);
-	CHWPDocInfo(CHWPXFile* pHWPXFile);
+	// CHWPDocInfo(CHWPXFile* pHWPXFile);
 	CHWPDocInfo(CHWPFile* pHWPFile);
 
 	~CHWPDocInfo();

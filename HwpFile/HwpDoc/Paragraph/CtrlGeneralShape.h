@@ -31,6 +31,8 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	int m_nMaxTxtWidth;
 
 	friend class CCtrlShapeEllipse;
+	friend class CCtrlShapePolygon;
+	friend class CCtrlShapeRect;
 public:
 	CCtrlGeneralShape(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlGeneralShape();

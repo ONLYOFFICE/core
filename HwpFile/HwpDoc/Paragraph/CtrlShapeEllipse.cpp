@@ -2,18 +2,6 @@
 
 namespace HWP
 {
-EArcType GetArcType(int nValue)
-{
-	switch(static_cast<EArcType>(nValue))
-	{
-		case EArcType::NORMAL:
-		default:
-			return EArcType::NORMAL;
-		case EArcType::PIE: return EArcType::PIE;
-		case EArcType::CHORD: return EArcType::CHORD;
-	}
-}
-
 CCtrlShapeEllipse::CCtrlShapeEllipse(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}

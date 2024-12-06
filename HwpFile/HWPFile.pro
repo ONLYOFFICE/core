@@ -39,14 +39,28 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlClick.cpp \
     HwpDoc/Paragraph/CtrlColumnDef.cpp \
     HwpDoc/Paragraph/CtrlCommon.cpp \
+    HwpDoc/Paragraph/CtrlContainer.cpp \
+    HwpDoc/Paragraph/CtrlEqEdit.cpp \
+    HwpDoc/Paragraph/CtrlForm.cpp \
     HwpDoc/Paragraph/CtrlGeneralShape.cpp \
+    HwpDoc/Paragraph/CtrlHeadFoot.cpp \
     HwpDoc/Paragraph/CtrlObjElement.cpp \
     HwpDoc/Paragraph/CtrlPageNumPos.cpp \
     HwpDoc/Paragraph/CtrlShapeArc.cpp \
+    HwpDoc/Paragraph/CtrlShapeConnectLine.cpp \
+    HwpDoc/Paragraph/CtrlShapeCurve.cpp \
     HwpDoc/Paragraph/CtrlShapeEllipse.cpp \
     HwpDoc/Paragraph/CtrlShapeLine.cpp \
+    HwpDoc/Paragraph/CtrlShapeOle.cpp \
+    HwpDoc/Paragraph/CtrlShapePic.cpp \
+    HwpDoc/Paragraph/CtrlShapePolygon.cpp \
+    HwpDoc/Paragraph/CtrlShapeRect.cpp \
+    HwpDoc/Paragraph/CtrlShapeTextArt.cpp \
+    HwpDoc/Paragraph/CtrlShapeVideo.cpp \
+    HwpDoc/Paragraph/CtrlTalbe.cpp \
     HwpDoc/Paragraph/HWPPargraph.cpp \
-    HwpDoc/Paragraph/LineSeg.cpp
+    HwpDoc/Paragraph/LineSeg.cpp \
+    HwpDoc/Paragraph/TblCell.cpp
 
 HEADERS += \
     HwpDoc/Errors.h \
@@ -78,14 +92,28 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlClick.h \
     HwpDoc/Paragraph/CtrlColumnDef.h \
     HwpDoc/Paragraph/CtrlCommon.h \
+    HwpDoc/Paragraph/CtrlContainer.h \
+    HwpDoc/Paragraph/CtrlEqEdit.h \
+    HwpDoc/Paragraph/CtrlForm.h \
     HwpDoc/Paragraph/CtrlGeneralShape.h \
+    HwpDoc/Paragraph/CtrlHeadFoot.h \
     HwpDoc/Paragraph/CtrlObjElement.h \
     HwpDoc/Paragraph/CtrlPageNumPos.h \
     HwpDoc/Paragraph/CtrlShapeArc.h \
+    HwpDoc/Paragraph/CtrlShapeConnectLine.h \
+    HwpDoc/Paragraph/CtrlShapeCurve.h \
     HwpDoc/Paragraph/CtrlShapeEllipse.h \
     HwpDoc/Paragraph/CtrlShapeLine.h \
+    HwpDoc/Paragraph/CtrlShapeOle.h \
+    HwpDoc/Paragraph/CtrlShapePic.h \
+    HwpDoc/Paragraph/CtrlShapePolygon.h \
+    HwpDoc/Paragraph/CtrlShapeRect.h \
+    HwpDoc/Paragraph/CtrlShapeTextArt.h \
+    HwpDoc/Paragraph/CtrlShapeVideo.h \
+    HwpDoc/Paragraph/CtrlTalbe.h \
     HwpDoc/Paragraph/HWPPargraph.h \
     HwpDoc/Paragraph/LineSeg.h \
     HwpDoc/Paragraph/Point.h \
-    HwpDoc/Paragraph/RangeTag.h
+    HwpDoc/Paragraph/RangeTag.h \
+    HwpDoc/Paragraph/TblCell.h
 

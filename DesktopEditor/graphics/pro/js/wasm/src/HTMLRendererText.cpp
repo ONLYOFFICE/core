@@ -145,10 +145,10 @@ namespace NSHtmlRenderer
 		m_pInternal->m_oPage.ClearNoAttack();
 		m_pInternal->m_oPage.SkipLen();
 		// статистика
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
-		m_pInternal->m_oPage.AddInt(0);
+		// m_pInternal->m_oPage.AddInt(0);
+		// m_pInternal->m_oPage.AddInt(0);
+		// m_pInternal->m_oPage.AddInt(0);
+		// m_pInternal->m_oPage.AddInt(0);
 	}
 	BYTE* CHTMLRendererText::GetBuffer()
 	{
@@ -156,12 +156,12 @@ namespace NSHtmlRenderer
 
 		m_pInternal->m_oPage.WriteLen();
 		// статистика
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountParagraphs, 4);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountWords, 8);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountSymbols, 12);
-		m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountSpaces, 16);
+		// m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountParagraphs, 4);
+		// m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountWords, 8);
+		// m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountSymbols, 12);
+		// m_pInternal->m_oPage.AddInt(m_pInternal->m_oSmartText.m_nCountSpaces, 16);
 
-		m_pInternal->m_oSmartText.ClearStatistics();
+		// m_pInternal->m_oSmartText.ClearStatistics();
 		return m_pInternal->m_oPage.GetBuffer();
 	}
 	HRESULT CHTMLRendererText::get_Type(LONG* lType)

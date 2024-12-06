@@ -1095,8 +1095,9 @@ int main(int argc, char* argv[])
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);
 		int i = 4;
-		nLength -= 20;
+		nLength -= 4;
 
+		/*
 		int nPathLength = READ_INT(pGlyphs + i);
 		i += 4;
 		std::cout << "Stats Paragraphs " << nPathLength;
@@ -1109,10 +1110,11 @@ int main(int argc, char* argv[])
 		nPathLength = READ_INT(pGlyphs + i);
 		i += 4;
 		std::cout << " Spaces " << nPathLength << std::endl;
+		*/
 
 		while (i < nLength)
 		{
-			nPathLength = READ_INT(pGlyphs + i);
+			int nPathLength = READ_INT(pGlyphs + i);
 			i += 4;
 			std::cout << "Line X " << (double)nPathLength / 10000.0;
 			nPathLength = READ_INT(pGlyphs + i);

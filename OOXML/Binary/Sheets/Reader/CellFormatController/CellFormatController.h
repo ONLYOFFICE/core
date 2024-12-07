@@ -52,7 +52,7 @@ public:
     int ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
 
 private:
-
+    std::wstring ConvertFormulaArguments(const std::wstring& formula);
     /// @brief создание стиля для указанного формата
     /// @param format формат значения
     void createFormatStyle(const std::wstring &format);
@@ -71,5 +71,4 @@ private:
 
     /// @brief идентификатор локали
     _INT32 lcid_;
-
 };

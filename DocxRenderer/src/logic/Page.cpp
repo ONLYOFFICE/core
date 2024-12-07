@@ -1705,9 +1705,9 @@ namespace NSDocxRenderer
 							bool out = false;
 							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
 								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
-									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(index)))
+									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(j)))
 									{
-										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(index);
+										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(j);
 										out = true;
 										break;
 									}

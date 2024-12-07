@@ -320,7 +320,7 @@ void ods_table_state::set_table_style(office_element_ptr & elm)
 {	
 	office_table_style_ = dynamic_cast<style*>(elm.get());
 
-	if (!office_table_style_)return;
+	if (!office_table_style_) return;
 
 	table_table* table = dynamic_cast<table_table*>(office_table_.get());
 	if (table == NULL)return;
@@ -333,8 +333,16 @@ void ods_table_state::start_group(office_element_ptr & elm)
 	current_level_.back()->add_child_element(elm);
 	current_level_.push_back(elm);
 }
-
 void ods_table_state::end_group()
+{
+	current_level_.pop_back();
+}
+void ods_table_state::start_rows(office_element_ptr& elm)
+{
+	current_level_.back()->add_child_element(elm);
+	current_level_.push_back(elm);
+}
+void ods_table_state::end_rows()
 {
 	current_level_.pop_back();
 }
@@ -355,32 +363,31 @@ void ods_table_state::add_row_break(_INT32 val)
 {
 	row_breaks_.push_back(val + 1);
 }
-void ods_table_state::add_column(office_element_ptr & elm, _UINT32 repeated,office_element_ptr & style_elm)
+void ods_table_state::add_column(office_element_ptr & elm, _UINT32 repeated, office_element_ptr & style_elm)
 {
 	current_level_.back()->add_child_element(elm);
 
 	std::wstring style_name;
 
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
-	if (style)style_name = style->style_name_;
+	if (style) style_name = style->style_name_;
 
-    ods_column_state state(elm, repeated, style_name, style_elm, defaut_column_width_, current_level_.size());
-  
+	ods_column_state state(elm, repeated, style_name, style_elm, defaut_column_width_, current_level_.size());
+
 	//if (repeated > 10000) repeated = 1024;//????
 
 	current_table_column_ += repeated;
-    columns_.push_back(state);
+	columns_.push_back(state);
 
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
-	if (column == NULL)return;
+	if (column == NULL) return;
 
 	if (false == style_name.empty()) column->attlist_.table_style_name_ = style_name;
 	column->attlist_.table_number_columns_repeated_ = repeated;
-	
 }
 void ods_table_state::set_column_default_cell_style(std::wstring & style_name)
 {
-	if (style_name.length() < 1)return;
+	if (style_name.empty()) return;
 
 	table_table_column* column = dynamic_cast<table_table_column*>(columns_.back().elm.get());
 	if (column == NULL)return;
@@ -471,25 +478,24 @@ void ods_table_state::add_row(office_element_ptr & elm, _UINT32 repeated, office
 	std::wstring style_name;
 
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
-	if (style)style_name = style->style_name_;
+	if (style) style_name = style->style_name_;
 
     ods_row_state state(elm, repeated, style_name, style_elm, defaut_row_height_, current_level_.size());
   
     rows_.push_back(state);
 
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
-	if (row == NULL)return;
+	if (row == NULL) return;
 
 	if (false == style_name.empty()) row->attlist_.table_style_name_ = style_name;
 	row->attlist_.table_number_rows_repeated_ = repeated;
 
 	row_default_cell_style_name_ = L"";
-
 }
 void ods_table_state::add_row_repeated()
 {
 	table_table_row* row = dynamic_cast<table_table_row*>(rows_.back().elm.get());
-	if (row == NULL)return;
+	if (row == NULL) return;
 
 	_UINT32 t = rows_.back().repeated;
 	rows_.back().repeated++;
@@ -666,27 +672,29 @@ ods_hyperlink_state & ods_table_state::current_hyperlink()
 void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & style_elm)
 {
 	current_row_element()->add_child_element(elm);
-	
+
 	std::wstring style_name;
+
+	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
+	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(elm.get());
 
 	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)	style_name = style->style_name_;
 	else		style_name = row_default_cell_style_name_;
 
-	table_table_cell* cell = dynamic_cast<table_table_cell*>(elm.get());
-	if (cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
+	if (cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column()))
 	{
-		cell->attlist_.table_style_name_ =	style_name;
+		cell->attlist_.table_style_name_ = style_name;
 	}
-	table_covered_table_cell* covered_cell = dynamic_cast<table_covered_table_cell*>(elm.get());
-	if (covered_cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column())) 
+	if (covered_cell && !style_name.empty() && style_name != get_column_default_cell_style(current_column()))
 	{
-		covered_cell->attlist_.table_style_name_ =	style_name;
+		covered_cell->attlist_.table_style_name_ = style_name;
 	}
+
 	ods_cell_state state;
 
 	state.empty = true;
-	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_elm;
+	state.elm = elm;  state.repeated = 1;  state.style_name = style_name; state.style_elm = style_name.empty() ? office_element_ptr() : style_elm;
     state.row = current_table_row_;  state.col = current_table_column_ + 1;
 
 	data_validation_state::_ref ref;

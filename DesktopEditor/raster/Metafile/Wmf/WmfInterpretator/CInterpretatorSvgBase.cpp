@@ -733,15 +733,13 @@ namespace MetaFile
 		if (NULL == pBrush)
 			pBrush = m_pParser->GetBrush();
 
-		unsigned int unBrushStyle = pBrush->GetStyle();
-
-		if (NULL == pBrush || BS_NULL == unBrushStyle)
+		if (NULL == pBrush || BS_NULL == pBrush->GetStyle())
 		{
 			arAttributes.push_back({L"fill", L"none"});
 			return;
 		}
 
-		switch (unBrushStyle)
+		switch (pBrush->GetStyle())
 		{
 			case BS_SOLID:
 			{

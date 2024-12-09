@@ -135,12 +135,11 @@ namespace NSHtmlRenderer
 		NSWasm::CHLine m_oLine;
 		NSWasm::CData* m_pPageMeta;
 
-		// LONG m_nCountParagraphs;
-		// LONG m_nCountWords;
-		// LONG m_nCountSymbols;
-		// LONG m_nCountSpaces;
+		LONG m_nCountParagraphs;
+		LONG m_nCountWords;
+		LONG m_nCountSymbols;
+		LONG m_nCountSpaces;
 
-		/*
 		CHText() : m_oFontManager(), m_oLine()
 		{
 			m_nCountParagraphs = 0;
@@ -156,7 +155,6 @@ namespace NSHtmlRenderer
 			m_nCountSymbols = 0;
 			m_nCountSpaces = 0;
 		}
-		*/
 		void ClosePage()
 		{
 			if (m_oLine.GetCountChars())
@@ -358,7 +356,7 @@ namespace NSHtmlRenderer
 			m_pPageMeta->WriteDouble(m_oLine.m_dAscent);
 			m_pPageMeta->WriteDouble(m_oLine.m_dDescent);
 
-			// m_nCountParagraphs++;
+			m_nCountParagraphs++;
 
 			// width
 			LONG _position = m_pPageMeta->GetSize();
@@ -368,7 +366,7 @@ namespace NSHtmlRenderer
 			double dCurrentGlyphLineOffset = 0;
 			m_pPageMeta->AddInt(nCount);
 			NSWasm::CHChar* pChar = NULL;
-			// bool bIsLastSymbol = false;
+			bool bIsLastSymbol = false;
 			for (LONG lIndexChar = 0; lIndexChar < nCount; ++lIndexChar)
 			{
 				pChar = &m_oLine.m_pChars[lIndexChar];
@@ -379,7 +377,6 @@ namespace NSHtmlRenderer
 					dCurrentGlyphLineOffset += pChar->x;
 				}
 
-				/*
 				if (pChar->unicode == 0xFFFF || pChar->unicode == 32 || pChar->unicode == 9)
 				{
 					m_nCountSpaces++;
@@ -394,13 +391,12 @@ namespace NSHtmlRenderer
 					m_nCountSymbols++;
 					bIsLastSymbol = true;
 				}
-				*/
 
 				m_pPageMeta->AddInt(pChar->unicode); // юникодное значение
 				m_pPageMeta->WriteDouble(pChar->width); // ширина буквы
 			}
-			// if (bIsLastSymbol)
-			// 	m_nCountWords++;
+			if (bIsLastSymbol)
+				m_nCountWords++;
 
 			if (pChar)
 				dWidthLine = dCurrentGlyphLineOffset + pChar->width;

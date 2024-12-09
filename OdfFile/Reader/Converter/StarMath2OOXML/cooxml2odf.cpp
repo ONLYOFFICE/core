@@ -541,7 +541,7 @@ namespace StarMath
 	}
 	std::vector<COneElement*> COOXml2Odf::ConversionMRun(OOX::Logic::CMRun *pMRun)
 	{
-		StValuePr* stRpr;
+		StValuePr* stRpr(nullptr);
 		std::vector<COneElement*> arLine;
 		if(pMRun == nullptr) return arLine;
 		if(pMRun->m_oRPr.GetPointer() != nullptr)
@@ -816,22 +816,22 @@ namespace StarMath
 		if(pValue == nullptr)
 			pValue = new StValuePr;
 		bool bAttribute{false};
-		if(pARpr->b.get())
+		if(pARpr->b.IsInit() && pARpr->b.get())
 		{
-			if(pARpr->i.get())
+			if(pARpr->i.IsInit() && pARpr->i.get())
 				pValue->m_enStyle = SimpleTypes::EStyle::styleBoldItalic;
 			else
 				pValue->m_enStyle = SimpleTypes::EStyle::styleBold;
 			bAttribute = true;
 		}
-		else if(pARpr->i.get())
+		else if(pARpr->i.IsInit() && pARpr->i.get())
 		{
 			pValue->m_enStyle = SimpleTypes::EStyle::styleItalic;
 			bAttribute = true;
 		}
 		if(pARpr->sz.IsInit())
 		{
-			pValue->m_iSize = pARpr->sz.get();
+			pValue->m_iSize = pARpr->sz.get()/100;
 			bAttribute = true;
 		}
 		if(pARpr->latin.IsInit() && !pARpr->latin->typeface.empty())

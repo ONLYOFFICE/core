@@ -2358,8 +2358,9 @@ namespace PdfReader
 
 		double dTextScale = std::min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
 		double dITextScale = 1 / dTextScale;
-		double dOldSize = 10.0;
+		double dOldSize = 10.0, dOldWidth = 1.0;
 		m_pRenderer->get_FontSize(&dOldSize);
+		m_pRenderer->get_PenSize(&dOldWidth);
 		if (dOldSize * dTextScale > 0)
 		{
 			m_pRenderer->put_FontSize(dOldSize * dTextScale);
@@ -2404,6 +2405,8 @@ namespace PdfReader
 				double dSize = 1;
 				m_pRenderer->get_FontSize(&dSize);
 				m_pRenderer->put_FontSize(dSize * dNorma);
+				if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+					m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth() * dNorma));
 			}
 		}
 
@@ -2561,7 +2564,6 @@ namespace PdfReader
 			long lDrawPath = c_nStroke;
 			if (nRenderMode == 2)
 				lDrawPath |= c_nWindingFillMode;
-
 			m_pRenderer->DrawPath(lDrawPath);
 
 			m_pRenderer->EndCommand(c_nStrokeTextType);
@@ -2584,6 +2586,7 @@ namespace PdfReader
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
+		m_pRenderer->put_PenSize(dOldWidth);
 	}
 
 	GBool RendererOutputDev::beginType3Char(GfxState* state, double x, double y, double dx, double dy, CharCode code, Unicode* u, int uLen)

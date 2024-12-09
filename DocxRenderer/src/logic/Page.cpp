@@ -5,7 +5,6 @@
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
-#include "elements/DropCap.h"
 #include "../resources/Constants.h"
 #include "../resources/utils.h"
 
@@ -654,7 +653,7 @@ namespace NSDocxRenderer
 		double avg_font_size = m_oManagers.pParagraphStyleManager->GetAvgFontSize();
 
 		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
-		std::vector<std::shared_ptr<CDropCap>> drop_caps;
+		std::vector<std::shared_ptr<CContText>> drop_caps;
 
 		for (size_t i = 0; i < m_arTextLines.size(); i++)
 		{
@@ -697,16 +696,7 @@ namespace NSDocxRenderer
 			}
 			if (num_of_lines > 1)
 			{
-				auto drop_cap = std::make_shared<CDropCap>();
-				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
-				drop_cap->nLines = num_of_lines;
-				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
-				drop_cap->wsText = drop_cap_cont->GetText().ToStdWString();
-
-				drop_cap->nFontSize = static_cast<LONG>(drop_cap_cont->m_pFontStyle->dFontSize * 2);
-				drop_caps.push_back(std::move(drop_cap));
-
-				drop_cap_cont = nullptr;
+				drop_caps.push_back(std::move(drop_cap_cont));
 				if (drop_cap_line->IsCanBeDeleted())
 					drop_cap_line = nullptr;
 
@@ -718,27 +708,12 @@ namespace NSDocxRenderer
 		// шейпы из буквиц
 		for (auto&& drop_cap : drop_caps)
 		{
-			auto shape = std::make_shared<CShape>();
-			shape->m_eType = CShape::eShapeType::stTextBox;
+			drop_cap->CalcSelected();
 
-			// перемерим на подобранном шрифте
-			NSStructures::CFont oFont;
-			oFont.Name = drop_cap->wsFont;
-			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
-			m_oManagers.pFontManager->LoadFontByName(oFont);
+			auto line = std::make_shared<CTextLine>();
+			line->AddCont(drop_cap);
 
-			auto h = m_oManagers.pFontManager->GetFontHeight();
-
-			shape->m_dTop = drop_cap->m_dTop;
-			shape->m_dBaselinePos = drop_cap->m_dTop + h;
-			shape->m_dHeight = shape->m_dBaselinePos - shape->m_dTop;
-
-			shape->m_dRight = drop_cap->m_dRight;
-			shape->m_dLeft = drop_cap->m_dLeft;
-			shape->m_dWidth = drop_cap->m_dWidth;
-
-			shape->m_arOutputObjects.push_back(drop_cap);
-			shape->m_bIsBehindDoc = false;
+			auto shape = CreateSingleLineShape(line);
 			m_arShapes.push_back(shape);
 		}
 	}

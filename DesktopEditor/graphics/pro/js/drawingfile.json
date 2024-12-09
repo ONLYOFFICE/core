@@ -227,7 +227,7 @@
 	},
 	{
 		"folder": "../../../../DocxRenderer/src/logic/elements",
-		"files": ["BaseItem.cpp", "ContText.cpp", "DropCap.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp"]
+		"files": ["BaseItem.cpp", "ContText.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp"]
 	},
 	{
 		"folder": "../../../common",

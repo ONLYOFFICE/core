@@ -490,6 +490,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L",");
 		}
 		oWriter.WriteString(L"\" />");
+
+		// add origin font
 		oWriter.WriteString(L"</a:r>");
 	}
 

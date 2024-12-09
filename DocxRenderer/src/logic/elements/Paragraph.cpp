@@ -63,9 +63,18 @@ namespace NSDocxRenderer
 		}
 		if (m_bIsNeedFirstLineIndent)
 		{
-			oWriter.WriteString(L" w:firstLine=\"");
-			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToDx));
-			oWriter.WriteString(L"\"");
+			if (m_dFirstLine > 0)
+			{
+				oWriter.WriteString(L" w:firstLine=\"");
+				oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToDx));
+				oWriter.WriteString(L"\"");
+			}
+			else
+			{
+				oWriter.WriteString(L" w:hanging=\"");
+				oWriter.AddInt(static_cast<int>(-m_dFirstLine * c_dMMToDx));
+				oWriter.WriteString(L"\"");
+			}
 		}
 		oWriter.WriteString(L"/>"); //конец w:ind
 

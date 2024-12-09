@@ -1461,7 +1461,7 @@ namespace NSDocxRenderer
 			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
 			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
 
-			paragraph->m_dRightBorder = m_dWidth - max_right;
+			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
 			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
@@ -1488,13 +1488,7 @@ namespace NSDocxRenderer
 
 					// indent check
 					if (index == 1)
-					{
 						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-						// первая строчка левее правой
-						if (!first_left && prev_line->m_dLeft < curr_line->m_dLeft)
-							position_curr.left = false;
-					}
 					else
 						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
@@ -1517,8 +1511,12 @@ namespace NSDocxRenderer
 				// indent check
 				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
 				{
+					double left_diff = paragraph->m_arLines[0]->m_dLeft - paragraph->m_arLines[1]->m_dLeft;
 					paragraph->m_bIsNeedFirstLineIndent = true;
-					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+					paragraph->m_dFirstLine = left_diff;
+
+					if (left_diff < 0)
+						paragraph->m_dLeftBorder -= left_diff;
 				}
 			}
 
@@ -1652,7 +1650,7 @@ namespace NSDocxRenderer
 					is_first_line = false;
 
 				// первая строка может быть с отступом
-				if (is_first_line && (line_bot->m_dLeft < line_top->m_dLeft))
+				if (is_first_line)
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1887,7 +1885,11 @@ namespace NSDocxRenderer
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth;
 
-		pParagraph->m_dLeftBorder = 0;
+		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
+			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;
+		else
+			pParagraph->m_dLeftBorder = 0;
+
 		pParagraph->m_dRightBorder = 0;
 
 		// first correction fix

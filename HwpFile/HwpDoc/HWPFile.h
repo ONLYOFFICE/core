@@ -2,6 +2,7 @@
 #define HWPFILE_H
 
 #include "HwpFileHeader.h"
+#include <list>
 
 namespace HWP
 {

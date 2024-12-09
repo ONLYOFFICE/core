@@ -8,11 +8,8 @@ namespace HWP
 class CCtrl
 {
 	std::string m_sCtrlID;
+protected:
 	bool m_bFullFilled;
-
-	friend class CCtrlColumnDef;
-	friend class CCtrlHeadFoot;
-	friend class CCtrlEqEdit;
 public:
 	CCtrl();
 	CCtrl(const std::string& sCtrlID);

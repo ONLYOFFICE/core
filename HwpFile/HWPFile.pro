@@ -44,6 +44,8 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlForm.cpp \
     HwpDoc/Paragraph/CtrlGeneralShape.cpp \
     HwpDoc/Paragraph/CtrlHeadFoot.cpp \
+    HwpDoc/Paragraph/CtrlNewNumber.cpp \
+    HwpDoc/Paragraph/CtrlNote.cpp \
     HwpDoc/Paragraph/CtrlObjElement.cpp \
     HwpDoc/Paragraph/CtrlPageNumPos.cpp \
     HwpDoc/Paragraph/CtrlShapeArc.cpp \
@@ -60,9 +62,13 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlTalbe.cpp \
     HwpDoc/Paragraph/HWPPargraph.cpp \
     HwpDoc/Paragraph/LineSeg.cpp \
-    HwpDoc/Paragraph/TblCell.cpp
+    HwpDoc/Paragraph/TblCell.cpp \
+    HwpDoc/Section/NoteShape.cpp \
+    HwpDoc/Section/Page.cpp \
+    HwpDoc/Section/PageBorderFill.cpp
 
 HEADERS += \
+    HwpDoc/Common.h \
     HwpDoc/Errors.h \
     HwpDoc/HWPDocInfo.h \
     HwpDoc/HWPElements/HWPRecord.h \
@@ -97,6 +103,8 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlForm.h \
     HwpDoc/Paragraph/CtrlGeneralShape.h \
     HwpDoc/Paragraph/CtrlHeadFoot.h \
+    HwpDoc/Paragraph/CtrlNewNumber.h \
+    HwpDoc/Paragraph/CtrlNote.h \
     HwpDoc/Paragraph/CtrlObjElement.h \
     HwpDoc/Paragraph/CtrlPageNumPos.h \
     HwpDoc/Paragraph/CtrlShapeArc.h \
@@ -115,5 +123,8 @@ HEADERS += \
     HwpDoc/Paragraph/LineSeg.h \
     HwpDoc/Paragraph/Point.h \
     HwpDoc/Paragraph/RangeTag.h \
-    HwpDoc/Paragraph/TblCell.h
+    HwpDoc/Paragraph/TblCell.h \
+    HwpDoc/Section/NoteShape.h \
+    HwpDoc/Section/Page.h \
+    HwpDoc/Section/PageBorderFill.h
 

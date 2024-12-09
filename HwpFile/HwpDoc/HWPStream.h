@@ -2,16 +2,16 @@
 #define HWPSTREAM_H
 
 #include <string>
+#include "Common.h"
 
 namespace HWP
 {
-typedef char BYTE;
-
 class CHWPStream
 {
 	BYTE* m_pBegin;
 	BYTE* m_pCur;
 	BYTE* m_pEnd;
+	BYTE* m_pSavedPosition;
 public:
 	CHWPStream();
 	CHWPStream(BYTE* pBuffer, unsigned int unSize);
@@ -20,6 +20,7 @@ public:
 
 	BYTE* GetCurPtr();
 
+	bool ReadChar(CHAR& chValue);
 	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
 	bool ReadInt(int& nValue);
@@ -28,8 +29,8 @@ public:
 	short ReadShort();
 	bool ReadByte(BYTE& chValue);
 	BYTE ReadByte();
-	bool ReadString(std::string& sValue);
-	bool ReadString(std::string& sValue, int nLength);
+	bool ReadString(STRING& sValue);
+	bool ReadString(STRING& sValue, int nLength);
 
 	void Skip(unsigned int unStep);
 
@@ -37,6 +38,9 @@ public:
 	bool IsValid() const;
 	bool IsEof() const;
 	unsigned int GetLength() const;
+
+	void SavePosition();
+	int GetDistanceToLastPos();
 
 	BYTE operator[](unsigned int unPosition) const;
 };

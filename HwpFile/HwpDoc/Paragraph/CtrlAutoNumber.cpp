@@ -3,23 +3,6 @@
 namespace HWP
 {
 
-ENumType GetNumType(int nValue)
-{
-	switch(static_cast<ENumType>(nValue))
-	{
-		case ENumType::PAGE:
-		case ENumType::FOOTNOTE:
-		case ENumType::ENDNOTE:
-		case ENumType::FIGURE:
-		case ENumType::TABLE:
-		case ENumType::EQUATION:
-		case ENumType::TOTAL_PAGE:
-			return static_cast<ENumType>(nValue);
-		default:
-			return ENumType::null;
-	}
-}
-
 CCtrlAutoNumber::CCtrlAutoNumber(const std::string& sCtrlID)
 	: CCtrl(sCtrlID)
 {}

@@ -3,13 +3,13 @@
 namespace HWP
 {
 CHWPStream::CHWPStream()
-	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr)
+	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_pSavedPosition(nullptr)
 {
 
 }
 
 CHWPStream::CHWPStream(BYTE* pBuffer, unsigned int unSize)
-	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + unSize)
+	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + unSize), m_pSavedPosition(nullptr)
 {}
 
 void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize)
@@ -22,6 +22,13 @@ void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize)
 BYTE* CHWPStream::GetCurPtr()
 {
 	return m_pCur;
+}
+
+bool CHWPStream::ReadChar(CHAR& chValue)
+{
+	//TODO:: реализовать
+	Skip(2);
+	return true;
 }
 
 bool CHWPStream::ReadFloat(float& fValue)
@@ -170,6 +177,16 @@ bool CHWPStream::IsEof() const
 unsigned int CHWPStream::GetLength() const
 {
 	return (unsigned int)(m_pEnd - m_pCur);
+}
+
+void CHWPStream::SavePosition()
+{
+	m_pSavedPosition = m_pCur;
+}
+
+int CHWPStream::GetDistanceToLastPos()
+{
+	return (nullptr != m_pSavedPosition) ? m_pCur - m_pSavedPosition : 0;
 }
 
 BYTE CHWPStream::operator[](unsigned int unPosition) const

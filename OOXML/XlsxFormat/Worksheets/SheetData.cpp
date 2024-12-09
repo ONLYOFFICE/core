@@ -2826,8 +2826,7 @@ namespace OOX
                     if(!m_oFormula->m_sText.empty())
                     {
                         ExtraRecord = writer->getNextRecord(XLSB::rt_ShrFmla);
-                        m_oFormula->toBin(ExtraRecord);
-                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair<_INT32,_INT32>(m_oRow.get(),m_oCol.get()));
+                        SharedFormulasRef::sharedRefsLocations->push_back(std::make_pair<_INT32,_INT32>(m_oRow.get() - 1, m_oCol.get()));
                     }
                     if(m_oFormula->m_oSi.IsInit() && m_oFormula->m_oSi->GetValue() < SharedFormulasRef::sharedRefsLocations->size())
                     {
@@ -2852,12 +2851,18 @@ namespace OOX
                 }
             }
             if(ExtraRecord && m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)
+            {
+                m_oFormula->toBin(ExtraRecord);
                 writer->storeNextRecord(ExtraRecord);
+            }
             if(CellRecord)
                 writer->storeNextRecord(CellRecord);
             if(ExtraRecord && (m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared
                 || m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray))
+            {
+                m_oFormula->toBin(ExtraRecord);
                 writer->storeNextRecord(ExtraRecord);
+            }
         }
         void CCell::fromBin(XLS::BaseObjectPtr& obj)
         {
@@ -3856,7 +3861,7 @@ namespace OOX
                 *record << rw;
             }
             {
-                _UINT32 ixfe = 0xffffffff;
+                _UINT32 ixfe = 0x0;
                 if(m_oS.IsInit())
                 ixfe = m_oS->GetValue();
                 *record << ixfe;

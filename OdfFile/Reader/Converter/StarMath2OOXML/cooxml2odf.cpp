@@ -1079,7 +1079,7 @@ namespace StarMath
 		StStyleMenClose stStyle;
 		if(pCtrlPr == nullptr)
 			return stStyle;
-		StValuePr* pValue;
+		StValuePr* pValue(nullptr);
 		if(pCtrlPr->m_oRPr.GetPointer() != nullptr)
 			pValue = ConversionRunProperties(pCtrlPr->m_oRPr.GetPointer());
 		else if(pCtrlPr->m_oARPr.GetPointer() != nullptr)

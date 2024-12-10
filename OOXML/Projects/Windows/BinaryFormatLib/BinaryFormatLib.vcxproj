@@ -49,6 +49,7 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.cpp" />
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp" />
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CSVReader.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\CurrencyReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DateReader.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\DigitReader.h" />
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h" />
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CSVReader.h" />

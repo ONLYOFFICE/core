@@ -49,7 +49,7 @@ _UINT32 XMLReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &
     }
 
     XML2TableConverter converter = {reader};
-    XLSXTableController table = {oXlsx};
+    XLSXTableController table = {oXlsx, -1};
     // map хранящий текущий номер колонки для записи
     std::map<_UINT32, _UINT32> rowNumbers = {};
     std::map<_UINT32, std::wstring> stringData = {};

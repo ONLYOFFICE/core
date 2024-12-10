@@ -355,6 +355,9 @@ public:
 	void start_group(office_element_ptr & elm);
 	void end_group();
 		
+	void start_rows(office_element_ptr& elm);
+	void end_rows();
+
 	_INT32 current_level() {return (_INT32)current_level_.size() - 1;}
 
 	void start_headers(office_element_ptr & elm);
@@ -521,6 +524,7 @@ public:
 	std::vector<ods_comment_state> comments_;
 
 	std::map<std::wstring, office_element_ptr> mapHeaderFooterImages;
+
 private:
 
 	struct _spanned_info
@@ -542,7 +546,7 @@ private:
     odf_conversion_context *context_;   
 	
 	office_element_ptr	office_table_;
-	style*				office_table_style_;//??? может хранить как office_element_ptr ???
+	style*				office_table_style_ = NULL;//??? может хранить как office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
 	
 	std::wstring row_default_cell_style_name_;

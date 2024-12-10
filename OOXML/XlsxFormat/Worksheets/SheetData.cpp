@@ -1401,6 +1401,47 @@ namespace OOX
                     *record << BinFmla;
                     break;
                 }
+                case SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable :
+                {
+                    {
+                        XLSB::UncheckedRfX fmlaRef;
+                        fmlaRef.rowFirst = 0;
+                        fmlaRef.rowLast = 0;
+                        fmlaRef.columnFirst = 0;
+                        fmlaRef.columnLast = 0;
+                        if(m_oRef.IsInit())
+                            fmlaRef.fromString(m_oRef.get());
+                        *record << fmlaRef;
+                    }
+                    {
+                        XLS::CellRef cellref;
+                        if(m_oR1.IsInit())
+                            cellref.fromString(m_oR1.get());
+                        _INT32 refInput = cellref.row;
+                        *record << refInput;
+                        refInput = cellref.column;
+                        *record << refInput;
+                        if(m_oR2.IsInit())
+                            cellref.fromString(m_oR1.get());
+                        refInput = cellref.row;
+                        *record << refInput;
+                        refInput = cellref.column;
+                        *record << refInput;
+                    }
+                    BYTE flags = 0;
+                    if(m_oDtr.IsInit())
+                        SETBIT(flags, 0, m_oDtr->GetValue())
+                    if(m_oDt2D.IsInit())
+                        SETBIT(flags, 1, m_oDt2D->GetValue())
+                    if(m_oDel1.IsInit())
+                        SETBIT(flags, 2, m_oDel1->GetValue())
+                    if(m_oDel2.IsInit())
+                        SETBIT(flags, 3, m_oDel2->GetValue())
+                    if(m_oAca.IsInit())
+                        SETBIT(flags, 4, m_oAca->GetValue())
+                    *record << flags;
+                    break;
+                }
             default:
                 break;
             }
@@ -2669,7 +2710,6 @@ namespace OOX
                     }
                 }
             }
-
             bool isReal = false;
             _INT32 intCache = 0;
             double realCache = 0;
@@ -2746,6 +2786,15 @@ namespace OOX
             CFRecordPtr CellRecord;
             // дополнительная запись для shared, array и table формул
             CFRecordPtr ExtraRecord;
+            //обработка celltype datatable
+            if(m_oFormula.IsInit() && m_oFormula->m_oT.IsInit() && m_oFormula->m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)
+            {
+                ExtraRecord = writer->getNextRecord(XLSB::rt_Table);
+                m_oFormula->toBin(ExtraRecord);
+                writer->storeNextRecord(ExtraRecord);
+                m_oFormula.reset();
+                ExtraRecord.reset();
+            }
             switch(cellType)
             {
                 case SimpleTypes::Spreadsheet::celltypeNumber:
@@ -2916,14 +2965,9 @@ namespace OOX
                     *CellRecord << BinFmla;
                 }
             }
-            if(ExtraRecord && m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)
-            {
-                m_oFormula->toBin(ExtraRecord);
-                writer->storeNextRecord(ExtraRecord);
-            }
             if(CellRecord)
                 writer->storeNextRecord(CellRecord);
-            if(ExtraRecord && (m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared
+            if(ExtraRecord && m_oFormula.IsInit() && (m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared
                 || m_oFormula->m_oT == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray))
             {
                 m_oFormula->toBin(ExtraRecord);

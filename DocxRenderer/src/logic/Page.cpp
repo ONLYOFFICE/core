@@ -5,7 +5,6 @@
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
-#include "elements/DropCap.h"
 #include "../resources/Constants.h"
 #include "../resources/utils.h"
 
@@ -654,7 +653,7 @@ namespace NSDocxRenderer
 		double avg_font_size = m_oManagers.pParagraphStyleManager->GetAvgFontSize();
 
 		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
-		std::vector<std::shared_ptr<CDropCap>> drop_caps;
+		std::vector<std::shared_ptr<CContText>> drop_caps;
 
 		for (size_t i = 0; i < m_arTextLines.size(); i++)
 		{
@@ -697,16 +696,7 @@ namespace NSDocxRenderer
 			}
 			if (num_of_lines > 1)
 			{
-				auto drop_cap = std::make_shared<CDropCap>();
-				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
-				drop_cap->nLines = num_of_lines;
-				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
-				drop_cap->wsText = drop_cap_cont->GetText().ToStdWString();
-
-				drop_cap->nFontSize = static_cast<LONG>(drop_cap_cont->m_pFontStyle->dFontSize * 2);
-				drop_caps.push_back(std::move(drop_cap));
-
-				drop_cap_cont = nullptr;
+				drop_caps.push_back(std::move(drop_cap_cont));
 				if (drop_cap_line->IsCanBeDeleted())
 					drop_cap_line = nullptr;
 
@@ -718,27 +708,12 @@ namespace NSDocxRenderer
 		// шейпы из буквиц
 		for (auto&& drop_cap : drop_caps)
 		{
-			auto shape = std::make_shared<CShape>();
-			shape->m_eType = CShape::eShapeType::stTextBox;
+			drop_cap->CalcSelected();
 
-			// перемерим на подобранном шрифте
-			NSStructures::CFont oFont;
-			oFont.Name = drop_cap->wsFont;
-			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
-			m_oManagers.pFontManager->LoadFontByName(oFont);
+			auto line = std::make_shared<CTextLine>();
+			line->AddCont(drop_cap);
 
-			auto h = m_oManagers.pFontManager->GetFontHeight();
-
-			shape->m_dTop = drop_cap->m_dTop;
-			shape->m_dBaselinePos = drop_cap->m_dTop + h;
-			shape->m_dHeight = shape->m_dBaselinePos - shape->m_dTop;
-
-			shape->m_dRight = drop_cap->m_dRight;
-			shape->m_dLeft = drop_cap->m_dLeft;
-			shape->m_dWidth = drop_cap->m_dWidth;
-
-			shape->m_arOutputObjects.push_back(drop_cap);
-			shape->m_bIsBehindDoc = false;
+			auto shape = CreateSingleLineShape(line);
 			m_arShapes.push_back(shape);
 		}
 	}
@@ -1486,7 +1461,7 @@ namespace NSDocxRenderer
 			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
 			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
 
-			paragraph->m_dRightBorder = m_dWidth - max_right;
+			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
 			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
@@ -1513,13 +1488,7 @@ namespace NSDocxRenderer
 
 					// indent check
 					if (index == 1)
-					{
 						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-						// первая строчка левее правой
-						if (!first_left && prev_line->m_dLeft < curr_line->m_dLeft)
-							position_curr.left = false;
-					}
 					else
 						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
@@ -1542,8 +1511,12 @@ namespace NSDocxRenderer
 				// indent check
 				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
 				{
+					double left_diff = paragraph->m_arLines[0]->m_dLeft - paragraph->m_arLines[1]->m_dLeft;
 					paragraph->m_bIsNeedFirstLineIndent = true;
-					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+					paragraph->m_dFirstLine = left_diff;
+
+					if (left_diff < 0)
+						paragraph->m_dLeftBorder -= left_diff;
 				}
 			}
 
@@ -1677,7 +1650,7 @@ namespace NSDocxRenderer
 					is_first_line = false;
 
 				// первая строка может быть с отступом
-				if (is_first_line && (line_bot->m_dLeft < line_top->m_dLeft))
+				if (is_first_line)
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1705,9 +1678,9 @@ namespace NSDocxRenderer
 							bool out = false;
 							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
 								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
-									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(index)))
+									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(j)))
 									{
-										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(index);
+										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(j);
 										out = true;
 										break;
 									}
@@ -1912,7 +1885,11 @@ namespace NSDocxRenderer
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth;
 
-		pParagraph->m_dLeftBorder = 0;
+		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
+			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;
+		else
+			pParagraph->m_dLeftBorder = 0;
+
 		pParagraph->m_dRightBorder = 0;
 
 		// first correction fix

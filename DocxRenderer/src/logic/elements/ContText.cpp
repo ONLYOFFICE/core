@@ -490,6 +490,11 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L",");
 		}
 		oWriter.WriteString(L"\" />");
+
+		oWriter.WriteString(L"<metaorigin:font ");
+		oWriter.WriteString(L" font=\"");
+		oWriter.WriteString(m_wsOriginFontName);
+		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</a:r>");
 	}
 
@@ -971,6 +976,7 @@ namespace NSDocxRenderer
 		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
 		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
 		pCont->m_dSpaceWidthMM = pFontManager->GetSpaceWidthMM();
+		pCont->m_wsOriginFontName = oFont.Name;
 
 		if (bUseDefaultFont)
 		{

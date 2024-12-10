@@ -2795,6 +2795,22 @@ namespace OOX
                 m_oFormula.reset();
                 ExtraRecord.reset();
             }
+            //обработка метаданных ячейки
+            if(m_oCellMetadata.IsInit())
+            {
+                auto metaRecord = writer->getNextRecord(XLSB::rt_CellMeta);
+                _INT32 metavalue = m_oCellMetadata.get();
+                *metaRecord << metavalue;
+                writer->storeNextRecord(metaRecord);
+
+            }
+            if(m_oValueMetadata.IsInit())
+            {
+                auto metaRecord = writer->getNextRecord(XLSB::rt_ValueMeta);
+                _INT32 metavalue = m_oValueMetadata.get();
+                *metaRecord << metavalue;
+                writer->storeNextRecord(metaRecord);
+            }
             switch(cellType)
             {
                 case SimpleTypes::Spreadsheet::celltypeNumber:

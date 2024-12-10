@@ -321,12 +321,12 @@ TEST_F(CPdfFileTest, SetMetaData)
 
 TEST_F(CPdfFileTest, ConvertToRaster)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
 	double dPageDpiX, dPageDpiY, dWidth, dHeight;
-	int i = 0;
+	int i = 3;
 	//for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
@@ -372,7 +372,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

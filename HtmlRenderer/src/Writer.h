@@ -39,8 +39,6 @@
 #include "Text.h"
 #include "Document.h"
 #include "../../DesktopEditor/fontengine/FontConverter.h"
-#include "FontManager.h"
-#include "../../Common/OfficeFileFormats.h"
 
 namespace NSHtmlRenderer
 {
@@ -1380,7 +1378,7 @@ namespace NSHtmlRenderer
 			if (NULL != pGids)
 				m_bIsGids = true;
 
-			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, m_dCurrentFontSize);
+			m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, this);
 			return;
 		}
 
@@ -1575,10 +1573,10 @@ namespace NSHtmlRenderer
 		{
 			m_oSmartText.ClosePage();
 
-			paragraphs = (int)0;
-			words = (int)0;
-			spaces = (int)0;
-			symbols = (int)0;
+			paragraphs = (int)m_oSmartText.m_lCountParagraphs;
+			words = (int)m_oSmartText.m_lCountWords;
+			spaces = (int)m_oSmartText.m_lCountSpaces;
+			symbols = (int)m_oSmartText.m_lCountSymbols;
 			sBase64Data = "";
 
 			if (m_lPagesCount > 0)
@@ -2057,10 +2055,10 @@ namespace NSHtmlRenderer
 		{
 			CMetafile oDocInfo;
 			oDocInfo.WriteLONG(m_lPagesCount);
-			oDocInfo.WriteLONG(0);
-			oDocInfo.WriteLONG(0);
-			oDocInfo.WriteLONG(0);
-			oDocInfo.WriteLONG(0);
+			oDocInfo.WriteLONG(m_oSmartText.m_lCountParagraphs);
+			oDocInfo.WriteLONG(m_oSmartText.m_lCountWords);
+			oDocInfo.WriteLONG(m_oSmartText.m_lCountSymbols);
+			oDocInfo.WriteLONG(m_oSmartText.m_lCountSpaces);
 
 			oDocInfo.WriteLONG(m_oDstFontGenerator.m_lCountFonts);
 
@@ -2155,6 +2153,13 @@ namespace NSHtmlRenderer
 			m_arrPages.clear();
 			m_bIsGids = false;
 			m_lCurrentDumpSize = 0;
+
+			m_oSmartText.SetParams(this);
+
+			m_oSmartText.m_lCountParagraphs = 0;
+			m_oSmartText.m_lCountWords = 0;
+			m_oSmartText.m_lCountSymbols = 0;
+			m_oSmartText.m_lCountSpaces = 0;
 		}
 	};
 }

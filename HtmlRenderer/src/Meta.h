@@ -257,7 +257,10 @@ namespace NSHtmlRenderer
 
 		inline void WriteCommandType(const CommandType& eType)
 		{
-			WriteBYTE((BYTE)eType);
+			CheckBufferSize(m_lSizeofBYTE);
+
+			*(m_pBuffer + m_lPosition)	= (BYTE)eType;
+			m_lPosition += m_lSizeofBYTE;
 		}
 
 		//

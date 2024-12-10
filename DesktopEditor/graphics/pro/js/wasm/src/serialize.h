@@ -1,10 +1,7 @@
 #ifndef _WASM_SERIALIZE_H
 #define _WASM_SERIALIZE_H
 
-#include "../../../../../common/StringExt.h"
-#include "../../../../../common/StringUTF32.h"
-#include "../../../../../graphics/IRenderer.h"
-#include "../../../../../graphics/pro/Fonts.h"
+#include <vector>
 #include "../../../../../common/File.h"
 
 namespace NSWasm
@@ -208,58 +205,32 @@ namespace NSWasm
 		}
 	};
 
-	class CHChar
+	struct CHChar
 	{
-	public:
-		int unicode;	// юникодное значение
-		int gid;		// индекс глифа в файле
-		double x;		// сдвиг по baseline
-		double width;	// ширина символа (сдвиг до след буквы)
-		double* matrix; // матрица преобразования (!!! без сдвига)
+		int unicode; // юникодное значение
+		double x; // сдвиг по baseline
+		double width; // ширина символа (сдвиг до след буквы)
 
-	public:
-		CHChar()
-		{
-			unicode = 0;
-			gid = 0;
-			width = 0;
-			matrix = NULL;
-		}
-		CHChar(const CHChar& oSrc)
-		{
-			*this = oSrc;
-		}
+		CHChar() : unicode(0), x(0), width(0) {}
+		CHChar(const CHChar& oSrc) { *this = oSrc; }
 		CHChar& operator=(const CHChar& oSrc)
 		{
 			unicode = oSrc.unicode;
-			gid = oSrc.gid;
+			x = oSrc.x;
 			width = oSrc.width;
-			matrix = NULL;
-			if (NULL != oSrc.matrix)
-			{
-				matrix = new double[4];
-				memcpy(matrix, oSrc.matrix, 4 * sizeof(double));
-			}
 			return *this;
-		}
-		~CHChar()
-		{
-			RELEASEARRAYOBJECTS(matrix);
 		}
 
 		inline void Clear()
 		{
 			unicode = 0;
-			gid = 0;
+			x = 0;
 			width = 0;
-
-			RELEASEARRAYOBJECTS(matrix);
 		}
 	};
 
-	class CHLine
+	struct CHLine
 	{
-	public:
 		double m_dAscent;
 		double m_dDescent;
 		double m_dX;
@@ -288,7 +259,6 @@ namespace NSWasm
 		double m_shx;
 		double m_shy;
 
-	public:
 		CHLine()
 		{
 			m_dAscent = 0;
@@ -374,9 +344,7 @@ namespace NSWasm
 			{
 				CHChar* pNews = new CHChar[2 * m_lSizeChars];
 				for (LONG i = 0; i < m_lSizeChars; ++i)
-				{
 					pNews[i] = m_pChars[i];
-				}
 
 				RELEASEARRAYOBJECTS(m_pChars);
 				m_pChars = pNews;
@@ -392,10 +360,18 @@ namespace NSWasm
 
 		inline CHChar* GetTail()
 		{
-			if (0 == m_lCharsTail)
-				return NULL;
+			if (m_lCharsTail >= m_lSizeChars)
+			{
+				CHChar* pNews = new CHChar[2 * m_lSizeChars];
+				for (LONG i = 0; i < m_lSizeChars; ++i)
+					pNews[i] = m_pChars[i];
 
-			return &m_pChars[m_lCharsTail - 1];
+				RELEASEARRAYOBJECTS(m_pChars);
+				m_pChars = pNews;
+				m_lSizeChars *= 2;
+			}
+
+			return m_lCharsTail ? &m_pChars[m_lCharsTail - 1] : NULL;
 		}
 
 		inline LONG GetCountChars()

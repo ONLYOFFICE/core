@@ -846,7 +846,7 @@ BYTE* CPdfReader::GetStructure()
 }
 BYTE* CPdfReader::GetLinks(int nPageIndex)
 {
-	if (!m_pPDFDocument)
+	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
 		return NULL;
 
 	nPageIndex++;

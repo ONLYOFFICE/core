@@ -30,6 +30,6 @@ DESTDIR = $$PWD_ROOT_DIR/build
 use_test_html_renderer {
     DEFINES += TEST_FOR_HTML_RENDERER_TEXT
 
-    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
-	SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+	HEADERS += $$CORE_ROOT_DIR/DesktopEditor/graphics/pro/js/wasm/src/HTMLRendererText.h
+	SOURCES += $$CORE_ROOT_DIR/DesktopEditor/graphics/pro/js/wasm/src/HTMLRendererText.cpp
 }

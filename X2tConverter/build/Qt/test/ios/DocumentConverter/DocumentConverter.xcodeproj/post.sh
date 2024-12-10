@@ -41,12 +41,6 @@ libHtmlFile.dylib \
 
 install_name_tool \
 -change \
-libHtmlRenderer.dylib \
-@executable_path/libHtmlRenderer.dylib \
-"${dst}"/${TARGET_NAME}.app/${TARGET_NAME}
-
-install_name_tool \
--change \
 libPdfReader.dylib \
 @executable_path/libPdfReader.dylib \
 "${dst}"/${TARGET_NAME}.app/${TARGET_NAME}
@@ -113,25 +107,6 @@ install_name_tool \
 libgraphics.dylib \
 @executable_path/libgraphics.dylib \
 "${dst}"/${TARGET_NAME}.app/libdoctrenderer.dylib
-
-# htmlrenderer
-install_name_tool \
--change \
-libkernel.dylib \
-@executable_path/libkernel.dylib \
-"${dst}"/${TARGET_NAME}.app/libHtmlRenderer.dylib
-
-install_name_tool \
--change \
-libUnicodeConverter.dylib \
-@executable_path/libUnicodeConverter.dylib \
-"${dst}"/${TARGET_NAME}.app/libHtmlRenderer.dylib
-
-install_name_tool \
--change \
-libgraphics.dylib \
-@executable_path/libgraphics.dylib \
-"${dst}"/${TARGET_NAME}.app/libHtmlRenderer.dylib
 
 # pdfwriter
 install_name_tool \
@@ -221,12 +196,6 @@ libgraphics.dylib \
 @executable_path/libgraphics.dylib \
 "${dst}"/${TARGET_NAME}.app/libPdfReader.dylib
 
-install_name_tool \
--change \
-libHtmlRenderer.dylib \
-@executable_path/libHtmlRenderer.dylib \
-"${dst}"/${TARGET_NAME}.app/libPdfReader.dylib
-
 # x2t
 install_name_tool \
 -change \
@@ -262,12 +231,6 @@ install_name_tool \
 -change \
 libHtmlFile.dylib \
 @executable_path/libHtmlFile.dylib \
-"${dst}"/${TARGET_NAME}.app/libx2t.dylib
-
-install_name_tool \
--change \
-libHtmlRenderer.dylib \
-@executable_path/libHtmlRenderer.dylib \
 "${dst}"/${TARGET_NAME}.app/libx2t.dylib
 
 install_name_tool \

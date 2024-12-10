@@ -43,11 +43,3 @@ SOURCES += \
     XpsLib/StaticResources.cpp \
     XpsLib/Utils.cpp \
     XpsLib/WString.cpp
-
-#CONFIG += build_viewer_module
-build_viewer_module {
-    DEFINES += BUILDING_WASM_MODULE
-
-    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
-    SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
-}

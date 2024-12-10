@@ -105,17 +105,7 @@ use_external_jpeg2000 {
     SOURCES += SrcReader/JPXStream2.cpp
 }
 
-#CONFIG += build_viewer_module
-build_viewer_module {
-    DEFINES += BUILDING_WASM_MODULE \
-               TEST_CPP_BINARY
-
-    HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
-    SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
-}
-
 # PdfWriter
-
 DEFINES += CRYPTOPP_DISABLE_ASM \
            NOMINMAX
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib

@@ -36,7 +36,6 @@
 
 #include "../../common/Directory.h"
 #include "../../fontengine/ApplicationFonts.h"
-#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
 #include "MetaFile.h"
 
 #if defined(_WIN64)

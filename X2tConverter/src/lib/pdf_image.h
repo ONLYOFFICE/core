@@ -36,7 +36,6 @@
 
 #include "../../../DjVuFile/DjVu.h"
 #include "../../../DocxRenderer/DocxRenderer.h"
-#include "../../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../../PdfFile/PdfFile.h"
 #include "../../../XpsFile/XpsFile.h"
 #include "../../../OfficeUtils/src/ZipFolder.h"

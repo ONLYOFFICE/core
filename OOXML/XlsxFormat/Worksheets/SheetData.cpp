@@ -2883,17 +2883,34 @@ namespace OOX
                 }
                 case SimpleTypes::Spreadsheet::celltypeSharedString:
                 {
-                    CellRecord = writer->getNextRecord(XLSB::rt_CellIsst);
-                    WriteCellInfo(CellRecord);
-                    _UINT32 isst = 0;
-                    if(m_oValue.IsInit())
+                    if(!m_oFormula.IsInit() && m_oValue.IsInit())
+                    {
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellIsst);
+                        WriteCellInfo(CellRecord);
+                        _UINT32 isst = 0;
                         isst = std::stoi(m_oValue->m_sText);
-                    *CellRecord << isst;
+                        *CellRecord << isst;
+                    }
+                    else if(m_oFormula.IsInit())
+                    {
+                        CellRecord = writer->getNextRecord(XLSB::rt_FmlaString);
+                        WriteCellInfo(CellRecord);
+                        XLSB::XLWideString str;
+                        if(m_oValue.IsInit())
+                            str = m_oValue->m_sText;
+                        *CellRecord << str;
+                    }
+                    else
+                    {
+                        CellRecord = writer->getNextRecord(XLSB::rt_CellBlank);
+                        WriteCellInfo(CellRecord);
+                    }
                     break;
                 }
+                case SimpleTypes::Spreadsheet::celltypeInlineStr:
                 case SimpleTypes::Spreadsheet::celltypeStr:
                 {
-                    if(m_oValue.IsInit())
+                    if(m_oValue.IsInit() || m_oRichText.IsInit())
                     {
                         if(!m_oFormula.IsInit())
                             CellRecord = writer->getNextRecord(XLSB::rt_CellSt);
@@ -2901,7 +2918,10 @@ namespace OOX
                             CellRecord = writer->getNextRecord(XLSB::rt_FmlaString);
                         WriteCellInfo(CellRecord);
                         XLSB::XLWideString str;
-                        str = m_oValue->m_sText;
+                        if(m_oValue.IsInit())
+                            str = m_oValue->m_sText;
+                        else
+                            str = m_oRichText->ToString();
                         *CellRecord << str;
                     }
                     else

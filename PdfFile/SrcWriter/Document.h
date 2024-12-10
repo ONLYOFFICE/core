@@ -146,6 +146,7 @@ namespace PdfWriter
 		CAnnotation*      CreatePopupAnnot();
 		CAnnotation*      CreateFreeTextAnnot();
 		CAnnotation*      CreateCaretAnnot();
+		CAnnotation*      CreateStampAnnot();
 		CAnnotation*      CreateWidgetAnnot();
 		CAnnotation*      CreatePushButtonWidget();
 		CAnnotation*      CreateCheckBoxWidget();

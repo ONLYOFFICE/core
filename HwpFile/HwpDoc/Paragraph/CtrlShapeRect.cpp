@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapeRect::CCtrlShapeRect(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeRect::CCtrlShapeRect(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -44,7 +44,7 @@ int CCtrlShapeRect::ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPS
 	if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
 	{
 		oBuffer.Skip(10);
-		std::string sFieldNmae;
+		STRING sFieldNmae;
 		oBuffer.ReadString(sFieldNmae);
 
 		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurentPos));

@@ -31,7 +31,8 @@ class CCtrlHeadFoot : public CCtrl
 
 	std::vector<CHWPPargraph*> m_arParas;
 public:
-	CCtrlHeadFoot(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
+	CCtrlHeadFoot(const STRING& sCtrlID);
+	CCtrlHeadFoot(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
 	~CCtrlHeadFoot();
 
 	int GetSize() override;

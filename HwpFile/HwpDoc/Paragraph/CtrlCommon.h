@@ -54,6 +54,21 @@ enum class EVertAlign
 	OUTSIDE
 };
 
+EVertAlign GetVertAlign(int nValue)
+{
+	switch(static_cast<EVertAlign>(nValue))
+	{
+		case EVertAlign::CENTER:
+		case EVertAlign::BOTTOM:
+		case EVertAlign::INSIDE:
+		case EVertAlign::OUTSIDE:
+			return static_cast<EVertAlign>(nValue);
+		case EVertAlign::TOP:
+		default:
+			return EVertAlign::TOP;
+	}
+}
+
 enum class EHorzAlign
 {
 	LEFT,
@@ -98,9 +113,9 @@ class CCtrlCommon : public CCtrl
 	short m_arOutMargin[4];
 	int m_nObjInstanceID;
 	int m_nBlockPageBreak;
-	std::string m_sObjDesc;
+	STRING m_sObjDesc;
 
-	std::list<CHWPPargraph*> m_arParas;
+	// std::list<CHWPPargraph*> m_arParas;
 	int m_nCaptionAttr;
 	int m_nCaptionWidth;
 	int m_nCaptionSpacing;
@@ -115,8 +130,8 @@ class CCtrlCommon : public CCtrl
 	friend class CCtrlTalbe;
 public:
 	CCtrlCommon();
-	CCtrlCommon(const std::string& sCtrlID);
-	CCtrlCommon(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlCommon(const STRING& sCtrlID);
+	CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 

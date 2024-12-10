@@ -114,7 +114,7 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	BYTE m_chBright;
 	BYTE m_chContrast;
 	BYTE m_chEffect;
-	std::string m_sBinDataID;
+	STRING m_sBinDataID;
 
 	BYTE m_chBorderAlpha;
 	int m_nInstanceID;
@@ -125,7 +125,7 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	int m_nIniPicHeight;
 	BYTE m_chPicAlpha;
 public:
-	CCtrlShapePic(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapePic(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlShapePic();
 
 	static int ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

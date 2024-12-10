@@ -44,7 +44,7 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nEndX2;
 	int m_nEndY2;
 public:
-	CCtrlShapeEllipse(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

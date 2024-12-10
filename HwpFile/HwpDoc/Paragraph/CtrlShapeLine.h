@@ -13,7 +13,7 @@ class CCtrlShapeLine : public CCtrlGeneralShape
 	int m_nEndY;
 	short m_shAttr;
 public:
-	CCtrlShapeLine(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeLine(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

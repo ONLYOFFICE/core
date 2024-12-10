@@ -22,7 +22,7 @@ struct TParaHeadInfo
 
 struct TNumbering : public TParaHeadInfo
 {
-	std::string m_sNumFormat;
+	STRING m_sNumFormat;
 };
 
 class CHWPRecordNumbering : public CHWPRecord
@@ -31,7 +31,7 @@ class CHWPRecordNumbering : public CHWPRecord
 
 	TNumbering m_arNumbering[10];
 	short m_shStart;
-	std::string m_arExtLevelFormat[3];
+	STRING m_arExtLevelFormat[3];
 	int m_arExtLevelStart[3];
 public:
 	CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

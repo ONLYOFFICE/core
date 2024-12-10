@@ -12,7 +12,7 @@
 
 namespace HWP
 {
-CCtrlContainer::CCtrlContainer(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlContainer::CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -41,7 +41,7 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 
 	oObj.m_arList.reserve(oObj.m_shNElement);
 
-	std::string sCtrlId;
+	STRING sCtrlId;
 
 	#define CREATE_OBJECT(class_name) \
 	{ \

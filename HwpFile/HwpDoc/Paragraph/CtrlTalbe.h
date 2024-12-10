@@ -30,7 +30,8 @@ class CCtrlTalbe : public CCtrlCommon
 	std::list<TCellZone*> m_arCellzoneList;
 	std::list<CTblCell*> m_arCells;
 public:
-	CCtrlTalbe(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlTalbe(const STRING& sCtrlID);
+	CCtrlTalbe(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlTalbe();
 
 	static int ParseCtrl(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

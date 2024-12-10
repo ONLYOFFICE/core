@@ -34,7 +34,8 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	friend class CCtrlShapePolygon;
 	friend class CCtrlShapeRect;
 public:
-	CCtrlGeneralShape(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlGeneralShape(const STRING& sCtrlID);
+	CCtrlGeneralShape(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlGeneralShape();
 
 	void SetParent(CHWPPargraph* pParent);

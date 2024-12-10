@@ -8,7 +8,7 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 
 }
 
-std::string CHWPRecordBinData::GetItemID() const
+STRING CHWPRecordBinData::GetItemID() const
 {
 	return m_sItemID;
 }

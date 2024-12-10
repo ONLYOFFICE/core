@@ -113,7 +113,7 @@ CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
 }
 
-CCtrlShapePic::CCtrlShapePic(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapePic::CCtrlShapePic(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

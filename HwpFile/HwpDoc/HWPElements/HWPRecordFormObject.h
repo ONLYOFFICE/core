@@ -1,15 +1,14 @@
 #ifndef HWPRECORDFORMOBJECT_H
 #define HWPRECORDFORMOBJECT_H
 
-#include "../HWPStream.h"
+#include "../Paragraph/CtrlForm.h"
 #include "HWPRecord.h"
-#include <string>
 
 namespace HWP
 {
 class CHWPRecordFormObject : public CHWPRecord
 {
-	std::string m_sFormStr;
+	STRING m_sFormStr;
 public:
 	CHWPRecordFormObject(int nTagNum, int nLevel, int nSize);
 

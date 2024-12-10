@@ -28,12 +28,13 @@ class CCtrlPageNumPos : public CCtrl
 
 	ENumPos m_ePos;
 	ENumberShape2 m_eNumShape;
-	std::string m_sUserDef;
-	std::string m_sPrefix;
-	std::string m_sPostfix;
-	std::string m_sConstantDash;
+	STRING m_sUserDef;
+	STRING m_sPrefix;
+	STRING m_sPostfix;
+	STRING m_sConstantDash;
 public:
-	CCtrlPageNumPos(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlPageNumPos(const STRING& sCtrlID);
+	CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

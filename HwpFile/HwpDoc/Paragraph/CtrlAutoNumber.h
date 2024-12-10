@@ -4,6 +4,7 @@
 #include "Ctrl.h"
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
+#include "../Common.h"
 
 namespace HWP
 {
@@ -45,8 +46,8 @@ class CCtrlAutoNumber : public CCtrl
 	ENumberShape2 m_eNumShape;
 	bool m_bSuperscript;
 public:
-	CCtrlAutoNumber(const std::string& sCtrlID);
-	CCtrlAutoNumber(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlAutoNumber(const STRING& sCtrlID);
+	CCtrlAutoNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

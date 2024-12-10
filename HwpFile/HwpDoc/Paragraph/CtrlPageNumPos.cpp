@@ -24,7 +24,11 @@ ENumPos GetNumPos(int nValue)
 	}
 }
 
-CCtrlPageNumPos::CCtrlPageNumPos(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID)
+	: CCtrl(sCtrlID)
+{}
+
+CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();

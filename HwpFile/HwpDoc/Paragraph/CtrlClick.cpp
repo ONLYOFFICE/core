@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlClick::CCtrlClick(const std::string& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlClick::CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlId)
 {
 	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();

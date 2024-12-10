@@ -79,7 +79,7 @@ class CFill
 	BYTE m_chBright;
 	BYTE m_chContrast;
 	BYTE m_chEffect;
-	std::string m_sBinItemID;
+	STRING m_sBinItemID;
 	BYTE m_chStepCenter;
 
 	BYTE m_chAlpha;

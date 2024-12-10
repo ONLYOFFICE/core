@@ -57,21 +57,6 @@ namespace HWP
 		}
 	}
 
-	EVertAlign GetVertAlign(int nValue)
-	{
-		switch(static_cast<EVertAlign>(nValue))
-		{
-			case EVertAlign::CENTER:
-			case EVertAlign::BOTTOM:
-			case EVertAlign::INSIDE:
-			case EVertAlign::OUTSIDE:
-				return static_cast<EVertAlign>(nValue);
-			case EVertAlign::TOP:
-			default:
-				return EVertAlign::TOP;
-		}
-	}
-
 	EHorzAlign GetHorzAlign(int nValue)
 	{
 		switch(static_cast<EHorzAlign>(nValue))
@@ -104,11 +89,11 @@ namespace HWP
 	CCtrlCommon::CCtrlCommon()
 	{}
 
-	CCtrlCommon::CCtrlCommon(const std::string& sCtrlID)
+	CCtrlCommon::CCtrlCommon(const STRING& sCtrlID)
 		: CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP)
 	{}
 
-	CCtrlCommon::CCtrlCommon(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+	CCtrlCommon::CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 		: CCtrl(sCtrlID)
 	{
 		BYTE *pOldCurentPos = oBuffer.GetCurPtr();
@@ -154,7 +139,7 @@ namespace HWP
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	{
-		const std::string sCtrlId(oBuffer.GetCurPtr(), 4); //TODO:: StandardCharsets.US_ASCII
+		const STRING sCtrlId(oBuffer.GetCurPtr(), 4); //TODO:: StandardCharsets.US_ASCII
 
 		if ("nil$" == sCtrlId || "loc$" == sCtrlId || "cer$" == sCtrlId || "lle$" == sCtrlId ||
 		    "cra$" == sCtrlId || "lop$" == sCtrlId || "ruc$" == sCtrlId || "deqe" == sCtrlId ||

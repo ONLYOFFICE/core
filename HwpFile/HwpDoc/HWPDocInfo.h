@@ -18,7 +18,7 @@ class CHWPDocInfo
 	CHWPFile  *m_pParentHWP;
 	std::list<CHWPRecord*> m_lRecords;
 
-	std::map<std::string, CHWPRecord*> m_mBinDatas;
+	std::map<STRING, CHWPRecord*> m_mBinDatas;
 	std::list<CHWPRecord*> m_lFaseNames;
 	std::list<CHWPRecord*> m_lBorderFills;
 	std::list<CHWPRecord*> m_lCharShapes;

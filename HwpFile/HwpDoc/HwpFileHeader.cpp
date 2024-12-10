@@ -9,7 +9,7 @@ namespace HWP
 	{
 		unsigned int unOffset = 0;
 
-		m_sSignature = std::string((char*)oBuffer.GetCurPtr(), 32);
+		m_sSignature = STRING((char*)oBuffer.GetCurPtr(), 32);
 
 		if ("HWP Document File" != m_sSignature)
 			return false;

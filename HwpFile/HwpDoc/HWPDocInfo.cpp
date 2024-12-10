@@ -38,7 +38,7 @@ CHWPDocInfo::~CHWPDocInfo()
 	REMOVE_LIST_DATA(m_lStyles);
 	REMOVE_LIST_DATA(m_lTabDefs);
 
-	for (std::pair<std::string, CHWPRecord*> oBinData : m_mBinDatas)
+	for (std::pair<STRING, CHWPRecord*> oBinData : m_mBinDatas)
 	{
 		if (nullptr != oBinData.second)
 			delete oBinData.second;

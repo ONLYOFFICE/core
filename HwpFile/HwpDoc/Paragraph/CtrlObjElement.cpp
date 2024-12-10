@@ -5,11 +5,11 @@ namespace HWP
 CCtrlObjElement::CCtrlObjElement()
 {}
 
-CCtrlObjElement::CCtrlObjElement(const std::string& sCtrlID)
+CCtrlObjElement::CCtrlObjElement(const STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
 {}
 
-CCtrlObjElement::CCtrlObjElement(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlObjElement::CCtrlObjElement(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

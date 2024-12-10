@@ -2,7 +2,11 @@
 
 namespace HWP
 {
-CCtrlGeneralShape::CCtrlGeneralShape(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlGeneralShape::CCtrlGeneralShape(const STRING& sCtrlID)
+	: CCtrlObjElement(sCtrlID)
+{}
+
+CCtrlGeneralShape::CCtrlGeneralShape(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlObjElement(sCtrlID, nSize, oBuffer, nOff, nVersion), m_pFill(nullptr)
 {}
 

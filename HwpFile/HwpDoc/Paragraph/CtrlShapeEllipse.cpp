@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapeEllipse::CCtrlShapeEllipse(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -56,7 +56,7 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 	if (nSize > oBuffer.GetCurPtr() - pOldCurrentPos)
 	{
 		oBuffer.Skip(10);
-		std::string sFieldName;
+		STRING sFieldName;
 		oBuffer.ReadString(sFieldName);
 
 		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurrentPos));

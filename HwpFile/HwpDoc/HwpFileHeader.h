@@ -8,8 +8,8 @@ namespace HWP
 {
 class CHwpFileHeader
 {
-	std::string m_sSignature;
-	std::string m_sVersion;
+	STRING m_sSignature;
+	STRING m_sVersion;
 	bool m_bCompressed;
 	bool m_bPasswordEncrypted;
 	bool m_bDistributable;

@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapeLine::CCtrlShapeLine(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeLine::CCtrlShapeLine(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

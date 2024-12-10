@@ -32,7 +32,7 @@ std::list<CCharShape*> CCharShape::Parse(int nTagNum, int nLevel, int nSize, CHW
 	return arCharShapes;
 }
 
-int CCharShape::FillChasrShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, const std::list<CCtrl*>& arParas)
+int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, const std::list<CCtrl*>& arParas)
 {
 	if (arParas.empty())
 		return 0;
@@ -41,6 +41,8 @@ int CCharShape::FillChasrShape(int nTagNum, int nLevel, int nSize, CHWPStream& o
 
 	//TODO:: перенести реализацию
 
-	return 0;
+	oBuffer.Skip(nSize);
+
+	return nSize;
 }
 }

@@ -10,7 +10,7 @@ namespace HWP
 {
 struct TCommonObj
 {
-	std::string m_sCtrlID;
+	STRING m_sCtrlID;
 
 	int m_nObjAttr;
 	int m_nYOffset;
@@ -21,7 +21,7 @@ struct TCommonObj
 	std::vector<short> m_arObjSpaces;
 	int m_nObjInstanceID;
 	int m_nBlockPageBreak;
-	std::string m_sObjDesc;
+	STRING m_sObjDesc;
 
 	std::list<CHWPPargraph*> m_arParas;
 	int m_nCaptionAttr;

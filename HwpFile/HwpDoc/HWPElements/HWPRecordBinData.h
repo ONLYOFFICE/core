@@ -32,15 +32,15 @@ class CHWPRecordBinData : public CHWPRecord
 	} m_eState;
 
 
-	std::string m_sAPath;
+	STRING m_sAPath;
 	short m_shBinDataID;
-	std::string m_sFormat;
+	STRING m_sFormat;
 
-	std::string m_sItemID;
+	STRING m_sItemID;
 public:
 	CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	std::string GetItemID() const;
+	STRING GetItemID() const;
 };
 }
 

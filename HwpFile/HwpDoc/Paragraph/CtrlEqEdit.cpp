@@ -2,7 +2,11 @@
 
 namespace HWP
 {
-CCtrlEqEdit::CCtrlEqEdit(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlEqEdit::CCtrlEqEdit(const STRING& sCtrlID)
+	: CCtrlGeneralShape(sCtrlID)
+{}
+
+CCtrlEqEdit::CCtrlEqEdit(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

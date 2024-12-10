@@ -12,7 +12,7 @@ class CCtrlShapeCurve : public CCtrlGeneralShape
 	std::vector<TPoint> m_arPoints;
 	std::vector<BYTE> m_arSegmentType;
 public:
-	CCtrlShapeCurve(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeCurve(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

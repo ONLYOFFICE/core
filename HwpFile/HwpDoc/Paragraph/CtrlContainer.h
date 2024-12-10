@@ -8,10 +8,10 @@ namespace HWP
 class CCtrlContainer : public CCtrlGeneralShape
 {
 	short m_shNElement;
-	std::vector<std::string> m_arCtrlIdList;
+	std::vector<STRING> m_arCtrlIdList;
 	std::vector<CCtrlGeneralShape*> m_arList;
 public:
-	CCtrlContainer(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlContainer();
 
 	static int ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

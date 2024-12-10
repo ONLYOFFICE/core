@@ -2,11 +2,11 @@
 
 namespace HWP
 {
-CCtrlColumnDef::CCtrlColumnDef(const std::string& sCtrlID)
+CCtrlColumnDef::CCtrlColumnDef(const STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
 
-CCtrlColumnDef::CCtrlColumnDef(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlColumnDef::CCtrlColumnDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();

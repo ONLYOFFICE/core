@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapeCurve::CCtrlShapeCurve(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeCurve::CCtrlShapeCurve(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

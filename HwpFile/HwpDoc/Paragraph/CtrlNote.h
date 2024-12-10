@@ -13,7 +13,8 @@ class CCtrlNote : public CCtrl
 
 	std::list<CHWPPargraph*> m_arParas;
 public:
-	CCtrlNote(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlNote(const STRING& sCtrlID);
+	CCtrlNote(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

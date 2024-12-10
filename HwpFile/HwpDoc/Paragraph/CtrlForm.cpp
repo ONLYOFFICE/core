@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlForm::CCtrlForm(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlForm::CCtrlForm(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID), m_nSize(nSize)
 {}
 

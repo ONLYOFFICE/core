@@ -111,7 +111,7 @@ BYTE CHWPStream::ReadByte()
 	return chValue;
 }
 
-bool CHWPStream::ReadString(std::string& sValue)
+bool CHWPStream::ReadString(STRING& sValue)
 {
 	sValue.clear();
 
@@ -127,14 +127,14 @@ bool CHWPStream::ReadString(std::string& sValue)
 	if (!CanRead(nLen))
 		nLen = m_pEnd - GetCurPtr();
 
-	sValue = std::string(GetCurPtr(), nLen); //TODO:: StandardCharsets.UTF_16LE
+	sValue = STRING(GetCurPtr(), nLen); //TODO:: StandardCharsets.UTF_16LE
 
 	Skip(nLen);
 
 	return true;
 }
 
-bool CHWPStream::ReadString(std::string& sValue, int nLength)
+bool CHWPStream::ReadString(STRING& sValue, int nLength)
 {
 	sValue.clear();
 
@@ -144,7 +144,7 @@ bool CHWPStream::ReadString(std::string& sValue, int nLength)
 	if (!CanRead(nLength))
 		nLength = m_pEnd - GetCurPtr();
 
-	sValue = std::string(GetCurPtr(), nLength); //TODO:: StandardCharsets.UTF_16LE
+	sValue = STRING(GetCurPtr(), nLength); //TODO:: StandardCharsets.UTF_16LE
 
 	Skip(nLength);
 

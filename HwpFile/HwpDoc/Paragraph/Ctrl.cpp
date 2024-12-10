@@ -3,19 +3,30 @@
 namespace HWP
 {
 CCtrl::CCtrl()
+	:  m_bFullFilled(false)
 {}
 
-CCtrl::CCtrl(const std::string& sCtrlID)
-	: m_sCtrlID(sCtrlID)
+CCtrl::CCtrl(const STRING& sCtrlID)
+	: m_sCtrlID(sCtrlID), m_bFullFilled(false)
 {}
 
-void CCtrl::SetID(const std::string& sCtrlID)
+void CCtrl::SetID(const STRING& sCtrlID)
 {
 	m_sCtrlID = sCtrlID;
 }
 
-std::string CCtrl::GetID() const
+STRING CCtrl::GetID() const
 {
 	return m_sCtrlID;
+}
+
+bool CCtrl::FullFilled() const
+{
+	return m_bFullFilled;
+}
+
+void CCtrl::SetFullFilled()
+{
+	m_bFullFilled = true;
 }
 }

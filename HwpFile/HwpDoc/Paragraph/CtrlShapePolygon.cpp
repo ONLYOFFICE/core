@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapePolygon::CCtrlShapePolygon(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -51,7 +51,7 @@ int CCtrlShapePolygon::ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize,
 	if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
 	{
 		oBuffer.Skip(10);
-		std::string sFieldNmae;
+		STRING sFieldNmae;
 		oBuffer.ReadString(sFieldNmae);
 
 		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurentPos));

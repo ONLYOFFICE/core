@@ -2,7 +2,11 @@
 
 namespace HWP
 {
-CCtrlTalbe::CCtrlTalbe(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlTalbe::CCtrlTalbe(const STRING& sCtrlID)
+	: CCtrlCommon(sCtrlID)
+{}
+
+CCtrlTalbe::CCtrlTalbe(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

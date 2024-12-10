@@ -1,21 +1,24 @@
 #ifndef CTRL_H
 #define CTRL_H
 
-#include <string>
+#include "../Common.h"
 
 namespace HWP
 {
 class CCtrl
 {
-	std::string m_sCtrlID;
+	STRING m_sCtrlID;
 protected:
 	bool m_bFullFilled;
 public:
 	CCtrl();
-	CCtrl(const std::string& sCtrlID);
+	CCtrl(const STRING& sCtrlID);
 
-	void SetID(const std::string& sCtrlID);
-	std::string GetID() const;
+	void SetID(const STRING& sCtrlID);
+	STRING GetID() const;
+	bool FullFilled() const;
+
+	void SetFullFilled();
 
 	virtual int GetSize() = 0;
 };

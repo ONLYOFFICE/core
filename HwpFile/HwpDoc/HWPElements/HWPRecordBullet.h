@@ -19,7 +19,7 @@ class CHWPRecordBullet : public CHWPRecord
 	BYTE m_chBright;
 	BYTE m_chContrast;
 	BYTE m_chImageEffect;
-	std::string m_sBinItemRefID;
+	STRING m_sBinItemRefID;
 	wchar_t m_wchCheckBulletChar;
 public:
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

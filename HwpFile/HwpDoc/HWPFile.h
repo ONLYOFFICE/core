@@ -2,13 +2,16 @@
 #define HWPFILE_H
 
 #include "HwpFileHeader.h"
+#include "HwpDoc/HwpSe
 #include <list>
 
 namespace HWP
 {
+class CHwpDocInfo;
+
 class CHWPFile
 {
-	std::string    m_sFileName;
+	STRING    m_sFileName;
 	CCompoundFile  m_oOleFile;
 	CHwpFileHeader m_oFileHeader;
 	int m_nVersion;

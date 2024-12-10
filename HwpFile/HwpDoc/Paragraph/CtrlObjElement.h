@@ -27,8 +27,8 @@ class CCtrlObjElement : public CCtrlCommon
 	std::vector<double> m_arMatrixSeq;
 public:
 	CCtrlObjElement();
-	CCtrlObjElement(const std::string& sCtrlID);
-	CCtrlObjElement(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlObjElement(const STRING& sCtrlID);
+	CCtrlObjElement(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 

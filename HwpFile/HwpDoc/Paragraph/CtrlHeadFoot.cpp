@@ -12,7 +12,11 @@ EPageRange GetPageRange(int nValue)
 	}
 }
 
-CCtrlHeadFoot::CCtrlHeadFoot(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader)
+CCtrlHeadFoot::CCtrlHeadFoot(const STRING& sCtrlID)
+	: CCtrl(sCtrlID)
+{}
+
+CCtrlHeadFoot::CCtrlHeadFoot(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader)
 	: CCtrl(sCtrlID), m_bIsHeader(bIsHeader)
 {
 	BYTE *pOldCurentPos = oBuffer.GetCurPtr();

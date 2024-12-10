@@ -13,7 +13,8 @@ class CCtrlNewNumber : public CCtrl
 	ENumberShape2 m_eNumShape;
 	short m_shNum;
 public:
-	CCtrlNewNumber(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlNewNumber(const STRING& sCtrlID);
+	CCtrlNewNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

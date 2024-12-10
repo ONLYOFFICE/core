@@ -23,10 +23,10 @@ class CHWPRecordFaceName : public CHWPRecord
 	bool m_bAttrExists;
 	bool m_bSubstExists;
 
-	std::string m_sFaceName;
+	STRING m_sFaceName;
 	EAltType m_eSubstType;
-	std::string m_sSubstFace;
-	std::string m_sBasicFaceName;
+	STRING m_sSubstFace;
+	STRING m_sBasicFaceName;
 
 	BYTE m_chFamilyType;
 	BYTE m_chSerifStyle;

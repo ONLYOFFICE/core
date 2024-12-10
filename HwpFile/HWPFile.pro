@@ -22,12 +22,20 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordBullet.cpp \
     HwpDoc/HWPElements/HWPRecordCharShape.cpp \
     HwpDoc/HWPElements/HWPRecordCtrlData.cpp \
+    HwpDoc/HWPElements/HWPRecordCtrlHeader.cpp \
     HwpDoc/HWPElements/HWPRecordDocumentProperties.cpp \
     HwpDoc/HWPElements/HWPRecordFaceName.cpp \
     HwpDoc/HWPElements/HWPRecordFormObject.cpp \
     HwpDoc/HWPElements/HWPRecordIDMaping.cpp \
+    HwpDoc/HWPElements/HWPRecordListHeader.cpp \
     HwpDoc/HWPElements/HWPRecordNumbering.cpp \
+    HwpDoc/HWPElements/HWPRecordParaRangeTag.cpp \
+    HwpDoc/HWPElements/HWPRecordParaShape.cpp \
+    HwpDoc/HWPElements/HWPRecordParaText.cpp \
+    HwpDoc/HWPElements/HWPRecordStyle.cpp \
+    HwpDoc/HWPElements/HwpRecordTabDef.cpp \
     HwpDoc/HWPFile.cpp \
+    HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
@@ -48,6 +56,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlNote.cpp \
     HwpDoc/Paragraph/CtrlObjElement.cpp \
     HwpDoc/Paragraph/CtrlPageNumPos.cpp \
+    HwpDoc/Paragraph/CtrlSectionDef.cpp \
     HwpDoc/Paragraph/CtrlShapeArc.cpp \
     HwpDoc/Paragraph/CtrlShapeConnectLine.cpp \
     HwpDoc/Paragraph/CtrlShapeCurve.cpp \
@@ -62,6 +71,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlTalbe.cpp \
     HwpDoc/Paragraph/HWPPargraph.cpp \
     HwpDoc/Paragraph/LineSeg.cpp \
+    HwpDoc/Paragraph/ParaText.cpp \
     HwpDoc/Paragraph/TblCell.cpp \
     HwpDoc/Section/NoteShape.cpp \
     HwpDoc/Section/Page.cpp \
@@ -77,14 +87,23 @@ HEADERS += \
     HwpDoc/HWPElements/HWPRecordBullet.h \
     HwpDoc/HWPElements/HWPRecordCharShape.h \
     HwpDoc/HWPElements/HWPRecordCtrlData.h \
+    HwpDoc/HWPElements/HWPRecordCtrlHeader.h \
     HwpDoc/HWPElements/HWPRecordDocumentProperties.h \
     HwpDoc/HWPElements/HWPRecordFaceName.h \
     HwpDoc/HWPElements/HWPRecordFormObject.h \
     HwpDoc/HWPElements/HWPRecordIDMaping.h \
+    HwpDoc/HWPElements/HWPRecordListHeader.h \
     HwpDoc/HWPElements/HWPRecordNumbering.h \
+    HwpDoc/HWPElements/HWPRecordParaRangeTag.h \
+    HwpDoc/HWPElements/HWPRecordParaShape.h \
+    HwpDoc/HWPElements/HWPRecordParaText.h \
+    HwpDoc/HWPElements/HWPRecordStyle.h \
     HwpDoc/HWPElements/HWPTag.h \
+    HwpDoc/HWPElements/HWPType.h \
+    HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
     HwpDoc/HWPFile.h \
+    HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
@@ -107,6 +126,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlNote.h \
     HwpDoc/Paragraph/CtrlObjElement.h \
     HwpDoc/Paragraph/CtrlPageNumPos.h \
+    HwpDoc/Paragraph/CtrlSectionDef.h \
     HwpDoc/Paragraph/CtrlShapeArc.h \
     HwpDoc/Paragraph/CtrlShapeConnectLine.h \
     HwpDoc/Paragraph/CtrlShapeCurve.h \
@@ -121,6 +141,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlTalbe.h \
     HwpDoc/Paragraph/HWPPargraph.h \
     HwpDoc/Paragraph/LineSeg.h \
+    HwpDoc/Paragraph/ParaText.h \
     HwpDoc/Paragraph/Point.h \
     HwpDoc/Paragraph/RangeTag.h \
     HwpDoc/Paragraph/TblCell.h \

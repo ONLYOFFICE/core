@@ -34,7 +34,7 @@ public:
 
 	void Skip(unsigned int unStep);
 
-	bool CanRead(int nSize) const;
+	bool CanRead(int nSize = 1) const;
 	bool IsValid() const;
 	bool IsEof() const;
 	unsigned int GetLength() const;

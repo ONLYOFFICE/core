@@ -81,7 +81,7 @@ class CHWPRecordCharShape : public CHWPRecord
 {
 	CHWPDocInfo *m_pParent;
 
-	std::string m_arFontNames[MAX_ELEMENTS];
+	STRING m_arFontNames[MAX_ELEMENTS];
 	short m_arRatios[MAX_ELEMENTS];
 	short m_arSpacings[MAX_ELEMENTS];
 	short m_arRelSizes[MAX_ELEMENTS];

@@ -22,8 +22,8 @@ class CCtrlColumnDef : public CCtrl
 	BYTE m_chColLineWidth;
 	int m_nColLineColor;
 public:
-	CCtrlColumnDef(const std::string& sCtrlID);
-	CCtrlColumnDef(const std::string& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlColumnDef(const STRING& sCtrlID);
+	CCtrlColumnDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

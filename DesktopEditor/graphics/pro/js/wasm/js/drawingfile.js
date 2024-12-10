@@ -506,8 +506,8 @@ function readAnnotAP(reader, AP)
 {
 	// number for relations with AP
 	AP["i"] = reader.readInt();
-	AP["x"] = reader.readInt();
-	AP["y"] = reader.readInt();
+	AP["x"] = reader.readDouble();
+	AP["y"] = reader.readDouble();
 	AP["w"] = reader.readInt();
 	AP["h"] = reader.readInt();
 	let n = reader.readInt();

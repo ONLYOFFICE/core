@@ -49,10 +49,12 @@ namespace NExtractTools
 		UINT nCodePage;
 		std::wstring sDelimiter;
 		BYTE saveFileType;
-		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType);
+        _INT32 lcid = -1;
+        
+		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType, lcid);
 
 		CSVReader csvReader;
-		_UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter);
+        _UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter, lcid);
 
 		if (SUCCEEDED_X2T(nRes))
 		{
@@ -82,8 +84,12 @@ namespace NExtractTools
 		{
 			std::wstring sMediaPath;
 			std::wstring sEmbedPath;
-
-			sXMLOptions = _T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
+            if(!params.m_nFormatTo)
+            {
+                    params.m_nFormatTo = new int;
+                    *params.m_nFormatTo = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
+            }
+            sXMLOptions = params.getXmlOptions();//_T("<XmlOptions><fileOptions fileType=\"2\"/></XmlOptions>");
 
 			nRes = oCXlsxSerializer.loadFromFile(sResultXlstFileEditor, sTo, sXMLOptions, sMediaPath, sEmbedPath);
 		}

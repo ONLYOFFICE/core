@@ -198,7 +198,7 @@ int SUPBOOK::serialize(std::wostream & strm)
 		return 0;
 	}
 
-	if (false == book->bOleLink)
+	if (false == book->bOleLink && book->ctab == 0)
 	{
 		serialize_dde(strm);
 	}
@@ -387,7 +387,8 @@ int SUPBOOK::serialize_dde(std::wostream & strm)
 		{
 			CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships"); 
 			CP_XML_ATTR(L"ddeService", book->virtPath[0]); 
-			CP_XML_ATTR(L"ddeTopic", book->virtPath[1]); 
+			if (book->virtPath.size() > 1)
+				CP_XML_ATTR(L"ddeTopic", book->virtPath[1]); 
 
 			CP_XML_NODE(L"ddeItems")
 			{ 	

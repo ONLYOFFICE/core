@@ -3995,6 +3995,24 @@ namespace OOX
             for(auto it = m_arrItems.begin(); it != m_arrItems.end(); it++)
             {
                 (*it)->toBin(writer);
+                if((*it)->m_oRepeated.IsInit())
+                    {
+                        auto pcell =*it;
+                        _INT32 cellTimes = pcell->m_oRepeated.get() - 1;
+                        _INT32 originalCol = 0;
+                        if(pcell->m_oCol.IsInit())
+                            originalCol = pcell->m_oCol.get();
+                        while(cellTimes > 0)
+                        {
+                            if(pcell->m_oCol.IsInit())
+                                pcell->m_oCol = pcell->m_oCol.get() + 1;
+                            pcell->toBin(writer);
+                            cellTimes--;
+                        }
+                        if(pcell->m_oCol.IsInit())
+                            pcell->m_oCol = originalCol;
+
+                    }
             }
         }
         void CRow::WriteAttributes(XLS::StreamCacheWriterPtr& writer)
@@ -4735,6 +4753,21 @@ namespace OOX
         for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
         {
             (*it)->toBin(writer);
+            if((*it)->m_oRepeated.IsInit())
+                {
+                    auto prow = *it;
+                    _INT32 rowTimes = prow->m_oRepeated.get() - 1;
+                    while(rowTimes > 0)
+                    {
+                        if(prow->m_oR.IsInit())
+                            prow->m_oR = prow->m_oR->GetValue() + 1;
+                        if(!prow->m_arrItems.empty() && prow->m_arrItems.at(0)->m_oRow.IsInit())
+                            prow->m_arrItems.at(0)->m_oRow = prow->m_oR->GetValue();
+                        prow->toBin(writer);
+                        rowTimes--;
+                    }
+
+                }
             it = m_arrItems.erase(it);
         }
 

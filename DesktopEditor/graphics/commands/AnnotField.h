@@ -408,14 +408,16 @@ public:
 	class GRAPHICS_DECL CStampAnnotPr
 	{
 	public:
-		int GetRotate();
+		double GetRotate();
 		const std::wstring& GetName();
+		void GetInRect(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
 
 		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
 	private:
-		int m_nRotate;
+		double m_nRotate;
 		std::wstring m_wsName;
+		double m_dInRect[4]{};
 	};
 
 	CAnnotFieldInfo();

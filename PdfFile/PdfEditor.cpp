@@ -1282,6 +1282,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				nLength = oTemp.getInt();
 			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 			pAPN->SetStream(pStream);
+			pAPN->Add("Length", nLength);
 			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
 			pOStream->reset();
 			for (int nI = 0; nI < nLength; ++nI)

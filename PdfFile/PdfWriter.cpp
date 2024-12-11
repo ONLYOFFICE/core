@@ -2102,15 +2102,27 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
 			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
 
-			pStampAnnot->SetName(pPr->GetName());
-			pStampAnnot->SetRotate(pPr->GetRotate());
+			pStampAnnot->SetName(L"#" + pPr->GetName());
+			double nRotate = pPr->GetRotate();
 
 			if (bRender)
 			{
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
-				DrawAP(pAnnot, pRender, nLen);
+				PdfWriter::CAnnotAppearanceObject* pAP = DrawAP(pAnnot, pRender, nLen);
+
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
+				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+				pAP->Add("BBox", pArray);
+				pArray->Add(dRD1);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD4);
+				pArray->Add(dRD3);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
+				pStampAnnot->SetAPStream(pAP);
 			}
+
+			pStampAnnot->SetRotate(nRotate);
 		}
 	}
 	else if (oInfo.IsPopup())
@@ -3666,10 +3678,10 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	return L"";
 }
-void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
+PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
 {
 	if (!pAnnot || !pRender)
-		return;
+		return NULL;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
@@ -3691,6 +3703,8 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);
 	RELEASEOBJECT(pFakePage);
+
+	return pAP;
 }
 void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender)
 {

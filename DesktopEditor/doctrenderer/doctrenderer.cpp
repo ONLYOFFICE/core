@@ -986,7 +986,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::IMAGE:
 			{
 				editorType = NSDoctRenderer::DoctRendererEditorType::VISIO;
-				m_pInternal->m_strEditorType = L"draw";
+				m_pInternal->m_strEditorType = L"visio";
 				break;
 			}
 			default:

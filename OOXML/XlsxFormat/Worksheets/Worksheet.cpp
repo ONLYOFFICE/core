@@ -365,6 +365,8 @@ namespace OOX
                 auto record = writer->getNextRecord(XLSB::rt_BeginSheet);
                  writer->storeNextRecord(record);
             }
+            if (m_oSheetPr.IsInit())
+                m_oSheetPr->toBin(writer);
             if ( m_oSheetData.IsInit())
                 m_oSheetData->toBin(writer);
             {

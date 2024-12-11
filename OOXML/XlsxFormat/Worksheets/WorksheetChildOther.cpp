@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -70,6 +70,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../Common/SimpleTypes_Word.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -1950,6 +1951,86 @@ namespace OOX
             ptr->fCondFmtCalc = false;
             return objectPtr;
 		}
+        void CSheetPr::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            _UINT16 flags1 = 0;
+            BYTE flags2 = 0;
+            if(m_oPageSetUpPr.IsInit())
+            {
+                if(m_oPageSetUpPr->m_oAutoPageBreaks.IsInit())
+                    SETBIT(flags1, 0, m_oPageSetUpPr->m_oAutoPageBreaks->GetValue())
+                else
+                    SETBIT(flags1, 0, 1)
+                if(m_oPageSetUpPr->m_oFitToPage.IsInit())
+                    SETBIT(flags1, 8, m_oPageSetUpPr->m_oFitToPage->GetValue())
+            }
+            else
+            {
+                SETBIT(flags1, 0, 1)
+            }
+            if(m_oPublished.IsInit())
+                SETBIT(flags1, 3, m_oPublished->GetValue())
+            else
+                SETBIT(flags1, 3, 1);
+            if(m_oOutlinePr.IsInit())
+            {
+                if(m_oOutlinePr->m_oApplyStyles.IsInit())
+                    SETBIT(flags1, 5, m_oOutlinePr->m_oApplyStyles->GetValue())
+
+                if(m_oOutlinePr->m_oShowOutlineSymbols.IsInit())
+                    SETBIT(flags1, 10, m_oOutlinePr->m_oShowOutlineSymbols->GetValue())
+                else
+                   SETBIT(flags1, 10, 1)
+                if(m_oOutlinePr->m_oSummaryBelow.IsInit())
+                   SETBIT(flags1, 6, m_oOutlinePr->m_oSummaryBelow->GetValue())
+                else
+                    SETBIT(flags1, 6, 1)
+                if(m_oOutlinePr->m_oSummaryRight.IsInit())
+                    SETBIT(flags1, 7, m_oOutlinePr->m_oSummaryRight->GetValue())
+                else
+                   SETBIT(flags1, 7, 1)
+            }
+            else
+            {
+                SETBIT(flags1, 10, 1)
+                SETBIT(flags1, 6, 1)
+                SETBIT(flags1, 7, 1)
+            }
+            if(m_oSyncHorizontal.IsInit())
+                SETBIT(flags1, 12, m_oSyncHorizontal->GetValue())
+            if(m_oSyncVertical.IsInit())
+                SETBIT(flags1, 13, m_oSyncVertical->GetValue())
+            if(m_oTransitionEvaluation.IsInit())
+                SETBIT(flags1, 14, m_oTransitionEvaluation->GetValue())
+            if(m_oTransitionEntry.IsInit())
+                SETBIT(flags1, 15, m_oTransitionEntry->GetValue())
+            if(m_oFilterMode.IsInit())
+                SETBIT(flags2, 16, m_oFilterMode->GetValue())
+            auto SheetPr = writer->getNextRecord(XLSB::rt_WsProp);
+            *SheetPr << flags1 << flags2;
+            XLSB::Color tabColor;
+            if(m_oTabColor.IsInit())
+                tabColor = m_oTabColor->toColor();
+            else
+                tabColor = m_oTabColor->GetDefaultColor();
+            tabColor.writeFields(*SheetPr);
+            _INT32 rwSync = 0xFFFFFFFF;
+            _INT32 colSync = 0xFFFFFFFF;
+            if (m_oSyncRef.IsInit())
+            {
+                XLS::CellRef ref(m_oSyncRef.get());
+                rwSync = ref.getRow();
+                colSync = ref.getColumn();
+            }
+            *SheetPr << rwSync <<colSync ;
+            XLSB::XLWideString codeName;
+            if(m_oCodeName.IsInit())
+                codeName = m_oCodeName.get();
+            else
+                codeName = L"";
+             *SheetPr << codeName;
+            writer->storeNextRecord(SheetPr);
+        }
 		XLS::BaseObjectPtr CSheetPr::toBinCs()
 		{
 			auto ptr(new XLSB::CsProp);

@@ -1280,7 +1280,7 @@ int main(int argc, char* argv[])
 	}
 
 	// ANNOTS
-	if (false)
+	if (true)
 	{
 		BYTE* pAnnots = GetAnnotationsInfo(pGrFile, -1);
 		nLength = READ_INT(pAnnots);
@@ -1870,7 +1870,7 @@ int main(int argc, char* argv[])
 
 				nPathLength = READ_INT(pAnnots + i);
 				i += 4;
-				std::cout << "Rotate " << nPathLength << ", ";
+				std::cout << "Rotate " << nPathLength / 10000.0 << ", ";
 
 				nPathLength = READ_INT(pAnnots + i);
 				i += 4;

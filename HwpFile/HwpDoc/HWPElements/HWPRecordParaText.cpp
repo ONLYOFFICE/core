@@ -10,7 +10,7 @@
 #include "../Paragraph/CtrlColumnDef.h"
 #include "../Paragraph/CtrlNote.h"
 #include "../Paragraph/CtrlGeneralShape.h"
-#include "../Paragraph/CtrlTalbe.h"
+#include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
 
 #include <regex>

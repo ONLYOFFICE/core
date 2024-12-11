@@ -68,7 +68,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlShapeRect.cpp \
     HwpDoc/Paragraph/CtrlShapeTextArt.cpp \
     HwpDoc/Paragraph/CtrlShapeVideo.cpp \
-    HwpDoc/Paragraph/CtrlTalbe.cpp \
+    HwpDoc/Paragraph/CtrlTable.cpp \
     HwpDoc/Paragraph/HWPPargraph.cpp \
     HwpDoc/Paragraph/LineSeg.cpp \
     HwpDoc/Paragraph/ParaText.cpp \
@@ -138,7 +138,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlShapeRect.h \
     HwpDoc/Paragraph/CtrlShapeTextArt.h \
     HwpDoc/Paragraph/CtrlShapeVideo.h \
-    HwpDoc/Paragraph/CtrlTalbe.h \
+    HwpDoc/Paragraph/CtrlTable.h \
     HwpDoc/Paragraph/HWPPargraph.h \
     HwpDoc/Paragraph/LineSeg.h \
     HwpDoc/Paragraph/ParaText.h \

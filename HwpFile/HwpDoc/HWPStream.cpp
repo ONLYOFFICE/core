@@ -181,12 +181,23 @@ unsigned int CHWPStream::GetLength() const
 
 void CHWPStream::SavePosition()
 {
-	m_pSavedPosition = m_pCur;
+	m_arSavedPositions.push(m_pCur);
 }
 
-int CHWPStream::GetDistanceToLastPos()
+void CHWPStream::RemoveLastSavedPos()
 {
-	return (nullptr != m_pSavedPosition) ? m_pCur - m_pSavedPosition : 0;
+	if (!m_arSavedPositions.empty())
+		m_arSavedPositions.pop();
+}
+
+int CHWPStream::GetDistanceToLastPos(bool bRemoveLastPos)
+{
+	int nDistance = (!m_arSavedPositions.empty()) ? m_pCur - m_arSavedPositions.top() : 0;
+
+	if (bRemoveLastPos)
+		RemoveLastSavedPos();
+
+	return nDistance;
 }
 
 BYTE CHWPStream::operator[](unsigned int unPosition) const

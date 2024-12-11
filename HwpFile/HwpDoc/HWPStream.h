@@ -1,6 +1,7 @@
 #ifndef HWPSTREAM_H
 #define HWPSTREAM_H
 
+#include <stack>
 #include <string>
 #include "Common.h"
 
@@ -11,7 +12,7 @@ class CHWPStream
 	BYTE* m_pBegin;
 	BYTE* m_pCur;
 	BYTE* m_pEnd;
-	BYTE* m_pSavedPosition;
+	std::stack<BYTE*> m_arSavedPositions;
 public:
 	CHWPStream();
 	CHWPStream(BYTE* pBuffer, unsigned int unSize);

@@ -2,6 +2,13 @@
 
 namespace HWP
 {
+CCtrlShapePolygon::CCtrlShapePolygon()
+{}
+
+CCtrlShapePolygon::CCtrlShapePolygon(const std::string& sCtrlID)
+	: CCtrlGeneralShape(sCtrlID)
+{}
+
 CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}

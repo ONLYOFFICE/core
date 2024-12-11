@@ -133,6 +133,8 @@ public:
 	CCtrlCommon(const STRING& sCtrlID);
 	CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	void SetTextVerAlign(EVertAlign eVertAlign);
+
 	int GetSize() override;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

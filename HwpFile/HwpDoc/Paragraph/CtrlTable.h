@@ -1,5 +1,5 @@
-#ifndef CTRLTALBE_H
-#define CTRLTALBE_H
+#ifndef CTRLTABLE_H
+#define CTRLTABLE_H
 
 #include "TblCell.h"
 
@@ -14,7 +14,7 @@ struct TCellZone
 	short m_shBorderFillIDRef;
 };
 
-class CCtrlTalbe : public CCtrlCommon
+class CCtrlTable : public CCtrlCommon
 {
 	int m_nAttr;
 	short m_shNRows;
@@ -30,13 +30,13 @@ class CCtrlTalbe : public CCtrlCommon
 	std::list<TCellZone*> m_arCellzoneList;
 	std::list<CTblCell*> m_arCells;
 public:
-	CCtrlTalbe(const STRING& sCtrlID);
-	CCtrlTalbe(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	~CCtrlTalbe();
+	CCtrlTable(const STRING& sCtrlID);
+	CCtrlTable(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	~CCtrlTable();
 
-	static int ParseCtrl(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	static int ParseListHeaderAppend(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int ParseListHeaderAppend(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }
 
-#endif // CTRLTALBE_H
+#endif // CTRLTABLE_H

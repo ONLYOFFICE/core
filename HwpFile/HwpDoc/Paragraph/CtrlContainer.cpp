@@ -12,6 +12,10 @@
 
 namespace HWP
 {
+CCtrlContainer::CCtrlContainer(const std::string& sCtrlID)
+	: CCtrlGeneralShape(sCtrlID)
+{}
+
 CCtrlContainer::CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
@@ -23,6 +27,21 @@ CCtrlContainer::~CCtrlContainer()
 		if (nullptr != pElement)
 			delete pElement;
 	}
+}
+
+void CCtrlContainer::AddShape(CCtrlGeneralShape* pShape)
+{
+	m_arList.push_back(pShape);
+}
+
+bool CCtrlContainer::Empty() const
+{
+	return m_arList.empty();
+}
+
+CCtrlGeneralShape* CCtrlContainer::GetLastShape()
+{
+	return (!m_arList.empty()) ? m_arList.back() : nullptr;
 }
 
 int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -98,4 +117,17 @@ int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuff
 
 	return oBuffer.GetCurPtr() - pOldCurentPos;
 }
+
+template<typename FindClass>
+FindClass* CCtrlContainer::FindLastElement()
+{
+	for (VECTOR<CCtrlGeneralShape*>::const_reverse_iterator itCtrl = m_arList.crbegin(); itCtrl != m_arList.crend(); ++itCtrl)
+	{
+		if (nullptr != dynamic_cast<FindClass>(*itCtrl))
+			return (FindClass*)(*itCtrl);
+	}
+
+	return nullptr;
+}
+
 }

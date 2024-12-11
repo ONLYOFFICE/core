@@ -2,6 +2,9 @@
 
 namespace HWP
 {
+CCtrlEqEdit::CCtrlEqEdit()
+{}
+
 CCtrlEqEdit::CCtrlEqEdit(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}

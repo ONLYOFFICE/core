@@ -2,6 +2,13 @@
 
 namespace HWP
 {
+CCtrlShapeArc::CCtrlShapeArc()
+{}
+
+CCtrlShapeArc::CCtrlShapeArc(const std::string& sCtrlID)
+	: CCtrlGeneralShape(sCtrlID)
+{}
+
 CCtrlShapeArc::CCtrlShapeArc(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}

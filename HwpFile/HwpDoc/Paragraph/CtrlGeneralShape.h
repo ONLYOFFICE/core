@@ -34,6 +34,7 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	friend class CCtrlShapePolygon;
 	friend class CCtrlShapeRect;
 public:
+	CCtrlGeneralShape();
 	CCtrlGeneralShape(const STRING& sCtrlID);
 	CCtrlGeneralShape(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlGeneralShape();
@@ -43,6 +44,7 @@ public:
 
 	int GetSize() override;
 
+	static CCtrlGeneralShape* Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderApend(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

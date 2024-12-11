@@ -2,6 +2,13 @@
 
 namespace HWP
 {
+CCtrlShapeEllipse::CCtrlShapeEllipse()
+{}
+
+CCtrlShapeEllipse::CCtrlShapeEllipse(const std::string& sCtrlID)
+	: CCtrlGeneralShape(sCtrlID)
+{}
+
 CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}

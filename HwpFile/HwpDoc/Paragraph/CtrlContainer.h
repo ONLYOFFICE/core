@@ -8,11 +8,16 @@ namespace HWP
 class CCtrlContainer : public CCtrlGeneralShape
 {
 	short m_shNElement;
-	std::vector<STRING> m_arCtrlIdList;
-	std::vector<CCtrlGeneralShape*> m_arList;
+	VECTOR<STRING> m_arCtrlIdList;
+	VECTOR<CCtrlGeneralShape*> m_arList;
 public:
 	CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlContainer();
+
+	bool Empty() const;
+
+	template <typename FindClass>
+	FindClass* FindLastElement();
 
 	static int ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

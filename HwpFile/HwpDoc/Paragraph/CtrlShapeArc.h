@@ -15,6 +15,7 @@ class CCtrlShapeArc : public CCtrlGeneralShape
 	int m_nAxixX2;
 	int m_nAxixY2;
 public:
+	CCtrlShapeArc();
 	CCtrlShapeArc(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeArc& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

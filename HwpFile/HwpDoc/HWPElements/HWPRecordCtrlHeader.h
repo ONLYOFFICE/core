@@ -14,7 +14,7 @@
 #include "../Paragraph/CtrlNote.h"
 #include "../Paragraph/CtrlPageNumPos.h"
 #include "../Paragraph/CtrlSectionDef.h"
-#include "../Paragraph/CtrlTalbe.h"
+#include "../Paragraph/CtrlTable.h"
 
 namespace HWP
 {

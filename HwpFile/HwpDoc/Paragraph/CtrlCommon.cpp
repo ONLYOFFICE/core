@@ -132,6 +132,11 @@ namespace HWP
 		m_nSize = oBuffer.GetCurPtr() - pOldCurentPos;
 	}
 
+	void CCtrlCommon::SetTextVerAlign(EVertAlign& eVertAlign)
+	{
+		m_eTextVerAlign = eVertAlign;
+	}
+
 	int CCtrlCommon::GetSize()
 	{
 		return m_nSize;

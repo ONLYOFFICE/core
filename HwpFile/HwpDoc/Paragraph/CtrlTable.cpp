@@ -1,16 +1,16 @@
-#include "CtrlTalbe.h"
+#include "CtrlTable.h"
 
 namespace HWP
 {
-CCtrlTalbe::CCtrlTalbe(const STRING& sCtrlID)
+CCtrlTable::CCtrlTable(const STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
 {}
 
-CCtrlTalbe::CCtrlTalbe(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlTable::CCtrlTable(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlTalbe::~CCtrlTalbe()
+CCtrlTable::~CCtrlTable()
 {
 	for (TCellZone* pCellzone : m_arCellzoneList)
 	{
@@ -25,7 +25,7 @@ CCtrlTalbe::~CCtrlTalbe()
 	}
 }
 
-int CCtrlTalbe::ParseCtrl(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
 
@@ -71,7 +71,7 @@ int CCtrlTalbe::ParseCtrl(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int 
 	return nSize;
 }
 
-int CCtrlTalbe::ParseListHeaderAppend(CCtrlTalbe& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+int CCtrlTable::ParseListHeaderAppend(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	if (24 != nSize)
 		return nSize;

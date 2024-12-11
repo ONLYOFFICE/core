@@ -11,6 +11,7 @@ class CCtrlShapePolygon : public CCtrlGeneralShape
 	int m_nPoints;
 	std::list<TPoint> m_arPoints;
 public:
+	CCtrlShapePolygon();
 	CCtrlShapePolygon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

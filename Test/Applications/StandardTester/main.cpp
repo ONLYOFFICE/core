@@ -110,6 +110,13 @@ public:
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, true));
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, true));
 
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSDX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSSX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSTX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSDM, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSSM, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSTM, true));
+
 		m_nCount = 0;
 		m_nCurrent = 0;
 		m_nCurrentComplete = 0;
@@ -150,7 +157,8 @@ public:
 			if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
 				sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
 				sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods" ||
-				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu")
+				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu" ||
+				sExt == L"vsdx")
 			{
 				m_files.push_back(*iter);
 			}

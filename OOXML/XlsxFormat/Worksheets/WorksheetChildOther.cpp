@@ -961,6 +961,15 @@ namespace OOX
 				castedPtr->rfx = m_oRef.get();
 			return ptr;
 		}
+        void CDimension::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_WsDim);
+            XLSB::UncheckedRfX ref;
+            if(m_oRef.IsInit())
+                ref = m_oRef.get();
+            *record << ref;
+            writer->storeNextRecord(record);
+        }
 		EElementType CDimension::getType() const
 		{
 			return et_x_Dimension;

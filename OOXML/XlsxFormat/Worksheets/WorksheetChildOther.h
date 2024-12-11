@@ -33,6 +33,7 @@
 
 #include "../WritingElement.h"
 #include "../../Base/Nullable.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace SimpleTypes
 {
@@ -277,6 +278,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			virtual EElementType getType () const;
 

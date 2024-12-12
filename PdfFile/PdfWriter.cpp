@@ -1988,6 +1988,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
 			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+
+			pTextMarkupAnnot->SetAP(pPr->GetQuadPoints());
 		}
 		else if (oInfo.IsSquareCircle())
 		{

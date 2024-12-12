@@ -2623,6 +2623,17 @@ namespace PdfWriter
 		pArray->Add(dW);
 		pArray->Add(dH);
 	}
+	void CAnnotAppearanceObject::AddMatrix(double sx, double shy, double shx, double sy, double tx, double ty)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		Add("Matrix", pArray);
+		pArray->Add(sx);
+		pArray->Add(shy);
+		pArray->Add(shx);
+		pArray->Add(sy);
+		pArray->Add(tx);
+		pArray->Add(ty);
+	}
 	void CAnnotAppearanceObject::DrawTextCommentN(const std::string& sColor)
 	{
 		CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(0.6, 0.6);

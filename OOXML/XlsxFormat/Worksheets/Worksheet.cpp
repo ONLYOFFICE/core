@@ -369,6 +369,8 @@ namespace OOX
                 m_oSheetPr->toBin(writer);
             if (m_oDimension.IsInit())
                     m_oDimension->toBin(writer);
+            if (m_oSheetViews.IsInit())
+                    m_oSheetViews->toBin(writer);
             if ( m_oSheetData.IsInit())
                 m_oSheetData->toBin(writer);
             {

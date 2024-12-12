@@ -1185,6 +1185,58 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CPane::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Pane);
+            {
+                XLS::Xnum numsplit;
+                if(m_oXSplit.IsInit())
+                    numsplit.data.value = m_oXSplit->GetValue();
+                else
+                    numsplit.data.value = 0;
+                *record << numsplit;
+                if(m_oYSplit.IsInit())
+                    numsplit.data.value = m_oYSplit->GetValue();
+                else
+                    numsplit.data.value = 0;
+                *record << numsplit;
+            }
+            {
+                _INT32 rowCol = 0;
+                XLS::CellRef ref;
+                if(m_oTopLeftCell.IsInit())
+                    ref.fromString(m_oTopLeftCell.get());
+                rowCol = ref.row;
+                *record << rowCol;
+                rowCol = ref.column;
+                *record << rowCol;
+            }
+            {
+                _UINT32 pnnAct = 0;
+                if(m_oActivePane.IsInit())
+                {
+                    if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+                        pnnAct = 0;
+                    else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+                        pnnAct = 1;
+                    else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+                        pnnAct = 2;
+                    else if(m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+                        pnnAct = 3;
+                }
+                *record << pnnAct;
+            }
+            BYTE flags = 0;
+            if(m_oState.IsInit())
+            {
+                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
+                    SETBIT(flags, 0, 1)
+                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+                    SETBIT(flags, 1, 1)
+            }
+            *record << flags;
+            writer->storeNextRecord(record);
+        }
 		EElementType CPane::getType() const
 		{
 			return et_x_Pane;
@@ -1292,6 +1344,44 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CSelection::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Sel);
+            _UINT32 pnn = 3;
+            if(m_oPane.IsInit())
+            {
+                if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+                    pnn = 0;
+                else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+                    pnn = 1;
+                else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+                    pnn = 2;
+                else if(m_oPane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+                    pnn = 3;
+            }
+            *record << pnn;
+            {
+                XLS::CellRef ref;
+                if(m_oActiveCell.IsInit())
+                    ref.fromString(m_oActiveCell.get());
+                _INT32 rowCol = 0;
+                rowCol = ref.row;
+                *record << rowCol;
+                rowCol = ref.column;
+                *record << rowCol;
+            }
+            _UINT32 irefAct = 0;
+            if(m_oActiveCellId.IsInit())
+                irefAct = m_oActiveCellId->GetValue();
+            *record << irefAct;
+            XLSB::UncheckedSqRfX    sqrfx;
+            if(m_oSqref.IsInit())
+                sqrfx.strValue = m_oSqref.get();
+            else
+                sqrfx.strValue = L"A1";
+            *record << sqrfx;
+            writer->storeNextRecord(record);
+        }
 		EElementType CSelection::getType() const
 		{
 			return et_x_Selection;
@@ -1517,6 +1607,24 @@ namespace OOX
 				return castedPtr;
            
 		}
+        void CSheetView::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto beginView = writer->getNextRecord(XLSB::rt_BeginWsView);
+                writeAttributes(beginView);
+                writer->storeNextRecord(beginView);
+            }
+            if(m_oPane.IsInit())
+                m_oPane->toBin(writer);
+            for(auto i:m_arrItems)
+            {
+                i->toBin(writer);
+            }
+            {
+                auto endView = writer->getNextRecord(XLSB::rt_EndWsView);
+                writer->storeNextRecord(endView);
+            }
+        }
 		XLS::BaseObjectPtr CSheetView::toBinCs()
 		{
 			auto pWsView(new XLSB::BeginCsView);
@@ -1602,6 +1710,81 @@ namespace OOX
 				}
 			}
 		}
+        void CSheetView::writeAttributes(XLS::CFRecordPtr& record)
+        {
+        {
+                _UINT16 flags = 0;
+                if (m_oWindowProtection.IsInit())
+                    SETBIT(flags, 0, m_oWindowProtection->GetValue())
+                if (m_oShowFormulas.IsInit())
+                    SETBIT(flags, 1, m_oShowFormulas->GetValue())
+                if (m_oShowGridLines.IsInit())
+                    SETBIT(flags, 2, m_oShowGridLines->GetValue())
+                if (m_oShowRowColHeaders.IsInit())
+                    SETBIT(flags, 3, m_oShowRowColHeaders->GetValue())
+                if (m_oShowZeros.IsInit())
+                    SETBIT(flags, 4, m_oShowZeros->GetValue())
+                else
+                    SETBIT(flags, 4, 1)
+                if (m_oRightToLeft.IsInit())
+                    SETBIT(flags, 5, m_oRightToLeft->GetValue())
+                if (m_oTabSelected.IsInit())
+                    SETBIT(flags, 6, m_oTabSelected->GetValue())
+                if (m_oShowRuler.IsInit())
+                    SETBIT(flags, 7, m_oShowRuler->GetValue())
+                if (m_oShowOutlineSymbols.IsInit())
+                    SETBIT(flags, 8, m_oShowOutlineSymbols->GetValue())
+                else
+                    SETBIT(flags, 8, 1)
+                if (m_oDefaultGridColor.IsInit())
+                    SETBIT(flags, 9, m_oDefaultGridColor->GetValue())
+                else
+                    SETBIT(flags, 9, 1)
+                if (m_oShowWhiteSpace.IsInit())
+                    SETBIT(flags, 10, !m_oShowWhiteSpace->GetValue())
+                 _UINT32 xlView = 0;
+                 if (m_oView.IsInit())
+                        xlView = m_oView->m_eValue;
+                *record <<flags << xlView;
+            }
+            {
+                XLS::CellRef ref;
+                if(m_oTopLeftCell.IsInit())
+                    ref.fromString(m_oTopLeftCell.get());
+                _INT32 rwtop = ref.row;
+                _INT32 colLeft = ref.column;
+                *record << rwtop << colLeft;
+            }
+            BYTE icvHdr = 64;
+            if(m_oColorId.IsInit())
+            icvHdr = m_oColorId->m_eValue;
+            *record << icvHdr;
+            record->reserveNunBytes(3);
+
+            _UINT16 wScale = 100;
+            if (m_oZoomScale.IsInit())
+                wScale = m_oZoomScale->m_eValue;
+            *record << wScale;
+            if (m_oZoomScaleNormal.IsInit())
+                wScale = m_oZoomScaleNormal->m_eValue;
+            else
+                wScale = 0;
+            *record << wScale;
+            if (m_oZoomScaleSheetLayoutView.IsInit())
+                    wScale = m_oZoomScaleSheetLayoutView->m_eValue;
+                else
+                    wScale = 0;
+            *record << wScale;
+            if (m_oZoomScalePageLayoutView.IsInit())
+                wScale = m_oZoomScalePageLayoutView->m_eValue;
+            else
+                wScale = 0;
+            *record << wScale;
+            _UINT32 iWbkView = 0;
+            if (m_oWorkbookViewId.IsInit())
+                    iWbkView = m_oWorkbookViewId->m_eValue;
+            *record << iWbkView;
+        }
 
 		CSheetViews::CSheetViews()
 		{
@@ -1682,6 +1865,20 @@ namespace OOX
 					castedPtr->m_arWSVIEW2.push_back(i->toBin());
 				return ptr;
 		}
+        void CSheetViews::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto record = writer->getNextRecord(XLSB::rt_BeginWsViews);
+                writer->storeNextRecord(record);
+            }
+            for(auto i:m_arrItems)
+                i->toBin(writer);
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndWsViews);
+                writer->storeNextRecord(record);
+            }
+
+        }
 		XLS::BaseObjectPtr CSheetViews::toBinCs()
 		{
 			auto ptr(new XLSB::CSVIEWS);

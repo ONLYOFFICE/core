@@ -64,10 +64,10 @@ public:
 	const bool	getRowRelative() const;
 	const bool	getColumnRelative() const;
 
-    int		row;
-    int		column;
-	bool	rowRelative;
-	bool	colRelative;
+    int		row = 0;
+    int		column = 0;
+    bool	rowRelative = false;
+    bool	colRelative = false;
 protected:
 	bool	fQuoted;
 	mutable std::wstring to_string_cache;

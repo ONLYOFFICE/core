@@ -3271,6 +3271,145 @@ namespace OOX
 				return castedPtr;
 			}
 		}
+        void CSheetProtection::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            XLS::CFRecordPtr record;
+            unsigned char *flagBuf;
+            if(m_oSpinCount.IsInit() || m_oHashValue.IsInit() || m_oSaltValue.IsInit())
+            {
+                record = writer->getNextRecord(XLSB::rt_SheetProtectionIso);
+                _UINT32 spinCount = 0;
+                if(m_oSpinCount.IsInit())
+                    spinCount = m_oSpinCount->GetValue();
+                *record << spinCount;
+            }
+            else
+            {
+                record = writer->getNextRecord(XLSB::rt_SheetProtection);
+                _UINT16 protPwd = 0;
+                if(m_oPassword.IsInit())
+                    protPwd = std::stoul(m_oPassword.get(),nullptr, 16);
+                *record <<  protPwd;
+            }
+            {
+                _UINT32 flag = 0;
+                if(m_oSheet.IsInit())
+                    flag = m_oSheet->GetValue();
+                *record << flag;
+                if(!flag)
+                    record->reserveNunBytes(60);
+                else
+                {
+                    if(m_oObjects.IsInit())
+                        flag = m_oObjects->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oScenarios.IsInit())
+                        flag = m_oScenarios->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oFormatCells.IsInit())
+                        flag = m_oFormatCells->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oFormatColumns.IsInit())
+                        flag = m_oFormatColumns->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oFormatRows.IsInit())
+                        flag = m_oFormatRows->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oInsertColumns.IsInit())
+                        flag = m_oInsertColumns->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oInsertRows.IsInit())
+                        flag = m_oInsertRows->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oInsertHyperlinks.IsInit())
+                        flag = m_oInsertHyperlinks->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oDeleteColumns.IsInit())
+                        flag = m_oDeleteColumns->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oDeleteRows.IsInit())
+                        flag = m_oDeleteRows->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oSelectLockedCells.IsInit())
+                        flag = m_oSelectLockedCells->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oSort.IsInit())
+                        flag = m_oSort->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oAutoFilter.IsInit())
+                        flag = m_oAutoFilter->GetValue();
+                    *record << flag;
+                     flag = 1;
+                    if(m_oPivotTables.IsInit())
+                        flag = m_oPivotTables->GetValue();
+                    *record << flag;
+                    flag = 1;
+                    if(m_oSelectUnlockedCells.IsInit())
+                        flag = m_oSelectUnlockedCells->GetValue();
+                    *record << flag;
+                }
+
+            }
+            if(record->getTypeId() == XLSB::rt_SheetProtectionIso)
+            {
+                {
+                    XLSB::IsoPasswordData ipdPasswordData;
+                    if(m_oHashValue.IsInit())
+                    {
+                        BYTE * temp;
+                        auto tempSize = 0;
+                        NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+                            m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+                        ipdPasswordData.rgbHash.cbLength = tempSize;
+                        ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+                        delete[] temp;
+                    }
+
+                    if(m_oSaltValue.IsInit())
+                    {
+                        BYTE * temp;
+                        auto tempSize = 0;
+                        NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
+                        m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+                        ipdPasswordData.rgbSalt.cbLength = tempSize;
+                        ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+                        delete[] temp;
+                    }
+                    if(m_oAlgorithmName.IsInit())
+                        ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
+                    else
+                        ipdPasswordData.szAlgName = L"";
+                    *record << ipdPasswordData;
+                }
+                flagBuf = new unsigned char[60];
+                auto RecordData = record->getData();
+                std::memcpy(flagBuf, RecordData + 4, 60);
+            }
+            if(record)
+                writer->storeNextRecord(record);
+            if(record)
+                record.reset();
+            if(flagBuf)
+            {
+                record = writer->getNextRecord(XLSB::rt_SheetProtection);
+                _UINT16 protPwd = 0;
+                *record <<protPwd;
+                record->appendRawDataToStatic(flagBuf, 60);
+                writer->storeNextRecord(record);
+            }
+        }
 		XLS::BaseObjectPtr CSheetProtection::toBinCS()
 		{
 			XLS::BaseObjectPtr objectPtr;

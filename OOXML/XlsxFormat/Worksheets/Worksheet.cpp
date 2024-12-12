@@ -377,6 +377,8 @@ namespace OOX
                     m_oCols->toBin(writer);
             if ( m_oSheetData.IsInit())
                 m_oSheetData->toBin(writer);
+            if(m_oSheetProtection.IsInit())
+                m_oSheetProtection->toBin(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

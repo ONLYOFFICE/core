@@ -1068,6 +1068,53 @@ namespace OOX
                 ptr->fUnsynced = false;
 			return Castedptr;
 		}
+        void CSheetFormatPr::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_WsFmtInfo);
+            {
+                _UINT32 dxGCol =  0xFFFFFFFF;
+                if(m_oBaseColWidth.IsInit())
+                    dxGCol = m_oBaseColWidth.get() * 256.;
+                *record << dxGCol;
+            }
+            {
+                _UINT16 cchDefColWidth = 9;
+                if(m_oDefaultColWidth.IsInit())
+                {
+                    cchDefColWidth = m_oDefaultColWidth.get();
+
+                }
+                *record << cchDefColWidth;
+            }
+            {
+                _UINT16 miyDefRwHeight =  290;
+                if (m_oDefaultRowHeight.IsInit())
+                    miyDefRwHeight = m_oDefaultRowHeight.get() * 20;
+                *record << miyDefRwHeight;
+            }
+            {
+                _UINT16 flags = 0;
+                if (m_oZeroHeight.IsInit())
+                    SETBIT(flags, 1, m_oZeroHeight.get())
+                if (m_oThickTop.IsInit())
+                    SETBIT(flags, 2, m_oThickTop.get())
+                if (m_oThickBottom.IsInit())
+                    SETBIT(flags, 3, m_oThickBottom.get())
+                *record << flags;
+            }
+            {
+                BYTE rowCol = 0;;
+                if (m_oOutlineLevelCol.IsInit())
+                    rowCol =  m_oOutlineLevelCol.get();
+                *record << rowCol;
+                if (m_oOutlineLevelRow.IsInit())
+                    rowCol = m_oOutlineLevelRow.get();
+                else
+                     rowCol = 0;
+                *record << rowCol;
+            }
+            writer->storeNextRecord(record);
+        }
 		EElementType CSheetFormatPr::getType() const
 		{
 			return et_x_SheetFormatPr;

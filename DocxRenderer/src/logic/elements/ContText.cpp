@@ -546,6 +546,11 @@ namespace NSDocxRenderer
 	{
 		return IsTextOnlySpaces(m_oText);
 	}
+	bool CContText::IsDiacritical() const noexcept
+	{
+		const auto& text = GetText();
+		return text.length() == 1 && CContText::IsUnicodeDiacriticalMark(text.at(0));
+	}
 
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
 	{

@@ -387,36 +387,25 @@ namespace NSDocxRenderer
 
 	void CPage::Analyze()
 	{
-		m_arConts = std::move(m_oContBuilder.GetConts());
+		// building objects from symbols
+		m_arConts = m_oContBuilder.GetConts();
+		m_arDiacriticalSymbols = MoveDiacriticalSymbols();
+		m_arTextLines = BuildTextLines();
 
-		// build m_arDiacriticalSymbols
-		BuildDiacriticalSymbols();
-
-		// build text lines from m_arConts
-		BuildTextLines();
-
-
-		// analyze shapes (get type of lines etc)
+		// analyzing data
 		AnalyzeShapes();
-
-		// analyze text lines and conts inside
 		AnalyzeTextLines();
 
+		// building final objects
+		m_arParagraphs = BuildParagraphs();
+		// TODO: tables
 
-		// merge conts in text lines
-		MergeConts();
-
-		// build paragraphs from m_arTextLines
-		BuildParagraphes();
-
-		// calc sizes on selected fonts for m_arConts
+		// post analyze
 		CalcSelected();
-
-		// merge shapes
 		MergeShapes();
-
-		// calc shapes paths with no rotation to write
 		CalcShapesRotation();
+
+		m_arOutputObjects = BuildOutputObjects();
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -437,22 +426,20 @@ namespace NSDocxRenderer
 		});
 	}
 
-	void CPage::BuildDiacriticalSymbols()
+	std::vector<std::shared_ptr<CContText>> CPage::MoveDiacriticalSymbols()
 	{
-		for (size_t i = 0; i < m_arConts.size(); i++)
-		{
-			if (m_arConts[i] && m_arConts[i]->GetText().length() == 1)
-			{
-				const auto& text = m_arConts[i]->GetText();
-				if (CContText::IsUnicodeDiacriticalMark(text.at(0)))
-					m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
-			}
-		}
+		std::vector<std::shared_ptr<CContText>> diac_symbols;
+		for (auto& cont : m_arConts)
+			if (cont && cont->IsDiacritical())
+				diac_symbols.push_back(std::move(cont));
+		return diac_symbols;
 	}
 
-	void CPage::BuildTextLines()
+	std::vector<std::shared_ptr<CTextLine>> CPage::BuildTextLines()
 	{
 		std::shared_ptr<CTextLine> curr_line = nullptr;
+		std::vector<std::shared_ptr<CTextLine>> text_lines;
+
 		for (auto& cont : m_arConts)
 		{
 			if (!cont)
@@ -465,11 +452,11 @@ namespace NSDocxRenderer
 			}
 
 			bool skip = false;
-			for (size_t i = 0; i < m_arTextLines.size(); ++i)
+			for (size_t i = 0; i < text_lines.size(); ++i)
 			{
-				if (fabs(m_arTextLines[i]->m_dBaselinePos - cont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(text_lines[i]->m_dBaselinePos - cont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
-					curr_line = m_arTextLines[i];
+					curr_line = text_lines[i];
 					cont->m_bPossibleSplit = true;
 					curr_line->AddCont(cont);
 					skip = true;
@@ -481,13 +468,13 @@ namespace NSDocxRenderer
 
 			curr_line = std::make_shared<CTextLine>();
 			curr_line->AddCont(cont);
-			m_arTextLines.push_back(curr_line);
+			text_lines.push_back(curr_line);
 		}
 
-		for (size_t i = 0; i < m_arTextLines.size(); i++)
+		for (size_t i = 0; i < text_lines.size(); i++)
 		{
 			bool only_spaces = true;
-			for (auto& cont : m_arTextLines[i]->m_arConts)
+			for (auto& cont : text_lines[i]->m_arConts)
 			{
 				if (!cont->IsOnlySpaces())
 				{
@@ -496,8 +483,9 @@ namespace NSDocxRenderer
 				}
 			}
 			if (only_spaces)
-				m_arTextLines.erase(m_arTextLines.begin() + i, m_arTextLines.begin() + i + 1);
+				text_lines.erase(text_lines.begin() + i, text_lines.begin() + i + 1);
 		}
+		return text_lines;
 	}
 
 	void CPage::MergeShapes()
@@ -532,6 +520,58 @@ namespace NSDocxRenderer
 		}
 	}
 
+	std::vector<std::shared_ptr<CBaseItem>> CPage::BuildOutputObjects()
+	{
+		std::vector<std::shared_ptr<CBaseItem>> output_objects;
+
+		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+		    m_eTextAssociationType == TextAssociationType::tatPlainLine)
+		{
+			CBaseItem* prev_p = nullptr;
+
+			size_t first_index = 0;
+			size_t second_index = first_index + 1;
+
+			for (; first_index < m_arParagraphs.size(); first_index = second_index++)
+			{
+				auto& first_p = m_arParagraphs[first_index];
+				if (second_index != m_arParagraphs.size())
+				{
+					auto& second_p = m_arParagraphs[second_index];
+					while (second_index < m_arParagraphs.size() && first_p->m_dBaselinePos > second_p->m_dTop)
+						second_index++;
+				}
+
+				if (second_index - first_index == 1)
+				{
+					auto& p = m_arParagraphs[first_index];
+
+					if (!prev_p)
+						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+					else
+						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBaselinePos;
+
+					output_objects.push_back(p);
+					prev_p = p.get();
+				}
+				else
+				{
+					for (size_t j = first_index; j < second_index; ++j)
+						m_arShapes.push_back(CreateSingleParagraphShape(m_arParagraphs[j]));
+				}
+			}
+		}
+
+		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
+		         m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		{
+			for (auto& p : m_arParagraphs)
+				m_arShapes.push_back(CreateSingleParagraphShape(p));
+		}
+
+		return output_objects;
+	}
+
 	void CPage::CalcSelected()
 	{
 		for (auto& line : m_arTextLines)
@@ -554,10 +594,10 @@ namespace NSDocxRenderer
 
 	void CPage::AnalyzeShapes()
 	{
-		DetermineLinesType();
+		AnalyzeLinesType();
 	}
 
-	void CPage::DetermineLinesType()
+	void CPage::AnalyzeLinesType()
 	{
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const CShape::shape_ptr_t& a, const CShape::shape_ptr_t& b) {
 			return a->m_dLeft < b->m_dLeft;
@@ -627,23 +667,24 @@ namespace NSDocxRenderer
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		// analyze drop caps (creates shapes)
 		AnalyzeDropCaps();
-
-		// analyze conts in text lines
 		AnalyzeConts();
-
-		// Strikeout, underline, outline, highlight
 		AnalyzeEffects();
-
-		// diacritical symbols
 		AddDiacriticalSymbols();
-
-		// super/subscript
 		MergeLinesByVertAlignType();
-
-		// delete lines out of page
 		DeleteTextClipPage();
+		MergeConts();
+		SplitLines();
+		AnalyzeOverlapLines();
+
+		// переместим nullptr в конец и удалим
+		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
+		m_arTextLines.erase(right, m_arTextLines.end());
+
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
 	}
 
 	void CPage::AnalyzeDropCaps()
@@ -1102,13 +1143,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</w:p>");
 		}
 
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			auto& pObj = m_arOutputObjects[i];
-			CParagraph* pParagraph = nullptr;
-			if((pParagraph = dynamic_cast<CParagraph*>(pObj.get())) != nullptr)
-				pParagraph->ToXml(oWriter);
-		}
+		for (auto& obj : m_arOutputObjects)
+			obj->ToXml(oWriter);
 	}
 
 	void CPage::MergeConts()
@@ -1249,6 +1285,10 @@ namespace NSDocxRenderer
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
 			auto& line = m_arTextLines[index];
+
+			if (!line)
+				continue;
+
 			bool next_line = false;
 			for (size_t i = 0; i < line->m_arConts.size(); ++i)
 			{
@@ -1299,10 +1339,6 @@ namespace NSDocxRenderer
 			if (next_line)
 				continue;
 		}
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
-			return a->m_dBaselinePos < b->m_dBaselinePos;
-		});
 	}
 
 	std::vector<std::vector<std::shared_ptr<CTextLine>>> CPage::GetLinesByGroups()
@@ -1377,13 +1413,13 @@ namespace NSDocxRenderer
 		return line_groups;
 	}
 
-	void CPage::BuildParagraphes()
+	void CPage::AnalyzeOverlapLines()
 	{
 		auto no_crossing = [] (const eHorizontalCrossingType& h_type, const eVerticalCrossingType& v_type) {
 			return h_type == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-				   h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
-				   v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-				   v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+			       h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
+			       v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+			       v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
 		// линии из которых сделаем шейпы
@@ -1423,18 +1459,13 @@ namespace NSDocxRenderer
 				}
 			}
 		}
+	}
 
+	std::vector<std::shared_ptr<CParagraph>> CPage::BuildParagraphs()
+	{
 		if (m_arTextLines.empty())
-			return;
+			return {};
 
-		// переместим nullptr в конец и удалим
-		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
-		m_arTextLines.erase(right, m_arTextLines.end());
-
-		if (m_arTextLines.empty())
-			return;
-
-		SplitLines();
 		auto line_groups = GetLinesByGroups();
 		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
 
@@ -1789,50 +1820,7 @@ namespace NSDocxRenderer
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-			m_eTextAssociationType == TextAssociationType::tatPlainLine)
-		{
-			CBaseItem* prev_p = nullptr;
-
-			size_t first_index = 0;
-			size_t second_index = first_index + 1;
-
-			for (; first_index < ar_paragraphs.size(); first_index = second_index++)
-			{
-				auto& first_p = ar_paragraphs[first_index];
-				if (second_index != ar_paragraphs.size())
-				{
-					auto& second_p = ar_paragraphs[second_index];
-					while (second_index < ar_paragraphs.size() && first_p->m_dBaselinePos > second_p->m_dTop)
-						second_index++;
-				}
-
-				if (second_index - first_index == 1)
-				{
-					auto& p = ar_paragraphs[first_index];
-
-					if (!prev_p)
-						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-					else
-						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBaselinePos;
-
-					m_arOutputObjects.push_back(p);
-					prev_p = p.get();
-				}
-				else
-				{
-					for (size_t j = first_index; j < second_index; ++j)
-						m_arShapes.push_back(CreateSingleParagraphShape(ar_paragraphs[j]));
-				}
-			}
-		}
-
-		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
-				 m_eTextAssociationType == TextAssociationType::tatShapeLine)
-		{
-			for (auto& p : ar_paragraphs)
-				m_arShapes.push_back(CreateSingleParagraphShape(p));
-		}
+		return ar_paragraphs;
 	}
 
 	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine)

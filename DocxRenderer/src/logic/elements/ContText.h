@@ -117,6 +117,7 @@ namespace NSDocxRenderer
 		bool IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept;
 
 		bool IsOnlySpaces() const;
+		bool IsDiacritical() const noexcept;
 		double CalculateSpace() const noexcept;
 
 		// check font effect and delete not needed cont
@@ -154,7 +155,7 @@ namespace NSDocxRenderer
 		CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector);
 		~CContTextBuilder() = default;
 
-		// after call CContTextBuilder is empty.
+		// after call CContTextBuilder is empty
 		std::vector<cont_ptr_t> GetConts();
 		void AddUnicode(
 			double dTop,

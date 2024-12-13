@@ -26,12 +26,13 @@ namespace NSDocxRenderer
 		};
 
 		double m_dWidth {0.0};
-		double m_dHeight {0.0};
+		double m_dHeight{0.0};
 
 		LONG m_lCurrentCommand{0};
-		LONG m_lClipMode{0};
+		LONG m_lClipMode      {0};
 
 		TextAssociationType m_eTextAssociationType{TextAssociationType::tatPlainParagraph};
+
 		NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
 
 		NSStructures::CFont     m_oFont;
@@ -46,13 +47,14 @@ namespace NSDocxRenderer
 		CVectorGraphics  m_oCurrVectorGraphics, m_oClipVectorGraphics;
 		CContTextBuilder m_oContBuilder;
 
-		std::vector<std::shared_ptr<CContText>> m_arConts;
-		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
-		std::vector<std::shared_ptr<CContText>> m_arDiacriticalSymbols;
-		std::vector<std::shared_ptr<CShape>>    m_arShapes;
+		std::vector<std::shared_ptr<CContText>>  m_arConts;
+		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
+		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
+		std::vector<std::shared_ptr<CShape>>     m_arShapes;
+		std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
 
-		std::vector<std::wstring>   m_arCompleteObjectsXml;
 		std::vector<std::shared_ptr<CBaseItem>>  m_arOutputObjects;
+		std::vector<std::wstring>                m_arCompleteObjectsXml;
 
 		bool m_bIsDeleteTextClipPage{true};
 		bool m_bIsRecalcFontSize    {true};
@@ -67,7 +69,6 @@ namespace NSDocxRenderer
 		void EndCommand(DWORD lType);
 
 		void Clear();
-		void DeleteTextClipPage();
 
 		void WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight);
 
@@ -77,8 +78,8 @@ namespace NSDocxRenderer
 		void PathStart();
 		void PathEnd();
 		void PathClose();
-
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
+
 		void AddText(
 			const PUINT pUnicodes,
 			const PUINT pGids,
@@ -94,36 +95,73 @@ namespace NSDocxRenderer
 		void ReorderShapesForPptx();
 
 	private:
-		void BuildDiacriticalSymbols();
-		void BuildTextLines();
+		// returns std::vector of conts with diac. symbols and remove it from m_arConts
+		std::vector<std::shared_ptr<CContText>> MoveDiacriticalSymbols();
+
+		// returns std::vector of text lines builded from m_arConts
+		std::vector<std::shared_ptr<CTextLine>> BuildTextLines();
+
+		// returns std::vector of paragraphs builded from m_arTextLines
+		std::vector<std::shared_ptr<CParagraph>> BuildParagraphs();
+
+		// returns std::vector of base items builded from m_arParagraphs
+		std::vector<std::shared_ptr<CBaseItem>> BuildOutputObjects();
+
+		// analyze shapes (set lines type)
+		void AnalyzeShapes();
+
+		// analyze type of lines (double, wave, etc.)
+		void AnalyzeLinesType();
+
+		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
 		void AnalyzeTextLines();
-		void SplitLines();
-		void CalcSelected();
-		void BuildParagraphes();
 
-		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
+		// analyze drop caps (creates shapes)
+		void AnalyzeDropCaps();
 
-		void MergeShapes();
-		void CalcShapesRotation();
+		// analyze conts in text lines
+		void AnalyzeConts();
 
 		// strikeouts, underlines, highlights, outline
 		void AnalyzeEffects();
+
+		// adds diacritical symbols in conts
+		void AddDiacriticalSymbols();
+
+		// super-sub scripts line merge
+		void MergeLinesByVertAlignType();
+
+		// remove out of bounds text lines
+		void DeleteTextClipPage();
+
+		// merging conts in text lines
+		void MergeConts();
+
+		// set dominant shapes
+		void DetermineDominantGraphics();
+
+		// split lines by graphics
+		void SplitLines();
+
+		// creates shapes from overlapping text lines
+		void AnalyzeOverlapLines();
+
+		// calc selected sizes of conts
+		void CalcSelected();
+
+		// merge shapes with each other
+		void MergeShapes();
+
+		// calc true shapes rotation for ooxml format
+		void CalcShapesRotation();
+
+		// get lines by groups by X
+		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
 
 		bool IsLineCrossingText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 		bool IsLineBelowText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 		bool IsHighlight(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
 		bool IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
-
-		void AnalyzeDropCaps();
-		void AnalyzeConts();
-		void AddDiacriticalSymbols();
-		void MergeLinesByVertAlignType();
-
-		void AnalyzeShapes();
-		void DetermineLinesType();
-
-		void MergeConts();
-		void DetermineDominantGraphics();
 
 		bool IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
 		bool IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
@@ -132,7 +170,6 @@ namespace NSDocxRenderer
 		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
 		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);
 
-		// конвертим m_arImages, m_arShapes, m_arParagraphs в xml-строку
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
 

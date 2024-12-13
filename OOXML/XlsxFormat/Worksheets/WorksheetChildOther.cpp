@@ -3305,63 +3305,63 @@ namespace OOX
                 else
                 {
                     if(m_oObjects.IsInit())
-                        flag = m_oObjects->GetValue();
+                        flag = !m_oObjects->GetValue();
                     *record << flag;
                     flag = 1;
                     if(m_oScenarios.IsInit())
-                        flag = m_oScenarios->GetValue();
+                        flag = !m_oScenarios->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oFormatCells.IsInit())
-                        flag = m_oFormatCells->GetValue();
+                        flag = !m_oFormatCells->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oFormatColumns.IsInit())
-                        flag = m_oFormatColumns->GetValue();
+                        flag = !m_oFormatColumns->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oFormatRows.IsInit())
-                        flag = m_oFormatRows->GetValue();
+                        flag = !m_oFormatRows->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oInsertColumns.IsInit())
-                        flag = m_oInsertColumns->GetValue();
+                        flag = !m_oInsertColumns->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oInsertRows.IsInit())
-                        flag = m_oInsertRows->GetValue();
+                        flag = !m_oInsertRows->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oInsertHyperlinks.IsInit())
-                        flag = m_oInsertHyperlinks->GetValue();
+                        flag = !m_oInsertHyperlinks->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oDeleteColumns.IsInit())
-                        flag = m_oDeleteColumns->GetValue();
+                        flag = !m_oDeleteColumns->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oDeleteRows.IsInit())
-                        flag = m_oDeleteRows->GetValue();
+                        flag = !m_oDeleteRows->GetValue();
                     *record << flag;
                     flag = 1;
                     if(m_oSelectLockedCells.IsInit())
-                        flag = m_oSelectLockedCells->GetValue();
+                        flag = !m_oSelectLockedCells->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oSort.IsInit())
-                        flag = m_oSort->GetValue();
+                        flag = !m_oSort->GetValue();
                     *record << flag;
-                    flag = 1;
+                    flag = 0;
                     if(m_oAutoFilter.IsInit())
-                        flag = m_oAutoFilter->GetValue();
+                        flag = !m_oAutoFilter->GetValue();
                     *record << flag;
-                     flag = 1;
+                     flag = 0;
                     if(m_oPivotTables.IsInit())
-                        flag = m_oPivotTables->GetValue();
+                        flag = !m_oPivotTables->GetValue();
                     *record << flag;
                     flag = 1;
                     if(m_oSelectUnlockedCells.IsInit())
-                        flag = m_oSelectUnlockedCells->GetValue();
+                        flag = !m_oSelectUnlockedCells->GetValue();
                     *record << flag;
                 }
 
@@ -3397,9 +3397,9 @@ namespace OOX
                         ipdPasswordData.szAlgName = L"";
                     *record << ipdPasswordData;
                 }
-                flagBuf = new unsigned char[60];
+                flagBuf = new unsigned char[64];
                 auto RecordData = record->getData();
-                std::memcpy(flagBuf, RecordData + 4, 60);
+                std::memcpy(flagBuf, RecordData + 4, 64);
             }
             if(record)
                 writer->storeNextRecord(record);
@@ -3410,7 +3410,7 @@ namespace OOX
                 record = writer->getNextRecord(XLSB::rt_SheetProtection);
                 _UINT16 protPwd = 0;
                 *record <<protPwd;
-                record->appendRawDataToStatic(flagBuf, 60);
+                record->appendRawDataToStatic(flagBuf, 64);
                 writer->storeNextRecord(record);
             }
         }

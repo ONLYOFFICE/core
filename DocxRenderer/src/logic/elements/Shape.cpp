@@ -323,7 +323,7 @@ namespace NSDocxRenderer
 			return; // линия должна быть одного размера по высоте
 		}
 
-		auto set_line_type = [] (shape_ptr_t& master, shape_ptr_t& slave, eLineType type) {
+		auto set_line_type = [] (std::shared_ptr<CShape>& master, std::shared_ptr<CShape>& slave, eLineType type) {
 			master->m_eLineType = type;
 			master->RecalcWithNewItem(slave.get());
 			master->m_oVector.Join(std::move(slave->m_oVector));
@@ -1017,6 +1017,4 @@ namespace NSDocxRenderer
 		}
 		oWriter.WriteString(L"</p:sp>");
 	}
-
-
 }; // namespace NSDocxRenderer

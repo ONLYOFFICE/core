@@ -96,4 +96,24 @@ namespace NSDocxRenderer
 		static Aggplus::BooleanOpType GetOpType(long nClipType);
 		static std::vector<Point> GetPointsCurve(const std::array<Point, 4>& curve, double step = 0.05);
 	};
+
+	// collect and contains horizontal and vertical lines
+	class CHorVerLinesCollector
+	{
+	public:
+		CHorVerLinesCollector() = default;
+		~CHorVerLinesCollector() = default;
+
+		// after call m_arHorizontal is empty
+		std::vector<std::pair<double, double>> GetHorizontal();
+
+		// after call m_arVertical is empty
+		std::vector<std::pair<double, double>> GetVertical();
+
+		void AddVector(const CVectorGraphics& oVector);
+
+	private:
+		std::vector<std::pair<double, double>> m_arHorizontal;
+		std::vector<std::pair<double, double>> m_arVertical;
+	};
 }

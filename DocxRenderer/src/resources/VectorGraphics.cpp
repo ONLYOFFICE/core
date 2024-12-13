@@ -390,4 +390,38 @@ namespace NSDocxRenderer
 
 		return points;
 	}
+	std::vector<std::pair<double, double>> CHorVerLinesCollector::GetHorizontal()
+	{
+		return std::move(m_arHorizontal);
+	}
+	std::vector<std::pair<double, double>> CHorVerLinesCollector::GetVertical()
+	{
+		return std::move(m_arVertical);
+	}
+
+	void CHorVerLinesCollector::AddVector(const CVectorGraphics& oVector)
+	{
+		double last_x{};
+		double last_y{};
+
+		for (const auto& command : oVector.GetData())
+		{
+			if (command.type == CVectorGraphics::ePathCommandType::pctLine)
+			{
+				double x = command.points.front().x;
+				double y = command.points.front().y;
+
+				if (x - last_x <= std::numeric_limits<double>::epsilon())
+					m_arVertical.push_back({last_y, y});
+
+				else if (y - last_y <= std::numeric_limits<double>::epsilon())
+					m_arHorizontal.push_back({last_x, x});
+			}
+			if (!command.points.empty())
+			{
+				last_x = command.points.back().x;
+				last_y = command.points.back().y;
+			}
+		}
+	}
 }

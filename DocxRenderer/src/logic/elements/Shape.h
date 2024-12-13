@@ -31,8 +31,6 @@ namespace NSDocxRenderer
 		};
 
 	public:
-		using shape_ptr_t = std::shared_ptr<CShape>;
-
 		eShapeType m_eType           {eShapeType::stUnknown};
 
 		NSStructures::CBrush m_oBrush{};

@@ -25,6 +25,12 @@ namespace NSDocxRenderer
 			CFontSelector*			   pFontSelector;
 		};
 
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		using item_ptr_t = std::shared_ptr<CBaseItem>;
+		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
+
 		double m_dWidth {0.0};
 		double m_dHeight{0.0};
 
@@ -45,16 +51,18 @@ namespace NSDocxRenderer
 		CManagers        m_oManagers;
 
 		CVectorGraphics  m_oCurrVectorGraphics, m_oClipVectorGraphics;
-		CContTextBuilder m_oContBuilder;
 
-		std::vector<std::shared_ptr<CContText>>  m_arConts;
-		std::vector<std::shared_ptr<CTextLine>>  m_arTextLines;
-		std::vector<std::shared_ptr<CContText>>  m_arDiacriticalSymbols;
-		std::vector<std::shared_ptr<CShape>>     m_arShapes;
-		std::vector<std::shared_ptr<CParagraph>> m_arParagraphs;
+		CContTextBuilder      m_oContBuilder;
+		CHorVerLinesCollector m_oHorVerLinesCollector;
 
-		std::vector<std::shared_ptr<CBaseItem>>  m_arOutputObjects;
-		std::vector<std::wstring>                m_arCompleteObjectsXml;
+		std::vector<cont_ptr_t>      m_arConts;
+		std::vector<line_ptr_t>      m_arTextLines;
+		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
+		std::vector<shape_ptr_t>     m_arShapes;
+		std::vector<paragraph_ptr_t> m_arParagraphs;
+
+		std::vector<item_ptr_t>   m_arOutputObjects;
+		std::vector<std::wstring> m_arCompleteObjectsXml;
 
 		bool m_bIsDeleteTextClipPage{true};
 		bool m_bIsRecalcFontSize    {true};
@@ -96,22 +104,25 @@ namespace NSDocxRenderer
 
 	private:
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
-		std::vector<std::shared_ptr<CContText>> MoveDiacriticalSymbols();
+		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
 
 		// returns std::vector of text lines builded from m_arConts
-		std::vector<std::shared_ptr<CTextLine>> BuildTextLines();
+		std::vector<line_ptr_t> BuildTextLines();
 
 		// returns std::vector of paragraphs builded from m_arTextLines
-		std::vector<std::shared_ptr<CParagraph>> BuildParagraphs();
+		std::vector<paragraph_ptr_t> BuildParagraphs();
 
 		// returns std::vector of base items builded from m_arParagraphs
-		std::vector<std::shared_ptr<CBaseItem>> BuildOutputObjects();
+		std::vector<item_ptr_t> BuildOutputObjects();
 
 		// analyze shapes (set lines type)
 		void AnalyzeShapes();
 
 		// analyze type of lines (double, wave, etc.)
 		void AnalyzeLinesType();
+
+		// get horizontal and vertical lines from shapes
+		void GetHorVerLines();
 
 		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
 		void AnalyzeTextLines();
@@ -140,7 +151,7 @@ namespace NSDocxRenderer
 		// set dominant shapes
 		void DetermineDominantGraphics();
 
-		// split lines by graphics
+		// split lines by graphics TODO: rewrite with horverlinescollector
 		void SplitLines();
 
 		// creates shapes from overlapping text lines
@@ -156,19 +167,19 @@ namespace NSDocxRenderer
 		void CalcShapesRotation();
 
 		// get lines by groups by X
-		std::vector<std::vector<std::shared_ptr<CTextLine>>> GetLinesByGroups();
+		std::vector<std::vector<line_ptr_t>> GetLinesByGroups();
 
-		bool IsLineCrossingText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
-		bool IsLineBelowText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
-		bool IsHighlight(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
-		bool IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont);
+		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont);
+		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont);
+		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont);
+		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont);
 
-		bool IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
-		bool IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept;
-		bool IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept;
+		bool IsShapeBorderBetweenVertical(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+		bool IsShapeBorderBetweenHorizontal(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+		bool IsShapeBorderTrough(cont_ptr_t pItem, double& dXCrossing, double& dYCrossing) const noexcept;
 
-		std::shared_ptr<CShape> CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine);
-		std::shared_ptr<CShape> CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph);
+		shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
+		shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter);
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);

@@ -389,17 +389,19 @@ namespace NSDocxRenderer
 	{
 		m_arConts = std::move(m_oContBuilder.GetConts());
 
-		// analyze shapes (get type of lines etc)
-		AnalyzeShapes();
-
 		// build m_arDiacriticalSymbols
 		BuildDiacriticalSymbols();
 
 		// build text lines from m_arConts
 		BuildTextLines();
 
+
+		// analyze shapes (get type of lines etc)
+		AnalyzeShapes();
+
 		// analyze text lines and conts inside
 		AnalyzeTextLines();
+
 
 		// merge conts in text lines
 		MergeConts();
@@ -424,13 +426,11 @@ namespace NSDocxRenderer
 	}
 	void CPage::ReorderShapesForPptx()
 	{
-		using shape_ptr_t = std::shared_ptr<CShape>;
-
 		// переместим nullptr в конец и удалим
 		auto right = MoveNullptr(m_arShapes.begin(), m_arShapes.end());
 		m_arShapes.erase(right, m_arShapes.end());
 
-		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& s1, const shape_ptr_t& s2) {
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const CShape::shape_ptr_t& s1, const CShape::shape_ptr_t& s2) {
 			if (s1->m_bIsBehindDoc && !s2->m_bIsBehindDoc) return true;
 			if (!s1->m_bIsBehindDoc && s2->m_bIsBehindDoc) return false;
 			return s1->m_nOrder < s2->m_nOrder;
@@ -505,8 +505,7 @@ namespace NSDocxRenderer
 		if (m_arShapes.empty())
 			return;
 
-		using shape_ptr_t = std::shared_ptr<CShape>;
-		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const CShape::shape_ptr_t& a, const CShape::shape_ptr_t& b) {
 			if (!a) return false;
 			if (!b) return true;
 			return a->m_nOrder < b->m_nOrder;
@@ -560,8 +559,7 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineLinesType()
 	{
-		using shape_ptr_t = std::shared_ptr<CShape>;
-		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
+		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const CShape::shape_ptr_t& a, const CShape::shape_ptr_t& b) {
 			return a->m_dLeft < b->m_dLeft;
 		});
 
@@ -607,7 +605,7 @@ namespace NSDocxRenderer
 					auto& second_shape = m_arShapes[curr_shape_indexes[k]];
 
 					CShape::CheckLineType(first_shape, second_shape, k == curr_shape_indexes.size() - 1);
-					if(!m_arShapes[j])
+					if (!m_arShapes[j])
 					{
 						j = k;
 						k++;

@@ -1767,8 +1767,12 @@ namespace OOX
                     SETBIT(flags, 1, m_oShowFormulas->GetValue())
                 if (m_oShowGridLines.IsInit())
                     SETBIT(flags, 2, m_oShowGridLines->GetValue())
+                 else
+                    SETBIT(flags, 2, 1)
                 if (m_oShowRowColHeaders.IsInit())
                     SETBIT(flags, 3, m_oShowRowColHeaders->GetValue())
+                else
+                    SETBIT(flags, 3, 1)
                 if (m_oShowZeros.IsInit())
                     SETBIT(flags, 4, m_oShowZeros->GetValue())
                 else

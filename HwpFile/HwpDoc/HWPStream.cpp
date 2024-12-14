@@ -3,25 +3,44 @@
 namespace HWP
 {
 CHWPStream::CHWPStream()
-	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_pSavedPosition(nullptr)
-{
-
-}
-
-CHWPStream::CHWPStream(BYTE* pBuffer, unsigned int unSize)
-	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + unSize), m_pSavedPosition(nullptr)
+	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_bExternalBuffer(true)
 {}
 
-void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize)
+CHWPStream::CHWPStream(unsigned int unSize)
+	: m_bExternalBuffer(false)
+{
+	m_pBegin = new(std::nothrow) BYTE[unSize];
+	m_pCur = m_pBegin;
+	m_pEnd = m_pBegin + unSize;
+}
+
+CHWPStream::CHWPStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer)
+	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + unSize), m_bExternalBuffer(bExternalBuffer)
+{}
+
+CHWPStream::~CHWPStream()
+{
+	if (nullptr != m_pBegin && !m_bExternalBuffer)
+		delete[] m_pBegin;
+}
+
+void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer)
 {
 	m_pBegin = pBuffer;
 	m_pCur   = pBuffer;
 	m_pEnd   = pBuffer + unSize;
+
+	m_bExternalBuffer = bExternalBuffer;
 }
 
 BYTE* CHWPStream::GetCurPtr()
 {
 	return m_pCur;
+}
+
+unsigned int CHWPStream::Tell() const
+{
+	return m_pCur - m_pBegin;
 }
 
 bool CHWPStream::ReadChar(CHAR& chValue)
@@ -39,6 +58,13 @@ bool CHWPStream::ReadFloat(float& fValue)
 }
 
 bool CHWPStream::ReadDouble(double& dValue)
+{
+	//TODO:: реализовать
+	Skip(8);
+	return true;
+}
+
+bool CHWPStream::ReadLong(long& lValue)
 {
 	//TODO:: реализовать
 	Skip(8);
@@ -151,6 +177,15 @@ bool CHWPStream::ReadString(STRING& sValue, int nLength)
 	return true;
 }
 
+bool CHWPStream::ReadBytes(char* pBytes, unsigned int unSize)
+{
+	if (nullptr == pBytes || !CanRead(unSize))
+		return false;
+
+	memcpy(pBytes, m_pCur, unSize);
+	return true;
+}
+
 void CHWPStream::Skip(unsigned int unStep)
 {
 	if (m_pCur + unStep >= m_pEnd)
@@ -159,8 +194,27 @@ void CHWPStream::Skip(unsigned int unStep)
 		m_pCur += unStep;
 }
 
+void CHWPStream::MoveToStart()
+{
+	m_pCur = m_pBegin;
+
+	while (!m_arSavedPositions.empty())
+		m_arSavedPositions.pop();
+}
+
+void CHWPStream::MoveTo(unsigned int unPosition)
+{
+	if (unPosition < m_pEnd - m_pBegin)
+		m_pCur = m_pBegin + unPosition;
+	else
+		m_pCur = m_pEnd;
+}
+
 bool CHWPStream::CanRead(int nSize) const
 {
+	if (!IsValid())
+		return false;
+
 	return m_pCur + nSize <= m_pEnd;
 }
 

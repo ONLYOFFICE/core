@@ -38,6 +38,8 @@ class CHwpFileHeader
 public:
 	CHwpFileHeader();
 
+	bool GetDistributable() const;
+
 	bool Parse(CHWPStream& oBuffer);
 };
 }

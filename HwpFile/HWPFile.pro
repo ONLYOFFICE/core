@@ -38,6 +38,8 @@ SOURCES += \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HwpFileHeader.cpp \
+    HwpDoc/OLEdoc/CompoundFile.cpp \
+    HwpDoc/OLEdoc/DirectoryEntry.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
     HwpDoc/Paragraph/CellParagraph.cpp \
     HwpDoc/Paragraph/CharShape.cpp \
@@ -107,6 +109,10 @@ HEADERS += \
     HwpDoc/HWPStream.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
+    HwpDoc/OLEdoc/CompoundFile.h \
+    HwpDoc/OLEdoc/DirectoryEntry.h \
+    HwpDoc/OLEdoc/Sector.h \
+    HwpDoc/OLEdoc/SectorType.h \
     HwpDoc/Paragraph/CapParagraph.h \
     HwpDoc/Paragraph/CellParagraph.h \
     HwpDoc/Paragraph/CharShape.h \

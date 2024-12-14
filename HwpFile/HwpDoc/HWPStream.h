@@ -13,17 +13,23 @@ class CHWPStream
 	BYTE* m_pCur;
 	BYTE* m_pEnd;
 	std::stack<BYTE*> m_arSavedPositions;
+
+	bool m_bExternalBuffer;
 public:
 	CHWPStream();
-	CHWPStream(BYTE* pBuffer, unsigned int unSize);
+	CHWPStream(unsigned int unSize);
+	CHWPStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer = true);
+	~CHWPStream();
 
-	void SetStream(BYTE* pBuffer, unsigned int unSize);
+	void SetStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer = true);
 
 	BYTE* GetCurPtr();
+	unsigned int Tell() const;
 
 	bool ReadChar(CHAR& chValue);
 	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
+	bool ReadLong(long& lValue);
 	bool ReadInt(int& nValue);
 	bool ReadColor(int& nValue);
 	bool ReadShort(short& shValue);
@@ -32,8 +38,11 @@ public:
 	BYTE ReadByte();
 	bool ReadString(STRING& sValue);
 	bool ReadString(STRING& sValue, int nLength);
+	bool ReadBytes(BYTE* pBytes, unsigned int unSize);
 
 	void Skip(unsigned int unStep);
+	void MoveToStart();
+	void MoveTo(unsigned int unPosition);
 
 	bool CanRead(int nSize = 1) const;
 	bool IsValid() const;
@@ -41,7 +50,8 @@ public:
 	unsigned int GetLength() const;
 
 	void SavePosition();
-	int GetDistanceToLastPos();
+	void RemoveLastSavedPos();
+	int GetDistanceToLastPos(bool bRemoveLastPos = false);
 
 	BYTE operator[](unsigned int unPosition) const;
 };

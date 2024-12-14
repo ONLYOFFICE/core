@@ -2,12 +2,13 @@
 #define HWPFILE_H
 
 #include "HwpFileHeader.h"
-#include "HwpDoc/HwpSe
+#include "OLEdoc/CompoundFile.h"
+#include "HWPSection.h"
 #include <list>
 
 namespace HWP
 {
-class CHwpDocInfo;
+class CHWPDocInfo;
 
 class CHWPFile
 {
@@ -15,11 +16,18 @@ class CHWPFile
 	CCompoundFile  m_oOleFile;
 	CHwpFileHeader m_oFileHeader;
 	int m_nVersion;
-	CHwpDocInfo    m_oDocInfo;
-	std::list<CHwpSection> m_lBodyText;
-	std::list<CHwpSection> m_lViewText;
+	CHWPDocInfo       m_oDocInfo;
+	VECTOR<CHWPSection*> m_arBodyTexts;
+	VECTOR<CHWPSection*> m_arViewTexts;
 public:
-	CHWPFile();
+	CHWPFile(const STRING& sFileName);
+	~CHWPFile();
+
+	VECTOR<CHWPSection*> GetSections();
+	CCompoundFile* GetOleFile();
+
+	bool Detect();
+	bool Open();
 };
 }
 

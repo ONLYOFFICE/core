@@ -108,8 +108,13 @@ namespace NSDocxRenderer
 			double dBoxWidth;
 			double dBoxHeight;
 
-			m_pManager->SetStringGid(0);
-			m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			if (m_oText.ToStdWString() == L" ")
+				dBoxWidth = m_pManager->GetSpaceWidthMM();
+			else
+			{
+				m_pManager->SetStringGid(0);
+				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			}
 
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;

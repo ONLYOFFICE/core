@@ -105,12 +105,13 @@ namespace NSDocxRenderer
 		~CHorVerLinesCollector() = default;
 
 		// after call m_arHorizontal is empty
-		std::vector<std::pair<double, double>> GetHorizontal();
+		const std::vector<std::pair<double, double>>& GetHorizontal();
 
 		// after call m_arVertical is empty
-		std::vector<std::pair<double, double>> GetVertical();
+		const std::vector<std::pair<double, double>>& GetVertical();
 
 		void AddVector(const CVectorGraphics& oVector);
+		void Clear();
 
 	private:
 		std::vector<std::pair<double, double>> m_arHorizontal;

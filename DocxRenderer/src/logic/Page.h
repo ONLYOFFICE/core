@@ -121,9 +121,6 @@ namespace NSDocxRenderer
 		// analyze type of lines (double, wave, etc.)
 		void AnalyzeLinesType();
 
-		// get horizontal and vertical lines from shapes
-		void GetHorVerLines();
-
 		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
 		void AnalyzeTextLines();
 
@@ -148,10 +145,13 @@ namespace NSDocxRenderer
 		// merging conts in text lines
 		void MergeConts();
 
+		// get horizontal and vertical lines from shapes
+		void GetHorVerLines();
+
 		// set dominant shapes
 		void DetermineDominantGraphics();
 
-		// split lines by graphics TODO: rewrite with horverlinescollector
+		// split lines by graphics
 		void SplitLines();
 
 		// creates shapes from overlapping text lines

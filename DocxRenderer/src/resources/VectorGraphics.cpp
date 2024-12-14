@@ -390,13 +390,13 @@ namespace NSDocxRenderer
 
 		return points;
 	}
-	std::vector<std::pair<double, double>> CHorVerLinesCollector::GetHorizontal()
+	const std::vector<std::pair<double, double>>& CHorVerLinesCollector::GetHorizontal()
 	{
-		return std::move(m_arHorizontal);
+		return m_arHorizontal;
 	}
-	std::vector<std::pair<double, double>> CHorVerLinesCollector::GetVertical()
+	const std::vector<std::pair<double, double>>& CHorVerLinesCollector::GetVertical()
 	{
-		return std::move(m_arVertical);
+		return m_arVertical;
 	}
 
 	void CHorVerLinesCollector::AddVector(const CVectorGraphics& oVector)
@@ -423,5 +423,10 @@ namespace NSDocxRenderer
 				last_y = command.points.back().y;
 			}
 		}
+	}
+	void CHorVerLinesCollector::Clear()
+	{
+		m_arVertical.clear();
+		m_arHorizontal.clear();
 	}
 }

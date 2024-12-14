@@ -599,7 +599,6 @@ namespace NSDocxRenderer
 		});
 
 		AnalyzeLinesType();
-		GetHorVerLines();
 	}
 
 	void CPage::AnalyzeLinesType()
@@ -681,6 +680,7 @@ namespace NSDocxRenderer
 		MergeLinesByVertAlignType();
 		DeleteTextClipPage();
 		MergeConts();
+		GetHorVerLines();
 		SplitLines();
 		AnalyzeOverlapLines();
 

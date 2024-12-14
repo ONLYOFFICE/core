@@ -83,6 +83,17 @@ public:
 	void set_default_cell_properties(const std::wstring &style_name);
 	std::wstring get_default_cell_properties();
 	std::wstring get_column_cell_properties();
+
+	void set_default_cell_paddings(
+		_CP_OPT(odf_types::length) left,
+		_CP_OPT(odf_types::length) right,
+		_CP_OPT(odf_types::length) top,
+		_CP_OPT(odf_types::length) bottom);
+	void get_default_cell_paddings(
+		_CP_OPT(odf_types::length)& left,
+		_CP_OPT(odf_types::length)& right,
+		_CP_OPT(odf_types::length)& top,
+		_CP_OPT(odf_types::length)& bottom);
 	
 	_CP_OPT(double) get_table_width();
 	_CP_OPT(double) get_table_height();

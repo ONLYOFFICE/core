@@ -2,7 +2,6 @@
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include <list>
-#include <memory>
 #include <array>
 
 namespace NSDocxRenderer

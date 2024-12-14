@@ -1,7 +1,6 @@
 #pragma once
-#include "../../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../../DesktopEditor/graphics/Image.h"
 #include "../../resources/ImageInfo.h"
-#include <map>
 #include <memory>
 
 #ifndef DOCXRENDERER_USE_DYNAMIC_LIBRARY

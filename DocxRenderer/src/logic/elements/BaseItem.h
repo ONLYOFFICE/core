@@ -1,6 +1,4 @@
 #pragma once
-#include <vector>
-#include <memory>
 
 #include "../../../../DesktopEditor/common/StringBuilder.h"
 

@@ -1,8 +1,6 @@
 #include "VectorGraphics.h"
 
-#include <algorithm>
 #include <string.h>
-#include <numeric>
 #include <limits>
 
 #include "../../../DesktopEditor/graphics/Matrix.h"

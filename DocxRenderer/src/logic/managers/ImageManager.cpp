@@ -1,6 +1,7 @@
 #include "ImageManager.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
 
 #include "../../resources/Constants.h"
 

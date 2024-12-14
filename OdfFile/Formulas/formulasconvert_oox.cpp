@@ -192,9 +192,6 @@ std::vector<std::map<std::wstring, std::wstring>> oox2odf_converter::Impl::mapRe
 
 void oox2odf_converter::Impl::replace_cells_range(std::wstring& expr, bool bSelect)
 {
-	if ((0 == expr.find(L"KAVYCHKA")) && (expr.length() - 8 == expr.rfind(L"KAVYCHKA") ))
-		return;
-
 	boost::wregex re(L"(([:$!])+)|(\\S+\\d+)");
 
 	boost::wsmatch result;
@@ -307,11 +304,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater1(boost::wsmat
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
 
-		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
-		{
-			return c1;
-		}
-		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		if (!c1.empty() || !c2.empty() || !sheet.empty())
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
@@ -365,11 +358,7 @@ std::wstring oox2odf_converter::Impl::replace_cells_range_formater2(boost::wsmat
         std::wstring c1 = what[2].str(); 
         std::wstring c2 = what[3].str(); 
 
-		if ((0 == c1.find(L"KAVYCHKA")) && (c1.length() - 8 == c1.rfind(L"KAVYCHKA") ))
-		{
-			return c1;
-		}
-		else if (!c1.empty() || !c2.empty() || !sheet.empty())
+		if (!c1.empty() || !c2.empty() || !sheet.empty())
 		{      
 			XmlUtils::replace_all( sheet, L"!", L"");
 
@@ -600,7 +589,7 @@ std::wstring oox2odf_converter::Impl::convert_formula(const std::wstring & expr)
 
 	if (res1 == res)
 	{
-		//XmlUtils::replace_all( res1, L"KAVYCHKA", L"\""); //IMCONJUGATE_emb.xlsx
+		//IMCONJUGATE_emb.xlsx
 	
 		res = boost::regex_replace(
 			res1,	

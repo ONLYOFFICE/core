@@ -350,6 +350,9 @@ namespace formulasconvert {
 			replace_tmp_back(external);
 
 			int id = -1;//add_external_link(external);
+
+			if (external[0] == L'\'') external = external.substr(1, external.size() - 2);
+
 			std::unordered_map<std::wstring, int>::iterator pFind = mapExternalLink_.find(external);
 			if ( pFind == mapExternalLink_.end())
 			{
@@ -364,6 +367,9 @@ namespace formulasconvert {
 			{
 				sheet1 = sheet1.substr(1, sheet1.length() - 2);
 			}
+			replace_tmp_back(sheet1);
+			if (sheet1[0] == L'\'') sheet1 = sheet1.substr(1, sheet1.size() - 2);
+
 			sheet1 = L"'[" + std::to_wstring(id) + L"]" + sheet1 + L"'";
 		}
 		else if (std::wstring::npos != sheet1.find(L" "))
@@ -468,9 +474,9 @@ namespace formulasconvert {
 		convert_with_absolute = bAbsoluteAlways;
 
 		//boost::wregex complexRef(L"\\[(?:\'([^\']*)\'#){0,1}\\[{0,1}(?:\\$){0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
-		boost::wregex complexRef(L"(?:(?:(?:(?:\\[\'([^\']*)\'#)|(?:\'([^\']*)\'#\\[)))|(?:\\[))\
+		boost::wregex complexRef(L"(?:(?:(?:(?:\\[(.*)#)|(?:(.*)#\\[)))|(?:\\[))\
 (?:\\$){0,1}([^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::(\\${0,1}[^\\.]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]");
-//									 [ 'external'#  [  $   Sheet2         . A1								 : ( $   Sheet2)? . B5                    ]
+//									 [ external#  [  $   Sheet2         . A1								 : ( $   Sheet2)? . B5                    ]
 
 		std::wstring result = boost::regex_replace(
   			expr,
@@ -504,8 +510,8 @@ namespace formulasconvert {
 		convert_with_absolute = bAbsoluteAlways;
 		
 		//boost::wregex complexRef(L"\\${0,1}([^\\.]+?){0,1}\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)(?::\\.(\\${0,1}[a-zA-Z]+\\${0,1}\\d+)){0,1}");
-		boost::wregex complexRef(L"\\[{0,1}(?:\'([^\']*)\'#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
-//									  'external'#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
+		boost::wregex complexRef(L"\\[{0,1}(?:(.*)#){0,1}\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)(?::\\${0,1}([^\\.\\s]+?){0,1}\\.(\\${0,1}[\\w^0-9]*\\${0,1}\\d*)){0,1}\\]{0,1}");
+//									  external#  $   Sheet2         . A1								 : ( $   Sheet2)? . B5   
 	
 		const std::wstring res = boost::regex_replace(
 			expr,

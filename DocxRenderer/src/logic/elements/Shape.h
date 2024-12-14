@@ -1,4 +1,7 @@
 #pragma once
+
+#include <memory>
+
 #include "../../../../DesktopEditor/graphics/structures.h"
 
 #include "../../resources/ImageInfo.h"

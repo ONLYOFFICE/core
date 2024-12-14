@@ -97,9 +97,6 @@ namespace NSDocxRenderer
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
-
-					// cache that value? (calls rarely)
-					wide_space->CalcSelected();
 				};
 
 				if (bIsEqual)

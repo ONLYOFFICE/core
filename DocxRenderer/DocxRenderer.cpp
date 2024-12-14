@@ -126,20 +126,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPage(IOfficeDrawingFile* pFile, siz
 
 	DrawPage(pFile, nPage);
 
-	std::vector<std::wstring> xml_shapes;
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXml(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
-
-	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
-	if (!arComleteObjects.empty())
-		xml_shapes.insert(xml_shapes.end(), arComleteObjects.begin(), arComleteObjects.end());
-
+	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapes();
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
@@ -154,23 +141,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 
 	DrawPage(pFile, nPage);
 
-	// for drawingml is no tag behind-doc - so we need to reorder shapes
-	m_pInternal->m_oDocument.m_oCurrentPage.ReorderShapesForPptx();
-
-	std::vector<std::wstring> xml_shapes;
-	for (const auto& shape : m_pInternal->m_oDocument.m_oCurrentPage.m_arShapes)
-	{
-		if (!shape) continue;
-		auto writer = new NSStringUtils::CStringBuilder();
-		shape->ToXmlPptx(*writer);
-		xml_shapes.push_back(writer->GetData());
-		delete writer;
-	}
-
-	std::vector<std::wstring>& arComleteObjects = m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml;
-	if (!arComleteObjects.empty())
-		xml_shapes.insert(xml_shapes.end(), arComleteObjects.begin(), arComleteObjects.end());
-
+	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapesPptx();
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
@@ -241,7 +212,7 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 			std::string sNewId = "r:embed=\"rId" + std::to_string(pInfo->m_nId + c_iStartingIdForImages) + "\"";
 			NSStringUtils::string_replaceA(sUtf8Shape, "r:embed=\"\"", sNewId);
 		}
-		m_pInternal->m_oDocument.m_oCurrentPage.m_arCompleteObjectsXml.push_back(UTF8_TO_U(sUtf8Shape));
+		m_pInternal->m_oDocument.m_oCurrentPage.AddCompleteXml(UTF8_TO_U(sUtf8Shape));
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

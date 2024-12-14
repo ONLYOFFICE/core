@@ -18,18 +18,12 @@ namespace NSDocxRenderer
 			CManagers(const CManagers& other) = default;
 			~CManagers() = default;
 
-			CImageManager*             pImageManager;
-			CFontStyleManager*         pFontStyleManager;
-			CParagraphStyleManager*    pParagraphStyleManager;
-			CFontManager*              pFontManager;
-			CFontSelector*			   pFontSelector;
+			CImageManager*          pImageManager;
+			CFontStyleManager*      pFontStyleManager;
+			CParagraphStyleManager* pParagraphStyleManager;
+			CFontManager*           pFontManager;
+			CFontSelector*			pFontSelector;
 		};
-
-		using shape_ptr_t = std::shared_ptr<CShape>;
-		using cont_ptr_t = std::shared_ptr<CContText>;
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		using item_ptr_t = std::shared_ptr<CBaseItem>;
-		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 
 		double m_dWidth {0.0};
 		double m_dHeight{0.0};
@@ -37,32 +31,14 @@ namespace NSDocxRenderer
 		LONG m_lCurrentCommand{0};
 		LONG m_lClipMode      {0};
 
-		TextAssociationType m_eTextAssociationType{TextAssociationType::tatPlainParagraph};
-
+		TextAssociationType         m_eTextAssociationType{TextAssociationType::tatPlainParagraph};
 		NSFonts::IApplicationFonts* m_pAppFonts{nullptr};
-
-		NSStructures::CFont     m_oFont;
-		NSStructures::CPen      m_oPen;
-		NSStructures::CBrush    m_oBrush;
-		NSStructures::CShadow   m_oShadow;
-		NSStructures::CEdgeText m_oEdgeText;
-
-		Aggplus::CMatrix m_oTransform;
-		CManagers        m_oManagers;
-
-		CVectorGraphics  m_oCurrVectorGraphics, m_oClipVectorGraphics;
-
-		CContTextBuilder      m_oContBuilder;
-		CHorVerLinesCollector m_oHorVerLinesCollector;
-
-		std::vector<cont_ptr_t>      m_arConts;
-		std::vector<line_ptr_t>      m_arTextLines;
-		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
-		std::vector<shape_ptr_t>     m_arShapes;
-		std::vector<paragraph_ptr_t> m_arParagraphs;
-
-		std::vector<item_ptr_t>   m_arOutputObjects;
-		std::vector<std::wstring> m_arCompleteObjectsXml;
+		NSStructures::CFont         m_oFont{};
+		NSStructures::CPen          m_oPen{};
+		NSStructures::CBrush        m_oBrush{};
+		NSStructures::CShadow       m_oShadow{};
+		NSStructures::CEdgeText     m_oEdgeText{};
+		Aggplus::CMatrix            m_oTransform{};
 
 		bool m_bIsDeleteTextClipPage{true};
 		bool m_bIsRecalcFontSize    {true};
@@ -100,9 +76,18 @@ namespace NSDocxRenderer
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
-		void ReorderShapesForPptx();
+
+		std::vector<std::wstring> GetXmlShapes();
+		std::vector<std::wstring> GetXmlShapesPptx();
+		void AddCompleteXml(const std::wstring oXml);
 
 	private:
+		using shape_ptr_t = std::shared_ptr<CShape>;
+		using cont_ptr_t = std::shared_ptr<CContText>;
+		using line_ptr_t = std::shared_ptr<CTextLine>;
+		using item_ptr_t = std::shared_ptr<CBaseItem>;
+		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
+
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
 
@@ -166,23 +151,43 @@ namespace NSDocxRenderer
 		// calc true shapes rotation for ooxml format
 		void CalcShapesRotation();
 
+		// for drawingml is no tag behind-doc - so we need to reorder shapes
+		void ReorderShapesForPptx();
+
 		// get lines by groups by X
 		std::vector<std::vector<line_ptr_t>> GetLinesByGroups();
 
-		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont);
-		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont);
-		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont);
-		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont);
+		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
+		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 
 		bool IsShapeBorderBetweenVertical(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
 		bool IsShapeBorderBetweenHorizontal(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
 		bool IsShapeBorderTrough(cont_ptr_t pItem, double& dXCrossing, double& dYCrossing) const noexcept;
 
-		shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
-		shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
+		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
+		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;
 
-		void ToXml(NSStringUtils::CStringBuilder& oWriter);
-		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter);
+		static shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
+		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
+
+		CManagers m_oManagers;
+
+		CVectorGraphics m_oCurrVectorGraphics;
+		CVectorGraphics m_oClipVectorGraphics;
+
+		CContTextBuilder      m_oContBuilder;
+		CHorVerLinesCollector m_oHorVerLinesCollector;
+
+		std::vector<cont_ptr_t>      m_arConts;
+		std::vector<line_ptr_t>      m_arTextLines;
+		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
+		std::vector<shape_ptr_t>     m_arShapes;
+		std::vector<paragraph_ptr_t> m_arParagraphs;
+
+		std::vector<item_ptr_t>   m_arOutputObjects;
+		std::vector<std::wstring> m_arCompleteObjectsXml;
 
 		size_t m_nShapeOrder = 0;
 	};

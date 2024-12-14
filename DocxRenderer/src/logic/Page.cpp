@@ -54,6 +54,7 @@ namespace NSDocxRenderer
 		m_oEdgeText.SetDefaultParams();
 		m_oTransform.Reset();
 
+		m_oHorVerLinesCollector.Clear();
 		m_arConts.clear();
 		m_arTextLines.clear();
 		m_arDiacriticalSymbols.clear();
@@ -412,6 +413,45 @@ namespace NSDocxRenderer
 	{
 		ToXml(oWriter);
 		WriteSectionToFile(bIsLastPage, oWriter);
+	}
+
+	std::vector<std::wstring> CPage::GetXmlShapes()
+	{
+		std::vector<std::wstring> xml_shapes;
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape) continue;
+			auto writer = new NSStringUtils::CStringBuilder();
+			shape->ToXml(*writer);
+			xml_shapes.push_back(writer->GetData());
+			delete writer;
+		}
+		if (!m_arCompleteObjectsXml.empty())
+			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+
+		return xml_shapes;
+	}
+	std::vector<std::wstring> CPage::GetXmlShapesPptx()
+	{
+		ReorderShapesForPptx();
+
+		std::vector<std::wstring> xml_shapes;
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape) continue;
+			auto writer = new NSStringUtils::CStringBuilder();
+			shape->ToXmlPptx(*writer);
+			xml_shapes.push_back(writer->GetData());
+			delete writer;
+		}
+		if (!m_arCompleteObjectsXml.empty())
+			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+
+		return xml_shapes;
+	}
+	void CPage::AddCompleteXml(const std::wstring oXml)
+	{
+		m_arCompleteObjectsXml.push_back(oXml);
 	}
 	void CPage::ReorderShapesForPptx()
 	{
@@ -942,7 +982,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CPage::IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont)
+	bool CPage::IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		double dTopBorder = pCont->m_dTop + pCont->m_dHeight / 3;
@@ -967,7 +1007,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
 
-	bool CPage::IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont)
+	bool CPage::IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
@@ -991,7 +1031,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
 
-	bool CPage::IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont)
+	bool CPage::IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 
@@ -1021,7 +1061,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4 && !bIf5 && bIf6 && bIf7;
 	}
 
-	bool CPage::IsOutline(shape_ptr_t pShape, cont_ptr_t pCont)
+	bool CPage::IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		auto v_type = pCont->CBaseItem::GetVerticalCrossingType(pShape.get());
@@ -1129,7 +1169,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept
 	{
 		bool bIsNeedWP = !m_arShapes.empty();
 
@@ -1893,7 +1933,7 @@ namespace NSDocxRenderer
 		return pShape;
 	}
 
-	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)
+	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept
 	{
 		// section
 		int lWidthDx  = (int)(m_dWidth * c_dMMToDx);

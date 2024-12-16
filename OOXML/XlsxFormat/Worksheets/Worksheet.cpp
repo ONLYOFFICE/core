@@ -383,6 +383,11 @@ namespace OOX
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);
             }
+
+
+            if (!m_arrConditionalFormatting.empty())
+                        for(auto &item : m_arrConditionalFormatting)
+                            item->toBin(writer);
         }
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{

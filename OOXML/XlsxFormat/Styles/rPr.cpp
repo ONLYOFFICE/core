@@ -35,6 +35,7 @@
 #include "Fonts.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../XlsbFormat/Biff12_records/IndexedColor.h"
 #include "../../XlsbFormat/Biff12_records/MRUColor.h"
 #include "../../XlsbFormat/Biff12_records/Color14.h"
@@ -564,6 +565,48 @@ namespace OOX
                 ptr->nTintAndShade = 0;
 			return objectPtr;
 		}
+        void CColor::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Color);
+            BYTE flags = 0;
+            BYTE index = 0;
+            BYTE bRed = 0;
+            BYTE bGreen = 0;
+            BYTE bBlue = 0;
+            BYTE bAlpha = 255;
+            if(m_oAuto.IsInit())
+            {
+                if(m_oAuto->GetValue())
+                    SETBITS(flags, 1, 7, 0);
+            }
+            else if(m_oIndexed.IsInit())
+            {
+                    index = m_oIndexed->GetValue();
+                    SETBITS(flags, 1, 7, 1);
+            }
+            else if(m_oThemeColor.IsInit())
+            {
+                    index = m_oThemeColor->GetValue();
+                    SETBITS(flags, 1, 7, 3);
+            }
+            else
+            {
+                if(m_oRgb.IsInit())
+                {
+                    bAlpha = m_oRgb->Get_A();
+                    bBlue = m_oRgb->Get_B();
+                    bGreen = m_oRgb->Get_G();
+                    bRed = m_oRgb->Get_R();
+                }
+                SETBITS(flags, 1, 7, 2);
+                SETBIT(flags, 0, 1);
+            }
+            _INT16 nTintAndShade = 0;
+            if ( m_oTint.IsInit())
+                nTintAndShade = m_oTint->GetValue() * 32767.0;
+            *record << flags << index << nTintAndShade << bRed << bGreen << bBlue << bAlpha;
+            writer->storeNextRecord(record);
+        }
         XLS::BaseObjectPtr CColor::toBin14()
         {
             auto ptr(new XLSB::Color14);

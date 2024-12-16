@@ -756,21 +756,25 @@ namespace StarMath
 		if(pRPr->m_oColor.GetPointer() != nullptr)
 		{
 			std::wstring wsColor,wsUpperColor(L"");
-			wsColor =  pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()->ToStringNoAlpha();
-			for(wchar_t chToken: wsColor)
-				wsUpperColor += std::toupper(chToken);
-			if(wsUpperColor != L"000000")
+			wsColor =  pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()!= nullptr ? pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()->ToStringNoAlpha():L"";
+			if(wsColor != L"")
 			{
-				stTempPr->m_wsColor = wsUpperColor;
-				bRpr = true;
+				for(wchar_t chToken: wsColor)
+					wsUpperColor += std::toupper(chToken);
+				if(wsUpperColor != L"000000")
+				{
+					stTempPr->m_wsColor = wsUpperColor;
+					bRpr = true;
+				}
 			}
 		}
 		if(pRPr->m_oSz.GetPointer() != nullptr)
 		{
-			bRpr = true;
-			stTempPr->m_iSize = pRPr->m_oSz.GetPointer()->m_oVal.GetPointer()->GetValue();
+			stTempPr->m_iSize = pRPr->m_oSz.GetPointer()->m_oVal.GetPointer() != nullptr ? pRPr->m_oSz.GetPointer()->m_oVal.GetPointer()->GetValue():0;
+			if(stTempPr->m_iSize != 0)
+				bRpr = true;
 		}
-		if(pRPr->m_oRFonts.GetPointer()!= nullptr)
+		if(pRPr->m_oRFonts.GetPointer()!= nullptr && pRPr->m_oRFonts.GetPointer()->m_sAscii.GetPointer()!= nullptr)
 			stTempPr->m_enFont = FontCheck(pRPr->m_oRFonts.GetPointer()->m_sAscii.get(),bRpr);
 		if(pRPr->m_oStrike.GetPointer()!=nullptr && pRPr->m_oStrike.GetPointer()->m_oVal.GetValue() == SimpleTypes::EOnOff::onoffTrue)
 		{

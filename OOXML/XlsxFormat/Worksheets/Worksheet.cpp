@@ -379,15 +379,15 @@ namespace OOX
                 m_oSheetData->toBin(writer);
             if(m_oSheetProtection.IsInit())
                 m_oSheetProtection->toBin(writer);
-            {
-                auto record = writer->getNextRecord(XLSB::rt_EndSheet);
-                 writer->storeNextRecord(record);
-            }
 
 
             if (!m_arrConditionalFormatting.empty())
                         for(auto &item : m_arrConditionalFormatting)
                             item->toBin(writer);
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndSheet);
+                 writer->storeNextRecord(record);
+            }
         }
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{

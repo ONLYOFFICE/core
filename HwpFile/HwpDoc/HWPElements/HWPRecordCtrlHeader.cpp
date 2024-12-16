@@ -1,5 +1,18 @@
 #include "HWPRecordCtrlHeader.h"
 
+#include "../Paragraph/CtrlAutoNumber.h"
+#include "../Paragraph/CtrlClick.h"
+#include "../Paragraph/CtrlColumnDef.h"
+#include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlForm.h"
+#include "../Paragraph/CtrlGeneralShape.h"
+#include "../Paragraph/CtrlHeadFoot.h"
+#include "../Paragraph/CtrlNewNumber.h"
+#include "../Paragraph/CtrlNote.h"
+#include "../Paragraph/CtrlPageNumPos.h"
+#include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlTable.h"
+
 namespace HWP
 {
 CHWPRecordCtrlHeader::CHWPRecordCtrlHeader(int nTagNum, int nLevel, int nSize)
@@ -26,7 +39,7 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 	else if ("  nf" == sCtrlID || "  ne" == sCtrlID)
 		pCtrl = new CCtrlNote(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 	else if (" lbt" == sCtrlID)
-		pCtrl = new CCtrlTalbe(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
+		pCtrl = new CCtrlTable(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 	else if ("onta" == sCtrlID)
 		pCtrl = new CCtrlAutoNumber(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 	else if ("onwn" == sCtrlID)

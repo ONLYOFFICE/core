@@ -80,5 +80,7 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 		default: break;
 		}
 	}
+
+	return true;
 }
 }

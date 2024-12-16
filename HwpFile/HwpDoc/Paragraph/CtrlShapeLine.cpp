@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeLine::CCtrlShapeLine()
 {}
 
-CCtrlShapeLine::CCtrlShapeLine(const std::string& sCtrlID)
+CCtrlShapeLine::CCtrlShapeLine(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

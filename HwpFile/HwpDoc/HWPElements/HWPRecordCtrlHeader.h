@@ -3,18 +3,8 @@
 
 #include "HWPRecord.h"
 
-#include "../Paragraph/CtrlAutoNumber.h"
-#include "../Paragraph/CtrlClick.h"
-#include "../Paragraph/CtrlColumnDef.h"
-#include "../Paragraph/CtrlEqEdit.h"
-#include "../Paragraph/CtrlForm.h"
-#include "../Paragraph/CtrlGeneralShape.h"
-#include "../Paragraph/CtrlHeadFoot.h"
-#include "../Paragraph/CtrlNewNumber.h"
-#include "../Paragraph/CtrlNote.h"
-#include "../Paragraph/CtrlPageNumPos.h"
-#include "../Paragraph/CtrlSectionDef.h"
-#include "../Paragraph/CtrlTable.h"
+#include "../Paragraph/Ctrl.h"
+#include "../HWPStream.h"
 
 namespace HWP
 {

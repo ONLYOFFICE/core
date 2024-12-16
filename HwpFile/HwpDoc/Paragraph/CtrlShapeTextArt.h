@@ -24,6 +24,8 @@ class CCtrlShapeTextArt : public CCtrlGeneralShape
 
 	std::vector<TPoint> m_arOutline;
 public:
+	CCtrlShapeTextArt();
+	CCtrlShapeTextArt(const STRING& sCtrlID);
 	CCtrlShapeTextArt(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeTextArt& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

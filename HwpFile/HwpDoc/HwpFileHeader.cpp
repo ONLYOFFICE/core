@@ -2,66 +2,91 @@
 
 namespace HWP
 {
-	CHwpFileHeader::CHwpFileHeader()
-	{}
+CHwpFileHeader::CHwpFileHeader()
+{}
 
-	bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
-	{
-		unsigned int unOffset = 0;
+bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
+{
+	unsigned int unOffset = 0;
 
-		m_sSignature = STRING((char*)oBuffer.GetCurPtr(), 32);
+	m_sSignature = STRING((char*)oBuffer.GetCurPtr(), 32);
 
-		if ("HWP Document File" != m_sSignature)
-			return false;
+	if ("HWP Document File" != m_sSignature)
+		return false;
 
-		unOffset += 32;
+	unOffset += 32;
 
-		//version
-		unOffset += 4;
+	//version
+	unOffset += 4;
 
-		m_bCompressed        = CHECK_FLAG(oBuffer[unOffset], 0x01);
-		m_bPasswordEncrypted = CHECK_FLAG(oBuffer[unOffset], 0x02);
-		m_bDistributable = CHECK_FLAG(oBuffer[unOffset], 0x04);
-		m_bSaveScript = CHECK_FLAG(oBuffer[unOffset], 0x08);
-		m_bDRMprotected = CHECK_FLAG(oBuffer[unOffset], 0x10);
-		m_bHasXMLTemplateStorage =CHECK_FLAG(oBuffer[unOffset], 0x20);
-		m_bHasDocumentHistory = CHECK_FLAG(oBuffer[unOffset], 0x40);
-		m_bHasPkiSignature = CHECK_FLAG(oBuffer[unOffset], 0x80);
+	m_bCompressed        = CHECK_FLAG(oBuffer[unOffset], 0x01);
+	m_bPasswordEncrypted = CHECK_FLAG(oBuffer[unOffset], 0x02);
+	m_bDistributable = CHECK_FLAG(oBuffer[unOffset], 0x04);
+	m_bSaveScript = CHECK_FLAG(oBuffer[unOffset], 0x08);
+	m_bDRMprotected = CHECK_FLAG(oBuffer[unOffset], 0x10);
+	m_bHasXMLTemplateStorage =CHECK_FLAG(oBuffer[unOffset], 0x20);
+	m_bHasDocumentHistory = CHECK_FLAG(oBuffer[unOffset], 0x40);
+	m_bHasPkiSignature = CHECK_FLAG(oBuffer[unOffset], 0x80);
 
-		++unOffset;
+	++unOffset;
 
-		m_bPkiEncrypted = CHECK_FLAG(oBuffer[unOffset], 0x01);
-		m_bReservePkiSignature = CHECK_FLAG(oBuffer[unOffset], 0x02);
-		m_bPkiCertificateDRM = CHECK_FLAG(oBuffer[unOffset], 0x04);
-		m_bCCLDocument = CHECK_FLAG(oBuffer[unOffset], 0x08);
-		m_bMobileOptimized = CHECK_FLAG(oBuffer[unOffset], 0x10);
-		m_bPrivateInformation = CHECK_FLAG(oBuffer[unOffset], 0x20);
-		m_bModifyTracking = CHECK_FLAG(oBuffer[unOffset], 0x40);
-		m_bCopyrightKOGL = CHECK_FLAG(oBuffer[unOffset], 0x80);
+	m_bPkiEncrypted = CHECK_FLAG(oBuffer[unOffset], 0x01);
+	m_bReservePkiSignature = CHECK_FLAG(oBuffer[unOffset], 0x02);
+	m_bPkiCertificateDRM = CHECK_FLAG(oBuffer[unOffset], 0x04);
+	m_bCCLDocument = CHECK_FLAG(oBuffer[unOffset], 0x08);
+	m_bMobileOptimized = CHECK_FLAG(oBuffer[unOffset], 0x10);
+	m_bPrivateInformation = CHECK_FLAG(oBuffer[unOffset], 0x20);
+	m_bModifyTracking = CHECK_FLAG(oBuffer[unOffset], 0x40);
+	m_bCopyrightKOGL = CHECK_FLAG(oBuffer[unOffset], 0x80);
 
-		++unOffset;
+	++unOffset;
 
-		m_bHasVideoControl = CHECK_FLAG(oBuffer[unOffset], 0x01);
-		m_bHasMarkFieldControl = CHECK_FLAG(oBuffer[unOffset], 0x02);
+	m_bHasVideoControl = CHECK_FLAG(oBuffer[unOffset], 0x01);
+	m_bHasMarkFieldControl = CHECK_FLAG(oBuffer[unOffset], 0x02);
 
-		unOffset += 2;
+	unOffset += 2;
 
-		m_bCopyrighted = CHECK_FLAG(oBuffer[unOffset], 0x01);
-		m_bCopyProhibited = CHECK_FLAG(oBuffer[unOffset], 0x02);
-		m_bCopyPermitted = CHECK_FLAG(oBuffer[unOffset], 0x04);
+	m_bCopyrighted = CHECK_FLAG(oBuffer[unOffset], 0x01);
+	m_bCopyProhibited = CHECK_FLAG(oBuffer[unOffset], 0x02);
+	m_bCopyPermitted = CHECK_FLAG(oBuffer[unOffset], 0x04);
 
-		unOffset += 4;
+	unOffset += 4;
 
-		//encryptVersion
-		unOffset += 4;
+	//encryptVersion
+	unOffset += 4;
 
-		m_nCountryKOGLLicensed = (int)oBuffer[unOffset];
+	m_nCountryKOGLLicensed = (int)oBuffer[unOffset];
 
-		return true;
-	}
+	return true;
+}
 
-	bool CHwpFileHeader::GetDistributable() const
-	{
-		return m_bDistributable;
-	}
+bool CHwpFileHeader::Compressed() const
+{
+	return m_bCompressed;
+}
+
+bool CHwpFileHeader::PasswordEncrypted() const
+{
+	return m_bPasswordEncrypted;
+}
+
+bool CHwpFileHeader::Distributable() const
+{
+	return m_bDistributable;
+}
+
+bool CHwpFileHeader::SignatureEmpty() const
+{
+	return m_sSignature.empty();
+}
+
+bool CHwpFileHeader::VersionEmpty() const
+{
+	return m_sVersion.empty();
+}
+
+STRING CHwpFileHeader::GetVersion() const
+{
+	return m_sVersion;
+}
 }

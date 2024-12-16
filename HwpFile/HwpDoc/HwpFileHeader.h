@@ -38,7 +38,13 @@ class CHwpFileHeader
 public:
 	CHwpFileHeader();
 
-	bool GetDistributable() const;
+	bool Compressed() const;
+	bool PasswordEncrypted() const;
+	bool Distributable() const;
+	bool SignatureEmpty() const;
+	bool VersionEmpty() const;
+
+	STRING GetVersion() const;
 
 	bool Parse(CHWPStream& oBuffer);
 };

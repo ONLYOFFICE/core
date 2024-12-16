@@ -3,13 +3,12 @@
 
 #include "HwpFileHeader.h"
 #include "OLEdoc/CompoundFile.h"
+#include "HWPElements/HWPRecordBinData.h"
 #include "HWPSection.h"
-#include <list>
 
 namespace HWP
 {
 class CHWPDocInfo;
-
 class CHWPFile
 {
 	STRING    m_sFileName;
@@ -24,10 +23,33 @@ public:
 	~CHWPFile();
 
 	VECTOR<CHWPSection*> GetSections();
-	CCompoundFile* GetOleFile();
+	const CCompoundFile* GetOleFile() const;
 
 	bool Detect();
 	bool Open();
+	void Close();
+
+	void SaveHWPComponent();
+
+	bool GetFileHeader();
+	const CHWPDocInfo* GetDocInfo() const;
+	bool GetDocInfo(int nVersion);
+	bool GetComponent(const STRING& sEntryName, CHWPStream& oBuffer);
+	VECTOR<CDirectoryEntry*> GetBinData();
+	void SetBinData(const VECTOR<CDirectoryEntry*>& arBinData);
+	VECTOR<CHWPPargraph*> GetParas();
+	void AddParas(const VECTOR<CHWPPargraph*>& arParas);
+private:
+	void SaveChildEntries(const STRING& sBasePath, const STRING& sStorageName, ECompressed eCompressed);
+	CDirectoryEntry* FindChildEntry(const STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const STRING& sEntryName);
+	STRING SaveChildEntry(const STRING& sRootPath, const STRING& sEntryName, ECompressed eCompressed);
+	bool GetChildStream(const STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer);
+
+	bool Unzip(CHWPStream& oInput, CHWPStream& oBuffer);
+	bool Decrypt(CHWPStream& oInput, CHWPStream& oBuffer);
+
+	bool GetBodyText(int nVersion);
+	bool GetViewText(int nVersion);
 };
 }
 

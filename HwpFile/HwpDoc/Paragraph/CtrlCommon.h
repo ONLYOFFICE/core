@@ -54,7 +54,7 @@ enum class EVertAlign
 	OUTSIDE
 };
 
-EVertAlign GetVertAlign(int nValue)
+inline EVertAlign GetVertAlign(int nValue)
 {
 	switch(static_cast<EVertAlign>(nValue))
 	{
@@ -84,6 +84,11 @@ enum class ETextWrap
 	TOP_AND_BOTTOM,
 	BEHIND_TEXT,
 	IN_FRONT_OF_TEXT
+};
+
+enum class ECtrlCommonType
+{
+
 };
 
 class CCtrlCommon : public CCtrl
@@ -127,7 +132,7 @@ class CCtrlCommon : public CCtrl
 	friend class CCtrlGeneralShape;
 	friend class CCtrlShapeVideo;
 	friend class CCtrlEqEdit;
-	friend class CCtrlTalbe;
+	friend class CCtrlTable;
 public:
 	CCtrlCommon();
 	CCtrlCommon(const STRING& sCtrlID);

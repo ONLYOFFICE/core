@@ -11,6 +11,7 @@ class CCtrlContainer : public CCtrlGeneralShape
 	VECTOR<STRING> m_arCtrlIdList;
 	VECTOR<CCtrlGeneralShape*> m_arList;
 public:
+	CCtrlContainer(const STRING& sCtrlID);
 	CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlContainer();
 
@@ -18,6 +19,9 @@ public:
 
 	template <typename FindClass>
 	FindClass* FindLastElement();
+
+	void AddShape(CCtrlGeneralShape* pShape);
+	CCtrlGeneralShape* GetLastShape();
 
 	static int ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

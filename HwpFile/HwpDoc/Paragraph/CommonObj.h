@@ -18,12 +18,12 @@ struct TCommonObj
 	int m_nObjWidth;
 	int m_nObjHeight;
 	int m_nZOrder;
-	std::vector<short> m_arObjSpaces;
+	VECTOR<short> m_arObjSpaces;
 	int m_nObjInstanceID;
 	int m_nBlockPageBreak;
 	STRING m_sObjDesc;
 
-	std::list<CHWPPargraph*> m_arParas;
+	LIST<CHWPPargraph*> m_arParas;
 	int m_nCaptionAttr;
 	int m_nCaptionWidth;
 	int m_nCaptionSpacing;

@@ -117,7 +117,7 @@ CCtrlShapePic::CCtrlShapePic()
 	: CCtrlGeneralShape()
 {}
 
-CCtrlShapePic::CCtrlShapePic(const std::string& sCtrlID)
+CCtrlShapePic::CCtrlShapePic(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

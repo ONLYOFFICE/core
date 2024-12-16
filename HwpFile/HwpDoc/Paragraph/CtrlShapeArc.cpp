@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeArc::CCtrlShapeArc()
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const std::string& sCtrlID)
+CCtrlShapeArc::CCtrlShapeArc(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

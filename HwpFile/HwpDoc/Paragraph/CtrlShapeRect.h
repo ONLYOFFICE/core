@@ -11,6 +11,8 @@ class CCtrlShapeRect : public CCtrlGeneralShape
 	BYTE m_chCurv;
 	TPoint m_arPoints[4];
 public:
+	CCtrlShapeRect();
+	CCtrlShapeRect(const STRING& sCtrlID);
 	CCtrlShapeRect(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

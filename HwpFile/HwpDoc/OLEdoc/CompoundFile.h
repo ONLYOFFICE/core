@@ -43,6 +43,7 @@ public:
 
 	bool Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer);
 	bool Open();
+	void Close();
 private:
 	void AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex);
 

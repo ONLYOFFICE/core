@@ -1,7 +1,6 @@
 #ifndef HWPDOCINFO_H
 #define HWPDOCINFO_H
 
-#include "HWPFile.h"
 #include "HanType.h"
 #include "HWPStream.h"
 #include "HWPElements/HWPRecord.h"
@@ -11,6 +10,7 @@
 
 namespace HWP
 {
+class CHWPFile;
 class CHWPDocInfo
 {
 	EHanType   m_eHanType;

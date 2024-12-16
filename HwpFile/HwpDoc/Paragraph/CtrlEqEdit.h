@@ -15,6 +15,7 @@ class CCtrlEqEdit : public CCtrlGeneralShape
 	STRING m_sVersion;
 	STRING m_sFont;
 public:
+	CCtrlEqEdit();
 	CCtrlEqEdit(const STRING& sCtrlID);
 	CCtrlEqEdit(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 

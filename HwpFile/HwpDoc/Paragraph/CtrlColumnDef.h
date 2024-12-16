@@ -16,8 +16,8 @@ class CCtrlColumnDef : public CCtrl
 	short m_shColCount;
 	bool m_bSameSz;
 	short m_shSameGap;
-	std::vector<short> m_arColSzWidths;
-	std::vector<short> m_arColSzGaps;
+	VECTOR<short> m_arColSzWidths;
+	VECTOR<short> m_arColSzGaps;
 	ELineStyle2 m_eColLineStyle;
 	BYTE m_chColLineWidth;
 	int m_nColLineColor;

@@ -288,6 +288,12 @@ bool CCompoundFile::Open()
 	return true;
 }
 
+void CCompoundFile::Close()
+{
+	if (m_fFile.is_open())
+		m_fFile.close();
+}
+
 void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex)
 {
 	if (-1 == nCurrentIndex)

@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapePolygon::CCtrlShapePolygon()
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const std::string& sCtrlID)
+CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

@@ -126,7 +126,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					if (" osg" == sInfo)
 						arParas.push_back(new CCtrlGeneralShape(sInfo));
 					else if (" lbt" == sInfo)
-						arParas.push_back(new CCtrlTalbe(sInfo));
+						arParas.push_back(new CCtrlTable(sInfo));
 					else if ("deqe" == sInfo)
 						arParas.push_back(new CCtrlEqEdit(sInfo));
 					// else if ("mrof" == sInfo)

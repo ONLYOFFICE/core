@@ -21,7 +21,7 @@ enum class ENumType
 	null
 };
 
-ENumType GetNumType(int nValue)
+inline ENumType GetNumType(int nValue)
 {
 	switch(static_cast<ENumType>(nValue))
 	{

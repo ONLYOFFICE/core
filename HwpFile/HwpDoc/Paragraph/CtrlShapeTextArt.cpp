@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeTextArt::CCtrlShapeTextArt()
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const std::string& sCtrlID)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

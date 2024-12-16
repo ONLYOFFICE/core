@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeRect::CCtrlShapeRect()
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const std::string& sCtrlID)
+CCtrlShapeRect::CCtrlShapeRect(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

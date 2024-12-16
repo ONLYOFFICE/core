@@ -8,7 +8,6 @@
 
 namespace HWP
 {
-
 struct TBorder
 {
 	ELineStyle2 m_eStyle;

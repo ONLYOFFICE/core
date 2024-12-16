@@ -12,7 +12,7 @@ enum class EArcType
 	CHORD
 };
 
-EArcType GetArcType(int nValue)
+inline EArcType GetArcType(int nValue)
 {
 	switch(static_cast<EArcType>(nValue))
 	{
@@ -44,6 +44,8 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nEndX2;
 	int m_nEndY2;
 public:
+	CCtrlShapeEllipse();
+	CCtrlShapeEllipse(const STRING& sCtrlID);
 	CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

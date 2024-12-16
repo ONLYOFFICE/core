@@ -3,7 +3,6 @@
 
 namespace HWP
 {
-
 enum class ELineStyle1
 {
 	SOLID,
@@ -25,7 +24,7 @@ enum class ELineStyle1
 	SOLID_3D_REVERS_LI
 };
 
-ELineStyle1 GetLineStyle1(int nValue)
+inline ELineStyle1 GetLineStyle1(int nValue)
 {
 	switch(static_cast<ELineStyle1>(nValue))
 	{
@@ -68,7 +67,7 @@ enum class ELineStyle2
 	SLIM_THICK_SLIM
 };
 
-ELineStyle2 GetLineStyle2(int nValue)
+inline ELineStyle2 GetLineStyle2(int nValue)
 {
 	switch(static_cast<ELineStyle2>(nValue))
 	{
@@ -108,7 +107,7 @@ enum class ENumberShape1
 	CIRCLED_IDEOGRAPH
 };
 
-ENumberShape1 GetNumberShape1(int nValue)
+inline ENumberShape1 GetNumberShape1(int nValue)
 {
 	switch (static_cast<ENumberShape1>(nValue))
 	{
@@ -156,7 +155,7 @@ enum class ENumberShape2
 	USER_CHAR = 0x81
 };
 
-ENumberShape2 GetNumberShape2(int nValue)
+inline ENumberShape2 GetNumberShape2(int nValue)
 {
 	switch (static_cast<ENumberShape2>(nValue))
 	{
@@ -199,7 +198,7 @@ enum class ELineArrowStyle
 	EMPTY_BOX
 };
 
-ELineArrowStyle GetLineArrowStyle(int nNum, bool bFill)
+inline ELineArrowStyle GetLineArrowStyle(int nNum, bool bFill)
 {
 	switch (nNum)
 	{
@@ -230,7 +229,7 @@ enum class ELineArrowSize
 	LARGE_LARGE
 };
 
-ELineArrowSize GetLineArrowSize(int nValue)
+inline ELineArrowSize GetLineArrowSize(int nValue)
 {
 	switch(static_cast<ELineArrowSize>(nValue))
 	{

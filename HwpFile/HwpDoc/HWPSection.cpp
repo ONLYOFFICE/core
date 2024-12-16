@@ -2,6 +2,7 @@
 
 #include "HWPElements/HWPTag.h"
 
+#include "HwpDoc/Paragraph/CtrlEqEdit.h"
 #include "Paragraph/CtrlTable.h"
 #include "Paragraph/CtrlSectionDef.h"
 #include "Paragraph/CtrlCommon.h"
@@ -74,6 +75,8 @@ bool CHWPSection::Parse(CHWPStream& oBuffer, int nVersion)
 				m_arParas.push_back(pCurrPara);
 		}
 	}
+
+	return true;
 }
 
 int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion)

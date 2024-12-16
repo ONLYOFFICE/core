@@ -7,6 +7,13 @@
 
 namespace HWP
 {
+enum class ECompressed
+{
+	FOLLOW_STORAGE = 0x00,
+	COMPRESS = 0x10,
+	NO_COMPRESS = 0x20
+};
+
 class CHWPRecordBinData : public CHWPRecord
 {
 	enum class EType
@@ -16,12 +23,7 @@ class CHWPRecordBinData : public CHWPRecord
 		STORAGE = 0x2
 	} m_eType;
 
-	enum class ECompressed
-	{
-		FOLLOW_STORAGE = 0x00,
-		COMPRESS = 0x10,
-		NO_COMPRESS = 0x20
-	} m_eCompressed;
+	ECompressed m_eCompressed;
 
 	enum class EState
 	{

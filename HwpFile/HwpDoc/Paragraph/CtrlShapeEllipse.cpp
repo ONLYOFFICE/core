@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeEllipse::CCtrlShapeEllipse()
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const std::string& sCtrlID)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

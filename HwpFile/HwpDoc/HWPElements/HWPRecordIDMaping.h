@@ -8,7 +8,6 @@
 
 namespace HWP
 {
-
 enum class EIndex
 {
 	BIN_DATA,
@@ -36,7 +35,7 @@ enum class EIndex
 class CHWPRecordIDMaping : public CHWPRecord
 {
 	CHWPDocInfo *m_pParent;
-	std::list<int> m_arIdMappingNum;
+	LIST<int> m_arIdMappingNum;
 
 	int m_arCounts[static_cast<int>(EIndex::MAX)];
 

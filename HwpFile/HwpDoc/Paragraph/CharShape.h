@@ -15,7 +15,7 @@ public:
 	CCharShape();
 	CCharShape(int nStart, int nID);
 
-	static std::list<CCharShape*> Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static LIST<CCharShape*> Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, const VECTOR<CCtrl*>& arParas);
 };
 }

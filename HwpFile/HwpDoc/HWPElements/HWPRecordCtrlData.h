@@ -35,12 +35,12 @@ struct TParameterSet
 {
 	short m_shParamSetId;
 	short m_shNItems;
-	std::list<TParameterItem> m_arItems;
+	LIST<TParameterItem> m_arItems;
 };
 
 class CHWPRecordCtrlData : public CHWPRecord
 {
-	std::list<TParameterSet> m_arParamSets;
+	LIST<TParameterSet> m_arParamSets;
 public:
 	CHWPRecordCtrlData(int nTagNum, int nLevel, int nSize);
 };

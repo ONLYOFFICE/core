@@ -12,7 +12,7 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel)
+ADD_DEPENDENCY(kernel, UnicodeConverter)
 
 SOURCES += \
     HwpDoc/HWPDocInfo.cpp \

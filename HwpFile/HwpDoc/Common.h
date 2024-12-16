@@ -7,9 +7,10 @@
 
 namespace HWP
 {
-#define CHAR char16_t
-#define STRING std::string
-#define BYTE char
+typedef char16_t CHAR;
+typedef std::string STRING;
+typedef char BYTE;
+
 #define LIST std::list
 #define VECTOR std::vector
 

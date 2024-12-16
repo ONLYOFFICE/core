@@ -5,7 +5,7 @@ namespace HWP
 CCtrlShapeOle::CCtrlShapeOle()
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const std::string& sCtrlID)
+CCtrlShapeOle::CCtrlShapeOle(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 

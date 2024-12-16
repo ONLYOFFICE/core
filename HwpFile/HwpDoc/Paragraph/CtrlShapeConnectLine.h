@@ -33,9 +33,6 @@ class CCtrlShapeConnectLine : public CCtrlGeneralShape
 	TConnectPoint m_oEndPt;
 public:
 	CCtrlShapeConnectLine(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-
-	static int ParseElement(CCtrlShapeConnectLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	static int ParseCtrl(CCtrlShapeConnectLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }
 

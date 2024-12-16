@@ -22,6 +22,8 @@ CHWPStream::~CHWPStream()
 {
 	if (nullptr != m_pBegin && !m_bExternalBuffer)
 		delete[] m_pBegin;
+
+	m_pBegin = nullptr;
 }
 
 void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer)

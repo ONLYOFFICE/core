@@ -125,6 +125,8 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	int m_nIniPicHeight;
 	BYTE m_chPicAlpha;
 public:
+	CCtrlShapePic();
+	CCtrlShapePic(const STRING& sCtrlID);
 	CCtrlShapePic(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlShapePic();
 

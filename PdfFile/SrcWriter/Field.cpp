@@ -1638,6 +1638,9 @@ namespace PdfWriter
 		{
 			m_pStream = new CMemoryStream();
 			SetStream(m_pXref, m_pStream);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		}
 
 		Add("Type", "XObject");

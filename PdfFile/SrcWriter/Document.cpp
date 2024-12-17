@@ -661,6 +661,10 @@ namespace PdfWriter
 	{
 		return new CCaretAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateStampAnnot()
+	{
+		return new CStampAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreateWidgetAnnot()
 	{
 		if (!CheckAcroForm())

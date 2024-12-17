@@ -2371,9 +2371,9 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 	}
 	oObj.free();
 
-	m_nRotate = 0;
-	if (oAnnot.dictLookup("Rotate", &oObj)->isInt())
-		m_nRotate = oObj.getInt();
+	m_dRotate = 0;
+	if (oAnnot.dictLookup("Rotate", &oObj)->isNum())
+		m_dRotate = oObj.getNum();
 	oObj.free();
 
 	double m[6] = { 1, 0, 0, 1, 0, 0 }, bbox[4] = { 0, 0, 0, 0 };
@@ -4193,7 +4193,7 @@ void CAnnotStamp::ToWASM(NSWasm::CData& oRes)
 	CAnnotMarkup::ToWASM(oRes);
 
 	oRes.WriteString(m_sName);
-	oRes.AddInt(m_nRotate);
+	oRes.WriteDouble(m_dRotate);
 	oRes.WriteDouble(m_dX1);
 	oRes.WriteDouble(m_dY1);
 	oRes.WriteDouble(m_dX2);

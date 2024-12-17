@@ -703,7 +703,20 @@ namespace NSDocxRenderer
 	{
 		for (const auto& shape : m_arShapes)
 			if (shape)
+			{
+				const double out_of_page_coeff = 1.1;
+				bool is_out_of_page = shape->m_dTop < 0 ||
+				                      shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
+				                      shape->m_dLeft < 0 ||
+				                      shape->m_dRight > this->m_dWidth * out_of_page_coeff;
+
+				bool is_too_big = (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM);
+
+				if (is_too_big || is_out_of_page)
+					continue;
+
 				m_oHorVerLinesCollector.AddVector(shape->m_oVector);
+			}
 	}
 
 	void CPage::AnalyzeTextLines()
@@ -1240,89 +1253,59 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CPage::IsShapeBorderBetweenVertical(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
+	bool CPage::IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept
 	{
 		double left = std::min(pFirst->m_dRight, pSecond->m_dRight);
 		double right = std::max(pFirst->m_dLeft, pSecond->m_dLeft);
-		double top = std::min(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
-		double bot = std::max(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+		double top = std::min(pFirst->m_dTop, pSecond->m_dTop);
+		double bot = std::max(pFirst->m_dBaselinePos, pSecond->m_dBaselinePos);
 
 		auto dummy_cont = std::make_shared<CContText>();
-		dummy_cont->m_dLeft = left;
-		dummy_cont->m_dRight = right;
-		dummy_cont->m_dTopWithAscent = top;
-		dummy_cont->m_dBotWithDescent = bot;
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
 
-		double dx = 0, dy = 0;
-		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
-		if (is_shape_trough && dy * 2 > bot - top) return true;
-		return false;
+		return IsVerticalLineTrough(dummy_cont);
 	}
-
-	bool CPage::IsShapeBorderBetweenHorizontal(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
+	bool CPage::IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept
 	{
 		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
 		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
-		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
-		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
+		double top = std::min(pFirst->m_dBaselinePos, pSecond->m_dBaselinePos);
+		double bot = std::max(pFirst->m_dTop, pSecond->m_dTop);
 
 		auto dummy_cont = std::make_shared<CContText>();
-		dummy_cont->m_dLeft = left;
-		dummy_cont->m_dRight = right;
-		dummy_cont->m_dTopWithAscent = top;
-		dummy_cont->m_dBotWithDescent = bot;
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
 
-		double dx = 0, dy = 0;
-		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
-		if (is_shape_trough && dx * 2 > right - left) return true;
-		return false;
+		return IsHorizontalLineTrough(dummy_cont);
 	}
 
-	bool CPage::IsShapeBorderTrough(cont_ptr_t pItem, double& dXCrossing, double& dYCrossing) const noexcept
+	bool CPage::IsVerticalLineTrough(item_ptr_t pFirst) const noexcept
 	{
-		double left = pItem->m_dLeft;
-		double right = pItem->m_dRight;
-		double top = pItem->m_dTopWithAscent;
-		double bot = pItem->m_dBotWithDescent;
+		const auto& ver_lines = m_oHorVerLinesCollector.GetVertical();
+		const auto height = pFirst->m_dBaselinePos - pFirst->m_dTop;
+		const auto center = pFirst->m_dTop + height / 2;
 
-		for (const auto& shape : m_arShapes)
-		{
-			if (!shape)
-				continue;
-
-			const double out_of_page_coeff = 1.1;
-			bool is_out_of_page = shape->m_dTop < 0 ||
-								  shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
-								  shape->m_dLeft < 0 ||
-								  shape->m_dRight > this->m_dWidth * out_of_page_coeff;
-			bool is_too_big = ((shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM) &&
-							   (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown));
-
-			if (is_too_big || is_out_of_page)
-				continue;
-
-			double& s_left = shape->m_dLeft;
-			double& s_right = shape->m_dRight;
-			double& s_top = shape->m_dTop;
-			double& s_bot = shape->m_dBaselinePos;
-
-			bool lines_condition = shape->m_eSimpleLineType != eSimpleLineType::sltUnknown &&
-								   !((s_right < left) || (s_left > right)) &&
-								   !((s_bot < top) || (s_top > bot));
-
-			bool rectangle_condition = shape->m_eGraphicsType == eGraphicsType::gtRectangle &&
-									   shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
-									   !((s_right < left) || (s_left > right)) &&
-									   !((s_bot < top) || (s_top > bot)) &&
-									   !(s_top < top && s_bot > bot && s_left < left && s_right > right);
-
-			if (lines_condition || rectangle_condition)
-			{
-				dXCrossing = std::min(right, s_right) - std::max(left, s_left);
-				dYCrossing = std::min(bot, s_bot) - std::max(top, s_top);
+		for (const auto& line : ver_lines)
+			if (line.pos > pFirst->m_dLeft && line.pos < pFirst->m_dRight && line.min <= center && line.max >= center)
 				return true;
-			}
-		}
+
+		return false;
+	}
+	bool CPage::IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept
+	{
+		const auto& hor_lines = m_oHorVerLinesCollector.GetHorizontal();
+		const auto width = pFirst->m_dRight - pFirst->m_dLeft;
+		const auto center = pFirst->m_dLeft + width / 2;
+
+		for (const auto& line : hor_lines)
+			if (line.pos > pFirst->m_dTop && line.pos < pFirst->m_dBaselinePos && line.min <= center && line.max >= center)
+				return true;
+
 		return false;
 	}
 
@@ -1340,10 +1323,7 @@ namespace NSDocxRenderer
 			{
 				bool is_space = line->m_arConts[i] && line->m_arConts[i]->GetText().ToStdWString() == L" ";
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
-
-				double x_crossing{};
-				double y_crossing{};
-				bool is_shape_trough = IsShapeBorderTrough(line->m_arConts[i], x_crossing, y_crossing);
+				bool is_shape_trough = IsVerticalLineTrough(line->m_arConts[i]);
 
 				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleSplit && is_space)
 					|| (is_space && is_cont_wide)
@@ -1712,7 +1692,7 @@ namespace NSDocxRenderer
 
 			// alignment check
 			bool is_first_line = false;
-			Position curr_position = {true, true, true};
+			Position curr_position;
 
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
@@ -1826,7 +1806,7 @@ namespace NSDocxRenderer
 			// если между линий шейп - делим
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
-				if (IsShapeBorderBetweenHorizontal(text_lines[index], text_lines[index + 1]))
+				if (IsHorizontalLineBetween(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 

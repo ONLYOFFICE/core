@@ -100,17 +100,24 @@ namespace NSDocxRenderer
 	class CHorVerLinesCollector
 	{
 	public:
+		struct CHorVerLine
+		{
+			double min{};
+			double max{};
+			double pos{};
+		};
+
 		CHorVerLinesCollector() = default;
 		~CHorVerLinesCollector() = default;
 
-		const std::vector<std::pair<double, double>>& GetHorizontal();
-		const std::vector<std::pair<double, double>>& GetVertical();
+		const std::vector<CHorVerLine>& GetHorizontal() const;
+		const std::vector<CHorVerLine>& GetVertical() const;
 
 		void AddVector(const CVectorGraphics& oVector);
 		void Clear();
 
 	private:
-		std::vector<std::pair<double, double>> m_arHorizontal;
-		std::vector<std::pair<double, double>> m_arVertical;
+		std::vector<CHorVerLine> m_arHorizontal;
+		std::vector<CHorVerLine> m_arVertical;
 	};
 }

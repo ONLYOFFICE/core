@@ -162,9 +162,10 @@ namespace NSDocxRenderer
 		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 
-		bool IsShapeBorderBetweenVertical(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
-		bool IsShapeBorderBetweenHorizontal(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
-		bool IsShapeBorderTrough(cont_ptr_t pItem, double& dXCrossing, double& dYCrossing) const noexcept;
+		bool IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
+		bool IsVerticalLineTrough(item_ptr_t pFirst) const noexcept;
+		bool IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept;
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;

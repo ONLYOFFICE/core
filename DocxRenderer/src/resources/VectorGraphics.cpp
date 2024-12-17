@@ -388,11 +388,11 @@ namespace NSDocxRenderer
 
 		return points;
 	}
-	const std::vector<std::pair<double, double>>& CHorVerLinesCollector::GetHorizontal()
+	const std::vector<CHorVerLinesCollector::CHorVerLine>& CHorVerLinesCollector::GetHorizontal() const
 	{
 		return m_arHorizontal;
 	}
-	const std::vector<std::pair<double, double>>& CHorVerLinesCollector::GetVertical()
+	const std::vector<CHorVerLinesCollector::CHorVerLine>& CHorVerLinesCollector::GetVertical() const
 	{
 		return m_arVertical;
 	}
@@ -410,10 +410,10 @@ namespace NSDocxRenderer
 				double y = command.points.front().y;
 
 				if (x - last_x <= std::numeric_limits<double>::epsilon())
-					m_arVertical.push_back({last_y, y});
+					m_arVertical.push_back({std::min(last_y, y), std::max(last_y, y), x});
 
 				else if (y - last_y <= std::numeric_limits<double>::epsilon())
-					m_arHorizontal.push_back({last_x, x});
+					m_arHorizontal.push_back({std::min(last_x, x), std::max(last_x, x), y});
 			}
 			if (!command.points.empty())
 			{

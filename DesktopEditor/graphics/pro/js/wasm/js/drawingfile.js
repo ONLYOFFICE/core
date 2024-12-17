@@ -1279,7 +1279,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 		else if (rec["Type"] == 12)
 		{
 			rec["Icon"] = reader.readString();
-			rec["Rotate"] = reader.readInt();
+			rec["Rotate"] = reader.readDouble2();
 			rec["InRect"] = [];
 			for (let i = 0; i < 8; ++i)
 				rec["InRect"].push(reader.readDouble2());

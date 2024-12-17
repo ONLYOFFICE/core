@@ -1423,7 +1423,7 @@ namespace PdfWriter
 	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp), m_pAPStream(NULL)
 	{
 	}
-	void CStampAnnotation::SetRotate(int nRotate)
+	void CStampAnnotation::SetRotate(double nRotate)
 	{
 		Add("Rotate", nRotate);
 

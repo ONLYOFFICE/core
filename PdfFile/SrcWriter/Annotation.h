@@ -398,7 +398,7 @@ namespace PdfWriter
 			return AnnotStamp;
 		}
 
-		void SetRotate(int nRotate);
+		void SetRotate(double nRotate);
 		void SetName(const std::wstring& wsName);
 		void SetAPStream(CDictObject* pStream);
 	};

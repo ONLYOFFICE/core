@@ -1449,7 +1449,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   } else if (rot == 180) {
     appearBuf->appendf("-1 0 0 -1 {0:.4f} {1:.4f} cm\n",
 		       xMax - xMin, yMax - yMin);
-    dx = xMax - yMax;
+	dx = xMax - xMin;
     dy = yMax - yMin;
   } else if (rot == 270) {
     appearBuf->appendf("0 -1 1 0 0 {0:.4f} cm\n", yMax - yMin);
@@ -1464,7 +1464,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   // compute string width
   //~ this assumes we're substituting Helvetica/WinAnsiEncoding for everything
   fontSize = 14;
-  w = 0, i = 0;
+  i = 0;
   vBreaks = new GList();
   double dX = 0, dWordWidth = 0, dKoef = fontSize / 1000.0;
   unsigned int unWordStartPos = 0;
@@ -1496,7 +1496,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 	  else
 	  {
 		  double dLetterWidth = charWidth * dKoef;
-		  if (dX + dWordWidth + dLetterWidth > dx)
+		  if (dX + dWordWidth + dLetterWidth > dx - margin * 4)
 		  {
 			  if (bLineStart)
 			  {
@@ -1542,14 +1542,6 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 
 	  i++;
   }
-  for (i = 0; i < text2->getLength(); ++i) {
-    charName = winAnsiEncoding[text->getChar(i) & 0xff];
-    if (charName && builtinFonts[4].widths->getWidth(charName, &charWidth)) {
-      w += charWidth;
-    } else {
-      w += 0.5;
-    }
-  }
 
   // write the DA string
   appearBuf->append("/xpdf_default_font 14 Tf\n");
@@ -1561,29 +1553,78 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   }
 
   unsigned int unLinesCount = vBreaks->getLength() + 1;
-  x = margin * 2;
-  y = dy - margin - 2 - 0.789571 * fontSize;
-  double dLineHeight = 0.789571 * fontSize;
+
+  double dShiftY = dy - margin - 2 - 0.789571 * fontSize;
+  double dLineHeight = 1.2 * fontSize;
+  double dCurX, dCurY;
+  bool bStart = true;
   for (i = 0; i < unLinesCount; ++i)
   {
-	  // compute text start position
-	  double dLineShiftX = x;
-	  w = m_oLinesManager.GetLineWidth(i, fontSize);
-	  if (2 == quadding)
-		  dLineShiftX += dx - w - margin * 2;
-	  else if (1 == quadding)
-		  dLineShiftX += (dx - w) / 2;
+	  int nLineStartPos = i == 0 ? 0 : *(int*)vBreaks->get(i - 1);
+	  int nLineEndPos = i == vBreaks->getLength() ? text2->getLength() : *(int*)vBreaks->get(i);
+	  int nInLineCount = nLineEndPos - nLineStartPos;
 
-	  int nInLineCount = m_oLinesManager.GetLineEndPos(unIndex) - m_oLinesManager.GetLineStartPos(unIndex);
 	  if (nInLineCount > 0)
 	  {
+		  // compute width
+		  w = 0;
+		  int nStart = nLineStartPos, nEnd = nLineEndPos;
+		  while (nStart < nEnd)
+		  {
+			  char c = text->getChar(nStart);
+			  if (c == 0x20)
+				  nStart++;
+			  else
+				  break;
+		  }
+
+		  while (nEnd > nStart && nEnd > 0)
+		  {
+			  char c = text->getChar(nEnd - 1);
+			  if (c == 0x20)
+				  nEnd--;
+			  else
+				  break;
+		  }
+
+		  for (unsigned int unPos = nStart; unPos < nEnd; ++unPos)
+		  {
+			  charName = winAnsiEncoding[text->getChar(unPos) & 0xff];
+			  if (!charName || !builtinFonts[4].widths->getWidth(charName, &charWidth))
+				  charWidth = 500;
+			  w += charWidth * dKoef;
+		  }
+
+		  // compute text start position
+		  x = margin * 2;
+		  if (2 == quadding)
+			  x = dx - w - margin * 2;
+		  else if (1 == quadding)
+			  x = (dx - w) / 2;
+		  y = dShiftY;
+
+		  if (bStart)
+		  {
+			  dCurX = x;
+			  dCurY = y;
+		  }
+		  else
+		  {
+			  x -= dCurX;
+			  y -= dCurY;
+
+			  dCurX += x;
+			  dCurY += y;
+		  }
+		  bStart = false;
+
 		  // write the font matrix
-		  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", dLineShiftX, y);
+		  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
 
 		  // write the text string
 		  appearBuf->append('(');
-		  for (i = m_oLinesManager.GetLineStartPos(unIndex); i < text2->getLength(); ++i) {
-			c = text2->getChar(i) & 0xff;
+		  for (int j = nLineStartPos; j < nLineEndPos; ++j) {
+			c = text2->getChar(j) & 0xff;
 			if (c == '(' || c == ')' || c == '\\') {
 			  appearBuf->append('\\');
 			  appearBuf->append((char)c);
@@ -1594,10 +1635,8 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 			}
 		  }
 		  appearBuf->append(") Tj\n");
-
-		  pField->AddLineToTextAppearance(dLineShiftX, dLineShiftY, pCodes + unLineStart, nInLineCount, ppFonts + unLineStart, NULL);
 	  }
-	  y -= dLineHeight;
+	  dShiftY -= dLineHeight;
   }
 
   // cleanup

@@ -53,8 +53,8 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeSlicerCacheOlapItem;
 
-            bool                        fNoData;
-            BYTE                        cparent;
+            bool                        fNoData = false;
+            BYTE                        cparent = 0;
             XLWideString                stName;
             XLWideString                stTitle;
             std::vector<XLWideString>   parents;

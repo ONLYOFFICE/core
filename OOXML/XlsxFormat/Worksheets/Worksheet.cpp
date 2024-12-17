@@ -382,8 +382,12 @@ namespace OOX
 
 
             if (!m_arrConditionalFormatting.empty())
-                        for(auto &item : m_arrConditionalFormatting)
-                            item->toBin(writer);
+                for(auto &item : m_arrConditionalFormatting)
+                    item->toBin(writer);
+            if (m_oDataValidations.IsInit())
+                m_oDataValidations->toBin(writer);
+            if (m_oHyperlinks.IsInit())
+                m_oHyperlinks->toBin(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

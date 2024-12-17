@@ -1712,6 +1712,8 @@ namespace NSDocxRenderer
 
 			// alignment check
 			bool is_first_line = false;
+			Position curr_position = {true, true, true};
+
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				Position& position = ar_positions[index];
@@ -1720,9 +1722,17 @@ namespace NSDocxRenderer
 				auto& line_bot = text_lines[index + 1];
 
 				if (index == 0 || ar_delims[index - 1])
+				{
 					is_first_line = true;
+					curr_position = position;
+				}
 				else
+				{
 					is_first_line = false;
+					curr_position.left &= position.left;
+					curr_position.center &= position.center;
+					curr_position.right &= position.right;
+				}
 
 				// первая строка может быть с отступом
 				if (is_first_line)
@@ -1738,33 +1748,20 @@ namespace NSDocxRenderer
 					else
 						ar_indents[index] = true;
 				}
+				if (ar_indents[index])
+					curr_position.left = true;
 
-				bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
-				bool bullet_skip = false;
+				bool is_unknown = !(curr_position.left || curr_position.right || curr_position.center);
+				bool is_enum = false;
 				if (is_unknown)
 				{
 					// bullet paragraphs
 					if (!ar_delims[index])
 					{
-						const auto& first_sym = line_top->m_arConts.front()->GetText().at(0);
-						if (CContText::IsUnicodeBullet(first_sym))
-						{
-							double left_no_first = 0;
-							bool out = false;
-							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
-								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
-									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(j)))
-									{
-										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(j);
-										out = true;
-										break;
-									}
-
-							if (out && fabs(left_no_first - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-								bullet_skip = true;
-						}
+						double left_no_enum = line_top->GetLeftNoEnum();
+						is_enum = left_no_enum != line_top->m_dLeft && fabs(left_no_enum - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 					}
-					if (!bullet_skip)
+					if (!is_enum)
 						ar_delims[index] = true;
 				}
 			}

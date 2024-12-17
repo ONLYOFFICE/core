@@ -6,18 +6,6 @@
 
 namespace NSDocxRenderer
 {
-	bool IsTextOnlySpaces(const NSStringUtils::CStringUTF32& oText)
-	{
-		bool only_spaces = true;
-		for (size_t j = 0; j < oText.length(); ++j)
-			if (!CContText::IsUnicodeSpace(oText.at(j)))
-			{
-				only_spaces = false;
-				break;
-			}
-		return only_spaces;
-	}
-
 	CSelectedSizes::CSelectedSizes(const CSelectedSizes& oSelectedSizes)
 	{
 		*this = oSelectedSizes;
@@ -549,7 +537,14 @@ namespace NSDocxRenderer
 
 	bool CContText::IsOnlySpaces() const
 	{
-		return IsTextOnlySpaces(m_oText);
+		bool only_spaces = true;
+		for (size_t j = 0; j < m_oText.length(); ++j)
+			if (!CContText::IsUnicodeSpace(m_oText.at(j)))
+			{
+				only_spaces = false;
+				break;
+			}
+		return only_spaces;
 	}
 	bool CContText::IsDiacritical() const noexcept
 	{
@@ -841,7 +836,14 @@ namespace NSDocxRenderer
 
 		return is_bullet || is_another;
 	}
-
+	bool CContText::IsUnicodeEnumEnd(uint32_t cSym)
+	{
+		return cSym == 0x29 || cSym == 0x2e;
+	}
+	bool CContText::IsUnicodeNumber(uint32_t cSym)
+	{
+		return cSym >= 0x30 && cSym <= 0x39;
+	}
 	bool CContText::IsUnicodeSpace(uint32_t cSym)
 	{
 		return (0x20 == cSym || 0xA0 == cSym || 0x2003 == cSym);

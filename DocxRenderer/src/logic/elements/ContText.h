@@ -136,6 +136,8 @@ namespace NSDocxRenderer
 
 		static bool IsUnicodeRtl(uint32_t cSym);
 		static bool IsUnicodeBullet(uint32_t cSym);
+		static bool IsUnicodeEnumEnd(uint32_t cSym);
+		static bool IsUnicodeNumber(uint32_t cSym);
 		static bool IsUnicodeSpace(uint32_t c);
 		static bool IsUnicodeSymbol(uint32_t symbol);
 		static bool IsUnicodeDiacriticalMark(uint32_t symbol);

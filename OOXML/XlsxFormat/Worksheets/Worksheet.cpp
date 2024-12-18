@@ -380,7 +380,8 @@ namespace OOX
             if(m_oSheetProtection.IsInit())
                 m_oSheetProtection->toBin(writer);
 
-
+            if (m_oMergeCells.IsInit())
+                    m_oMergeCells->toBin(writer);
             if (!m_arrConditionalFormatting.empty())
                 for(auto &item : m_arrConditionalFormatting)
                     item->toBin(writer);
@@ -388,6 +389,14 @@ namespace OOX
                 m_oDataValidations->toBin(writer);
             if (m_oHyperlinks.IsInit())
                 m_oHyperlinks->toBin(writer);
+            if (m_oPrintOptions.IsInit())
+                m_oPrintOptions->toBin(writer);
+            if (m_oPageMargins.IsInit())
+                m_oPageMargins->toBin(writer);
+            if (m_oRowBreaks.IsInit())
+                m_oRowBreaks->toBinRow(writer);
+            if (m_oColBreaks.IsInit())
+                m_oColBreaks->toBinColumn(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

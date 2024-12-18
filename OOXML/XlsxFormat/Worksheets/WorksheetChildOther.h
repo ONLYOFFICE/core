@@ -174,6 +174,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 		private:
@@ -249,6 +250,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 		private:
@@ -701,6 +703,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 		private:
@@ -733,6 +736,8 @@ namespace OOX
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBinColumn();
 			XLS::BaseObjectPtr toBinRow();
+            void toBinRow(XLS::StreamCacheWriterPtr& writer);
+            void toBinColumn(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
 

@@ -474,6 +474,42 @@ namespace OOX
 				ptr->xnumFooter.data.value = 0;
 			return objPtr;
 		}
+        void CPageMargins::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Margins);
+            XLS::Xnum marginData;
+            if(m_oLeft.IsInit())
+                marginData.data.value = std::round(m_oLeft->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            if(m_oRight.IsInit())
+                marginData.data.value = std::round(m_oRight->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            if(m_oTop.IsInit())
+                marginData.data.value = std::round(m_oTop->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            if(m_oBottom.IsInit())
+                marginData.data.value = std::round(m_oBottom->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            if(m_oHeader.IsInit())
+                marginData.data.value = std::round(m_oHeader->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            if(m_oFooter.IsInit())
+                marginData.data.value = std::round(m_oFooter->GetValue()) / 100;
+            else
+                marginData.data.value = 0;
+            *record << marginData;
+            writer->storeNextRecord(record);
+        }
 		EElementType CPageMargins::getType() const
 		{
 			return et_x_PageMargins;
@@ -899,6 +935,21 @@ namespace OOX
 				ptr->fVCenter = false;
 			return objectPtr;
 		}
+        void CPrintOptions::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_PrintOptions);
+            _UINT16 flags = 0;
+            if(m_oHorizontalCentered.IsInit())
+                SETBIT(flags, 0, m_oHorizontalCentered->GetValue())
+            if(m_oVerticalCentered.IsInit())
+                SETBIT(flags, 1, m_oVerticalCentered->GetValue())
+            if(m_oHeadings.IsInit())
+                SETBIT(flags, 2, m_oHeadings->GetValue())
+            if(m_oGridLines.IsInit())
+                SETBIT(flags, 3, m_oGridLines->GetValue())
+            *record << flags;
+            writer->storeNextRecord(record);
+        }
 		EElementType CPrintOptions::getType() const
 		{
 			return et_x_PrintOptions;
@@ -2835,6 +2886,27 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CBreak::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Brk);
+            _UINT32 unRwCol = 0;
+            if(m_oId.IsInit())
+                unRwCol = m_oId->GetValue();
+            _UINT32 unColRwStrt = 0;
+            if(m_oMin.IsInit())
+                unColRwStrt = m_oMin->GetValue();
+            _UINT32 unColRwEnd = 0;
+            if(m_oMax.IsInit())
+                unColRwEnd = m_oMax->GetValue();
+            _UINT32 fMan = 0;
+            if(m_oMan.IsInit())
+                fMan = m_oMan->GetValue();
+            _UINT32 fPivot = 0;
+            if(m_oPt.IsInit())
+                fPivot = m_oPt->GetValue();
+            *record << unRwCol << unColRwStrt << unColRwEnd << fMan << fPivot;
+            writer->storeNextRecord(record);
+        }
 		void CBreak::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -2958,6 +3030,46 @@ namespace OOX
 			}
 			return objectPtr;
 		}
+        void CRowColBreaks::toBinRow(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginRwBrk);
+                _UINT32 ibrkMac = 0;
+                if(m_oCount.IsInit())
+                    ibrkMac = m_oCount->GetValue();
+                _UINT32 ibrkManMac = 0;
+                if(m_oManualBreakCount.IsInit())
+                    ibrkManMac = m_oManualBreakCount->GetValue();
+                *begin << ibrkMac << ibrkManMac;
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_arrItems)
+                i->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndRwBrk);
+                writer->storeNextRecord(end);
+            }
+        }
+        void CRowColBreaks::toBinColumn(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginColBrk);
+                _UINT32 ibrkMac = 0;
+                if(m_oCount.IsInit())
+                    ibrkMac = m_oCount->GetValue();
+                _UINT32 ibrkManMac = 0;
+                if(m_oManualBreakCount.IsInit())
+                    ibrkManMac = m_oManualBreakCount->GetValue();
+                *begin << ibrkMac << ibrkManMac;
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_arrItems)
+                i->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndColBrk);
+                writer->storeNextRecord(end);
+            }
+        }
 
 		void CRowColBreaks::fromBin(XLS::BaseObjectPtr& obj)
 		{

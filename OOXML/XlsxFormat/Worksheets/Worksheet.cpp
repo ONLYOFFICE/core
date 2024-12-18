@@ -393,6 +393,10 @@ namespace OOX
                 m_oPrintOptions->toBin(writer);
             if (m_oPageMargins.IsInit())
                 m_oPageMargins->toBin(writer);
+            if (m_oPageSetup.IsInit())
+                m_oPageSetup->toBin(writer);
+            if (m_oHeaderFooter.IsInit())
+                m_oHeaderFooter->toBin(writer);
             if (m_oRowBreaks.IsInit())
                 m_oRowBreaks->toBinRow(writer);
             if (m_oColBreaks.IsInit())

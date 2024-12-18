@@ -700,6 +700,86 @@ namespace OOX
 			ptr->fEndNotes = false;
 			return objectPtr;
 		}
+        void CPageSetup::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_PageSetup);
+            {
+                _UINT32 uintBuf = 9;
+                if (m_oPaperSize.IsInit())
+                    uintBuf = m_oPaperSize->m_eValue;
+                *record << uintBuf;
+                if (m_oScale.IsInit())
+                    uintBuf = m_oScale->m_eValue;
+                else
+                    uintBuf = 100;
+                *record << uintBuf;
+                if (m_oHorizontalDpi.IsInit())
+                    uintBuf = m_oHorizontalDpi->m_eValue;
+                else
+                    uintBuf = 600;
+                *record << uintBuf;
+                if (m_oVerticalDpi.IsInit())
+                    uintBuf = m_oVerticalDpi->m_eValue;
+                else
+                    uintBuf = 0;
+                *record << uintBuf;
+                if (m_oCopies.IsInit())
+                    uintBuf = m_oCopies->m_eValue;
+                else
+                    uintBuf = 1;
+                *record << uintBuf;
+                _INT32 iPageStart = 1;
+                if (m_oFirstPageNumber.IsInit())
+                    iPageStart = m_oFirstPageNumber->m_eValue;
+                *record << iPageStart;
+                if (m_oFitToWidth.IsInit())
+                    uintBuf = m_oFitToWidth->m_eValue;
+                else
+                    uintBuf = 1;
+                *record << uintBuf;
+                if (m_oFitToHeight.IsInit())
+                    uintBuf = m_oFitToHeight->m_eValue;
+                else
+                    uintBuf = 1;
+                *record << uintBuf;
+            }
+            {
+                _UINT16 flags = 0;
+                if (m_oPageOrder.IsInit() && m_oPageOrder->GetValue() == SimpleTypes::Spreadsheet::EPageOrder::pageorderOverThenDown)
+                    SETBIT(flags, 0, 1)
+                if (m_oOrientation.IsInit() && m_oOrientation->GetValue() == SimpleTypes::EPageOrientation::pageorientLandscape)
+                {
+                    SETBIT(flags, 1, 1)
+                }
+                else if(!m_oOrientation.IsInit())
+                {
+                    SETBIT(flags, 6, true)
+                }
+                if(m_oBlackAndWhite.IsInit())
+                {
+                    SETBIT(flags, 3, m_oBlackAndWhite->m_eValue)
+                    if (m_oBlackAndWhite->m_eValue && m_oCellComments.IsInit())
+                        if (m_oCellComments == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+                            SETBIT(flags, 5, 1)
+                }
+                if (m_oDraft.IsInit())
+                    SETBIT(flags, 4, m_oDraft->m_eValue)
+                if (m_oUseFirstPageNumber.IsInit())
+                    SETBIT(flags, 7, m_oUseFirstPageNumber->m_eValue)
+                else
+                    SETBIT(flags, 7, 1)
+                if (m_oErrors.IsInit())
+                    SETBITS(flags, 9, 10, m_oErrors->m_eValue)
+                *record << flags;
+            }
+            XLSB::XLNullableWideString szRelID;
+            if (m_oRId.IsInit())
+                szRelID = m_oRId->GetValue();
+            else
+                szRelID.setSize(0xFFFFFFFF);
+             *record << szRelID;
+            writer->storeNextRecord(record);
+        }
 		XLS::BaseObjectPtr CPageSetup::toBinCs()
 		{
 			auto ptr(new XLSB::CsPageSetup);
@@ -2644,6 +2724,62 @@ namespace OOX
 				castedBegin->stFooterFirst = false;
 			return objectPtr;
 		}
+        void CHeaderFooter::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginHeaderFooter);
+                {
+                    _UINT16 flags = 0;
+                    if(m_oDifferentOddEven.IsInit())
+                        SETBIT(flags, 0, m_oDifferentOddEven->GetValue());
+                    if(m_oDifferentFirst.IsInit())
+                        SETBIT(flags, 1, m_oDifferentFirst->GetValue());
+                    if(m_oScaleWithDoc.IsInit())
+                        SETBIT(flags, 2, m_oScaleWithDoc->GetValue());
+                    if(m_oAlignWithMargins.IsInit())
+                        SETBIT(flags, 3, m_oAlignWithMargins->GetValue());
+                    *begin << flags;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
+                    if(m_oOddHeader.IsInit())
+                        dataString = m_oOddHeader->m_sText;
+                    else
+                        dataString = L"";
+                    *begin << dataString;
+                    if(m_oOddFooter.IsInit())
+                        dataString = m_oOddFooter->m_sText;
+                    else
+                        dataString = L"";
+                    *begin << dataString;
+                    if(m_oEvenHeader.IsInit())
+                        dataString = m_oEvenHeader->m_sText;
+                    else
+                        dataString = L"";
+                    *begin << dataString;
+                    if(m_oEvenFooter.IsInit())
+                        dataString = m_oEvenFooter->m_sText;
+                    else
+                        dataString = L"";
+                     *begin << dataString;
+                    if(m_oFirstHeader.IsInit())
+                        dataString = m_oFirstHeader->m_sText;
+                    else
+                        dataString = L"";
+                    *begin << dataString;
+                    if(m_oFirstFooter.IsInit())
+                        dataString = m_oFirstFooter->m_sText;
+                    else
+                        dataString = L"";
+                    *begin << dataString;
+                }
+                writer->storeNextRecord(begin);
+            }
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndHeaderFooter);
+                writer->storeNextRecord(end);
+            }
+        }
 		EElementType CHeaderFooter::getType() const
 		{
 			return et_x_HeaderFooterWorksheet;

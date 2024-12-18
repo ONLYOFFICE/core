@@ -401,6 +401,12 @@ namespace OOX
                 m_oRowBreaks->toBinRow(writer);
             if (m_oColBreaks.IsInit())
                 m_oColBreaks->toBinColumn(writer);
+            if (m_oLegacyDrawing.IsInit())
+                m_oLegacyDrawing->toBin(writer);
+            if (m_oLegacyDrawingHF.IsInit())
+                m_oLegacyDrawingHF->toBin(writer);
+            if (m_oOleObjects.IsInit())
+                m_oOleObjects->toBin(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

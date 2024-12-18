@@ -2864,6 +2864,17 @@ namespace OOX
 				castedPtr->stRelId.value = m_oId->GetValue();
 			return ptr;
 		}
+        void CLegacyDrawingHFWorksheet::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_LegacyDrawingHF);
+            XLSB::RelID stRelId;
+            if(m_oId.IsInit())
+                stRelId = m_oId->GetValue();
+            else
+                stRelId.value.setSize(0xFFFFFFFF);
+            *record << stRelId;
+            writer->storeNextRecord(record);
+        }
 		EElementType CLegacyDrawingHFWorksheet::getType() const
 		{
 			return et_x_LegacyDrawingHFWorksheet;

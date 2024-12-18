@@ -24,14 +24,14 @@ CHWPRecordParaText::CHWPRecordParaText(int nTagNum, int nLevel, int nSize)
 LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	STRING sText;
-	oBuffer.ReadString(sText, nSize);
+	oBuffer.ReadString(sText, nSize, EStringCharacter::UTF16);
 
 	if (sText.empty())
 		return LIST<CCtrl*>();
 
-	std::regex oRegex("[\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]");
-	std::sregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
-	std::sregex_iterator itEnd;
+	std::wregex oRegex(L"[\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]");
+	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
+	std::wsregex_iterator itEnd;
 
 	int nPrevIndex = 0;
 
@@ -42,7 +42,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		if (itCurrent->position() > nPrevIndex)
 		{
 			// write text
-			arParas.push_back(new CParaText("____", sText.substr(nPrevIndex, itCurrent->position() - nPrevIndex), nPrevIndex));
+			arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex, itCurrent->position() - nPrevIndex), nPrevIndex));
 		}
 
 		if (1 == itCurrent->length())
@@ -51,23 +51,23 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			{
 				case 0x0a:
 				{
-					arParas.push_back(new CCtrlCharacter("   _", ECtrlCharType::LINE_BREAK));
+					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
 					break;
 				}
 				case 0x0d:
 				{
-					arParas.push_back(new CCtrlCharacter("   _", ECtrlCharType::PARAGRAPH_BREAK));
+					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
 					break;
 				}
 				case 0x18:
 				{
-					arParas.push_back(new CCtrlCharacter("   _", ECtrlCharType::HARD_HYPHEN));
+					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
 					break;
 				}
 				case 0x1e:
 				case 0x1f:
 				{
-					arParas.push_back(new CCtrlCharacter("   _", ECtrlCharType::HARD_SPACE));
+					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
 					break;
 				}
 			}
@@ -83,7 +83,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					break;
 				case 0x09:
 				{
-					arParas.push_back(new CParaText("____", "\t", 0));
+					arParas.push_back(new CParaText(L"____", L"\t", 0));
 					break;
 				}
 				case 0x10:
@@ -99,14 +99,14 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				case 0x15:
 				{
 					// if ("dhgp" == sInfo) break;
-					if ("pngp" == sInfo) arParas.push_back(new CCtrlPageNumPos(sInfo));
-					else if ("onwn" == sInfo) arParas.push_back(new CCtrlNewNumber(sInfo));
+					if (L"pngp" == sInfo) arParas.push_back(new CCtrlPageNumPos(sInfo));
+					else if (L"onwn" == sInfo) arParas.push_back(new CCtrlNewNumber(sInfo));
 					break;
 				}
 				case 0x02:
 				{
-					if ("dces" == sInfo) arParas.push_back(new CCtrlSectionDef(sInfo));
-					else if ("dloc" == sInfo) arParas.push_back(new CCtrlColumnDef(sInfo));
+					if (L"dces" == sInfo) arParas.push_back(new CCtrlSectionDef(sInfo));
+					else if (L"dloc" == sInfo) arParas.push_back(new CCtrlColumnDef(sInfo));
 					break;
 				}
 				case 0x03:
@@ -123,11 +123,11 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					break;
 				case 0x0b:
 				{
-					if (" osg" == sInfo)
+					if (L" osg" == sInfo)
 						arParas.push_back(new CCtrlGeneralShape(sInfo));
-					else if (" lbt" == sInfo)
+					else if (L" lbt" == sInfo)
 						arParas.push_back(new CCtrlTable(sInfo));
-					else if ("deqe" == sInfo)
+					else if (L"deqe" == sInfo)
 						arParas.push_back(new CCtrlEqEdit(sInfo));
 					// else if ("mrof" == sInfo)
 					break;
@@ -142,7 +142,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		if (nPrevIndex < sText.length())
 		{
 			// write final text
-			arParas.push_back(new CParaText("____", sText.substr(nPrevIndex), nPrevIndex));
+			arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex), nPrevIndex));
 		}
 	}
 

@@ -14,7 +14,10 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 
 ADD_DEPENDENCY(kernel, UnicodeConverter)
 
+DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
+
 SOURCES += \
+    HWPFile.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
@@ -34,7 +37,7 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordParaText.cpp \
     HwpDoc/HWPElements/HWPRecordStyle.cpp \
     HwpDoc/HWPElements/HwpRecordTabDef.cpp \
-    HwpDoc/HWPFile.cpp \
+    HwpDoc/HWPFile_Private.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HwpFileHeader.cpp \
@@ -80,6 +83,7 @@ SOURCES += \
     HwpDoc/Section/PageBorderFill.cpp
 
 HEADERS += \
+    HWPFile.h \
     HwpDoc/Common.h \
     HwpDoc/Errors.h \
     HwpDoc/HWPDocInfo.h \
@@ -104,7 +108,7 @@ HEADERS += \
     HwpDoc/HWPElements/HWPType.h \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
-    HwpDoc/HWPFile.h \
+    HwpDoc/HWPFile_Private.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
     HwpDoc/HanType.h \

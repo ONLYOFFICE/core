@@ -20,16 +20,16 @@ int CCtrlEqEdit::ParseElement(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer,
 	oObj.m_bFullFilled = true;
 
 	oBuffer.ReadInt(oObj.m_nAttr);
-	oBuffer.ReadString(oObj.m_sEqn);
+	oBuffer.ReadString(oObj.m_sEqn, EStringCharacter::UTF16);
 	oBuffer.ReadInt(oObj.m_nCharSize);
 	oBuffer.ReadColor(oObj.m_nColor);
 	oBuffer.ReadInt(oObj.m_nBaseline);
-	oBuffer.ReadString(oObj.m_sVersion);
+	oBuffer.ReadString(oObj.m_sVersion, EStringCharacter::UTF16);
 
 	if (oBuffer.GetCurPtr() - pOldCurentPos +2 > nSize)
 		return nSize;
 
-	oBuffer.ReadString(oObj.m_sFont);
+	oBuffer.ReadString(oObj.m_sFont, EStringCharacter::UTF16);
 
 	return nSize;
 }

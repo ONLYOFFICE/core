@@ -10,12 +10,12 @@
 
 namespace HWP
 {
-class CHWPFile;
+class CHWPFile_Private;
 class CHWPDocInfo
 {
 	EHanType   m_eHanType;
 	// CHWPXFile *m_pParentHWPX;
-	CHWPFile  *m_pParentHWP;
+	CHWPFile_Private  *m_pParentHWP;
 	std::list<CHWPRecord*> m_lRecords;
 
 	std::map<STRING, CHWPRecord*> m_mBinDatas;
@@ -33,7 +33,7 @@ class CHWPDocInfo
 public:
 	CHWPDocInfo(EHanType eHanType);
 	// CHWPDocInfo(CHWPXFile* pHWPXFile);
-	CHWPDocInfo(CHWPFile* pHWPFile);
+	CHWPDocInfo(CHWPFile_Private* pHWPFile);
 
 	~CHWPDocInfo();
 

@@ -79,6 +79,14 @@ bool CHWPSection::Parse(CHWPStream& oBuffer, int nVersion)
 	return true;
 }
 
+#define FIND_LAST_ELEMENT(type, ptr, container_type, container) \
+	for (VECTOR<container_type*>::const_reverse_iterator itCtrl = container.crbegin(); itCtrl != container.crend(); ++itCtrl) \
+	{ \
+		if (nullptr != dynamic_cast<type*>(*itCtrl)) \
+			ptr = (type*)(*itCtrl); \
+	}
+
+
 int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();
@@ -126,7 +134,11 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				}
 				case HWPTAG_TABLE:
 				{
-					CCtrlTable *pTable = oCurrPara.FindLastElement<CCtrlTable>();
+					CCtrlTable *pTable = nullptr;
+
+					const VECTOR<CCtrl*> arCtrls = oCurrPara.GetCtrls();
+
+					FIND_LAST_ELEMENT(CCtrlTable, pTable, CCtrl, arCtrls);
 
 					if (nullptr != pTable)
 						ParseCtrlRecurse(*pTable, nLevel, oBuffer, 0, nVersion);
@@ -143,7 +155,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				case HWPTAG_FOOTNOTE_SHAPE:
 				case HWPTAG_PAGE_BORDER_FILL:
 				{
-					CCtrlSectionDef *pCtrlSecDef = dynamic_cast<CCtrlSectionDef*>(oCurrPara.FindLastElement("dces"));
+					CCtrlSectionDef *pCtrlSecDef = dynamic_cast<CCtrlSectionDef*>(oCurrPara.FindLastElement(L"dces"));
 
 					if (nullptr != pCtrlSecDef)
 						ParseCtrlRecurse(*pCtrlSecDef, nLevel, oBuffer, 0, nVersion);
@@ -163,7 +175,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				case HWPTAG_SHAPE_COMPONENT_TEXTART:
 				case HWPTAG_SHAPE_COMPONENT_UNKNOWN:
 				{
-					CCtrlGeneralShape *pCtrlGeneral = dynamic_cast<CCtrlGeneralShape*>(oCurrPara.FindLastElement(" osg"));
+					CCtrlGeneralShape *pCtrlGeneral = dynamic_cast<CCtrlGeneralShape*>(oCurrPara.FindLastElement(L" osg"));
 
 					if (nullptr != pCtrlGeneral)
 						ParseCtrlRecurse(*pCtrlGeneral, nLevel, oBuffer, 0, nVersion);
@@ -178,7 +190,11 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				case HWPTAG_VIDEO_DATA:
 				default:
 				{
-					CCtrlCommon *pCtrlCommon = oCurrPara.FindLastElement<CCtrlCommon>();
+					CCtrlCommon *pCtrlCommon = nullptr;
+
+					const VECTOR<CCtrl*> arCtrls = oCurrPara.GetCtrls();
+
+					FIND_LAST_ELEMENT(CCtrlCommon, pCtrlCommon, CCtrl, arCtrls);
 
 					if (nullptr != pCtrlCommon)
 						ParseCtrlRecurse(*pCtrlCommon, nLevel, oBuffer, 0, nVersion);
@@ -225,7 +241,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				case HWPTAG_PARA_CHAR_SHAPE:
 				{
 					if (0 == oCurrPara.GetCountCtrls())
-						oCurrPara.AddCtrl(new CCtrlCharacter("   _", ECtrlCharType::PARAGRAPH_BREAK));
+						oCurrPara.AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
 
 					CCharShape::FillCharShape(nTagNum, nLevel, nSize, oBuffer, 0, nVersion, oCurrPara.GetCtrls());
 				}
@@ -254,7 +270,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 
 					if (nullptr != dynamic_cast<CCtrlHeadFoot*>(pCtrl))
 					{
-						CCtrlSectionDef* pSecD = dynamic_cast<CCtrlSectionDef*>(oCurrPara.FindLastElement("dces"));
+						CCtrlSectionDef* pSecD = dynamic_cast<CCtrlSectionDef*>(oCurrPara.FindLastElement(L"dces"));
 
 						if (nullptr != pSecD)
 							pSecD->AddHeadFoot((CCtrlHeadFoot*)pCtrl);
@@ -361,56 +377,67 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer& oContainer, int nRunLevel
 		{
 			oBuffer.Skip(nHeaderSize);
 
+			#define CHECK_SHAPE(shapeType) \
+			const VECTOR<CCtrlGeneralShape*> arCtrls = oContainer.GetShapes(); \
+			shapeType *pCtrl = nullptr; \
+			FIND_LAST_ELEMENT(shapeType, pCtrl, CCtrlGeneralShape, arCtrls); \
+			if (nullptr == pCtrl) \
+			{ \
+				pCtrl = new shapeType(); \
+				oContainer.AddShape(pCtrl); \
+			} \
+			shapeType::ParseElement((shapeType&)(*pCtrl), nSize, oBuffer, 0, nVersion)
+
 			switch (eTag)
 			{
 				case HWPTAG_SHAPE_COMPONENT_PICTURE:
 				{
-					CheckShape<CCtrlShapePic>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapePic);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_LINE:
 				{
-					CheckShape<CCtrlShapeLine>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeLine);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_RECTANGLE:
 				{
-					CheckShape<CCtrlShapeRect>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeRect);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_ELLIPSE:
 				{
-					CheckShape<CCtrlShapeEllipse>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeEllipse);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_ARC:
 				{
-					CheckShape<CCtrlShapeArc>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeArc);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_POLYGON:
 				{
-					CheckShape<CCtrlShapePolygon>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapePolygon);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_CURVE:
 				{
-					CheckShape<CCtrlShapeCurve>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeCurve);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_OLE:
 				{
-					CheckShape<CCtrlShapeOle>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeOle);
 					break;
 				}
 				case HWPTAG_EQEDIT:
 				{
-					CheckShape<CCtrlEqEdit>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlEqEdit);
 					break;
 				}
 				case HWPTAG_SHAPE_COMPONENT_TEXTART:
 				{
-					CheckShape<CCtrlShapeTextArt>(oContainer, nSize, oBuffer, nVersion);
+					CHECK_SHAPE(CCtrlShapeTextArt);
 					break;
 				}
 				case HWPTAG_LIST_HEADER:
@@ -429,9 +456,9 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer& oContainer, int nRunLevel
 					if (bIsShapeRect || bIsShapePolygon)
 					{
 						if (bIsShapeRect)
-							pCtrl->SetID("cer$");
+							pCtrl->SetID(L"cer$");
 						else
-							pCtrl->SetID("lop$");
+							pCtrl->SetID(L"lop$");
 
 						oBuffer.Skip(-6);
 						pCtrl->SetTextVerAlign(CHWPRecordListHeader::GetVertAlign(6, oBuffer, 0, nVersion));
@@ -543,17 +570,17 @@ int CHWPSection::ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuff
 {
 	oBuffer.SavePosition();
 
-	if ("cer$" == oObj.GetID())
+	if (L"cer$" == oObj.GetID())
 		CCtrlShapeRect::ParseListHeaderAppend((CCtrlShapeRect&)(oObj), nSize, oBuffer, 0, nVersion);
-	else if (" osg" == oObj.GetID())
+	else if (L" osg" == oObj.GetID())
 		CCtrlGeneralShape::ParseListHeaderApend((CCtrlGeneralShape&)(oObj), nSize, oBuffer, 0, nVersion);
-	else if (" lbt" == oObj.GetID())
+	else if (L" lbt" == oObj.GetID())
 		CCtrlTable::ParseListHeaderAppend((CCtrlTable&)(oObj), nSize, oBuffer, 0, nVersion);
-	else if ("deqe" == oObj.GetID())
+	else if (L"deqe" == oObj.GetID())
 		CCtrlEqEdit::ParseListHeaderAppend((CCtrlEqEdit&)(oObj), nSize, oBuffer, 0, nVersion);
-	else if ("lop$" == oObj.GetID())
+	else if (L"lop$" == oObj.GetID())
 		CCtrlShapePolygon::ParseListHeaderAppend((CCtrlShapePolygon&)(oObj), nSize, oBuffer, 0, nVersion);
-	else if ("lle$" == oObj.GetID())
+	else if (L"lle$" == oObj.GetID())
 		CCtrlShapeEllipse::ParseListHeaderAppend((CCtrlShapeEllipse&)(oObj), nSize, oBuffer, 0, nVersion);
 
 	return oBuffer.GetDistanceToLastPos();
@@ -561,26 +588,13 @@ int CHWPSection::ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuff
 
 int CHWPSection::ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	if ("dces" == oObj.GetID())
+	if (L"dces" == oObj.GetID())
 		oBuffer.Skip(nSize - 6);
-	else if ("daeh" == oObj.GetID() || "toof" == oObj.GetID())
+	else if (L"daeh" == oObj.GetID() || L"toof" == oObj.GetID())
 		CCtrlHeadFoot::ParseListHeaderAppend((CCtrlHeadFoot&)(oObj), nSize, oBuffer, 0, nVersion);
 
 	// else if ("  nf" == oObj.GetID())
 
 	return nSize;
 }
-
-template<typename ShapeType>
-void CHWPSection::CheckShape(CCtrlContainer& oContainer, int nSize, CHWPStream& oBuffer, int nVersion)
-{
-	ShapeType *pCtrl = oContainer.FindLastElement<ShapeType>();
-	if (nullptr == pCtrl)
-	{
-		pCtrl = new ShapeType();
-		oContainer.AddShape(pCtrl);
-	}
-	ShapeType::ParseElement((ShapeType&)(*pCtrl), nSize, oBuffer, 0, nVersion);
-}
-
 }

@@ -24,7 +24,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 	m_bAttrExists = CHECK_FLAG(chDataBits, 0x40);
 	m_bSubstExists = CHECK_FLAG(chDataBits, 0x80);
 
-	oBuffer.ReadString(m_sFaceName);
+	oBuffer.ReadString(m_sFaceName, EStringCharacter::UTF16);
 
 	if (m_bSubstExists)
 	{
@@ -32,7 +32,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 		oBuffer.ReadByte(chSubsType);
 		m_eSubstType = GetAltType(chSubsType & 0x0F);
 
-		oBuffer.ReadString(m_sSubstFace);
+		oBuffer.ReadString(m_sSubstFace, EStringCharacter::UTF16);
 	}
 
 	if (m_bAttrExists)
@@ -50,6 +50,6 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 	}
 
 	if (m_bBasicFaceExists)
-		oBuffer.ReadString(m_sBasicFaceName);
+		oBuffer.ReadString(m_sBasicFaceName, EStringCharacter::UTF16);
 }
 }

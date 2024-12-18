@@ -40,7 +40,7 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 		short shValue;
 		oBuffer.ReadShort(shValue);
 
-		m_sBinItemRefID = std::to_string(shValue);
+		m_sBinItemRefID = TO_STRING(shValue);
 	}
 }
 }

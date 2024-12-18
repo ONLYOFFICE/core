@@ -108,7 +108,7 @@ int CHWPPargraph::Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int
 	return nSize;
 }
 
-CCtrl* CHWPPargraph::FindFirstElement(const std::string& sID, bool bFullfilled, unsigned int& nIndex) const
+CCtrl* CHWPPargraph::FindFirstElement(const STRING& sID, bool bFullfilled, unsigned int& nIndex) const
 {
 	nIndex = 0;
 	for (VECTOR<CCtrl*>::const_iterator itCtrl = m_arP.cbegin(); itCtrl != m_arP.cend(); ++itCtrl)
@@ -116,18 +116,6 @@ CCtrl* CHWPPargraph::FindFirstElement(const std::string& sID, bool bFullfilled, 
 		++nIndex;
 		if (sID == (*itCtrl)->GetID() && bFullfilled == (*itCtrl)->FullFilled())
 			return (*itCtrl);
-	}
-
-	return nullptr;
-}
-
-template<typename FindClass>
-FindClass* CHWPPargraph::FindLastElement()
-{
-	for (VECTOR<CCtrl*>::const_reverse_iterator itCtrl = m_arP.crbegin(); itCtrl != m_arP.crend(); ++itCtrl)
-	{
-		if (nullptr != dynamic_cast<FindClass>(*itCtrl))
-			return (FindClass*)(*itCtrl);
 	}
 
 	return nullptr;

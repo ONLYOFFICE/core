@@ -127,7 +127,7 @@ namespace HWP
 		oBuffer.ReadInt(m_nBlockPageBreak);
 
 		if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
-			oBuffer.ReadString(m_sObjDesc);
+			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
 
 		m_nSize = oBuffer.GetCurPtr() - pOldCurentPos;
 	}
@@ -144,12 +144,13 @@ namespace HWP
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	{
-		const STRING sCtrlId(oBuffer.GetCurPtr(), 4); //TODO:: StandardCharsets.US_ASCII
+		STRING sCtrlId;
+		oBuffer.ReadString(sCtrlId, 4, EStringCharacter::ASCII);
 
-		if ("nil$" == sCtrlId || "loc$" == sCtrlId || "cer$" == sCtrlId || "lle$" == sCtrlId ||
-		    "cra$" == sCtrlId || "lop$" == sCtrlId || "ruc$" == sCtrlId || "deqe" == sCtrlId ||
-		    "cip$" == sCtrlId || "elo$" == sCtrlId || "noc$" == sCtrlId || "div$" == sCtrlId ||
-		    "tat$" == sCtrlId)
+		if (L"nil$" == sCtrlId || L"loc$" == sCtrlId || L"cer$" == sCtrlId || L"lle$" == sCtrlId ||
+		    L"cra$" == sCtrlId || L"lop$" == sCtrlId || L"ruc$" == sCtrlId || L"deqe" == sCtrlId ||
+		    L"cip$" == sCtrlId || L"elo$" == sCtrlId || L"noc$" == sCtrlId || L"div$" == sCtrlId ||
+		    L"tat$" == sCtrlId)
 			return 4;
 
 		return 0;

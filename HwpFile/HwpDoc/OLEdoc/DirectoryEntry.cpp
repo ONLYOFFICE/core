@@ -35,12 +35,12 @@ void CDirectoryEntry::SetChildID(int nChildID)
 	m_nChildID = nChildID;
 }
 
-void CDirectoryEntry::SetClsID1(const long& lClsID1)
+void CDirectoryEntry::SetClsID1(const long long& lClsID1)
 {
 	m_lClsID1 = lClsID1;
 }
 
-void CDirectoryEntry::SetClsID2(const long& lClsID2)
+void CDirectoryEntry::SetClsID2(const long long& lClsID2)
 {
 	m_lClsID2 = lClsID2;
 }
@@ -50,12 +50,12 @@ void CDirectoryEntry::SetStateBit(int nStateBit)
 	m_nStateBit = nStateBit;
 }
 
-void CDirectoryEntry::SetCreationTime(const long& lCreationTime)
+void CDirectoryEntry::SetCreationTime(const long long& lCreationTime)
 {
 	m_lCreationTime = lCreationTime;
 }
 
-void CDirectoryEntry::SetModifiedTime(const long& lModifiedTime)
+void CDirectoryEntry::SetModifiedTime(const long long& lModifiedTime)
 {
 	m_lModifiedTime = lModifiedTime;
 }
@@ -65,7 +65,7 @@ void CDirectoryEntry::SetStartingSectorID(int nStartingSectorID)
 	m_nStartingSectorID = nStartingSectorID;
 }
 
-void CDirectoryEntry::SetStreamSize(const long& lStreamSize)
+void CDirectoryEntry::SetStreamSize(const long long& lStreamSize)
 {
 	m_lStreamSize = lStreamSize;
 }
@@ -95,7 +95,7 @@ int CDirectoryEntry::GetStartingSectorID() const
 	return m_nStartingSectorID;
 }
 
-long CDirectoryEntry::GetStreamSize() const
+long long CDirectoryEntry::GetStreamSize() const
 {
 	return m_lStreamSize;
 }
@@ -108,5 +108,10 @@ VECTOR<int> CDirectoryEntry::GetSecNums() const
 VECTOR<int>& CDirectoryEntry::GetSecNums()
 {
 	return m_arSecNums;
+}
+
+int CDirectoryEntry::GetObjectType() const
+{
+	return m_nObjectType;
 }
 }

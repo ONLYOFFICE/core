@@ -1,7 +1,7 @@
 #ifndef HWPRECORDBORDERFILL_H
 #define HWPRECORDBORDERFILL_H
 
-#include "HwpDoc/HWPDocInfo.h"
+#include "../HWPDocInfo.h"
 #include "HwpRecordTypes.h"
 #include "../HWPStream.h"
 #include <vector>

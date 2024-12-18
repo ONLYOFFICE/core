@@ -14,7 +14,7 @@ int CHWPRecordFormObject::ParseCtrl(CCtrlForm& oForm, int nSize, CHWPStream& oBu
 	oBuffer.Skip(4); // tbp+
 	oBuffer.Skip(4); // Длина строки?
 
-	oBuffer.ReadString(m_sFormStr);
+	oBuffer.ReadString(m_sFormStr, EStringCharacter::UTF16);
 
 	return oBuffer.GetDistanceToLastPos();
 }

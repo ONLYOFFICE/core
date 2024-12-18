@@ -17,7 +17,7 @@ int CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oB
 {
 	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
 
-	if ("loc$" == oObj.GetID())
+	if (L"loc$" == oObj.GetID())
 		oBuffer.Skip(4);
 
 	oBuffer.ReadInt(oObj.m_nStartX);

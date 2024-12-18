@@ -10,7 +10,7 @@ CCtrlClick::CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, in
 	oBuffer.Skip(4);
 	oBuffer.Skip(1);
 
-	oBuffer.ReadString(m_sClickHereStr);
+	oBuffer.ReadString(m_sClickHereStr, EStringCharacter::UTF16);
 
 	oBuffer.Skip(4);
 	oBuffer.Skip(4);

@@ -38,9 +38,6 @@ public:
 	static int Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	CCtrl* FindFirstElement(const STRING& sID, bool bFullfilled, unsigned int& nIndex) const;
-
-	template <typename FindClass>
-	FindClass* FindLastElement();
 	CCtrl* FindLastElement(const STRING& sID);
 };
 }

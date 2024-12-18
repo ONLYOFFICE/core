@@ -162,7 +162,7 @@ int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuf
 
 	short shBinItemID;
 	oBuffer.ReadShort(shBinItemID);
-	oObj.m_sBinDataID = std::to_string(shBinItemID - 1);
+	oObj.m_sBinDataID = std::to_wstring(shBinItemID - 1);
 
 	oBuffer.ReadByte(oObj.m_chBorderAlpha);
 

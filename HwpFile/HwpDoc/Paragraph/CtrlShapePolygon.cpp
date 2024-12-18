@@ -58,8 +58,8 @@ int CCtrlShapePolygon::ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize,
 	if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
 	{
 		oBuffer.Skip(10);
-		STRING sFieldNmae;
-		oBuffer.ReadString(sFieldNmae);
+		STRING sFieldName;
+		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
 		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurentPos));
 	}

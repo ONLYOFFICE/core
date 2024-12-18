@@ -1,5 +1,7 @@
 #include "HWPStream.h"
 
+#include "../../DesktopEditor/common/StringExt.h"
+
 namespace HWP
 {
 CHWPStream::CHWPStream()
@@ -47,35 +49,55 @@ unsigned int CHWPStream::Tell() const
 
 bool CHWPStream::ReadChar(CHAR& chValue)
 {
-	//TODO:: реализовать
-	Skip(2);
+	if (m_pCur + 2 > m_pEnd)
+		return false;
+
+	chValue = (CHAR)(((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[0] & 0x000000FF));
+	m_pCur += 2;
+
 	return true;
 }
 
 bool CHWPStream::ReadFloat(float& fValue)
 {
-	//TODO:: реализовать
-	Skip(4);
+	//TODO:: Проверить
+	int nValue;
+	if (!ReadInt(nValue))
+		return false;
+
+	fValue = *(float*)&nValue;
+
 	return true;
 }
 
 bool CHWPStream::ReadDouble(double& dValue)
 {
 	//TODO:: реализовать
-	Skip(8);
+	long long lValue;
+	if (!ReadLong(lValue))
+		return false;
+
+	dValue = *(double*)&lValue;
+
 	return true;
 }
 
-bool CHWPStream::ReadLong(long& lValue)
+bool CHWPStream::ReadLong(long long& lValue)
 {
-	//TODO:: реализовать
-	Skip(8);
+	if (m_pCur + 8 > m_pEnd)
+		return false;
+
+	lValue = ((m_pCur[7] << 24) & 0xFF000000) | ((m_pCur[6 ]<< 16) & 0xFF0000) | ((m_pCur[5] << 8) & 0xFF00) | (m_pCur[4] & 0xFF);
+	lValue = (lValue << 32) | ((m_pCur[3] << 24) & 0xFF000000) | ((m_pCur[2] << 16) & 0xFF0000) | ((m_pCur[1] << 8) & 0xFF00) | (m_pCur[0] & 0xFF);
+
+	m_pCur += 8;
+
 	return true;
 }
 
 bool CHWPStream::ReadInt(int& nValue)
 {
-	if (m_pCur + 4 >= m_pEnd)
+	if (m_pCur + 4 > m_pEnd)
 		return false;
 
 	nValue = ((m_pCur[3] << 24) & 0xFF000000) | ((m_pCur[2] << 16) & 0x00FF0000) | ((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[0] & 0x000000FF);
@@ -86,7 +108,7 @@ bool CHWPStream::ReadInt(int& nValue)
 
 bool CHWPStream::ReadColor(int& nValue)
 {
-	if (m_pCur + 4 >= m_pEnd)
+	if (m_pCur + 4 > m_pEnd)
 		return false;
 
 	nValue = ((m_pCur[3] << 24) & 0xFF000000) | ((m_pCur[0] << 16) & 0x00FF0000) | ((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[2] & 0x000000FF);
@@ -97,7 +119,7 @@ bool CHWPStream::ReadColor(int& nValue)
 
 bool CHWPStream::ReadShort(short& shValue)
 {
-	if (m_pCur + 2 >= m_pEnd)
+	if (m_pCur + 2 > m_pEnd)
 		return false;
 
 	shValue = (short)(((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[0] & 0x000000FF));
@@ -108,7 +130,7 @@ bool CHWPStream::ReadShort(short& shValue)
 
 short CHWPStream::ReadShort()
 {
-	if (m_pCur + 2 >= m_pEnd)
+	if (m_pCur + 1 > m_pEnd)
 		return 0;
 
 	short shValue = (short)(((m_pCur[1] << 8) & 0x0000FF00) | (m_pCur[0] & 0x000000FF));
@@ -119,7 +141,7 @@ short CHWPStream::ReadShort()
 
 bool CHWPStream::ReadByte(BYTE& chValue)
 {
-	if (m_pCur + 1 >= m_pEnd)
+	if (m_pCur + 1 > m_pEnd)
 		return false;
 
 	chValue = m_pCur[0];
@@ -130,7 +152,7 @@ bool CHWPStream::ReadByte(BYTE& chValue)
 
 BYTE CHWPStream::ReadByte()
 {
-	if (m_pCur + 1 >= m_pEnd)
+	if (m_pCur + 1 > m_pEnd)
 		return 0;
 
 	BYTE chValue = m_pCur[0]++;
@@ -139,30 +161,29 @@ BYTE CHWPStream::ReadByte()
 	return chValue;
 }
 
-bool CHWPStream::ReadString(STRING& sValue)
+void Trim(STRING& sValue)
 {
-	sValue.clear();
+	STRING::const_iterator itBegin = std::find_if(sValue.cbegin(), sValue.cend(), [](wchar_t wChar){ return !iswcntrl(wChar); });
 
+	if (itBegin != sValue.cend())
+		sValue.erase(0, itBegin - sValue.cbegin());
+
+	STRING::const_reverse_iterator itEnd = std::find_if(sValue.crbegin(), sValue.crend(), [](wchar_t wChar){ return !iswcntrl(wChar); });
+
+	if (itEnd != sValue.crend())
+		sValue.erase(itEnd.base());
+}
+
+bool CHWPStream::ReadString(STRING& sValue, EStringCharacter eCharacter)
+{
 	short shLen;
 	if (!ReadShort(shLen))
 		return false;
 
-	if (0 == shLen)
-		return true;
-
-	int nLen = (int)shLen * 2;
-
-	if (!CanRead(nLen))
-		nLen = m_pEnd - GetCurPtr();
-
-	sValue = STRING(GetCurPtr(), nLen); //TODO:: StandardCharsets.UTF_16LE
-
-	Skip(nLen);
-
-	return true;
+	return ReadString(sValue, (int)shLen * 2, eCharacter);
 }
 
-bool CHWPStream::ReadString(STRING& sValue, int nLength)
+bool CHWPStream::ReadString(STRING& sValue, int nLength, EStringCharacter eCharacter)
 {
 	sValue.clear();
 
@@ -172,8 +193,26 @@ bool CHWPStream::ReadString(STRING& sValue, int nLength)
 	if (!CanRead(nLength))
 		nLength = m_pEnd - GetCurPtr();
 
-	sValue = STRING(GetCurPtr(), nLength); //TODO:: StandardCharsets.UTF_16LE
+	switch (eCharacter)
+	{
+		case EStringCharacter::ASCII:
+		{
+			sValue = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)GetCurPtr(), nLength);
+			break;
+		}
+		case EStringCharacter::UTF16:
+		{
+			sValue = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)GetCurPtr(), nLength / 2);
+			break;
+		}
+		case EStringCharacter::UTF32:
+		{
+			sValue = NSStringExt::CConverter::GetUnicodeFromUTF32((unsigned int*)GetCurPtr(), nLength / 4);
+			break;
+		}
+	}
 
+	Trim(sValue);
 	Skip(nLength);
 
 	return true;
@@ -185,12 +224,13 @@ bool CHWPStream::ReadBytes(char* pBytes, unsigned int unSize)
 		return false;
 
 	memcpy(pBytes, m_pCur, unSize);
+	m_pCur += unSize;
 	return true;
 }
 
 void CHWPStream::Skip(unsigned int unStep)
 {
-	if (m_pCur + unStep >= m_pEnd)
+	if (m_pCur + unStep > m_pEnd)
 		m_pCur = m_pEnd;
 	else
 		m_pCur += unStep;
@@ -227,10 +267,10 @@ bool CHWPStream::IsValid() const
 
 bool CHWPStream::IsEof() const
 {
-	return m_pCur >= m_pEnd;
+	return m_pCur > m_pEnd;
 }
 
-unsigned int CHWPStream::GetLength() const
+unsigned int CHWPStream::GetSize() const
 {
 	return (unsigned int)(m_pEnd - m_pCur);
 }
@@ -258,8 +298,8 @@ int CHWPStream::GetDistanceToLastPos(bool bRemoveLastPos)
 
 BYTE CHWPStream::operator[](unsigned int unPosition) const
 {
-	if (m_pCur >= m_pEnd)
-		return *m_pEnd;
+	if (m_pCur > m_pEnd)
+		return *(m_pEnd - 1);
 
 	return *(m_pCur + unPosition);
 }

@@ -12,7 +12,7 @@
 
 namespace HWP
 {
-CCtrlContainer::CCtrlContainer(const std::string& sCtrlID)
+CCtrlContainer::CCtrlContainer(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
@@ -22,7 +22,7 @@ CCtrlContainer::CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBu
 
 CCtrlContainer::~CCtrlContainer()
 {
-	for (CCtrlGeneralShape* pElement : m_arList)
+	for (CCtrlGeneralShape* pElement : m_arShapes)
 	{
 		if (nullptr != pElement)
 			delete pElement;
@@ -31,17 +31,22 @@ CCtrlContainer::~CCtrlContainer()
 
 void CCtrlContainer::AddShape(CCtrlGeneralShape* pShape)
 {
-	m_arList.push_back(pShape);
+	m_arShapes.push_back(pShape);
 }
 
 bool CCtrlContainer::Empty() const
 {
-	return m_arList.empty();
+	return m_arShapes.empty();
+}
+
+std::vector<CCtrlGeneralShape*> CCtrlContainer::GetShapes() const
+{
+	return m_arShapes;
 }
 
 CCtrlGeneralShape* CCtrlContainer::GetLastShape()
 {
-	return (!m_arList.empty()) ? m_arList.back() : nullptr;
+	return (!m_arShapes.empty()) ? m_arShapes.back() : nullptr;
 }
 
 int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -56,9 +61,9 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
 
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNElement; ++unIndex)
-		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4);
+		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4, EStringCharacter::ASCII);
 
-	oObj.m_arList.reserve(oObj.m_shNElement);
+	oObj.m_arShapes.reserve(oObj.m_shNElement);
 
 	STRING sCtrlId;
 
@@ -73,28 +78,28 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 	{
 		CCtrlGeneralShape* pChldObj = nullptr;
 
-		oBuffer.ReadString(sCtrlId, 4);
+		oBuffer.ReadString(sCtrlId, 4, EStringCharacter::ASCII);
 
-		if ("cip$" == sCtrlId)
+		if (L"cip$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapePic)
-		else if ("cer$" == sCtrlId)
+		else if (L"cer$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeRect)
-		else if ("nil$" == sCtrlId)
+		else if (L"nil$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeLine)
-		else if ("noc$" == sCtrlId)
+		else if (L"noc$" == sCtrlId)
 			CREATE_OBJECT(CCtrlContainer)
-		else if ("lle$" == sCtrlId)
+		else if (L"lle$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeEllipse)
-		else if ("lop$" == sCtrlId)
+		else if (L"lop$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapePolygon)
-		else if ("cra$" == sCtrlId)
+		else if (L"cra$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeArc)
-		else if ("ruc$" == sCtrlId)
+		else if (L"ruc$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeCurve)
-		else if ("elo$" == sCtrlId)
+		else if (L"elo$" == sCtrlId)
 			CREATE_OBJECT(CCtrlShapeOle)
 
-		oObj.m_arList[unIndex] = pChldObj;
+		oObj.m_arShapes[unIndex] = pChldObj;
 	}
 
 	return oBuffer.GetCurPtr() - pOldCurentPos;
@@ -111,23 +116,10 @@ int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuff
 	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
 
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNElement; ++unIndex)
-		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4);
+		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4, EStringCharacter::ASCII);
 
 	oBuffer.Skip(4);
 
 	return oBuffer.GetCurPtr() - pOldCurentPos;
 }
-
-template<typename FindClass>
-FindClass* CCtrlContainer::FindLastElement()
-{
-	for (VECTOR<CCtrlGeneralShape*>::const_reverse_iterator itCtrl = m_arList.crbegin(); itCtrl != m_arList.crend(); ++itCtrl)
-	{
-		if (nullptr != dynamic_cast<FindClass>(*itCtrl))
-			return (FindClass*)(*itCtrl);
-	}
-
-	return nullptr;
-}
-
 }

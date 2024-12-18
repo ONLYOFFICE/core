@@ -8,11 +8,13 @@
 namespace HWP
 {
 typedef char16_t CHAR;
-typedef std::string STRING;
+typedef std::wstring STRING;
 typedef char BYTE;
 
 #define LIST std::list
 #define VECTOR std::vector
+
+#define TO_STRING(val) std::to_wstring(val)
 
 #define CLEAR_ARRAY(type, array) \
 	for (type* pValue : array) \

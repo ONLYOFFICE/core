@@ -9,7 +9,7 @@ class CCtrlContainer : public CCtrlGeneralShape
 {
 	short m_shNElement;
 	VECTOR<STRING> m_arCtrlIdList;
-	VECTOR<CCtrlGeneralShape*> m_arList;
+	VECTOR<CCtrlGeneralShape*> m_arShapes;
 public:
 	CCtrlContainer(const STRING& sCtrlID);
 	CCtrlContainer(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
@@ -17,8 +17,7 @@ public:
 
 	bool Empty() const;
 
-	template <typename FindClass>
-	FindClass* FindLastElement();
+	VECTOR<CCtrlGeneralShape*> GetShapes() const;
 
 	void AddShape(CCtrlGeneralShape* pShape);
 	CCtrlGeneralShape* GetLastShape();

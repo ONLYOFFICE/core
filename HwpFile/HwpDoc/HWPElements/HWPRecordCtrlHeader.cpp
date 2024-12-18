@@ -24,36 +24,36 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 	oBuffer.SavePosition();
 
 	STRING sCtrlID;
-	oBuffer.ReadString(sCtrlID, 4); //TODO::StandardCharsets.US_ASCII
+	oBuffer.ReadString(sCtrlID, 4, EStringCharacter::ASCII); //TODO::StandardCharsets.US_ASCII
 
 	CCtrl* pCtrl = nullptr;
 
-	if ("dces" == sCtrlID)
+	if (L"dces" == sCtrlID)
 		pCtrl = new CCtrlSectionDef(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("dloc" == sCtrlID)
+	else if (L"dloc" == sCtrlID)
 		pCtrl = new CCtrlColumnDef(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("daeh" == sCtrlID)
+	else if (L"daeh" == sCtrlID)
 		pCtrl = new CCtrlHeadFoot(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion, true);
-	else if ("toof" == sCtrlID)
+	else if (L"toof" == sCtrlID)
 		pCtrl = new CCtrlHeadFoot(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion, false);
-	else if ("  nf" == sCtrlID || "  ne" == sCtrlID)
+	else if (L"  nf" == sCtrlID || L"  ne" == sCtrlID)
 		pCtrl = new CCtrlNote(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if (" lbt" == sCtrlID)
+	else if (L" lbt" == sCtrlID)
 		pCtrl = new CCtrlTable(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("onta" == sCtrlID)
+	else if (L"onta" == sCtrlID)
 		pCtrl = new CCtrlAutoNumber(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("onwn" == sCtrlID)
+	else if (L"onwn" == sCtrlID)
 		pCtrl = new CCtrlNewNumber(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if (" osg" == sCtrlID)
+	else if (L" osg" == sCtrlID)
 		pCtrl = new CCtrlGeneralShape(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("deqe" == sCtrlID)
+	else if (L"deqe" == sCtrlID)
 		pCtrl = new CCtrlEqEdit(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
-	else if ("dhgp" == sCtrlID)
+	else if (L"dhgp" == sCtrlID)
 	{
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
 		oBuffer.Skip(nTempSize);
 	}
-	else if ("cot%" == sCtrlID)
+	else if (L"cot%" == sCtrlID)
 	{
 		// Когда содержимое считывается как UTF_16LE, следующее содержимое остается тем же самым
 		// ¥TableOfContents:set:140:ContentsMake:uint:17 ContentsStyles:wstring:0: ContentsLevel:int:5 ContentsAutoTabRight:int:0 ContentsLeader:int:3 ContentsHyperlink:bool:1
@@ -61,36 +61,36 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
 		oBuffer.Skip(nTempSize);
 	}
-	else if ("klc%" == sCtrlID)
+	else if (L"klc%" == sCtrlID)
 	{
 		pCtrl = new CCtrlClick(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
-	else if ("mrof" == sCtrlID)
+	else if (L"mrof" == sCtrlID)
 	{
 		pCtrl = new CCtrlForm(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
-	else if ("pngp" == sCtrlID)
+	else if (L"pngp" == sCtrlID)
 	{
 		pCtrl = new CCtrlPageNumPos(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
-	else if ("klh%" == sCtrlID || // hyperlink
-	         "frx%" == sCtrlID || // FIELD_CROSSREF
-	         "knu%" == sCtrlID || // FIELD_UNKNOWN
-	         "etd%" == sCtrlID || // FIELD_DATE
-	         "tdd%" == sCtrlID || // FIELD_DOCDATE
-	         "tap%" == sCtrlID || // FIELD_PATH
-	         "kmb%" == sCtrlID || // FIELD_BOOKMARK
-	         "gmm%" == sCtrlID || // FIELD_MAILMERGE
-	         "umf%" == sCtrlID || // FIELD_FORMULA
-	         "mxdi" == sCtrlID || // ???
-	         "mkob" == sCtrlID || // ???
-	         "spct" == sCtrlID || // ???
-	         "tmct" == sCtrlID || // ???
-	         "tcgp" == sCtrlID || // ???
-	         "tudt" == sCtrlID)   // ???
+	else if (L"klh%" == sCtrlID || // hyperlink
+	         L"frx%" == sCtrlID || // FIELD_CROSSREF
+	         L"knu%" == sCtrlID || // FIELD_UNKNOWN
+	         L"etd%" == sCtrlID || // FIELD_DATE
+	         L"tdd%" == sCtrlID || // FIELD_DOCDATE
+	         L"tap%" == sCtrlID || // FIELD_PATH
+	         L"kmb%" == sCtrlID || // FIELD_BOOKMARK
+	         L"gmm%" == sCtrlID || // FIELD_MAILMERGE
+	         L"umf%" == sCtrlID || // FIELD_FORMULA
+	         L"mxdi" == sCtrlID || // ???
+	         L"mkob" == sCtrlID || // ???
+	         L"spct" == sCtrlID || // ???
+	         L"tmct" == sCtrlID || // ???
+	         L"tcgp" == sCtrlID || // ???
+	         L"tudt" == sCtrlID)   // ???
 	{
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
 		oBuffer.Skip(nTempSize);

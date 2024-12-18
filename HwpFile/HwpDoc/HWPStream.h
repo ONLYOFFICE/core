@@ -7,6 +7,13 @@
 
 namespace HWP
 {
+enum class EStringCharacter
+{
+	ASCII,
+	UTF16,
+	UTF32
+};
+
 class CHWPStream
 {
 	BYTE* m_pBegin;
@@ -29,15 +36,15 @@ public:
 	bool ReadChar(CHAR& chValue);
 	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
-	bool ReadLong(long& lValue);
+	bool ReadLong(long long& lValue);
 	bool ReadInt(int& nValue);
 	bool ReadColor(int& nValue);
 	bool ReadShort(short& shValue);
 	short ReadShort();
 	bool ReadByte(BYTE& chValue);
 	BYTE ReadByte();
-	bool ReadString(STRING& sValue);
-	bool ReadString(STRING& sValue, int nLength);
+	bool ReadString(STRING& sValue, EStringCharacter eCharacter);
+	bool ReadString(STRING& sValue, int nLength, EStringCharacter eCharacter);
 	bool ReadBytes(BYTE* pBytes, unsigned int unSize);
 
 	void Skip(unsigned int unStep);
@@ -47,7 +54,7 @@ public:
 	bool CanRead(int nSize = 1) const;
 	bool IsValid() const;
 	bool IsEof() const;
-	unsigned int GetLength() const;
+	unsigned int GetSize() const;
 
 	void SavePosition();
 	void RemoveLastSavedPos();

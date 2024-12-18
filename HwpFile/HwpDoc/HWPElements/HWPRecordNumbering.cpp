@@ -20,7 +20,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shWidthAdjust);
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shTextOffset);
 		oBuffer.ReadInt(m_arNumbering[nIndex].m_nCharShape);
-		oBuffer.ReadString(m_arNumbering[nIndex].m_sNumFormat);
+		oBuffer.ReadString(m_arNumbering[nIndex].m_sNumFormat, EStringCharacter::UTF16);
 	}
 
 	oBuffer.ReadShort(m_shStart);

@@ -1,21 +1,19 @@
 #include "CompoundFile.h"
-#include <cwctype>
 
 namespace HWP
 {
-CCompoundFile::CCompoundFile(const std::string& sFileName)
-	: m_fFile(sFileName), m_nSectorSize(512)
+CCompoundFile::CCompoundFile(const STRING& sFileName)
+	: m_fFile(sFileName, std::ios::in | std::ios::binary), m_nSectorSize(512)
 {}
 
 CCompoundFile::~CCompoundFile()
 {
-	if (m_fFile.is_open())
-		m_fFile.close();
+	Close();
 
 	CLEAR_ARRAY(CDirectoryEntry, m_arDirectoryEntries);
 }
 
-const CDirectoryEntry* CCompoundFile::GetEntry(const std::string& sFileName) const
+const CDirectoryEntry* CCompoundFile::GetEntry(const STRING& sFileName) const
 {
 	VECTOR<CDirectoryEntry*>::const_iterator itFound = std::find_if(m_arDirectoryEntries.cbegin(), m_arDirectoryEntries.cend(), [&sFileName](const CDirectoryEntry* pDirectoryEntry){ return sFileName == pDirectoryEntry->GetDirectoryEntryName();});
 
@@ -25,7 +23,7 @@ const CDirectoryEntry* CCompoundFile::GetEntry(const std::string& sFileName) con
 	return *itFound;
 }
 
-bool CCompoundFile::GetComponent(const std::string& sEntryName, CHWPStream& oBuffer)
+bool CCompoundFile::GetComponent(const STRING& sEntryName, CHWPStream& oBuffer)
 {
 	const CDirectoryEntry* pEntry = GetEntry(sEntryName);
 
@@ -42,7 +40,12 @@ VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const CDirectoryEntry* p
 
 	int nIndex = 0;
 	if (nullptr == pBaseEntry)
-		nIndex = m_arDirectoryEntries.at(0)->GetChildID();
+	{
+		if (!m_arDirectoryEntries.empty())
+			nIndex = m_arDirectoryEntries.at(0)->GetChildID();
+		else
+			return VECTOR<CDirectoryEntry*>();
+	}
 	else
 		nIndex = pBaseEntry->GetChildID();
 
@@ -86,17 +89,24 @@ bool CCompoundFile::Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer)
 
 	if (oEntry.GetStreamSize() < m_nMiniStreamCutoffSize)
 	{
+		if ( m_arDirectoryEntries.empty())
+			return false;
+
 		arStreamContainerSectors = m_arDirectoryEntries.at(0)->GetSecNums();
 
 		for (int nSecNum : oEntry.GetSecNums())
 		{
 			int nStreamIndex = nSecNum / (m_nSectorSize / 64);
 			int nStreamOffset = nSecNum % (m_nSectorSize / 64);
+
+			if (nStreamIndex >= arStreamContainerSectors.size())
+				return false;
+
 			int nSatID = arStreamContainerSectors.at(nStreamIndex);
 
 			m_fFile.seekg((nSatID + 1) * m_nSectorSize + nStreamOffset * 64);
-
 			m_fFile.read(oBuffer.GetCurPtr(), nRemainSize >= 64 ? 64 : nRemainSize);
+
 			oBuffer.Skip(m_fFile.gcount());
 			nRemainSize -= m_fFile.gcount();
 		}
@@ -111,6 +121,7 @@ bool CCompoundFile::Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer)
 			// readStream
 			m_fFile.seekg((nSecNum + 1) * m_nSectorSize);
 			m_fFile.read(oBuffer.GetCurPtr(), nRemainSize >= m_nSectorSize ? m_nSectorSize : nRemainSize);
+
 			oBuffer.Skip(m_fFile.gcount());
 			nRemainSize -= m_fFile.gcount();
 		}
@@ -123,6 +134,9 @@ bool CCompoundFile::Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer)
 
 bool CCompoundFile::Open()
 {
+	if (m_fFile.bad())
+		return false;
+
 	CHWPStream oBuffer(m_nSectorSize);
 
 	if (!oBuffer.IsValid())
@@ -154,6 +168,9 @@ bool CCompoundFile::Open()
 		int nSatIndex = nSecID / (m_nSectorSize / 4);
 
 		// collect Directory SecID
+		if (nSatIndex >= m_arSATs.size())
+			return false;
+
 		int nSatID = m_arSATs.at(nSatIndex);
 		VECTOR<int> arSecIDs = GetSecIDsFromSAT(nSatID, nSatIndex, nSecID);
 
@@ -183,6 +200,10 @@ bool CCompoundFile::Open()
 	while (0xFFFFFFFE != nLastSecID)
 	{
 		int nSatIndex = nLastSecID / (m_nSectorSize / 4);
+
+		if (nSatIndex >= m_arSATs.size())
+			return false;
+
 		int nSatID = m_arSATs.at(nSatIndex);
 		VECTOR<int> arSecIDs = GetSecIDsFromSAT(nSatID, nSatIndex, nLastSecID);
 
@@ -211,6 +232,10 @@ bool CCompoundFile::Open()
 			while (0xFFFFFFFE != nLastSecID)
 			{
 				int nContainerIndex = nLastSecID / (m_nSectorSize / 4);
+
+				if (nContainerIndex >= m_arSATs.size())
+					return false;
+
 				int nSatID = m_arSATs.at(nContainerIndex);
 				VECTOR<int> arSecIDs = GetSecIDsFromSAT(nSatID, nContainerIndex, nLastSecID);
 
@@ -239,6 +264,10 @@ bool CCompoundFile::Open()
 				while (0xFFFFFFFE != nLastSSecID)
 				{
 					int nSSatIndex = nLastSSecID / (m_nSectorSize / 4);
+
+					if (nSSatIndex >= m_arSSATSecIDs.size())
+						return false;
+
 					int nSSatID = m_arSSATSecIDs.at(nSSatIndex);
 
 					VECTOR<int> arSecIDs = GetSecIDsFromSAT(nSSatID, nSSatIndex, nLastSSecID);
@@ -263,6 +292,10 @@ bool CCompoundFile::Open()
 				while (0xFFFFFFFE != nLastSectID)
 				{
 					int nSatIndex = nLastSectID / (m_nSectorSize / 4);
+
+					if (nSatIndex >= m_arSATs.size())
+						return false;
+
 					int nSatID = m_arSATs.at(nSatIndex);
 
 					VECTOR<int> arSecIDs = GetSecIDsFromSAT(nSatID, nSatIndex, nLastSectID);
@@ -303,6 +336,9 @@ void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex)
 	if (arIndexs.end() == itFoundIndex)
 		arIndexs.push_back(nCurrentIndex);
 
+	if (nCurrentIndex >= m_arDirectoryEntries.size())
+		return;
+
 	const int nLeftSibling  = m_arDirectoryEntries.size() > nCurrentIndex ? m_arDirectoryEntries.at(nCurrentIndex)->GetLeftSiblingID()  : -1;
 	const int nRightSibling = m_arDirectoryEntries.size() > nCurrentIndex ? m_arDirectoryEntries.at(nCurrentIndex)->GetRightSiblingID() : -1;
 
@@ -334,6 +370,9 @@ VECTOR<int> CCompoundFile::GetSecIDsFromSAT(int nSecID, int nSatIndex, int nSecI
 
 	m_fFile.seekg((nSecID + 1) * m_nSectorSize);
 	m_fFile.read(oBuffer.GetCurPtr(), m_nSectorSize);
+
+	if (m_fFile.gcount() != m_nSectorSize)
+		return VECTOR<int>();
 
 	int nCurrSecID = nSecIDSSAT;
 	VECTOR<int> arSecIDs;
@@ -475,8 +514,8 @@ void CCompoundFile::ParseDirectorySector(CHWPStream& oBuffer)
 		STRING sDirectiryEnryName;
 
 		oBuffer.ReadShort(shEntryNameLen);
-		oBuffer.MoveTo(64 + nIndex);
-		oBuffer.ReadString(sDirectiryEnryName, shEntryNameLen);
+		oBuffer.MoveTo(nIndex);
+		oBuffer.ReadString(sDirectiryEnryName, shEntryNameLen, EStringCharacter::UTF16);
 		oBuffer.MoveTo(66 + nIndex);
 		//
 		int nObjectType = oBuffer.ReadByte() & 0xFF;
@@ -487,21 +526,21 @@ void CCompoundFile::ParseDirectorySector(CHWPStream& oBuffer)
 		oBuffer.ReadInt(nRightSiblingID);
 		oBuffer.ReadInt(nChildID);
 
-		long lClsID1, lClsID2;
+		long long lClsID1, lClsID2;
 		oBuffer.ReadLong(lClsID1);
 		oBuffer.ReadLong(lClsID2);
 
 		int nStateBit;
 		oBuffer.ReadInt(nStateBit);
 
-		long lCreationTime, lModifiedTime;
+		long long lCreationTime, lModifiedTime;
 		oBuffer.ReadLong(lCreationTime);
 		oBuffer.ReadLong(lModifiedTime);
 
 		int nStartingSectorID;
 		oBuffer.ReadInt(nStartingSectorID);
 
-		long lStreamSize;
+		long long lStreamSize;
 		oBuffer.ReadLong(lStreamSize);
 
 		CDirectoryEntry *pDirectoryEntry = new CDirectoryEntry();
@@ -574,9 +613,9 @@ bool CCompoundFile::ParseHeader(CHWPStream& oBuffer)
 	if (0x0003 != m_nMajorVersion && 0x0004 != m_nMajorVersion)
 		return false;
 
-	int nByteOrder = oBuffer.ReadShort();
+	short shByteOrder = oBuffer.ReadShort();
 
-	if (0xFFFE != nByteOrder)
+	if (0xFFFE != (unsigned short)shByteOrder)
 		return false;
 
 	int nSectorShift = oBuffer.ReadShort();
@@ -630,7 +669,9 @@ bool CCompoundFile::CheckSignature(CHWPStream& oBuffer)
 		return false;
 
 	BYTE arBufSig[8];
-	oBuffer.ReadBytes(arBufSig, 8);
+
+	if (!oBuffer.ReadBytes(arBufSig, 8))
+		return false;
 
 	if ((BYTE)0xD0 == arBufSig[0] && (BYTE)0xCF == arBufSig[1] && (BYTE)0x11 == arBufSig[2] && (BYTE)0xE0 == arBufSig[3] &&
 	    (BYTE)0xA1 == arBufSig[4] && (BYTE)0xB1 == arBufSig[5] && (BYTE)0x1A == arBufSig[6] && (BYTE)0xE1 == arBufSig[7])

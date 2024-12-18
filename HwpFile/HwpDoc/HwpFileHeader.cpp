@@ -7,16 +7,18 @@ CHwpFileHeader::CHwpFileHeader()
 
 bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
 {
-	unsigned int unOffset = 0;
-
-	m_sSignature = STRING((char*)oBuffer.GetCurPtr(), 32);
-
-	if ("HWP Document File" != m_sSignature)
+	if (!oBuffer.IsValid())
 		return false;
 
-	unOffset += 32;
+	unsigned int unOffset = 0;
+
+	oBuffer.ReadString(m_sSignature, 32, EStringCharacter::ASCII);
+
+	if (L"HWP Document File" != m_sSignature)
+		return false;
 
 	//version
+	m_sVersion = std::to_wstring((int)oBuffer[unOffset + 3]) + std::to_wstring((int)oBuffer[unOffset + 2]) + std::to_wstring((int)oBuffer[unOffset + 1]) + std::to_wstring((int)oBuffer[unOffset + 0]);
 	unOffset += 4;
 
 	m_bCompressed        = CHECK_FLAG(oBuffer[unOffset], 0x01);

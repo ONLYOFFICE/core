@@ -64,7 +64,7 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 	{
 		oBuffer.Skip(10);
 		STRING sFieldName;
-		oBuffer.ReadString(sFieldName);
+		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
 		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurrentPos));
 	}

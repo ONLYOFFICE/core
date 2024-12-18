@@ -52,7 +52,7 @@ CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, 
 	oBuffer.SavePosition();
 
 	STRING sCtrlId;
-	oBuffer.ReadString(sCtrlId, 4);
+	oBuffer.ReadString(sCtrlId, 4, EStringCharacter::ASCII);
 
 	CCtrlGeneralShape *pShape = nullptr;
 
@@ -64,52 +64,52 @@ CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, 
 	else \
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos())
 
-	if ("cip$" == sCtrlId)
+	if (L"cip$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapePic);
 	}
-	else if ("cer$" == sCtrlId)
+	else if (L"cer$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeRect);
 	}
-	else if ("nil$" == sCtrlId ||
-	         "loc$" == sCtrlId)
+	else if (L"nil$" == sCtrlId ||
+	         L"loc$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeLine);
 	}
-	else if ("noc$" == sCtrlId)
+	else if (L"noc$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlContainer);
 	}
-	else if ("lle$" == sCtrlId)
+	else if (L"lle$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeEllipse);
 	}
-	else if ("lop$" == sCtrlId)
+	else if (L"lop$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapePolygon);
 	}
-	else if ("cra$" == sCtrlId)
+	else if (L"cra$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeArc);
 	}
-	else if ("ruc$" == sCtrlId)
+	else if (L"ruc$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeCurve);
 	}
-	else if ("deqe" == sCtrlId)
+	else if (L"deqe" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlEqEdit);
 	}
-	else if ("elo$" == sCtrlId)
+	else if (L"elo$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeOle);
 	}
-	else if ("div$" == sCtrlId)
+	else if (L"div$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeVideo);
 	}
-	else if ("tat$" == sCtrlId)
+	else if (L"tat$" == sCtrlId)
 	{
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeTextArt);
 	}

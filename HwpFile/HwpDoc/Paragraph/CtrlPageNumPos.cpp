@@ -39,10 +39,10 @@ CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& o
 	m_ePos = GetNumPos((nAttr >> 8) & 0xF);
 
 	oBuffer.Skip(2);
-	oBuffer.ReadString(m_sUserDef, 2);
-	oBuffer.ReadString(m_sPrefix, 2);
-	oBuffer.ReadString(m_sPostfix, 2);
-	oBuffer.ReadString(m_sConstantDash, 2);
+	oBuffer.ReadString(m_sUserDef, 2, EStringCharacter::UTF16);
+	oBuffer.ReadString(m_sPrefix, 2, EStringCharacter::UTF16);
+	oBuffer.ReadString(m_sPostfix, 2, EStringCharacter::UTF16);
+	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 
 	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
 }

@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlShapeVideo::CCtrlShapeVideo(const std::string& sCtrlID)
+CCtrlShapeVideo::CCtrlShapeVideo(const STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
@@ -17,11 +17,11 @@ int CCtrlShapeVideo::ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& 
 	if (0 == oObj.m_nVideoType)
 		oBuffer.ReadShort(oObj.m_shVidoeBinID);
 	else if (1 == oObj.m_nVideoType)
-		oBuffer.ReadString(oObj.m_sObjDesc);
+		oBuffer.ReadString(oObj.m_sObjDesc, EStringCharacter::UTF16);
 
 	short m_sBinID;
 	oBuffer.ReadShort(m_sBinID);
-	oObj.m_sThumnailBinID = std::to_string(m_sBinID - 1);
+	oObj.m_sThumnailBinID = std::to_wstring(m_sBinID - 1);
 
 	return nSize;
 }

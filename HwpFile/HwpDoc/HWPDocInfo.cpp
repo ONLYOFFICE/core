@@ -14,7 +14,7 @@ CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 // 	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile)
 // {}
 
-CHWPDocInfo::CHWPDocInfo(CHWPFile* pHWPFile)
+CHWPDocInfo::CHWPDocInfo(CHWPFile_Private* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile)
 {}
 
@@ -51,7 +51,7 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 {
 	int nOff = 0;
 
-	while (nOff < oBuffer.GetLength())
+	while (nOff < oBuffer.GetSize())
 	{
 		int nHeader = ((oBuffer[nOff + 3] << 24) & 0xFF000000) | ((oBuffer[nOff + 2] << 16) & 0xFF0000) | ((oBuffer[nOff + 1] << 8) & 0xFF00) | (oBuffer[nOff] & 0xFF);
 		int nTagNum = nHeader & 0x3FF;

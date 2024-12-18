@@ -117,7 +117,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 		short shBinTemp;
 		oBuffer.ReadShort(shBinTemp);
 
-		m_sBinItemID = std::to_string(shBinTemp - 1);
+		m_sBinItemID = TO_STRING(shBinTemp - 1);
 	}
 
 	int nMoreSize;

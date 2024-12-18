@@ -12,9 +12,6 @@ class CHWPSection
 
 	int ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-
-	template <typename ShapeType>
-	void CheckShape(CCtrlContainer& oContainer, int nSize, CHWPStream& oBuffer, int nVersion);
 public:
 	CHWPSection();
 	~CHWPSection();

@@ -18,7 +18,7 @@ int CCtrlShapeOle::ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuf
 	oBuffer.ReadInt(oObj.m_nAttr);
 	oBuffer.ReadInt(oObj.m_nExtentX);
 	oBuffer.ReadInt(oObj.m_nExtentY);
-	oObj.m_sBinDataID = std::to_string(oBuffer.ReadShort());
+	oObj.m_sBinDataID = std::to_wstring(oBuffer.ReadShort());
 	oBuffer.ReadColor(oObj.m_nBorderColor);
 	oBuffer.ReadInt(oObj.m_nBorderThick);
 	oBuffer.ReadInt(oObj.m_nBorderAttr);

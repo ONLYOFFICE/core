@@ -20,6 +20,9 @@ DEFINES += CRYPTOPP_DISABLE_ASM
 DEFINES += DISABLE_TYPE_MISMATCH\
 #DEFINES += USE_PRECOMPILED_HEADERS
 
+# use old CryptoAPI for xp build
+build_xp:DEFINES += USE_MS_CRYPTOAPI
+
 core_android {
     INCLUDEPATH += $$(ANDROID_NDK_ROOT)/sources/android/cpufeatures
 }

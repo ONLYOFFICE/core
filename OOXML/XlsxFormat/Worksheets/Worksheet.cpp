@@ -384,6 +384,10 @@ namespace OOX
             if (m_oProtectedRanges.IsInit() && !m_oProtectedRanges->m_arrItems.empty())
                 m_oProtectedRanges->toBin(writer);
 
+            if (m_oAutofilter.IsInit())
+                    m_oAutofilter->toBin(writer);
+            if (m_oSortState.IsInit())
+                    m_oSortState->toBin(writer);
             if (m_oDataConsolidate.IsInit())
                 m_oDataConsolidate->toBin(writer);
             if (m_oMergeCells.IsInit())

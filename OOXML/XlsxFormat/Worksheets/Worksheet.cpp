@@ -379,6 +379,8 @@ namespace OOX
                 m_oSheetData->toBin(writer);
             if(m_oSheetProtection.IsInit())
                 m_oSheetProtection->toBin(writer);
+            if (m_oProtectedRanges.IsInit() && !m_oProtectedRanges->m_arrItems.empty())
+                m_oProtectedRanges->toBin(writer);
 
             if (m_oMergeCells.IsInit())
                     m_oMergeCells->toBin(writer);

@@ -3980,6 +3980,61 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CDataRef::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_DRef);
+            BYTE fname = 0;
+            {
+                BYTE fbuiltin = 0;
+                if (m_oName.IsInit() && m_oName->size())
+                {
+                    fname = 1;
+                    std::set<std::wstring> defaultNames =
+                    {
+                        L"Consolidate_Area", L"Auto_Open", L"Auto_Close", L"Extract", L"Database", L"Criteria", L"Sheet_Title",
+                        L"Print_Area", L"Print_Titles", L"Recorder", L"Data_Form", L"Auto_Activate", L"Auto_Deactivate", L"_FilterDatabase"
+                    };
+                    if(defaultNames.find(m_oName.get()) != defaultNames.end())
+                    {
+                        fbuiltin = 1;
+                    }
+                }
+                *record << fname << fbuiltin;
+            }
+            if(!fname)
+            {
+                XLSB::UncheckedRfX ref;
+                if (m_oRef.IsInit())
+                    ref = m_oRef.get();
+                 *record << ref;
+            }
+            else
+            {
+                _UINT32 gap = 1048576;
+                *record << gap << gap;
+                gap = 16384;
+                *record << gap << gap;
+            }
+            {
+                XLSB::XLWideString xstrName;
+                XLSB::XLWideString xstrSheet;
+                XLSB::XLNullableWideString relId;
+                if(fname)
+                    xstrName = m_oName.get();
+                else
+                    xstrName = L"";
+                if (m_oSheet.IsInit())
+                    xstrSheet = m_oSheet.get();
+                else
+                    xstrSheet = L"";
+                if (m_oId.IsInit())
+                    relId = m_oId->GetValue();
+                else
+                    relId = L"";
+                *record << xstrName << xstrSheet << relId;
+            }
+            writer->storeNextRecord(record);
+        }
 		EElementType CDataRef::getType() const
 		{
 			return et_x_DataRef;
@@ -4085,6 +4140,21 @@ namespace OOX
             beginRefs->cdref = ptr->m_arBrtDRef.size();
 			return objectPtr;
 		}
+        void CDataRefs::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginDRefs);
+                _UINT32 size = m_arrItems.size();
+                *begin << size;
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_arrItems)
+                i->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndDRefs);
+                writer->storeNextRecord(end);
+            }
+        }
 		EElementType CDataRefs::getType() const
 		{
 			return et_x_DataRefs;
@@ -4166,6 +4236,31 @@ namespace OOX
 			}
 			return objectPtr;
 		}
+        void CDataConsolidate::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginDCon);
+                BYTE flags = 0;
+                BYTE iftab = 0;
+                if(m_oFunction.IsInit())
+                    iftab = m_oFunction->GetValue();
+                if(m_oStartLabels.IsInit())
+                    SETBIT(flags, 0, m_oStartLabels->GetValue())
+                if(m_oTopLabels.IsInit())
+                    SETBIT(flags, 1, m_oTopLabels->GetValue())
+                if(m_oLink.IsInit())
+                    SETBIT(flags, 2, m_oLink->GetValue())
+                *begin << iftab << flags;
+                writer->storeNextRecord(begin);
+            }
+            if(m_oDataRefs.IsInit())
+                m_oDataRefs->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndDCon);
+
+                writer->storeNextRecord(end);
+            }
+        }
 		void CDataConsolidate::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::DCON*>(obj.get());

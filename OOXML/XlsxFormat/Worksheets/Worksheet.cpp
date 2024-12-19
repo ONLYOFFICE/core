@@ -375,13 +375,17 @@ namespace OOX
                     m_oSheetFormatPr->toBin(writer);
             if (m_oCols.IsInit())
                     m_oCols->toBin(writer);
+
             if ( m_oSheetData.IsInit())
                 m_oSheetData->toBin(writer);
+
             if(m_oSheetProtection.IsInit())
                 m_oSheetProtection->toBin(writer);
             if (m_oProtectedRanges.IsInit() && !m_oProtectedRanges->m_arrItems.empty())
                 m_oProtectedRanges->toBin(writer);
 
+            if (m_oDataConsolidate.IsInit())
+                m_oDataConsolidate->toBin(writer);
             if (m_oMergeCells.IsInit())
                     m_oMergeCells->toBin(writer);
             if (!m_arrConditionalFormatting.empty())
@@ -403,6 +407,8 @@ namespace OOX
                 m_oRowBreaks->toBinRow(writer);
             if (m_oColBreaks.IsInit())
                 m_oColBreaks->toBinColumn(writer);
+            if (m_oDrawing.IsInit())
+                m_oDrawing->toBin(writer);
             if (m_oLegacyDrawing.IsInit())
                 m_oLegacyDrawing->toBin(writer);
             if (m_oLegacyDrawingHF.IsInit())

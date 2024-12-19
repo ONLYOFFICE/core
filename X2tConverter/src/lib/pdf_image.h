@@ -217,6 +217,7 @@ namespace NExtractTools
 
 			CConvertFromBinParams oBufferParams;
 			oBufferParams.m_sThemesDirectory        = convertParams.m_sThemesDir;
+			oBufferParams.m_sMediaDirectory         = sFileDir;
 			oBufferParams.m_sInternalMediaDirectory = convertParams.m_sInternalMediaDirectory;
 
 			std::wstring documentID = params.getDocumentID();

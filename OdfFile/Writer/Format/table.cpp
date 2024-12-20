@@ -468,18 +468,17 @@ void table_columns_no_group::add_child_element( const office_element_ptr & child
 }
 void table_columns_no_group::serialize(std::wostream & _Wostream)
 {
-  //  CP_XML_WRITER(_Wostream)
-  //  {
-		//CP_XML_NODE_SIMPLE()
-  //      {
-			table_columns_1_.serialize(_Wostream);
+	CP_XML_WRITER(_Wostream)
+	{
+		table_columns_1_.serialize(_Wostream);
  			
-			if (table_table_header_columns_)
-				table_table_header_columns_->serialize(_Wostream);
-			
-			table_columns_2_.serialize(_Wostream);			
-	//	}
-	//}
+		if (table_table_header_columns_)
+			table_table_header_columns_->serialize(_Wostream);
+		else
+			CP_XML_NODE(L"table:table-header-columns");
+
+		table_columns_2_.serialize(_Wostream);
+	}
 }
 _CP_PTR(table_columns_no_group) table_columns_no_group::create(odf_conversion_context * Context)
 {

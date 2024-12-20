@@ -710,7 +710,8 @@ namespace NSDocxRenderer
 				                      shape->m_dLeft < 0 ||
 				                      shape->m_dRight > this->m_dWidth * out_of_page_coeff;
 
-				bool is_too_big = (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM);
+
+				bool is_too_big = (!shape->m_bIsNoFill && (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM));
 
 				if (is_too_big || is_out_of_page)
 					continue;
@@ -729,11 +730,13 @@ namespace NSDocxRenderer
 		AnalyzeDropCaps();
 		AnalyzeConts();
 		AnalyzeEffects();
+
+		GetHorVerLines();
+
 		AddDiacriticalSymbols();
-		MergeLinesByVertAlignType();
+		MergeTextLinesByVatType();
 		DeleteTextClipPage();
 		MergeConts();
-		GetHorVerLines();
 		SplitLines();
 		AnalyzeOverlapLines();
 
@@ -1150,7 +1153,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CPage::MergeLinesByVertAlignType()
+	void CPage::MergeTextLinesByVatType()
 	{
 		for (auto& line : m_arTextLines)
 		{
@@ -1274,6 +1277,36 @@ namespace NSDocxRenderer
 		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
 		double top = std::min(pFirst->m_dBaselinePos, pSecond->m_dBaselinePos);
 		double bot = std::max(pFirst->m_dTop, pSecond->m_dTop);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsHorizontalLineTrough(dummy_cont);
+	}
+	bool CPage::IsVerticalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dRight, pSecond->m_dRight);
+		double right = std::max(pFirst->m_dLeft, pSecond->m_dLeft);
+		double top = std::min(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
+		double bot = std::max(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsVerticalLineTrough(dummy_cont);
+	}
+	bool CPage::IsHorizontalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
+		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
+		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
+		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
 
 		auto dummy_cont = std::make_shared<CContText>();
 		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;

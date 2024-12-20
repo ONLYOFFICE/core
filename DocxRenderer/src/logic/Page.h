@@ -122,7 +122,7 @@ namespace NSDocxRenderer
 		void AddDiacriticalSymbols();
 
 		// super-sub scripts line merge
-		void MergeLinesByVertAlignType();
+		void MergeTextLinesByVatType();
 
 		// remove out of bounds text lines
 		void DeleteTextClipPage();
@@ -164,6 +164,10 @@ namespace NSDocxRenderer
 
 		bool IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
 		bool IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
+
+		bool IsVerticalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+
 		bool IsVerticalLineTrough(item_ptr_t pFirst) const noexcept;
 		bool IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept;
 

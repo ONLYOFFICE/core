@@ -1601,6 +1601,7 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 			{
 				After2003Read();
+                PrepareForBinaryWriter();
 				AfterRead();
 				return;
 			}
@@ -3087,10 +3088,6 @@ namespace OOX
 				if (strcmp("r", wsName) == 0)
 				{
 					m_oRef = oReader.GetTextA();
-                    std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
-                    XLS::CellRef cellref = XLS::CellRef(wstringRef);
-                    m_oCol = cellref.column;
-                    m_oRow = cellref.row;
 				}
 				else if (strcmp("ss:Formula", wsName) == 0)
 				{

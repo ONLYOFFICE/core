@@ -65,7 +65,7 @@
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
-
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -942,6 +942,14 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			ptr->stRelID.value = m_oRId->GetValue();
 		return objectPtr;
 	}
+    void CTablePart::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        auto record = writer->getNextRecord(XLSB::rt_ListPart);
+        XLSB::RelID stRelID;
+        if(m_oRId.IsInit())
+            stRelID = m_oRId->GetValue();
+        writer->storeNextRecord(record);
+    }
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -1024,6 +1032,23 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		}
 		return objectPtr;
 	}
+    void CTableParts::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        {
+            auto begin = writer->getNextRecord(XLSB::rt_BeginListParts);
+            _UINT32 count = m_arrItems.size();
+            *begin << count;
+            writer->storeNextRecord(begin);
+        }
+        for(auto i:m_arrItems)
+        {
+            i->toBin(writer);
+        }
+        {
+            auto end = writer->getNextRecord(XLSB::rt_EndListParts);
+            writer->storeNextRecord(end);
+        }
+    }
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )

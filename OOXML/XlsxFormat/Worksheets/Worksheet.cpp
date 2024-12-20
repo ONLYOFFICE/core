@@ -385,9 +385,10 @@ namespace OOX
                 m_oProtectedRanges->toBin(writer);
 
             if (m_oAutofilter.IsInit())
-                    m_oAutofilter->toBin(writer);
+                m_oAutofilter->toBin(writer);
             if (m_oSortState.IsInit())
-                    m_oSortState->toBin(writer);
+                m_oSortState->toBin(writer);
+
             if (m_oDataConsolidate.IsInit())
                 m_oDataConsolidate->toBin(writer);
             if (m_oMergeCells.IsInit())
@@ -419,6 +420,10 @@ namespace OOX
                 m_oLegacyDrawingHF->toBin(writer);
             if (m_oOleObjects.IsInit())
                 m_oOleObjects->toBin(writer);
+            if (m_oControls.IsInit())
+                m_oControls->toBin(writer);
+            if (m_oTableParts.IsInit())
+                m_oTableParts->toBin(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

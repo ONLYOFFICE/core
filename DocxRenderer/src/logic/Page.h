@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "elements/Paragraph.h"
+#include "elements/Table.h"
 #include "elements/Shape.h"
 #include "managers/ImageManager.h"
 #include "managers/FontStyleManager.h"
@@ -87,6 +88,7 @@ namespace NSDocxRenderer
 		using line_ptr_t = std::shared_ptr<CTextLine>;
 		using item_ptr_t = std::shared_ptr<CBaseItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
+		using table_ptr_t = std::shared_ptr<CTable>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
@@ -96,6 +98,9 @@ namespace NSDocxRenderer
 
 		// returns std::vector of paragraphs builded from m_arTextLines
 		std::vector<paragraph_ptr_t> BuildParagraphs();
+
+		// returns std::vector of tables builded from shapes and paragraphes
+		std::vector<table_ptr_t> BuildTables();
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<item_ptr_t> BuildOutputObjects();
@@ -190,6 +195,7 @@ namespace NSDocxRenderer
 		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
 		std::vector<shape_ptr_t>     m_arShapes;
 		std::vector<paragraph_ptr_t> m_arParagraphs;
+		std::vector<table_ptr_t>     m_arTables;
 
 		std::vector<item_ptr_t>   m_arOutputObjects;
 		std::vector<std::wstring> m_arCompleteObjectsXml;

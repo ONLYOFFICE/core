@@ -393,13 +393,13 @@ namespace NSDocxRenderer
 		m_arDiacriticalSymbols = MoveDiacriticalSymbols();
 		m_arTextLines = BuildTextLines();
 
-		// analyzing data
+		// analyzing data. can take shapes and set them to nullptr
 		AnalyzeShapes();
 		AnalyzeTextLines();
 
 		// building final objects
 		m_arParagraphs = BuildParagraphs();
-		// TODO: tables
+		// m_arTables = BuildTables();
 
 		// post analyze
 		CalcSelected();
@@ -1876,6 +1876,15 @@ namespace NSDocxRenderer
 		});
 
 		return ar_paragraphs;
+	}
+	std::vector<CPage::table_ptr_t> CPage::BuildTables()
+	{
+		// build cells
+		// add paragraphs
+		// build rows
+		// build tables
+		std::vector<table_ptr_t> ar_tables;
+		return ar_tables;
 	}
 
 	CPage::shape_ptr_t CPage::CreateSingleLineShape(line_ptr_t& pLine)

@@ -15,7 +15,7 @@ CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID, int nSize, CHWPStrea
 
 int CCtrlShapePolygon::ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(oObj.m_nPoints);
 
@@ -30,8 +30,10 @@ int CCtrlShapePolygon::ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStre
 		}
 	}
 
-	if (4 == (nSize - (oBuffer.GetCurPtr() - pOldCurentPos)))
+	if (4 == (nSize - oBuffer.GetDistanceToLastPos()))
 		oBuffer.Skip(4);
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return nSize;
 }
@@ -43,7 +45,7 @@ int CCtrlShapePolygon::ParseCtrl(CCtrlShapePolygon& oObj, int nSize, CHWPStream&
 
 int CCtrlShapePolygon::ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.Skip(2);
 
@@ -55,16 +57,16 @@ int CCtrlShapePolygon::ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize,
 
 	oBuffer.Skip(13);
 
-	if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
+	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
 		STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
-		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurentPos));
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 	}
 
-	return oBuffer.GetCurPtr() - pOldCurentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 

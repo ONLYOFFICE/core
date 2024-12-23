@@ -5,7 +5,7 @@ namespace HWP
 CCtrlClick::CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlId)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.Skip(4);
 	oBuffer.Skip(1);
@@ -15,7 +15,7 @@ CCtrlClick::CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, in
 	oBuffer.Skip(4);
 	oBuffer.Skip(4);
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlClick::GetSize()

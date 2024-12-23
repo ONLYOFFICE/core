@@ -11,6 +11,4 @@ STRING CHWPRecordBinData::GetItemID() const
 {
 	return m_sItemID;
 }
-
-
 }

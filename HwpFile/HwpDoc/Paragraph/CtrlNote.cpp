@@ -2,6 +2,9 @@
 
 namespace HWP
 {
+CCtrlNote::CCtrlNote()
+{}
+
 CCtrlNote::CCtrlNote(const STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
@@ -17,5 +20,10 @@ CCtrlNote::CCtrlNote(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int 
 int CCtrlNote::GetSize()
 {
 	return m_nSize;
+}
+
+void CCtrlNote::AddParagraph(CHWPPargraph* pParagraph)
+{
+	m_arParas.push_back(pParagraph);
 }
 }

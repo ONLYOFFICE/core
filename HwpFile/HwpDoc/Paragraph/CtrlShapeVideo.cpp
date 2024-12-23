@@ -12,6 +12,8 @@ CCtrlShapeVideo::CCtrlShapeVideo(const STRING& sCtrlID, int nSize, CHWPStream& o
 
 int CCtrlShapeVideo::ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	oBuffer.ReadInt(oObj.m_nVideoType);
 
 	if (0 == oObj.m_nVideoType)
@@ -23,6 +25,7 @@ int CCtrlShapeVideo::ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& 
 	oBuffer.ReadShort(m_sBinID);
 	oObj.m_sThumnailBinID = std::to_wstring(m_sBinID - 1);
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 

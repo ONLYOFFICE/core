@@ -39,10 +39,10 @@ CHWPRecordIDMaping::CHWPRecordIDMaping(CHWPDocInfo& oDocInfo, int nTagNum, int n
 	{
 		int nCount;
 		oBuffer.ReadInt(nCount);
+		m_arIdMappingNum.push_back(nCount);
 
 		m_arCounts[nIndex] = nCount;
 
-		//TODO:: BinData
 	}
 }
 }

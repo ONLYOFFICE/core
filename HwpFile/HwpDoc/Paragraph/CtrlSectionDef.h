@@ -37,18 +37,24 @@ class CCtrlSectionDef : public CCtrl
 	short m_shEquation;
 	short m_shLang;
 
-	// CPage m_oPage;
-	LIST<CCtrlHeadFoot*> m_arHeaderFooter;
-	// LIST<CNoteShape*> m_arNoteShapes;
-	// LIST<CPageBorderFill*> m_arBorderFills;
+	CPage *m_pPage;
+	VECTOR<CCtrlHeadFoot*> m_arHeaderFooter;
+	VECTOR<CNoteShape*> m_arNoteShapes;
+	VECTOR<CPageBorderFill*> m_arBorderFills;
 
-	// LIST<CHWPPargraph*> m_arParas;
+	VECTOR<CHWPPargraph*> m_arParas;
 
 public:
 	CCtrlSectionDef(const STRING& sCtrlID);
 	CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	~CCtrlSectionDef();
+
+	void SetPage(CPage* pPage);
 
 	void AddHeadFoot(CCtrlHeadFoot* pHeadFoot);
+	void AddParagraph(CHWPPargraph* pParagraph);
+	void AddNoteShape(CNoteShape* pNoteShape);
+	void AddPageBorderFill(CPageBorderFill* pPageBorderFill);
 
 	int GetSize() override;
 };

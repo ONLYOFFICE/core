@@ -14,8 +14,10 @@ int CHWPRecordFormObject::ParseCtrl(CCtrlForm& oForm, int nSize, CHWPStream& oBu
 	oBuffer.Skip(4); // tbp+
 	oBuffer.Skip(4); // Длина строки?
 
-	oBuffer.ReadString(m_sFormStr, EStringCharacter::UTF16);
+	short shLen = oBuffer.ReadShort() * 2;
+	oBuffer.Skip(shLen);
+	// oBuffer.ReadString(m_sFormStr, EStringCharacter::UTF16);
 
-	return oBuffer.GetDistanceToLastPos();
+	return oBuffer.GetDistanceToLastPos(true);
 }
 }

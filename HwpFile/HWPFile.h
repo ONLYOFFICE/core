@@ -14,12 +14,16 @@ namespace HWP { class CHWPFile_Private; }
 class HWP_FILE_DECL_EXPORT CHWPFile
 {
 	HWP::CHWPFile_Private *m_pInternal;
+	std::wstring m_wsTempDirectory;
 public:
 	CHWPFile(const std::wstring& wsFileName);
 	~CHWPFile();
 
+	void SetTempDirectory(const std::wstring& wsTempDirectory);
+
 	bool Open();
 	void Close();
+	bool ConvertToOOXML(const std::wstring& wsFilePath);
 };
 
 #endif // HWPFILE_H

@@ -1,14 +1,34 @@
 #include "HWPDocInfo.h"
 
 #include "HWPElements/HWPRecordBinData.h"
+#include "HWPElements/HWPRecordDocumentProperties.h"
+#include "HWPElements/HWPRecordIDMaping.h"
+#include "HWPElements/HWPRecordFaceName.h"
+#include "HWPElements/HWPRecordBorderFill.h"
+#include "HWPElements/HWPRecordCharShape.h"
+#include "HwpDoc/HWPElements/HWPRecordBullet.h"
+#include "HwpDoc/HWPElements/HWPRecordNumbering.h"
+#include "HwpDoc/HWPElements/HWPRecordParaShape.h"
+#include "HwpDoc/HWPElements/HWPRecordStyle.h"
+#include "HwpDoc/HWPElements/HwpRecordTabDef.h"
 
 namespace HWP
 {
+ECompatDoc GetCompatDoc(int nValue)
+{
+	switch(static_cast<ECompatDoc>(nValue))
+	{
+		case ECompatDoc::HWP: return ECompatDoc::HWP;
+		case ECompatDoc::OLD_HWP: return ECompatDoc::OLD_HWP;
+		case ECompatDoc::MS_WORD: return ECompatDoc::MS_WORD;
+		default:
+			return ECompatDoc::UNKNOWN;
+	}
+}
+
 CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 	: m_eHanType(eHanType)
-{
-
-}
+{}
 
 // CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
 // 	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile)
@@ -18,25 +38,25 @@ CHWPDocInfo::CHWPDocInfo(CHWPFile_Private* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile)
 {}
 
-#define REMOVE_LIST_DATA(list) \
-	for (CHWPRecord* pRecord : list) \
+CHWPDocInfo::~CHWPDocInfo()
+{
+	#define REMOVE_LIST_DATA(array) \
+	for (CHWPRecord* pRecord : array) \
 	{ \
 		if (nullptr != pRecord) \
 			delete pRecord; \
 	} \
-	list.clear() \
+	array.clear() \
 
-CHWPDocInfo::~CHWPDocInfo()
-{
-	REMOVE_LIST_DATA(m_lRecords);
-	REMOVE_LIST_DATA(m_lFaseNames);
-	REMOVE_LIST_DATA(m_lBorderFills);
-	REMOVE_LIST_DATA(m_lCharShapes);
-	REMOVE_LIST_DATA(m_lNumberings);
-	REMOVE_LIST_DATA(m_lBullets);
-	REMOVE_LIST_DATA(m_lParaShapes);
-	REMOVE_LIST_DATA(m_lStyles);
-	REMOVE_LIST_DATA(m_lTabDefs);
+	REMOVE_LIST_DATA(m_arRecords);
+	REMOVE_LIST_DATA(m_arFaseNames);
+	REMOVE_LIST_DATA(m_arBorderFills);
+	REMOVE_LIST_DATA(m_arCharShapes);
+	REMOVE_LIST_DATA(m_arNumberings);
+	REMOVE_LIST_DATA(m_arBullets);
+	REMOVE_LIST_DATA(m_arParaShapes);
+	REMOVE_LIST_DATA(m_arStyles);
+	REMOVE_LIST_DATA(m_arTabDefs);
 
 	for (std::pair<STRING, CHWPRecord*> oBinData : m_mBinDatas)
 	{
@@ -68,19 +88,151 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 		CHWPRecord *pRecord = nullptr;
 		EHWPTag eTag = GetTagFromNum(nTagNum);
 
+		#define CREATE_AND_ADD_RECORD(type_record, array) \
+		pRecord = new type_record(*this, nTagNum, nLevel, nSize, oBuffer, nOff, nVersion); \
+		if (nullptr != pRecord) \
+			array.push_back(pRecord)
+
 		switch (eTag)
 		{
-		case EHWPTag::HWPTAG_BIN_DATA:
+		case HWPTAG_DOCUMENT_PROPERTIES:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordDocumentProperties, m_arRecords);
+			break;
+		}
+		case HWPTAG_ID_MAPPINGS:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordIDMaping, m_arRecords);
+			break;
+		}
+		case HWPTAG_BIN_DATA:
 		{
 			CHWPRecordBinData *pBindData = new CHWPRecordBinData(*this, nTagNum, nLevel, nSize, oBuffer, nOff, nVersion);
 
 			if (nullptr != pBindData)
 				m_mBinDatas.insert(std::make_pair(pBindData->GetItemID(), pBindData));
+
+			break;
 		}
-		default: break;
+		case HWPTAG_FACE_NAME:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordFaceName, m_arFaseNames);
+			break;
+		}
+		case HWPTAG_BORDER_FILL:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordBorderFill, m_arBorderFills);
+			break;
+		}
+		case HWPTAG_CHAR_SHAPE:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordCharShape, m_arCharShapes);
+			break;
+		}
+		case HWPTAG_TAB_DEF:
+		{
+			CREATE_AND_ADD_RECORD(CHwpRecordTabDef, m_arTabDefs);
+			break;
+		}
+		case HWPTAG_NUMBERING:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordNumbering, m_arNumberings);
+			break;
+		}
+		case HWPTAG_BULLET:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordBullet, m_arBullets);
+			break;
+		}
+		case HWPTAG_PARA_SHAPE:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordParaShape, m_arParaShapes);
+			break;
+		}
+		case HWPTAG_STYLE:
+		{
+			CREATE_AND_ADD_RECORD(CHWPRecordStyle, m_arStyles);
+			break;
+		}
+		case HWPTAG_COMPATIBLE_DOCUMENT:
+		{
+			int nCompatDoc;
+			oBuffer.ReadInt(nCompatDoc);
+
+			m_eCompatibleDoc = GetCompatDoc(nCompatDoc);
+			break;
+		}
+		case HWPTAG_LAYOUT_COMPATIBILITY:
+		case HWPTAG_DOC_DATA:
+		case HWPTAG_DISTRIBUTE_DOC_DATA:
+		case HWPTAG_TRACKCHANGE:
+		case HWPTAG_MEMO_SHAPE:
+		case HWPTAG_FORBIDDEN_CHAR:
+		case HWPTAG_TRACK_CHANGE:
+		case HWPTAG_TRACK_CHANGE_AUTHOR:
+		default:
+		{
+			oBuffer.Skip(nSize);
+			break;
+		}
 		}
 	}
 
 	return true;
+}
+
+#define GET_RECORD(array_records, index) \
+	if (array_records.size() <= index) \
+		return nullptr; \
+	return array_records[index]
+
+const CHWPRecord* CHWPDocInfo::GetRecord(int nIndex) const
+{
+	GET_RECORD(m_arRecords, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetFaceName(int nIndex) const
+{
+	GET_RECORD(m_arFaseNames, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetBorderFill(int nIndex) const
+{
+	GET_RECORD(m_arBorderFills, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetCharShape(int nIndex) const
+{
+	GET_RECORD(m_arCharShapes, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetNumbering(int nIndex) const
+{
+	GET_RECORD(m_arNumberings, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetBullet(int nIndex) const
+{
+	GET_RECORD(m_arBullets, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetParaShape(int nIndex) const
+{
+	GET_RECORD(m_arParaShapes, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetStyle(int nIndex) const
+{
+	GET_RECORD(m_arStyles, nIndex);
+}
+
+const CHWPRecord* CHWPDocInfo::GetTabDef(int nIndex) const
+{
+	GET_RECORD(m_arTabDefs, nIndex);
+}
+
+CHWPFile_Private* CHWPDocInfo::GetParentHWP()
+{
+	return m_pParentHWP;
 }
 }

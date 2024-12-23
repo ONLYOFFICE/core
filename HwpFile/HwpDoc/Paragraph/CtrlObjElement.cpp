@@ -20,7 +20,7 @@ int CCtrlObjElement::GetSize()
 
 int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE *pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	CCtrlCommon::ParseCtrl(oObj, nSize, oBuffer, nOff, nVersion);
 
@@ -52,6 +52,6 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 			oBuffer.ReadDouble(oObj.m_arMatrixSeq[nIndex]);
 	}
 
-	return oBuffer.GetCurPtr() - pOldCurrentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 }

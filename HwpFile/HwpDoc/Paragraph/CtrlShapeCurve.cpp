@@ -15,6 +15,8 @@ CCtrlShapeCurve::CCtrlShapeCurve(const STRING& sCtrlID, int nSize, CHWPStream& o
 
 int CCtrlShapeCurve::ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	oBuffer.ReadInt(oObj.m_nPoints);
 
 	if (0 < oObj.m_nPoints)
@@ -35,6 +37,8 @@ int CCtrlShapeCurve::ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& 
 	}
 
 	oBuffer.Skip(4);
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return nSize;
 }

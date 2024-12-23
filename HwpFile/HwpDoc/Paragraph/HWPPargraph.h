@@ -30,7 +30,7 @@ public:
 
 	void SetCtrl(CCtrl* pCtrl, unsigned int unIndex);
 
-	VECTOR<CCtrl*> GetCtrls();
+	VECTOR<CCtrl*>& GetCtrls();
 
 	unsigned int GetCountCtrls() const;
 
@@ -39,6 +39,8 @@ public:
 
 	CCtrl* FindFirstElement(const STRING& sID, bool bFullfilled, unsigned int& nIndex) const;
 	CCtrl* FindLastElement(const STRING& sID);
+
+	int IndexOf(CCtrl* pCtrl);
 };
 }
 

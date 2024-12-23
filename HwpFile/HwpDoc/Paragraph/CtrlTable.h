@@ -34,6 +34,12 @@ public:
 	CCtrlTable(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlTable();
 
+	void AddCell(CTblCell* pCell);
+
+	bool HaveCells();
+
+	CTblCell* GetLastCell();
+
 	static int ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderAppend(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

@@ -26,6 +26,10 @@ class CTblCell
 public:
 	CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	void SetVertAlign(EVertAlign eVertAlign);
+
+	void AddParagraph(CCellParagraph* pParagraph);
+
 	int GetSize();
 };
 }

@@ -15,7 +15,7 @@ CCtrlEqEdit::CCtrlEqEdit(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, 
 
 int CCtrlEqEdit::ParseElement(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oObj.m_bFullFilled = true;
 
@@ -26,10 +26,15 @@ int CCtrlEqEdit::ParseElement(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer,
 	oBuffer.ReadInt(oObj.m_nBaseline);
 	oBuffer.ReadString(oObj.m_sVersion, EStringCharacter::UTF16);
 
-	if (oBuffer.GetCurPtr() - pOldCurentPos +2 > nSize)
-		return nSize;
+	if (oBuffer.GetDistanceToLastPos() + 2 <= nSize)
+	{
+		short shLen = oBuffer.ReadShort();
 
-	oBuffer.ReadString(oObj.m_sFont, EStringCharacter::UTF16);
+		if (oBuffer.GetDistanceToLastPos() + shLen <= nSize)
+			oBuffer.ReadString(oObj.m_sFont, shLen, EStringCharacter::UTF16);
+	}
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return nSize;
 }
@@ -42,7 +47,10 @@ int CCtrlEqEdit::ParseCtrl(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, in
 int CCtrlEqEdit::ParseListHeaderAppend(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	if (24 != nSize)
+	{
+		oBuffer.Skip(nSize);
 		return nSize;
+	}
 
 	oBuffer.Skip(2);
 	oBuffer.ReadInt(oObj.m_nCaptionAttr);

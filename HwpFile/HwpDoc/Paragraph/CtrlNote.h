@@ -11,12 +11,15 @@ class CCtrlNote : public CCtrl
 {
 	int m_nSize;
 
-	std::list<CHWPPargraph*> m_arParas;
+	VECTOR<CHWPPargraph*> m_arParas;
 public:
+	CCtrlNote();
 	CCtrlNote(const STRING& sCtrlID);
 	CCtrlNote(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
+
+	void AddParagraph(CHWPPargraph* pParagraph);
 };
 }
 

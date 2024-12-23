@@ -25,9 +25,24 @@ CCtrlTable::~CCtrlTable()
 	}
 }
 
+void CCtrlTable::AddCell(CTblCell* pCell)
+{
+	m_arCells.push_back(pCell);
+}
+
+bool CCtrlTable::HaveCells()
+{
+	return !m_arCells.empty();
+}
+
+CTblCell* CCtrlTable::GetLastCell()
+{
+	return (!m_arCells.empty()) ? m_arCells.back() : nullptr;
+}
+
 int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(oObj.m_nAttr);
 	oBuffer.ReadShort(oObj.m_shNRows);
@@ -44,11 +59,11 @@ int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int 
 
 	oBuffer.ReadShort(oObj.m_shBorderFillID);
 
-	if (nVersion >= 5010 && ((oBuffer.GetCurPtr() - pOldCurentPos) < nSize))
+	if (nVersion >= 5010 && (oBuffer.GetDistanceToLastPos() < nSize))
 	{
 		oBuffer.ReadShort(oObj.m_shValidZoneSize);
 
-		if (0 < oObj.m_shValidZoneSize && ((oBuffer.GetCurPtr() - pOldCurentPos) < nSize))
+		if (0 < oObj.m_shValidZoneSize && (oBuffer.GetDistanceToLastPos() < nSize))
 		{
 			for (unsigned int unIndex = 0; unIndex < oObj.m_shValidZoneSize; ++unIndex)
 			{
@@ -68,13 +83,17 @@ int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int 
 		}
 	}
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 
 int CCtrlTable::ParseListHeaderAppend(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	if (24 != nSize)
+	{
+		oBuffer.Skip(nSize);
 		return nSize;
+	}
 
 	oBuffer.Skip(2);
 	oBuffer.ReadInt(oObj.m_nCaptionAttr);

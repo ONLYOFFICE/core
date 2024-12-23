@@ -89,7 +89,7 @@ bool CCompoundFile::Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer)
 
 	if (oEntry.GetStreamSize() < m_nMiniStreamCutoffSize)
 	{
-		if ( m_arDirectoryEntries.empty())
+		if (m_arDirectoryEntries.empty())
 			return false;
 
 		arStreamContainerSectors = m_arDirectoryEntries.at(0)->GetSecNums();
@@ -509,7 +509,6 @@ void CCompoundFile::ParseDirectorySector(CHWPStream& oBuffer)
 	{
 		oBuffer.MoveTo(64 + nIndex);
 
-		//TODO:: проверить данный момент
 		short shEntryNameLen;
 		STRING sDirectiryEnryName;
 

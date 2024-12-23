@@ -3,6 +3,7 @@
 
 #include "../HWPStream.h"
 #include "HWPRecord.h"
+#include "../Paragraph/Ctrl.h"
 #include <list>
 
 namespace HWP
@@ -43,6 +44,8 @@ class CHWPRecordCtrlData : public CHWPRecord
 	LIST<TParameterSet> m_arParamSets;
 public:
 	CHWPRecordCtrlData(int nTagNum, int nLevel, int nSize);
+
+	static int ParseCtrl(CCtrl& oCtrl, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }
 

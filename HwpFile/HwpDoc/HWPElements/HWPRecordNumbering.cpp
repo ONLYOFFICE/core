@@ -5,7 +5,7 @@ namespace HWP
 CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
     : CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
-	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	for (int nIndex = 0; nIndex < 7; ++nIndex)
 	{
@@ -25,15 +25,13 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 
 	oBuffer.ReadShort(m_shStart);
 
-	#define CHECK_SIZE (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
-
-	if (nVersion > 5025 && CHECK_SIZE) //TODO:: добавить проверку offset-off < size
+	if (nVersion > 5025 && (nSize > oBuffer.GetDistanceToLastPos())) //TODO:: добавить проверку offset-off < size
 	{
 		for (int nIndex = 0; nIndex < 7; ++nIndex)
 			oBuffer.ReadInt(m_arNumbering[nIndex].m_nStartNumber);
 	}
 
-	if (nVersion > 5100 && CHECK_SIZE) //TODO:: добавить проверку offset-off < size
+	if (nVersion > 5100 && (nSize > oBuffer.GetDistanceToLastPos())) //TODO:: добавить проверку offset-off < size
 	{
 		for (int nIndex = 0; nIndex < 3; ++nIndex)
 		{
@@ -52,5 +50,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 		for (int nIndex = 0; nIndex < 3; ++nIndex)
 			oBuffer.ReadInt(m_arExtLevelStart[nIndex]);
 	}
+
+	oBuffer.RemoveLastSavedPos();
 }
 }

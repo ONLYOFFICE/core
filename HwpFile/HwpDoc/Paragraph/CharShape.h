@@ -15,8 +15,11 @@ public:
 	CCharShape();
 	CCharShape(int nStart, int nID);
 
-	static LIST<CCharShape*> Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	static int FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, const VECTOR<CCtrl*>& arParas);
+	int GetStart() const;
+	int GetCharShapeID() const;
+
+	static VECTOR<CCharShape*> Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, VECTOR<CCtrl*>& arParas);
 };
 }
 

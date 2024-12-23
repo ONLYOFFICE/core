@@ -15,7 +15,7 @@ CCtrlShapeLine::CCtrlShapeLine(const STRING& sCtrlID, int nSize, CHWPStream& oBu
 
 int CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	if (L"loc$" == oObj.GetID())
 		oBuffer.Skip(4);
@@ -25,12 +25,16 @@ int CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oB
 	oBuffer.ReadInt(oObj.m_nEndX);
 	oBuffer.ReadInt(oObj.m_nEndY);
 
-	if (nSize == oBuffer.GetCurPtr() - pOldCurrentPos)
+	if (nSize == oBuffer.GetDistanceToLastPos())
+	{
+		oBuffer.RemoveLastSavedPos();
 		return nSize;
+	}
 
 	oBuffer.ReadShort(oObj.m_shAttr);
 	oBuffer.Skip(2);
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 

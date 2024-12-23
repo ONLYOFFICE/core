@@ -14,4 +14,9 @@ int CCtrlCharacter::GetSize()
 {
 	return 1;
 }
+
+void CCtrlCharacter::SetCharShapeID(int nCharShapeID)
+{
+	m_nCharShapeID = nCharShapeID;
+}
 }

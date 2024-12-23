@@ -15,6 +15,8 @@ CCtrlShapeOle::CCtrlShapeOle(const STRING& sCtrlID, int nSize, CHWPStream& oBuff
 
 int CCtrlShapeOle::ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	oBuffer.ReadInt(oObj.m_nAttr);
 	oBuffer.ReadInt(oObj.m_nExtentX);
 	oBuffer.ReadInt(oObj.m_nExtentY);
@@ -23,7 +25,7 @@ int CCtrlShapeOle::ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuf
 	oBuffer.ReadInt(oObj.m_nBorderThick);
 	oBuffer.ReadInt(oObj.m_nBorderAttr);
 
-	return nSize;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlShapeOle::ParseCtrl(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

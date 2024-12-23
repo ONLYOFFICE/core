@@ -21,6 +21,7 @@ CPicColor::CPicColor(CHWPStream& oBuffer, int nOff, int nSize)
 	oBuffer.ReadInt(m_nType);
 	oBuffer.ReadInt(m_nRGB);
 
+	oBuffer.Skip(nSize - 8);
 	m_nSize = nSize;
 }
 
@@ -41,7 +42,7 @@ int CPicEffect::GetSize()
 CShadow::CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	: CPicEffect(nTypeNum), m_pColor(nullptr)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(m_nStyle);
 	oBuffer.ReadInt(m_nTransparency);
@@ -53,9 +54,9 @@ CShadow::CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	oBuffer.ReadFloat(m_fMagnifyX);
 	oBuffer.ReadFloat(m_fMagnifyY);
 	oBuffer.ReadInt(m_nRotation);
-	m_pColor = new CPicColor(oBuffer, nOff, nSize - (oBuffer.GetCurPtr() - pOldCurrentPos));
+	m_pColor = new CPicColor(oBuffer, nOff, nSize - oBuffer.GetDistanceToLastPos());
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 CShadow::~CShadow()
@@ -67,13 +68,13 @@ CShadow::~CShadow()
 CNeon::CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	: CPicEffect(nTypeNum), m_pColor(nullptr)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadFloat(m_fTransparency);
 	oBuffer.ReadFloat(m_fRadius);
-	m_pColor = new CPicColor(oBuffer, nOff, nSize - (oBuffer.GetCurPtr() - pOldCurrentPos));
+	m_pColor = new CPicColor(oBuffer, nOff, nSize - oBuffer.GetDistanceToLastPos());
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 CNeon::~CNeon()
@@ -93,7 +94,7 @@ CSoftEdge::CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	: CPicEffect(nTypeNum)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(m_nStyle);
 	oBuffer.ReadFloat(m_fRadius);
@@ -110,7 +111,7 @@ CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	oBuffer.ReadFloat(m_fEndPos);
 	oBuffer.ReadFloat(m_fOffsetDirection);
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 CCtrlShapePic::CCtrlShapePic()
@@ -136,7 +137,7 @@ CCtrlShapePic::~CCtrlShapePic()
 
 int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadColor(oObj.m_nBorderColor);
 	oBuffer.ReadInt(oObj.m_nBorderThick);
@@ -166,7 +167,12 @@ int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuf
 
 	oBuffer.ReadByte(oObj.m_chBorderAlpha);
 
-	#define CAN_READ() if ((oBuffer.GetCurPtr() - pOldCurentPos) >= nSize) return nSize
+	#define CAN_READ() \
+	if (oBuffer.GetDistanceToLastPos() >= nSize) \
+	{ \
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true)); \
+		return nSize; \
+	}
 
 	CAN_READ();
 
@@ -184,7 +190,7 @@ int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuf
 			oObj.m_arPicEffect.push_back(pEffect); \
 	}
 
-	if (oObj.m_nPicEffectInfo && (oBuffer.GetCurPtr() - pOldCurentPos) < nSize)
+	if (oObj.m_nPicEffectInfo && oBuffer.GetDistanceToLastPos() < nSize)
 	{
 		ADD_EFFECT(0x1, CShadow,   56)
 		ADD_EFFECT(0x2, CNeon,     28)
@@ -197,8 +203,10 @@ int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuf
 	oBuffer.ReadInt(oObj.m_nIniPicWidth);
 	oBuffer.ReadInt(oObj.m_nIniPicHeight);
 
-	if (nSize - (oBuffer.GetCurPtr() - pOldCurentPos) >= 1)
+	if (nSize - oBuffer.GetDistanceToLastPos() >= 1)
 		oBuffer.ReadByte(oObj.m_chPicAlpha);
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return nSize;
 }

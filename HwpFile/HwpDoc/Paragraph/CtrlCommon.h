@@ -120,7 +120,7 @@ class CCtrlCommon : public CCtrl
 	int m_nBlockPageBreak;
 	STRING m_sObjDesc;
 
-	// std::list<CHWPPargraph*> m_arParas;
+	VECTOR<CHWPPargraph*> m_arParas;
 	int m_nCaptionAttr;
 	int m_nCaptionWidth;
 	int m_nCaptionSpacing;
@@ -140,7 +140,15 @@ public:
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
 
+	void AddParagraph(CHWPPargraph* pParagraph);
+	void AddCaption(CCapParagraph* pCapPara);
+
 	int GetSize() override;
+
+	CHWPPargraph* GetLastPara();
+
+	int GetCaptionWidth() const;
+	bool CaptionsEmpty() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

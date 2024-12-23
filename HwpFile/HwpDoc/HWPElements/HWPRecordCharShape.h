@@ -58,7 +58,7 @@ enum class EAccent
 	TWOARAEA
 };
 
-EAccent GetAccent(int nValue)
+inline EAccent GetAccent(int nValue)
 {
 	switch(static_cast<EAccent>(nValue))
 	{

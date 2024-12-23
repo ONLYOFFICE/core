@@ -68,7 +68,7 @@ EShadow GetShadow(int nValue)
 CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
@@ -128,12 +128,12 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.ReadColor(m_nShadeColor);
 	oBuffer.ReadColor(m_nShadeColor);
 
-	#define CHECK_SIZE (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
-
-	if (CHECK_SIZE)
+	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadShort(m_shBorderFillIDRef);
 
-	if (nVersion > 5030 && CHECK_SIZE)
+	if (nVersion > 5030 && nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadColor(m_nStrikeOutColor);
+
+	oBuffer.RemoveLastSavedPos();
 }
 }

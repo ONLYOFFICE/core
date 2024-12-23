@@ -24,14 +24,17 @@ class CHWPStream
 	bool m_bExternalBuffer;
 public:
 	CHWPStream();
-	CHWPStream(unsigned int unSize);
-	CHWPStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer = true);
+	CHWPStream(unsigned long ulSize);
+	CHWPStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 	~CHWPStream();
 
-	void SetStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer = true);
+	void SetStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 
 	BYTE* GetCurPtr();
-	unsigned int Tell() const;
+	unsigned long Tell() const;
+	unsigned long SizeToEnd() const;
+
+	void Expand(unsigned long ulSize);
 
 	bool ReadChar(CHAR& chValue);
 	bool ReadFloat(float& fValue);
@@ -45,9 +48,9 @@ public:
 	BYTE ReadByte();
 	bool ReadString(STRING& sValue, EStringCharacter eCharacter);
 	bool ReadString(STRING& sValue, int nLength, EStringCharacter eCharacter);
-	bool ReadBytes(BYTE* pBytes, unsigned int unSize);
+	unsigned long ReadBytes(BYTE* pBytes, unsigned long unSize);
 
-	void Skip(unsigned int unStep);
+	void Skip(int nStep);
 	void MoveToStart();
 	void MoveTo(unsigned int unPosition);
 
@@ -61,6 +64,9 @@ public:
 	int GetDistanceToLastPos(bool bRemoveLastPos = false);
 
 	BYTE operator[](unsigned int unPosition) const;
+
+
+	bool WriteBytes(const BYTE* pBuffer, unsigned long ulSize);
 };
 
 #define CHECK_FLAG(value, flag) ((value) & flag) == flag

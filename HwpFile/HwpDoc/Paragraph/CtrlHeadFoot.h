@@ -33,9 +33,10 @@ class CCtrlHeadFoot : public CCtrl
 public:
 	CCtrlHeadFoot(const STRING& sCtrlID);
 	CCtrlHeadFoot(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
-	~CCtrlHeadFoot();
 
 	int GetSize() override;
+
+	void AddParagraph(CHWPPargraph* pParagraph);
 
 	static int ParseListHeaderAppend(CCtrlHeadFoot& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

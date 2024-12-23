@@ -15,6 +15,8 @@ CCtrlShapeRect::CCtrlShapeRect(const STRING& sCtrlID, int nSize, CHWPStream& oBu
 
 int CCtrlShapeRect::ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	oBuffer.ReadByte(oObj.m_chCurv);
 
 	for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
@@ -23,6 +25,7 @@ int CCtrlShapeRect::ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oB
 		oBuffer.ReadInt(oObj.m_arPoints[unIndex].m_nY);
 	}
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 
@@ -33,7 +36,7 @@ int CCtrlShapeRect::ParseCtrl(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuff
 
 int CCtrlShapeRect::ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.Skip(2);
 
@@ -48,16 +51,16 @@ int CCtrlShapeRect::ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPS
 
 	oBuffer.Skip(13);
 
-	if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
+	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
 		STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
-		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurentPos));
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 	}
 
-	return oBuffer.GetCurPtr() - pOldCurentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 }

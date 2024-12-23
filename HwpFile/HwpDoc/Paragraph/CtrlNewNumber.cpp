@@ -21,7 +21,7 @@ CCtrlNewNumber::CCtrlNewNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBu
 
 	m_bFullFilled = true;
 
-	m_nSize = oBuffer.GetDistanceToLastPos();
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlNewNumber::GetSize()

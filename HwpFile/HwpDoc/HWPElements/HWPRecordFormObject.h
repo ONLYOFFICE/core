@@ -8,11 +8,11 @@ namespace HWP
 {
 class CHWPRecordFormObject : public CHWPRecord
 {
-	STRING m_sFormStr;
+	static STRING m_sFormStr;
 public:
 	CHWPRecordFormObject(int nTagNum, int nLevel, int nSize);
 
-	int ParseCtrl(CCtrlForm& oForm, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	static int ParseCtrl(CCtrlForm& oForm, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }
 

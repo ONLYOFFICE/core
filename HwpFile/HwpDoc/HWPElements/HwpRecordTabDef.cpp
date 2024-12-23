@@ -46,6 +46,8 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 
 		m_arTabs.push_back(pTab);
 	}
+
+	oBuffer.RemoveLastSavedPos();
 }
 
 }

@@ -48,7 +48,7 @@ void CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
 	m_arP[unIndex] = pCtrl;
 }
 
-VECTOR<CCtrl*> CHWPPargraph::GetCtrls()
+VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
 {
 	return m_arP;
 }
@@ -105,6 +105,7 @@ int CHWPPargraph::Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int
 		oBuffer.ReadShort(shCangeTrackingMerge);
 	}
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 
@@ -130,6 +131,19 @@ CCtrl* CHWPPargraph::FindLastElement(const STRING& sID)
 	}
 
 	return nullptr;
+}
+
+int CHWPPargraph::IndexOf(CCtrl* pCtrl)
+{
+	if (nullptr == pCtrl || m_arP.empty())
+		return -1;
+
+	VECTOR<CCtrl*>::const_iterator itFound = std::find_if(m_arP.cbegin(), m_arP.cend(), [pCtrl](CCtrl *pCurrCtrl){ return CCtrl::Equals(pCurrCtrl, pCtrl); });
+
+	if (itFound != m_arP.cend())
+		return itFound - m_arP.cbegin();
+
+	return -1;
 }
 
 }

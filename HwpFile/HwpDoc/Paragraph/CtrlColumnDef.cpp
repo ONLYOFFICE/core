@@ -9,7 +9,7 @@ CCtrlColumnDef::CCtrlColumnDef(const STRING& sCtrlID)
 CCtrlColumnDef::CCtrlColumnDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	short shAttrLowBits;
 	oBuffer.ReadShort(shAttrLowBits);
@@ -39,7 +39,7 @@ CCtrlColumnDef::CCtrlColumnDef(const STRING& sCtrlID, int nSize, CHWPStream& oBu
 
 	m_nAttr = shAttrHighBits << 16 | shAttrLowBits;
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 	m_bFullFilled = true;
 }
 

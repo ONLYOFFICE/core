@@ -3,11 +3,11 @@
 namespace HWP
 {
 CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID)
-	: CCtrl(sCtrlID)
+	: CCtrl(sCtrlID), m_pPage(nullptr)
 {}
 
 CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CCtrl(sCtrlID)
+	: CCtrl(sCtrlID), m_pPage(nullptr)
 {
 	oBuffer.SavePosition();
 
@@ -40,12 +40,38 @@ CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& o
 		oBuffer.ReadShort(m_shLang);
 
 	m_bFullFilled = true;
-	m_nSize = oBuffer.GetDistanceToLastPos();
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
+}
+
+CCtrlSectionDef::~CCtrlSectionDef()
+{
+	if (nullptr != m_pPage)
+		delete m_pPage;
+}
+
+void CCtrlSectionDef::SetPage(CPage* pPage)
+{
+	m_pPage = pPage;
 }
 
 void CCtrlSectionDef::AddHeadFoot(CCtrlHeadFoot* pHeadFoot)
 {
 	m_arHeaderFooter.push_back(pHeadFoot);
+}
+
+void CCtrlSectionDef::AddParagraph(CHWPPargraph* pParagraph)
+{
+	m_arParas.push_back(pParagraph);
+}
+
+void CCtrlSectionDef::AddNoteShape(CNoteShape* pNoteShape)
+{
+	m_arNoteShapes.push_back(pNoteShape);
+}
+
+void CCtrlSectionDef::AddPageBorderFill(CPageBorderFill* pPageBorderFill)
+{
+	m_arBorderFills.push_back(pPageBorderFill);
 }
 
 int CCtrlSectionDef::GetSize()

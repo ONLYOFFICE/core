@@ -5,6 +5,8 @@ namespace HWP
 CTblCell::CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: m_nSize(nSize)
 {
+	oBuffer.SavePosition();
+
 	oBuffer.Skip(2);
 
 	oBuffer.ReadShort(m_shColAddr);
@@ -18,6 +20,18 @@ CTblCell::CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 		m_arMargin[unIndex] = oBuffer.ReadShort();
 
 	oBuffer.ReadShort(m_shBorderFill);
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+}
+
+void CTblCell::SetVertAlign(EVertAlign eVertAlign)
+{
+	m_eVertAlign = eVertAlign;
+}
+
+void CTblCell::AddParagraph(CCellParagraph* pParagraph)
+{
+	m_arParas.push_back(pParagraph);
 }
 
 int CTblCell::GetSize()

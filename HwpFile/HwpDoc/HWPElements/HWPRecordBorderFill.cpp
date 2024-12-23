@@ -63,7 +63,7 @@ CFill::CFill()
 
 CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 {
-	BYTE *pCurrentPosition = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(m_nFillType);
 
@@ -135,7 +135,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 	if (CHECK_FLAG(m_nFillType, 0x02))
 		oBuffer.ReadByte(m_chAlpha);
 
-	m_nSize = oBuffer.GetCurPtr() - pCurrentPosition;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 int CFill::GetSize() const
@@ -165,7 +165,6 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize)
 CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
-	BYTE *pCurrentPosition = oBuffer.GetCurPtr();
 	short shTypeBits;
 	oBuffer.ReadShort(shTypeBits);
 

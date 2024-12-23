@@ -5,9 +5,7 @@ namespace HWP
 CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
-	BYTE* pOldCurentPos = oBuffer.GetCurPtr();
-
-	#define CHECK_SIZE() nSize > (oBuffer.GetCurPtr() - pOldCurentPos)
+	oBuffer.SavePosition();
 
 	int nTypeBits;
 	oBuffer.ReadInt(nTypeBits);
@@ -23,19 +21,19 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 
 	oBuffer.Skip(2); //TODO:: ByteBuffer.wrap(buf, offset, 2).order(ByteOrder.LITTLE_ENDIAN).getChar();
 
-	if (CHECK_SIZE())
+	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadInt(m_nBulletImage);
 
-	if (CHECK_SIZE())
+	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadByte(m_chBright);
 
-	if (CHECK_SIZE())
+	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadByte(m_chContrast);
 
-	if (CHECK_SIZE())
+	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadByte(m_chImageEffect);
 
-	if (CHECK_SIZE())
+	if (nSize > oBuffer.GetDistanceToLastPos(true))
 	{
 		short shValue;
 		oBuffer.ReadShort(shValue);

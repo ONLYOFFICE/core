@@ -1,8 +1,12 @@
 #include "HWPFile_Private.h"
 #include "HWPDocInfo.h"
 
+#include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
+
 #include <regex>
+
+#define DEFAULT_BUFFER_SIZE 8096
 
 namespace HWP
 {
@@ -16,7 +20,7 @@ CHWPFile_Private::~CHWPFile_Private()
 	CLEAR_ARRAY(CHWPSection, m_arViewTexts);
 }
 
-std::vector<CHWPSection*> CHWPFile_Private::GetSections()
+VECTOR<CHWPSection*> CHWPFile_Private::GetSections()
 {
 	if (m_oFileHeader.Distributable())
 		return m_arViewTexts;
@@ -220,8 +224,86 @@ bool CHWPFile_Private::GetChildStream(const STRING& sEntryName, ECompressed eCom
 
 bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 {
-	//TODO:: реализовать
-	return false;
+	unsigned char* pInBuffer = new(std::nothrow) unsigned char[oInput.GetSize()];
+
+	if (nullptr == pInBuffer)
+		return false;
+
+	unsigned char* pOutBuffer = new(std::nothrow) unsigned char[DEFAULT_BUFFER_SIZE];
+
+	if (nullptr == pOutBuffer)
+	{
+		delete[] pInBuffer;
+		return false;
+	}
+
+	CInflate oInflater;
+
+	oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
+	oInflater.Init2();
+	oInflater.SetIn(pInBuffer, 0);
+
+	int nRes = DEFLATE_OK;
+
+	while (DEFLATE_OK == nRes)
+	{
+		const unsigned int unSize = oInput.ReadBytes((BYTE*)pInBuffer, DEFAULT_BUFFER_SIZE);
+
+		oInflater.SetIn(pInBuffer, unSize);
+
+		if (0 == unSize)
+			break;
+
+		while (oInflater.GetAvailIn() > 0)
+		{
+			nRes = oInflater.Process(DEFLATE_SYNC_FLUSH);
+
+			if (DEFLATE_OK != nRes && DEFLATE_STREAM_END != nRes)
+				break;
+
+			if (oInflater.GetAvailOut() == 0)
+				oBuffer.WriteBytes((BYTE*)pOutBuffer, DEFAULT_BUFFER_SIZE);
+
+			if (DEFLATE_STREAM_END == nRes)
+				break;
+
+			oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
+		}
+	}
+
+	bool bEnd = false;
+
+	while (true)
+	{
+		nRes = oInflater.Process(DEFLATE_FINISH);
+
+		if (DEFLATE_OK != nRes && DEFLATE_STREAM_END != nRes)
+		{
+			oInflater.End();
+		}
+
+		if (DEFLATE_STREAM_END == nRes)
+			bEnd = true;
+
+		if (oInflater.GetAvailOut() < DEFAULT_BUFFER_SIZE)
+		{
+			unsigned long ulSize = DEFAULT_BUFFER_SIZE - oInflater.GetAvailOut();
+			oBuffer.WriteBytes((BYTE*)pOutBuffer, ulSize);
+			oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
+		}
+
+		if (bEnd)
+			break;
+	}
+
+	oInflater.End();
+
+	delete[] pInBuffer;
+	delete[] pOutBuffer;
+
+	oBuffer.MoveToStart();
+
+	return DEFLATE_OK == nRes || DEFLATE_STREAM_END == nRes;
 }
 
 bool CHWPFile_Private::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
@@ -235,7 +317,7 @@ bool CHWPFile_Private::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 
 	EHWPTag eTag = GetTagFromNum(nTagNum);
 
-	if (EHWPTag::HWPTAG_DISTRIBUTE_DOC_DATA != eTag)
+	if (HWPTAG_DISTRIBUTE_DOC_DATA != eTag)
 		return false;
 
 	if (256 != nSize)
@@ -257,7 +339,7 @@ bool CHWPFile_Private::GetBodyText(int nVersion)
 		if (m_oFileHeader.Compressed())
 		{
 			CHWPStream oTempBuffer;
-			if (!m_oOleFile.Read(*pSection, oTempBuffer) && !Unzip(oTempBuffer, oBuffer))
+			if (!m_oOleFile.Read(*pSection, oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
 				return false;
 		}
 		else if (!m_oOleFile.Read(*pSection, oBuffer))
@@ -282,14 +364,14 @@ bool CHWPFile_Private::GetViewText(int nVersion)
 		if (m_oFileHeader.Compressed())
 		{
 			CHWPStream oTempDecryptBuffer, oTempBuffer;
-			if (!m_oOleFile.Read(*pSection, oTempDecryptBuffer) && !!Decrypt(oTempDecryptBuffer, oTempBuffer) && !Unzip(oTempBuffer, oBuffer))
+			if (!m_oOleFile.Read(*pSection, oTempDecryptBuffer) || !Decrypt(oTempDecryptBuffer, oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
 				return false;
 		}
 		else
 		{
 			CHWPStream oTempBuffer;
 
-			if (!m_oOleFile.Read(*pSection, oTempBuffer) && !Decrypt(oTempBuffer, oBuffer))
+			if (!m_oOleFile.Read(*pSection, oTempBuffer) || !Decrypt(oTempBuffer, oBuffer))
 				return false;
 		}
 

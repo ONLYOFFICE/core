@@ -16,6 +16,9 @@ CCtrlAutoNumber::CCtrlAutoNumber(const STRING& sCtrlID, int nSize, CHWPStream& o
 	m_eNumType = GetNumType(nAttr & 0xF);
 	m_eNumShape = GetNumberShape2(nAttr >> 4 & 0xFF);
 	m_bSuperscript = CHECK_FLAG(nAttr >> 12, 0x01);
+
+	m_nSize = 4;
+	m_bFullFilled = true;
 }
 
 int CCtrlAutoNumber::GetSize()

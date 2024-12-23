@@ -13,6 +13,7 @@ protected:
 public:
 	CCtrl();
 	CCtrl(const STRING& sCtrlID);
+	virtual ~CCtrl();
 
 	void SetID(const STRING& sCtrlID);
 	STRING GetID() const;
@@ -21,6 +22,8 @@ public:
 	void SetFullFilled();
 
 	virtual int GetSize() = 0;
+
+	static bool Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl);
 };
 }
 

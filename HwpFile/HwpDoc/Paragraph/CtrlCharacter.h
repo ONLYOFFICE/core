@@ -22,6 +22,8 @@ public:
 	CCtrlCharacter(const STRING& sCtrlID, ECtrlCharType eCtrlChar, int nCharShapeID);
 
 	int GetSize() override;
+
+	void SetCharShapeID(int nCharShapeID);
 };
 }
 

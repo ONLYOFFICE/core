@@ -51,12 +51,12 @@ CCtrlGeneralShape* CCtrlContainer::GetLastShape()
 
 int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.ReadShort(oObj.m_shNElement);
 
 	if (oObj.m_shNElement <= 0)
-		return oBuffer.GetCurPtr() - pOldCurentPos;
+		return oBuffer.GetDistanceToLastPos(true);
 
 	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
 
@@ -69,7 +69,7 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 
 	#define CREATE_OBJECT(class_name) \
 	{ \
-	pChldObj = new class_name(sCtrlId, nSize - (oBuffer.GetCurPtr() - pOldCurentPos), oBuffer, 0, nVersion); \
+	pChldObj = new class_name(sCtrlId, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion); \
 	class_name::ParseCtrl((class_name&)pChldObj, nSize, oBuffer, 0, nVersion); \
 	pChldObj->SetID(sCtrlId); \
 	}
@@ -102,12 +102,12 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 		oObj.m_arShapes[unIndex] = pChldObj;
 	}
 
-	return oBuffer.GetCurPtr() - pOldCurentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	CCtrlObjElement::ParseCtrl(oObj, nSize, oBuffer, nOff, nVersion);
 
@@ -120,6 +120,6 @@ int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuff
 
 	oBuffer.Skip(4);
 
-	return oBuffer.GetCurPtr() - pOldCurentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 }

@@ -5,34 +5,32 @@
 namespace HWP
 {
 CHWPStream::CHWPStream()
-	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_bExternalBuffer(true)
+	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_bExternalBuffer(false)
 {}
 
-CHWPStream::CHWPStream(unsigned int unSize)
-	: m_bExternalBuffer(false)
+CHWPStream::CHWPStream(unsigned long ulSize)
+	: m_pBegin(nullptr), m_pCur(nullptr), m_pEnd(nullptr), m_bExternalBuffer(false)
 {
-	m_pBegin = new(std::nothrow) BYTE[unSize];
-	m_pCur = m_pBegin;
-	m_pEnd = m_pBegin + unSize;
+	Expand(ulSize);
 }
 
-CHWPStream::CHWPStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer)
-	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + unSize), m_bExternalBuffer(bExternalBuffer)
+CHWPStream::CHWPStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer)
+	: m_pBegin(pBuffer), m_pCur(pBuffer), m_pEnd(pBuffer + ulSize), m_bExternalBuffer(bExternalBuffer)
 {}
 
 CHWPStream::~CHWPStream()
 {
 	if (nullptr != m_pBegin && !m_bExternalBuffer)
-		delete[] m_pBegin;
+		free(m_pBegin);
 
 	m_pBegin = nullptr;
 }
 
-void CHWPStream::SetStream(BYTE* pBuffer, unsigned int unSize, bool bExternalBuffer)
+void CHWPStream::SetStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer)
 {
 	m_pBegin = pBuffer;
 	m_pCur   = pBuffer;
-	m_pEnd   = pBuffer + unSize;
+	m_pEnd   = pBuffer + ulSize;
 
 	m_bExternalBuffer = bExternalBuffer;
 }
@@ -42,9 +40,34 @@ BYTE* CHWPStream::GetCurPtr()
 	return m_pCur;
 }
 
-unsigned int CHWPStream::Tell() const
+unsigned long CHWPStream::Tell() const
 {
-	return m_pCur - m_pBegin;
+	return (!IsValid()) ? 0 : m_pCur - m_pBegin;
+}
+
+unsigned long CHWPStream::SizeToEnd() const
+{
+	return (!IsValid() || IsEof()) ? 0 : m_pEnd - m_pCur;
+}
+
+void CHWPStream::Expand(unsigned long ulSize)
+{
+	if (nullptr != m_pBegin)
+	{
+		unsigned long ulCurrentPos = Tell();
+		unsigned long ulNewSize = GetSize() + ulSize;
+
+		m_pBegin = (BYTE*)realloc(m_pBegin, ulNewSize);
+		m_pEnd = m_pBegin + ulNewSize;
+		m_pCur = m_pBegin + ulCurrentPos;
+	}
+	else
+	{
+		m_pBegin = (BYTE*)malloc(ulSize);
+		m_pBegin[0] = 0x11;
+		m_pEnd = m_pBegin + ulSize;
+		m_pCur = m_pBegin;
+	}
 }
 
 bool CHWPStream::ReadChar(CHAR& chValue)
@@ -218,22 +241,34 @@ bool CHWPStream::ReadString(STRING& sValue, int nLength, EStringCharacter eChara
 	return true;
 }
 
-bool CHWPStream::ReadBytes(char* pBytes, unsigned int unSize)
+unsigned long CHWPStream::ReadBytes(BYTE* pBytes, unsigned long unSize)
 {
-	if (nullptr == pBytes || !CanRead(unSize))
-		return false;
+	if (!IsValid() || IsEof())
+		return 0;
 
-	memcpy(pBytes, m_pCur, unSize);
-	m_pCur += unSize;
-	return true;
+	unsigned long ulNewSize = (std::min)(unSize, SizeToEnd());
+
+	memcpy(pBytes, m_pCur, ulNewSize);
+	m_pCur += ulNewSize;
+	return ulNewSize;
 }
 
-void CHWPStream::Skip(unsigned int unStep)
+void CHWPStream::Skip(int nStep)
 {
-	if (m_pCur + unStep > m_pEnd)
-		m_pCur = m_pEnd;
-	else
-		m_pCur += unStep;
+	if (nStep > 0)
+	{
+		if (m_pCur + nStep > m_pEnd)
+			m_pCur = m_pEnd;
+		else
+			m_pCur += nStep;
+	}
+	else if (nStep < 0)
+	{
+		if (m_pCur + nStep > m_pBegin)
+			m_pCur += nStep;
+		else
+			m_pCur = m_pBegin;
+	}
 }
 
 void CHWPStream::MoveToStart()
@@ -272,7 +307,7 @@ bool CHWPStream::IsEof() const
 
 unsigned int CHWPStream::GetSize() const
 {
-	return (unsigned int)(m_pEnd - m_pCur);
+	return (unsigned int)(m_pEnd - m_pBegin);
 }
 
 void CHWPStream::SavePosition()
@@ -302,5 +337,17 @@ BYTE CHWPStream::operator[](unsigned int unPosition) const
 		return *(m_pEnd - 1);
 
 	return *(m_pCur + unPosition);
+}
+
+bool CHWPStream::WriteBytes(const BYTE* pBuffer, unsigned long ulSize)
+{
+	unsigned long ulSizeToEnd = SizeToEnd();
+
+	if (ulSize > ulSizeToEnd)
+		Expand(ulSize - ulSizeToEnd);
+
+	memcpy(m_pCur, pBuffer, ulSize);
+	m_pCur += ulSize;
+	return true;
 }
 }

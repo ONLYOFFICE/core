@@ -29,4 +29,13 @@ EParamItemType GetParamItemType(int nValue)
 CHWPRecordCtrlData::CHWPRecordCtrlData(int nTagNum, int nLevel, int nSize)
 	: CHWPRecord(nTagNum, nLevel, nSize)
 {}
+
+int CHWPRecordCtrlData::ParseCtrl(CCtrl& oCtrl, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+{
+	// TODO:: Вернуться к этому моменту
+	// Само по себе содержание документа Hankom не позволяет понять, как его интерпретировать.
+
+	oBuffer.Skip(nSize);
+	return nSize;
+}
 }

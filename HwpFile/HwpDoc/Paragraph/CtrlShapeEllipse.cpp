@@ -15,6 +15,8 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStrea
 
 int CCtrlShapeEllipse::ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 
@@ -37,19 +39,21 @@ int CCtrlShapeEllipse::ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStre
 	oBuffer.ReadInt(oObj.m_nEndX2);
 	oBuffer.ReadInt(oObj.m_nEndY2);
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+
 	return nSize;
 }
 
 int CCtrlShapeEllipse::ParseCtrl(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
 	CCtrlGeneralShape::ParseCtrl(oObj, nSize, oBuffer, nOff, nVersion);
-
-	return oObj.GetSize();
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	oBuffer.Skip(2);
 
@@ -60,16 +64,16 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 
 	oBuffer.ReadInt(oObj.m_nMaxTxtWidth);
 
-	if (nSize > oBuffer.GetCurPtr() - pOldCurrentPos)
+	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
 		STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
-		oBuffer.Skip(nSize - (oBuffer.GetCurPtr() - pOldCurrentPos));
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 	}
 
-	return oBuffer.GetCurPtr() - pOldCurrentPos;
+	return oBuffer.GetDistanceToLastPos(true);
 }
 
 }

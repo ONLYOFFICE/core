@@ -30,6 +30,8 @@ int CHWPRecordParaRangeTag::Parse(CHWPPargraph& oPara, int nTagNum, int nLevel, 
 		oPara.AddRangeTag(pRangeTag);
 	}
 
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 

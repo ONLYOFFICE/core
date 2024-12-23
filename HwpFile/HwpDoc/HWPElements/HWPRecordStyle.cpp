@@ -19,5 +19,4 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel,
 	m_nParaShape = oBuffer.ReadShort();
 	m_nCharShape = oBuffer.ReadShort();
 }
-
 }

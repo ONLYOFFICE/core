@@ -20,6 +20,7 @@ int CCtrlShapeTextArt::ParseElement(CCtrlShapeTextArt& oObj, int nSize, CHWPStre
 	// [HWP ambiguous] following 120bytes are unknown.
 	// Document doesn't mention about this at all.
 
+	oBuffer.Skip(nSize);
 	return nSize;
 }
 

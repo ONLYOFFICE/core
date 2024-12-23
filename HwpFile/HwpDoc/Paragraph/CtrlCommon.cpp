@@ -96,7 +96,7 @@ namespace HWP
 	CCtrlCommon::CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 		: CCtrl(sCtrlID)
 	{
-		BYTE *pOldCurentPos = oBuffer.GetCurPtr();
+		oBuffer.SavePosition();
 
 		oBuffer.ReadInt(m_nObjAttr);
 
@@ -126,10 +126,10 @@ namespace HWP
 		oBuffer.ReadInt(m_nObjInstanceID);
 		oBuffer.ReadInt(m_nBlockPageBreak);
 
-		if (nSize > (oBuffer.GetCurPtr() - pOldCurentPos))
+		if (nSize > oBuffer.GetDistanceToLastPos())
 			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
 
-		m_nSize = oBuffer.GetCurPtr() - pOldCurentPos;
+		m_nSize = oBuffer.GetDistanceToLastPos(true);
 	}
 
 	void CCtrlCommon::SetTextVerAlign(EVertAlign eVertAlign)
@@ -137,9 +137,34 @@ namespace HWP
 		m_eTextVerAlign = eVertAlign;
 	}
 
+	void CCtrlCommon::AddParagraph(CHWPPargraph* pParagraph)
+	{
+		m_arParas.push_back(pParagraph);
+	}
+
+	void CCtrlCommon::AddCaption(CCapParagraph* pCapPara)
+	{
+		m_arCaption.push_back(pCapPara);
+	}
+
 	int CCtrlCommon::GetSize()
 	{
 		return m_nSize;
+	}
+
+	CHWPPargraph* CCtrlCommon::GetLastPara()
+	{
+		return (!m_arParas.empty()) ? m_arParas.back() : nullptr;
+	}
+
+	int CCtrlCommon::GetCaptionWidth() const
+	{
+		return m_nCaptionWidth;
+	}
+
+	bool CCtrlCommon::CaptionsEmpty() const
+	{
+		return m_arCaption.empty();
 	}
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

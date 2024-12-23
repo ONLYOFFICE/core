@@ -31,7 +31,7 @@ CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID)
 CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	BYTE* pOldCurrentPos = oBuffer.GetCurPtr();
+	oBuffer.SavePosition();
 
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
@@ -44,7 +44,7 @@ CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& o
 	oBuffer.ReadString(m_sPostfix, 2, EStringCharacter::UTF16);
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 
-	m_nSize = oBuffer.GetCurPtr() - pOldCurrentPos;
+	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
 int CCtrlPageNumPos::GetSize()

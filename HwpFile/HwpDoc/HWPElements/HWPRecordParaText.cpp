@@ -23,15 +23,20 @@ CHWPRecordParaText::CHWPRecordParaText(int nTagNum, int nLevel, int nSize)
 
 LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
+	oBuffer.SavePosition();
+
 	STRING sText;
 	oBuffer.ReadString(sText, nSize, EStringCharacter::UTF16);
 
 	if (sText.empty())
+	{
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 		return LIST<CCtrl*>();
+	}
 
 	std::wregex oRegex(L"[\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]");
 	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
-	std::wsregex_iterator itEnd;
+	std::wsregex_iterator itEnd = std::wsregex_iterator();
 
 	int nPrevIndex = 0;
 
@@ -135,17 +140,18 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				default:
 					break;
 			}
-
-			nPrevIndex = itCurrent->position() + itCurrent->length();
 		}
-
-		if (nPrevIndex < sText.length())
-		{
-			// write final text
-			arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex), nPrevIndex));
-		}
+		nPrevIndex = itCurrent->position() + itCurrent->length();
+		++itCurrent;
 	}
 
+	if (nPrevIndex < sText.length())
+	{
+		// write final text
+		arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex), nPrevIndex));
+	}
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return arParas;
 }
 }

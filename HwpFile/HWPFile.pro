@@ -18,6 +18,9 @@ DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 
 SOURCES += \
     HWPFile.cpp \
+    HwpDoc/Conversion/Converter2OOXML.cpp \
+    HwpDoc/Conversion/Transform.cpp \
+    HwpDoc/Conversion/WriterContext.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
@@ -85,6 +88,10 @@ SOURCES += \
 HEADERS += \
     HWPFile.h \
     HwpDoc/Common.h \
+    HwpDoc/Conversion/Converter2OOXML.h \
+    HwpDoc/Conversion/Transform.h \
+    HwpDoc/Conversion/Types.h \
+    HwpDoc/Conversion/WriterContext.h \
     HwpDoc/Errors.h \
     HwpDoc/HWPDocInfo.h \
     HwpDoc/HWPElements/HWPRecord.h \

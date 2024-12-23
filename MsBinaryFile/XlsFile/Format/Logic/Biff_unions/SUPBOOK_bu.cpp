@@ -98,7 +98,7 @@ const bool SUPBOOK::loadContent(BinProcessor& proc)
 	
 	while(true)
 	{
-		ExternName extern_name(supbook.cch, !supbook.bOleLink);
+		ExternName extern_name(supbook.cch, supbook.bOleLink);
 		if(!proc.optional(extern_name))
 		{
 			break;
@@ -198,7 +198,7 @@ int SUPBOOK::serialize(std::wostream & strm)
 		return 0;
 	}
 
-	if (false == book->bOleLink && book->ctab == 0)
+	if (book->bOleLink && book->ctab == 0)
 	{
 		serialize_dde(strm);
 	}
@@ -410,6 +410,15 @@ int SUPBOOK::serialize_dde(std::wostream & strm)
 						}
 					}
 					//ole items in oleLink
+					ExternDocName* oleDocName = dynamic_cast<ExternDocName*>(external_name->body.get());
+					if (oleDocName)
+					{
+						CP_XML_NODE(L"ddeItem")
+						{
+							CP_XML_ATTR(L"name", oleDocName->extName.value());
+							CP_XML_ATTR(L"advise", external_name->fWantAdvise);
+						}
+					}
 				}
 			}
 		}

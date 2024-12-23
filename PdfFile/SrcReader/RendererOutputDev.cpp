@@ -51,6 +51,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
@@ -1462,7 +1463,7 @@ namespace PdfReader
 						{
 							Unicode aUnicode[2];
 							if (pToUnicode->mapToUnicode(nIndex, aUnicode, 2))
-								pCodeToUnicode[nIndex] = (unsigned short)aUnicode[0];
+								pCodeToUnicode[nIndex] = aUnicode[0];
 							else
 								pCodeToUnicode[nIndex] = 0;
 						}
@@ -2422,8 +2423,8 @@ namespace PdfReader
 
 		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
 		{
-			unsigned short unUnicode = oEntry.pCodeToUnicode[nCode];
-			wsUnicodeText = (wchar_t(unUnicode));
+			int unUnicode = oEntry.pCodeToUnicode[nCode];
+			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
 		}
 		else
 		{

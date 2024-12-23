@@ -44,7 +44,6 @@ RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt, const std::w
 
 RoundTripExtractor::~RoundTripExtractor()
 {
-    NSDirectory::DeleteDirectory(m_tempPath);
 }
 
 vector_string RoundTripExtractor::find(const std::wstring& strRegEx) const

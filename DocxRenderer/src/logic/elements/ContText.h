@@ -62,6 +62,9 @@ namespace NSDocxRenderer
 		// font to calc selected sizes
 		NSStructures::CFont m_oSelectedFont{};
 
+		// origin font
+		std::wstring m_wsOriginFontName{};
+
 		// sizes
 		double m_dSpaceWidthMM{0};
 		CSelectedSizes m_oSelectedSizes{};

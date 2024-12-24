@@ -32,11 +32,19 @@
 #ifndef SERVER_SETTINGS_H
 #define SERVER_SETTINGS_H
 
+#include <string>
+#include <map>
+#include "../common/File.h"
+#include "../common/StringBuilder.h"
+#include <iostream>
+
 // class for server version (disable local files and etc)
 class CServerInstance
 {
 private:
 	bool m_bIsEnabled;
+	std::map<std::wstring, bool> m_arMapTmpFiles;
+
 	CServerInstance()
 	{
 		m_bIsEnabled = false;
@@ -57,6 +65,32 @@ public:
 	bool IsEnable()
 	{
 		return m_bIsEnabled;
+	}
+
+	void AddTmpFile(const std::wstring& sFolder)
+	{
+		std::wstring sDirectory = sFolder + L"/media";
+		NSStringUtils::string_replace(sDirectory, L"\\", L"/");
+		std::map<std::wstring, bool>::iterator findDir = m_arMapTmpFiles.find(sDirectory);
+		if (findDir == m_arMapTmpFiles.end())
+			m_arMapTmpFiles.insert(std::make_pair(sDirectory, true));
+	}
+
+	void RemoveTmpFile(const std::wstring& sFolder)
+	{
+		std::wstring sDirectory = sFolder + L"/media";
+		NSStringUtils::string_replace(sDirectory, L"\\", L"/");
+		std::map<std::wstring, bool>::iterator findDir = m_arMapTmpFiles.find(sDirectory);
+		if (findDir != m_arMapTmpFiles.end())
+			m_arMapTmpFiles.erase(findDir);
+	}
+
+	bool CheckTmpDirectory(const std::wstring& sFile)
+	{
+		std::wstring sDirectory = NSFile::GetDirectoryName(sFile);
+		NSStringUtils::string_replace(sDirectory, L"\\", L"/");
+		std::map<std::wstring, bool>::iterator findDir = m_arMapTmpFiles.find(sDirectory);
+		return (findDir != m_arMapTmpFiles.end()) ? true : false;
 	}
 };
 

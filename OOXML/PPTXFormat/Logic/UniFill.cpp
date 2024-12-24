@@ -256,16 +256,14 @@ namespace PPTX
 											case 1:
 											{
 												// id. embed / link
-												pReader->Skip(4);
-												break;
-											}
+												pReader->Skip(4);												
+											}break;
 											case 10:
 											case 11:
 											{
 												// id. embed / link
-												pReader->GetString2();
-												break;
-											}
+												pReader->GetString2();												
+											}break;
 											case 2:
 											{
 												if (!pFill->blip.is_init())
@@ -415,41 +413,35 @@ namespace PPTX
 													pFill->blip->mediaRid		= OOX::RId((size_t)oRelsGeneratorInfo.nMediaRId).get();
 													pFill->blip->mediaFilepath	= oRelsGeneratorInfo.sFilepathMedia;
 												}
-												pReader->Skip(1); // end attribute
-												break;
-											}
+												pReader->Skip(1); // end attribute												
+											}break;
 											default:
 											{
-												pReader->SkipRecord();
-												break;
-											}
+												pReader->SkipRecord();												
+											}break;
 										}
 									}
 
-									pReader->Seek(_e2);
-									break;
-								}
+									pReader->Seek(_e2);									
+								}break;
 								case 1:
 								{
 									pFill->srcRect = new PPTX::Logic::Rect();
+									pFill->srcRect->m_name = L"a:srcRect";
 									pFill->srcRect->fromPPTY(pReader);
-									break;
-								}
+								}break;
 								case 2:
 								{
 									pFill->tile = new PPTX::Logic::Tile();
-									pFill->tile->fromPPTY(pReader);
-									break;
-								}
+									pFill->tile->fromPPTY(pReader);									
+								}break;
 								case 3:
 								{
 									pFill->stretch = new PPTX::Logic::Stretch();
-									pReader->SkipRecord();
-									break;
-								}
+									pFill->stretch->fromPPTY(pReader);									
+								}break;
 								default:
 								{
-									// пока никаких настроек градиента нет
 									pReader->SkipRecord();
 								}
 							}
@@ -517,33 +509,27 @@ namespace PPTX
 										pFill->GsLst[_countGs].color.fromPPTY(pReader);
 									}
 
-									pReader->Seek(_e1);
-									break;
-								}
+									pReader->Seek(_e1);									
+								}break;
 								case 1:
 								{
 									pFill->lin = new PPTX::Logic::Lin();
-									pFill->lin->fromPPTY(pReader);
-									break;
-								}
+									pFill->lin->fromPPTY(pReader);									
+								}break;
 								case 2:
 								{
 									pFill->path = new PPTX::Logic::Path();
-									pFill->path->fromPPTY(pReader);
-									break;
-								}
+									pFill->path->fromPPTY(pReader);									
+								}break;
 								case 3:
 								{
 									pFill->tileRect = new PPTX::Logic::Rect();
-									pFill->tileRect->fromPPTY(pReader);
-									pFill->tileRect->m_name = _T("a:tileRect");
-									break;
-								}
+									pFill->tileRect->m_name = L"a:tileRect";
+									pFill->tileRect->fromPPTY(pReader);									
+								}break;
 								default:
 								{
-									// пока никаких настроек градиента нет
 									pReader->SkipRecord();
-									break;
 								}
 							}
 						}

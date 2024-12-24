@@ -1638,6 +1638,9 @@ namespace PdfWriter
 		{
 			m_pStream = new CMemoryStream();
 			SetStream(m_pXref, m_pStream);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		}
 
 		Add("Type", "XObject");
@@ -2622,6 +2625,17 @@ namespace PdfWriter
 		pArray->Add(dY);
 		pArray->Add(dW);
 		pArray->Add(dH);
+	}
+	void CAnnotAppearanceObject::AddMatrix(double sx, double shy, double shx, double sy, double tx, double ty)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		Add("Matrix", pArray);
+		pArray->Add(sx);
+		pArray->Add(shy);
+		pArray->Add(shx);
+		pArray->Add(sy);
+		pArray->Add(tx);
+		pArray->Add(ty);
 	}
 	void CAnnotAppearanceObject::DrawTextCommentN(const std::string& sColor)
 	{

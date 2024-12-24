@@ -77,8 +77,9 @@ std::wstring RtfDocument::RenderToOOX(RenderParameter oRenderParameter)
 	return L"";
 }
 
-int RtfDocument::GetZIndex()
+int RtfDocument::GetZIndex(bool bReverse)
 {
+	if (bReverse ) return -(0xFFFF - (m_nZIndexLast++));
 	return m_nZIndexLast++;
 }
 void RtfDocument::SetZIndex(int val)

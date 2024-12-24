@@ -44,7 +44,10 @@ CImagesWorker::CImagesWorker(const std::wstring& sFolder)
 std::wstring CImagesWorker::GetImageLocal(const std::wstring& sUrl)
 {
 	if (CServerInstance::getInstance().IsEnable())
-		return L"error";
+	{
+		if (!CServerInstance::getInstance().CheckTmpDirectory(sUrl))
+			return L"error";
+	}
 	std::wstring sExt = NSFile::GetFileExtention(sUrl);
 	std::wstring sRet = L"image" + std::to_wstring(m_nIndex++) + L"." + sExt;
 	m_mapImages.insert(std::make_pair(sUrl, sRet));

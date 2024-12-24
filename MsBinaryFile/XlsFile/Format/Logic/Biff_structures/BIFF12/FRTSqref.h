@@ -53,10 +53,10 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        bool            fAdjDelete;
-        bool            fDoAdjust;
-        bool            fAdjChange;
-        bool            fEdit;
+        bool            fAdjDelete = false;
+        bool            fDoAdjust = false;
+        bool            fAdjChange = false;
+        bool            fEdit = false;
 
         UncheckedSqRfX  sqrfx;
 

@@ -66,7 +66,7 @@
 #include "Matrix.h"
 #include "GraphicsLayerBlend.h"
 #include "GraphicsPath.h"
-#include "AlphaMask.h"
+#include "AlphaMask_p.h"
 #include "Clip.h"
 #include "Brush.h"
 #include "Image.h"

@@ -468,6 +468,20 @@ namespace NSStructures
 			p1.x = static_cast<float>(p1_x);
 			p1.y = static_cast<float>(p1_y);
 
+			for (size_t i = 0; i < shading.patch.size(); ++i)
+			{
+				for (size_t j = 0; j < shading.patch[i].size(); ++j)
+				{
+					double patch_x = static_cast<double>(shading.patch[i][j].x);
+					double patch_y = static_cast<double>(shading.patch[i][j].y);
+
+					matrix.TransformPoint(patch_x, patch_y);
+
+					shading.patch[i][j].x = static_cast<float>(patch_x);
+					shading.patch[i][j].y = static_cast<float>(patch_y);
+				}
+			}
+
 			// sizes scale
 			double sqrt_det = sqrt(fabs(matrix.Determinant()));
 			r0 *= sqrt_det;

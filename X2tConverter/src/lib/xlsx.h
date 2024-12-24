@@ -34,6 +34,8 @@
 #include "../../../OOXML/XlsbFormat/Xlsb.h"
 #include "../../../OOXML/Binary/Document/DocWrapper/XlsxSerializer.h"
 #include "../../../OOXML/Binary/Sheets/Reader/XMLReader/XMLReader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+
 #include "common.h"
 
 namespace NExtractTools
@@ -165,6 +167,7 @@ namespace NExtractTools
 		oXlsb.m_bWriteToXlsb = true;
 		oXlsb.Read(oox_path);
 		oXlsb.LinkTables();
+		oXlsb.PrepareRichStr();
 
 		OOX::CContentTypes oContentTypes;
 		oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
@@ -358,6 +361,7 @@ namespace NExtractTools
 			oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
 			oXlsb.ReadSheetData();
 
+			params.m_bMacro = params.m_bMacro & (oXlsb.m_pVbaProject || oXlsb.GetGlobalinfo()->bMacrosExist);
 			nRes = oXlsb.WriteNative(sTo, oContentTypes) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 			if(!params.m_bMacro)
 			{
@@ -396,8 +400,11 @@ namespace NExtractTools
 		OOX::Spreadsheet::CXlsx oXlsx;
 
 		XMLReader reader = {};
+        _INT32 lcid = -1;
+        if(params.m_nLcid != nullptr)
+            lcid = *params.m_nLcid;
 
-		reader.Read2(sFrom, oXlsx);
+        reader.Read2(sFrom, oXlsx, lcid);
 
 		oXlsx.PrepareToWrite();
 

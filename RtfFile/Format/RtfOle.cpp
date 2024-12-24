@@ -111,7 +111,7 @@ std::wstring RtfOle::RenderToOOX(RenderParameter oRenderParameter)
                           L"\" w:dyaOrig=\"" + std::to_wstring(m_nHeight) + L"\">";
 		
 		RenderParameter oNewRenderParameter = oRenderParameter;
-		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2;
+		oNewRenderParameter.nType = RENDER_TO_OOX_PARAM_SHAPE_CHILD;
 
 		if (m_oResultShape)
 		{
@@ -172,6 +172,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 				sRelsType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
 			}break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
 			{
 				sExtension = L"doc";
 				sMime = L"application/msword";

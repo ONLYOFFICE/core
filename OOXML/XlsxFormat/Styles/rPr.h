@@ -148,6 +148,7 @@ namespace OOX
 			void fromBin(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObject* obj);
 			XLS::BaseObjectPtr toBin();
+            XLS::BaseObjectPtr toBin14();
 			XLSB::Color toColor();
 			XLSB::Color GetDefaultColor();
 
@@ -303,6 +304,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
             void fromFont(CFont* font);
+            CFont* toFont();
 			void fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType);
 			void toXLSB (NSBinPptxRW::CXlsbBinaryWriter& oStream) const;
 			_UINT32 getXLSBSize() const;

@@ -145,6 +145,26 @@ std::wstring RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nWidthGoal,	sResult, L"picwgoal" )
 	RENDER_RTF_INT( m_nHeightGoal,	sResult, L"pichgoal" )
 
+	if (true == m_oBorderTop.IsValid())
+	{
+		sResult += L"\\brdrt";
+		sResult += m_oBorderTop.RenderToRtf(oRenderParameter);
+	}
+	if (true == m_oBorderLeft.IsValid())
+	{
+		sResult += L"\\brdrl";
+		sResult += m_oBorderLeft.RenderToRtf(oRenderParameter);
+	}
+	if (true == m_oBorderBottom.IsValid())
+	{
+		sResult += L"\\brdrb";
+		sResult += m_oBorderBottom.RenderToRtf(oRenderParameter);
+	}
+	if (true == m_oBorderRight.IsValid())
+	{
+		sResult += L"\\brdrr";
+		sResult += m_oBorderRight.RenderToRtf(oRenderParameter);
+	}
 	switch( eDataType )
 	{
 		case dt_emf: sResult += L"\\emfblip";		break;

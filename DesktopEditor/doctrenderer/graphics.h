@@ -7,6 +7,7 @@
 #include "../common/File.h"
 #include "nativecontrol.h"
 #include "../graphics/pro/Graphics.h"
+#include "embed/GraphicsEmbed.h"
 
 namespace NSGraphics
 {
@@ -114,28 +115,32 @@ namespace NSGraphics
 	class CGraphics
 	{
 	public:
-		std::wstring m_sApplicationFontsDirectory;
-		std::wstring m_sApplicationImagesDirectory;
-		std::wstring m_sApplicationThemesDirectory;
+		CGraphicsAppImage* m_pAppImage;
+		CBgraFrame m_oFrame;
 
 	private:
-		NSFonts   ::IApplicationFonts* m_pApplicationFonts;
 		NSGraphics::IGraphicsRenderer* m_pRenderer;
-		CBgraFrame m_oFrame;
 		CGrState   m_oGrState;
 
 	public:
-		CGraphics() {}
+		CGraphics()
+		{
+			m_pAppImage = NULL;
+		}
 		~CGraphics()
 		{
 			Destroy();
 		}
 
-		void init(NSNativeControl::CNativeControl* oNative, double width_px, double height_px, double width_mm, double height_mm);
+		void init(double width_px, double height_px, double width_mm, double height_mm);
 		void Destroy()
 		{
+			int w, h;
+			if (m_pAppImage && m_pAppImage->GetBits(w, h))
+				m_oFrame.put_Data(NULL);
+
 			RELEASEINTERFACE(m_pRenderer);
-			RELEASEINTERFACE(m_pApplicationFonts);
+			RELEASEOBJECT(m_pAppImage);
 		}
 		void EndDraw() {}
 		void put_GlobalAlpha(bool enable, double globalAlpha);

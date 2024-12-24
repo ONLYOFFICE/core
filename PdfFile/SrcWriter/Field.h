@@ -391,6 +391,7 @@ namespace PdfWriter
 		void DrawTextLine(const double &dX, const double &dY, const std::wstring& wsText);
 		void EndDrawText();
 		void AddBBox(double dX, double dY, double dW, double dH);
+		void AddMatrix(double sx, double shy, double shx, double sy, double tx, double ty);
 
 		void StartDraw(const double& dWidth, const double& dHeight);
 		void StartText(CFontDict* pFont, const double& dFontSize);

@@ -53,7 +53,7 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeBeginDim;
 
-            bool            fMeasure;
+            bool            fMeasure = false;
             XLWideString    stName;
             XLWideString    stUnique;
             XLWideString    stDisplay;

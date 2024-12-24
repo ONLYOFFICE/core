@@ -1,0 +1,8 @@
+# Ignore everything in this directory
+glm
+mdds
+librevenge
+libodfgen
+libetonyek
+# Except this file
+!.gitignore

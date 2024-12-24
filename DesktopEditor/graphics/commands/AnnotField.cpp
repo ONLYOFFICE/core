@@ -75,6 +75,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pPopupPr        = NULL;
 	m_pFreeTextPr     = NULL;
 	m_pCaretPr        = NULL;
+	m_pStampPr        = NULL;
 	m_pWidgetPr       = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
@@ -89,6 +90,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pPopupPr);
 	RELEASEOBJECT(m_pFreeTextPr);
 	RELEASEOBJECT(m_pCaretPr);
+	RELEASEOBJECT(m_pStampPr);
 	RELEASEOBJECT(m_pWidgetPr);
 }
 
@@ -154,6 +156,15 @@ void CAnnotFieldInfo::SetType(int nType)
 
 		RELEASEOBJECT(m_pTextMarkupPr);
 		m_pTextMarkupPr = new CAnnotFieldInfo::CTextMarkupAnnotPr();
+		break;
+	}
+	case 12:
+	{
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pStampPr);
+		m_pStampPr = new CAnnotFieldInfo::CStampAnnotPr();
 		break;
 	}
 	case 13:
@@ -285,6 +296,10 @@ bool CAnnotFieldInfo::IsCaret() const
 {
 	return (m_nType == 13);
 }
+bool CAnnotFieldInfo::IsStamp() const
+{
+	return (m_nType == 12);
+}
 
 CAnnotFieldInfo::CMarkupAnnotPr*       CAnnotFieldInfo::GetMarkupAnnotPr()       { return m_pMarkupPr; }
 CAnnotFieldInfo::CTextAnnotPr*         CAnnotFieldInfo::GetTextAnnotPr()         { return m_pTextPr; }
@@ -296,6 +311,7 @@ CAnnotFieldInfo::CPolygonLineAnnotPr*  CAnnotFieldInfo::GetPolygonLineAnnotPr() 
 CAnnotFieldInfo::CPopupAnnotPr*        CAnnotFieldInfo::GetPopupAnnotPr()        { return m_pPopupPr; }
 CAnnotFieldInfo::CFreeTextAnnotPr*     CAnnotFieldInfo::GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 CAnnotFieldInfo::CCaretAnnotPr*        CAnnotFieldInfo::GetCaretAnnotPr()        { return m_pCaretPr; }
+CAnnotFieldInfo::CStampAnnotPr*        CAnnotFieldInfo::GetStampAnnotPr()        { return m_pStampPr; }
 CAnnotFieldInfo::CWidgetAnnotPr*       CAnnotFieldInfo::GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
@@ -375,6 +391,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			m_pFreeTextPr->Read(pReader, nFlags);
 		else if (IsCaret())
 			m_pCaretPr->Read(pReader, nFlags);
+		else if (IsStamp())
+			m_pStampPr->Read(pReader, nFlags);
 	}
 	else if (IsPopup())
 		m_pPopupPr->Read(pReader);
@@ -625,6 +643,19 @@ void CAnnotFieldInfo::CCaretAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader*
 	}
 	if (nFlags & (1 << 16))
 		m_nSy = pReader->ReadByte();
+}
+
+double CAnnotFieldInfo::CStampAnnotPr::GetRotate() { return m_nRotate; }
+const std::wstring& CAnnotFieldInfo::CStampAnnotPr::GetName() { return m_wsName; }
+void CAnnotFieldInfo::CStampAnnotPr::GetInRect(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dInRect[0]; dRD2 = m_dInRect[1]; dRD3 = m_dInRect[2]; dRD4 = m_dInRect[3]; }
+void CAnnotFieldInfo::CStampAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
+{
+	m_wsName = pReader->ReadString();
+	m_nRotate = pReader->ReadDouble();
+	m_dInRect[0] = pReader->ReadDouble();
+	m_dInRect[1] = pReader->ReadDouble();
+	m_dInRect[2] = pReader->ReadDouble();
+	m_dInRect[3] = pReader->ReadDouble();
 }
 
 bool CAnnotFieldInfo::CPopupAnnotPr::IsOpen()      const { return m_bOpen; }

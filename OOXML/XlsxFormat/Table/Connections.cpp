@@ -1025,7 +1025,7 @@ namespace OOX
 				auto ptr = static_cast<XLSB::EXTCONN15*>(obj.get());
 				if (ptr != nullptr)
 				{
-					//ReadAttributes(ptr->m_BrtBeginExtConn15);
+					ReadAttributes(ptr->m_BrtBeginExtConn15);
 
 					if (ptr->m_source != nullptr)
 					{
@@ -1042,10 +1042,7 @@ namespace OOX
             auto ptr(new XLSB::EXTCONN15);
             objectPtr = XLS::BaseObjectPtr{ptr};
             auto ptr1(new XLSB::BeginExtConn15);
-            ptr1->fAutoDelete = false;
-            ptr1->fExcludeFromRefreshAll = false;
-            ptr1->fSandbox = false;
-            ptr1->fUsedByAddin = false;
+
             if(m_oIdExt.IsInit() && !m_oIdExt.get().empty())
                 ptr1->irstId = m_oIdExt.get();
             else
@@ -1095,78 +1092,70 @@ namespace OOX
 					ptr1->stConnName = m_oName.get();
 				else
 					ptr1->stConnName = L"";
+
 				if(m_oId.IsInit())
 					ptr1->dwConnID = m_oId->GetValue();
-                else
-                    ptr1->dwConnID = 1;
 				if(m_oCredentials.IsInit())
 					ptr1->iCredMethod = m_oCredentials->GetValue();
-                else
-                    ptr1->iCredMethod = 0;
+
 				if(m_oBackground.IsInit())
-					ptr1->fBackgroundQuery = m_oBackground.get();
-				else
-					ptr1->fBackgroundQuery = false;
+					ptr1->fBackgroundQuery = m_oBackground.get();        
 				if(m_oDeleted.IsInit())
 					ptr1->fDeleted = m_oDeleted.get();
-                else
-                    ptr1->fDeleted = false;
+
 				if(m_oDescription.IsInit())
+                {
 					ptr1->stConnDesc = m_oDescription.get();
-				else
-					ptr1->fLoadConnectionDesc = false;
+                    ptr1->fLoadConnectionDesc = true;
+                }
 				if(m_oInterval.IsInit())
 					ptr1->wInterval = m_oInterval.get();
-                else
-                    ptr1->wInterval = 0;
+
 				if(m_oKeepAlive.IsInit())
 					ptr1->fMaintain = m_oKeepAlive.get();
-                else
-                    ptr1->fMaintain = false;
+
 				if(m_oMinRefreshableVersion.IsInit())
 					ptr1->bVerRefreshableMin = m_oMinRefreshableVersion.get();
                 else if(m_oRefreshedVersion.IsInit())
                     ptr1->bVerRefreshableMin = m_oRefreshedVersion.get();
                 else
                     ptr1->bVerRefreshableMin = 0;
+
 				if(m_oNew.IsInit())
 					ptr1->fNewQuery = m_oNew.get();
-                else
-                    ptr1->fNewQuery = false;
+
 				if(m_oOdcFile.IsInit())
+                {
 					ptr1->stConnectionFile = m_oOdcFile.get();
-				else
-					ptr1->fLoadSourceConnectionFile = false;
+                    ptr1->fLoadSourceConnectionFile = true;
+                }
 				if(m_oOnlyUseConnectionFile.IsInit())
 					ptr1->fAlwaysUseConnectionFile = m_oOnlyUseConnectionFile.get();
-				else
-					ptr1->fAlwaysUseConnectionFile = false;
+
 				if(m_oReconnectionMethod.IsInit())
 					ptr1->irecontype = m_oReconnectionMethod.get();
-                else
-                    ptr1->irecontype = 1;
+
 				if(m_oRefreshedVersion.IsInit())
 					ptr1->bVerRefreshed = m_oRefreshedVersion.get();
 				if(m_oRefreshOnLoad.IsInit())
 					ptr1->fRefreshOnLoad = m_oRefreshOnLoad.get();
-                else
-                    ptr1->fRefreshOnLoad = false;
+
 				if(m_oSaveData.IsInit())
 					ptr1->fSaveData = m_oSaveData.get();
-				else
-					ptr1->fSaveData = false;
+
 				if(m_oSavePassword.IsInit())
-					ptr1->pc = m_oSavePassword.get();
-                else
-                    ptr1->pc = 2;
+                    ptr1->pc = m_oSavePassword.get();
+
 				if(m_oSingleSignOnId.IsInit())
+                {
 					ptr1->stSso = m_oSingleSignOnId.get();
-				else
-					ptr1->fLoadSSOApplicationID = false;
+                    ptr1->fLoadSSOApplicationID = true;
+                }
 				if(m_oSourceFile.IsInit())
+                {
 					ptr1->stDataFile = m_oSourceFile.get();
-				else
-					ptr1->fLoadSourceDataFile = false;
+                    ptr1->fLoadSourceDataFile = true;
+                }
 
 				if(m_oDbPr.IsInit())
 					ptr->m_ECDBPROPS = m_oDbPr->toBin();
@@ -1176,8 +1165,8 @@ namespace OOX
 					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
 				if(m_oWebPr.IsInit())
 					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
-				//if(m_oExtLst.IsInit())
-					//ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
+                if(m_oExtLst.IsInit())
+                    ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
 			}
 
 			return objectPtr;

@@ -35,6 +35,8 @@
 #include "Biff12_records/CommonRecords.h"
 #include "Biff12_records/BeginSheet.h""
 #include "Biff12_unions/COLINFOS.h"
+#include "Biff12_records/BeginColInfos.h"
+#include "Biff12_records/EndColInfos.h"
 #include "Biff12_records/WsDim.h"
 #include "Biff12_records/Drawing.h""
 #include "Biff12_records/LegacyDrawing.h"
@@ -465,11 +467,15 @@ const bool WorkSheetStream::saveContent(XLS::BinProcessor & proc)
     if (m_BrtWsFmtInfo != nullptr)
         proc.mandatory(*m_BrtWsFmtInfo);
 
-	for (auto &item : m_arCOLINFOS)
+	if(!m_arCOLINFOS.empty())
 	{
-		proc.mandatory(*item);
+		proc.mandatory<BeginColInfos>();
+		for (auto &item : m_arCOLINFOS)
+		{
+			proc.mandatory(*item);
+		}
+		proc.mandatory<EndColInfos>();
 	}
-
     if (m_CELLTABLE != nullptr)
         proc.mandatory(*m_CELLTABLE);
 

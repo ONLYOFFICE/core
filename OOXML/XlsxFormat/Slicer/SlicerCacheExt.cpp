@@ -635,8 +635,7 @@ void CSlicerCache::toXML(NSStringUtils::CStringBuilder& writer, const std::wstri
 	writer.StartNode(sName);
 	writer.StartAttributes();
 	WritingNullable(m_oRId, writer.WriteAttribute(L"r:id", m_oRId->ToString()););
-	writer.EndAttributes();
-	writer.EndNode(sName);
+    writer.EndAttributesAndNode();
 }
 void CSlicerCache::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 {

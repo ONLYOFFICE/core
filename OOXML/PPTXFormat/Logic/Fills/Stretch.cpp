@@ -98,6 +98,30 @@ namespace PPTX
 
 			pWriter->EndNode(strName);
 		}
+		void Stretch::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE rec = pReader->GetUChar();
+
+				switch (rec)
+				{
+					case 0:
+					{
+						fillRect = new PPTX::Logic::Rect();
+						fillRect->m_name = L"a:fillRect";
+						fillRect->fromPPTY(pReader);
+					}break;
+					default:
+					{
+						pReader->SkipRecord();
+					}
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
 		void Stretch::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			pWriter->WriteRecord2(0, fillRect);

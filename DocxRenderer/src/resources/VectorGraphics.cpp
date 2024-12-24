@@ -129,8 +129,8 @@ namespace NSDocxRenderer
 	{
 		m_dLeft = std::numeric_limits<double>().max();
 		m_dTop = std::numeric_limits<double>().max();
-		m_dRight = std::numeric_limits<double>().min();
-		m_dBottom = std::numeric_limits<double>().min();
+		m_dRight = std::numeric_limits<double>::lowest();
+		m_dBottom = std::numeric_limits<double>::lowest();
 	}
 
 	double CVectorGraphics::GetLeft() const noexcept
@@ -220,10 +220,6 @@ namespace NSDocxRenderer
 		ResetBorders();
 	}
 
-	void CVectorGraphics::End()
-	{
-		Clear();
-	}
 	void CVectorGraphics::Add(const PathCommand& command)
 	{
 		m_arData.push_back(command);
@@ -321,10 +317,14 @@ namespace NSDocxRenderer
 	// ClipRegionUnion = 0x0100;
 	// ClipRegionXor = 0x0200;
 	// ClipRegionDiff = 0x0400;
-	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType)
+
+	// c_nStroke = 0x0001;
+	// c_nWindingFillMode = 0x0100;
+	// c_nEvenOddFillMode = 0x0200;
+	CVectorGraphics CVectorGraphics::CalcBoolean(const CVectorGraphics& vg1, const CVectorGraphics& vg2, long clipType, long fillType)
 	{
 		auto op = GetOpType(clipType);
-		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op);
+		Aggplus::CGraphicsPath result = Aggplus::CalcBooleanOperation(vg1.GetGraphicsPath(), vg2.GetGraphicsPath(), op, fillType);
 		return CVectorGraphics(result);
 	}
 

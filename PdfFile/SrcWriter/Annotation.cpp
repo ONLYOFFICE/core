@@ -317,27 +317,8 @@ namespace PdfWriter
 			return;
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-		pNormal->Add("BBox", pArray);
-
-		pArray->Add(GetRect().fLeft);
-		pArray->Add(GetRect().fBottom);
-		pArray->Add(GetRect().fRight);
-		pArray->Add(GetRect().fTop);
-
-		pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pNormal->Add("Matrix", pArray);
-		pArray->Add(1);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(1);
-		pArray->Add(-GetRect().fLeft);
-		pArray->Add(-GetRect().fBottom);
+		pNormal->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
+		pNormal->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 	}
 	//----------------------------------------------------------------------------------------
 	// CMarkupAnnotation
@@ -597,6 +578,7 @@ namespace PdfWriter
 			pN->DrawTextParagraph(sColor);
 			pR->AddBBox(0, 0, 20, 20);
 			pR->DrawTextParagraph(sColor);
+			break;
 		}
 		case 12:
 		{
@@ -604,6 +586,7 @@ namespace PdfWriter
 			pN->DrawTextRightArrow(sColor);
 			pR->AddBBox(0, 0, 20, 20);
 			pR->DrawTextRightArrow(sColor);
+			break;
 		}
 		case 13:
 		{
@@ -611,6 +594,7 @@ namespace PdfWriter
 			pN->DrawTextRightPointer(sColor);
 			pR->AddBBox(0, 0, 20, 17);
 			pR->DrawTextRightPointer(sColor);
+			break;
 		}
 		case 14:
 		{
@@ -618,6 +602,7 @@ namespace PdfWriter
 			pN->DrawTextStar(sColor);
 			pR->AddBBox(0, 0, 20, 19);
 			pR->DrawTextStar(sColor);
+			break;
 		}
 		case 15:
 		{
@@ -625,6 +610,7 @@ namespace PdfWriter
 			pN->DrawTextUpArrow(sColor);
 			pR->AddBBox(0, 0, 17, 20);
 			pR->DrawTextUpArrow(sColor);
+			break;
 		}
 		case 16:
 		{
@@ -632,6 +618,7 @@ namespace PdfWriter
 			pN->DrawTextUpLeftArrow(sColor);
 			pR->AddBBox(0, 0, 17, 17);
 			pR->DrawTextUpLeftArrow(sColor);
+			break;
 		}
 		case 10:
 		default:
@@ -1024,27 +1011,8 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
 		CStream* pStream = pNormal->GetStream();
 
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-		pNormal->Add("BBox", pArray);
-
-		pArray->Add(GetRect().fLeft);
-		pArray->Add(GetRect().fBottom);
-		pArray->Add(GetRect().fRight);
-		pArray->Add(GetRect().fTop);
-
-		pArray = new CArrayObject();
-		if (!pArray)
-			return;
-
-		pNormal->Add("Matrix", pArray);
-		pArray->Add(1);
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(1);
-		pArray->Add(-GetRect().fLeft);
-		pArray->Add(-GetRect().fBottom);
+		pNormal->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
+		pNormal->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 
 		if (GetBorderType() == EBorderType::Dashed)
 			pStream->WriteStr(GetBorderDash().c_str());
@@ -1220,6 +1188,121 @@ namespace PdfWriter
 		for (int i = 0; i < arrQuadPoints.size(); ++i)
 			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
 	}
+	void CTextMarkupAnnotation::SetAP(const std::vector<double>& arrQuadPoints)
+	{
+		CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
+		Add("AP", pAP);
+		CAnnotAppearanceObject* pN = pAP->GetNormal();
+		CStream* pStream = pN->GetStream();
+
+		pN->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
+		pN->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
+
+		switch (m_nSubtype)
+		{
+		case AnnotHighLight:
+		{
+			CExtGrState* pExtGrState = m_pDocument->GetExtGState(-1, -1, blendmode_Multiply);
+			const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+			if (sExtGrStateName)
+			{
+				pStream->WriteEscapeName(sExtGrStateName);
+				pStream->WriteStr(" gs\012");
+			}
+			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), false);
+			pStream->WriteStr(sColor.c_str());
+			pStream->WriteChar('\012');
+			pStream->WriteStr("1 w\012");
+
+			for (int i = 0; i < arrQuadPoints.size(); i += 8)
+			{
+				pStream->WriteReal(arrQuadPoints[i] + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 1]);
+				pStream->WriteStr(" m\012");
+
+				pStream->WriteReal(arrQuadPoints[i + 2] + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 3]);
+				pStream->WriteStr(" l\012");
+
+				pStream->WriteReal(arrQuadPoints[i + 6] + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 7]);
+				pStream->WriteStr(" l\012");
+
+				pStream->WriteReal(arrQuadPoints[i + 4] + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 5]);
+				pStream->WriteStr(" l\012f\012");
+			}
+			break;
+		}
+		case AnnotSquiggly:
+		case AnnotUnderline:
+		{
+			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), true);
+			pStream->WriteStr(sColor.c_str());
+			pStream->WriteChar('\012');
+
+			for (int i = 0; i < arrQuadPoints.size(); i += 8)
+			{
+				double dX = arrQuadPoints[i + 2] - arrQuadPoints[i];
+				double dY = arrQuadPoints[i + 3] - arrQuadPoints[i + 1];
+				double dAngle = atan2(dY, dX);
+				double dHeight = sqrt(pow(arrQuadPoints[i] - arrQuadPoints[i + 4], 2) + pow(arrQuadPoints[i + 1] - arrQuadPoints[i + 5], 2));
+				double dLineWidth = std::max(0.5, dHeight * 0.075);
+				double dIndentX = sin(dAngle) * dLineWidth * 1.9;
+				double dIndentY = cos(dAngle) * dLineWidth * 1.9;
+
+				pStream->WriteReal(dLineWidth);
+				pStream->WriteStr(" w\012");
+
+				pStream->WriteReal(arrQuadPoints[i + 4] + m_dPageX + dIndentX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 5] + dIndentY);
+				pStream->WriteStr(" m\012");
+
+				pStream->WriteReal(arrQuadPoints[i + 6] + m_dPageX + dIndentX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - arrQuadPoints[i + 7] + dIndentY);
+				pStream->WriteStr(" l\012S\012");
+			}
+			break;
+		}
+		case AnnotStrikeOut:
+		default:
+		{
+			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), true);
+			pStream->WriteStr(sColor.c_str());
+			pStream->WriteChar('\012');
+
+			for (int i = 0; i < arrQuadPoints.size(); i += 8)
+			{
+				double dX1 = arrQuadPoints[i] + (arrQuadPoints[i + 4] - arrQuadPoints[i]) / 2.0;
+				double dY1 = arrQuadPoints[i + 1] + (arrQuadPoints[i + 5] - arrQuadPoints[i + 1]) / 2.0;
+				double dX2 = arrQuadPoints[i + 2] + (arrQuadPoints[i + 6] - arrQuadPoints[i + 2]) / 2.0;
+				double dY2 = arrQuadPoints[i + 3] + (arrQuadPoints[i + 7] - arrQuadPoints[i + 3]) / 2.0;
+				double dHeight = sqrt(pow(arrQuadPoints[i] - arrQuadPoints[i + 4], 2) + pow(arrQuadPoints[i + 1] - arrQuadPoints[i + 5], 2));
+				double dLineWidth = std::max(0.5, dHeight * 0.075);
+
+				pStream->WriteReal(dLineWidth);
+				pStream->WriteStr(" w\012");
+
+				pStream->WriteReal(dX1 + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - dY1);
+				pStream->WriteStr(" m\012");
+
+				pStream->WriteReal(dX2 + m_dPageX);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(m_dPageH - dY2);
+				pStream->WriteStr(" l\012S\012");
+			}
+			break;
+		}
+		}
+	}
 	//----------------------------------------------------------------------------------------
 	// CSquareCircleAnnotation
 	//----------------------------------------------------------------------------------------
@@ -1333,6 +1416,42 @@ namespace PdfWriter
 		}
 
 		Add("IT", sValue.c_str());
+	}
+	//----------------------------------------------------------------------------------------
+	// CStampAnnotation
+	//----------------------------------------------------------------------------------------
+	CStampAnnotation::CStampAnnotation(CXref* pXref) : CMarkupAnnotation(pXref, AnnotStamp), m_pAPStream(NULL)
+	{
+	}
+	void CStampAnnotation::SetRotate(double nRotate)
+	{
+		Add("Rotate", nRotate);
+
+		if (!m_pAPStream)
+			return;
+
+		CArrayObject* pArray = new CArrayObject();
+		if (!pArray)
+			return;
+
+		double ca = cos(nRotate / 180.0 * M_PI);
+		double sa = sin(nRotate / 180.0 * M_PI);
+		m_pAPStream->Add("Matrix", pArray);
+		pArray->Add(ca);
+		pArray->Add(sa);
+		pArray->Add(-sa);
+		pArray->Add(ca);
+		pArray->Add(0);
+		pArray->Add(0);
+	}
+	void CStampAnnotation::SetName(const std::wstring& wsName)
+	{
+		std::string sValue = U_TO_UTF8(wsName);
+		Add("Name", sValue.c_str());
+	}
+	void CStampAnnotation::SetAPStream(CDictObject* pStream)
+	{
+		m_pAPStream = pStream;
 	}
 	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation
@@ -1617,16 +1736,7 @@ namespace PdfWriter
 		if (!m_pAppearance)
 			return;
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-
-		CArrayObject* pArray = new CArrayObject();
-		if (!pArray)
-			return;
-		pNormal->Add("BBox", pArray);
-
-		pArray->Add(0);
-		pArray->Add(0);
-		pArray->Add(GetWidth());
-		pArray->Add(GetHeight());
+		pNormal->AddBBox(0, 0, GetWidth(), GetHeight());
 	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{

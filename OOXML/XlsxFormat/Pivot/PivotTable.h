@@ -31,6 +31,8 @@
  */
 #pragma once
 
+#include "PivotHierarchies.h"
+
 #include "../WritingElement.h"
 #include "../FileTypes_Spreadsheet.h"
 
@@ -911,21 +913,23 @@ namespace OOX
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr writeAttributes();
 	//----------
-			nullable<CColumnRowFields>		m_oColFields;
-			nullable<CColumnRowItems>		m_oColItems;
-			nullable<CDataFields>			m_oDataFields;
-			nullable<CPivotTableFormats>	m_oFormats;
-			nullable<CPivotTableLocation>	m_oLocation;
-			nullable<CPageFields>			m_oPageFields;
-			nullable<CPivotFields>			m_oPivotFields;
-			nullable<CColumnRowFields>		m_oRowFields;
-			nullable<CColumnRowItems>		m_oRowItems;
-			nullable<CPivotTableStyleInfo>	m_oPivotTableStyleInfo;
+            nullable<CColumnRowFields>          m_oColFields;
+            nullable<CColumnRowItems>           m_oColItems;
+            nullable<CDataFields>               m_oDataFields;
+            nullable<CPivotTableFormats>        m_oFormats;
+            nullable<CPivotTableLocation>       m_oLocation;
+            nullable<CPageFields>               m_oPageFields;
+            nullable<CPivotFields>              m_oPivotFields;
+            nullable<CColumnRowFields>          m_oRowFields;
+            nullable<CColumnRowItems>           m_oRowItems;
+            nullable<CPivotTableStyleInfo>      m_oPivotTableStyleInfo;
+            nullable<CpivotTableHierarchies>    m_oPivotHierarchies;
+            nullable<CHierarchiesUsage>    		m_oColHierarchiesUsage;
+            nullable<CHierarchiesUsage>    		m_oRowHierarchiesUsage;
 	//nullable<CPivotTableFilters>					m_oFilters;
 	//nullable<CPivotChartFormats>					m_oChartFormats;
 	//nullable<Pivot Conditional Formats>			m_oConditionalFormats;
 	//nullable<Column OLAP Hierarchy References>	m_oColHierarchiesUsage;
-	//nullable<PivotTable OLAP Hierarchies>			m_oPivotHierarchies;
 	//nullable<Row OLAP Hierarchy References>		m_oRowHierarchiesUsage;
 
 			nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;

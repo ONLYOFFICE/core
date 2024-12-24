@@ -17,7 +17,8 @@ namespace NSJSON
 			vtPrimitive,
 			vtArray,
 			vtTypedArray,
-			vtObject
+			vtObject,
+			vtImage
 		};
 
 	public:

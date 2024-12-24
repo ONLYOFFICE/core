@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_TILE_INCLUDE_H_
-#define PPTX_LOGIC_TILE_INCLUDE_H_
 
 #include "./../../WrapperWritingElement.h"
 #include "./../../Limit/RectAlign.h"
@@ -61,7 +59,6 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
 			nullable_limit<Limit::RectAlign>	algn;
 			nullable_limit<Limit::Flip>			flip;
 			nullable_int						sx;
@@ -75,4 +72,3 @@ namespace PPTX
 	} // namespace Logic
 } // namespace PPTX
 
-#endif // PPTX_LOGIC_TILE_INCLUDE_H_

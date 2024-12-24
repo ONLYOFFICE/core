@@ -37,6 +37,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/Color.h"
 #include "../../XlsbFormat/Biff12_records/IndexedColor.h"
 #include "../../XlsbFormat/Biff12_records/MRUColor.h"
+#include "../../XlsbFormat/Biff12_records/Color14.h"
 
 #include "../ComplexTypes_Spreadsheet.h"
 
@@ -474,7 +475,7 @@ namespace OOX
 		{
 			XLSB::Color ptr;
 
-            ptr.bAlpha = 0;
+            ptr.bAlpha = 255;
             ptr.bBlue = 0;
             ptr.bGreen = 0;
             ptr.bRed = 0;
@@ -563,6 +564,52 @@ namespace OOX
                 ptr->nTintAndShade = 0;
 			return objectPtr;
 		}
+        XLS::BaseObjectPtr CColor::toBin14()
+        {
+            auto ptr(new XLSB::Color14);
+
+            XLS::BaseObjectPtr objectPtr(ptr);
+
+            ptr->color.bAlpha = 0;
+            ptr->color.bRed = 0;
+            ptr->color.bGreen = 0;
+            ptr->color.bBlue = 0;
+            ptr->color.index = 0;
+            ptr->color.fValidRGB = false;
+
+            if(m_oAuto.IsInit())
+            {
+                if(m_oAuto->GetValue())
+                    ptr->color.xColorType = 0;
+            }
+            else if(m_oIndexed.IsInit())
+            {
+                    ptr->color.index = m_oIndexed->GetValue();
+                    ptr->color.xColorType = 1;
+            }
+            else if(m_oThemeColor.IsInit())
+            {
+                    ptr->color.index = m_oThemeColor->GetValue();
+                    ptr->color.xColorType = 3;
+            }
+            else
+            {
+                ptr->color.bAlpha = m_oRgb->Get_A();
+                ptr->color.bBlue = m_oRgb->Get_B();
+                ptr->color.bGreen = m_oRgb->Get_G();
+                ptr->color.bRed = m_oRgb->Get_R();
+                ptr->color.xColorType = 2;
+                ptr->color.fValidRGB = true;
+            }
+
+            if ( m_oTint.IsInit())
+            {
+                ptr->color.nTintAndShade = m_oTint->GetValue() * 32767.0;
+            }
+            else
+                ptr->color.nTintAndShade = 0;
+            return objectPtr;
+        }
 		EElementType CColor::getType () const
 		{
 			return et_x_Color;
@@ -1440,6 +1487,26 @@ namespace OOX
 			m_oUnderline      = font->m_oUnderline;
 			m_oVertAlign      = font->m_oVertAlign;
 
+		}
+		CFont* CRPr::toFont()
+		{
+            auto font(new CFont);
+            font->m_oBold = m_oBold;
+            font->m_oCharset = m_oCharset;
+            font->m_oColor = m_oColor;
+            font->m_oCondense = m_oCondense;
+            font->m_oExtend = m_oExtend;
+            font->m_oFamily = m_oFamily;
+            font->m_oItalic = m_oItalic;
+            font->m_oOutline = m_oOutline;
+            font->m_oRFont = m_oRFont;
+            font->m_oScheme = m_oScheme;
+            font->m_oShadow = m_oShadow;
+            font->m_oStrike = m_oStrike;
+            font->m_oSz = m_oSz;
+            font->m_oUnderline = m_oUnderline;
+            font->m_oVertAlign = m_oVertAlign;
+			return font;
 		}
 
 	} //Spreadsheet

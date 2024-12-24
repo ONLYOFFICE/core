@@ -586,9 +586,9 @@ void ods_table_context::start_table(office_element_ptr & elm)
 	
 	std::wstring style_name_new = L"ta" + boost::lexical_cast<std::wstring>(table_state_list_.size());
 
-	office_element_ptr & style = context_.styles_context()->add_or_find(style_name_new, style_family::Table, true);
+	office_element_ptr& style = context_.styles_context()->add_or_find(style_name_new, style_family::Table, true);
 	style->create_child_element(L"style", L"table-properties");
-	
+
 	state()->set_table_style(style);
 	state()->set_table_hidden(false);
 

@@ -3672,13 +3672,13 @@ int Binary_CustomsTableReader::ReadCustom(BYTE type, long length, void* poResult
 		int res = c_oSerConstants::ReadOk;
 		READ1_DEF(length, res, this->ReadCustomContent, &oCustomXmlProps);
 
-		if (false == oCustomXmlProps.m_oCustomXmlContentA.empty())
-		{
-			m_oFileWriter.m_oCustomXmlWriter.WriteCustomA(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContentA, m_oFileWriter.m_bGlossaryMode);
-		}
-		else if (false == oCustomXmlProps.m_oCustomXmlContent.empty())
+		if (false == oCustomXmlProps.m_oCustomXmlContent.empty())
 		{
 			m_oFileWriter.m_oCustomXmlWriter.WriteCustom(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContent, m_oFileWriter.m_bGlossaryMode);
+		}
+		else
+		{
+			m_oFileWriter.m_oCustomXmlWriter.WriteCustomA(oCustomXmlProps.toXML(), oCustomXmlProps.m_oCustomXmlContentA, m_oFileWriter.m_bGlossaryMode);
 		}
 	}
 	else
@@ -4979,6 +4979,18 @@ int Binary_DocumentTableReader::ReadDocumentContent(BYTE type, long length, void
 		m_oFileWriter.m_pDrawingConverter->WriteRels(OOX::FileTypes::JsaProject.RelationType(), sJsaProject.GetPath(), L"", &lId);
 		m_oFileWriter.m_pDrawingConverter->m_pImageManager->m_pContentTypes->AddDefault(sJsaProject.GetExtention(false));
 	}
+	else if (c_oSerParType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+	}
+	else if (c_oSerParType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		m_oDocumentWriter.m_oContent.WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -5755,8 +5767,8 @@ int Binary_DocumentTableReader::ReadPermStart(BYTE type, long length, void* poRe
 	}
 	else if (c_oSerPermission::Ed == type)
 	{
-		pPerm->m_sId.Init();
-		*pPerm->m_sId = m_oBufferedStream.GetString3(length);
+		pPerm->m_sEd.Init();
+		*pPerm->m_sEd = m_oBufferedStream.GetString3(length);
 	}
 	else if (c_oSerPermission::EdGroup == type)
 	{
@@ -6034,6 +6046,18 @@ int Binary_DocumentTableReader::ReadMathArg(BYTE type, long length, void* poResu
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		GetRunStringWriter().WriteString(oMoveToRangeEnd.toXML());
 	}	
+	else if (c_oSer_OMathContentType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
+	else if (c_oSer_OMathContentType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		GetRunStringWriter().WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8653,6 +8677,18 @@ int Binary_DocumentTableReader::Read_TableContent(BYTE type, long length, void* 
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
 	}
+	else if (c_oSerDocTableType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
+	else if (c_oSerDocTableType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8725,6 +8761,18 @@ int Binary_DocumentTableReader::ReadRowContent(BYTE type, long length, void* poR
 		OOX::Logic::CMoveToRangeEnd oMoveToRangeEnd;
 		READ1_DEF(length, res, this->ReadMoveToRangeEnd, &oMoveToRangeEnd);
 		pCStringWriter->WriteString(oMoveToRangeEnd.toXML());
+	}
+	else if (c_oSerDocTableType::PermStart == type)
+	{
+		OOX::Logic::CPermStart oPerm;
+		READ1_DEF(length, res, this->ReadPermStart, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
+	}
+	else if (c_oSerDocTableType::PermEnd == type)
+	{
+		OOX::Logic::CPermEnd oPerm;
+		READ1_DEF(length, res, this->ReadPermEnd, &oPerm);
+		pCStringWriter->WriteString(oPerm.toXML());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

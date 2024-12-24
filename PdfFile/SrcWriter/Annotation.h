@@ -320,6 +320,8 @@ namespace PdfWriter
 
 		void SetSubtype(BYTE nSubtype);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
+
+		void SetAP(const std::vector<double>& arrQuadPoints);
 	};
 	class CSquareCircleAnnotation : public CMarkupAnnotation
 	{
@@ -384,6 +386,21 @@ namespace PdfWriter
 
 		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
+	};
+	class CStampAnnotation : public CMarkupAnnotation
+	{
+	private:
+		CDictObject* m_pAPStream;
+	public:
+		CStampAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotStamp;
+		}
+
+		void SetRotate(double nRotate);
+		void SetName(const std::wstring& wsName);
+		void SetAPStream(CDictObject* pStream);
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{

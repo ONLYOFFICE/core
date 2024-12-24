@@ -33,7 +33,6 @@ DEFINES += UNICODE \
 DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
 DEFINES += DJVU_USE_DYNAMIC_LIBRARY
-DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
 DEFINES += FILE_FORMAT_CHECKER_WITH_MACRO
@@ -95,7 +94,9 @@ HEADERS += \
 	../../src/lib/odf.h \
 	\
 	../../src/lib/pdf_image.h \
-	../../src/lib/pdf_oform.h
+	../../src/lib/pdf_oform.h \
+	\
+	../../src/lib/iwork.h
 
 #vbaformat
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lVbaFormatLib
@@ -127,7 +128,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, HtmlRenderer, doctrenderer, DocxRenderer)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, doctrenderer, DocxRenderer, IWorkFile)
 
 
 #####################################################

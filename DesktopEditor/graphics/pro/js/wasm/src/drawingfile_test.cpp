@@ -10,6 +10,10 @@ unsigned char READ_BYTE(BYTE* x)
 {
 	return x ? x[0] : 1;
 }
+unsigned short READ_SHORT(BYTE* x)
+{
+	return x ? (x[0] | x[1] << 8) : 2;
+}
 unsigned int READ_INT(BYTE* x)
 {
 	return x ? (x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24) : 4;
@@ -750,11 +754,11 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 
 	int nPathLength = READ_INT(pWidgetsAP + i);
 	i += 4;
-	std::cout << "X " << nPathLength << ", ";
+	std::cout << "X " << (double)nPathLength / 100.0 << ", ";
 
 	nPathLength = READ_INT(pWidgetsAP + i);
 	i += 4;
-	std::cout << "Y " << nPathLength << ", ";
+	std::cout << "Y " << (double)nPathLength / 100.0 << ", ";
 
 	int nWidgetWidth = READ_INT(pWidgetsAP + i);
 	i += 4;
@@ -990,13 +994,16 @@ int main(int argc, char* argv[])
 	}
 
 	int i = nTestPage;
-	for (int i = 0; i < nPagesCount; ++i)
+	//for (int i = 0; i < nPagesCount; ++i)
 	{
 		// RASTER
 		if (true)
 		{
 			nWidth  = READ_INT(pInfo + i * 16 + 12);
 			nHeight = READ_INT(pInfo + i * 16 + 16);
+
+			//nWidth  *= 3;
+			//nHeight *= 3;
 
 			BYTE* res = NULL;
 			res = GetPixmap(pGrFile, i, nWidth, nHeight, 0xFFFFFF);
@@ -1083,15 +1090,82 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
-		// TODO:
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
+		nLength = READ_INT(pGlyphs);
+		int i = 4;
+		nLength -= 20;
+
+		int nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << "Stats Paragraphs " << nPathLength;
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << " Words " << nPathLength;
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << " Symbols " << nPathLength;
+		nPathLength = READ_INT(pGlyphs + i);
+		i += 4;
+		std::cout << " Spaces " << nPathLength << std::endl;
+
+		while (i < nLength)
+		{
+			int nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << "Line X " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Y " << (double)nPathLength / 10000.0;
+			nPathLength = READ_BYTE(pGlyphs + i);
+			i += 1;
+			if (nPathLength)
+			{
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << " Ex " << (double)nPathLength / 10000.0;
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << " Ey " << (double)nPathLength / 10000.0;
+			}
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Ascent " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Descent " << (double)nPathLength / 10000.0;
+			nPathLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " LineWidth " << (double)nPathLength / 10000.0;
+			int nCharLength = READ_INT(pGlyphs + i);
+			i += 4;
+			std::cout << " Chars:" << std::endl;
+			for (int j = 0; j < nCharLength; ++j)
+			{
+				int nCharX = 0;
+				if (j)
+				{
+					nCharX = READ_INT(pGlyphs + i);
+					i += 4;
+				}
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << "  Unicode " << nPathLength;
+				nPathLength = READ_INT(pGlyphs + i);
+				i += 4;
+				std::cout << " width " << (double)nPathLength / 10000.0;
+				if (nCharX)
+					std::cout << " charX " << (double)nCharX / 10000.0;
+				std::cout << std::endl;
+			}
+		}
+
 		DestroyTextInfo(pGrFile);
 	}
 
 	// INTERACTIVE FORMS
-	if (true)
+	if (false)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);
@@ -1787,6 +1861,49 @@ int main(int argc, char* argv[])
 					i += nPathLength;
 				}
 			}
+			else if (sType == "Stamp")
+			{
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Icon " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+				i += nPathLength;
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Rotate " << nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y1 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y2 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y3 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "X4 " << (double)nPathLength / 10000.0 << ", ";
+
+				nPathLength = READ_INT(pAnnots + i);
+				i += 4;
+				std::cout << "Y4 " << (double)nPathLength / 10000.0 << ", ";
+			}
 
 			std::cout << std::endl << std::endl;
 		}
@@ -1808,7 +1925,8 @@ int main(int argc, char* argv[])
 			free(pAnnotAP);
 	}
 
-	if (true)
+	// SCAN PAGE
+	if (false)
 	{
 		BYTE* pScan = ScanPage(pGrFile, nTestPage, 1);
 		if (pScan)

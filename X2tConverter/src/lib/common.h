@@ -449,7 +449,10 @@ namespace NExtractTools
 			if (SUCCEEDED_X2T(hRes))
 			{
 				if (bIsCrypt)
-					hRes = dir2zipMscrypt(sOOXMLDir, sTo, params, convertParams);
+				{
+					_UINT32 hRes2 = dir2zipMscrypt(sOOXMLDir, sTo, params, convertParams);
+					hRes = (hRes2 == 0 ? hRes : hRes2);
+				}
 				else
 				{
 					COfficeUtils oCOfficeUtils(NULL);

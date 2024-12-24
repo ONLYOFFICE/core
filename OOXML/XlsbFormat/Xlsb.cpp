@@ -95,6 +95,23 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+XLS::StreamCacheReaderPtr OOX::Spreadsheet::CXlsb::GetFileReader(const CPath& oFilePath, BYTE* &streamBuf)
+{
+    NSFile::CFileBinary oFile;
+    if (oFile.OpenFile(oFilePath.GetPath()) == false)
+        return nullptr;
+
+    auto m_lStreamLen = (LONG)oFile.GetFileSize();
+    streamBuf = new BYTE[m_lStreamLen];
+    DWORD dwRead = 0;
+    oFile.ReadFile(streamBuf, (DWORD)m_lStreamLen, dwRead);
+    oFile.CloseFile();
+
+    m_binaryReader->Init(streamBuf, 0, dwRead);
+
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
+    return reader;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
 {
     if (NULL == m_pWorkbook)
@@ -194,6 +211,41 @@ void OOX::Spreadsheet::CXlsb::PrepareSi()
         }*/
     }
 }
+
+//подготовка шрифтов в richString для конвертации в xlsb
+void OOX::Spreadsheet::CXlsb::PrepareRichStr()
+{
+    if(m_pStyles && m_pStyles->m_oFonts.IsInit())
+    {
+        auto lambdaSi = [&](OOX::Spreadsheet::CSi* si) 
+        {
+            for(size_t i = 0, length = si->m_arrItems.size(); i < length; ++i)
+            {
+                OOX::Spreadsheet::WritingElement* we = si->m_arrItems[i];
+                if(OOX::et_x_r == we->getType())
+                {
+                    OOX::Spreadsheet::CRun* pRun = static_cast<OOX::Spreadsheet::CRun*>(we);
+                    if(pRun->m_oRPr.IsInit() && !pRun->m_oRPr->m_nFontIndex.IsInit())
+                    {
+                        auto font = pRun->m_oRPr->toFont();
+                        m_pStyles->m_oFonts->AddFont(font);
+                        pRun->m_oRPr->m_nFontIndex.Init();
+                        pRun->m_oRPr->m_nFontIndex = m_pStyles->m_oFonts->m_arrItems.size() - 1;
+
+                    }
+                }
+            }
+        };
+
+        if(m_pSharedStrings)
+        {
+            for(auto &si : m_pSharedStrings->m_arrItems)
+            {
+                lambdaSi(si);
+            }
+        }
+    }
+}
 //отложенный парсинг SheetData
 void OOX::Spreadsheet::CXlsb::ReadSheetData()
 {
@@ -212,6 +264,8 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
             continue;
 
         auto m_lStreamLen = (LONG)oFile.GetFileSize();
+        if(dataPosition > m_lStreamLen)
+            continue;
         auto m_pStream = new BYTE[m_lStreamLen];
         DWORD dwRead = 0;
         oFile.ReadFile(m_pStream, (DWORD)m_lStreamLen, dwRead);
@@ -222,16 +276,16 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
         XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
+        //XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
-        proc.SetRecordPosition(dataPosition);
+        reader->SetRecordPosition(dataPosition);
 
-        proc.mandatory(*cell_table_temlate.get());
-        delete[] m_pStream;
+        //proc.mandatory(*cell_table_temlate.get());
+
 
         //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
-
+        worksheet->m_oSheetData->fromBin(reader);
+        delete[] m_pStream;
         //для оптимизации по памяти сразу записываем в файл все листы
         if(m_bWriteToXlsx)
         {

@@ -189,6 +189,7 @@ namespace NSFile
 
 		static void SetTempPath(const std::wstring& strTempPath);
 		static std::wstring GetTempPath();
+		static bool IsGlobalTempPathUse();
 
 		static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix);
 		static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL);

@@ -885,8 +885,8 @@ namespace NSDocxRenderer
 			if (0xFF != m_oBrush.Alpha1)
 			{
 				oWriter.WriteString(L"\"><a:alpha val=\"");
-				oWriter.AddInt(static_cast<int>(m_oBrush.Alpha1 / 255.0 * 100.0));
-				oWriter.WriteString(L"%\"/></a:srgbClr>");
+				oWriter.AddInt(static_cast<int>(m_oBrush.Alpha1 / 255.0 * 100.0 * 1000));
+				oWriter.WriteString(L"\"/></a:srgbClr>");
 			}
 			else
 			{

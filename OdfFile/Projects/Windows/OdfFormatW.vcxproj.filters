@@ -4,6 +4,9 @@
     <Filter Include="Shapes">
       <UniqueIdentifier>{2c07ccd6-b0a1-40b5-99b2-2c732a124cff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{b7620571-58c3-496f-ab28-245c69522663}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Writer\Format\Shapes\odf_shape_mapping.h">
@@ -137,6 +140,9 @@
     <ClInclude Include="..\..\Writer\Format\text_elements.h" />
     <ClInclude Include="..\..\Writer\Format\visitor.h" />
     <ClInclude Include="..\..\Writer\Format\office_meta.h" />
+    <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.h">
+      <Filter>math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Writer\Format\abstract_xml.cpp" />
@@ -217,5 +223,8 @@
     <ClCompile Include="..\..\Writer\Format\table_named_expressions.cpp" />
     <ClCompile Include="..\..\Writer\Format\text_elements.cpp" />
     <ClCompile Include="..\..\Writer\Format\office_meta.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cooxml2odf.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -50,8 +50,8 @@ namespace XLSB
 			void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _UINT32             csz;
-            _INT32              iSXTL;
+            _UINT32             csz = 0;
+            _INT32              iSXTL = -1;
     };
 
 } // namespace XLSB

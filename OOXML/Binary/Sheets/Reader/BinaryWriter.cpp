@@ -8565,7 +8565,8 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	UINT nCodePage;
 	std::wstring sDelimiter;
 	BYTE saveFileType;
-	SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
+    _INT32 Lcid;
+    SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid);
 
 	m_nLastFilePosOffset = 0;
 	OOX::Spreadsheet::CXlsx *pXlsx = NULL;
@@ -8577,7 +8578,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			CSVReader csvReader;
 
 			pXlsx = new OOX::Spreadsheet::CXlsx();
-			result = csvReader.Read(sInputDir, *pXlsx, nCodePage, sDelimiter);
+            result = csvReader.Read(sInputDir, *pXlsx, nCodePage, sDelimiter, Lcid);
 		}break;
 		case BinXlsxRW::c_oFileTypes::XLSX:
         case BinXlsxRW::c_oFileTypes::XLSB:
@@ -8622,7 +8623,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			}
 		}break;
 	}		
-	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result)
+	if (0 != result && AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS != result && AVS_FILEUTILS_ERROR_CONVERT_CELLLIMITS != result)
 	{
 		RELEASEOBJECT(pXlsx);
 		return result;
@@ -8660,7 +8661,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 //todo 46 временно CP_UTF8
 		
 		CSVWriter oCSVWriter;
-		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
+		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), Lcid, true);
 	}
 	else
 	{

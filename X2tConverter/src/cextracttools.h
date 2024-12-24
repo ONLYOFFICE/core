@@ -49,7 +49,7 @@
 #include <fstream>
 #include <iostream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_CELLLIMITS == (nRes))
 
 namespace NExtractTools
 {
@@ -867,6 +867,7 @@ namespace NExtractTools
 			std::wstring sRes;
 			int nCsvEncoding = 46; // 65001 utf8
 			std::wstring cDelimiter = L",";
+            int LcId = -1;
 
 			if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
@@ -895,6 +896,12 @@ namespace NExtractTools
 			{
 				cDelimiter = *m_sCsvDelimiterChar;
 			}
+
+            if(m_nLcid != NULL)
+            {
+                LcId = *m_nLcid;
+            }
+
 			int nFileType = 1;
 			if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
 				nFileType = 2;
@@ -915,6 +922,8 @@ namespace NExtractTools
 			sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
 			if (m_bMacro)
 				sRes += L"' macro='1";
+            if(LcId != -1)
+                sRes += L"' Lcid='" + std::to_wstring(LcId);
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
 			sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 

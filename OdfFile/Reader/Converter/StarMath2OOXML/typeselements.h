@@ -311,6 +311,7 @@ enum class TypeElement{
 	dotslow,
 	newline,
 	emptySquare,
+	slash,
 	//function
 	abs,
 	fact,
@@ -368,6 +369,9 @@ enum class TypeElement{
 	underbrace,
 	//grade
 	evaluate,
+	//string
+	letter,
+	number,
 };
 }
 #endif // TYPESELEMENTS_H

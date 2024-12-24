@@ -54,7 +54,7 @@ namespace XLSB
     {
         _UINT16 flags;
 
-        record >> cchLevelUnq >> ichPropName >> isxtl >> isxvd >> flags >> irstProperty;
+        record >> cchLevelUnq >> ichPropName >> cchPropName >> isxtl >> isxvd >> flags >> irstProperty;
 
         fDisplayInReport = GETBIT(flags, 0);
     }
@@ -65,7 +65,7 @@ namespace XLSB
 
 		SETBIT(flags, 0, fDisplayInReport)
 
-		record << cchLevelUnq << ichPropName << isxtl << isxvd << flags << irstProperty;
+        record << cchLevelUnq << ichPropName << cchPropName << isxtl << isxvd << flags << irstProperty;
 	}
 
 } // namespace XLSB

@@ -2683,7 +2683,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 							pPPTShape->m_eType == PPTShapes::sptCWedgeRoundRectCallout ||
 							pPPTShape->m_eType == PPTShapes::sptCWedgeEllipseCallout ||
 							pPPTShape->m_eType == PPTShapes::sptCCloudCallout ||
-							pPPTShape->m_eType == PPTShapes::sptCFlowChartConnector)
+							pPPTShape->m_eType == PPTShapes::sptCFlowChartConnector ||
+							pPPTShape->m_eType == PPTShapes::sptCFlowChartProcess)
 						{
 							pShape->oTextBoxBodyPr->lIns = 91440;
 							pShape->oTextBoxBodyPr->tIns = 45720;
@@ -5735,6 +5736,28 @@ void CDrawingConverter::CheckPenShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::
             pSolid->m_namespace = L"a";
 			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
 			pSolid->Color.Color->SetRGB(0, 0, 0);
+
+			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+			pSpPr->ln->Fill.Fill = pSolid;
+		}
+	}
+	else
+	{
+		nullable_string sStrokeColor, sStrokeOpacity;
+		XmlMacroReadAttributeBase(oNode, L"o:bordertopcolor", sStrokeColor);
+		XmlUtils::CXmlNode oNodeStroke = oNode.ReadNode(L"w10:bordertop");
+		
+		if (oNodeStroke.IsValid() && sStrokeColor.is_init())
+		{
+			if (!pSpPr->ln.IsInit())
+				pSpPr->ln.Init();
+
+			pPPTShape->m_bIsStroked = true;
+
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = L"a";
+
+			ConvertColor(pSolid->Color, sStrokeColor, sStrokeOpacity);
 
 			pSpPr->ln->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 			pSpPr->ln->Fill.Fill = pSolid;

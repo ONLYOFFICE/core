@@ -36,7 +36,6 @@
 
 #include "../../../DjVuFile/DjVu.h"
 #include "../../../DocxRenderer/DocxRenderer.h"
-#include "../../../HtmlRenderer/include/HTMLRenderer3.h"
 #include "../../../PdfFile/PdfFile.h"
 #include "../../../XpsFile/XpsFile.h"
 #include "../../../OfficeUtils/src/ZipFolder.h"
@@ -194,7 +193,7 @@ namespace NExtractTools
 
 		std::wstring sFileDir         = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = combinePath(sFileDir, L"media");
-		std::wstring sPdfBinFile      = combinePath(sFileDir, L"pdf.bin");
+		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
@@ -218,6 +217,7 @@ namespace NExtractTools
 
 			CConvertFromBinParams oBufferParams;
 			oBufferParams.m_sThemesDirectory        = convertParams.m_sThemesDir;
+			oBufferParams.m_sMediaDirectory         = sFileDir;
 			oBufferParams.m_sInternalMediaDirectory = convertParams.m_sInternalMediaDirectory;
 
 			std::wstring documentID = params.getDocumentID();
@@ -258,7 +258,7 @@ namespace NExtractTools
 
 		std::wstring sFileDir         = NSDirectory::GetFolderPath(sFrom);
 		std::wstring sImagesDirectory = combinePath(sFileDir, L"media");
-		std::wstring sPdfBinFile      = combinePath(sFileDir, L"pdf.bin");
+		std::wstring sPdfBinFile      = combinePath(convertParams.m_sTempDir, L"pdf.bin");
 
 		NSDoctRenderer::CDoctrenderer oDoctRenderer(NULL != params.m_sAllFontsPath ? *params.m_sAllFontsPath : L"");
 		std::wstring sXml = getDoctXml(eFromType, eToType, sFrom, sPdfBinFile, sImagesDirectory, convertParams.m_sThemesDir, -1, L"", params);
@@ -697,7 +697,17 @@ namespace NExtractTools
 
 		std::wstring password = params.getPassword();
 		if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
-			return false;
+		{
+			if (oPdfResult.GetError() == 4)
+			{
+				// if password does not changed - old password may be not sended
+				password = params.getSavePassword();
+				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
+					return false;
+			}
+			else
+				return false;
+		}
 
 		CConvertFromBinParams oConvertParams;
 		oConvertParams.m_sInternalMediaDirectory = NSFile::GetDirectoryName(sFrom);

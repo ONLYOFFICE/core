@@ -661,6 +661,10 @@ namespace PdfWriter
 	{
 		return new CCaretAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateStampAnnot()
+	{
+		return new CStampAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreateWidgetAnnot()
 	{
 		if (!CheckAcroForm())
@@ -1792,6 +1796,25 @@ namespace PdfWriter
 			pProperties->Remove("OShapes");
 			pObj = NULL;
 		}
+
+		CBinaryObject* sID = NULL;
+		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+		if (!pID)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			pID = new CArrayObject();
+			m_pTrailer->Add("ID", pID);
+
+			pID->Add(new CBinaryObject(arrId, 16));
+			pID->Add(new CBinaryObject(arrId, 16));
+
+			sID = new CBinaryObject(arrId, 16);
+		}
+		else
+			sID = (CBinaryObject*)pID->Get(1)->Copy();
+
 		CDictObject* pMetaOForm = (CDictObject*)pObj;
 		if (!pMetaOForm)
 		{
@@ -1800,25 +1823,8 @@ namespace PdfWriter
 			pMetaOForm->Add("Type", "OShapes");
 			pProperties->Add("OShapes", pMetaOForm);
 			m_vMetaOForms.push_back(pMetaOForm);
-
-			CBinaryObject* sID = NULL;
-			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
-			if (!pID)
-			{
-				BYTE arrId[16];
-				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
-
-				pID = new CArrayObject();
-				m_pTrailer->Add("ID", pID);
-
-				pID->Add(new CBinaryObject(arrId, 16));
-				pID->Add(new CBinaryObject(arrId, 16));
-
-				sID = new CBinaryObject(arrId, 16);
-			}
-			else
-				sID = (CBinaryObject*)pID->Get(1)->Copy();
-			pMetaOForm->Add("ID", sID);
+			pMetaOForm->Add("IDF", sID->Copy());
+			pMetaOForm->Add("ID", sID->Copy());
 		}
 		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Metadata");
 		if (!pArrayMeta)
@@ -1832,6 +1838,7 @@ namespace PdfWriter
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
+		pBDC->Add("IDF", sID);
 		m_pCurPage->BeginMarkedContentDict("OShapes", pBDC);
 		RELEASEOBJECT(pBDC);
 	}
@@ -1861,5 +1868,6 @@ namespace PdfWriter
 	void CDocument::ClearPage()
 	{
 		m_pCurPage->ClearContent(m_pXref);
+		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
 	}
 }

@@ -38,7 +38,8 @@ namespace StarMath {
 	}
 	CConversionSMtoOOXML::~CConversionSMtoOOXML()
 	{
-		delete m_pXmlWrite;
+		if (m_pXmlWrite)
+			delete m_pXmlWrite;
 	}
 	//check XMLWrite(if not nullptr == delete)
 	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)

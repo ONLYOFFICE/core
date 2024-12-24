@@ -33,7 +33,8 @@ namespace MetaFile
 			return;
 
 		std::swap(m_pParser, m_oSecondConditional.m_pParser);
-		std::swap(m_oClip, m_oSecondConditional.m_oClip);
+
+		SwapClips(m_oClip, m_oSecondConditional.m_oClip);
 	}
 
 	InterpretatorType CEmfInterpretatorSvg::GetType() const
@@ -1046,6 +1047,7 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_FRAMERGN(const TRectL &oBounds, unsigned int unIhBrush, int nWidth, int nHeight, const TRegionDataHeader &oRegionDataHeader, const std::vector<TRectL> &arRects)
 	{
+		m_bUpdatedClip = false;
 	}
 
 	void CEmfInterpretatorSvg::HANDLE_EMFPLUS_OFFSETCLIP(double dX, double dY)
@@ -1491,6 +1493,17 @@ namespace MetaFile
 	void CEmfInterpretatorSvg::PathClip(const CPath &oPath, int nClipMode, TXForm *pTransform)
 	{
 		CInterpretatorSvgBase::PathClip(oPath, nClipMode, pTransform);
+	}
+
+	void CEmfInterpretatorSvg::SwapClips(CSvgClip& oFirstClip, CSvgClip& oSecondClip)
+	{
+		if (oFirstClip.StartedClip())
+			WriteNodeEnd(L"g");
+
+		if (oSecondClip.StartedClip())
+			WriteNodeBegin(L"g", {{L"clip-path", L"url(#" + oSecondClip.GetClipId() + L')'}});
+
+		std::swap(oFirstClip, oSecondClip);
 	}
 
 	TRectD CEmfInterpretatorSvg::TranslateRect(const TRectL &oRect) const

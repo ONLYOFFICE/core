@@ -8,7 +8,7 @@ namespace HWP
 {
 class CHWPSection
 {
-	LIST<CHWPPargraph*> m_arParas;
+	VECTOR<CHWPPargraph*> m_arParas;
 
 	int ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
@@ -20,6 +20,8 @@ public:
 	int ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseCtrlRecurse(CCtrl& oCurrCtrl, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseContainerRecurse(CCtrlContainer& oContainer, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	const VECTOR<CHWPPargraph*> GetParagraphs() const;
 };
 }
 

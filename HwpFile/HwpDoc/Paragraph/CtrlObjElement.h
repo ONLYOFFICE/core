@@ -24,7 +24,7 @@ class CCtrlObjElement : public CCtrlCommon
 	int m_nYCenter;
 	short m_shMatCnt;
 	double m_arMatrix[6];
-	std::vector<double> m_arMatrixSeq;
+	VECTOR<double> m_arMatrixSeq;
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const STRING& sCtrlID);

@@ -91,7 +91,7 @@ int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oB
 
 					CParaText *pNewParaText = new CParaText(L"____", sSplitRightText, pCharShape->m_nStart, pCharShape->m_nCharShapeID);
 
-					arParas.insert(itFound.base() + 1, pNewParaText);
+					arParas.insert(itFound.base(), pNewParaText);
 				}
 			}
 

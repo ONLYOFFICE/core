@@ -46,7 +46,7 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 	int nMatrixSize = ((int)oObj.m_shMatCnt) * 6 * 2;
 	if (nMatrixSize > 0)
 	{
-		oObj.m_arMatrixSeq.reserve(nMatrixSize);
+		oObj.m_arMatrixSeq.resize(nMatrixSize);
 
 		for (int nIndex = 0; nIndex < nMatrixSize; ++nMatrixSize)
 			oBuffer.ReadDouble(oObj.m_arMatrixSeq[nIndex]);

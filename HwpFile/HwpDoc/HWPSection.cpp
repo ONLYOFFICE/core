@@ -35,6 +35,71 @@
 #include "HWPElements/HWPRecordFormObject.h"
 #include "HWPElements/HWPRecordCtrlData.h"
 
+#ifdef _DEBUG
+#include <iostream>
+#define PRINT_HWPTAG(tag) \
+	do \
+	{ \
+	switch (eTag) \
+	{ \
+		case HWPTAG_DOCUMENT_PROPERTIES: std::cout << "HWPTAG_DOCUMENT_PROPERTIES" << std::endl; break; \
+		case HWPTAG_ID_MAPPINGS: std::cout << "HWPTAG_ID_MAPPINGS" << std::endl; break; \
+		case HWPTAG_BIN_DATA: std::cout << "HWPTAG_BIN_DATA" << std::endl; break; \
+		case HWPTAG_FACE_NAME: std::cout << "HWPTAG_FACE_NAME" << std::endl; break; \
+		case HWPTAG_BORDER_FILL: std::cout << "HWPTAG_BORDER_FILL" << std::endl; break; \
+		case HWPTAG_CHAR_SHAPE: std::cout << "HWPTAG_CHAR_SHAPE" << std::endl; break; \
+		case HWPTAG_TAB_DEF: std::cout << "HWPTAG_TAB_DEF" << std::endl; break; \
+		case HWPTAG_NUMBERING: std::cout << "HWPTAG_NUMBERING" << std::endl; break; \
+		case HWPTAG_BULLET: std::cout << "HWPTAG_BULLET" << std::endl; break; \
+		case HWPTAG_PARA_SHAPE: std::cout << "HWPTAG_PARA_SHAPE" << std::endl; break; \
+		case HWPTAG_STYLE: std::cout << "HWPTAG_STYLE" << std::endl; break; \
+		case HWPTAG_DOC_DATA: std::cout << "HWPTAG_DOC_DATA" << std::endl; break; \
+		case HWPTAG_DISTRIBUTE_DOC_DATA: std::cout << "HWPTAG_DISTRIBUTE_DOC_DATA" << std::endl; break; \
+		case HWPTAG_COMPATIBLE_DOCUMENT: std::cout << "HWPTAG_COMPATIBLE_DOCUMENT" << std::endl; break; \
+		case HWPTAG_LAYOUT_COMPATIBILITY: std::cout << "HWPTAG_LAYOUT_COMPATIBILITY" << std::endl; break; \
+		case HWPTAG_TRACKCHANGE: std::cout << "HWPTAG_TRACKCHANGE" << std::endl; break; \
+		case HWPTAG_PARA_HEADER: std::cout << "HWPTAG_PARA_HEADER" << std::endl; break; \
+		case HWPTAG_PARA_TEXT: std::cout << "HWPTAG_PARA_TEXT" << std::endl; break; \
+		case HWPTAG_PARA_CHAR_SHAPE: std::cout << "HWPTAG_PARA_CHAR_SHAPE" << std::endl; break; \
+		case HWPTAG_PARA_LINE_SEG: std::cout << "HWPTAG_PARA_LINE_SEG" << std::endl; break; \
+		case HWPTAG_PARA_RANGE_TAG: std::cout << "HWPTAG_PARA_RANGE_TAG" << std::endl; break; \
+		case HWPTAG_CTRL_HEADER: std::cout << "HWPTAG_CTRL_HEADER" << std::endl; break; \
+		case HWPTAG_LIST_HEADER: std::cout << "HWPTAG_LIST_HEADER" << std::endl; break; \
+		case HWPTAG_PAGE_DEF: std::cout << "HWPTAG_PAGE_DEF" << std::endl; break; \
+		case HWPTAG_FOOTNOTE_SHAPE: std::cout << "HWPTAG_FOOTNOTE_SHAPE" << std::endl; break; \
+		case HWPTAG_PAGE_BORDER_FILL: std::cout << "HWPTAG_PAGE_BORDER_FILL" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT: std::cout << "HWPTAG_SHAPE_COMPONENT" << std::endl; break; \
+		case HWPTAG_TABLE: std::cout << "HWPTAG_TABLE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_LINE: std::cout << "HWPTAG_SHAPE_COMPONENT_LINE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_RECTANGLE: std::cout << "HWPTAG_SHAPE_COMPONENT_RECTANGLE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_ELLIPSE: std::cout << "HWPTAG_SHAPE_COMPONENT_ELLIPSE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_ARC: std::cout << "HWPTAG_SHAPE_COMPONENT_ARC" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_POLYGON: std::cout << "HWPTAG_SHAPE_COMPONENT_POLYGON" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_CURVE: std::cout << "HWPTAG_SHAPE_COMPONENT_CURVE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_OLE: std::cout << "HWPTAG_SHAPE_COMPONENT_OLE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_PICTURE: std::cout << "HWPTAG_SHAPE_COMPONENT_PICTURE" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_CONTAINER: std::cout << "HWPTAG_SHAPE_COMPONENT_CONTAINER" << std::endl; break; \
+		case HWPTAG_CTRL_DATA: std::cout << "HWPTAG_CTRL_DATA" << std::endl; break; \
+		case HWPTAG_EQEDIT: std::cout << "HWPTAG_EQEDIT" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_TEXTART: std::cout << "HWPTAG_SHAPE_COMPONENT_TEXTART" << std::endl; break; \
+		case HWPTAG_FORM_OBJECT: std::cout << "HWPTAG_FORM_OBJECT" << std::endl; break; \
+		case HWPTAG_MEMO_SHAPE: std::cout << "HWPTAG_MEMO_SHAPE" << std::endl; break; \
+		case HWPTAG_MEMO_LIST: std::cout << "HWPTAG_MEMO_LIST" << std::endl; break; \
+		case HWPTAG_FORBIDDEN_CHAR: std::cout << "HWPTAG_FORBIDDEN_CHAR" << std::endl; break; \
+		case HWPTAG_CHART_DATA: std::cout << "HWPTAG_CHART_DATA" << std::endl; break; \
+		case HWPTAG_TRACK_CHANGE: std::cout << "HWPTAG_TRACK_CHANGE" << std::endl; break; \
+		case HWPTAG_TRACK_CHANGE_AUTHOR: std::cout << "HWPTAG_TRACK_CHANGE_AUTHOR" << std::endl; break; \
+		case HWPTAG_VIDEO_DATA: std::cout << "HWPTAG_VIDEO_DATA" << std::endl; break; \
+		case HWPTAG_SHAPE_COMPONENT_UNKNOWN:  std::cout << "HWPTAG_SHAPE_COMPONENT_UNKNOWN" << std::endl; break; \
+		default: std::cout << "UNKNOWN" << std::endl; break; \
+	} \
+	} \
+	while (false)
+#else
+#define PRINT_HWPTAG(tag) do {} while(false)
+#endif
+
+
 namespace HWP
 {
 CHWPSection::CHWPSection()
@@ -78,6 +143,8 @@ bool CHWPSection::Parse(CHWPStream& oBuffer, int nVersion)
 			oBuffer.Skip(4);
 
 		EHWPTag eTag = GetTagFromNum(nTagNum);
+
+		PRINT_HWPTAG(eTag);
 
 		if (0 == nLevel && HWPTAG_PARA_HEADER == eTag)
 		{
@@ -130,6 +197,8 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 			break;
 
 		EHWPTag eTag = GetTagFromNum(nTagNum);
+
+		PRINT_HWPTAG(eTag);
 
 		if (nLevel > nRunLevel)
 		{
@@ -211,6 +280,8 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 
 					if (nullptr != pCtrlCommon)
 						ParseCtrlRecurse(*pCtrlCommon, nLevel, oBuffer, 0, nVersion);
+					else
+						oBuffer.Skip(nHeaderSize);
 
 					break;
 				}
@@ -227,7 +298,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 					if (nullptr != dynamic_cast<CCellParagraph*>(&oCurrPara))
 					{
 						oBuffer.Skip(-nHeaderSize);
-						return oBuffer.GetDistanceToLastPos();
+						return oBuffer.GetDistanceToLastPos(true);
 					}
 					else if (nullptr != dynamic_cast<CCapParagraph*>(&oCurrPara))
 					{
@@ -239,11 +310,11 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 						if (1 == nRunLevel) //TODO:: проверить
 						{
 							oBuffer.Skip(nSize);
-							return oBuffer.GetDistanceToLastPos();
+							return oBuffer.GetDistanceToLastPos(true);
 						}
 
 						oBuffer.Skip(-nHeaderSize);
-						return oBuffer.GetDistanceToLastPos();
+						return oBuffer.GetDistanceToLastPos(true);
 					}
 				}
 				case HWPTAG_PARA_TEXT:
@@ -257,6 +328,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 						oCurrPara.AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
 
 					CCharShape::FillCharShape(nTagNum, nLevel, nSize, oBuffer, 0, nVersion, oCurrPara.GetCtrls());
+					break;
 				}
 				case HWPTAG_PARA_LINE_SEG:
 				{
@@ -270,6 +342,8 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				}
 				case HWPTAG_CTRL_HEADER:
 				{
+					oBuffer.SavePosition();
+
 					CCtrl *pCtrl = CHWPRecordCtrlHeader::Parse(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
 
 					if (nullptr != dynamic_cast<CCtrlGeneralShape*>(pCtrl))
@@ -291,14 +365,16 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 
 					if (nullptr != dynamic_cast<CCtrlTable*>(pCtrl))
 					{
-						oBuffer.Skip(nSize);
+						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 						ParseCtrlRecurse(*pCtrl, nLevel, oBuffer, 0, nVersion);
 					}
 					else
 					{
-						oBuffer.Skip(nSize);
+						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 						ParseCtrlRecurse(*pCtrl, nLevel, oBuffer, 0, nVersion);
 					}
+
+					oBuffer.RemoveLastSavedPos();
 					break;
 				}
 				case HWPTAG_TABLE:
@@ -338,11 +414,11 @@ int CHWPSection::ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream
 				case HWPTAG_CHART_DATA:
 				case HWPTAG_VIDEO_DATA:
 				case HWPTAG_SHAPE_COMPONENT_UNKNOWN:
-				default:
 				{
 					oBuffer.Skip(nSize);
 					break;
 				}
+				default: {}
 			}
 		}
 	}
@@ -383,6 +459,8 @@ int CHWPSection::ParseCtrlRecurse(CCtrl& oCurrCtrl, int nRunLevel, CHWPStream& o
 			break;
 
 		EHWPTag eTag = GetTagFromNum(nTagNum);
+
+		PRINT_HWPTAG(eTag);
 
 		if (nLevel > nRunLevel)
 		{
@@ -981,6 +1059,11 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer& oContainer, int nRunLevel
 	}
 
 	return oBuffer.GetDistanceToLastPos(true);
+}
+
+const VECTOR<CHWPPargraph*> CHWPSection::GetParagraphs() const
+{
+	return m_arParas;
 }
 
 int CHWPSection::ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

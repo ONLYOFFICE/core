@@ -79,8 +79,11 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		}
 		else if (8 == itCurrent->length())
 		{
-			//TODO:: реализовать
-			STRING sInfo = sText.substr(2, 4); //  new String(m.group().getBytes(StandardCharsets.UTF_16LE), 2, 12, StandardCharsets.US_ASCII).replaceAll("[\\x00-\\x20]+$", "");
+			//TODO:: Проверить
+			STRING sInfo = sText.substr(itCurrent->position() + 1, 4); //  new String(m.group().getBytes(StandardCharsets.UTF_16LE), 2, 12, StandardCharsets.US_ASCII).replaceAll("[\\x00-\\x20]+$", "");
+			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");
+			sInfo = std::regex_replace(sInfo, wrReplaceRegex, L"");
+
 			switch(itCurrent->str()[0])
 			{
 				case 0x04:

@@ -15,6 +15,11 @@ int CCtrlCharacter::GetSize()
 	return 1;
 }
 
+ECtrlCharType CCtrlCharacter::GetType() const
+{
+	return m_eCtrlChar;
+}
+
 void CCtrlCharacter::SetCharShapeID(int nCharShapeID)
 {
 	m_nCharShapeID = nCharShapeID;

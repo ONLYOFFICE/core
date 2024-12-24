@@ -53,6 +53,11 @@ VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
 	return m_arP;
 }
 
+const std::vector<CCtrl*> CHWPPargraph::GetCtrls() const
+{
+	return m_arP;
+}
+
 unsigned int CHWPPargraph::GetCountCtrls() const
 {
 	return m_arP.size();

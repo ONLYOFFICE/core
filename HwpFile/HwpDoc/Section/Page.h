@@ -10,7 +10,7 @@ class CPage
 	bool m_bLandscape;
 	int m_nWidth;
 	int m_nHeight;
-	BYTE m_chGutterType;
+	HWP_BYTE m_chGutterType;
 	int m_nMarginLeft;
 	int m_nMarginRight;
 	int m_nMarginTop;
@@ -20,6 +20,16 @@ class CPage
 	int m_nMarginGutter;
 public:
 	CPage();
+
+	int GetWidth() const;
+	int GetHeight() const;
+	int GetMarginLeft() const;
+	int GetMarginRight() const;
+	int GetMarginTop() const;
+	int GetMarginBottom() const;
+	int GetMarginHeader() const;
+	int GetMarginFooter() const;
+	int GetMarginGutter() const;
 
 	static CPage* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

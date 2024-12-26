@@ -111,24 +111,29 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	int m_nCropRight;
 	int m_nCropBottom;
 	short m_arInnerSpaces[4];
-	BYTE m_chBright;
-	BYTE m_chContrast;
-	BYTE m_chEffect;
-	STRING m_sBinDataID;
+	HWP_BYTE m_chBright;
+	HWP_BYTE m_chContrast;
+	HWP_BYTE m_chEffect;
+	HWP_STRING m_sBinDataID;
 
-	BYTE m_chBorderAlpha;
+	HWP_BYTE m_chBorderAlpha;
 	int m_nInstanceID;
 	int m_nPicEffectInfo;
-	std::list<CPicEffect*> m_arPicEffect;
+	LIST<CPicEffect*> m_arPicEffect;
 
 	int m_nIniPicWidth;
 	int m_nIniPicHeight;
-	BYTE m_chPicAlpha;
+	HWP_BYTE m_chPicAlpha;
 public:
 	CCtrlShapePic();
-	CCtrlShapePic(const STRING& sCtrlID);
-	CCtrlShapePic(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapePic(const HWP_STRING& sCtrlID);
+	CCtrlShapePic(const CCtrlGeneralShape& oShape);
+	CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlShapePic();
+
+	HWP_STRING GetBinDataID() const;
+	int GetPicWidth() const;
+	int GetPicHeight() const;
 
 	static int ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

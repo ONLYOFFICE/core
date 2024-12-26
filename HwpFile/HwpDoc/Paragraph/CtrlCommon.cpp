@@ -87,13 +87,69 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon()
+		: m_nVertOffset(0), m_nHorzOffset(0)
 	{}
 
-	CCtrlCommon::CCtrlCommon(const STRING& sCtrlID)
+	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID)
 		: CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP)
 	{}
 
-	CCtrlCommon::CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+	CCtrlCommon::CCtrlCommon(const CCtrlCommon& oCtrlCommon)
+		: CCtrl(oCtrlCommon.GetID())
+	{
+		m_nSize = oCtrlCommon.m_nSize;
+
+		m_nObjAttr = oCtrlCommon.m_nObjAttr;
+		m_bTreatAsChar = oCtrlCommon.m_bTreatAsChar;
+		m_bAffectLSpacing = oCtrlCommon.m_bAffectLSpacing;
+		m_eVertRelTo = oCtrlCommon.m_eVertRelTo;
+		m_eVertAlign = oCtrlCommon.m_eVertAlign;
+		m_eHorzRelTo = oCtrlCommon.m_eHorzRelTo;
+		m_eHorzAlign = oCtrlCommon.m_eHorzAlign;
+		m_bFlowWithText = oCtrlCommon.m_bFlowWithText;
+		m_bAllowOverlap = oCtrlCommon.m_bAllowOverlap;
+		m_eWidthRelto = oCtrlCommon.m_eWidthRelto;
+		m_eHeightRelto = oCtrlCommon.m_eHeightRelto;
+		m_eTextWrap = oCtrlCommon.m_eTextWrap;
+		m_chTextFlow = oCtrlCommon.m_chTextFlow;
+		m_chNumeringType = oCtrlCommon.m_chNumeringType;
+
+		m_nVertOffset = oCtrlCommon.m_nVertOffset;
+		m_nHorzOffset = oCtrlCommon.m_nHorzOffset;
+		m_nWidth = oCtrlCommon.m_nWidth;
+		m_nHeight = oCtrlCommon.m_nHeight;
+		m_nZOrder = oCtrlCommon.m_nZOrder;
+
+		for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
+			m_arOutMargin[unIndex] = oCtrlCommon.m_arOutMargin[unIndex];
+
+		m_nObjInstanceID = oCtrlCommon.m_nObjInstanceID;
+		m_nBlockPageBreak = oCtrlCommon.m_nBlockPageBreak;
+		m_sObjDesc = oCtrlCommon.m_sObjDesc;
+
+		m_arParas.resize(oCtrlCommon.m_arParas.size());
+		for (unsigned int unIndex = 0; unIndex < oCtrlCommon.m_arParas.size(); ++unIndex)
+		{
+			oCtrlCommon.m_arParas[unIndex]->AddRef();
+			m_arParas[unIndex] = oCtrlCommon.m_arParas[unIndex];
+		}
+
+		m_nCaptionAttr = oCtrlCommon.m_nCaptionAttr;
+		m_nCaptionWidth = oCtrlCommon.m_nCaptionWidth;
+		m_nCaptionSpacing = oCtrlCommon.m_nCaptionSpacing;
+		m_nCaptionMaxW = oCtrlCommon.m_nCaptionMaxW;
+
+		m_arCaption.resize(oCtrlCommon.m_arCaption.size());
+		for (unsigned int unIndex = 0; unIndex < oCtrlCommon.m_arCaption.size(); ++unIndex)
+		{
+			oCtrlCommon.m_arCaption[unIndex]->AddRef();
+			m_arCaption[unIndex] = oCtrlCommon.m_arCaption[unIndex];
+		}
+
+		m_eTextVerAlign = oCtrlCommon.m_eTextVerAlign;
+	}
+
+	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 		: CCtrl(sCtrlID)
 	{
 		oBuffer.SavePosition();
@@ -111,8 +167,8 @@ namespace HWP
 		m_eWidthRelto = GetWidthRelTo(m_nObjAttr >> 15 & 0x07);
 		m_eHeightRelto = GetHeightRelTo(m_nObjAttr >> 18 & 0x03);
 		m_eTextWrap = GetTextWrap(m_nObjAttr >> 21 & 0x07);
-		m_chTextFlow = (BYTE)(m_nObjAttr >> 24 & 0x03);
-		m_chNumeringType = (BYTE)(m_nObjAttr >> 26 & 0x07);
+		m_chTextFlow = (HWP_BYTE)(m_nObjAttr >> 24 & 0x03);
+		m_chNumeringType = (HWP_BYTE)(m_nObjAttr >> 26 & 0x07);
 
 		oBuffer.ReadInt(m_nVertOffset);
 		oBuffer.ReadInt(m_nHorzOffset);
@@ -130,6 +186,21 @@ namespace HWP
 			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
 
 		m_nSize = oBuffer.GetDistanceToLastPos(true);
+	}
+
+	CCtrlCommon::~CCtrlCommon()
+	{
+		for (CHWPPargraph* pParagraph : m_arParas)
+		{
+			if (0 == pParagraph->Release())
+				pParagraph = nullptr;
+		}
+
+		for (CCapParagraph* pCapParagraph : m_arCaption)
+		{
+			if (0 == pCapParagraph->Release())
+				pCapParagraph = nullptr;
+		}
 	}
 
 	void CCtrlCommon::SetTextVerAlign(EVertAlign eVertAlign)
@@ -157,6 +228,16 @@ namespace HWP
 		return (!m_arParas.empty()) ? m_arParas.back() : nullptr;
 	}
 
+	int CCtrlCommon::GetHorzOffset() const
+	{
+		return m_nHorzOffset;
+	}
+
+	int CCtrlCommon::GetVertOffset() const
+	{
+		return m_nVertOffset;
+	}
+
 	int CCtrlCommon::GetCaptionWidth() const
 	{
 		return m_nCaptionWidth;
@@ -169,7 +250,7 @@ namespace HWP
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	{
-		STRING sCtrlId;
+		HWP_STRING sCtrlId;
 		oBuffer.ReadString(sCtrlId, 4, EStringCharacter::ASCII);
 
 		if (L"nil$" == sCtrlId || L"loc$" == sCtrlId || L"cer$" == sCtrlId || L"lle$" == sCtrlId ||
@@ -178,6 +259,7 @@ namespace HWP
 		    L"tat$" == sCtrlId)
 			return 4;
 
+		oBuffer.Skip(-4);
 		return 0;
 
 		//TODO:: проверить данный метод

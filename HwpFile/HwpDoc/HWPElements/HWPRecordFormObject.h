@@ -8,7 +8,7 @@ namespace HWP
 {
 class CHWPRecordFormObject : public CHWPRecord
 {
-	static STRING m_sFormStr;
+	static HWP_STRING m_sFormStr;
 public:
 	CHWPRecordFormObject(int nTagNum, int nLevel, int nSize);
 

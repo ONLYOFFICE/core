@@ -19,7 +19,7 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	ELineArrowSize m_eLineHeadSz;
 	ELineArrowSize m_eLineTailSz;
 	ELineStyle2 m_eLineStyle;
-	BYTE m_chOutline;
+	HWP_BYTE m_chOutline;
 
 	int m_nFillType;
 	CFill* m_pFill;
@@ -35,8 +35,9 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	friend class CCtrlShapeRect;
 public:
 	CCtrlGeneralShape();
-	CCtrlGeneralShape(const STRING& sCtrlID);
-	CCtrlGeneralShape(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlGeneralShape(const HWP_STRING& sCtrlID);
+	CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape);
+	CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlGeneralShape();
 
 	void SetParent(CHWPPargraph* pParent);

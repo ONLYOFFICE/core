@@ -27,10 +27,14 @@ class CCtrlObjElement : public CCtrlCommon
 	VECTOR<double> m_arMatrixSeq;
 public:
 	CCtrlObjElement();
-	CCtrlObjElement(const STRING& sCtrlID);
-	CCtrlObjElement(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID);
+	CCtrlObjElement(const CCtrlObjElement& oObjElement);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
+
+	int GetCurWidth() const;
+	int GetCurHeight() const;
 
 	static int ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeArc::CCtrlShapeArc()
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const STRING& sCtrlID)
+CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeArc::CCtrlShapeArc(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

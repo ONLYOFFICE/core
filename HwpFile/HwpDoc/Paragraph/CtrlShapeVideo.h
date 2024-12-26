@@ -9,11 +9,12 @@ class CCtrlShapeVideo : public CCtrlGeneralShape
 {
 	int m_nVideoType;
 	short m_shVidoeBinID;
-	STRING m_sWebURL;
-	STRING m_sThumnailBinID;
+	HWP_STRING m_sWebURL;
+	HWP_STRING m_sThumnailBinID;
 public:
-	CCtrlShapeVideo(const STRING& sCtrlID);
-	CCtrlShapeVideo(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeVideo(const HWP_STRING& sCtrlID);
+	CCtrlShapeVideo(const CCtrlGeneralShape& oShape);
+	CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeVideo& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

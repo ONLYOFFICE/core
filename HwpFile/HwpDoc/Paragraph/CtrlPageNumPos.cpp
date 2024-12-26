@@ -24,11 +24,11 @@ ENumPos GetNumPos(int nValue)
 	}
 }
 
-CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID)
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
 
-CCtrlPageNumPos::CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	oBuffer.SavePosition();

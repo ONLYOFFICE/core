@@ -15,7 +15,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.ReadByte(m_arNumbering[nIndex].m_chAlign);
 		m_arNumbering[nIndex].m_bUseInstWidth = CHECK_FLAG(nTypeBits, 0x40);
 		m_arNumbering[nIndex].m_bAutoIndent = CHECK_FLAG(nTypeBits, 0x80);
-		m_arNumbering[nIndex].m_chTextOffsetType = (BYTE)((nTypeBits >> 4) & 0x01);
+		m_arNumbering[nIndex].m_chTextOffsetType = (HWP_BYTE)((nTypeBits >> 4) & 0x01);
 
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shWidthAdjust);
 		oBuffer.ReadShort(m_arNumbering[nIndex].m_shTextOffset);

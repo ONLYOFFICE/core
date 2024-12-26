@@ -22,14 +22,19 @@ CNoteShape* CNoteShape::Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nO
 	CNoteShape* pNoteShape = new CNoteShape();
 
 	if (nullptr == pNoteShape)
+	{
+		oBuffer.Skip(nSize);
 		return nullptr;
+	}
+
+	oBuffer.SavePosition();
 
 	pNoteShape->m_eNumberShape = GetNumberShape2(oBuffer.ReadByte());
 
-	BYTE chAttr;
+	HWP_BYTE chAttr;
 	oBuffer.ReadByte(chAttr);
 
-	pNoteShape->m_chPlacement = (BYTE)(chAttr & 0x03);
+	pNoteShape->m_chPlacement = (HWP_BYTE)(chAttr & 0x03);
 	pNoteShape->m_eNumbering = GetNoteNumbering((chAttr >> 2) & 0x03);
 	pNoteShape->m_bSuperscript = CHECK_FLAG(chAttr >> 4, 0x01);
 	pNoteShape->m_bBeneathText = CHECK_FLAG(chAttr >> 5, 0x01);
@@ -47,6 +52,8 @@ CNoteShape* CNoteShape::Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nO
 	pNoteShape->m_eNoteLineType = GetLineStyle1(oBuffer.ReadByte());
 	oBuffer.ReadByte(pNoteShape->m_chNoteLineWidth);
 	oBuffer.ReadColor(pNoteShape->m_nNoteLineColor);
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return pNoteShape;
 }

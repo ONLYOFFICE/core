@@ -19,11 +19,11 @@ class CCtrlColumnDef : public CCtrl
 	VECTOR<short> m_arColSzWidths;
 	VECTOR<short> m_arColSzGaps;
 	ELineStyle2 m_eColLineStyle;
-	BYTE m_chColLineWidth;
+	HWP_BYTE m_chColLineWidth;
 	int m_nColLineColor;
 public:
-	CCtrlColumnDef(const STRING& sCtrlID);
-	CCtrlColumnDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlColumnDef(const HWP_STRING& sCtrlID);
+	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

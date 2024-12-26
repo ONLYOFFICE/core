@@ -8,8 +8,8 @@ namespace HWP
 {
 class CHwpFileHeader
 {
-	STRING m_sSignature;
-	STRING m_sVersion;
+	HWP_STRING m_sSignature;
+	HWP_STRING m_sVersion;
 	bool m_bCompressed;
 	bool m_bPasswordEncrypted;
 	bool m_bDistributable;
@@ -44,7 +44,7 @@ public:
 	bool SignatureEmpty() const;
 	bool VersionEmpty() const;
 
-	STRING GetVersion() const;
+	HWP_STRING GetVersion() const;
 
 	bool Parse(CHWPStream& oBuffer);
 };

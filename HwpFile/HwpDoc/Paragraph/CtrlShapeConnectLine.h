@@ -32,7 +32,7 @@ class CCtrlShapeConnectLine : public CCtrlGeneralShape
 	TConnectPoint m_oStartPt;
 	TConnectPoint m_oEndPt;
 public:
-	CCtrlShapeConnectLine(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }
 

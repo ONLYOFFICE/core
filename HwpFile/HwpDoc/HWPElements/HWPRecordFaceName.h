@@ -23,13 +23,13 @@ class CHWPRecordFaceName : public CHWPRecord
 	bool m_bAttrExists;
 	bool m_bSubstExists;
 
-	STRING m_sFaceName;
+	HWP_STRING m_sFaceName;
 	EAltType m_eSubstType;
-	STRING m_sSubstFace;
-	STRING m_sBasicFaceName;
+	HWP_STRING m_sSubstFace;
+	HWP_STRING m_sBasicFaceName;
 
-	BYTE m_chFamilyType;
-	BYTE m_chSerifStyle;
+	HWP_BYTE m_chFamilyType;
+	HWP_BYTE m_chSerifStyle;
 	short m_shWeight;
 	short m_shPropotion;
 	short m_shContrast;

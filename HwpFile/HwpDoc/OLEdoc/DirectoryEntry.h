@@ -7,7 +7,7 @@ namespace HWP
 {
 class CDirectoryEntry
 {
-	STRING m_sDirectoryEntryName;
+	HWP_STRING m_sDirectoryEntryName;
 	int m_nObjectType;
 	int m_nColorFlag;
 	int m_nLeftSiblingID;
@@ -24,7 +24,7 @@ class CDirectoryEntry
 public:
 	CDirectoryEntry();
 
-	void SetDirectoryEntryName(const STRING& sDirectoryEntryName);
+	void SetDirectoryEntryName(const HWP_STRING& sDirectoryEntryName);
 	void SetObjectType(int nObjectType);
 	void SetColorFlag(int nColorFlag);
 	void SetLeftSiblingID(int nLeftSiblingID);
@@ -48,7 +48,7 @@ public:
 	VECTOR<int>& GetSecNums();
 
 	int GetObjectType() const;
-	STRING GetDirectoryEntryName() const;
+	HWP_STRING GetDirectoryEntryName() const;
 };
 }
 

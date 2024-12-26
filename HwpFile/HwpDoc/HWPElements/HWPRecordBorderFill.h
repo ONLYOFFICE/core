@@ -11,7 +11,7 @@ namespace HWP
 struct TBorder
 {
 	ELineStyle2 m_eStyle;
-	BYTE m_chWidth;
+	HWP_BYTE m_chWidth;
 	int m_nColor;
 };
 
@@ -55,7 +55,7 @@ enum class EColorFillPattern
 	CROSS_DIAGONAL = 5 // xxxxx
 };
 
-class CFill
+class CFill : public IRef
 {
 	int m_nSize;
 
@@ -75,13 +75,13 @@ class CFill
 	std::vector<int> m_arColors;
 
 	EImageFillType m_eMode;
-	BYTE m_chBright;
-	BYTE m_chContrast;
-	BYTE m_chEffect;
-	STRING m_sBinItemID;
-	BYTE m_chStepCenter;
+	HWP_BYTE m_chBright;
+	HWP_BYTE m_chContrast;
+	HWP_BYTE m_chEffect;
+	HWP_STRING m_sBinItemID;
+	HWP_BYTE m_chStepCenter;
 
-	BYTE m_chAlpha;
+	HWP_BYTE m_chAlpha;
 public:
 	CFill();
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
@@ -99,10 +99,10 @@ class CHWPRecordBorderFill : public CHWPRecord
 
 	bool m_bThreeD;
 	bool m_bShadow;
-	BYTE m_chSlash;
-	BYTE m_chBackSlash;
-	BYTE m_chCrookedSlash;
-	BYTE m_chCrookedBackSlash;
+	HWP_BYTE m_chSlash;
+	HWP_BYTE m_chBackSlash;
+	HWP_BYTE m_chCrookedSlash;
+	HWP_BYTE m_chCrookedBackSlash;
 	bool m_bCounterSlash;
 	bool m_bCounterBackSlash;
 	bool m_bBreakCellSeparateLine;

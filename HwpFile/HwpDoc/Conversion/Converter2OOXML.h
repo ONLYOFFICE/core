@@ -4,12 +4,24 @@
 #include "../HWPFile_Private.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
+#include "HwpDoc/Paragraph/CtrlShapePic.h"
+#include "HwpDoc/Paragraph/ParaText.h"
+#include "HwpDoc/Section/Page.h"
+
 namespace HWP
 {
+struct TConversionState
+{
+	bool m_bOpenedP;
+	bool m_bOpenedR;
+
+	TConversionState();
+};
+
 class CConverter2OOXML
 {
 	CHWPFile_Private *m_pHWPFile;
-	STRING m_sTempDirectory;
+	HWP_STRING m_sTempDirectory;
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
 	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
@@ -23,6 +35,16 @@ class CConverter2OOXML
 	void FillDefaultData();
 	void Close();
 	void Convert();
+
+	bool IsRasterFormat(const HWP_STRING& sFormat);
+
+	void WriteSectionSettings(const CPage* pPage);
+	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);
+	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
+
+	void WriteParaStyle(short shStyleID, short shParaShapeID, short shCharShapeID, const TConversionState& oState);
+
+	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
 public:
 	CConverter2OOXML();
 	~CConverter2OOXML();
@@ -30,8 +52,8 @@ public:
 	void Clear();
 
 	void SetHWPFile(CHWPFile_Private* pHWPFile);
-	void SetTempDirectory(const STRING& sTempDirectory);
-	bool ConvertTo(const STRING& sFilePath);
+	void SetTempDirectory(const HWP_STRING& sTempDirectory);
+	bool ConvertTo(const HWP_STRING& sFilePath);
 };
 }
 

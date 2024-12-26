@@ -7,16 +7,16 @@ namespace HWP
 {
 class CCtrl
 {
-	STRING m_sCtrlID;
+	HWP_STRING m_sCtrlID;
 protected:
 	bool m_bFullFilled;
 public:
 	CCtrl();
-	CCtrl(const STRING& sCtrlID);
+	CCtrl(const HWP_STRING& sCtrlID);
 	virtual ~CCtrl();
 
-	void SetID(const STRING& sCtrlID);
-	STRING GetID() const;
+	void SetID(const HWP_STRING& sCtrlID);
+	HWP_STRING GetID() const;
 	bool FullFilled() const;
 
 	void SetFullFilled();

@@ -1,4 +1,6 @@
 #include "HWPRecordIDMaping.h"
+#include "../HWPFile_Private.h"
+#include "../OLEdoc/CompoundFile.h"
 
 namespace HWP
 {
@@ -16,7 +18,7 @@ EIndex GetIndex(int nValue)
 		case EIndex::FACENAME_SYMBOL:
 		case EIndex::FACENAME_USER:
 		case EIndex::BORDER_FILL:
-		case EIndex::CHAR_SHAPE:
+		case EIndex::HWP_CHAR_SHAPE:
 		case EIndex::TAB_DEF:
 		case EIndex::NUMBERING:
 		case EIndex::BULLET:
@@ -43,6 +45,18 @@ CHWPRecordIDMaping::CHWPRecordIDMaping(CHWPDocInfo& oDocInfo, int nTagNum, int n
 
 		m_arCounts[nIndex] = nCount;
 
+		switch (GetIndex(nIndex))
+		{
+			case EIndex::BIN_DATA:
+			{
+				// TODO:: проверить
+				if (nullptr != m_pParent && m_pParent->GetParentHWP()->GetBinData().empty())
+					m_pParent->GetParentHWP()->SetBinData(m_pParent->GetParentHWP()->GetOleFile()->GetChildEntries(L"BinData"));
+
+				break;
+			}
+			default: break;
+		}
 	}
 }
 }

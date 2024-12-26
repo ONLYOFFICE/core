@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeOle::CCtrlShapeOle()
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const STRING& sCtrlID)
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeOle::CCtrlShapeOle(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

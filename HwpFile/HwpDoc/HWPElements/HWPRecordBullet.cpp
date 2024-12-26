@@ -10,10 +10,10 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	int nTypeBits;
 	oBuffer.ReadInt(nTypeBits);
 
-	m_oHeaderInfo.m_chAlign = (BYTE)((nTypeBits) & 0x03);
+	m_oHeaderInfo.m_chAlign = (HWP_BYTE)((nTypeBits) & 0x03);
 	m_oHeaderInfo.m_bUseInstWidth = CHECK_FLAG(nTypeBits, 0x40);
 	m_oHeaderInfo.m_bAutoIndent = CHECK_FLAG(nTypeBits, 0x80);
-	m_oHeaderInfo.m_chTextOffsetType = (BYTE)((nTypeBits >> 4) & 0x01);
+	m_oHeaderInfo.m_chTextOffsetType = (HWP_BYTE)((nTypeBits >> 4) & 0x01);
 
 	oBuffer.ReadShort(m_oHeaderInfo.m_shWidthAdjust);
 	oBuffer.ReadShort(m_oHeaderInfo.m_shTextOffset);
@@ -38,7 +38,7 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 		short shValue;
 		oBuffer.ReadShort(shValue);
 
-		m_sBinItemRefID = TO_STRING(shValue);
+		m_sBinItemRefID = TO_HWP_STRING(shValue);
 	}
 }
 }

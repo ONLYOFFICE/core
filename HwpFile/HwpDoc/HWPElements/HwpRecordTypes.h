@@ -152,7 +152,7 @@ enum class ENumberShape2
 	DECAGON_CIRCLE,
 	DECAGON_CRICLE_HANGJA,
 	SYMBOL = 0x80,
-	USER_CHAR = 0x81
+	USER_HWP_CHAR = 0x81
 };
 
 inline ENumberShape2 GetNumberShape2(int nValue)
@@ -177,7 +177,7 @@ inline ENumberShape2 GetNumberShape2(int nValue)
 		case ENumberShape2::DECAGON_CIRCLE:
 		case ENumberShape2::DECAGON_CRICLE_HANGJA:
 		case ENumberShape2::SYMBOL:
-		case ENumberShape2::USER_CHAR:
+		case ENumberShape2::USER_HWP_CHAR:
 			return static_cast<ENumberShape2>(nValue);
 		default:
 			return ENumberShape2::DIGIT;

@@ -16,10 +16,10 @@ class CHWPRecordBullet : public CHWPRecord
 	wchar_t m_wchBulletChar;
 	int m_nBulletImage;
 
-	BYTE m_chBright;
-	BYTE m_chContrast;
-	BYTE m_chImageEffect;
-	STRING m_sBinItemRefID;
+	HWP_BYTE m_chBright;
+	HWP_BYTE m_chContrast;
+	HWP_BYTE m_chImageEffect;
+	HWP_STRING m_sBinItemRefID;
 	wchar_t m_wchCheckBulletChar;
 public:
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

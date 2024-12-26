@@ -22,9 +22,9 @@ class CCtrlSectionDef : public CCtrl
 	bool m_bHidePageNumPos;
 	bool m_bShowFirstBorder;
 	bool m_bShowFirstFill;
-	BYTE m_chTextDirection;
+	HWP_BYTE m_chTextDirection;
 	bool m_bHideEmptyLine;
-	BYTE m_chPageStartOn;
+	HWP_BYTE m_chPageStartOn;
 
 	short m_shSpaceColumns;
 	short m_shLineGrid;
@@ -45,8 +45,8 @@ class CCtrlSectionDef : public CCtrl
 	VECTOR<CHWPPargraph*> m_arParas;
 
 public:
-	CCtrlSectionDef(const STRING& sCtrlID);
-	CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlSectionDef(const HWP_STRING& sCtrlID);
+	CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlSectionDef();
 
 	void SetPage(CPage* pPage);
@@ -57,6 +57,8 @@ public:
 	void AddPageBorderFill(CPageBorderFill* pPageBorderFill);
 
 	int GetSize() override;
+
+	const CPage* GetPage() const;
 };
 }
 

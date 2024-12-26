@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeTextArt::CCtrlShapeTextArt()
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const STRING& sCtrlID)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

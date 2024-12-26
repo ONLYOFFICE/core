@@ -13,6 +13,7 @@ class CHWPRecord
 public:
 	CHWPRecord(int nTagNum, int nLevel, int nSize);
 	CHWPRecord(EHWPTag eTag, int nLevel, int nSize);
+	virtual ~CHWPRecord();
 };
 }
 

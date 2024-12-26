@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeEllipse::CCtrlShapeEllipse()
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -67,7 +71,7 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
-		STRING sFieldName;
+		HWP_STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());

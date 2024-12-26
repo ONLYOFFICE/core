@@ -1,23 +1,16 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
-#include "../HWPElements/HWPRecordBorderFill.h"
-
-#include "Types.h"
-
 namespace HWP
 {
-class CTransform
+namespace Transform
 {
-public:
-	CTransform();
-
-	static int TranslateHWP2Office(int nHWPValue)
+	inline int TranslateHWP2OOXML(int nValue)
 	{
-		return (int)(nHWPValue * ((double)21000 / 59529));
+		return (int)((double)nValue * 127.); // 7200. * 914400 = 127
 	}
 
-	static short ToLineWidth(short shHWPThick)
+	short ToLineWidth(short shHWPThick)
 	{
 		switch(shHWPThick)
 		{
@@ -57,7 +50,7 @@ public:
 				return 0;
 		}
 	}
-};
+}
 }
 
 #endif // TRANSFORM_H

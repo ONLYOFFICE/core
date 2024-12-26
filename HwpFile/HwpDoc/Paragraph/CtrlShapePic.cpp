@@ -118,11 +118,15 @@ CCtrlShapePic::CCtrlShapePic()
 	: CCtrlGeneralShape()
 {}
 
-CCtrlShapePic::CCtrlShapePic(const STRING& sCtrlID)
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapePic::CCtrlShapePic(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapePic::CCtrlShapePic(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -133,6 +137,21 @@ CCtrlShapePic::~CCtrlShapePic()
 		if (nullptr != pEffect)
 			delete pEffect;
 	}
+}
+
+HWP_STRING CCtrlShapePic::GetBinDataID() const
+{
+	return m_sBinDataID;
+}
+
+int CCtrlShapePic::GetPicWidth() const
+{
+	return m_nIniPicWidth;
+}
+
+int CCtrlShapePic::GetPicHeight() const
+{
+	return m_nIniPicHeight;
 }
 
 int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -163,7 +182,7 @@ int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuf
 
 	short shBinItemID;
 	oBuffer.ReadShort(shBinItemID);
-	oObj.m_sBinDataID = std::to_wstring(shBinItemID - 1);
+	oObj.m_sBinDataID = std::to_wstring(shBinItemID);
 
 	oBuffer.ReadByte(oObj.m_chBorderAlpha);
 

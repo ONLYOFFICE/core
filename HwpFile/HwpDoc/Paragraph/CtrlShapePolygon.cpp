@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapePolygon::CCtrlShapePolygon()
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID)
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapePolygon::CCtrlShapePolygon(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -60,7 +64,7 @@ int CCtrlShapePolygon::ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize,
 	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
-		STRING sFieldName;
+		HWP_STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());

@@ -25,7 +25,7 @@ class CHWPDocInfo
 	CHWPFile_Private  *m_pParentHWP;
 	VECTOR<CHWPRecord*> m_arRecords;
 
-	std::map<STRING, CHWPRecord*> m_mBinDatas;
+	std::map<HWP_STRING, CHWPRecord*> m_mBinDatas;
 	VECTOR<CHWPRecord*> m_arFaseNames;
 	VECTOR<CHWPRecord*> m_arBorderFills;
 	VECTOR<CHWPRecord*> m_arCharShapes;
@@ -56,6 +56,9 @@ public:
 	const CHWPRecord* GetTabDef(int nIndex) const;
 
 	CHWPFile_Private* GetParentHWP();
+
+	const CHWPRecord* GetBinData(const HWP_STRING& sID) const;
+	EHanType GetHanType() const;
 };
 }
 

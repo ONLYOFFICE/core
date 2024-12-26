@@ -32,20 +32,20 @@ class CCompoundFile
 	VECTOR<int> m_arSStreams;
 	VECTOR<CDirectoryEntry*> m_arDirectoryEntries;
 public:
-	CCompoundFile(const STRING& sFileName);
+	CCompoundFile(const HWP_STRING& sFileName);
 	~CCompoundFile();
 
-	const CDirectoryEntry* GetEntry(const STRING& sFileName) const;
-	bool GetComponent(const STRING& sEntryName, CHWPStream& oBuffer);
+	const CDirectoryEntry* GetEntry(const HWP_STRING& sFileName) const;
+	bool GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer);
 
-	VECTOR<CDirectoryEntry*> GetChildEntries(const CDirectoryEntry* pBaseEntry);
-	VECTOR<CDirectoryEntry*> GetChildEntries(const STRING& sBaseEntryName);
+	VECTOR<CDirectoryEntry*> GetChildEntries(const CDirectoryEntry* pBaseEntry) const;
+	VECTOR<CDirectoryEntry*> GetChildEntries(const HWP_STRING& sBaseEntryName) const;
 
 	bool Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer);
 	bool Open();
 	void Close();
 private:
-	void AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex);
+	void AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex) const;
 
 	VECTOR<int> GetSecIDsFromSAT(int nSecID, int nSatIndex, int nSecIDSSAT);
 

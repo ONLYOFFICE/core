@@ -46,8 +46,8 @@ class CCtrlAutoNumber : public CCtrl
 	ENumberShape2 m_eNumShape;
 	bool m_bSuperscript;
 public:
-	CCtrlAutoNumber(const STRING& sCtrlID);
-	CCtrlAutoNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlAutoNumber(const HWP_STRING& sCtrlID);
+	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

@@ -11,38 +11,50 @@ enum class ECompressed
 {
 	FOLLOW_STORAGE = 0x00,
 	COMPRESS = 0x10,
-	NO_COMPRESS = 0x20
+	NO_COMPRESS = 0x20,
+	UNKNOWN
+};
+
+enum class EType
+{
+	LINK = 0x0,
+	EMBEDDING = 0x1,
+	STORAGE = 0x2,
+	UNKNOWN
+};
+
+enum class EState
+{
+	NEVER_ACCESSED = 0x000,
+	FOUND_FILE_BY_ACCESS = 0x100,
+	ACCESS_FAILED = 0x200,
+	LINK_ACCESS_IGNORED = 0x400,
+	UNKNOWN
 };
 
 class CHWPRecordBinData : public CHWPRecord
 {
-	enum class EType
-	{
-		LINK = 0x0,
-		EMBEDDING = 0x1,
-		STORAGE = 0x2
-	} m_eType;
-
+	EType m_eType;
 	ECompressed m_eCompressed;
+	EState m_eState;
 
-	enum class EState
-	{
-		NEVER_ACCESSED = 0x000,
-		FOUND_FILE_BY_ACCESS = 0x100,
-		ACCESS_FAILED = 0x200,
-		LINK_ACCESS_IGNORED = 0x400
-	} m_eState;
-
-
-	STRING m_sAPath;
+	HWP_STRING m_sAPath;
+	HWP_STRING m_sRPath;
 	short m_shBinDataID;
-	STRING m_sFormat;
+	HWP_STRING m_sFormat;
 
-	STRING m_sItemID;
+	HWP_STRING m_sItemID;
 public:
 	CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	STRING GetItemID() const;
+	HWP_STRING GetPath() const;
+	HWP_STRING GetItemID() const;
+	HWP_STRING GetFormat() const;
+
+	EType GetType() const;
+	ECompressed GetCompressed() const;
+
+	short GetBinDataID() const;
 };
 }
 

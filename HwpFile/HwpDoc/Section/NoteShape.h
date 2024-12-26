@@ -29,7 +29,7 @@ enum class ENotePlacement
 class CNoteShape
 {
 	ENumberShape2 m_eNumberShape;
-	BYTE m_chPlacement;
+	HWP_BYTE m_chPlacement;
 	ENoteNumbering m_eNumbering;
 	bool m_bSuperscript;
 	bool m_bBeneathText;
@@ -42,7 +42,7 @@ class CNoteShape
 	short m_shSpacingBelowLine;
 	short m_shSpacingBetweenNotes;
 	ELineStyle1 m_eNoteLineType;
-	BYTE m_chNoteLineWidth;
+	HWP_BYTE m_chNoteLineWidth;
 	int m_nNoteLineColor;
 public:
 	CNoteShape();

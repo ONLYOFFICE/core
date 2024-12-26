@@ -12,8 +12,8 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel,
 	oBuffer.ReadString(m_sName, EStringCharacter::UTF16);
 	oBuffer.ReadString(m_sEngName, EStringCharacter::UTF16);
 
-	m_chType = (BYTE)(oBuffer.ReadByte() & 0x00FF);
-	m_chNextStyle = (BYTE)(oBuffer.ReadByte() & 0x00FF);
+	m_chType = (HWP_BYTE)(oBuffer.ReadByte() & 0x00FF);
+	m_chNextStyle = (HWP_BYTE)(oBuffer.ReadByte() & 0x00FF);
 
 	oBuffer.ReadShort(m_shLangID);
 	m_nParaShape = oBuffer.ReadShort();

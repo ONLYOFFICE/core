@@ -18,8 +18,8 @@ class CCtrlCharacter : public CCtrl
 	ECtrlCharType m_eCtrlChar;
 	int m_nCharShapeID;
 public:
-	CCtrlCharacter(const STRING& sCtrlID, ECtrlCharType eCtrlChar);
-	CCtrlCharacter(const STRING& sCtrlID, ECtrlCharType eCtrlChar, int nCharShapeID);
+	CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar);
+	CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar, int nCharShapeID);
 
 	int GetSize() override;
 	ECtrlCharType GetType() const;

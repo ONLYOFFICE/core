@@ -10,7 +10,7 @@ namespace HWP
 {
 class CHWPFile_Private
 {
-	STRING    m_sFileName;
+	HWP_STRING    m_sFileName;
 	CCompoundFile  m_oOleFile;
 	CHwpFileHeader m_oFileHeader;
 	int m_nVersion;
@@ -18,7 +18,7 @@ class CHWPFile_Private
 	VECTOR<CHWPSection*> m_arBodyTexts;
 	VECTOR<CHWPSection*> m_arViewTexts;
 public:
-	CHWPFile_Private(const STRING& sFileName);
+	CHWPFile_Private(const HWP_STRING& sFileName);
 	~CHWPFile_Private();
 
 	VECTOR<CHWPSection*> GetSections();
@@ -33,16 +33,16 @@ public:
 	bool GetFileHeader();
 	const CHWPDocInfo* GetDocInfo() const;
 	bool GetDocInfo(int nVersion);
-	bool GetComponent(const STRING& sEntryName, CHWPStream& oBuffer);
+	bool GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer);
 	VECTOR<CDirectoryEntry*> GetBinData();
 	void SetBinData(const VECTOR<CDirectoryEntry*>& arBinData);
 	VECTOR<CHWPPargraph*> GetParas();
 	void AddParas(const VECTOR<CHWPPargraph*>& arParas);
+	bool GetChildStream(const HWP_STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer);
 private:
-	void SaveChildEntries(const STRING& sBasePath, const STRING& sStorageName, ECompressed eCompressed);
-	CDirectoryEntry* FindChildEntry(const STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const STRING& sEntryName);
-	STRING SaveChildEntry(const STRING& sRootPath, const STRING& sEntryName, ECompressed eCompressed);
-	bool GetChildStream(const STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer);
+	void SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed);
+	CDirectoryEntry* FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const;
+	HWP_STRING SaveChildEntry(const HWP_STRING& sRootPath, const HWP_STRING& sEntryName, ECompressed eCompressed);
 
 	bool Unzip(CHWPStream& oInput, CHWPStream& oBuffer);
 	bool Decrypt(CHWPStream& oInput, CHWPStream& oBuffer);

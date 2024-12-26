@@ -5,7 +5,7 @@ namespace HWP
 HWP::CDirectoryEntry::CDirectoryEntry()
 {}
 
-void CDirectoryEntry::SetDirectoryEntryName(const STRING& sDirectoryEntryName)
+void CDirectoryEntry::SetDirectoryEntryName(const HWP_STRING& sDirectoryEntryName)
 {
 	m_sDirectoryEntryName = sDirectoryEntryName;
 }
@@ -70,7 +70,7 @@ void CDirectoryEntry::SetStreamSize(const long long& lStreamSize)
 	m_lStreamSize = lStreamSize;
 }
 
-STRING CDirectoryEntry::GetDirectoryEntryName() const
+HWP_STRING CDirectoryEntry::GetDirectoryEntryName() const
 {
 	return m_sDirectoryEntryName;
 }

@@ -7,19 +7,20 @@ namespace HWP
 {
 class CParaText : public CCtrl
 {
-	STRING m_sText;
+	HWP_STRING m_sText;
 	int m_nStartIDx;
 	int m_nCharShapeID;
 public:
-	CParaText(const STRING& sCtrlID, const STRING& sText, int nStartIDx);
-	CParaText(const STRING& sCtrlID, const STRING& sText, int nStartIDx, int nCharShapeID);
+	CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx);
+	CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx, int nCharShapeID);
 
 	int GetSize() override;
 	int GetStartIDx() const;
-	STRING GetText() const;
+	int GetCharShapeID() const;
+	HWP_STRING GetText() const;
 
 	void SetCharShapeID(int nCharShapeID);
-	void SetText(const STRING& sText);
+	void SetText(const HWP_STRING& sText);
 };
 }
 

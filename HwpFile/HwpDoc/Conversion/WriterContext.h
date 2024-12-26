@@ -24,9 +24,9 @@ public:
 	~CWriterContext();
 
 	VECTOR<CHWPSection*> GetSections();
-	STRING DetectHancom(const STRING& sPathToFile);
+	HWP_STRING DetectHancom(const HWP_STRING& sPathToFile);
 	bool Detect();
-	bool Open(const STRING& sPathToFile, const STRING& sHanType);
+	bool Open(const HWP_STRING& sPathToFile, const HWP_STRING& sHanType);
 	void Close();
 
 	const CHWPDocInfo* GetDocInfo();
@@ -38,9 +38,9 @@ public:
 	const CHWPRecordBullet* GetBullet(short shId);
 	const CHwpRecordTabDef* GetTabDef(short shId);
 
-	STRING GetBinFilename(const STRING& sId);
-	bool GetBinBytes(const STRING& sId, CHWPStream& oBuffer);
-	STRING GetBinFormat(const STRING& sId);
+	HWP_STRING GetBinFilename(const HWP_STRING& sId);
+	bool GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer);
+	HWP_STRING GetBinFormat(const HWP_STRING& sId);
 };
 }
 

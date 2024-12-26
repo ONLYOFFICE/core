@@ -47,7 +47,10 @@ VECTOR<CCharShape*> CCharShape::Parse(int nTagNum, int nLevel, int nSize, CHWPSt
 int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, std::vector<CCtrl*>& arParas)
 {
 	if (arParas.empty())
+	{
+		oBuffer.Skip(nSize);
 		return 0;
+	}
 
 	oBuffer.SavePosition();
 
@@ -84,8 +87,8 @@ int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oB
 					// split
 					int nLenToSplit = pCharShape->m_nStart - pParaText->GetStartIDx();
 
-					STRING sSplitLeftText = pParaText->GetText().substr(0, nLenToSplit);
-					STRING sSplitRightText = pParaText->GetText().substr(nLenToSplit);
+					HWP_STRING sSplitLeftText = pParaText->GetText().substr(0, nLenToSplit);
+					HWP_STRING sSplitRightText = pParaText->GetText().substr(nLenToSplit);
 
 					pParaText->SetText(sSplitLeftText);
 

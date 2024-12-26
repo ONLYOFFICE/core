@@ -37,10 +37,10 @@ class CHWPRecordParaShape : public CHWPRecord
 	CHWPDocInfo *m_pParent;
 
 	EHorizontalAlign m_eAlign;
-	BYTE m_chBreakLatinWord;
-	BYTE m_chBreakNonLatinWord;
+	HWP_BYTE m_chBreakLatinWord;
+	HWP_BYTE m_chBreakNonLatinWord;
 	bool m_bSnapToGrid;
-	BYTE m_chCondense;
+	HWP_BYTE m_chCondense;
 	bool m_bWidowOrphan;
 	bool m_bKeepWithNext;
 	bool m_bPageBreakBefore;
@@ -48,7 +48,7 @@ class CHWPRecordParaShape : public CHWPRecord
 	bool m_bFontLineHeight;
 	EHeadingType m_eHeadingType;
 
-	BYTE m_chHeadingLevel;
+	HWP_BYTE m_chHeadingLevel;
 	bool m_bConnect;
 	bool m_bIgnoreMargin;
 	bool m_bParaTailShape;
@@ -68,7 +68,7 @@ class CHWPRecordParaShape : public CHWPRecord
 	short m_shOffsetTop;
 	short m_shOffsetBottom;
 
-	BYTE m_chLineWrap;
+	HWP_BYTE m_chLineWrap;
 	bool m_bAutoSpaceEAsianEng;
 	bool m_bAutoSpaceEAsianNum;
 

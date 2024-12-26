@@ -3,11 +3,11 @@
 namespace HWP
 {
 
-CCtrlAutoNumber::CCtrlAutoNumber(const STRING& sCtrlID)
+CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
 
-CCtrlAutoNumber::CCtrlAutoNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	int nAttr;

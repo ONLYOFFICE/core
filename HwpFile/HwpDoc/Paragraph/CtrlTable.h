@@ -30,8 +30,8 @@ class CCtrlTable : public CCtrlCommon
 	std::list<TCellZone*> m_arCellzoneList;
 	std::list<CTblCell*> m_arCells;
 public:
-	CCtrlTable(const STRING& sCtrlID);
-	CCtrlTable(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlTable(const HWP_STRING& sCtrlID);
+	CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlTable();
 
 	void AddCell(CTblCell* pCell);

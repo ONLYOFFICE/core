@@ -32,9 +32,9 @@ VECTOR<CHWPSection*> CWriterContext::GetSections()
 	return VECTOR<CHWPSection*>();
 }
 
-STRING CWriterContext::DetectHancom(const STRING& sPathToFile)
+HWP_STRING CWriterContext::DetectHancom(const HWP_STRING& sPathToFile)
 {
-	STRING sDetectingType;
+	HWP_STRING sDetectingType;
 
 	CHWPFile_Private* pHwpTemp = new CHWPFile_Private(sPathToFile);
 	if (nullptr != pHwpTemp)
@@ -73,7 +73,7 @@ bool CWriterContext::Detect()
 	}
 }
 
-bool CWriterContext::Open(const STRING& sPathToFile, const STRING& sHanType)
+bool CWriterContext::Open(const HWP_STRING& sPathToFile, const HWP_STRING& sHanType)
 {
 	if (L"HWP" == sHanType)
 	{
@@ -192,21 +192,21 @@ const CHwpRecordTabDef* CWriterContext::GetTabDef(short shId)
 	return (CHwpRecordTabDef*)pDocInfo->GetTabDef(shId);
 }
 
-STRING CWriterContext::GetBinFilename(const STRING& sId)
+HWP_STRING CWriterContext::GetBinFilename(const HWP_STRING& sId)
 {
 	//TODO::реализовать
-	return STRING();
+	return HWP_STRING();
 }
 
-bool CWriterContext::GetBinBytes(const STRING& sId, CHWPStream& oBuffer)
+bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer)
 {
 	//TODO::реализовать
 	return false;
 }
 
-STRING CWriterContext::GetBinFormat(const STRING& sId)
+HWP_STRING CWriterContext::GetBinFormat(const HWP_STRING& sId)
 {
 	//TODO::реализовать
-	return STRING();
+	return HWP_STRING();
 }
 }

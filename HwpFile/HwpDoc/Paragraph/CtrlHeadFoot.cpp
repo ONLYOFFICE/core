@@ -12,11 +12,11 @@ EPageRange GetPageRange(int nValue)
 	}
 }
 
-CCtrlHeadFoot::CCtrlHeadFoot(const STRING& sCtrlID)
+CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
 
-CCtrlHeadFoot::CCtrlHeadFoot(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader)
+CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader)
 	: CCtrl(sCtrlID), m_bIsHeader(bIsHeader)
 {
 	oBuffer.SavePosition();

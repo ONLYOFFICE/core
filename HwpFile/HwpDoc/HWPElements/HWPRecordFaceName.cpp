@@ -17,7 +17,7 @@ EAltType GetAltType(int nValue)
 CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
-	BYTE chDataBits;
+	HWP_BYTE chDataBits;
 	oBuffer.ReadByte(chDataBits);
 
 	m_bBasicFaceExists = CHECK_FLAG(chDataBits, 0x20);

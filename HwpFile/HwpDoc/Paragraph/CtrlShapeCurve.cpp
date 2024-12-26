@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeCurve::CCtrlShapeCurve()
 {}
 
-CCtrlShapeCurve::CCtrlShapeCurve(const STRING& sCtrlID)
+CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeCurve::CCtrlShapeCurve(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeCurve::CCtrlShapeCurve(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

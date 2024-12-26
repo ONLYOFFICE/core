@@ -2,11 +2,11 @@
 
 namespace HWP
 {
-CCtrlTable::CCtrlTable(const STRING& sCtrlID)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
 {}
 
-CCtrlTable::CCtrlTable(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

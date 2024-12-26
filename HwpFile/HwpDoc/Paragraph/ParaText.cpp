@@ -2,11 +2,11 @@
 
 namespace HWP
 {
-CParaText::CParaText(const STRING& sCtrlID, const STRING& sText, int nStartIDx)
+CParaText::CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx)
 	: CCtrl(sCtrlID), m_sText(sText), m_nStartIDx(nStartIDx)
 {}
 
-CParaText::CParaText(const STRING& sCtrlID, const STRING& sText, int nStartIDx, int nCharShapeID)
+CParaText::CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx, int nCharShapeID)
 	: CCtrl(sCtrlID), m_sText(sText), m_nStartIDx(nStartIDx), m_nCharShapeID(nCharShapeID)
 {}
 
@@ -20,7 +20,12 @@ int CParaText::GetStartIDx() const
 	return m_nStartIDx;
 }
 
-STRING CParaText::GetText() const
+int CParaText::GetCharShapeID() const
+{
+	return m_nCharShapeID;
+}
+
+HWP_STRING CParaText::GetText() const
 {
 	return m_sText;
 }
@@ -30,7 +35,7 @@ void CParaText::SetCharShapeID(int nCharShapeID)
 	m_nCharShapeID = nCharShapeID;
 }
 
-void CParaText::SetText(const STRING& sText)
+void CParaText::SetText(const HWP_STRING& sText)
 {
 	m_sText = sText;
 }

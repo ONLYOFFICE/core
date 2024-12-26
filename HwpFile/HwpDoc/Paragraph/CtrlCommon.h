@@ -107,8 +107,8 @@ class CCtrlCommon : public CCtrl
 	EWidthRelTo m_eWidthRelto;
 	EHeightRelTo m_eHeightRelto;
 	ETextWrap m_eTextWrap;
-	BYTE m_chTextFlow;
-	BYTE m_chNumeringType;
+	HWP_BYTE m_chTextFlow;
+	HWP_BYTE m_chNumeringType;
 
 	int m_nVertOffset;
 	int m_nHorzOffset;
@@ -118,14 +118,14 @@ class CCtrlCommon : public CCtrl
 	short m_arOutMargin[4];
 	int m_nObjInstanceID;
 	int m_nBlockPageBreak;
-	STRING m_sObjDesc;
+	HWP_STRING m_sObjDesc;
 
 	VECTOR<CHWPPargraph*> m_arParas;
 	int m_nCaptionAttr;
 	int m_nCaptionWidth;
 	int m_nCaptionSpacing;
 	int m_nCaptionMaxW;
-	std::list<CCapParagraph*> m_arCaption;
+	VECTOR<CCapParagraph*> m_arCaption;
 
 	EVertAlign m_eTextVerAlign;
 
@@ -135,8 +135,10 @@ class CCtrlCommon : public CCtrl
 	friend class CCtrlTable;
 public:
 	CCtrlCommon();
-	CCtrlCommon(const STRING& sCtrlID);
-	CCtrlCommon(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID);
+	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
+	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	virtual ~CCtrlCommon();
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
 
@@ -147,6 +149,8 @@ public:
 
 	CHWPPargraph* GetLastPara();
 
+	int GetHorzOffset() const;
+	int GetVertOffset() const;
 	int GetCaptionWidth() const;
 	bool CaptionsEmpty() const;
 

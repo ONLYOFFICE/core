@@ -44,17 +44,17 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.ReadInt(nTypeBits);
 
 	m_eAlign = GetHorizontalAlign((nTypeBits >> 2) & 0x07);
-	m_chBreakLatinWord = (BYTE)((nTypeBits >> 5) & 0x03);
-	m_chBreakNonLatinWord = (BYTE)((nTypeBits >> 7) & 0x01);
+	m_chBreakLatinWord = (HWP_BYTE)((nTypeBits >> 5) & 0x03);
+	m_chBreakNonLatinWord = (HWP_BYTE)((nTypeBits >> 7) & 0x01);
 	m_bSnapToGrid = CHECK_FLAG(nTypeBits, 0x80);
-	m_chCondense = (BYTE)((nTypeBits >> 9) & 0x7F);
+	m_chCondense = (HWP_BYTE)((nTypeBits >> 9) & 0x7F);
 	m_bWidowOrphan = CHECK_FLAG(nTypeBits, 0x10000);
 	m_bKeepWithNext = CHECK_FLAG(nTypeBits, 0x20000);
 	m_bPageBreakBefore = CHECK_FLAG(nTypeBits, 0x40000);
 	m_eVertAlign = GetVerticalAlign((nTypeBits >> 20) & 0x03);
 	m_bFontLineHeight = CHECK_FLAG(nTypeBits, 0x100000);
 	m_eHeadingType = GetHeadingType((nTypeBits >> 23) & 0x03);
-	m_chHeadingLevel = (BYTE)((nTypeBits >> 25) & 0x07);
+	m_chHeadingLevel = (HWP_BYTE)((nTypeBits >> 25) & 0x07);
 	m_bConnect = CHECK_FLAG(nTypeBits, 0x800000);
 	m_bIgnoreMargin = CHECK_FLAG(nTypeBits, 0x1000000);
 	m_bParaTailShape = CHECK_FLAG(nTypeBits, 0x2000000);
@@ -67,7 +67,7 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 
 	if (nVersion < 5025)
 	{
-		m_nLineSpacingType = (BYTE)(nTypeBits & 0x03);
+		m_nLineSpacingType = (HWP_BYTE)(nTypeBits & 0x03);
 		oBuffer.ReadInt(m_nLineSpacing);
 	}
 	else
@@ -86,7 +86,7 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		int nAttrBits;
 		oBuffer.ReadInt(nAttrBits);
 
-		m_chLineWrap = (BYTE)(nAttrBits & 0x03);
+		m_chLineWrap = (HWP_BYTE)(nAttrBits & 0x03);
 		m_bAutoSpaceEAsianEng = CHECK_FLAG(nAttrBits, 0x10);
 		m_bAutoSpaceEAsianNum = CHECK_FLAG(nAttrBits, 0x20);
 	}

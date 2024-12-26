@@ -3,10 +3,26 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
+
+#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
 
 #include "../Paragraph/CtrlCharacter.h"
 #include "../Paragraph/ParaText.h"
+#include "../Paragraph/CtrlSectionDef.h"
+
+#include "../HWPElements/HWPRecordBinData.h"
+#include "../HWPElements/HWPRecordStyle.h"
+#include "../HWPElements/HWPRecordParaShape.h"
+#include "../HWPElements/HWPRecordCharShape.h"
+
+#include "Transform.h"
+
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #define DEFAULT_FONT_FAMILY std::wstring(L"Arial")
 #define DEFAULT_FONT_SIZE 18
@@ -39,7 +55,7 @@ void CConverter2OOXML::SetHWPFile(CHWPFile_Private* pHWPFile)
 	m_pHWPFile = pHWPFile;
 }
 
-void CConverter2OOXML::SetTempDirectory(const STRING& sTempDirectory)
+void CConverter2OOXML::SetTempDirectory(const HWP_STRING& sTempDirectory)
 {
 	m_sTempDirectory = sTempDirectory;
 }
@@ -194,12 +210,7 @@ void CConverter2OOXML::Close()
 		oRelsWriter.CloseFile();
 	}
 
-	m_oDocXml.WriteString(L"<w:sectPr w:rsidR=\"0007083F\" w:rsidRPr=\"0007083F\" w:rsidSect=\"0007612E\">");
-	m_oDocXml.WriteString(L"<w:pgSz w:w=\"11906\" w:h=\"16838\"/>");
-	m_oDocXml.WriteString(L"<w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\"/>");
-	m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
-	m_oDocXml.WriteString(L"<w:docGrid w:linePitch=\"360\"/>");
-	m_oDocXml.WriteString(L"</w:sectPr></w:body></w:document>");
+	m_oDocXml.WriteString(L"</w:body></w:document>");
 
 	NSFile::CFileBinary oDocumentWriter;
 	if (oDocumentWriter.CreateFileW(m_sTempDirectory + L"/word/document.xml"))
@@ -249,11 +260,15 @@ void CConverter2OOXML::Close()
 
 void CConverter2OOXML::Convert()
 {
+	TConversionState oState;
+
 	for (const CHWPSection* pSection : m_pHWPFile->GetSections())
 	{
+		const bool bIsLastSection = pSection == m_pHWPFile->GetSections().back();
+		const CCtrlSectionDef *pCtrlSectionDef = nullptr;
+
 		for (const CHWPPargraph *pPara : pSection->GetParagraphs())
 		{
-			bool bOpenP = false;
 			bool bLineBreak = false;
 
 			for (const CCtrl* pCtrl : pPara->GetCtrls())
@@ -262,11 +277,13 @@ void CConverter2OOXML::Convert()
 				{
 					const std::wstring wsText = ((const CParaText*)pCtrl)->GetText();
 
-					if (!bOpenP)
+					if (!oState.m_bOpenedP)
 					{
-						bOpenP = true;
 						m_oDocXml += L"<w:p>";
+						oState.m_bOpenedP = true;
 					}
+
+					WriteParaStyle(pPara->GetStyleID(), pPara->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oState);
 
 					m_oDocXml += L"<w:r>";
 
@@ -280,7 +297,7 @@ void CConverter2OOXML::Convert()
 					m_oDocXml.WriteEncodeXmlString(wsText);
 					m_oDocXml += L"</w:t></w:r>";
 				}
-				else if (nullptr !=  dynamic_cast<const CCtrlCharacter*>(pCtrl))
+				else if (nullptr != dynamic_cast<const CCtrlCharacter*>(pCtrl))
 				{
 					const CCtrlCharacter *pCtrlCharacter = (const CCtrlCharacter*)pCtrl;
 
@@ -288,9 +305,9 @@ void CConverter2OOXML::Convert()
 					{
 						case ECtrlCharType::PARAGRAPH_BREAK:
 						{
-							if (bOpenP)
+							if (oState.m_bOpenedP)
 							{
-								bOpenP = false;
+								oState.m_bOpenedP = false;
 								m_oDocXml += L"</w:p>";
 							}
 							m_oDocXml += L"<w:p><w:r></w:r></w:p>";
@@ -307,15 +324,283 @@ void CConverter2OOXML::Convert()
 							break;
 					}
 				}
+				else if (nullptr != dynamic_cast<const CCtrlSectionDef*>(pCtrl))
+				{
+					pCtrlSectionDef = (const CCtrlSectionDef*)pCtrl;
+				}
+				else if (nullptr != dynamic_cast<const CCtrlShapePic*>(pCtrl))
+				{
+					WritePicture((const CCtrlShapePic*)pCtrl, oState);
+				}
+				else
+					continue;
 			}
 
-			if (bOpenP)
+			if (oState.m_bOpenedP)
+			{
 				m_oDocXml += L"</w:p>";
+				oState.m_bOpenedP = false;
+			}
 		}
+
+		if (!bIsLastSection)
+			m_oDocXml += L"<w:p><w:pPr>";
+
+		WriteSectionSettings((nullptr != pCtrlSectionDef) ? pCtrlSectionDef->GetPage() : nullptr);
+
+		if (!bIsLastSection)
+			m_oDocXml += L"</w:pPr></w:p>";
 	}
 }
 
-bool CConverter2OOXML::ConvertTo(const STRING& sFilePath)
+bool CConverter2OOXML::IsRasterFormat(const HWP_STRING& sFormat)
+{
+	return L"png" == sFormat || L"jpg" == sFormat || L"jpeg" == sFormat;
+}
+
+void CConverter2OOXML::WriteSectionSettings(const CPage* pPage)
+{
+	m_oDocXml.WriteString(L"<w:sectPr>");
+	if (nullptr == pPage)
+	{
+		//DEFAULT_VALUE
+		m_oDocXml.WriteString(L"<w:pgSz w:w=\"11906\" w:h=\"16838\"/>");
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"1134\" w:right=\"850\" w:bottom=\"1134\" w:left=\"1701\" w:header=\"708\" w:footer=\"708\" w:gutter=\"0\"/>");
+	}
+	else
+	{
+		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(pPage->GetWidth() / 5) + L"\" w:h=\"" + std::to_wstring(pPage->GetHeight() / 5) + L"\"/>");
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(pPage->GetMarginTop() / 5) + L"\" w:right=\"" + std::to_wstring(pPage->GetMarginRight() / 5) + L"\" w:bottom=\"" +
+		                        std::to_wstring(pPage->GetMarginBottom() / 5) + L"\"  w:left=\"" + std::to_wstring(pPage->GetMarginRight() / 5) + L"\" w:header=\"" +
+		                        std::to_wstring(pPage->GetMarginHeader() / 5) + L"\"  w:footer=\"" + std::to_wstring(pPage->GetMarginFooter() / 5) + L"\"  w:gutter=\"" +
+		                        std::to_wstring(pPage->GetMarginGutter() / 5) + L"\"/>");
+	}
+	m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
+	m_oDocXml.WriteString(L"<w:docGrid w:linePitch=\"360\"/>");
+	m_oDocXml.WriteString(L"</w:sectPr>");
+}
+
+void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState)
+{
+	if (nullptr == pCtrlPic)
+		return;
+
+	CHWPStream oBuffer;
+	HWP_STRING sFormat;
+
+	if (!GetBinBytes(pCtrlPic->GetBinDataID(), oBuffer, sFormat))
+		return;
+
+	oBuffer.MoveToStart();
+
+	if (IsRasterFormat(sFormat))
+	{
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(m_sTempDirectory + L"/word/media/image" + pCtrlPic->GetBinDataID() + L'.' + sFormat);
+		if (!oFile.WriteFile((unsigned char*)oBuffer.GetCurPtr(), oBuffer.GetSize()))
+		{
+			oFile.CloseFile();
+			return;
+		}
+		oFile.CloseFile();
+	}
+	else if (L"svg" == sFormat)
+	{
+		std::string sSVG(oBuffer.GetCurPtr(), oBuffer.GetSize());
+		if (!SaveSVGFile(UTF8_TO_U(sSVG), pCtrlPic->GetBinDataID()))
+			return;
+
+		sFormat = L"png";
+	}
+
+	m_oDocXmlRels.WriteString(L"<Relationship Id=\"Picture");
+	m_oDocXmlRels.WriteString(pCtrlPic->GetBinDataID());
+	m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
+	m_oDocXmlRels.WriteEncodeXmlString(pCtrlPic->GetBinDataID() + L'.' + sFormat);
+	m_oDocXmlRels.WriteString(L"\"/>");
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"<w:p>");
+
+	m_oDocXml.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>");
+	m_oDocXml.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
+	m_oDocXml.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
+	m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+	m_oDocXml.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetCurHeight())) + L"\"/>");
+	m_oDocXml.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	m_oDocXml.WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
+	m_oDocXml.WriteString(L"<wp:docPr id=\"" + pCtrlPic->GetBinDataID() + L"\" name=\"Picture" + pCtrlPic->GetBinDataID() + L"\"/>");
+	m_oDocXml.WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
+	m_oDocXml.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+	m_oDocXml.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	m_oDocXml.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	m_oDocXml.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlPic->GetBinDataID() + L"\" name=\"Picture" + pCtrlPic->GetBinDataID() + L"\"/>");
+	m_oDocXml.WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+	m_oDocXml.WriteString(L"<pic:blipFill><a:blip r:embed=\"Picture" + pCtrlPic->GetBinDataID() + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+	m_oDocXml.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::TranslateHWP2OOXML(pCtrlPic->GetCurHeight())) + L"\"/></a:xfrm>");
+	m_oDocXml.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
+	m_oDocXml.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
+	m_oDocXml.WriteString(L"</wp:anchor></w:drawing></w:r>");
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"</w:p>");
+}
+
+bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex)
+{
+	if (sSVG.empty())
+		return false;
+
+	CSvgFile oSvgReader;
+
+	NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
+	NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
+	NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+
+	pFontCache->SetStreams(pFonts->GetStreams());
+	pFontManager->SetOwnerCache(pFontCache);
+
+	oSvgReader.SetFontManager(pFontManager);
+
+	if (!oSvgReader.ReadFromWString(sSVG))
+	{
+		RELEASEINTERFACE(pFontManager);
+		pFonts->Release();
+		return false;
+	}
+
+	NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
+	pGrRenderer->SetFontManager(pFontManager);
+
+	double dX, dY, dW, dH;
+	oSvgReader.GetBounds(dX, dY, dW, dH);
+
+	if (dW < 0) dW = -dW;
+	if (dH < 0) dH = -dH;
+
+	double dOneMaxSize = (double)1000.;
+
+	if (dW > dH && dW > dOneMaxSize)
+	{
+		dH *= (dOneMaxSize / dW);
+		dW = dOneMaxSize;
+	}
+	else if (dH > dW && dH > dOneMaxSize)
+	{
+		dW *= (dOneMaxSize / dH);
+		dH = dOneMaxSize;
+	}
+
+	int nWidth  = static_cast<int>(dW + 0.5);
+	int nHeight = static_cast<int>(dH + 0.5);
+
+	double dWidth  = 25.4 * nWidth / 96;
+	double dHeight = 25.4 * nHeight / 96;
+
+	unsigned char* pBgraData = (unsigned char*)malloc(nWidth * nHeight * 4);
+	if (!pBgraData)
+	{
+		double dKoef = 2000.0 / (nWidth > nHeight ? nWidth : nHeight);
+
+		nWidth = (int)(dKoef * nWidth);
+		nHeight = (int)(dKoef * nHeight);
+
+		dWidth  = 25.4 * nWidth / 96;
+		dHeight = 25.4 * nHeight / 96;
+
+		pBgraData = (unsigned char*)malloc(nWidth * nHeight * 4);
+	}
+
+	if (!pBgraData)
+		return false;
+
+	unsigned int alfa = 0xffffff;
+	//дефолтный тон должен быть прозрачным, а не белым
+	//memset(pBgraData, 0xff, nWidth * nHeight * 4);
+	for (int i = 0; i < nWidth * nHeight; i++)
+	{
+		((unsigned int*)pBgraData)[i] = alfa;
+	}
+
+	CBgraFrame oFrame;
+	oFrame.put_Data(pBgraData);
+	oFrame.put_Width(nWidth);
+	oFrame.put_Height(nHeight);
+	oFrame.put_Stride(-4 * nWidth);
+
+	pGrRenderer->CreateFromBgraFrame(&oFrame);
+	pGrRenderer->SetSwapRGB(false);
+	pGrRenderer->put_Width(dWidth);
+	pGrRenderer->put_Height(dHeight);
+
+	oSvgReader.Draw(pGrRenderer, 0, 0, dWidth, dHeight);
+
+	oFrame.SaveFile(m_sTempDirectory + L"/word/media/image" + sIndex + L".png", 4);
+	oFrame.put_Data(NULL);
+
+	RELEASEINTERFACE(pFontManager);
+	RELEASEINTERFACE(pGrRenderer);
+
+	if (pBgraData)
+		free(pBgraData);
+
+	pFonts->Release();
+
+	return true;
+}
+
+void CConverter2OOXML::WriteParaStyle(short shStyleID, short shParaShapeID, short shCharShapeID, const TConversionState& oState)
+{
+	const CHWPDocInfo* pDocInfo = nullptr;
+
+	if (nullptr != m_pHWPFile)
+	{
+		pDocInfo = m_pHWPFile->GetDocInfo();
+
+		const CHWPRecordStyle* pStyle = dynamic_cast<const CHWPRecordStyle*>(pDocInfo->GetStyle(shStyleID));
+		const CHWPRecordParaShape* pParaShape = dynamic_cast<const CHWPRecordParaShape*>(pDocInfo->GetParaShape(shParaShapeID));
+		const CHWPRecordCharShape* pCharShape = dynamic_cast<const CHWPRecordCharShape*>(pDocInfo->GetCharShape(shCharShapeID));
+	}
+}
+
+bool CConverter2OOXML::GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat)
+{
+	const CHWPDocInfo* pDocInfo = nullptr;
+
+	if (nullptr != m_pHWPFile)
+	{
+		pDocInfo = m_pHWPFile->GetDocInfo();
+
+		const CHWPRecordBinData* pBinData = dynamic_cast<const CHWPRecordBinData*>(pDocInfo->GetBinData(sID));
+
+		if (nullptr == pBinData)
+			return false;
+
+		if (EType::LINK == pBinData->GetType())
+		{
+			NSFile::CFileBinary oFile;
+			unsigned char *pBuffer = nullptr;
+			unsigned long ulSize = 0;
+
+			oFile.ReadAllBytes(pBinData->GetPath(), &pBuffer, ulSize);
+			oBuffer.SetStream((HWP_BYTE*)pBuffer, ulSize, false);
+			sFormat = NSFile::GetFileExtention(pBinData->GetPath());
+		}
+		else
+		{
+			std::wostringstream oStringStream;
+			oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
+			sFormat = pBinData->GetFormat();
+
+			return m_pHWPFile->GetChildStream(oStringStream.str(), pBinData->GetCompressed(), oBuffer);
+		}
+	}
+
+	return true;
+}
+
+bool CConverter2OOXML::ConvertTo(const HWP_STRING& sFilePath)
 {
 	if (nullptr == m_pHWPFile || sFilePath.empty())
 		return false;
@@ -330,4 +615,11 @@ bool CConverter2OOXML::ConvertTo(const STRING& sFilePath)
 
 	return false;
 }
+
+TConversionState::TConversionState()
+	: m_bOpenedP(false), m_bOpenedR(false)
+{
+
+}
+
 }

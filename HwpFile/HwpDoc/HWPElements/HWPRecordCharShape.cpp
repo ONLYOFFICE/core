@@ -77,7 +77,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		//fontName[i] 	= ((HwpRecord_FaceName)parent.faceNameList.get(fontID)).faceName;
 	}
 
-	#define READ_SHORT (short)((*oBuffer.GetCurPtr()) & 0x00FF); oBuffer.Skip(1)
+	#define READ_SHORT (short)(oBuffer[0] & 0x00FF); oBuffer.Skip(1)
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
@@ -96,7 +96,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arCharOffset[nIndex] = (BYTE)((*oBuffer.GetCurPtr()) & 0x00FF);
+		m_arCharOffset[nIndex] = (HWP_BYTE)((*oBuffer.GetCurPtr()) & 0x00FF);
 	}
 
 	oBuffer.ReadInt(m_nHeight);
@@ -115,7 +115,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	m_bEngrave = CHECK_FLAG(nAttrBits, 0x4000);
 	m_bSuperScript = CHECK_FLAG(nAttrBits, 0x8000);
 	m_bSubScript = CHECK_FLAG(nAttrBits, 0xF000);
-	m_chStrikeOut = (BYTE)((nAttrBits >> 18) & 0x07);
+	m_chStrikeOut = (HWP_BYTE)((nAttrBits >> 18) & 0x07);
 	m_eSymMark = GetAccent((nAttrBits >> 21) & 0x0F);
 	m_bUseFontSpace = CHECK_FLAG(nAttrBits, 0x2000000);
 	m_eStrikeOutShape = GetLineStyle2((nAttrBits >> 26) & 0x0F);

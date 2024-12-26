@@ -6,11 +6,11 @@
 #include "HWPElements/HWPRecordFaceName.h"
 #include "HWPElements/HWPRecordBorderFill.h"
 #include "HWPElements/HWPRecordCharShape.h"
-#include "HwpDoc/HWPElements/HWPRecordBullet.h"
-#include "HwpDoc/HWPElements/HWPRecordNumbering.h"
-#include "HwpDoc/HWPElements/HWPRecordParaShape.h"
-#include "HwpDoc/HWPElements/HWPRecordStyle.h"
-#include "HwpDoc/HWPElements/HwpRecordTabDef.h"
+#include "HWPElements/HWPRecordBullet.h"
+#include "HWPElements/HWPRecordNumbering.h"
+#include "HWPElements/HWPRecordParaShape.h"
+#include "HWPElements/HWPRecordStyle.h"
+#include "HWPElements/HwpRecordTabDef.h"
 
 namespace HWP
 {
@@ -58,7 +58,7 @@ CHWPDocInfo::~CHWPDocInfo()
 	REMOVE_LIST_DATA(m_arStyles);
 	REMOVE_LIST_DATA(m_arTabDefs);
 
-	for (std::pair<STRING, CHWPRecord*> oBinData : m_mBinDatas)
+	for (std::pair<HWP_STRING, CHWPRecord*> oBinData : m_mBinDatas)
 	{
 		if (nullptr != oBinData.second)
 			delete oBinData.second;
@@ -69,29 +69,34 @@ CHWPDocInfo::~CHWPDocInfo()
 
 bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 {
-	int nOff = 0;
+	int nHeader, nTagNum, nLevel, nSize;
 
-	while (nOff < oBuffer.GetSize())
+	while (oBuffer.CanRead())
 	{
-		int nHeader = ((oBuffer[nOff + 3] << 24) & 0xFF000000) | ((oBuffer[nOff + 2] << 16) & 0xFF0000) | ((oBuffer[nOff + 1] << 8) & 0xFF00) | (oBuffer[nOff] & 0xFF);
-		int nTagNum = nHeader & 0x3FF;
-		int nLevel  = (nHeader & 0xFFC00) >> 10; //TODO:: Проверить побитовый сдвиг без знака
-		int nSize   = (nHeader & 0xFFF00000) >> 20;
+		oBuffer.ReadInt(nHeader);
+		oBuffer.Skip(-4);
+		nTagNum = nHeader & 0x3FF; // 10 bits (0 - 9 bit)
+		nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
+		nSize = (nHeader & 0xFFF00000) >> 20; // 12 bits (20-31 bit)
 
 		if (0xFFF == nSize)
 		{
-			nSize = ((oBuffer[nOff + 7] << 24) & 0xFF000000) | ((oBuffer[nOff + 6] << 16) & 0xFF0000) | ((oBuffer[nOff + 5] << 8) & 0xFF00) | (oBuffer[nOff + 4] & 0xFF);
+			//TODO:: buf[off+7]<<24&0xFF000000 | buf[off+6]<<16&0xFF0000 | buf[off+5]<<8&0xFF00 | buf[off+4]&0xFF;
+			oBuffer.Skip(4);
+			oBuffer.ReadInt(nSize);
 		}
 		else
-			nOff += 4;
+			oBuffer.Skip(4);
 
 		CHWPRecord *pRecord = nullptr;
 		EHWPTag eTag = GetTagFromNum(nTagNum);
 
 		#define CREATE_AND_ADD_RECORD(type_record, array) \
-		pRecord = new type_record(*this, nTagNum, nLevel, nSize, oBuffer, nOff, nVersion); \
+		pRecord = new type_record(*this, nTagNum, nLevel, nSize, oBuffer, 0, nVersion); \
 		if (nullptr != pRecord) \
 			array.push_back(pRecord)
+
+		oBuffer.SavePosition();
 
 		switch (eTag)
 		{
@@ -107,7 +112,7 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 		}
 		case HWPTAG_BIN_DATA:
 		{
-			CHWPRecordBinData *pBindData = new CHWPRecordBinData(*this, nTagNum, nLevel, nSize, oBuffer, nOff, nVersion);
+			CHWPRecordBinData *pBindData = new CHWPRecordBinData(*this, nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
 
 			if (nullptr != pBindData)
 				m_mBinDatas.insert(std::make_pair(pBindData->GetItemID(), pBindData));
@@ -124,7 +129,7 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 			CREATE_AND_ADD_RECORD(CHWPRecordBorderFill, m_arBorderFills);
 			break;
 		}
-		case HWPTAG_CHAR_SHAPE:
+		case HWPTAG_HWP_CHAR_SHAPE:
 		{
 			CREATE_AND_ADD_RECORD(CHWPRecordCharShape, m_arCharShapes);
 			break;
@@ -167,15 +172,15 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 		case HWPTAG_DISTRIBUTE_DOC_DATA:
 		case HWPTAG_TRACKCHANGE:
 		case HWPTAG_MEMO_SHAPE:
-		case HWPTAG_FORBIDDEN_CHAR:
+		case HWPTAG_FORBIDDEN_HWP_CHAR:
 		case HWPTAG_TRACK_CHANGE:
 		case HWPTAG_TRACK_CHANGE_AUTHOR:
-		default:
-		{
-			oBuffer.Skip(nSize);
 			break;
+		default:
+		{}
 		}
-		}
+
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	}
 
 	return true;
@@ -234,5 +239,18 @@ const CHWPRecord* CHWPDocInfo::GetTabDef(int nIndex) const
 CHWPFile_Private* CHWPDocInfo::GetParentHWP()
 {
 	return m_pParentHWP;
+}
+
+const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
+{
+	if (m_mBinDatas.end() == m_mBinDatas.find(sID))
+		return nullptr;
+
+	return m_mBinDatas.at(sID);
+}
+
+EHanType CHWPDocInfo::GetHanType() const
+{
+	return m_eHanType;
 }
 }

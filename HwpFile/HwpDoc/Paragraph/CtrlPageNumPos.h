@@ -28,13 +28,13 @@ class CCtrlPageNumPos : public CCtrl
 
 	ENumPos m_ePos;
 	ENumberShape2 m_eNumShape;
-	STRING m_sUserDef;
-	STRING m_sPrefix;
-	STRING m_sPostfix;
-	STRING m_sConstantDash;
+	HWP_STRING m_sUserDef;
+	HWP_STRING m_sPrefix;
+	HWP_STRING m_sPostfix;
+	HWP_STRING m_sConstantDash;
 public:
-	CCtrlPageNumPos(const STRING& sCtrlID);
-	CCtrlPageNumPos(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlPageNumPos(const HWP_STRING& sCtrlID);
+	CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

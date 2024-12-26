@@ -6,19 +6,19 @@ CCtrl::CCtrl()
 	:  m_bFullFilled(false)
 {}
 
-CCtrl::CCtrl(const STRING& sCtrlID)
+CCtrl::CCtrl(const HWP_STRING& sCtrlID)
 	: m_sCtrlID(sCtrlID), m_bFullFilled(false)
 {}
 
 CCtrl::~CCtrl()
 {}
 
-void CCtrl::SetID(const STRING& sCtrlID)
+void CCtrl::SetID(const HWP_STRING& sCtrlID)
 {
 	m_sCtrlID = sCtrlID;
 }
 
-STRING CCtrl::GetID() const
+HWP_STRING CCtrl::GetID() const
 {
 	return m_sCtrlID;
 }

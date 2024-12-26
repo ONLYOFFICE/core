@@ -12,6 +12,7 @@
 #include "../Paragraph/CtrlPageNumPos.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlTable.h"
+#include "../Paragraph/CtrlEmpty.h"
 
 namespace HWP
 {
@@ -23,8 +24,8 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 {
 	oBuffer.SavePosition();
 
-	STRING sCtrlID;
-	oBuffer.ReadString(sCtrlID, 4, EStringCharacter::ASCII); //TODO::StandardCharsets.US_ASCII
+	HWP_STRING sCtrlID;
+	oBuffer.ReadString(sCtrlID, 4, EStringCharacter::ASCII);
 
 	CCtrl* pCtrl = nullptr;
 
@@ -90,13 +91,18 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 	         L"spct" == sCtrlID || // ???
 	         L"tmct" == sCtrlID || // ???
 	         L"tcgp" == sCtrlID || // ???
-	         L"tudt" == sCtrlID)   // ???
+	         L"tudt" == sCtrlID ||
+	         true)   // ???
 	{
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
+		pCtrl = new CCtrlEmpty(sCtrlID);
+		((CCtrlEmpty*)pCtrl)->SetSize(nTempSize);
+		pCtrl->SetFullFilled();
 		oBuffer.Skip(nTempSize);
 	}
 
-	oBuffer.RemoveLastSavedPos();
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	return pCtrl;
 }

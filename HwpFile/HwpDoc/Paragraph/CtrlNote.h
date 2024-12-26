@@ -14,8 +14,8 @@ class CCtrlNote : public CCtrl
 	VECTOR<CHWPPargraph*> m_arParas;
 public:
 	CCtrlNote();
-	CCtrlNote(const STRING& sCtrlID);
-	CCtrlNote(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlNote(const HWP_STRING& sCtrlID);
+	CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 

@@ -18,18 +18,45 @@ namespace HWP
 CCtrlGeneralShape::CCtrlGeneralShape()
 {}
 
-CCtrlGeneralShape::CCtrlGeneralShape(const STRING& sCtrlID)
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID)
 	: CCtrlObjElement(sCtrlID)
 {}
 
-CCtrlGeneralShape::CCtrlGeneralShape(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlGeneralShape::CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape)
+	: CCtrlObjElement((CCtrlObjElement)oGeneralShape)
+{
+	m_pParent = oGeneralShape.m_pParent;
+
+	m_nLineColor = oGeneralShape.m_nLineColor;
+	m_nLineThick = oGeneralShape.m_nLineThick;
+	m_eLineHead = oGeneralShape.m_eLineHead;
+	m_eLineTail = oGeneralShape.m_eLineTail;
+	m_eLineHeadSz = oGeneralShape.m_eLineHeadSz;
+	m_eLineTailSz = oGeneralShape.m_eLineTailSz;
+	m_eLineStyle = oGeneralShape.m_eLineStyle;
+	m_chOutline = oGeneralShape.m_chOutline;
+
+	m_nFillType = oGeneralShape.m_nFillType;
+	m_pFill = oGeneralShape.m_pFill;
+
+	if (nullptr != m_pFill)
+		m_pFill->AddRef();
+
+	m_shLeftSpace = oGeneralShape.m_shLeftSpace;
+	m_shRightSpace = oGeneralShape.m_shRightSpace;
+	m_shTopSpace = oGeneralShape.m_shTopSpace;
+	m_shBottomSpace = oGeneralShape.m_shBottomSpace;
+	m_nMaxTxtWidth = oGeneralShape.m_nMaxTxtWidth;
+}
+
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlObjElement(sCtrlID, nSize, oBuffer, nOff, nVersion), m_pFill(nullptr)
 {}
 
 CCtrlGeneralShape::~CCtrlGeneralShape()
 {
-	if (nullptr != m_pFill)
-		delete m_pFill;
+	if (nullptr != m_pFill && 0 == m_pFill->Release())
+		m_pFill = nullptr;
 }
 
 void CCtrlGeneralShape::SetParent(CHWPPargraph* pParent)
@@ -51,13 +78,13 @@ CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, 
 {
 	oBuffer.SavePosition();
 
-	STRING sCtrlId;
+	HWP_STRING sCtrlId;
 	oBuffer.ReadString(sCtrlId, 4, EStringCharacter::ASCII);
 
 	CCtrlGeneralShape *pShape = nullptr;
 
 	#define CREATE_AND_PARSE_SHAPE(type)\
-	pShape = new type(sCtrlId); \
+	pShape = new type(oObj); \
 	\
 	if (nullptr != pShape) \
 		type::ParseCtrl((type&)(*pShape), nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion); \

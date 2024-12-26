@@ -25,7 +25,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 {
 	oBuffer.SavePosition();
 
-	STRING sText;
+	HWP_STRING sText;
 	oBuffer.ReadString(sText, nSize, EStringCharacter::UTF16);
 
 	if (sText.empty())
@@ -80,7 +80,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		else if (8 == itCurrent->length())
 		{
 			//TODO:: Проверить
-			STRING sInfo = sText.substr(itCurrent->position() + 1, 4); //  new String(m.group().getBytes(StandardCharsets.UTF_16LE), 2, 12, StandardCharsets.US_ASCII).replaceAll("[\\x00-\\x20]+$", "");
+			HWP_STRING sInfo = sText.substr(itCurrent->position() + 1, 4); //  new String(m.group().getBytes(StandardCharsets.UTF_16LE), 2, 12, StandardCharsets.US_ASCII).replaceAll("[\\x00-\\x20]+$", "");
 			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");
 			sInfo = std::regex_replace(sInfo, wrReplaceRegex, L"");
 

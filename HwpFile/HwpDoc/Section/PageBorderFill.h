@@ -10,7 +10,7 @@ class CPageBorderFill
 	bool m_bTextBorder;
 	bool m_bHeaderInside;
 	bool m_bFooterInside;
-	BYTE m_chFillArea;
+	HWP_BYTE m_chFillArea;
 	short m_shOffsetLeft;
 	short m_shOffsetRight;
 	short m_shOffsetTop;

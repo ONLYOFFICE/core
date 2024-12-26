@@ -10,7 +10,7 @@ class CCtrlForm : public CCtrl
 {
 	int m_nSize;
 public:
-	CCtrlForm(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlForm(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

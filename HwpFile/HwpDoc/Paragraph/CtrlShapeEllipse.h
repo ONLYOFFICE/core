@@ -45,8 +45,9 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nEndY2;
 public:
 	CCtrlShapeEllipse();
-	CCtrlShapeEllipse(const STRING& sCtrlID);
-	CCtrlShapeEllipse(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID);
+	CCtrlShapeEllipse(const CCtrlGeneralShape& oShape);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

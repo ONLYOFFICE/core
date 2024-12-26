@@ -10,10 +10,10 @@ class CHWPRecordStyle : public CHWPRecord
 {
 	CHWPDocInfo* m_pParent;
 
-	STRING m_sName;
-	STRING m_sEngName;
-	BYTE m_chType;
-	BYTE m_chNextStyle;
+	HWP_STRING m_sName;
+	HWP_STRING m_sEngName;
+	HWP_BYTE m_chType;
+	HWP_BYTE m_chNextStyle;
 	short m_shLangID;
 	int m_nParaShape;
 	int m_nCharShape;

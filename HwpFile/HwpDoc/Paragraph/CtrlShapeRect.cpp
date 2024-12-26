@@ -5,11 +5,15 @@ namespace HWP
 CCtrlShapeRect::CCtrlShapeRect()
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const STRING& sCtrlID)
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeRect::CCtrlShapeRect(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
@@ -54,7 +58,7 @@ int CCtrlShapeRect::ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPS
 	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);
-		STRING sFieldName;
+		HWP_STRING sFieldName;
 		oBuffer.ReadString(sFieldName, EStringCharacter::UTF16);
 
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());

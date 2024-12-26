@@ -16,27 +16,27 @@ enum class EStringCharacter
 
 class CHWPStream
 {
-	BYTE* m_pBegin;
-	BYTE* m_pCur;
-	BYTE* m_pEnd;
-	std::stack<BYTE*> m_arSavedPositions;
+	HWP_BYTE* m_pBegin;
+	HWP_BYTE* m_pCur;
+	HWP_BYTE* m_pEnd;
+	std::stack<HWP_BYTE*> m_arSavedPositions;
 
 	bool m_bExternalBuffer;
 public:
 	CHWPStream();
 	CHWPStream(unsigned long ulSize);
-	CHWPStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
+	CHWPStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 	~CHWPStream();
 
-	void SetStream(BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
+	void SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 
-	BYTE* GetCurPtr();
+	HWP_BYTE* GetCurPtr();
 	unsigned long Tell() const;
 	unsigned long SizeToEnd() const;
 
 	void Expand(unsigned long ulSize);
 
-	bool ReadChar(CHAR& chValue);
+	bool ReadChar(HWP_CHAR& chValue);
 	bool ReadFloat(float& fValue);
 	bool ReadDouble(double& dValue);
 	bool ReadLong(long long& lValue);
@@ -44,11 +44,11 @@ public:
 	bool ReadColor(int& nValue);
 	bool ReadShort(short& shValue);
 	short ReadShort();
-	bool ReadByte(BYTE& chValue);
-	BYTE ReadByte();
-	bool ReadString(STRING& sValue, EStringCharacter eCharacter);
-	bool ReadString(STRING& sValue, int nLength, EStringCharacter eCharacter);
-	unsigned long ReadBytes(BYTE* pBytes, unsigned long unSize);
+	bool ReadByte(HWP_BYTE& chValue);
+	HWP_BYTE ReadByte();
+	bool ReadString(HWP_STRING& sValue, EStringCharacter eCharacter);
+	bool ReadString(HWP_STRING& sValue, int nLength, EStringCharacter eCharacter);
+	unsigned long ReadBytes(HWP_BYTE* pBytes, unsigned long unSize);
 
 	void Skip(int nStep);
 	void MoveToStart();
@@ -63,10 +63,9 @@ public:
 	void RemoveLastSavedPos();
 	int GetDistanceToLastPos(bool bRemoveLastPos = false);
 
-	BYTE operator[](unsigned int unPosition) const;
+	HWP_BYTE operator[](unsigned int unPosition) const;
 
-
-	bool WriteBytes(const BYTE* pBuffer, unsigned long ulSize);
+	bool WriteBytes(const HWP_BYTE* pBuffer, unsigned long ulSize);
 };
 
 #define CHECK_FLAG(value, flag) ((value) & flag) == flag

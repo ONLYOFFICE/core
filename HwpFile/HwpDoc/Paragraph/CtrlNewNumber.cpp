@@ -2,11 +2,11 @@
 
 namespace HWP
 {
-CCtrlNewNumber::CCtrlNewNumber(const STRING& sCtrlID)
+CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
 
-CCtrlNewNumber::CCtrlNewNumber(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	oBuffer.SavePosition();

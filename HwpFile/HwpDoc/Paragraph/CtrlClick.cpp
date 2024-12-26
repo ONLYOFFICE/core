@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCtrlClick::CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlClick::CCtrlClick(const HWP_STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlId)
 {
 	oBuffer.SavePosition();

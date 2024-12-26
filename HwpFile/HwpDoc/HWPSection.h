@@ -17,9 +17,9 @@ public:
 	~CHWPSection();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
-	int ParseRecurse(CHWPPargraph& oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
-	int ParseCtrlRecurse(CCtrl& oCurrCtrl, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
-	int ParseContainerRecurse(CCtrlContainer& oContainer, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
+	int ParseRecurse(CHWPPargraph* oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
+	int ParseCtrlRecurse(CCtrl* oCurrCtrl, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
+	int ParseContainerRecurse(CCtrlContainer* oContainer, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	const VECTOR<CHWPPargraph*> GetParagraphs() const;
 };

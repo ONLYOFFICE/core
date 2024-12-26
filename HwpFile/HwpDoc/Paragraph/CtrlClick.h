@@ -9,9 +9,9 @@ namespace HWP
 class CCtrlClick : public CCtrl
 {
 	int m_nSize;
-	STRING m_sClickHereStr;
+	HWP_STRING m_sClickHereStr;
 public:
-	CCtrlClick(const STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlClick(const HWP_STRING& sCtrlId, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
 };

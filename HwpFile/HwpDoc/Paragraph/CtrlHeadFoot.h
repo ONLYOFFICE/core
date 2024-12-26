@@ -26,13 +26,13 @@ class CCtrlHeadFoot : public CCtrl
 
 	int m_nTextWidth;
 	int m_nTextHeight;
-	BYTE m_chRefLevelText;
-	BYTE m_chRefLevelNum;
+	HWP_BYTE m_chRefLevelText;
+	HWP_BYTE m_chRefLevelNum;
 
 	std::vector<CHWPPargraph*> m_arParas;
 public:
-	CCtrlHeadFoot(const STRING& sCtrlID);
-	CCtrlHeadFoot(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
+	CCtrlHeadFoot(const HWP_STRING& sCtrlID);
+	CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
 
 	int GetSize() override;
 

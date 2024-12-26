@@ -10,7 +10,7 @@
 
 namespace HWP
 {
-CHWPFile_Private::CHWPFile_Private(const STRING& sFileName)
+CHWPFile_Private::CHWPFile_Private(const HWP_STRING& sFileName)
 	: m_sFileName(sFileName), m_oOleFile(sFileName), m_oDocInfo(this)
 {}
 
@@ -103,7 +103,7 @@ bool CHWPFile_Private::GetDocInfo(int nVersion)
 	{
 		CHWPStream oTempBuffer;
 
-		if (!GetComponent(L"DocInfo", oTempBuffer) && !Unzip(oTempBuffer, oBuffer))
+		if (!GetComponent(L"DocInfo", oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
 			return false;
 	}
 	else
@@ -115,7 +115,7 @@ bool CHWPFile_Private::GetDocInfo(int nVersion)
 	return m_oDocInfo.Parse(oBuffer, m_nVersion);
 }
 
-bool CHWPFile_Private::GetComponent(const STRING& sEntryName, CHWPStream& oBuffer)
+bool CHWPFile_Private::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	return m_oOleFile.GetComponent(sEntryName, oBuffer);
 }
@@ -143,19 +143,19 @@ void CHWPFile_Private::AddParas(const std::vector<CHWPPargraph*>& arParas)
 }
 //------------
 
-void CHWPFile_Private::SaveChildEntries(const STRING& sBasePath, const STRING& sStorageName, ECompressed eCompressed)
+void CHWPFile_Private::SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed)
 {
 	// TODO:: перенести
 }
 
-CDirectoryEntry* CHWPFile_Private::FindChildEntry(const STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const STRING& sEntryName)
+CDirectoryEntry* CHWPFile_Private::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
 {
 	for (CDirectoryEntry* pEntry : m_oOleFile.GetChildEntries(&oBaseEntry))
 	{
 		if (0x01 == pEntry->GetObjectType())
 		{
 			//TODO:: проверить
-			STRING sChildPath = sBasePath + FILE_SEPARATOR_STR + pEntry->GetDirectoryEntryName();
+			HWP_STRING sChildPath = sBasePath + FILE_SEPARATOR_STR + pEntry->GetDirectoryEntryName();
 			return FindChildEntry(sChildPath, *pEntry, sEntryName);
 		}
 		else
@@ -168,18 +168,18 @@ CDirectoryEntry* CHWPFile_Private::FindChildEntry(const STRING& sBasePath, const
 	return nullptr;
 }
 
-STRING CHWPFile_Private::SaveChildEntry(const STRING& sRootPath, const STRING& sEntryName, ECompressed eCompressed)
+HWP_STRING CHWPFile_Private::SaveChildEntry(const HWP_STRING& sRootPath, const HWP_STRING& sEntryName, ECompressed eCompressed)
 {
 	//TODO:: перенести
-	return STRING();
+	return HWP_STRING();
 }
 
-bool CHWPFile_Private::GetChildStream(const STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer)
+bool CHWPFile_Private::GetChildStream(const HWP_STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer)
 {
-	STRING sRegexStr = L".*" + STRING(FILE_SEPARATOR_STR) + L"([" + STRING(FILE_SEPARATOR_STR) + L"]+)$";
+	// HWP_STRING sRegexStr = L".*" + HWP_STRING(FILE_SEPARATOR_STR) + L"([" + HWP_STRING(FILE_SEPARATOR_STR) + L"]+)$";
 
-	STRING sShortFilename = std::regex_replace(m_sFileName, std::wregex(sRegexStr), L"$1");
-	sShortFilename = std::regex_replace(sShortFilename, std::wregex(L"(.*)\\.hwp$"), L"$1");
+	// HWP_STRING sShortFilename = std::regex_replace(m_sFileName, std::wregex(sRegexStr), L"$1");
+	// sShortFilename = std::regex_replace(sShortFilename, std::wregex(L"(.*)\\.hwp$"), L"$1");
 
 	CDirectoryEntry *pTargetEntry = nullptr;
 
@@ -189,7 +189,7 @@ bool CHWPFile_Private::GetChildStream(const STRING& sEntryName, ECompressed eCom
 	{
 		if (0x01 == pEntry->GetObjectType())
 		{
-			STRING sChildPath = sShortFilename + FILE_SEPARATOR_STR + pEntry->GetDirectoryEntryName();
+			HWP_STRING sChildPath = /*sShortFilename + FILE_SEPARATOR_STR + */pEntry->GetDirectoryEntryName();
 			pTargetEntry = FindChildEntry(sChildPath, *pEntry, sEntryName);
 
 			if (nullptr != pTargetEntry)
@@ -224,7 +224,7 @@ bool CHWPFile_Private::GetChildStream(const STRING& sEntryName, ECompressed eCom
 
 bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 {
-	unsigned char* pInBuffer = new(std::nothrow) unsigned char[oInput.GetSize()];
+	unsigned char* pInBuffer = new(std::nothrow) unsigned char[DEFAULT_BUFFER_SIZE];
 
 	if (nullptr == pInBuffer)
 		return false;
@@ -245,9 +245,9 @@ bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 
 	int nRes = DEFLATE_OK;
 
-	while (DEFLATE_OK == nRes)
+	while (true)
 	{
-		const unsigned int unSize = oInput.ReadBytes((BYTE*)pInBuffer, DEFAULT_BUFFER_SIZE);
+		const unsigned int unSize = oInput.ReadBytes((HWP_BYTE*)pInBuffer, DEFAULT_BUFFER_SIZE);
 
 		oInflater.SetIn(pInBuffer, unSize);
 
@@ -256,24 +256,25 @@ bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 
 		while (oInflater.GetAvailIn() > 0)
 		{
-			nRes = oInflater.Process(DEFLATE_SYNC_FLUSH);
+			nRes = oInflater.Process(DEFLATE_NO_FLUSH);
 
 			if (DEFLATE_OK != nRes && DEFLATE_STREAM_END != nRes)
 				break;
 
 			if (oInflater.GetAvailOut() == 0)
-				oBuffer.WriteBytes((BYTE*)pOutBuffer, DEFAULT_BUFFER_SIZE);
+			{
+				oBuffer.WriteBytes((HWP_BYTE*)pOutBuffer, DEFAULT_BUFFER_SIZE);
+				oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
+			}
 
 			if (DEFLATE_STREAM_END == nRes)
 				break;
-
-			oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
 		}
 	}
 
 	bool bEnd = false;
 
-	while (true)
+	while (DEFLATE_OK == nRes || DEFLATE_STREAM_END == nRes)
 	{
 		nRes = oInflater.Process(DEFLATE_FINISH);
 
@@ -288,7 +289,7 @@ bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 		if (oInflater.GetAvailOut() < DEFAULT_BUFFER_SIZE)
 		{
 			unsigned long ulSize = DEFAULT_BUFFER_SIZE - oInflater.GetAvailOut();
-			oBuffer.WriteBytes((BYTE*)pOutBuffer, ulSize);
+			oBuffer.WriteBytes((HWP_BYTE*)pOutBuffer, ulSize);
 			oInflater.SetOut(pOutBuffer, DEFAULT_BUFFER_SIZE);
 		}
 

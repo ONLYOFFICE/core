@@ -12,14 +12,13 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel, UnicodeConverter)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
 DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 
 SOURCES += \
     HWPFile.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
-    HwpDoc/Conversion/Transform.cpp \
     HwpDoc/Conversion/WriterContext.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
@@ -56,6 +55,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlColumnDef.cpp \
     HwpDoc/Paragraph/CtrlCommon.cpp \
     HwpDoc/Paragraph/CtrlContainer.cpp \
+    HwpDoc/Paragraph/CtrlEmpty.cpp \
     HwpDoc/Paragraph/CtrlEqEdit.cpp \
     HwpDoc/Paragraph/CtrlForm.cpp \
     HwpDoc/Paragraph/CtrlGeneralShape.cpp \
@@ -135,6 +135,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlColumnDef.h \
     HwpDoc/Paragraph/CtrlCommon.h \
     HwpDoc/Paragraph/CtrlContainer.h \
+    HwpDoc/Paragraph/CtrlEmpty.h \
     HwpDoc/Paragraph/CtrlEqEdit.h \
     HwpDoc/Paragraph/CtrlForm.h \
     HwpDoc/Paragraph/CtrlGeneralShape.h \

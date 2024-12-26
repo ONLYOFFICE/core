@@ -2,11 +2,15 @@
 
 namespace HWP
 {
-CCtrlShapeVideo::CCtrlShapeVideo(const STRING& sCtrlID)
+CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID)
 	: CCtrlGeneralShape(sCtrlID)
 {}
 
-CCtrlShapeVideo::CCtrlShapeVideo(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlShapeVideo::CCtrlShapeVideo(const CCtrlGeneralShape& oShape)
+	: CCtrlGeneralShape(oShape)
+{}
+
+CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 

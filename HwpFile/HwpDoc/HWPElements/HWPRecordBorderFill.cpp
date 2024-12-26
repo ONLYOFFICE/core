@@ -80,7 +80,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 
 	if (CHECK_FLAG(m_nFillType, 0x04))
 	{
-		BYTE chTypeNum;
+		HWP_BYTE chTypeNum;
 		oBuffer.ReadByte(chTypeNum);
 		m_eGradType = GetGradFillType((int)chTypeNum);
 
@@ -106,7 +106,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 
 	if (CHECK_FLAG(m_nFillType, 0x02))
 	{
-		BYTE nTypeNum;
+		HWP_BYTE nTypeNum;
 		oBuffer.ReadByte(nTypeNum);
 		m_eMode = GetImageFillType(nTypeNum);
 
@@ -117,7 +117,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 		short shBinTemp;
 		oBuffer.ReadShort(shBinTemp);
 
-		m_sBinItemID = TO_STRING(shBinTemp - 1);
+		m_sBinItemID = TO_HWP_STRING(shBinTemp - 1);
 	}
 
 	int nMoreSize;
@@ -170,10 +170,10 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 
 	m_bThreeD = CHECK_FLAG(shTypeBits, 0x01);
 	m_bShadow = CHECK_FLAG(shTypeBits, 0x02);
-	m_chSlash = (BYTE)((shTypeBits >> 2) & 0x07);
-	m_chBackSlash = (BYTE)((shTypeBits >> 5) & 0x07);
-	m_chCrookedSlash = (BYTE)((shTypeBits >> 8) & 0x03);
-	m_chCrookedBackSlash = (BYTE)((shTypeBits >> 10) & 0x01);
+	m_chSlash = (HWP_BYTE)((shTypeBits >> 2) & 0x07);
+	m_chBackSlash = (HWP_BYTE)((shTypeBits >> 5) & 0x07);
+	m_chCrookedSlash = (HWP_BYTE)((shTypeBits >> 8) & 0x03);
+	m_chCrookedBackSlash = (HWP_BYTE)((shTypeBits >> 10) & 0x01);
 	m_bCounterSlash = CHECK_FLAG(shTypeBits, 0x800);
 	m_bCounterBackSlash = CHECK_FLAG(shTypeBits, 0x1000);
 	m_bBreakCellSeparateLine = CHECK_FLAG(shTypeBits, 0x2000);
@@ -185,7 +185,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 	oBuffer.ReadByte(side.m_chWidth);\
 	oBuffer.ReadColor(side.m_nColor)
 
-	BYTE chLineStyleNum;
+	HWP_BYTE chLineStyleNum;
 
 	READ_SIDE(m_oLeft);
 	READ_SIDE(m_oRight);

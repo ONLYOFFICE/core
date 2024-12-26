@@ -5,17 +5,53 @@ namespace HWP
 CCtrlObjElement::CCtrlObjElement()
 {}
 
-CCtrlObjElement::CCtrlObjElement(const STRING& sCtrlID)
+CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
 {}
 
-CCtrlObjElement::CCtrlObjElement(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
+	: CCtrlCommon((CCtrlCommon)oObjElement)
+{
+	m_nXGrpOffset = oObjElement.m_nXGrpOffset;
+	m_nYGrpOffset = oObjElement.m_nYGrpOffset;
+	m_shNGrp = oObjElement.m_shNGrp;
+	m_shVer = oObjElement.m_shVer;
+	m_nIniWidth = oObjElement.m_nIniWidth;
+	m_nIniHeight = oObjElement.m_nIniHeight;
+	m_nCurWidth = oObjElement.m_nCurWidth;
+	m_nCurHeight = oObjElement.m_nCurHeight;
+	m_bHorzFlip = oObjElement.m_bHorzFlip;
+	m_bVerFlip = oObjElement.m_bVerFlip;
+	m_shRotat = oObjElement.m_shRotat;
+	m_nXCenter = oObjElement.m_nXCenter;
+	m_nYCenter = oObjElement.m_nYCenter;
+	m_shMatCnt = oObjElement.m_shMatCnt;
+
+	for (unsigned int unIndex = 0; unIndex < 6; ++unIndex)
+		m_arMatrix[unIndex] = oObjElement.m_arMatrix[unIndex];
+
+	m_arMatrixSeq.resize(oObjElement.m_arMatrixSeq.size());
+	for (unsigned int unIndex = 0; unIndex < oObjElement.m_arMatrixSeq.size(); ++unIndex)
+		m_arMatrixSeq[unIndex] = oObjElement.m_arMatrixSeq[unIndex];
+}
+
+CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
 int CCtrlObjElement::GetSize()
 {
 	return m_nSize;
+}
+
+int CCtrlObjElement::GetCurWidth() const
+{
+	return m_nCurWidth;
+}
+
+int CCtrlObjElement::GetCurHeight() const
+{
+	return m_nCurHeight;
 }
 
 int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -48,7 +84,7 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 	{
 		oObj.m_arMatrixSeq.resize(nMatrixSize);
 
-		for (int nIndex = 0; nIndex < nMatrixSize; ++nMatrixSize)
+		for (int nIndex = 0; nIndex < nMatrixSize; ++nIndex)
 			oBuffer.ReadDouble(oObj.m_arMatrixSeq[nIndex]);
 	}
 

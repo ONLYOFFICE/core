@@ -14,8 +14,9 @@ class CCtrlShapeLine : public CCtrlGeneralShape
 	short m_shAttr;
 public:
 	CCtrlShapeLine();
-	CCtrlShapeLine(const STRING& sCtrlID);
-	CCtrlShapeLine(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID);
+	CCtrlShapeLine(const CCtrlGeneralShape& oShape);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

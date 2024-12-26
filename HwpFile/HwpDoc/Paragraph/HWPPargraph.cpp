@@ -34,10 +34,10 @@ void CHWPPargraph::AddCtrls(const LIST<CCtrl*>& arCtrls)
 	m_arP.insert(m_arP.end(), arCtrls.begin(), arCtrls.end());
 }
 
-void CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
+bool CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
 {
 	if (unIndex >= m_arP.size())
-		return;
+		return false;
 
 	CCtrl* pOldCtrl = m_arP[unIndex];
 
@@ -46,6 +46,8 @@ void CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
 		delete pOldCtrl;
 
 	m_arP[unIndex] = pCtrl;
+
+	return true;
 }
 
 VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
@@ -61,6 +63,16 @@ const std::vector<CCtrl*> CHWPPargraph::GetCtrls() const
 unsigned int CHWPPargraph::GetCountCtrls() const
 {
 	return m_arP.size();
+}
+
+short CHWPPargraph::GetShapeID() const
+{
+	return m_shParaShapeID;
+}
+
+short CHWPPargraph::GetStyleID() const
+{
+	return m_shParaStyleID;
 }
 
 CHWPPargraph* CHWPPargraph::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -114,20 +126,21 @@ int CHWPPargraph::Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int
 	return nSize;
 }
 
-CCtrl* CHWPPargraph::FindFirstElement(const STRING& sID, bool bFullfilled, unsigned int& nIndex) const
+CCtrl* CHWPPargraph::FindFirstElement(const HWP_STRING& sID, bool bFullfilled, unsigned int& nIndex) const
 {
-	nIndex = 0;
 	for (VECTOR<CCtrl*>::const_iterator itCtrl = m_arP.cbegin(); itCtrl != m_arP.cend(); ++itCtrl)
 	{
-		++nIndex;
 		if (sID == (*itCtrl)->GetID() && bFullfilled == (*itCtrl)->FullFilled())
+		{
+			nIndex = itCtrl - m_arP.cbegin();
 			return (*itCtrl);
+		}
 	}
 
 	return nullptr;
 }
 
-CCtrl* CHWPPargraph::FindLastElement(const STRING& sID)
+CCtrl* CHWPPargraph::FindLastElement(const HWP_STRING& sID)
 {
 	for (VECTOR<CCtrl*>::const_reverse_iterator itCtrl = m_arP.crbegin(); itCtrl != m_arP.crend(); ++itCtrl)
 	{

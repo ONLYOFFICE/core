@@ -2,11 +2,11 @@
 
 namespace HWP
 {
-CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID)
+CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID), m_pPage(nullptr)
 {}
 
-CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID), m_pPage(nullptr)
 {
 	oBuffer.SavePosition();
@@ -22,9 +22,9 @@ CCtrlSectionDef::CCtrlSectionDef(const STRING& sCtrlID, int nSize, CHWPStream& o
 	m_bHidePageNumPos = CHECK_FLAG(nAttr, 0x20);
 	m_bShowFirstBorder = CHECK_FLAG(nAttr, 0x100);
 	m_bShowFirstFill = CHECK_FLAG(nAttr, 0x200);
-	m_chTextDirection = (BYTE)((nAttr >> 16) & 0x07);
+	m_chTextDirection = (HWP_BYTE)((nAttr >> 16) & 0x07);
 	m_bHideEmptyLine = CHECK_FLAG(nAttr, 0x20000);
-	m_chPageStartOn = (BYTE)((nAttr >> 20) & 0x03);
+	m_chPageStartOn = (HWP_BYTE)((nAttr >> 20) & 0x03);
 
 	oBuffer.ReadShort(m_shSpaceColumns);
 	oBuffer.ReadShort(m_shLineGrid);
@@ -77,5 +77,10 @@ void CCtrlSectionDef::AddPageBorderFill(CPageBorderFill* pPageBorderFill)
 int CCtrlSectionDef::GetSize()
 {
 	return m_nSize;
+}
+
+const CPage* CCtrlSectionDef::GetPage() const
+{
+	return m_pPage;
 }
 }

@@ -8,16 +8,17 @@ namespace HWP
 class CCtrlEqEdit : public CCtrlGeneralShape
 {
 	int m_nAttr;
-	STRING m_sEqn;
+	HWP_STRING m_sEqn;
 	int m_nCharSize;
 	int m_nColor;
 	int m_nBaseline;
-	STRING m_sVersion;
-	STRING m_sFont;
+	HWP_STRING m_sVersion;
+	HWP_STRING m_sFont;
 public:
 	CCtrlEqEdit();
-	CCtrlEqEdit(const STRING& sCtrlID);
-	CCtrlEqEdit(const STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlEqEdit(const HWP_STRING& sCtrlID);
+	CCtrlEqEdit(const CCtrlGeneralShape& oShape);
+	CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	static int ParseElement(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

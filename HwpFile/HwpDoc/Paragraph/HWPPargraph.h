@@ -7,11 +7,11 @@
 
 namespace HWP
 {
-class CHWPPargraph
+class CHWPPargraph : public IRef
 {
 	short m_shParaShapeID; // HWPTAG_PARA_HEADER
 	short m_shParaStyleID; // HWPTAG_PARA_HEADER
-	BYTE m_chBreakType;    // HWPTAG_PARA_HEADER
+	HWP_BYTE m_chBreakType;    // HWPTAG_PARA_HEADER
 
 	CLineSeg *m_pLineSegs; // HWPTAG_PARA_LINE_SEG
 	VECTOR<TRangeTag*> m_arRangeTags;  // HWPTAG_PARA_RANGE_TAG
@@ -28,18 +28,20 @@ public:
 	void AddCtrl(CCtrl* pCtrl);
 	void AddCtrls(const LIST<CCtrl*>& arCtrls);
 
-	void SetCtrl(CCtrl* pCtrl, unsigned int unIndex);
+	bool SetCtrl(CCtrl* pCtrl, unsigned int unIndex);
 
 	VECTOR<CCtrl*>& GetCtrls();
 	const VECTOR<CCtrl*> GetCtrls() const;
 
 	unsigned int GetCountCtrls() const;
+	short GetShapeID() const;
+	short GetStyleID() const;
 
 	static CHWPPargraph* Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	CCtrl* FindFirstElement(const STRING& sID, bool bFullfilled, unsigned int& nIndex) const;
-	CCtrl* FindLastElement(const STRING& sID);
+	CCtrl* FindFirstElement(const HWP_STRING& sID, bool bFullfilled, unsigned int& nIndex) const;
+	CCtrl* FindLastElement(const HWP_STRING& sID);
 
 	int IndexOf(CCtrl* pCtrl);
 };

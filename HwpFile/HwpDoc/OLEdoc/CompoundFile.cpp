@@ -2,7 +2,7 @@
 
 namespace HWP
 {
-CCompoundFile::CCompoundFile(const STRING& sFileName)
+CCompoundFile::CCompoundFile(const HWP_STRING& sFileName)
 	: m_fFile(sFileName, std::ios::in | std::ios::binary), m_nSectorSize(512)
 {}
 
@@ -13,7 +13,7 @@ CCompoundFile::~CCompoundFile()
 	CLEAR_ARRAY(CDirectoryEntry, m_arDirectoryEntries);
 }
 
-const CDirectoryEntry* CCompoundFile::GetEntry(const STRING& sFileName) const
+const CDirectoryEntry* CCompoundFile::GetEntry(const HWP_STRING& sFileName) const
 {
 	VECTOR<CDirectoryEntry*>::const_iterator itFound = std::find_if(m_arDirectoryEntries.cbegin(), m_arDirectoryEntries.cend(), [&sFileName](const CDirectoryEntry* pDirectoryEntry){ return sFileName == pDirectoryEntry->GetDirectoryEntryName();});
 
@@ -23,7 +23,7 @@ const CDirectoryEntry* CCompoundFile::GetEntry(const STRING& sFileName) const
 	return *itFound;
 }
 
-bool CCompoundFile::GetComponent(const STRING& sEntryName, CHWPStream& oBuffer)
+bool CCompoundFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	const CDirectoryEntry* pEntry = GetEntry(sEntryName);
 
@@ -33,7 +33,7 @@ bool CCompoundFile::GetComponent(const STRING& sEntryName, CHWPStream& oBuffer)
 	return Read(*pEntry, oBuffer);
 }
 
-VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const CDirectoryEntry* pBaseEntry)
+VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const CDirectoryEntry* pBaseEntry) const
 {
 	//TODO:: реализовать
 	VECTOR<int> arEntryIdx;
@@ -62,7 +62,7 @@ VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const CDirectoryEntry* p
 	return arEntries;
 }
 
-VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const STRING& sBaseEntryName)
+VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const HWP_STRING& sBaseEntryName) const
 {
 	VECTOR<CDirectoryEntry*>::const_iterator itFound = std::find_if(m_arDirectoryEntries.cbegin(), m_arDirectoryEntries.cend(),
 	                                                                [&sBaseEntryName](const CDirectoryEntry* pDirectoryEntry)
@@ -76,7 +76,7 @@ VECTOR<CDirectoryEntry*> CCompoundFile::GetChildEntries(const STRING& sBaseEntry
 
 bool CCompoundFile::Read(const CDirectoryEntry& oEntry, CHWPStream& oBuffer)
 {
-	BYTE *pBuffer = new(std::nothrow) BYTE[oEntry.GetStreamSize()];
+	HWP_BYTE *pBuffer = new(std::nothrow) HWP_BYTE[oEntry.GetStreamSize()];
 
 	if (nullptr == pBuffer)
 		return false;
@@ -327,13 +327,12 @@ void CCompoundFile::Close()
 		m_fFile.close();
 }
 
-void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex)
+void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex) const
 {
 	if (-1 == nCurrentIndex)
 		return;
 
-	VECTOR<int>::iterator itFoundIndex = std::find(arIndexs.begin(), arIndexs.end(), nCurrentIndex);
-	if (arIndexs.end() == itFoundIndex)
+	if (arIndexs.end() == std::find(arIndexs.cbegin(), arIndexs.cend(), nCurrentIndex))
 		arIndexs.push_back(nCurrentIndex);
 
 	if (nCurrentIndex >= m_arDirectoryEntries.size())
@@ -344,7 +343,7 @@ void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex)
 
 	if (-1 != nRightSibling)
 	{
-		const int nElderIndex = itFoundIndex - arIndexs.begin();
+		const int nElderIndex = std::find(arIndexs.cbegin(), arIndexs.cend(), nCurrentIndex) - arIndexs.cbegin();
 		arIndexs.insert(arIndexs.begin() + nElderIndex + 1, nRightSibling);
 
 		if (nRightSibling < m_arDirectoryEntries.size())
@@ -353,7 +352,7 @@ void CCompoundFile::AddSiblings(VECTOR<int>& arIndexs, int nCurrentIndex)
 
 	if (-1 != nLeftSibling)
 	{
-		const int nElderIndex = itFoundIndex - arIndexs.begin();
+		const int nElderIndex = std::find(arIndexs.cbegin(), arIndexs.cend(), nCurrentIndex) - arIndexs.cbegin();
 		arIndexs.insert(arIndexs.begin() + nElderIndex, nLeftSibling);
 
 		if (nLeftSibling < m_arDirectoryEntries.size())
@@ -510,7 +509,7 @@ void CCompoundFile::ParseDirectorySector(CHWPStream& oBuffer)
 		oBuffer.MoveTo(64 + nIndex);
 
 		short shEntryNameLen;
-		STRING sDirectiryEnryName;
+		HWP_STRING sDirectiryEnryName;
 
 		oBuffer.ReadShort(shEntryNameLen);
 		oBuffer.MoveTo(nIndex);
@@ -667,13 +666,13 @@ bool CCompoundFile::CheckSignature(CHWPStream& oBuffer)
 	if (!oBuffer.CanRead(8))
 		return false;
 
-	BYTE arBufSig[8];
+	HWP_BYTE arBufSig[8];
 
 	if (!oBuffer.ReadBytes(arBufSig, 8))
 		return false;
 
-	if ((BYTE)0xD0 == arBufSig[0] && (BYTE)0xCF == arBufSig[1] && (BYTE)0x11 == arBufSig[2] && (BYTE)0xE0 == arBufSig[3] &&
-	    (BYTE)0xA1 == arBufSig[4] && (BYTE)0xB1 == arBufSig[5] && (BYTE)0x1A == arBufSig[6] && (BYTE)0xE1 == arBufSig[7])
+	if ((HWP_BYTE)0xD0 == arBufSig[0] && (HWP_BYTE)0xCF == arBufSig[1] && (HWP_BYTE)0x11 == arBufSig[2] && (HWP_BYTE)0xE0 == arBufSig[3] &&
+	    (HWP_BYTE)0xA1 == arBufSig[4] && (HWP_BYTE)0xB1 == arBufSig[5] && (HWP_BYTE)0x1A == arBufSig[6] && (HWP_BYTE)0xE1 == arBufSig[7])
 		return true;
 
 	return false;

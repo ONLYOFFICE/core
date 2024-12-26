@@ -81,7 +81,7 @@ class CHWPRecordCharShape : public CHWPRecord
 {
 	CHWPDocInfo *m_pParent;
 
-	STRING m_arFontNames[MAX_ELEMENTS];
+	HWP_STRING m_arFontNames[MAX_ELEMENTS];
 	short m_arRatios[MAX_ELEMENTS];
 	short m_arSpacings[MAX_ELEMENTS];
 	short m_arRelSizes[MAX_ELEMENTS];
@@ -99,14 +99,14 @@ class CHWPRecordCharShape : public CHWPRecord
 	bool m_bEngrave;
 	bool m_bSuperScript;
 	bool m_bSubScript;
-	BYTE m_chStrikeOut;
+	HWP_BYTE m_chStrikeOut;
 	EAccent m_eSymMark;
 	bool m_bUseFontSpace;
 	ELineStyle2 m_eStrikeOutShape;
 	bool m_bUseKerning;
 
-	BYTE m_chShadowOffsetX;
-	BYTE m_chShadowOffsetY;
+	HWP_BYTE m_chShadowOffsetX;
+	HWP_BYTE m_chShadowOffsetY;
 	int m_nTextColor;
 	int m_nShadeColor;
 	int m_nShadowColor;

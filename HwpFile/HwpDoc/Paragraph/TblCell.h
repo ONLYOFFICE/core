@@ -22,7 +22,7 @@ class CTblCell
 	std::list<CCellParagraph*> m_arParas;
 	EVertAlign m_eVertAlign;
 
-	STRING m_sMergedColName;
+	HWP_STRING m_sMergedColName;
 public:
 	CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 

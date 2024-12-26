@@ -253,12 +253,12 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	return index;
 }
 
-void static process_list_bullet_style(oox::docx_conversion_context& Context, office_element_ptr_array& content)
+void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
-	if (content.size() <= 0)
+	if (content_.size() <= 0)
 		return;
 
-	span* first_span = dynamic_cast<span*>(content[0].get());
+	span* first_span = dynamic_cast<span*>(content_[0].get());
 	if (!first_span)
 		return;
 
@@ -275,6 +275,15 @@ void static process_list_bullet_style(oox::docx_conversion_context& Context, off
 
 	if (text_props)
 	{
+		if (!attrs_.text_style_name_.empty())
+		{
+			style_instance* paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, false);
+			if (paragraph_style && paragraph_style->content())
+			{
+				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
+			}
+		}
+
 		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
 		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
 
@@ -283,7 +292,7 @@ void static process_list_bullet_style(oox::docx_conversion_context& Context, off
 		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
 			ss << "<w:i/>";
 	}
-	
+
 	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
 }
 
@@ -383,7 +392,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	}
 	Context.start_paragraph_style(styleName);
 	
-	process_list_bullet_style(Context, content_);
+	process_list_bullet_style(Context);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 

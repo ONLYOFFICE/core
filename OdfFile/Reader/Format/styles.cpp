@@ -138,7 +138,14 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
 
 style_text_properties * style_content::get_style_text_properties() const
 {
-    return dynamic_cast<style_text_properties *>(style_text_properties_.get());    
+	return dynamic_cast<style_text_properties*>(style_text_properties_.get());
+}
+
+style_text_properties* style_content::get_style_text_properties(bool create)
+{
+	if (!style_text_properties_ && create)
+		style_text_properties_ = boost::make_shared<style_text_properties>();
+	return dynamic_cast<style_text_properties*>(style_text_properties_.get());
 }
 
 style_paragraph_properties * style_content::get_style_paragraph_properties() const

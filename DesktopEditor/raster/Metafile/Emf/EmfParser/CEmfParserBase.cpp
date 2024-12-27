@@ -78,8 +78,8 @@ namespace MetaFile
 		unsigned int ulWidth, ulHeight;
 
 		if (ReadImage(oTEmfStretchDIBITS.unOffBmiSrc, oTEmfStretchDIBITS.unCbBmiSrc,
-					  oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
-					  sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+		              oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
+		              sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			if (m_pInterpretator)
 			{
@@ -761,7 +761,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+		{
+			CEmfInterpretatorSvg *pEmfInterpretatorSvg = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pEmfInterpretatorSvg;
+		}
 	}
 
 	CEmfInterpretatorBase* CEmfParserBase::GetInterpretator()

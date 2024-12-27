@@ -2,6 +2,7 @@
 #define EMFPLUSTYPES_H
 
 #include "EmfTypes.h"
+#include "../Common/MetaFileObjects.h"
 
 namespace MetaFile
 {
@@ -243,7 +244,7 @@ namespace MetaFile
 		CustomLineCapDataLinePath = 0x00000002
 	} CustomLineCapDataFlags;
 
-	class CLineCapData
+	class CLineCapData : public ILineCap
 	{
 	public:
 		CLineCapData() {};

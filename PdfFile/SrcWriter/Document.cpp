@@ -1456,6 +1456,9 @@ namespace PdfWriter
 		m_pCurPage  = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
+		if (m_pPageTree)
+			m_pPageTree->ReplacePage(nPageIndex, pPage);
+
 		return true;
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
@@ -1778,10 +1781,10 @@ namespace PdfWriter
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{
-		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		CDictObject* pResources = (CDictObject*)m_pCurPage->GetResourcesItem();
 		if (!pResources)
 		{
-			pResources = new CDictObject();
+			pResources = new CResourcesDict(NULL, true, false);
 			m_pCurPage->Add("Resources", pResources);
 		}
 		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
@@ -1844,7 +1847,7 @@ namespace PdfWriter
 	}
 	void CDocument::EndShapeXML()
 	{
-		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		CDictObject* pResources = (CDictObject*)m_pCurPage->GetResourcesItem();
 		if (!pResources)
 			return;
 		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");

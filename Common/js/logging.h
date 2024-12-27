@@ -4,6 +4,7 @@
 #include <stdio.h>
 #define LOG_BUFFER_SIZE 1000
 
+// not intended for use in production. only for testing/debugging purposes
 namespace Logging
 {
 void logBytes(char* name, unsigned char* str, int len)

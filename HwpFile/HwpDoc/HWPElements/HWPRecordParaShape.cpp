@@ -51,7 +51,7 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	m_bWidowOrphan = CHECK_FLAG(nTypeBits, 0x10000);
 	m_bKeepWithNext = CHECK_FLAG(nTypeBits, 0x20000);
 	m_bPageBreakBefore = CHECK_FLAG(nTypeBits, 0x40000);
-	m_eVertAlign = GetVerticalAlign((nTypeBits >> 20) & 0x03);
+	m_eVertAlign = ::HWP::GetVerticalAlign((nTypeBits >> 20) & 0x03);
 	m_bFontLineHeight = CHECK_FLAG(nTypeBits, 0x100000);
 	m_eHeadingType = GetHeadingType((nTypeBits >> 23) & 0x03);
 	m_chHeadingLevel = (HWP_BYTE)((nTypeBits >> 25) & 0x07);
@@ -92,5 +92,15 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	}
 	else
 		oBuffer.Skip(4);
+}
+
+EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const
+{
+	return m_eAlign;
+}
+
+EVerticalAlign CHWPRecordParaShape::GetVerticalAlign() const
+{
+	return m_eVertAlign;
 }
 }

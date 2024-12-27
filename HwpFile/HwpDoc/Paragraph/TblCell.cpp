@@ -39,4 +39,49 @@ int CTblCell::GetSize()
 	return m_nSize;
 }
 
+short CTblCell::GetColAddr() const
+{
+	return m_shColAddr;
+}
+
+short CTblCell::GetRowAddr() const
+{
+	return m_shRowAddr;
+}
+
+short CTblCell::GetColSpan() const
+{
+	return m_shColSpan;
+}
+
+short CTblCell::GetRowSpan() const
+{
+	return m_shRowSpan;
+}
+
+VECTOR<CCellParagraph*> CTblCell::GetParagraphs() const
+{
+	return m_arParas;
+}
+
+int CTblCell::GetWidth() const
+{
+	return m_nWidth;
+}
+
+int CTblCell::GetHeight() const
+{
+	return m_nHeight;
+}
+
+EVertAlign CTblCell::GetVertAlign() const
+{
+	return m_eVertAlign;
+}
+
+short CTblCell::GetBorderFillID() const
+{
+	return m_shBorderFill;
+}
+
 }

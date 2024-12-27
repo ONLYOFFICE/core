@@ -1,8 +1,8 @@
 #include "HWPRecordCharShape.h"
+#include "../HWPElements/HWPRecordFaceName.h"
 
 namespace HWP
 {
-
 ELang GetLang(int nValue)
 {
 	switch (static_cast<ELang>(nValue))
@@ -74,7 +74,11 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	{
 		short shFontID;
 		oBuffer.ReadShort(shFontID);
-		//fontName[i] 	= ((HwpRecord_FaceName)parent.faceNameList.get(fontID)).faceName;
+
+		const CHWPRecordFaceName* pFaceName = dynamic_cast<const CHWPRecordFaceName*>(m_pParent->GetFaceName(shFontID));
+
+		if (nullptr != pFaceName)
+			m_arFontNames[nIndex] = pFaceName->GetFaceName();
 	}
 
 	#define READ_SHORT (short)(oBuffer[0] & 0x00FF); oBuffer.Skip(1)
@@ -96,7 +100,8 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arCharOffset[nIndex] = (HWP_BYTE)((*oBuffer.GetCurPtr()) & 0x00FF);
+		m_arCharOffset[nIndex] = (HWP_BYTE)(oBuffer[0] & 0x00FF);
+		oBuffer.Skip(1);
 	}
 
 	oBuffer.ReadInt(m_nHeight);
@@ -135,5 +140,41 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.ReadColor(m_nStrikeOutColor);
 
 	oBuffer.RemoveLastSavedPos();
+}
+
+bool CHWPRecordCharShape::Bold() const
+{
+	return m_bBold;
+}
+
+bool CHWPRecordCharShape::Italic() const
+{
+	return m_bItalic;
+}
+
+int CHWPRecordCharShape::GetHeight() const
+{
+	return m_nHeight;
+}
+
+short CHWPRecordCharShape::GetRelSize(ELang eLang) const
+{
+	if (ELang::MAX == eLang)
+		return 0;
+
+	return m_arRelSizes[(int)eLang];
+}
+
+HWP_STRING CHWPRecordCharShape::GetFontName(ELang eLang) const
+{
+	if (ELang::MAX == eLang)
+		return HWP_STRING();
+
+	return m_arFontNames[(int)eLang];
+}
+
+int CHWPRecordCharShape::GetTextColor() const
+{
+	return m_nTextColor;
 }
 }

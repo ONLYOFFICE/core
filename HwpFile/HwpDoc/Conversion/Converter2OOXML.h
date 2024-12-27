@@ -4,9 +4,12 @@
 #include "../HWPFile_Private.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
-#include "HwpDoc/Paragraph/CtrlShapePic.h"
-#include "HwpDoc/Paragraph/ParaText.h"
-#include "HwpDoc/Section/Page.h"
+#include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlShapePic.h"
+#include "../Paragraph/ParaText.h"
+#include "../Paragraph/TblCell.h"
+
+#include "../Section/Page.h"
 
 namespace HWP
 {
@@ -14,8 +17,16 @@ struct TConversionState
 {
 	bool m_bOpenedP;
 	bool m_bOpenedR;
+	bool m_bWasSpace;
 
 	TConversionState();
+};
+
+enum class ECellCreator
+{
+	FILE,
+	EMPTY,
+	NOT_CREATED
 };
 
 class CConverter2OOXML
@@ -38,13 +49,24 @@ class CConverter2OOXML
 
 	bool IsRasterFormat(const HWP_STRING& sFormat);
 
+	void WriteParagraph(const CHWPPargraph* pParagraph, TConversionState& oState);
+	void WriteParagraphProperties(const CHWPPargraph* pParagraph, TConversionState& oState);
+	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, TConversionState& oState);
+	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, TConversionState& oState);
+	void WriteCell(const CTblCell* pCell, TConversionState& oState, ECellCreator eCellCreator);
+	void WriteCellProperties(short shBorderFillID);
+	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName);
+
 	void WriteSectionSettings(const CPage* pPage);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
 
-	void WriteParaStyle(short shStyleID, short shParaShapeID, short shCharShapeID, const TConversionState& oState);
+
+	void WriteParaShapeProperties(short shParaShapeID, const TConversionState& oState);
+	void WriteRunnerStyle(short shCharShapeID, const TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
+	const CCtrlSectionDef* FindSectionDef(const CHWPSection* pSection) const;
 public:
 	CConverter2OOXML();
 	~CConverter2OOXML();

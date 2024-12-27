@@ -75,6 +75,9 @@ class CHWPRecordParaShape : public CHWPRecord
 	int m_nLineSpacingType;
 public:
 	CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	EHorizontalAlign GetHorizantalAlign() const;
+	EVerticalAlign GetVerticalAlign() const;
 };
 }
 

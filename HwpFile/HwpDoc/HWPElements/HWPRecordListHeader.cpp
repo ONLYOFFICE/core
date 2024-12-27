@@ -10,6 +10,7 @@ int CHWPRecordListHeader::GetCount(int nTagNum, int nLevel, int nSize, CHWPStrea
 {
 	short m_shParas;
 	oBuffer.ReadShort(m_shParas);
+	oBuffer.Skip(4);
 
 	return m_shParas;
 }

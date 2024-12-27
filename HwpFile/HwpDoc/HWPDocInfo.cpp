@@ -74,7 +74,6 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 	while (oBuffer.CanRead())
 	{
 		oBuffer.ReadInt(nHeader);
-		oBuffer.Skip(-4);
 		nTagNum = nHeader & 0x3FF; // 10 bits (0 - 9 bit)
 		nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
 		nSize = (nHeader & 0xFFF00000) >> 20; // 12 bits (20-31 bit)
@@ -82,11 +81,8 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 		if (0xFFF == nSize)
 		{
 			//TODO:: buf[off+7]<<24&0xFF000000 | buf[off+6]<<16&0xFF0000 | buf[off+5]<<8&0xFF00 | buf[off+4]&0xFF;
-			oBuffer.Skip(4);
 			oBuffer.ReadInt(nSize);
 		}
-		else
-			oBuffer.Skip(4);
 
 		CHWPRecord *pRecord = nullptr;
 		EHWPTag eTag = GetTagFromNum(nTagNum);
@@ -203,7 +199,7 @@ const CHWPRecord* CHWPDocInfo::GetFaceName(int nIndex) const
 
 const CHWPRecord* CHWPDocInfo::GetBorderFill(int nIndex) const
 {
-	GET_RECORD(m_arBorderFills, nIndex);
+	GET_RECORD(m_arBorderFills, nIndex - 1);
 }
 
 const CHWPRecord* CHWPDocInfo::GetCharShape(int nIndex) const
@@ -218,7 +214,7 @@ const CHWPRecord* CHWPDocInfo::GetNumbering(int nIndex) const
 
 const CHWPRecord* CHWPDocInfo::GetBullet(int nIndex) const
 {
-	GET_RECORD(m_arBullets, nIndex);
+	GET_RECORD(m_arBullets, nIndex - 1);
 }
 
 const CHWPRecord* CHWPDocInfo::GetParaShape(int nIndex) const

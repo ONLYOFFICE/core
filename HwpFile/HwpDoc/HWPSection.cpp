@@ -364,15 +364,10 @@ int CHWPSection::ParseRecurse(CHWPPargraph* pCurrPara, int nRunLevel, CHWPStream
 					}
 
 					if (nullptr != dynamic_cast<CCtrlTable*>(pCtrl))
-					{
-						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
-						ParseCtrlRecurse(pCtrl, nLevel, oBuffer, 0, nVersion);
-					}
-					else
-					{
-						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
-						ParseCtrlRecurse(pCtrl, nLevel, oBuffer, 0, nVersion);
-					}
+						pCurrPara->AddCtrl(pCtrl); // TODO:: Странный момент. По логу записей таблицы никак не могут сохраниться (до выяснения будет так)
+
+					oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
+					ParseCtrlRecurse(pCtrl, nLevel, oBuffer, 0, nVersion);
 
 					oBuffer.RemoveLastSavedPos();
 					break;
@@ -504,7 +499,6 @@ int CHWPSection::ParseCtrlRecurse(CCtrl* pCurrCtrl, int nRunLevel, CHWPStream& o
 					oBuffer.Skip(nHeaderSize);
 
 					int nSubParaCount = CHWPRecordListHeader::GetCount(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
-					oBuffer.Skip(4);
 
 					if (nullptr != dynamic_cast<CCtrlTable*>(pCtrl))
 					{

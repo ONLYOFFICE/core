@@ -25,6 +25,39 @@ CCtrlTable::~CCtrlTable()
 	}
 }
 
+bool CCtrlTable::Empty() const
+{
+	return m_arCells.empty();
+}
+
+short CCtrlTable::GetRows() const
+{
+	return m_shNRows;
+}
+
+short CCtrlTable::GetCols() const
+{
+	return m_shNCols;
+}
+
+short CCtrlTable::GetColsInRow(short shRowIndex) const
+{
+	if (shRowIndex >= m_arRowSize.size())
+		return 1;
+
+	return m_arRowSize[shRowIndex];
+}
+
+short CCtrlTable::GetCountCells() const
+{
+	return m_arCells.size();
+}
+
+short CCtrlTable::GetBorderFillID() const
+{
+	return m_shBorderFillID;
+}
+
 void CCtrlTable::AddCell(CTblCell* pCell)
 {
 	m_arCells.push_back(pCell);
@@ -33,6 +66,14 @@ void CCtrlTable::AddCell(CTblCell* pCell)
 bool CCtrlTable::HaveCells()
 {
 	return !m_arCells.empty();
+}
+
+const CTblCell* CCtrlTable::GetCell(unsigned int unIndex) const
+{
+	if (unIndex >= m_arCells.size())
+		return nullptr;
+
+	return m_arCells[unIndex];
 }
 
 CTblCell* CCtrlTable::GetLastCell()
@@ -53,7 +94,7 @@ int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int 
 	oBuffer.ReadShort(oObj.m_shInTSpace);
 	oBuffer.ReadShort(oObj.m_shInBSpace);
 
-	oObj.m_arRowSize.reserve(oObj.m_shNRows);
+	oObj.m_arRowSize.resize(oObj.m_shNRows);
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNRows; ++unIndex)
 		oBuffer.ReadShort(oObj.m_arRowSize[unIndex]);
 
@@ -82,6 +123,8 @@ int CCtrlTable::ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int 
 			}
 		}
 	}
+
+	oObj.m_bFullFilled = true;
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;

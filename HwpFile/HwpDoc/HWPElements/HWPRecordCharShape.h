@@ -114,6 +114,15 @@ class CHWPRecordCharShape : public CHWPRecord
 	int m_nStrikeOutColor;
 public:
 	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	bool Bold() const;
+	bool Italic() const;
+
+	int GetHeight() const;
+
+	short GetRelSize(ELang eLang) const;
+	HWP_STRING GetFontName(ELang eLang) const;
+	int GetTextColor() const;
 };
 }
 

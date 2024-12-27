@@ -52,4 +52,9 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 	if (m_bBasicFaceExists)
 		oBuffer.ReadString(m_sBasicFaceName, EStringCharacter::UTF16);
 }
+
+HWP_STRING CHWPRecordFaceName::GetFaceName() const
+{
+	return m_sFaceName;
+}
 }

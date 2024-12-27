@@ -1,17 +1,37 @@
 #ifndef TRANSFORM_H
 #define TRANSFORM_H
 
+#include <iomanip>
+#include <sstream>
+
 namespace HWP
 {
 namespace Transform
 {
-	inline int TranslateHWP2OOXML(int nValue)
+	inline int HWP2OOXML(int nValue)
 	{
 		return (int)((double)nValue * 127.); // 7200. * 914400 = 127
 	}
 
-	short ToLineWidth(short shHWPThick)
+	inline int HWPUnit2Twips(int nValue)
 	{
+		return static_cast<int>((double)nValue / 7200. * 1440.);
+	}
+
+	inline std::wstring IntColorToHEX(int nColor)
+	{
+		std::wstringstream oSStream;
+
+		oSStream << std::uppercase << std::hex << std::setw(6) << std::setfill(L'0') << nColor;
+
+		return oSStream.str();
+	}
+
+	short LineWidth2Pt(short shHWPThick)
+	{
+		//TODO:: проверить
+		return (short)std::ceil((double)shHWPThick * 4 * 25.4 / 72.);
+
 		switch(shHWPThick)
 		{
 			case 0: // 0.1mm

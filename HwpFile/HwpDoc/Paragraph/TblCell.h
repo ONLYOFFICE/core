@@ -19,7 +19,7 @@ class CTblCell
 	int m_nHeight;
 	int m_arMargin[4];
 	short m_shBorderFill;
-	std::list<CCellParagraph*> m_arParas;
+	VECTOR<CCellParagraph*> m_arParas;
 	EVertAlign m_eVertAlign;
 
 	HWP_STRING m_sMergedColName;
@@ -31,6 +31,16 @@ public:
 	void AddParagraph(CCellParagraph* pParagraph);
 
 	int GetSize();
+
+	short GetColAddr() const;
+	short GetRowAddr() const;
+	short GetColSpan() const;
+	short GetRowSpan() const;
+	VECTOR<CCellParagraph*> GetParagraphs() const;
+	int GetWidth() const;
+	int GetHeight() const;
+	EVertAlign GetVertAlign() const;
+	short GetBorderFillID() const;
 };
 }
 

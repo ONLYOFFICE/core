@@ -143,19 +143,24 @@ int CFill::GetSize() const
 	return m_nSize;
 }
 
-bool CFill::IsColorFill() const
+bool CFill::ColorFill() const
 {
 	return CHECK_FLAG(m_nFillType, 0x01);
 }
 
-bool CFill::IsGradFill() const
+bool CFill::GradFill() const
 {
 	return CHECK_FLAG(m_nFillType, 0x04);
 }
 
-bool CFill::IsImageFill() const
+bool CFill::ImageFill() const
 {
 	return CHECK_FLAG(m_nFillType, 0x02);
+}
+
+int CFill::GetFaceColor() const
+{
+	return m_nFaceColor;
 }
 
 CHWPRecordBorderFill::CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize)
@@ -194,6 +199,31 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 	READ_SIDE(m_oDiagonal);
 
 	m_oFill = CFill(oBuffer, 0, 0); // TODO:: перейти от использования off и size
+}
+
+TBorder CHWPRecordBorderFill::GetLeftBorder() const
+{
+	return m_oLeft;
+}
+
+TBorder CHWPRecordBorderFill::GetRightBorder() const
+{
+	return m_oRight;
+}
+
+TBorder CHWPRecordBorderFill::GetTopBorder() const
+{
+	return m_oTop;
+}
+
+TBorder CHWPRecordBorderFill::GetBottomBorder() const
+{
+	return m_oBottom;
+}
+
+const CFill* CHWPRecordBorderFill::GetFill() const
+{
+	return &m_oFill;
 }
 
 }

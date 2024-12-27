@@ -87,9 +87,11 @@ public:
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
 
 	int GetSize() const;
-	bool IsColorFill() const;
-	bool IsGradFill() const;
-	bool IsImageFill() const;
+	bool ColorFill() const;
+	bool GradFill() const;
+	bool ImageFill() const;
+
+	int GetFaceColor() const;
 };
 
 class CHWPRecordBorderFill : public CHWPRecord
@@ -113,10 +115,16 @@ class CHWPRecordBorderFill : public CHWPRecord
 	TBorder m_oBottom;
 	TBorder m_oDiagonal;
 	CFill   m_oFill;
-
 public:
 	CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize);
 	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	TBorder GetLeftBorder() const;
+	TBorder GetRightBorder() const;
+	TBorder GetTopBorder() const;
+	TBorder GetBottomBorder() const;
+
+	const CFill* GetFill() const;
 };
 }
 

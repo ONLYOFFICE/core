@@ -24,20 +24,28 @@ class CCtrlTable : public CCtrlCommon
 	short m_shInRSpace;
 	short m_shInTSpace;
 	short m_shInBSpace;
-	std::vector<short> m_arRowSize;
+	VECTOR<short> m_arRowSize;
 	short m_shBorderFillID;
 	short m_shValidZoneSize;
-	std::list<TCellZone*> m_arCellzoneList;
-	std::list<CTblCell*> m_arCells;
+	VECTOR<TCellZone*> m_arCellzoneList;
+	VECTOR<CTblCell*> m_arCells;
 public:
 	CCtrlTable(const HWP_STRING& sCtrlID);
 	CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlTable();
 
+	bool Empty() const;
+	short GetRows() const;
+	short GetCols() const;
+	short GetColsInRow(short shRowIndex) const;
+	short GetCountCells() const;
+	short GetBorderFillID() const;
+
 	void AddCell(CTblCell* pCell);
 
 	bool HaveCells();
 
+	const CTblCell* GetCell(unsigned int unIndex) const;
 	CTblCell* GetLastCell();
 
 	static int ParseCtrl(CCtrlTable& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

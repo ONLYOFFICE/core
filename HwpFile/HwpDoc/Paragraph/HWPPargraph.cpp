@@ -75,6 +75,11 @@ short CHWPPargraph::GetStyleID() const
 	return m_shParaStyleID;
 }
 
+const CLineSeg* CHWPPargraph::GetLineSeg() const
+{
+	return m_pLineSegs;
+}
+
 CHWPPargraph* CHWPPargraph::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	CHWPPargraph *pPara = new CHWPPargraph();

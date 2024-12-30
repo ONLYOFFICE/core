@@ -92,6 +92,17 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	}
 	else
 		oBuffer.Skip(4);
+
+	if (nVersion >= 5025)
+	{
+		int nAttrBits;
+		oBuffer.ReadInt(nAttrBits);
+
+		m_nLineSpacingType = (HWP_BYTE)(nAttrBits & 0x0F);
+		oBuffer.ReadInt(m_nLineSpacing);
+	}
+	else
+		oBuffer.Skip(8);
 }
 
 EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const
@@ -102,5 +113,30 @@ EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const
 EVerticalAlign CHWPRecordParaShape::GetVerticalAlign() const
 {
 	return m_eVertAlign;
+}
+
+int CHWPRecordParaShape::GetLineSpacingType() const
+{
+	return m_nLineSpacingType;
+}
+
+int CHWPRecordParaShape::GetLineSpacing() const
+{
+	return m_nLineSpacing;
+}
+
+int CHWPRecordParaShape::GetMarginPrev() const
+{
+	return m_nMarginPrev;
+}
+
+int CHWPRecordParaShape::GetMarginNext() const
+{
+	return m_nMarginNext;
+}
+
+bool CHWPRecordParaShape::KeepWithNext() const
+{
+	return m_bKeepWithNext;
 }
 }

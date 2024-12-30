@@ -8,12 +8,16 @@ namespace HWP
 {
 namespace Transform
 {
-	inline int HWP2OOXML(int nValue)
+	inline int HWPINT2OOXML(int nValue)
 	{
-		return (int)((double)nValue * 127.); // 7200. * 914400 = 127
+		return static_cast<int>((double)nValue * 21000. / 59529.);
+	}
+	inline int HWPUINT2OOXML(int nValue)
+	{
+		return static_cast<int>((double)nValue * 127.); // 914400. / 7200. = 127
 	}
 
-	inline int HWPUnit2Twips(int nValue)
+	inline int HWPUINT2Twips(int nValue)
 	{
 		return static_cast<int>((double)nValue / 7200. * 1440.);
 	}

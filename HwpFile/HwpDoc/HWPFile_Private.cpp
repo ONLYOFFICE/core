@@ -341,10 +341,16 @@ bool CHWPFile_Private::GetBodyText(int nVersion)
 		{
 			CHWPStream oTempBuffer;
 			if (!m_oOleFile.Read(*pSection, oTempBuffer) || !Unzip(oTempBuffer, oBuffer))
+			{
+				delete pHwpSection;
 				return false;
+			}
 		}
 		else if (!m_oOleFile.Read(*pSection, oBuffer))
+		{
+			delete pHwpSection;
 			return false;
+		}
 
 		pHwpSection->Parse(oBuffer, m_nVersion);
 		m_arBodyTexts.push_back(pHwpSection);
@@ -373,7 +379,10 @@ bool CHWPFile_Private::GetViewText(int nVersion)
 			CHWPStream oTempBuffer;
 
 			if (!m_oOleFile.Read(*pSection, oTempBuffer) || !Decrypt(oTempBuffer, oBuffer))
+			{
+				delete pHwpSection;
 				return false;
+			}
 		}
 
 		pHwpSection->Parse(oBuffer, m_nVersion);

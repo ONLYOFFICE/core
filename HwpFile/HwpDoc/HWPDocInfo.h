@@ -59,6 +59,7 @@ public:
 
 	const CHWPRecord* GetBinData(const HWP_STRING& sID) const;
 	EHanType GetHanType() const;
+	ECompatDoc GetCompatibleDoc() const;
 };
 }
 

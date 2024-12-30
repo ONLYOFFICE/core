@@ -19,4 +19,9 @@ CLineSeg::CLineSeg(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int 
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
+
+int CLineSeg::GetLineSpacing() const
+{
+	return m_nLineSpacing;
+}
 }

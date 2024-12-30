@@ -346,6 +346,12 @@ int CHWPSection::ParseRecurse(CHWPPargraph* pCurrPara, int nRunLevel, CHWPStream
 
 					CCtrl *pCtrl = CHWPRecordCtrlHeader::Parse(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
 
+					if (nullptr == pCtrl)
+					{
+						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
+						break;
+					}
+
 					if (nullptr != dynamic_cast<CCtrlGeneralShape*>(pCtrl))
 						((CCtrlGeneralShape*)pCtrl)->SetParent(pCurrPara);
 

@@ -78,6 +78,12 @@ public:
 
 	EHorizontalAlign GetHorizantalAlign() const;
 	EVerticalAlign GetVerticalAlign() const;
+	int GetLineSpacingType() const;
+	int GetLineSpacing() const;
+	int GetMarginPrev() const;
+	int GetMarginNext() const;
+
+	bool KeepWithNext() const;
 };
 }
 

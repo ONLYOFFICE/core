@@ -37,6 +37,8 @@ public:
 	short GetShapeID() const;
 	short GetStyleID() const;
 
+	const CLineSeg* GetLineSeg() const;
+
 	static CHWPPargraph* Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 

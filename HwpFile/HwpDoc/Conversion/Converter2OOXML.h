@@ -61,7 +61,6 @@ class CConverter2OOXML
 	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
 
-
 	void WriteParaShapeProperties(short shParaShapeID, const TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, const TConversionState& oState);
 

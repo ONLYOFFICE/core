@@ -152,9 +152,29 @@ bool CHWPRecordCharShape::Italic() const
 	return m_bItalic;
 }
 
+bool CHWPRecordCharShape::Underline() const
+{
+	return EUnderline::NONE != m_eUnderline;
+}
+
 int CHWPRecordCharShape::GetHeight() const
 {
 	return m_nHeight;
+}
+
+EUnderline CHWPRecordCharShape::GetUnderlineType() const
+{
+	return m_eUnderline;
+}
+
+ELineStyle1 CHWPRecordCharShape::GetUnderlineStyle() const
+{
+	return m_eUnderLineShape;
+}
+
+int CHWPRecordCharShape::GetUnderlineColor() const
+{
+	return m_nUnderlineColor;
 }
 
 short CHWPRecordCharShape::GetRelSize(ELang eLang) const
@@ -171,6 +191,14 @@ HWP_STRING CHWPRecordCharShape::GetFontName(ELang eLang) const
 		return HWP_STRING();
 
 	return m_arFontNames[(int)eLang];
+}
+
+short CHWPRecordCharShape::GetSpacing(ELang eLang) const
+{
+	if (ELang::MAX == eLang)
+		return 0;
+
+	return m_arSpacings[(int)eLang];
 }
 
 int CHWPRecordCharShape::GetTextColor() const

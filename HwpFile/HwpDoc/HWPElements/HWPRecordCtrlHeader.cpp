@@ -77,22 +77,22 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 		pCtrl = new CCtrlPageNumPos(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
-	else if (L"klh%" == sCtrlID || // hyperlink
-	         L"frx%" == sCtrlID || // FIELD_CROSSREF
-	         L"knu%" == sCtrlID || // FIELD_UNKNOWN
-	         L"etd%" == sCtrlID || // FIELD_DATE
-	         L"tdd%" == sCtrlID || // FIELD_DOCDATE
-	         L"tap%" == sCtrlID || // FIELD_PATH
-	         L"kmb%" == sCtrlID || // FIELD_BOOKMARK
-	         L"gmm%" == sCtrlID || // FIELD_MAILMERGE
-	         L"umf%" == sCtrlID || // FIELD_FORMULA
-	         L"mxdi" == sCtrlID || // ???
-	         L"mkob" == sCtrlID || // ???
-	         L"spct" == sCtrlID || // ???
-	         L"tmct" == sCtrlID || // ???
-	         L"tcgp" == sCtrlID || // ???
-	         L"tudt" == sCtrlID ||
-	         true)   // ???
+	// else if (L"klh%" == sCtrlID || // hyperlink
+	//          L"frx%" == sCtrlID || // FIELD_CROSSREF
+	//          L"knu%" == sCtrlID || // FIELD_UNKNOWN
+	//          L"etd%" == sCtrlID || // FIELD_DATE
+	//          L"tdd%" == sCtrlID || // FIELD_DOCDATE
+	//          L"tap%" == sCtrlID || // FIELD_PATH
+	//          L"kmb%" == sCtrlID || // FIELD_BOOKMARK
+	//          L"gmm%" == sCtrlID || // FIELD_MAILMERGE
+	//          L"umf%" == sCtrlID || // FIELD_FORMULA
+	//          L"mxdi" == sCtrlID || // ???
+	//          L"mkob" == sCtrlID || // ???
+	//          L"spct" == sCtrlID || // ???
+	//          L"tmct" == sCtrlID || // ???
+	//          L"tcgp" == sCtrlID || // ???
+	//          L"tudt" == sCtrlID)   // ???
+	else
 	{
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
 		pCtrl = new CCtrlEmpty(sCtrlID);

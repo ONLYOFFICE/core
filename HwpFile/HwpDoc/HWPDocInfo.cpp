@@ -27,7 +27,7 @@ ECompatDoc GetCompatDoc(int nValue)
 }
 
 CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
-	: m_eHanType(eHanType)
+	: m_eHanType(eHanType), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
 // CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
@@ -35,7 +35,7 @@ CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 // {}
 
 CHWPDocInfo::CHWPDocInfo(CHWPFile_Private* pHWPFile)
-	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile)
+	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
 CHWPDocInfo::~CHWPDocInfo()
@@ -248,5 +248,10 @@ const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 EHanType CHWPDocInfo::GetHanType() const
 {
 	return m_eHanType;
+}
+
+ECompatDoc CHWPDocInfo::GetCompatibleDoc() const
+{
+	return m_eCompatibleDoc;
 }
 }

@@ -117,11 +117,16 @@ public:
 
 	bool Bold() const;
 	bool Italic() const;
+	bool Underline() const;
 
 	int GetHeight() const;
+	EUnderline GetUnderlineType() const;
+	ELineStyle1 GetUnderlineStyle() const;
+	int GetUnderlineColor() const;
 
 	short GetRelSize(ELang eLang) const;
 	HWP_STRING GetFontName(ELang eLang) const;
+	short GetSpacing(ELang eLang) const;
 	int GetTextColor() const;
 };
 }

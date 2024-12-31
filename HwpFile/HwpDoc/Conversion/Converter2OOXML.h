@@ -17,7 +17,6 @@ struct TConversionState
 {
 	bool m_bOpenedP;
 	bool m_bOpenedR;
-	bool m_bWasSpace;
 
 	TConversionState();
 };

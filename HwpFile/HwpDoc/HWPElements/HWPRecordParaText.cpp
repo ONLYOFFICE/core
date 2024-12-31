@@ -34,7 +34,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		return LIST<CCtrl*>();
 	}
 
-	std::wregex oRegex(L"[\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]");
+	std::wregex oRegex(L"[\\u0000-\\u001f]"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
 	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
 	std::wsregex_iterator itEnd = std::wsregex_iterator();
 
@@ -42,41 +42,94 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 	LIST<CCtrl*> arParas;
 
-	while(itCurrent != itEnd)
+	HWP_STRING sCurrentText;
+	bool bEnd = false;
+
+	#define UPDATE_CURRENT_TEXT() \
+	do { \
+	if (!sCurrentText.empty()) \
+	{ \
+		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex)); \
+		sCurrentText.clear(); \
+	}} while (false)
+
+	while(itCurrent != itEnd && !bEnd)
 	{
 		if (itCurrent->position() > nPrevIndex)
 		{
 			// write text
-			arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex, itCurrent->position() - nPrevIndex), nPrevIndex));
+			sCurrentText += sText.substr(nPrevIndex, itCurrent->position() - nPrevIndex);
 		}
 
 		if (1 == itCurrent->length())
 		{
 			switch(itCurrent->str()[0])
 			{
+				case 0x00:
+				case 0x02:
+				case 0x13:
+				// case 0x03:
+				// case 0x04:
+				// case 0x17:
+				// case 0x19:
+				{
+					sCurrentText.clear();
+					break;
+				}
+				case 0x03:
+				{
+					UPDATE_CURRENT_TEXT();
+					break;
+				}
+				case 0x04:
+				{
+					bEnd = true;
+					break;
+				}
+				case 0x08:
+				{
+					if (!sCurrentText.empty())
+						sCurrentText.pop_back();
+					break;
+				}
+				case 0x09:
+				{
+					sCurrentText.push_back(L'\t');
+					break;
+				}
+				case 0x0b:
+				{
+					sCurrentText.push_back(L'\v');
+					break;
+				}
 				case 0x0a:
 				{
+					UPDATE_CURRENT_TEXT();
 					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
 					break;
 				}
 				case 0x0d:
 				{
+					UPDATE_CURRENT_TEXT();
 					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
 					break;
 				}
 				case 0x18:
 				{
+					UPDATE_CURRENT_TEXT();
 					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
 					break;
 				}
 				case 0x1e:
 				case 0x1f:
 				{
+					UPDATE_CURRENT_TEXT();
 					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
 					break;
 				}
 			}
 		}
+		// Пока данный вариант невозможен
 		else if (8 == itCurrent->length())
 		{
 			//TODO:: Проверить
@@ -144,15 +197,16 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					break;
 			}
 		}
+
 		nPrevIndex = itCurrent->position() + itCurrent->length();
 		++itCurrent;
 	}
 
-	if (nPrevIndex < sText.length())
-	{
-		// write final text
-		arParas.push_back(new CParaText(L"____", sText.substr(nPrevIndex), nPrevIndex));
-	}
+	if (!bEnd)
+		sCurrentText += sText.substr(nPrevIndex);
+
+	if (!sCurrentText.empty())
+		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex));
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return arParas;

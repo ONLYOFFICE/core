@@ -322,14 +322,9 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 				bLineBreak = false;
 			}
 
-			if (!oState.m_bWasSpace && !std::iswspace(wsText.front()))
-				wsText.insert(0, L" ");
-
 			m_oDocXml.WriteString(L"<w:t xml:space=\"preserve\">");
 			m_oDocXml.WriteEncodeXmlString(wsText);
 			m_oDocXml.WriteString(L"</w:t></w:r>");
-
-			oState.m_bWasSpace = std::iswspace(wsText.back());
 		}
 		else if (nullptr != dynamic_cast<const CCtrlCharacter*>(pCtrl))
 		{
@@ -342,7 +337,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 					if (oState.m_bOpenedP)
 					{
 						oState.m_bOpenedP = false;
-						oState.m_bWasSpace = true;
 						m_oDocXml.WriteString(L"</w:p>");
 					}
 					m_oDocXml.WriteString(L"<w:p>");
@@ -377,7 +371,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 	{
 		m_oDocXml.WriteString(L"</w:p>");
 		oState.m_bOpenedP = false;
-		oState.m_bWasSpace = true;
 	}
 }
 
@@ -1018,7 +1011,7 @@ bool CConverter2OOXML::ConvertTo(const HWP_STRING& sFilePath)
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bWasSpace(true)
+	: m_bOpenedP(false), m_bOpenedR(false)
 {}
 
 }

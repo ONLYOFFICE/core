@@ -24,7 +24,6 @@
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
 
 #include "htmlfile2.h"
 #include "src/Languages.h"
@@ -4534,29 +4533,22 @@ private:
 		if (wsSvg.empty())
 			return false;
 
-		CSvgFile oSvgReader;
-
 		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-		NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
-		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+		pFonts->Initialize();
 
-		pFontCache->SetStreams(pFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		oSvgReader.SetFontManager(pFontManager);
-
-		if (!oSvgReader.ReadFromWString(wsSvg))
+		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
+		if (!pSvgReader->LoadFromString(wsSvg))
 		{
-			RELEASEINTERFACE(pFontManager);
-			pFonts->Release();
+			RELEASEINTERFACE(pSvgReader);
+			RELEASEINTERFACE(pFonts);
 			return false;
 		}
 
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-		pGrRenderer->SetFontManager(pFontManager);
+		pGrRenderer->SetFontManager(pSvgReader->get_FontManager());
 
 		double dX, dY, dW, dH;
-		oSvgReader.GetBounds(dX, dY, dW, dH);
+		pSvgReader->GetBounds(&dX, &dY, &dW, &dH);
 
 		if (dW < 0) dW = -dW;
 		if (dH < 0) dH = -dH;
@@ -4615,19 +4607,20 @@ private:
 		pGrRenderer->put_Width(dWidth);
 		pGrRenderer->put_Height(dHeight);
 
-		oSvgReader.SetWorkingDirectory(m_sSrc);
-		oSvgReader.Draw(pGrRenderer, 0, 0, dWidth, dHeight);
+		// TODO: src directory as tmp - it's not good idea
+		pSvgReader->SetTempDirectory(m_sSrc);
+		pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
 		oFrame.SaveFile(m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L".png", 4);
 		oFrame.put_Data(NULL);
 
-		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
 
 		if (pBgraData)
 			free(pBgraData);
 
-		pFonts->Release();
+		RELEASEINTERFACE(pSvgReader);
+		RELEASEINTERFACE(pFonts);
 
 		return true;
 	}

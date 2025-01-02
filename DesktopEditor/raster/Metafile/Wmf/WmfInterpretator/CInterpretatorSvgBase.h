@@ -62,8 +62,8 @@ namespace MetaFile
 
 		void AddClipValue(const std::wstring& wsId, const std::wstring& wsValue, int nClipMode = RGN_AND);
 
-		inline std::wstring GetClip()   const;
-		inline std::wstring GetClipId() const;
+		std::wstring GetClip()   const;
+		std::wstring GetClipId() const;
 	private:
 		struct TClipValue
 		{

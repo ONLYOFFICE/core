@@ -540,7 +540,15 @@ void xlsx_conditionalFormatting_context::start(std::wstring ref)
 
 void xlsx_conditionalFormatting_context::add_rule(int type)
 {
-	impl_->conditionalFormattings_.back().rules.push_back(rule());
+	if (false == impl_->conditionalFormattings_.back().rules.empty())
+	{
+		if (impl_->conditionalFormattings_.back().rules.back().type != type)
+		{
+			impl_->conditionalFormattings_.push_back(impl_->conditionalFormattings_.back());
+			impl_->conditionalFormattings_.back().rules.clear();
+		}
+	}
+	impl_->conditionalFormattings_.back().rules.emplace_back();
 	impl_->conditionalFormattings_.back().rules.back().type = type;
 }
 void xlsx_conditionalFormatting_context::set_formula(std::wstring f)

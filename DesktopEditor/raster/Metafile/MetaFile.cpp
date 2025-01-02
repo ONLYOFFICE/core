@@ -448,6 +448,37 @@ namespace MetaFile
 		return false;
 	}
 
+	bool CMetaFile::LoadFromString(const std::wstring& data)
+	{
+#ifdef METAFILE_SUPPORT_SVG
+		RELEASEINTERFACE(m_pFontManager);
+
+		if (m_pAppFonts)
+		{
+			m_pFontManager = m_pAppFonts->GenerateFontManager();
+			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+			m_pFontManager->SetOwnerCache(pMeasurerCache);
+		}
+
+		m_oSvgFile.SetFontManager(m_pFontManager);
+
+		if (m_oSvgFile.ReadFromWString(data) == true)
+		{
+			m_lType = c_lMetaSvg;
+			return true;
+		}
+#endif
+		return false;
+	}
+
+	void CMetaFile::SetTempDirectory(const std::wstring& dir)
+	{
+#ifdef METAFILE_SUPPORT_SVG
+		m_oSvgFile.SetWorkingDirectory(dir);
+#endif
+	}
+
 	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)

@@ -398,20 +398,38 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 
 			}
 		}
-		if (fo_margin_left_ || //? + буквица
+		_CP_OPT(odf_types::length_or_percent) curr_margin_left_ = fo_margin_left_;
+		if (curr_margin_left_ || //? + буквица
 			fo_margin_right_ || 
 			(fo_text_indent_ && Context.get_drop_cap_context().state() != 1))
 		{
 			// TODO auto indent
+
+			if (Context.get_list_style_level() > 0)
+			{
+				int lvl = Context.get_list_style_stack().size() - 1;
+				odf_reader::list_style_container& lists = Context.root()->odf_context().listStyleContainer();
+				odf_reader::text_list_style* curStyleList = lists.list_style_by_name(Context.get_list_style_stack().back());
+
+				if (lvl < curStyleList->content_.size())
+				{
+					odf_reader::text_list_level_style* curStyleListLvl = dynamic_cast<odf_reader::text_list_level_style*>(curStyleList->content_[lvl].get());
+					odf_reader::style_list_level_properties* curStyleListLvlProps = curStyleListLvl ? dynamic_cast<odf_reader::style_list_level_properties*>(curStyleListLvl->list_level_properties_.get()) : NULL;
+					if (curStyleListLvlProps)
+					{
+						curr_margin_left_ = curStyleListLvlProps->text_space_before_;
+					}
+				}
+			}
 			std::wstring w_left, w_right, w_hanging, w_firstLine;
 
-            w_left = docx_process_margin(fo_margin_left_, 20.0);
+            w_left = docx_process_margin(curr_margin_left_, 20.0);
             w_right = docx_process_margin(fo_margin_right_, 20.0);
             w_firstLine = docx_process_margin(fo_text_indent_, 20.0);
 
-			if (w_left.empty())			w_left = L"0";
-			if (w_right.empty())		w_right = L"0";
-			if (w_firstLine.empty())	w_hanging = L"0";
+			if (w_left.empty()) w_left = L"0";
+			if (w_right.empty()) w_right = L"0";
+			if (w_firstLine.empty()) w_hanging = L"0";
 	                
 		   CP_XML_NODE(L"w:ind")
 		   {

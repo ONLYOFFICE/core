@@ -7,15 +7,13 @@
 #include "CSvgParser.h"
 #include "SvgObjects/CStyle.h"
 
-#define SVG_DECL_IMPORT Q_DECL_IMPORT
-
 namespace SVG 
 {
 	struct TFontArguments;
 	class CFont;
 }
 
-class SVG_DECL_IMPORT CSvgFile
+class CSvgFile
 {
 	public:
 		CSvgFile();

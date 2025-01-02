@@ -27,7 +27,6 @@ namespace MetaFile
 
 		void   SetStream(BYTE *pBytes, unsigned int unSize);
 		bool   GetBanEMFProcesses();
-
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);
 

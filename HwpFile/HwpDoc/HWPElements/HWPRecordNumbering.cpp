@@ -12,7 +12,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 		int nTypeBits;
 		oBuffer.ReadInt(nTypeBits);
 
-		oBuffer.ReadByte(m_arNumbering[nIndex].m_chAlign);
+		m_arNumbering[nIndex].m_chAlign = (HWP_BYTE)(nTypeBits & 0x03);
 		m_arNumbering[nIndex].m_bUseInstWidth = CHECK_FLAG(nTypeBits, 0x40);
 		m_arNumbering[nIndex].m_bAutoIndent = CHECK_FLAG(nTypeBits, 0x80);
 		m_arNumbering[nIndex].m_chTextOffsetType = (HWP_BYTE)((nTypeBits >> 4) & 0x01);
@@ -52,5 +52,34 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 	}
 
 	oBuffer.RemoveLastSavedPos();
+}
+
+short CHWPRecordNumbering::GetStart() const
+{
+	return m_shStart;
+}
+
+HWP_STRING CHWPRecordNumbering::GetNumFormat(unsigned short ushIndex) const
+{
+	if (ushIndex >= 7)
+		return HWP_STRING();
+
+	return m_arNumbering[ushIndex].m_sNumFormat;
+}
+
+HWP_BYTE CHWPRecordNumbering::GetAlign(unsigned short ushIndex) const
+{
+	if (ushIndex >= 7)
+		return 0;
+
+	return m_arNumbering[ushIndex].m_chAlign;
+}
+
+int CHWPRecordNumbering::GetStartNumber(unsigned short ushIndex) const
+{
+	if (ushIndex >= 7)
+		return 0;
+
+	return m_arNumbering[ushIndex].m_nStartNumber;
 }
 }

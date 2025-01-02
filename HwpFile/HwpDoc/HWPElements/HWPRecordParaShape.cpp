@@ -53,7 +53,7 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	m_bPageBreakBefore = CHECK_FLAG(nTypeBits, 0x40000);
 	m_eVertAlign = ::HWP::GetVerticalAlign((nTypeBits >> 20) & 0x03);
 	m_bFontLineHeight = CHECK_FLAG(nTypeBits, 0x100000);
-	m_eHeadingType = GetHeadingType((nTypeBits >> 23) & 0x03);
+	m_eHeadingType = ::HWP::GetHeadingType((nTypeBits >> 23) & 0x03);
 	m_chHeadingLevel = (HWP_BYTE)((nTypeBits >> 25) & 0x07);
 	m_bConnect = CHECK_FLAG(nTypeBits, 0x800000);
 	m_bIgnoreMargin = CHECK_FLAG(nTypeBits, 0x1000000);
@@ -113,6 +113,21 @@ EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const
 EVerticalAlign CHWPRecordParaShape::GetVerticalAlign() const
 {
 	return m_eVertAlign;
+}
+
+EHeadingType CHWPRecordParaShape::GetHeadingType() const
+{
+	return m_eHeadingType;
+}
+
+HWP_BYTE CHWPRecordParaShape::GetHeadingLevel() const
+{
+	return m_chHeadingLevel;
+}
+
+short CHWPRecordParaShape::GetHeadingIdRef() const
+{
+	return m_shHeadingIdRef;
 }
 
 int CHWPRecordParaShape::GetLineSpacingType() const

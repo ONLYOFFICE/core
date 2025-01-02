@@ -29,12 +29,17 @@ class CHWPRecordNumbering : public CHWPRecord
 {
 	CHWPDocInfo *m_pParent;
 
-	TNumbering m_arNumbering[10];
+	TNumbering m_arNumbering[7];
 	short m_shStart;
 	HWP_STRING m_arExtLevelFormat[3];
 	int m_arExtLevelStart[3];
 public:
 	CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	short GetStart() const;
+	HWP_STRING GetNumFormat(unsigned short ushIndex) const;
+	HWP_BYTE GetAlign(unsigned short ushIndex) const;
+	int GetStartNumber(unsigned short ushIndex) const;
 };
 }
 

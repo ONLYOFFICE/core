@@ -209,7 +209,7 @@ const CHWPRecord* CHWPDocInfo::GetCharShape(int nIndex) const
 
 const CHWPRecord* CHWPDocInfo::GetNumbering(int nIndex) const
 {
-	GET_RECORD(m_arNumberings, nIndex);
+	GET_RECORD(m_arNumberings, nIndex - 1);
 }
 
 const CHWPRecord* CHWPDocInfo::GetBullet(int nIndex) const

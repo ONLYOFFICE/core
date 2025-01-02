@@ -6,10 +6,11 @@
 
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapePic.h"
-#include "../Paragraph/ParaText.h"
 #include "../Paragraph/TblCell.h"
 
 #include "../Section/Page.h"
+
+#include "NumberingConverter.h"
 
 namespace HWP
 {
@@ -40,6 +41,8 @@ class CConverter2OOXML
 	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
 	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
 	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
+
+	CNumberingConverter m_oNumberingConverter;
 
 	void CreateEmptyFiles();
 	void FillDefaultData();

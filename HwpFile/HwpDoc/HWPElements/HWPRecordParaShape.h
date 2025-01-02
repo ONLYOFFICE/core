@@ -78,6 +78,9 @@ public:
 
 	EHorizontalAlign GetHorizantalAlign() const;
 	EVerticalAlign GetVerticalAlign() const;
+	EHeadingType GetHeadingType() const;
+	HWP_BYTE GetHeadingLevel() const;
+	short GetHeadingIdRef() const;
 	int GetLineSpacingType() const;
 	int GetLineSpacing() const;
 	int GetMarginPrev() const;

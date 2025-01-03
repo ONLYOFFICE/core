@@ -117,7 +117,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 		short shBinTemp;
 		oBuffer.ReadShort(shBinTemp);
 
-		m_sBinItemID = TO_HWP_STRING(shBinTemp - 1);
+		m_sBinItemID = TO_HWP_STRING(shBinTemp);
 	}
 
 	int nMoreSize;
@@ -143,6 +143,11 @@ int CFill::GetSize() const
 	return m_nSize;
 }
 
+bool CFill::NoneFill() const
+{
+	return !ColorFill() && !GradFill() && !ImageFill();
+}
+
 bool CFill::ColorFill() const
 {
 	return CHECK_FLAG(m_nFillType, 0x01);
@@ -161,6 +166,11 @@ bool CFill::ImageFill() const
 int CFill::GetFaceColor() const
 {
 	return m_nFaceColor;
+}
+
+HWP_STRING CFill::GetBinItemID() const
+{
+	return m_sBinItemID;
 }
 
 CHWPRecordBorderFill::CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize)

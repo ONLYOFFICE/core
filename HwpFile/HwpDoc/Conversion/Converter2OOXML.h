@@ -19,6 +19,8 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
+	int m_nCountShapes;
+
 	TConversionState();
 };
 
@@ -59,9 +61,12 @@ class CConverter2OOXML
 	void WriteCellProperties(short shBorderFillID);
 	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName);
 
+	void WriteRectangle(const CCtrlShapeRect* pShapeRect, TConversionState& oState);
+
 	void WriteSectionSettings(const CPage* pPage);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
+	bool SavePicture(const HWP_STRING& sBinItemId);
 
 	void WriteParaShapeProperties(short shParaShapeID, const TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, const TConversionState& oState);

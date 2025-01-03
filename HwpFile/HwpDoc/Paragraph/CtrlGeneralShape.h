@@ -45,6 +45,12 @@ public:
 
 	int GetSize() override;
 
+	const CFill* GetFill() const;
+
+	ELineStyle2 GetLineStyle() const;
+	int GetLineColor() const;
+	int GetLineThick() const;
+
 	static CCtrlGeneralShape* Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderApend(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

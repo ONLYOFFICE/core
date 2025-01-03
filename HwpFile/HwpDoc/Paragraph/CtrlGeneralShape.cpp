@@ -16,10 +16,11 @@
 namespace HWP
 {
 CCtrlGeneralShape::CCtrlGeneralShape()
+	: m_pFill(nullptr)
 {}
 
 CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID)
-	: CCtrlObjElement(sCtrlID)
+	: CCtrlObjElement(sCtrlID), m_pFill(nullptr)
 {}
 
 CCtrlGeneralShape::CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape)
@@ -72,6 +73,26 @@ CHWPPargraph* CCtrlGeneralShape::GetParent()
 int CCtrlGeneralShape::GetSize()
 {
 	return m_nSize;
+}
+
+const CFill* CCtrlGeneralShape::GetFill() const
+{
+	return m_pFill;
+}
+
+ELineStyle2 CCtrlGeneralShape::GetLineStyle() const
+{
+	return m_eLineStyle;
+}
+
+int CCtrlGeneralShape::GetLineColor() const
+{
+	return m_nLineColor;
+}
+
+int CCtrlGeneralShape::GetLineThick() const
+{
+	return m_nLineThick;
 }
 
 CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

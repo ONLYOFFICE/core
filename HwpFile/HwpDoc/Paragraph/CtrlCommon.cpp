@@ -248,6 +248,11 @@ namespace HWP
 		return m_arCaption.empty();
 	}
 
+	HWP_STRING CCtrlCommon::GetDesc() const
+	{
+		return m_sObjDesc;
+	}
+
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	{
 		HWP_STRING sCtrlId;

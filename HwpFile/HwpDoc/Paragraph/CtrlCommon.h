@@ -153,6 +153,7 @@ public:
 	int GetVertOffset() const;
 	int GetCaptionWidth() const;
 	bool CaptionsEmpty() const;
+	HWP_STRING GetDesc() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

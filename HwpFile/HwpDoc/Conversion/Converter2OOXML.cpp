@@ -9,15 +9,16 @@
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
 
-#include "../Paragraph/CtrlCharacter.h"
 #include "../Paragraph/ParaText.h"
+#include "../Paragraph/CtrlCharacter.h"
 #include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlTable.h"
+#include "../Paragraph/CtrlShapeRect.h"
 
 #include "../HWPElements/HWPRecordBinData.h"
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
 
-#include "../Paragraph/CtrlTable.h"
 #include "Transform.h"
 
 #include <sstream>
@@ -349,6 +350,10 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 		{
 			WriteTable((const CCtrlTable*)pCtrl, pParagraph->GetShapeID(), oState);
 		}
+		else if (nullptr != dynamic_cast<const CCtrlShapeRect*>(pCtrl))
+		{
+			WriteRectangle((const CCtrlShapeRect*)pCtrl, oState);
+		}
 		else
 			continue;
 	}
@@ -669,6 +674,91 @@ void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBo
 	m_oDocXml.WriteString(L"<w:" + sBorderName + L" w:val=\"" + sType + L"\" w:sz=\"" + std::to_wstring(Transform::LineWidth2Pt((short)oBorder.m_chWidth)) + L"\" w:space=\"0\" w:color=\"" + Transform::IntColorToHEX(oBorder.m_nColor) + L"\"/>");
 }
 
+void CConverter2OOXML::WriteRectangle(const CCtrlShapeRect* pShapeRect, TConversionState& oState)
+{
+	if (nullptr == pShapeRect)
+		return;
+
+	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetCurWidth()));
+	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetCurHeight()));
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"<w:p>");
+
+	m_oDocXml.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
+	m_oDocXml.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
+	m_oDocXml.WriteString(L"<w:drawing>");
+	m_oDocXml.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
+	m_oDocXml.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
+	m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+	m_oDocXml.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
+	m_oDocXml.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	m_oDocXml.WriteString(L"<wp:wrapNone/>"); //TODO:: добавить поддержку
+	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(++oState.m_nCountShapes) + L"\" name=\"Rectangle " + std::to_wstring(oState.m_nCountShapes) + L"\" descr=\"");
+	m_oDocXml.WriteEncodeXmlString(pShapeRect->GetDesc());
+	m_oDocXml.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
+	m_oDocXml.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+	m_oDocXml.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
+	m_oDocXml.WriteString(L"<wps:wsp><wps:cNvSpPr/><wps:spPr><a:xfrm>");
+	m_oDocXml.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
+	m_oDocXml.WriteString(L"<a:ext cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
+	m_oDocXml.WriteString(L"</a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+
+	const CFill *pFill = pShapeRect->GetFill();
+
+	if (nullptr == pFill || pFill->NoneFill())
+		m_oDocXml.WriteString(L"<a:noFill/>");
+	else if (pFill->ColorFill())
+		m_oDocXml.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pFill->GetFaceColor()) + L"\"/></a:solidFill>");
+	else if (pFill->ImageFill())
+	{
+		if (SavePicture(pFill->GetBinItemID()))
+			m_oDocXml.WriteString(L"<a:blipFill><a:blip r:embed=\"Picture" + pFill->GetBinItemID() + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>");
+		else
+			m_oDocXml.WriteString(L"<a:noFill/>");
+	}
+
+	m_oDocXml.WriteString(L"<a:ln" + ((ELineStyle2::NONE != pShapeRect->GetLineStyle()) ? (L" w=\"" + std::to_wstring(Transform::LineWidth2Pt(pShapeRect->GetLineThick())) + L'\"') : std::wstring()) + L">");
+
+	switch (pShapeRect->GetLineStyle())
+	{
+		case ELineStyle2::NONE: m_oDocXml.WriteString(L"<a:noFill/>"); break;
+		case ELineStyle2::SOLID: m_oDocXml.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pShapeRect->GetLineColor()) + L"\"/></a:solidFill>"); break;
+		case ELineStyle2::DASH:
+		case ELineStyle2::DOT:
+		case ELineStyle2::DASH_DOT:
+		case ELineStyle2::DASH_DOT_DOT:
+		case ELineStyle2::LONG_DASH:
+		case ELineStyle2::CIRCLE:
+		case ELineStyle2::DOUBLE_SLIM:
+		case ELineStyle2::SLIM_THICK:
+		case ELineStyle2::THICK_SLIM:
+		case ELineStyle2::SLIM_THICK_SLIM:
+			m_oDocXml.WriteString(L"<a:noFill/>"); break; //TODO:: добавить реализацию
+			break;
+	}
+	m_oDocXml.WriteString(L"</a:ln>");
+
+	m_oDocXml.WriteString(L"</wps:spPr>");
+
+	m_oDocXml.WriteString(L"<wps:style>");
+	m_oDocXml.WriteString(L"<a:lnRef idx=\"2\"><a:schemeClr val=\"accent1\"><a:shade val=\"15000\"/></a:schemeClr></a:lnRef>");
+	m_oDocXml.WriteString(L"<a:fillRef idx=\"1\"><a:schemeClr val=\"accent1\"/></a:fillRef>");
+	m_oDocXml.WriteString(L"<a:effectRef idx=\"0\"><a:schemeClr val=\"accent1\"/></a:effectRef>");
+	m_oDocXml.WriteString(L"<a:fontRef idx=\"minor\"><a:schemeClr val=\"lt1\"/></a:fontRef>");
+	m_oDocXml.WriteString(L"</wps:style>");
+
+	m_oDocXml.WriteString(L"<wps:bodyPr rot=\"0\" spcFirstLastPara=\"0\" vertOverflow=\"overflow\" horzOverflow=\"overflow\" vert=\"horz\" wrap=\"square\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt=\"0\" anchor=\"ctr\" anchorCtr=\"0\" forceAA=\"0\" compatLnSpc=\"1\">");
+	m_oDocXml.WriteString(L"<a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/>");
+	m_oDocXml.WriteString(L"</wps:bodyPr>");
+
+	m_oDocXml.WriteString(L"</wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></mc:Choice></mc:AlternateContent></w:r>");
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"</w:p>");
+}
+
 void CConverter2OOXML::WriteSectionSettings(const CPage* pPage)
 {
 	m_oDocXml.WriteString(L"<w:sectPr>");
@@ -680,11 +770,11 @@ void CConverter2OOXML::WriteSectionSettings(const CPage* pPage)
 	}
 	else
 	{
-		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(pPage->GetWidth() / 5) + L"\" w:h=\"" + std::to_wstring(pPage->GetHeight() / 5) + L"\"/>");
-		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(pPage->GetMarginTop() / 5) + L"\" w:right=\"" + std::to_wstring(pPage->GetMarginRight() / 5) + L"\" w:bottom=\"" +
-		                        std::to_wstring(pPage->GetMarginBottom() / 5) + L"\"  w:left=\"" + std::to_wstring(pPage->GetMarginRight() / 5) + L"\" w:header=\"" +
-		                        std::to_wstring(pPage->GetMarginHeader() / 5) + L"\"  w:footer=\"" + std::to_wstring(pPage->GetMarginFooter() / 5) + L"\"  w:gutter=\"" +
-		                        std::to_wstring(pPage->GetMarginGutter() / 5) + L"\"/>");
+		m_oDocXml.WriteString(L"<w:pgSz w:w=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetWidth())) + L"\" w:h=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetHeight())) + L"\"/>");
+		m_oDocXml.WriteString(L"<w:pgMar w:top=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginTop())) + L"\" w:right=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:bottom=\"" +
+		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginBottom())) + L"\"  w:left=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginRight())) + L"\" w:header=\"" +
+		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginHeader())) + L"\"  w:footer=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginFooter())) + L"\"  w:gutter=\"" +
+		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginGutter())) + L"\"/>");
 	}
 	m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
 	m_oDocXml.WriteString(L"<w:docGrid w:linePitch=\"360\"/>");
@@ -696,39 +786,10 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, const TConver
 	if (nullptr == pCtrlPic)
 		return;
 
-	CHWPStream oBuffer;
-	HWP_STRING sFormat;
+	HWP_STRING sPictureID;
 
-	if (!GetBinBytes(pCtrlPic->GetBinDataID(), oBuffer, sFormat))
+	if (!SavePicture(pCtrlPic->GetBinDataID()))
 		return;
-
-	oBuffer.MoveToStart();
-
-	if (IsRasterFormat(sFormat))
-	{
-		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(m_sTempDirectory + L"/word/media/image" + pCtrlPic->GetBinDataID() + L'.' + sFormat);
-		if (!oFile.WriteFile((unsigned char*)oBuffer.GetCurPtr(), oBuffer.GetSize()))
-		{
-			oFile.CloseFile();
-			return;
-		}
-		oFile.CloseFile();
-	}
-	else if (L"svg" == sFormat)
-	{
-		std::string sSVG(oBuffer.GetCurPtr(), oBuffer.GetSize());
-		if (!SaveSVGFile(UTF8_TO_U(sSVG), pCtrlPic->GetBinDataID()))
-			return;
-
-		sFormat = L"png";
-	}
-
-	m_oDocXmlRels.WriteString(L"<Relationship Id=\"Picture");
-	m_oDocXmlRels.WriteString(pCtrlPic->GetBinDataID());
-	m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
-	m_oDocXmlRels.WriteEncodeXmlString(pCtrlPic->GetBinDataID() + L'.' + sFormat);
-	m_oDocXmlRels.WriteString(L"\"/>");
 
 	if (!oState.m_bOpenedP)
 		m_oDocXml.WriteString(L"<w:p>");
@@ -857,6 +918,45 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIn
 		free(pBgraData);
 
 	pFonts->Release();
+
+	return true;
+}
+
+bool CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
+{
+	CHWPStream oBuffer;
+	HWP_STRING sFormat;
+
+	if (!GetBinBytes(sBinItemId, oBuffer, sFormat))
+		return false;
+
+	oBuffer.MoveToStart();
+
+	if (IsRasterFormat(sFormat))
+	{
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(m_sTempDirectory + L"/word/media/image" + sBinItemId + L'.' + sFormat);
+		if (!oFile.WriteFile((unsigned char*)oBuffer.GetCurPtr(), oBuffer.GetSize()))
+		{
+			oFile.CloseFile();
+			return false;
+		}
+		oFile.CloseFile();
+	}
+	else if (L"svg" == sFormat)
+	{
+		std::string sSVG(oBuffer.GetCurPtr(), oBuffer.GetSize());
+		if (!SaveSVGFile(UTF8_TO_U(sSVG), sBinItemId))
+			return false;
+
+		sFormat = L"png";
+	}
+
+	m_oDocXmlRels.WriteString(L"<Relationship Id=\"Picture");
+	m_oDocXmlRels.WriteString(sBinItemId);
+	m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
+	m_oDocXmlRels.WriteEncodeXmlString(sBinItemId + L'.' + sFormat);
+	m_oDocXmlRels.WriteString(L"\"/>");
 
 	return true;
 }
@@ -1038,7 +1138,7 @@ bool CConverter2OOXML::ConvertToDir(const HWP_STRING& sDirectoryPath)
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false)
+	: m_bOpenedP(false), m_bOpenedR(false), m_nCountShapes(0)
 {}
 
 }

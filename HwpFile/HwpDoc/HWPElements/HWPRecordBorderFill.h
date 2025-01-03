@@ -87,11 +87,13 @@ public:
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
 
 	int GetSize() const;
+	bool NoneFill() const;
 	bool ColorFill() const;
 	bool GradFill() const;
 	bool ImageFill() const;
 
 	int GetFaceColor() const;
+	HWP_STRING GetBinItemID() const;
 };
 
 class CHWPRecordBorderFill : public CHWPRecord

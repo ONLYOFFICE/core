@@ -54,6 +54,8 @@
 
 #include "lib/iwork.h"
 
+#include "lib/hwp.h"
+
 #include "../../DesktopEditor/doctrenderer/docbuilder.h"
 #include "../../MsBinaryFile/Common/Vba/VbaReader.h"
 
@@ -671,6 +673,10 @@ namespace NExtractTools
 			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF == nFormatFrom)
 			{
 				nRes = pdfoform2docx_dir(sFrom, sDocxDir, params, convertParams);
+			}
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP == nFormatFrom)
+			{
+				nRes = hwp2docx_dir(sFrom, sDocxDir, params, convertParams);
 			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

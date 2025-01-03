@@ -274,6 +274,10 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(numbers2odf);
 	DECLARE_CONVERT_FUNC(key2odf);
 
+	//HWP
+	DECLARE_CONVERT_FUNC(hwp2docx);
+	DECLARE_CONVERT_FUNC(hwp2docx_dir);
+
 	//-------------------------------------------------------------------------------------------------------------------------------------------------
 	_UINT32 convertmailmerge(const InputParamsMailMerge& oMailMergeSend, const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams);
 

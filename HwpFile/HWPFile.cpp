@@ -41,5 +41,14 @@ bool CHWPFile::ConvertToOOXML(const std::wstring& wsFilePath)
 	oConverter.SetHWPFile(m_pInternal);
 	oConverter.SetTempDirectory(m_wsTempDirectory);
 
-	return oConverter.ConvertTo(wsFilePath);
+	return oConverter.ConvertToFile(wsFilePath);
+}
+
+bool CHWPFile::ConvertToOOXML_Dir(const std::wstring& wsDirectoryPath)
+{
+	HWP::CConverter2OOXML oConverter;
+
+	oConverter.SetHWPFile(m_pInternal);
+
+	return oConverter.ConvertToDir(wsDirectoryPath);
 }

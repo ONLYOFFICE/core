@@ -76,7 +76,8 @@ public:
 
 	void SetHWPFile(CHWPFile_Private* pHWPFile);
 	void SetTempDirectory(const HWP_STRING& sTempDirectory);
-	bool ConvertTo(const HWP_STRING& sFilePath);
+	bool ConvertToFile(const HWP_STRING& sFilePath);
+	bool ConvertToDir(const HWP_STRING& sDirectoryPath);
 };
 }
 

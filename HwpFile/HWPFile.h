@@ -24,6 +24,7 @@ public:
 	bool Open();
 	void Close();
 	bool ConvertToOOXML(const std::wstring& wsFilePath);
+	bool ConvertToOOXML_Dir(const std::wstring& wsDirectoryPath);
 };
 
 #endif // HWPFILE_H

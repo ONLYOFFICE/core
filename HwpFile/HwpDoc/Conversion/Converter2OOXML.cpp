@@ -1006,7 +1006,7 @@ const CCtrlSectionDef* CConverter2OOXML::FindSectionDef(const CHWPSection* pSect
 	return dynamic_cast<const CCtrlSectionDef*>(*itFound);
 }
 
-bool CConverter2OOXML::ConvertTo(const HWP_STRING& sFilePath)
+bool CConverter2OOXML::ConvertToFile(const HWP_STRING& sFilePath)
 {
 	if (nullptr == m_pHWPFile || sFilePath.empty())
 		return false;
@@ -1019,7 +1019,22 @@ bool CConverter2OOXML::ConvertTo(const HWP_STRING& sFilePath)
 	COfficeUtils oZip;
 	oZip.CompressFileOrDirectory(m_sTempDirectory, sFilePath);
 
-	return false;
+	return true;
+}
+
+bool CConverter2OOXML::ConvertToDir(const HWP_STRING& sDirectoryPath)
+{
+	if (nullptr == m_pHWPFile || sDirectoryPath.empty())
+		return false;
+
+	SetTempDirectory(sDirectoryPath);
+
+	Clear();
+	CreateEmptyFiles();
+	Convert();
+	Close();
+
+	return true;
 }
 
 TConversionState::TConversionState()

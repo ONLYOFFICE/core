@@ -1,7 +1,6 @@
 #ifndef HWPFILEHEADER_H
 #define HWPFILEHEADER_H
 
-#include <string>
 #include "HWPStream.h"
 
 namespace HWP

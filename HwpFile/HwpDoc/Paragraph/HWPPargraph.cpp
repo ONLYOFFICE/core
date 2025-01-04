@@ -87,7 +87,9 @@ CHWPPargraph* CHWPPargraph::Parse(int nTagNum, int nLevel, int nSize, CHWPStream
 	if (nullptr == pPara)
 		return nullptr;
 
+	oBuffer.SavePosition();
 	Parse(*pPara, nSize, oBuffer, nOff, nVersion);
+	oBuffer.Skip(-oBuffer.GetDistanceToLastPos(true));
 
 	return pPara;
 }
@@ -96,11 +98,7 @@ int CHWPPargraph::Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int
 {
 	oBuffer.SavePosition();
 
-	int nChars;
-	oBuffer.ReadInt(nChars);
-
-	if ((nChars & 0x80000000) != 0)
-		nChars = 0x7fffffff;
+	oBuffer.Skip(4); // nChars
 
 	int nControlMask;
 	oBuffer.ReadInt(nControlMask);

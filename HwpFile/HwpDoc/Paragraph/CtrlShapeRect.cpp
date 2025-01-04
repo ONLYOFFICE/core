@@ -51,7 +51,10 @@ int CCtrlShapeRect::ParseListHeaderAppend(CCtrlShapeRect& oObj, int nSize, CHWPS
 	oBuffer.ReadInt(oObj.m_nMaxTxtWidth);
 
 	if (nSize - 12 <= 13)
+	{
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 		return nSize;
+	}
 
 	oBuffer.Skip(13);
 

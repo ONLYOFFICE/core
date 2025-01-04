@@ -162,6 +162,9 @@ CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, 
 		CREATE_AND_PARSE_SHAPE(CCtrlShapeTextArt);
 	}
 
+	if (nullptr != pShape)
+		pShape->SetID(sCtrlId);
+
 	oBuffer.RemoveLastSavedPos();
 
 	return pShape;
@@ -180,9 +183,10 @@ int CCtrlGeneralShape::ParseListHeaderApend(CCtrlGeneralShape& oObj, int nSize, 
 		oBuffer.ReadInt(oObj.m_nCaptionMaxW);
 	}
 
-	if ((nSize - oBuffer.GetDistanceToLastPos(true)) == 8)
+	if ((nSize - oBuffer.GetDistanceToLastPos()) == 8)
 		oBuffer.Skip(8);
 
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
 

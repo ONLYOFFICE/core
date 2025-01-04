@@ -228,6 +228,19 @@ namespace HWP
 		return (!m_arParas.empty()) ? m_arParas.back() : nullptr;
 	}
 
+	unsigned int CCtrlCommon::GetCountParagraphs() const
+	{
+		return m_arParas.size();
+	}
+
+	const CHWPPargraph* CCtrlCommon::GetParagraphs(unsigned int unIndex) const
+	{
+		if (unIndex >= m_arParas.size())
+			return nullptr;
+
+		return m_arParas[unIndex];
+	}
+
 	int CCtrlCommon::GetHorzOffset() const
 	{
 		return m_nHorzOffset;

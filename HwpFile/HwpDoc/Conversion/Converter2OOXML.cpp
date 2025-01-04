@@ -32,6 +32,41 @@
 
 namespace HWP
 {
+enum class EShapeObjectType
+{
+	Arc,
+	Curve,
+	Ellipse,
+	Line,
+	Ole,
+	Picture,
+	Polygon,
+	Rectangle,
+	Unknown
+};
+
+EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
+{
+	if (L"cra$" == wsID)
+		return EShapeObjectType::Arc;
+	if (L"ruc$" == wsID)
+		return EShapeObjectType::Curve;
+	if (L"lle$" == wsID)
+		return EShapeObjectType::Ellipse;
+	if (L"nil$" == wsID || L"loc$" == wsID)
+		return EShapeObjectType::Line;
+	if (L"elo$" == wsID)
+		return EShapeObjectType::Ole;
+	if (L"cip$" == wsID)
+		return EShapeObjectType::Picture;
+	if (L"lop$" == wsID)
+		return EShapeObjectType::Polygon;
+	if (L"cer$" == wsID)
+		return EShapeObjectType::Rectangle;
+
+	return EShapeObjectType::Unknown;
+}
+
 CConverter2OOXML::CConverter2OOXML()
 	: m_pHWPFile(nullptr)
 {}
@@ -350,9 +385,9 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 		{
 			WriteTable((const CCtrlTable*)pCtrl, pParagraph->GetShapeID(), oState);
 		}
-		else if (nullptr != dynamic_cast<const CCtrlShapeRect*>(pCtrl))
+		else if (nullptr != dynamic_cast<const CCtrlGeneralShape*>(pCtrl))
 		{
-			WriteRectangle((const CCtrlShapeRect*)pCtrl, oState);
+			WriteShape((const CCtrlGeneralShape*)pCtrl, oState);
 		}
 		else
 			continue;
@@ -674,13 +709,18 @@ void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBo
 	m_oDocXml.WriteString(L"<w:" + sBorderName + L" w:val=\"" + sType + L"\" w:sz=\"" + std::to_wstring(Transform::LineWidth2Pt((short)oBorder.m_chWidth)) + L"\" w:space=\"0\" w:color=\"" + Transform::IntColorToHEX(oBorder.m_nColor) + L"\"/>");
 }
 
-void CConverter2OOXML::WriteRectangle(const CCtrlShapeRect* pShapeRect, TConversionState& oState)
+void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState)
 {
-	if (nullptr == pShapeRect)
+	if (nullptr == pGeneralShape)
 		return;
 
-	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetCurWidth()));
-	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetCurHeight()));
+	EShapeObjectType eShapeType = GetShapeObjectType(pGeneralShape->GetID());
+
+	if (EShapeObjectType::Unknown == eShapeType)
+		return;
+
+	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetCurWidth()));
+	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetCurHeight()));
 
 	if (!oState.m_bOpenedP)
 		m_oDocXml.WriteString(L"<w:p>");
@@ -690,22 +730,56 @@ void CConverter2OOXML::WriteRectangle(const CCtrlShapeRect* pShapeRect, TConvers
 	m_oDocXml.WriteString(L"<w:drawing>");
 	m_oDocXml.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
 	m_oDocXml.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
-	m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
-	m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pShapeRect->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+	m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
 	m_oDocXml.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
 	m_oDocXml.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 	m_oDocXml.WriteString(L"<wp:wrapNone/>"); //TODO:: добавить поддержку
-	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(++oState.m_nCountShapes) + L"\" name=\"Rectangle " + std::to_wstring(oState.m_nCountShapes) + L"\" descr=\"");
-	m_oDocXml.WriteEncodeXmlString(pShapeRect->GetDesc());
+	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(++oState.m_nCountShapes) + L"\" name=\"Shape " + std::to_wstring(oState.m_nCountShapes) + L"\" descr=\"");
+	m_oDocXml.WriteEncodeXmlString(pGeneralShape->GetDesc());
 	m_oDocXml.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	m_oDocXml.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	m_oDocXml.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 	m_oDocXml.WriteString(L"<wps:wsp><wps:cNvSpPr/><wps:spPr><a:xfrm>");
 	m_oDocXml.WriteString(L"<a:off x=\"0\" y=\"0\"/>");
 	m_oDocXml.WriteString(L"<a:ext cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
-	m_oDocXml.WriteString(L"</a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+	m_oDocXml.WriteString(L"</a:xfrm>");
 
-	const CFill *pFill = pShapeRect->GetFill();
+	switch (eShapeType)
+	{
+		case EShapeObjectType::Arc:
+		{
+			m_oDocXml.WriteString(L"<a:prstGeom prst=\"arc\"><a:avLst>");
+			m_oDocXml.WriteString(L"<a:gd name=\"adj1\" fmla=\"val 0\"/>");
+			m_oDocXml.WriteString(L"<a:gd name=\"adj2\" fmla=\"val 5400000\"/>");
+			m_oDocXml.WriteString(L"</a:avLst></a:prstGeom>");
+			break;
+		}
+		case EShapeObjectType::Ellipse:
+		{
+			m_oDocXml.WriteString(L"<a:prstGeom prst=\"ellipse\"><a:avLst/></a:prstGeom>");
+			break;
+		}
+		case EShapeObjectType::Line:
+		{
+			m_oDocXml.WriteString(L"<a:prstGeom prst=\"line\"><a:avLst/></a:prstGeom>");
+			break;
+		}
+
+		case EShapeObjectType::Rectangle:
+		{
+			m_oDocXml.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
+			break;
+		}
+		case EShapeObjectType::Curve:
+		case EShapeObjectType::Ole:
+		case EShapeObjectType::Picture:
+		case EShapeObjectType::Polygon:
+		case EShapeObjectType::Unknown:
+			break;
+	}
+
+	const CFill *pFill = pGeneralShape->GetFill();
 
 	if (nullptr == pFill || pFill->NoneFill())
 		m_oDocXml.WriteString(L"<a:noFill/>");
@@ -719,12 +793,12 @@ void CConverter2OOXML::WriteRectangle(const CCtrlShapeRect* pShapeRect, TConvers
 			m_oDocXml.WriteString(L"<a:noFill/>");
 	}
 
-	m_oDocXml.WriteString(L"<a:ln" + ((ELineStyle2::NONE != pShapeRect->GetLineStyle()) ? (L" w=\"" + std::to_wstring(Transform::LineWidth2Pt(pShapeRect->GetLineThick())) + L'\"') : std::wstring()) + L">");
+	m_oDocXml.WriteString(L"<a:ln" + ((ELineStyle2::NONE != pGeneralShape->GetLineStyle()) ? (L" w=\"" + std::to_wstring(Transform::LineWidth2Pt(pGeneralShape->GetLineThick())) + L'\"') : std::wstring()) + L">");
 
-	switch (pShapeRect->GetLineStyle())
+	switch (pGeneralShape->GetLineStyle())
 	{
 		case ELineStyle2::NONE: m_oDocXml.WriteString(L"<a:noFill/>"); break;
-		case ELineStyle2::SOLID: m_oDocXml.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pShapeRect->GetLineColor()) + L"\"/></a:solidFill>"); break;
+		case ELineStyle2::SOLID: m_oDocXml.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pGeneralShape->GetLineColor()) + L"\"/></a:solidFill>"); break;
 		case ELineStyle2::DASH:
 		case ELineStyle2::DOT:
 		case ELineStyle2::DASH_DOT:
@@ -742,16 +816,21 @@ void CConverter2OOXML::WriteRectangle(const CCtrlShapeRect* pShapeRect, TConvers
 
 	m_oDocXml.WriteString(L"</wps:spPr>");
 
-	m_oDocXml.WriteString(L"<wps:style>");
-	m_oDocXml.WriteString(L"<a:lnRef idx=\"2\"><a:schemeClr val=\"accent1\"><a:shade val=\"15000\"/></a:schemeClr></a:lnRef>");
-	m_oDocXml.WriteString(L"<a:fillRef idx=\"1\"><a:schemeClr val=\"accent1\"/></a:fillRef>");
-	m_oDocXml.WriteString(L"<a:effectRef idx=\"0\"><a:schemeClr val=\"accent1\"/></a:effectRef>");
-	m_oDocXml.WriteString(L"<a:fontRef idx=\"minor\"><a:schemeClr val=\"lt1\"/></a:fontRef>");
-	m_oDocXml.WriteString(L"</wps:style>");
+	unsigned int nCountParagraphs = pGeneralShape->GetCountParagraphs();
 
-	m_oDocXml.WriteString(L"<wps:bodyPr rot=\"0\" spcFirstLastPara=\"0\" vertOverflow=\"overflow\" horzOverflow=\"overflow\" vert=\"horz\" wrap=\"square\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt=\"0\" anchor=\"ctr\" anchorCtr=\"0\" forceAA=\"0\" compatLnSpc=\"1\">");
-	m_oDocXml.WriteString(L"<a:prstTxWarp prst=\"textNoShape\"><a:avLst/></a:prstTxWarp><a:noAutofit/>");
-	m_oDocXml.WriteString(L"</wps:bodyPr>");
+	if (0 < nCountParagraphs)
+	{
+		m_oDocXml.WriteString(L"<wps:txbx><w:txbxContent>");
+
+		TConversionState oShapeState;
+
+		for (unsigned int unParaIndex = 0; unParaIndex < nCountParagraphs; ++unParaIndex)
+			WriteParagraph(pGeneralShape->GetParagraphs(unParaIndex), oShapeState);
+
+		m_oDocXml.WriteString(L"</w:txbxContent></wps:txbx>");
+	}
+
+	m_oDocXml.WriteString(L"<wps:bodyPr/>");
 
 	m_oDocXml.WriteString(L"</wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></mc:Choice></mc:AlternateContent></w:r>");
 

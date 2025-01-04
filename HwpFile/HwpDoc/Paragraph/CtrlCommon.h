@@ -148,6 +148,8 @@ public:
 	int GetSize() override;
 
 	CHWPPargraph* GetLastPara();
+	unsigned int GetCountParagraphs() const;
+	const CHWPPargraph* GetParagraphs(unsigned int unIndex) const;
 
 	int GetHorzOffset() const;
 	int GetVertOffset() const;

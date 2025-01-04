@@ -61,7 +61,7 @@ class CConverter2OOXML
 	void WriteCellProperties(short shBorderFillID);
 	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName);
 
-	void WriteRectangle(const CCtrlShapeRect* pShapeRect, TConversionState& oState);
+	void WriteShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState);
 
 	void WriteSectionSettings(const CPage* pPage);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);

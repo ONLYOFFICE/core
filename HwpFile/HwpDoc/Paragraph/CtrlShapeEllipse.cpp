@@ -68,6 +68,8 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 
 	oBuffer.ReadInt(oObj.m_nMaxTxtWidth);
 
+	oBuffer.Skip(13);
+
 	if (nSize > oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.Skip(10);

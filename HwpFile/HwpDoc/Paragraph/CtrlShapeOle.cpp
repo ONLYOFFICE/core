@@ -17,6 +17,11 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+HWP_STRING CCtrlShapeOle::GetBinDataID() const
+{
+	return m_sBinDataID;
+}
+
 int CCtrlShapeOle::ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();
@@ -29,7 +34,8 @@ int CCtrlShapeOle::ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuf
 	oBuffer.ReadInt(oObj.m_nBorderThick);
 	oBuffer.ReadInt(oObj.m_nBorderAttr);
 
-	return oBuffer.GetDistanceToLastPos(true);
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+	return nSize;
 }
 
 int CCtrlShapeOle::ParseCtrl(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

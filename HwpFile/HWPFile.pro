@@ -20,6 +20,7 @@ SOURCES += \
     HWPFile.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
+    HwpDoc/Conversion/OleConverter.cpp \
     HwpDoc/Conversion/WriterContext.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
@@ -91,6 +92,7 @@ HEADERS += \
     HwpDoc/Common.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/NumberingConverter.h \
+    HwpDoc/Conversion/OleConverter.h \
     HwpDoc/Conversion/Transform.h \
     HwpDoc/Conversion/Types.h \
     HwpDoc/Conversion/WriterContext.h \

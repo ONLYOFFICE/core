@@ -14,6 +14,9 @@
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlShapeRect.h"
+#include "../Paragraph/CtrlShapeArc.h"
+#include "../Paragraph/CtrlShapeLine.h"
+#include "../Paragraph/CtrlEqEdit.h"
 
 #include "../HWPElements/HWPRecordBinData.h"
 #include "../HWPElements/HWPRecordParaShape.h"
@@ -83,8 +86,9 @@ void CConverter2OOXML::Clear()
 	m_oNoteXmlRels.Clear();
 	m_oDocXml.Clear();
 	m_oNoteXml.Clear();
-	m_oNumberXml.Clear();
 	m_oWebSettings.Clear();
+
+	m_oNumberingConverter.Clear();
 }
 
 void CConverter2OOXML::SetHWPFile(CHWPFile_Private* pHWPFile)
@@ -95,6 +99,7 @@ void CConverter2OOXML::SetHWPFile(CHWPFile_Private* pHWPFile)
 void CConverter2OOXML::SetTempDirectory(const HWP_STRING& sTempDirectory)
 {
 	m_sTempDirectory = sTempDirectory;
+	m_oOleConverter.SetTempDir(m_sTempDirectory);
 }
 
 void CConverter2OOXML::CreateEmptyFiles()
@@ -139,15 +144,6 @@ void CConverter2OOXML::CreateEmptyFiles()
 		oRelsWriter.CloseFile();
 	}
 
-	// [Content_Types].xml
-	std::wstring wsContent = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\"><Default Extension=\"bmp\" ContentType=\"image/bmp\"/><Default Extension=\"svg\" ContentType=\"image/svg+xml\"/><Default Extension=\"jfif\" ContentType=\"image/jpeg\"/><Default Extension=\"wmf\" ContentType=\"image/x-wmf\"/><Default Extension=\"gif\" ContentType=\"image/gif\"/><Default Extension=\"jpe\" ContentType=\"image/jpeg\"/><Default Extension=\"png\" ContentType=\"image/png\"/><Default Extension=\"jpg\" ContentType=\"image/jpeg\"/><Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/><Default Extension=\"xml\" ContentType=\"application/xml\"/><Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/><Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/><Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/><Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/><Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/><Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/><Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/><Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/><Override PartName=\"/word/footnotes.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml\"/><Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/><Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/><Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/></Types>";
-	NSFile::CFileBinary oContentWriter;
-	if (oContentWriter.CreateFileW(m_sTempDirectory + L"/[Content_Types].xml"))
-	{
-		oContentWriter.WriteStringUTF8(wsContent);
-		oContentWriter.CloseFile();
-	}
-
 	// fontTable.xml
 	std::wstring wsFontTable = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:fonts xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\"><w:font w:name=\"Wingdings\"><w:panose1 w:val=\"05000000000000000000\"/></w:font><w:font w:name=\"Courier New\"><w:panose1 w:val=\"02070309020205020404\"/></w:font><w:font w:name=\"Symbol\"><w:panose1 w:val=\"05050102010706020507\"/></w:font><w:font w:name=\"Times New Roman\"><w:panose1 w:val=\"020B0604020202020204\"/></w:font><w:font w:name=\"Calibri\"><w:panose1 w:val=\"020F0502020204030204\"/></w:font><w:font w:name=\"Times New Roman\"><w:panose1 w:val=\"02020603050405020304\"/></w:font><w:font w:name=\"Cambria\"><w:panose1 w:val=\"02040503050406030204\"/></w:font></w:fonts>";
 	NSFile::CFileBinary oFontTableWriter;
@@ -158,16 +154,13 @@ void CConverter2OOXML::CreateEmptyFiles()
 	}
 
 	// settings.xml
-	std::wstring wsSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"useWord2013TrackBottomHyphenation\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"0\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
+	std::wstring wsSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"useWord2013TrackBottomHyphenation\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"0\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
 	NSFile::CFileBinary oSettingsWriter;
 	if (oSettingsWriter.CreateFileW(m_sTempDirectory + L"/word/settings.xml"))
 	{
 		oSettingsWriter.WriteStringUTF8(wsSettings);
 		oSettingsWriter.CloseFile();
 	}
-
-	// numbering.xml
-	m_oNumberXml += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:numbering xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\">";
 
 	// core.xml
 	std::wstring wsCore = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><cp:coreProperties xmlns:cp=\"http://schemas.openxmlformats.org/package/2006/metadata/core-properties\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:dcmitype=\"http://purl.org/dc/dcmitype/\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">";
@@ -185,35 +178,48 @@ void CConverter2OOXML::CreateEmptyFiles()
 void CConverter2OOXML::FillDefaultData()
 {
 	// Заполняем начало файлов
-	m_oDocXmlRels  += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>";
-	m_oDocXmlRels  += L"<Relationship Id=\"rId7\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/>";
-	m_oNoteXmlRels += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">";
-	m_oDocXml      += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>";
-	m_oNoteXml     += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">";
-	m_oNoteXml     += L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>";
-	m_oWebSettings += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/>";
+	m_oDocXmlRels .WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes\" Target=\"footnotes.xml\"/>");
+	m_oDocXmlRels .WriteString(L"<Relationship Id=\"rId7\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering\" Target=\"numbering.xml\"/>");
+	m_oNoteXmlRels.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+	m_oDocXml     .WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>");
+	m_oNoteXml    .WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:footnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" mc:Ignorable=\"w14 w15 wp14\">");
+	m_oNoteXml    .WriteString(L"<w:footnote w:type=\"separator\" w:id=\"-1\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:separator/></w:r></w:p></w:footnote><w:footnote w:type=\"continuationSeparator\" w:id=\"0\"><w:p><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"0\"/></w:pPr><w:r><w:continuationSeparator/></w:r></w:p></w:footnote>");
+	m_oWebSettings.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/>");
 
-	m_oStylesXml   += L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">";
-	m_oStylesXml += L"<w:rPrDefault><w:rPr>";
-	m_oStylesXml += L"<w:rFonts w:ascii=\"" + DEFAULT_FONT_FAMILY + L"\" w:eastAsia=\"" + DEFAULT_FONT_FAMILY + L"\"  w:hAnsi=\"" + DEFAULT_FONT_FAMILY + L"\" w:cs=\"" + DEFAULT_FONT_FAMILY + L"\"/>";
-	m_oStylesXml += L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>";
-	m_oStylesXml += L"<w:lang w:val=\"" + DEFAULT_LANGUAGE + L"\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/>";
-	m_oStylesXml += L"</w:rPr></w:rPrDefault><w:pPrDefault/>";
+	m_oStylesXml.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:styles xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" mc:Ignorable=\"w14 w15\">");
+	m_oStylesXml.WriteString(L"<w:rPrDefault><w:rPr>");
+	m_oStylesXml.WriteString(L"<w:rFonts w:ascii=\"" + DEFAULT_FONT_FAMILY + L"\" w:eastAsia=\"" + DEFAULT_FONT_FAMILY + L"\"  w:hAnsi=\"" + DEFAULT_FONT_FAMILY + L"\" w:cs=\"" + DEFAULT_FONT_FAMILY + L"\"/>");
+	m_oStylesXml.WriteString(L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>");
+	m_oStylesXml.WriteString(L"<w:lang w:val=\"" + DEFAULT_LANGUAGE + L"\" w:eastAsia=\"en-US\" w:bidi=\"ar-SA\"/>");
+	m_oStylesXml.WriteString(L"</w:rPr></w:rPrDefault><w:pPrDefault/>");
 
-	m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/><w:rPr><w:rFonts w:eastAsiaTheme=\"minorEastAsia\"/>";
-	m_oStylesXml += L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>";
-	m_oStylesXml += L"</w:rPr></w:style>";
+	m_oStylesXml.WriteString(L"<w:style w:type=\"paragraph\" w:styleId=\"normal\" w:default=\"1\"><w:name w:val=\"Normal\"/><w:qFormat/><w:rPr><w:rFonts w:eastAsiaTheme=\"minorEastAsia\"/>");
+	m_oStylesXml.WriteString(L"<w:sz w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/><w:szCs w:val=\"" + std::to_wstring(DEFAULT_FONT_SIZE) + L"\"/>");
+	m_oStylesXml.WriteString(L"</w:rPr></w:style>");
 
-	m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>";
-	m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0000FF\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>";
-	m_oStylesXml += L"<w:style w:type=\"character\" w:styleId=\"footnote\"><w:name w:val=\"footnote reference\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:vertAlign w:val=\"superscript\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"footnote-p\"><w:name w:val=\"footnote text\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"footnote-c\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:rPr><w:sz w:val=\"18\"/></w:rPr><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"40\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"footnote-c\" w:customStyle=\"1\"><w:name w:val=\"footnote text character\"/><w:link w:val=\"footnote-p\"/><w:uiPriority w:val=\"99\"/><w:rPr><w:sz w:val=\"18\"/></w:rPr></w:style>";
-	m_oStylesXml += L"<w:style w:type=\"paragraph\" w:styleId=\"normal-web\"><w:name w:val=\"Normal (Web)\"/><w:basedOn w:val=\"normal\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"/></w:pPr></w:style>";
+	m_oStylesXml.WriteString(L"<w:style w:type=\"paragraph\" w:styleId=\"li\"><w:name w:val=\"List Paragraph\"/><w:basedOn w:val=\"normal\"/><w:qFormat/><w:uiPriority w:val=\"34\"/><w:pPr><w:contextualSpacing w:val=\"true\"/><w:ind w:left=\"720\"/></w:pPr></w:style>");
+	m_oStylesXml.WriteString(L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0000FF\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>");
+	m_oStylesXml.WriteString(L"<w:style w:type=\"character\" w:styleId=\"footnote\"><w:name w:val=\"footnote reference\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:vertAlign w:val=\"superscript\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"footnote-p\"><w:name w:val=\"footnote text\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"footnote-c\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:rPr><w:sz w:val=\"18\"/></w:rPr><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"40\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"footnote-c\" w:customStyle=\"1\"><w:name w:val=\"footnote text character\"/><w:link w:val=\"footnote-p\"/><w:uiPriority w:val=\"99\"/><w:rPr><w:sz w:val=\"18\"/></w:rPr></w:style>");
+	m_oStylesXml.WriteString(L"<w:style w:type=\"paragraph\" w:styleId=\"normal-web\"><w:name w:val=\"Normal (Web)\"/><w:basedOn w:val=\"normal\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"/></w:pPr></w:style>");
+
+	m_oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
+	m_oContentTypes.WriteString(L"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
+	m_oContentTypes.WriteString(L"<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/numbering.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>");
 }
 
 void CConverter2OOXML::Close()
@@ -261,15 +267,7 @@ void CConverter2OOXML::Close()
 	}
 
 	// numbering.xml
-	m_oNumberingConverter.WriteEnding(m_oNumberXml);
-	m_oNumberXml.WriteString(L"</w:numbering>");
-
-	NSFile::CFileBinary oNumberingWriter;
-	if (oNumberingWriter.CreateFileW(m_sTempDirectory + L"/word/numbering.xml"))
-	{
-		oNumberingWriter.WriteStringUTF8(m_oNumberXml.GetData());
-		oNumberingWriter.CloseFile();
-	}
+	m_oNumberingConverter.SaveToFile(m_sTempDirectory + FILE_SEPARATOR_STR + L"word" + FILE_SEPARATOR_STR);
 
 	// webSettings.xml
 	m_oWebSettings.WriteString(L"</w:webSettings>");
@@ -278,6 +276,15 @@ void CConverter2OOXML::Close()
 	{
 		oWebSettingsWriter.WriteStringUTF8(m_oWebSettings.GetData());
 		oWebSettingsWriter.CloseFile();
+	}
+
+	// [Content_Types].xml
+	m_oContentTypes.WriteString(L"</Types>");
+	NSFile::CFileBinary oContentTypeWriter;
+	if (oContentTypeWriter.CreateFileW(m_sTempDirectory + L"/[Content_Types].xml"))
+	{
+		oContentTypeWriter.WriteStringUTF8(m_oContentTypes.GetData());
+		oContentTypeWriter.CloseFile();
 	}
 }
 
@@ -385,9 +392,20 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 		{
 			WriteTable((const CCtrlTable*)pCtrl, pParagraph->GetShapeID(), oState);
 		}
-		else if (nullptr != dynamic_cast<const CCtrlGeneralShape*>(pCtrl))
+		else if (nullptr != dynamic_cast<const CCtrlShapeArc*>(pCtrl) ||
+		         nullptr != dynamic_cast<const CCtrlShapeEllipse*>(pCtrl) ||
+		         nullptr != dynamic_cast<const CCtrlShapeLine*>(pCtrl) ||
+		         nullptr != dynamic_cast<const CCtrlShapeRect*>(pCtrl))
 		{
-			WriteShape((const CCtrlGeneralShape*)pCtrl, oState);
+			WriteGeometryShape((const CCtrlGeneralShape*)pCtrl, oState);
+		}
+		else if (nullptr != dynamic_cast<const CCtrlEqEdit*>(pCtrl))
+		{
+			WriteEqEditShape((const CCtrlEqEdit*)pCtrl, oState);
+		}
+		else if (nullptr != dynamic_cast<const CCtrlShapeOle*>(pCtrl))
+		{
+			WriteOleShape((const CCtrlShapeOle*)pCtrl, oState);
 		}
 		else
 			continue;
@@ -448,8 +466,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, const TConv
 			break;
 	}
 
-	// TODO:: пока не совсем понятно как правильно вычислить lineSpacing
-	int nLineSpacing = 0; //TODO:: проверить. По документации не очень понятно в каких единицах измеряется
+	int nLineSpacing = 0;
 	HWP_STRING sType = L"auto";
 
 	switch(pParaShape->GetLineSpacingType())
@@ -485,7 +502,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, const TConv
 		case EHeadingType::NUMBER:
 		case EHeadingType::BULLET:
 		{
-			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(pDocInfo->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType(), m_oNumberXml);
+			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(pDocInfo->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType());
 
 			if (0 == nNumId)
 				break;
@@ -709,7 +726,7 @@ void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBo
 	m_oDocXml.WriteString(L"<w:" + sBorderName + L" w:val=\"" + sType + L"\" w:sz=\"" + std::to_wstring(Transform::LineWidth2Pt((short)oBorder.m_chWidth)) + L"\" w:space=\"0\" w:color=\"" + Transform::IntColorToHEX(oBorder.m_nColor) + L"\"/>");
 }
 
-void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState)
+void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState)
 {
 	if (nullptr == pGeneralShape)
 		return;
@@ -719,8 +736,8 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pGeneralShape, TConve
 	if (EShapeObjectType::Unknown == eShapeType)
 		return;
 
-	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetCurWidth()));
-	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetCurHeight()));
+	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetWidth()));
+	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHeight()));
 
 	if (!oState.m_bOpenedP)
 		m_oDocXml.WriteString(L"<w:p>");
@@ -730,12 +747,17 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pGeneralShape, TConve
 	m_oDocXml.WriteString(L"<w:drawing>");
 	m_oDocXml.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
 	m_oDocXml.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
-	m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
-	m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+
+	if (0 != pGeneralShape->GetHorzOffset())
+		m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+
+	if (0 != pGeneralShape->GetVertOffset())
+		m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+
 	m_oDocXml.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
 	m_oDocXml.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 	m_oDocXml.WriteString(L"<wp:wrapNone/>"); //TODO:: добавить поддержку
-	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(++oState.m_nCountShapes) + L"\" name=\"Shape " + std::to_wstring(oState.m_nCountShapes) + L"\" descr=\"");
+	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(oState.m_nCountShapes) + L"\" name=\"Shape " + std::to_wstring(++oState.m_nCountShapes) + L"\" descr=\"");
 	m_oDocXml.WriteEncodeXmlString(pGeneralShape->GetDesc());
 	m_oDocXml.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	m_oDocXml.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
@@ -836,6 +858,66 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pGeneralShape, TConve
 
 	if (!oState.m_bOpenedP)
 		m_oDocXml.WriteString(L"</w:p>");
+}
+
+void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, TConversionState& oState)
+{
+	//TODO:: добавить конвертацию eqn формулы в ooxml
+}
+
+void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, TConversionState& oState)
+{
+	//TODO:: добавить конвертацию hwp ole -> ooxml chart
+	//TODO:: необходимо добавить поддержку формата "Hwp Document File Formats - Charts" (для случаев, когда нет ooxml представления)
+	// Пока можем вытащить лишь ooxml представление данных
+
+	CHWPStream oBuffer;
+	HWP_STRING sFormat;
+
+	if (!GetBinBytes(pOleShape->GetBinDataID(), oBuffer, sFormat))
+		return;
+
+	m_oOleConverter.CreateChart(oBuffer);
+
+	const unsigned int unChartIndex = m_oOleConverter.GetChartsCount();
+
+	if (0 == unChartIndex)
+		return;
+
+	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
+	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"<w:p>");
+
+	m_oDocXml.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
+	m_oDocXml.WriteString(L"<w:drawing>");
+	m_oDocXml.WriteString(L"<wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
+
+	if (0 != pOleShape->GetHorzOffset())
+		m_oDocXml.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+
+	if (0 != pOleShape->GetVertOffset())
+		m_oDocXml.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+
+	m_oDocXml.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
+	m_oDocXml.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+	m_oDocXml.WriteString(L"<wp:docPr id=\"" + std::to_wstring(oState.m_nCountShapes) + L"\" name=\"Shape " + std::to_wstring(++oState.m_nCountShapes) + L"\" descr=\"");
+	m_oDocXml.WriteEncodeXmlString(pOleShape->GetDesc());
+	m_oDocXml.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
+	m_oDocXml.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+	m_oDocXml.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">");
+	m_oDocXml.WriteString(L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"Chart" + std::to_wstring(unChartIndex) + L"\"/>");
+	m_oDocXml.WriteString(L"</a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
+
+	if (!oState.m_bOpenedP)
+		m_oDocXml.WriteString(L"</w:p>");
+
+	m_oDocXmlRels.WriteString(L"<Relationship Id=\"Chart" + std::to_wstring(unChartIndex) + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"charts/chart" + std::to_wstring(unChartIndex) + L".xml\"/>");
+
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/charts/chart" + std::to_wstring(unChartIndex) + L".xml\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/charts/style" + std::to_wstring(unChartIndex) + L".xml\" ContentType=\"application/vnd.ms-office.chartstyle+xml\"/>");
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/charts/colors" + std::to_wstring(unChartIndex) + L".xml\" ContentType=\"application/vnd.ms-office.chartcolorstyle+xml\"/>");
 }
 
 void CConverter2OOXML::WriteSectionSettings(const CPage* pPage)

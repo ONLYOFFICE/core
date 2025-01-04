@@ -20,6 +20,8 @@ public:
 	CCtrlShapeOle(const CCtrlGeneralShape& oShape);
 	CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	HWP_STRING GetBinDataID() const;
+
 	static int ParseElement(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeOle& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

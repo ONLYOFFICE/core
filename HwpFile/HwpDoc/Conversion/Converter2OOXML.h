@@ -6,10 +6,12 @@
 
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapePic.h"
+#include "../Paragraph/CtrlShapeOle.h"
 #include "../Paragraph/TblCell.h"
 
 #include "../Section/Page.h"
 
+#include "OleConverter.h"
 #include "NumberingConverter.h"
 
 namespace HWP
@@ -41,10 +43,11 @@ class CConverter2OOXML
 	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
 	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
-	NSStringUtils::CStringBuilder m_oNumberXml;   // numbering.xml
 	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
+	NSStringUtils::CStringBuilder m_oContentTypes;// [Content_Types].xml
 
 	CNumberingConverter m_oNumberingConverter;
+	COleConverter m_oOleConverter;
 
 	void CreateEmptyFiles();
 	void FillDefaultData();
@@ -61,7 +64,9 @@ class CConverter2OOXML
 	void WriteCellProperties(short shBorderFillID);
 	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName);
 
-	void WriteShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState);
+	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState);
+	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, TConversionState& oState);
+	void WriteOleShape(const CCtrlShapeOle* pOleShape, TConversionState& oState);
 
 	void WriteSectionSettings(const CPage* pPage);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);

@@ -10,12 +10,17 @@ namespace HWP
 {
 class CNumberingConverter
 {
+	NSStringUtils::CStringBuilder m_oNumberXml;
 	std::vector<const CHWPRecordNumbering*> m_arUsedNumbering;
 public:
 	CNumberingConverter();
 
-	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType, NSStringUtils::CStringBuilder& oStringBuilder);
-	void WriteEnding(NSStringUtils::CStringBuilder& oStringBuilder);
+	void Clear();
+
+	unsigned int GetCountNumbering() const;
+
+	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType);
+	bool SaveToFile(const std::wstring& wsDirectory);
 };
 }
 

@@ -104,8 +104,8 @@ class CCtrlCommon : public CCtrl
 	EHorzAlign m_eHorzAlign;
 	bool m_bFlowWithText;
 	bool m_bAllowOverlap;
-	EWidthRelTo m_eWidthRelto;
-	EHeightRelTo m_eHeightRelto;
+	EWidthRelTo m_eWidthRelTo;
+	EHeightRelTo m_eHeightRelTo;
 	ETextWrap m_eTextWrap;
 	HWP_BYTE m_chTextFlow;
 	HWP_BYTE m_chNumeringType;
@@ -156,6 +156,10 @@ public:
 	int GetCaptionWidth() const;
 	bool CaptionsEmpty() const;
 	HWP_STRING GetDesc() const;
+	EWidthRelTo GetWidthRelTo() const;
+	EHeightRelTo GetHeightRelTo() const;
+	int GetWidth() const;
+	int GetHeight() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

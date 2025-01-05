@@ -161,7 +161,8 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				arParas.push_back(new CCtrlSectionDef(sType));
 			else if (L"dloc" == sType)
 				arParas.push_back(new CCtrlColumnDef(sType));
-			else if (L"  nf" == sType)
+			else if (L"  nf" == sType ||
+			         L"  ne" == sType)
 				arParas.push_back(new CCtrlNote(sType));
 			else if (L" osg" == sType)
 				arParas.push_back(new CCtrlGeneralShape(sType));

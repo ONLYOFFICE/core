@@ -209,6 +209,8 @@ void CConverter2OOXML::FillDefaultData()
 	m_oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 	m_oContentTypes.WriteString(L"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
 	m_oContentTypes.WriteString(L"<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
+	m_oContentTypes.WriteString(L"<Default Extension=\"png\" ContentType=\"image/png\"/>");
+	m_oContentTypes.WriteString(L"<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>");
 	m_oContentTypes.WriteString(L"<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>");
 	m_oContentTypes.WriteString(L"<Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>");
 	m_oContentTypes.WriteString(L"<Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>");
@@ -366,6 +368,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 						oState.m_bOpenedP = false;
 						m_oDocXml.WriteString(L"</w:p>");
 					}
+					//TODO::
 					m_oDocXml.WriteString(L"<w:p>");
 					WriteParagraphProperties(pParagraph, oState);
 					m_oDocXml.WriteString(L"<w:r></w:r></w:p>");
@@ -414,16 +417,16 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, TConversio
 
 		if (nullptr == dynamic_cast<const CCtrlNote*>(pCtrl) && m_oFootnoteConverter.NeedWritten())
 		{
-			for (unsigned short ushIndex : m_oFootnoteConverter.GetNotWrittenIds(true))
-				m_oDocXml.WriteString(L"<w:r><w:footnoteReference w:id=\"" + std::to_wstring(ushIndex) + L"\"/></w:r>");
+			for (std::pair<std::wstring, unsigned short> oValue : m_oFootnoteConverter.GetNotWrittenIds(true))
+				m_oDocXml.WriteString(L"<w:r><w:" + oValue.first + L"noteReference w:id=\"" + std::to_wstring(oValue.second) + L"\"/></w:r>");
 		}
 	}
 
 	if (oState.m_bOpenedP)
 	{
 		if (m_oFootnoteConverter.NeedWritten())
-			for (unsigned short ushIndex : m_oFootnoteConverter.GetNotWrittenIds(true))
-				m_oDocXml.WriteString(L"<w:r><w:footnoteReference w:id=\"" + std::to_wstring(ushIndex) + L"\"/></w:r>");
+			for (std::pair<std::wstring, unsigned short> oValue : m_oFootnoteConverter.GetNotWrittenIds(true))
+				m_oDocXml.WriteString(L"<w:r><w:" + oValue.first + L"noteReference w:id=\"" + std::to_wstring(oValue.second) + L"\"/></w:r>");
 
 		m_oDocXml.WriteString(L"</w:p>");
 		oState.m_bOpenedP = false;
@@ -1130,6 +1133,10 @@ bool CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 	m_oDocXmlRels.WriteString(L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"media/image");
 	m_oDocXmlRels.WriteEncodeXmlString(sBinItemId + L'.' + sFormat);
 	m_oDocXmlRels.WriteString(L"\"/>");
+
+	m_oContentTypes.WriteString(L"<Override PartName=\"/word/media/image");
+	m_oContentTypes.WriteEncodeXmlString(sBinItemId + L'.' + sFormat);
+	m_oContentTypes.WriteString(L"\" ContentType=\"image/" + sFormat + L"\"/>");
 
 	return true;
 }

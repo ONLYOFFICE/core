@@ -1112,7 +1112,7 @@ int CHWPSection::ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, in
 		CCtrlHeadFoot::ParseListHeaderAppend((CCtrlHeadFoot&)(oObj), nSize, oBuffer, 0, nVersion);
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true) - 6);
 	}
-	else if (L"  nf" == oObj.GetID())
+	else
 		oBuffer.Skip(nSize);
 
 	return nSize;

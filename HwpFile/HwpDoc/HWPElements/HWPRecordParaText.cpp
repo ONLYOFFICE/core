@@ -15,6 +15,8 @@
 
 #include <regex>
 
+#include "../../../DesktopEditor/common/File.h"
+
 namespace HWP
 {
 CHWPRecordParaText::CHWPRecordParaText(int nTagNum, int nLevel, int nSize)
@@ -34,7 +36,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		return LIST<CCtrl*>();
 	}
 
-	std::wregex oRegex(L"[\\u0000-\\u001f]"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
+	std::wregex oRegex(L"([\\u0000-\\u001f]|.{2}[\\u0000-\u0017]{4})"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
 	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
 	std::wsregex_iterator itEnd = std::wsregex_iterator();
 
@@ -130,72 +132,43 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			}
 		}
 		// Пока данный вариант невозможен
-		else if (8 == itCurrent->length())
+		else if (6 == itCurrent->length())
 		{
 			//TODO:: Проверить
-			HWP_STRING sInfo = sText.substr(itCurrent->position() + 1, 4); //  new String(m.group().getBytes(StandardCharsets.UTF_16LE), 2, 12, StandardCharsets.US_ASCII).replaceAll("[\\x00-\\x20]+$", "");
+			HWP_STRING sInfo = sText.substr(itCurrent->position(), 2);
 			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");
 			sInfo = std::regex_replace(sInfo, wrReplaceRegex, L"");
 
-			switch(itCurrent->str()[0])
-			{
-				case 0x04:
-				case 0x08:
-					break;
-				case 0x09:
-				{
-					arParas.push_back(new CParaText(L"____", L"\t", 0));
-					break;
-				}
-				case 0x10:
-				{
-					arParas.push_back(new CCtrlHeadFoot(sInfo));
-					break;
-				}
-				case 0x12:
-				{
-					arParas.push_back(new CCtrlAutoNumber(sInfo));
-					break;
-				}
-				case 0x15:
-				{
-					// if ("dhgp" == sInfo) break;
-					if (L"pngp" == sInfo) arParas.push_back(new CCtrlPageNumPos(sInfo));
-					else if (L"onwn" == sInfo) arParas.push_back(new CCtrlNewNumber(sInfo));
-					break;
-				}
-				case 0x02:
-				{
-					if (L"dces" == sInfo) arParas.push_back(new CCtrlSectionDef(sInfo));
-					else if (L"dloc" == sInfo) arParas.push_back(new CCtrlColumnDef(sInfo));
-					break;
-				}
-				case 0x03:
-				case 0x0e:
-				case 0x0f:
-					break;
-				case 0x11:
-				{
-					arParas.push_back(new CCtrlNote(sInfo));
-					break;
-				}
-				case 0x16:
-				case 0x17:
-					break;
-				case 0x0b:
-				{
-					if (L" osg" == sInfo)
-						arParas.push_back(new CCtrlGeneralShape(sInfo));
-					else if (L" lbt" == sInfo)
-						arParas.push_back(new CCtrlTable(sInfo));
-					else if (L"deqe" == sInfo)
-						arParas.push_back(new CCtrlEqEdit(sInfo));
-					// else if ("mrof" == sInfo)
-					break;
-				}
-				default:
-					break;
-			}
+			HWP_STRING sType;
+			sType.resize(4);
+
+			sType[0] = (sInfo[0] & 0xFF);
+			sType[1] = ((sInfo[0] >> 8) & 0xFF);
+			sType[2] = (sInfo[1] & 0xFF);
+			sType[3] = ((sInfo[1] >> 8) & 0xFF);
+
+			//TODO:: более подробно разобраться в данном моменте
+			if (L"daeh" == sType ||
+			    L"tood" == sType)
+				arParas.push_back(new CCtrlHeadFoot(sType));
+			else if (L"onta" == sType)
+				arParas.push_back(new CCtrlAutoNumber(sType));
+			else if (L"pngp" == sType)
+				arParas.push_back(new CCtrlPageNumPos(sType));
+			else if (L"onwn" == sType)
+				arParas.push_back(new CCtrlNewNumber(sType));
+			else if (L"dces" == sType)
+				arParas.push_back(new CCtrlSectionDef(sType));
+			else if (L"dloc" == sType)
+				arParas.push_back(new CCtrlColumnDef(sType));
+			else if (L"  nf" == sType)
+				arParas.push_back(new CCtrlNote(sType));
+			else if (L" osg" == sType)
+				arParas.push_back(new CCtrlGeneralShape(sType));
+			else if (L" lbt" == sType)
+				arParas.push_back(new CCtrlTable(sType));
+			else if (L"deqe" == sType)
+				arParas.push_back(new CCtrlEqEdit(sType));
 		}
 
 		nPrevIndex = itCurrent->position() + itCurrent->length();

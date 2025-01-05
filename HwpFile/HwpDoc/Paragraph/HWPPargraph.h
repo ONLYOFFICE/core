@@ -31,7 +31,7 @@ public:
 	bool SetCtrl(CCtrl* pCtrl, unsigned int unIndex);
 
 	VECTOR<CCtrl*>& GetCtrls();
-	const VECTOR<CCtrl*> GetCtrls() const;
+	VECTOR<const CCtrl*> GetCtrls() const;
 
 	unsigned int GetCountCtrls() const;
 	short GetShapeID() const;

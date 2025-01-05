@@ -19,6 +19,8 @@ public:
 
 	int GetSize() override;
 
+	VECTOR<const CHWPPargraph*> GetParagraphs() const;
+
 	void AddParagraph(CHWPPargraph* pParagraph);
 };
 }

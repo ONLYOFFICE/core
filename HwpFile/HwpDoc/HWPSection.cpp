@@ -351,7 +351,7 @@ int CHWPSection::ParseRecurse(CHWPPargraph* pCurrPara, int nRunLevel, CHWPStream
 
 					if (nullptr == pCtrl)
 					{
-						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
+						oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 						break;
 					}
 
@@ -371,9 +371,6 @@ int CHWPSection::ParseRecurse(CHWPPargraph* pCurrPara, int nRunLevel, CHWPStream
 						if (nullptr != pSecD)
 							pSecD->AddHeadFoot((CCtrlHeadFoot*)pCtrl);
 					}
-
-					if (nullptr != dynamic_cast<CCtrlTable*>(pCtrl))
-						pCurrPara->AddCtrl(pCtrl); // TODO:: Странный момент. По логу записей таблицы никак не могут сохраниться (до выяснения будет так)
 
 					oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos());
 					ParseCtrlRecurse(pCtrl, nLevel, oBuffer, 0, nVersion);
@@ -1115,7 +1112,8 @@ int CHWPSection::ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, in
 		CCtrlHeadFoot::ParseListHeaderAppend((CCtrlHeadFoot&)(oObj), nSize, oBuffer, 0, nVersion);
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true) - 6);
 	}
-	// else if ("  nf" == oObj.GetID())
+	else if (L"  nf" == oObj.GetID())
+		oBuffer.Skip(nSize);
 
 	return nSize;
 }

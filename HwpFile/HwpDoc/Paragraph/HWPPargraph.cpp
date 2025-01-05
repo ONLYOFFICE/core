@@ -55,9 +55,14 @@ VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
 	return m_arP;
 }
 
-const std::vector<CCtrl*> CHWPPargraph::GetCtrls() const
+std::vector<const CCtrl*> CHWPPargraph::GetCtrls() const
 {
-	return m_arP;
+	std::vector<const CCtrl*> arParagraphs(m_arP.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arP.size(); ++unIndex)
+		arParagraphs[unIndex] = dynamic_cast<const CCtrl*>(m_arP[unIndex]);
+
+	return arParagraphs;
 }
 
 unsigned int CHWPPargraph::GetCountCtrls() const

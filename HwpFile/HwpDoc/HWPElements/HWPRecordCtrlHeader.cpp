@@ -101,9 +101,6 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 		oBuffer.Skip(nTempSize);
 	}
 
-
-	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
-
 	return pCtrl;
 }
 }

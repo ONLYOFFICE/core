@@ -130,6 +130,9 @@ int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, 
 
 bool CNumberingConverter::SaveToFile(const std::wstring& wsDirectory)
 {
+	if (m_arUsedNumbering.empty())
+		return false;
+
 	NSStringUtils::CStringBuilder oNumberingData;
 
 	oNumberingData.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");

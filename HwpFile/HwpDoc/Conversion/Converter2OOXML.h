@@ -11,6 +11,7 @@
 
 #include "../Section/Page.h"
 
+#include "FootnoteConverter.h"
 #include "OleConverter.h"
 #include "NumberingConverter.h"
 
@@ -42,11 +43,11 @@ class CConverter2OOXML
 	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
 	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
-	NSStringUtils::CStringBuilder m_oNoteXml;     // footnotes.xml
 	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
 	NSStringUtils::CStringBuilder m_oContentTypes;// [Content_Types].xml
 
 	CNumberingConverter m_oNumberingConverter;
+	CFootnoteConverter m_oFootnoteConverter;
 	COleConverter m_oOleConverter;
 
 	void CreateEmptyFiles();

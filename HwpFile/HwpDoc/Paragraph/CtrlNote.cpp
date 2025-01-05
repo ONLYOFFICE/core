@@ -22,6 +22,16 @@ int CCtrlNote::GetSize()
 	return m_nSize;
 }
 
+std::vector<const CHWPPargraph*> CCtrlNote::GetParagraphs() const
+{
+	std::vector<const CHWPPargraph*> arParagraphs(m_arParas.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arParas.size(); ++unIndex)
+		arParagraphs[unIndex] = dynamic_cast<const CHWPPargraph*>(m_arParas[unIndex]);
+
+	return arParagraphs;
+}
+
 void CCtrlNote::AddParagraph(CHWPPargraph* pParagraph)
 {
 	m_arParas.push_back(pParagraph);

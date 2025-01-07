@@ -33,9 +33,24 @@ int CCtrlHeadFoot::GetSize()
 	return m_nSize;
 }
 
+bool CCtrlHeadFoot::IsHeader() const
+{
+	return m_bIsHeader;
+}
+
 void CCtrlHeadFoot::AddParagraph(CHWPPargraph* pParagraph)
 {
 	m_arParas.push_back(pParagraph);
+}
+
+VECTOR<const CHWPPargraph*> CCtrlHeadFoot::GetParagraphs() const
+{
+	VECTOR<const CHWPPargraph*> arParagraphs(m_arParas.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arParas.size(); ++unIndex)
+		arParagraphs[unIndex] = dynamic_cast<const CHWPPargraph*>(m_arParas[unIndex]);
+
+	return arParagraphs;
 }
 
 int CCtrlHeadFoot::ParseListHeaderAppend(CCtrlHeadFoot& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

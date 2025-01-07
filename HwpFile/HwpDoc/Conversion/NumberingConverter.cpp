@@ -6,12 +6,6 @@ namespace HWP
 CNumberingConverter::CNumberingConverter()
 {}
 
-void CNumberingConverter::Clear()
-{
-	m_oNumberXml.Clear();
-	m_arUsedNumbering.clear();
-}
-
 unsigned int CNumberingConverter::GetCountNumbering() const
 {
 	return m_arUsedNumbering.size();

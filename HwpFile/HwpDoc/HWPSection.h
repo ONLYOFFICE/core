@@ -21,7 +21,7 @@ public:
 	int ParseCtrlRecurse(CCtrl* oCurrCtrl, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseContainerRecurse(CCtrlContainer* oContainer, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	const VECTOR<CHWPPargraph*> GetParagraphs() const;
+	VECTOR<const CHWPPargraph*> GetParagraphs() const;
 };
 }
 

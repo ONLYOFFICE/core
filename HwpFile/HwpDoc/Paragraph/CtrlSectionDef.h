@@ -59,6 +59,7 @@ public:
 	int GetSize() override;
 
 	const CPage* GetPage() const;
+	VECTOR<const CCtrlHeadFoot*> GetHeaderFooters() const;
 };
 }
 

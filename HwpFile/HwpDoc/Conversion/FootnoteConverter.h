@@ -4,27 +4,27 @@
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 #include "../Paragraph/CtrlNote.h"
+#include "../Paragraph/CtrlHeadFoot.h"
 
 namespace HWP
 {
+class CConverter2OOXML;
 class CFootnoteConverter
 {
-	std::vector<std::pair<std::wstring, unsigned short>> m_arNotWrittenIds;
+	unsigned short m_ushCountFootnotes;
+	unsigned short m_ushCountEndnotes;
 
-	unsigned short m_unCountFootnotes;
-	unsigned short m_unCountEndnotes;
+	unsigned short m_ushHeaderCount;
+	unsigned short m_ushFooterCount;
 
 	NSStringUtils::CStringBuilder m_oFootnoteXml;
 	NSStringUtils::CStringBuilder m_oEndnoteXml;
 public:
 	CFootnoteConverter();
 
-	void Clear();
+	std::wstring CreateNote(const CCtrlNote* pNote, CConverter2OOXML& oConverter);
+	std::wstring CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHeadFoot, CConverter2OOXML& oConverter);
 
-	bool NeedWritten() const;
-	std::vector<std::pair<std::wstring, unsigned short>>GetNotWrittenIds(bool bNeedClear = false);
-
-	void CreateFootnote(const CCtrlNote* pNote);
 	bool SaveToFile(const std::wstring& wsDirectory);
 };
 }

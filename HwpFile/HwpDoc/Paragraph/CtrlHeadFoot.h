@@ -29,14 +29,17 @@ class CCtrlHeadFoot : public CCtrl
 	HWP_BYTE m_chRefLevelText;
 	HWP_BYTE m_chRefLevelNum;
 
-	std::vector<CHWPPargraph*> m_arParas;
+	VECTOR<CHWPPargraph*> m_arParas;
 public:
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID);
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
 
 	int GetSize() override;
+	bool IsHeader() const;
 
 	void AddParagraph(CHWPPargraph* pParagraph);
+
+	VECTOR<const CHWPPargraph*> GetParagraphs() const;
 
 	static int ParseListHeaderAppend(CCtrlHeadFoot& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

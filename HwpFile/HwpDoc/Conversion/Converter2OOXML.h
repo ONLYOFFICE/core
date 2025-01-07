@@ -22,9 +22,14 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
-	int m_nCountShapes;
-
 	TConversionState();
+};
+
+struct TRelationship
+{
+	HWP_STRING m_wsID;
+	HWP_STRING m_wsType;
+	HWP_STRING m_wsTarget;
 };
 
 enum class ECellCreator
@@ -40,15 +45,18 @@ class CConverter2OOXML
 	HWP_STRING m_sTempDirectory;
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
-	NSStringUtils::CStringBuilder m_oDocXmlRels;  // document.xml.rels
-	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
+	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
 	NSStringUtils::CStringBuilder m_oContentTypes;// [Content_Types].xml
+
+	VECTOR<TRelationship> m_arRelationships;
 
 	CNumberingConverter m_oNumberingConverter;
 	CFootnoteConverter m_oFootnoteConverter;
 	COleConverter m_oOleConverter;
+
+	unsigned int m_unShapeCount;
 
 	void CreateEmptyFiles();
 	void FillDefaultData();
@@ -57,38 +65,42 @@ class CConverter2OOXML
 
 	bool IsRasterFormat(const HWP_STRING& sFormat);
 
-	void WriteParagraph(const CHWPPargraph* pParagraph, TConversionState& oState);
-	void WriteParagraphProperties(const CHWPPargraph* pParagraph, TConversionState& oState);
-	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, TConversionState& oState);
-	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, TConversionState& oState);
-	void WriteCell(const CTblCell* pCell, TConversionState& oState, ECellCreator eCellCreator);
-	void WriteCellProperties(short shBorderFillID);
-	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName);
+	void WriteParagraphProperties(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteCell(const CTblCell* pCell, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, ECellCreator eCellCreator);
+	void WriteCellProperties(short shBorderFillID, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder);
 
-	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, TConversionState& oState);
-	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, TConversionState& oState);
-	void WriteOleShape(const CCtrlShapeOle* pOleShape, TConversionState& oState);
+	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	void WriteSectionSettings(const CPage* pPage);
-	void WritePicture(const CCtrlShapePic* pCtrlPic, const TConversionState& oState);
+	void WriteSectionSettings(const CCtrlSectionDef* pSectionDef);
+	void WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
-	bool SavePicture(const HWP_STRING& sBinItemId);
+	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
-	void WriteParaShapeProperties(short shParaShapeID, const TConversionState& oState);
-	void WriteRunnerStyle(short shCharShapeID, const TConversionState& oState);
+	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
+	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
 	const CCtrlSectionDef* FindSectionDef(const CHWPSection* pSection) const;
+
+	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
+	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);
 public:
 	CConverter2OOXML();
 	~CConverter2OOXML();
 
-	void Clear();
+	void WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void SetHWPFile(CHWPFile_Private* pHWPFile);
 	void SetTempDirectory(const HWP_STRING& sTempDirectory);
 	bool ConvertToFile(const HWP_STRING& sFilePath);
 	bool ConvertToDir(const HWP_STRING& sDirectoryPath);
+
+	HWP_STRING GetTempDirectory() const;
 };
 }
 

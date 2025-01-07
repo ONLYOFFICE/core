@@ -15,8 +15,6 @@ class CNumberingConverter
 public:
 	CNumberingConverter();
 
-	void Clear();
-
 	unsigned int GetCountNumbering() const;
 
 	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType);

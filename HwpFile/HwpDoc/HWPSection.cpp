@@ -1075,9 +1075,14 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer* pContainer, int nRunLevel
 	return oBuffer.GetDistanceToLastPos(true);
 }
 
-const VECTOR<CHWPPargraph*> CHWPSection::GetParagraphs() const
+VECTOR<const CHWPPargraph*> CHWPSection::GetParagraphs() const
 {
-	return m_arParas;
+	VECTOR<const CHWPPargraph*> arParagraphs(m_arParas.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arParas.size(); ++unIndex)
+		arParagraphs[unIndex] = dynamic_cast<const CHWPPargraph*>(m_arParas[unIndex]);
+
+	return arParagraphs;
 }
 
 int CHWPSection::ParseListAppend(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -1110,7 +1115,7 @@ int CHWPSection::ParseListAppend(CCtrl& oObj, int nSize, CHWPStream& oBuffer, in
 	{
 		oBuffer.SavePosition();
 		CCtrlHeadFoot::ParseListHeaderAppend((CCtrlHeadFoot&)(oObj), nSize, oBuffer, 0, nVersion);
-		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true) - 6);
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	}
 	else
 		oBuffer.Skip(nSize);

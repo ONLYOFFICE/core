@@ -83,4 +83,14 @@ const CPage* CCtrlSectionDef::GetPage() const
 {
 	return m_pPage;
 }
+
+std::vector<const CCtrlHeadFoot*> CCtrlSectionDef::GetHeaderFooters() const
+{
+	VECTOR<const CCtrlHeadFoot*> arHeaderFooters(m_arHeaderFooter.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arHeaderFooter.size(); ++unIndex)
+		arHeaderFooters[unIndex] = dynamic_cast<const CCtrlHeadFoot*>(m_arHeaderFooter[unIndex]);
+
+	return arHeaderFooters;
+}
 }

@@ -80,6 +80,11 @@ short CHWPPargraph::GetStyleID() const
 	return m_shParaStyleID;
 }
 
+HWP_BYTE CHWPPargraph::GetBreakType() const
+{
+	return m_chBreakType;
+}
+
 const CLineSeg* CHWPPargraph::GetLineSeg() const
 {
 	return m_pLineSegs;

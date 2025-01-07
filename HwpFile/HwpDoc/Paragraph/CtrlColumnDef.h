@@ -26,6 +26,9 @@ public:
 	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
+
+	short GetColCount() const;
+	ELineStyle2 GetColLineStyle() const;
 };
 }
 

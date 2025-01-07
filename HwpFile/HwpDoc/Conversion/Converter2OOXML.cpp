@@ -292,10 +292,12 @@ void CConverter2OOXML::Convert()
 		if (!bIsLastSection)
 			m_oDocXml.WriteString(L"<w:p><w:pPr>");
 
-		WriteSectionSettings(FindSectionDef(pSection));
+		WriteSectionSettings(oState);
 
 		if (!bIsLastSection)
 			m_oDocXml.WriteString(L"</w:pPr></w:p>");
+
+		++oState.m_ushSecdIndex;
 	}
 }
 
@@ -308,6 +310,30 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 {
 	if (nullptr == pParagraph)
 		return;
+
+	if (0 < pParagraph->GetBreakType())
+	{
+		if ((0x01 == (pParagraph->GetBreakType() & 0x01) ||
+		    0x02 == (pParagraph->GetBreakType() & 0x02)) &&
+		    0 < oState.m_ushSecdIndex)
+		{
+			if (oState.m_bOpenedP)
+				oBuilder.WriteString(L"</w:p>");
+
+			oBuilder.WriteString(L"<w:p><w:r><w:br w:type=\"page\"/></w:r>");
+
+			oState.m_bOpenedP = true;
+		}
+		else if (0x08 == (pParagraph->GetBreakType() & 0x08))
+		{
+			if (oState.m_bOpenedP)
+				oBuilder.WriteString(L"</w:p>");
+
+			oBuilder.WriteString(L"<w:p><w:r><w:br w:type=\"column\"/></w:r>");
+
+			oState.m_bOpenedP = true;
+		}
+	}
 
 	bool bLineBreak = false;
 	std::wstring wsNoteRef;
@@ -399,6 +425,10 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		{
 			wsNoteRef = m_oFootnoteConverter.CreateNote((const CCtrlNote*)pCtrl, *this);
 		}
+		else if (nullptr != dynamic_cast<const CCtrlSectionDef*>(pCtrl))
+			oState.m_pSectionDef = (const CCtrlSectionDef*)pCtrl;
+		else if (nullptr != dynamic_cast<const CCtrlColumnDef*>(pCtrl))
+			oState.m_pColumnDef  = (const CCtrlColumnDef*)(pCtrl);
 		else
 			continue;
 
@@ -934,13 +964,13 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	AddContentType(L"charts/colors" + std::to_wstring(unChartIndex), L"application/vnd.ms-office.chartcolorstyle+xml");
 }
 
-void CConverter2OOXML::WriteSectionSettings(const CCtrlSectionDef* pSectionDef)
+void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 {
 	m_oDocXml.WriteString(L"<w:sectPr>");
 
-	if (nullptr != pSectionDef)
+	if (nullptr != oState.m_pSectionDef)
 	{
-		for (const CCtrlHeadFoot* pCtrlHeadFoot : pSectionDef->GetHeaderFooters())
+		for (const CCtrlHeadFoot* pCtrlHeadFoot : oState.m_pSectionDef->GetHeaderFooters())
 		{
 			const std::wstring wsID = m_oFootnoteConverter.CreateHeadOrFoot((const CCtrlHeadFoot*)pCtrlHeadFoot, *this);
 
@@ -955,7 +985,18 @@ void CConverter2OOXML::WriteSectionSettings(const CCtrlSectionDef* pSectionDef)
 		}
 	}
 
-	const CPage *pPage = (nullptr != pSectionDef) ? pSectionDef->GetPage() : nullptr;
+	if (nullptr != oState.m_pColumnDef && 1 < oState.m_pColumnDef->GetColCount())
+	{
+		//TODO:: Добавить поддержку остальный свойств
+		m_oDocXml.WriteString(L"<w:cols w:num=\"" + std::to_wstring(oState.m_pColumnDef->GetColCount()) + L"\"  w:space=\"454\" w:equalWidth=\"true\"");
+
+		if (ELineStyle2::NONE != oState.m_pColumnDef->GetColLineStyle())
+			m_oDocXml.WriteString(L" w:sep=\"true\"");
+
+		m_oDocXml.WriteString(L"/>");
+	}
+
+	const CPage *pPage = (nullptr != oState.m_pSectionDef) ? oState.m_pSectionDef->GetPage() : nullptr;
 
 	if (nullptr == pPage)
 	{
@@ -1282,21 +1323,6 @@ bool CConverter2OOXML::GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, H
 	return true;
 }
 
-const CCtrlSectionDef* CConverter2OOXML::FindSectionDef(const CHWPSection* pSection) const
-{
-	if (nullptr == pSection)
-		return nullptr;
-
-	for (const CHWPPargraph* pParagraph : pSection->GetParagraphs())
-	{
-		for (const CCtrl* pCtrl : pParagraph->GetCtrls())
-			if (nullptr != dynamic_cast<const CCtrlSectionDef*>(pCtrl))
-				return (const CCtrlSectionDef*)pCtrl;
-	}
-
-	return nullptr;
-}
-
 HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget)
 {
 	if (wsType.empty() || wsTarget.empty())
@@ -1350,7 +1376,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false)
+	: m_bOpenedP(false), m_bOpenedR(false), m_ushSecdIndex(0), m_pSectionDef(nullptr), m_pColumnDef(nullptr)
 {}
 
 }

@@ -5,11 +5,10 @@
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 #include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlColumnDef.h"
 #include "../Paragraph/CtrlShapePic.h"
 #include "../Paragraph/CtrlShapeOle.h"
 #include "../Paragraph/TblCell.h"
-
-#include "../Section/Page.h"
 
 #include "FootnoteConverter.h"
 #include "OleConverter.h"
@@ -21,6 +20,11 @@ struct TConversionState
 {
 	bool m_bOpenedP;
 	bool m_bOpenedR;
+
+	unsigned short m_ushSecdIndex;
+
+	const CCtrlSectionDef* m_pSectionDef;
+	const CCtrlColumnDef*  m_pColumnDef;
 
 	TConversionState();
 };
@@ -76,7 +80,7 @@ class CConverter2OOXML
 	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	void WriteSectionSettings(const CCtrlSectionDef* pSectionDef);
+	void WriteSectionSettings(TConversionState& oState);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
@@ -85,7 +89,6 @@ class CConverter2OOXML
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
-	const CCtrlSectionDef* FindSectionDef(const CHWPSection* pSection) const;
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);

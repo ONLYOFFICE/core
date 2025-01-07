@@ -47,4 +47,14 @@ int CCtrlColumnDef::GetSize()
 {
 	return m_nSize;
 }
+
+short CCtrlColumnDef::GetColCount() const
+{
+	return m_shColCount;
+}
+
+ELineStyle2 CCtrlColumnDef::GetColLineStyle() const
+{
+	return m_eColLineStyle;
+}
 }

@@ -36,6 +36,7 @@ public:
 	unsigned int GetCountCtrls() const;
 	short GetShapeID() const;
 	short GetStyleID() const;
+	HWP_BYTE GetBreakType() const;
 
 	const CLineSeg* GetLineSeg() const;
 

@@ -21,6 +21,8 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
+	bool m_bNeedLineBreak;
+
 	unsigned short m_ushSecdIndex;
 
 	const CCtrlSectionDef* m_pSectionDef;
@@ -60,7 +62,10 @@ class CConverter2OOXML
 	CFootnoteConverter m_oFootnoteConverter;
 	COleConverter m_oOleConverter;
 
-	unsigned int m_unShapeCount;
+	unsigned short m_ushShapeCount;
+	unsigned short m_ushPageCount;
+	unsigned short m_ushTableCount;
+	unsigned short m_ushEquationCount;
 
 	void CreateEmptyFiles();
 	void FillDefaultData();
@@ -69,7 +74,7 @@ class CConverter2OOXML
 
 	bool IsRasterFormat(const HWP_STRING& sFormat);
 
-	void WriteParagraphProperties(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteParagraphProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteTable(const CCtrlTable* pTable, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCell(const CTblCell* pCell, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, ECellCreator eCellCreator);
@@ -87,6 +92,8 @@ class CConverter2OOXML
 
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
+
+	void WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
 

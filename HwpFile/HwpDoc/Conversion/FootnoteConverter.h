@@ -26,6 +26,9 @@ public:
 	std::wstring CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHeadFoot, CConverter2OOXML& oConverter);
 
 	bool SaveToFile(const std::wstring& wsDirectory);
+
+	unsigned short GetFootnoteCount() const;
+	unsigned short GetEndnoteCount() const;
 };
 }
 

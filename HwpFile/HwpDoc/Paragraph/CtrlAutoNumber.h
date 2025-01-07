@@ -50,6 +50,8 @@ public:
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
 	int GetSize() override;
+
+	ENumType GetNumType() const;
 };
 }
 

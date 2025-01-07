@@ -133,3 +133,13 @@ bool CFootnoteConverter::SaveToFile(const std::wstring& wsDirectory)
 	return true;
 }
 }
+
+unsigned short HWP::CFootnoteConverter::GetFootnoteCount() const
+{
+	return m_ushCountFootnotes;
+}
+
+unsigned short HWP::CFootnoteConverter::GetEndnoteCount() const
+{
+	return m_ushCountEndnotes;
+}

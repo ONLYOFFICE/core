@@ -12,6 +12,7 @@
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlCharacter.h"
 #include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlShapeRect.h"
 #include "../Paragraph/CtrlShapeArc.h"
@@ -72,7 +73,7 @@ EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
 }
 
 CConverter2OOXML::CConverter2OOXML()
-	: m_pHWPFile(nullptr)
+	: m_pHWPFile(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0), m_ushEquationCount(0)
 {}
 
 CConverter2OOXML::~CConverter2OOXML()
@@ -323,6 +324,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			oBuilder.WriteString(L"<w:p><w:r><w:br w:type=\"page\"/></w:r>");
 
 			oState.m_bOpenedP = true;
+			++m_ushPageCount;
 		}
 		else if (0x08 == (pParagraph->GetBreakType() & 0x08))
 		{
@@ -335,8 +337,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		}
 	}
 
-	bool bLineBreak = false;
-	std::wstring wsNoteRef;
+	VECTOR<std::wstring> arNoteRef;
 
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
@@ -347,26 +348,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			if (wsText.empty())
 				wsText = L" ";
 
-			if (!oState.m_bOpenedP)
-			{
-				oBuilder.WriteString(L"<w:p>");
-				oState.m_bOpenedP = true;
-				WriteParagraphProperties(pParagraph, oBuilder, oState);
-			}
-
-			oBuilder.WriteString(L"<w:r>");
-
-			WriteRunnerStyle(((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
-
-			if (bLineBreak)
-			{
-				oBuilder.WriteString(L"<w:br/>");
-				bLineBreak = false;
-			}
-
-			oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
-			oBuilder.WriteEncodeXmlString(wsText);
-			oBuilder.WriteString(L"</w:t></w:r>");
+			WriteText(wsText, pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
 		}
 		else if (nullptr != dynamic_cast<const CCtrlCharacter*>(pCtrl))
 		{
@@ -381,16 +363,12 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 						oState.m_bOpenedP = false;
 						oBuilder.WriteString(L"</w:p>");
 					}
-					//TODO::
-					oBuilder.WriteString(L"<w:p>");
-					WriteParagraphProperties(pParagraph, oBuilder, oState);
-					oBuilder.WriteString(L"<w:r></w:r></w:p>");
-					bLineBreak = false;
+					oState.m_bNeedLineBreak = false;
 					break;
 				}
 				case ECtrlCharType::LINE_BREAK:
 				{
-					bLineBreak = true;
+					oState.m_bNeedLineBreak = true;
 					break;
 				}
 				case ECtrlCharType::HARD_HYPHEN:
@@ -423,40 +401,69 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		}
 		else if (nullptr != dynamic_cast<const CCtrlNote*>(pCtrl))
 		{
-			wsNoteRef = m_oFootnoteConverter.CreateNote((const CCtrlNote*)pCtrl, *this);
+			arNoteRef.push_back(m_oFootnoteConverter.CreateNote((const CCtrlNote*)pCtrl, *this));
 		}
 		else if (nullptr != dynamic_cast<const CCtrlSectionDef*>(pCtrl))
 			oState.m_pSectionDef = (const CCtrlSectionDef*)pCtrl;
 		else if (nullptr != dynamic_cast<const CCtrlColumnDef*>(pCtrl))
 			oState.m_pColumnDef  = (const CCtrlColumnDef*)(pCtrl);
+		else if (nullptr != dynamic_cast<const CCtrlAutoNumber*>(pCtrl))
+		{
+			unsigned short ushValue = 0;
+
+			//TODO:: лучше перейти не на ручной подсчет, а на автоматический в word (но там есть свои проблемы)
+			switch (((const CCtrlAutoNumber*)pCtrl)->GetNumType())
+			{
+				case ENumType::PAGE:
+				case ENumType::TOTAL_PAGE:
+					ushValue = m_ushPageCount; break;
+				case ENumType::FOOTNOTE:
+					ushValue = m_oFootnoteConverter.GetFootnoteCount(); break;
+				case ENumType::ENDNOTE:
+					ushValue = m_oFootnoteConverter.GetEndnoteCount(); break;
+				case ENumType::FIGURE:
+					ushValue = m_ushShapeCount; break;
+				case ENumType::TABLE:
+					ushValue = m_ushTableCount; break;
+				case ENumType::EQUATION:
+					ushValue = m_ushEquationCount; break;
+				case ENumType::null:
+					break;
+			}
+
+			if (0 == ushValue)
+				continue;
+
+			WriteText(std::to_wstring(ushValue), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+		}
 		else
 			continue;
 
-		if (!wsNoteRef.empty() && nullptr == dynamic_cast<const CCtrlNote*>(pCtrl) && oState.m_bOpenedP)
+		if (!arNoteRef.empty() && nullptr == dynamic_cast<const CCtrlNote*>(pCtrl) && oState.m_bOpenedP)
 		{
-			oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
-			wsNoteRef.clear();
+			for (const std::wstring& wsNoteRef : arNoteRef)
+				oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
+
+			arNoteRef.clear();
 		}
 	}
 
 	if (oState.m_bOpenedP)
 	{
-		if (!wsNoteRef.empty())
-			oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
+		if (!arNoteRef.empty())
+			for (const std::wstring& wsNoteRef : arNoteRef)
+				oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
 
 		oBuilder.WriteString(L"</w:p>");
 		oState.m_bOpenedP = false;
 	}
 }
 
-void CConverter2OOXML::WriteParagraphProperties(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (nullptr == pParagraph)
-		return;
-
 	oBuilder.WriteString(L"<w:pPr>");
 
-	WriteParaShapeProperties(pParagraph->GetShapeID(), oBuilder, oState);
+	WriteParaShapeProperties(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"</w:pPr>");
 }
@@ -505,7 +512,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 		case 0x0:
 		{
 			sType = L"auto";
-			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100. * SPACING_SCALE_MS_WORD);
+			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
 			break;
 		}
 		case 0x01:
@@ -557,6 +564,8 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 {
 	if (nullptr == pTable || pTable->Empty())
 		return;
+
+	++m_ushTableCount;
 
 	oBuilder.WriteString(L"<w:tbl>");
 
@@ -788,7 +797,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
 	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 	oBuilder.WriteString(L"<wp:wrapNone/>"); //TODO:: добавить поддержку
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_unShapeCount) + L"\" descr=\"");
+	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
 	oBuilder.WriteEncodeXmlString(pGeneralShape->GetDesc());
 	oBuilder.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
@@ -896,6 +905,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	//TODO:: добавить конвертацию eqn формулы в ooxml
+	++m_ushEquationCount;
+
 	if (!oState.m_bOpenedP)
 	{
 		oBuilder.WriteString(L"<w:p>");
@@ -948,7 +959,7 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 
 	oBuilder.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
 	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_unShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_unShapeCount) + L"\" descr=\"");
+	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
 	oBuilder.WriteEncodeXmlString(pOleShape->GetDesc());
 	oBuilder.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
@@ -1287,6 +1298,30 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	}
 }
 
+void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	if (!oState.m_bOpenedP)
+	{
+		oBuilder.WriteString(L"<w:p>");
+		oState.m_bOpenedP = true;
+		WriteParagraphProperties(shParaShapeID, oBuilder, oState);
+	}
+
+	oBuilder.WriteString(L"<w:r>");
+
+	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+
+	if (oState.m_bNeedLineBreak)
+	{
+		oBuilder.WriteString(L"<w:br/>");
+		oState.m_bNeedLineBreak = false;
+	}
+
+	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
+	oBuilder.WriteEncodeXmlString(wsText);
+	oBuilder.WriteString(L"</w:t></w:r>");
+}
+
 bool CConverter2OOXML::GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat)
 {
 	const CHWPDocInfo* pDocInfo = nullptr;
@@ -1376,7 +1411,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushSecdIndex(0), m_pSectionDef(nullptr), m_pColumnDef(nullptr)
+	: m_bOpenedP(false), m_bOpenedR(false), m_bNeedLineBreak(false), m_ushSecdIndex(0), m_pSectionDef(nullptr), m_pColumnDef(nullptr)
 {}
 
 }

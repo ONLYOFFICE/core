@@ -13,7 +13,7 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 
-	m_eNumType = GetNumType(nAttr & 0xF);
+	m_eNumType = ::HWP::GetNumType(nAttr & 0xF);
 	m_eNumShape = GetNumberShape2(nAttr >> 4 & 0xFF);
 	m_bSuperscript = CHECK_FLAG(nAttr >> 12, 0x1);
 
@@ -24,5 +24,10 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 int CCtrlAutoNumber::GetSize()
 {
 	return m_nSize;
+}
+
+ENumType CCtrlAutoNumber::GetNumType() const
+{
+	return m_eNumType;
 }
 }

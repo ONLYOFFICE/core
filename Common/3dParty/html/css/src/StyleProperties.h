@@ -224,6 +224,8 @@ namespace NSCSS
 	{
 	public:
 		CColor();
+		CColor(const CColor& oColor);
+		~CColor();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);

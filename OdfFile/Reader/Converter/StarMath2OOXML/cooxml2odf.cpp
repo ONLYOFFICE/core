@@ -541,7 +541,7 @@ namespace StarMath
 	}
 	std::vector<COneElement*> COOXml2Odf::ConversionMRun(OOX::Logic::CMRun *pMRun)
 	{
-		StValuePr* stRpr;
+		StValuePr* stRpr(nullptr);
 		std::vector<COneElement*> arLine;
 		if(pMRun == nullptr) return arLine;
 		if(pMRun->m_oRPr.GetPointer() != nullptr)
@@ -756,21 +756,25 @@ namespace StarMath
 		if(pRPr->m_oColor.GetPointer() != nullptr)
 		{
 			std::wstring wsColor,wsUpperColor(L"");
-			wsColor =  pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()->ToStringNoAlpha();
-			for(wchar_t chToken: wsColor)
-				wsUpperColor += std::toupper(chToken);
-			if(wsUpperColor != L"000000")
+			wsColor =  pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()!= nullptr ? pRPr->m_oColor.GetPointer()->m_oVal.GetPointer()->ToStringNoAlpha():L"";
+			if(wsColor != L"")
 			{
-				stTempPr->m_wsColor = wsUpperColor;
-				bRpr = true;
+				for(wchar_t chToken: wsColor)
+					wsUpperColor += std::toupper(chToken);
+				if(wsUpperColor != L"000000")
+				{
+					stTempPr->m_wsColor = wsUpperColor;
+					bRpr = true;
+				}
 			}
 		}
 		if(pRPr->m_oSz.GetPointer() != nullptr)
 		{
-			bRpr = true;
-			stTempPr->m_iSize = pRPr->m_oSz.GetPointer()->m_oVal.GetPointer()->GetValue();
+			stTempPr->m_iSize = pRPr->m_oSz.GetPointer()->m_oVal.GetPointer() != nullptr ? pRPr->m_oSz.GetPointer()->m_oVal.GetPointer()->GetValue():0;
+			if(stTempPr->m_iSize != 0)
+				bRpr = true;
 		}
-		if(pRPr->m_oRFonts.GetPointer()!= nullptr)
+		if(pRPr->m_oRFonts.GetPointer()!= nullptr && pRPr->m_oRFonts.GetPointer()->m_sAscii.GetPointer()!= nullptr)
 			stTempPr->m_enFont = FontCheck(pRPr->m_oRFonts.GetPointer()->m_sAscii.get(),bRpr);
 		if(pRPr->m_oStrike.GetPointer()!=nullptr && pRPr->m_oStrike.GetPointer()->m_oVal.GetValue() == SimpleTypes::EOnOff::onoffTrue)
 		{
@@ -816,22 +820,22 @@ namespace StarMath
 		if(pValue == nullptr)
 			pValue = new StValuePr;
 		bool bAttribute{false};
-		if(pARpr->b.get())
+		if(pARpr->b.IsInit() && pARpr->b.get())
 		{
-			if(pARpr->i.get())
+			if(pARpr->i.IsInit() && pARpr->i.get())
 				pValue->m_enStyle = SimpleTypes::EStyle::styleBoldItalic;
 			else
 				pValue->m_enStyle = SimpleTypes::EStyle::styleBold;
 			bAttribute = true;
 		}
-		else if(pARpr->i.get())
+		else if(pARpr->i.IsInit() && pARpr->i.get())
 		{
 			pValue->m_enStyle = SimpleTypes::EStyle::styleItalic;
 			bAttribute = true;
 		}
 		if(pARpr->sz.IsInit())
 		{
-			pValue->m_iSize = pARpr->sz.get();
+			pValue->m_iSize = pARpr->sz.get()/100;
 			bAttribute = true;
 		}
 		if(pARpr->latin.IsInit() && !pARpr->latin->typeface.empty())
@@ -870,7 +874,7 @@ namespace StarMath
 				wsRecordColor = L"blue";
 			else if(L"00FF00" == wsColor)
 				wsRecordColor = L"lime";
-			else if(L"008000" = wsColor)
+			else if(L"008000" == wsColor)
 				wsRecordColor = L"green";
 			else if(L"FF0000" == wsColor)
 				wsRecordColor = L"red";
@@ -1079,7 +1083,7 @@ namespace StarMath
 		StStyleMenClose stStyle;
 		if(pCtrlPr == nullptr)
 			return stStyle;
-		StValuePr* pValue;
+		StValuePr* pValue(nullptr);
 		if(pCtrlPr->m_oRPr.GetPointer() != nullptr)
 			pValue = ConversionRunProperties(pCtrlPr->m_oRPr.GetPointer());
 		else if(pCtrlPr->m_oARPr.GetPointer() != nullptr)

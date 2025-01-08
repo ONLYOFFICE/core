@@ -312,14 +312,14 @@ namespace Aggplus
         agg::trans_affine& m1 = mm1->m_internal->m_agg_mtx;
         agg::trans_affine& m2 = mm2->m_internal->m_agg_mtx;
 
-        bool bMain = (fabs(m1.sx  - m2.sx) < eps &&
-                      fabs(m1.sy  - m2.sy) < eps &&
-                      fabs(m1.shx - m2.shx) < eps &&
-                      fabs(m1.shy - m2.shy) < eps) ? true : false;
+        bool bMain = fabs(m1.sx  - m2.sx)  < eps &&
+                     fabs(m1.sy  - m2.sy)  < eps &&
+                     fabs(m1.shx - m2.shx) < eps &&
+                     fabs(m1.shy - m2.shy) < eps;
 
         if (!bMain || bIsOnlyMain)
             return bMain;
 
-        return (fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps) ? true : false;
+        return fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps;
     }
 }

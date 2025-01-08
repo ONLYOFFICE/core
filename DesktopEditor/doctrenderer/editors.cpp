@@ -100,12 +100,12 @@ namespace NSDoctRenderer
 			}
 			case DoctRendererEditorType::VISIO:
 			{
-				if (!NSFile::CFileBinary::Exists(config->m_strSdkPath + L"/draw/sdk-all-min.js"))
+				if (!NSFile::CFileBinary::Exists(config->m_strSdkPath + L"/visio/sdk-all-min.js"))
 					return L"";
-				AppendScript(builder, config->m_strSdkPath + L"/draw/sdk-all-min.js");
+				AppendScript(builder, config->m_strSdkPath + L"/visio/sdk-all-min.js");
 				AppendScript(builder, sFontsPath);
-				AppendScript(builder, config->m_strSdkPath + L"/draw/sdk-all.js");
-				sCachePath = config->m_strSdkPath + L"/draw/sdk-all";
+				AppendScript(builder, config->m_strSdkPath + L"/visio/sdk-all.js");
+				sCachePath = config->m_strSdkPath + L"/visio/sdk-all";
 				break;
 			}
 			case DoctRendererEditorType::PDF:
@@ -147,7 +147,7 @@ namespace NSDoctRenderer
 			}
 			case DoctRendererEditorType::VISIO:
 			{
-				return config->m_strSdkPath + L"/draw/sdk-all.bin";
+				return config->m_strSdkPath + L"/visio/sdk-all.bin";
 			}
 			case DoctRendererEditorType::PDF:
 			{

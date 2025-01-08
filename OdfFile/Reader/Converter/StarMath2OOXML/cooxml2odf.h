@@ -241,6 +241,8 @@ namespace StarMath
 		CSpecialChar(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_wsSymbol(wsSymbol),m_wsAnnotation(wsAnnotation)
 		{
 			SetType(TypeElement::SpecialSymbol);
+			if(m_wsSymbol == L"\u0026")
+				m_wsSymbol = L"\u0026amp;";
 		}
 		virtual ~CSpecialChar();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;

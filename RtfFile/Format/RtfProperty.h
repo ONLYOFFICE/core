@@ -347,6 +347,8 @@ public:
 	bool IsValid();
 	_INT32 GetType();
 
+	std::wstring GetBorderType();
+
 	void SetDefaultRtf( );
 	void SetDefaultOOX( );
 	void SetDefault( );
@@ -356,6 +358,7 @@ public:
 
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
+	std::wstring RenderToShapeOOX(RenderParameter oRenderParameter);
 	
 	static bool GetStringRtfByType( _BorderType nValue, std::wstring& sValue );
 	static std::wstring GetStringOOXByType( _BorderType nValue, std::wstring& sValue );

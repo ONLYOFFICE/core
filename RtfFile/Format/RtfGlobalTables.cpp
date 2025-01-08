@@ -357,7 +357,7 @@ std::wstring RtfListTable::RenderToOOX(RenderParameter oRenderParameter)
 	if( m_aArray.size() > 0 )
 	{
 		RenderParameter oNewParam = oRenderParameter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_SHAPE_WSHAPE;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_PIC_BULLET;
 		for (int i = 0; i < m_aPictureList.GetCount(); i++ )
 		{
 			sResult += L"<w:numPicBullet w:numPicBulletId=\"" + std::to_wstring(i) + L"\">";

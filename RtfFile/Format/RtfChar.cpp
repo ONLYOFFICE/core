@@ -120,7 +120,8 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
     
     std::wstring sResult;
-    if (RENDER_TO_OOX_PARAM_RUN		== oRenderParameter.nType)
+    if (RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType ||
+		RENDER_TO_OOX_PARAM_FIELD == oRenderParameter.nType)
     {
 		bool bInsert = false;
 		bool bDelete = false;
@@ -150,7 +151,7 @@ std::wstring RtfChar::RenderToOOX(RenderParameter oRenderParameter)
 				sResult += m_oProperty.RenderToOOX(oRenderParameter);
 			sResult += L"</w:rPr>";
 			
-			sResult += renderTextToXML(L"Text", bDelete );
+			sResult += renderTextToXML((RENDER_TO_OOX_PARAM_FIELD == oRenderParameter.nType ? L"Field" : L"Text"), bDelete );
         sResult += L"</w:r>";
 		
 		if (bDelete)sResult += L"</w:del>";
@@ -221,6 +222,12 @@ std::wstring RtfChar::renderTextToXML( std::wstring sParam, bool bDelete )
             sResult += XmlUtils::EncodeXmlString( m_sChars, true );
 		sResult += L"</m:t>";
     }
+	else if (L"Field" == sParam && !m_sChars.empty())
+	{
+		sResult += L"<w:instrText xml:space=\"preserve\">";
+		sResult += XmlUtils::EncodeXmlString(m_sChars, true);
+		sResult += L"</w:instrText>";
+	}
 	return sResult;
 }
 std::wstring RtfChar::renderRtfText( std::wstring& sText, void* poDocument, RtfCharProperty* oCharProperty, bool bMarker)
@@ -403,7 +410,8 @@ std::wstring RtfCharSpecial::RenderToOOX(RenderParameter oRenderParameter)
 	OOXWriter*		poOOXWriter		= static_cast<OOXWriter*>	(oRenderParameter.poWriter);
 
     std::wstring sResult;
-	if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+	if (RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType ||
+		RENDER_TO_OOX_PARAM_FIELD == oRenderParameter.nType)
 	{
 		bool bInsert = false;
 		bool bDelete = false;

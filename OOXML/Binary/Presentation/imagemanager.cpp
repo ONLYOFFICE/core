@@ -47,12 +47,6 @@
 
 #include "../../Base/Unit.h"
 
-// как все протестируем - уберем
-#define SUPPORT_OLD_SVG_CONVERTATION
-#ifdef SUPPORT_OLD_SVG_CONVERTATION
-#include "../../../HtmlRenderer/include/ASCSVGWriter.h"
-#endif
-
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
@@ -545,54 +539,7 @@ namespace NSShapeImageGen
 						return oInfo;
 					}
 
-				#ifdef SUPPORT_OLD_SVG_CONVERTATION
-					// пробуем сохранить в svg. большие/сложные файлы
-					// сохраняем в растр
-					NSHtmlRenderer::CASCSVGWriter oWriterSVG;
-					oWriterSVG.SetFontManager(m_pFontManager);
-					oWriterSVG.put_Width(lWidth);
-					oWriterSVG.put_Height(lHeight);
-
-					bool bRes = true;
-					try
-					{
-						bRes = pMetafile->DrawOnRenderer(&oWriterSVG, 0, 0, dWidth, dHeight);
-					}
-					catch (...)
-					{
-						bRes = false;
-					}
-
-					if (bRes)
-					{
-						bool bIsComplex = false;
-
-						// растровые - сложные
-						oWriterSVG.IsRaster(&bIsComplex);
-
-						if (!bIsComplex)
-						{
-							LONG lSvgDataSize = 0;
-							oWriterSVG.GetSVGDataSize(&lSvgDataSize);
-
-							// больше 5 метров - сложные
-							bIsComplex = (lSvgDataSize > 5 * 1024 * 1024);
-						}
-
-						if (!bIsComplex)
-						{
-							oInfo.m_eType = itSVG;
-
-							oWriterSVG.SaveFile(strSaveItemWE + L".svg");
-							m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
-
-							RELEASEOBJECT(pMetafile);
-							return oInfo;
-						}
-					}
-				#endif
-
-					// не смогли (или не захотели? (SUPPORT_OLD_SVG_CONVERTATION)) сконвертировать в svg.
+					// не смогли сконвертировать в svg.
 					// пробуем в png
 
 					std::wstring strSaveItem = strSaveItemWE + L".png";

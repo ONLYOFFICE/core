@@ -68,16 +68,6 @@ CFile.prototype.unlockPageNumForFontsLoader = function()
 	drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 };
 
-CFile.prototype.getOriginPage = function(originIndex)
-{
-	for (let i = 0; i < this.pages.length; ++i)
-	{
-		if (this.pages[i]["originIndex"] == originIndex)
-			return i;
-	}
-	return -1;
-};
-
 CFile.prototype["getPages"] = function()
 {
 	return this.pages;
@@ -124,6 +114,11 @@ CFile.prototype["loadFromDataWithPassword"] = function(password)
 		this.getInfo();
 	this._isNeedPassword = (4 === error) ? true : false;
 	return error;
+};
+
+CFile.prototype["getType"] = function()
+{
+	return this.type;
 };
 
 CFile.prototype["close"] = function()
@@ -236,18 +231,17 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let i = this.getOriginPage(pageIndex);
-	if (i < 0)
-		return null;
-	let page = this.pages[i];
-	if (!page || page.fonts.length > 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
+		return [];
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
-	let res = this._getGlyphs(pageIndex);
+	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	let res = this._getGlyphs(page.originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -501,8 +495,8 @@ function readAnnotAP(reader, AP)
 {
 	// number for relations with AP
 	AP["i"] = reader.readInt();
-	AP["x"] = reader.readInt();
-	AP["y"] = reader.readInt();
+	AP["x"] = reader.readDouble();
+	AP["y"] = reader.readDouble();
 	AP["w"] = reader.readInt();
 	AP["h"] = reader.readInt();
 	let n = reader.readInt();
@@ -1285,7 +1279,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 		else if (rec["Type"] == 12)
 		{
 			rec["Icon"] = reader.readString();
-			rec["Rotate"] = reader.readInt();
+			rec["Rotate"] = reader.readDouble2();
 			rec["InRect"] = [];
 			for (let i = 0; i < 8; ++i)
 				rec["InRect"].push(reader.readDouble2());
@@ -1386,18 +1380,17 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let i = this.getOriginPage(pageIndex);
-	if (i < 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
 		return null;
-	let page = this.pages[i];
-	if (!page || page.fonts.length > 0)
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
-	this.lockPageNumForFontsLoader(i, UpdateFontsSource.Page);
-	let ptr = this._getPixmap(pageIndex, width, height, backgroundColor);
+	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
+	let ptr = this._getPixmap(page.originIndex, width, height, backgroundColor);
 	this.unlockPageNumForFontsLoader();
 
 	if (page.fonts.length > 0)

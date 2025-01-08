@@ -619,7 +619,8 @@ namespace NExtractTools
 					nRes = dotm2docm_dir(sFrom, sDocxDir, params, convertParams);
 				}
 			}
-			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatFrom)
+			else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC == nFormatFrom || 
+					AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT == nFormatFrom)
 			{
 				if (params.m_bMacro)
 				{

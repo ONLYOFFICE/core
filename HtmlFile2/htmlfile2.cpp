@@ -24,7 +24,6 @@
 #include "../DesktopEditor/xml/include/xmlutils.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/pro/Graphics.h"
-#include "../DesktopEditor/raster/Metafile/svg/CSvgFile.h"
 
 #include "htmlfile2.h"
 #include "src/Languages.h"
@@ -1432,8 +1431,6 @@ public:
 	std::wstring m_sBase; // Полный базовый адрес
 	std::wstring m_sCore; // Путь до корневого файла (используется для работы с Epub)
 
-	NSCSS::CTree m_oTree; // Дерево body html-файла
-
 private:
 	int m_nFootnoteId;  // ID сноски
 	int m_nHyperlinkId; // ID ссылки
@@ -1913,7 +1910,7 @@ public:
 			std::wstring sName = m_oLightReader.GetName();
 
 			if(sName == L"body")
-				readStyle2(m_oTree);
+				readStyle2();
 			else
 			{
 				// Стиль по ссылке
@@ -1956,7 +1953,7 @@ public:
 		}
 	}
 
-	void readStyle2(NSCSS::CTree& oTree)
+	void readStyle2()
 	{
 		std::wstring sName = m_oLightReader.GetName();
 		// Стиль по ссылке
@@ -1994,31 +1991,11 @@ public:
 		else if(sName == L"style")
 			m_oStylesCalculator.AddStyles(m_oLightReader.GetText2());
 
-		oTree.m_oNode.m_wsName = sName;
-		// Стиль по атрибуту
-		while(m_oLightReader.MoveToNextAttribute())
-		{
-			std::wstring sNameA  = m_oLightReader.GetName();
-			if(sNameA == L"class")
-				oTree.m_oNode.m_wsClass  = m_oLightReader.GetText();
-			else if(sNameA == L"id")
-				oTree.m_oNode.m_wsId = m_oLightReader.GetText();
-			else if(sNameA == L"style")
-				oTree.m_oNode.m_wsStyle += m_oLightReader.GetText();
-			else
-				oTree.m_oNode.m_mAttributes[sNameA] = m_oLightReader.GetText();
-		}
-		m_oLightReader.MoveToElement();
-
 		int nDeath = m_oLightReader.GetDepth();
 		while(m_oLightReader.ReadNextSiblingNode(nDeath))
 		{
 			if(!m_oLightReader.IsEmptyNode())
-			{
-				NSCSS::CTree oChildTree;
-				readStyle2(oChildTree);
-				oTree.m_arrChild.push_back(oChildTree);
-			}
+				readStyle2();
 		}
 	}
 
@@ -4292,12 +4269,10 @@ private:
 		if (m_oState.m_bWasPStyle)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting{m_oStylesCalculator.GetCompiledStyle(sSelectors, true)};
-		NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
+		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-
-		oStyleSetting += oTS.oAdditionalStyle;
 
 		std::wstring sPStyle = GetStyle(oStyle, true);
 
@@ -4332,10 +4307,7 @@ private:
 		if (!m_oState.m_bInP)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting = m_oStylesCalculator.GetCompiledStyle(sSelectors, true);
-
-		oStyleSetting += oTS.oAdditionalStyle;
-
+		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
 		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
 
 		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
@@ -4561,29 +4533,22 @@ private:
 		if (wsSvg.empty())
 			return false;
 
-		CSvgFile oSvgReader;
-
 		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-		NSFonts::IFontManager* pFontManager = pFonts->GenerateFontManager();
-		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
+		pFonts->Initialize();
 
-		pFontCache->SetStreams(pFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		oSvgReader.SetFontManager(pFontManager);
-
-		if (!oSvgReader.ReadFromWString(wsSvg))
+		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
+		if (!pSvgReader->LoadFromString(wsSvg))
 		{
-			RELEASEINTERFACE(pFontManager);
-			pFonts->Release();
+			RELEASEINTERFACE(pSvgReader);
+			RELEASEINTERFACE(pFonts);
 			return false;
 		}
 
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-		pGrRenderer->SetFontManager(pFontManager);
+		pGrRenderer->SetFontManager(pSvgReader->get_FontManager());
 
 		double dX, dY, dW, dH;
-		oSvgReader.GetBounds(dX, dY, dW, dH);
+		pSvgReader->GetBounds(&dX, &dY, &dW, &dH);
 
 		if (dW < 0) dW = -dW;
 		if (dH < 0) dH = -dH;
@@ -4642,19 +4607,20 @@ private:
 		pGrRenderer->put_Width(dWidth);
 		pGrRenderer->put_Height(dHeight);
 
-		oSvgReader.SetWorkingDirectory(m_sSrc);
-		oSvgReader.Draw(pGrRenderer, 0, 0, dWidth, dHeight);
+		// TODO: src directory as tmp - it's not good idea
+		pSvgReader->SetTempDirectory(m_sSrc);
+		pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
 		oFrame.SaveFile(m_sDst + L"/word/media/i" + std::to_wstring(m_arrImages.size()) + L".png", 4);
 		oFrame.put_Data(NULL);
 
-		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
 
 		if (pBgraData)
 			free(pBgraData);
 
-		pFonts->Release();
+		RELEASEINTERFACE(pSvgReader);
+		RELEASEINTERFACE(pFonts);
 
 		return true;
 	}
@@ -4709,8 +4675,6 @@ HRESULT CHtmlFile2::OpenHtml(const std::wstring& sSrc, const std::wstring& sDst,
 	m_internal->CreateDocxEmpty(oParams);
 	m_internal->readStyle();
 
-	m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
-
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())
 		return S_FALSE;
@@ -4732,9 +4696,6 @@ HRESULT CHtmlFile2::OpenMht(const std::wstring& sSrc, const std::wstring& sDst, 
 	m_internal->m_sDst = sDst;
 	m_internal->CreateDocxEmpty(oParams);
 	m_internal->readStyle();
-
-	m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
-	m_internal->m_oTree.Clear();
 
 	// Переходим в начало
 	if(!m_internal->m_oLightReader.MoveToStart())
@@ -4763,8 +4724,6 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 		if(!IsHtmlFile(sS))
 			continue;
 		m_internal->readStyle();
-
-		m_internal->m_oStylesCalculator.SetBodyTree(m_internal->m_oTree);
 
 		// Переходим в начало
 		if(m_internal->m_oLightReader.MoveToStart())

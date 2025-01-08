@@ -3,6 +3,7 @@
 
 #include "BaseItem.h"
 #include "../managers/FontManager.h"
+#include "../managers//FontStyleManager.h"
 #include "../styles/FontStyle.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
@@ -60,6 +61,9 @@ namespace NSDocxRenderer
 
 		// font to calc selected sizes
 		NSStructures::CFont m_oSelectedFont{};
+
+		// origin font
+		std::wstring m_wsOriginFontName{};
 
 		// sizes
 		double m_dSpaceWidthMM{0};
@@ -138,5 +142,40 @@ namespace NSDocxRenderer
 	private:
 		NSStringUtils::CStringUTF32 m_oText{};
 		std::vector<double> m_arSymWidths{};
+	};
+
+	class CContTextBuilder
+	{
+	protected:
+		using cont_ptr_t = std::shared_ptr<CContText>;
+
+	public:
+		CContTextBuilder() = delete;
+		CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector);
+		~CContTextBuilder() = default;
+
+		// after call CContTextBuilder is empty.
+		std::vector<cont_ptr_t> GetConts();
+		void AddUnicode(
+			double dTop,
+			double dBot,
+			double dLeft,
+			double dRight,
+			const NSStructures::CFont& oFont,
+			const NSStructures::CBrush& oBrush,
+			CFontManager* pFontManager,
+			const NSStringUtils::CStringUTF32& oText,
+			bool bForcedBold = false,
+			bool bUseDefaultFont = false,
+			bool bWriteStyleRaw = false);
+
+	private:
+		std::vector<cont_ptr_t> m_arConts;
+		cont_ptr_t m_pCurrCont {nullptr};
+		NSStructures::CFont m_oPrevFont;
+		NSStructures::CBrush m_oPrevBrush;
+
+		CFontStyleManager* m_pFontStyleManager {nullptr};
+		CFontSelector* m_pFontSelector {nullptr};
 	};
 }

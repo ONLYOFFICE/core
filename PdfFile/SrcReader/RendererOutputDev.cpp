@@ -51,6 +51,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
@@ -1281,7 +1282,6 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
-				/*
 				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
 				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
 				{
@@ -1297,6 +1297,7 @@ namespace PdfReader
 					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
 					break;
 				}
+				/*
 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
 #else
@@ -1462,7 +1463,7 @@ namespace PdfReader
 						{
 							Unicode aUnicode[2];
 							if (pToUnicode->mapToUnicode(nIndex, aUnicode, 2))
-								pCodeToUnicode[nIndex] = (unsigned short)aUnicode[0];
+								pCodeToUnicode[nIndex] = aUnicode[0];
 							else
 								pCodeToUnicode[nIndex] = 0;
 						}
@@ -2358,8 +2359,9 @@ namespace PdfReader
 
 		double dTextScale = std::min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
 		double dITextScale = 1 / dTextScale;
-		double dOldSize = 10.0;
+		double dOldSize = 10.0, dOldWidth = 1.0;
 		m_pRenderer->get_FontSize(&dOldSize);
+		m_pRenderer->get_PenSize(&dOldWidth);
 		if (dOldSize * dTextScale > 0)
 		{
 			m_pRenderer->put_FontSize(dOldSize * dTextScale);
@@ -2404,6 +2406,8 @@ namespace PdfReader
 				double dSize = 1;
 				m_pRenderer->get_FontSize(&dSize);
 				m_pRenderer->put_FontSize(dSize * dNorma);
+				if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+					m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth() * dNorma));
 			}
 		}
 
@@ -2419,8 +2423,8 @@ namespace PdfReader
 
 		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
 		{
-			unsigned short unUnicode = oEntry.pCodeToUnicode[nCode];
-			wsUnicodeText = (wchar_t(unUnicode));
+			int unUnicode = oEntry.pCodeToUnicode[nCode];
+			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
 		}
 		else
 		{
@@ -2561,7 +2565,6 @@ namespace PdfReader
 			long lDrawPath = c_nStroke;
 			if (nRenderMode == 2)
 				lDrawPath |= c_nWindingFillMode;
-
 			m_pRenderer->DrawPath(lDrawPath);
 
 			m_pRenderer->EndCommand(c_nStrokeTextType);
@@ -2584,6 +2587,7 @@ namespace PdfReader
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
+		m_pRenderer->put_PenSize(dOldWidth);
 	}
 
 	GBool RendererOutputDev::beginType3Char(GfxState* state, double x, double y, double dx, double dy, CharCode code, Unicode* u, int uLen)

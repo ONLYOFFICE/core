@@ -12,7 +12,10 @@
 namespace NSDocxRenderer
 {
 	CDocument::CDocument(IRenderer* pRenderer, NSFonts::IApplicationFonts* pFonts) :
-		m_pAppFonts(pFonts), m_oCurrentPage(), m_oFontManager(pFonts), m_oFontSelector(pFonts)
+		m_pAppFonts(pFonts),
+		m_oFontManager(pFonts),
+		m_oFontSelector(pFonts),
+		m_oCurrentPage(pFonts, {&m_oImageManager, &m_oFontStyleManager, &m_oParagraphStyleManager, &m_oFontManager, &m_oFontSelector})
 	{
 		m_oSimpleGraphicsConverter.SetRenderer(pRenderer);
 	}
@@ -24,23 +27,19 @@ namespace NSDocxRenderer
 			delete val.second;
 
 		m_mapXmlString.clear();
-		m_oFontSelector.ClearCache();
+		m_lCurrentCommandType = 0;
+		m_oImageManager.Clear();
+		m_oFontStyleManager.Clear();
 	}
 
-	CDocument::~CDocument() {
+	CDocument::~CDocument()
+	{
 		Clear();
-		RELEASEINTERFACE(m_pFontManager);
+		RELEASEINTERFACE(m_pBaseFontManager);
 	}
 
 	HRESULT CDocument::NewPage()
 	{
-		m_oPen.SetDefaultParams();
-		m_oBrush.SetDefaultParams();
-		m_oFont.SetDefaultParams();
-		m_oShadow.SetDefaultParams();
-		m_oEdge.SetDefaultParams();
-
-		m_oTransform.Reset();
 		m_oCurrentPage.Clear();
 		return S_OK;
 	}
@@ -80,109 +79,109 @@ namespace NSDocxRenderer
 	// pen --------------------------------------------------------------------------------------
 	HRESULT CDocument::get_PenColor(LONG* lColor)
 	{
-		*lColor = m_oPen.Color;
+		*lColor = m_oCurrentPage.m_oPen.Color;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenColor(LONG lColor)
 	{
-		m_oPen.Color = lColor;
+		m_oCurrentPage.m_oPen.Color = lColor;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenAlpha(LONG* lAlpha)
 	{
-		*lAlpha = m_oPen.Alpha;
+		*lAlpha = m_oCurrentPage.m_oPen.Alpha;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenAlpha(LONG lAlpha)
 	{
-		m_oPen.Alpha = CLAMP_ALPHA(lAlpha);
+		m_oCurrentPage.m_oPen.Alpha = CLAMP_ALPHA(lAlpha);
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenSize(double* dSize)
 	{
-		*dSize = m_oPen.Size;
+		*dSize = m_oCurrentPage.m_oPen.Size;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenSize(double dSize)
 	{
-		m_oPen.Size = dSize;
+		m_oCurrentPage.m_oPen.Size = dSize;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenDashStyle(BYTE* val)
 	{
-		*val = m_oPen.DashStyle;
+		*val = m_oCurrentPage.m_oPen.DashStyle;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenDashStyle(BYTE val)
 	{
-		m_oPen.DashStyle = val;
+		m_oCurrentPage.m_oPen.DashStyle = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenLineStartCap(BYTE* val)
 	{
-		*val = m_oPen.LineStartCap;
+		*val = m_oCurrentPage.m_oPen.LineStartCap;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenLineStartCap(BYTE val)
 	{
-		m_oPen.LineStartCap = val;
+		m_oCurrentPage.m_oPen.LineStartCap = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenLineEndCap(BYTE* val)
 	{
-		*val = m_oPen.LineEndCap;
+		*val = m_oCurrentPage.m_oPen.LineEndCap;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenLineEndCap(BYTE val)
 	{
-		m_oPen.LineEndCap = val;
+		m_oCurrentPage.m_oPen.LineEndCap = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenLineJoin(BYTE* val)
 	{
-		*val = m_oPen.LineJoin;
+		*val = m_oCurrentPage.m_oPen.LineJoin;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenLineJoin(BYTE val)
 	{
-		m_oPen.LineJoin = val;
+		m_oCurrentPage.m_oPen.LineJoin = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenDashOffset(double* val)
 	{
-		*val = m_oPen.DashOffset;
+		*val = m_oCurrentPage.m_oPen.DashOffset;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenDashOffset(double val)
 	{
-		m_oPen.DashOffset = val;
+		m_oCurrentPage.m_oPen.DashOffset = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenAlign(LONG* val)
 	{
-		*val = m_oPen.Align;
+		*val = m_oCurrentPage.m_oPen.Align;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenAlign(LONG val)
 	{
-		m_oPen.Align = val;
+		m_oCurrentPage.m_oPen.Align = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_PenMiterLimit(double* val)
 	{
-		*val = m_oPen.MiterLimit;
+		*val = m_oCurrentPage.m_oPen.MiterLimit;
 		return S_OK;
 	}
 	HRESULT CDocument::put_PenMiterLimit(double val)
 	{
-		m_oPen.MiterLimit = val;
+		m_oCurrentPage.m_oPen.MiterLimit = val;
 		return S_OK;
 	}
 	HRESULT CDocument::PenDashPattern(double* pPattern, LONG lCount)
 	{
 		if (nullptr != pPattern)
 		{
-			m_oPen.SetDashPattern(pPattern, lCount);
+			m_oCurrentPage.m_oPen.SetDashPattern(pPattern, lCount);
 		}
 
 		return S_OK;
@@ -190,304 +189,304 @@ namespace NSDocxRenderer
 	// brush ------------------------------------------------------------------------------------
 	HRESULT CDocument::get_BrushType(LONG* lType)
 	{
-		*lType = m_oBrush.Type;
+		*lType = m_oCurrentPage.m_oBrush.Type;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushType(LONG lType)
 	{
-		m_oBrush.Type = lType;
+		m_oCurrentPage.m_oBrush.Type = lType;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushColor1(LONG* lColor)
 	{
-		*lColor = m_oBrush.Color1;
+		*lColor = m_oCurrentPage.m_oBrush.Color1;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushColor1(LONG lColor)
 	{
-		m_oBrush.Color1 = lColor;
+		m_oCurrentPage.m_oBrush.Color1 = lColor;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushAlpha1(LONG* lAlpha)
 	{
-		*lAlpha = m_oBrush.Alpha1;
+		*lAlpha = m_oCurrentPage.m_oBrush.Alpha1;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushAlpha1(LONG lAlpha)
 	{
-		m_oBrush.Alpha1 = CLAMP_ALPHA(lAlpha);;
+		m_oCurrentPage.m_oBrush.Alpha1 = CLAMP_ALPHA(lAlpha);;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushColor2(LONG* lColor)
 	{
-		*lColor = m_oBrush.Color2;
+		*lColor = m_oCurrentPage.m_oBrush.Color2;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushColor2(LONG lColor)
 	{
-		m_oBrush.Color2 = lColor;
+		m_oCurrentPage.m_oBrush.Color2 = lColor;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushAlpha2(LONG* lAlpha)
 	{
-		*lAlpha = m_oBrush.Alpha2;
+		*lAlpha = m_oCurrentPage.m_oBrush.Alpha2;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushAlpha2(LONG lAlpha)
 	{
-		m_oBrush.Alpha2 = CLAMP_ALPHA(lAlpha);;
+		m_oCurrentPage.m_oBrush.Alpha2 = CLAMP_ALPHA(lAlpha);;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushTexturePath(std::wstring* sPath)
 	{
-		*sPath = m_oBrush.TexturePath;
+		*sPath = m_oCurrentPage.m_oBrush.TexturePath;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushTexturePath(const std::wstring& sPath)
 	{
-		m_oBrush.TexturePath = sPath;
+		m_oCurrentPage.m_oBrush.TexturePath = sPath;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushTextureMode(LONG* lMode)
 	{
-		*lMode = m_oBrush.TextureMode;
+		*lMode = m_oCurrentPage.m_oBrush.TextureMode;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushTextureMode(LONG lMode)
 	{
-		m_oBrush.TextureMode = lMode;
+		m_oCurrentPage.m_oBrush.TextureMode = lMode;
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushTextureAlpha(LONG* lTxAlpha)
 	{
-		*lTxAlpha = m_oBrush.TextureAlpha;
+		*lTxAlpha = m_oCurrentPage.m_oBrush.TextureAlpha;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushTextureAlpha(LONG lTxAlpha)
 	{
-		m_oBrush.TextureAlpha = CLAMP_ALPHA(lTxAlpha);
+		m_oCurrentPage.m_oBrush.TextureAlpha = CLAMP_ALPHA(lTxAlpha);
 		return S_OK;
 	}
 	HRESULT CDocument::get_BrushLinearAngle(double* dAngle)
 	{
-		*dAngle = m_oBrush.LinearAngle;
+		*dAngle = m_oCurrentPage.m_oBrush.LinearAngle;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushLinearAngle(double dAngle)
 	{
-		m_oBrush.LinearAngle = dAngle;
+		m_oCurrentPage.m_oBrush.LinearAngle = dAngle;
 		return S_OK;
 	}
 	HRESULT CDocument::BrushRect(bool val, double left, double top, double width, double height)
 	{
-		m_oBrush.Rectable = val ? 1 : 0;
-		m_oBrush.Rect.X = (float)left;
-		m_oBrush.Rect.Y = (float)top;
-		m_oBrush.Rect.Width  = (float)width;
-		m_oBrush.Rect.Height = (float)height;
+		m_oCurrentPage.m_oBrush.Rectable = val ? 1 : 0;
+		m_oCurrentPage.m_oBrush.Rect.X = (float)left;
+		m_oCurrentPage.m_oBrush.Rect.Y = (float)top;
+		m_oCurrentPage.m_oBrush.Rect.Width  = (float)width;
+		m_oCurrentPage.m_oBrush.Rect.Height = (float)height;
 
 		return S_OK;
 	}
 	HRESULT CDocument::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 	{
-		m_oBrush.Bounds.left = dLeft;
-		m_oBrush.Bounds.top = dTop;
-		m_oBrush.Bounds.right = dLeft + dWidth;
-		m_oBrush.Bounds.bottom = dTop + dHeight;
+		m_oCurrentPage.m_oBrush.Bounds.left = dLeft;
+		m_oCurrentPage.m_oBrush.Bounds.top = dTop;
+		m_oCurrentPage.m_oBrush.Bounds.right = dLeft + dWidth;
+		m_oCurrentPage.m_oBrush.Bounds.bottom = dTop + dHeight;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount)
 	{
-		m_oBrush.m_arrSubColors.clear();
+		m_oCurrentPage.m_oBrush.m_arrSubColors.clear();
 		for (LONG i = 0; i < lCount; ++i)
 		{
 			NSStructures::CBrush::TSubColor color;
 			color.color = pColors[i];
 			color.position = (long)(pPositions[i] * 65536);
-			m_oBrush.m_arrSubColors.push_back(color);
+			m_oCurrentPage.m_oBrush.m_arrSubColors.push_back(color);
 		}
 		m_oCurrentPage.m_bIsGradient = true;
 		return S_OK;
 	}
 	HRESULT CDocument::put_BrushGradInfo(void* pGradInfo)
 	{
-		m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
-		m_oBrush.m_oGradientInfo.transform(m_oTransform);
+		m_oCurrentPage.m_oBrush.m_oGradientInfo = *((NSStructures::GradientInfo*)pGradInfo);
+		m_oCurrentPage.m_oBrush.m_oGradientInfo.transform(m_oCurrentPage.m_oTransform);
 		m_oCurrentPage.m_bIsGradient = true;
 		return S_OK;
 	}
 	// font -------------------------------------------------------------------------------------
 	HRESULT CDocument::get_FontName(std::wstring* sName)
 	{
-		*sName = m_oFont.Name;
+		*sName = m_oCurrentPage.m_oFont.Name;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontName(std::wstring sName)
 	{
-		m_oFont.Name = sName;
+		m_oCurrentPage.m_oFont.Name = sName;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontPath(std::wstring* sPath)
 	{
-		*sPath = m_oFont.Path;
+		*sPath = m_oCurrentPage.m_oFont.Path;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontPath(std::wstring sPath)
 	{
-		m_oFont.Path = sPath;
+		m_oCurrentPage.m_oFont.Path = sPath;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontSize(double* dSize)
 	{
-		*dSize = m_oFont.Size;
+		*dSize = m_oCurrentPage.m_oFont.Size;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontSize(double dSize)
 	{
-		m_oFont.Size = dSize;
+		m_oCurrentPage.m_oFont.Size = dSize;
 		m_oCurrentPage.m_bIsRecalcFontSize = true;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontStyle(LONG* lStyle)
 	{
-		*lStyle = m_oFont.GetStyle();
+		*lStyle = m_oCurrentPage.m_oFont.GetStyle();
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontStyle(LONG lStyle)
 	{
-		m_oFont.SetStyle(lStyle);
+		m_oCurrentPage.m_oFont.SetStyle(lStyle);
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontStringGID(INT* bGID)
 	{
-		*bGID = m_oFont.StringGID;
+		*bGID = m_oCurrentPage.m_oFont.StringGID;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontStringGID(INT bGID)
 	{
-		m_oFont.StringGID = bGID;
+		m_oCurrentPage.m_oFont.StringGID = bGID;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontCharSpace(double* dSpace)
 	{
-		*dSpace = m_oFont.CharSpace;
+		*dSpace = m_oCurrentPage.m_oFont.CharSpace;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontCharSpace(double dSpace)
 	{
-		m_oFont.CharSpace = dSpace;
+		m_oCurrentPage.m_oFont.CharSpace = dSpace;
 		return S_OK;
 	}
 	HRESULT CDocument::get_FontFaceIndex(int* lFaceIndex)
 	{
-		*lFaceIndex = m_oFont.FaceIndex;
+		*lFaceIndex = m_oCurrentPage.m_oFont.FaceIndex;
 		return S_OK;
 	}
 	HRESULT CDocument::put_FontFaceIndex(const int& lFaceIndex)
 	{
-		m_oFont.FaceIndex = lFaceIndex;
+		m_oCurrentPage.m_oFont.FaceIndex = lFaceIndex;
 		return S_OK;
 	}
 	// shadow -----------------------------------------------------------------------------------
 	HRESULT CDocument::get_ShadowDistanceX(double* val)
 	{
-		*val = m_oShadow.DistanceX;
+		*val = m_oCurrentPage.m_oShadow.DistanceX;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowDistanceX(double val)
 	{
-		m_oShadow.DistanceX = val;
+		m_oCurrentPage.m_oShadow.DistanceX = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_ShadowDistanceY(double* val)
 	{
-		*val = m_oShadow.DistanceY;
+		*val = m_oCurrentPage.m_oShadow.DistanceY;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowDistanceY(double val)
 	{
-		m_oShadow.DistanceY = val;
+		m_oCurrentPage.m_oShadow.DistanceY = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_ShadowBlurSize(double* val)
 	{
-		*val = m_oShadow.BlurSize;
+		*val = m_oCurrentPage.m_oShadow.BlurSize;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowBlurSize(double val)
 	{
-		m_oShadow.BlurSize = val;
+		m_oCurrentPage.m_oShadow.BlurSize = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_ShadowColor(LONG* val)
 	{
-		*val = m_oShadow.Color;
+		*val = m_oCurrentPage.m_oShadow.Color;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowColor(LONG val)
 	{
-		m_oShadow.Color = val;
+		m_oCurrentPage.m_oShadow.Color = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_ShadowAlpha(LONG* val)
 	{
-		*val = m_oShadow.Alpha;
+		*val = m_oCurrentPage.m_oShadow.Alpha;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowAlpha(LONG val)
 	{
-		m_oShadow.Alpha = val;
+		m_oCurrentPage.m_oShadow.Alpha = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_ShadowVisible(INT* val)
 	{
-		*val = m_oShadow.Visible;
+		*val = m_oCurrentPage.m_oShadow.Visible;
 		return S_OK;
 	}
 	HRESULT CDocument::put_ShadowVisible(INT val)
 	{
-		m_oShadow.Visible = val;
+		m_oCurrentPage.m_oShadow.Visible = val;
 		return S_OK;
 	}
 	// edge -------------------------------------------------------------------------------------
 	HRESULT CDocument::get_EdgeVisible(LONG* val)
 	{
-		*val = m_oEdge.Visible;
+		*val = m_oCurrentPage.m_oEdgeText.Visible;
 		return S_OK;
 	}
 	HRESULT CDocument::put_EdgeVisible(LONG val)
 	{
-		m_oEdge.Visible = val;
+		m_oCurrentPage.m_oEdgeText.Visible = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_EdgeColor(LONG* val)
 	{
-		*val = m_oEdge.Color;
+		*val = m_oCurrentPage.m_oEdgeText.Color;
 		return S_OK;
 	}
 	HRESULT CDocument::put_EdgeColor(LONG val)
 	{
-		m_oEdge.Color = val;
+		m_oCurrentPage.m_oEdgeText.Color = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_EdgeAlpha(LONG* val)
 	{
-		*val = m_oEdge.Alpha;
+		*val = m_oCurrentPage.m_oEdgeText.Alpha;
 		return S_OK;
 	}
 	HRESULT CDocument::put_EdgeAlpha(LONG val)
 	{
-		m_oEdge.Alpha = val;
+		m_oCurrentPage.m_oEdgeText.Alpha = val;
 		return S_OK;
 	}
 	HRESULT CDocument::get_EdgeDist(double* val)
 	{
-		*val = m_oEdge.Dist;
+		*val = m_oCurrentPage.m_oEdgeText.Dist;
 		return S_OK;
 	}
 	HRESULT CDocument::put_EdgeDist(double val)
 	{
-		m_oEdge.Dist = val;
+		m_oCurrentPage.m_oEdgeText.Dist = val;
 		return S_OK;
 	}
 
@@ -496,21 +495,21 @@ namespace NSDocxRenderer
 											  const double& dX, const double& dY, const double& dW,
 											  const double& dH, const double& dBaseLineOffset)
 	{
-		double dAngleMatrix = m_oTransform.z_Rotation();
-		if (fabs(dAngleMatrix) > 1 || m_oTransform.sx() < 0 || m_oTransform.sy() < 0)
+		double dAngleMatrix = m_oCurrentPage.m_oTransform.z_Rotation();
+		if (fabs(dAngleMatrix) > 1 || m_oCurrentPage.m_oTransform.sx() < 0 || m_oCurrentPage.m_oTransform.sy() < 0)
 		{
 			//note У повернутых символов не приходят координаты.
 			_SetFont();
 			PathCommandEnd();
 			BeginCommand(c_nPathType);
-			m_oSimpleGraphicsConverter.PathCommandText2(pUnicodes, pGids, nCount, m_pFontManager, dX, dY, dW, dH);
+			m_oSimpleGraphicsConverter.PathCommandText2(pUnicodes, pGids, nCount, m_pBaseFontManager, dX, dY, dW, dH);
 			DrawPath(c_nWindingFillMode);
 			EndCommand(c_nPathType);
 			PathCommandEnd();
 			return S_OK;
 		}
 
-		m_oCurrentPage.CollectTextData((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0);
+		m_oCurrentPage.AddText((unsigned int*)pUnicodes, (unsigned int*)pGids, nCount, dX, dY, dW, dH, 0);
 		return S_OK;
 	}
 
@@ -584,25 +583,17 @@ namespace NSDocxRenderer
 	HRESULT CDocument::PathCommandMoveTo(double fX, double fY)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
-			m_oCurrentPage.MoveTo(fX, fY);
-		}
+			m_oCurrentPage.PathMoveTo(fX, fY);
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandMoveTo(fX, fY);
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandLineTo(double fX, double fY)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
-			m_oCurrentPage.LineTo(fX, fY);
-		}
+			m_oCurrentPage.PathLineTo(fX, fY);
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandLineTo(fX, fY);
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandLinesTo(double* pPoints, LONG lCount)
@@ -613,13 +604,9 @@ namespace NSDocxRenderer
 	HRESULT CDocument::PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
-			m_oCurrentPage.CurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
-		}
+			m_oCurrentPage.PathCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandCurvesTo(double* pPoints, LONG lCount)
@@ -635,37 +622,29 @@ namespace NSDocxRenderer
 	HRESULT CDocument::PathCommandClose()
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
 			m_oCurrentPage.PathClose();
-		}
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandClose();
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandEnd()
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
 			m_oCurrentPage.PathEnd();
-		}
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandEnd();
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::DrawPath(long nType)
 	{
 		std::shared_ptr<CImageInfo> pInfo = nullptr;
-		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oBrush.Type))
+		if ((nType > 0xFF) && (c_BrushTypeTexture == m_oCurrentPage.m_oBrush.Type))
 		{
 			double x = 0, y = 0, w = 0, h = 0;
-			if (m_oBrush.Image)
-				pInfo = m_oImageManager.WriteImage(m_oBrush.Image, x, y, w, h);
+			if (m_oCurrentPage.m_oBrush.Image)
+				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.Image, x, y, w, h);
 			else
-				pInfo = m_oImageManager.WriteImage(m_oBrush.TexturePath, x, y, w, h);
+				pInfo = m_oImageManager.WriteImage(m_oCurrentPage.m_oBrush.TexturePath, x, y, w, h);
 		}
 		m_oCurrentPage.DrawPath(nType, pInfo);
 		return S_OK;
@@ -673,13 +652,9 @@ namespace NSDocxRenderer
 	HRESULT CDocument::PathCommandStart()
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
-		{
 			m_oCurrentPage.PathStart();
-		}
 		else
-		{
 			m_oSimpleGraphicsConverter.PathCommandStart();
-		}
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandGetCurrentPoint(double* fX, double* fY)
@@ -691,25 +666,25 @@ namespace NSDocxRenderer
 	HRESULT CDocument::PathCommandTextCHAR(const int& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 	{
 		_SetFont();
-		m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, nullptr, 1, m_pFontManager, dX, dY, dW, dH);
+		m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, nullptr, 1, m_pBaseFontManager, dX, dY, dW, dH);
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandTextExCHAR(const int& lUnicode, const int& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 	{
 		_SetFont();
-		m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, &lGid, 1, m_pFontManager, dX, dY, dW, dH);
+		m_oSimpleGraphicsConverter.PathCommandText2(&lUnicode, &lGid, 1, m_pBaseFontManager, dX, dY, dW, dH);
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 	{
 		_SetFont();
-		m_oSimpleGraphicsConverter.PathCommandText(wsUnicodeText, m_pFontManager, dX, dY, dW, dH, 0);
+		m_oSimpleGraphicsConverter.PathCommandText(wsUnicodeText, m_pBaseFontManager, dX, dY, dW, dH, 0);
 		return S_OK;
 	}
 	HRESULT CDocument::PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 	{
 		_SetFont();
-		m_oSimpleGraphicsConverter.PathCommandText2(wsUnicodeText, (const int*)pGids, nGidsCount, m_pFontManager, dX, dY, dW, dH);
+		m_oSimpleGraphicsConverter.PathCommandText2(wsUnicodeText, (const int*)pGids, nGidsCount, m_pBaseFontManager, dX, dY, dW, dH);
 		return S_OK;
 	}
 
@@ -745,7 +720,7 @@ namespace NSDocxRenderer
 	}
 	HRESULT CDocument::ResetTransform(void)
 	{
-		m_oTransform.Reset();
+		m_oCurrentPage.m_oTransform.Reset();
 		return S_OK;
 	}
 	HRESULT CDocument::get_ClipMode(LONG* plMode)
@@ -761,7 +736,7 @@ namespace NSDocxRenderer
 
 	void CDocument::ApplyTransform(double d1, double d2, double d3, double d4, double d5, double d6)
 	{
-		m_oTransform.SetElements(d1, d2, d3, d4, d5, d6);
+		m_oCurrentPage.m_oTransform.SetElements(d1, d2, d3, d4, d5, d6);
 	}
 
 	void CDocument::ApplyTransform2(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
@@ -788,73 +763,49 @@ namespace NSDocxRenderer
 			oMatrix.Translate(dCentreX, dCentreY, Aggplus::MatrixOrderAppend);
 		}
 
-		m_oTransform = oMatrix;
+		m_oCurrentPage.m_oTransform = oMatrix;
 	}
 
 	void CDocument::_SetFont()
 	{
-		if (nullptr == m_pFontManager)
+		if (nullptr == m_pBaseFontManager)
 		{
-			m_pFontManager = m_pAppFonts->GenerateFontManager();
-			m_pFontManager->CreateOwnerCache(8);
+			m_pBaseFontManager = m_pAppFonts->GenerateFontManager();
+			m_pBaseFontManager->CreateOwnerCache(8);
 		}
 
-		double dPix = m_oFont.CharSpace * m_dDpiX / 25.4;
-
-		if (m_oInstalledFont.IsEqual(&m_oFont))
+		double dPix = m_oCurrentPage.m_oFont.CharSpace * m_dDpiX / 25.4;
+		if (m_oInstalledFont.IsEqual(&m_oCurrentPage.m_oFont))
 		{
 			if (1 < m_dWidth)
 			{
-				m_pFontManager->SetCharSpacing(dPix);
+				m_pBaseFontManager->SetCharSpacing(dPix);
 			}
 			return;
 		}
 
-		m_pFontManager->SetStringGID(m_oFont.StringGID);
+		m_pBaseFontManager->SetStringGID(m_oCurrentPage.m_oFont.StringGID);
 		if (1 < m_dWidth)
-		{
-			m_pFontManager->SetCharSpacing(dPix);
-		}
+			m_pBaseFontManager->SetCharSpacing(dPix);
 
-		if (m_oFont.Path.empty())
-		{
-			m_pFontManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
-		}
+		if (m_oCurrentPage.m_oFont.Path.empty())
+			m_pBaseFontManager->LoadFontByName(m_oCurrentPage.m_oFont.Name, (float)m_oCurrentPage.m_oFont.Size, m_oCurrentPage.m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
 		else
-		{
-			m_pFontManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, (float)m_oFont.Size, m_dDpiX, m_dDpiY);
-		}
-
-		m_oInstalledFont = m_oFont;
+			m_pBaseFontManager->LoadFontFromFile(m_oCurrentPage.m_oFont.Path, m_oCurrentPage.m_oFont.FaceIndex, (float)m_oCurrentPage.m_oFont.Size, m_dDpiX, m_dDpiY);
+		m_oInstalledFont = m_oCurrentPage.m_oFont;
 	}
 
-	void CDocument::Init(const bool& bIsClearStreams)
+	void CDocument::Init(bool bIsClearStreams)
 	{
+		Clear();
+
 		// Сбросим кэш шрифтов. По идее можно оставлять кэш для шрифтов "по имени",
 		// но для шрифтов из темповых папок - нет. Темповая папка для Reader (PDF/XPS/DJVU)
 		// может быть одной и той же. И создание там файлов функцией создания временных файлов
 		// может вернуть один и тот же путь. И шрифт возьмется из старого файла.
+		m_oFontSelector.ClearCache();
 		m_oFontManager.ClearCache();
 		if (m_pAppFonts && bIsClearStreams) m_pAppFonts->GetStreams()->Clear();
-
-		Clear();
-		m_lCurrentCommandType = 0;
-
-		m_oCurrentPage.Init(&m_oFont,
-							&m_oPen,
-							&m_oBrush,
-							&m_oShadow,
-							&m_oEdge,
-							&m_oTransform,
-							&m_oSimpleGraphicsConverter,
-							&m_oImageManager,
-							&m_oFontStyleManager,
-							&m_oFontManager,
-							&m_oFontSelector,
-							&m_oParagraphStyleManager);
-
-		m_oImageManager.Clear();
-		m_oFontStyleManager.Clear();
 	}
 
 #ifndef DISABLE_FULL_DOCUMENT_CREATION

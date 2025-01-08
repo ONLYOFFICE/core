@@ -133,6 +133,11 @@ public:
 	_CP_OPT(double)	default_column_width;
 	bool			optimal_column_width;
 
+	_CP_OPT(odf_types::length) default_cell_padding_left;
+	_CP_OPT(odf_types::length) default_cell_padding_right;
+	_CP_OPT(odf_types::length) default_cell_padding_top;
+	_CP_OPT(odf_types::length) default_cell_padding_bottom;
+
 	std::wstring default_cell_properties; // для предустановки ..
 
 private:
@@ -447,6 +452,23 @@ std::wstring odf_table_context::get_column_cell_properties()
 
 	return default_cell_props;
 }
+
+void odf_table_context::set_default_cell_paddings(_CP_OPT(odf_types::length) left, _CP_OPT(odf_types::length) right, _CP_OPT(odf_types::length) top, _CP_OPT(odf_types::length) bottom)
+{
+	impl_->default_cell_padding_left	= left;
+	impl_->default_cell_padding_right	= right;
+	impl_->default_cell_padding_top		= top;
+	impl_->default_cell_padding_bottom	= bottom;
+}
+
+void odf_table_context::get_default_cell_paddings(_CP_OPT(odf_types::length)& left, _CP_OPT(odf_types::length)& right, _CP_OPT(odf_types::length)& top, _CP_OPT(odf_types::length)& bottom)
+{
+	left	= impl_->default_cell_padding_left;
+	right	= impl_->default_cell_padding_right;
+	top		= impl_->default_cell_padding_top;
+	bottom	= impl_->default_cell_padding_bottom;
+}
+
 void odf_table_context::set_default_row_height(double height)
 {
 	impl_->default_row_height = height;

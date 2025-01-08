@@ -2282,7 +2282,7 @@ bool RtfBackgroundReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	return true;
 }
 
-RtfFieldReader::RtfFieldReader( RtfField& oField ):m_oField(oField)
+RtfFieldReader::RtfFieldReader( RtfField& oField ) : m_oField(oField)
 {
 	m_eInternalState = is_normal;
 }
@@ -2473,8 +2473,8 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 	{
 		RtfFieldInstPtr oNewFieldInst = RtfFieldInstPtr(new RtfFieldInst());
 		oNewFieldInst->m_oCharProperty = oReader.m_oState->m_oCharProp;
-		
-		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );
+
+		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );				
 		StartSubReader( oFieldInstReader, oDocument, oReader );
 		
 		if ( oNewFieldInst->IsValid() )
@@ -2492,7 +2492,6 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 	}
 	return true;
 }
-
 RtfAnnotElemReader::RtfAnnotElemReader( RtfAnnotElem& oAnnot ) : m_oAnnot(oAnnot)
 {
 }
@@ -2558,19 +2557,18 @@ void RtfBookmarkEndReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReade
 RtfFieldInstReader::RtfFieldInstReader( RtfFieldInst& oFieldInst ) :  m_oFieldInst(oFieldInst) {}
 void RtfFieldInstReader::ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 {
-	RtfParagraphPropDestination::ExecuteText( oDocument, oReader, sText );
+	RtfParagraphPropDestination::ExecuteText(oDocument, oReader, sText);
 }
 void RtfFieldInstReader::ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 {
 	RtfParagraphPropDestination::Finalize( oReader );
-
-	m_oFieldInst.m_pTextItems	= m_oTextItems;
+	m_oFieldInst.m_pTextItems = m_oTextItems;
 }
 bool RtfFieldInstReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader , std::string sCommand, bool hasParameter, int parameter)
 {
-	if( "fldinst" == sCommand )
+	if ("fldinst" == sCommand)
 		return true;
-	if( "fldrslt" == sCommand )
+	if ("fldrslt" == sCommand)
 		return true;
 	else if ("formfield" == sCommand)
 	{
@@ -3059,6 +3057,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 	else if ( L"lineEndArrowLength"		== m_sPropName ) m_oShape.m_nLineEndArrowLength		= nValue;
 	else if ( L"lineWidth"				== m_sPropName ) m_oShape.m_nLineWidth				= nValue;
 	else if ( L"lineDashing"			== m_sPropName ) m_oShape.m_nLineDashing			= nValue;
+	
+	else if (L"borderTopColor"		== m_sPropName) m_oShape.m_nBorderTopColor = nValue;
+	else if (L"borderLeftColor"		== m_sPropName) m_oShape.m_nBorderLeftColor = nValue;
+	else if (L"borderBottomColor"	== m_sPropName) m_oShape.m_nBorderBottomColor = nValue;
+	else if (L"borderRightColor"	== m_sPropName) m_oShape.m_nBorderRightColor= nValue;
+	
 	else if ( L"cxstyle"				== m_sPropName ) m_oShape.m_nConnectorStyle			= nValue;
 	else if ( L"cxk"					== m_sPropName ) m_oShape.m_nConnectionType			= nValue;
 	//office signature
@@ -3836,8 +3840,31 @@ bool RtfPictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader
 			oReader.m_oLex.ReadBytes( parameter, &m_pbBin );//читаем сразу байты, потому что если между ними и был пробел, то он пропустится в RtfLex::parseKeyword
 		}
 	}
+	else if ("brdrt" == sCommand)		m_eInternalState = is_borderTop;
+	else if ("brdrb" == sCommand)		m_eInternalState = is_borderBottom;
+	else if ("brdrl" == sCommand)		m_eInternalState = is_borderLeft;
+	else if ("brdrr" == sCommand)		m_eInternalState = is_borderRight;
 	else
-		return false;
+	{
+		bool bResult = false;
+
+		switch (m_eInternalState)
+		{
+		case is_borderBottom:
+			bResult = RtfBorderCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter, m_oShape.m_oPicture->m_oBorderBottom);
+			break;
+		case is_borderLeft:
+			bResult = RtfBorderCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter, m_oShape.m_oPicture->m_oBorderLeft);
+			break;
+		case is_borderRight:
+			bResult = RtfBorderCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter, m_oShape.m_oPicture->m_oBorderRight);
+			break;
+		case is_borderTop:
+			bResult = RtfBorderCommand::ExecuteCommand(oDocument, oReader, sCommand, hasParameter, parameter, m_oShape.m_oPicture->m_oBorderTop);
+			break;
+		}
+		return bResult;
+	}
 	return true;
 }
 void RtfPictureReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReader, std::wstring sText)

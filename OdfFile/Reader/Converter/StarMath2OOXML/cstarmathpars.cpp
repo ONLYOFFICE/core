@@ -116,7 +116,7 @@ namespace StarMath
 		T* pTempElement = dynamic_cast<T*>(pElementWhichAdd);
 		if(pTempElement->GetLeftArg() == nullptr)
 		{
-			if(CParserStarMathString::CheckNewline(pLeftArg))
+			if(CParserStarMathString::CheckNewline(pLeftArg) || CParserStarMathString::CheckGrid(pLeftArg))
 				return false;
 			pTempElement->SetLeftArg(pLeftArg);
 			pElementWhichAdd = pTempElement;
@@ -203,6 +203,19 @@ namespace StarMath
 		}
 		else
 			return false;
+	}
+	bool CParserStarMathString::CheckGrid(CElement *pElement)
+	{
+		if(pElement == nullptr)
+			return false;
+		if(pElement->GetBaseType() == TypeElement::SpecialSymbol)
+		{
+			CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pElement);
+			if(pSpecial->GetType() == TypeElement::grid || pSpecial->GetType() == TypeElement::transition)
+				return true;
+			else return false;
+		}
+		else return false;
 	}
 	void CParserStarMathString::AddingAnElementToAnArray(std::vector<CElement *> &arrEquation, CElement *pAddElement, CStarMathReader *pReader)
 	{

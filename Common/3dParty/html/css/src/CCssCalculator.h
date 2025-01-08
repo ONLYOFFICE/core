@@ -19,8 +19,8 @@ namespace NSCSS
 		CCssCalculator();
 		~CCssCalculator();
 
-		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point) const;
-		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors, const bool& bIsSettings = false, const UnitMeasure& unitMeasure = Point) const;
+		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors) const;
+		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors) const;
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
@@ -30,11 +30,8 @@ namespace NSCSS
 		void AddStyles        (const std::wstring& wsStyle);
 		void AddStylesFromFile(const std::wstring& wsFileName);
 
-		void SetUnitMeasure(const UnitMeasure& nType);
 		void SetDpi(const unsigned short int& nValue);
-		void SetBodyTree(const CTree &oTree);
 
-		UnitMeasure GetUnitMeasure() const;
 		std::wstring GetEncoding()   const;
 		unsigned short int GetDpi()  const;
 

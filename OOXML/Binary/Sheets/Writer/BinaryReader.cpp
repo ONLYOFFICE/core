@@ -8669,8 +8669,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			UINT nCodePage;
 			std::wstring sDelimiter;
 			BYTE saveFileType;
+			_INT32 Lcid;
 
-			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid);
 			// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
@@ -8736,7 +8737,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				OOX::Spreadsheet::CXlsx oXlsx;
 				CSVWriter oCSVWriter;
 				
-				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
+                oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, Lcid, false);
 				
 				bResultOk = oCSVWriter.Start(sDstPathCSV);
 				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;

@@ -6,7 +6,6 @@ namespace SVG
 	    : m_pInternal(new NSCSS::CCssCalculator_Private)
 	{
 		m_pInternal->SetDpi(96);
-		m_pInternal->SetUnitMeasure(NSCSS::UnitMeasure::Pixel);
 	}
 
 	CSvgCalculator::~CSvgCalculator()

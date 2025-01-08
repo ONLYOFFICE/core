@@ -5,45 +5,15 @@
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
-#include "elements/DropCap.h"
 #include "../resources/Constants.h"
 #include "../resources/utils.h"
 
 namespace NSDocxRenderer
 {
-	CPage::CPage()
+	CPage::CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers) :
+		m_oManagers(oManagers), m_oContBuilder(oManagers.pFontStyleManager, oManagers.pFontSelector)
 	{
-	}
-
-	void CPage::Init(
-		NSStructures::CFont* pFont,
-		NSStructures::CPen* pPen,
-		NSStructures::CBrush* pBrush,
-		NSStructures::CShadow* pShadow,
-		NSStructures::CEdgeText* pEdge,
-		Aggplus::CMatrix* pMatrix,
-		Aggplus::CGraphicsPathSimpleConverter* pSimple,
-		CImageManager* pImageManager,
-		CFontStyleManager* pFontStyleManager,
-		CFontManager *pFontManager,
-		CFontSelector* pFontSelector,
-		CParagraphStyleManager* pParagraphStyleManager)
-	{
-		m_pFont     = pFont;
-		m_pPen      = pPen;
-		m_pBrush    = pBrush;
-		m_pShadow   = pShadow;
-		m_pEdgeText = pEdge;
-
-		m_pTransform               = pMatrix;
-		m_pSimpleGraphicsConverter = pSimple;
-
-		m_pImageManager = pImageManager;
-		m_pFontStyleManager = pFontStyleManager;
-		m_pFontManager = pFontManager;
-		m_pFontSelector = pFontSelector;
-		m_pParagraphStyleManager = pParagraphStyleManager;
-
+		m_pAppFonts = pAppFonts;
 		CShape::ResetRelativeHeight();
 	}
 
@@ -77,6 +47,13 @@ namespace NSDocxRenderer
 
 	void CPage::Clear()
 	{
+		m_oPen.SetDefaultParams();
+		m_oBrush.SetDefaultParams();
+		m_oFont.SetDefaultParams();
+		m_oShadow.SetDefaultParams();
+		m_oEdgeText.SetDefaultParams();
+		m_oTransform.Reset();
+
 		m_arConts.clear();
 		m_arTextLines.clear();
 		m_arDiacriticalSymbols.clear();
@@ -103,13 +80,13 @@ namespace NSDocxRenderer
 	// image commands
 	void CPage::WriteImage(const std::shared_ptr<CImageInfo> pInfo, double& fX, double& fY, double& fWidth, double& fHeight)
 	{
-		double rotation = m_pTransform->z_Rotation();
+		double rotation = m_oTransform.z_Rotation();
 
 		Point p1(fX, fY);
 		Point p2(fX + fWidth, fY + fHeight);
 
-		m_pTransform->TransformPoint(p1.x, p1.y);
-		m_pTransform->TransformPoint(p2.x, p2.y);
+		m_oTransform.TransformPoint(p1.x, p1.y);
+		m_oTransform.TransformPoint(p2.x, p2.y);
 
 		Point c((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
 		Aggplus::CMatrix rotate_matrix;
@@ -138,25 +115,24 @@ namespace NSDocxRenderer
 	}
 
 	// path commands
-	void CPage::MoveTo(double& dX, double& dY)
+	void CPage::PathMoveTo(double& dX, double& dY)
 	{
-		m_pTransform->TransformPoint(dX, dY);
+		m_oTransform.TransformPoint(dX, dY);
 		m_oCurrVectorGraphics.MoveTo(dX, dY);
 	}
 
-	void CPage::LineTo(double& dX, double& dY)
+	void CPage::PathLineTo(double& dX, double& dY)
 	{
-		m_pTransform->TransformPoint(dX, dY);
+		m_oTransform.TransformPoint(dX, dY);
 		m_oCurrVectorGraphics.LineTo(dX, dY);
 	}
 
-	void CPage::CurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
+	void CPage::PathCurveTo(double& dX1, double& dY1, double& dX2, double& dY2, double& dX3, double& dY3)
 	{
-		m_pTransform->TransformPoint(x1, y1);
-		m_pTransform->TransformPoint(x2, y2);
-		m_pTransform->TransformPoint(x3, y3);
-
-		m_oCurrVectorGraphics.CurveTo(x1, y1, x2, y2, x3, y3);
+		m_oTransform.TransformPoint(dX1, dY1);
+		m_oTransform.TransformPoint(dX2, dY2);
+		m_oTransform.TransformPoint(dX3, dY3);
+		m_oCurrVectorGraphics.CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
 	}
 
 	void CPage::PathStart()
@@ -183,12 +159,12 @@ namespace NSDocxRenderer
 		if (m_oCurrVectorGraphics.IsEmpty())
 			return;
 
-		double rotation = m_pTransform->z_Rotation();
+		double rotation = m_oTransform.z_Rotation();
 		double left = m_oCurrVectorGraphics.GetLeft();
 		double right = m_oCurrVectorGraphics.GetRight();
 		double top = m_oCurrVectorGraphics.GetTop();
 		double bot = m_oCurrVectorGraphics.GetBottom();
-		double transform_det = sqrt(fabs(m_pTransform->Determinant()));
+		double transform_det = sqrt(fabs(m_oTransform.Determinant()));
 
 		// save default image vector before clip to calc blipFill
 		auto image_vector = m_oCurrVectorGraphics;
@@ -197,13 +173,13 @@ namespace NSDocxRenderer
 			if (lType & c_nStroke)
 			{
 				s->m_bIsNoStroke = false;
-				s->m_oPen = *m_pPen;
+				s->m_oPen = m_oPen;
 				s->m_oPen.Size *= transform_det;
 			}
 			if (lType & c_nWindingFillMode || lType & c_nEvenOddFillMode)
 			{
 				s->m_bIsNoFill = false;
-				s->m_oBrush = *m_pBrush;
+				s->m_oBrush = m_oBrush;
 			}
 		};
 
@@ -225,8 +201,8 @@ namespace NSDocxRenderer
 		{
 			if ((fabs(left - right) < 0.3) || (fabs(top - bot) < 0.3))
 			{
-				shape->m_oPen.Color = m_pBrush->Color1;
-				shape->m_oPen.Alpha = m_pBrush->Alpha1;
+				shape->m_oPen.Color = m_oBrush.Color1;
+				shape->m_oPen.Alpha = m_oBrush.Alpha1;
 			}
 		}
 
@@ -281,7 +257,7 @@ namespace NSDocxRenderer
 			transform_matrix.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop());
 			shifted_vector.Transform(transform_matrix);
 
-			NSStructures::CBrush shifted_brush = *m_pBrush;
+			NSStructures::CBrush shifted_brush = m_oBrush;
 			shifted_brush.Bounds.left = shifted_vector.GetLeft();
 			shifted_brush.Bounds.right = shifted_vector.GetRight();
 			shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
@@ -294,7 +270,7 @@ namespace NSDocxRenderer
 			g_renderer->put_Width(shape->m_dWidth);
 			g_renderer->put_Height(shape->m_dHeight);
 			g_renderer->RestoreBrush(shifted_brush);
-			g_renderer->RestorePen(*m_pPen);
+			g_renderer->RestorePen(m_oPen);
 			g_renderer->BeginCommand(c_nPathType);
 			shifted_vector.DrawOnRenderer(g_renderer);
 			g_renderer->DrawPath(c_nWindingFillMode);
@@ -302,7 +278,7 @@ namespace NSDocxRenderer
 
 			Aggplus::CImage img;
 			img.Create(data, width_pix, height_pix, stride, true);
-			info = m_pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
+			info = m_oManagers.pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
 			rotation = 0;
 			image_vector = shape->m_oVector;
 
@@ -338,7 +314,7 @@ namespace NSDocxRenderer
 		m_arShapes.push_back(shape);
 	}
 
-	void CPage::CollectTextData(
+	void CPage::AddText(
 		const PUINT pUnicodes,
 		const PUINT pGids,
 		const UINT& nCount,
@@ -357,8 +333,8 @@ namespace NSDocxRenderer
 		double dTextR = fX + fWidth;
 		double dTextB = fY + fHeight;
 
-		m_pTransform->TransformPoint(dTextX, dTextY);
-		m_pTransform->TransformPoint(dTextR, dTextB);
+		m_oTransform.TransformPoint(dTextX, dTextY);
+		m_oTransform.TransformPoint(dTextR, dTextB);
 
 		NSStringUtils::CStringUTF32 oText((uint32_t*)pUnicodes, nCount);
 
@@ -370,10 +346,10 @@ namespace NSDocxRenderer
 		// иногда приходит неверный? размер, нужно перемерить (XPS)
 		if (m_bIsRecalcFontSize)
 		{
-			m_pFont->Size *= ((m_pTransform->sx() + m_pTransform->sy()) / 2);
+			m_oFont.Size *= ((m_oTransform.sx() + m_oTransform.sy()) / 2);
 			m_bIsRecalcFontSize = false;
 		}
-		m_pFontManager->LoadFontByFile(*m_pFont);
+		m_oManagers.pFontManager->LoadFontByFile(m_oFont);
 
 		double _x = 0;
 		double _y = 0;
@@ -382,151 +358,37 @@ namespace NSDocxRenderer
 
 		if (nullptr != pGids)
 		{
-			m_pFontManager->SetStringGid(1);
-			m_pFontManager->MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
+			m_oManagers.pFontManager->SetStringGid(1);
+			m_oManagers.pFontManager->MeasureStringGids(pGids, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
 		else
 		{
 			// такого быть не должно (только из xps)
-			m_pFontManager->SetStringGid(0);
-			m_pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
+			m_oManagers.pFontManager->SetStringGid(0);
+			m_oManagers.pFontManager->MeasureStringGids(pUnicodes, nCount, dTextX, dTextY, _x, _y, _w, _h, CFontManager::mtPosition);
 		}
 
-		auto oMetrics = m_pFontManager->GetFontMetrics();
-		_h = m_pFontManager->GetFontHeight();
+		_h = m_oManagers.pFontManager->GetFontHeight();
 
 		double baseline = dTextY + fBaseLineOffset;
 		double top = baseline - _h;
-		double height = baseline - top;
 		double left = dTextX;
-		double width = _w;
 		double right = left + _w;
 
-		// if new text is close to current cont
-		if (m_pCurrCont != nullptr &&
-			fabs(m_pCurrCont->m_dBaselinePos - baseline) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-			m_oPrevFont.IsEqual2(m_pFont) &&
-			m_oPrevBrush.IsEqual(m_pBrush))
-		{
-
-			double avg_width = width / oText.length();
-			for (size_t i = 0; i < oText.length(); ++i)
-				if (oText.at(i) == c_SPACE_SYM)
-					m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
-
-			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
-			double space_width =
-				avg_space_width != 0.0 ?
-				avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-				m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
-
-			bool is_added = false;
-
-			// some_text+more_text
-			if (fabs(m_pCurrCont->m_dRight - left) < space_width && right > m_pCurrCont->m_dRight)
-			{
-				double left_avg_width = (right - m_pCurrCont->m_dRight) / oText.length();
-				std::vector<double> ar_widths;
-				for (size_t i = 0; i < oText.length(); ++i)
-					ar_widths.push_back(left_avg_width);
-
-				m_pCurrCont->AddTextBack(oText, ar_widths);
-				is_added = true;
-
-			}
-			// more_text+some_text
-			else if (fabs(m_pCurrCont->m_dLeft - right) < space_width && left < m_pCurrCont->m_dLeft)
-			{
-				double right_avg_width = (m_pCurrCont->m_dLeft - left) / oText.length();
-				std::vector<double> ar_widths;
-				for (size_t i = 0; i < oText.length(); ++i)
-					ar_widths.push_back(right_avg_width);
-
-				m_pCurrCont->AddTextFront(oText, ar_widths);
-				is_added = true;
-			}
-
-			if (is_added)
-			{
-				m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, top);
-				m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, baseline);
-				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
-				m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
-				return;
-			}
-		}
-
-		auto pCont = std::make_shared<CContText>(m_pFontManager);
-		auto oParams = m_pFontManager->GetFontSelectParams();
-
 		// use forced fold option
+		const auto& oParams = m_oManagers.pFontManager->GetFontSelectParams();
 		bool bForcedBold = oParams.bDefaultBold;
-		if (m_lCurrentCommand == c_nStrokeTextType && m_pFont->Bold)
+		if (m_lCurrentCommand == c_nStrokeTextType && m_oFont.Bold)
 			bForcedBold = true;
 
-		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
-
-		pCont->m_dBaselinePos = baseline;
-		pCont->m_dTop         = top;
-		pCont->m_dHeight      = height;
-		pCont->m_dLeft        = left;
-
-		// первичное получение стиля для текущего символа
-		// при дальнейшем анализе может измениться
-		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
-			*m_pBrush,
-			m_pFontSelector->GetSelectedName(),
-			m_pFont->Size,
-			m_pFontSelector->IsSelectedItalic(),
-			m_pFontSelector->IsSelectedBold() || bForcedBold);
-
-		// just in case if oText contains more than 1 symbol
-		std::vector<double> ar_widths;
-		double avg_width = abs(right - left) / oText.length();
-		for (size_t i = 0; i < oText.length(); ++i)
-		{
-			if (oText.at(i) == c_SPACE_SYM) pCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
-			ar_widths.push_back(avg_width);
-		}
-
-		pCont->SetText(oText, ar_widths);
-		pCont->m_bIsRtl = CContText::IsUnicodeRtl(oText[0]);
-
-		pCont->m_dWidth = width;
-		pCont->m_dRight = right;
-
-		double font_size = m_pFont->Size;
-		double em_height = oMetrics.dEmHeight;
-		double ratio = font_size / em_height * c_dPtToMM;
-
-		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
-		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
-		pCont->m_dSpaceWidthMM = m_pFontManager->GetSpaceWidthMM();
-
-		if (m_bUseDefaultFont)
-		{
-			pCont->m_oSelectedFont.Path = m_pFont->Path;
-			pCont->m_oSelectedFont.Size = m_pFont->Size;
-			pCont->m_oSelectedFont.FaceIndex = m_pFont->FaceIndex;
-		}
-		else
-		{
-			pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
-			pCont->m_oSelectedFont.Size = m_pFont->Size;
-			pCont->m_oSelectedFont.Bold = m_pFontSelector->IsSelectedBold();
-			pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
-		}
-		pCont->m_bWriteStyleRaw = m_bWriteStyleRaw;
-		m_pParagraphStyleManager->UpdateAvgFontSize(m_pFont->Size);
-		m_arConts.push_back(pCont);
-
-		m_pCurrCont = pCont;
-		m_oPrevFont = *m_pFont;
-		m_oPrevBrush = *m_pBrush;
+		m_oManagers.pParagraphStyleManager->UpdateAvgFontSize(m_oFont.Size);
+		m_oContBuilder.AddUnicode(top, baseline, left, right, m_oFont, m_oBrush, m_oManagers.pFontManager, oText, bForcedBold, m_bUseDefaultFont, m_bWriteStyleRaw);
 	}
 
 	void CPage::Analyze()
 	{
+		m_arConts = std::move(m_oContBuilder.GetConts());
+
 		// analyze shapes (get type of lines etc)
 		AnalyzeShapes();
 
@@ -788,10 +650,10 @@ namespace NSDocxRenderer
 
 	void CPage::AnalyzeDropCaps()
 	{
-		double avg_font_size = m_pParagraphStyleManager->GetAvgFontSize();
+		double avg_font_size = m_oManagers.pParagraphStyleManager->GetAvgFontSize();
 
 		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
-		std::vector<std::shared_ptr<CDropCap>> drop_caps;
+		std::vector<std::shared_ptr<CContText>> drop_caps;
 
 		for (size_t i = 0; i < m_arTextLines.size(); i++)
 		{
@@ -834,16 +696,7 @@ namespace NSDocxRenderer
 			}
 			if (num_of_lines > 1)
 			{
-				auto drop_cap = std::make_shared<CDropCap>();
-				*static_cast<CBaseItem*>(drop_cap.get()) = *drop_cap_cont;
-				drop_cap->nLines = num_of_lines;
-				drop_cap->wsFont = drop_cap_cont->m_pFontStyle->wsFontName;
-				drop_cap->wsText = drop_cap_cont->GetText().ToStdWString();
-
-				drop_cap->nFontSize = static_cast<LONG>(drop_cap_cont->m_pFontStyle->dFontSize * 2);
-				drop_caps.push_back(std::move(drop_cap));
-
-				drop_cap_cont = nullptr;
+				drop_caps.push_back(std::move(drop_cap_cont));
 				if (drop_cap_line->IsCanBeDeleted())
 					drop_cap_line = nullptr;
 
@@ -855,27 +708,12 @@ namespace NSDocxRenderer
 		// шейпы из буквиц
 		for (auto&& drop_cap : drop_caps)
 		{
-			auto shape = std::make_shared<CShape>();
-			shape->m_eType = CShape::eShapeType::stTextBox;
+			drop_cap->CalcSelected();
 
-			// перемерим на подобранном шрифте
-			NSStructures::CFont oFont;
-			oFont.Name = drop_cap->wsFont;
-			oFont.Size = static_cast<double>(drop_cap->nFontSize) / 2.0;
-			m_pFontManager->LoadFontByName(oFont);
+			auto line = std::make_shared<CTextLine>();
+			line->AddCont(drop_cap);
 
-			auto h = m_pFontManager->GetFontHeight();
-
-			shape->m_dTop = drop_cap->m_dTop;
-			shape->m_dBaselinePos = drop_cap->m_dTop + h;
-			shape->m_dHeight = shape->m_dBaselinePos - shape->m_dTop;
-
-			shape->m_dRight = drop_cap->m_dRight;
-			shape->m_dLeft = drop_cap->m_dLeft;
-			shape->m_dWidth = drop_cap->m_dWidth;
-
-			shape->m_arOutputObjects.push_back(drop_cap);
-			shape->m_bIsBehindDoc = false;
+			auto shape = CreateSingleLineShape(line);
 			m_arShapes.push_back(shape);
 		}
 	}
@@ -936,12 +774,12 @@ namespace NSDocxRenderer
 						{
 							pNextCont = nullptr;
 							pCurrCont->m_iNumDuplicates++;
-							// if (!pCurrCont->m_pFontStyle.get()->bBold)
-							// {
-							// 	CFontStyle font_style = *pCurrCont->m_pFontStyle;
-							// 	font_style.bBold = true;
-							// 	pCurrCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(font_style);
-							// }
+							if (!pCurrCont->m_pFontStyle.get()->bBold)
+							{
+								CFontStyle font_style = *pCurrCont->m_pFontStyle;
+								font_style.bBold = true;
+								pCurrCont->m_pFontStyle = m_oManagers.pFontStyleManager->GetOrAddFontStyle(font_style);
+							}
 						}
 					}
 					if (pNextLine && pNextLine->IsCanBeDeleted())
@@ -1037,7 +875,7 @@ namespace NSDocxRenderer
 							auto oBrush = curr_cont->m_pFontStyle->oBrush;
 							oBrush.Color1 = shape->m_oPen.Color;
 
-							curr_cont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
+							curr_cont->m_pFontStyle = m_oManagers.pFontStyleManager->GetOrAddFontStyle(
 								oBrush,
 								curr_cont->m_pFontStyle->wsFontName,
 								curr_cont->m_pFontStyle->dFontSize,
@@ -1623,13 +1461,13 @@ namespace NSDocxRenderer
 			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
 			paragraph->m_dHeight = paragraph->m_dBaselinePos - paragraph->m_dTop;
 
-			paragraph->m_dRightBorder = m_dWidth - max_right;
+			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
 			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
-			paragraph->m_wsStyleId = m_pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
+			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
 
 			paragraph->MergeLines();
 
@@ -1650,13 +1488,7 @@ namespace NSDocxRenderer
 
 					// indent check
 					if (index == 1)
-					{
 						first_left = fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
-
-						// первая строчка левее правой
-						if (!first_left && prev_line->m_dLeft < curr_line->m_dLeft)
-							position_curr.left = false;
-					}
 					else
 						position_curr.left &= fabs(curr_line->m_dLeft - prev_line->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 
@@ -1679,8 +1511,12 @@ namespace NSDocxRenderer
 				// indent check
 				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
 				{
+					double left_diff = paragraph->m_arLines[0]->m_dLeft - paragraph->m_arLines[1]->m_dLeft;
 					paragraph->m_bIsNeedFirstLineIndent = true;
-					paragraph->m_dFirstLine = paragraph->m_arLines[0]->m_dLeft - paragraph->m_dLeft;
+					paragraph->m_dFirstLine = left_diff;
+
+					if (left_diff < 0)
+						paragraph->m_dLeftBorder -= left_diff;
 				}
 			}
 
@@ -1814,7 +1650,7 @@ namespace NSDocxRenderer
 					is_first_line = false;
 
 				// первая строка может быть с отступом
-				if (is_first_line && line_bot->m_dLeft < line_top->m_dLeft)
+				if (is_first_line)
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1829,8 +1665,33 @@ namespace NSDocxRenderer
 				}
 
 				bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
+				bool bullet_skip = false;
 				if (is_unknown)
-					ar_delims[index] = true;
+				{
+					// bullet paragraphs
+					if (!ar_delims[index])
+					{
+						const auto& first_sym = line_top->m_arConts.front()->GetText().at(0);
+						if (CContText::IsUnicodeBullet(first_sym))
+						{
+							double left_no_first = 0;
+							bool out = false;
+							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
+								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
+									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(j)))
+									{
+										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(j);
+										out = true;
+										break;
+									}
+
+							if (out && fabs(left_no_first - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
+								bullet_skip = true;
+						}
+					}
+					if (!bullet_skip)
+						ar_delims[index] = true;
+				}
 			}
 
 			// gap check
@@ -2024,7 +1885,11 @@ namespace NSDocxRenderer
 		pShape->m_dHeight = pParagraph->m_dHeight;
 		pShape->m_dWidth = pParagraph->m_dWidth;
 
-		pParagraph->m_dLeftBorder = 0;
+		if (pParagraph->m_bIsNeedFirstLineIndent && pParagraph->m_dFirstLine < 0)
+			pParagraph->m_dLeftBorder = -pParagraph->m_dFirstLine;
+		else
+			pParagraph->m_dLeftBorder = 0;
+
 		pParagraph->m_dRightBorder = 0;
 
 		// first correction fix

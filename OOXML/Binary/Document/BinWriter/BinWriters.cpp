@@ -3606,7 +3606,17 @@ void BinaryDocumentTableWriter::WriteDocumentContent(const std::vector<OOX::Writ
 				Write(static_cast<OOX::Logic::CDocParts*>(item));
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}break;
-		default:
+			case OOX::et_w_permStart:
+			{
+				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+				WritePermission(c_oSerParType::PermStart, pPermStart);
+			}break;
+			case OOX::et_w_permEnd:
+			{
+				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+				WritePermission(c_oSerParType::PermEnd, pPermEnd);
+			}break;
+			default:
 			break;
 		}
 	}
@@ -3896,12 +3906,12 @@ void BinaryDocumentTableWriter::WriteParagraphContent(const std::vector<OOX::Wri
 			case OOX::et_w_permStart:
 			{
 				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
-				WritePermission(pPermStart);
+				WritePermission(c_oSerParType::PermStart, pPermStart);
 			}break;
 			case OOX::et_w_permEnd:
 			{
 				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
-				WritePermission(pPermEnd);
+				WritePermission(c_oSerParType::PermEnd, pPermEnd);
 			}break;
 			case OOX::et_w_fldSimple:
 			{
@@ -4197,11 +4207,11 @@ void BinaryDocumentTableWriter::WriteComment(OOX::EElementType eType, nullable<S
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
-void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermStart* pPerm)
+void BinaryDocumentTableWriter::WritePermission(unsigned char type, OOX::Logic::CPermStart* pPerm)
 {
 	if (!pPerm) return;
 
-	int nCurPos2 = m_oBcw.WriteItemStart(c_oSerParType::PermStart);
+	int nCurPos2 = m_oBcw.WriteItemStart(type);
 
 	if (pPerm->m_sId.IsInit())
 	{
@@ -4241,11 +4251,11 @@ void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermStart* pPerm)
 	}
 	m_oBcw.WriteItemWithLengthEnd(nCurPos2);
 }
-void BinaryDocumentTableWriter::WritePermission(OOX::Logic::CPermEnd* pPerm)
+void BinaryDocumentTableWriter::WritePermission(unsigned char type, OOX::Logic::CPermEnd* pPerm)
 {
 	if (!pPerm) return;
 	
-	int nCurPos2 = m_oBcw.WriteItemStart(c_oSerParType::PermEnd);
+	int nCurPos2 = m_oBcw.WriteItemStart(type);
 	if (pPerm->m_sId.IsInit())
 	{
 		int nCurPos = m_oBcw.WriteItemStart(c_oSerPermission::Id);
@@ -4688,184 +4698,170 @@ void BinaryDocumentTableWriter::WriteMathArgNodes(const std::vector<OOX::Writing
 		int nCurPos = 0;
 		switch(eType)
 		{
-		case OOX::et_m_acc:
+			case OOX::et_m_acc:
 			{
 				OOX::Logic::CAcc* pAcc = static_cast<OOX::Logic::CAcc*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Acc);
 
-				if ( pAcc->m_oAccPr.IsInit() )
+				if (pAcc->m_oAccPr.IsInit())
 					WriteMathAccPr(pAcc->m_oAccPr.get());
-				if ( pAcc->m_oElement.IsInit() )
+				if (pAcc->m_oElement.IsInit())
 					WriteMathElement(pAcc->m_oElement.get());
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_argPr:
+			}break;
+			case OOX::et_m_argPr:
 			{
 				OOX::Logic::CArgPr* pArgPr = static_cast<OOX::Logic::CArgPr*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::ArgPr);
 
-				if ( pArgPr->m_oArgSz.IsInit() )
+				if (pArgPr->m_oArgSz.IsInit())
 					WriteMathArgSz(pArgPr->m_oArgSz.get());
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_bar:
+			}break;
+			case OOX::et_m_bar:
 			{
 				OOX::Logic::CBar* pBar = static_cast<OOX::Logic::CBar*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Bar);
 
-				if ( pBar->m_oBarPr.IsInit() )
+				if (pBar->m_oBarPr.IsInit())
 					WriteMathBarPr(pBar->m_oBarPr.get());
-				if ( pBar->m_oElement.IsInit() )
+				if (pBar->m_oElement.IsInit())
 					WriteMathElement(pBar->m_oElement.get());
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_borderBox:
+			}break;
+			case OOX::et_m_borderBox:
 			{
 				OOX::Logic::CBorderBox* pBorderBox = static_cast<OOX::Logic::CBorderBox*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::BorderBox);
 
-				if ( pBorderBox->m_oBorderBoxPr.IsInit() )
+				if (pBorderBox->m_oBorderBoxPr.IsInit())
 					WriteMathBorderBoxPr(pBorderBox->m_oBorderBoxPr.get());
-				if ( pBorderBox->m_oElement.IsInit() )
+				if (pBorderBox->m_oElement.IsInit())
 					WriteMathElement(pBorderBox->m_oElement.get());
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_box:
+			}break;
+			case OOX::et_m_box:
 			{
 				OOX::Logic::CBox* pBox = static_cast<OOX::Logic::CBox*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Box);
 
-				if ( pBox->m_oBoxPr.IsInit() )
+				if (pBox->m_oBoxPr.IsInit())
 					WriteMathBoxPr(pBox->m_oBoxPr.get());
-				if ( pBox->m_oElement.IsInit() )
+				if (pBox->m_oElement.IsInit())
 					WriteMathElement(pBox->m_oElement.get());
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_ctrlPr:
+			}break;
+			case OOX::et_m_ctrlPr:
 			{
 				OOX::Logic::CCtrlPr* pCtrlPr = static_cast<OOX::Logic::CCtrlPr*>(item);
 				WriteMathCtrlPr(*pCtrlPr, c_oSer_OMathContentType::CtrlPr);
 				break;
 			}
-		case OOX::et_m_d:
+			case OOX::et_m_d:
 			{
 				OOX::Logic::CDelimiter* pDelimiter = static_cast<OOX::Logic::CDelimiter*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Delimiter);
 
 				WriteMathDelimiter(pDelimiter->m_arrItems, pDelimiter->m_lColumn);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_del:
+			}break;
+			case OOX::et_w_del:
 			{
 				OOX::Logic::CDel* pDel = static_cast<OOX::Logic::CDel*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Del);
 				WriteDel(*pDel);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_eqArr:
+			}break;
+			case OOX::et_m_eqArr:
 			{
 				OOX::Logic::CEqArr* pEqArr = static_cast<OOX::Logic::CEqArr*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::EqArr);
 
 				WriteMathEqArr(pEqArr->m_arrItems, pEqArr->m_lRow);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_f:
+			}break;
+			case OOX::et_m_f:
 			{
 				OOX::Logic::CFraction* pFraction = static_cast<OOX::Logic::CFraction*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Fraction);
 
-				if ( pFraction->m_oFPr.IsInit() )
+				if (pFraction->m_oFPr.IsInit())
 					WriteMathFPr(pFraction->m_oFPr.get());
-				if ( pFraction->m_oDen.IsInit() )
+				if (pFraction->m_oDen.IsInit())
 					WriteMathDen(pFraction->m_oDen.get());
-				if ( pFraction->m_oNum.IsInit() )
+				if (pFraction->m_oNum.IsInit())
 					WriteMathNum(pFraction->m_oNum.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_func:
+			}break;
+			case OOX::et_m_func:
 			{
 				OOX::Logic::CFunc* pFunc = static_cast<OOX::Logic::CFunc*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Func);
 
-				if ( pFunc->m_oFuncPr.IsInit() )
+				if (pFunc->m_oFuncPr.IsInit())
 					WriteMathFuncPr(pFunc->m_oFuncPr.get());
-				if ( pFunc->m_oElement.IsInit() )
+				if (pFunc->m_oElement.IsInit())
 					WriteMathElement(pFunc->m_oElement.get());
-				if ( pFunc->m_oFName.IsInit() )
+				if (pFunc->m_oFName.IsInit())
 					WriteMathFName(pFunc->m_oFName.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_groupChr:
+			}break;
+			case OOX::et_m_groupChr:
 			{
 				OOX::Logic::CGroupChr* pGroupChr = static_cast<OOX::Logic::CGroupChr*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::GroupChr);
 
-				if ( pGroupChr->m_oGroupChrPr.IsInit() )
+				if (pGroupChr->m_oGroupChrPr.IsInit())
 					WriteMathGroupChrPr(pGroupChr->m_oGroupChrPr.get());
-				if ( pGroupChr->m_oElement.IsInit() )
+				if (pGroupChr->m_oElement.IsInit())
 					WriteMathElement(pGroupChr->m_oElement.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_ins:
+			}break;
+			case OOX::et_w_ins:
 			{
 				OOX::Logic::CIns* pIns = static_cast<OOX::Logic::CIns*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Ins);
 				WriteIns(*pIns);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_limLow:
+			}break;
+			case OOX::et_m_limLow:
 			{
 				OOX::Logic::CLimLow* pLimLow = static_cast<OOX::Logic::CLimLow*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::LimLow);
 
-				if ( pLimLow->m_oLimLowPr.IsInit() )
+				if (pLimLow->m_oLimLowPr.IsInit())
 					WriteMathLimLowPr(pLimLow->m_oLimLowPr.get());
-				if ( pLimLow->m_oElement.IsInit() )
+				if (pLimLow->m_oElement.IsInit())
 					WriteMathElement(pLimLow->m_oElement.get());
-				if ( pLimLow->m_oLim.IsInit() )
+				if (pLimLow->m_oLim.IsInit())
 					WriteMathLim(pLimLow->m_oLim.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_limUpp:
+			}break;
+			case OOX::et_m_limUpp:
 			{
 				OOX::Logic::CLimUpp* pLimUpp = static_cast<OOX::Logic::CLimUpp*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::LimUpp);
 
-				if ( pLimUpp->m_oLimUppPr.IsInit() )
+				if (pLimUpp->m_oLimUppPr.IsInit())
 					WriteMathLimUppPr(pLimUpp->m_oLimUppPr.get());
-				if ( pLimUpp->m_oElement.IsInit() )
+				if (pLimUpp->m_oElement.IsInit())
 					WriteMathElement(pLimUpp->m_oElement.get());
-				if ( pLimUpp->m_oLim.IsInit() )
+				if (pLimUpp->m_oLim.IsInit())
 					WriteMathLim(pLimUpp->m_oLim.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_m:
+			}break;
+			case OOX::et_m_m:
 			{
 				OOX::Logic::CMatrix* pMatrix = static_cast<OOX::Logic::CMatrix*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Matrix);
 
 				LONG lCol = 0;
-//TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
+				//TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
 				for (std::vector<OOX::WritingElement*>::iterator jt = pMatrix->m_arrItems.begin(); jt != pMatrix->m_arrItems.end(); jt++)
 				{
 					OOX::WritingElement* item = *jt;
@@ -4878,35 +4874,32 @@ void BinaryDocumentTableWriter::WriteMathArgNodes(const std::vector<OOX::Writing
 				}
 				WriteMathMatrix(pMatrix->m_arrItems, pMatrix->m_lRow, lCol);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_nary:
+			}break;
+			case OOX::et_m_nary:
 			{
 				OOX::Logic::CNary* pNary = static_cast<OOX::Logic::CNary*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Nary);
 
-				if ( pNary->m_oNaryPr.IsInit() )
+				if (pNary->m_oNaryPr.IsInit())
 					WriteMathNaryPr(pNary->m_oNaryPr.get());
-				if ( pNary->m_oSub.IsInit() )
+				if (pNary->m_oSub.IsInit())
 					WriteMathSub(pNary->m_oSub.get());
-				if ( pNary->m_oSup.IsInit() )
+				if (pNary->m_oSup.IsInit())
 					WriteMathSup(pNary->m_oSup.get());
-				if ( pNary->m_oElement.IsInit() )
+				if (pNary->m_oElement.IsInit())
 					WriteMathElement(pNary->m_oElement.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_oMath:
+			}break;
+			case OOX::et_m_oMath:
 			{
 				OOX::Logic::COMath* pOMath = static_cast<OOX::Logic::COMath*>(item);
 
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMath);
-					WriteMathArgNodes(pOMath->m_arrItems);
+				WriteMathArgNodes(pOMath->m_arrItems);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_oMathPara:
+			}break;
+			case OOX::et_m_oMathPara:
 			{
 				OOX::Logic::COMathPara* pOMathPara = static_cast<OOX::Logic::COMathPara*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::OMathPara);
@@ -4914,158 +4907,154 @@ void BinaryDocumentTableWriter::WriteMathArgNodes(const std::vector<OOX::Writing
 				WriteMathOMathPara(pOMathPara->m_arrItems);
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_phant:
+			}break;
+			case OOX::et_m_phant:
 			{
 				OOX::Logic::CPhant* pPhant = static_cast<OOX::Logic::CPhant*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Phant);
 
-				if ( pPhant->m_oPhantPr.IsInit() )
+				if (pPhant->m_oPhantPr.IsInit())
 					WriteMathPhantPr(pPhant->m_oPhantPr.get());
-				if ( pPhant->m_oElement.IsInit() )
+				if (pPhant->m_oElement.IsInit())
 					WriteMathElement(pPhant->m_oElement.get());
 
-				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_r:
+				m_oBcw.WriteItemEnd(nCurPos);			
+			}break;
+			case OOX::et_m_r:
 			{
 				OOX::Logic::CMRun* pMRun = static_cast<OOX::Logic::CMRun*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MRun);
 				WriteMathRunContent(pMRun);
-				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_rad:
+				m_oBcw.WriteItemEnd(nCurPos);			
+			}break;
+			case OOX::et_m_rad:
 			{
 				OOX::Logic::CRad* pRad = static_cast<OOX::Logic::CRad*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Rad);
 
-				if ( pRad->m_oRadPr.IsInit() )
+				if (pRad->m_oRadPr.IsInit())
 					WriteMathRadPr(pRad->m_oRadPr.get());
-				if ( pRad->m_oDeg.IsInit() )
+				if (pRad->m_oDeg.IsInit())
 					WriteMathDeg(pRad->m_oDeg.get());
-				if ( pRad->m_oElement.IsInit() )
+				if (pRad->m_oElement.IsInit())
 					WriteMathElement(pRad->m_oElement.get());
 
-				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_sPre:
+				m_oBcw.WriteItemEnd(nCurPos);			
+			}break;
+			case OOX::et_m_sPre:
 			{
 				OOX::Logic::CSPre* pSPre = static_cast<OOX::Logic::CSPre*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::SPre);
 
-				if ( pSPre->m_oSPrePr.IsInit() )
+				if (pSPre->m_oSPrePr.IsInit())
 					WriteMathSPrePr(pSPre->m_oSPrePr.get());
-				if ( pSPre->m_oSub.IsInit() )
+				if (pSPre->m_oSub.IsInit())
 					WriteMathSub(pSPre->m_oSub.get());
-				if ( pSPre->m_oSup.IsInit() )
+				if (pSPre->m_oSup.IsInit())
 					WriteMathSup(pSPre->m_oSup.get());
-				if ( pSPre->m_oElement.IsInit() )
+				if (pSPre->m_oElement.IsInit())
 					WriteMathElement(pSPre->m_oElement.get());
 
-				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_sSub:
+				m_oBcw.WriteItemEnd(nCurPos);			
+			}break;
+			case OOX::et_m_sSub:
 			{
 				OOX::Logic::CSSub* pSSub = static_cast<OOX::Logic::CSSub*>(item);
 				int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::SSub);
 
-				if ( pSSub->m_oSSubPr.IsInit() )
+				if (pSSub->m_oSSubPr.IsInit())
 					WriteMathSSubPr(pSSub->m_oSSubPr.get());
-				if ( pSSub->m_oElement.IsInit() )
+				if (pSSub->m_oElement.IsInit())
 					WriteMathElement(pSSub->m_oElement.get());
-				if ( pSSub->m_oSub.IsInit() )
+				if (pSSub->m_oSub.IsInit())
 					WriteMathSub(pSSub->m_oSub.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_sSubSup:
+			}break;
+			case OOX::et_m_sSubSup:
 			{
 				OOX::Logic::CSSubSup* pSSubSup = static_cast<OOX::Logic::CSSubSup*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::SSubSup);
 
-				if ( pSSubSup->m_oSSubSupPr.IsInit() )
+				if (pSSubSup->m_oSSubSupPr.IsInit())
 					WriteMathSSubSupPr(pSSubSup->m_oSSubSupPr.get());
-				if ( pSSubSup->m_oElement.IsInit() )
+				if (pSSubSup->m_oElement.IsInit())
 					WriteMathElement(pSSubSup->m_oElement.get());
-				if ( pSSubSup->m_oSub.IsInit() )
+				if (pSSubSup->m_oSub.IsInit())
 					WriteMathSub(pSSubSup->m_oSub.get());
-				if ( pSSubSup->m_oSup.IsInit() )
+				if (pSSubSup->m_oSup.IsInit())
 					WriteMathSup(pSSubSup->m_oSup.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_m_sSup:
+			}break;
+			case OOX::et_m_sSup:
 			{
 				OOX::Logic::CSSup* pSSup = static_cast<OOX::Logic::CSSup*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::SSup);
 
-				if ( pSSup->m_oSSupPr.IsInit() )
+				if (pSSup->m_oSSupPr.IsInit())
 					WriteMathSSupPr(pSSup->m_oSSupPr.get());
-				if ( pSSup->m_oElement.IsInit() )
+				if (pSSup->m_oElement.IsInit())
 					WriteMathElement(pSSup->m_oElement.get());
-				if ( pSSup->m_oSup.IsInit() )
+				if (pSSup->m_oSup.IsInit())
 					WriteMathSup(pSSup->m_oSup.get());
 
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_bookmarkStart:
+			}break;
+			case OOX::et_w_bookmarkStart:
 			{
 				OOX::Logic::CBookmarkStart* pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::BookmarkStart);
 				WriteBookmarkStart(*pBookmarkStart);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_bookmarkEnd:
+			}break;
+			case OOX::et_w_bookmarkEnd:
 			{
 				OOX::Logic::CBookmarkEnd* pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::BookmarkEnd);
 				WriteBookmarkEnd(*pBookmarkEnd);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_moveFromRangeStart:
+			}break;
+			case OOX::et_w_moveFromRangeStart:
 			{
 				OOX::Logic::CMoveFromRangeStart* pMoveFromRangeStart = static_cast<OOX::Logic::CMoveFromRangeStart*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MoveFromRangeStart);
 				WriteMoveRangeStart(*pMoveFromRangeStart);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_moveFromRangeEnd:
+			}break;
+			case OOX::et_w_moveFromRangeEnd:
 			{
 				OOX::Logic::CMoveFromRangeEnd* pMoveFromRangeEnd = static_cast<OOX::Logic::CMoveFromRangeEnd*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MoveFromRangeEnd);
 				WriteMoveRangeEnd(*pMoveFromRangeEnd);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_moveToRangeStart:
+			}break;
+			case OOX::et_w_moveToRangeStart:
 			{
 				OOX::Logic::CMoveToRangeStart* pMoveToRangeStart = static_cast<OOX::Logic::CMoveToRangeStart*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MoveToRangeStart);
 				WriteMoveRangeStart(*pMoveToRangeStart);
 				m_oBcw.WriteItemEnd(nCurPos);
-				break;
-			}
-		case OOX::et_w_moveToRangeEnd:
+			}break;
+			case OOX::et_w_moveToRangeEnd:
 			{
 				OOX::Logic::CMoveToRangeEnd* pMoveToRangeEnd = static_cast<OOX::Logic::CMoveToRangeEnd*>(item);
 				nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MoveToRangeEnd);
 				WriteMoveRangeEnd(*pMoveToRangeEnd);
 				m_oBcw.WriteItemEnd(nCurPos);
+			}break;
+			case OOX::et_w_permStart:
+			{
+				OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+				WritePermission(c_oSer_OMathContentType::PermStart, pPermStart);
+			}break;
+			case OOX::et_w_permEnd:
+			{
+				OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+				WritePermission(c_oSer_OMathContentType::PermEnd, pPermEnd);
+			}break;
+			default:
 				break;
-			}
-		default:
-			break;
 		}
 	}
 }
@@ -7668,7 +7657,7 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 	int nCurPos			= 0;
 	int nCurRowIndex	= 0;
 
-	for(size_t i = 0; i < content.size(); ++i)
+	for (size_t i = 0; i < content.size(); ++i)
 	{
 		OOX::WritingElement* item = content[i];
 
@@ -7743,6 +7732,17 @@ void BinaryDocumentTableWriter::WriteTableContent(std::vector<OOX::WritingElemen
 			WriteMoveRangeEnd(*pMoveToRangeEnd);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
+		else if (OOX::et_w_permStart == item->getType())
+		{
+			OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+			WritePermission(c_oSerDocTableType::PermStart, pPermStart);
+		}
+		else if (OOX::et_w_permEnd == item->getType())
+		{
+			OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+			WritePermission(c_oSerDocTableType::PermEnd, pPermEnd);
+		}
+
 	}
 }
 void BinaryDocumentTableWriter::WriteRow(const OOX::Logic::CTr& Row, OOX::Logic::CTableProperty* pTblPr, int nCurRowIndex)
@@ -7844,6 +7844,16 @@ void BinaryDocumentTableWriter::WriteRowContent(const std::vector<OOX::WritingEl
 			nCurPos = m_oBcw.WriteItemStart(c_oSerDocTableType::MoveToRangeEnd);
 			WriteMoveRangeEnd(*pMoveToRangeEnd);
 			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		else if (OOX::et_w_permStart == item->getType())
+		{
+			OOX::Logic::CPermStart* pPermStart = static_cast<OOX::Logic::CPermStart*>(item);
+			WritePermission(c_oSerDocTableType::PermStart, pPermStart);
+		}
+		else if (OOX::et_w_permEnd == item->getType())
+		{
+			OOX::Logic::CPermEnd* pPermEnd = static_cast<OOX::Logic::CPermEnd*>(item);
+			WritePermission(c_oSerDocTableType::PermEnd, pPermEnd);
 		}
 	}
 }

@@ -142,6 +142,14 @@ std::vector<double> Curve::GetYValues() const noexcept
 	return {Segment1.P.Y, Segment2.P.Y + Segment2.HI.Y, Segment2.P.Y + Segment2.HO.Y, Segment2.P.Y};
 }
 
+std::vector<double> Curve::GetBound() const noexcept
+{
+	return {min(Segment1.P.X, Segment2.P.X + Segment2.HI.X, Segment2.P.X + Segment2.HO.X, Segment2.P.X),
+			min(Segment1.P.Y, Segment2.P.Y + Segment2.HI.Y, Segment2.P.Y + Segment2.HO.Y, Segment2.P.Y),
+			max(Segment1.P.X, Segment2.P.X + Segment2.HI.X, Segment2.P.X + Segment2.HO.X, Segment2.P.X),
+			max(Segment1.P.Y, Segment2.P.Y + Segment2.HI.Y, Segment2.P.Y + Segment2.HO.Y, Segment2.P.Y)};
+}
+
 std::vector<double> Curve::GetPeeks() const
 {
 	std::vector<double> x = GetXValues(),
@@ -232,6 +240,7 @@ double Curve::GetTimeOf(const PointD& point) const noexcept
 				if (getDistance(point, GetPoint(u)) <= GEOMETRIC_EPSILON)
 					return u;
 			}
+			roots.clear();
 		}
 	}
 	bool firstDist = d0 <= GEOMETRIC_EPSILON,
@@ -269,8 +278,31 @@ double Curve::GetTimeAt(const double& offset) const noexcept
 			by = 6 * (y[0] + y[2]) - 12 * y[1],
 			cy = 3 * (y[1] - y[0]);
 
-	return findRoot(length, start, offset, ax, bx, cx,
-					ay, by, cy, start + guess, a, b);
+	double vx = start + guess;
+	for (size_t i = 0; i < 32; i++)
+	{
+		length += integrate(ax, bx, cx, ay, by, cy, start, vx, getIterations(start, vx));
+		start = vx;
+
+		double dx = vx - (length - offset) / CurveLength(vx, ax, bx, cx, ay, by, cy);
+		if (fabs(vx - dx) < EPSILON)
+		{
+			vx = dx;
+			break;
+		}
+
+		if (length - offset > 0)
+		{
+			b = vx;
+			vx = dx <= a ? (a + b) * 0.5 : dx;
+		}
+		else{
+			a = vx;
+			vx = dx >= b ? (a + b) * 0.5 : dx;
+		}
+	}
+
+	return clamp(vx, a, b);
 }
 
 PointD Curve::Get(const double& t, const int& type) const noexcept
@@ -407,15 +439,15 @@ std::vector<std::pair<double, double>> Curve::GetOverlaps(const Curve& curve) co
 		std::swap(y1, y2);
 	}
 
-	double	d20 = getDistance(px, py, vx, vy, x2[0], y2[0], true),
-			d23 = getDistance(px, py, vx, vy, x2[3], y2[3], true);
+	double	d20 = fabs(getSignedDistance(px, py, vx, vy, x2[0], y2[0], true)),
+			d23 = fabs(getSignedDistance(px, py, vx, vy, x2[3], y2[3], true));
 
 	if (d20 < GEOMETRIC_EPSILON && d23 < GEOMETRIC_EPSILON)
 	{
-		double	d11 = getDistance(px, py, vx, vy, x1[1], y1[1], true),
-				d12 = getDistance(px, py, vx, vy, x1[2], y1[2], true),
-				d21 = getDistance(px, py, vx, vy, x2[1], y2[1], true),
-				d22 = getDistance(px, py, vx, vy, x2[2], y2[2], true);
+		double	d11 = fabs(getSignedDistance(px, py, vx, vy, x1[1], y1[1], true)),
+				d12 = fabs(getSignedDistance(px, py, vx, vy, x1[2], y1[2], true)),
+				d21 = fabs(getSignedDistance(px, py, vx, vy, x2[1], y2[1], true)),
+				d22 = fabs(getSignedDistance(px, py, vx, vy, x2[2], y2[2], true));
 
 		if (!straightBoth &&
 			d11 < GEOMETRIC_EPSILON &&
@@ -611,10 +643,10 @@ int Curve::SolveCubic(double a, double b, double c, double d,
 		q = c2 * x + d;
 
 		double	t = q / a,
-				r = pow(fabs(t), 1 / 3),
+				r = pow(fabs(t), 1.0 / 3.0),
 				s = t < 0 ? -1 : 1,
 				td = -qd / a,
-				rd = td > 0 ? 1.324717957244746 * std::max(r, sqrt(td)) : r,
+				rd = td > 0 ? 1.324717957244746 * std::max(r, std::sqrt(td)) : r,
 				x0 = x - s * rd;
 
 		if (x0 != x)
@@ -715,9 +747,9 @@ CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
+	FillType(fillType),
 	Path1(path1),
-	Path2(path2),
-	FillType(fillType)
+	Path2(path2)
 {
 	TraceBoolean();
 }
@@ -995,7 +1027,7 @@ void CBooleanOperations::TracePaths()
 			start = true;
 		while (valid)
 		{
-			if (!start || (Op == Intersection && s.Inters))
+			if (!start || (Op == Intersection && s.Inters && !GetNextSegment(s).Inters))
 				SetVisited(s);
 
 			if (start)
@@ -1221,35 +1253,22 @@ void CBooleanOperations::SetVisited(const Segment& segment)
 		Segments2[segment.Index].Visited = true;
 }
 
-std::vector<std::vector<double>> CBooleanOperations::GetBoundsForCurves(const std::vector<Curve>& curves) const noexcept
-{
-	std::vector<std::vector<double>> bounds;
-	for (int i = 0; i < curves.size(); i++)
-	{
-		std::vector<double>	x = curves[i].GetXValues(),
-			y = curves[i].GetYValues();
-		bounds.push_back({min(x[0], x[1], x[2], x[3]),
-						  min(y[0], y[1], y[2], y[3]),
-						  max(x[0], x[1], x[2], x[3]),
-						  max(y[0], y[1], y[2], y[3])});
-	}
-	return bounds;
-}
-
 std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions()
 {
-	std::vector<std::vector<double>> bounds1 = GetBoundsForCurves(Curves1);
-	std::vector<std::vector<double>> bounds2 = GetBoundsForCurves(Curves2);
+	std::vector<std::vector<double>> allBounds, bounds2;
+	for (const auto& c : Curves1)
+		allBounds.push_back(c.GetBound());
+	for (const auto& c : Curves2)
+		bounds2.push_back(c.GetBound());
 
-	bool self = bounds1 == bounds2;
+	bool self = allBounds == bounds2;
 
-	std::vector<std::vector<double>> allBounds(bounds1);
 	if (!self)
-		for (auto it = bounds2.begin(); it != bounds2.end(); ++it) // std::copy(bounds2.begin(), bounds2.end(), std::back_inserter(allBounds));
+		for (auto it = bounds2.begin(); it != bounds2.end(); ++it)
 			allBounds.push_back(*it);
 
 	int	allLength = static_cast<int>(allBounds.size()),
-		length1	  = static_cast<int>(bounds1.size());
+		length1	  = static_cast<int>(Curves1.size());
 
 	std::vector<int> allIdicesByPri1(allLength);
 	for (int i = 0; i < allLength; i++)
@@ -1265,56 +1284,47 @@ std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions()
 	std::vector<std::vector<int>> allCollisions(length1);
 	for (int i = 0; i < allLength; i++)
 	{
-		int curIndex = allIdicesByPri1[i];
-		std::vector<double>	curBounds = allBounds[curIndex];
 		std::vector<int>	curCollisions;
-		bool isCurrent1 = curIndex < length1,
+		bool isCurrent1 = allIdicesByPri1[i] < length1,
 			 isCurrent2 = self || !isCurrent1;
-		int  origIndex = self ? curIndex : curIndex - length1;
+		int  origIndex = self ? allIdicesByPri1[i] : allIdicesByPri1[i] - length1;
 
 		if (!activeIndicesByPri2.empty())
 		{
 			int pruneCount = binarySearch(allBounds, activeIndicesByPri2, 2,
-										  curBounds[0] - GEOMETRIC_EPSILON) + 1;
+										  allBounds[allIdicesByPri1[i]][0] - GEOMETRIC_EPSILON) + 1;
 
 			activeIndicesByPri2.erase(activeIndicesByPri2.begin(),
 									  activeIndicesByPri2.begin() + pruneCount);
-
-			double	curSec2 = curBounds[3],
-				curSec1 = curBounds[1];
 			for (int j = 0; j < static_cast<int>(activeIndicesByPri2.size()); j++)
 			{
-				int activeIndex = activeIndicesByPri2[j];
-				std::vector<double> activeBounds = allBounds[activeIndex];
-				bool isActive1 = activeIndex < length1,
+				bool isActive1 = activeIndicesByPri2[j] < length1,
 					 isActive2 = self || !isActive1,
 					 isActive1Or2 = (isCurrent1 && isActive2) || (isCurrent2 && isActive1),
-					 inRange1 = curSec1 <= activeBounds[3] + GEOMETRIC_EPSILON,
-					 inRange2 = curSec2 >= activeBounds[1] - GEOMETRIC_EPSILON;
+					 inRange1 = allBounds[allIdicesByPri1[i]][1] <= allBounds[activeIndicesByPri2[j]][3] + GEOMETRIC_EPSILON,
+					 inRange2 = allBounds[allIdicesByPri1[i]][3] >= allBounds[activeIndicesByPri2[j]][1] - GEOMETRIC_EPSILON;
 
 				if (isActive1Or2 && (inRange2 && inRange1))
 				{
 					if (isCurrent1 && isActive2)
-						curCollisions.push_back(self ? activeIndex : activeIndex - length1);
+						curCollisions.push_back(self ? activeIndicesByPri2[j] : activeIndicesByPri2[j] - length1);
 					if (isCurrent2 && isActive1)
-						allCollisions[activeIndex].push_back(origIndex);
+						allCollisions[activeIndicesByPri2[j]].push_back(origIndex);
 				}
 			}
 		}
 		if (isCurrent1)
 		{
-			if (bounds1 == bounds2)
-				curCollisions.push_back(curIndex);
-			allCollisions[curIndex] = curCollisions;
+			if (self) curCollisions.push_back(allIdicesByPri1[i]);
+			allCollisions[allIdicesByPri1[i]] = curCollisions;
 		}
 		if (activeIndicesByPri2.size() > 0)
 		{
-			double curPri2 = curBounds[2];
-			int index = binarySearch(allBounds, activeIndicesByPri2, 2, curPri2);
-			activeIndicesByPri2.insert(activeIndicesByPri2.begin() + (1 + index), curIndex);
+			int index = 1 + binarySearch(allBounds, activeIndicesByPri2, 2, allBounds[allIdicesByPri1[i]][2]);
+			activeIndicesByPri2.insert(activeIndicesByPri2.begin() + index, allIdicesByPri1[i]);
 		}
 		else
-			activeIndicesByPri2.push_back(curIndex);
+			activeIndicesByPri2.push_back(allIdicesByPri1[i]);
 	}
 
 	for (auto& c : allCollisions)
@@ -1387,11 +1397,6 @@ bool CBooleanOperations::IsCrossing(std::shared_ptr<Location> loc) noexcept
 	return t1Inside ? inRange1 : inRange2;
 }
 
-bool CBooleanOperations::FilterIntersections(std::shared_ptr<Location> loc) noexcept
-{
-	return loc->Overlap || IsCrossing(loc);
-}
-
 bool CBooleanOperations::IntersectsBounds() noexcept
 {
 	RectF_T<double> rect1, rect2;
@@ -1406,17 +1411,12 @@ bool CBooleanOperations::IntersectsBounds() noexcept
 
 void CBooleanOperations::GetIntersection()
 {
-	if (!IntersectsBounds())
-		return;
+	if (!IntersectsBounds()) return;
 
 	std::vector<std::vector<int>> boundsCollisions = FindBoundsCollisions();
 	for (int index1 = 0; index1 < Curves1.size(); index1++)
-	{
-		std::vector<int> collisions1 = boundsCollisions[index1];
-		if (!collisions1.empty())
-			for (int j = 0; j < collisions1.size(); j++)
-				GetCurveIntersection(Curves1[index1], Curves2[collisions1[j]]);
-	}
+		for (int j = 0; j < boundsCollisions[index1].size(); j++)
+			GetCurveIntersection(Curves1[index1], Curves2[boundsCollisions[index1][j]]);
 }
 
 void CBooleanOperations::GetCurveIntersection(const Curve& curve1, const Curve& curve2)
@@ -1537,15 +1537,15 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 						x2 = curve2.GetXValues(),
 						y2 = curve2.GetYValues();
 
-	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1]),
-			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2]),
+	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1], false),
+			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2], false),
 			factor = (d1 * d2) > 0 ? 3.0 / 4.0 : 4.0 / 9.0,
 			dMin = factor * min(0, d1, d2),
 			dMax = factor * max(0, d1, d2),
-			dp0 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[0], y1[0]),
-			dp1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[1], y1[1]),
-			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2]),
-			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3]);
+			dp0 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[0], y1[0], false),
+			dp1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[1], y1[1], false),
+			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2], false),
+			dp3 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[3], y1[3], false);
 
 	std::vector<PointD> top;
 	std::vector<PointD> bottom;
@@ -1883,7 +1883,7 @@ void CBooleanOperations::AddLocation(Curve curve1, Curve curve2, double t1,
 			loc1->Inters = loc2;
 			loc2->Inters = loc1;
 
-			if (!filter || FilterIntersections(loc1))
+			if (!filter || loc1->Overlap || IsCrossing(loc1))
 				InsertLocation(loc1, overlap);
 		}
 	}

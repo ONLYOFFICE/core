@@ -572,7 +572,9 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 14,
 		MoveFromRangeEnd = 15,
 		MoveToRangeStart = 16,
-		MoveToRangeEnd = 17
+		MoveToRangeEnd = 17,
+		PermStart = 18,
+		PermEnd = 19
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -1075,7 +1077,9 @@ extern int g_nCurFormatVersion;
 		NoBreakHyphen = 81,
 		SoftHyphen = 82,
 		Sym = 83,
-		Tab = 84
+		Tab = 84,
+		PermStart =85,
+		PermEnd = 86
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

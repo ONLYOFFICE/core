@@ -95,6 +95,10 @@ class CConverter2OOXML
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 
+	void OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void CloseAnchorNode(NSStringUtils::CStringBuilder& oBuilder);
+	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+
 	void WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);

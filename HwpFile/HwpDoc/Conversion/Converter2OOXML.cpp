@@ -435,6 +435,10 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 			WriteText(std::to_wstring(ushValue), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
 		}
+		else if (nullptr != dynamic_cast<const CCtrlShapeVideo*>(pCtrl))
+		{
+			WriteVideo((const CCtrlShapeVideo*)pCtrl, oBuilder, oState);
+		}
 		else
 			continue;
 
@@ -784,21 +788,9 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
 	oBuilder.WriteString(L"<w:drawing>");
-	oBuilder.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
-	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 
-	if (0 != pGeneralShape->GetHorzOffset())
-		oBuilder.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	OpenAnchorNode(pGeneralShape, oBuilder);
 
-	if (0 != pGeneralShape->GetVertOffset())
-		oBuilder.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
-
-	oBuilder.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
-	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oBuilder.WriteString(L"<wp:wrapNone/>"); //TODO:: добавить поддержку
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
-	oBuilder.WriteEncodeXmlString(pGeneralShape->GetDesc());
-	oBuilder.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 	oBuilder.WriteString(L"<wps:wsp><wps:cNvSpPr/><wps:spPr><a:xfrm>");
@@ -895,7 +887,9 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	oBuilder.WriteString(L"<wps:bodyPr/>");
 
-	oBuilder.WriteString(L"</wps:wsp></a:graphicData></a:graphic></wp:anchor></w:drawing></mc:Choice></mc:AlternateContent></w:r>");
+	oBuilder.WriteString(L"</wps:wsp></a:graphicData></a:graphic>");
+	CloseAnchorNode(oBuilder);
+	oBuilder.WriteString(L"</w:drawing></mc:Choice></mc:AlternateContent></w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -940,31 +934,23 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
+	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
 
+
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<w:drawing>");
-	oBuilder.WriteString(L"<wp:inline distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\">");
 
-	if (0 != pOleShape->GetHorzOffset())
-		oBuilder.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	OpenAnchorNode(pOleShape, oBuilder);
 
-	if (0 != pOleShape->GetVertOffset())
-		oBuilder.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
-
-	const std::wstring wsRelID = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
-
-	oBuilder.WriteString(L"<wp:extent cx=\"" + wsWidth + L"\" cy=\"" + wsHeight + L"\"/>");
-	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
-	oBuilder.WriteEncodeXmlString(pOleShape->GetDesc());
-	oBuilder.WriteString(L"\"/><wp:cNvGraphicFramePr/>");
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">");
 	oBuilder.WriteString(L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + wsRelID + L"\"/>");
-	oBuilder.WriteString(L"</a:graphicData></a:graphic></wp:inline></w:drawing></w:r>");
+	oBuilder.WriteString(L"</a:graphicData></a:graphic>");
+	CloseAnchorNode(oBuilder);
+	oBuilder.WriteString(L"</w:drawing></w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -1041,25 +1027,53 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 		oBuilder.WriteString(L"<w:p>");
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>");
-	oBuilder.WriteString(L"<wp:anchor  behindDoc=\"0\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"0\" allowOverlap=\"1\" relativeHeight=\"2\">");
-	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
-	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
-	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"page\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
-	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurHeight())) + L"\"/>");
-	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
-	oBuilder.WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
-	oBuilder.WriteString(L"<wp:docPr id=\"" + pCtrlPic->GetBinDataID() + L"\" name=\"Picture" + pCtrlPic->GetBinDataID() + L"\"/>");
-	oBuilder.WriteString(L"<wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr>");
+
+	OpenAnchorNode(pCtrlPic, oBuilder);
+
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlPic->GetBinDataID() + L"\" name=\"Picture" + pCtrlPic->GetBinDataID() + L"\"/>");
-	oBuilder.WriteString(L"<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr></pic:nvPicPr>");
+	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurHeight())) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
 	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
-	oBuilder.WriteString(L"</wp:anchor></w:drawing></w:r>");
+	CloseAnchorNode(oBuilder);
+	oBuilder.WriteString(L"</w:drawing></w:r>");
+
+	if (!oState.m_bOpenedP)
+		oBuilder.WriteString(L"</w:p>");
+}
+
+void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
+{
+	if (nullptr == pCtrlVideo)
+		return;
+
+	HWP_STRING sPictureID = SavePicture(pCtrlVideo->GetThumnailBinID());
+
+	if (sPictureID.empty())
+		return;
+
+	if (!oState.m_bOpenedP)
+		oBuilder.WriteString(L"<w:p>");
+
+	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>");
+
+	OpenAnchorNode(pCtrlVideo, oBuilder);
+
+	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
+	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	oBuilder.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
+	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlVideo->GetThumnailBinID() + L"\" name=\"Video " + pCtrlVideo->GetThumnailBinID() + L"\"/>");
+	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
+	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetCurHeight())) + L"\"/></a:xfrm>");
+	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
+	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
+	CloseAnchorNode(oBuilder);
+	oBuilder.WriteString(L"</w:drawing></w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -1165,6 +1179,7 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIn
 
 HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 {
+	//TODO:: добавить поддержку устновки размеров изображения из свойств шейпа
 	CHWPStream oBuffer;
 	HWP_STRING sFormat;
 
@@ -1290,6 +1305,88 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 
 		oBuilder.WriteString(L"</w:rPr>");
 	}
+}
+
+void CConverter2OOXML::OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
+
+	oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
+	                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
+	                     L"\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
+
+	WriteShapeProperty(pCtrlShape, oBuilder);
+}
+
+void CConverter2OOXML::CloseAnchorNode(NSStringUtils::CStringBuilder& oBuilder)
+{
+	oBuilder.WriteString(L"</wp:anchor>");
+}
+
+HWP_STRING GetVRelativeFrom(EVRelTo eRelTo)
+{
+	switch (eRelTo)
+	{
+		case EVRelTo::PARA:
+			return L"paragraph";
+		case EVRelTo::PAPER:
+		case EVRelTo::PAGE:
+		case EVRelTo::null:
+			return L"page";
+	}
+}
+
+HWP_STRING GetHRelativeFrom(EHRelTo eRelTo)
+{
+	switch (eRelTo)
+	{
+		case EHRelTo::PAPER:
+		case EHRelTo::PAGE:
+		case EHRelTo::null:
+			return L"page";
+		case EHRelTo::COLUMN:
+			return L"column";
+		case EHRelTo::PARA:
+			return L"character";
+	}
+}
+
+void CConverter2OOXML::WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
+
+	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
+	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"" + GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
+	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+
+	switch (pCtrlShape->GetTextWrap())
+	{
+		case ETextWrap::SQUARE:
+		{
+			oBuilder.WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
+			break;
+		}
+		case ETextWrap::TOP_AND_BOTTOM:
+		{
+			oBuilder.WriteString(L"<wp:wrapTopAndBottom/>");
+			break;
+		}
+		case ETextWrap::BEHIND_TEXT:
+		case ETextWrap::IN_FRONT_OF_TEXT:
+		{
+			oBuilder.WriteString(L"<wp:wrapNone/>");
+			break;
+		}
+	}
+
+	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
+	oBuilder.WriteEncodeXmlString(pCtrlShape->GetDesc());
+	oBuilder.WriteString(L"\"/>");
+	oBuilder.WriteString(L"<wp:cNvGraphicFramePr/>");
 }
 
 void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

@@ -153,6 +153,8 @@ public:
 
 	int GetHorzOffset() const;
 	int GetVertOffset() const;
+	EVRelTo GetVertRelTo() const;
+	EHRelTo GetHorzRelTo() const;
 	int GetCaptionWidth() const;
 	bool CaptionsEmpty() const;
 	HWP_STRING GetDesc() const;
@@ -160,6 +162,8 @@ public:
 	EHeightRelTo GetHeightRelTo() const;
 	int GetWidth() const;
 	int GetHeight() const;
+	ETextWrap GetTextWrap() const;
+	int GetZOrder() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

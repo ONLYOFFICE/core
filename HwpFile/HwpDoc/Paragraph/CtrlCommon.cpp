@@ -166,7 +166,7 @@ namespace HWP
 		m_bAllowOverlap = CHECK_FLAG(m_nObjAttr, 0x4000);
 		m_eWidthRelTo = ::HWP::GetWidthRelTo(m_nObjAttr >> 15 & 0x07);
 		m_eHeightRelTo = ::HWP::GetHeightRelTo(m_nObjAttr >> 18 & 0x03);
-		m_eTextWrap = GetTextWrap(m_nObjAttr >> 21 & 0x07);
+		m_eTextWrap = ::HWP::GetTextWrap(m_nObjAttr >> 21 & 0x07);
 		m_chTextFlow = (HWP_BYTE)(m_nObjAttr >> 24 & 0x03);
 		m_chNumeringType = (HWP_BYTE)(m_nObjAttr >> 26 & 0x07);
 
@@ -251,6 +251,16 @@ namespace HWP
 		return m_nVertOffset;
 	}
 
+	EVRelTo CCtrlCommon::GetVertRelTo() const
+	{
+		return m_eVertRelTo;
+	}
+
+	EHRelTo CCtrlCommon::GetHorzRelTo() const
+	{
+		return m_eHorzRelTo;
+	}
+
 	int CCtrlCommon::GetCaptionWidth() const
 	{
 		return m_nCaptionWidth;
@@ -284,6 +294,16 @@ namespace HWP
 	int CCtrlCommon::GetHeight() const
 	{
 		return m_nHeight;
+	}
+
+	ETextWrap CCtrlCommon::GetTextWrap() const
+	{
+		return m_eTextWrap;
+	}
+
+	int CCtrlCommon::GetZOrder() const
+	{
+		return m_nZOrder;
 	}
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

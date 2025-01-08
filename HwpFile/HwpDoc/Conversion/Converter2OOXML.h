@@ -5,6 +5,7 @@
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 #include "../Paragraph/CtrlSectionDef.h"
+#include "../Paragraph/CtrlShapeVideo.h"
 #include "../Paragraph/CtrlColumnDef.h"
 #include "../Paragraph/CtrlShapePic.h"
 #include "../Paragraph/CtrlShapeOle.h"
@@ -87,6 +88,7 @@ class CConverter2OOXML
 
 	void WriteSectionSettings(TConversionState& oState);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
+	void WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 

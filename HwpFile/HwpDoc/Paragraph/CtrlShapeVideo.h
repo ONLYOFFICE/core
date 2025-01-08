@@ -8,13 +8,18 @@ namespace HWP
 class CCtrlShapeVideo : public CCtrlGeneralShape
 {
 	int m_nVideoType;
-	short m_shVidoeBinID;
+	short m_shVideoBinID;
 	HWP_STRING m_sWebURL;
 	HWP_STRING m_sThumnailBinID;
 public:
 	CCtrlShapeVideo(const HWP_STRING& sCtrlID);
 	CCtrlShapeVideo(const CCtrlGeneralShape& oShape);
 	CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	int GetVideoType() const;
+	short GetVedeoBinID() const;
+	HWP_STRING GetWebUrl() const;
+	HWP_STRING GetThumnailBinID() const;
 
 	static int ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeVideo& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

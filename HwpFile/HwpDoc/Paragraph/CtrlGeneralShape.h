@@ -30,6 +30,8 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	short m_shBottomSpace;
 	int m_nMaxTxtWidth;
 
+	void InitData();
+
 	friend class CCtrlShapeEllipse;
 	friend class CCtrlShapePolygon;
 	friend class CCtrlShapeRect;

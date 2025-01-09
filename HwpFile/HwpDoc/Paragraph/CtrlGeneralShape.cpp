@@ -16,16 +16,21 @@
 namespace HWP
 {
 CCtrlGeneralShape::CCtrlGeneralShape()
-	: m_pFill(nullptr)
-{}
+{
+	InitData();
+}
 
 CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID)
-	: CCtrlObjElement(sCtrlID), m_pFill(nullptr)
-{}
+	: CCtrlObjElement(sCtrlID)
+{
+	InitData();
+}
 
 CCtrlGeneralShape::CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape)
 	: CCtrlObjElement((CCtrlObjElement)oGeneralShape)
 {
+	InitData();
+
 	m_pParent = oGeneralShape.m_pParent;
 
 	m_nLineColor = oGeneralShape.m_nLineColor;
@@ -51,13 +56,21 @@ CCtrlGeneralShape::CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape)
 }
 
 CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CCtrlObjElement(sCtrlID, nSize, oBuffer, nOff, nVersion), m_pFill(nullptr)
-{}
+	: CCtrlObjElement(sCtrlID, nSize, oBuffer, nOff, nVersion)
+{
+	InitData();
+}
 
 CCtrlGeneralShape::~CCtrlGeneralShape()
 {
 	if (nullptr != m_pFill && 0 == m_pFill->Release())
 		m_pFill = nullptr;
+}
+
+void CCtrlGeneralShape::InitData()
+{
+	m_eLineStyle = ELineStyle2::NONE;
+	m_pFill = nullptr;
 }
 
 void CCtrlGeneralShape::SetParent(CHWPPargraph* pParent)

@@ -135,6 +135,11 @@ public:
 	int GetPicWidth() const;
 	int GetPicHeight() const;
 
+	ELineStyle2 GetBorderLineStyle() const;
+	HWP_BYTE GetBorderCompoundLineType() const;
+	int GetBorderColor() const;
+	int GetBorderThick() const;
+
 	static int ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

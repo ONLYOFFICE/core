@@ -241,6 +241,26 @@ namespace HWP
 		return m_arParas[unIndex];
 	}
 
+	short CCtrlCommon::GetLeftMargin() const
+	{
+		return m_arOutMargin[0];
+	}
+
+	short CCtrlCommon::GetTopMargin() const
+	{
+		return m_arOutMargin[2];
+	}
+
+	short CCtrlCommon::GetRightMargin() const
+	{
+		return m_arOutMargin[1];
+	}
+
+	short CCtrlCommon::GetBottomMargin() const
+	{
+		return m_arOutMargin[3];
+	}
+
 	int CCtrlCommon::GetHorzOffset() const
 	{
 		return m_nHorzOffset;
@@ -299,6 +319,11 @@ namespace HWP
 	ETextWrap CCtrlCommon::GetTextWrap() const
 	{
 		return m_eTextWrap;
+	}
+
+	HWP_BYTE CCtrlCommon::GetTextFlow() const
+	{
+		return m_chTextFlow;
 	}
 
 	int CCtrlCommon::GetZOrder() const

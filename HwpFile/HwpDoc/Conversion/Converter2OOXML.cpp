@@ -733,15 +733,15 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 
 	oBuilder.WriteString(L"<w:tcBorders>");
 
-	WriteBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
-	WriteBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
-	WriteBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
-	WriteBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
+	WriteCellBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
+	WriteCellBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
+	WriteCellBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
+	WriteCellBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
 
 	oBuilder.WriteString(L"</w:tcBorders>");
 }
 
-void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::WriteCellBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (0x00 == oBorder.m_chWidth || sBorderName.empty())
 		return;
@@ -848,26 +848,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 			oBuilder.WriteString(L"<a:noFill/>");
 	}
 
-	oBuilder.WriteString(L"<a:ln" + ((ELineStyle2::NONE != pGeneralShape->GetLineStyle()) ? (L" w=\"" + std::to_wstring(Transform::LineWidth2Pt(pGeneralShape->GetLineThick())) + L'\"') : std::wstring()) + L">");
-
-	switch (pGeneralShape->GetLineStyle())
-	{
-		case ELineStyle2::NONE: oBuilder.WriteString(L"<a:noFill/>"); break;
-		case ELineStyle2::SOLID: oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pGeneralShape->GetLineColor()) + L"\"/></a:solidFill>"); break;
-		case ELineStyle2::DASH:
-		case ELineStyle2::DOT:
-		case ELineStyle2::DASH_DOT:
-		case ELineStyle2::DASH_DOT_DOT:
-		case ELineStyle2::LONG_DASH:
-		case ELineStyle2::CIRCLE:
-		case ELineStyle2::DOUBLE_SLIM:
-		case ELineStyle2::SLIM_THICK:
-		case ELineStyle2::THICK_SLIM:
-		case ELineStyle2::SLIM_THICK_SLIM:
-			oBuilder.WriteString(L"<a:noFill/>"); break; //TODO:: добавить реализацию
-			break;
-	}
-	oBuilder.WriteString(L"</a:ln>");
+	WriteLineSettings(pGeneralShape, oBuilder);
 
 	oBuilder.WriteString(L"</wps:spPr>");
 
@@ -1037,7 +1018,9 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurHeight())) + L"\"/></a:xfrm>");
-	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
+	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/>");
+	WriteBorderSettings(pCtrlPic, oBuilder);
+	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
 	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
 	CloseAnchorNode(oBuilder);
 	oBuilder.WriteString(L"</w:drawing></w:r>");
@@ -1314,7 +1297,11 @@ void CConverter2OOXML::OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUti
 
 	oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
 	                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
-	                     L"\" distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
+	                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
+	                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
+	                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
+	                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
+	                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 	WriteShapeProperty(pCtrlShape, oBuilder);
 }
@@ -1367,7 +1354,15 @@ void CConverter2OOXML::WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStrin
 	{
 		case ETextWrap::SQUARE:
 		{
-			oBuilder.WriteString(L"<wp:wrapSquare wrapText=\"bothSides\"/>");
+			oBuilder.WriteString(L"<wp:wrapSquare wrapText=\"");
+			switch (pCtrlShape->GetTextFlow())
+			{
+				case 0x0: default: oBuilder.WriteString(L"bothSides"); break;
+				case 0x1: oBuilder.WriteString(L"left"); break;
+				case 0x2: oBuilder.WriteString(L"right"); break;
+				case 0x3: oBuilder.WriteString(L"largest"); break;
+			}
+			oBuilder.WriteString(L"\"/>");
 			break;
 		}
 		case ETextWrap::TOP_AND_BOTTOM:
@@ -1411,6 +1406,117 @@ void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID
 	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
 	oBuilder.WriteEncodeXmlString(wsText);
 	oBuilder.WriteString(L"</w:t></w:r>");
+}
+
+void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlGeneralShape)
+		return;
+
+	WriteLineSettings(pCtrlGeneralShape->GetLineStyle(), pCtrlGeneralShape->GetLineColor(), pCtrlGeneralShape->GetLineThick(), 1, oBuilder);
+}
+
+void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (ELineStyle2::NONE == eLineStyle || 0 >= nThick)
+	{
+		oBuilder.WriteString(L"<a:ln><a:noFill/></a:ln>");
+		return;
+	}
+
+	oBuilder.WriteString(L"<a:ln");
+
+	oBuilder.WriteString(L" w=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nThick)) + L"\" cap=\"sq\"");
+
+	switch (eLineStyle)
+	{
+		case ELineStyle2::DOUBLE_SLIM:
+		{
+			oBuilder.WriteString(L" cmpd=\"dbl\"");
+			break;
+		}
+		case ELineStyle2::SLIM_THICK:
+		{
+			oBuilder.WriteString(L" cmpd=\"thickThin\"");
+			break;
+		}
+		case ELineStyle2::THICK_SLIM:
+		{
+			oBuilder.WriteString(L" cmpd=\"thinThick\"");
+			break;
+		}
+		case ELineStyle2::SLIM_THICK_SLIM:
+		{
+			oBuilder.WriteString(L" cmpd=\"tri\"");
+			break;
+		}
+		default:
+			break;
+	}
+
+	oBuilder.WriteString(L">");
+
+	oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(nColor) + L"\"/></a:solidFill>");
+
+	switch (eLineStyle)
+	{
+		case ELineStyle2::DASH:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"dash\"/>");
+			break;
+		}
+		case ELineStyle2::DOT:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"dot\"/>");
+			break;
+		}
+		case ELineStyle2::DASH_DOT:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"dashDot\"/>");
+			break;
+		}
+		case ELineStyle2::DASH_DOT_DOT:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"sysDashDot\"/>");
+			break;
+		}
+		case ELineStyle2::LONG_DASH:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"lgDash\"/>");
+			break;
+		}
+		case ELineStyle2::CIRCLE:
+		{
+			oBuilder.WriteString(L"<a:prstDash val=\"dot\"/>");
+			break;
+		}
+		default:
+			break;
+	}
+
+	switch (nCompoundLineType)
+	{
+		case 0x00:
+		{
+			oBuilder.WriteString(L"<a:round/>");
+			break;
+		}
+		case 0x01:
+		{
+			oBuilder.WriteString(L"<a:miter lim=\"800000\"/>");
+			break;
+		}
+	}
+
+	oBuilder.WriteString(L"</a:ln>");
+}
+
+void CConverter2OOXML::WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlPic)
+		return;
+
+	WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
 }
 
 bool CConverter2OOXML::GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat)

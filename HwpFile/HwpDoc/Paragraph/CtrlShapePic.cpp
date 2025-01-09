@@ -154,6 +154,26 @@ int CCtrlShapePic::GetPicHeight() const
 	return m_nIniPicHeight;
 }
 
+ELineStyle2 CCtrlShapePic::GetBorderLineStyle() const
+{
+	return ::HWP::GetLineStyle2((m_nBorderAttr & ((1 << 5) - 1)));
+}
+
+HWP_BYTE CCtrlShapePic::GetBorderCompoundLineType() const
+{
+	return (HWP_BYTE)((m_nBorderAttr >> 6) & ((1 << 3) - 1));
+}
+
+int CCtrlShapePic::GetBorderColor() const
+{
+	return m_nBorderColor;
+}
+
+int CCtrlShapePic::GetBorderThick() const
+{
+	return m_nBorderThick;
+}
+
 int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

@@ -151,6 +151,11 @@ public:
 	unsigned int GetCountParagraphs() const;
 	const CHWPPargraph* GetParagraphs(unsigned int unIndex) const;
 
+	short GetLeftMargin() const;
+	short GetTopMargin() const;
+	short GetRightMargin() const;
+	short GetBottomMargin() const;
+
 	int GetHorzOffset() const;
 	int GetVertOffset() const;
 	EVRelTo GetVertRelTo() const;
@@ -163,6 +168,7 @@ public:
 	int GetWidth() const;
 	int GetHeight() const;
 	ETextWrap GetTextWrap() const;
+	HWP_BYTE GetTextFlow() const;
 	int GetZOrder() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

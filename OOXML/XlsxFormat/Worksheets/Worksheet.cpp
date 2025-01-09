@@ -426,6 +426,8 @@ namespace OOX
                 m_oControls->toBin(writer);
             if (m_oTableParts.IsInit())
                 m_oTableParts->toBin(writer);
+			if (m_oExtLst.IsInit())
+                    m_oExtLst->toBinWorksheet(writer);
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);

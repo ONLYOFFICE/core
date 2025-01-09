@@ -202,6 +202,7 @@ namespace OOX
 			std::wstring toXMLWithNS(const std::wstring& sNamespace) const;
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBinWorksheet();
+            void toBinWorksheet(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBinWorkBook();
 			XLS::BaseObjectPtr toBinStyles();
 			XLS::BaseObjectPtr toBinTable();

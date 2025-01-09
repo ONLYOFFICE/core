@@ -62,6 +62,7 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BiffStructure.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -659,6 +660,24 @@ XLS::BaseObjectPtr CSlicerRef::toBin()
 
 	return objectPtr;
 }
+void CSlicerRef::toBin(XLS::StreamCacheWriterPtr& writer)
+{
+    {
+        auto record = writer->getNextRecord(XLSB::rt_BeginSlicerEx);
+        XLSB::FRTHeader header;
+        if(m_oRId.IsInit())
+        {
+            header.relID.relId = m_oRId->GetValue();
+            header.fRelID = true;
+        }
+        *record << header;
+        writer->storeNextRecord(record);
+    }
+    {
+        auto end = writer->getNextRecord(XLSB::rt_EndSlicerEx);
+        writer->storeNextRecord(end);
+    }
+}
 XLS::BaseObjectPtr CSlicerRef::toBinTable()
 {
 	auto ptr(new XLSB::TABLESLICEREX);
@@ -972,6 +991,27 @@ XLS::BaseObjectPtr CSlicerRefs::toBin()
 		ptr->m_arSLICEREX.push_back(i.toBin());
 	}
 	return objectPtr;
+}
+void CSlicerRefs::toBin(XLS::StreamCacheWriterPtr& writer)
+{
+    {
+        auto begin = writer->getNextRecord(XLSB::rt_FRTBegin);
+        _UINT32 version = 0;
+        *begin << version;
+        writer->storeNextRecord(begin);
+        begin = writer->getNextRecord(XLSB::rt_BeginSlicersEx);
+        writer->storeNextRecord(begin);
+    }
+    for(auto i:m_oSlicer)
+    {
+        i.toBin(writer);
+    }
+    {
+        auto end = writer->getNextRecord(XLSB::rt_EndSlicersEx);
+        writer->storeNextRecord(end);
+        end = writer->getNextRecord(XLSB::rt_FRTEnd);
+        writer->storeNextRecord(end);
+    }
 }
 XLS::BaseObjectPtr CSlicerRefs::toBinTable()
 {

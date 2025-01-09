@@ -3018,6 +3018,17 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CPictureWorksheet::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_BkHim);
+            XLSB::RelID stRelId;
+            if(m_oId.IsInit())
+                stRelId = m_oId->GetValue();
+            else
+                stRelId.value.setSize(0xFFFFFFFF);
+            *record << stRelId;
+            writer->storeNextRecord(record);
+        }
 		void CPictureWorksheet::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);

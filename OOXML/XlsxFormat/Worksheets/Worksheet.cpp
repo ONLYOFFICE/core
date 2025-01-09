@@ -418,6 +418,8 @@ namespace OOX
                 m_oLegacyDrawing->toBin(writer);
             if (m_oLegacyDrawingHF.IsInit())
                 m_oLegacyDrawingHF->toBin(writer);
+            if (m_oPicture.IsInit())
+                m_oPicture->toBin(writer);
             if (m_oOleObjects.IsInit())
                 m_oOleObjects->toBin(writer);
             if (m_oControls.IsInit())

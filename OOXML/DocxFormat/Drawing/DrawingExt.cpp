@@ -930,25 +930,6 @@ namespace OOX
 			}
             return objectPtr;
 		}
-        void COfficeArtExtensionList::toBinWorksheet(XLS::StreamCacheWriterPtr& writer)
-        {
-            for(auto i:m_arrExt)
-            {
-                if(i->m_sUri == L"{CCE6A557-97BC-4B89-ADB6-D9C93CAAB3DF}")
-                {
-                    i->m_oDataValidations->toBin14(writer);
-                }
-                else if(i->m_sUri == L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}")
-                {
-                    i->m_oSlicerList->toBin(writer);
-                }
-                else if(i->m_sUri == L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}")
-                {
-                    if(i->m_oSlicerListExt.IsInit())
-                        i->m_oSlicerListExt->toBin(writer);
-                }
-            }
-        }
 		XLS::BaseObjectPtr COfficeArtExtensionList::toBinMetadata()
 		{
 			XLS::BaseObjectPtr objectPtr;

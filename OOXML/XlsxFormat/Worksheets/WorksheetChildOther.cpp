@@ -1870,8 +1870,10 @@ namespace OOX
         }
 		XLS::BaseObjectPtr CSheetView::toBinCs()
 		{
+            auto ptr(new XLSB::CSVIEW);
 			auto pWsView(new XLSB::BeginCsView);
-			XLS::BaseObjectPtr castedPtr(pWsView);
+            ptr->m_BrtBeginCsView = XLS::BaseObjectPtr{pWsView};
+            XLS::BaseObjectPtr castedPtr(ptr);
 			if(m_oTabSelected.IsInit())
 				pWsView->fSelected = m_oTabSelected->m_eValue;
 			else
@@ -2491,7 +2493,7 @@ namespace OOX
 			if(m_oCodeName.IsInit())
 				ptr->strName = m_oCodeName.get();
 			else
-                ptr->strName.value.setSize(0xFFFFFFFF);
+                ptr->strName.value.setSize(0);
 			if(m_oPublished.IsInit())
 				ptr->fPublish = m_oPublished->GetValue();
 			else
@@ -3815,6 +3817,99 @@ namespace OOX
 
 			return objectPtr;
 		}
+        void CSheetProtection::toBinCS(XLS::StreamCacheWriterPtr& writer)
+        {
+            XLS::CFRecordPtr record;
+            bool iso = false;
+            if(m_oSpinCount.IsInit() || m_oHashValue.IsInit() || m_oSaltValue.IsInit())
+            {
+                record = writer->getNextRecord(XLSB::rt_CsProtectionIso);
+                _UINT32 spinCount = 0;
+                if(m_oSpinCount.IsInit())
+                    spinCount = m_oSpinCount->GetValue();
+                *record << spinCount;
+            }
+            else
+            {
+                record = writer->getNextRecord(XLSB::rt_CsProtection);
+                _UINT16 protPwd = 0;
+                if(m_oPassword.IsInit())
+                    protPwd = std::stoul(m_oPassword.get(),nullptr, 16);
+                *record <<  protPwd;
+            }
+
+            {
+                _UINT32 flag = 0;
+                if(m_oContent.IsInit())
+                    flag = m_oContent->GetValue();
+                *record << flag;
+                if(!flag)
+                    record->reserveNunBytes(4);
+                else if(m_oObjects.IsInit())
+                {
+                    flag = m_oObjects->GetValue();
+                    *record << flag;
+                }
+             }
+
+            if(record->getTypeId() == XLSB::rt_CsProtectionIso)
+            {
+                {
+                    XLSB::IsoPasswordData ipdPasswordData;
+                    if(m_oHashValue.IsInit())
+                    {
+                        BYTE * temp;
+                        auto tempSize = 0;
+                        NSFile::CBase64Converter::CBase64Converter::Decode(std::string{m_oHashValue.get().begin(),
+                            m_oHashValue.get().end()}.c_str(), m_oHashValue.get().size(), temp, tempSize);
+                        ipdPasswordData.rgbHash.cbLength = tempSize;
+                        ipdPasswordData.rgbHash.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+                        delete[] temp;
+                    }
+
+                    if(m_oSaltValue.IsInit())
+                    {
+                        BYTE * temp;
+                        auto tempSize = 0;
+                        NSFile::CBase64Converter::Decode(std::string{m_oSaltValue.get().begin(),
+                        m_oSaltValue.get().end()}.c_str(), m_oSaltValue.get().size(), temp, tempSize);
+                        ipdPasswordData.rgbSalt.cbLength = tempSize;
+                        ipdPasswordData.rgbSalt.rgbData = std::vector<BYTE>(temp, temp + tempSize);
+                        delete[] temp;
+                    }
+                    if(m_oAlgorithmName.IsInit())
+                        ipdPasswordData.szAlgName = m_oAlgorithmName->ToString();
+                    else
+                        ipdPasswordData.szAlgName = L"";
+                    *record << ipdPasswordData;
+                }
+                iso = true;
+            }
+            if(record)
+                writer->storeNextRecord(record);
+            if(record)
+                record.reset();
+            if(iso)
+            {
+                record = writer->getNextRecord(XLSB::rt_CsProtection);
+                _UINT16 protPwd = 0;
+                *record <<protPwd;
+                {
+                    _UINT32 flag = 0;
+                    if(m_oContent.IsInit())
+                        flag = m_oContent->GetValue();
+                    *record << flag;
+                    if(!flag)
+                        record->reserveNunBytes(4);
+                    else if(m_oObjects.IsInit())
+                    {
+                        flag = m_oObjects->GetValue();
+                        *record << flag;
+                    }
+                }
+                writer->storeNextRecord(record);
+            }
+        }
 		EElementType CSheetProtection::getType() const
 		{
 			return et_x_SheetProtection;

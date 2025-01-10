@@ -365,6 +365,8 @@ namespace OOX
                 auto record = writer->getNextRecord(XLSB::rt_BeginSheet);
                  writer->storeNextRecord(record);
             }
+            if(!m_bIsChartSheet)
+            {
             if (m_oSheetPr.IsInit())
                 m_oSheetPr->toBin(writer);
             if (m_oDimension.IsInit())
@@ -431,10 +433,48 @@ namespace OOX
                 auto extLst = m_oExtLst->toBinWorksheet();
                 extLst->write(writer, nullptr);
             }
+            }
+            else
+            {
+                if (m_oSheetPr.IsInit())
+                {
+                    XLS::BaseObjectPtr props;
+                    props = m_oSheetPr->toBinCs();
+                    props->write(writer, nullptr);
+                }
+                if(m_oSheetViews.IsInit())
+                {
+                    XLS::BaseObjectPtr views;
+                    views = m_oSheetViews->toBinCs();
+                    views->write(writer, nullptr);
+                }
+                if(m_oSheetProtection.IsInit())
+                    m_oSheetProtection->toBinCS(writer);
+                if (m_oPageMargins.IsInit())
+                    m_oPageMargins->toBin(writer);
+                if (m_oPageSetup.IsInit())
+                {
+                    XLS::BaseObjectPtr pageSetup;
+                    pageSetup = m_oPageSetup->toBinCs();
+                    pageSetup->write(writer, nullptr);
+                }
+                if (m_oHeaderFooter.IsInit())
+                    m_oHeaderFooter->toBin(writer);
+                if (m_oDrawing.IsInit())
+                    m_oDrawing->toBin(writer);
+                if (m_oLegacyDrawing.IsInit())
+                    m_oLegacyDrawing->toBin(writer);
+                if (m_oLegacyDrawingHF.IsInit())
+                    m_oLegacyDrawingHF->toBin(writer);
+                if (m_oPicture.IsInit())
+                    m_oPicture->toBin(writer);
+
+            }
             {
                 auto record = writer->getNextRecord(XLSB::rt_EndSheet);
                  writer->storeNextRecord(record);
             }
+
         }
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{

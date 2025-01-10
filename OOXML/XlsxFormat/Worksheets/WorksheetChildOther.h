@@ -774,6 +774,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBinCS();
+            void toBinCS(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);

@@ -2406,6 +2406,19 @@ void CConditionalFormattingRule::toBin(XLS::StreamCacheWriterPtr& writer, const 
     {
         m_oIconSet->toBin(writer);
     }
+    if(m_oExtId.IsInit())
+    {
+        XLSB::FRTCFRULE ext;
+        auto beginExt(new XLSB::CFRuleExt);
+        ext.m_BrtCFRuleExt = XLS::BaseObjectPtr{beginExt};
+
+        beginExt->guid = m_oExtId.get();
+        auto ruleBegin(new XLSB::FRTBegin);
+        ruleBegin->productVersion.product = 0;
+        ruleBegin->productVersion.version = 0;
+        ext.m_BrtFRTBegin = XLS::BaseObjectPtr{ruleBegin};
+        ext.write(writer, nullptr);
+    }
     {
         auto end = writer->getNextRecord(XLSB::rt_EndCFRule);
         writer->storeNextRecord(end);

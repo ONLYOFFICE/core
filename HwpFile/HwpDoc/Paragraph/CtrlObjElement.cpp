@@ -10,7 +10,7 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID)
 {}
 
 CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
-	: CCtrlCommon((CCtrlCommon)oObjElement)
+	: CCtrlCommon(oObjElement)
 {
 	m_nXGrpOffset = oObjElement.m_nXGrpOffset;
 	m_nYGrpOffset = oObjElement.m_nYGrpOffset;
@@ -38,11 +38,6 @@ CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
-
-int CCtrlObjElement::GetSize()
-{
-	return m_nSize;
-}
 
 int CCtrlObjElement::GetCurWidth() const
 {

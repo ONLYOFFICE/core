@@ -4,8 +4,10 @@
 #include "../HWPFile_Private.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
+#include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapeVideo.h"
+#include "../Paragraph/CtrlCharacter.h"
 #include "../Paragraph/CtrlColumnDef.h"
 #include "../Paragraph/CtrlShapePic.h"
 #include "../Paragraph/CtrlShapeOle.h"
@@ -99,10 +101,17 @@ class CConverter2OOXML
 	void CloseAnchorNode(NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
+	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
 	void WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder);
+
+	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteCharacter(const CCtrlCharacter* pCharacter, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
 

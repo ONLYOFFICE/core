@@ -17,6 +17,11 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapePolygon::GetShapeType() const
+{
+	return EShapeType::Polygon;
+}
+
 int CCtrlShapePolygon::ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

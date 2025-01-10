@@ -40,8 +40,6 @@ inline ENumType GetNumType(int nValue)
 
 class CCtrlAutoNumber : public CCtrl
 {
-	int m_nSize;
-
 	ENumType m_eNumType;
 	ENumberShape2 m_eNumShape;
 	bool m_bSuperscript;
@@ -49,7 +47,7 @@ public:
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID);
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 
 	ENumType GetNumType() const;
 };

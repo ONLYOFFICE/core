@@ -62,10 +62,10 @@ int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oB
 		{
 			for (CCtrl* pCtrl : arParas)
 			{
-				if (nullptr != dynamic_cast<CParaText*>(pCtrl))
+				if (ECtrlObjectType::ParaText == pCtrl->GetCtrlType())
 					((CParaText*)pCtrl)->SetCharShapeID(pCharShape->m_nCharShapeID);
 
-				if (nullptr != dynamic_cast<CCtrlCharacter*>(pCtrl))
+				if (ECtrlObjectType::Character == pCtrl->GetCtrlType())
 					((CCtrlCharacter*)pCtrl)->SetCharShapeID(pCharShape->m_nCharShapeID);
 			}
 		}
@@ -74,7 +74,7 @@ int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oB
 			VECTOR<CCtrl*>::const_reverse_iterator itFound = std::find_if(arParas.crbegin(), arParas.crend(),
 			                                                              [pCharShape](CCtrl* pCurCtrl)
 			                                                              { if (nullptr == dynamic_cast<CParaText*>(pCurCtrl)) return false;
-			                                                                return ((CParaText*)pCurCtrl)->GetStartIDx() <= pCharShape->m_nStart && pCharShape->m_nStart < ((CParaText*)pCurCtrl)->GetStartIDx() + ((CParaText*)pCurCtrl)->GetSize(); });
+			                                                                return ((CParaText*)pCurCtrl)->GetStartIDx() <= pCharShape->m_nStart && pCharShape->m_nStart < ((CParaText*)pCurCtrl)->GetStartIDx() + ((CParaText*)pCurCtrl)->GetTextLength(); });
 
 			if (itFound != arParas.crend())
 			{
@@ -100,10 +100,10 @@ int CCharShape::FillCharShape(int nTagNum, int nLevel, int nSize, CHWPStream& oB
 
 			for (CCtrl* pCtrl : arParas)
 			{
-				if (nullptr != dynamic_cast<CParaText*>(pCtrl) && ((CParaText*)pCtrl)->GetStartIDx() > pCharShape->m_nStart)
+				if (ECtrlObjectType::ParaText == pCtrl->GetCtrlType() && ((CParaText*)pCtrl)->GetStartIDx() > pCharShape->m_nStart)
 					((CParaText*)pCtrl)->SetCharShapeID(pCharShape->m_nCharShapeID);
 
-				if (nullptr != dynamic_cast<CCtrlCharacter*>(pCtrl))
+				if (ECtrlObjectType::Character == pCtrl->GetCtrlType())
 					((CCtrlCharacter*)pCtrl)->SetCharShapeID(pCharShape->m_nCharShapeID);
 			}
 		}

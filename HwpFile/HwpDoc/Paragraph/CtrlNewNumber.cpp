@@ -9,8 +9,6 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID)
 CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	oBuffer.SavePosition();
-
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 
@@ -20,12 +18,10 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	oBuffer.ReadShort(m_shNum);
 
 	m_bFullFilled = true;
-
-	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-int CCtrlNewNumber::GetSize()
+ECtrlObjectType CCtrlNewNumber::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::NewNumber;
 }
 }

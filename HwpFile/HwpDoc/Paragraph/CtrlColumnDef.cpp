@@ -9,8 +9,6 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID)
 CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	oBuffer.SavePosition();
-
 	short shAttrLowBits;
 	oBuffer.ReadShort(shAttrLowBits);
 	oBuffer.ReadShort(m_shSameGap);
@@ -39,13 +37,12 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 
 	m_nAttr = shAttrHighBits << 16 | shAttrLowBits;
 
-	m_nSize = oBuffer.GetDistanceToLastPos(true);
 	m_bFullFilled = true;
 }
 
-int CCtrlColumnDef::GetSize()
+ECtrlObjectType CCtrlColumnDef::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::ColumnDef;
 }
 
 short CCtrlColumnDef::GetColCount() const

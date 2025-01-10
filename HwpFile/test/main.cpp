@@ -4,7 +4,7 @@
 
 int main()
 {
-	CHWPFile oFile(L"C:/ONLYOFFICE/Files/hwp/example.hwp");
+	CHWPFile oFile(L"YOUR_PATH");
 
 	if (oFile.Open())
 	{
@@ -21,5 +21,5 @@ int main()
 	NSDirectory::DeleteDirectory(wsTempDir);
 	NSDirectory::CreateDirectory(wsTempDir);
 	oFile.SetTempDirectory(wsTempDir);
-	oFile.ConvertToOOXML(L"temp.docx");
+	oFile.ConvertToOOXML(L"YOUR_PATH.docx");
 }

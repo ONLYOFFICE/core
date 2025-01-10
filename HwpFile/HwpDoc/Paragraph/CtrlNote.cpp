@@ -14,12 +14,11 @@ CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, 
 {
 	oBuffer.Skip(8);
 	m_bFullFilled = true;
-	m_nSize = 8;
 }
 
-int CCtrlNote::GetSize()
+ECtrlObjectType CCtrlNote::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::Note;
 }
 
 std::vector<const CHWPPargraph*> CCtrlNote::GetParagraphs() const

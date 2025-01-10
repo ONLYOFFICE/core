@@ -14,7 +14,10 @@ public:
 	CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx);
 	CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nStartIDx, int nCharShapeID);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
+
+	unsigned int GetTextLength() const;
+
 	int GetStartIDx() const;
 	int GetCharShapeID() const;
 	HWP_STRING GetText() const;

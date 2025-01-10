@@ -9,6 +9,8 @@ class CCellParagraph : public CHWPPargraph
 {
 public:
 	CCellParagraph();
+
+	EParagraphType GetType() const override;
 };
 }
 

@@ -3,7 +3,6 @@
 
 #include "CellParagraph.h"
 #include "CtrlCommon.h"
-#include <list>
 
 namespace HWP
 {

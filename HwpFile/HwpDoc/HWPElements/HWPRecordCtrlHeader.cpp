@@ -96,7 +96,6 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 	{
 		int nTempSize = nSize - oBuffer.GetDistanceToLastPos();
 		pCtrl = new CCtrlEmpty(sCtrlID);
-		((CCtrlEmpty*)pCtrl)->SetSize(nTempSize);
 		pCtrl->SetFullFilled();
 		oBuffer.Skip(nTempSize);
 	}

@@ -25,6 +25,11 @@ CCtrlTable::~CCtrlTable()
 	}
 }
 
+ECtrlObjectType CCtrlTable::GetCtrlType() const
+{
+	return ECtrlObjectType::Table;
+}
+
 bool CCtrlTable::Empty() const
 {
 	return m_arCells.empty();

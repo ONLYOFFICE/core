@@ -14,8 +14,16 @@ CHWPPargraph::~CHWPPargraph()
 	CLEAR_ARRAY(TRangeTag, m_arRangeTags);
 }
 
+EParagraphType CHWPPargraph::GetType() const
+{
+	return EParagraphType::Normal;
+}
+
 void CHWPPargraph::SetLineSeg(CLineSeg* pLineSeg)
 {
+	if (nullptr != m_pLineSegs)
+		delete m_pLineSegs;
+
 	m_pLineSegs = pLineSeg;
 }
 
@@ -41,7 +49,6 @@ bool CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
 
 	CCtrl* pOldCtrl = m_arP[unIndex];
 
-	//TODO:: проверить нужно ли это
 	if (nullptr != pOldCtrl)
 		delete pOldCtrl;
 

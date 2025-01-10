@@ -33,6 +33,8 @@ class CCtrlShapeConnectLine : public CCtrlGeneralShape
 	TConnectPoint m_oEndPt;
 public:
 	CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+
+	EShapeType GetShapeType() const override;
 };
 }
 

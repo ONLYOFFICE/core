@@ -17,6 +17,11 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapeRect::GetShapeType() const
+{
+	return EShapeType::Rect;
+}
+
 int CCtrlShapeRect::ParseElement(CCtrlShapeRect& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

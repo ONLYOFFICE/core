@@ -7,8 +7,6 @@ namespace HWP
 {
 class CCtrlObjElement : public CCtrlCommon
 {
-	int m_nSize;
-
 	int m_nXGrpOffset;
 	int m_nYGrpOffset;
 	short m_shNGrp;
@@ -30,8 +28,6 @@ public:
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-
-	int GetSize() override;
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;

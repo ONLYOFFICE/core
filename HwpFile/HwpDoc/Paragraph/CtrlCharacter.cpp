@@ -10,10 +10,11 @@ CCtrlCharacter::CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlCha
 	: CCtrl(sCtrlID), m_eCtrlChar(eCtrlChar), m_nCharShapeID(nCharShapeID)
 {}
 
-int CCtrlCharacter::GetSize()
+ECtrlObjectType CCtrlCharacter::GetCtrlType() const
 {
-	return 1;
+	return ECtrlObjectType::Character;
 }
+
 
 ECtrlCharType CCtrlCharacter::GetType() const
 {

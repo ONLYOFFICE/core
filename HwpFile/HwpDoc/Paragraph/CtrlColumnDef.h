@@ -10,8 +10,6 @@ namespace HWP
 {
 class CCtrlColumnDef : public CCtrl
 {
-	int m_nSize;
-
 	int m_nAttr;
 	short m_shColCount;
 	bool m_bSameSz;
@@ -25,7 +23,7 @@ public:
 	CCtrlColumnDef(const HWP_STRING& sCtrlID);
 	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 
 	short GetColCount() const;
 	ELineStyle2 GetColLineStyle() const;

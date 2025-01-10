@@ -139,6 +139,11 @@ CCtrlShapePic::~CCtrlShapePic()
 	}
 }
 
+EShapeType CCtrlShapePic::GetShapeType() const
+{
+	return EShapeType::Pic;
+}
+
 HWP_STRING CCtrlShapePic::GetBinDataID() const
 {
 	return m_sBinDataID;

@@ -3,20 +3,14 @@
 namespace HWP
 {
 CCtrlEmpty::CCtrlEmpty()
-	: m_nSize(0)
 {}
 
 CCtrlEmpty::CCtrlEmpty(const HWP_STRING& sCtrlID)
-	: CCtrl(sCtrlID), m_nSize(0)
+	: CCtrl(sCtrlID)
 {}
 
-int CCtrlEmpty::GetSize()
+ECtrlObjectType CCtrlEmpty::GetCtrlType() const
 {
-	return m_nSize;
-}
-
-void CCtrlEmpty::SetSize(int nSize)
-{
-	m_nSize = nSize;
+	return ECtrlObjectType::Empty;
 }
 }

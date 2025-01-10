@@ -2,7 +2,6 @@
 
 namespace HWP
 {
-
 ENumPos GetNumPos(int nValue)
 {
 	switch(static_cast<ENumPos>(nValue))
@@ -31,8 +30,6 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID)
 CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	oBuffer.SavePosition();
-
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 	m_eNumShape = GetNumberShape2(nAttr & 0xFF);
@@ -43,12 +40,10 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	oBuffer.ReadString(m_sPrefix, 2, EStringCharacter::UTF16);
 	oBuffer.ReadString(m_sPostfix, 2, EStringCharacter::UTF16);
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
-
-	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-int CCtrlPageNumPos::GetSize()
+ECtrlObjectType CCtrlPageNumPos::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::PageNumPos;
 }
 }

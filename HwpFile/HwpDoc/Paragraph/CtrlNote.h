@@ -9,15 +9,13 @@ namespace HWP
 {
 class CCtrlNote : public CCtrl
 {
-	int m_nSize;
-
 	VECTOR<CHWPPargraph*> m_arParas;
 public:
 	CCtrlNote();
 	CCtrlNote(const HWP_STRING& sCtrlID);
 	CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 
 	VECTOR<const CHWPPargraph*> GetParagraphs() const;
 

@@ -33,6 +33,11 @@ CCtrlContainer::~CCtrlContainer()
 	}
 }
 
+EShapeType CCtrlContainer::GetShapeType() const
+{
+	return EShapeType::Container;
+}
+
 void CCtrlContainer::AddShape(CCtrlGeneralShape* pShape)
 {
 	m_arShapes.push_back(pShape);

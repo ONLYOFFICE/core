@@ -12,8 +12,6 @@ namespace HWP
 {
 class CCtrlSectionDef : public CCtrl
 {
-	int m_nSize;
-
 	bool m_bHideHeader;
 	bool m_bHideFooter;
 	bool m_bHideMasterPage;
@@ -49,14 +47,14 @@ public:
 	CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlSectionDef();
 
+	ECtrlObjectType GetCtrlType() const override;
+
 	void SetPage(CPage* pPage);
 
 	void AddHeadFoot(CCtrlHeadFoot* pHeadFoot);
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddNoteShape(CNoteShape* pNoteShape);
 	void AddPageBorderFill(CPageBorderFill* pPageBorderFill);
-
-	int GetSize() override;
 
 	const CPage* GetPage() const;
 	VECTOR<const CCtrlHeadFoot*> GetHeaderFooters() const;

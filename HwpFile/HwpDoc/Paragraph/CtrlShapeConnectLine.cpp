@@ -24,4 +24,9 @@ EConnectLineType GetConnectLineType(int nValue)
 CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
+
+EShapeType CCtrlShapeConnectLine::GetShapeType() const
+{
+	return EShapeType::ConnectLine;
+}
 }

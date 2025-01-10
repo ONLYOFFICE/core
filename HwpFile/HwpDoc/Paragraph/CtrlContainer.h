@@ -16,6 +16,8 @@ public:
 	CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlContainer();
 
+	EShapeType GetShapeType() const override;
+
 	bool Empty() const;
 
 	VECTOR<CCtrlGeneralShape*> GetShapes() const;

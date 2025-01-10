@@ -17,6 +17,11 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlEqEdit::GetShapeType() const
+{
+	return EShapeType::EqEdit;
+}
+
 HWP_STRING CCtrlEqEdit::GetEqn() const
 {
 	return m_sEqn;

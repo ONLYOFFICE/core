@@ -17,7 +17,12 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-int CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+EShapeType CCtrlShapeLine::GetShapeType() const
+{
+	return EShapeType::Line;
+}
+
+void CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();
 
@@ -32,20 +37,18 @@ int CCtrlShapeLine::ParseElement(CCtrlShapeLine& oObj, int nSize, CHWPStream& oB
 	if (nSize == oBuffer.GetDistanceToLastPos())
 	{
 		oBuffer.RemoveLastSavedPos();
-		return nSize;
+		return;
 	}
 
 	oBuffer.ReadShort(oObj.m_shAttr);
 	oBuffer.Skip(2);
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
-	return nSize;
 }
 
-int CCtrlShapeLine::ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+void CCtrlShapeLine::ParseCtrl(CCtrlShapeLine& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	CCtrlGeneralShape::ParseCtrl(oObj, nSize, oBuffer, nOff, nVersion);
-	return oObj.GetSize();
 }
 
 }

@@ -16,6 +16,8 @@ public:
 	CCtrlShapePolygon(const CCtrlGeneralShape& oShape);
 	CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	EShapeType GetShapeType() const override;
+
 	static int ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderAppend(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

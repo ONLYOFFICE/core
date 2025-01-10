@@ -7,13 +7,11 @@ namespace HWP
 {
 class CCtrlEmpty : public CCtrl
 {
-	int m_nSize;
 public:
 	CCtrlEmpty();
 	CCtrlEmpty(const HWP_STRING& sCtrlID);
 
-	int GetSize() override;
-	void SetSize(int nSize);
+	ECtrlObjectType GetCtrlType() const override;
 };
 }
 

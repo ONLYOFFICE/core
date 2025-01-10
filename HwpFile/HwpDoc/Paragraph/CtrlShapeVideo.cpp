@@ -14,6 +14,11 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapeVideo::GetShapeType() const
+{
+	return EShapeType::Video;
+}
+
 int CCtrlShapeVideo::GetVideoType() const
 {
 	return m_nVideoType;

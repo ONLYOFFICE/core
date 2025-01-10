@@ -7,6 +7,13 @@
 
 namespace HWP
 {
+enum class EParagraphType
+{
+	Normal,
+	Cap,
+	Cell
+};
+
 class CHWPPargraph : public IRef
 {
 	short m_shParaShapeID; // HWPTAG_PARA_HEADER
@@ -20,6 +27,8 @@ class CHWPPargraph : public IRef
 public:
 	CHWPPargraph();
 	virtual ~CHWPPargraph();
+
+	virtual EParagraphType GetType() const;
 
 	void SetLineSeg(CLineSeg* pLineSeg);
 

@@ -34,6 +34,8 @@ public:
 	CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlTable();
 
+	ECtrlObjectType GetCtrlType() const override;
+
 	bool Empty() const;
 	short GetRows() const;
 	short GetCols() const;

@@ -7,10 +7,27 @@
 
 namespace HWP
 {
+enum class EShapeType
+{
+	GeneralShape,
+	Arc,
+	ConnectLine,
+	Curve,
+	Ellipse,
+	Line,
+	Ole,
+	Pic,
+	Polygon,
+	Rect,
+	TextArt,
+	Video,
+	EqEdit,
+	Container
+};
+
 class CCtrlGeneralShape : public CCtrlObjElement
 {
 	CHWPPargraph* m_pParent;
-	int m_nSize;
 
 	int m_nLineColor;
 	int m_nLineThick;
@@ -42,10 +59,11 @@ public:
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlGeneralShape();
 
+	ECtrlObjectType GetCtrlType() const override;
+	virtual EShapeType GetShapeType() const;
+
 	void SetParent(CHWPPargraph* pParent);
 	CHWPPargraph* GetParent();
-
-	int GetSize() override;
 
 	const CFill* GetFill() const;
 

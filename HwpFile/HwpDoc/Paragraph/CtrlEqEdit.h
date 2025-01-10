@@ -20,6 +20,8 @@ public:
 	CCtrlEqEdit(const CCtrlGeneralShape& oShape);
 	CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	EShapeType GetShapeType() const override;
+
 	HWP_STRING GetEqn() const;
 
 	static int ParseElement(CCtrlEqEdit& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

@@ -17,6 +17,11 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapeArc::GetShapeType() const
+{
+	return EShapeType::Arc;
+}
+
 int CCtrlShapeArc::ParseElement(CCtrlShapeArc& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

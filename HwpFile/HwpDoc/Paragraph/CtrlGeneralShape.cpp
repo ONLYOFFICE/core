@@ -27,7 +27,7 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID)
 }
 
 CCtrlGeneralShape::CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape)
-	: CCtrlObjElement((CCtrlObjElement)oGeneralShape)
+	: CCtrlObjElement(oGeneralShape)
 {
 	InitData();
 
@@ -67,6 +67,16 @@ CCtrlGeneralShape::~CCtrlGeneralShape()
 		m_pFill = nullptr;
 }
 
+ECtrlObjectType CCtrlGeneralShape::GetCtrlType() const
+{
+	return ECtrlObjectType::Shape;
+}
+
+EShapeType CCtrlGeneralShape::GetShapeType() const
+{
+	return EShapeType::GeneralShape;
+}
+
 void CCtrlGeneralShape::InitData()
 {
 	m_eLineStyle = ELineStyle2::NONE;
@@ -81,11 +91,6 @@ void CCtrlGeneralShape::SetParent(CHWPPargraph* pParent)
 CHWPPargraph* CCtrlGeneralShape::GetParent()
 {
 	return m_pParent;
-}
-
-int CCtrlGeneralShape::GetSize()
-{
-	return m_nSize;
 }
 
 const CFill* CCtrlGeneralShape::GetFill() const

@@ -17,6 +17,11 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapeEllipse::GetShapeType() const
+{
+	return EShapeType::Ellipse;
+}
+
 int CCtrlShapeEllipse::ParseElement(CCtrlShapeEllipse& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

@@ -9,6 +9,8 @@ class CCapParagraph : public CHWPPargraph
 {
 public:
 	CCapParagraph();
+
+	EParagraphType GetType() const override;
 };
 }
 

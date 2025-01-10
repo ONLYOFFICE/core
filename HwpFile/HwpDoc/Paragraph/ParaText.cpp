@@ -10,7 +10,12 @@ CParaText::CParaText(const HWP_STRING& sCtrlID, const HWP_STRING& sText, int nSt
 	: CCtrl(sCtrlID), m_sText(sText), m_nStartIDx(nStartIDx), m_nCharShapeID(nCharShapeID)
 {}
 
-int CParaText::GetSize()
+ECtrlObjectType CParaText::GetCtrlType() const
+{
+	return ECtrlObjectType::ParaText;
+}
+
+unsigned int CParaText::GetTextLength() const
 {
 	return m_sText.length();
 }

@@ -19,18 +19,14 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID)
 CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader)
 	: CCtrl(sCtrlID), m_bIsHeader(bIsHeader)
 {
-	oBuffer.SavePosition();
-
 	oBuffer.ReadInt(m_nAttr);
 	m_eWhichPage = GetPageRange(m_nAttr & 0x03);
 	oBuffer.ReadInt(m_nSerialInSec);
-
-	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-int CCtrlHeadFoot::GetSize()
+ECtrlObjectType CCtrlHeadFoot::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::HeadFoot;
 }
 
 bool CCtrlHeadFoot::IsHeader() const

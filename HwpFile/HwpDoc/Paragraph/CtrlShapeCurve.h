@@ -17,6 +17,8 @@ public:
 	CCtrlShapeCurve(const CCtrlGeneralShape& oShape);
 	CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	EShapeType GetShapeType() const override;
+
 	static int ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

@@ -3,11 +3,11 @@
 namespace HWP
 {
 CCtrlForm::CCtrlForm(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CCtrl(sCtrlID), m_nSize(nSize)
+	: CCtrl(sCtrlID)
 {}
 
-int CCtrlForm::GetSize()
+ECtrlObjectType CCtrlForm::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::Form;
 }
 }

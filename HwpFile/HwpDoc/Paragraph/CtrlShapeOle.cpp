@@ -17,6 +17,11 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+EShapeType CCtrlShapeOle::GetShapeType() const
+{
+	return EShapeType::Ole;
+}
+
 HWP_STRING CCtrlShapeOle::GetBinDataID() const
 {
 	return m_sBinDataID;

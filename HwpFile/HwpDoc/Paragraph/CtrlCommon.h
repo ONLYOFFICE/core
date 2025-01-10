@@ -86,15 +86,8 @@ enum class ETextWrap
 	IN_FRONT_OF_TEXT
 };
 
-enum class ECtrlCommonType
-{
-
-};
-
 class CCtrlCommon : public CCtrl
 {
-	int m_nSize;
-
 	int m_nObjAttr;
 	bool m_bTreatAsChar;
 	bool m_bAffectLSpacing;
@@ -140,12 +133,12 @@ public:
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	virtual ~CCtrlCommon();
 
+	ECtrlObjectType GetCtrlType() const override;
+
 	void SetTextVerAlign(EVertAlign eVertAlign);
 
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddCaption(CCapParagraph* pCapPara);
-
-	int GetSize() override;
 
 	CHWPPargraph* GetLastPara();
 	unsigned int GetCountParagraphs() const;

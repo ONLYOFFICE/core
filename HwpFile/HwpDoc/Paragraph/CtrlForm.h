@@ -8,11 +8,10 @@ namespace HWP
 {
 class CCtrlForm : public CCtrl
 {
-	int m_nSize;
 public:
 	CCtrlForm(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 };
 }
 

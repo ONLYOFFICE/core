@@ -21,7 +21,7 @@ public:
 	CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar);
 	CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar, int nCharShapeID);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 	ECtrlCharType GetType() const;
 
 	void SetCharShapeID(int nCharShapeID);

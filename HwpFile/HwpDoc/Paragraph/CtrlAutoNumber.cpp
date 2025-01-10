@@ -2,7 +2,6 @@
 
 namespace HWP
 {
-
 CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
@@ -17,13 +16,12 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	m_eNumShape = GetNumberShape2(nAttr >> 4 & 0xFF);
 	m_bSuperscript = CHECK_FLAG(nAttr >> 12, 0x1);
 
-	m_nSize = 4;
 	m_bFullFilled = true;
 }
 
-int CCtrlAutoNumber::GetSize()
+ECtrlObjectType CCtrlAutoNumber::GetCtrlType() const
 {
-	return m_nSize;
+	return ECtrlObjectType::AutoNumber;
 }
 
 ENumType CCtrlAutoNumber::GetNumType() const

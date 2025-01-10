@@ -17,8 +17,6 @@ enum class EPageRange
 
 class CCtrlHeadFoot : public CCtrl
 {
-	int m_nSize;
-
 	bool m_bIsHeader;
 	int m_nAttr;
 	EPageRange m_eWhichPage;
@@ -34,7 +32,8 @@ public:
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID);
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
+
 	bool IsHeader() const;
 
 	void AddParagraph(CHWPPargraph* pParagraph);

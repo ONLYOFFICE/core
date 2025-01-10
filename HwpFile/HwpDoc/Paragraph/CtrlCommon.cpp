@@ -97,8 +97,6 @@ namespace HWP
 	CCtrlCommon::CCtrlCommon(const CCtrlCommon& oCtrlCommon)
 		: CCtrl(oCtrlCommon.GetID())
 	{
-		m_nSize = oCtrlCommon.m_nSize;
-
 		m_nObjAttr = oCtrlCommon.m_nObjAttr;
 		m_bTreatAsChar = oCtrlCommon.m_bTreatAsChar;
 		m_bAffectLSpacing = oCtrlCommon.m_bAffectLSpacing;
@@ -182,10 +180,8 @@ namespace HWP
 		oBuffer.ReadInt(m_nObjInstanceID);
 		oBuffer.ReadInt(m_nBlockPageBreak);
 
-		if (nSize > oBuffer.GetDistanceToLastPos())
+		if (nSize > oBuffer.GetDistanceToLastPos(true))
 			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
-
-		m_nSize = oBuffer.GetDistanceToLastPos(true);
 	}
 
 	CCtrlCommon::~CCtrlCommon()
@@ -203,6 +199,11 @@ namespace HWP
 		}
 	}
 
+	ECtrlObjectType CCtrlCommon::GetCtrlType() const
+	{
+		return ECtrlObjectType::Common;
+	}
+
 	void CCtrlCommon::SetTextVerAlign(EVertAlign eVertAlign)
 	{
 		m_eTextVerAlign = eVertAlign;
@@ -216,11 +217,6 @@ namespace HWP
 	void CCtrlCommon::AddCaption(CCapParagraph* pCapPara)
 	{
 		m_arCaption.push_back(pCapPara);
-	}
-
-	int CCtrlCommon::GetSize()
-	{
-		return m_nSize;
 	}
 
 	CHWPPargraph* CCtrlCommon::GetLastPara()

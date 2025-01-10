@@ -131,6 +131,8 @@ public:
 	CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	~CCtrlShapePic();
 
+	EShapeType GetShapeType() const override;
+
 	HWP_STRING GetBinDataID() const;
 	int GetPicWidth() const;
 	int GetPicHeight() const;

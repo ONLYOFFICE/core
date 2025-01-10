@@ -24,8 +24,6 @@ enum class ENumPos
 
 class CCtrlPageNumPos : public CCtrl
 {
-	int m_nSize;
-
 	ENumPos m_ePos;
 	ENumberShape2 m_eNumShape;
 	HWP_STRING m_sUserDef;
@@ -36,7 +34,7 @@ public:
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID);
 	CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
-	int GetSize() override;
+	ECtrlObjectType GetCtrlType() const override;
 };
 }
 

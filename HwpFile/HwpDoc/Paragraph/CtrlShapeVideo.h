@@ -16,6 +16,8 @@ public:
 	CCtrlShapeVideo(const CCtrlGeneralShape& oShape);
 	CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 
+	EShapeType GetShapeType() const override;
+
 	int GetVideoType() const;
 	short GetVedeoBinID() const;
 	HWP_STRING GetWebUrl() const;

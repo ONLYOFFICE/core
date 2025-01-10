@@ -83,7 +83,6 @@ SOURCES += \
 	\
 	../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.cpp \
 	../../../PPTXFormat/DrawingConverter/ASCOfficePPTXFileRealization.cpp \
-	../../../../HtmlRenderer/src/ASCSVGWriter.cpp \
 	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.cpp \
 	../../../PPTXFormat/ViewProps/CViewPr.cpp \
@@ -127,13 +126,12 @@ HEADERS += \
 	pptx_format.h \
 	\
 	../../../Base/Nullable.h \
-	../../../../HtmlRenderer/include/ASCSVGWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
 	\
 	../../../../MsBinaryFile/Common/Vml/Common.h \
 	../../../../MsBinaryFile/Common/Vml/BaseShape.h \
 	../../../../MsBinaryFile/Common/Vml/toVmlConvert.h \
-        ../../../../MsBinaryFile/Common/Vml/VmlPath.h \
+	../../../../MsBinaryFile/Common/Vml/VmlPath.h \
 	../../../../MsBinaryFile/Common/Vml/GraphicsPath.h \	
 	\
 	../../../../MsBinaryFile/Common/Vml/PPTShape/PptShape.h \

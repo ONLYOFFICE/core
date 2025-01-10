@@ -33,7 +33,6 @@
 #if defined(_WIN64)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/doctrenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/DocxRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/XpsFile.lib")
@@ -49,7 +48,6 @@
 		#pragma comment(lib, "../../../build/lib/win_64/DEBUG/CryptoPPLib.lib")
 #else
 		#pragma comment(lib, "../../../build/lib/win_64/doctrenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_64/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/XpsFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_64/EpubFile.lib")
@@ -67,7 +65,6 @@
 #elif defined (_WIN32)
 	#if defined(_DEBUG)
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/doctrenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/DocxRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/XpsFile.lib")
@@ -83,7 +80,6 @@
 		#pragma comment(lib, "../../../build/lib/win_32/DEBUG/CryptoPPLib.lib")
 #else
 		#pragma comment(lib, "../../../build/lib/win_32/doctrenderer.lib")
-		#pragma comment(lib, "../../../build/lib/win_32/HtmlRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/DocxRenderer.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/PdfFile.lib")
 		#pragma comment(lib, "../../../build/lib/win_32/XpsFile.lib")

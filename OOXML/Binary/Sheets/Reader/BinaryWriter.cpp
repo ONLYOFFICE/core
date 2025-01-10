@@ -2395,7 +2395,7 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::UpdateLinks);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oUpdateLinks->GetValue());
+		m_oBcw.m_oStream.WriteBYTE(workbookPr.m_oUpdateLinks->GetValue());
 	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)

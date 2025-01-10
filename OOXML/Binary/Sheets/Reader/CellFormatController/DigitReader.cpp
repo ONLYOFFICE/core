@@ -123,8 +123,10 @@ bool DigitReader::ReadDigit(const std::wstring &value, std::wstring &digit, std:
 			}
 		}
 		else
-        {
-			digit = std::to_wstring(dValue);
+        {   if(value.find(L'.') == std::wstring::npos)
+                digit = std::to_wstring((_INT64)dValue);
+            else
+                digit = std::to_wstring(dValue);
             format = data_format;
         }
         return true;

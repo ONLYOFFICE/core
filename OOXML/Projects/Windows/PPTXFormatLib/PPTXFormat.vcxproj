@@ -669,7 +669,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\WritingVector.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Base\XmlTools.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\BaseShape.cpp" />
     <ClCompile Include="..\..\..\..\MsBinaryFile\Common\Vml\GraphicsPath.cpp" />

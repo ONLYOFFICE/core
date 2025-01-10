@@ -256,7 +256,8 @@ namespace PPTX
 				checker.isOfficeFile(ole_file->filename().GetPath());
 
 				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS ||
-					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC ||
+					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT)
 				{
 					std::wstring sTemp = ole_file->filename().GetDirectory();
 
@@ -273,7 +274,8 @@ namespace PPTX
 
 						ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
 					}
-					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC ||
+							checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT)
 					{
 						COfficeDocFile docFile;
 						docFile.m_sTempFolder = ole_file->filename().GetDirectory();

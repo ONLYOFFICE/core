@@ -296,7 +296,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
 		else if (7 == m_nFileType)
-			pNative->m_strEditorType = L"draw";
+			pNative->m_strEditorType = L"visio";
 		else
 			pNative->m_strEditorType = L"spreadsheet";
 

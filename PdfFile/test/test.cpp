@@ -326,7 +326,7 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 	LoadFromFile();
 
 	double dPageDpiX, dPageDpiY, dWidth, dHeight;
-	int i = 3;
+	int i = 0;
 	//for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);

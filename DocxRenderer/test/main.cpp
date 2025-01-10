@@ -43,7 +43,7 @@
 #include <fstream>
 
 #ifdef TEST_FOR_HTML_RENDERER_TEXT
-#include "../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/HTMLRendererText.h"
 #endif
 
 //#define LOAD_FILE_AS_BINARY

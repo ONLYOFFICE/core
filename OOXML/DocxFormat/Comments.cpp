@@ -74,72 +74,72 @@ namespace OOX
 		int nParentDepth = oReader.GetDepth();
 		while( oReader.ReadNextSiblingNode( nParentDepth ) )
 		{
-			std::wstring sName = oReader.GetName();
+			std::wstring sName = oReader.GetNameNoNS();
 			WritingElement *pItem = NULL;
 
-			if ( L"w:altChunk" ==sName )
+			if ( L"altChunk" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CAltChunk, oReader)
-			else if ( L"w:bookmarkEnd" ==sName )
+			else if ( L"bookmarkEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CBookmarkEnd, oReader)
-			else if ( L"w:bookmarkStart" ==sName )
+			else if ( L"bookmarkStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CBookmarkStart, oReader)
-			else if ( L"w:commentRangeEnd" ==sName )
+			else if ( L"commentRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCommentRangeEnd, oReader)
-			else if ( L"w:commentRangeStart" ==sName )
+			else if ( L"commentRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCommentRangeStart, oReader)
-			//else if ( L"w:customXml" ==sName )
+			//else if ( L"customXml" ==sName )
 			//	pItem = new Logic::CCustomXml( oReader );
-			else if ( L"w:customXmlDelRangeEnd" ==sName )
+			else if ( L"customXmlDelRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlDelRangeEnd, oReader)
-			else if ( L"w:customXmlDelRangeStart" ==sName )
+			else if ( L"customXmlDelRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlDelRangeStart, oReader)
-			else if ( L"w:customXmlInsRangeEnd" ==sName )
+			else if ( L"customXmlInsRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlInsRangeEnd, oReader)
-			else if ( L"w:customXmlInsRangeStart" ==sName )
+			else if ( L"customXmlInsRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlInsRangeStart, oReader)
-			else if ( L"w:customXmlMoveFromRangeEnd" ==sName )
+			else if ( L"customXmlMoveFromRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlMoveFromRangeEnd, oReader)
-			else if ( L"w:customXmlMoveFromRangeStart" ==sName )
+			else if ( L"customXmlMoveFromRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlMoveFromRangeStart, oReader)
-			else if ( L"w:customXmlMoveToRangeEnd" ==sName )
+			else if ( L"customXmlMoveToRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlMoveToRangeEnd, oReader)
-			else if ( L"w:customXmlMoveToRangeStart" ==sName )
+			else if ( L"customXmlMoveToRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CCustomXmlMoveToRangeStart, oReader)
-			else if ( L"w:del" ==sName )
+			else if ( L"del" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CDel, oReader)
-			else if ( L"w:ins" ==sName )
+			else if ( L"ins" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CIns, oReader)
-			else if ( L"w:moveFrom" ==sName )
+			else if ( L"moveFrom" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveFrom, oReader)
-			else if ( L"w:moveFromRangeEnd" ==sName )
+			else if ( L"moveFromRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveFromRangeEnd, oReader)
-			else if ( L"w:moveFromRangeStart" ==sName )
+			else if ( L"moveFromRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveFromRangeStart, oReader)
-			else if ( L"w:moveTo" ==sName )
+			else if ( L"moveTo" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveTo, oReader)
-			else if ( L"w:moveToRangeEnd" ==sName )
+			else if ( L"moveToRangeEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveToRangeEnd, oReader)
-			else if ( L"w:moveToRangeStart" ==sName )
+			else if ( L"moveToRangeStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CMoveToRangeStart, oReader)
-			else if ( L"m:oMath" ==sName )
+			else if ( L"oMath" ==sName )
 				AssignPtrXmlContent(pItem, Logic::COMath, oReader)
-			else if ( L"m:oMathPara" ==sName )
+			else if ( L"oMathPara" ==sName )
 				AssignPtrXmlContent(pItem, Logic::COMathPara, oReader)
-			else if ( L"w:p" ==sName )
+			else if ( L"p" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CParagraph, oReader)
-			else if ( L"w:permEnd" ==sName )
+			else if ( L"permEnd" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CPermEnd, oReader)
-			else if ( L"w:permStart" ==sName )
+			else if ( L"permStart" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CPermStart, oReader)
-			else if ( L"w:proofErr" ==sName )
+			else if ( L"proofErr" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CProofErr, oReader)
-			else if ( L"w:sdt" ==sName )
+			else if ( L"sdt" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CSdt, oReader)
-			else if ( L"w:tbl" ==sName )
+			else if ( L"tbl" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CTbl, oReader)
-			else if ( L"w:tbl" ==sName )
+			else if ( L"tbl" ==sName )
 				AssignPtrXmlContent(pItem, Logic::CTbl, oReader)
-			else if ( L"aml:content" ==sName )
+			else if ( L"content" ==sName )
 			{
 				fromXML2(oReader);
 				break;
@@ -277,18 +277,13 @@ namespace OOX
 	}
 	void CComment::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w:author",		m_oAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:date",			m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"oodata",			m_oOOData )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:id",			m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w:initials",      m_oInitials )
-
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"aml:author",		m_oAuthor )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:createdate",	m_oDate )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:id",			m_oId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"aml:initials",	m_oInitials )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"author",		m_oAuthor )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"date",		m_oDate )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"oodata",		m_oOOData )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"id",			m_oId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"initials",	m_oInitials )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
 	CComments::CComments(OOX::Document *pMain) : OOX::File(pMain), OOX::IFileContainer(pMain)
@@ -354,14 +349,14 @@ namespace OOX
 		if ( !oReader.ReadNextNode() )
 			return;
 
-		std::wstring sName = oReader.GetName();
-		if ( L"w:comments" == sName && !oReader.IsEmptyNode() )
+		std::wstring sName = oReader.GetNameNoNS();
+		if ( L"comments" == sName && !oReader.IsEmptyNode() )
 		{
 			int nNumberingDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 			{
-				sName = oReader.GetName();
-				if ( L"w:comment" == sName )
+				sName = oReader.GetNameNoNS();
+				if ( L"comment" == sName )
 				{
 					CComment* pComment = new CComment();
 					*pComment = oReader;
@@ -427,11 +422,11 @@ namespace OOX
 	}
 	void CCommentExt::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w15:paraId",			m_oParaId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:paraIdParent",	m_oParaIdParent )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w15:done",			m_oDone )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"paraId",			m_oParaId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"paraIdParent",	m_oParaIdParent )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"done",			m_oDone )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
 	CCommentsExt::CCommentsExt(OOX::Document *pMain) : OOX::File(pMain)//, OOX::IFileContainer(pMain)
@@ -699,10 +694,10 @@ namespace OOX
 	}
 	void CCommentId::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"w16cid:paraId",		m_oParaId )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w16cid:durableId",	m_oDurableId )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if     ( oReader, L"paraId",		m_oParaId )
+			WritingElement_ReadAttributes_Read_else_if( oReader, L"durableId",	m_oDurableId )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
 	CCommentsIds::CCommentsIds(OOX::Document *pMain) : OOX::File(pMain)
@@ -742,8 +737,8 @@ namespace OOX
 			int nNumberingDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nNumberingDepth ) )
 			{
-				sName = oReader.GetName();
-				if ( L"w16cid:commentId" == sName )
+				sName = oReader.GetNameNoNS();
+				if ( L"commentId" == sName )
 				{
 					CCommentId* pCommentExt = new CCommentId();
 					*pCommentExt = oReader;
@@ -855,9 +850,9 @@ namespace OOX
 	}
 	void CPerson::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
-		WritingElement_ReadAttributes_Start( oReader )
-			WritingElement_ReadAttributes_Read_if ( oReader, L"w15:author", m_oAuthor )
-		WritingElement_ReadAttributes_End( oReader )
+		WritingElement_ReadAttributes_Start_No_NS( oReader )
+			WritingElement_ReadAttributes_Read_if ( oReader, L"author", m_oAuthor )
+		WritingElement_ReadAttributes_End_No_NS( oReader )
 	}
 
 	CPeople::CPeople(OOX::Document *pMain) : OOX::File(pMain)

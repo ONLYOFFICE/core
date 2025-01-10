@@ -1371,6 +1371,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
 		return L".dotm";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
 		return L".doc";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
 		return L".odt";

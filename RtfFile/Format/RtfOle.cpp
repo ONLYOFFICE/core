@@ -172,6 +172,7 @@ std::wstring RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 				sRelsType = L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
 			}break;
 			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+			case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
 			{
 				sExtension = L"doc";
 				sMime = L"application/msword";

@@ -46,6 +46,7 @@ class CHWPRecordBinData : public CHWPRecord
 	HWP_STRING m_sItemID;
 public:
 	CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordBinData(XmlUtils::CXmlNode& oNode, int nVersion);
 
 	HWP_STRING GetPath() const;
 	HWP_STRING GetItemID() const;

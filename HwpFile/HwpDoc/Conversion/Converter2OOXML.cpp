@@ -743,7 +743,7 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 	if (nullptr == pBorderFill)
 		return;
 
-	if (pBorderFill->GetFill()->ColorFill())
+	if (nullptr != pBorderFill->GetFill() && pBorderFill->GetFill()->ColorFill())
 		oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pBorderFill->GetFill()->GetFaceColor()) + L"\"/>");
 
 	oBuilder.WriteString(L"<w:tcBorders>");

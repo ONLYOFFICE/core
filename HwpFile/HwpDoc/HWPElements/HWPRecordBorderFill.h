@@ -13,6 +13,8 @@ struct TBorder
 	ELineStyle2 m_eStyle;
 	HWP_BYTE m_chWidth;
 	int m_nColor;
+
+	void ReadFromNode(XmlUtils::CXmlNode& oNode);
 };
 
 enum class EImageFillType
@@ -82,9 +84,14 @@ class CFill : public IRef
 	HWP_BYTE m_chStepCenter;
 
 	HWP_BYTE m_chAlpha;
+
+	void ReadWinBrush(XmlUtils::CXmlNode& oNode);
+	void ReadGradation(XmlUtils::CXmlNode& oNode);
+	void ReadImgBrush(XmlUtils::CXmlNode& oNode);
 public:
 	CFill();
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
+	CFill(XmlUtils::CXmlNode& oNode);
 
 	int GetSize() const;
 	bool NoneFill() const;
@@ -116,10 +123,12 @@ class CHWPRecordBorderFill : public CHWPRecord
 	TBorder m_oTop;
 	TBorder m_oBottom;
 	TBorder m_oDiagonal;
-	CFill   m_oFill;
+	CFill   *m_pFill;
 public:
 	CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize);
 	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, XmlUtils::CXmlNode& oNode, int nVersion);
+	~CHWPRecordBorderFill();
 
 	TBorder GetLeftBorder() const;
 	TBorder GetRightBorder() const;

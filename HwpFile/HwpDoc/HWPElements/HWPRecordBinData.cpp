@@ -3,6 +3,7 @@
 #include "../HWPFile_Private.h"
 
 #include <iomanip>
+#include <regex>
 #include <sstream>
 
 namespace HWP
@@ -79,6 +80,37 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	}
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+}
+
+CHWPRecordBinData::CHWPRecordBinData(XmlUtils::CXmlNode& oNode, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
+{
+	m_sItemID = oNode.GetAttribute(L"id");
+
+	HWP_STRING sType = oNode.GetAttribute(L"isEmbeded");
+
+	if (L"0" == sType)
+	{
+		m_eType = EType::LINK;
+
+		m_sAPath = oNode.GetAttribute(L"sub-path");
+
+		if (m_sAPath.empty())
+			m_sAPath = oNode.GetAttribute(L"href");
+	}
+	else if (L"1" == sType)
+	{
+		m_eType = EType::EMBEDDING;
+		m_sAPath = oNode.GetAttribute(L"href");
+	}
+	else
+		m_sAPath = oNode.GetAttribute(L"href");
+
+	m_sFormat = oNode.GetAttribute(L"media-type");
+
+	std::wregex oRegex(L"image/(.*)");
+
+	m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
 }
 
 HWP_STRING CHWPRecordBinData::GetPath() const

@@ -155,6 +155,15 @@ namespace MetaFile
 		unHeight = unDibHeigth;
 	}
 
+	std::vector<std::pair<unsigned int, double> > CEmfLogBrushEx::GetGradientColors() const
+	{
+		std::vector<std::pair<unsigned, double>> arColors(2);
+
+		arColors[0] = std::make_pair(GetColor()  + (GetAlpha()  << 24), 0.);
+		arColors[1] = std::make_pair(GetColor2() + (GetAlpha2() << 24), 0.);
+
+		return arColors;
+	}
 
 	CEmfLogFont::CEmfLogFont(bool bFixedLength)
 	    : m_bFixedLength(bFixedLength)

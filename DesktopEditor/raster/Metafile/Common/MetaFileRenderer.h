@@ -1109,12 +1109,18 @@ namespace MetaFile
 
 				m_pRenderer->put_BrushLinearAngle(pBrush->GetStyleEx());
 
-				long Colors[2];
-				Colors[0] = pBrush->GetColor()  + (pBrush->GetAlpha()  << 24);
-				Colors[1] = pBrush->GetColor2() + (pBrush->GetAlpha2() << 24);
-				double Position[2] = {0, 1};
+				std::vector<std::pair<unsigned int, double>> arColors{pBrush->GetGradientColors()};
 
-				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
+				std::vector<long> arLColors(arColors.size());
+				std::vector<double> arDPositions(arColors.size());
+
+				for (unsigned int unIndex = 0; unIndex < arColors.size(); ++unIndex)
+				{
+					arLColors[unIndex] = arColors[unIndex].first;
+					arDPositions[unIndex] = arColors[unIndex].second;
+				}
+
+				m_pRenderer->put_BrushGradientColors(arLColors.data(), arDPositions.data(), arColors.size());
 
 			}
 			else if (	BS_RADIALGRADIENT	== unBrushStyle ||

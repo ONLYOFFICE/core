@@ -33,6 +33,7 @@
 #define _METAFILE_COMMON_METAFILEOBJECTS_H
 
 #include <string>
+#include <vector>
 
 namespace MetaFile
 {
@@ -69,6 +70,8 @@ namespace MetaFile
 		virtual std::wstring GetDibPatterPath() const = 0;
 		virtual void         GetBounds(double& left, double& top, double& width, double& height) const = 0;
 		virtual void         GetCenterPoint(double& dX, double& dY) const = 0;
+
+		virtual std::vector<std::pair<unsigned int, double>> GetGradientColors() const = 0;
 
 		virtual void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const = 0;
 	};

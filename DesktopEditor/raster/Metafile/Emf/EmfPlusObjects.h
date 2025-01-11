@@ -189,6 +189,7 @@ namespace MetaFile
 		void         GetCenterPoint(double& dX, double& dY) const override;
 		void         GetBounds(double& left, double& top, double& width, double& height) const override;
 
+		std::vector<std::pair<unsigned int, double>> GetGradientColors() const override;
 	public:
 		TEmfPlusARGB   oColor;
 		TEmfPlusARGB   oColorBack;
@@ -198,6 +199,8 @@ namespace MetaFile
 		TEmfPlusPointF oCenterPoint;
 		unsigned int   unAngle;
 		std::wstring   wsDibPatternPath;
+
+		std::vector<std::pair<TEmfPlusARGB, double>> arGradientColors;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen

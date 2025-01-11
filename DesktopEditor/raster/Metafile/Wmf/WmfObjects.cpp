@@ -162,6 +162,16 @@ namespace MetaFile
 		unHeight = unDibHeigth;
 	}
 
+	std::vector<std::pair<unsigned int, double> > CWmfBrush::GetGradientColors() const
+	{
+		std::vector<std::pair<unsigned int, double>> arColors(2);
+
+		arColors[0] = std::make_pair(GetColor()  + (GetAlpha()  << 24), 0.);
+		arColors[1] = std::make_pair(GetColor2() + (GetAlpha2() << 24), 0.);
+
+		return arColors;
+	}
+
 	CWmfFont::CWmfFont()
 	    : shHeight(DEFAULT_FONT_SIZE), shWidth(0), shEscapement(0), shOrientation(0), shWeight(400),
 	      uchItalic(0x00), uchUnderline(0x00), uchStrikeOut(0x00), uchCharSet(0x01), uchOutPrecision(0x00),

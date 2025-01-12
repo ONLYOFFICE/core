@@ -1,7 +1,7 @@
 #ifndef DIRECTORYENTRY_H
 #define DIRECTORYENTRY_H
 
-#include "../Common.h"
+#include "../Common/Common.h"
 
 namespace HWP
 {

@@ -4,7 +4,6 @@
 #include "../HWPStream.h"
 #include "HWPRecord.h"
 #include "../Paragraph/Ctrl.h"
-#include <list>
 
 namespace HWP
 {

@@ -1,7 +1,7 @@
 #ifndef CTRL_H
 #define CTRL_H
 
-#include "../Common.h"
+#include "../Common/Common.h"
 
 namespace HWP
 {

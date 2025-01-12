@@ -5,7 +5,6 @@
 #include "HWPStream.h"
 #include "HWPElements/HWPRecord.h"
 
-#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 #include <map>
 

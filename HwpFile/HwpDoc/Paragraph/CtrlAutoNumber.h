@@ -4,7 +4,7 @@
 #include "Ctrl.h"
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
-#include "../Common.h"
+#include "../Common/Common.h"
 
 namespace HWP
 {

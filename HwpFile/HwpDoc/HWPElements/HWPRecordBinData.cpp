@@ -82,7 +82,7 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CHWPRecordBinData::CHWPRecordBinData(XmlUtils::CXmlNode& oNode, int nVersion)
+CHWPRecordBinData::CHWPRecordBinData(CXMLNode& oNode, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
 {
 	m_sItemID = oNode.GetAttribute(L"id");

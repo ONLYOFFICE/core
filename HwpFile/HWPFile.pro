@@ -18,6 +18,7 @@ DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 
 SOURCES += \
     HWPFile.cpp \
+    HwpDoc/Common/XMLReader.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
     HwpDoc/Conversion/FootnoteConverter.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
@@ -46,6 +47,7 @@ SOURCES += \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HwpFileHeader.cpp \
+    HwpDoc/OCFdoc/OWPMLFile.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
@@ -90,7 +92,8 @@ SOURCES += \
 
 HEADERS += \
     HWPFile.h \
-    HwpDoc/Common.h \
+    HwpDoc/Common/Common.h \
+    HwpDoc/Common/XMLNode.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/FootnoteConverter.h \
     HwpDoc/Conversion/NumberingConverter.h \
@@ -126,6 +129,7 @@ HEADERS += \
     HwpDoc/HWPStream.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
+    HwpDoc/OCFdoc/OWPMLFile.h \
     HwpDoc/OLEdoc/CompoundFile.h \
     HwpDoc/OLEdoc/DirectoryEntry.h \
     HwpDoc/OLEdoc/Sector.h \

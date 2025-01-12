@@ -2,6 +2,16 @@
 
 namespace HWP
 {
+TTab::TTab()
+{}
+
+TTab::TTab(CXMLNode& oNode)
+{
+	m_nPos = oNode.GetAttributeInt(L"pos");
+	SetType(oNode.GetAttributeInt(L"type"));
+	m_eLeader = GetLineStyle2(oNode.GetAttributeInt(L"leader"));
+}
+
 void TTab::SetType(int nValue)
 {
 	SWITCH(TTab::EType, nValue)
@@ -50,4 +60,24 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	oBuffer.RemoveLastSavedPos();
 }
 
+CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo)
+{
+	if (oNode.GetAttributeBool(L"autoTabLeft"))
+		m_nAttr |= 0x00000001;
+	else
+		m_nAttr &= 0xFFFFFFFE;
+
+	if (oNode.GetAttributeBool(L"autoTabRight"))
+		m_nAttr |= 0x00000002;
+	else
+		m_nAttr &= 0xFFFFFFFD;
+
+	for (CXMLNode& oChild : oNode.GetChilds(L"hp:switch"))
+		for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:default"))
+		{
+			CXMLNode oTabItem{oGrandChild.GetChild(L"hh:tabItem")};
+			m_arTabs.push_back(new TTab(oTabItem));
+		}
+}
 }

@@ -1,9 +1,10 @@
 #ifndef HWPRECORDDOCUMENTPROPERTIES_H
 #define HWPRECORDDOCUMENTPROPERTIES_H
 
-#include "HwpDoc/HWPDocInfo.h"
+#include "../HWPDocInfo.h"
 #include "../HWPStream.h"
 #include "HWPRecord.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -23,6 +24,7 @@ class CHWPRecordDocumentProperties : public CHWPRecord
 	int m_nCharUnitLocInPara;
 public:
 	CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 };
 }
 

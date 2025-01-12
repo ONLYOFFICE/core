@@ -65,6 +65,17 @@ EShadow GetShadow(int nValue)
 	}
 }
 
+void CHWPRecordCharShape::ReadContainerData(CXMLNode& oNode, short arValues[], int nDefaultValue)
+{
+	arValues[(int)ELang::HANGUL]   = oNode.GetAttributeInt(L"hangul",   nDefaultValue);
+	arValues[(int)ELang::LATIN]    = oNode.GetAttributeInt(L"latin",    nDefaultValue);
+	arValues[(int)ELang::HANJA]    = oNode.GetAttributeInt(L"hanja",    nDefaultValue);
+	arValues[(int)ELang::JAPANESE] = oNode.GetAttributeInt(L"japanese", nDefaultValue);
+	arValues[(int)ELang::OTHER]    = oNode.GetAttributeInt(L"other",    nDefaultValue);
+	arValues[(int)ELang::SYMBOL]   = oNode.GetAttributeInt(L"symbol",   nDefaultValue);
+	arValues[(int)ELang::USER]     = oNode.GetAttributeInt(L"user",     nDefaultValue);
+}
+
 CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo)
 {
@@ -140,6 +151,110 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.ReadColor(m_nStrikeOutColor);
 
 	oBuffer.RemoveLastSavedPos();
+}
+
+CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_HWP_CHAR_SHAPE, 0, 0), m_pParent(&oDocInfo)
+{
+	m_eUnderline = EUnderline::NONE;
+	m_eUnderLineShape = ELineStyle1::SOLID;
+	m_eOutline = EOutline::NONE;
+	m_eShadow = EShadow::NONE;
+	m_eSymMark = EAccent::NONE;
+	m_eStrikeOutShape = ELineStyle2::NONE;
+
+	m_nHeight = oNode.GetAttributeInt(L"height", 1000);
+	m_nTextColor = oNode.GetAttributeColor(L"textColor", 0x000000);
+	m_nShadeColor = oNode.GetAttributeColor(L"shadeColor", 0xFFFFFFFF);
+	m_bUseFontSpace = oNode.GetAttributeBool(L"useFontSpace");
+	m_bUseKerning = oNode.GetAttributeBool(L"useKerning");
+
+	HWP_STRING sMarkType = oNode.GetAttribute(L"symMark");
+
+	if (L"DOT_ABOVE" == sMarkType)
+		m_eSymMark = EAccent::DOT;
+	else if (L"RING_ABOVE" == sMarkType)
+		m_eSymMark = EAccent::RING;
+	else if (L"TILDE" == sMarkType)
+		m_eSymMark = EAccent::TILDE;
+	else
+		m_eSymMark = EAccent::NONE;
+
+	m_shBorderFillIDRef = oNode.GetAttributeInt(L"borderFillIDRef");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hh:fontRef" == oChild.GetName())
+		{
+			if (nullptr == m_pParent)
+				continue;
+
+			const CHWPRecordFaceName* pFaceName = nullptr;
+
+			#define UPDATE_FACENAME(node_name, elang_type) \
+			pFaceName = dynamic_cast<const CHWPRecordFaceName*>(m_pParent->GetFaceName(oNode.GetAttributeInt(node_name))); \
+			if (nullptr != pFaceName) \
+				m_arFontNames[(int)elang_type] = pFaceName->GetFaceName()
+
+			UPDATE_FACENAME(L"hangul",   ELang::HANGUL);
+			UPDATE_FACENAME(L"latin",    ELang::LATIN);
+			UPDATE_FACENAME(L"hanja",    ELang::HANJA);
+			UPDATE_FACENAME(L"japanese", ELang::JAPANESE);
+			UPDATE_FACENAME(L"other",    ELang::OTHER);
+			UPDATE_FACENAME(L"symbol",   ELang::SYMBOL);
+			UPDATE_FACENAME(L"user",     ELang::USER);
+		}
+		else if (L"hh:ratio" == oChild.GetName())
+			ReadContainerData(oChild, m_arRatios, 100);
+		else if (L"hh:spacing" == oChild.GetName())
+			ReadContainerData(oChild, m_arSpacings);
+		else if (L"hh:relSz" == oChild.GetName())
+			ReadContainerData(oChild, m_arRelSizes, 100);
+		else if (L"hh:offset" == oChild.GetName())
+			ReadContainerData(oChild, m_arCharOffset);
+		else if (L"hh:underline" == oChild.GetName())
+		{
+			m_eUnderline = GetUnderline(oChild.GetAttributeInt(L"type"));
+			m_eUnderLineShape = GetLineStyle1(oChild.GetAttributeInt(L"shape"));
+			m_nUnderlineColor = oChild.GetAttributeColor(L"color");
+		}
+		else if (L"hh:strikeout" == oChild.GetName())
+		{
+			if (L"3D" == oChild.GetAttribute(L"shape"))
+				m_eStrikeOutShape = ELineStyle2::NONE;
+		}
+		else if (L"hh:outline" == oChild.GetName())
+		{
+			m_eOutline = GetOutline(oChild.GetAttributeInt(L"type"));
+		}
+		else if (L"hh:shadow" == oChild.GetName())
+		{
+			HWP_STRING sType = oChild.GetAttribute(L"type");
+
+			if (L"DROP" == sType)
+				m_eShadow = EShadow::DISCRETE;
+			else if (L"CONTINUOUS" == sType)
+				m_eShadow = EShadow::CONTINUOUS;
+			else
+				m_eShadow = EShadow::NONE;
+
+			m_nShadowColor = oChild.GetAttributeColor(L"color");
+			m_chShadowOffsetX = (HWP_BYTE)oChild.GetAttributeInt(L"offsetX");
+			m_chShadowOffsetY = (HWP_BYTE)oChild.GetAttributeInt(L"offsetY");
+		}
+		else if (L"hh:italic" == oChild.GetName())
+			m_bItalic = true;
+		else if (L"hh:bold" == oChild.GetName())
+			m_bBold = true;
+		else if (L"hh:emboss" == oChild.GetName())
+			m_bEmboss = true;
+		else if (L"hh:engrave" == oChild.GetName())
+			m_bEmboss = true;
+		else if (L"hh:supscript" == oChild.GetName())
+			m_bSuperScript = true;
+		else if (L"hh:subscript" == oChild.GetName())
+			m_bSubScript = true;
+	}
 }
 
 bool CHWPRecordCharShape::Bold() const

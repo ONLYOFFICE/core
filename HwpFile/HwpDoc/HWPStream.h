@@ -2,8 +2,7 @@
 #define HWPSTREAM_H
 
 #include <stack>
-#include <string>
-#include "Common.h"
+#include "Common/Common.h"
 
 namespace HWP
 {

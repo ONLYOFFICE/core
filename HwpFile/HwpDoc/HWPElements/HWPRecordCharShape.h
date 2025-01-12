@@ -5,6 +5,7 @@
 #include "../HWPStream.h"
 #include "HWPRecord.h"
 #include "HwpRecordTypes.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -112,8 +113,11 @@ class CHWPRecordCharShape : public CHWPRecord
 	int m_nShadowColor;
 	short m_shBorderFillIDRef;
 	int m_nStrikeOutColor;
+
+	void ReadContainerData(CXMLNode& oNode, short arValues[], int nDefaultValue = 0);
 public:
 	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 
 	bool Bold() const;
 	bool Italic() const;

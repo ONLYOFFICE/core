@@ -59,7 +59,7 @@ EColorFillPattern GetColorFillPattern(int nPattern)
 	}
 }
 
-void TBorder::ReadFromNode(XmlUtils::CXmlNode& oNode)
+void TBorder::ReadFromNode(CXMLNode& oNode)
 {
 	m_eStyle = GetLineStyle2(oNode.GetAttributeInt(L"type"));
 
@@ -184,12 +184,9 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CFill::CFill(XmlUtils::CXmlNode& oNode)
+CFill::CFill(CXMLNode& oNode)
 {
-	std::vector<XmlUtils::CXmlNode> arChilds;
-	oNode.GetChilds(arChilds);
-
-	for (XmlUtils::CXmlNode& oChild : arChilds)
+	for (CXMLNode& oChild : oNode.GetChilds())
 	{
 		if (L"hc:winBrush" == oChild.GetName())
 		{
@@ -209,37 +206,15 @@ CFill::CFill(XmlUtils::CXmlNode& oNode)
 	}
 }
 
-void CFill::ReadWinBrush(XmlUtils::CXmlNode& oNode)
+void CFill::ReadWinBrush(CXMLNode& oNode)
 {
-	m_nFaceColor = 0xFFFFFFFF;
-
-	HWP_STRING sColor = oNode.GetAttribute(L"faceColor");
-
-	if (L"none" != sColor)
-	{
-		if (L'#' == sColor.front())
-			sColor.erase(0, 1);
-
-		m_nFaceColor = std::stoi(sColor, 0, 16);
-	}
-
-	m_nHatchColor = 0x000000;
-
-	sColor = oNode.GetAttribute(L"hatchColor");
-
-	if (L"none" != sColor)
-	{
-		if (L'#' == sColor.front())
-			sColor.erase(0, 1);
-
-		m_nHatchColor = std::stoi(sColor, 0, 16);
-	}
-
+	m_nFaceColor = oNode.GetAttributeColor(L"faceColor", 0xFFFFFFFF);
+	m_nHatchColor = oNode.GetAttributeColor(L"hatchColor", 0x000000);
 	m_eHatchStyle = GetColorFillPattern(oNode.GetAttributeInt(L"hatchStyle", -1));
 	m_chAlpha = (HWP_BYTE)oNode.GetAttributeInt(L"alpha", 255);
 }
 
-void CFill::ReadGradation(XmlUtils::CXmlNode& oNode)
+void CFill::ReadGradation(CXMLNode& oNode)
 {
 	m_eGradType = GetGradFillType(oNode.GetAttributeInt(L"type"));
 	m_nAngle = oNode.GetAttributeInt(L"angle");
@@ -260,14 +235,11 @@ void CFill::ReadGradation(XmlUtils::CXmlNode& oNode)
 		m_arColors[unIndex] = std::stoi(std::regex_replace(arChilds[unIndex].GetText(), std::wregex(L"\\D"), L""), 0, 16);
 }
 
-void CFill::ReadImgBrush(XmlUtils::CXmlNode& oNode)
+void CFill::ReadImgBrush(CXMLNode& oNode)
 {
 	m_eMode = GetImageFillType(oNode.GetAttributeInt(L"mode", (int)EImageFillType::NONE));
 
-	std::vector<XmlUtils::CXmlNode> arChilds;
-	oNode.GetChilds(arChilds);
-
-	for (XmlUtils::CXmlNode& oChild : arChilds)
+	for (CXMLNode& oChild : oNode.GetChilds())
 	{
 		if (L"hc:img" == oChild.GetName())
 		{
@@ -362,30 +334,16 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 	m_pFill = new CFill(oBuffer, 0, 0); // TODO:: перейти от использования off и size
 }
 
-CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, XmlUtils::CXmlNode& oNode, int nVersion)
+CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_BORDER_FILL, 0, 0), m_pParent(&oDocInfo), m_pFill(nullptr)
 {
-	if (L"1" == oNode.GetAttribute(L"threeD"))
-		m_bThreeD = true;
-	else
-		m_bThreeD = false;
-
-	if (L"1" == oNode.GetAttribute(L"shadow"))
-		m_bShadow = true;
-	else
-		m_bShadow = false;
-
-	if (L"1" == oNode.GetAttribute(L"breakCellSeparateLine"))
-		m_bBreakCellSeparateLine = true;
-	else
-		m_bBreakCellSeparateLine = false;
-
-	std::vector<XmlUtils::CXmlNode> arChilds;
-	oNode.GetChilds(arChilds);
+	m_bThreeD = oNode.GetAttributeBool(L"threeD");
+	m_bShadow = oNode.GetAttributeBool(L"shadow");
+	m_bBreakCellSeparateLine = oNode.GetAttributeBool(L"breakCellSeparateLine");
 
 	HWP_STRING sChildName;
 
-	for (XmlUtils::CXmlNode& oChild : arChilds)
+	for (CXMLNode& oChild : oNode.GetChilds())
 	{
 		if (L"hh:slash" == oChild.GetName())
 		{
@@ -402,15 +360,8 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, XmlUtils::CXml
 			else if (L"ALL" == sType)
 				m_chSlash = 0b111;
 
-			if (L"1" == oChild.GetAttribute(L"Crooked"))
-				m_chCrookedSlash = 1;
-			else
-				m_chCrookedSlash = 0;
-
-			if (L"1" == oChild.GetAttribute(L"isCounter"))
-				m_bCounterSlash = true;
-			else
-				m_bCounterSlash = false;
+			m_chCrookedSlash = oChild.GetAttributeBool(L"Crooked");
+			m_bCounterSlash = oChild.GetAttributeBool(L"isCounter");
 		}
 		else if (L"hh:backSlash" == oChild.GetName())
 		{
@@ -427,15 +378,8 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, XmlUtils::CXml
 			else if (L"ALL" == sType)
 				m_chBackSlash = 0b111;
 
-			if (L"1" == oChild.GetAttribute(L"Crooked"))
-				m_chCrookedBackSlash = 1;
-			else
-				m_chCrookedBackSlash = 0;
-
-			if (L"1" == oChild.GetAttribute(L"isCounter"))
-				m_bCounterBackSlash = true;
-			else
-				m_bCounterBackSlash = false;
+			m_chCrookedBackSlash = oChild.GetAttributeBool(L"Crooked");
+			m_bCounterBackSlash = oChild.GetAttributeBool(L"isCounter");
 		}
 		else if (L"hh:leftBorder" == oChild.GetName())
 			m_oLeft.ReadFromNode(oChild);
@@ -448,9 +392,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, XmlUtils::CXml
 		else if (L"hh:diagonal" == oChild.GetName())
 			m_oDiagonal.ReadFromNode(oChild);
 		else if (L"hc:fillBrush" == oChild.GetName())
-		{
 			m_pFill = new CFill(oChild);
-		}
 	}
 }
 

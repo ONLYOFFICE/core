@@ -4,6 +4,7 @@
 #include "LineSeg.h"
 #include "RangeTag.h"
 #include "Ctrl.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -24,8 +25,11 @@ class CHWPPargraph : public IRef
 	VECTOR<TRangeTag*> m_arRangeTags;  // HWPTAG_PARA_RANGE_TAG
 
 	VECTOR<CCtrl*> m_arP; //HWPTAG_PARA_TEXT
+
+	void ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion);
 public:
 	CHWPPargraph();
+	CHWPPargraph(CXMLNode& oNode, int nVersion);
 	virtual ~CHWPPargraph();
 
 	virtual EParagraphType GetType() const;

@@ -68,40 +68,7 @@ void TBorder::ReadFromNode(CXMLNode& oNode)
 	if (L"none" != sColor)
 		m_nColor = std::stoi(sColor, 0, 16);
 
-	HWP_STRING sWidthValue = oNode.GetAttribute(L"width");
-
-	if (L"0.1" == sWidthValue || L"0.1 mm" == sWidthValue)
-		m_chWidth = 0;
-	else if (L"0.12" == sWidthValue || L"0.12 mm" == sWidthValue)
-		m_chWidth = 1;
-	else if (L"0.15" == sWidthValue || L"0.15 mm" == sWidthValue)
-		m_chWidth = 2;
-	else if (L"0.2" == sWidthValue || L"0.2 mm" == sWidthValue)
-		m_chWidth = 3;
-	else if (L"0.25" == sWidthValue || L"0.25 mm" == sWidthValue)
-		m_chWidth = 4;
-	else if (L"0.3" == sWidthValue || L"0.3 mm" == sWidthValue)
-		m_chWidth = 5;
-	else if (L"0.4" == sWidthValue || L"0.4 mm" == sWidthValue)
-		m_chWidth = 6;
-	else if (L"0.5" == sWidthValue || L"0.5 mm" == sWidthValue)
-		m_chWidth = 7;
-	else if (L"0.6" == sWidthValue || L"0.6 mm" == sWidthValue)
-		m_chWidth = 8;
-	else if (L"0.7" == sWidthValue || L"0.7 mm" == sWidthValue)
-		m_chWidth = 9;
-	else if (L"1.0" == sWidthValue || L"1.0 mm" == sWidthValue)
-		m_chWidth = 10;
-	else if (L"1.5" == sWidthValue || L"1.5 mm" == sWidthValue)
-		m_chWidth = 11;
-	else if (L"2.0" == sWidthValue || L"2.0 mm" == sWidthValue)
-		m_chWidth = 12;
-	else if (L"3.0" == sWidthValue || L"3.0 mm" == sWidthValue)
-		m_chWidth = 13;
-	else if (L"4.0" == sWidthValue || L"4.0 mm" == sWidthValue)
-		m_chWidth = 14;
-	else if (L"5.0" == sWidthValue || L"5.0 mm" == sWidthValue)
-		m_chWidth = 15;
+	m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oNode.GetAttribute(L"width"));
 }
 
 CFill::CFill()
@@ -256,7 +223,7 @@ void CFill::ReadImgBrush(CXMLNode& oNode)
 				m_chEffect = 2;
 
 			m_sBinItemID = oChild.GetAttribute(L"binaryItemIDRef");
-			m_chAlpha = (HWP_BYTE)oNode.GetAttributeInt(L"alpha", 255);
+			m_chAlpha = (HWP_BYTE)oChild.GetAttributeInt(L"alpha", 255);
 		}
 	}
 }

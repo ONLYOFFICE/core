@@ -5,6 +5,7 @@
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
 #include "../Common/Common.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -46,6 +47,7 @@ class CCtrlAutoNumber : public CCtrl
 public:
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID);
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
 

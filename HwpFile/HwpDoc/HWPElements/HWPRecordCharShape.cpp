@@ -192,7 +192,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 			const CHWPRecordFaceName* pFaceName = nullptr;
 
 			#define UPDATE_FACENAME(node_name, elang_type) \
-			pFaceName = dynamic_cast<const CHWPRecordFaceName*>(m_pParent->GetFaceName(oNode.GetAttributeInt(node_name))); \
+			pFaceName = dynamic_cast<const CHWPRecordFaceName*>(m_pParent->GetFaceName(oChild.GetAttributeInt(node_name))); \
 			if (nullptr != pFaceName) \
 				m_arFontNames[(int)elang_type] = pFaceName->GetFaceName()
 

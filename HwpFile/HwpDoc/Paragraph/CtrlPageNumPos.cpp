@@ -42,6 +42,13 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 }
 
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrl(sCtrlID)
+{
+	m_ePos = GetNumPos(oNode.GetAttributeInt(L"pos"));
+	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"formatType"));
+}
+
 ECtrlObjectType CCtrlPageNumPos::GetCtrlType() const
 {
 	return ECtrlObjectType::PageNumPos;

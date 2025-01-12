@@ -2,9 +2,45 @@
 
 namespace HWP
 {
+void CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion)
+{
+	if (L"hp:secPr" == oNode.GetName())
+	{
+
+	}
+}
+
 CHWPPargraph::CHWPPargraph()
 	: m_pLineSegs(nullptr)
 {}
+
+CHWPPargraph::CHWPPargraph(CXMLNode& oNode, int nVersion)
+	: m_pLineSegs(nullptr)
+{
+	m_shParaShapeID = oNode.GetAttributeInt(L"paraPrIDRef");
+	m_shParaStyleID = oNode.GetAttributeInt(L"styleIDRef");
+
+	if (oNode.GetAttributeBool(L"pageBreak"))
+		m_chBreakType |= 0b00000100;
+	else
+		m_chBreakType &= 0b11111011;
+
+	if (oNode.GetAttributeBool(L"columnBreak"))
+		m_chBreakType |= 0b00001000;
+	else
+		m_chBreakType &= 0b11110111;
+
+	int nCharShapeID = 0;
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:run" == oChild.GetName())
+		{
+			nCharShapeID = oChild.GetAttributeInt(L"charPrIDRef");
+
+		}
+	}
+}
 
 CHWPPargraph::~CHWPPargraph()
 {

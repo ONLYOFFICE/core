@@ -1334,7 +1334,6 @@ HWP_STRING GetVRelativeFrom(EVRelTo eRelTo)
 			return L"paragraph";
 		case EVRelTo::PAPER:
 		case EVRelTo::PAGE:
-		case EVRelTo::null:
 			return L"page";
 	}
 }
@@ -1345,7 +1344,6 @@ HWP_STRING GetHRelativeFrom(EHRelTo eRelTo)
 	{
 		case EHRelTo::PAPER:
 		case EHRelTo::PAGE:
-		case EHRelTo::null:
 			return L"page";
 		case EHRelTo::COLUMN:
 			return L"column";

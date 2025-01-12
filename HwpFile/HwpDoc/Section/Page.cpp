@@ -5,6 +5,34 @@ namespace HWP
 HWP::CPage::CPage()
 {}
 
+CPage::CPage(CXMLNode& oNode)
+{
+	m_bLandscape = L"NARROWLY" == oNode.GetAttribute(L"landscape");
+
+	m_nWidth = oNode.GetAttributeInt(L"width");
+	m_nHeight = oNode.GetAttributeInt(L"height");
+
+	std::wstring wsType = oNode.GetAttribute(L"gutterType");
+
+	if (L"LEFT_ONELY" == wsType)
+		m_chGutterType = 0;
+	else if (L"LEFT_RIGHT" == wsType)
+		m_chGutterType = 1;
+	else if (L"TOP_BOTTOM" == wsType)
+		m_chGutterType = 2;
+
+	for (CXMLNode& oChild : oNode.GetChilds(L"hp:margin"))
+	{
+		m_nMarginLeft   = oChild.GetAttributeInt(L"left");
+		m_nMarginRight  = oChild.GetAttributeInt(L"right");
+		m_nMarginTop    = oChild.GetAttributeInt(L"top");
+		m_nMarginBottom = oChild.GetAttributeInt(L"bottom");
+		m_nMarginHeader = oChild.GetAttributeInt(L"header");
+		m_nMarginFooter = oChild.GetAttributeInt(L"footer");
+		m_nMarginGutter = oChild.GetAttributeInt(L"gutter");
+	}
+}
+
 int CPage::GetWidth() const
 {
 	return m_nWidth;

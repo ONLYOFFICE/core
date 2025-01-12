@@ -17,6 +17,8 @@ public:
 	std::vector<CXMLNode> GetChilds();
 	std::vector<CXMLNode> GetChilds(const std::wstring& wsName);
 };
+
+int ConvertWidthToHWP(const std::wstring& wsValue);
 }
 
 #endif // XMLNODEH_H

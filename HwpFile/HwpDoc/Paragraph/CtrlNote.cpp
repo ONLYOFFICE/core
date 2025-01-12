@@ -16,6 +16,18 @@ CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, 
 	m_bFullFilled = true;
 }
 
+CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrl(sCtrlID)
+{
+	for (CXMLNode& oChild : oNode.GetChilds(L"subList"))
+	{
+		for (CXMLNode& oGrandChild : oChild.GetChilds(L"p"))
+			m_arParas.push_back(new CHWPPargraph(oGrandChild, nVersion));
+	}
+
+	m_bFullFilled = true;
+}
+
 ECtrlObjectType CCtrlNote::GetCtrlType() const
 {
 	return ECtrlObjectType::Note;

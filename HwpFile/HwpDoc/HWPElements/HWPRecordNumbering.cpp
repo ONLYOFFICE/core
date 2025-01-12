@@ -76,9 +76,9 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 			else if (L"RIGHT" == sType)
 				m_arNumbering[unIndex].m_chAlign = 2;
 
-			m_arNumbering[unIndex].m_bUseInstWidth = oNode.GetAttributeBool(L"useInstWidth");
-			m_arNumbering[unIndex].m_bAutoIndent = oNode.GetAttributeBool(L"autoIndent");
-			m_arNumbering[unIndex].m_shWidthAdjust = oNode.GetAttributeInt(L"widthAdjust");
+			m_arNumbering[unIndex].m_bUseInstWidth = oChild.GetAttributeBool(L"useInstWidth");
+			m_arNumbering[unIndex].m_bAutoIndent = oChild.GetAttributeBool(L"autoIndent");
+			m_arNumbering[unIndex].m_shWidthAdjust = oChild.GetAttributeInt(L"widthAdjust");
 
 			sType =  oChild.GetAttribute(L"textOffsetType");
 
@@ -87,11 +87,11 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 			else if (L"HWPUNIT" == sType)
 				m_arNumbering[unIndex].m_chTextOffsetType = 1;
 
-			m_arNumbering[unIndex].m_shTextOffset = oNode.GetAttributeInt(L"textOffset");
+			m_arNumbering[unIndex].m_shTextOffset = oChild.GetAttributeInt(L"textOffset");
 
-			short shLevel = oNode.GetAttributeInt(L"level");
+			short shLevel = oChild.GetAttributeInt(L"level");
 
-			sType = oNode.GetAttribute(L"numFormat");
+			sType = oChild.GetAttribute(L"numFormat");
 
 			if (L"DIGIT" == sType)
 			{
@@ -180,8 +180,8 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 				}
 			}
 
-			m_arNumbering[unIndex].m_nCharShape = std::abs(oNode.GetAttributeInt(L"charPrIDRef"));
-			m_arNumbering[unIndex].m_nStartNumber = oNode.GetAttributeInt(L"start");
+			m_arNumbering[unIndex].m_nCharShape = std::abs(oChild.GetAttributeInt(L"charPrIDRef"));
+			m_arNumbering[unIndex].m_nStartNumber = oChild.GetAttributeInt(L"start");
 			++unIndex;
 		}
 

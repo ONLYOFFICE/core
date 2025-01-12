@@ -4,8 +4,6 @@
 #include "../HWPStream.h"
 #include "CapParagraph.h"
 #include "Ctrl.h"
-#include <vector>
-#include <list>
 
 namespace HWP
 {
@@ -14,8 +12,7 @@ enum class EVRelTo
 {
 	PAPER,
 	PAGE,
-	PARA,
-	null
+	PARA
 };
 
 enum class EHRelTo
@@ -23,8 +20,7 @@ enum class EHRelTo
 	PAPER,
 	PAGE,
 	COLUMN,
-	PARA,
-	null
+	PARA
 };
 
 enum class EWidthRelTo
@@ -33,16 +29,14 @@ enum class EWidthRelTo
 	PAGE,
 	COLUMN,
 	PARA,
-	ABSOLUTE,
-	null
+	ABSOLUTE
 };
 
 enum class EHeightRelTo
 {
 	PAPER,
 	PAGE,
-	ABSOLUTE,
-	null
+	ABSOLUTE
 };
 
 enum class EVertAlign
@@ -131,6 +125,7 @@ public:
 	CCtrlCommon(const HWP_STRING& sCtrlID);
 	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 	virtual ~CCtrlCommon();
 
 	ECtrlObjectType GetCtrlType() const override;

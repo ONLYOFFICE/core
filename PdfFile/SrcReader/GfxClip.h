@@ -354,16 +354,15 @@ public:
 			RELEASEOBJECT(m_vPaths[i]);
     }
 
-    void AddPath(GfxPath *pPath, double *Matrix, bool bEo)
+    void AddPath(GfxPath *pPath, double *Matrix, int nFlag)
     {
         if (pPath && Matrix)
         {
             m_vPaths.push_back(pPath->copy());
             m_vMatrix.push_back(GfxClipMatrix());
             m_vMatrix.back().FromDoublePointer(Matrix);
-            m_vPathsClipEo.push_back(bEo);
+            m_vPathsClipFlag.push_back(nFlag);
         }
-
     }
 
     size_t GetPathNum()
@@ -376,9 +375,9 @@ public:
         return m_vPaths[i];
     }
 
-    bool GetClipEo(int i)
+    int GetClipFlag(int i)
     {
-        return m_vPathsClipEo[i];
+        return m_vPathsClipFlag[i];
     }
 
     bool IsChanged()
@@ -393,10 +392,8 @@ public:
 
     std::vector<GfxClipMatrix> m_vMatrix;
 private:
-
-
     std::vector<GfxPath *> m_vPaths;
-    std::vector<bool> m_vPathsClipEo;
+    std::vector<int> m_vPathsClipFlag;
     bool m_bChanged;
 };
 

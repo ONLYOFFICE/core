@@ -2173,7 +2173,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
@@ -2183,7 +2184,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), true);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeEvenOdd;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
@@ -2193,7 +2195,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding | c_nClipToStrokePath;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToPath(GfxState* pGState, GfxPath* pPath, double* pMatrix, bool bEO)
@@ -3496,9 +3499,7 @@ namespace PdfReader
 
 		GfxClip* pClip = pState->pClip;
 		GfxPath* pPath = pClip->GetPath(nIndex);
-		bool     bFlag = pClip->GetClipEo(nIndex);
-		int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-		nClipFlag |= c_nClipRegionIntersect;
+		int  nClipFlag = pClip->GetClipFlag(nIndex);;
 
 		m_pRenderer->BeginCommand(c_nClipType);
 		m_pRenderer->put_ClipMode(nClipFlag);

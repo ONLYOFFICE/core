@@ -22,7 +22,6 @@ SOURCES += \
     HwpDoc/Conversion/FootnoteConverter.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
     HwpDoc/Conversion/OleConverter.cpp \
-    HwpDoc/Conversion/WriterContext.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
@@ -97,7 +96,6 @@ HEADERS += \
     HwpDoc/Conversion/OleConverter.h \
     HwpDoc/Conversion/Transform.h \
     HwpDoc/Conversion/Types.h \
-    HwpDoc/Conversion/WriterContext.h \
     HwpDoc/Errors.h \
     HwpDoc/HWPDocInfo.h \
     HwpDoc/HWPElements/HWPRecord.h \

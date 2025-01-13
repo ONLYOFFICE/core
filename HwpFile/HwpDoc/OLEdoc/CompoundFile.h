@@ -4,7 +4,7 @@
 #include "Sector.h"
 #include "DirectoryEntry.h"
 #include "../HWPStream.h"
-#include "../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/common/File.h"
 
 namespace HWP
 {

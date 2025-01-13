@@ -350,7 +350,8 @@ namespace NSDocxRenderer
 			m_oFont.Size *= ((m_oTransform.sx() + m_oTransform.sy()) / 2);
 			m_bIsRecalcFontSize = false;
 		}
-		m_oManagers.pFontManager->LoadFontByFile(m_oFont);
+		if (!m_oManagers.pFontManager->LoadFontByFile(m_oFont))
+			return;
 
 		double _x = 0;
 		double _y = 0;

@@ -851,6 +851,15 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->styleHorizontalPos = graphicProperties->common_horizontal_pos_attlist_.style_horizontal_pos_;
 		drawing->styleVerticalPos = graphicProperties->common_vertical_pos_attlist_.style_vertical_pos_;
 		drawing->styleVerticalRel = graphicProperties->common_vertical_rel_attlist_.style_vertical_rel_;
+
+		if (graphicProperties->style_mirror_)
+		{
+			bool flipV = graphicProperties->style_mirror_->find(L"vertical") != std::wstring::npos;
+			bool flipH = graphicProperties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+			drawing->additional.push_back(odf_reader::_property(L"flipV", flipV));
+			drawing->additional.push_back(odf_reader::_property(L"flipH", flipH));
+		}
 	}
 	if (!drawing->styleVerticalRel && anchor)
 	{

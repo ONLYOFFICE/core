@@ -2149,6 +2149,12 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteCalcPr(workbook.m_oCalcPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+    if (workbook.m_oPivotCaches.IsInit())
+    {
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCaches);
+        WritePivotCaches(workbook, workbook.m_oPivotCaches.get());
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
 //ExternalReferences
 	if(workbook.m_oExternalReferences.IsInit())
 	{
@@ -2540,6 +2546,43 @@ void BinaryWorkbookTableWriter::WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCa
 		m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oForceFullCalc->ToBool());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+}
+void BinaryWorkbookTableWriter::WritePivotCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCaches& CPivotCaches)
+{
+    int nCurPos = 0;
+    for(size_t i = 0, length = CPivotCaches.m_arrItems.size(); i < length; ++i)
+    {
+        OOX::Spreadsheet::CWorkbookPivotCache* pivotCache = CPivotCaches.m_arrItems[i];
+        //cache
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCache);
+        WritePivotCache(workbook, *pivotCache);
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
+}
+void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCache& CPivotCache)
+{
+     int nCurPos = 0;
+
+    if(CPivotCache.m_oCacheId.IsInit())
+    {
+        nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::id);
+        m_oBcw.m_oStream.WriteULONG(CPivotCache.m_oCacheId->GetValue());
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
+    if(CPivotCache.m_oRid.IsInit())
+    {
+        smart_ptr<OOX::File> pFile = workbook.Find(OOX::RId(CPivotCache.m_oRid->GetValue()));
+        if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheDefinition == pFile->type())
+        {
+            auto pivotCacheFile = static_cast<OOX::Spreadsheet::CPivotCacheDefinitionFile*>(pFile.GetPointer());
+            if(pivotCacheFile->m_oPivotCashDefinition.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cache);
+                m_oBcw.m_oStream.WriteRecord2(0, pivotCacheFile->m_oPivotCashDefinition);
+                m_oBcw.WriteItemWithLengthEnd(nCurPos);
+            }
+        }
+    }
 }
 void BinaryWorkbookTableWriter::WriteConnections(const OOX::Spreadsheet::CConnections& connections)
 {

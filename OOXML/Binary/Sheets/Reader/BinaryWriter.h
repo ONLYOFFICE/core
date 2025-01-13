@@ -205,6 +205,7 @@ namespace BinXlsxRW
 		void WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView);
 		void WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames);
         void WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCalcPr);
+        void WritePivotCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCaches& CPivotCaches);
 		
 		void WriteConnections(const OOX::Spreadsheet::CConnections& connections);
 		void WriteConnection(const OOX::Spreadsheet::CConnection& connection);
@@ -236,6 +237,7 @@ namespace BinXlsxRW
 		void WriteDefinedName(const OOX::Spreadsheet::CDefinedName& definedName);
 		void WriteSlicerCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CSlicerCaches& oSlicerCaches);
 		void WriteFileSharing(const OOX::Spreadsheet::CFileSharing& fileSharing);
+        void WritePivotCache(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCache& CPivotCache);
 		
 		void WriteTimelineCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CTimelineCacheRefs& oTimelineCacheRefs);
 		void WriteTimelineCache(OOX::Spreadsheet::CTimelineCacheDefinition* pTimelineCache);

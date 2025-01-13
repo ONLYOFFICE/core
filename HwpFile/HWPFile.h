@@ -6,7 +6,7 @@
 #ifndef HWPFILE_USE_DYNAMIC_LIBRARY
 #define HWP_FILE_DECL_EXPORT
 #else
-#include "../../DesktopEditor/common/base_export.h"
+#include "../DesktopEditor/common/base_export.h"
 #define HWP_FILE_DECL_EXPORT Q_DECL_EXPORT
 #endif
 

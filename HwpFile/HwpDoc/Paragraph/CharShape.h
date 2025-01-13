@@ -1,7 +1,6 @@
 #ifndef CHARSHAPE_H
 #define CHARSHAPE_H
 
-#include <list>
 #include "../HWPStream.h"
 #include "Ctrl.h"
 

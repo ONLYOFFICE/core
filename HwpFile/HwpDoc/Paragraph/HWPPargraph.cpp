@@ -1,4 +1,5 @@
 #include "HWPPargraph.h"
+#include <algorithm>
 
 namespace HWP
 {

@@ -11,6 +11,8 @@
 #include "../Paragraph/CtrlColumnDef.h"
 #include "../Paragraph/CtrlShapePic.h"
 #include "../Paragraph/CtrlShapeOle.h"
+#include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/TblCell.h"
 
 #include "FootnoteConverter.h"

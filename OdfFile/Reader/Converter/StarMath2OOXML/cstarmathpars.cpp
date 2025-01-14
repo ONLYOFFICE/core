@@ -894,7 +894,10 @@ namespace StarMath
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion());
 		pXmlWrite->WriteNodeBegin(L"m:t",false);
-		pXmlWrite->WriteString(m_wsString);
+        if(m_wsString == L"&")
+            pXmlWrite->WriteString(L"&amp;");
+        else
+            pXmlWrite->WriteString(m_wsString);
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 		}

@@ -574,6 +574,8 @@ namespace OOX
 			XLS::BaseObjectPtr writeAttributes();
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+            virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+            virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	//----------
 			nullable_bool									m_oBackgroundQuery;
 			nullable_bool									m_oEnableRefresh;

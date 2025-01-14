@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -3847,6 +3847,25 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		writer.WriteString(L"</pivotCacheDefinition>");
 	}
+    void CPivotCacheDefinition::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+    {
+        NSStringUtils::CStringBuilder writer;
+        toXML(writer);
+        pWriter->WriteString1(0,  writer.GetData());
+    }
+    void CPivotCacheDefinition::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+    {
+        pReader->GetUChar();//type
+        auto xmlData = pReader->GetString2();
+        XmlUtils::CXmlLiteReader oReader;
+
+        if (!oReader.FromString(xmlData))
+            return;
+
+        if (!oReader.ReadNextNode())
+            return;
+        fromXML(oReader);
+    }
 	void CPivotCacheDefinition::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes( oReader );

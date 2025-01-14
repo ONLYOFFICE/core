@@ -127,6 +127,9 @@ extern "C" {
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION", AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_CANVAS_PDF", AVS_OFFICESTUDIO_FILE_CANVAS_PDF);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF", AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF);
+                jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES", AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES);
+                jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP", AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP);
+                jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX", AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX);
 
                 jobject res = jjniHashMap.toJniObject(env);
                 jjniHashMap.destroy(env);

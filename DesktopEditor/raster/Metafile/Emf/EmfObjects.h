@@ -78,7 +78,7 @@ namespace MetaFile
 		void         GetCenterPoint(double& dX, double& dY) const override;
 		void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 
-		std::vector<std::pair<unsigned, double>> GetGradientColors() const override;
+		void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
 	public:
 		unsigned int   unBrushStyle;
 		TRGBA          oColor;

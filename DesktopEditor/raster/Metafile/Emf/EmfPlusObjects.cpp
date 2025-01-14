@@ -79,27 +79,24 @@ namespace MetaFile
 		height = oRectF.dHeight;
 	}
 
-	std::vector<std::pair<unsigned int, double> > CEmfPlusBrush::GetGradientColors() const
+	void CEmfPlusBrush::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
 	{
 		if (arGradientColors.empty())
 		{
-			std::vector<std::pair<unsigned int, double>> arColors(2);
+			arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+			arPositions = {0., 1.};
 
-			arColors[0] = std::make_pair(GetColor()  + (GetAlpha()  << 24), 0.);
-			arColors[1] = std::make_pair(GetColor2() + (GetAlpha2() << 24), 0.);
-
-			return arColors;
+			return;
 		}
 
-		std::vector<std::pair<unsigned int, double>> arColors(arGradientColors.size());
+		arColors.resize(arGradientColors.size());
+		arPositions.resize(arGradientColors.size());
 
 		for (unsigned int unIndex = 0; unIndex < arGradientColors.size(); ++unIndex)
 		{
-			arColors[unIndex].first = METAFILE_RGBA(arGradientColors[unIndex].first.chRed, arGradientColors[unIndex].first.chGreen, arGradientColors[unIndex].first.chBlue, arGradientColors[unIndex].first.chAlpha);
-			arColors[unIndex].second = arGradientColors[unIndex].second;
+			arColors[unIndex] = METAFILE_RGBA(arGradientColors[unIndex].first.chRed, arGradientColors[unIndex].first.chGreen, arGradientColors[unIndex].first.chBlue, arGradientColors[unIndex].first.chAlpha);
+			arPositions[unIndex] = arGradientColors[unIndex].second;
 		}
-
-		return arColors;
 	}
 
 	CEmfPlusPen::CEmfPlusPen()

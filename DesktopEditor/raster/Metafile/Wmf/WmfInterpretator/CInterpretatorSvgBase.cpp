@@ -1284,9 +1284,13 @@ namespace MetaFile
 
 			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">";
 
-			for (const std::pair<unsigned int, double> parColorData : pBrush->GetGradientColors())
-				m_wsDefs += L"<stop offset=\"" + ConvertToWString(parColorData.second, 2) +
-				            L"\" stop-color=\"" + CalculateColor(parColorData.first) +  L"\"/>";
+			std::vector<long> arColors;
+			std::vector<double> arPositions;
+			pBrush->GetGradientColors(arColors, arPositions);
+
+			for (unsigned int unIndex = 0; unIndex < arColors.size(); ++unIndex)
+				m_wsDefs += L"<stop offset=\"" + ConvertToWString(arPositions[unIndex], 2) +
+				            L"\" stop-color=\"" + CalculateColor(arColors[unIndex]) +  L"\"/>";
 
 			m_wsDefs += L"</linearGradient>";
 

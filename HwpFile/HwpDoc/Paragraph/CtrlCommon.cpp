@@ -1,6 +1,7 @@
 #include "CtrlCommon.h"
 #include "../Common/Common.h"
-#include "../Paragraph/CellParagraph.h"
+
+#include "CellParagraph.h"
 
 namespace HWP
 {

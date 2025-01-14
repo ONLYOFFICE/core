@@ -31,6 +31,7 @@ class CPicColor
 	int m_nRGB;
 public:
 	CPicColor(CHWPStream& oBuffer, int nOff, int nSize);
+	CPicColor(CXMLNode& oNode);
 };
 
 class CPicEffect
@@ -60,6 +61,7 @@ class CShadow : public CPicEffect
 	CPicColor *m_pColor;
 public:
 	CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
+	CShadow(CXMLNode& oNode, int nVersion);
 	~CShadow();
 };
 
@@ -70,6 +72,7 @@ class CNeon : public CPicEffect
 	CPicColor *m_pColor;
 public:
 	CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
+	CNeon(CXMLNode& oNode, int nVersion);
 	~CNeon();
 };
 
@@ -78,6 +81,7 @@ class CSoftEdge : public CPicEffect
 	float m_fRadius;
 public:
 	CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
+	CSoftEdge(CXMLNode& oNode, int nVersion);
 };
 
 class CReflect : public CPicEffect
@@ -98,6 +102,7 @@ class CReflect : public CPicEffect
 	float m_fOffsetDirection;
 public:
 	CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
+	CReflect(CXMLNode& oNode, int nVersion);
 };
 
 class CCtrlShapePic : public CCtrlGeneralShape
@@ -129,6 +134,7 @@ public:
 	CCtrlShapePic(const HWP_STRING& sCtrlID);
 	CCtrlShapePic(const CCtrlGeneralShape& oShape);
 	CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 	~CCtrlShapePic();
 
 	EShapeType GetShapeType() const override;

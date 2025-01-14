@@ -17,6 +17,22 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	m_chCurv = (HWP_BYTE)oNode.GetAttributeInt(L"ratio");
+
+	for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
+	{
+		if ((L"hc:pt" + std::to_wstring(unIndex)) == oNode.GetName())
+		{
+			m_arPoints[unIndex].m_nX = oNode.GetAttributeInt(L"x");
+			m_arPoints[unIndex].m_nY = oNode.GetAttributeInt(L"y");
+			break;
+		}
+	}
+}
+
 EShapeType CCtrlShapeRect::GetShapeType() const
 {
 	return EShapeType::Rect;

@@ -17,6 +17,18 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	m_sBinDataID = oNode.GetAttribute(L"binaryItemIDRef");
+
+	for (CXMLNode& oChild : oNode.GetChilds(L"hc:extent"))
+	{
+		m_nExtentX = oChild.GetAttributeInt(L"x");
+		m_nExtentY = oChild.GetAttributeInt(L"y");
+	}
+}
+
 EShapeType CCtrlShapeOle::GetShapeType() const
 {
 	return EShapeType::Ole;

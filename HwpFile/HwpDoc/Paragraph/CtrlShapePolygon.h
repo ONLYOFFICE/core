@@ -9,12 +9,13 @@ namespace HWP
 class CCtrlShapePolygon : public CCtrlGeneralShape
 {
 	int m_nPoints;
-	std::list<TPoint> m_arPoints;
+	VECTOR<TPoint> m_arPoints;
 public:
 	CCtrlShapePolygon();
 	CCtrlShapePolygon(const HWP_STRING& sCtrlID);
 	CCtrlShapePolygon(const CCtrlGeneralShape& oShape);
 	CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

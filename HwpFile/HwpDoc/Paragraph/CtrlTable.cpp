@@ -10,6 +10,46 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlCommon(sCtrlID, oNode, nVersion)
+{
+	m_shNRows = oNode.GetAttributeInt(L"rowCnt");
+	m_shNCols = oNode.GetAttributeInt(L"colCnt");
+	m_shCellSpacing = oNode.GetAttributeInt(L"cellSpacing");
+	m_shBorderFillID = oNode.GetAttributeInt(L"borderFillIDRef");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:inMargin" == oChild.GetName())
+		{
+			m_shInLSpace = oChild.GetAttributeInt(L"left");
+			m_shInRSpace = oChild.GetAttributeInt(L"right");
+			m_shInTSpace = oChild.GetAttributeInt(L"top");
+			m_shInBSpace = oChild.GetAttributeInt(L"bottom");
+		}
+		else if (L"hp:cellzoneList" == oChild.GetName())
+		{
+			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:cellzone"))
+			{
+				TCellZone* pCellZone = new TCellZone();
+
+				pCellZone->m_shStartRowAddr = oGrandChild.GetAttributeInt(L"startRowAddr");
+				pCellZone->m_shStartColAddr = oGrandChild.GetAttributeInt(L"startColAddr");
+				pCellZone->m_shEndRowAddr = oGrandChild.GetAttributeInt(L"endRowAddr");
+				pCellZone->m_shEndColAddr = oGrandChild.GetAttributeInt(L"endColAddr");
+				pCellZone->m_shBorderFillIDRef = oGrandChild.GetAttributeInt(L"borderFillIDRef");
+
+				m_arCellzoneList.push_back(pCellZone);
+			}
+		}
+		else if(L"hp:tr" == oChild.GetName())
+		{
+			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:tc"))
+				m_arCells.push_back(new CTblCell(oGrandChild, nVersion));
+		}
+	}
+}
+
 CCtrlTable::~CCtrlTable()
 {
 	for (TCellZone* pCellzone : m_arCellzoneList)

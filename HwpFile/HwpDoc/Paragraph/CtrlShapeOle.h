@@ -19,6 +19,7 @@ public:
 	CCtrlShapeOle(const HWP_STRING& sCtrlID);
 	CCtrlShapeOle(const CCtrlGeneralShape& oShape);
 	CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

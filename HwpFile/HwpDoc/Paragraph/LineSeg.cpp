@@ -20,6 +20,13 @@ CLineSeg::CLineSeg(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
+CLineSeg::CLineSeg(CXMLNode& oNode, int nVersion)
+{
+	//TODO:: реализовать
+	m_nLineSpacing = oNode.GetAttributeInt(L"spacing");
+	m_nTextHeight = oNode.GetAttributeInt(L"textheight");
+}
+
 int CLineSeg::GetLineSpacing() const
 {
 	return m_nLineSpacing;

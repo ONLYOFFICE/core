@@ -17,6 +17,22 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	std::vector<CXMLNode> arChilds{oNode.GetChilds(L"hc:pt")};
+
+	m_arPoints.resize(arChilds.size());
+
+	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
+	{
+		m_arPoints[unIndex].m_nX = arChilds[unIndex].GetAttributeInt(L"x");
+		m_arPoints[unIndex].m_nY = arChilds[unIndex].GetAttributeInt(L"y");
+	}
+
+	m_nPoints = m_arPoints.size();
+}
+
 EShapeType CCtrlShapePolygon::GetShapeType() const
 {
 	return EShapeType::Polygon;

@@ -122,7 +122,7 @@ int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuff
 
 	oBuffer.ReadShort(oObj.m_shNElement);
 
-	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
+	oObj.m_arCtrlIdList.resize(oObj.m_shNElement);
 
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNElement; ++unIndex)
 		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4, EStringCharacter::ASCII);

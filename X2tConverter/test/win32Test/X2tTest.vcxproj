@@ -183,6 +183,7 @@
     <ClInclude Include="..\..\src\lib\doc.h" />
     <ClInclude Include="..\..\src\lib\docx.h" />
     <ClInclude Include="..\..\src\lib\html.h" />
+    <ClInclude Include="..\..\src\lib\hwp.h" />
     <ClInclude Include="..\..\src\lib\iwork.h" />
     <ClInclude Include="..\..\src\lib\odf.h" />
     <ClInclude Include="..\..\src\lib\pdf_image.h" />

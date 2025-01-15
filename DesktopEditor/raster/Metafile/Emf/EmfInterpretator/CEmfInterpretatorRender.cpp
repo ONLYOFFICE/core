@@ -41,7 +41,7 @@ namespace MetaFile
 	}
 
 	void CEmfInterpretatorRender::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx,
-											 int iGraphicsMode, double dXScale, double dYScale)
+	                                         int iGraphicsMode, double dXScale, double dYScale)
 	{
 		if (NULL != m_pMetaFileRenderer)
 			m_pMetaFileRenderer->DrawString(wsText, unCharsCount, dX, dY, pDx, iGraphicsMode, dXScale, dYScale);

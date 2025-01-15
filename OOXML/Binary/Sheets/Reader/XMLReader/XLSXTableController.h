@@ -47,7 +47,8 @@ class XLSXTableController
 public:
     /// @brief инициализация полей объекта
     /// @param book объект который будет заполнен данными с помощью метода FormBook
-    XLSXTableController(OOX::Spreadsheet::CXlsx &book);
+    /// @param lcid идентификатор локлаи
+    XLSXTableController(OOX::Spreadsheet::CXlsx &book, _INT32 lcid);
 
     /// @brief добавление ячейки
     /// @param sText вставляемый текст

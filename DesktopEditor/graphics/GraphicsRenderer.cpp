@@ -822,7 +822,8 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 			m_pPath->SetRuler(bIsIn ? false : true);
 
 			INT bIsIntersect = (c_nClipRegionIntersect == (0x0100 & m_lCurrentClipMode));
-			m_pRenderer->CombineClip(m_pPath, bIsIntersect ? agg::sbool_and : agg::sbool_or);
+			INT bIsStrokePath = (c_nClipToStrokePath == (0x0010 & m_lCurrentClipMode));
+			m_pRenderer->CombineClip(m_pPath, bIsIntersect ? agg::sbool_and : agg::sbool_or, bIsStrokePath ? &m_oPen : NULL);
 
 			//m_pRenderer->SetClip(m_pPath);
 			break;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -55,7 +55,7 @@ public:
     bool ReadScientific(const std::wstring &value, std::wstring &digit, std::wstring &format);
 
 private:
-    std::wstring createFractionFormat(const std::wstring &value, wchar_t *endPtr);
+    std::wstring createFractionFormat(const std::wstring &value, const std::wstring &postfix);
 
     bool checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format);
 };

@@ -139,7 +139,9 @@ private:
 	ods_table_context table_context_;	
 	office_spreadsheet* root_spreadsheet_;
 	bool repeat_at_lasts_ = true;
-	bool header_row_ = false;
+	
+	bool in_header_row_ = false;
+	bool in_rows_ = false;
 };
 
 

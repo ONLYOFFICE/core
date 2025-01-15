@@ -61,7 +61,8 @@ enum _rels_type
 	typeActiveX, 
 	typeControl,
 	typeControlProps,
-	typeChartUserShapes
+	typeChartUserShapes,
+    typePDF
 };
 enum _rels_type_place
 {

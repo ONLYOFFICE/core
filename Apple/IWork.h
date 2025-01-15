@@ -28,8 +28,8 @@ public:
 	CIWorkFile();
 	~CIWorkFile();
 
-	IWorkFileType GetType(const std::wstring& sFile);
-	int Convert2Odf(const std::wstring& sFile, const std::wstring& sOutputFile);
+	IWorkFileType GetType(const std::wstring& sFile) const;
+	int Convert2Odf(const std::wstring& sFile, const std::wstring& sOutputFile) const;
 	void SetTmpDirectory(const std::wstring& sFolder);
 };
 

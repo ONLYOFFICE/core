@@ -43,7 +43,7 @@
 
 #include <memory>
 
-_UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx)
+_UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _INT32 lcid)
 {
     XmlUtils::CXmlLiteReader reader = {};
     if(!reader.FromFile(sFileName))
@@ -60,7 +60,7 @@ _UINT32 XMLReader::Read2(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx 
     reader.MoveToStart();
 
     ///создаем таблицу
-    XLSXTableController table = {oXlsx};
+    XLSXTableController table = {oXlsx, lcid};
     ///заполняем первый ряд таблицы именами столбцов
     auto colNames = nameController.GetColumnNames();
     std::map<_UINT32, std::wstring> namesMap;

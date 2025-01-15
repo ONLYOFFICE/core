@@ -513,6 +513,9 @@ namespace NSCSS
 				return (*static_cast<std::wstring*>(m_oValue)) == (*static_cast<std::wstring*>(oColor.m_oValue));
 			case ColorUrl:
 				return (*static_cast<CURL*>(m_oValue)) == (*static_cast<CURL*>(oColor.m_oValue));
+			case ColorContextStroke:
+			case ColorContextFill:
+				return false;
 		}
 	}
 
@@ -532,6 +535,9 @@ namespace NSCSS
 				return (*static_cast<std::wstring*>(m_oValue)) != (*static_cast<std::wstring*>(oColor.m_oValue));
 			case ColorUrl:
 				return (*static_cast<CURL*>(m_oValue)) != (*static_cast<CURL*>(oColor.m_oValue));
+			case ColorContextStroke:
+			case ColorContextFill:
+				return false;
 		}
 	}
 
@@ -561,6 +567,9 @@ namespace NSCSS
 				m_oValue = new CURL(*static_cast<CURL*>(oColor.m_oValue));
 				break;
 			}
+			case ColorContextStroke:
+			case ColorContextFill:
+				break;
 		}
 
 		return *this;
@@ -579,6 +588,39 @@ namespace NSCSS
 	CColor::CColor()
 		: CValue(NULL, 0, false), m_oOpacity(1.), m_enType(ColorEmpty)
 	{}
+
+	CColor::CColor(const CColor& oColor)
+		: CValue(NULL, 0, false), m_oOpacity(oColor.m_oOpacity), m_enType(oColor.m_enType)
+	{
+		switch (m_enType)
+		{
+			case ColorRGB:
+			{
+				TRGB *pRGB = static_cast<TRGB*>(oColor.m_oValue);
+				m_oValue = new TRGB(*pRGB);
+				break;
+			}
+			case ColorHEX:
+			{
+				std::wstring* pValue = static_cast<std::wstring*>(oColor.m_oValue);
+				m_oValue = new std::wstring(*pValue);
+				break;
+			}
+			case ColorUrl:
+			{
+				CURL *pURL = static_cast<CURL*>(oColor.m_oValue);
+				m_oValue = new CURL(*pURL);
+				break;
+			}
+			default:
+			break;
+		}
+	}
+
+	CColor::~CColor()
+	{
+		Clear();
+	}
 
 	void CColor::SetEmpty(unsigned int unLevel)
 	{

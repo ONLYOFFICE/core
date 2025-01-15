@@ -219,6 +219,10 @@ namespace PdfWriter
 			m_pCount = new CNumberObject(0);
 			Add("Count", m_pCount);
 		}
+
+		CResourcesDict* pResources = (CResourcesDict*)Get("Resources");
+		if (pResources)
+			pResources->Fix();
 	}
 	void CPageTree::AddPage(CDictObject* pPage)
 	{
@@ -257,6 +261,16 @@ namespace PdfWriter
 			return true;
 		return false;
 	}
+	bool CPageTree::ReplacePage(int nPageIndex, CPage* pPage)
+	{
+		if (nPageIndex >= m_pCount->Get())
+			return false;
+		int nI = 0;
+		CObjectBase* pObj = GetFromPageTree(nPageIndex, nI, true, true, pPage);
+		if (pObj)
+			return true;
+		return false;
+	}
 	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
 	{
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
@@ -270,9 +284,14 @@ namespace PdfWriter
 				if (nPageIndex == nI)
 				{
 					pRes = pObj;
-					if (bRemove)
+					if (bRemove && bInsert)
+					{
+						m_pPages->Insert(pObj, pPage, true);
+						pPage->Add("Parent", this);
+					}
+					else if (bRemove)
 						pRes = m_pPages->Remove(i);
-					if (bInsert)
+					else if (bInsert)
 					{
 						m_pPages->Insert(pObj, pPage);
 						pPage->Add("Parent", this);
@@ -406,8 +425,6 @@ namespace PdfWriter
 				m_unPatternsCount = m_pPatterns->GetSize();
 			}
 		}
-		else
-			Add("Resources", new CDictObject());
 
 		m_pStream = NULL;
 	}
@@ -527,7 +544,7 @@ namespace PdfWriter
 				pPageTree = (CPageTree*)pObj;
 			while (pPageTree)
 			{
-				pObject = Get("Resources");
+				pObject = pPageTree->Get("Resources");
 
 				if (pObject)
 					break;

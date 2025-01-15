@@ -1,0 +1,188 @@
+#include "HWPPargraph.h"
+#include <algorithm>
+
+namespace HWP
+{
+CHWPPargraph::CHWPPargraph()
+	: m_pLineSegs(nullptr)
+{}
+
+CHWPPargraph::~CHWPPargraph()
+{
+	if (nullptr != m_pLineSegs)
+		delete m_pLineSegs;
+
+	CLEAR_ARRAY(TRangeTag, m_arRangeTags);
+}
+
+EParagraphType CHWPPargraph::GetType() const
+{
+	return EParagraphType::Normal;
+}
+
+void CHWPPargraph::SetLineSeg(CLineSeg* pLineSeg)
+{
+	if (nullptr != m_pLineSegs)
+		delete m_pLineSegs;
+
+	m_pLineSegs = pLineSeg;
+}
+
+void CHWPPargraph::AddRangeTag(TRangeTag* pRangeTag)
+{
+	m_arRangeTags.push_back(pRangeTag);
+}
+
+void CHWPPargraph::AddCtrl(CCtrl* pCtrl)
+{
+	m_arP.push_back(pCtrl);
+}
+
+void CHWPPargraph::AddCtrls(const LIST<CCtrl*>& arCtrls)
+{
+	m_arP.insert(m_arP.end(), arCtrls.begin(), arCtrls.end());
+}
+
+bool CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
+{
+	if (unIndex >= m_arP.size())
+		return false;
+
+	CCtrl* pOldCtrl = m_arP[unIndex];
+
+	if (nullptr != pOldCtrl)
+		delete pOldCtrl;
+
+	m_arP[unIndex] = pCtrl;
+
+	return true;
+}
+
+VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
+{
+	return m_arP;
+}
+
+std::vector<const CCtrl*> CHWPPargraph::GetCtrls() const
+{
+	std::vector<const CCtrl*> arParagraphs(m_arP.size());
+
+	for (unsigned int unIndex = 0; unIndex < m_arP.size(); ++unIndex)
+		arParagraphs[unIndex] = dynamic_cast<const CCtrl*>(m_arP[unIndex]);
+
+	return arParagraphs;
+}
+
+unsigned int CHWPPargraph::GetCountCtrls() const
+{
+	return m_arP.size();
+}
+
+short CHWPPargraph::GetShapeID() const
+{
+	return m_shParaShapeID;
+}
+
+short CHWPPargraph::GetStyleID() const
+{
+	return m_shParaStyleID;
+}
+
+HWP_BYTE CHWPPargraph::GetBreakType() const
+{
+	return m_chBreakType;
+}
+
+const CLineSeg* CHWPPargraph::GetLineSeg() const
+{
+	return m_pLineSegs;
+}
+
+CHWPPargraph* CHWPPargraph::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+{
+	CHWPPargraph *pPara = new CHWPPargraph();
+
+	if (nullptr == pPara)
+		return nullptr;
+
+	oBuffer.SavePosition();
+	Parse(*pPara, nSize, oBuffer, nOff, nVersion);
+	oBuffer.Skip(-oBuffer.GetDistanceToLastPos(true));
+
+	return pPara;
+}
+
+int CHWPPargraph::Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
+{
+	oBuffer.SavePosition();
+
+	oBuffer.Skip(4); // nChars
+
+	int nControlMask;
+	oBuffer.ReadInt(nControlMask);
+
+	oBuffer.ReadShort(oPara.m_shParaShapeID);
+	oPara.m_shParaStyleID = (short)(oBuffer.ReadByte() & 0x00FF);
+	oBuffer.ReadByte(oPara.m_chBreakType);
+
+	short shNCharShapeInfo;
+	oBuffer.ReadShort(shNCharShapeInfo);
+
+	short shNRangeTags;
+	oBuffer.ReadShort(shNRangeTags);
+
+	short shNLineSeg;
+	oBuffer.ReadShort(shNLineSeg);
+
+	int nParaInstanceID;
+	oBuffer.ReadInt(nParaInstanceID);
+
+	if (nVersion >= 5032 && oBuffer.GetDistanceToLastPos() < nSize)
+	{
+		short shCangeTrackingMerge;
+		oBuffer.ReadShort(shCangeTrackingMerge);
+	}
+
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+	return nSize;
+}
+
+CCtrl* CHWPPargraph::FindFirstElement(const HWP_STRING& sID, bool bFullfilled, unsigned int& nIndex) const
+{
+	for (VECTOR<CCtrl*>::const_iterator itCtrl = m_arP.cbegin(); itCtrl != m_arP.cend(); ++itCtrl)
+	{
+		if (sID == (*itCtrl)->GetID() && bFullfilled == (*itCtrl)->FullFilled())
+		{
+			nIndex = itCtrl - m_arP.cbegin();
+			return (*itCtrl);
+		}
+	}
+
+	return nullptr;
+}
+
+CCtrl* CHWPPargraph::FindLastElement(const HWP_STRING& sID)
+{
+	for (VECTOR<CCtrl*>::const_reverse_iterator itCtrl = m_arP.crbegin(); itCtrl != m_arP.crend(); ++itCtrl)
+	{
+		if (sID == (*itCtrl)->GetID())
+			return (*itCtrl);
+	}
+
+	return nullptr;
+}
+
+int CHWPPargraph::IndexOf(CCtrl* pCtrl)
+{
+	if (nullptr == pCtrl || m_arP.empty())
+		return -1;
+
+	VECTOR<CCtrl*>::const_iterator itFound = std::find_if(m_arP.cbegin(), m_arP.cend(), [pCtrl](CCtrl *pCurrCtrl){ return CCtrl::Equals(pCurrCtrl, pCtrl); });
+
+	if (itFound != m_arP.cend())
+		return itFound - m_arP.cbegin();
+
+	return -1;
+}
+
+}

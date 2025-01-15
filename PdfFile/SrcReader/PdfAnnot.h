@@ -147,7 +147,8 @@ private:
 	double m_dWScale, m_dHScale;
 	double m_dRWScale, m_dRHScale;
 	double m_dWTale, m_dHTale;
-	int m_nRx1, m_nRy1, m_nWidth, m_nHeight;
+	double m_dRx1, m_dRy1;
+	int m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
 	bool m_bIsStamp;
 
@@ -578,7 +579,7 @@ public:
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
 	std::string m_sName; // Иконка
-	int m_nRotate;
+	double m_dRotate;
 	double m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3, m_dX4, m_dY4;
 };
 

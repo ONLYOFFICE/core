@@ -655,20 +655,15 @@ namespace MetaFile
 
 				m_oStream >> unPositionCount;
 
-				std::vector<double> arBlendPositions(unPositionCount);
-
-				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
-					m_oStream >> arBlendPositions[unIndex];
-
-				std::vector<TEmfPlusARGB> arBlendColors(unPositionCount);
-
-				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
-					m_oStream >> arBlendColors[unIndex];
-
-				if (1 < unPositionCount)
+				if (unPositionCount > 1)
 				{
-					pEmfPlusBrush->oColorBack = arBlendColors[0];
-					pEmfPlusBrush->oColor     = arBlendColors.back();
+					pEmfPlusBrush->arGradientColors.resize(unPositionCount);
+
+					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].second;
+
+					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
 				}
 			}
 
@@ -679,12 +674,39 @@ namespace MetaFile
 			//TODO: реализовать
 			pEmfPlusBrush->unStyle = BS_LINEARGRADIENT;
 
-			m_oStream.Skip(8); // BrushDataFlags, WrapMode
+			int nBrushDataFlags;
+			m_oStream >> nBrushDataFlags;
+
+			m_oStream.Skip(4); // WrapMode
 
 			//				m_oStream >> pEmfPlusBrush->RectF;
 			m_oStream.Skip(16);
 			m_oStream >> pEmfPlusBrush->oColor;
 			m_oStream >> pEmfPlusBrush->oColorBack;
+
+			m_oStream.Skip(8); // Reserved1, Reserved2
+
+			if (BrushDataTransform & nBrushDataFlags)
+			{
+				m_oStream.Skip(24);
+			}
+
+			if (BrushDataPresetColors & nBrushDataFlags)
+			{
+				int nPositionCount;
+				m_oStream >> nPositionCount;
+
+				if (nPositionCount > 1)
+				{
+					pEmfPlusBrush->arGradientColors.resize(nPositionCount);
+
+					for (unsigned int unIndex = 0; unIndex < nPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].second;
+
+					for (unsigned int unIndex = 0; unIndex < nPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
+				}
+			}
 
 			break;
 		}
@@ -2266,16 +2288,21 @@ namespace MetaFile
 			if (NULL != pEmfPlusPen->pBrush)
 				m_pDC->SetBrush(pEmfPlusPen->pBrush);
 
-			CPathConverter oPathConverter;
-			CPath oNewPath, oLineCapPath;
-
-			oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
-
-			oNewPath.DrawOn(m_pInterpretator, true, false);
-			oLineCapPath.DrawOn(m_pInterpretator, false, true);
-
 			if (NULL != m_pInterpretator)
-				m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, &oNewPath);
+			{
+				CPathConverter oPathConverter;
+				CPath oNewPath, oLineCapPath;
+
+				oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
+
+				if (InterpretatorType::Render == m_pInterpretator->GetType())
+				{
+					oNewPath.DrawOn(m_pInterpretator, true, false);
+					oLineCapPath.DrawOn(m_pInterpretator, false, true);
+				}
+				else
+					m_pInterpretator->HANDLE_EMFPLUS_DRAWPATH(shOgjectIndex, unPenId, pPath);
+			}
 
 			if (NULL != pEmfPlusPen->pBrush)
 				m_pDC->RemoveBrush(pEmfPlusPen->pBrush);
@@ -3126,7 +3153,6 @@ namespace MetaFile
 		m_oStream >> oMatrix;
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_RESETWORLDTRANSFORM()
@@ -3134,7 +3160,6 @@ namespace MetaFile
 		m_bBanEmfProcessing = true;
 
 		m_pDC->ResetTransform();
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ROTATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3153,7 +3178,6 @@ namespace MetaFile
 		TEmfPlusXForm oMatrix(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, 0, 0);
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SCALEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3168,7 +3192,6 @@ namespace MetaFile
 		TEmfPlusXForm oMatrix(dSx, 0, 0, dSy, 0, 0);
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPAGETRANSFORM(unsigned short unShFlags)
@@ -3185,8 +3208,6 @@ namespace MetaFile
 
 		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
 		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
-
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETWORLDTRANSFORM()
@@ -3196,11 +3217,8 @@ namespace MetaFile
 		m_oStream >> oMatrix;
 
 		m_pDC->MultiplyTransform(oMatrix, MWT_SET);
-
 		TEmfPlusXForm oUnitKoefMatrix(m_dPageTransformX, 0, 0, m_dPageTransformY, 0, 0);
 		m_pDC->MultiplyTransform(oUnitKoefMatrix, MWT_LEFTMULTIPLY);
-
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_TRANSLATEWORLDTRANSFORM(unsigned short unShFlags)
@@ -3213,7 +3231,6 @@ namespace MetaFile
 		TEmfPlusXForm oMatrix(1, 0, 0, 1, dX, dY);
 
 		m_pDC->MultiplyTransform(oMatrix, (unShFlags & 0x2000) ? MWT_RIGHTMULTIPLY : MWT_LEFTMULTIPLY);
-		UpdateOutputDC();
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_ENDOFFILE()

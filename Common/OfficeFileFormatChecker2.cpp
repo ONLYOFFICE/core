@@ -905,6 +905,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
 	else if (0 == sExt.compare(L".key"))
 		nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
+	else if (0 == sExt.compare(L".hwp"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
+	else if (0 == sExt.compare(L".hwpx"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 		return true;
@@ -1371,6 +1375,7 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTM:
 		return L".dotm";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT:
 		return L".doc";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:
 		return L".odt";

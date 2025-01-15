@@ -201,6 +201,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 
 		add_default_row(repeated_default);
 	}
+	if (in_rows_) level += 1;
 //-------------------------------------------------------------------------------------------
 	while (level < current_table()->current_level())
 	{
@@ -209,7 +210,7 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 	while (level > current_table()->current_level())
 	{
 		office_element_ptr row_group_elm;
-		create_element(L"table", L"table-row-group",row_group_elm,this);
+		create_element(L"table", L"table-row-group", row_group_elm, this);
 		current_table()->start_group(row_group_elm);
 	}
 //-------------------------------------------------------------------------------------------
@@ -264,14 +265,12 @@ void ods_conversion_context::start_row(int _start_row, int repeated, int level, 
 		else
 			row_properties->style_table_row_properties_attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
-	header_row_ = false;
+	in_header_row_ = false;
 	if (_start_row == 1 && (false == current_table()->table_parts().empty()) && (false == current_table()->table_parts().back().columns.empty()))
 	{
-		header_row_ = true;
+		in_header_row_ = true;
 		repeated = 1;
-	}
-	if (header_row_)
-	{
+
 		office_element_ptr row_headers_elm;
 		create_element(L"table", L"table-header-rows", row_headers_elm, this);
 		current_table()->start_headers(row_headers_elm);
@@ -296,9 +295,16 @@ void ods_conversion_context::end_row()
 
 		current_table()->add_default_cell(repeated);
 	}
-	if (header_row_)
+	if (in_header_row_)
 	{
+		in_header_row_ = false;
 		current_table()->end_headers();
+		
+		office_element_ptr rows_elm;
+		create_element(L"table", L"table-rows", rows_elm, this);
+		current_table()->start_rows(rows_elm);
+		
+		in_rows_ = true;
 	}
 }
 //////////////////////
@@ -557,10 +563,16 @@ void ods_conversion_context::add_default_row(int repeated)
 void ods_conversion_context::end_rows()
 {
 	//add default last row
-    int repeated = (std::max)(current_table()->dimension_row, 64) - current_table()->current_row();
+	int repeated = (std::max)(current_table()->dimension_row, 64) - current_table()->current_row();
 	if (repeated < 0) repeated = 1;
 
 	add_default_row(repeated);
+	
+	if (in_rows_)
+	{
+		in_rows_ = false;
+		current_table()->end_rows();
+	}
 }
 void ods_conversion_context::add_column(int start_column, int repeated, int level, bool _default)
 {
@@ -628,10 +640,21 @@ void ods_conversion_context::add_column(int start_column, int repeated, int leve
 		else
 			column_properties->attlist_.common_break_attlist_.fo_break_before_ = fo_break(fo_break::Auto);
 	}
-
 	office_element_ptr column_elm;
 	create_element(L"table", L"table-column", column_elm, this);
-	
+
+	if (start_column == 1 && (false == current_table()->table_parts().empty()) && (false == current_table()->table_parts().back().columns.empty()))
+	{
+		office_element_ptr column_headers_elm;
+		create_element(L"table", L"table-header-columns", column_headers_elm, this);
+		
+		current_table()->start_headers(column_headers_elm);
+			current_table()->add_column(column_elm, 1, style_elm);
+		current_table()->end_headers();
+		
+		repeated -= 1;
+	}
+
 	current_table()->add_column(column_elm, repeated, style_elm);
 
 	if (_default)

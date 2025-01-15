@@ -482,6 +482,7 @@ namespace StarMath
 		static CElement* ReadingWithoutBracket(CStarMathReader* pReader,const bool& bConnection = true);
 		//checking the element (true if it is newline)
 		static bool CheckNewline(CElement* pElement);
+		static bool CheckGrid(CElement* pElement);
 		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement,CStarMathReader* pReader);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.

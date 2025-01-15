@@ -170,13 +170,13 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
 				if (m_oFormula1.IsInit())
 				{
 					writer.WriteString(L"<formula1>");
-					writer.WriteString(m_oFormula1->m_sText);
+					writer.WriteEncodeXmlString(m_oFormula1->m_sText);
 					writer.WriteString(L"</formula1>");
 				}
 				if (m_oFormula2.IsInit())
 				{
 					writer.WriteString(L"<formula2>");
-					writer.WriteString(m_oFormula2->m_sText);
+					writer.WriteEncodeXmlString(m_oFormula2->m_sText);
 					writer.WriteString(L"</formula2>");
 				}
 				if (m_oList.IsInit())

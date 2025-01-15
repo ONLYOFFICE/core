@@ -3424,7 +3424,7 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
 	{
 		PivotCachesTemp oPivotCachesTemp;
 		READ1_DEF(length, res, this->ReadPivotCache, &oPivotCachesTemp);
-        if (-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefenition)
+		if (-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
 		{
 			OOX::Spreadsheet::CPivotCacheDefinitionFile* pDefinitionFile = new OOX::Spreadsheet::CPivotCacheDefinitionFile(NULL);
 			std::wstring srIdRecords;
@@ -3433,7 +3433,7 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
 				NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
 				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
 			}
-            pDefinitionFile->m_oPivotCashDefinition = oPivotCachesTemp.pDefenition;
+			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
 			
 			NSCommon::smart_ptr<OOX::File> pFile(pDefinitionFile);
 			OOX::RId rIdDefinition = m_oWorkbook.Add(pFile);
@@ -3465,10 +3465,8 @@ int BinaryWorkbookTableReader::ReadPivotCache(BYTE type, long length, void* poRe
 	}
 	else if (c_oSer_PivotTypes::cache == type)
 	{
-        m_oBufferedStream.GetUChar();//type
-        pPivotCachesTemp->nDefinitionLength = m_oBufferedStream.GetULong();
-        pPivotCachesTemp->pDefenition = new OOX::Spreadsheet::CPivotCacheDefinition;
-        pPivotCachesTemp->pDefenition->fromPPTY(&m_oBufferedStream);
+		pPivotCachesTemp->pDefinitionData = m_oBufferedStream.GetPointer(length);
+		pPivotCachesTemp->nDefinitionLength = length;
 	}
 	else if (c_oSer_PivotTypes::record == type)
 	{

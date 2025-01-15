@@ -1561,7 +1561,7 @@ public:
 		}
 
 		// settings.xml
-		std::wstring sSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"useWord2013TrackBottomHyphenation\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"0\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
+		std::wstring sSettings = L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?><w:settings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:v=\"urn:schemas-microsoft-com:vml\"><w:displayBackgroundShape/><w:clrSchemeMapping w:accent1=\"accent1\" w:accent2=\"accent2\" w:accent3=\"accent3\" w:accent4=\"accent4\" w:accent5=\"accent5\" w:accent6=\"accent6\" w:bg1=\"light1\" w:bg2=\"light2\" w:followedHyperlink=\"followedHyperlink\" w:hyperlink=\"hyperlink\" w:t1=\"dark1\" w:t2=\"dark2\"/><w:defaultTabStop w:val=\"708\"/><m:mathPr/><w:trackRevisions w:val=\"false\"/><w:footnotePr><w:footnote w:id=\"-1\"/><w:footnote w:id=\"0\"/><w:numFmt w:val=\"decimal\"/><w:numRestart w:val=\"continuous\"/><w:numStart w:val=\"1\"/><w:pos w:val=\"pageBottom\"/></w:footnotePr><w:decimalSymbol w:val=\".\"/><w:listSeparator w:val=\",\"/><w:compat><w:compatSetting w:name=\"compatibilityMode\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"15\"/><w:compatSetting w:name=\"overrideTableStyleFontSizeAndJustification\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"enableOpenTypeFeatures\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"doNotFlipMirrorIndents\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"1\"/><w:compatSetting w:name=\"useWord2013TrackBottomHyphenation\" w:uri=\"http://schemas.microsoft.com/office/word\" w:val=\"0\"/></w:compat><w:zoom w:percent=\"100\"/><w:characterSpacingControl w:val=\"doNotCompress\"/><w:themeFontLang w:val=\"en-US\" w:eastAsia=\"zh-CN\"/><w:shapeDefaults><o:shapedefaults v:ext=\"edit\" spidmax=\"1026\"/><o:shapelayout v:ext=\"edit\"><o:idmap v:ext=\"edit\" data=\"1\"/></o:shapelayout></w:shapeDefaults></w:settings>";
 		NSFile::CFileBinary oSettingsWriter;
 		if (oSettingsWriter.CreateFileW(m_sDst + L"/word/settings.xml"))
 		{
@@ -2178,10 +2178,12 @@ private:
 		NSCSS::CCompiledStyle oStyle;
 		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
 
-		INT nMarLeft   = 720;
-		INT nMarRight  = 720;
-		INT nMarTop    = 100;
-		INT nMarBottom = 100;
+		const bool bInTable = ElementInTable(sSelectors);
+
+		INT nMarLeft   = (!bInTable) ? 720 : 0;
+		INT nMarRight  = (!bInTable) ? 720 : 0;
+		INT nMarTop    = (!bInTable) ? 100 : 0;
+		INT nMarBottom = (!bInTable) ? 100 : 0;
 
 		if (!oStyle.m_oMargin.GetLeft().Empty() && !oStyle.m_oMargin.GetLeft().Zero())
 			nMarLeft  = oStyle.m_oMargin.GetLeft().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
@@ -2293,6 +2295,28 @@ private:
 		m_oDocXml.WriteString(sCrossId);
 		m_oDocXml.WriteString(L"\"/>");
 		*/
+
+		if (!sSelectors.back().m_mAttributes.empty())
+		{
+			std::map<std::wstring, std::wstring>::iterator itFound = sSelectors.back().m_mAttributes.find(L"bgcolor");
+
+			if (sSelectors.back().m_mAttributes.end() != itFound)
+			{
+				NSCSS::NSProperties::CColor oColor;
+				oColor.SetValue(itFound->second);
+
+				if (!oColor.Empty() && !oColor.None())
+				{
+					const std::wstring wsHEXColor{oColor.ToHEX()};
+
+					if (!wsHEXColor.empty())
+						m_oDocXml.WriteString(L"<w:background w:color=\"" + wsHEXColor + L"\"/>");
+
+					sSelectors.back().m_mAttributes.erase(itFound);
+				}
+			}
+		}
+		m_oLightReader.MoveToElement();
 
 		CTextSettings oTS;
 		readStream(&m_oDocXml, sSelectors, oTS);
@@ -3627,12 +3651,14 @@ private:
 		return true;
 	}
 
-	bool ParseTable(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, CTextSettings& oTS)
+	bool ParseTable(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		if(m_oLightReader.IsEmptyNode())
 			return false;
 
 		CTable oTable;
+		CTextSettings oTextSettings{oTS};
+		oTextSettings.sPStyle.clear();
 
 		NSCSS::CCompiledStyle oStyle;
 		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
@@ -3729,11 +3755,11 @@ private:
 			if(sName == L"caption")
 				ParseTableCaption(oTable, sSelectors, oTS);
 			if(sName == L"thead")
-				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeHeader);
+				ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeHeader);
 			if(sName == L"tbody")
-				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeBody);
+				ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeBody);
 			else if(sName == L"tfoot")
-				ParseTableRows(oTable, sSelectors, oTS, ERowParseMode::ParseModeFoother);
+				ParseTableRows(oTable, sSelectors, oTextSettings, ERowParseMode::ParseModeFoother);
 			else if (sName == L"colgroup")
 				ParseTableColspan(oTable);
 

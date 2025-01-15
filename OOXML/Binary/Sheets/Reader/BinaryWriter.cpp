@@ -2581,8 +2581,23 @@ void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& wor
                 m_oBcw.m_oStream.WriteRecord2(0, pivotCacheFile->m_oPivotCashDefinition);
                 m_oBcw.WriteItemWithLengthEnd(nCurPos);
             }
+            auto records = pivotCacheFile->GetContainer();
+            if(!records.empty())
+            {
+                for(auto recordFile:records)
+                {
+                    if(recordFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheRecords == recordFile->type())
+                    {
+                        auto record = static_cast<OOX::Spreadsheet::CPivotCacheRecordsFile*>(recordFile.GetPointer());
+                        nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::record);
+                        m_oBcw.m_oStream.WriteBYTEArray(record->m_pData, record->m_nDataLength);
+                        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+                    }
+                }
+            }
         }
     }
+
 }
 void BinaryWorkbookTableWriter::WriteConnections(const OOX::Spreadsheet::CConnections& connections)
 {

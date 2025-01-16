@@ -17,6 +17,8 @@
 #include "OleConverter.h"
 #include "NumberingConverter.h"
 
+#include "WriterContext.h"
+
 namespace HWP
 {
 struct TConversionState
@@ -50,7 +52,7 @@ enum class ECellCreator
 
 class CConverter2OOXML
 {
-	CHWPFile_Private *m_pHWPFile;
+	CWriterContext * m_pContext;
 	HWP_STRING m_sTempDirectory;
 
 	NSStringUtils::CStringBuilder m_oStylesXml;   // styles.xml
@@ -113,8 +115,6 @@ class CConverter2OOXML
 	void WriteCharacter(const CCtrlCharacter* pCharacter, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	bool GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat);
-
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);
 public:
@@ -123,7 +123,7 @@ public:
 
 	void WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	void SetHWPFile(CHWPFile_Private* pHWPFile);
+	void SetContext(CWriterContext* pContext);
 	void SetTempDirectory(const HWP_STRING& sTempDirectory);
 	bool ConvertToFile(const HWP_STRING& sFilePath);
 	bool ConvertToDir(const HWP_STRING& sDirectoryPath);

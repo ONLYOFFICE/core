@@ -21,14 +21,12 @@ public:
 	CHWPFile_Private(const HWP_STRING& sFileName);
 	~CHWPFile_Private();
 
-	VECTOR<CHWPSection*> GetSections();
+	VECTOR<const CHWPSection*> GetSections();
 	const CCompoundFile* GetOleFile() const;
 
 	bool Detect();
 	bool Open();
 	void Close();
-
-	void SaveHWPComponent();
 
 	bool GetFileHeader();
 	const CHWPDocInfo* GetDocInfo() const;

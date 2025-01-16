@@ -264,11 +264,11 @@ HWP_STRING CFill::GetBinItemID() const
 }
 
 CHWPRecordBorderFill::CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize)
-	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(nullptr), m_pFill(nullptr)
+	: CHWPRecord(nTagNum, nLevel, nSize), m_pFill(nullptr)
 {}
 
 CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(&oDocInfo), m_pFill(nullptr)
+	: CHWPRecord(nTagNum, nLevel, nSize), m_pFill(nullptr)
 {
 	short shTypeBits;
 	oBuffer.ReadShort(shTypeBits);
@@ -302,7 +302,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 }
 
 CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
-	: CHWPRecord(EHWPTag::HWPTAG_BORDER_FILL, 0, 0), m_pParent(&oDocInfo), m_pFill(nullptr)
+	: CHWPRecord(EHWPTag::HWPTAG_BORDER_FILL, 0, 0), m_pFill(nullptr)
 {
 	m_bThreeD = oNode.GetAttributeBool(L"threeD");
 	m_bShadow = oNode.GetAttributeBool(L"shadow");

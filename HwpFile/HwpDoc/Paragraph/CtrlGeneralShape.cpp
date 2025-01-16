@@ -63,7 +63,7 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPS
 }
 
 CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlObjElement(sCtrlID)
+	: CCtrlObjElement(sCtrlID, oNode, nVersion)
 {
 	InitData();
 

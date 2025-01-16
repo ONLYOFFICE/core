@@ -25,6 +25,12 @@ typedef char HWP_BYTE;
 #define CASE(value) case value : return value
 #define DEFAULT(value) case value: default: return value
 
+#define RETURN_VECTOR_CONST_PTR(type, array_values) \
+	std::vector<const type*> arTempVector(array_values.size()); \
+	for (unsigned int unIndex = 0; unIndex < array_values.size(); ++unIndex) \
+		arTempVector[unIndex] = dynamic_cast<const type*>(array_values[unIndex]); \
+	return arTempVector
+
 class IRef
 {
 	unsigned long m_ulRef;

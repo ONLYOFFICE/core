@@ -106,7 +106,6 @@ public:
 
 class CHWPRecordBorderFill : public CHWPRecord
 {
-	CHWPDocInfo *m_pParent;
 	static constexpr const float LINE_THICK[] = { 0.1f, 0.12f, 0.15f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 5.0f };
 
 	bool m_bThreeD;

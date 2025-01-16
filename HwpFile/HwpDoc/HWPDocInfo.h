@@ -4,7 +4,7 @@
 #include "HanType.h"
 #include "HWPStream.h"
 #include "HWPElements/HWPRecord.h"
-
+#include "Common/XMLNode.h"
 
 #include <map>
 
@@ -19,10 +19,11 @@ enum class ECompatDoc
 };
 
 class CHWPFile_Private;
+class CHWPXFile_Private;
 class CHWPDocInfo
 {
 	EHanType   m_eHanType;
-	// CHWPXFile *m_pParentHWPX;
+	CHWPXFile_Private *m_pParentHWPX;
 	CHWPFile_Private  *m_pParentHWP;
 	VECTOR<CHWPRecord*> m_arRecords;
 
@@ -39,12 +40,14 @@ class CHWPDocInfo
 	ECompatDoc m_eCompatibleDoc;
 public:
 	CHWPDocInfo(EHanType eHanType);
-	// CHWPDocInfo(CHWPXFile* pHWPXFile);
+	CHWPDocInfo(CHWPXFile_Private* pHWPXFile);
 	CHWPDocInfo(CHWPFile_Private* pHWPFile);
 
 	~CHWPDocInfo();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
+	bool Parse(CXMLNode& oNode, int nVersion);
+	bool ReadContentHpf(CXMLNode& oNode, int nVersion);
 
 	const CHWPRecord* GetRecord(int nIndex) const;
 	const CHWPRecord* GetFaceName(int nIndex) const;
@@ -61,6 +64,8 @@ public:
 	const CHWPRecord* GetBinData(const HWP_STRING& sID) const;
 	EHanType GetHanType() const;
 	ECompatDoc GetCompatibleDoc() const;
+private:
+	bool ReadRefList(CXMLNode& oNode, int nVersion);
 };
 }
 

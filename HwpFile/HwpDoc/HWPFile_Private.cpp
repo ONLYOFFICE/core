@@ -4,8 +4,6 @@
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include <regex>
-
 #define DEFAULT_BUFFER_SIZE 8096
 
 namespace HWP
@@ -20,12 +18,16 @@ CHWPFile_Private::~CHWPFile_Private()
 	CLEAR_ARRAY(CHWPSection, m_arViewTexts);
 }
 
-VECTOR<CHWPSection*> CHWPFile_Private::GetSections()
+std::vector<const CHWPSection*> CHWPFile_Private::GetSections()
 {
 	if (m_oFileHeader.Distributable())
-		return m_arViewTexts;
+	{
+		RETURN_VECTOR_CONST_PTR(CHWPSection, m_arViewTexts);
+	}
 	else
-		return m_arBodyTexts;
+	{
+		RETURN_VECTOR_CONST_PTR(CHWPSection, m_arBodyTexts);
+	}
 }
 
 const CCompoundFile* CHWPFile_Private::GetOleFile() const
@@ -72,14 +74,6 @@ bool CHWPFile_Private::Open()
 void CHWPFile_Private::Close()
 {
 	m_oOleFile.Close();
-}
-
-void CHWPFile_Private::SaveHWPComponent()
-{
-	ECompressed eCompressed = m_oFileHeader.Compressed() ? ECompressed::COMPRESS : ECompressed::NO_COMPRESS;
-
-	// Save internal component for debugging purpose.
-	// TODO:: перенести
 }
 
 bool CHWPFile_Private::GetFileHeader()
@@ -313,7 +307,7 @@ bool CHWPFile_Private::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	oInput.ReadInt(nHeader);
 
 	int nTagNum = nHeader & 0x3FF; // 10 bits (0 - 9 bit)
-	int nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
+	// int nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
 	int nSize = (nHeader & 0xFFF00000) >> 20; // 12 bits (20-31 bit)
 
 	EHWPTag eTag = GetTagFromNum(nTagNum);

@@ -41,7 +41,7 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 {}
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlCommon(sCtrlID)
+	: CCtrlCommon(sCtrlID, oNode, nVersion)
 {
 	m_shNGrp = oNode.GetAttributeInt(L"groupLevel");
 

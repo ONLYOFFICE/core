@@ -47,7 +47,9 @@ CHWPPargraph::CHWPPargraph(CXMLNode& oNode, int nVersion)
 		if (L"hp:run" == oChild.GetName())
 		{
 			nCharShapeID = oChild.GetAttributeInt(L"charPrIDRef");
-			ParseHWPParagraph(oChild, nCharShapeID, nVersion);
+
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
+				ParseHWPParagraph(oGrandChild, nCharShapeID, nVersion);
 		}
 		else if (L"hp:linesegarray" == oChild.GetName())
 		{
@@ -175,12 +177,7 @@ VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
 
 std::vector<const CCtrl*> CHWPPargraph::GetCtrls() const
 {
-	std::vector<const CCtrl*> arParagraphs(m_arP.size());
-
-	for (unsigned int unIndex = 0; unIndex < m_arP.size(); ++unIndex)
-		arParagraphs[unIndex] = dynamic_cast<const CCtrl*>(m_arP[unIndex]);
-
-	return arParagraphs;
+	RETURN_VECTOR_CONST_PTR(CCtrl, m_arP);
 }
 
 unsigned int CHWPPargraph::GetCountCtrls() const

@@ -65,15 +65,15 @@ EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
 }
 
 CConverter2OOXML::CConverter2OOXML()
-	: m_pHWPFile(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0), m_ushEquationCount(0)
+	: m_pContext(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0), m_ushEquationCount(0)
 {}
 
 CConverter2OOXML::~CConverter2OOXML()
 {}
 
-void CConverter2OOXML::SetHWPFile(CHWPFile_Private* pHWPFile)
+void CConverter2OOXML::SetContext(CWriterContext* pContext)
 {
-	m_pHWPFile = pHWPFile;
+	m_pContext = pContext;
 }
 
 void CConverter2OOXML::SetTempDirectory(const HWP_STRING& sTempDirectory)
@@ -271,16 +271,19 @@ void CConverter2OOXML::Close()
 
 void CConverter2OOXML::Convert()
 {
+	if (nullptr == m_pContext)
+		return;
+
 	TConversionState oState;
 
-	for (const CHWPSection* pSection : m_pHWPFile->GetSections())
+	std::vector<const CHWPSection*> arSetcions{m_pContext->GetSections()};
+
+	for (const CHWPSection* pSection : arSetcions)
 	{
-		const bool bIsLastSection = pSection == m_pHWPFile->GetSections().back();
+		const bool bIsLastSection = pSection == arSetcions.back();
 
 		for (const CHWPPargraph *pPara : pSection->GetParagraphs())
-		{
 			WriteParagraph(pPara, m_oDocXml, oState);
-		}
 
 		if (!bIsLastSection)
 			m_oDocXml.WriteString(L"<w:p><w:pPr>");
@@ -364,6 +367,7 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 		}
 		case EShapeType::GeneralShape:
 		case EShapeType::ConnectLine:
+		case EShapeType::Container:
 		case EShapeType::Polygon:
 		case EShapeType::TextArt:
 		case EShapeType::Curve:
@@ -486,15 +490,10 @@ void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, NSStringUti
 
 void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
 {
-	const CHWPDocInfo* pDocInfo = nullptr;
-
-	if (nullptr != m_pHWPFile)
-		pDocInfo = m_pHWPFile->GetDocInfo();
-
-	if (nullptr == m_pHWPFile)
+	if (nullptr == m_pContext)
 		return;
 
-	const CHWPRecordParaShape* pParaShape = dynamic_cast<const CHWPRecordParaShape*>(pDocInfo->GetParaShape(shParaShapeID));
+	const CHWPRecordParaShape* pParaShape = dynamic_cast<const CHWPRecordParaShape*>(m_pContext->GetParaShape(shParaShapeID));
 
 	if (nullptr == pParaShape)
 		return;
@@ -523,29 +522,32 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 	int nLineSpacing = 0;
 	HWP_STRING sType = L"auto";
 
-	switch(pParaShape->GetLineSpacingType())
-	{
-		case 0x0:
-		{
-			sType = L"auto";
-			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
-			break;
-		}
-		case 0x01:
-		{
-			sType = L"exact";
-			nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing() / 2. * 20)/*0.352778*/; //(1pt=0.352778mm) //TODO:: проверить, как найдется пример
-			break;
-		}
-		case 0x02:
-		case 0x03:
-		default:
-		{
-			sType = L"atLeast";
-			nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());  //TODO:: проверить, как найдется пример
-			break;
-		}
-	}
+	// switch(pParaShape->GetLineSpacingType())
+	// {
+	// 	case 0x0:
+	// 	{
+	// 		sType = L"atLeast";
+	// 		nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());
+	// 		nLineSpacing = 57;
+	// 		// nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
+	// 		break;
+	// 	}
+	// 	case 0x01:
+	// 	{
+	// 		sType = L"exact";
+	// 		nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
+	// 		// nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing() / 2. * 20)/*0.352778*/; //(1pt=0.352778mm) //TODO:: проверить, как найдется пример
+	// 		break;
+	// 	}
+	// 	case 0x02:
+	// 	case 0x03:
+	// 	default:
+	// 	{
+	// 		sType = L"atLeast";
+	// 		nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());  //TODO:: проверить, как найдется пример
+	// 		break;
+	// 	}
+	// }
 
 	oBuilder.WriteString(L"<w:spacing w:lineRule=\"" + sType + L"\" w:line=\"" + std::to_wstring(nLineSpacing) +
 	                      L"\" w:before=\"" + std::to_wstring(static_cast<int>((double)pParaShape->GetMarginPrev() / 10.)) +
@@ -556,7 +558,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 		case EHeadingType::NUMBER:
 		case EHeadingType::BULLET:
 		{
-			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(pDocInfo->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType());
+			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(m_pContext->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType());
 
 			if (0 == nNumId)
 				break;
@@ -675,8 +677,8 @@ void CConverter2OOXML::WriteTableProperties(const CCtrlTable* pTable, short shPa
 
 	const CHWPRecordBorderFill* pBorderFill = nullptr;
 
-	if (nullptr != m_pHWPFile)
-		pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pHWPFile->GetDocInfo()->GetBorderFill(pTable->GetBorderFillID()));
+	if (nullptr != m_pContext)
+		pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pContext->GetBorderFill(pTable->GetBorderFillID()));
 
 	if (nullptr == pBorderFill)
 	{
@@ -737,8 +739,8 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 {
 	const CHWPRecordBorderFill* pBorderFill = nullptr;
 
-	if (nullptr != m_pHWPFile)
-		pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pHWPFile->GetDocInfo()->GetBorderFill(shBorderFillID));
+	if (nullptr != m_pContext)
+		pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pContext->GetBorderFill(shBorderFillID));
 
 	if (nullptr == pBorderFill)
 		return;
@@ -914,11 +916,15 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	//TODO:: добавить конвертацию hwp ole -> ooxml chart
 	//TODO:: необходимо добавить поддержку формата "Hwp Document File Formats - Charts" (для случаев, когда нет ooxml представления)
 	// Пока можем вытащить лишь ooxml представление данных
+	// Реализовать с использованием pole.h?
+
+	if (nullptr == m_pContext)
+		return;
 
 	CHWPStream oBuffer;
 	HWP_STRING sFormat;
 
-	if (!GetBinBytes(pOleShape->GetBinDataID(), oBuffer, sFormat))
+	if (!m_pContext->GetBinBytes(pOleShape->GetBinDataID(), oBuffer, sFormat))
 		return;
 
 	m_oOleConverter.CreateChart(oBuffer);
@@ -1177,11 +1183,14 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIn
 
 HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 {
+	if (nullptr == m_pContext)
+		return HWP_STRING();
+
 	//TODO:: добавить поддержку устновки размеров изображения из свойств шейпа
 	CHWPStream oBuffer;
 	HWP_STRING sFormat;
 
-	if (!GetBinBytes(sBinItemId, oBuffer, sFormat))
+	if (!m_pContext->GetBinBytes(sBinItemId, oBuffer, sFormat))
 		return HWP_STRING();
 
 	oBuffer.MoveToStart();
@@ -1213,96 +1222,92 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 
 void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
 {
-	const CHWPDocInfo* pDocInfo = nullptr;
+	if (nullptr == m_pContext)
+		return;
 
-	if (nullptr != m_pHWPFile)
+	const CHWPRecordCharShape* pCharShape = dynamic_cast<const CHWPRecordCharShape*>(m_pContext->GetCharShape(shCharShapeID));
+
+	if (nullptr == pCharShape)
+		return;
+
+	oBuilder.WriteString(L"<w:rPr>");
+
+	HWP_STRING sFontFamily = pCharShape->GetFontName(ELang::LATIN);
+	HWP_STRING sFontFamilyAsian = pCharShape->GetFontName(ELang::HANGUL);
+
+	if (sFontFamilyAsian.empty() && !sFontFamily.empty())
+		sFontFamilyAsian = sFontFamily;
+	else if (!sFontFamilyAsian.empty() && sFontFamily.empty())
+		sFontFamily = sFontFamilyAsian;
+
+	if (!sFontFamily.empty() && !sFontFamilyAsian.empty())
 	{
-		pDocInfo = m_pHWPFile->GetDocInfo();
-
-		const CHWPRecordCharShape* pCharShape = dynamic_cast<const CHWPRecordCharShape*>(pDocInfo->GetCharShape(shCharShapeID));
-
-		if (nullptr == pCharShape)
-			return;
-
-		oBuilder.WriteString(L"<w:rPr>");
-
-		HWP_STRING sFontFamily = pCharShape->GetFontName(ELang::LATIN);
-		HWP_STRING sFontFamilyAsian = pCharShape->GetFontName(ELang::HANGUL);
-
-		if (sFontFamilyAsian.empty() && !sFontFamily.empty())
-			sFontFamilyAsian = sFontFamily;
-		else if (!sFontFamilyAsian.empty() && sFontFamily.empty())
-			sFontFamily = sFontFamilyAsian;
-
-		if (!sFontFamily.empty() && !sFontFamilyAsian.empty())
-		{
-			oBuilder.WriteString(L"<w:rFonts w:ascii=\"" + sFontFamily +
-			                      L"\" w:hAnsi=\"" + sFontFamily +
-			                      L"\" w:cs=\"" + sFontFamily +
-			                      L"\" w:eastAsia=\"" + sFontFamilyAsian + L"\"/>");
-		}
-
-		if (pCharShape->Bold())
-			oBuilder.WriteString(L"<w:b/><w:bCs/>");
-
-		if (pCharShape->Italic())
-			oBuilder.WriteString(L"<w:i/><w:iCs/>");
-
-		const int nHeight = static_cast<int>(((double)(std::abs)(pCharShape->GetHeight()) * ((double)pCharShape->GetRelSize(ELang::LATIN) / 100.) / 100.) * 2.);
-
-		oBuilder.WriteString(L"<w:sz w:val=\"" + std::to_wstring(nHeight) + L"\"/><w:szCs w:val=\"" + std::to_wstring(nHeight) + L"\"/>");
-
-		oBuilder.WriteString(L"<w:color w:val=\"" + Transform::IntColorToHEX(pCharShape->GetTextColor()) + L"\"/>");
-
-		if (pCharShape->Underline())
-		{
-			EUnderline eUnderlineType = pCharShape->GetUnderlineType();
-			ELineStyle1 eUnderlineStyle = pCharShape->GetUnderlineStyle();
-
-			if (EUnderline::BOTTOM == eUnderlineType)
-			{
-				oBuilder.WriteString(L"<w:u w:val=\"");
-
-				switch (eUnderlineStyle)
-				{
-					case ELineStyle1::SOLID: oBuilder.WriteString(L"single"); break;
-					case ELineStyle1::DASH: oBuilder.WriteString(L"dash"); break;
-					case ELineStyle1::DOT: oBuilder.WriteString(L"dotted"); break;
-					case ELineStyle1::DASH_DOT: oBuilder.WriteString(L"dotDash"); break;
-					case ELineStyle1::DASH_DOT_DOT: oBuilder.WriteString(L"dotDotDash"); break;
-					case ELineStyle1::LONG_DASH: oBuilder.WriteString(L"dotDash"); break;
-					case ELineStyle1::CIRCLE: oBuilder.WriteString(L"dotted"); break;
-					case ELineStyle1::DOUBLE_SLIM: oBuilder.WriteString(L"double"); break;
-					case ELineStyle1::SLIM_THICK: oBuilder.WriteString(L"double"); break;
-					case ELineStyle1::THICK_SLIM: oBuilder.WriteString(L"double"); break;
-					case ELineStyle1::SLIM_THICK_SLIM: oBuilder.WriteString(L"double"); break;
-					case ELineStyle1::WAVE: oBuilder.WriteString(L"wave"); break;
-					case ELineStyle1::DOUBLE_WAVE: oBuilder.WriteString(L"wavyDouble"); break;
-					case ELineStyle1::THICK_3D: oBuilder.WriteString(L"thick"); break;
-					case ELineStyle1::THICK_3D_REVERS_LI: oBuilder.WriteString(L"thick"); break;
-					case ELineStyle1::SOLID_3D: oBuilder.WriteString(L"thick"); break;
-					case ELineStyle1::SOLID_3D_REVERS_LI: oBuilder.WriteString(L"thick"); break;
-				}
-
-				oBuilder.WriteString(L"\" w:color=\"" + Transform::IntColorToHEX(pCharShape->GetUnderlineColor()) + L"\"/>");
-			}
-			else if (EUnderline::CENTER == eUnderlineType)
-			{
-				if (eUnderlineStyle == ELineStyle1::DOUBLE_SLIM ||
-				    eUnderlineStyle == ELineStyle1::DOUBLE_WAVE)
-					oBuilder.WriteString(L"<w:dstrike/>");
-				else
-					oBuilder.WriteString(L"<w:strike/>");
-			}
-		}
-
-		double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
-		dSpacing *= 20; // pt to twips (20 = 1440 / 72)
-
-		oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
-
-		oBuilder.WriteString(L"</w:rPr>");
+		oBuilder.WriteString(L"<w:rFonts w:ascii=\"" + sFontFamily +
+							  L"\" w:hAnsi=\"" + sFontFamily +
+							  L"\" w:cs=\"" + sFontFamily +
+							  L"\" w:eastAsia=\"" + sFontFamilyAsian + L"\"/>");
 	}
+
+	if (pCharShape->Bold())
+		oBuilder.WriteString(L"<w:b/><w:bCs/>");
+
+	if (pCharShape->Italic())
+		oBuilder.WriteString(L"<w:i/><w:iCs/>");
+
+	const int nHeight = static_cast<int>(((double)(std::abs)(pCharShape->GetHeight()) * ((double)pCharShape->GetRelSize(ELang::LATIN) / 100.) / 100.) * 2.);
+
+	oBuilder.WriteString(L"<w:sz w:val=\"" + std::to_wstring(nHeight) + L"\"/><w:szCs w:val=\"" + std::to_wstring(nHeight) + L"\"/>");
+
+	oBuilder.WriteString(L"<w:color w:val=\"" + Transform::IntColorToHEX(pCharShape->GetTextColor()) + L"\"/>");
+
+	if (pCharShape->Underline())
+	{
+		EUnderline eUnderlineType = pCharShape->GetUnderlineType();
+		ELineStyle1 eUnderlineStyle = pCharShape->GetUnderlineStyle();
+
+		if (EUnderline::BOTTOM == eUnderlineType)
+		{
+			oBuilder.WriteString(L"<w:u w:val=\"");
+
+			switch (eUnderlineStyle)
+			{
+				case ELineStyle1::SOLID: oBuilder.WriteString(L"single"); break;
+				case ELineStyle1::DASH: oBuilder.WriteString(L"dash"); break;
+				case ELineStyle1::DOT: oBuilder.WriteString(L"dotted"); break;
+				case ELineStyle1::DASH_DOT: oBuilder.WriteString(L"dotDash"); break;
+				case ELineStyle1::DASH_DOT_DOT: oBuilder.WriteString(L"dotDotDash"); break;
+				case ELineStyle1::LONG_DASH: oBuilder.WriteString(L"dotDash"); break;
+				case ELineStyle1::CIRCLE: oBuilder.WriteString(L"dotted"); break;
+				case ELineStyle1::DOUBLE_SLIM: oBuilder.WriteString(L"double"); break;
+				case ELineStyle1::SLIM_THICK: oBuilder.WriteString(L"double"); break;
+				case ELineStyle1::THICK_SLIM: oBuilder.WriteString(L"double"); break;
+				case ELineStyle1::SLIM_THICK_SLIM: oBuilder.WriteString(L"double"); break;
+				case ELineStyle1::WAVE: oBuilder.WriteString(L"wave"); break;
+				case ELineStyle1::DOUBLE_WAVE: oBuilder.WriteString(L"wavyDouble"); break;
+				case ELineStyle1::THICK_3D: oBuilder.WriteString(L"thick"); break;
+				case ELineStyle1::THICK_3D_REVERS_LI: oBuilder.WriteString(L"thick"); break;
+				case ELineStyle1::SOLID_3D: oBuilder.WriteString(L"thick"); break;
+				case ELineStyle1::SOLID_3D_REVERS_LI: oBuilder.WriteString(L"thick"); break;
+			}
+
+			oBuilder.WriteString(L"\" w:color=\"" + Transform::IntColorToHEX(pCharShape->GetUnderlineColor()) + L"\"/>");
+		}
+		else if (EUnderline::CENTER == eUnderlineType)
+		{
+			if (eUnderlineStyle == ELineStyle1::DOUBLE_SLIM ||
+				eUnderlineStyle == ELineStyle1::DOUBLE_WAVE)
+				oBuilder.WriteString(L"<w:dstrike/>");
+			else
+				oBuilder.WriteString(L"<w:strike/>");
+		}
+	}
+
+	double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
+	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
+
+	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+
+	oBuilder.WriteString(L"</w:rPr>");
 }
 
 void CConverter2OOXML::OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
@@ -1416,23 +1421,57 @@ void CConverter2OOXML::CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, T
 	oState.m_bOpenedP = false;
 }
 
+std::vector<std::wstring> SplitText(const std::wstring& wsText)
+{
+	if (wsText.empty())
+		return std::vector<std::wstring>();
+
+	std::vector<std::wstring> arTexts;
+
+	std::wstring wsCurrentText;
+	bool bWasLetter = iswalpha(wsText[0]);
+	wsCurrentText.push_back(wsText[0]);
+
+	for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
+	{
+		bool bCurrentIsLetter = iswalpha(wsText[unIndex]);
+
+		if (bCurrentIsLetter != bWasLetter)
+		{
+			arTexts.push_back(wsCurrentText);
+			wsCurrentText.clear();
+			bWasLetter = bCurrentIsLetter;
+		}
+
+		wsCurrentText.push_back(wsText[unIndex]);
+	}
+
+	if (!wsCurrentText.empty())
+		arTexts.push_back(wsCurrentText);
+
+	return arTexts;
+}
+
 void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	OpenParagraph(shParaShapeID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:r>");
-
-	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
-
-	if (oState.m_bNeedLineBreak)
+	for (const std::wstring& wsTextElement : SplitText(wsText))
 	{
-		oBuilder.WriteString(L"<w:br/>");
-		oState.m_bNeedLineBreak = false;
-	}
+		oBuilder.WriteString(L"<w:r>");
 
-	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
-	oBuilder.WriteEncodeXmlString(wsText);
-	oBuilder.WriteString(L"</w:t></w:r>");
+		WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+
+		if (oState.m_bNeedLineBreak)
+		{
+			oBuilder.WriteString(L"<w:br/>");
+			oState.m_bNeedLineBreak = false;
+		}
+
+		oBuilder.WriteString(L"<w:t >");
+		oBuilder.WriteEncodeXmlString(wsTextElement);
+		oBuilder.WriteString(L"</w:t></w:r>");
+	}
 }
 
 void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralShape, NSStringUtils::CStringBuilder& oBuilder)
@@ -1579,42 +1618,6 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 	WriteText(std::to_wstring(ushValue), shParaShapeID, shCharShapeID, oBuilder, oState);
 }
 
-bool CConverter2OOXML::GetBinBytes(const HWP_STRING& sID, CHWPStream& oBuffer, HWP_STRING& sFormat)
-{
-	const CHWPDocInfo* pDocInfo = nullptr;
-
-	if (nullptr != m_pHWPFile)
-	{
-		pDocInfo = m_pHWPFile->GetDocInfo();
-
-		const CHWPRecordBinData* pBinData = dynamic_cast<const CHWPRecordBinData*>(pDocInfo->GetBinData(sID));
-
-		if (nullptr == pBinData)
-			return false;
-
-		if (EType::LINK == pBinData->GetType())
-		{
-			NSFile::CFileBinary oFile;
-			unsigned char *pBuffer = nullptr;
-			unsigned long ulSize = 0;
-
-			oFile.ReadAllBytes(pBinData->GetPath(), &pBuffer, ulSize);
-			oBuffer.SetStream((HWP_BYTE*)pBuffer, ulSize, false);
-			sFormat = NSFile::GetFileExtention(pBinData->GetPath());
-		}
-		else
-		{
-			std::wostringstream oStringStream;
-			oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
-			sFormat = pBinData->GetFormat();
-
-			return m_pHWPFile->GetChildStream(oStringStream.str(), pBinData->GetCompressed(), oBuffer);
-		}
-	}
-
-	return true;
-}
-
 HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget)
 {
 	if (wsType.empty() || wsTarget.empty())
@@ -1635,7 +1638,7 @@ void CConverter2OOXML::AddContentType(const HWP_STRING& wsName, const HWP_STRING
 
 bool CConverter2OOXML::ConvertToFile(const HWP_STRING& sFilePath)
 {
-	if (nullptr == m_pHWPFile || sFilePath.empty())
+	if (nullptr == m_pContext || sFilePath.empty())
 		return false;
 
 	CreateEmptyFiles();
@@ -1650,14 +1653,18 @@ bool CConverter2OOXML::ConvertToFile(const HWP_STRING& sFilePath)
 
 bool CConverter2OOXML::ConvertToDir(const HWP_STRING& sDirectoryPath)
 {
-	if (nullptr == m_pHWPFile || sDirectoryPath.empty())
+	if (nullptr == m_pContext || sDirectoryPath.empty())
 		return false;
+
+	HWP_STRING sCurrentTempDir{m_sTempDirectory};
 
 	SetTempDirectory(sDirectoryPath);
 
 	CreateEmptyFiles();
 	Convert();
 	Close();
+
+	SetTempDirectory(sCurrentTempDir);
 
 	return true;
 }

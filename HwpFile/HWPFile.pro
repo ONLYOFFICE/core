@@ -46,8 +46,8 @@ SOURCES += \
     HwpDoc/HWPFile_Private.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
+    HwpDoc/HWPXFile_Private.cpp \
     HwpDoc/HwpFileHeader.cpp \
-    HwpDoc/OCFdoc/OWPMLFile.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
@@ -127,9 +127,9 @@ HEADERS += \
     HwpDoc/HWPFile_Private.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
+    HwpDoc/HWPXFile_Private.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
-    HwpDoc/OCFdoc/OWPMLFile.h \
     HwpDoc/OLEdoc/CompoundFile.h \
     HwpDoc/OLEdoc/DirectoryEntry.h \
     HwpDoc/OLEdoc/Sector.h \

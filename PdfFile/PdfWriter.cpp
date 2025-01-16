@@ -1985,13 +1985,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		{
 			pMarkupAnnot->RemoveAP();
 
-			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pTMPr = oInfo.GetTextMarkupAnnotPr();
 			PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
 
-			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
-			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
+			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
 
-			pTextMarkupAnnot->SetAP(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
 		}
 		else if (oInfo.IsSquareCircle())
 		{

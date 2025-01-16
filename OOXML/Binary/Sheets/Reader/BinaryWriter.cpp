@@ -2578,7 +2578,10 @@ void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& wor
             if(pivotCacheFile->m_oPivotCashDefinition.IsInit())
             {
                 nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cache);
-                m_oBcw.m_oStream.WriteRecord2(0, pivotCacheFile->m_oPivotCashDefinition);
+                NSStringUtils::CStringBuilder writer;
+                pivotCacheFile->m_oPivotCashDefinition->toXML(writer);
+                auto wstringData = writer.GetData();
+                m_oBcw.m_oStream.WriteStringUtf8(wstringData);
                 m_oBcw.WriteItemWithLengthEnd(nCurPos);
             }
             auto records = pivotCacheFile->GetContainer();

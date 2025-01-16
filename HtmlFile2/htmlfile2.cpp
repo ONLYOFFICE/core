@@ -599,6 +599,11 @@ public:
 		return m_bIsEmpty;
 	}
 
+	bool Merged()
+	{
+		return m_bIsMerged;
+	}
+
 	CTableCell* Copy()
 	{
 		return new CTableCell(*this);
@@ -756,7 +761,7 @@ public:
 
 		if (nPosition < 0)
 		{
-			std::vector<CTableCell*>::iterator itFoundEmpty = std::find_if(m_arCells.begin(), m_arCells.end(), [](CTableCell* pCell) { return pCell->Empty(); });
+			std::vector<CTableCell*>::iterator itFoundEmpty = std::find_if(m_arCells.begin(), m_arCells.end(), [](CTableCell* pCell) { return pCell->Empty() && !pCell->Merged(); });
 
 			if (m_arCells.end() != itFoundEmpty)
 			{
@@ -3666,9 +3671,9 @@ private:
 		//Table styles
 		std::wstring wsFrame;
 
-		for (const std::pair<std::wstring, std::wstring> oArgument : sSelectors.back().m_mAttributes)
+		for (const std::pair<std::wstring, std::wstring>& oArgument : sSelectors.back().m_mAttributes)
 		{
-			if (L"border" == oArgument.first)
+			if (oStyle.m_oBorder.Empty() && L"border" == oArgument.first)
 			{
 				const int nWidth = NSStringFinder::ToInt(oArgument.second);
 
@@ -3676,7 +3681,7 @@ private:
 				{
 					oStyle.m_oBorder.SetStyle(L"outset",  0, true);
 					oStyle.m_oBorder.SetWidth(nWidth,     0, true);
-					oStyle.m_oBorder.SetColor(L"auto", 0, true);
+					oStyle.m_oBorder.SetColor(L"auto",    0, true);
 					oTable.SetRules(L"all");
 				}
 				else

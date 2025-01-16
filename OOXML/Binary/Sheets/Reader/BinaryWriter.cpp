@@ -4680,15 +4680,26 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
             }
         }
     }
-	//pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
-	//OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
-	//if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTable.IsInit()))
-	//{
-	//	BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
-	//	nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
-	//	oBinaryTableWriter.WriteQueryTable(pPivotTableFile->m_oPivotTable.get());
-	//	m_oBcw.WriteItemWithLengthEnd(nCurPos);		
-	//}
+    pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
+    OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
+    if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTableDefinition.IsInit()))
+    {
+        BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
+        if(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId.IsInit())
+        {
+            auto cachePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cacheId);
+            m_oBcw.m_oStream.WriteULONG(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId->GetValue());
+            m_oBcw.WriteItemWithLengthEnd(cachePos);
+        }
+        NSStringUtils::CStringBuilder writer;
+        pPivotTableFile->m_oPivotTableDefinition->toXML(writer);
+        auto wstringData = writer.GetData();
+        auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
+        m_oBcw.m_oStream.WriteStringUtf8(wstringData);
+        m_oBcw.WriteItemWithLengthEnd(tablePos);
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
 }
 void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 {

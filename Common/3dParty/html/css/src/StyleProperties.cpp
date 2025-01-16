@@ -917,6 +917,25 @@ namespace NSCSS
 		}
 	}
 
+	std::wstring CColor::ToHEX() const
+	{
+		switch(m_enType)
+		{
+			case ColorRGB:
+			{
+				TRGB* pRGB = static_cast<TRGB*>(m_oValue);
+				return ConvertRGBtoHEX(*pRGB);
+			}
+			case ColorHEX:
+			{
+				std::wstring *pValue = static_cast<std::wstring*>(m_oValue);
+				return *pValue;
+			}
+			default:
+				return std::wstring();
+		}
+	}
+
 	std::wstring CColor::EquateToColor(const std::vector<std::pair<TRGB, std::wstring>> &arColors) const
 	{
 		if (arColors.empty())

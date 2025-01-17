@@ -183,6 +183,10 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"fodt");
 	list.m_documents.push_back(L"htm");
 	list.m_documents.push_back(L"html");
+
+	list.m_documents.push_back(L"hwp");
+	list.m_documents.push_back(L"hwpx");
+
 	list.m_documents.push_back(L"mht");
 	list.m_documents.push_back(L"odt");
 	list.m_documents.push_back(L"ott");

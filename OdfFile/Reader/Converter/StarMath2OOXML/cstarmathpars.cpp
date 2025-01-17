@@ -1251,7 +1251,10 @@ namespace StarMath
 		{	
 			pReader->ReadingTheNextToken();
 			enOpen = GetBracketOpen(pReader->GetLowerCaseString());
-			enClose = GetBracketClose(pReader->GetLowerCaseString());
+            if(pReader->GetLowerCaseString() == L"none")
+                enOpen = TypeElement::none;
+            else
+                enClose = GetBracketClose(pReader->GetLowerCaseString());
 			if(enOpen != TypeElement::undefine)
 			{
 				m_enLeftBracket = enOpen;
@@ -3410,7 +3413,13 @@ namespace StarMath
 			if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)
 			{
 				if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken) == TypeElement::left)
-					continue;
+                {
+                    if(GetToken() && (m_wsLowerCaseToken == L"none" || (m_wsLowerCaseToken != L"left" && CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)))
+                    {
+                        inBracketInside += 1;
+                        continue;
+                    }
+                }
 				else
 					inBracketInside +=1;
 			}
@@ -3421,7 +3430,6 @@ namespace StarMath
 				m_stBracket.push(m_itEnd);
 				m_stCloseBracket.push(m_itStart);
 				m_itEnd = itStartBracketClose;
-//				m_itEnd = m_itStart;
 				break;
 			}
 			else if(CElementBracket::GetBracketClose(m_wsLowerCaseToken) != TypeElement::undefine && inBracketInside != 0)

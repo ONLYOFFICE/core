@@ -4766,7 +4766,8 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 			m_internal->m_oLightReader.Clear();
 			m_internal->m_sBase.clear();
 		}
-		m_internal->m_oStylesCalculator.Clear();
+		//Если очищать, то каждый раз при использовании внешнего css файла он заново парсится
+		// m_internal->m_oStylesCalculator.Clear();
 	}
 
 	m_internal->write();

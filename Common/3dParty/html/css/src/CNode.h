@@ -7,6 +7,7 @@
 
 namespace NSCSS
 {
+	class CCompiledStyle;
 	class CNode
 	{
 	public:
@@ -16,11 +17,16 @@ namespace NSCSS
 		std::wstring m_wsStyle; // Стиль тэга
 		std::map<std::wstring, std::wstring> m_mAttributes; // Остальные аттрибуты тэга
 
+		CCompiledStyle *m_pCompiledStyle;
 	public:
 		CNode();
+		CNode(const CNode& oNode);
 		CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId);
+		~CNode();
 
 		bool Empty() const;
+
+		void SetCompiledStyle(CCompiledStyle* pCompiledStyle);
 
 		void Clear();
 

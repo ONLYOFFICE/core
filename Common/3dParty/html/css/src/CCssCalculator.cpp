@@ -13,14 +13,9 @@ namespace NSCSS
 		delete m_pInternal;
 	}
 
-	CCompiledStyle CCssCalculator::GetCompiledStyle(const std::vector<CNode> &arSelectors) const
+	bool CCssCalculator::CalculateCompiledStyle(std::vector<CNode>& arSelectors) const
 	{
-		return m_pInternal->GetCompiledStyle(arSelectors);
-	}
-
-	bool CCssCalculator::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors) const
-	{
-		return m_pInternal->GetCompiledStyle(oStyle, arSelectors);
+		return m_pInternal->CalculateCompiledStyle(arSelectors);
 	}
 
 	std::wstring CCssCalculator::CalculateStyleId(const CNode& oNode)

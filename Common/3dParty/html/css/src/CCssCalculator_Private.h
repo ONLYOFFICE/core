@@ -35,11 +35,11 @@ namespace NSCSS
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
-		
+
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
 
-		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors, unsigned int unStart = 0);
 
 		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
 		std::vector<CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
@@ -69,8 +69,7 @@ namespace NSCSS
 		~CCssCalculator_Private();
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors);
-		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors);
+		bool CalculateCompiledStyle(std::vector<CNode>& arSelectors);
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);

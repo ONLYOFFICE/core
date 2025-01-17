@@ -1,17 +1,42 @@
 #include "CNode.h"
+#include "CCompiledStyle.h"
 
 namespace NSCSS
 {
 	CNode::CNode()
+		: m_pCompiledStyle(new CCompiledStyle())
 	{}
 
+	CNode::CNode(const CNode& oNode)
+		: m_wsName(oNode.m_wsName), m_wsClass(oNode.m_wsClass), m_wsId(oNode.m_wsId),
+	      m_wsStyle(oNode.m_wsStyle), m_mAttributes(oNode.m_mAttributes)
+	{
+		m_pCompiledStyle = new CCompiledStyle();
+		*m_pCompiledStyle = *oNode.m_pCompiledStyle;
+	}
+
 	CNode::CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId)
-		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId)
+		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId), m_pCompiledStyle(new CCompiledStyle())
 	{}
+
+	CNode::~CNode()
+	{
+		if (nullptr != m_pCompiledStyle)
+			delete m_pCompiledStyle;
+	}
 
 	bool CNode::Empty() const
 	{
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
+	}
+
+	void CNode::SetCompiledStyle(CCompiledStyle* pCompiledStyle)
+	{
+		if (nullptr != m_pCompiledStyle)
+			delete m_pCompiledStyle;
+
+		m_pCompiledStyle = new CCompiledStyle();
+		*m_pCompiledStyle = *pCompiledStyle;
 	}
 
 	void CNode::Clear()

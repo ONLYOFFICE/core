@@ -49,6 +49,8 @@ namespace NSCSS
 		if (!oElement.m_sId.empty())
 			m_sId += L'+' + oElement.m_sId;
 
+		m_arParentsStyles.insert(oElement.m_arParentsStyles.begin(), oElement.m_arParentsStyles.end());
+
 		return *this;
 	}
 
@@ -68,6 +70,8 @@ namespace NSCSS
 		m_oText         = oElement.m_oText;
 		m_oDisplay      = oElement.m_oDisplay;
 		m_oTransform    = oElement.m_oTransform;
+
+		m_arParentsStyles = oElement.m_arParentsStyles;
 
 		return *this;
 	}
@@ -109,7 +113,8 @@ namespace NSCSS
 	bool CCompiledStyle::Empty() const
 	{
 		return m_oBackground.Empty() && m_oBorder.Empty() && m_oFont.Empty() &&
-		       m_oMargin.Empty() && m_oPadding.Empty() && m_oText.Empty() && m_oDisplay.Empty();
+		       m_oMargin.Empty() && m_oPadding.Empty() && m_oText.Empty() &&
+		       m_oDisplay.Empty() && m_oTransform.Empty();
 	}
 
 	void CCompiledStyle::AddPropSel(const std::wstring& sProperty, const std::wstring& sValue, const unsigned int unLevel, const bool& bHardMode)
@@ -521,7 +526,7 @@ namespace NSCSS
 	{
 		return m_sId;
 	}
-	
+
 	bool CCompiledStyle::HaveThisParent(const std::wstring &wsParentName) const
 	{
 		return m_arParentsStyles.end() != m_arParentsStyles.find(wsParentName);

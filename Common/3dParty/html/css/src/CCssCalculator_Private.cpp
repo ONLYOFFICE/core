@@ -91,7 +91,7 @@ namespace NSCSS
 
 		return {};
 	}
-	
+
 	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
 	{
 		for (const std::pair<std::wstring, std::wstring> &oData : mData)
@@ -107,11 +107,11 @@ namespace NSCSS
 		}
 	}
 
-	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors)
+	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart)
 	{
 		std::vector<std::wstring> arNodes;
-		
-		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend() - unStart; ++oNode)
 		{
 			if (!oNode->m_wsName.empty())
 				arNodes.push_back(oNode->m_wsName);
@@ -239,7 +239,7 @@ namespace NSCSS
 	{
 		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageNames), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
 	}
-	
+
 	inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet)
 	{
 		for (size_t i = 0; i < oStylesheet->imports.length; ++i)
@@ -457,19 +457,7 @@ namespace NSCSS
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
-	CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors)
-	{
-		if (arSelectors.empty())
-			return CCompiledStyle();
-
-		CCompiledStyle oStyle;
-
-		GetCompiledStyle(oStyle, arSelectors);
-
-		return oStyle;
-	}
-
-	bool CCssCalculator_Private::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors)
+	bool CCssCalculator_Private::CalculateCompiledStyle(std::vector<CNode> &arSelectors)
 	{
 		if (arSelectors.empty())
 			return false;
@@ -478,54 +466,59 @@ namespace NSCSS
 
 		if (oItem != m_mUsedStyles.end())
 		{
-			oStyle = oItem->second;
+			arSelectors.back().SetCompiledStyle(new CCompiledStyle(oItem->second));
 			return true;
 		}
 
-		oStyle.SetDpi(m_nDpi);
+		arSelectors.back().m_pCompiledStyle->SetDpi(m_nDpi);
+		unsigned int unStart = 0;
 
-		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
+		std::vector<CNode>::const_reverse_iterator itFound = std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const CNode& oNode){ return !oNode.m_pCompiledStyle->Empty(); });
+
+		if (itFound != arSelectors.crend())
+			unStart = itFound.base() - arSelectors.cbegin();
+
+		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, unStart);
 		std::vector<std::wstring> arPrevNodes;
 		bool bInTable = false;
-		
-		for (size_t i = 0; i < arSelectors.size(); ++i)
+
+		for (size_t i = unStart; i < arSelectors.size(); ++i)
 		{
-			oStyle.AddParent(arSelectors[i].m_wsName);
+			if (0 != i)
+				*arSelectors[i].m_pCompiledStyle += *arSelectors[i - 1].m_pCompiledStyle;
+
+			arSelectors[i].m_pCompiledStyle->AddParent(arSelectors[i].m_wsName);
 
 			if (!bInTable)
 				bInTable = IsTableElement(arSelectors[i].m_wsName);
 
 			if (bInTable)
 			{
-				oStyle.m_oBackground.Clear();
-				oStyle.m_oBorder.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oBorder.Clear();
 			}
 
-			CCompiledStyle oTempStyle;
-
-			oTempStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);
+			arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
 
 			for (const CElement* oElement : FindElements(arNodes, arPrevNodes))
-				oTempStyle.AddStyle(oElement->GetStyle(), i + 1);
+				arSelectors[i].m_pCompiledStyle->AddStyle(oElement->GetStyle(), i + 1);
 
 			if (!arSelectors[i].m_wsStyle.empty())
-				oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
-
-			oStyle += oTempStyle;
+				arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
 
 			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
 			if (bInTable && i < arSelectors.size() - 1)
 			{
-				oStyle.m_oFont.GetLineHeight().Clear();
-				oStyle.m_oPadding.Clear();
-				oStyle.m_oMargin.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oFont.GetLineHeight().Clear();
+				arSelectors[i].m_pCompiledStyle->m_oPadding.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oMargin.Clear();
 			}
 		}
 
-		oStyle.SetID(CalculateStyleId(arSelectors.back()));
+		arSelectors.back().m_pCompiledStyle->SetID(CalculateStyleId(arSelectors.back()));
 
-		if (!oStyle.Empty())
-			m_mUsedStyles[arSelectors] = oStyle;
+		if (!arSelectors.back().m_pCompiledStyle->Empty())
+			m_mUsedStyles[arSelectors] = *arSelectors.back().m_pCompiledStyle;
 
 		return true;
 	}
@@ -562,7 +555,7 @@ namespace NSCSS
 			if (arSelectors[i].m_mAttributes.end() != arSelectors[i].m_mAttributes.find(L"page"))
 				SetPageData(oPageData, GetPageData(arSelectors[i].m_mAttributes.at(L"page")), i + 1, false);
 		}
-		
+
 		return true;
 	}
 	#endif
@@ -584,7 +577,7 @@ namespace NSCSS
 		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
 		std::wsmatch oMatch;
 		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
-		
+
 		while (std::regex_search(oSearchStart, wsStyle.cend(), oMatch, oRegex))
 		{
 			AddPageData(oMatch[1].str(), oMatch[2].str());
@@ -735,9 +728,7 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
 
 inline static bool IsTableElement(const std::wstring& wsNameTag)
 {
-	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag || 
+	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag ||
 	        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
 	        L"th" == wsNameTag;
 }
-
-

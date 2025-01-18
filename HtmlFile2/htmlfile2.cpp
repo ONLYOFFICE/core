@@ -6,8 +6,6 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <fstream>
-#include <iterator>
 
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
@@ -2371,8 +2369,6 @@ private:
 
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
-
-		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
 
@@ -4791,8 +4787,13 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 			m_internal->m_oLightReader.Clear();
 			m_internal->m_sBase.clear();
 		}
-		//Если очищать, то каждый раз при использовании внешнего css файла он заново парсится
-		// m_internal->m_oStylesCalculator.Clear();
+
+		// Очищаем разрешенные файлы стилей
+		// Это необходимо, чтобы мы не могли взять стили из не подключенного файла, но при этом, чтобы данные оставались,
+		// т.к. ко многим файлам может быть подключен один и тот же файл (проблема возникает когда он большой)
+		// и подключать (в нашем случае заново парсить) его будет долго
+		m_internal->m_oStylesCalculator.ClearAllowedStyleFiles();
+		m_internal->m_oStylesCalculator.ClearEmbeddedStyles();
 	}
 
 	m_internal->write();

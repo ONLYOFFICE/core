@@ -3,11 +3,15 @@
 namespace HWP
 {
 CCtrlObjElement::CCtrlObjElement()
-{}
+{
+	InitMatrix();
+}
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
-{}
+{
+	InitMatrix();
+}
 
 CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
 	: CCtrlCommon(oObjElement)
@@ -38,11 +42,15 @@ CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
-{}
+{
+	InitMatrix();
+}
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrlCommon(sCtrlID, oNode, nVersion)
 {
+	InitMatrix();
+
 	m_shNGrp = oNode.GetAttributeInt(L"groupLevel");
 
 	m_arMatrix.resize(6);
@@ -147,6 +155,17 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 	}
 
 	return oBuffer.GetDistanceToLastPos(true);
+}
+
+void CCtrlObjElement::InitMatrix()
+{
+	m_arMatrix.resize(6);
+	m_arMatrix[0] = 1.;
+	m_arMatrix[1] = 0.;
+	m_arMatrix[2] = 0.;
+	m_arMatrix[3] = 1.;
+	m_arMatrix[4] = 0.;
+	m_arMatrix[5] = 0.;
 }
 
 void CCtrlObjElement::SetMatrix(CXMLNode& oNode, std::vector<double>& arMatrix, int nOffset)

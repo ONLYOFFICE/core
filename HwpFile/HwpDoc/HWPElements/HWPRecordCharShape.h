@@ -122,11 +122,16 @@ public:
 	bool Bold() const;
 	bool Italic() const;
 	bool Underline() const;
+	bool StrikeOut() const;
 
 	int GetHeight() const;
+
 	EUnderline GetUnderlineType() const;
 	ELineStyle1 GetUnderlineStyle() const;
 	int GetUnderlineColor() const;
+
+	ELineStyle2 GetStrikeOutType() const;
+	int GetStrikeOutColor() const;
 
 	short GetRelSize(ELang eLang) const;
 	HWP_STRING GetFontName(ELang eLang) const;

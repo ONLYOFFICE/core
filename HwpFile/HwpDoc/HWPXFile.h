@@ -1,5 +1,5 @@
-#ifndef HWPXFILE_PRIVATE_H
-#define HWPXFILE_PRIVATE_H
+#ifndef HWPXFILE_H
+#define HWPXFILE_H
 
 #include "HWPSection.h"
 #include "HwpFileHeader.h"
@@ -8,7 +8,7 @@
 
 namespace HWP
 {
-class CHWPXFile_Private
+class CHWPXFile
 {
 	HWP_STRING m_sFileName;
 	CZipFolderMemory *m_pZipFolder;
@@ -17,8 +17,8 @@ class CHWPXFile_Private
 	CHWPDocInfo m_oDocInfo;
 	VECTOR<CHWPSection*> m_arSections;
 public:
-	CHWPXFile_Private(const HWP_STRING& sFileName);
-	~CHWPXFile_Private();
+	CHWPXFile(const HWP_STRING& sFileName);
+	~CHWPXFile();
 
 	VECTOR<const CHWPSection*> GetSections() const;
 	const CHWPDocInfo* GetDocInfo() const;
@@ -35,4 +35,4 @@ private:
 };
 }
 
-#endif // HWPXFILE_PRIVATE_H
+#endif // HWPXFILE_H

@@ -81,11 +81,11 @@ void CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVer
 	}
 	else if (L"hp:t" == oNode.GetName())
 	{
+		m_arP.push_back(new CParaText(L"____", oNode.GetText(), 0, nCharShapeID));
+
 		for(CXMLNode& oChild : oNode.GetChilds())
 		{
-			if (L"#text" == oChild.GetName())
-				m_arP.push_back(new CParaText(L"____", oChild.GetText(), 0, nCharShapeID));
-			else if (L"hp:lineBreak" == oChild.GetName())
+			if (L"hp:lineBreak" == oChild.GetName())
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
 			else if (L"hp:hyphen" == oChild.GetName())
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));

@@ -61,7 +61,7 @@ EColorFillPattern GetColorFillPattern(int nPattern)
 
 void TBorder::ReadFromNode(CXMLNode& oNode)
 {
-	m_eStyle = GetLineStyle2(oNode.GetAttributeInt(L"type"));
+	m_eStyle = GetLineStyle2(oNode.GetAttribute(L"type"));
 
 	HWP_STRING sColor = std::regex_replace(oNode.GetAttribute(L"color"), std::wregex(L"^#([0-9A-Fa-f]+)$"), L"$1");
 

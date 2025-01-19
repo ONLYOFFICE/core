@@ -9,7 +9,7 @@ TTab::TTab(CXMLNode& oNode)
 {
 	m_nPos = oNode.GetAttributeInt(L"pos");
 	SetType(oNode.GetAttributeInt(L"type"));
-	m_eLeader = GetLineStyle2(oNode.GetAttributeInt(L"leader"));
+	m_eLeader = GetLineStyle2(oNode.GetAttribute(L"leader"));
 }
 
 void TTab::SetType(int nValue)

@@ -30,11 +30,11 @@ CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 	: m_eHanType(eHanType), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
-CHWPDocInfo::CHWPDocInfo(CHWPXFile_Private* pHWPXFile)
+CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
 	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile), m_eCompatibleDoc(ECompatDoc::UNKNOWN)
 {}
 
-CHWPDocInfo::CHWPDocInfo(CHWPFile_Private* pHWPFile)
+CHWPDocInfo::CHWPDocInfo(CHWPFile* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
@@ -262,7 +262,7 @@ bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
 }
 
 #define GET_RECORD(array_records, index) \
-	if (array_records.size() <= index) \
+	if (array_records.size() <= index || index < 0) \
 		return nullptr; \
 	return array_records[index]
 
@@ -311,7 +311,7 @@ const CHWPRecord* CHWPDocInfo::GetTabDef(int nIndex) const
 	GET_RECORD(m_arTabDefs, nIndex);
 }
 
-CHWPFile_Private* CHWPDocInfo::GetParentHWP()
+CHWPFile* CHWPDocInfo::GetParentHWP()
 {
 	return m_pParentHWP;
 }

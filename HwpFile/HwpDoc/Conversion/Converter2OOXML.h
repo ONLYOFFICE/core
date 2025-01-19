@@ -1,7 +1,7 @@
 #ifndef CONVERTER2OOXML_H
 #define CONVERTER2OOXML_H
 
-#include "../HWPFile_Private.h"
+#include "../HWPFile.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
 #include "../Paragraph/CtrlAutoNumber.h"
@@ -17,7 +17,7 @@
 #include "OleConverter.h"
 #include "NumberingConverter.h"
 
-#include "WriterContext.h"
+#include "../Common/WriterContext.h"
 
 namespace HWP
 {
@@ -112,7 +112,7 @@ class CConverter2OOXML
 	void WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder);
 
 	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteCharacter(const CCtrlCharacter* pCharacter, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);

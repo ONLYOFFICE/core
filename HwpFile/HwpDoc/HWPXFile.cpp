@@ -1,23 +1,23 @@
-#include "HWPXFile_Private.h"
+#include "HWPXFile.h"
 
 namespace HWP
 {
-CHWPXFile_Private::CHWPXFile_Private(const HWP_STRING& sFileName)
+CHWPXFile::CHWPXFile(const HWP_STRING& sFileName)
 	: m_sFileName(sFileName), m_pZipFolder(nullptr), m_oDocInfo(this)
 {}
 
-CHWPXFile_Private::~CHWPXFile_Private()
+CHWPXFile::~CHWPXFile()
 {
 	Close();
 	CLEAR_ARRAY(CHWPSection, m_arSections);
 }
 
-VECTOR<const CHWPSection*> CHWPXFile_Private::GetSections() const
+VECTOR<const CHWPSection*> CHWPXFile::GetSections() const
 {
 	RETURN_VECTOR_CONST_PTR(CHWPSection, m_arSections);
 }
 
-bool CHWPXFile_Private::Detect()
+bool CHWPXFile::Detect()
 {
 	BYTE *pBuffer = NULL;
 	DWORD dwBufferSize = 0;
@@ -30,7 +30,7 @@ bool CHWPXFile_Private::Detect()
 	return GetFileHeader();
 }
 
-bool CHWPXFile_Private::Open()
+bool CHWPXFile::Open()
 {
 	if (!NSFile::CFileBinary::Exists(m_sFileName))
 		return false;
@@ -51,7 +51,7 @@ bool CHWPXFile_Private::Open()
 	return true;
 }
 
-void CHWPXFile_Private::Close()
+void CHWPXFile::Close()
 {
 	if (nullptr != m_pZipFolder)
 	{
@@ -60,7 +60,7 @@ void CHWPXFile_Private::Close()
 	}
 }
 
-VECTOR<HWP_STRING> CHWPXFile_Private::GetPathsToSections() const
+VECTOR<HWP_STRING> CHWPXFile::GetPathsToSections() const
 {
 	VECTOR<std::wstring> arPaths{m_pZipFolder->getFiles(L"Contents", false)};
 
@@ -111,18 +111,18 @@ VECTOR<HWP_STRING> CHWPXFile_Private::GetPathsToSections() const
 	return arResult;
 }
 
-bool CHWPXFile_Private::GetFileHeader()
+bool CHWPXFile::GetFileHeader()
 {
 	CXMLNode oVersionXml{GetDocument(L"version.xml")};
 	return m_oFileHeader.Parse(oVersionXml);
 }
 
-const CHWPDocInfo* CHWPXFile_Private::GetDocInfo() const
+const CHWPDocInfo* CHWPXFile::GetDocInfo() const
 {
 	return &m_oDocInfo;
 }
 
-bool CHWPXFile_Private::GetDocInfo(int nVersion)
+bool CHWPXFile::GetDocInfo(int nVersion)
 {
 	CXMLNode oContent{GetDocument(L"Contents/content.hpf")};
 	if (m_oDocInfo.ReadContentHpf(oContent, nVersion))
@@ -134,7 +134,7 @@ bool CHWPXFile_Private::GetDocInfo(int nVersion)
 	return false;
 }
 
-bool CHWPXFile_Private::ReadSection(const HWP_STRING& sName, int nVersion)
+bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 {
 	CXMLNode oRootNode{GetDocument(sName)};
 
@@ -149,7 +149,7 @@ bool CHWPXFile_Private::ReadSection(const HWP_STRING& sName, int nVersion)
 	return bResult;
 }
 
-CXMLNode CHWPXFile_Private::GetDocument(const HWP_STRING& sEntryName)
+CXMLNode CHWPXFile::GetDocument(const HWP_STRING& sEntryName)
 {
 	if (nullptr == m_pZipFolder)
 		return CXMLNode();

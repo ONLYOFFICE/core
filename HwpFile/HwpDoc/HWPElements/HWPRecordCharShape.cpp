@@ -154,7 +154,9 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 }
 
 CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
-	: CHWPRecord(EHWPTag::HWPTAG_HWP_CHAR_SHAPE, 0, 0), m_pParent(&oDocInfo)
+	: CHWPRecord(EHWPTag::HWPTAG_HWP_CHAR_SHAPE, 0, 0), m_pParent(&oDocInfo),
+      m_bItalic(false), m_bBold(false), m_bEmboss(false), m_bEngrave(false),
+      m_bSuperScript(false), m_bSubScript(false)
 {
 	m_eUnderline = EUnderline::NONE;
 	m_eUnderLineShape = ELineStyle1::SOLID;
@@ -215,11 +217,14 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 		else if (L"hh:underline" == oChild.GetName())
 		{
 			m_eUnderline = GetUnderline(oChild.GetAttributeInt(L"type"));
-			m_eUnderLineShape = GetLineStyle1(oChild.GetAttributeInt(L"shape"));
+			m_eUnderLineShape = GetLineStyle1(oChild.GetAttribute(L"shape"));
 			m_nUnderlineColor = oChild.GetAttributeColor(L"color");
 		}
 		else if (L"hh:strikeout" == oChild.GetName())
 		{
+			m_eStrikeOutShape = GetLineStyle2(oChild.GetAttribute(L"shape"));
+			m_nStrikeOutColor = oChild.GetAttributeColor(L"color");
+
 			if (L"3D" == oChild.GetAttribute(L"shape"))
 				m_eStrikeOutShape = ELineStyle2::NONE;
 		}
@@ -272,6 +277,11 @@ bool CHWPRecordCharShape::Underline() const
 	return EUnderline::NONE != m_eUnderline;
 }
 
+bool CHWPRecordCharShape::StrikeOut() const
+{
+	return ELineStyle2::NONE != m_eStrikeOutShape;
+}
+
 int CHWPRecordCharShape::GetHeight() const
 {
 	return m_nHeight;
@@ -290,6 +300,16 @@ ELineStyle1 CHWPRecordCharShape::GetUnderlineStyle() const
 int CHWPRecordCharShape::GetUnderlineColor() const
 {
 	return m_nUnderlineColor;
+}
+
+ELineStyle2 CHWPRecordCharShape::GetStrikeOutType() const
+{
+	return m_eStrikeOutShape;
+}
+
+int CHWPRecordCharShape::GetStrikeOutColor() const
+{
+	return m_nStrikeOutColor;
 }
 
 short CHWPRecordCharShape::GetRelSize(ELang eLang) const

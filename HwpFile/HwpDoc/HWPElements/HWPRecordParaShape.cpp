@@ -106,12 +106,11 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 }
 
 CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
-	: CHWPRecord(EHWPTag::HWPTAG_PARA_SHAPE, 0, 0), m_pParent(&oDocInfo)
+	: CHWPRecord(EHWPTag::HWPTAG_PARA_SHAPE, 0, 0), m_pParent(&oDocInfo),
+      m_eAlign(EHorizontalAlign::JUSTIFY), m_bWidowOrphan(false), m_bKeepWithNext(false),
+      m_bPageBreakBefore(false), m_eVertAlign(EVerticalAlign::BASELINE), m_eHeadingType(EHeadingType::NONE),
+      m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false)
 {
-	m_eHeadingType = EHeadingType::NONE;
-	m_eAlign = EHorizontalAlign::JUSTIFY;
-	m_eVertAlign = EVerticalAlign::BASELINE;
-
 	m_shTabDef = oNode.GetAttributeInt(L"tabPrIDRef");
 	m_chCondense = (HWP_BYTE)oNode.GetAttributeInt(L"condense");
 

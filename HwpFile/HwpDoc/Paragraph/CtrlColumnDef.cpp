@@ -59,7 +59,7 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 	{
 		if (L"hp:colLine" == oChild.GetName())
 		{
-			m_eColLineStyle = GetLineStyle2(oChild.GetAttributeInt(L"type"));
+			m_eColLineStyle = GetLineStyle2(oChild.GetAttribute(L"type"));
 			m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oChild.GetAttribute(L"width"));
 			m_nColLineColor = oChild.GetAttributeColor(L"color");
 		}

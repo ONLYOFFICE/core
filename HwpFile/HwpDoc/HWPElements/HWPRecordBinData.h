@@ -13,15 +13,13 @@ enum class ECompressed
 	FOLLOW_STORAGE = 0x00,
 	COMPRESS = 0x10,
 	NO_COMPRESS = 0x20,
-	UNKNOWN
 };
 
 enum class EType
 {
 	LINK = 0x0,
 	EMBEDDING = 0x1,
-	STORAGE = 0x2,
-	UNKNOWN
+	STORAGE = 0x2
 };
 
 enum class EState
@@ -29,8 +27,7 @@ enum class EState
 	NEVER_ACCESSED = 0x000,
 	FOUND_FILE_BY_ACCESS = 0x100,
 	ACCESS_FAILED = 0x200,
-	LINK_ACCESS_IGNORED = 0x400,
-	UNKNOWN
+	LINK_ACCESS_IGNORED = 0x400
 };
 
 class CHWPRecordBinData : public CHWPRecord

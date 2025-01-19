@@ -12,14 +12,10 @@
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
 
-#include "../HWPElements/HWPRecordBinData.h"
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
 
 #include "Transform.h"
-
-#include <sstream>
-#include <iomanip>
 
 #define DEFAULT_FONT_FAMILY std::wstring(L"Arial")
 #define DEFAULT_FONT_SIZE 18
@@ -302,7 +298,7 @@ bool CConverter2OOXML::IsRasterFormat(const HWP_STRING& sFormat)
 	return L"png" == sFormat || L"jpg" == sFormat || L"jpeg" == sFormat;
 }
 
-void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCharacter)
 		return;
@@ -316,6 +312,9 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, NSString
 				oState.m_bOpenedP = false;
 				oBuilder.WriteString(L"</w:p>");
 			}
+			else
+				WriteText(L"", shParaShapeID, pCharacter->GetCharShapeId(), oBuilder, oState);
+
 			oState.m_bNeedLineBreak = false;
 			break;
 		}
@@ -423,7 +422,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Character:
 			{
-				WriteCharacter((const CCtrlCharacter*)pCtrl, oBuilder, oState);
+				WriteCharacter((const CCtrlCharacter*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Shape:
@@ -519,35 +518,33 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 			break;
 	}
 
-	int nLineSpacing = 0;
+	int nLineSpacing = 240;
 	HWP_STRING sType = L"auto";
 
-	// switch(pParaShape->GetLineSpacingType())
-	// {
-	// 	case 0x0:
-	// 	{
-	// 		sType = L"atLeast";
-	// 		nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());
-	// 		nLineSpacing = 57;
-	// 		// nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
-	// 		break;
-	// 	}
-	// 	case 0x01:
-	// 	{
-	// 		sType = L"exact";
-	// 		nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.);
-	// 		// nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing() / 2. * 20)/*0.352778*/; //(1pt=0.352778mm) //TODO:: проверить, как найдется пример
-	// 		break;
-	// 	}
-	// 	case 0x02:
-	// 	case 0x03:
-	// 	default:
-	// 	{
-	// 		sType = L"atLeast";
-	// 		nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());  //TODO:: проверить, как найдется пример
-	// 		break;
-	// 	}
-	// }
+	switch(pParaShape->GetLineSpacingType())
+	{
+		case 0x0:
+		{
+			sType = L"auto";
+			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100. * 0.65); // TODO:: в hwp изначально межстрочный интервал меньше. Множитель 1 в hwp ≈ 0.65 MS
+			break;
+		}
+		case 0x01:
+		{
+			sType = L"exact";
+			nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing() / 2. * 20)/*0.352778*/; //(1pt=0.352778mm) //TODO:: проверить, как найдется пример
+			break;
+			break;
+		}
+		case 0x02:
+		case 0x03:
+		default:
+		{
+			sType = L"atLeast";
+			nLineSpacing = static_cast<int>((double)pParaShape->GetLineSpacing());  //TODO:: проверить, как найдется пример
+			break;
+		}
+	}
 
 	oBuilder.WriteString(L"<w:spacing w:lineRule=\"" + sType + L"\" w:line=\"" + std::to_wstring(nLineSpacing) +
 	                      L"\" w:before=\"" + std::to_wstring(static_cast<int>((double)pParaShape->GetMarginPrev() / 10.)) +
@@ -1260,6 +1257,8 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 
 	oBuilder.WriteString(L"<w:color w:val=\"" + Transform::IntColorToHEX(pCharShape->GetTextColor()) + L"\"/>");
 
+	bool bStrike = false;
+
 	if (pCharShape->Underline())
 	{
 		EUnderline eUnderlineType = pCharShape->GetUnderlineType();
@@ -1299,8 +1298,13 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 				oBuilder.WriteString(L"<w:dstrike/>");
 			else
 				oBuilder.WriteString(L"<w:strike/>");
+
+			bStrike = true;
 		}
 	}
+
+	if (!bStrike && pCharShape->StrikeOut())
+		oBuilder.WriteString(L"<w:strike/>");
 
 	double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
 	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
@@ -1424,7 +1428,7 @@ void CConverter2OOXML::CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, T
 std::vector<std::wstring> SplitText(const std::wstring& wsText)
 {
 	if (wsText.empty())
-		return std::vector<std::wstring>();
+		return std::vector<std::wstring>{L""};
 
 	std::vector<std::wstring> arTexts;
 
@@ -1434,7 +1438,7 @@ std::vector<std::wstring> SplitText(const std::wstring& wsText)
 
 	for (unsigned int unIndex = 1; unIndex < wsText.length(); ++unIndex)
 	{
-		bool bCurrentIsLetter = iswalpha(wsText[unIndex]);
+		bool bCurrentIsLetter = iswalnum(wsText[unIndex]);
 
 		if (bCurrentIsLetter != bWasLetter)
 		{
@@ -1468,9 +1472,20 @@ void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID
 			oState.m_bNeedLineBreak = false;
 		}
 
-		oBuilder.WriteString(L"<w:t >");
-		oBuilder.WriteEncodeXmlString(wsTextElement);
-		oBuilder.WriteString(L"</w:t></w:r>");
+		if (!wsTextElement.empty())
+		{
+			oBuilder.WriteString(L"<w:t");
+
+			if (!iswalnum(wsTextElement.front()))
+				oBuilder.WriteString(L" xml:space=\"preserve\"");
+
+			oBuilder.WriteString(L">");
+
+			oBuilder.WriteEncodeXmlString(wsTextElement);
+			oBuilder.WriteString(L"</w:t>");
+		}
+
+		oBuilder.WriteString(L"</w:r>");
 	}
 }
 

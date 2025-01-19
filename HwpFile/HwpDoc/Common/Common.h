@@ -25,6 +25,17 @@ typedef char HWP_BYTE;
 #define CASE(value) case value : return value
 #define DEFAULT(value) case value: default: return value
 
+#define STR_(value) L#value
+#define IF_STRING_IN_ENUM(checked_value, value, enum_type)\
+	if (STR_(checked_value) == value)\
+		return enum_type::checked_value
+#define ELSE_IF_STRING_IN_ENUM(checked_value, value, enum_type)\
+	else if (STR_(checked_value) == value)\
+		return enum_type::checked_value
+#define ELSE_STRING_IN_ENUM(checked_value, enum_type)\
+	else\
+		return enum_type::checked_value
+
 #define RETURN_VECTOR_CONST_PTR(type, array_values) \
 	std::vector<const type*> arTempVector(array_values.size()); \
 	for (unsigned int unIndex = 0; unIndex < array_values.size(); ++unIndex) \

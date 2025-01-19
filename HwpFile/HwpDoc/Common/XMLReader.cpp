@@ -12,7 +12,7 @@ CXMLNode::CXMLNode(const CXmlNode& oNode)
 
 bool CXMLNode::GetAttributeBool(const std::wstring& wsName)
 {
-	return L"1" == XmlUtils::CXmlNode::GetAttribute(wsName);
+	return L"1" == XmlUtils::CXmlNode::GetAttribute(wsName, L"0");
 }
 
 int CXMLNode::GetAttributeColor(const std::wstring& wsName, const int& _default)

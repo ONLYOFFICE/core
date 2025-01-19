@@ -73,7 +73,7 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode,
 		{
 			m_nLineColor = oChild.GetAttributeColor(L"color");
 			m_nLineThick = std::abs(oChild.GetAttributeInt(L"width"));
-			m_eLineStyle = GetLineStyle2(oChild.GetAttributeInt(L"style"));
+			m_eLineStyle = GetLineStyle2(oChild.GetAttribute(L"style"));
 
 			HWP_STRING sType = oChild.GetAttribute(L"headStyle");
 

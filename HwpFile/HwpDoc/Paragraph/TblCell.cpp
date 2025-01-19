@@ -64,7 +64,9 @@ CTblCell::CTblCell(CXMLNode& oNode, int nVersion)
 				if (nullptr == pCellParagraphs)
 					continue;
 
-				pCellParagraphs->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+				if (ECtrlObjectType::Character != pCellParagraphs->GetCtrls().back()->GetCtrlType())
+					pCellParagraphs->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+
 				m_arParas.push_back(pCellParagraphs);
 			}
 		}

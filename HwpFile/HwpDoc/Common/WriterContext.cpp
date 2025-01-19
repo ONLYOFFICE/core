@@ -1,6 +1,6 @@
 #include "WriterContext.h"
-#include "../HWPFile_Private.h"
-#include "../HWPXFile_Private.h"
+#include "../HWPFile.h"
+#include "../HWPXFile.h"
 
 #include <sstream>
 #include <iomanip>
@@ -18,6 +18,23 @@ CWriterContext::~CWriterContext()
 
 	if (nullptr != m_pHWPXFile)
 		delete m_pHWPXFile;
+}
+
+void CWriterContext::Clear()
+{
+	m_eType = EHanType::NONE;
+
+	if (nullptr != m_pHWPFile)
+	{
+		delete m_pHWPFile;
+		m_pHWPFile = nullptr;
+	}
+
+	if (nullptr != m_pHWPXFile)
+	{
+		delete m_pHWPXFile;
+		m_pHWPXFile = nullptr;
+	}
 }
 
 VECTOR<const CHWPSection*> CWriterContext::GetSections()
@@ -48,7 +65,7 @@ EHanType CWriterContext::DetectHancom(const HWP_STRING& sPathToFile)
 {
 	bool bDetected = false;
 
-	CHWPFile_Private* pHwpTemp = new CHWPFile_Private(sPathToFile);
+	CHWPFile* pHwpTemp = new CHWPFile(sPathToFile);
 	if (nullptr != pHwpTemp)
 	{
 		if (pHwpTemp->Detect())
@@ -63,7 +80,7 @@ EHanType CWriterContext::DetectHancom(const HWP_STRING& sPathToFile)
 	if (bDetected)
 		return EHanType::HWP;
 
-	CHWPXFile_Private* pHwpxTemp = new CHWPXFile_Private(sPathToFile);
+	CHWPXFile* pHwpxTemp = new CHWPXFile(sPathToFile);
 	if (nullptr != pHwpxTemp)
 	{
 		if (pHwpxTemp->Detect())
@@ -106,13 +123,15 @@ bool CWriterContext::Detect()
 
 bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 {
+	Clear();
+
 	m_eType = eHanType;
 
 	switch (m_eType)
 	{
 		case EHanType::HWP:
 		{
-			m_pHWPFile = new CHWPFile_Private(sPathToFile);
+			m_pHWPFile = new CHWPFile(sPathToFile);
 
 			if (nullptr == m_pHWPFile)
 				return false;
@@ -121,7 +140,7 @@ bool CWriterContext::Open(const HWP_STRING& sPathToFile, EHanType eHanType)
 		}
 		case EHanType::HWPX:
 		{
-			m_pHWPXFile = new CHWPXFile_Private(sPathToFile);
+			m_pHWPXFile = new CHWPXFile(sPathToFile);
 
 			if (nullptr == m_pHWPXFile)
 				return false;
@@ -183,17 +202,17 @@ const CHWPRecordBorderFill* CWriterContext::GetBorderFill(short shId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= shId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
-	return (CHWPRecordBorderFill*)pDocInfo->GetBorderFill(shId - 1);
+	return (CHWPRecordBorderFill*)pDocInfo->GetBorderFill(shId);
 }
 
 const CHWPRecordParaShape* CWriterContext::GetParaShape(int nId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= nId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
 	return (CHWPRecordParaShape*)pDocInfo->GetParaShape(nId);
@@ -203,7 +222,7 @@ const CHWPRecordStyle* CWriterContext::GetParaStyle(short shId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= shId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
 	return (CHWPRecordStyle*)pDocInfo->GetStyle(shId);
@@ -213,7 +232,7 @@ const CHWPRecordCharShape* CWriterContext::GetCharShape(int nId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= nId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
 	return (CHWPRecordCharShape*)pDocInfo->GetCharShape(nId);
@@ -223,7 +242,7 @@ const CHWPRecordNumbering* CWriterContext::GetNumbering(short shId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= shId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
 	return (CHWPRecordNumbering*)pDocInfo->GetNumbering(shId);
@@ -233,17 +252,17 @@ const CHWPRecordBullet* CWriterContext::GetBullet(short shId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= shId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
-	return (CHWPRecordBullet*)pDocInfo->GetBullet(shId - 1);
+	return (CHWPRecordBullet*)pDocInfo->GetBullet(shId);
 }
 
 const CHwpRecordTabDef* CWriterContext::GetTabDef(short shId)
 {
 	const CHWPDocInfo* pDocInfo = GetDocInfo();
 
-	if (nullptr == pDocInfo || 0 >= shId)
+	if (nullptr == pDocInfo)
 		return nullptr;
 
 	return (CHwpRecordTabDef*)pDocInfo->GetTabDef(shId);

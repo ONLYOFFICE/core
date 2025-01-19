@@ -24,6 +24,8 @@ class CCtrlObjElement : public CCtrlCommon
 	VECTOR<double> m_arMatrix;
 	VECTOR<double> m_arMatrixSeq;
 
+	void InitMatrix();
+
 	void SetMatrix(CXMLNode& oNode, VECTOR<double>& arMatrix, int nOffset);
 public:
 	CCtrlObjElement();

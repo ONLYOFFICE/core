@@ -19,11 +19,11 @@ DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 SOURCES += \
     HWPFile.cpp \
     HwpDoc/Common/XMLReader.cpp \
+    HwpDoc/Common/WriterContext.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
     HwpDoc/Conversion/FootnoteConverter.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
     HwpDoc/Conversion/OleConverter.cpp \
-    HwpDoc/Conversion/WriterContext.cpp \
     HwpDoc/HWPDocInfo.cpp \
     HwpDoc/HWPElements/HWPRecord.cpp \
     HwpDoc/HWPElements/HWPRecordBinData.cpp \
@@ -43,10 +43,10 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordParaText.cpp \
     HwpDoc/HWPElements/HWPRecordStyle.cpp \
     HwpDoc/HWPElements/HwpRecordTabDef.cpp \
-    HwpDoc/HWPFile_Private.cpp \
+    HwpDoc/HWPFile.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
-    HwpDoc/HWPXFile_Private.cpp \
+    HwpDoc/HWPXFile.cpp \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
@@ -94,13 +94,13 @@ HEADERS += \
     HWPFile.h \
     HwpDoc/Common/Common.h \
     HwpDoc/Common/XMLNode.h \
+    HwpDoc/Common/WriterContext.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/FootnoteConverter.h \
     HwpDoc/Conversion/NumberingConverter.h \
     HwpDoc/Conversion/OleConverter.h \
     HwpDoc/Conversion/Transform.h \
     HwpDoc/Conversion/Types.h \
-    HwpDoc/Conversion/WriterContext.h \
     HwpDoc/Errors.h \
     HwpDoc/HWPDocInfo.h \
     HwpDoc/HWPElements/HWPRecord.h \
@@ -124,10 +124,10 @@ HEADERS += \
     HwpDoc/HWPElements/HWPType.h \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
-    HwpDoc/HWPFile_Private.h \
+    HwpDoc/HWPFile.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
-    HwpDoc/HWPXFile_Private.h \
+    HwpDoc/HWPXFile.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
     HwpDoc/OLEdoc/CompoundFile.h \

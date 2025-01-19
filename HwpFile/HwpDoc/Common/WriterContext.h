@@ -2,8 +2,8 @@
 #define WRITERCONTEXT_H
 
 #include "../HanType.h"
-#include "../HWPFile_Private.h"
-#include "../HWPXFile_Private.h"
+#include "../HWPFile.h"
+#include "../HWPXFile.h"
 
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordStyle.h"
@@ -17,12 +17,13 @@ namespace HWP
 class CWriterContext
 {
 	EHanType m_eType;
-	CHWPFile_Private*  m_pHWPFile;
-	CHWPXFile_Private* m_pHWPXFile;
-	int m_nVersion;
+	CHWPFile*  m_pHWPFile;
+	CHWPXFile* m_pHWPXFile;
 public:
 	CWriterContext();
 	~CWriterContext();
+
+	void Clear();
 
 	VECTOR<const CHWPSection*> GetSections();
 	static EHanType DetectHancom(const HWP_STRING& sPathToFile);

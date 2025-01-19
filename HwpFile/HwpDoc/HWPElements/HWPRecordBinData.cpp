@@ -1,6 +1,6 @@
 #include "HWPRecordBinData.h"
 
-#include "../HWPFile_Private.h"
+#include "../HWPFile.h"
 
 #include <iomanip>
 #include <regex>
@@ -12,10 +12,9 @@ ECompressed GetCompressed(int nValue)
 {
 	SWITCH(ECompressed, nValue)
 	{
-		CASE(ECompressed::FOLLOW_STORAGE);
+		DEFAULT(ECompressed::FOLLOW_STORAGE);
 		CASE(ECompressed::COMPRESS);
 		CASE(ECompressed::NO_COMPRESS);
-		DEFAULT(ECompressed::UNKNOWN);
 	}
 }
 
@@ -23,22 +22,21 @@ EType GetType(int nValue)
 {
 	SWITCH(EType, nValue)
 	{
-		CASE(EType::LINK);
+		DEFAULT(EType::LINK);
 		CASE(EType::EMBEDDING);
 		CASE(EType::STORAGE);
-		DEFAULT(EType::UNKNOWN);
 	}
 }
+
 
 EState GetState(int nValue)
 {
 	SWITCH(EState, nValue)
 	{
-		CASE(EState::NEVER_ACCESSED);
+		DEFAULT(EState::NEVER_ACCESSED);
 		CASE(EState::FOUND_FILE_BY_ACCESS);
 		CASE(EState::ACCESS_FAILED);
 		CASE(EState::LINK_ACCESS_IGNORED);
-		DEFAULT(EState::UNKNOWN);
 	}
 }
 

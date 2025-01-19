@@ -185,7 +185,7 @@ namespace HWP
 		else if (L"LARGEST_ONLY" == sType)
 			m_chTextFlow = 3;
 
-		sType = oNode.GetAttributeInt(L"textWrap");
+		sType = oNode.GetAttribute(L"textWrap");
 
 		if (L"SQUARE" == sType)
 			m_eTextWrap = ETextWrap::SQUARE;

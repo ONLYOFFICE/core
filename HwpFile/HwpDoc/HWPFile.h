@@ -1,5 +1,5 @@
-#ifndef HWPFILE_PRIVATE_H
-#define HWPFILE_PRIVATE_H
+#ifndef HWPFILE_H
+#define HWPFILE_H
 
 #include "HwpFileHeader.h"
 #include "OLEdoc/CompoundFile.h"
@@ -8,7 +8,7 @@
 
 namespace HWP
 {
-class CHWPFile_Private
+class CHWPFile
 {
 	HWP_STRING    m_sFileName;
 	CCompoundFile  m_oOleFile;
@@ -18,8 +18,8 @@ class CHWPFile_Private
 	VECTOR<CHWPSection*> m_arBodyTexts;
 	VECTOR<CHWPSection*> m_arViewTexts;
 public:
-	CHWPFile_Private(const HWP_STRING& sFileName);
-	~CHWPFile_Private();
+	CHWPFile(const HWP_STRING& sFileName);
+	~CHWPFile();
 
 	VECTOR<const CHWPSection*> GetSections();
 	const CCompoundFile* GetOleFile() const;
@@ -50,4 +50,4 @@ private:
 };
 }
 
-#endif // HWPFILE_PRIVATE_H
+#endif // HWPFILE_H

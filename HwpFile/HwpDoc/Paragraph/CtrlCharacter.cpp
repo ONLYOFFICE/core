@@ -15,6 +15,11 @@ ECtrlObjectType CCtrlCharacter::GetCtrlType() const
 	return ECtrlObjectType::Character;
 }
 
+int CCtrlCharacter::GetCharShapeId() const
+{
+	return m_nCharShapeID;
+}
+
 
 ECtrlCharType CCtrlCharacter::GetType() const
 {

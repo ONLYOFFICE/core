@@ -792,6 +792,7 @@ public:
 				
 				if (1 != pCell->GetColspan())
 				{
+					++itFoundEmpty;
 					UINT unColspan = pCell->GetColspan() - 1;
 	
 					while (m_arCells.end() != itFoundEmpty && (*itFoundEmpty)->Empty() && unColspan > 0)
@@ -824,12 +825,13 @@ public:
 		{
 			delete m_arCells[nPosition];
 			--m_oStyles.m_unMaxIndex;
-			m_arCells[nPosition++] = pCell;
+			m_arCells[nPosition] = pCell;
 
 			if (1 != pCell->GetColspan())
 			{
+				++nPosition;
 				UINT unDeleteCount =  pCell->GetColspan() - 1;
-				while (m_arCells[nPosition]->Empty() && nPosition < m_arCells.size() && unDeleteCount > 0)
+				while (nPosition < m_arCells.size() && m_arCells[nPosition]->Empty() && !m_arCells[nPosition]->Merged() && unDeleteCount > 0)
 				{
 					delete m_arCells[nPosition];
 					--m_oStyles.m_unMaxIndex;

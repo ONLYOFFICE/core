@@ -5,6 +5,27 @@
 
 namespace HWP
 {
+	EVertAlign GetVertAlign(int nValue)
+	{
+		SWITCH(EVertAlign, nValue)
+		{
+			DEFAULT(EVertAlign::TOP);
+			CASE(EVertAlign::CENTER);
+			CASE(EVertAlign::BOTTOM);
+			CASE(EVertAlign::INSIDE);
+			CASE(EVertAlign::OUTSIDE);
+		}
+	}
+
+	EVertAlign GetVertAlign(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(CENTER, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EVertAlign);
+		ELSE_STRING_IN_ENUM(TOP, EVertAlign);
+	}
+
 	EVRelTo GetVRelTo(int nValue)
 	{
 		SWITCH(EVRelTo, nValue)
@@ -13,6 +34,14 @@ namespace HWP
 			CASE(EVRelTo::PAGE);
 			DEFAULT(EVRelTo::PAPER);
 		}
+	}
+
+	EVRelTo GetVRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PARA, sValue, EVRelTo);
+		ELSE_IF_STRING_IN_ENUM(PAGE, sValue, EVRelTo);
+		ELSE_IF_STRING_IN_ENUM(PAPER, sValue, EVRelTo);
+		ELSE_STRING_IN_ENUM(PARA, EVRelTo);
 	}
 
 	EHRelTo GetHRelTo(int nValue)
@@ -24,6 +53,14 @@ namespace HWP
 			CASE(EHRelTo::COLUMN);
 			DEFAULT(EHRelTo::PAPER);
 		}
+	}
+
+	EHRelTo GetHRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EHRelTo);
+		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EHRelTo);
+		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EHRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EHRelTo);
 	}
 
 	EWidthRelTo GetWidthRelTo(int nValue)
@@ -38,6 +75,15 @@ namespace HWP
 		}
 	}
 
+	EWidthRelTo GetWidthRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EWidthRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EWidthRelTo);
+	}
+
 	EHeightRelTo GetHeightRelTo(int nValue)
 	{
 		SWITCH(EHeightRelTo, nValue)
@@ -46,6 +92,13 @@ namespace HWP
 			CASE(EHeightRelTo::ABSOLUTE);
 			DEFAULT(EHeightRelTo::PAPER);
 		}
+	}
+
+	EHeightRelTo GetHeightRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EHeightRelTo);
+		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EHeightRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EHeightRelTo);
 	}
 
 	EHorzAlign GetHorzAlign(int nValue)
@@ -60,6 +113,15 @@ namespace HWP
 		}
 	}
 
+	EHorzAlign GetHorzAlign(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(CENTER, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(RIGHT, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EHorzAlign);
+		ELSE_STRING_IN_ENUM(LEFT, EHorzAlign);
+	}
+
 	ETextWrap GetTextWrap(int nValue)
 	{
 		SWITCH(ETextWrap, nValue)
@@ -69,6 +131,14 @@ namespace HWP
 			CASE(ETextWrap::IN_FRONT_OF_TEXT);
 			DEFAULT(ETextWrap::SQUARE);
 		}
+	}
+
+	ETextWrap GetTextWrap(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(TOP_AND_BOTTOM, sValue, ETextWrap);
+		ELSE_IF_STRING_IN_ENUM(BEHIND_TEXT, sValue, ETextWrap);
+		ELSE_IF_STRING_IN_ENUM(IN_FRONT_OF_TEXT, sValue, ETextWrap);
+		ELSE_STRING_IN_ENUM(SQUARE, ETextWrap);
 	}
 
 	CCtrlCommon::CCtrlCommon()
@@ -214,9 +284,9 @@ namespace HWP
 			if (L"hp:sz" == oChild.GetName())
 			{
 				m_nWidth = oChild.GetAttributeInt(L"width");
-				m_eWidthRelTo = ::HWP::GetWidthRelTo(oChild.GetAttributeInt(L"widthRelTo"));
+				m_eWidthRelTo = ::HWP::GetWidthRelTo(oChild.GetAttribute(L"widthRelTo"));
 				m_nHeight = oChild.GetAttributeInt(L"height");
-				m_eHeightRelTo = ::HWP::GetHeightRelTo(oChild.GetAttributeInt(L"heightRelTo"));
+				m_eHeightRelTo = ::HWP::GetHeightRelTo(oChild.GetAttribute(L"heightRelTo"));
 			}
 			else if (L"hp:pos" == oChild.GetName())
 			{
@@ -227,14 +297,14 @@ namespace HWP
 				else
 					m_bAllowOverlap = oChild.GetAttributeBool(L"allowOverlap");
 
-				m_eVertRelTo = GetVRelTo(oChild.GetAttributeInt(L"vertRelTo"));
-				m_eHorzRelTo = GetHRelTo(oChild.GetAttributeInt(L"horzRelTo"));
+				m_eVertRelTo = GetVRelTo(oChild.GetAttribute(L"vertRelTo"));
+				m_eHorzRelTo = GetHRelTo(oChild.GetAttribute(L"horzRelTo"));
 
 				if (EVRelTo::PARA == m_eVertRelTo)
 					m_bFlowWithText = oChild.GetAttributeBool(L"flowWithText");
 
-				m_eVertAlign = GetVertAlign(oChild.GetAttributeInt(L"vertAlign"));
-				m_eHorzAlign = GetHorzAlign(oChild.GetAttributeInt(L"horzAlign"));
+				m_eVertAlign = GetVertAlign(oChild.GetAttribute(L"vertAlign"));
+				m_eHorzAlign = GetHorzAlign(oChild.GetAttribute(L"horzAlign"));
 				m_nVertOffset = oChild.GetAttributeInt(L"vertOffset");
 				m_nHorzOffset = oChild.GetAttributeInt(L"horzOffset");
 			}
@@ -345,6 +415,16 @@ namespace HWP
 	short CCtrlCommon::GetBottomMargin() const
 	{
 		return m_arOutMargin[3];
+	}
+
+	bool CCtrlCommon::GetTreatAsChar() const
+	{
+		return m_bTreatAsChar;
+	}
+
+	bool CCtrlCommon::GetFlowWithText() const
+	{
+		return m_bFlowWithText;
 	}
 
 	int CCtrlCommon::GetHorzOffset() const

@@ -18,26 +18,11 @@ enum class ENumType
 	FIGURE,
 	TABLE,
 	EQUATION,
-	TOTAL_PAGE,
-	null
+	TOTAL_PAGE
 };
 
-inline ENumType GetNumType(int nValue)
-{
-	switch(static_cast<ENumType>(nValue))
-	{
-		case ENumType::PAGE:
-		case ENumType::FOOTNOTE:
-		case ENumType::ENDNOTE:
-		case ENumType::FIGURE:
-		case ENumType::TABLE:
-		case ENumType::EQUATION:
-		case ENumType::TOTAL_PAGE:
-			return static_cast<ENumType>(nValue);
-		default:
-			return ENumType::null;
-	}
-}
+inline ENumType GetNumType(int nValue);
+inline ENumType GetNumType(const HWP_STRING& sValue);
 
 class CCtrlAutoNumber : public CCtrl
 {

@@ -2,6 +2,31 @@
 
 namespace HWP
 {
+ENumType GetNumType(int nValue)
+{
+	SWITCH(ENumType, nValue)
+	{
+		DEFAULT(ENumType::PAGE);
+		CASE(ENumType::FOOTNOTE);
+		CASE(ENumType::ENDNOTE);
+		CASE(ENumType::FIGURE);
+		CASE(ENumType::TABLE);
+		CASE(ENumType::EQUATION);
+		CASE(ENumType::TOTAL_PAGE);
+	}
+}
+
+ENumType GetNumType(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(FOOTNOTE, sValue, ENumType);
+	ELSE_IF_STRING_IN_ENUM(ENDNOTE, sValue, ENumType);
+	ELSE_IF_STRING_IN_ENUM(FIGURE, sValue, ENumType);
+	ELSE_IF_STRING_IN_ENUM(TABLE, sValue, ENumType);
+	ELSE_IF_STRING_IN_ENUM(EQUATION, sValue, ENumType);
+	ELSE_IF_STRING_IN_ENUM(TOTAL_PAGE, sValue, ENumType);
+	ELSE_STRING_IN_ENUM(PAGE, ENumType);
+}
+
 CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID)
 	: CCtrl(sCtrlID)
 {}
@@ -22,7 +47,7 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	m_eNumType = ::HWP::GetNumType(oNode.GetAttributeInt(L"numType"));
+	m_eNumType = ::HWP::GetNumType(oNode.GetAttribute(L"numType"));
 
 	HWP_STRING sType;
 

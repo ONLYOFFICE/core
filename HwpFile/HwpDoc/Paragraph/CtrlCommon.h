@@ -48,20 +48,8 @@ enum class EVertAlign
 	OUTSIDE
 };
 
-inline EVertAlign GetVertAlign(int nValue)
-{
-	switch(static_cast<EVertAlign>(nValue))
-	{
-		case EVertAlign::CENTER:
-		case EVertAlign::BOTTOM:
-		case EVertAlign::INSIDE:
-		case EVertAlign::OUTSIDE:
-			return static_cast<EVertAlign>(nValue);
-		case EVertAlign::TOP:
-		default:
-			return EVertAlign::TOP;
-	}
-}
+inline EVertAlign GetVertAlign(int nValue);
+inline EVertAlign GetVertAlign(const HWP_STRING& sValue);
 
 enum class EHorzAlign
 {
@@ -144,6 +132,8 @@ public:
 	short GetRightMargin() const;
 	short GetBottomMargin() const;
 
+	bool GetTreatAsChar() const;
+	bool GetFlowWithText() const;
 	int GetHorzOffset() const;
 	int GetVertOffset() const;
 	EVRelTo GetVertRelTo() const;

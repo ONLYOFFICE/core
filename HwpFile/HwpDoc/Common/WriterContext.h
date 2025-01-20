@@ -24,6 +24,7 @@ public:
 	~CWriterContext();
 
 	void Clear();
+	EHanType GetType();
 
 	VECTOR<const CHWPSection*> GetSections();
 	static EHanType DetectHancom(const HWP_STRING& sPathToFile);
@@ -41,7 +42,7 @@ public:
 	const CHwpRecordTabDef* GetTabDef(short shId);
 
 	HWP_STRING GetBinFilename(const HWP_STRING& sId);
-	bool GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP_STRING& sFormat);
+	bool GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP_STRING& sFileName);
 	HWP_STRING GetBinFormat(const HWP_STRING& sId);
 };
 }

@@ -37,6 +37,9 @@ public:
 	int GetCurWidth() const;
 	int GetCurHeight() const;
 
+	int GetFinalWidth() const;
+	int GetFinalHeight() const;
+
 	static int ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }

@@ -122,6 +122,26 @@ const CHWPDocInfo* CHWPXFile::GetDocInfo() const
 	return &m_oDocInfo;
 }
 
+bool CHWPXFile::GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer)
+{
+	if (nullptr == m_pZipFolder || !m_pZipFolder->exists(sFileName))
+		return false;
+
+	CZipFolderMemory::CBuffer *pFileBuffer = nullptr;
+	m_pZipFolder->read(sFileName, pFileBuffer);
+
+	if (nullptr == pFileBuffer)
+		return false;
+
+	pFileBuffer->UnsetDestroy();
+
+	oBuffer.SetStream((HWP_BYTE*)pFileBuffer->Buffer, pFileBuffer->Size);
+
+	delete pFileBuffer;
+
+	return true;
+}
+
 bool CHWPXFile::GetDocInfo(int nVersion)
 {
 	CXMLNode oContent{GetDocument(L"Contents/content.hpf")};

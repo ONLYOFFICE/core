@@ -21,14 +21,18 @@ std::wstring CFootnoteConverter::CreateNote(const CCtrlNote* pNote, CConverter2O
 
 	NSStringUtils::CStringBuilder *pXMLBuilder = &m_oFootnoteXml;
 	std::wstring wsPrefix = L"foot";
+	std::wstring wsIndex;
 
 	if (L"  ne" == pNote->GetID())
 	{
 		wsPrefix = L"end";
 		pXMLBuilder = &m_oEndnoteXml;
+		wsIndex = std::to_wstring(++m_ushCountEndnotes);
 	}
+	else
+		wsIndex = std::to_wstring(++m_ushCountFootnotes);
 
-	pXMLBuilder->WriteString(L"<w:" + wsPrefix + L"note w:id=\"" + std::to_wstring(++m_ushCountFootnotes) + L"\">");
+	pXMLBuilder->WriteString(L"<w:" + wsPrefix + L"note w:id=\"" + wsIndex + L"\">");
 
 	TConversionState oState;
 
@@ -37,7 +41,7 @@ std::wstring CFootnoteConverter::CreateNote(const CCtrlNote* pNote, CConverter2O
 
 	pXMLBuilder->WriteString(L"</w:" + wsPrefix + L"note>");
 
-	return L"<w:" + wsPrefix + L"noteReference w:id=\"" + std::to_wstring(m_ushCountFootnotes) + L"\"/>";
+	return L"<w:" + wsPrefix + L"noteReference w:id=\"" + wsIndex + L"\"/>";
 }
 
 std::wstring CFootnoteConverter::CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHeadFoot, CConverter2OOXML& oConverter)

@@ -22,6 +22,7 @@ public:
 
 	VECTOR<const CHWPSection*> GetSections() const;
 	const CHWPDocInfo* GetDocInfo() const;
+	bool GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer);
 
 	bool Detect();
 	bool Open();

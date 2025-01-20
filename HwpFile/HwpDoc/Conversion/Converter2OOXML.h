@@ -93,14 +93,14 @@ class CConverter2OOXML
 	void WriteSectionSettings(TConversionState& oState);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	void WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
-	bool SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex);
+	bool SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
 
-	void OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
-	void CloseAnchorNode(NSStringUtils::CStringBuilder& oBuilder);
+	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);

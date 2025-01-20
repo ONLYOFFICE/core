@@ -14,6 +14,8 @@ CHWPFile::CHWPFile(const HWP_STRING& sFileName)
 
 CHWPFile::~CHWPFile()
 {
+	Close();
+
 	CLEAR_ARRAY(CHWPSection, m_arBodyTexts);
 	CLEAR_ARRAY(CHWPSection, m_arViewTexts);
 }

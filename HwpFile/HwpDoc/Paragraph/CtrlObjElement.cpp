@@ -53,45 +53,41 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int
 
 	m_shNGrp = oNode.GetAttributeInt(L"groupLevel");
 
-	m_arMatrix.resize(6);
 	m_arMatrixSeq.resize((m_shNGrp + 1) * 6 * 2);
 
 	short shScaMatCnt = 0, shRotMatCnt = 0;
 
-	std::vector<CXMLNode> arChilds{oNode.GetChilds()};
-
-	//TODO:: проверить чтение не в обратном порядке
-	for (std::vector<CXMLNode>::reverse_iterator itNode = arChilds.rbegin(); itNode < arChilds.rend(); ++itNode)
+	for (CXMLNode& oChild : oNode.GetChilds())
 	{
-		if (L"hp:offset" == (*itNode).GetName())
+		if (L"hp:offset" == oChild.GetName())
 		{
-			m_nXGrpOffset = (*itNode).GetAttributeInt(L"x");
-			m_nYGrpOffset = (*itNode).GetAttributeInt(L"y");
+			m_nXGrpOffset = oChild.GetAttributeInt(L"x");
+			m_nYGrpOffset = oChild.GetAttributeInt(L"y");
 		}
-		else if (L"hp:orgSz" == (*itNode).GetName())
+		else if (L"hp:orgSz" == oChild.GetName())
 		{
-			m_nIniWidth  = (*itNode).GetAttributeInt(L"width");
-			m_nIniHeight = (*itNode).GetAttributeInt(L"height");
+			m_nIniWidth  = oChild.GetAttributeInt(L"width");
+			m_nIniHeight = oChild.GetAttributeInt(L"height");
 		}
-		else if (L"hp:curSz" == (*itNode).GetName())
+		else if (L"hp:curSz" == oChild.GetName())
 		{
-			m_nCurWidth  = (*itNode).GetAttributeInt(L"width");
-			m_nCurHeight = (*itNode).GetAttributeInt(L"height");
+			m_nCurWidth  = oChild.GetAttributeInt(L"width");
+			m_nCurHeight = oChild.GetAttributeInt(L"height");
 		}
-		else if (L"hp:flip" == (*itNode).GetName())
+		else if (L"hp:flip" == oChild.GetName())
 		{
-			m_bHorzFlip = (*itNode).GetAttributeBool(L"horizontal");
-			m_bVerFlip  = (*itNode).GetAttributeBool(L"vertical");
+			m_bHorzFlip = oChild.GetAttributeBool(L"horizontal");
+			m_bVerFlip  = oChild.GetAttributeBool(L"vertical");
 		}
-		else if (L"hp:rotationInfo" == (*itNode).GetName())
+		else if (L"hp:rotationInfo" == oChild.GetName())
 		{
-			m_shRotat = (*itNode).GetAttributeInt(L"angle");
-			m_nXCenter = (*itNode).GetAttributeInt(L"centerX");
-			m_nYCenter = (*itNode).GetAttributeInt(L"centerY");
+			m_shRotat = oChild.GetAttributeInt(L"angle");
+			m_nXCenter = oChild.GetAttributeInt(L"centerX");
+			m_nYCenter = oChild.GetAttributeInt(L"centerY");
 		}
-		else if (L"hp:renderingInfo" == (*itNode).GetName())
+		else if (L"hp:renderingInfo" == oChild.GetName())
 		{
-			for (CXMLNode& oGrandChild : (*itNode).GetChilds())
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
 			{
 				if (L"hc:transMatrix" == oGrandChild.GetName())
 					SetMatrix(oGrandChild, m_arMatrix, 0);
@@ -118,6 +114,22 @@ int CCtrlObjElement::GetCurWidth() const
 int CCtrlObjElement::GetCurHeight() const
 {
 	return m_nCurHeight;
+}
+
+int CCtrlObjElement::GetFinalWidth() const
+{
+	if (0 != m_nCurWidth)
+		return m_nCurWidth;
+
+	return CCtrlCommon::GetWidth();
+}
+
+int CCtrlObjElement::GetFinalHeight() const
+{
+	if (0 != m_nCurHeight)
+		return m_nCurHeight;
+
+	return CCtrlCommon::GetHeight();
 }
 
 int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

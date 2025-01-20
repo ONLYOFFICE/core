@@ -37,6 +37,11 @@ void CWriterContext::Clear()
 	}
 }
 
+EHanType CWriterContext::GetType()
+{
+	return m_eType;
+}
+
 VECTOR<const CHWPSection*> CWriterContext::GetSections()
 {
 	switch(m_eType)
@@ -280,66 +285,57 @@ HWP_STRING CWriterContext::GetBinFilename(const HWP_STRING& sId)
 	return (nullptr != pBinData) ? pBinData->GetPath() : HWP_STRING();
 }
 
-bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP_STRING& sFormat)
+bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP_STRING& sFileName)
 {
 	const CHWPDocInfo* pDocInfo = nullptr;
 
-	switch (m_eType)
+	pDocInfo = GetDocInfo();
+
+	if (nullptr == pDocInfo)
+		return false;
+
+	const CHWPRecordBinData* pBinData = dynamic_cast<const CHWPRecordBinData*>(pDocInfo->GetBinData(sId));
+
+	if (nullptr == pBinData)
+		return false;
+
+	if (EType::LINK == pBinData->GetType())
 	{
-		case EHanType::HWP:
+		switch (m_eType)
 		{
-			if (nullptr == m_pHWPFile)
-				return false;
-
-			pDocInfo = m_pHWPFile->GetDocInfo();
-
-			if (nullptr == pDocInfo)
-				return false;
-
-			const CHWPRecordBinData* pBinData = dynamic_cast<const CHWPRecordBinData*>(pDocInfo->GetBinData(sId));
-
-			if (nullptr == pBinData)
-				return false;
-
-			if (EType::LINK == pBinData->GetType())
+			case EHanType::HWPX:
 			{
-				NSFile::CFileBinary oFile;
-				unsigned char *pBuffer = nullptr;
-				unsigned long ulSize = 0;
-
-				oFile.ReadAllBytes(pBinData->GetPath(), &pBuffer, ulSize);
-				oBuffer.SetStream((HWP_BYTE*)pBuffer, ulSize, false);
-				sFormat = NSFile::GetFileExtention(pBinData->GetPath());
+				sFileName = NSFile::GetFileName(pBinData->GetPath());
+				return m_pHWPXFile->GetChildStream(pBinData->GetPath(), oBuffer);
 			}
-			else
-			{
-				std::wostringstream oStringStream;
-				oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
-				sFormat = pBinData->GetFormat();
+			default:
+				return false;
+		}
+	}
+	else
+	{
+		std::wostringstream oStringStream;
 
+		switch (m_eType)
+		{
+			case EHanType::HWP:
+			{
+				oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
+				sFileName = oStringStream.str();
 				return m_pHWPFile->GetChildStream(oStringStream.str(), pBinData->GetCompressed(), oBuffer);
 			}
+			case EHanType::HWPX:
+			{
+				oStringStream << sId << L"." << pBinData->GetFormat();
+				sFileName = oStringStream.str();
+				return m_pHWPXFile->GetChildStream(L"BinData/" + oStringStream.str(), oBuffer);
+			}
+			default:
+				return false;
 		}
-		case EHanType::HWPX:
-		{
-			if (nullptr == m_pHWPXFile)
-				return false;
-
-			pDocInfo = m_pHWPXFile->GetDocInfo();
-
-			if (nullptr == pDocInfo)
-				return false;
-
-			const CHWPRecordBinData* pBinData = dynamic_cast<const CHWPRecordBinData*>(pDocInfo->GetBinData(sId));
-
-			if (nullptr == pBinData)
-				return false;
-
-			//TODO:: реализовать
-		}
-		case EHanType::NONE:
-			return false;
 	}
+
+	return false;
 }
 
 HWP_STRING CWriterContext::GetBinFormat(const HWP_STRING& sId)

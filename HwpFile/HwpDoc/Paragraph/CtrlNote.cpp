@@ -19,9 +19,9 @@ CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, 
 CCtrlNote::CCtrlNote(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	for (CXMLNode& oChild : oNode.GetChilds(L"subList"))
+	for (CXMLNode& oChild : oNode.GetChilds(L"hp:subList"))
 	{
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"p"))
+		for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
 			m_arParas.push_back(new CHWPPargraph(oGrandChild, nVersion));
 	}
 

@@ -412,12 +412,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		{
 			case ECtrlObjectType::ParaText:
 			{
-				std::wstring wsText = ((const CParaText*)pCtrl)->GetText();
-
-				if (wsText.empty())
-					wsText = L" ";
-
-				WriteText(wsText, pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+				WriteText(((const CParaText*)pCtrl)->GetText(), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Character:
@@ -801,9 +796,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
-	oBuilder.WriteString(L"<w:drawing>");
 
-	OpenAnchorNode(pGeneralShape, oBuilder);
+	OpenDrawingNode(pGeneralShape, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
@@ -883,8 +877,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"<wps:bodyPr/>");
 
 	oBuilder.WriteString(L"</wps:wsp></a:graphicData></a:graphic>");
-	CloseAnchorNode(oBuilder);
-	oBuilder.WriteString(L"</w:drawing></mc:Choice></mc:AlternateContent></w:r>");
+	CloseDrawingNode(pGeneralShape, oBuilder);
+	oBuilder.WriteString(L"</mc:Choice></mc:AlternateContent></w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -919,9 +913,9 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 		return;
 
 	CHWPStream oBuffer;
-	HWP_STRING sFormat;
+	HWP_STRING sFileName;
 
-	if (!m_pContext->GetBinBytes(pOleShape->GetBinDataID(), oBuffer, sFormat))
+	if (!m_pContext->GetBinBytes(pOleShape->GetBinDataID(), oBuffer, sFileName))
 		return;
 
 	m_oOleConverter.CreateChart(oBuffer);
@@ -938,18 +932,16 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
 
-
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
-	oBuilder.WriteString(L"<w:drawing>");
 
-	OpenAnchorNode(pOleShape, oBuilder);
+	OpenDrawingNode(pOleShape, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/chart\">");
 	oBuilder.WriteString(L"<c:chart xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" r:id=\"" + wsRelID + L"\"/>");
 	oBuilder.WriteString(L"</a:graphicData></a:graphic>");
-	CloseAnchorNode(oBuilder);
-	oBuilder.WriteString(L"</w:drawing></w:r>");
+	CloseDrawingNode(pOleShape, oBuilder);
+	oBuilder.WriteString(L"</w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -1025,23 +1017,23 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
 
-	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>");
+	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
-	OpenAnchorNode(pCtrlPic, oBuilder);
+	OpenDrawingNode(pCtrlPic, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlPic->GetBinDataID() + L"\" name=\"Picture" + pCtrlPic->GetBinDataID() + L"\"/>");
+	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(m_ushShapeCount) + L"\"/>");
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
-	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetCurHeight())) + L"\"/></a:xfrm>");
+	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetFinalWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetFinalHeight())) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/>");
 	WriteBorderSettings(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
 	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
-	CloseAnchorNode(oBuilder);
-	oBuilder.WriteString(L"</w:drawing></w:r>");
+	CloseDrawingNode(pCtrlPic, oBuilder);
+	oBuilder.WriteString(L"</w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
@@ -1060,9 +1052,9 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
 
-	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr><w:drawing>");
+	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
-	OpenAnchorNode(pCtrlVideo, oBuilder);
+	OpenDrawingNode(pCtrlVideo, oBuilder);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -1070,17 +1062,17 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlVideo->GetThumnailBinID() + L"\" name=\"Video " + pCtrlVideo->GetThumnailBinID() + L"\"/>");
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
-	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetCurWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetCurHeight())) + L"\"/></a:xfrm>");
+	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetFinalWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetFinalHeight())) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
-	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
-	CloseAnchorNode(oBuilder);
-	oBuilder.WriteString(L"</w:drawing></w:r>");
+
+	CloseDrawingNode(pCtrlVideo, oBuilder);
+	oBuilder.WriteString(L"</w:r>");
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"</w:p>");
 }
 
-bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIndex)
+bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName)
 {
 	if (sSVG.empty())
 		return false;
@@ -1164,7 +1156,7 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, const HWP_STRING& sIn
 	pSvgReader->SetTempDirectory(m_sTempDirectory);
 	pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
 
-	oFrame.SaveFile(m_sTempDirectory + L"/word/media/image" + sIndex + L".png", 4);
+	oFrame.SaveFile(m_sTempDirectory + L"/word/media/" + sFileName, 4);
 	oFrame.put_Data(NULL);
 
 	RELEASEINTERFACE(pGrRenderer);
@@ -1185,17 +1177,17 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 
 	//TODO:: добавить поддержку устновки размеров изображения из свойств шейпа
 	CHWPStream oBuffer;
-	HWP_STRING sFormat;
+	HWP_STRING sFileName;
 
-	if (!m_pContext->GetBinBytes(sBinItemId, oBuffer, sFormat))
+	if (!m_pContext->GetBinBytes(sBinItemId, oBuffer, sFileName))
 		return HWP_STRING();
 
 	oBuffer.MoveToStart();
 
-	if (IsRasterFormat(sFormat))
+	if (IsRasterFormat(NSFile::GetFileExtention(sFileName)))
 	{
 		NSFile::CFileBinary oFile;
-		oFile.CreateFileW(m_sTempDirectory + L"/word/media/image" + sBinItemId + L'.' + sFormat);
+		oFile.CreateFileW(m_sTempDirectory + L"/word/media/" + sFileName);
 		if (!oFile.WriteFile((unsigned char*)oBuffer.GetCurPtr(), oBuffer.GetSize()))
 		{
 			oFile.CloseFile();
@@ -1203,18 +1195,15 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 		}
 		oFile.CloseFile();
 	}
-	else if (L"svg" == sFormat)
+	else if (L"svg" == NSFile::GetFileExtention(sFileName))
 	{
 		std::string sSVG(oBuffer.GetCurPtr(), oBuffer.GetSize());
-		if (!SaveSVGFile(UTF8_TO_U(sSVG), sBinItemId))
+		if (!SaveSVGFile(UTF8_TO_U(sSVG), sFileName))
 			return HWP_STRING();
-
-		sFormat = L"png";
 	}
 
-	AddContentType(L"media/image" + sBinItemId + L'.' + sFormat, L"image/" + sFormat);
-
-	return AddRelationship(L"image", L"media/image" + sBinItemId + L'.' + sFormat);
+	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
+	return AddRelationship(L"image", L"media/" + sFileName);
 }
 
 void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
@@ -1240,9 +1229,9 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	if (!sFontFamily.empty() && !sFontFamilyAsian.empty())
 	{
 		oBuilder.WriteString(L"<w:rFonts w:ascii=\"" + sFontFamily +
-							  L"\" w:hAnsi=\"" + sFontFamily +
-							  L"\" w:cs=\"" + sFontFamily +
-							  L"\" w:eastAsia=\"" + sFontFamilyAsian + L"\"/>");
+		                            L"\" w:hAnsi=\"" + sFontFamily +
+		                            L"\" w:cs=\"" + sFontFamily +
+		                            L"\" w:eastAsia=\"" + sFontFamilyAsian + L"\"/>");
 	}
 
 	if (pCharShape->Bold())
@@ -1314,25 +1303,45 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	oBuilder.WriteString(L"</w:rPr>");
 }
 
-void CConverter2OOXML::OpenAnchorNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (nullptr == pCtrlShape)
 		return;
 
-	oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
-	                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
-	                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
-	                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
-	                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
-	                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
-	                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
+	oBuilder.WriteString(L"<w:drawing>");
+
+	if (pCtrlShape->GetTreatAsChar())
+		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
+		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
+		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
+		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
+		                     L"\">");
+	else
+		oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
+		                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
+		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
+		                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
+		                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
+		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
+		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 	WriteShapeProperty(pCtrlShape, oBuilder);
 }
 
-void CConverter2OOXML::CloseAnchorNode(NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
 {
-	oBuilder.WriteString(L"</wp:anchor>");
+	if (nullptr == pCtrlShape)
+		return;
+
+	if (pCtrlShape->GetTreatAsChar())
+		oBuilder.WriteString(L"</wp:inline>");
+	else
+	{
+		oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
+		oBuilder.WriteString(L"</wp:anchor>");
+	}
+
+	oBuilder.WriteString(L"</w:drawing>");
 }
 
 HWP_STRING GetVRelativeFrom(EVRelTo eRelTo)
@@ -1459,6 +1468,12 @@ std::vector<std::wstring> SplitText(const std::wstring& wsText)
 void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	OpenParagraph(shParaShapeID, oBuilder, oState);
+
+	if (wsText.empty())
+	{
+		WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+		return;
+	}
 
 	for (const std::wstring& wsTextElement : SplitText(wsText))
 	{
@@ -1623,8 +1638,6 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 			ushValue = m_ushTableCount; break;
 		case ENumType::EQUATION:
 			ushValue = m_ushEquationCount; break;
-		case ENumType::null:
-			break;
 	}
 
 	if (0 == ushValue)

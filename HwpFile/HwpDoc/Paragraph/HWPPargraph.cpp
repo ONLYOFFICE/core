@@ -70,8 +70,10 @@ CHWPPargraph::~CHWPPargraph()
 	CLEAR_ARRAY(TRangeTag, m_arRangeTags);
 }
 
-void CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion)
+bool CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion)
 {
+	const size_t unCurrentParaCount = m_arP.size();
+
 	if (L"hp:secPr" == oNode.GetName())
 		m_arP.push_back(new CCtrlSectionDef(L"dces", oNode, nVersion));
 	else if (L"hp:ctrl" == oNode.GetName())
@@ -124,6 +126,26 @@ void CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVer
 		m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oNode, nVersion));
 	else if (L"hp:video" == oNode.GetName())
 		m_arP.push_back(new CCtrlShapeVideo(L"div$", oNode, nVersion));
+
+	if (unCurrentParaCount != m_arP.size())
+		return true;
+
+	if (L"hp:switch" == oNode.GetName())
+	{
+		for (CXMLNode& oCaseChild : oNode.GetChilds(L"hp:case"))
+		{
+			for (CXMLNode& oChild : oCaseChild.GetChilds())
+				if (ParseHWPParagraph(oChild, nCharShapeID, nVersion))
+					return true;
+		}
+
+		CXMLNode oDefaultChild{oNode.GetChild(L"hp:default")};
+		for (CXMLNode& oChild : oDefaultChild.GetChilds())
+			if (ParseHWPParagraph(oChild, nCharShapeID, nVersion))
+				return true;
+	}
+
+	return false;
 }
 
 

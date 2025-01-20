@@ -26,7 +26,7 @@ class CHWPPargraph : public IRef
 
 	VECTOR<CCtrl*> m_arP; //HWPTAG_PARA_TEXT
 
-	void ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion);
+	bool ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion);
 public:
 	CHWPPargraph();
 	CHWPPargraph(CXMLNode& oNode, int nVersion);

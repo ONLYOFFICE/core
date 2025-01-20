@@ -3328,6 +3328,13 @@ void odf_drawing_context::end_image()
 		else
 			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
 	}	
+	if (impl_->current_drawing_state_.flipV_)
+	{
+		if (impl_->current_graphic_properties->style_mirror_)
+			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" vertical");
+		else
+			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
+	}
 	end_element();
 	end_frame();
 }

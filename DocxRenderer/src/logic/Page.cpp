@@ -1,6 +1,7 @@
 #include "Page.h"
 
 #include <memory>
+#include <map>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
@@ -400,7 +401,9 @@ namespace NSDocxRenderer
 
 		// building final objects
 		m_arParagraphs = BuildParagraphs();
-		// m_arTables = BuildTables();
+
+		if (m_bIsBuildTables)
+			m_arTables = BuildTables();
 
 		// post analyze
 		CalcSelected();
@@ -408,6 +411,8 @@ namespace NSDocxRenderer
 		CalcShapesRotation();
 
 		m_arOutputObjects = BuildOutputObjects();
+		for (auto& t : m_arTables)
+			m_arOutputObjects.push_back(t);
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -1878,14 +1883,180 @@ namespace NSDocxRenderer
 
 		return ar_paragraphs;
 	}
+
 	std::vector<CPage::table_ptr_t> CPage::BuildTables()
 	{
-		// build cells
-		// add paragraphs
-		// build rows
-		// build tables
-		std::vector<table_ptr_t> ar_tables;
-		return ar_tables;
+		auto cells = BuildCells();
+		auto rows = BuildRows(cells);
+		std::vector<table_ptr_t> tables;
+
+		table_ptr_t curr_table = nullptr;
+		for (const auto& row : rows)
+		{
+			if (!curr_table)
+			{
+				curr_table = std::make_shared<CTable>();
+			}
+			else if (fabs(curr_table->m_dBaselinePos - row->m_dTop) > c_dGRAPHICS_ERROR_MM)
+			{
+				tables.push_back(std::move(curr_table));
+				curr_table = std::make_shared<CTable>();
+			}
+			curr_table->AddRow(row);
+		}
+		if (!curr_table->IsEmpty())
+			tables.push_back(std::move(curr_table));
+
+		return tables;
+	}
+	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
+	{
+		struct Crossing
+		{
+			Point p {};
+			std::vector<Point> lines {};
+		};
+		std::vector<Crossing> crossings;
+		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
+			for (auto& crossing : crossings)
+			{
+				if (fabs(crossing.p.x - p.x) < c_dGRAPHICS_ERROR_MM &&
+				        fabs(crossing.p.y - p.y) < c_dGRAPHICS_ERROR_MM)
+					return &crossing;
+			}
+			return nullptr;
+		};
+
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape)
+				continue;
+
+			Point prev {};
+			for (const auto& command : shape->m_oVector.GetData())
+			{
+				if (!command.points.empty())
+				{
+					if (command.type == CVectorGraphics::ePathCommandType::pctLine)
+					{
+						const auto& curr = command.points.back();
+						auto prev_crossing = find_crossing(prev);
+						auto curr_crossing = find_crossing(curr);
+
+						// add empty vector if no exists
+						if (!prev_crossing)
+							crossings.push_back({prev, {curr}});
+						else
+							prev_crossing->lines.push_back(curr);
+
+						if (!curr_crossing)
+							crossings.push_back({curr, {prev}});
+						else
+							curr_crossing->lines.push_back(prev);
+
+						prev = curr;
+					}
+					prev = command.points.back();
+				}
+			}
+		}
+
+		// sorting guarantee creating cell once (by taking second cross j > i)
+		std::sort(crossings.begin(), crossings.end(), [] (const Crossing& c1, const Crossing& c2) {
+			if (fabs(c1.p.y - c2.p.y) < c_dGRAPHICS_ERROR_MM)
+				return c1.p.x < c2.p.x;
+			return c1.p.y < c2.p.y;
+		});
+
+		std::vector<CTable::cell_ptr_t> cells;
+		for (size_t i = 0; i < crossings.size(); ++i)
+		{
+			for (size_t j = i + 1; j < crossings.size(); ++j)
+			{
+				const auto& first = crossings.at(i);
+				const auto& second = crossings.at(j);
+
+				// first should be top left corner
+				// and second right bot (not the same line ofc)
+				if (fabs(first.p.x - second.p.x) < c_dGRAPHICS_ERROR_MM ||
+				        first.p.x > second.p.x ||
+				        fabs(first.p.y - second.p.y) < c_dGRAPHICS_ERROR_MM ||
+				        first.p.y > second.p.y)
+					continue;
+
+				// 2 points should be the same
+				size_t equals = 0;
+				for (const auto& fl : first.lines)
+					for (const auto& sl : second.lines)
+						if (fabs(fl.x - sl.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.y - sl.y) < c_dGRAPHICS_ERROR_MM)
+							++equals;
+
+				if (equals == 2)
+				{
+					auto cell = std::make_shared<CTable::CCell>();
+					cell->m_dLeft = first.p.x;
+					cell->m_dRight = second.p.x;
+					cell->m_dTop = first.p.y;
+					cell->m_dBaselinePos = second.p.y;
+					cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
+					cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
+					cells.push_back(cell);
+					break;
+				}
+			}
+		}
+
+		// sets paragraphs into cells
+		for (auto& cell : cells)
+			for (auto& paragraph : m_arParagraphs)
+			{
+				if (!paragraph)
+					continue;
+
+				bool top = fabs(cell->m_dTop - paragraph->m_dTop) < 2 * c_dGRAPHICS_ERROR_MM || paragraph->m_dTop > cell->m_dTop;
+				bool bot = fabs(cell->m_dBaselinePos - paragraph->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM || paragraph->m_dBaselinePos < cell->m_dBaselinePos;
+				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM || paragraph->m_dLeft > cell->m_dLeft;
+				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM || paragraph->m_dRight < cell->m_dRight;
+				if (top && bot && left && right)
+				{
+					cell->AddParagraph(paragraph);
+					paragraph = nullptr;
+				}
+			}
+		auto right = MoveNullptr(m_arParagraphs.begin(), m_arParagraphs.end());
+		m_arParagraphs.erase(right, m_arParagraphs.end());
+		std::sort(m_arParagraphs.begin(), m_arParagraphs.end(), [] (const paragraph_ptr_t& p1, const paragraph_ptr_t& p2) {
+			return p1->m_dBaselinePos < p2->m_dBaselinePos;
+		});
+		return cells;
+	}
+	std::vector<CTable::row_ptr_t> CPage::BuildRows(std::vector<CTable::cell_ptr_t>& arCells)
+	{
+		std::sort(arCells.begin(), arCells.end(), [] (const CTable::cell_ptr_t c1, const CTable::cell_ptr_t& c2) {
+			if (fabs(c1->m_dBaselinePos - c2->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM)
+				return c1->m_dLeft < c2->m_dLeft;
+			return c1->m_dBaselinePos < c2->m_dBaselinePos;
+		});
+
+		std::vector<CTable::row_ptr_t> rows;
+		CTable::row_ptr_t curr_row = nullptr;
+		for (auto& cell : arCells)
+		{
+			if (!curr_row)
+			{
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			else if (fabs(curr_row->m_dBaselinePos - cell->m_dBaselinePos) > c_dGRAPHICS_ERROR_MM)
+			{
+				rows.push_back(std::move(curr_row));
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			curr_row->AddCell(cell);
+		}
+		if (!curr_row->IsEmpty())
+			rows.push_back(std::move(curr_row));
+
+		return rows;
 	}
 
 	CPage::shape_ptr_t CPage::CreateSingleLineShape(line_ptr_t& pLine)

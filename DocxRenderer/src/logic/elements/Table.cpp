@@ -22,15 +22,15 @@ namespace NSDocxRenderer
 		auto write_border = [&oWriter] (const CBorder& border, const std::wstring& prefix) {
 			oWriter.WriteString(L"<w:");
 			oWriter.WriteString(prefix);
-			oWriter.WriteString(L" w:val=\"");
+			oWriter.WriteString(L" w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(border.eLineType));
-			oWriter.WriteString(L"\" w:sz=\"");
+			oWriter.WriteString(L" w:sz=\"");
 			oWriter.AddUInt(static_cast<unsigned int>(border.dWidth * c_dMMToPt / 8));
 			oWriter.WriteString(L"\" w:space=\"");
 			oWriter.AddUInt(static_cast<unsigned int>(border.dSpacing * c_dMMToPt));
 			oWriter.WriteString(L"\" w:color=\"");
 			oWriter.WriteHexInt3(ConvertColorBGRToRGB(border.lColor));
-			oWriter.WriteString(L"\">");
+			oWriter.WriteString(L"\" />");
 		};
 
 		write_border(m_oBorderTop, L"top");
@@ -38,13 +38,13 @@ namespace NSDocxRenderer
 		write_border(m_oBorderLeft, L"left");
 		write_border(m_oBorderRight, L"right");
 
-		oWriter.WriteString(L"/<w:tcBorders>");
-		oWriter.WriteString(L"/<w:tcPr>");
+		oWriter.WriteString(L"</w:tcBorders>");
+		oWriter.WriteString(L"</w:tcPr>");
 
 		for (const auto& p : m_arParagraphs)
 			p->ToXml(oWriter);
 
-		oWriter.WriteString(L"/<w:tc>");
+		oWriter.WriteString(L"</w:tc>");
 	}
 	void CTable::CCell::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
 	{
@@ -72,7 +72,7 @@ namespace NSDocxRenderer
 		for (const auto& c : m_arCells)
 			c->ToXml(oWriter);
 
-		oWriter.WriteString(L"/<w:tr>");
+		oWriter.WriteString(L"</w:tr>");
 	}
 	void CTable::CRow::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
 	{
@@ -82,6 +82,10 @@ namespace NSDocxRenderer
 	{
 		CBaseItem::RecalcWithNewItem(pCell.get());
 		m_arCells.push_back(pCell);
+	}
+	bool CTable::CRow::IsEmpty() const
+	{
+		return m_arCells.empty();
 	}
 
 	void CTable::Clear()
@@ -114,6 +118,10 @@ namespace NSDocxRenderer
 	{
 		CBaseItem::RecalcWithNewItem(pRow.get());
 		m_arRows.push_back(pRow);
+	}
+	bool CTable::IsEmpty() const
+	{
+		return m_arRows.empty();
 	}
 
 } // namespace NSDocxRenderer

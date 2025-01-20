@@ -14,7 +14,8 @@ namespace NSDocxRenderer
 		Point() {}
 		Point(double x, double y) : x(x), y(y) {}
 		Point(const Point& point) : x(point.x), y(point.y) {}
-	};
+		Point& operator=(const Point& point) {x = point.x; y = point.y; return *this;}
+	};;
 
 	class CVectorGraphics
 	{

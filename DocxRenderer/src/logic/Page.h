@@ -46,6 +46,7 @@ namespace NSDocxRenderer
 		bool m_bIsGradient          {false};
 		bool m_bUseDefaultFont      {false};
 		bool m_bWriteStyleRaw       {false};
+		bool m_bIsBuildTables       {false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
@@ -101,6 +102,12 @@ namespace NSDocxRenderer
 
 		// returns std::vector of tables builded from shapes and paragraphes
 		std::vector<table_ptr_t> BuildTables();
+
+		// returns std::vector of cells for tables
+		std::vector<CTable::cell_ptr_t> BuildCells();
+
+		// returns std::vector of rows for tables
+		std::vector<CTable::row_ptr_t> BuildRows(std::vector<CTable::cell_ptr_t>& arCells);
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<item_ptr_t> BuildOutputObjects();

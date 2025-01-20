@@ -16,7 +16,6 @@ namespace NSDocxRenderer
 		class CCell;
 		class CRow;
 
-	private:
 		using cell_ptr_t = std::shared_ptr<CCell>;
 		using row_ptr_t = std::shared_ptr<CRow>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
@@ -59,6 +58,7 @@ namespace NSDocxRenderer
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 			void AddCell(const cell_ptr_t& pCell);
+			bool IsEmpty() const;
 
 		private:
 			std::vector<cell_ptr_t> m_arCells;
@@ -71,6 +71,7 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void AddRow(const row_ptr_t& pRow);
+		bool IsEmpty() const;
 
 	private:
 		std::vector<row_ptr_t> m_arRows;

@@ -2153,6 +2153,17 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
     {
         nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCaches);
         WritePivotCaches(workbook, workbook.m_oPivotCaches.get());
+        if (workbook.m_oExtLst.IsInit())
+        {
+            for(size_t i = 0; i < workbook.m_oExtLst->m_arrExt.size(); ++i)
+            {
+                OOX::Drawing::COfficeArtExtension* pExt = workbook.m_oExtLst->m_arrExt[i];
+                if ( pExt->m_oWorkbookPivotCaches.IsInit() )
+                {
+                   WritePivotCaches(workbook, pExt->m_oWorkbookPivotCaches.get());
+                }
+            }
+        }
         m_oBcw.WriteItemWithLengthEnd(nCurPos);
     }
 //ExternalReferences

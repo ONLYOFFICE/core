@@ -63,9 +63,12 @@ namespace NSCSS
 		m_arStyleFiles.clear();
 		m_arEmptyStyleFiles.clear();
 
-		ClearPageData();
 		ClearEmbeddedStyles();
 		ClearAllowedStyleFiles();
+
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		ClearPageData();
+		#endif
 	}
 
 	void CStyleStorage::AddStyles(const std::string& sStyle)
@@ -83,6 +86,7 @@ namespace NSCSS
 		if (wsStyle.empty())
 			return;
 
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
 		std::wsmatch oMatch;
 		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
@@ -92,6 +96,7 @@ namespace NSCSS
 			AddPageData(oMatch[1].str(), oMatch[2].str());
 			oSearchStart = oMatch.suffix().first;
 		}
+		#endif
 
 		AddStyles(U_TO_UTF8(wsStyle));
 	}
@@ -140,6 +145,12 @@ namespace NSCSS
 		}
 	}
 
+	#ifdef CSS_CALCULATOR_WITH_XHTML
+	void CStyleStorage::AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles)
+	{
+		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageName), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
+	}
+
 	void CStyleStorage::SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode)
 	{
 		for (const std::pair<std::wstring, std::wstring> &oData : mData)
@@ -168,6 +179,12 @@ namespace NSCSS
 
 		return {};
 	}
+
+	void CStyleStorage::ClearPageData()
+	{
+		m_arPageDatas.clear();
+	}
+	#endif
 
 	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector)
 	{
@@ -201,16 +218,6 @@ namespace NSCSS
 		KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
 		this->GetOutputData(output, mStyleData);
 		katana_destroy_output(output);
-	}
-
-	void CStyleStorage::AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles)
-	{
-		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageName), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
-	}
-
-	void CStyleStorage::ClearPageData()
-	{
-		m_arPageDatas.clear();
 	}
 
 	void CStyleStorage::ClearEmbeddedStyles()
@@ -481,16 +488,22 @@ namespace NSCSS
 	{}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
-	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
-	{
-		return m_oStyleStorage.GetPageData(wsPageName);
-	}
-	
 	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
 	{
 		//TODO:: пересмотреть данный метод
 		m_oStyleStorage.SetPageData(oPage, mData, unLevel, bHardMode);
 	}
+
+	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
+	{
+		return m_oStyleStorage.GetPageData(wsPageName);
+	}
+
+	void CCssCalculator_Private::ClearPageData()
+	{
+		m_oStyleStorage.ClearPageData();
+	}
+	#endif
 
 	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors)
 	{
@@ -617,6 +630,7 @@ namespace NSCSS
 		return arFindedElements;
 	}
 
+	#ifdef CSS_CALCULATOR_WITH_XHTML
 	CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors)
 	{
 		if (arSelectors.empty())
@@ -752,11 +766,6 @@ namespace NSCSS
 		return m_nDpi;
 	}
 
-	void CCssCalculator_Private::ClearPageData()
-	{
-		m_oStyleStorage.ClearPageData();
-	}
-
 	void CCssCalculator_Private::ClearEmbeddedStyles()
 	{
 		m_oStyleStorage.ClearEmbeddedStyles();
@@ -791,6 +800,13 @@ namespace NSCSS
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		m_mUsedStyles.clear();
 		#endif
+	}
+
+	bool IsTableElement(const std::wstring& wsNameTag)
+	{
+		return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag ||
+		        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
+		        L"th" == wsNameTag;
 	}
 }
 
@@ -892,13 +908,6 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
 	}
 
 	return str;
-}
-
-inline static bool IsTableElement(const std::wstring& wsNameTag)
-{
-	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag || 
-	        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
-	        L"th" == wsNameTag;
 }
 
 

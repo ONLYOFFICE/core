@@ -3,11 +3,9 @@
 
 #include <vector>
 #include <map>
-#include <list>
-#include <functional>
+#include <set>
 #include "CElement.h"
-#include "ConstValues.h"
-#include "CUnitMeasureConverter.h"
+#include "StyleProperties.h"
 #include "../../katana-parser/src/katana.h"
 
 #ifdef CSS_CALCULATOR_WITH_XHTML
@@ -27,16 +25,17 @@ namespace NSCSS
 		void AddStyles(const std::string& sStyle);
 		void AddStyles(const std::wstring& wsStyle);
 		void AddStylesFromFile(const std::wstring& wsFileName);
-		void AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles);
 
-		void ClearPageData();
 		void ClearEmbeddedStyles();
 		void ClearAllowedStyleFiles();
 		void ClearStylesFromFile(const std::wstring& wsFileName);
 
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		void AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles);
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
-
 		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
+		void ClearPageData();
+		#endif
 
 		const CElement* FindElement(const std::wstring& wsSelector);
 	private:
@@ -51,6 +50,7 @@ namespace NSCSS
 		std::vector<TStyleFileData*> m_arStyleFiles;
 		std::map<std::wstring, CElement*> m_mEmbeddedStyleData;
 
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		typedef struct
 		{
 			std::vector<std::wstring>            m_wsNames;
@@ -58,6 +58,7 @@ namespace NSCSS
 		} TPageData;
 
 		std::vector<TPageData> m_arPageDatas;
+		#endif
 	private:
 		void AddStyles(const std::string& sStyle, std::map<std::wstring, CElement*>& mStyleData);
 
@@ -88,18 +89,14 @@ namespace NSCSS
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
 		std::map<std::vector<CNode>, CCompiledStyle> m_mUsedStyles;
-		
-		std::map<std::wstring, std::wstring> GetPageData(const std::wstring& wsPageName);
+
 		void SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode = false);
-
-		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
-
-		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<const CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
-		std::vector<const CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
+		std::map<std::wstring, std::wstring> GetPageData(const std::wstring &wsPageName);
 		#endif
 
-		std::wstring m_sEncoding;
+		void FindPrevAndKindElements(const CElement* pElement, const std::vector<std::wstring>& arNextNodes, std::vector<const CElement*>& arFindedElements, const std::wstring& wsName, const std::vector<std::wstring>& arClasses = {});
 
+		std::wstring m_sEncoding;
 	public:
 		CCssCalculator_Private();
 		~CCssCalculator_Private();
@@ -110,7 +107,12 @@ namespace NSCSS
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
+
+		void ClearPageData();
 		#endif
+
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
+		std::vector<const CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
 
 		void AddStyles(const std::string& sStyle);
 		void AddStyles(const std::wstring& wsStyle);
@@ -121,12 +123,12 @@ namespace NSCSS
 		std::wstring GetEncoding() const;
 		unsigned short int GetDpi() const;
 
-		void ClearPageData();
 		void ClearEmbeddedStyles();
 		void ClearAllowedStyleFiles();
 		void ClearStylesFromFile(const std::wstring& wsFilePath);
 		void Clear();
-
 	};
+
+	inline bool IsTableElement(const std::wstring& wsNameTag);
 }
 #endif // CCSSCALCULATOR_PRIVATE_H

@@ -4781,10 +4781,11 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-
+        if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
-             writer->storeNextRecord(record);
+            writer->storeNextRecord(record);
         }
 
     }

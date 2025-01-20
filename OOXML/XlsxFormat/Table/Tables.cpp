@@ -948,6 +948,7 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         XLSB::RelID stRelID;
         if(m_oRId.IsInit())
             stRelID = m_oRId->GetValue();
+        *record << stRelID;
         writer->storeNextRecord(record);
     }
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

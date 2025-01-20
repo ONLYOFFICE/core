@@ -135,6 +135,8 @@ content_type * content_types_file::content()
 
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
+	if (extension.empty()) return true;
+
 	std::vector<default_content_type> & defaults = content_type_content_.get_default();
 	
 	for (size_t i = 0 ; i < defaults.size(); i++)
@@ -433,6 +435,10 @@ void embeddings::write(const std::wstring & RootPath)
 
     for (size_t i = 0; i < items.size(); i++ )
     {
+		if (items[i].type == typeUnknown) continue;
+		if (items[i].type == typeShape) continue;
+		if (items[i].type == typeGroupShape) continue;
+
 		int pos = items[i].outputName.rfind(L".");
 		std::wstring extension = pos >= 0 ? items[i].outputName.substr(pos + 1) : L"";
 
@@ -448,12 +454,10 @@ void embeddings::write(const std::wstring & RootPath)
 		else if (items[i].type == typePDF)
 		{
 			std::string name = "Acrobat Document";
-			std::string class_name = "Acrobat Document";
-			std::string class_name2 = "Acrobat.Document.DC";
+			std::string class_name = "Acrobat.Document.DC";
 
-			_UINT32 name_size = (_UINT32)name.length() + 1;
+			_UINT32 name_size = name.size() + 1;
 			_UINT32 class_name_size = class_name.size() + 1;
-			_UINT32 class_name2_size = class_name2.size() + 1;
 
 			DWORD nativeDataSize = 0;
 			BYTE* nativeData = NULL;
@@ -473,14 +477,14 @@ void embeddings::write(const std::wstring & RootPath)
 				long long posStreamCompObj = 0;
 				oStreamCompObj->Write((char*)dataCompObjHeader, 0, 28); posStreamCompObj += 28;
 
-				oStreamCompObj->Write((char*)&class_name_size, posStreamCompObj, 4); posStreamCompObj += 4;
-				oStreamCompObj->Write((char*)class_name.c_str(), posStreamCompObj, class_name_size);  posStreamCompObj += class_name_size;
+				oStreamCompObj->Write((char*)&name_size, posStreamCompObj, 4); posStreamCompObj += 4;
+				oStreamCompObj->Write((char*)name.c_str(), posStreamCompObj, name_size);  posStreamCompObj += name_size;
 				
 				tmp = 0;
 				oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;
 
-				oStreamCompObj->Write((char*)&class_name2_size, posStreamCompObj, 4); posStreamCompObj += 4;
-				oStreamCompObj->Write((char*)class_name2.c_str(), posStreamCompObj, class_name2_size);  posStreamCompObj += class_name2_size;
+				oStreamCompObj->Write((char*)&class_name_size, posStreamCompObj, 4); posStreamCompObj += 4;
+				oStreamCompObj->Write((char*)class_name.c_str(), posStreamCompObj, class_name_size);  posStreamCompObj += class_name_size;
 
 				tmp = 0x71B239F4;
 				oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;// UnicodeMarker
@@ -496,18 +500,19 @@ void embeddings::write(const std::wstring & RootPath)
 				std::shared_ptr<CFCPP::CFStream> oStreamOle = storageOut->RootStorage()->AddStream(L"\001Ole");
 				oStreamOle->Write((char*)dataOleInfo, 0, 20);
 				
+		//ObjInfo
+				std::shared_ptr<CFCPP::CFStream> oStreamObjInfo = storageOut->RootStorage()->AddStream(L"\003ObjInfo");
+				
+				BYTE dataObjInfo[] = { 0x00, 0x00, 0x03, 0x00, 0x01, 0x00 };
+				oStreamObjInfo->Write((char*)dataObjInfo, 0, 6);
+
 		//CONTENTS
 				std::shared_ptr<CFCPP::CFStream> oStreamCONTENTS = storageOut->RootStorage()->AddStream(L"CONTENTS");
 				oStreamCONTENTS->Write((char*)nativeData, 0, nativeDataSize);
 
-		//ObjInfo
-				std::shared_ptr<CFCPP::CFStream> oStreamObjInfo = storageOut->RootStorage()->AddStream(L"\003ObjInfo");
-				
-				BYTE dataObjInfo[] = { 0x00, 0x00, 0x03, 0x00, 0x0D, 0x00 };
-				oStreamObjInfo->Write((char*)dataObjInfo, 0, 6);
-
 				bool result = storageOut->Save(file_name_out);
 				storageOut->Close();
+
 			}
 			if (storageOut) delete storageOut;
 

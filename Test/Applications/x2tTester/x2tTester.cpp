@@ -1,4 +1,7 @@
 #include "x2tTester.h"
+
+#include <cctype>
+
 #include "../../../X2tConverter/src/run.h"
 
 class CFormatsList;

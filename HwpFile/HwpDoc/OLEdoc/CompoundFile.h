@@ -4,13 +4,13 @@
 #include "Sector.h"
 #include "DirectoryEntry.h"
 #include "../HWPStream.h"
-#include <fstream>
+#include "../../../DesktopEditor/common/File.h"
 
 namespace HWP
 {
 class CCompoundFile
 {
-	std::ifstream m_fFile;
+	NSFile::CFileBinary m_oFile;
 	int m_nMinorVersion;
 	int m_nMajorVersion;
 	int m_nSectorSize;

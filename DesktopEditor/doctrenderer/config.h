@@ -38,6 +38,9 @@
 #include "../xml/include/xmlutils.h"
 #include "../fontengine/TextHyphen.h"
 
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+
 namespace NSDoctRenderer
 {
 	class CAdditionalData
@@ -203,28 +206,14 @@ namespace NSDoctRenderer
 
 		char* GetVersion()
 		{
-			std::wstring sFile = m_strSdkPath + L"/word/sdk-all-min.js";
+			std::string sVersion = VALUE(INTVER);
 
-			std::string sData;
-			if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
-				return NULL;
-
-			std::string::size_type startPos = sData.find("Version:");
-			if (std::string::npos == startPos)
-				return NULL;
-
-			startPos += 8;
-
-			std::string::size_type endPos = sData.find(')', startPos);
-			if (std::string::npos == endPos)
-				return NULL;
-
-			size_t sSrcLen = endPos - startPos + 1;
+			size_t sSrcLen = sVersion.size();
 			if (sSrcLen == 0)
 				return NULL;
 
 			char* sRet = new char[sSrcLen + 1];
-			memcpy(sRet, sData.c_str() + startPos, sSrcLen);
+			memcpy(sRet, sVersion.c_str(), sSrcLen);
 			sRet[sSrcLen] = '\0';
 			return sRet;
 		}

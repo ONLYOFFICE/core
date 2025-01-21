@@ -193,7 +193,7 @@ void Trim(HWP_STRING& sValue)
 
 	HWP_STRING::const_reverse_iterator itEnd = std::find_if(sValue.crbegin(), sValue.crend(), [](wchar_t wChar){ return !iswcntrl(wChar); });
 
-	if (itEnd != sValue.crend())
+	if (itEnd != sValue.crbegin())
 		sValue.erase(itEnd.base());
 }
 

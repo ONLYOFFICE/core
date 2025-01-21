@@ -18,8 +18,8 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 
 	if (!m_bSameSz)
 	{
-		m_arColSzWidths.reserve(m_shColCount);
-		m_arColSzGaps.reserve(m_shColCount - 1);
+		m_arColSzWidths.resize(m_shColCount);
+		m_arColSzGaps.resize(m_shColCount - 1);
 
 		for (int nIndex = 0; nIndex < m_shColCount; ++nIndex)
 		{

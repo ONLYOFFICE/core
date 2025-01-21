@@ -58,6 +58,9 @@
     <ClInclude Include="..\..\src\lib\iwork.h">
       <Filter>libs</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\lib\hwp.h">
+      <Filter>libs</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="libs">

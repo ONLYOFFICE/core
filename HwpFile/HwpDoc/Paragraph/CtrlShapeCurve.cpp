@@ -54,7 +54,7 @@ int CCtrlShapeCurve::ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& 
 
 	if (0 < oObj.m_nPoints)
 	{
-		oObj.m_arPoints.reserve(oObj.m_nPoints);
+		oObj.m_arPoints.resize(oObj.m_nPoints);
 		for (unsigned int unIndex = 0; unIndex < oObj.m_nPoints; ++unIndex)
 		{
 			oBuffer.ReadInt(oObj.m_arPoints[unIndex].m_nX);
@@ -64,7 +64,7 @@ int CCtrlShapeCurve::ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& 
 
 	if (1 < oObj.m_nPoints)
 	{
-		oObj.m_arSegmentType.reserve(oObj.m_nPoints - 1);
+		oObj.m_arSegmentType.resize(oObj.m_nPoints - 1);
 		for (unsigned int unIndex = 0; unIndex < oObj.m_nPoints - 1; ++unIndex)
 			oBuffer.ReadByte(oObj.m_arSegmentType[unIndex]);
 	}

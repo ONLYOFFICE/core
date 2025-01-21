@@ -380,16 +380,23 @@ namespace MetaFile
 
 	void CEmfInterpretatorSvg::HANDLE_EMR_PIE(const TRectL &oBox, const TPointL &oStart, const TPointL &oEnd)
 	{
-		short shCenterX = (oBox.Left + oBox.Right) / 2;
-		short shCenterY = (oBox.Top + oBox.Bottom) / 2;
+		int nCenterX = (oBox.Left + oBox.Right) / 2;
+		int nCenterY = (oBox.Top + oBox.Bottom) / 2;
 
 		short shRadiusX = std::abs(oBox.Right - oBox.Left) / 2;
 		short shRadiusY = std::abs(oBox.Bottom - oBox.Top) / 2;
 
-		std::wstring wsPath = L'M' + ConvertToWString(shCenterX) + L' ' + ConvertToWString(shCenterY) + L' ' +
+		double dStartAngle = std::atan2(oStart.Y - nCenterY, oStart.X - nCenterX);
+		double dEndAngle   = std::atan2(oEnd.Y   - nCenterY, oEnd.X   - nCenterX);
+
+		if (dEndAngle > dStartAngle)
+			dEndAngle -= 2 * M_PI;
+
+		std::wstring wsPath = L'M' + ConvertToWString(nCenterX) + L' ' + ConvertToWString(nCenterY) + L' ' +
 		                      L'L' + ConvertToWString(oStart.X)+ L' ' + ConvertToWString(oStart.Y)+ L' ' +
-		                      L'A' + ConvertToWString(shRadiusX) + L' ' + ConvertToWString(shRadiusY) + L" 0, 0, 0, " + ConvertToWString(oEnd.X) + L' ' + ConvertToWString(oEnd.Y) + L' ' +
-		                      L'L' + ConvertToWString(shCenterX) + L' ' + ConvertToWString(shCenterY) + L" Z";
+		                      L'A' + ConvertToWString(shRadiusX) + L' ' + ConvertToWString(shRadiusY) + L" 0 " +
+		                      ((std::abs(dEndAngle - dStartAngle) > M_PI) ? L'1' : L'0') + L" 0 " + ConvertToWString(oEnd.X) + L' ' + ConvertToWString(oEnd.Y) + L' ' +
+		                      L'L' + ConvertToWString(nCenterX) + L' ' + ConvertToWString(nCenterY) + L" Z";
 
 		NodeAttributes arAttributes = {{L"d", wsPath}};
 

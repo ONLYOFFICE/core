@@ -114,7 +114,7 @@ namespace DocFileFormat
 						  // Технические_Требования_1_287_ДИТ.DOC
 							if (tdef.rgTc80[j].horzMerge == 0 && tdef.rgTc80[j].wWidth < 1)
 							{
-								bUseWidth = false; 
+								//bUseWidth = false; 
 								break;
 							}
 						}

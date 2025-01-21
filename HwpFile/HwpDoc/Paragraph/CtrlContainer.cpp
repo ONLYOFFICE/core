@@ -98,12 +98,12 @@ int CCtrlContainer::ParseElement(CCtrlContainer& oObj, int nSize, CHWPStream& oB
 	if (oObj.m_shNElement <= 0)
 		return oBuffer.GetDistanceToLastPos(true);
 
-	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
+	oObj.m_arCtrlIdList.resize(oObj.m_shNElement);
 
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNElement; ++unIndex)
 		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4, EStringCharacter::ASCII);
 
-	oObj.m_arShapes.reserve(oObj.m_shNElement);
+	oObj.m_arShapes.resize(oObj.m_shNElement);
 
 	HWP_STRING sCtrlId;
 
@@ -153,7 +153,7 @@ int CCtrlContainer::ParseCtrl(CCtrlContainer& oObj, int nSize, CHWPStream& oBuff
 
 	oBuffer.ReadShort(oObj.m_shNElement);
 
-	oObj.m_arCtrlIdList.reserve(oObj.m_shNElement);
+	oObj.m_arCtrlIdList.resize(oObj.m_shNElement);
 
 	for (unsigned int unIndex = 0; unIndex < oObj.m_shNElement; ++unIndex)
 		oBuffer.ReadString(oObj.m_arCtrlIdList[unIndex], 4, EStringCharacter::ASCII);

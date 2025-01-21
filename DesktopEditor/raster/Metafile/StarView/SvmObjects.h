@@ -300,6 +300,7 @@ public:
 	void GetBounds(double& left, double& top, double& width, double& height) const override;
 	void GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const override;
 
+	void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
 public:
 	unsigned short	BrushStyleEx;  //angle, or ....
 	unsigned short	BrushStyle;

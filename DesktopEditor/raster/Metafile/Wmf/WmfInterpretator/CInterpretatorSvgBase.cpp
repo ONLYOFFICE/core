@@ -1276,16 +1276,23 @@ namespace MetaFile
 
 		std::wstring wsStyleId;
 
-		if (BS_LINEARGRADIENT	== pBrush->GetStyle() ||
-		    BS_RECTGRADIENT		== pBrush->GetStyle() ||
-		    BS_PATHGRADIENT     == pBrush->GetStyle())
+		if (BS_LINEARGRADIENT == pBrush->GetStyle() ||
+		    BS_RECTGRADIENT   == pBrush->GetStyle() ||
+		    BS_PATHGRADIENT   == pBrush->GetStyle())
 		{
 			wsStyleId = L"LINEARGRADIENT_" + ConvertToWString(++m_unNumberDefs, 0);
 
-			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">" +
-			            L"<stop offset=\"0%\" stop-color=\""   + CalculateColor(pBrush->GetColor(), pBrush->GetAlpha())  + L"\"/>" +
-			            L"<stop offset=\"100%\" stop-color=\"" + CalculateColor(pBrush->GetColor2(), pBrush->GetAlpha2()) + L"\"/>" +
-			            L"</linearGradient>";
+			m_wsDefs += L"<linearGradient id=\"" + wsStyleId + L"\">";
+
+			std::vector<long> arColors;
+			std::vector<double> arPositions;
+			pBrush->GetGradientColors(arColors, arPositions);
+
+			for (unsigned int unIndex = 0; unIndex < arColors.size(); ++unIndex)
+				m_wsDefs += L"<stop offset=\"" + ConvertToWString(arPositions[unIndex], 2) +
+				            L"\" stop-color=\"" + CalculateColor(arColors[unIndex]) +  L"\"/>";
+
+			m_wsDefs += L"</linearGradient>";
 
 			return wsStyleId;
 		}
@@ -2065,4 +2072,12 @@ namespace MetaFile
 
 		return L"rgba(" + std::to_wstring(uchRed) + L", " + std::to_wstring(uchGreen) + L", " + std::to_wstring(uchBlue) + L", " + ConvertToWString((double)uchAlpha / 255., 3) + L')';
 	}
+
+	std::wstring CalculateColor(unsigned int unColor)
+	{
+		BYTE chAlpha = unColor >> 24;
+
+		return CalculateColor(unColor, chAlpha);
+	}
+
 }

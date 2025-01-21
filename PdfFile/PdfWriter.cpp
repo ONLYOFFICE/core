@@ -190,7 +190,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
-	if (!m_pFont && !m_pFont14)
+	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA())
 	{
 		m_bNeedUpdateTextFont = false;
 		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
@@ -1985,13 +1985,13 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		{
 			pMarkupAnnot->RemoveAP();
 
-			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pTMPr = oInfo.GetTextMarkupAnnotPr();
 			PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
 
-			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
-			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
+			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
 
-			pTextMarkupAnnot->SetAP(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
 		}
 		else if (oInfo.IsSquareCircle())
 		{

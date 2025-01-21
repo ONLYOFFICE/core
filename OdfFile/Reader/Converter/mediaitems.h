@@ -106,6 +106,7 @@ public:
 			case typeImage:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
 			case typeChart:		return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
 			case typeMsObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/package";
+			case typePDF:
 			case typeOleObject:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject";
 			case typeHyperlink:	return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink";
 			case typeMedia:		return L"http://schemas.microsoft.com/office/2007/relationships/media";
@@ -145,6 +146,8 @@ public:
 
 		return typeMedia;
 	}
+
+	bool pdf2image(const std::wstring& pdf_file_name, const std::wstring& image_file_name);
 
 private:
 	std::wstring create_file_name			(const std::wstring & uri, _rels_type type, bool & isInternal, size_t Num);

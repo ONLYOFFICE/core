@@ -1,4 +1,5 @@
 #include "HWPPargraph.h"
+#include <algorithm>
 
 #include "CtrlCharacter.h"
 #include "CtrlSectionDef.h"

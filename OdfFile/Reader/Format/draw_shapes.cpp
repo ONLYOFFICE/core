@@ -530,22 +530,37 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const std::ws
     }
 
 }
-bool convert_equation(const std::wstring& formula, std::wstring &result)
+bool convert_equation(std::wstring formula, std::wstring &result)
 {
 	std::wstring operators;
 	std::wstring function;
 	std::vector<std::wstring> values;
 
+	boost::erase_all(formula, L" ");
+
+	bool next_negative = false;
+
 	size_t pos = 0;
 	while (pos < formula.size())
 	{
-		if ((formula[pos] == L'+' || formula[pos] == L'/' || formula[pos] == L'*' || formula[pos] == L'-') && pos > 0)
+		if ((formula[pos] == L'+' || formula[pos] == L'/' || formula[pos] == L'*') && pos > 0)
 		{
 			if (operators.size() > 1 && !function.empty())
 			{
 				return false; // ? todooo
 			}
+
 			operators += formula[pos++];
+		}
+		else if (formula[pos] == L'-')
+		{
+			if (pos > 0 && (formula[pos-1] == L'+' || formula[pos-1] == L'/' || formula[pos - 1] == L'*' || formula[pos - 1] == L','))
+			{
+				next_negative = true;
+				pos++;
+			}
+			else 
+				operators += formula[pos++];
 		}
 		else if (formula[pos] == L'i' && formula[pos + 1] == L'f')
 		{
@@ -576,6 +591,16 @@ bool convert_equation(const std::wstring& formula, std::wstring &result)
 				function = L"cat2"; pos += 4;
 			}
 			else pos++;
+		}
+		else if (formula[pos] == 'a')
+		{
+			if (false == operators.empty())
+				return false;
+
+			if (pos + 2 < formula.size() && formula[pos + 1] == L'b' && formula[pos + 2] == L's')
+			{
+				function = L"abs"; pos += 3;
+			}
 		}
 		else if (formula[pos] == L'b')
 		{//bottom
@@ -661,6 +686,13 @@ bool convert_equation(const std::wstring& formula, std::wstring &result)
 		else if (formula[pos] >= L'0' && formula[pos] <= L'9' || formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h')
 		{
 			values.emplace_back();
+
+			if (next_negative)
+			{
+				values.back() += L'-';
+				next_negative = false;
+			}
+
 			size_t pos_start = pos;
 			while (pos < formula.size() && formula[pos] >= L'0' && formula[pos] <= L'9' || ((formula[pos] == L'-' || formula[pos] == L'w' || formula[pos] == L'h') && pos_start == pos))
 			{
@@ -780,6 +812,49 @@ void draw_enhanced_geometry::find_draw_type_oox()
 	if (attlist_.drawooo_enhanced_path_)		odf_path_ = attlist_.drawooo_enhanced_path_.get();
 	else if (attlist_.draw_enhanced_path_)		odf_path_ = attlist_.draw_enhanced_path_.get();
 }
+
+static void process_polylines(std::vector<::svg_path::_polylineS>& polylines, const std::vector<std::pair<std::wstring, std::wstring>>& equations)
+{
+	using namespace ::svg_path;
+
+	for (size_t i = 0; i < polylines.size(); i++)
+	{
+		_polylineS& p = polylines[i];
+
+		if (p.command == L"a:arcTo" && p.points.size() > 1)
+		{
+			::svg_path::_pointS& pt = p.points[1];
+
+			auto x_it = std::find_if(equations.begin(), equations.end(),
+				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.x && eq.first == *pt.x;});
+			auto y_it = std::find_if(equations.begin(), equations.end(),
+				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.y && eq.first == *pt.y; });
+
+			if (x_it != equations.end())
+			{
+				const std::wstring& formula = x_it->second;
+
+				std::vector<std::wstring> split;
+				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+
+				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+					pt.x = split[2];
+			}
+
+			if (y_it != equations.end())
+			{
+				const std::wstring& formula = y_it->second;
+
+				std::vector<std::wstring> split;
+				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+
+				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+					pt.y = split[2];
+			}
+		}
+	}
+}
+
 bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& props)
 {
 	find_draw_type_oox();
@@ -826,7 +901,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				XmlUtils::replace_all(name, L"f", L"gd");
 				
 				XmlUtils::replace_all(value, L"(bottom-top)", L"h");
-				XmlUtils::replace_all(value, L"(right-left)", L"w");				;
+				XmlUtils::replace_all(value, L"(right-left)", L"w");
 
 				std::wstring value_conv;
 				if (convert_equation(value, value_conv))
@@ -873,6 +948,8 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			if (!o_Polyline.empty() && res)
 			{
 				set_shape = true;
+
+				process_polylines(o_Polyline, equations);
 
 				std::wstringstream output_;
 				::svg_path::oox_serialize(output_, o_Polyline);

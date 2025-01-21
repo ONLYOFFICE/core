@@ -79,6 +79,26 @@ namespace MetaFile
 		height = oRectF.dHeight;
 	}
 
+	void CEmfPlusBrush::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
+	{
+		if (arGradientColors.empty())
+		{
+			arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+			arPositions = {0., 1.};
+
+			return;
+		}
+
+		arColors.resize(arGradientColors.size());
+		arPositions.resize(arGradientColors.size());
+
+		for (unsigned int unIndex = 0; unIndex < arGradientColors.size(); ++unIndex)
+		{
+			arColors[unIndex] = METAFILE_RGBA(arGradientColors[unIndex].first.chRed, arGradientColors[unIndex].first.chGreen, arGradientColors[unIndex].first.chBlue, arGradientColors[unIndex].first.chAlpha);
+			arPositions[unIndex] = arGradientColors[unIndex].second;
+		}
+	}
+
 	CEmfPlusPen::CEmfPlusPen()
 		: unStyle(PS_SOLID | PS_GEOMETRIC | PS_STARTCAP_FLAT | PS_ENDCAP_FLAT | PS_JOIN_MITER), dWidth(1), oColor(0, 0, 0),
 		  pBrush(NULL), dMiterLimit(0), dDashOffset(0),

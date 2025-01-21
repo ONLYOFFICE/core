@@ -295,7 +295,7 @@ void CConverter2OOXML::Convert()
 
 bool CConverter2OOXML::IsRasterFormat(const HWP_STRING& sFormat)
 {
-	return L"png" == sFormat || L"jpg" == sFormat || L"jpeg" == sFormat;
+	return L"png" == sFormat || L"jpg" == sFormat || L"jpeg" == sFormat || L"bmp" == sFormat;
 }
 
 void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

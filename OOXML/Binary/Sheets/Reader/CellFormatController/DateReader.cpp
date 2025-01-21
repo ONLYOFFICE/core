@@ -208,7 +208,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     {
         auto charElement = cutteddateStr.at(i);
         DateElemTypes elementType;
-        if(charElement == L' ')
+        if(charElement == L' ' || charElement == L' ')
             elementType = DateElemTypes::space;
         else if(charElement >= L'0' && charElement<= L'9')
             elementType = DateElemTypes::digit;

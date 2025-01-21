@@ -1,6 +1,7 @@
 #include "CharShape.h"
 #include "CtrlCharacter.h"
 #include "ParaText.h"
+#include <algorithm>
 
 namespace HWP
 {

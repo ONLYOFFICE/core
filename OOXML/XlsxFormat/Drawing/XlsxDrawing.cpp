@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,7 +31,7 @@
  */
 
 #include "Drawing.h"
-
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 namespace OOX
 {
 	using namespace Drawing;
@@ -83,6 +83,17 @@ namespace OOX
 				}
 			return ptr;
 		}
+        void CDrawingWorksheet::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_Drawing);
+            XLSB::RelID stRelId;
+            if(m_oId.IsInit())
+                stRelId = m_oId->GetValue();
+            else
+                stRelId.value.setSize(0xFFFFFFFF);
+            *record << stRelId;
+            writer->storeNextRecord(record);
+        }
 		EElementType CDrawingWorksheet::getType () const
 		{
 			return et_x_FromTo;

@@ -4758,8 +4758,8 @@ namespace OOX
     void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)
     {
         {
-            auto record = writer->getNextRecord(XLSB::rt_BeginSheetData);
-             writer->storeNextRecord(record);
+			auto record = writer->getNextRecord(XLSB::rt_BeginSheetData);
+			writer->storeNextRecord(record);
         }
         for(auto it = m_arrItems.begin(); it != m_arrItems.end();)
         {
@@ -4781,8 +4781,10 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-        if(SharedFormulasRef::sharedRefsLocations)
-                SharedFormulasRef::sharedRefsLocations.reset();
+		if(SharedFormulasRef::sharedRefsLocations)
+			SharedFormulasRef::sharedRefsLocations.reset();
+		if(SharedFormulasRef::ArrayRefsLocations)
+			SharedFormulasRef::ArrayRefsLocations.reset();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
             writer->storeNextRecord(record);

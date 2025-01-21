@@ -1,5 +1,7 @@
 #include "HWPXFile.h"
 
+#include <cwctype>
+
 namespace HWP
 {
 CHWPXFile::CHWPXFile(const HWP_STRING& sFileName)

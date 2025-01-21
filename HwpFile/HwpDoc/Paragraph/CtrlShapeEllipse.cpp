@@ -2,6 +2,23 @@
 
 namespace HWP
 {
+EArcType GetArcType(int nValue)
+{
+	SWITCH(EArcType, nValue)
+	{
+		DEFAULT(EArcType::NORMAL);
+		CASE(EArcType::PIE);
+		CASE(EArcType::CHORD);
+	}
+}
+
+EArcType GetArcType(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(PIE, sValue, EArcType);
+	ELSE_IF_STRING_IN_ENUM(CHORD, sValue, EArcType);
+	ELSE_STRING_IN_ENUM(NORMAL, EArcType);
+}
+
 CCtrlShapeEllipse::CCtrlShapeEllipse()
 {}
 
@@ -22,7 +39,7 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLNode& oNode,
 {
 	m_bIntervalDirty = oNode.GetAttributeBool(L"intervalDirty");
 	m_bHasArcProperty = oNode.GetAttributeBool(L"hasArcPr");
-	m_eArcType = GetArcType(oNode.GetAttributeInt(L"arcType"));
+	m_eArcType = GetArcType(oNode.GetAttribute(L"arcType"));
 
 	for (CXMLNode& oChild : oNode.GetChilds())
 	{
@@ -133,5 +150,4 @@ int CCtrlShapeEllipse::ParseListHeaderAppend(CCtrlShapeEllipse& oObj, int nSize,
 
 	return oBuffer.GetDistanceToLastPos(true);
 }
-
 }

@@ -21,8 +21,8 @@ enum class ENumType
 	TOTAL_PAGE
 };
 
-inline ENumType GetNumType(int nValue);
-inline ENumType GetNumType(const HWP_STRING& sValue);
+ENumType GetNumType(int nValue);
+ENumType GetNumType(const HWP_STRING& sValue);
 
 class CCtrlAutoNumber : public CCtrl
 {

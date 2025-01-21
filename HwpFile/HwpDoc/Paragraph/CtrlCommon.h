@@ -48,8 +48,8 @@ enum class EVertAlign
 	OUTSIDE
 };
 
-inline EVertAlign GetVertAlign(int nValue);
-inline EVertAlign GetVertAlign(const HWP_STRING& sValue);
+EVertAlign GetVertAlign(int nValue);
+EVertAlign GetVertAlign(const HWP_STRING& sValue);
 
 enum class EHorzAlign
 {

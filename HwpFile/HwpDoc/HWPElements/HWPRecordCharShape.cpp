@@ -3,6 +3,31 @@
 
 namespace HWP
 {
+EAccent GetAccent(int nValue)
+{
+	SWITCH(EAccent, nValue)
+	{
+		DEFAULT(EAccent::NONE);
+		CASE(EAccent::DOT);
+		CASE(EAccent::RING);
+		CASE(EAccent::CARON);
+		CASE(EAccent::TILDE);
+		CASE(EAccent::ARAEA);
+		CASE(EAccent::TWOARAEA);
+	}
+}
+
+EAccent GetAccent(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(DOT, sValue, EAccent);
+	ELSE_IF_STRING_IN_ENUM(RING, sValue, EAccent);
+	ELSE_IF_STRING_IN_ENUM(CARON, sValue, EAccent);
+	ELSE_IF_STRING_IN_ENUM(TILDE, sValue, EAccent);
+	ELSE_IF_STRING_IN_ENUM(ARAEA, sValue, EAccent);
+	ELSE_IF_STRING_IN_ENUM(TWOARAEA, sValue, EAccent);
+	ELSE_STRING_IN_ENUM(NONE, EAccent);
+}
+
 ELang GetLang(int nValue)
 {
 	switch (static_cast<ELang>(nValue))
@@ -162,7 +187,6 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 	m_eUnderLineShape = ELineStyle1::SOLID;
 	m_eOutline = EOutline::NONE;
 	m_eShadow = EShadow::NONE;
-	m_eSymMark = EAccent::NONE;
 	m_eStrikeOutShape = ELineStyle2::NONE;
 
 	m_nHeight = oNode.GetAttributeInt(L"height", 1000);
@@ -171,16 +195,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 	m_bUseFontSpace = oNode.GetAttributeBool(L"useFontSpace");
 	m_bUseKerning = oNode.GetAttributeBool(L"useKerning");
 
-	HWP_STRING sMarkType = oNode.GetAttribute(L"symMark");
-
-	if (L"DOT_ABOVE" == sMarkType)
-		m_eSymMark = EAccent::DOT;
-	else if (L"RING_ABOVE" == sMarkType)
-		m_eSymMark = EAccent::RING;
-	else if (L"TILDE" == sMarkType)
-		m_eSymMark = EAccent::TILDE;
-	else
-		m_eSymMark = EAccent::NONE;
+	m_eSymMark = GetAccent(oNode.GetAttribute(L"symMark"));
 
 	m_shBorderFillIDRef = oNode.GetAttributeInt(L"borderFillIDRef");
 

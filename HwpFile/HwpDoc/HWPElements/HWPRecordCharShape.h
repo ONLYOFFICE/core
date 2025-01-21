@@ -59,22 +59,8 @@ enum class EAccent
 	TWOARAEA
 };
 
-inline EAccent GetAccent(int nValue)
-{
-	switch(static_cast<EAccent>(nValue))
-	{
-		case EAccent::NONE:
-		case EAccent::DOT:
-		case EAccent::RING:
-		case EAccent::CARON:
-		case EAccent::TILDE:
-		case EAccent::ARAEA:
-		case EAccent::TWOARAEA:
-			return static_cast<EAccent>(nValue);
-		default:
-			return EAccent::NONE;
-	}
-}
+EAccent GetAccent(int nValue);
+EAccent GetAccent(const HWP_STRING& sValue);
 
 #define MAX_ELEMENTS (int)ELang::MAX
 

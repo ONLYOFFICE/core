@@ -12,17 +12,8 @@ enum class EArcType
 	CHORD
 };
 
-inline EArcType GetArcType(int nValue)
-{
-	switch(static_cast<EArcType>(nValue))
-	{
-		case EArcType::NORMAL:
-		default:
-			return EArcType::NORMAL;
-		case EArcType::PIE: return EArcType::PIE;
-		case EArcType::CHORD: return EArcType::CHORD;
-	}
-}
+EArcType GetArcType(int nValue);
+EArcType GetArcType(const HWP_STRING& sValue);
 
 class CCtrlShapeEllipse : public CCtrlGeneralShape
 {

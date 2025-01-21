@@ -4289,15 +4289,32 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	obj2.free();
       }
     }
-    if (!obj1.isNull()) {
-      colorSpace = GfxColorSpace::parse(&obj1
-					);
+
+    GBool haveRGBA = gFalse;
+    if (str->getKind() == strJPX && (csMode == streamCSDeviceRGB || csMode == streamCSDeviceCMYK)) {
+      // Case of transparent JPX image, they may contain RGBA data when SMaskInData=1
+      Object smaskInData;
+      dict->lookup("SMaskInData", &smaskInData);
+      haveRGBA = smaskInData.isInt() && smaskInData.getInt();
+      smaskInData.free();
+    }
+
+    if (!obj1.isNull() && !haveRGBA) {
+      colorSpace = GfxColorSpace::parse(&obj1);
     } else if (csMode == streamCSDeviceGray) {
       colorSpace = GfxColorSpace::create(csDeviceGray);
     } else if (csMode == streamCSDeviceRGB) {
-      colorSpace = GfxColorSpace::create(csDeviceRGB);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceRGB);
+      }
     } else if (csMode == streamCSDeviceCMYK) {
-      colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      }
     } else {
       colorSpace = NULL;
     }

@@ -2940,6 +2940,13 @@ namespace PdfReader
 					{
 						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
 					}
+					else if (3 == nColorMapType)
+					{
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+					}
 					else
 					{
 						GfxRGB oRGB;
@@ -2951,7 +2958,7 @@ namespace PdfReader
 
 					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
 						pLineDst[3] = 0;
-					else
+					else if (3 != nColorMapType)
 						pLineDst[3] = unAlpha;
 
 					pLine += nComps;

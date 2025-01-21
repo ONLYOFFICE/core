@@ -237,6 +237,11 @@ short CHWPRecordParaShape::GetHeadingIdRef() const
 	return m_shHeadingIdRef;
 }
 
+bool CHWPRecordParaShape::GetPageBreakBefore() const
+{
+	return m_bPageBreakBefore;
+}
+
 int CHWPRecordParaShape::GetLineSpacingType() const
 {
 	return m_nLineSpacingType;

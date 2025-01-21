@@ -26,7 +26,7 @@ CHWPPargraph::CHWPPargraph()
 {}
 
 CHWPPargraph::CHWPPargraph(CXMLNode& oNode, int nVersion)
-	: m_pLineSegs(nullptr)
+	: m_chBreakType(0), m_pLineSegs(nullptr)
 {
 	m_shParaShapeID = oNode.GetAttributeInt(L"paraPrIDRef");
 	m_shParaStyleID = oNode.GetAttributeInt(L"styleIDRef");

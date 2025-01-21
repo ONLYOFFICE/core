@@ -20,10 +20,20 @@ CHWPStream::CHWPStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBu
 
 CHWPStream::~CHWPStream()
 {
+	Clear();
+}
+
+void CHWPStream::Clear()
+{
 	if (nullptr != m_pBegin && !m_bExternalBuffer)
 		free(m_pBegin);
 
 	m_pBegin = nullptr;
+	m_pCur = nullptr;
+	m_pEnd = nullptr;
+
+	while (!m_arSavedPositions.empty())
+		m_arSavedPositions.pop();
 }
 
 void CHWPStream::SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer)

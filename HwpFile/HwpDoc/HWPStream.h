@@ -27,6 +27,8 @@ public:
 	CHWPStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 	~CHWPStream();
 
+	void Clear();
+
 	void SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 
 	HWP_BYTE* GetCurPtr();

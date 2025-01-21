@@ -160,6 +160,15 @@ void CConverter2OOXML::FillDefaultData()
 	AddRelationship(L"fontTable", L"fontTable.xml");
 	AddRelationship(L"theme", L"theme/theme1.xml");
 
+	AddContentType(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+	AddContentType(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+	AddContentType(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+	AddContentType(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
+	AddContentType(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+	AddContentType(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
+	AddContentType(L"/docProps/core.xml", L"application/vnd.openxmlformats-package.core-properties+xml");
+	AddContentType(L"/docProps/app.xml", L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
+
 	m_oNoteXmlRels.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 	m_oDocXml     .WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>");
 	m_oWebSettings.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:optimizeForBrowser/>");
@@ -179,20 +188,6 @@ void CConverter2OOXML::FillDefaultData()
 	m_oStylesXml.WriteString(L"<w:style w:type=\"character\" w:styleId=\"a\"><w:name w:val=\"Hyperlink\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:color w:val=\"0000FF\" w:themeColor=\"hyperlink\"/><w:u w:val=\"single\"/></w:rPr></w:style>");
 	m_oStylesXml.WriteString(L"<w:style w:type=\"character\" w:styleId=\"footnote\"><w:name w:val=\"footnote reference\"/><w:uiPriority w:val=\"99\"/><w:unhideWhenUsed/><w:rPr><w:vertAlign w:val=\"superscript\"/></w:rPr></w:style><w:style w:type=\"paragraph\" w:styleId=\"footnote-p\"><w:name w:val=\"footnote text\"/><w:basedOn w:val=\"normal\"/><w:link w:val=\"footnote-c\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:rPr><w:sz w:val=\"18\"/></w:rPr><w:pPr><w:spacing w:lineRule=\"auto\" w:line=\"240\" w:after=\"40\"/></w:pPr></w:style><w:style w:type=\"character\" w:styleId=\"footnote-c\" w:customStyle=\"1\"><w:name w:val=\"footnote text character\"/><w:link w:val=\"footnote-p\"/><w:uiPriority w:val=\"99\"/><w:rPr><w:sz w:val=\"18\"/></w:rPr></w:style>");
 	m_oStylesXml.WriteString(L"<w:style w:type=\"paragraph\" w:styleId=\"normal-web\"><w:name w:val=\"Normal (Web)\"/><w:basedOn w:val=\"normal\"/><w:uiPriority w:val=\"99\"/><w:semiHidden/><w:unhideWhenUsed/><w:pPr><w:spacing w:before=\"100\" w:beforeAutospacing=\"1\" w:after=\"100\" w:afterAutospacing=\"1\"/></w:pPr></w:style>");
-
-	m_oContentTypes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
-	m_oContentTypes.WriteString(L"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
-	m_oContentTypes.WriteString(L"<Default Extension=\"xml\" ContentType=\"application/xml\"/>");
-	m_oContentTypes.WriteString(L"<Default Extension=\"png\" ContentType=\"image/png\"/>");
-	m_oContentTypes.WriteString(L"<Default Extension=\"jpeg\" ContentType=\"image/jpeg\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/document.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/styles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/settings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/webSettings.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/fontTable.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/theme/theme1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>");
-	m_oContentTypes.WriteString(L"<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>");
 }
 
 void CConverter2OOXML::Close()
@@ -243,11 +238,19 @@ void CConverter2OOXML::Close()
 	}
 
 	// [Content_Types].xml
-	m_oContentTypes.WriteString(L"</Types>");
 	NSFile::CFileBinary oContentTypeWriter;
 	if (oContentTypeWriter.CreateFileW(m_sTempDirectory + L"/[Content_Types].xml"))
 	{
-		oContentTypeWriter.WriteStringUTF8(m_oContentTypes.GetData());
+		oContentTypeWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
+		oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\"/>");
+
+		for (const TContentType& oContentType : m_arDefaultContentType)
+			oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+
+		for (const TContentType& oContentType : m_arContentTypes)
+			oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+
+		oContentTypeWriter.WriteStringUTF8(L"</Types>");
 		oContentTypeWriter.CloseFile();
 	}
 
@@ -315,12 +318,11 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 			else
 				WriteText(L"", shParaShapeID, pCharacter->GetCharShapeId(), oBuilder, oState);
 
-			oState.m_bNeedLineBreak = false;
 			break;
 		}
 		case ECtrlCharType::LINE_BREAK:
 		{
-			oState.m_bNeedLineBreak = true;
+			oState.m_eBreakType = TConversionState::EBreakType::TextWrapping;
 			break;
 		}
 		case ECtrlCharType::HARD_HYPHEN:
@@ -381,14 +383,14 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 	if (0 < pParagraph->GetBreakType())
 	{
-		if ((0x01 == (pParagraph->GetBreakType() & 0x01) ||
-		    0x02 == (pParagraph->GetBreakType() & 0x02)) &&
-		    0 < oState.m_ushSecdIndex)
+		if ((0x04 == (pParagraph->GetBreakType() & 0x04)) && (0 < oState.m_unParaIndex))
 		{
 			if (oState.m_bOpenedP)
 				oBuilder.WriteString(L"</w:p>");
 
-			oBuilder.WriteString(L"<w:p><w:r><w:br w:type=\"page\"/></w:r>");
+			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
+
+			oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
 
 			oState.m_bOpenedP = true;
 			++m_ushPageCount;
@@ -398,11 +400,15 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			if (oState.m_bOpenedP)
 				oBuilder.WriteString(L"</w:p>");
 
-			oBuilder.WriteString(L"<w:p><w:r><w:br w:type=\"column\"/></w:r>");
+			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
+
+			oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
 
 			oState.m_bOpenedP = true;
 		}
 	}
+
+	++oState.m_unParaIndex;
 
 	VECTOR<std::wstring> arNoteRef;
 
@@ -482,7 +488,7 @@ void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, NSStringUti
 	oBuilder.WriteString(L"</w:pPr>");
 }
 
-void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
+void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == m_pContext)
 		return;
@@ -491,6 +497,9 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 	if (nullptr == pParaShape)
 		return;
+
+	if (pParaShape->GetPageBreakBefore())
+		oState.m_eBreakType = TConversionState::EBreakType::Page;
 
 	oBuilder.WriteString(L"<w:keepNext w:val=\"" + HWP_STRING((pParaShape->KeepWithNext()) ? L"true" : L"false") + L"\"/>");
 
@@ -1031,7 +1040,6 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/>");
 	WriteBorderSettings(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
-	oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
 	CloseDrawingNode(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
 
@@ -1202,11 +1210,11 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 			return HWP_STRING();
 	}
 
-	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
+	AddContentType(L"/media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
 	return AddRelationship(L"image", L"media/" + sFileName);
 }
 
-void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
+void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == m_pContext)
 		return;
@@ -1301,6 +1309,20 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
 
 	oBuilder.WriteString(L"</w:rPr>");
+
+	switch(oState.m_eBreakType)
+	{
+		case TConversionState::EBreakType::Page:
+			oBuilder.WriteString(L"<w:br w:type=\"page\"/>"); break;
+		case TConversionState::EBreakType::Column:
+			oBuilder.WriteString(L"<w:br w:type=\"column\"/>"); break;
+		case TConversionState::EBreakType::TextWrapping:
+			oBuilder.WriteString(L"<w:br/>"); break;
+		case TConversionState::EBreakType::None:
+			break;
+	}
+
+	oState.m_eBreakType = TConversionState::EBreakType::None;
 }
 
 void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
@@ -1317,6 +1339,7 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
 		                     L"\">");
 	else
+	{
 		oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
 		                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
 		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
@@ -1325,6 +1348,10 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
+		WriteShapePosition(pCtrlShape, oBuilder);
+	}
+
+	WriteShapeExtent(pCtrlShape, oBuilder);
 	WriteShapeProperty(pCtrlShape, oBuilder);
 }
 
@@ -1375,11 +1402,20 @@ void CConverter2OOXML::WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStrin
 	if (nullptr == pCtrlShape)
 		return;
 
+	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
+	oBuilder.WriteEncodeXmlString(pCtrlShape->GetDesc());
+	oBuilder.WriteString(L"\"/>");
+	oBuilder.WriteString(L"<wp:cNvGraphicFramePr/>");
+}
+
+void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
+
 	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"" + GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
 	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
-	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
-	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 
 	switch (pCtrlShape->GetTextWrap())
 	{
@@ -1408,11 +1444,15 @@ void CConverter2OOXML::WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStrin
 			break;
 		}
 	}
+}
 
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
-	oBuilder.WriteEncodeXmlString(pCtrlShape->GetDesc());
-	oBuilder.WriteString(L"\"/>");
-	oBuilder.WriteString(L"<wp:cNvGraphicFramePr/>");
+void CConverter2OOXML::WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
+
+	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
+	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 }
 
 void CConverter2OOXML::OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -1471,21 +1511,27 @@ void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID
 
 	if (wsText.empty())
 	{
+		oBuilder.WriteString(L"<w:r>");
 		WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+		oBuilder.WriteString(L"</w:r>");
 		return;
 	}
+
+	oBuilder.WriteString(L"<w:r>");
+
+	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
+
+	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
+	oBuilder.WriteEncodeXmlString(wsText);
+	oBuilder.WriteString(L"</w:t></w:r>");
+
+	return;
 
 	for (const std::wstring& wsTextElement : SplitText(wsText))
 	{
 		oBuilder.WriteString(L"<w:r>");
 
 		WriteRunnerStyle(shCharShapeID, oBuilder, oState);
-
-		if (oState.m_bNeedLineBreak)
-		{
-			oBuilder.WriteString(L"<w:br/>");
-			oState.m_bNeedLineBreak = false;
-		}
 
 		if (!wsTextElement.empty())
 		{
@@ -1651,6 +1697,11 @@ HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP
 	if (wsType.empty() || wsTarget.empty())
 		return HWP_STRING();
 
+	VECTOR<TRelationship>::const_iterator itFound = std::find_if(m_arRelationships.cbegin(), m_arRelationships.cend(), [wsTarget](const TRelationship& oRelationship){ return wsTarget == oRelationship.m_wsTarget; });
+
+	if (m_arRelationships.cend() != itFound)
+		return itFound->m_wsID;
+
 	m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
 
 	return m_arRelationships.back().m_wsID;
@@ -1661,7 +1712,30 @@ void CConverter2OOXML::AddContentType(const HWP_STRING& wsName, const HWP_STRING
 	if (wsName.empty() || wsType.empty())
 		return;
 
-	m_oContentTypes.WriteString(L"<Override PartName=\"/word/" + wsName + L"\" ContentType=\"" + wsType + L"\"/>");
+	VECTOR<TContentType>::const_iterator itFound = std::find_if(m_arContentTypes.cbegin(), m_arContentTypes.cend(), [wsName](const TContentType& oContentType){ return wsName == oContentType.m_wsName; });
+
+	if (m_arContentTypes.cend() != itFound)
+		return;
+
+	AddDefaultContentType(NSFile::GetFileExtention(wsName));
+
+	m_arContentTypes.push_back({wsName, wsType});
+}
+
+void CConverter2OOXML::AddDefaultContentType(const HWP_STRING& wsName)
+{
+	if (wsName.empty())
+		return;
+
+	VECTOR<TContentType>::const_iterator itFound = std::find_if(m_arDefaultContentType.cbegin(), m_arDefaultContentType.cend(), [wsName](const TContentType& oContentType){ return wsName == oContentType.m_wsName; });
+
+	if (m_arDefaultContentType.cend() != itFound)
+		return;
+
+	if (IsRasterFormat(wsName))
+		m_arDefaultContentType.push_back({wsName, L"image/" + wsName});
+	else if (L"xml" == wsName)
+		m_arDefaultContentType.push_back({wsName, L"application/xml"});
 }
 
 bool CConverter2OOXML::ConvertToFile(const HWP_STRING& sFilePath)
@@ -1703,7 +1777,8 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bNeedLineBreak(false), m_ushSecdIndex(0), m_pSectionDef(nullptr), m_pColumnDef(nullptr)
+	: m_bOpenedP(false), m_bOpenedR(false), m_ushSecdIndex(0), m_unParaIndex(0), m_pSectionDef(nullptr),
+      m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 
 }

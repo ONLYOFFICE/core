@@ -28,12 +28,19 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
-	bool m_bNeedLineBreak;
-
 	unsigned short m_ushSecdIndex;
+	unsigned int m_unParaIndex;
 
 	const CCtrlSectionDef* m_pSectionDef;
 	const CCtrlColumnDef*  m_pColumnDef;
+
+	enum class EBreakType
+	{
+		Page,
+		Column,
+		TextWrapping,
+		None
+	} m_eBreakType;
 
 	TConversionState();
 };
@@ -43,6 +50,12 @@ struct TRelationship
 	HWP_STRING m_wsID;
 	HWP_STRING m_wsType;
 	HWP_STRING m_wsTarget;
+};
+
+struct TContentType
+{
+	HWP_STRING m_wsName;
+	HWP_STRING m_wsType;
 };
 
 enum class ECellCreator
@@ -61,8 +74,9 @@ class CConverter2OOXML
 	NSStringUtils::CStringBuilder m_oDocXml;      // document.xml
 	NSStringUtils::CStringBuilder m_oNoteXmlRels; // footnotes.xml.rels
 	NSStringUtils::CStringBuilder m_oWebSettings; // webSettings.xml
-	NSStringUtils::CStringBuilder m_oContentTypes;// [Content_Types].xml
 
+	VECTOR<TContentType> m_arDefaultContentType;
+	VECTOR<TContentType> m_arContentTypes;
 	VECTOR<TRelationship> m_arRelationships;
 
 	CNumberingConverter m_oNumberingConverter;
@@ -98,11 +112,14 @@ class CConverter2OOXML
 	bool SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
-	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
-	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState);
+	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+
+	void WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
@@ -119,6 +136,7 @@ class CConverter2OOXML
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);
+	void AddDefaultContentType(const HWP_STRING& wsName);
 public:
 	CConverter2OOXML();
 	~CConverter2OOXML();

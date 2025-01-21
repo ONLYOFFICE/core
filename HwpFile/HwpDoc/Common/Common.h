@@ -25,12 +25,15 @@ typedef char HWP_BYTE;
 #define CASE(value) case value : return value
 #define DEFAULT(value) case value: default: return value
 
-#define STR_(value) L#value
+#define MAKE_STR(value) #value
+#define MAKE_WSTR(value) L##value
+#define WSTR(value) MAKE_WSTR(#value)
+
 #define IF_STRING_IN_ENUM(checked_value, value, enum_type)\
-	if (STR_(checked_value) == value)\
+	if (WSTR(checked_value) == value)\
 		return enum_type::checked_value
 #define ELSE_IF_STRING_IN_ENUM(checked_value, value, enum_type)\
-	else if (STR_(checked_value) == value)\
+	else if (WSTR(checked_value) == value)\
 		return enum_type::checked_value
 #define ELSE_STRING_IN_ENUM(checked_value, enum_type)\
 	else\

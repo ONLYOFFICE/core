@@ -183,7 +183,7 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
-			starMathConverter.StartConversion(oox_math_para);
+			starMathConverter.StartConversion(oox_math);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 

@@ -404,8 +404,8 @@ namespace NSDocxRenderer
 		// building final objects
 		m_arParagraphs = BuildParagraphs();
 
-		if (m_bIsBuildTables)
-			m_arTables = BuildTables();
+		// if (m_bIsBuildTables)
+		// 	m_arTables = BuildTables();
 
 		// post analyze
 		CalcSelected();
@@ -413,8 +413,8 @@ namespace NSDocxRenderer
 		CalcShapesRotation();
 
 		m_arOutputObjects = BuildOutputObjects();
-		for (auto& t : m_arTables)
-			m_arOutputObjects.push_back(t);
+		// for (auto& t : m_arTables)
+		// 	m_arOutputObjects.push_back(t);
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)

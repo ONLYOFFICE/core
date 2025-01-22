@@ -254,7 +254,7 @@ bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
 		for (CXMLNode& oGrandChild : oChild.GetChilds(L"opf:item"))
 		{
 			pRecordBinData = new CHWPRecordBinData(oGrandChild, nVersion);
-			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), pRecordBinData));
+			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
 		}
 	}
 

@@ -60,6 +60,8 @@ namespace NSDocxRenderer
 		m_arTextLines.clear();
 		m_arDiacriticalSymbols.clear();
 		m_arShapes.clear();
+		m_arParagraphs.clear();
+		m_arTables.clear();
 		m_arOutputObjects.clear();
 		m_oCurrVectorGraphics.Clear();
 		m_oClipVectorGraphics.Clear();

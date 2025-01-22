@@ -869,6 +869,27 @@ namespace NSDocxRenderer
 			}
 
 			oWriter.WriteString(L"</a:solidFill>");
+			if (m_oPen.DashStyle == Aggplus::DashStyleCustom)
+			{
+				// dash pattern
+				std::vector<double> dash_pattern(m_oPen.Count);
+				long count = m_oPen.Count;
+				m_oPen.GetDashPattern(dash_pattern.data(), count);
+
+				oWriter.WriteString(L"<a:custDash>");
+				for (size_t i = 0; i < count; i+= 2)
+				{
+					double to_percentage = 100.0 * 1000.0 / m_oPen.Size;
+					oWriter.WriteString(L"<a:ds d=\"");
+					oWriter.AddUInt(dash_pattern[i] * to_percentage);
+					oWriter.WriteString(L"\" ");
+					oWriter.WriteString(L"sp=\"");
+					oWriter.AddUInt(dash_pattern[i + 1] * to_percentage);
+					oWriter.WriteString(L"\" />");
+				}
+				oWriter.WriteString(L"</a:custDash>");
+			}
+			// Aggplus::DashStyleSolid
 			oWriter.WriteString(L"</a:ln>");
 		}
 	}

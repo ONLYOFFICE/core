@@ -25,7 +25,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L" w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(border.eLineType));
 			oWriter.WriteString(L" w:sz=\"");
-			oWriter.AddUInt(static_cast<unsigned int>(border.dWidth * c_dMMToPt / 8));
+			oWriter.AddUInt(static_cast<unsigned int>(border.dWidth * c_dMMToPt * 8));
 			oWriter.WriteString(L"\" w:space=\"");
 			oWriter.AddUInt(static_cast<unsigned int>(border.dSpacing * c_dMMToPt));
 			oWriter.WriteString(L"\" w:color=\"");
@@ -34,7 +34,7 @@ namespace NSDocxRenderer
 		};
 
 		write_border(m_oBorderTop, L"top");
-		write_border(m_oBorderBot, L"bot");
+		write_border(m_oBorderBot, L"bottom");
 		write_border(m_oBorderLeft, L"left");
 		write_border(m_oBorderRight, L"right");
 

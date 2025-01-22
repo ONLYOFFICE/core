@@ -405,7 +405,7 @@ namespace NSDocxRenderer
 		m_arParagraphs = BuildParagraphs();
 
 		// if (m_bIsBuildTables)
-		// 	m_arTables = BuildTables();
+		// m_arTables = BuildTables();
 
 		// post analyze
 		CalcSelected();
@@ -1915,8 +1915,9 @@ namespace NSDocxRenderer
 	{
 		struct Crossing
 		{
+			using Line = std::pair<Point, shape_ptr_t&>;
 			Point p {};
-			std::vector<Point> lines {};
+			std::vector<Line> lines {};
 		};
 		std::vector<Crossing> crossings;
 		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
@@ -1929,7 +1930,7 @@ namespace NSDocxRenderer
 			return nullptr;
 		};
 
-		for (const auto& shape : m_arShapes)
+		for (auto& shape : m_arShapes)
 		{
 			if (!shape)
 				continue;
@@ -1942,19 +1943,37 @@ namespace NSDocxRenderer
 					if (command.type == CVectorGraphics::ePathCommandType::pctLine)
 					{
 						const auto& curr = command.points.back();
+
+						// pure vertical / horizontal lines only
+						if (fabs(prev.x - curr.x) > c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > c_dGRAPHICS_ERROR_MM)
+						{
+							prev = curr;
+							continue;
+						}
+
 						auto prev_crossing = find_crossing(prev);
 						auto curr_crossing = find_crossing(curr);
 
 						// add empty vector if no exists
 						if (!prev_crossing)
-							crossings.push_back({prev, {curr}});
+						{
+							Crossing cr;
+							cr.p = prev;
+							cr.lines.push_back({curr, shape});
+							crossings.push_back(std::move(cr));
+						}
 						else
-							prev_crossing->lines.push_back(curr);
+							prev_crossing->lines.push_back({curr, shape});
 
 						if (!curr_crossing)
-							crossings.push_back({curr, {prev}});
+						{
+							Crossing cr;
+							cr.p = curr;
+							cr.lines.push_back({prev, shape});
+							crossings.push_back(std::move(cr));
+						}
 						else
-							curr_crossing->lines.push_back(prev);
+							curr_crossing->lines.push_back({prev, shape});
 
 						prev = curr;
 					}
@@ -1971,42 +1990,95 @@ namespace NSDocxRenderer
 		});
 
 		std::vector<CTable::cell_ptr_t> cells;
+		std::vector<std::reference_wrapper<shape_ptr_t>> remove_later;
 		for (size_t i = 0; i < crossings.size(); ++i)
 		{
 			for (size_t j = i + 1; j < crossings.size(); ++j)
 			{
-				const auto& first = crossings.at(i);
-				const auto& second = crossings.at(j);
+				const auto& cr_first = crossings.at(i);
+				const auto& cr_second = crossings.at(j);
 
 				// first should be top left corner
 				// and second right bot (not the same line ofc)
-				if (fabs(first.p.x - second.p.x) < c_dGRAPHICS_ERROR_MM ||
-				        first.p.x > second.p.x ||
-				        fabs(first.p.y - second.p.y) < c_dGRAPHICS_ERROR_MM ||
-				        first.p.y > second.p.y)
+				if (fabs(cr_first.p.x - cr_second.p.x) < c_dGRAPHICS_ERROR_MM ||
+				        cr_first.p.x > cr_second.p.x ||
+				        fabs(cr_first.p.y - cr_second.p.y) < c_dGRAPHICS_ERROR_MM ||
+				        cr_first.p.y > cr_second.p.y)
 					continue;
 
 				// 2 points should be the same
 				size_t equals = 0;
-				for (const auto& fl : first.lines)
-					for (const auto& sl : second.lines)
-						if (fabs(fl.x - sl.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.y - sl.y) < c_dGRAPHICS_ERROR_MM)
+				for (const auto& fl : cr_first.lines)
+					for (const auto& sl : cr_second.lines)
+						if (fabs(fl.first.x - sl.first.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.first.y - sl.first.y) < c_dGRAPHICS_ERROR_MM)
 							++equals;
 
 				if (equals == 2)
 				{
 					auto cell = std::make_shared<CTable::CCell>();
-					cell->m_dLeft = first.p.x;
-					cell->m_dRight = second.p.x;
-					cell->m_dTop = first.p.y;
-					cell->m_dBaselinePos = second.p.y;
+					cell->m_dLeft = cr_first.p.x;
+					cell->m_dRight = cr_second.p.x;
+					cell->m_dTop = cr_first.p.y;
+					cell->m_dBaselinePos = cr_second.p.y;
 					cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
 					cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
+
+					// borders style
+					shape_ptr_t l_top {nullptr};
+					shape_ptr_t l_bot {nullptr};
+					shape_ptr_t l_left {nullptr};
+					shape_ptr_t l_right {nullptr};
+
+					for (const auto& fl : cr_first.lines)
+					{
+						if (fl.first.x - cr_first.p.x > 0 && fabs(fl.first.y - cr_first.p.y) < c_dGRAPHICS_ERROR_MM)
+						{
+							l_top = fl.second;
+							remove_later.push_back(fl.second);
+						}
+						if (fl.first.y - cr_first.p.y > 0 && fabs(fl.first.x - cr_first.p.x) < c_dGRAPHICS_ERROR_MM)
+						{
+							l_left = fl.second;
+							remove_later.push_back(fl.second);
+						}
+					}
+					for (const auto& sl : cr_second.lines)
+					{
+						// TODO not to remove full shape. Remove only needed commands (split the shape)
+						if (cr_second.p.x - sl.first.x > 0 && fabs(sl.first.y - cr_second.p.y) < c_dGRAPHICS_ERROR_MM)
+						{
+							l_bot = sl.second;
+							remove_later.push_back(sl.second);
+						}
+						if (cr_second.p.y - sl.first.y > 0 && fabs(sl.first.x - cr_second.p.x) < c_dGRAPHICS_ERROR_MM)
+						{
+							l_right = sl.second;
+							remove_later.push_back(sl.second);
+						}
+					}
+
+					auto set_border_info = [] (CTable::CCell::CBorder& border, shape_ptr_t shape) {
+						border.dWidth = shape->m_oPen.Size;
+						border.lColor = shape->m_oPen.Color;
+						border.dSpacing = 0;
+						border.eLineType = eLineType::ltSingle;
+						// TODO more info
+					};
+
+					set_border_info(cell->m_oBorderTop, l_top);
+					set_border_info(cell->m_oBorderBot, l_bot);
+					set_border_info(cell->m_oBorderLeft, l_left);
+					set_border_info(cell->m_oBorderRight, l_right);
+
 					cells.push_back(cell);
 					break;
 				}
 			}
 		}
+
+		for (auto& elem : remove_later)
+			if (elem.get())
+				elem.get() = nullptr;
 
 		// sets paragraphs into cells
 		for (auto& cell : cells)

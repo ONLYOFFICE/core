@@ -164,7 +164,7 @@ namespace NSDocxRenderer
 		return m_arData.empty();
 	}
 
-	const std::list<CVectorGraphics::PathCommand>& CVectorGraphics::GetData() const
+	const std::list<CVectorGraphics::CPathCommand>& CVectorGraphics::GetData() const
 	{
 		return m_arData;
 	}
@@ -218,7 +218,7 @@ namespace NSDocxRenderer
 		ResetBorders();
 	}
 
-	void CVectorGraphics::Add(const PathCommand& command)
+	void CVectorGraphics::Add(const CPathCommand& command)
 	{
 		m_arData.push_back(command);
 	}

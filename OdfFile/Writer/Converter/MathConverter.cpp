@@ -178,28 +178,32 @@ namespace Oox2Odf
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
 			convert(oox_math->m_arrItems[i]);
-		}	
-
-		StarMath::COOXml2Odf starMathConverter;
-		starMathConverter.StartConversion(oox_math);
-
-		std::wstring annotation_text = starMathConverter.GetAnnotation();
-
-		if (false == annotation_text.empty())
-		{
-			CREATE_MATH_TAG(L"annotation");
-			typedef odf_writer::math_annotation* T;
-			T tmp = dynamic_cast<T>(elm.get());
-			if (tmp)
-			{
-				tmp->encoding_ = L"StarMath 5.0";
-			}
-			elm->add_text(annotation_text);
-
-			OPEN_MATH_TAG(elm);
-			CLOSE_MATH_TAG;
 		}
-		if (bStart) odf_context()->end_math();
+
+		if (bStart)
+		{
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math_para);
+
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
+			{
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
+
+			odf_context()->end_math();
+		}
 	}
 
 	void OoxConverter::convert(OOX::Logic::CMathPr *oox_math_pr)
@@ -238,9 +242,29 @@ namespace Oox2Odf
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
-
 		if (bStart)
+		{
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math_para);
+
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
+			{
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
 			odf_context()->end_math();
+		}
 	}
 
 	void OoxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)

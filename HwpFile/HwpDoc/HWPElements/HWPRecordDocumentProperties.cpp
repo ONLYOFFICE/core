@@ -15,4 +15,15 @@ CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo
 	oBuffer.ReadInt(m_nParaID);
 	oBuffer.ReadInt(m_nCharUnitLocInPara);
 }
+
+CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_DOCUMENT_PROPERTIES, 0, 0), m_pParent(&oDocInfo)
+{
+	m_shFigureStartNo   = oNode.GetAttributeInt(L"page");
+	m_shFootNoteStartNo = oNode.GetAttributeInt(L"footnote");
+	m_shEndNoteStartNo  = oNode.GetAttributeInt(L"endnote");
+	m_shFigureStartNo   = oNode.GetAttributeInt(L"pic");
+	m_shTableStartNo    = oNode.GetAttributeInt(L"tbl");
+	m_shEqStartNo       = oNode.GetAttributeInt(L"equation");
+}
 }

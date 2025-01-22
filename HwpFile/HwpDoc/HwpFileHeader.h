@@ -2,6 +2,7 @@
 #define HWPFILEHEADER_H
 
 #include "HWPStream.h"
+#include "Common/XMLNode.h"
 
 namespace HWP
 {
@@ -46,6 +47,7 @@ public:
 	HWP_STRING GetVersion() const;
 
 	bool Parse(CHWPStream& oBuffer);
+	bool Parse(CXMLNode& oNode);
 };
 }
 

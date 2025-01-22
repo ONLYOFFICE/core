@@ -24,6 +24,7 @@ class CTblCell
 	HWP_STRING m_sMergedColName;
 public:
 	CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CTblCell(CXMLNode& oNode, int nVersion);
 
 	void SetVertAlign(EVertAlign eVertAlign);
 

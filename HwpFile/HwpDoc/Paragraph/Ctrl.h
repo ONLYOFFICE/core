@@ -1,7 +1,8 @@
 #ifndef CTRL_H
 #define CTRL_H
 
-#include "../Common.h"
+#include "../Common/Common.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -44,6 +45,7 @@ public:
 	void SetFullFilled();
 
 	static bool Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl);
+	static CCtrl* GetCtrl(CXMLNode& oNode, int nVersion);
 };
 }
 

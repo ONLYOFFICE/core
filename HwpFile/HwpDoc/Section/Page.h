@@ -2,6 +2,7 @@
 #define PAGE_H
 
 #include "../HWPStream.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -20,6 +21,7 @@ class CPage
 	int m_nMarginGutter;
 public:
 	CPage();
+	CPage(CXMLNode& oNode);
 
 	int GetWidth() const;
 	int GetHeight() const;

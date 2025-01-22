@@ -5,6 +5,7 @@
 #include "../HWPStream.h"
 #include "../HWPDocInfo.h"
 #include "HWPRecordNumbering.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -13,16 +14,17 @@ class CHWPRecordBullet : public CHWPRecord
 	CHWPDocInfo *m_pParent;
 
 	TNumbering m_oHeaderInfo;
-	wchar_t m_wchBulletChar;
+	HWP_CHAR m_chBulletChar;
 	int m_nBulletImage;
 
 	HWP_BYTE m_chBright;
 	HWP_BYTE m_chContrast;
 	HWP_BYTE m_chImageEffect;
 	HWP_STRING m_sBinItemRefID;
-	wchar_t m_wchCheckBulletChar;
+	HWP_CHAR m_chCheckBulletChar;
 public:
 	CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 };
 }
 

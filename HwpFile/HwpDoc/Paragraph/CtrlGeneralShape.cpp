@@ -12,6 +12,7 @@
 #include "CtrlShapeOle.h"
 #include "CtrlShapeVideo.h"
 #include "CtrlShapeTextArt.h"
+#include "CtrlCharacter.h"
 
 namespace HWP
 {
@@ -61,6 +62,123 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	InitData();
 }
 
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlObjElement(sCtrlID, oNode, nVersion)
+{
+	InitData();
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:lineShape" == oChild.GetName())
+		{
+			m_nLineColor = oChild.GetAttributeColor(L"color");
+			m_nLineThick = std::abs(oChild.GetAttributeInt(L"width"));
+			m_eLineStyle = GetLineStyle2(oChild.GetAttribute(L"style"));
+
+			HWP_STRING sType = oChild.GetAttribute(L"headStyle");
+
+			if (L"ARROW" == sType)
+				m_eLineHead = ELineArrowStyle::ARROW;
+			else if (L"SPEAR" == sType)
+				m_eLineHead = ELineArrowStyle::SPEAR;
+			else if (L"CONCAVE_ARROW" == sType)
+				m_eLineHead = ELineArrowStyle::CONCAVE_ARROW;
+			else if (L"EMPTY_DIAMOND" == sType)
+				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+			else if (L"EMPTY_CIRCLE" == sType)
+				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+			else if (L"EMPTY_BOX" == sType)
+				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+			else
+				m_eLineHead = ELineArrowStyle::NORMAL;
+
+			sType = oChild.GetAttribute(L"headSz");
+
+			if (L"SMALL_SMALL" == sType)
+				m_eLineHeadSz = ELineArrowSize::SMALL_SMALL;
+			else if (L"SMALL_MEDIUM" == sType)
+				m_eLineHeadSz = ELineArrowSize::SMALL_MEDIUM;
+			else if (L"SMALL_LARGE" == sType)
+				m_eLineHeadSz = ELineArrowSize::SMALL_LARGE;
+			else if (L"MEDIUM_SMALL" == sType)
+				m_eLineHeadSz = ELineArrowSize::MEDIUM_SMALL;
+			else if (L"MEDIUM_MEDIUM" == sType)
+				m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
+			else if (L"MEDIUM_LARGE" == sType)
+				m_eLineHeadSz = ELineArrowSize::MEDIUM_LARGE;
+			else if (L"LARGE_SMALL" == sType)
+				m_eLineHeadSz = ELineArrowSize::LARGE_SMALL;
+			else if (L"LARGE_MEDIUM" == sType)
+				m_eLineHeadSz = ELineArrowSize::LARGE_MEDIUM;
+			else if (L"LARGE_LARGE" == sType)
+				m_eLineHeadSz = ELineArrowSize::LARGE_LARGE;
+			else
+				m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
+
+			sType = oChild.GetAttribute(L"tailStyle");
+
+			if (L"ARROW" == sType)
+				m_eLineTail = ELineArrowStyle::ARROW;
+			else if (L"SPEAR" == sType)
+				m_eLineTail = ELineArrowStyle::SPEAR;
+			else if (L"CONCAVE_ARROW" == sType)
+				m_eLineTail = ELineArrowStyle::CONCAVE_ARROW;
+			else if (L"EMPTY_DIAMOND" == sType)
+				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+			else if (L"EMPTY_CIRCLE" == sType)
+				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+			else if (L"EMPTY_BOX" == sType)
+				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+			else
+				m_eLineTail = ELineArrowStyle::NORMAL;
+
+			sType = oChild.GetAttribute(L"tailSz");
+
+			if (L"SMALL_SMALL" == sType)
+				m_eLineTailSz = ELineArrowSize::SMALL_SMALL;
+			else if (L"SMALL_MEDIUM" == sType)
+				m_eLineTailSz = ELineArrowSize::SMALL_MEDIUM;
+			else if (L"SMALL_LARGE" == sType)
+				m_eLineTailSz = ELineArrowSize::SMALL_LARGE;
+			else if (L"MEDIUM_SMALL" == sType)
+				m_eLineTailSz = ELineArrowSize::MEDIUM_SMALL;
+			else if (L"MEDIUM_MEDIUM" == sType)
+				m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
+			else if (L"MEDIUM_LARGE" == sType)
+				m_eLineTailSz = ELineArrowSize::MEDIUM_LARGE;
+			else if (L"LARGE_SMALL" == sType)
+				m_eLineTailSz = ELineArrowSize::LARGE_SMALL;
+			else if (L"LARGE_MEDIUM" == sType)
+				m_eLineTailSz = ELineArrowSize::LARGE_MEDIUM;
+			else if (L"LARGE_LARGE" == sType)
+				m_eLineTailSz = ELineArrowSize::LARGE_LARGE;
+			else
+				m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
+		}
+		else if (L"hc:fillBrush" ==  oChild.GetName())
+			m_pFill = new CFill(oChild);
+		else if (L"hp:drawText" == oChild.GetName())
+		{
+			m_nMaxTxtWidth = oChild.GetAttributeInt(L"lastWidth");
+
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			{
+				if (L"hp:textMargin" == oGrandChild.GetName())
+				{
+					m_shLeftSpace = oGrandChild.GetAttributeInt(L"left");
+					m_shRightSpace = oGrandChild.GetAttributeInt(L"right");
+					m_shTopSpace = oGrandChild.GetAttributeInt(L"top");
+					m_shBottomSpace = oGrandChild.GetAttributeInt(L"bottom");
+				}
+				else if (L"hp:subList" == oGrandChild.GetName())
+				{
+					ReadSubList(oGrandChild, nVersion);
+				}
+			}
+		}
+	}
+}
+
 CCtrlGeneralShape::~CCtrlGeneralShape()
 {
 	if (nullptr != m_pFill && 0 == m_pFill->Release())
@@ -81,6 +199,32 @@ void CCtrlGeneralShape::InitData()
 {
 	m_eLineStyle = ELineStyle2::NONE;
 	m_pFill = nullptr;
+}
+
+void CCtrlGeneralShape::ReadSubList(CXMLNode& oNode, int nVersion)
+{
+	m_eTextVerAlign = GetVertAlign(oNode.ReadAttributeInt(L"vertAlign"));
+
+	std::vector<CXMLNode> arChilds{oNode.GetChilds()};
+
+	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
+	{
+		CHWPPargraph* pLatestParagraph = nullptr;
+
+		if (L"hp:p" == arChilds[unIndex].GetName())
+		{
+			CHWPPargraph* pParagraph = new CHWPPargraph(arChilds[unIndex], nVersion);
+
+			if (nullptr == pParagraph)
+				continue;
+
+			m_arParas.push_back(pParagraph);
+			pLatestParagraph = pParagraph;
+		}
+
+		if (nullptr != pLatestParagraph && 0 != pLatestParagraph->GetCountCtrls() && ECtrlObjectType::ParaText == pLatestParagraph->GetCtrls().back()->GetCtrlType() && unIndex < arChilds.size() - 1)
+			pLatestParagraph->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+	}
 }
 
 void CCtrlGeneralShape::SetParent(CHWPPargraph* pParent)

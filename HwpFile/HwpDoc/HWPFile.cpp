@@ -1,39 +1,43 @@
-#include "HWPFile_Private.h"
+#include "HWPFile.h"
 #include "HWPDocInfo.h"
 
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
 
-#include <regex>
-
 #define DEFAULT_BUFFER_SIZE 8096
 
 namespace HWP
 {
-CHWPFile_Private::CHWPFile_Private(const HWP_STRING& sFileName)
+CHWPFile::CHWPFile(const HWP_STRING& sFileName)
 	: m_sFileName(sFileName), m_oOleFile(sFileName), m_oDocInfo(this)
 {}
 
-CHWPFile_Private::~CHWPFile_Private()
+CHWPFile::~CHWPFile()
 {
+	Close();
+
 	CLEAR_ARRAY(CHWPSection, m_arBodyTexts);
 	CLEAR_ARRAY(CHWPSection, m_arViewTexts);
 }
 
-VECTOR<CHWPSection*> CHWPFile_Private::GetSections()
+std::vector<const CHWPSection*> CHWPFile::GetSections()
 {
 	if (m_oFileHeader.Distributable())
-		return m_arViewTexts;
+	{
+		RETURN_VECTOR_CONST_PTR(CHWPSection, m_arViewTexts);
+	}
 	else
-		return m_arBodyTexts;
+	{
+		RETURN_VECTOR_CONST_PTR(CHWPSection, m_arBodyTexts);
+	}
 }
 
-const CCompoundFile* CHWPFile_Private::GetOleFile() const
+const CCompoundFile* CHWPFile::GetOleFile() const
 {
 	return &m_oOleFile;
 }
 
-bool CHWPFile_Private::Detect()
+bool CHWPFile::Detect()
 {
 	// read CompoundFile structure
 	if (!m_oOleFile.Open() || !GetFileHeader())
@@ -45,7 +49,7 @@ bool CHWPFile_Private::Detect()
 	return true;
 }
 
-bool CHWPFile_Private::Open()
+bool CHWPFile::Open()
 {
 	if ((m_oFileHeader.SignatureEmpty() || m_oFileHeader.VersionEmpty()) && !Detect())
 		return false;
@@ -69,20 +73,12 @@ bool CHWPFile_Private::Open()
 	return true;
 }
 
-void CHWPFile_Private::Close()
+void CHWPFile::Close()
 {
 	m_oOleFile.Close();
 }
 
-void CHWPFile_Private::SaveHWPComponent()
-{
-	ECompressed eCompressed = m_oFileHeader.Compressed() ? ECompressed::COMPRESS : ECompressed::NO_COMPRESS;
-
-	// Save internal component for debugging purpose.
-	// TODO:: перенести
-}
-
-bool CHWPFile_Private::GetFileHeader()
+bool CHWPFile::GetFileHeader()
 {
 	CHWPStream oBuffer;
 	if (!GetComponent(L"FileHeader", oBuffer))
@@ -91,12 +87,12 @@ bool CHWPFile_Private::GetFileHeader()
 	return m_oFileHeader.Parse(oBuffer);
 }
 
-const CHWPDocInfo* CHWPFile_Private::GetDocInfo() const
+const CHWPDocInfo* CHWPFile::GetDocInfo() const
 {
 	return &m_oDocInfo;
 }
 
-bool CHWPFile_Private::GetDocInfo(int nVersion)
+bool CHWPFile::GetDocInfo(int nVersion)
 {
 	CHWPStream oBuffer;
 	if (m_oFileHeader.Compressed())
@@ -115,40 +111,40 @@ bool CHWPFile_Private::GetDocInfo(int nVersion)
 	return m_oDocInfo.Parse(oBuffer, m_nVersion);
 }
 
-bool CHWPFile_Private::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
+bool CHWPFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	return m_oOleFile.GetComponent(sEntryName, oBuffer);
 }
 
 //TODO:: написанно, что данные методы используются только для отображения в LibbreOffice
 // проверить и если нужны будут, то реализовать
-VECTOR<CDirectoryEntry*> CHWPFile_Private::GetBinData()
+VECTOR<CDirectoryEntry*> CHWPFile::GetBinData()
 {
 	return VECTOR<CDirectoryEntry*>();
 }
 
-void CHWPFile_Private::SetBinData(const std::vector<CDirectoryEntry*>& arBinData)
+void CHWPFile::SetBinData(const std::vector<CDirectoryEntry*>& arBinData)
 {
 
 }
 
-VECTOR<CHWPPargraph*> CHWPFile_Private::GetParas()
+VECTOR<CHWPPargraph*> CHWPFile::GetParas()
 {
 	return VECTOR<CHWPPargraph*>();
 }
 
-void CHWPFile_Private::AddParas(const std::vector<CHWPPargraph*>& arParas)
+void CHWPFile::AddParas(const std::vector<CHWPPargraph*>& arParas)
 {
 
 }
 //------------
 
-void CHWPFile_Private::SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed)
+void CHWPFile::SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed)
 {
 	// TODO:: перенести
 }
 
-CDirectoryEntry* CHWPFile_Private::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
+CDirectoryEntry* CHWPFile::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
 {
 	for (CDirectoryEntry* pEntry : m_oOleFile.GetChildEntries(&oBaseEntry))
 	{
@@ -168,13 +164,13 @@ CDirectoryEntry* CHWPFile_Private::FindChildEntry(const HWP_STRING& sBasePath, c
 	return nullptr;
 }
 
-HWP_STRING CHWPFile_Private::SaveChildEntry(const HWP_STRING& sRootPath, const HWP_STRING& sEntryName, ECompressed eCompressed)
+HWP_STRING CHWPFile::SaveChildEntry(const HWP_STRING& sRootPath, const HWP_STRING& sEntryName, ECompressed eCompressed)
 {
 	//TODO:: перенести
 	return HWP_STRING();
 }
 
-bool CHWPFile_Private::GetChildStream(const HWP_STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer)
+bool CHWPFile::GetChildStream(const HWP_STRING& sEntryName, ECompressed eCompressed, CHWPStream& oBuffer)
 {
 	// HWP_STRING sRegexStr = L".*" + HWP_STRING(FILE_SEPARATOR_STR) + L"([" + HWP_STRING(FILE_SEPARATOR_STR) + L"]+)$";
 
@@ -222,7 +218,7 @@ bool CHWPFile_Private::GetChildStream(const HWP_STRING& sEntryName, ECompressed 
 	return false;
 }
 
-bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
+bool CHWPFile::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 {
 	unsigned char* pInBuffer = new(std::nothrow) unsigned char[DEFAULT_BUFFER_SIZE];
 
@@ -307,13 +303,13 @@ bool CHWPFile_Private::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 	return DEFLATE_OK == nRes || DEFLATE_STREAM_END == nRes;
 }
 
-bool CHWPFile_Private::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
+bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 {
 	int nHeader;
 	oInput.ReadInt(nHeader);
 
 	int nTagNum = nHeader & 0x3FF; // 10 bits (0 - 9 bit)
-	int nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
+	// int nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
 	int nSize = (nHeader & 0xFFF00000) >> 20; // 12 bits (20-31 bit)
 
 	EHWPTag eTag = GetTagFromNum(nTagNum);
@@ -328,7 +324,7 @@ bool CHWPFile_Private::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	return false;
 }
 
-bool CHWPFile_Private::GetBodyText(int nVersion)
+bool CHWPFile::GetBodyText(int nVersion)
 {
 	VECTOR<CDirectoryEntry*> arSections{m_oOleFile.GetChildEntries(L"BodyText")};
 
@@ -353,7 +349,7 @@ bool CHWPFile_Private::GetBodyText(int nVersion)
 	return true;
 }
 
-bool CHWPFile_Private::GetViewText(int nVersion)
+bool CHWPFile::GetViewText(int nVersion)
 {
 	VECTOR<CDirectoryEntry*> arSections{m_oOleFile.GetChildEntries(L"ViewText")};
 

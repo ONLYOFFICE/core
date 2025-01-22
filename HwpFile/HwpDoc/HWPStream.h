@@ -2,8 +2,7 @@
 #define HWPSTREAM_H
 
 #include <stack>
-#include <string>
-#include "Common.h"
+#include "Common/Common.h"
 
 namespace HWP
 {
@@ -27,6 +26,8 @@ public:
 	CHWPStream(unsigned long ulSize);
 	CHWPStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 	~CHWPStream();
+
+	void Clear();
 
 	void SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 

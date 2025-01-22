@@ -1,5 +1,12 @@
 #include "Ctrl.h"
 
+#include "CtrlColumnDef.h"
+#include "CtrlAutoNumber.h"
+#include "CtrlHeadFoot.h"
+#include "CtrlNewNumber.h"
+#include "CtrlNote.h"
+#include "CtrlPageNumPos.h"
+
 namespace HWP
 {
 CCtrl::CCtrl()
@@ -40,5 +47,27 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 
 	return pFirstCtrl->m_sCtrlID == pSecondCtrl->m_sCtrlID &&
 	       pFirstCtrl->m_bFullFilled == pSecondCtrl->m_bFullFilled;
+}
+
+CCtrl* CCtrl::GetCtrl(CXMLNode& oNode, int nVersion)
+{
+	if (L"hp:colPr" == oNode.GetName())
+		return new CCtrlColumnDef(L"dloc", oNode, nVersion);
+	else if (L"hp:header" == oNode.GetName())
+		return new CCtrlHeadFoot(L"daeh", oNode, nVersion);
+	else if (L"hp:footer" == oNode.GetName())
+		return new CCtrlHeadFoot(L"toof", oNode, nVersion);
+	else if (L"hp:footNote" == oNode.GetName())
+		return new CCtrlNote(L"  nf", oNode, nVersion);
+	else if (L"hp:endNote" == oNode.GetName())
+		return new CCtrlNote(L"  ne", oNode, nVersion);
+	else if (L"hp:autoNum" == oNode.GetName())
+		return new CCtrlAutoNumber(L"onta", oNode, nVersion);
+	else if (L"hp:newNum" == oNode.GetName())
+		return new CCtrlNewNumber(L"onwn", oNode, nVersion);
+	else if (L"hp:pageNum" == oNode.GetName())
+		return new CCtrlPageNumPos(L"pngp", oNode, nVersion);
+
+	return nullptr;
 }
 }

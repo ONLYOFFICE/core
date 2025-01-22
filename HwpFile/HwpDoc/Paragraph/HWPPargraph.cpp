@@ -1,11 +1,67 @@
 #include "HWPPargraph.h"
 #include <algorithm>
 
+#include "CtrlCharacter.h"
+#include "CtrlSectionDef.h"
+#include "CtrlContainer.h"
+#include "CtrlShapePic.h"
+#include "CtrlTable.h"
+#include "CtrlEqEdit.h"
+#include "CtrlShapeArc.h"
+#include "CtrlShapeConnectLine.h"
+#include "CtrlShapeCurve.h"
+#include "CtrlShapeEllipse.h"
+#include "CtrlShapeLine.h"
+#include "CtrlShapeOle.h"
+#include "CtrlShapePolygon.h"
+#include "CtrlShapeRect.h"
+#include "CtrlShapeTextArt.h"
+#include "CtrlShapeVideo.h"
+#include "ParaText.h"
+
 namespace HWP
 {
 CHWPPargraph::CHWPPargraph()
 	: m_pLineSegs(nullptr)
 {}
+
+CHWPPargraph::CHWPPargraph(CXMLNode& oNode, int nVersion)
+	: m_chBreakType(0), m_pLineSegs(nullptr)
+{
+	m_shParaShapeID = oNode.GetAttributeInt(L"paraPrIDRef");
+	m_shParaStyleID = oNode.GetAttributeInt(L"styleIDRef");
+
+	if (oNode.GetAttributeBool(L"pageBreak"))
+		m_chBreakType |= 0b00000100;
+	else
+		m_chBreakType &= 0b11111011;
+
+	if (oNode.GetAttributeBool(L"columnBreak"))
+		m_chBreakType |= 0b00001000;
+	else
+		m_chBreakType &= 0b11110111;
+
+	int nCharShapeID = 0;
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:run" == oChild.GetName())
+		{
+			nCharShapeID = oChild.GetAttributeInt(L"charPrIDRef");
+
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
+				ParseHWPParagraph(oGrandChild, nCharShapeID, nVersion);
+		}
+		else if (L"hp:linesegarray" == oChild.GetName())
+		{
+			CXMLNode oGrandChild{oChild.GetChild(L"hp:lineseg")};
+			m_pLineSegs = new CLineSeg(oGrandChild, nVersion);
+		}
+	}
+
+	if (m_arP.empty() || ECtrlObjectType::Character != m_arP.back()->GetCtrlType())
+		m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+}
 
 CHWPPargraph::~CHWPPargraph()
 {
@@ -14,6 +70,85 @@ CHWPPargraph::~CHWPPargraph()
 
 	CLEAR_ARRAY(TRangeTag, m_arRangeTags);
 }
+
+bool CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion)
+{
+	const size_t unCurrentParaCount = m_arP.size();
+
+	if (L"hp:secPr" == oNode.GetName())
+		m_arP.push_back(new CCtrlSectionDef(L"dces", oNode, nVersion));
+	else if (L"hp:ctrl" == oNode.GetName())
+	{
+		for(CXMLNode& oChild : oNode.GetChilds())
+			m_arP.push_back(CCtrl::GetCtrl(oChild, nVersion));
+	}
+	else if (L"hp:t" == oNode.GetName())
+	{
+		m_arP.push_back(new CParaText(L"____", oNode.GetText(), 0, nCharShapeID));
+
+		for(CXMLNode& oChild : oNode.GetChilds())
+		{
+			if (L"hp:lineBreak" == oChild.GetName())
+				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
+			else if (L"hp:hyphen" == oChild.GetName())
+				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
+			else if (L"hp:nbSpace" == oChild.GetName()||
+			         L"hp:fwSpace" == oChild.GetName())
+				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
+			else if (L"hp:tab" == oChild.GetName())
+				m_arP.push_back(new CParaText(L"____", L"\t", 0));
+		}
+	}
+	else if (L"hp:tbl" == oNode.GetName())
+		m_arP.push_back(new CCtrlTable(L" lbt", oNode, nVersion));
+	else if (L"hp:pic" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapePic(L"cip$", oNode, nVersion));
+	else if (L"hp:container" == oNode.GetName())
+		m_arP.push_back(new CCtrlContainer(L"noc$", oNode, nVersion));
+	else if (L"hp:ole" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeOle(L"elo$", oNode, nVersion));
+	else if (L"hp:equation" == oNode.GetName())
+		m_arP.push_back(new CCtrlEqEdit(L"deqe", oNode, nVersion));
+	else if (L"hp:line" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeLine(L"nil$", oNode, nVersion));
+	else if (L"hp:rect" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeRect(L"cer$", oNode, nVersion));
+	else if (L"hp:ellipse" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeEllipse(L"lle$", oNode, nVersion));
+	else if (L"hp:arc" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeArc(L"cra$", oNode, nVersion));
+	else if (L"hp:polygon" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapePolygon(L"lop$", oNode, nVersion));
+	else if (L"hp:curve" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeCurve(L"ruc$", oNode, nVersion));
+	else if (L"hp:connectLine" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeConnectLine(L"loc$", oNode, nVersion));
+	else if (L"hp:textart" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oNode, nVersion));
+	else if (L"hp:video" == oNode.GetName())
+		m_arP.push_back(new CCtrlShapeVideo(L"div$", oNode, nVersion));
+
+	if (unCurrentParaCount != m_arP.size())
+		return true;
+
+	if (L"hp:switch" == oNode.GetName())
+	{
+		for (CXMLNode& oCaseChild : oNode.GetChilds(L"hp:case"))
+		{
+			for (CXMLNode& oChild : oCaseChild.GetChilds())
+				if (ParseHWPParagraph(oChild, nCharShapeID, nVersion))
+					return true;
+		}
+
+		CXMLNode oDefaultChild{oNode.GetChild(L"hp:default")};
+		for (CXMLNode& oChild : oDefaultChild.GetChilds())
+			if (ParseHWPParagraph(oChild, nCharShapeID, nVersion))
+				return true;
+	}
+
+	return false;
+}
+
 
 EParagraphType CHWPPargraph::GetType() const
 {
@@ -65,12 +200,7 @@ VECTOR<CCtrl*>& CHWPPargraph::GetCtrls()
 
 std::vector<const CCtrl*> CHWPPargraph::GetCtrls() const
 {
-	std::vector<const CCtrl*> arParagraphs(m_arP.size());
-
-	for (unsigned int unIndex = 0; unIndex < m_arP.size(); ++unIndex)
-		arParagraphs[unIndex] = dynamic_cast<const CCtrl*>(m_arP[unIndex]);
-
-	return arParagraphs;
+	RETURN_VECTOR_CONST_PTR(CCtrl, m_arP);
 }
 
 unsigned int CHWPPargraph::GetCountCtrls() const

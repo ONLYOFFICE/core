@@ -1,8 +1,9 @@
 #include "HWPRecordBinData.h"
 
-#include "../HWPFile_Private.h"
+#include "../HWPFile.h"
 
 #include <iomanip>
+#include <regex>
 #include <sstream>
 
 namespace HWP
@@ -11,10 +12,9 @@ ECompressed GetCompressed(int nValue)
 {
 	SWITCH(ECompressed, nValue)
 	{
-		CASE(ECompressed::FOLLOW_STORAGE);
+		DEFAULT(ECompressed::FOLLOW_STORAGE);
 		CASE(ECompressed::COMPRESS);
 		CASE(ECompressed::NO_COMPRESS);
-		DEFAULT(ECompressed::UNKNOWN);
 	}
 }
 
@@ -22,22 +22,21 @@ EType GetType(int nValue)
 {
 	SWITCH(EType, nValue)
 	{
-		CASE(EType::LINK);
+		DEFAULT(EType::LINK);
 		CASE(EType::EMBEDDING);
 		CASE(EType::STORAGE);
-		DEFAULT(EType::UNKNOWN);
 	}
 }
+
 
 EState GetState(int nValue)
 {
 	SWITCH(EState, nValue)
 	{
-		CASE(EState::NEVER_ACCESSED);
+		DEFAULT(EState::NEVER_ACCESSED);
 		CASE(EState::FOUND_FILE_BY_ACCESS);
 		CASE(EState::ACCESS_FAILED);
 		CASE(EState::LINK_ACCESS_IGNORED);
-		DEFAULT(EState::UNKNOWN);
 	}
 }
 
@@ -79,6 +78,37 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	}
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+}
+
+CHWPRecordBinData::CHWPRecordBinData(CXMLNode& oNode, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
+{
+	m_sItemID = oNode.GetAttribute(L"id");
+
+	HWP_STRING sType = oNode.GetAttribute(L"isEmbeded");
+
+	if (L"0" == sType)
+	{
+		m_eType = EType::LINK;
+
+		m_sAPath = oNode.GetAttribute(L"sub-path");
+
+		if (m_sAPath.empty())
+			m_sAPath = oNode.GetAttribute(L"href");
+	}
+	else if (L"1" == sType)
+	{
+		m_eType = EType::EMBEDDING;
+		m_sAPath = oNode.GetAttribute(L"href");
+	}
+	else
+		m_sAPath = oNode.GetAttribute(L"href");
+
+	m_sFormat = oNode.GetAttribute(L"media-type");
+
+	std::wregex oRegex(L"image/(.*)");
+
+	m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
 }
 
 HWP_STRING CHWPRecordBinData::GetPath() const

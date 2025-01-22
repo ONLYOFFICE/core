@@ -1,5 +1,5 @@
 #include "HWPRecordIDMaping.h"
-#include "../HWPFile_Private.h"
+#include "../HWPFile.h"
 #include "../OLEdoc/CompoundFile.h"
 
 namespace HWP

@@ -60,6 +60,19 @@ bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
 	return true;
 }
 
+bool CHwpFileHeader::Parse(CXMLNode& oNode)
+{
+	if (!oNode.IsValid())
+		return false;
+
+	m_sVersion += oNode.GetAttribute(L"major");
+	m_sVersion += oNode.GetAttribute(L"minor");
+	m_sVersion += oNode.GetAttribute(L"micro");
+	m_sVersion += oNode.GetAttribute(L"buildNumber");
+
+	return true;
+}
+
 bool CHwpFileHeader::Compressed() const
 {
 	return m_bCompressed;

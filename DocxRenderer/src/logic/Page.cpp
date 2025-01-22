@@ -1917,6 +1917,11 @@ namespace NSDocxRenderer
 		{
 			Point p {};
 			std::vector<Point> lines {};
+			Crossing(const Point& _p, const std::vector<Point>& _lines)
+			{
+				p = _p;
+				lines = _lines;
+			}
 		};
 		std::vector<Crossing> crossings;
 		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {

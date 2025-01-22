@@ -234,69 +234,49 @@ namespace NSDocxRenderer
 
 	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves) noexcept
 	{
-		//note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-		if ((m_bIsNoStroke && m_bIsNoFill) ||
-			(m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
-		{
+		if ((m_bIsNoStroke && m_bIsNoFill) || (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
 			m_eGraphicsType = eGraphicsType::gtNoGraphics;
-		}
 		else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
 		{
 			m_eGraphicsType = eGraphicsType::gtRectangle;
-
 			if (dHeight < 0.7)
 			{
-				if (dWidth > 2.0) //note длинное тире - 2.8mm у times new roman
-				{
+				if (dWidth > 2.0) // длинное тире - 2.8mm у times new roman
 					m_eSimpleLineType = eSimpleLineType::sltHLongDash;
-				}
-				else if (dWidth > 0.7) //минимальное тире - 0.75mm у dotDotDash
-				{
+				else if (dWidth > 0.7) // минимальное тире - 0.75mm у dotDotDash
 					m_eSimpleLineType = eSimpleLineType::sltHDash;
-				}
-				else //максимальная точка - 0.5mm
-				{
-					m_eSimpleLineType = eSimpleLineType::sltHDot;
-				}
+				else
+					m_eSimpleLineType = eSimpleLineType::sltHDot; // максимальная точка - 0.5mm
 			}
 			else if (dWidth < 0.7)
 			{
-				if (dHeight > 2.0) //note длинное тире - 2.8mm у times new roman
-				{
+				if (dHeight > 2.0) // длинное тире - 2.8mm у times new roman
 					m_eSimpleLineType = eSimpleLineType::sltVLongDash;
-				}
-				else if (dHeight > 0.7) //минимальное тире - 0.75mm у dotDotDash
-				{
+				else if (dHeight > 0.7) // минимальное тире - 0.75mm у dotDotDash
 					m_eSimpleLineType = eSimpleLineType::sltVDash;
-				}
-				else //максимальна точка - 0.5mm
-				{
-					m_eSimpleLineType = eSimpleLineType::sltVDot;
-				}
+				else
+					m_eSimpleLineType = eSimpleLineType::sltVDot; // максимальна точка - 0.5mm
 			}
 		}
-		else if (nCurves > 0 &&  nPeacks <= 1) //1 move
+		else if (nCurves > 0 &&  nPeacks <= 1) // 1 move
 		{
 			m_eGraphicsType = eGraphicsType::gtCurve;
 			if (dHeight < dWidth)
-			{
 				m_eSimpleLineType = eSimpleLineType::sltHWave;
-			}
 			else
-			{
 				m_eSimpleLineType = eSimpleLineType::sltVWave;
-			}
 		}
 		else if (nCurves > 0 &&  nPeacks > 1)
-		{
 			m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
-		}
 	}
 
 	bool CShape::IsItFitLine() const noexcept
 	{
-		return (m_eGraphicsType == eGraphicsType::gtRectangle && (m_eSimpleLineType == eSimpleLineType::sltHDot || m_eSimpleLineType == eSimpleLineType::sltHDash || m_eSimpleLineType == eSimpleLineType::sltHLongDash)) ||
-			   (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltHWave);
+		return (m_eGraphicsType == eGraphicsType::gtRectangle && (
+		            m_eSimpleLineType == eSimpleLineType::sltHDot ||
+		            m_eSimpleLineType == eSimpleLineType::sltHDash ||
+		            m_eSimpleLineType == eSimpleLineType::sltHLongDash)) ||
+		        (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltHWave);
 	}
 
 	bool CShape::IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept
@@ -323,7 +303,7 @@ namespace NSDocxRenderer
 
 	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape)
 	{
-		if(!pFirstShape)
+		if (!pFirstShape)
 			return;
 
 		if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
@@ -338,103 +318,68 @@ namespace NSDocxRenderer
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
-			fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) // линия должна быть одного размера по высоте
+		    fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
+			return; // линия должна быть одного размера по высоте
+		}
+
+		auto set_line_type = [] (std::shared_ptr<CShape>& master, std::shared_ptr<CShape>& slave, eLineType type) {
+			master->m_eLineType = type;
+			master->RecalcWithNewItem(slave.get());
+			master->m_oVector.Join(std::move(slave->m_oVector));
+			slave = nullptr;
+		};
+
+		// проверка на двойную линию
+		if (pFirstShape->m_eLineType == eLineType::ltDouble)
+		{
+			if (pFirstShape->m_dTop < pSecondShape->m_dTop)
+				set_line_type(pFirstShape, pSecondShape, eLineType::ltDouble);
+			else
+				set_line_type(pSecondShape, pFirstShape, eLineType::ltDouble);
+
+			return;
+		}
+		if (pFirstShape->m_eLineType == eLineType::ltWavyDouble)
+		{
+			if (pFirstShape->m_dTop < pSecondShape->m_dTop)
+				set_line_type(pFirstShape, pSecondShape, eLineType::ltWavyDouble);
+			else
+				set_line_type(pSecondShape, pFirstShape, eLineType::ltWavyDouble);
+
 			return;
 		}
 
-		// проверка на двойную линию
-		if (pFirstShape->m_eLineType == eLineType::ltDouble || pFirstShape->m_eLineType == eLineType::ltWavyDouble)
-		{
-			if (pFirstShape->m_eLineType == eLineType::ltDouble)
-			{
-				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
-				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
-			}
-			else if (pFirstShape->m_eLineType == eLineType::ltWavyDouble)
-			{
-				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
-				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
-			}
-			return;
-		}
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
 				 fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
 				 fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
-			//Условие первого определения
+			// условие первого определения
 			if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
 			{
 				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
+					set_line_type(pFirstShape, pSecondShape, eLineType::ltDouble);
 				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
+					set_line_type(pSecondShape, pFirstShape, eLineType::ltDouble);
 			}
 			else if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 			{
 				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
+					set_line_type(pFirstShape, pSecondShape, eLineType::ltWavyDouble);
 				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
+					set_line_type(pSecondShape, pFirstShape, eLineType::ltWavyDouble);
 			}
 			return;
 		}
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
-		{
-			// все должно быть на одной линии
-			return;
-		}
+			return; // все должно быть на одной линии
 
 		// теперь считаем, что графика находится на одной линии
-		if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
+		// расстояние между объектами на одной линии должно быть небольшим
+		if (fabs(pFirstShape->m_dLeft + pFirstShape->m_dWidth - pSecondShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
 		{
-			// расстояние между объектами на одной линии должно быть небольшим
 			if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
-				pFirstShape->m_eLineType =pFirstShape-> m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+				pFirstShape->m_eLineType = pFirstShape-> m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
 
 			else if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
@@ -1072,6 +1017,4 @@ namespace NSDocxRenderer
 		}
 		oWriter.WriteString(L"</p:sp>");
 	}
-
-
 }; // namespace NSDocxRenderer

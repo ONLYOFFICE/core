@@ -1,4 +1,7 @@
 #pragma once
+
+#include <map>
+
 #include "../../../../DesktopEditor/common/CalculatorCRC32.h"
 
 #include "ExternalImageStorage.h"

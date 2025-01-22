@@ -1,6 +1,7 @@
 #include "Page.h"
 
 #include <memory>
+#include <map>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
@@ -54,10 +55,13 @@ namespace NSDocxRenderer
 		m_oEdgeText.SetDefaultParams();
 		m_oTransform.Reset();
 
+		m_oHorVerLinesCollector.Clear();
 		m_arConts.clear();
 		m_arTextLines.clear();
 		m_arDiacriticalSymbols.clear();
 		m_arShapes.clear();
+		m_arParagraphs.clear();
+		m_arTables.clear();
 		m_arOutputObjects.clear();
 		m_oCurrVectorGraphics.Clear();
 		m_oClipVectorGraphics.Clear();
@@ -169,7 +173,7 @@ namespace NSDocxRenderer
 		// save default image vector before clip to calc blipFill
 		auto image_vector = m_oCurrVectorGraphics;
 
-		auto set_fill_mode = [this, lType, &transform_det] (std::shared_ptr<CShape> s) {
+		auto set_fill_mode = [this, lType, &transform_det] (shape_ptr_t s) {
 			if (lType & c_nStroke)
 			{
 				s->m_bIsNoStroke = false;
@@ -349,7 +353,8 @@ namespace NSDocxRenderer
 			m_oFont.Size *= ((m_oTransform.sx() + m_oTransform.sy()) / 2);
 			m_bIsRecalcFontSize = false;
 		}
-		m_oManagers.pFontManager->LoadFontByFile(m_oFont);
+		if (!m_oManagers.pFontManager->LoadFontByFile(m_oFont))
+			return;
 
 		double _x = 0;
 		double _y = 0;
@@ -387,34 +392,29 @@ namespace NSDocxRenderer
 
 	void CPage::Analyze()
 	{
-		m_arConts = std::move(m_oContBuilder.GetConts());
+		// building objects from symbols
+		m_arConts = m_oContBuilder.GetConts();
+		m_arDiacriticalSymbols = MoveDiacriticalSymbols();
+		m_arTextLines = BuildTextLines();
 
-		// analyze shapes (get type of lines etc)
+		// analyzing data. can take shapes and set them to nullptr
 		AnalyzeShapes();
-
-		// build m_arDiacriticalSymbols
-		BuildDiacriticalSymbols();
-
-		// build text lines from m_arConts
-		BuildTextLines();
-
-		// analyze text lines and conts inside
 		AnalyzeTextLines();
 
-		// merge conts in text lines
-		MergeConts();
+		// building final objects
+		m_arParagraphs = BuildParagraphs();
 
-		// build paragraphs from m_arTextLines
-		BuildParagraphes();
+		// if (m_bIsBuildTables)
+		// 	m_arTables = BuildTables();
 
-		// calc sizes on selected fonts for m_arConts
+		// post analyze
 		CalcSelected();
-
-		// merge shapes
 		MergeShapes();
-
-		// calc shapes paths with no rotation to write
 		CalcShapesRotation();
+
+		m_arOutputObjects = BuildOutputObjects();
+		// for (auto& t : m_arTables)
+		// 	m_arOutputObjects.push_back(t);
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -422,10 +422,47 @@ namespace NSDocxRenderer
 		ToXml(oWriter);
 		WriteSectionToFile(bIsLastPage, oWriter);
 	}
+
+	std::vector<std::wstring> CPage::GetXmlShapes()
+	{
+		std::vector<std::wstring> xml_shapes;
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape) continue;
+			auto writer = new NSStringUtils::CStringBuilder();
+			shape->ToXml(*writer);
+			xml_shapes.push_back(writer->GetData());
+			delete writer;
+		}
+		if (!m_arCompleteObjectsXml.empty())
+			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+
+		return xml_shapes;
+	}
+	std::vector<std::wstring> CPage::GetXmlShapesPptx()
+	{
+		ReorderShapesForPptx();
+
+		std::vector<std::wstring> xml_shapes;
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape) continue;
+			auto writer = new NSStringUtils::CStringBuilder();
+			shape->ToXmlPptx(*writer);
+			xml_shapes.push_back(writer->GetData());
+			delete writer;
+		}
+		if (!m_arCompleteObjectsXml.empty())
+			xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+
+		return xml_shapes;
+	}
+	void CPage::AddCompleteXml(const std::wstring oXml)
+	{
+		m_arCompleteObjectsXml.push_back(oXml);
+	}
 	void CPage::ReorderShapesForPptx()
 	{
-		using shape_ptr_t = std::shared_ptr<CShape>;
-
 		// переместим nullptr в конец и удалим
 		auto right = MoveNullptr(m_arShapes.begin(), m_arShapes.end());
 		m_arShapes.erase(right, m_arShapes.end());
@@ -437,22 +474,20 @@ namespace NSDocxRenderer
 		});
 	}
 
-	void CPage::BuildDiacriticalSymbols()
+	std::vector<CPage::cont_ptr_t> CPage::MoveDiacriticalSymbols()
 	{
-		for (size_t i = 0; i < m_arConts.size(); i++)
-		{
-			if (m_arConts[i] && m_arConts[i]->GetText().length() == 1)
-			{
-				const auto& text = m_arConts[i]->GetText();
-				if (CContText::IsUnicodeDiacriticalMark(text.at(0)))
-					m_arDiacriticalSymbols.push_back(std::move(m_arConts[i]));
-			}
-		}
+		std::vector<cont_ptr_t> diac_symbols;
+		for (auto& cont : m_arConts)
+			if (cont && cont->IsDiacritical())
+				diac_symbols.push_back(std::move(cont));
+		return diac_symbols;
 	}
 
-	void CPage::BuildTextLines()
+	std::vector<CPage::line_ptr_t> CPage::BuildTextLines()
 	{
-		std::shared_ptr<CTextLine> curr_line = nullptr;
+		line_ptr_t curr_line = nullptr;
+		std::vector<line_ptr_t> text_lines;
+
 		for (auto& cont : m_arConts)
 		{
 			if (!cont)
@@ -465,11 +500,11 @@ namespace NSDocxRenderer
 			}
 
 			bool skip = false;
-			for (size_t i = 0; i < m_arTextLines.size(); ++i)
+			for (size_t i = 0; i < text_lines.size(); ++i)
 			{
-				if (fabs(m_arTextLines[i]->m_dBaselinePos - cont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(text_lines[i]->m_dBaselinePos - cont->m_dBaselinePos) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
 				{
-					curr_line = m_arTextLines[i];
+					curr_line = text_lines[i];
 					cont->m_bPossibleSplit = true;
 					curr_line->AddCont(cont);
 					skip = true;
@@ -481,13 +516,13 @@ namespace NSDocxRenderer
 
 			curr_line = std::make_shared<CTextLine>();
 			curr_line->AddCont(cont);
-			m_arTextLines.push_back(curr_line);
+			text_lines.push_back(curr_line);
 		}
 
-		for (size_t i = 0; i < m_arTextLines.size(); i++)
+		for (size_t i = 0; i < text_lines.size(); i++)
 		{
 			bool only_spaces = true;
-			for (auto& cont : m_arTextLines[i]->m_arConts)
+			for (auto& cont : text_lines[i]->m_arConts)
 			{
 				if (!cont->IsOnlySpaces())
 				{
@@ -496,8 +531,9 @@ namespace NSDocxRenderer
 				}
 			}
 			if (only_spaces)
-				m_arTextLines.erase(m_arTextLines.begin() + i, m_arTextLines.begin() + i + 1);
+				text_lines.erase(text_lines.begin() + i, text_lines.begin() + i + 1);
 		}
+		return text_lines;
 	}
 
 	void CPage::MergeShapes()
@@ -505,14 +541,13 @@ namespace NSDocxRenderer
 		if (m_arShapes.empty())
 			return;
 
-		using shape_ptr_t = std::shared_ptr<CShape>;
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
 			if (!a) return false;
 			if (!b) return true;
 			return a->m_nOrder < b->m_nOrder;
 		});
 
-		using shape_ref_ptr_t = std::reference_wrapper<std::shared_ptr<CShape>>;
+		using shape_ref_ptr_t = std::reference_wrapper<shape_ptr_t>;
 		for (size_t i = 0; i < m_arShapes.size() - 1; i++)
 		{
 			shape_ref_ptr_t val = m_arShapes[i];
@@ -531,6 +566,58 @@ namespace NSDocxRenderer
 			if (!shape || fabs(shape->m_dRotation) < c_dMIN_ROTATION) continue;
 			shape->CalcNoRotVector();
 		}
+	}
+
+	std::vector<CPage::item_ptr_t> CPage::BuildOutputObjects()
+	{
+		std::vector<item_ptr_t> output_objects;
+
+		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
+		    m_eTextAssociationType == TextAssociationType::tatPlainLine)
+		{
+			CBaseItem* prev_p = nullptr;
+
+			size_t first_index = 0;
+			size_t second_index = first_index + 1;
+
+			for (; first_index < m_arParagraphs.size(); first_index = second_index++)
+			{
+				auto& first_p = m_arParagraphs[first_index];
+				if (second_index != m_arParagraphs.size())
+				{
+					auto& second_p = m_arParagraphs[second_index];
+					while (second_index < m_arParagraphs.size() && first_p->m_dBaselinePos > second_p->m_dTop)
+						second_index++;
+				}
+
+				if (second_index - first_index == 1)
+				{
+					auto& p = m_arParagraphs[first_index];
+
+					if (!prev_p)
+						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+					else
+						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBaselinePos;
+
+					output_objects.push_back(p);
+					prev_p = p.get();
+				}
+				else
+				{
+					for (size_t j = first_index; j < second_index; ++j)
+						m_arShapes.push_back(CreateSingleParagraphShape(m_arParagraphs[j]));
+				}
+			}
+		}
+
+		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
+		         m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		{
+			for (auto& p : m_arParagraphs)
+				m_arShapes.push_back(CreateSingleParagraphShape(p));
+		}
+
+		return output_objects;
 	}
 
 	void CPage::CalcSelected()
@@ -555,16 +642,15 @@ namespace NSDocxRenderer
 
 	void CPage::AnalyzeShapes()
 	{
-		DetermineLinesType();
-	}
-
-	void CPage::DetermineLinesType()
-	{
-		using shape_ptr_t = std::shared_ptr<CShape>;
 		std::sort(m_arShapes.begin(), m_arShapes.end(), [] (const shape_ptr_t& a, const shape_ptr_t& b) {
 			return a->m_dLeft < b->m_dLeft;
 		});
 
+		AnalyzeLinesType();
+	}
+
+	void CPage::AnalyzeLinesType()
+	{
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			if (!m_arShapes[i] || m_arShapes[i]->m_dHeight > c_dMAX_LINE_HEIGHT_MM || // рассматриваем только тонкие объекты
@@ -607,7 +693,7 @@ namespace NSDocxRenderer
 					auto& second_shape = m_arShapes[curr_shape_indexes[k]];
 
 					CShape::CheckLineType(first_shape, second_shape, k == curr_shape_indexes.size() - 1);
-					if(!m_arShapes[j])
+					if (!m_arShapes[j])
 					{
 						j = k;
 						k++;
@@ -621,39 +707,62 @@ namespace NSDocxRenderer
 		}
 	}
 
+	void CPage::GetHorVerLines()
+	{
+		for (const auto& shape : m_arShapes)
+			if (shape)
+			{
+				const double out_of_page_coeff = 1.1;
+				bool is_out_of_page = shape->m_dTop < 0 ||
+				                      shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
+				                      shape->m_dLeft < 0 ||
+				                      shape->m_dRight > this->m_dWidth * out_of_page_coeff;
+
+
+				bool is_too_big = (!shape->m_bIsNoFill && (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM));
+
+				if (is_too_big || is_out_of_page)
+					continue;
+
+				m_oHorVerLinesCollector.AddVector(shape->m_oVector);
+			}
+	}
+
 	void CPage::AnalyzeTextLines()
 	{
 		// вся логика основана на отсортированных списках объектов
-		using line_ptr_t = std::shared_ptr<CTextLine>;
 		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		// analyze drop caps (creates shapes)
 		AnalyzeDropCaps();
-
-		// analyze conts in text lines
 		AnalyzeConts();
-
-		// Strikeout, underline, outline, highlight
 		AnalyzeEffects();
 
-		// diacritical symbols
+		GetHorVerLines();
+
 		AddDiacriticalSymbols();
-
-		// super/subscript
-		MergeLinesByVertAlignType();
-
-		// delete lines out of page
+		MergeTextLinesByVatType();
 		DeleteTextClipPage();
+		MergeConts();
+		SplitLines();
+		AnalyzeOverlapLines();
+
+		// переместим nullptr в конец и удалим
+		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
+		m_arTextLines.erase(right, m_arTextLines.end());
+
+		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
+			return a->m_dBaselinePos < b->m_dBaselinePos;
+		});
 	}
 
 	void CPage::AnalyzeDropCaps()
 	{
 		double avg_font_size = m_oManagers.pParagraphStyleManager->GetAvgFontSize();
 
-		std::vector<std::pair<std::shared_ptr<CContText>&, std::shared_ptr<CTextLine>&>> possible_caps;
-		std::vector<std::shared_ptr<CContText>> drop_caps;
+		std::vector<std::pair<cont_ptr_t&, line_ptr_t&>> possible_caps;
+		std::vector<cont_ptr_t> drop_caps;
 
 		for (size_t i = 0; i < m_arTextLines.size(); i++)
 		{
@@ -814,7 +923,7 @@ namespace NSDocxRenderer
 
 				for (size_t k = 0; k < curr_line->m_arConts.size(); ++k)
 				{
-					std::shared_ptr<CContText> curr_cont = curr_line->m_arConts[k];
+					cont_ptr_t curr_cont = curr_line->m_arConts[k];
 					if (!curr_cont)
 						continue;
 
@@ -897,7 +1006,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CPage::IsLineCrossingText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont)
+	bool CPage::IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		double dTopBorder = pCont->m_dTop + pCont->m_dHeight / 3;
@@ -922,7 +1031,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
 
-	bool CPage::IsLineBelowText(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont)
+	bool CPage::IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		bool bIf1 = (pShape->m_eGraphicsType == eGraphicsType::gtRectangle ||
@@ -946,7 +1055,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4;
 	}
 
-	bool CPage::IsHighlight(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont)
+	bool CPage::IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 
@@ -976,7 +1085,7 @@ namespace NSDocxRenderer
 		return bIf1 && bIf2 && bIf3 && bIf4 && !bIf5 && bIf6 && bIf7;
 	}
 
-	bool CPage::IsOutline(std::shared_ptr<CShape> pShape, std::shared_ptr<CContText> pCont)
+	bool CPage::IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept
 	{
 		auto h_type = pCont->CBaseItem::GetHorizontalCrossingType(pShape.get());
 		auto v_type = pCont->CBaseItem::GetVerticalCrossingType(pShape.get());
@@ -1052,7 +1161,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CPage::MergeLinesByVertAlignType()
+	void CPage::MergeTextLinesByVatType()
 	{
 		for (auto& line : m_arTextLines)
 		{
@@ -1062,7 +1171,7 @@ namespace NSDocxRenderer
 			if (line->m_eVertAlignType == eVertAlignType::vatSuperscript
 				|| line->m_eVertAlignType == eVertAlignType::vatSubscript)
 			{
-				std::shared_ptr<CTextLine>& base_line = line->m_pLine;
+				line_ptr_t& base_line = line->m_pLine;
 				if (base_line)
 				{
 					for (auto& pCont : line->m_arConts)
@@ -1084,7 +1193,7 @@ namespace NSDocxRenderer
 		}
 	}
 
-	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter)
+	void CPage::ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept
 	{
 		bool bIsNeedWP = !m_arShapes.empty();
 
@@ -1104,13 +1213,8 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</w:p>");
 		}
 
-		for (size_t i = 0; i < m_arOutputObjects.size(); ++i)
-		{
-			auto& pObj = m_arOutputObjects[i];
-			CParagraph* pParagraph = nullptr;
-			if((pParagraph = dynamic_cast<CParagraph*>(pObj.get())) != nullptr)
-				pParagraph->ToXml(oWriter);
-		}
+		for (auto& obj : m_arOutputObjects)
+			obj->ToXml(oWriter);
 	}
 
 	void CPage::MergeConts()
@@ -1126,7 +1230,7 @@ namespace NSDocxRenderer
 
 	void CPage::DetermineDominantGraphics()
 	{
-		std::shared_ptr<CShape> pDominantShape = nullptr;
+		shape_ptr_t pDominantShape = nullptr;
 
 		for (size_t i = 0; i < m_arTextLines.size(); ++i)
 		{
@@ -1160,89 +1264,89 @@ namespace NSDocxRenderer
 		}
 	}
 
-	bool CPage::IsShapeBorderBetweenVertical(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
+	bool CPage::IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dRight, pSecond->m_dRight);
+		double right = std::max(pFirst->m_dLeft, pSecond->m_dLeft);
+		double top = std::min(pFirst->m_dTop, pSecond->m_dTop);
+		double bot = std::max(pFirst->m_dBaselinePos, pSecond->m_dBaselinePos);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsVerticalLineTrough(dummy_cont);
+	}
+	bool CPage::IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept
+	{
+		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
+		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
+		double top = std::min(pFirst->m_dBaselinePos, pSecond->m_dBaselinePos);
+		double bot = std::max(pFirst->m_dTop, pSecond->m_dTop);
+
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
+
+		return IsHorizontalLineTrough(dummy_cont);
+	}
+	bool CPage::IsVerticalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
 	{
 		double left = std::min(pFirst->m_dRight, pSecond->m_dRight);
 		double right = std::max(pFirst->m_dLeft, pSecond->m_dLeft);
 		double top = std::min(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
 		double bot = std::max(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
 
-		std::shared_ptr<CContText> dummy_cont = std::make_shared<CContText>();
-		dummy_cont->m_dLeft = left;
-		dummy_cont->m_dRight = right;
-		dummy_cont->m_dTopWithAscent = top;
-		dummy_cont->m_dBotWithDescent = bot;
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
 
-		double dx = 0, dy = 0;
-		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
-		if (is_shape_trough && dy * 2 > bot - top) return true;
-		return false;
+		return IsVerticalLineTrough(dummy_cont);
 	}
-
-	bool CPage::IsShapeBorderBetweenHorizontal(std::shared_ptr<CTextLine> pFirst, std::shared_ptr<CTextLine> pSecond) const noexcept
+	bool CPage::IsHorizontalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept
 	{
 		double left = std::min(pFirst->m_dLeft, pSecond->m_dLeft);
 		double right = std::max(pFirst->m_dRight, pSecond->m_dRight);
 		double top = std::min(pFirst->m_dBotWithMaxDescent, pSecond->m_dBotWithMaxDescent);
 		double bot = std::max(pFirst->m_dTopWithMaxAscent, pSecond->m_dTopWithMaxAscent);
 
-		std::shared_ptr<CContText> dummy_cont = std::make_shared<CContText>();
-		dummy_cont->m_dLeft = left;
-		dummy_cont->m_dRight = right;
-		dummy_cont->m_dTopWithAscent = top;
-		dummy_cont->m_dBotWithDescent = bot;
+		auto dummy_cont = std::make_shared<CContText>();
+		dummy_cont->m_dLeft = left - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dRight = right + c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dTop = top - c_dGRAPHICS_ERROR_MM;
+		dummy_cont->m_dBaselinePos = bot + c_dGRAPHICS_ERROR_MM;
 
-		double dx = 0, dy = 0;
-		bool is_shape_trough = IsShapeBorderTrough(dummy_cont, dx, dy);
-		if (is_shape_trough && dx * 2 > right - left) return true;
-		return false;
+		return IsHorizontalLineTrough(dummy_cont);
 	}
 
-	bool CPage::IsShapeBorderTrough(std::shared_ptr<CContText> pItem, double& dXCrossing, double& dYCrossing) const noexcept
+	bool CPage::IsVerticalLineTrough(item_ptr_t pFirst) const noexcept
 	{
-		double left = pItem->m_dLeft;
-		double right = pItem->m_dRight;
-		double top = pItem->m_dTopWithAscent;
-		double bot = pItem->m_dBotWithDescent;
+		const auto& ver_lines = m_oHorVerLinesCollector.GetVertical();
+		const auto height = pFirst->m_dBaselinePos - pFirst->m_dTop;
+		const auto center = pFirst->m_dTop + height / 2;
 
-		for (const auto& shape : m_arShapes)
-		{
-			if (!shape)
-				continue;
-
-			const double out_of_page_coeff = 1.1;
-			bool is_out_of_page = shape->m_dTop < 0 ||
-								  shape->m_dBaselinePos > this->m_dHeight * out_of_page_coeff ||
-								  shape->m_dLeft < 0 ||
-								  shape->m_dRight > this->m_dWidth * out_of_page_coeff;
-			bool is_too_big = ((shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM) &&
-							   (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown));
-
-			if (is_too_big || is_out_of_page)
-				continue;
-
-			double& s_left = shape->m_dLeft;
-			double& s_right = shape->m_dRight;
-			double& s_top = shape->m_dTop;
-			double& s_bot = shape->m_dBaselinePos;
-
-			bool lines_condition = shape->m_eSimpleLineType != eSimpleLineType::sltUnknown &&
-								   !((s_right < left) || (s_left > right)) &&
-								   !((s_bot < top) || (s_top > bot));
-
-			bool rectangle_condition = shape->m_eGraphicsType == eGraphicsType::gtRectangle &&
-									   shape->m_eSimpleLineType == eSimpleLineType::sltUnknown &&
-									   !((s_right < left) || (s_left > right)) &&
-									   !((s_bot < top) || (s_top > bot)) &&
-									   !(s_top < top && s_bot > bot && s_left < left && s_right > right);
-
-			if (lines_condition || rectangle_condition)
-			{
-				dXCrossing = std::min(right, s_right) - std::max(left, s_left);
-				dYCrossing = std::min(bot, s_bot) - std::max(top, s_top);
+		for (const auto& line : ver_lines)
+			if (line.pos > pFirst->m_dLeft && line.pos < pFirst->m_dRight && line.min <= center && line.max >= center)
 				return true;
-			}
-		}
+
+		return false;
+	}
+	bool CPage::IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept
+	{
+		const auto& hor_lines = m_oHorVerLinesCollector.GetHorizontal();
+		const auto width = pFirst->m_dRight - pFirst->m_dLeft;
+		const auto center = pFirst->m_dLeft + width / 2;
+
+		for (const auto& line : hor_lines)
+			if (line.pos > pFirst->m_dTop && line.pos < pFirst->m_dBaselinePos && line.min <= center && line.max >= center)
+				return true;
+
 		return false;
 	}
 
@@ -1251,22 +1355,23 @@ namespace NSDocxRenderer
 		for (size_t index = 0; index < m_arTextLines.size(); ++index)
 		{
 			auto& line = m_arTextLines[index];
+
+			if (!line)
+				continue;
+
 			bool next_line = false;
 			for (size_t i = 0; i < line->m_arConts.size(); ++i)
 			{
 				bool is_space = line->m_arConts[i] && line->m_arConts[i]->GetText().ToStdWString() == L" ";
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
-
-				double x_crossing{};
-				double y_crossing{};
-				bool is_shape_trough = IsShapeBorderTrough(line->m_arConts[i], x_crossing, y_crossing);
+				bool is_shape_trough = IsVerticalLineTrough(line->m_arConts[i]);
 
 				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleSplit && is_space)
 					|| (is_space && is_cont_wide)
 					|| is_shape_trough)
 				{
-					std::vector<std::shared_ptr<CContText>> line_conts_first;
-					std::vector<std::shared_ptr<CContText>> line_conts_second;
+					std::vector<cont_ptr_t> line_conts_first;
+					std::vector<cont_ptr_t> line_conts_second;
 
 					// taking last cont or not
 					for (size_t j = 0; j < (is_space ? i : i + 1); ++j)
@@ -1277,8 +1382,8 @@ namespace NSDocxRenderer
 						if (line->m_arConts[j])
 							line_conts_second.push_back(line->m_arConts[j]);
 
-					std::shared_ptr<CTextLine> line_first(new CTextLine());
-					std::shared_ptr<CTextLine> line_second(new CTextLine());
+					line_ptr_t line_first(new CTextLine());
+					line_ptr_t line_second(new CTextLine());
 
 					line_first->AddConts(line_conts_first);
 					line_second->AddConts(line_conts_second);
@@ -1301,13 +1406,9 @@ namespace NSDocxRenderer
 			if (next_line)
 				continue;
 		}
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		std::sort(m_arTextLines.begin(), m_arTextLines.end(), [] (const line_ptr_t& a, const line_ptr_t& b) {
-			return a->m_dBaselinePos < b->m_dBaselinePos;
-		});
 	}
 
-	std::vector<std::vector<std::shared_ptr<CTextLine>>> CPage::GetLinesByGroups()
+	std::vector<std::vector<CPage::line_ptr_t>> CPage::GetLinesByGroups()
 	{
 		struct Group {
 			double left{};
@@ -1317,7 +1418,7 @@ namespace NSDocxRenderer
 			bool closed{false};
 		};
 
-		std::vector<std::vector<std::shared_ptr<CTextLine>>> line_groups;
+		std::vector<std::vector<line_ptr_t>> line_groups;
 		std::vector<Group> groups;
 
 		for (auto& line : m_arTextLines)
@@ -1371,7 +1472,7 @@ namespace NSDocxRenderer
 				new_group.closed = false;
 				groups.push_back(new_group);
 
-				std::vector<std::shared_ptr<CTextLine>> line_group;
+				std::vector<line_ptr_t> line_group;
 				line_group.push_back(line);
 				line_groups.push_back(line_group);
 			}
@@ -1379,13 +1480,13 @@ namespace NSDocxRenderer
 		return line_groups;
 	}
 
-	void CPage::BuildParagraphes()
+	void CPage::AnalyzeOverlapLines()
 	{
 		auto no_crossing = [] (const eHorizontalCrossingType& h_type, const eVerticalCrossingType& v_type) {
 			return h_type == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-				   h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
-				   v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-				   v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
+			       h_type == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
+			       v_type == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
+			       v_type == eVerticalCrossingType::vctNoCrossingCurrentBelowNext;
 		};
 
 		// линии из которых сделаем шейпы
@@ -1425,20 +1526,15 @@ namespace NSDocxRenderer
 				}
 			}
 		}
+	}
 
+	std::vector<CPage::paragraph_ptr_t> CPage::BuildParagraphs()
+	{
 		if (m_arTextLines.empty())
-			return;
+			return {};
 
-		// переместим nullptr в конец и удалим
-		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
-		m_arTextLines.erase(right, m_arTextLines.end());
-
-		if (m_arTextLines.empty())
-			return;
-
-		SplitLines();
 		auto line_groups = GetLinesByGroups();
-		std::vector<std::shared_ptr<CParagraph>> ar_paragraphs;
+		std::vector<paragraph_ptr_t> ar_paragraphs;
 
 		double min_left{m_dWidth};
 		double max_right{0.0};
@@ -1451,7 +1547,7 @@ namespace NSDocxRenderer
 		};
 
 		// lamda to setup and add paragpraph
-		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (std::shared_ptr<CParagraph>& paragraph) {
+		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
 			paragraph->m_dBaselinePos = paragraph->m_arLines.back()->m_dBaselinePos;
 			paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
@@ -1528,13 +1624,13 @@ namespace NSDocxRenderer
 		};
 
 		// lamda to add line and setup min_left/max_right
-		auto add_line = [&min_left, &max_right] (std::shared_ptr<CParagraph>& paragraph, const std::shared_ptr<CTextLine>& curr_line) {
+		auto add_line = [&min_left, &max_right] (paragraph_ptr_t& paragraph, const line_ptr_t& curr_line) {
 			min_left = std::min(min_left, curr_line->m_dLeft);
 			max_right = std::max(max_right, curr_line->m_dRight);
 			paragraph->m_arLines.push_back(curr_line);
 		};
 
-		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<std::shared_ptr<CTextLine>>& text_lines) {
+		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<line_ptr_t>& text_lines) {
 			// ar_spacing[index]- расстояние строки до строки снизу
 			// если 0.0 - строка последняя
 			std::vector<double> ar_spacings(text_lines.size(), 0.0);
@@ -1637,6 +1733,8 @@ namespace NSDocxRenderer
 
 			// alignment check
 			bool is_first_line = false;
+			Position curr_position;
+
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
 				Position& position = ar_positions[index];
@@ -1645,9 +1743,17 @@ namespace NSDocxRenderer
 				auto& line_bot = text_lines[index + 1];
 
 				if (index == 0 || ar_delims[index - 1])
+				{
 					is_first_line = true;
+					curr_position = position;
+				}
 				else
+				{
 					is_first_line = false;
+					curr_position.left &= position.left;
+					curr_position.center &= position.center;
+					curr_position.right &= position.right;
+				}
 
 				// первая строка может быть с отступом
 				if (is_first_line)
@@ -1663,33 +1769,20 @@ namespace NSDocxRenderer
 					else
 						ar_indents[index] = true;
 				}
+				if (ar_indents[index])
+					curr_position.left = true;
 
-				bool is_unknown = !((position.left || ar_indents[index]) || position.right || position.center);
-				bool bullet_skip = false;
+				bool is_unknown = !(curr_position.left || curr_position.right || curr_position.center);
+				bool is_enum = false;
 				if (is_unknown)
 				{
 					// bullet paragraphs
 					if (!ar_delims[index])
 					{
-						const auto& first_sym = line_top->m_arConts.front()->GetText().at(0);
-						if (CContText::IsUnicodeBullet(first_sym))
-						{
-							double left_no_first = 0;
-							bool out = false;
-							for (size_t i = 0; i < line_top->m_arConts.size() && !out; ++i)
-								for (size_t j = i ? 0 : 1; j < line_top->m_arConts[i]->GetLength() && !out; ++j)
-									if (!CContText::IsUnicodeSpace(line_top->m_arConts[i]->GetText().at(j)))
-									{
-										left_no_first = line_top->m_arConts[i]->GetSymLefts().at(j);
-										out = true;
-										break;
-									}
-
-							if (out && fabs(left_no_first - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM)
-								bullet_skip = true;
-						}
+						double left_no_enum = line_top->GetLeftNoEnum();
+						is_enum = left_no_enum != line_top->m_dLeft && fabs(left_no_enum - line_bot->m_dLeft) < c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 					}
-					if (!bullet_skip)
+					if (!is_enum)
 						ar_delims[index] = true;
 				}
 			}
@@ -1717,7 +1810,7 @@ namespace NSDocxRenderer
 					continue;
 				}
 
-				std::shared_ptr<CContText> cont = line_bot->m_arConts[0];
+				cont_ptr_t cont = line_bot->m_arConts[0];
 				double line_with_first_right = line_top->m_dRight + line_bot->m_dFirstWordWidth;
 				double line_with_first_left = line_top->m_dLeft - line_bot->m_dFirstWordWidth;
 
@@ -1754,7 +1847,7 @@ namespace NSDocxRenderer
 			// если между линий шейп - делим
 			for (size_t index = 0; index < ar_positions.size() - 1; ++index)
 			{
-				if (IsShapeBorderBetweenHorizontal(text_lines[index], text_lines[index + 1]))
+				if (IsHorizontalLineBetween(text_lines[index], text_lines[index + 1]))
 					ar_delims[index] = true;
 			}
 
@@ -1786,58 +1879,189 @@ namespace NSDocxRenderer
 				build_paragraphs(g);
 		}
 
-		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 		std::sort(ar_paragraphs.begin(), ar_paragraphs.end(), [] (const paragraph_ptr_t& a, const paragraph_ptr_t& b) {
 			return a->m_dBaselinePos < b->m_dBaselinePos;
 		});
 
-		if (m_eTextAssociationType == TextAssociationType::tatPlainParagraph ||
-			m_eTextAssociationType == TextAssociationType::tatPlainLine)
+		return ar_paragraphs;
+	}
+
+	std::vector<CPage::table_ptr_t> CPage::BuildTables()
+	{
+		auto cells = BuildCells();
+		auto rows = BuildRows(cells);
+		std::vector<table_ptr_t> tables;
+
+		table_ptr_t curr_table = nullptr;
+		for (const auto& row : rows)
 		{
-			CBaseItem* prev_p = nullptr;
-
-			size_t first_index = 0;
-			size_t second_index = first_index + 1;
-
-			for (; first_index < ar_paragraphs.size(); first_index = second_index++)
+			if (!curr_table)
 			{
-				auto& first_p = ar_paragraphs[first_index];
-				if (second_index != ar_paragraphs.size())
-				{
-					auto& second_p = ar_paragraphs[second_index];
-					while (second_index < ar_paragraphs.size() && first_p->m_dBaselinePos > second_p->m_dTop)
-						second_index++;
-				}
+				curr_table = std::make_shared<CTable>();
+			}
+			else if (fabs(curr_table->m_dBaselinePos - row->m_dTop) > c_dGRAPHICS_ERROR_MM)
+			{
+				tables.push_back(std::move(curr_table));
+				curr_table = std::make_shared<CTable>();
+			}
+			curr_table->AddRow(row);
+		}
+		if (!curr_table->IsEmpty())
+			tables.push_back(std::move(curr_table));
 
-				if (second_index - first_index == 1)
-				{
-					auto& p = ar_paragraphs[first_index];
+		return tables;
+	}
+	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
+	{
+		struct Crossing
+		{
+			Point p {};
+			std::vector<Point> lines {};
+		};
+		std::vector<Crossing> crossings;
+		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
+			for (auto& crossing : crossings)
+			{
+				if (fabs(crossing.p.x - p.x) < c_dGRAPHICS_ERROR_MM &&
+				        fabs(crossing.p.y - p.y) < c_dGRAPHICS_ERROR_MM)
+					return &crossing;
+			}
+			return nullptr;
+		};
 
-					if (!prev_p)
-						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
-					else
-						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBaselinePos;
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape)
+				continue;
 
-					m_arOutputObjects.push_back(p);
-					prev_p = p.get();
-				}
-				else
+			Point prev {};
+			for (const auto& command : shape->m_oVector.GetData())
+			{
+				if (!command.points.empty())
 				{
-					for (size_t j = first_index; j < second_index; ++j)
-						m_arShapes.push_back(CreateSingleParagraphShape(ar_paragraphs[j]));
+					if (command.type == CVectorGraphics::ePathCommandType::pctLine)
+					{
+						const auto& curr = command.points.back();
+						auto prev_crossing = find_crossing(prev);
+						auto curr_crossing = find_crossing(curr);
+
+						// add empty vector if no exists
+						if (!prev_crossing)
+							crossings.push_back({prev, {curr}});
+						else
+							prev_crossing->lines.push_back(curr);
+
+						if (!curr_crossing)
+							crossings.push_back({curr, {prev}});
+						else
+							curr_crossing->lines.push_back(prev);
+
+						prev = curr;
+					}
+					prev = command.points.back();
 				}
 			}
 		}
 
-		else if (m_eTextAssociationType == TextAssociationType::tatParagraphToShape ||
-				 m_eTextAssociationType == TextAssociationType::tatShapeLine)
+		// sorting guarantee creating cell once (by taking second cross j > i)
+		std::sort(crossings.begin(), crossings.end(), [] (const Crossing& c1, const Crossing& c2) {
+			if (fabs(c1.p.y - c2.p.y) < c_dGRAPHICS_ERROR_MM)
+				return c1.p.x < c2.p.x;
+			return c1.p.y < c2.p.y;
+		});
+
+		std::vector<CTable::cell_ptr_t> cells;
+		for (size_t i = 0; i < crossings.size(); ++i)
 		{
-			for (auto& p : ar_paragraphs)
-				m_arShapes.push_back(CreateSingleParagraphShape(p));
+			for (size_t j = i + 1; j < crossings.size(); ++j)
+			{
+				const auto& first = crossings.at(i);
+				const auto& second = crossings.at(j);
+
+				// first should be top left corner
+				// and second right bot (not the same line ofc)
+				if (fabs(first.p.x - second.p.x) < c_dGRAPHICS_ERROR_MM ||
+				        first.p.x > second.p.x ||
+				        fabs(first.p.y - second.p.y) < c_dGRAPHICS_ERROR_MM ||
+				        first.p.y > second.p.y)
+					continue;
+
+				// 2 points should be the same
+				size_t equals = 0;
+				for (const auto& fl : first.lines)
+					for (const auto& sl : second.lines)
+						if (fabs(fl.x - sl.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.y - sl.y) < c_dGRAPHICS_ERROR_MM)
+							++equals;
+
+				if (equals == 2)
+				{
+					auto cell = std::make_shared<CTable::CCell>();
+					cell->m_dLeft = first.p.x;
+					cell->m_dRight = second.p.x;
+					cell->m_dTop = first.p.y;
+					cell->m_dBaselinePos = second.p.y;
+					cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
+					cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
+					cells.push_back(cell);
+					break;
+				}
+			}
 		}
+
+		// sets paragraphs into cells
+		for (auto& cell : cells)
+			for (auto& paragraph : m_arParagraphs)
+			{
+				if (!paragraph)
+					continue;
+
+				bool top = fabs(cell->m_dTop - paragraph->m_dTop) < 2 * c_dGRAPHICS_ERROR_MM || paragraph->m_dTop > cell->m_dTop;
+				bool bot = fabs(cell->m_dBaselinePos - paragraph->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM || paragraph->m_dBaselinePos < cell->m_dBaselinePos;
+				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM || paragraph->m_dLeft > cell->m_dLeft;
+				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM || paragraph->m_dRight < cell->m_dRight;
+				if (top && bot && left && right)
+				{
+					cell->AddParagraph(paragraph);
+					paragraph = nullptr;
+				}
+			}
+		auto right = MoveNullptr(m_arParagraphs.begin(), m_arParagraphs.end());
+		m_arParagraphs.erase(right, m_arParagraphs.end());
+		std::sort(m_arParagraphs.begin(), m_arParagraphs.end(), [] (const paragraph_ptr_t& p1, const paragraph_ptr_t& p2) {
+			return p1->m_dBaselinePos < p2->m_dBaselinePos;
+		});
+		return cells;
+	}
+	std::vector<CTable::row_ptr_t> CPage::BuildRows(std::vector<CTable::cell_ptr_t>& arCells)
+	{
+		std::sort(arCells.begin(), arCells.end(), [] (const CTable::cell_ptr_t c1, const CTable::cell_ptr_t& c2) {
+			if (fabs(c1->m_dBaselinePos - c2->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM)
+				return c1->m_dLeft < c2->m_dLeft;
+			return c1->m_dBaselinePos < c2->m_dBaselinePos;
+		});
+
+		std::vector<CTable::row_ptr_t> rows;
+		CTable::row_ptr_t curr_row = nullptr;
+		for (auto& cell : arCells)
+		{
+			if (!curr_row)
+			{
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			else if (fabs(curr_row->m_dBaselinePos - cell->m_dBaselinePos) > c_dGRAPHICS_ERROR_MM)
+			{
+				rows.push_back(std::move(curr_row));
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			curr_row->AddCell(cell);
+		}
+		if (!curr_row->IsEmpty())
+			rows.push_back(std::move(curr_row));
+
+		return rows;
 	}
 
-	std::shared_ptr<CShape> CPage::CreateSingleLineShape(std::shared_ptr<CTextLine>& pLine)
+	CPage::shape_ptr_t CPage::CreateSingleLineShape(line_ptr_t& pLine)
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
 
@@ -1872,11 +2096,9 @@ namespace NSDocxRenderer
 		return pShape;
 	}
 
-	std::shared_ptr<CShape> CPage::CreateSingleParagraphShape(std::shared_ptr<CParagraph>& pParagraph)
+	CPage::shape_ptr_t CPage::CreateSingleParagraphShape(paragraph_ptr_t& pParagraph)
 	{
-		std::shared_ptr<CShape> pShape;
-
-		pShape = std::make_shared<CShape>();
+		auto pShape = std::make_shared<CShape>();
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
 		pShape->m_dTop = pParagraph->m_dTop;
@@ -1904,7 +2126,7 @@ namespace NSDocxRenderer
 		return pShape;
 	}
 
-	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter)
+	void CPage::WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept
 	{
 		// section
 		int lWidthDx  = (int)(m_dWidth * c_dMMToDx);

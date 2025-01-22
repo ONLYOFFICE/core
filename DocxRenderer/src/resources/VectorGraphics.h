@@ -2,7 +2,6 @@
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include <list>
-#include <memory>
 #include <array>
 
 namespace NSDocxRenderer
@@ -15,7 +14,8 @@ namespace NSDocxRenderer
 		Point() {}
 		Point(double x, double y) : x(x), y(y) {}
 		Point(const Point& point) : x(point.x), y(point.y) {}
-	};
+		Point& operator=(const Point& point) {x = point.x; y = point.y; return *this;}
+	};;
 
 	class CVectorGraphics
 	{
@@ -95,5 +95,30 @@ namespace NSDocxRenderer
 		Aggplus::CGraphicsPath GetGraphicsPath() const noexcept;
 		static Aggplus::BooleanOpType GetOpType(long nClipType);
 		static std::vector<Point> GetPointsCurve(const std::array<Point, 4>& curve, double step = 0.05);
+	};
+
+	// collect and contains horizontal and vertical lines
+	class CHorVerLinesCollector
+	{
+	public:
+		struct CHorVerLine
+		{
+			double min{};
+			double max{};
+			double pos{};
+		};
+
+		CHorVerLinesCollector() = default;
+		~CHorVerLinesCollector() = default;
+
+		const std::vector<CHorVerLine>& GetHorizontal() const;
+		const std::vector<CHorVerLine>& GetVertical() const;
+
+		void AddVector(const CVectorGraphics& oVector);
+		void Clear();
+
+	private:
+		std::vector<CHorVerLine> m_arHorizontal;
+		std::vector<CHorVerLine> m_arVertical;
 	};
 }

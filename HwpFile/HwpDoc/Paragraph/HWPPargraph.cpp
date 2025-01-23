@@ -80,7 +80,7 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVer
 	else if (L"hp:ctrl" == oNode.GetName())
 	{
 		for(CXMLNode& oChild : oNode.GetChilds())
-			m_arP.push_back(CCtrl::GetCtrl(oChild, nVersion));
+			AddCtrl(CCtrl::GetCtrl(oChild, nVersion));
 	}
 	else if (L"hp:t" == oNode.GetName())
 	{
@@ -170,7 +170,8 @@ void CHWPPargraph::AddRangeTag(TRangeTag* pRangeTag)
 
 void CHWPPargraph::AddCtrl(CCtrl* pCtrl)
 {
-	m_arP.push_back(pCtrl);
+	if (nullptr != pCtrl)
+		m_arP.push_back(pCtrl);
 }
 
 void CHWPPargraph::AddCtrls(const LIST<CCtrl*>& arCtrls)
@@ -180,7 +181,7 @@ void CHWPPargraph::AddCtrls(const LIST<CCtrl*>& arCtrls)
 
 bool CHWPPargraph::SetCtrl(CCtrl* pCtrl, unsigned int unIndex)
 {
-	if (unIndex >= m_arP.size())
+	if (unIndex >= m_arP.size() || nullptr == pCtrl)
 		return false;
 
 	CCtrl* pOldCtrl = m_arP[unIndex];

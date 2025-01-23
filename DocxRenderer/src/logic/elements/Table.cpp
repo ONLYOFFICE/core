@@ -25,7 +25,7 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L" w:val=");
 			oWriter.WriteString(SingletonInstance<LinesTable>().ConvertLineToString(border.eLineType));
 			oWriter.WriteString(L" w:sz=\"");
-			oWriter.AddUInt(static_cast<unsigned int>(border.dWidth * c_dMMToPt * 8));
+			oWriter.AddUInt(static_cast<unsigned int>(border.dWidth));
 			oWriter.WriteString(L"\" w:space=\"");
 			oWriter.AddUInt(static_cast<unsigned int>(border.dSpacing * c_dMMToPt));
 			oWriter.WriteString(L"\" w:color=\"");
@@ -97,13 +97,18 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:tbl>");
 
 		oWriter.WriteString(L"<w:tblPr>");
+		oWriter.WriteString(L"<w:tblpPr ");
+
+		oWriter.WriteString(L"w:horzAnchor=\"page\" w:vertAnchor=\"page\" w:tblpX=\"");
+		oWriter.AddInt64(static_cast<long long>(m_dLeft * c_dMMToDx));
+		oWriter.WriteString(L"\" w:tblpY=\"");
+		oWriter.AddInt64(static_cast<long long>(m_dTop * c_dMMToDx));
+		oWriter.WriteString(L"\" />");
+
 		oWriter.WriteString(L"<w:tblW w:w=\"");
 		oWriter.AddUInt(static_cast<unsigned int>(m_dWidth * c_dMMToDx));
 		oWriter.WriteString(L"\" w:type=\"dxa\"/>");
 		oWriter.WriteString(L"</w:tblPr>");
-
-		oWriter.WriteString(L"<w:tblGrid>");
-		oWriter.WriteString(L"</w:tblGrid>");
 
 		for (const auto& r : m_arRows)
 			r->ToXml(oWriter);

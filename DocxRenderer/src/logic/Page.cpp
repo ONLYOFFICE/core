@@ -1915,16 +1915,17 @@ namespace NSDocxRenderer
 		return tables;
 	}
 
+	// crossing is a logical intersection between two lines
+	// contains the crossing x,y and pointers to other crossings.
+	struct Crossing
+	{
+		using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
+		Point p {};
+		std::vector<Line> lines {};
+	};
 	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
 	{
-		// crossing is a logical intersection between two lines
-		// contains the crossing x,y and pointers to other crossings.
-		struct Crossing
-		{
-			using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
-			Point p {};
-			std::vector<Line> lines {};
-		};
+
 
 		// vector contains ptrs for easy exist-check
 		std::vector<std::shared_ptr<Crossing>> crossings;
@@ -1955,8 +1956,8 @@ namespace NSDocxRenderer
 
 						// pure vertical / horizontal lines only
 						// not small lines
-						if (fabs(prev.x - curr.x) > c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > c_dGRAPHICS_ERROR_MM ||
-						        (fabs(prev.x - curr.x) < c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) < c_dGRAPHICS_ERROR_MM))
+						if (fabs(prev.x - curr.x) > 2 * c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > 2 * c_dGRAPHICS_ERROR_MM ||
+						        (fabs(prev.x - curr.x) < 4 * c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) < 4 * c_dGRAPHICS_ERROR_MM))
 						{
 							prev = curr;
 							continue;
@@ -2116,6 +2117,13 @@ namespace NSDocxRenderer
 				        || paragraph->m_dRight < cell->m_dRight;
 				if (top && bot && left && right)
 				{
+					paragraph->m_dLeftBorder = paragraph->m_dLeft - cell->m_dLeft;
+					paragraph->m_dRightBorder = 0;
+					if (paragraph->m_dTop - cell->m_dTop > 0)
+						paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_dTop;
+					else
+						paragraph->m_dSpaceBefore = 0;
+					paragraph->m_dSpaceAfter = 0;
 					cell->AddParagraph(paragraph);
 					paragraph = nullptr;
 				}

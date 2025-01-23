@@ -120,6 +120,7 @@ class CConverter2OOXML
 
 	void WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);

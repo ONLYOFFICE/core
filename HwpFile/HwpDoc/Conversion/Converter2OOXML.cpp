@@ -160,14 +160,12 @@ void CConverter2OOXML::FillDefaultData()
 	AddRelationship(L"fontTable", L"fontTable.xml");
 	AddRelationship(L"theme", L"theme/theme1.xml");
 
-	AddContentType(L"/word/document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
-	AddContentType(L"/word/styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
-	AddContentType(L"/word/settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
-	AddContentType(L"/word/webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
-	AddContentType(L"/word/fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
-	AddContentType(L"/word/theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
-	AddContentType(L"/docProps/core.xml", L"application/vnd.openxmlformats-package.core-properties+xml");
-	AddContentType(L"/docProps/app.xml", L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
+	AddContentType(L"document.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+	AddContentType(L"styles.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml");
+	AddContentType(L"settings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml");
+	AddContentType(L"webSettings.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.webSettings+xml");
+	AddContentType(L"fontTable.xml", L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
+	AddContentType(L"theme/theme1.xml", L"application/vnd.openxmlformats-officedocument.theme+xml");
 
 	m_oNoteXmlRels.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 	m_oDocXml     .WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><w:document xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" mc:Ignorable=\"w14 w15 wp14\"><w:body>");
@@ -248,7 +246,10 @@ void CConverter2OOXML::Close()
 			oContentTypeWriter.WriteStringUTF8(L"<Default Extension=\"" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
 
 		for (const TContentType& oContentType : m_arContentTypes)
-			oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+			oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/word/" + oContentType.m_wsName + L"\" ContentType=\"" + oContentType.m_wsType + L"\"/>");
+
+		oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\"/>");
+		oContentTypeWriter.WriteStringUTF8(L"<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\"/>");
 
 		oContentTypeWriter.WriteStringUTF8(L"</Types>");
 		oContentTypeWriter.CloseFile();
@@ -530,7 +531,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 		case 0x0:
 		{
 			sType = L"auto";
-			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100. * 0.65); // TODO:: в hwp изначально межстрочный интервал меньше. Множитель 1 в hwp ≈ 0.65 MS
+			nLineSpacing = static_cast<int>(240. * (double)pParaShape->GetLineSpacing() / 100.); // TODO:: в hwp изначально межстрочный интервал меньше. Множитель 1 в hwp ≈ 0.65 MS
 			break;
 		}
 		case 0x01:
@@ -819,10 +820,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	{
 		case EShapeObjectType::Arc:
 		{
-			oBuilder.WriteString(L"<a:prstGeom prst=\"arc\"><a:avLst>");
-			oBuilder.WriteString(L"<a:gd name=\"adj1\" fmla=\"val 0\"/>");
-			oBuilder.WriteString(L"<a:gd name=\"adj2\" fmla=\"val 5400000\"/>");
-			oBuilder.WriteString(L"</a:avLst></a:prstGeom>");
+			oBuilder.WriteString(L"<a:prstGeom prst=\"arc\"><a:avLst/></a:prstGeom>");
 			break;
 		}
 		case EShapeObjectType::Ellipse:
@@ -1210,7 +1208,7 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 			return HWP_STRING();
 	}
 
-	AddContentType(L"/media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
+	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
 	return AddRelationship(L"image", L"media/" + sFileName);
 }
 
@@ -1333,11 +1331,15 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 	oBuilder.WriteString(L"<w:drawing>");
 
 	if (pCtrlShape->GetTreatAsChar())
+	{
 		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
 		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
 		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
 		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
 		                     L"\">");
+
+		WriteShapeExtent(pCtrlShape, oBuilder);
+	}
 	else
 	{
 		oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
@@ -1349,9 +1351,10 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 		WriteShapePosition(pCtrlShape, oBuilder);
+		WriteShapeExtent(pCtrlShape, oBuilder);
+		WriteShapeWrapMode(pCtrlShape, oBuilder);
 	}
 
-	WriteShapeExtent(pCtrlShape, oBuilder);
 	WriteShapeProperty(pCtrlShape, oBuilder);
 }
 
@@ -1416,6 +1419,21 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"" + GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
 	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
+}
+
+void CConverter2OOXML::WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
+
+	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
+	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
+}
+
+void CConverter2OOXML::WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (nullptr == pCtrlShape)
+		return;
 
 	switch (pCtrlShape->GetTextWrap())
 	{
@@ -1444,15 +1462,6 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 			break;
 		}
 	}
-}
-
-void CConverter2OOXML::WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
-{
-	if (nullptr == pCtrlShape)
-		return;
-
-	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
-	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 }
 
 void CConverter2OOXML::OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

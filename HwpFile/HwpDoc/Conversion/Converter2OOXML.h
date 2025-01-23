@@ -28,6 +28,8 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
+	unsigned short m_ushLastCharShapeId;
+
 	unsigned short m_ushSecdIndex;
 	unsigned int m_unParaIndex;
 
@@ -113,7 +115,7 @@ class CConverter2OOXML
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const HWP_STRING& sExternStyles = L"");
 
 	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
@@ -134,6 +136,8 @@ class CConverter2OOXML
 	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
+	void WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);

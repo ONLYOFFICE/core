@@ -377,6 +377,17 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 	}
 }
 
+void CConverter2OOXML::WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	oBuilder.WriteString(L"<w:r>");
+
+	WriteRunnerStyle(oState.m_ushLastCharShapeId, oBuilder, oState, L"<w:vertAlign w:val=\"superscript\"/>");
+
+	oBuilder.WriteString(m_oFootnoteConverter.CreateNote((const CCtrlNote*)pNote, *this));
+
+	oBuilder.WriteString(L"</w:r>");
+}
+
 void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pParagraph)
@@ -411,7 +422,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 	++oState.m_unParaIndex;
 
-	VECTOR<std::wstring> arNoteRef;
+	std::vector<const CCtrlNote*> arNotes;
 
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
@@ -439,7 +450,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Note:
 			{
-				arNoteRef.push_back(m_oFootnoteConverter.CreateNote((const CCtrlNote*)pCtrl, *this));
+				arNotes.push_back((const CCtrlNote*)pCtrl);
 				break;
 			}
 			case ECtrlObjectType::SectionDef:
@@ -461,20 +472,19 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				break;
 		}
 
-		if (!arNoteRef.empty() && ECtrlObjectType::Note != pCtrl->GetCtrlType() && oState.m_bOpenedP)
+		if (!arNotes.empty() && ECtrlObjectType::Note != pCtrl->GetCtrlType() && oState.m_bOpenedP)
 		{
-			for (const std::wstring& wsNoteRef : arNoteRef)
-				oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
+			for (const CCtrlNote* pNote: arNotes)
+				WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
 
-			arNoteRef.clear();
+			arNotes.clear();
 		}
 	}
 
-	if (oState.m_bOpenedP)
+	if (oState.m_bOpenedP && !arNotes.empty())
 	{
-		if (!arNoteRef.empty())
-			for (const std::wstring& wsNoteRef : arNoteRef)
-				oBuilder.WriteString(L"<w:r>" + wsNoteRef + L"</w:r>");
+		for (const CCtrlNote* pNote: arNotes)
+			WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
 	}
 
 	CloseParagraph(oBuilder, oState);
@@ -1212,7 +1222,7 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 	return AddRelationship(L"image", L"media/" + sFileName);
 }
 
-void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const HWP_STRING& sExternStyles)
 {
 	if (nullptr == m_pContext)
 		return;
@@ -1221,6 +1231,8 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 
 	if (nullptr == pCharShape)
 		return;
+
+	oState.m_ushLastCharShapeId = shCharShapeID;
 
 	oBuilder.WriteString(L"<w:rPr>");
 
@@ -1305,6 +1317,8 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
 
 	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+
+	oBuilder.WriteString(sExternStyles);
 
 	oBuilder.WriteString(L"</w:rPr>");
 
@@ -1786,8 +1800,8 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushSecdIndex(0), m_unParaIndex(0), m_pSectionDef(nullptr),
-      m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
+	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0),
+      m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 
 }

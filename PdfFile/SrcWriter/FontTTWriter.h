@@ -86,12 +86,14 @@ namespace PdfWriter
 		// таблицу 'cmap'.
 		void WriteTTF(CStream* pOutputStream, char *sName = NULL, unsigned short *pCodeToGID = NULL, unsigned int unCodesCount = 0, unsigned char *pUseGlyfs = NULL, long lGlyfsCount = 0);
 		void WriteOTF(CStream* pOutputStream, char *sName = NULL, unsigned short *pCodeToGID = NULL);
+		void WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID = NULL, unsigned int unCodesCount = 0, unsigned char* pUseGlyfs = NULL, long lGlyfsCount = 0);
 
 		int  GetAscent();
 		int  GetDescent();
 		int  GetCapHeight();
 		int* GetBBox();
 		int  GetWeight();
+		bool GetOpenTypeCFF();
 
 	private:
 

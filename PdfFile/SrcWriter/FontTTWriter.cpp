@@ -393,7 +393,7 @@ namespace PdfWriter
 		// Записываем OpenType шрифт не меняя его
 		if (m_bOpenTypeCFF)
 		{
-			WriteOTF(pOutputStream, sName, pCodeToGID);
+			WriteCIDFontType0C(pOutputStream, pCodeToGID, unCodesCount, pUseGlyfs, lGlyfsCount);
 			return;
 		}
 
@@ -1031,6 +1031,98 @@ namespace PdfWriter
 
 		return;
 	}
+	void CFontFileTrueType::WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount, unsigned char* pUseGlyfs, long lGlyfsCount)
+	{
+		if (!m_bOpenTypeCFF)
+		{
+			// Если шрифт не является OpenType CFF, завершаем.
+			return;
+		}
+
+		// Получаем данные таблицы CFF
+		int nCFFIndex = SeekTable("CFF ");
+		if (nCFFIndex < 0)
+			return;
+
+		TrueTypeTable* pCFFTable = &m_pTables[nCFFIndex];
+		unsigned char* pCFFData = m_sFile + pCFFTable->nOffset;
+		int nCFFLength = pCFFTable->nLen;
+
+		// Проверяем, что данные CFF корректны
+		if (nCFFLength < 4 || pCFFData[0] != 1 || pCFFData[1] != 0)
+		{
+			return;
+		}
+
+		// Записываем данные CFF в поток
+		pOutputStream->Write(pCFFData, nCFFLength);
+
+		/*
+		// Начинаем формирование CFF-структуры
+		std::vector<BYTE> cffData;
+
+		// 1. Header
+		cffData.push_back(1); // major version
+		cffData.push_back(0); // minor version
+		cffData.push_back(4); // header size
+		cffData.push_back(1); // offset size
+
+		// 2. Name Index
+		std::vector<BYTE> nameIndex;
+		const char* fontName = "CustomFont"; // Имя шрифта (можно настроить)
+		size_t nameLen = strlen(fontName);
+		nameIndex.push_back(0); // count (MSB)
+		nameIndex.push_back(1); // count (LSB)
+		nameIndex.push_back(1); // offset size
+		nameIndex.push_back(1); // offset to first name
+		nameIndex.push_back(1 + nameLen); // offset to end of name
+		nameIndex.insert(nameIndex.end(), fontName, fontName + nameLen); // Имя шрифта
+		cffData.insert(cffData.end(), nameIndex.begin(), nameIndex.end());
+
+		// 3. Top DICT Index (заглушка)
+		std::vector<BYTE> topDictIndex;
+		topDictIndex.push_back(0); // count (MSB)
+		topDictIndex.push_back(1); // count (LSB)
+		topDictIndex.push_back(1); // offset size
+		topDictIndex.push_back(1); // offset to first DICT
+		topDictIndex.push_back(2); // offset to end of DICT (заглушка, обновится позже)
+		cffData.insert(cffData.end(), topDictIndex.begin(), topDictIndex.end());
+
+		// 4. String Index (пусто)
+		cffData.push_back(0); // count (MSB)
+		cffData.push_back(0); // count (LSB)
+
+		// 5. Global Subroutines Index (пусто)
+		cffData.push_back(0); // count (MSB)
+		cffData.push_back(0); // count (LSB)
+
+		// 6. CharStrings Index
+		std::vector<BYTE> charStrings;
+		charStrings.push_back(0); // count (MSB)
+		charStrings.push_back(static_cast<unsigned char>(unCodesCount)); // count (LSB)
+		charStrings.push_back(1); // offset size
+
+		// Добавляем CharStrings (описание глифов)
+		size_t charStringOffset = 1 + unCodesCount + 1; // первый оффсет
+		for (unsigned int i = 0; i < unCodesCount; ++i)
+		{
+			charStrings.push_back(static_cast<unsigned char>(charStringOffset));
+			charStringOffset += 3; // заглушка для размера (определите реальный размер данных глифа)
+		}
+		charStrings.push_back(static_cast<unsigned char>(charStringOffset)); // последний оффсет
+
+		// Заглушка: заполняем данные глифов фиктивными операторами "endchar"
+		for (unsigned int i = 0; i < unCodesCount; ++i)
+		{
+			charStrings.push_back(14); // оператор endchar
+		}
+
+		cffData.insert(cffData.end(), charStrings.begin(), charStrings.end());
+
+		// Записываем данные в поток
+		pOutputStream->Write(reinterpret_cast<const BYTE*>(cffData.data()), cffData.size());
+		*/
+	}
 	int          CFontFileTrueType::GetAscent()
 	{
 		return m_nAscent;
@@ -1051,6 +1143,7 @@ namespace PdfWriter
 	{
 		return m_nWeight;
 	}
+	bool CFontFileTrueType::GetOpenTypeCFF() { return m_bOpenTypeCFF; }
 	unsigned int CFontFileTrueType::ComputeTableChecksum(unsigned char *sData, int nLength)
 	{
 		unsigned int nWord = 0;

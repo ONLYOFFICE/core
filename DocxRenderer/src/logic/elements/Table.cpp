@@ -15,7 +15,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:tcPr>");
 		oWriter.WriteString(L"<w:tcW w:w=\"");
 		oWriter.AddUInt(static_cast<unsigned int>(m_dWidth * c_dMMToDx));
-		oWriter.WriteString(L"\"w:type=\"dxa\"/>");
+		oWriter.WriteString(L"\" w:type=\"dxa\"/>");
 
 		oWriter.WriteString(L"<w:tcBorders>");
 
@@ -99,7 +99,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:tblPr>");
 		oWriter.WriteString(L"<w:tblW w:w=\"");
 		oWriter.AddUInt(static_cast<unsigned int>(m_dWidth * c_dMMToDx));
-		oWriter.WriteString(L"\"w:type=\"dxa\"/>");
+		oWriter.WriteString(L"\" w:type=\"dxa\"/>");
 		oWriter.WriteString(L"</w:tblPr>");
 
 		oWriter.WriteString(L"<w:tblGrid>");

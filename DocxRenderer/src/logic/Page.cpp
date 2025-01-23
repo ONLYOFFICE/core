@@ -1,7 +1,6 @@
 #include "Page.h"
 
 #include <memory>
-#include <map>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
@@ -1889,6 +1888,10 @@ namespace NSDocxRenderer
 	std::vector<CPage::table_ptr_t> CPage::BuildTables()
 	{
 		auto cells = BuildCells();
+
+		if (cells.empty())
+			return {};
+
 		auto rows = BuildRows(cells);
 		std::vector<table_ptr_t> tables;
 
@@ -1911,21 +1914,27 @@ namespace NSDocxRenderer
 
 		return tables;
 	}
+
 	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
 	{
+		// crossing is a logical intersection between two lines
+		// contains the crossing x,y and pointers to other crossings.
 		struct Crossing
 		{
-			using Line = std::pair<Point, shape_ptr_t&>;
+			using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
 			Point p {};
 			std::vector<Line> lines {};
 		};
-		std::vector<Crossing> crossings;
+
+		// vector contains ptrs for easy exist-check
+		std::vector<std::shared_ptr<Crossing>> crossings;
+
 		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
 			for (auto& crossing : crossings)
 			{
-				if (fabs(crossing.p.x - p.x) < c_dGRAPHICS_ERROR_MM &&
-				        fabs(crossing.p.y - p.y) < c_dGRAPHICS_ERROR_MM)
-					return &crossing;
+				if (fabs(crossing->p.x - p.x) < c_dGRAPHICS_ERROR_MM &&
+				        fabs(crossing->p.y - p.y) < c_dGRAPHICS_ERROR_MM)
+					return crossing.get();
 			}
 			return nullptr;
 		};
@@ -1945,7 +1954,9 @@ namespace NSDocxRenderer
 						const auto& curr = command.points.back();
 
 						// pure vertical / horizontal lines only
-						if (fabs(prev.x - curr.x) > c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > c_dGRAPHICS_ERROR_MM)
+						// not small lines
+						if (fabs(prev.x - curr.x) > c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > c_dGRAPHICS_ERROR_MM ||
+						        (fabs(prev.x - curr.x) < c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) < c_dGRAPHICS_ERROR_MM))
 						{
 							prev = curr;
 							continue;
@@ -1954,26 +1965,34 @@ namespace NSDocxRenderer
 						auto prev_crossing = find_crossing(prev);
 						auto curr_crossing = find_crossing(curr);
 
-						// add empty vector if no exists
+						// add empty crossing if no exists
 						if (!prev_crossing)
 						{
 							Crossing cr;
 							cr.p = prev;
-							cr.lines.push_back({curr, shape});
-							crossings.push_back(std::move(cr));
+							crossings.push_back(std::make_shared<Crossing>(cr));
+							prev_crossing = crossings.back().get();
 						}
-						else
-							prev_crossing->lines.push_back({curr, shape});
-
 						if (!curr_crossing)
 						{
 							Crossing cr;
 							cr.p = curr;
-							cr.lines.push_back({prev, shape});
-							crossings.push_back(std::move(cr));
+							crossings.push_back(std::make_shared<Crossing>(cr));
+							curr_crossing = crossings.back().get();
 						}
-						else
-							curr_crossing->lines.push_back({prev, shape});
+
+						// if crossing not exists
+						auto curr_crossing_eq = [&curr_crossing] (const Crossing::Line& line) -> bool {
+							return line.first == curr_crossing;
+						};
+						if (std::find_if(prev_crossing->lines.begin(), prev_crossing->lines.end(), curr_crossing_eq) == prev_crossing->lines.end())
+							prev_crossing->lines.push_back({curr_crossing, shape});
+
+						auto prev_crossing_eq = [&prev_crossing] (const Crossing::Line& line) -> bool {
+							return line.first == prev_crossing;
+						};
+						if (std::find_if(curr_crossing->lines.begin(), curr_crossing->lines.end(), prev_crossing_eq) == curr_crossing->lines.end())
+							curr_crossing->lines.push_back({prev_crossing, shape});
 
 						prev = curr;
 					}
@@ -1983,10 +2002,10 @@ namespace NSDocxRenderer
 		}
 
 		// sorting guarantee creating cell once (by taking second cross j > i)
-		std::sort(crossings.begin(), crossings.end(), [] (const Crossing& c1, const Crossing& c2) {
-			if (fabs(c1.p.y - c2.p.y) < c_dGRAPHICS_ERROR_MM)
-				return c1.p.x < c2.p.x;
-			return c1.p.y < c2.p.y;
+		std::sort(crossings.begin(), crossings.end(), [] (const std::shared_ptr<Crossing>& c1, const std::shared_ptr<Crossing>& c2) {
+			if (fabs(c1->p.y - c2->p.y) < c_dGRAPHICS_ERROR_MM)
+				return c1->p.x < c2->p.x;
+			return c1->p.y < c2->p.y;
 		});
 
 		std::vector<CTable::cell_ptr_t> cells;
@@ -2000,26 +2019,26 @@ namespace NSDocxRenderer
 
 				// first should be top left corner
 				// and second right bot (not the same line ofc)
-				if (fabs(cr_first.p.x - cr_second.p.x) < c_dGRAPHICS_ERROR_MM ||
-				        cr_first.p.x > cr_second.p.x ||
-				        fabs(cr_first.p.y - cr_second.p.y) < c_dGRAPHICS_ERROR_MM ||
-				        cr_first.p.y > cr_second.p.y)
+				if (fabs(cr_first->p.x - cr_second->p.x) < c_dGRAPHICS_ERROR_MM ||
+				        cr_first->p.x > cr_second->p.x ||
+				        fabs(cr_first->p.y - cr_second->p.y) < c_dGRAPHICS_ERROR_MM ||
+				        cr_first->p.y > cr_second->p.y)
 					continue;
 
 				// 2 points should be the same
 				size_t equals = 0;
-				for (const auto& fl : cr_first.lines)
-					for (const auto& sl : cr_second.lines)
-						if (fabs(fl.first.x - sl.first.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.first.y - sl.first.y) < c_dGRAPHICS_ERROR_MM)
+				for (const auto& fl : cr_first->lines)
+					for (const auto& sl : cr_second->lines)
+						if (fabs(fl.first->p.x - sl.first->p.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.first->p.y - sl.first->p.y) < c_dGRAPHICS_ERROR_MM)
 							++equals;
 
 				if (equals == 2)
 				{
 					auto cell = std::make_shared<CTable::CCell>();
-					cell->m_dLeft = cr_first.p.x;
-					cell->m_dRight = cr_second.p.x;
-					cell->m_dTop = cr_first.p.y;
-					cell->m_dBaselinePos = cr_second.p.y;
+					cell->m_dLeft = cr_first->p.x;
+					cell->m_dRight = cr_second->p.x;
+					cell->m_dTop = cr_first->p.y;
+					cell->m_dBaselinePos = cr_second->p.y;
 					cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
 					cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
 
@@ -2029,28 +2048,28 @@ namespace NSDocxRenderer
 					shape_ptr_t l_left {nullptr};
 					shape_ptr_t l_right {nullptr};
 
-					for (const auto& fl : cr_first.lines)
+					for (const auto& fl : cr_first->lines)
 					{
-						if (fl.first.x - cr_first.p.x > 0 && fabs(fl.first.y - cr_first.p.y) < c_dGRAPHICS_ERROR_MM)
+						if (fl.first->p.x - cr_first->p.x > 0 && fabs(fl.first->p.y - cr_first->p.y) < c_dGRAPHICS_ERROR_MM)
 						{
 							l_top = fl.second;
 							remove_later.push_back(fl.second);
 						}
-						if (fl.first.y - cr_first.p.y > 0 && fabs(fl.first.x - cr_first.p.x) < c_dGRAPHICS_ERROR_MM)
+						if (fl.first->p.y - cr_first->p.y > 0 && fabs(fl.first->p.x - cr_first->p.x) < c_dGRAPHICS_ERROR_MM)
 						{
 							l_left = fl.second;
 							remove_later.push_back(fl.second);
 						}
 					}
-					for (const auto& sl : cr_second.lines)
+					for (const auto& sl : cr_second->lines)
 					{
 						// TODO not to remove full shape. Remove only needed commands (split the shape)
-						if (cr_second.p.x - sl.first.x > 0 && fabs(sl.first.y - cr_second.p.y) < c_dGRAPHICS_ERROR_MM)
+						if (cr_second->p.x - sl.first->p.x > 0 && fabs(sl.first->p.y - cr_second->p.y) < c_dGRAPHICS_ERROR_MM)
 						{
 							l_bot = sl.second;
 							remove_later.push_back(sl.second);
 						}
-						if (cr_second.p.y - sl.first.y > 0 && fabs(sl.first.x - cr_second.p.x) < c_dGRAPHICS_ERROR_MM)
+						if (cr_second->p.y - sl.first->p.y > 0 && fabs(sl.first->p.x - cr_second->p.x) < c_dGRAPHICS_ERROR_MM)
 						{
 							l_right = sl.second;
 							remove_later.push_back(sl.second);
@@ -2087,10 +2106,14 @@ namespace NSDocxRenderer
 				if (!paragraph)
 					continue;
 
-				bool top = fabs(cell->m_dTop - paragraph->m_dTop) < 2 * c_dGRAPHICS_ERROR_MM || paragraph->m_dTop > cell->m_dTop;
-				bool bot = fabs(cell->m_dBaselinePos - paragraph->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM || paragraph->m_dBaselinePos < cell->m_dBaselinePos;
-				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM || paragraph->m_dLeft > cell->m_dLeft;
-				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM || paragraph->m_dRight < cell->m_dRight;
+				bool top = fabs(cell->m_dTop - paragraph->m_arLines.front()->m_dTopWithMaxAscent) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_arLines.front()->m_dTopWithMaxAscent > cell->m_dTop;
+				bool bot = fabs(cell->m_dBaselinePos - paragraph->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dBaselinePos < cell->m_dBaselinePos;
+				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dLeft > cell->m_dLeft;
+				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dRight < cell->m_dRight;
 				if (top && bot && left && right)
 				{
 					cell->AddParagraph(paragraph);

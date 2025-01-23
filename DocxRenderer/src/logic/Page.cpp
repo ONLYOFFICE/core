@@ -176,14 +176,14 @@ namespace NSDocxRenderer
 			if (lType & c_nStroke)
 			{
 				s->m_bIsNoStroke = false;
-				s->m_oPen = m_oPen;
-				s->m_oPen.Size *= transform_det;
 			}
 			if (lType & c_nWindingFillMode || lType & c_nEvenOddFillMode)
 			{
 				s->m_bIsNoFill = false;
 				s->m_oBrush = m_oBrush;
 			}
+			s->m_oPen = m_oPen;
+			s->m_oPen.Size *= transform_det;
 		};
 
 		if (!m_arShapes.empty())

@@ -532,6 +532,40 @@ ZLib.prototype.getImageAsSvg = function(path)
 	return string;
 };
 /**
+ * Get image file raw data. this memory was copied and detach from archive.
+ * @returns {Uint8Array}
+ */
+ZLib.prototype.getImageBuffer = function(path)
+{
+	let result = {
+		type : 0,
+		data : null
+	};
+	result.type = this.getImageType(path);
+	if (result.type != 10 && 
+		result.type != 21)
+	{
+		let fileData = this.getFile(path);
+		result.data = new Uint8Array(fileData.length);
+		result.data.set(fileData);
+		return result;
+	}
+
+	result.type = 24;
+
+	let fileData = this.getFile(path);
+	let encodedData = Module["_Raster_Encode"](this.files[path].p + 4, fileData.length, 24);
+	let encodedSize = Module["_Raster_GetEncodedSize"](encodedData);
+	let encodedBuffer = Module["_Raster_GetEncodedBuffer"](encodedData);
+
+	let fileDataEnc = new Uint8Array(Module["HEAP8"].buffer, encodedBuffer, encodedSize);
+	result.data = new Uint8Array(fileDataEnc.length);
+	result.data.set(fileDataEnc);
+	
+	Module["_Raster_DestroyEncodedData"](encodedData);
+	return result;
+};
+/**
  * Get image blob for browser
  * @returns {Blob}
  */

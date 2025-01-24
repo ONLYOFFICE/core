@@ -258,3 +258,56 @@ JSSmart<CJSValue> CZipEmbed::getImageType(JSSmart<CJSValue> typedArray)
 		oBuffer.Free();
 	return CJSContext::createInt(bIsImageFile ? oChecker.eFileType : 0);
 }
+
+JSSmart<CJSValue> CZipEmbed::getImageBuffer(JSSmart<CJSValue> filePath)
+{
+	if (!m_pFolder || !filePath->isString())
+		return CJSContext::createNull();
+
+	std::wstring sFilePath = filePath->toStringW();
+	IFolder::CBuffer* pBuffer;
+	if (!m_pFolder->read(sFilePath, pBuffer))
+		return CJSContext::createNull();
+
+	size_t nBufferSize = (size_t)pBuffer->Size;
+
+	CImageFileFormatChecker oChecker;
+	bool bIsImageFile = oChecker.isImageFile(pBuffer->Buffer, (DWORD)pBuffer->Size);
+
+	if (!bIsImageFile)
+	{
+		RELEASEOBJECT(pBuffer);
+		return CJSContext::createNull();
+	}
+
+	if (oChecker.eFileType != _CXIMAGE_FORMAT_WMF && oChecker.eFileType != _CXIMAGE_FORMAT_EMF)
+	{
+		BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
+		memcpy(pMemory, pBuffer->Buffer, nBufferSize);
+		RELEASEOBJECT(pBuffer);
+
+		JSSmart<CJSObject> retObject = CJSContext::createObject();
+		retObject->set("type", CJSContext::createInt(oChecker.eFileType));
+		retObject->set("data", NSJSBase::CJSContext::createUint8Array(pMemory, (int)nBufferSize, false));
+		return retObject->toValue();
+	}
+
+#ifndef GRAPHICS_DISABLE_METAFILE
+	MetaFile::IMetaFile* pMetaFile = MetaFile::Create(NULL);
+	pMetaFile->LoadFromBuffer(pBuffer->Buffer, (unsigned int)pBuffer->Size);
+	std::wstring wsSvg = pMetaFile->ConvertToSvg();
+	std::string sSvg = U_TO_UTF8(wsSvg);
+	pMetaFile->Release();
+	RELEASEOBJECT(pBuffer);
+
+	BYTE* pData = NSAllocator::Alloc(sSvg.length());
+	memcpy(pData, sSvg.c_str(), sSvg.length());
+
+	JSSmart<CJSObject> retObject = CJSContext::createObject();
+	retObject->set("type", CJSContext::createInt(24));
+	retObject->set("data", NSJSBase::CJSContext::createUint8Array(pData, sSvg.length(), false));
+	return retObject->toValue();
+#else
+	return CJSContext::createNull();
+#endif
+}

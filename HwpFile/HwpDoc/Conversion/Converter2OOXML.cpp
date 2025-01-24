@@ -1,5 +1,7 @@
 #include "Converter2OOXML.h"
 
+#include <cfloat>
+
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"

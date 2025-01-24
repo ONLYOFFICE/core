@@ -465,10 +465,22 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 	}
 }
 
+void CConverter2OOXML::WriteCaption(const CCtrlCommon* pCtrlCommon, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	if (nullptr == pCtrlCommon || !pCtrlCommon->HaveCaption())
+		return;
+
+	for (const CCapParagraph* pCapParagraph : pCtrlCommon->GetCaptionParas())
+		WriteParagraph(pCapParagraph, oBuilder, oState);
+}
+
 void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pParagraph)
 		return;
+
+	CloseParagraph(oBuilder, oState);
+	OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
 
 	if (0 < pParagraph->GetBreakType())
 	{
@@ -897,6 +909,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (EShapeObjectType::Unknown == eShapeType)
 		return;
 
+	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
+
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHeight()));
 
@@ -1120,7 +1134,7 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	m_oDocXml.WriteString(L"</w:sectPr>");
 }
 
-void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
+void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCtrlPic)
 		return;
@@ -1129,6 +1143,8 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 
 	if (sPictureID.empty())
 		return;
+
+	WriteCaption((const CCtrlCommon*)pCtrlPic, oBuilder, oState);
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
@@ -1154,7 +1170,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 		oBuilder.WriteString(L"</w:p>");
 }
 
-void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, const TConversionState& oState)
+void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCtrlVideo)
 		return;
@@ -1163,6 +1179,8 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 
 	if (sPictureID.empty())
 		return;
+
+	WriteCaption((const CCtrlCommon*)pCtrlVideo, oBuilder, oState);
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
@@ -1319,6 +1337,8 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 		if (!SaveSVGFile(UTF8_TO_U(sSVG), sFileName))
 			return HWP_STRING();
 	}
+
+	++m_ushShapeCount;
 
 	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
 	return AddRelationship(L"image", L"media/" + sFileName);
@@ -1877,6 +1897,7 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 		return;
 
 	unsigned short ushValue = 0;
+	HWP_STRING wsType;
 
 	//TODO:: лучше перейти не на ручной подсчет, а на автоматический в word (но там есть свои проблемы)
 	switch (pAutoNumber->GetNumType())
@@ -1889,17 +1910,32 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 		case ENumType::ENDNOTE:
 			ushValue = m_oFootnoteConverter.GetEndnoteCount(); break;
 		case ENumType::FIGURE:
+		{
+			wsType = L"Figure";
 			ushValue = m_ushShapeCount; break;
+		}
 		case ENumType::TABLE:
+		{
+			wsType = L"Table";
 			ushValue = m_ushTableCount; break;
+		}
 		case ENumType::EQUATION:
+		{
+			wsType = L"Equation";
 			ushValue = m_ushEquationCount; break;
+		}
 	}
 
 	if (0 == ushValue)
 		return;
 
+	if (!wsType.empty())
+		oBuilder.WriteString(L"<w:fldSimple w:instr=\" SEQ " + wsType + L" \\* ARABIC \">");
+
 	WriteText(std::to_wstring(ushValue), shParaShapeID, shCharShapeID, oBuilder, oState);
+
+	if (!wsType.empty())
+		oBuilder.WriteString(L"</w:fldSimple>");
 }
 
 HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget)

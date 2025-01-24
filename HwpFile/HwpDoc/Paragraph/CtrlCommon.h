@@ -149,6 +149,9 @@ public:
 	HWP_BYTE GetTextFlow() const;
 	int GetZOrder() const;
 
+	bool HaveCaption() const;
+	VECTOR<const CCapParagraph*> GetCaptionParas() const;
+
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

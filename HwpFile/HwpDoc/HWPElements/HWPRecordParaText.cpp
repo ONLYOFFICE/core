@@ -129,6 +129,8 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		// Пока данный вариант невозможен
 		else if (6 == itCurrent->length())
 		{
+			UPDATE_CURRENT_TEXT();
+
 			//TODO:: Проверить
 			HWP_STRING sInfo = sText.substr(itCurrent->position(), 2);
 			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");

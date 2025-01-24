@@ -601,6 +601,11 @@ bool convert_equation(std::wstring formula, std::wstring &result)
 			{
 				function = L"abs"; pos += 3;
 			}
+			else if (pos + 2 < formula.size() && formula[pos + 1] == L't' && formula[pos + 2] == L'a' && formula[pos + 3] == L'n' && formula[pos + 4] == L'2')
+			{
+				function = L"atan2"; pos += 5;
+			}
+			else pos++;
 		}
 		else if (formula[pos] == L'b')
 		{//bottom

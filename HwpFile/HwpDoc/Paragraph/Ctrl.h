@@ -22,6 +22,7 @@ enum class ECtrlObjectType
 	Table,
 	ParaText,
 	Common,
+	Field,
 
 	Empty
 };

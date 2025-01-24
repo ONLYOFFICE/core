@@ -50,6 +50,7 @@ SOURCES += \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
+    HwpDoc/Paragraph/CCtrlField.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
     HwpDoc/Paragraph/CellParagraph.cpp \
     HwpDoc/Paragraph/CharShape.cpp \
@@ -134,6 +135,7 @@ HEADERS += \
     HwpDoc/OLEdoc/DirectoryEntry.h \
     HwpDoc/OLEdoc/Sector.h \
     HwpDoc/OLEdoc/SectorType.h \
+    HwpDoc/Paragraph/CCtrlField.h \
     HwpDoc/Paragraph/CapParagraph.h \
     HwpDoc/Paragraph/CellParagraph.h \
     HwpDoc/Paragraph/CharShape.h \

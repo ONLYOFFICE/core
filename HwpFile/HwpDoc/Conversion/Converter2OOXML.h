@@ -1,9 +1,9 @@
 #ifndef CONVERTER2OOXML_H
 #define CONVERTER2OOXML_H
 
-#include "../HWPFile.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
+#include "../Paragraph/CCtrlField.h"
 #include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapeVideo.h"
@@ -13,6 +13,8 @@
 #include "../Paragraph/CtrlShapeOle.h"
 #include "../Paragraph/CtrlEqEdit.h"
 #include "../Paragraph/CtrlTable.h"
+#include "../Paragraph/CtrlNote.h"
+
 #include "../Paragraph/TblCell.h"
 
 #include "FootnoteConverter.h"
@@ -43,6 +45,8 @@ struct TConversionState
 		TextWrapping,
 		None
 	} m_eBreakType;
+
+	std::map<unsigned int, const CCtrlField*> m_mOpenField;
 
 	TConversionState();
 };
@@ -138,6 +142,9 @@ class CConverter2OOXML
 	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
+	void WriteField(const CCtrlField* pHyperlink, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void CloseField(const CCtrlField* pHyperlink, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);

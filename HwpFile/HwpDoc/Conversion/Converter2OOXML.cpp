@@ -261,7 +261,14 @@ void CConverter2OOXML::Close()
 		oRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
 
 		for (const TRelationship& oRelationship : m_arRelationships)
-			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + oRelationship.m_wsID + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + oRelationship.m_wsType + L"\" Target=\"" + oRelationship.m_wsTarget + L"\"/>");
+		{
+			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + oRelationship.m_wsID + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + oRelationship.m_wsType + L"\" Target=\"" + oRelationship.m_wsTarget + L'\"');
+
+			if (L"hyperlink" == oRelationship.m_wsType)
+				oRelsWriter.WriteStringUTF8(L" TargetMode=\"External\"/>");
+			else
+				oRelsWriter.WriteStringUTF8(L"/>");
+		}
 
 		oRelsWriter.WriteStringUTF8(L"</Relationships>");
 
@@ -388,6 +395,68 @@ void CConverter2OOXML::WriteNote(const CCtrlNote* pNote, short shParaShapeID, NS
 	oBuilder.WriteString(L"</w:r>");
 }
 
+void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	if (nullptr == pShape)
+		return;
+
+	switch (pShape->GetType())
+	{
+		case EFieldType::Hyperlink:
+		{
+			HWP_STRING sCommand = pShape->GetCommand();
+
+			if (sCommand.empty())
+				break;
+
+			sCommand = sCommand.substr(0, sCommand.find(L';'));
+
+			size_t unFound = sCommand.find(L'\\');
+
+			while (HWP_STRING::npos != unFound)
+			{
+				sCommand.erase(unFound, 1);
+				unFound = sCommand.find(L'\\', unFound);
+			}
+
+			const HWP_STRING wsID = AddRelationship(L"hyperlink", sCommand);
+
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:hyperlink r:id=\"" + wsID + L"\">");
+
+			oState.m_mOpenField.insert(std::make_pair(pShape->GetInstanceID(), pShape));
+
+			break;
+		}
+		case EFieldType::HyperlinkClosing:
+		{
+			oBuilder.WriteString(L"</w:hyperlink>");
+			break;
+		}
+		//TODO:: как-будто хочется определить тип закрывающей field на этапе парса hwpx
+		case EFieldType::Unknown:
+		{
+			std::map<unsigned int, const CCtrlField*>::const_iterator itFound = oState.m_mOpenField.find(pShape->GetInstanceID());
+
+			if (oState.m_mOpenField.cend() != itFound)
+			{
+				switch (itFound->second->GetType())
+				{
+					case EFieldType::Hyperlink:
+					{
+						oBuilder.WriteString(L"</w:hyperlink>");
+						break;
+					}
+					default:
+						break;
+				}
+			}
+
+			break;
+		}
+	}
+}
+
 void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pParagraph)
@@ -466,6 +535,11 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			case ECtrlObjectType::AutoNumber:
 			{
 				WriteAutoNumber((const CCtrlAutoNumber*)pCtrl, pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+				break;
+			}
+			case ECtrlObjectType::Field:
+			{
+				WriteField((const CCtrlField*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			default:
@@ -1171,6 +1245,9 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 
 	pSvgReader->SetTempDirectory(m_sTempDirectory);
 	pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
+
+	sFileName = sFileName.substr(0, sFileName.find(L'.'));
+	sFileName += L".png";
 
 	oFrame.SaveFile(m_sTempDirectory + L"/word/media/" + sFileName, 4);
 	oFrame.put_Data(NULL);

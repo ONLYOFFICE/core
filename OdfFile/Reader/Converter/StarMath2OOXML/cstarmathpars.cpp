@@ -980,7 +980,6 @@ namespace StarMath
 		}
 		else
 		{
-			pReader->SetMarkForUnar(true);
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
 			while((IsBinOperatorLowPrior() && (pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetLocalType() == TypeElement::intersection || pReader->GetLocalType() == TypeElement::setminus || pReader->GetLocalType() == TypeElement::setquotient)) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot  && pReader->GetLocalType() != TypeElement::sqrt)))
@@ -1136,11 +1135,16 @@ namespace StarMath
 	void CElementBinOperator::UnaryCheck(CStarMathReader *pReader, CElement *pLastElement)
 	{
 		pReader->ReadingTheNextToken();
-		if(!CParserStarMathString::CheckNewline(pLastElement) && MixedOperators(pReader->GetLocalType()))
-			if(pReader->GetAttribute() != nullptr)
+		if(MixedOperators(pReader->GetLocalType()))
+		{
+			if(CParserStarMathString::CheckNewline(pLastElement))
 				pReader->SetMarkForUnar(true);
-			else pReader->SetMarkForUnar(false);
-		else pReader->SetMarkForUnar(true);
+			else if(pReader->GetAttribute() != nullptr)
+				pReader->SetMarkForUnar(true);
+			else 
+				pReader->SetMarkForUnar(false);
+		}
+		else pReader->SetMarkForUnar(false);
 	}
 	bool CElementBinOperator::IsBinOperatorLowPrior()
 	{

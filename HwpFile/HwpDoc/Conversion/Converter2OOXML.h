@@ -45,6 +45,8 @@ struct TConversionState
 
 	THWPColor *m_pHighlightColor;
 
+	VECTOR<const CCtrlHeadFoot*> m_arCtrlsHeadFoot; //only for hwpx
+
 	const CCtrlSectionDef* m_pSectionDef;
 	const CCtrlColumnDef*  m_pColumnDef;
 

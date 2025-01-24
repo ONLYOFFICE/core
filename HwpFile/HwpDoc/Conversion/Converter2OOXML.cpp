@@ -551,6 +551,12 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				WriteField((const CCtrlField*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
+			case ECtrlObjectType::HeadFoot:
+			{
+				if (EHanType::HWPX == m_pContext->GetType())
+					oState.m_arCtrlsHeadFoot.push_back((const CCtrlHeadFoot*)pCtrl);
+				break;
+			}
 			default:
 				break;
 		}
@@ -1057,7 +1063,17 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 
 	if (nullptr != oState.m_pSectionDef)
 	{
-		for (const CCtrlHeadFoot* pCtrlHeadFoot : oState.m_pSectionDef->GetHeaderFooters())
+		std::vector<const CCtrlHeadFoot*> arCtrlsHeadFoot;
+
+		if (EHanType::HWP == m_pContext->GetType())
+			arCtrlsHeadFoot = oState.m_pSectionDef->GetHeaderFooters();
+		else if (EHanType::HWPX == m_pContext->GetType())
+		{
+			arCtrlsHeadFoot = oState.m_arCtrlsHeadFoot;
+			oState.m_arCtrlsHeadFoot.clear();
+		}
+
+		for (const CCtrlHeadFoot* pCtrlHeadFoot : arCtrlsHeadFoot)
 		{
 			const std::wstring wsID = m_oFootnoteConverter.CreateHeadOrFoot((const CCtrlHeadFoot*)pCtrlHeadFoot, *this);
 

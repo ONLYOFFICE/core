@@ -97,6 +97,48 @@ namespace PdfWriter
 
 		return (int)pTable1->unTag - (int)pTable2->unTag;
 	}
+	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
+	{
+		if (inOffset < 256)
+			return 1;
+		if (inOffset < 65536)
+			return 2;
+		if (inOffset < 1<<24)
+			return 3;
+		return 4;
+	}
+	void WriteOffset(unsigned int nValue, BYTE nSizeOfOffset, CStream* pOutputStream)
+	{
+		switch (nSizeOfOffset)
+		{
+		case 1:
+		{
+			pOutputStream->WriteUChar(nValue & 0xff);
+			break;
+		}
+		case 2:
+		{
+			pOutputStream->WriteUChar((nValue >> 8) & 0xff);
+			pOutputStream->WriteUChar(nValue & 0xff);
+			break;
+		}
+		case 3:
+		{
+			pOutputStream->WriteUChar((nValue >> 16) & 0xff);
+			pOutputStream->WriteUChar((nValue >> 8) & 0xff);
+			pOutputStream->WriteUChar(nValue & 0xff);
+			break;
+		}
+		case 4:
+		{
+			pOutputStream->WriteUChar((nValue >> 24) & 0xff);
+			pOutputStream->WriteUChar((nValue >> 16) & 0xff);
+			pOutputStream->WriteUChar((nValue >> 8) & 0xff);
+			pOutputStream->WriteUChar(nValue & 0xff);
+			break;
+		}
+		}
+	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
 	//----------------------------------------------------------------------------------------
@@ -284,7 +326,7 @@ namespace PdfWriter
 			return NULL;
 
 		CFontFileTrueType *pTTF = new CFontFileTrueType(sBuffer, nLen, true, unIndex);
-		if (!pTTF->m_bSuccess)
+		if (!pTTF->m_bSuccess) // || (pTTF->m_bOpenTypeCFF && nLen > 10000000))
 		{
 			delete pTTF;
 			return NULL;
@@ -1045,7 +1087,7 @@ namespace PdfWriter
 			return;
 
 		TrueTypeTable* pCFFTable = &m_pTables[nCFFIndex];
-		unsigned char* pCFFData = m_sFile + pCFFTable->nOffset;
+		BYTE* pCFFData = m_sFile + pCFFTable->nOffset;
 		int nCFFLength = pCFFTable->nLen;
 
 		// Проверяем, что данные CFF корректны
@@ -1054,8 +1096,38 @@ namespace PdfWriter
 			return;
 		}
 
+		// Header
+		pOutputStream->WriteUChar(pCFFData[0]); // major version - 1
+		pOutputStream->WriteUChar(pCFFData[1]); // minor version - 0
+		pOutputStream->WriteUChar(pCFFData[2]); // header size - 4
+		pOutputStream->WriteUChar(pCFFData[3]); // offset size - offsets - размер смещений в INDEX-таблицах - максимальный из размеров под offset-ы 1-4
+
+		// Name Index
+		BYTE nSizeOfOffset = GetMostCompressedOffsetSize(m_sName.size() + 1);
+		// Количество имён в таблице
+		pOutputStream->WriteUChar(0); // count (MSB)
+		pOutputStream->WriteUChar(1); // count (LSB)
+		pOutputStream->WriteUChar(nSizeOfOffset); // offset size - размер смещений для доступа к данным 1-4
+		// Массив смещений начала каждого имени + конец данных
+		WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first name
+		WriteOffset(m_sName.size() + 1, nSizeOfOffset, pOutputStream); // offset to end of name
+		// Массив имён шрифтов
+		pOutputStream->WriteStr(m_sName.c_str());
+
+		// Top DICT Index
+		// TODO Подготовить Top DICT segment
+		nSizeOfOffset = GetMostCompressedOffsetSize(1); // (Top DICT segment size + 1);
+
+		// Количество Top DICT в таблице
+		pOutputStream->WriteUChar(0); // count (MSB)
+		pOutputStream->WriteUChar(1); // count (LSB)
+		pOutputStream->WriteUChar(nSizeOfOffset); // offset size
+		// Массив смещений начала каждого Top DICT + конец данных
+		WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
+		WriteOffset(1 /* Top DICT segment size + 1 */, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
+
 		// Записываем данные CFF в поток
-		pOutputStream->Write(pCFFData, nCFFLength);
+		// pOutputStream->Write(pCFFData, nCFFLength);
 
 		/*
 		// Начинаем формирование CFF-структуры
@@ -1144,6 +1216,7 @@ namespace PdfWriter
 		return m_nWeight;
 	}
 	bool CFontFileTrueType::GetOpenTypeCFF() { return m_bOpenTypeCFF; }
+	void CFontFileTrueType::SetName(const std::string& sName) { m_sName = sName; }
 	unsigned int CFontFileTrueType::ComputeTableChecksum(unsigned char *sData, int nLength)
 	{
 		unsigned int nWord = 0;

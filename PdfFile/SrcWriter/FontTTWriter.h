@@ -95,6 +95,8 @@ namespace PdfWriter
 		int  GetWeight();
 		bool GetOpenTypeCFF();
 
+		void SetName(const std::string& sName);
+
 	private:
 
 		CFontFileTrueType(char *sBuffer, int nLen, bool bFreeFileData, unsigned int unFontIndex);
@@ -120,6 +122,7 @@ namespace PdfWriter
 		int            m_nDescent;
 		int            m_nCapHeight;
 		int            m_nWeight;
+		std::string    m_sName;
 					   
 		bool           m_bSuccess;
 	};

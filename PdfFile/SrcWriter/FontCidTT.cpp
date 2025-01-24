@@ -480,6 +480,8 @@ namespace PdfWriter
 			m_pFont->Add("BaseFont", sName);
 			m_pFontDescriptor->Add("FontName", sName);
 			m_bNeedAddFontName = false;
+
+			m_pFontFile->SetName(sFontName);
 		}
 
 		return true;

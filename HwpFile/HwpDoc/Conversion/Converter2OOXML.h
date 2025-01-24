@@ -14,6 +14,7 @@
 #include "../Paragraph/CtrlEqEdit.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlNote.h"
+#include "../Paragraph/ParaText.h"
 
 #include "../Paragraph/TblCell.h"
 
@@ -25,6 +26,13 @@
 
 namespace HWP
 {
+struct THWPColor
+{
+	BYTE m_uchRed;
+	BYTE m_uchGreen;
+	BYTE m_uchBlue;
+};
+
 struct TConversionState
 {
 	bool m_bOpenedP;
@@ -34,6 +42,8 @@ struct TConversionState
 
 	unsigned short m_ushSecdIndex;
 	unsigned int m_unParaIndex;
+
+	THWPColor *m_pHighlightColor;
 
 	const CCtrlSectionDef* m_pSectionDef;
 	const CCtrlColumnDef*  m_pColumnDef;
@@ -132,7 +142,8 @@ class CConverter2OOXML
 	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	void WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteText(const CParaText* pParaText, const VECTOR<TRangeTag>& arRangeTags, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteText(const HWP_STRING& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder);

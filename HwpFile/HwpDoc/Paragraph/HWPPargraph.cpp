@@ -67,8 +67,6 @@ CHWPPargraph::~CHWPPargraph()
 {
 	if (nullptr != m_pLineSegs)
 		delete m_pLineSegs;
-
-	CLEAR_ARRAY(TRangeTag, m_arRangeTags);
 }
 
 bool CHWPPargraph::ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion)
@@ -163,9 +161,9 @@ void CHWPPargraph::SetLineSeg(CLineSeg* pLineSeg)
 	m_pLineSegs = pLineSeg;
 }
 
-void CHWPPargraph::AddRangeTag(TRangeTag* pRangeTag)
+void CHWPPargraph::AddRangeTag(const TRangeTag& oRangeTag)
 {
-	m_arRangeTags.push_back(pRangeTag);
+	m_arRangeTags.push_back(oRangeTag);
 }
 
 void CHWPPargraph::AddCtrl(CCtrl* pCtrl)
@@ -227,6 +225,11 @@ HWP_BYTE CHWPPargraph::GetBreakType() const
 const CLineSeg* CHWPPargraph::GetLineSeg() const
 {
 	return m_pLineSegs;
+}
+
+VECTOR<TRangeTag> CHWPPargraph::GetRangeTags() const
+{
+	return m_arRangeTags;
 }
 
 CHWPPargraph* CHWPPargraph::Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

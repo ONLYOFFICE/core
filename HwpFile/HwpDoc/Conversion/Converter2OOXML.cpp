@@ -25,6 +25,14 @@
 
 namespace HWP
 {
+static std::vector<std::pair<THWPColor, std::wstring>> arHighlightColors
+	{{{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
+	  {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
+	  {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
+	  {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
+	  {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+	  {{211, 211, 211}, L"lightGray"}}};
+
 enum class EShapeObjectType
 {
 	Arc,
@@ -499,7 +507,8 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		{
 			case ECtrlObjectType::ParaText:
 			{
-				WriteText(((const CParaText*)pCtrl)->GetText(), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+				WriteText((const CParaText*)pCtrl, pParagraph->GetRangeTags(), pParagraph->GetShapeID(),  oBuilder, oState);
+				// WriteText(((const CParaText*)pCtrl)->GetText(), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Character:
@@ -1299,6 +1308,26 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 	return AddRelationship(L"image", L"media/" + sFileName);
 }
 
+HWP_STRING ConvertIntRgbToStr(const THWPColor& oCurrentColor)
+{
+	std::wstring wsSelectedColor;
+	double dMinDistance = DBL_MAX;
+	double dDistance;
+
+	for (const std::pair<THWPColor, std::wstring>& oColor : arHighlightColors)
+	{
+		dDistance = sqrt(pow(oCurrentColor.m_uchRed - oColor.first.m_uchRed, 2) + pow(oCurrentColor.m_uchGreen - oColor.first.m_uchGreen, 2) + pow(oCurrentColor.m_uchBlue - oColor.first.m_uchBlue, 2));
+
+		if (dDistance < dMinDistance)
+		{
+			dMinDistance = dDistance;
+			wsSelectedColor = oColor.second;
+		}
+	}
+
+	return wsSelectedColor;
+}
+
 void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const HWP_STRING& sExternStyles)
 {
 	if (nullptr == m_pContext)
@@ -1394,6 +1423,9 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
 
 	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+
+	if (nullptr != oState.m_pHighlightColor)
+		oBuilder.WriteString(L"<w:highlight w:val=\"" + ConvertIntRgbToStr(*oState.m_pHighlightColor) + L"\"/>");
 
 	oBuilder.WriteString(sExternStyles);
 
@@ -1574,6 +1606,68 @@ void CConverter2OOXML::CloseParagraph(NSStringUtils::CStringBuilder& oBuilder, T
 	oState.m_bOpenedP = false;
 }
 
+void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<TRangeTag>& arRangeTags, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	if (nullptr == pParaText)
+		return;
+
+	if (arRangeTags.empty())
+	{
+		WriteText(pParaText->GetText(), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+		return;
+	}
+
+	HWP_STRING wsText = pParaText->GetText();
+	int nParaTextPosition = pParaText->GetStartIDx();
+	int unStartText = 0;
+
+	for (size_t unTextPosition = 0; unTextPosition < wsText.length(); ++unTextPosition)
+	{
+		for (const TRangeTag& oRangeTag : arRangeTags)
+		{
+			if (unTextPosition + nParaTextPosition == oRangeTag.m_nStartPos)
+			{
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition - 1;
+
+				switch (oRangeTag.m_chType)
+				{
+					case 0x02: //highlight
+					{
+						oState.m_pHighlightColor = new THWPColor{(unsigned char)oRangeTag.m_arData[0], (unsigned char)oRangeTag.m_arData[1], (unsigned char)oRangeTag.m_arData[2]};
+						break;
+					}
+					default:
+						break;
+				}
+			}
+			else if (unTextPosition + nParaTextPosition == oRangeTag.m_nEndPos)
+			{
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition - 1;
+
+				switch (oRangeTag.m_chType)
+				{
+					case 0x02: //highlight
+					{
+						if (nullptr != oState.m_pHighlightColor)
+						{
+							delete oState.m_pHighlightColor;
+							oState.m_pHighlightColor = nullptr;
+						}
+						break;
+					}
+					default:
+						break;
+				}
+			}
+		}
+	}
+
+	if (unStartText < wsText.length())
+		WriteText(wsText.substr(unStartText), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+}
+
 std::vector<std::wstring> SplitText(const std::wstring& wsText)
 {
 	if (wsText.empty())
@@ -1605,7 +1699,7 @@ std::vector<std::wstring> SplitText(const std::wstring& wsText)
 	return arTexts;
 }
 
-void CConverter2OOXML::WriteText(const std::wstring& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	OpenParagraph(shParaShapeID, oBuilder, oState);
 
@@ -1877,7 +1971,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0),
+	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

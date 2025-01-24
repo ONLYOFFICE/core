@@ -13,6 +13,8 @@
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlShapePolygon.h"
+#include "../Paragraph/CtrlShapeCurve.h"
 
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
@@ -360,6 +362,8 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 		case EShapeType::Ellipse:
 		case EShapeType::Rect:
 		case EShapeType::Line:
+		case EShapeType::Polygon:
+		case EShapeType::Curve:
 		{
 			WriteGeometryShape(pShape, oBuilder, oState);
 			break;
@@ -387,9 +391,7 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 		case EShapeType::GeneralShape:
 		case EShapeType::ConnectLine:
 		case EShapeType::Container:
-		case EShapeType::Polygon:
 		case EShapeType::TextArt:
-		case EShapeType::Curve:
 			break;
 	}
 }
@@ -839,8 +841,6 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 		for (const CHWPPargraph* pParagraph : pCell->GetParagraphs())
 		{
 			TConversionState oCellState;
-			// Так как даже в пустой ячейки нужен параграф, то открываем его заранее, чтобы он 100% был (закроется он автоматически в WriteParagraph)
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oCellState);
 			WriteParagraph(pParagraph, oBuilder, oCellState);
 		}
 	}
@@ -954,10 +954,53 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 			oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 			break;
 		}
+		case EShapeObjectType::Polygon:
+		{
+			VECTOR<TPoint> arPoints{((const CCtrlShapePolygon*)pGeneralShape)->GetPoints()};
+
+			if (2 > arPoints.size())
+				break;
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+
+			for (unsigned short ushIndex = 1; ushIndex < arPoints.size(); ++ushIndex)
+				oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nY)) + L"\"/></a:lnTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			break;
+		}
 		case EShapeObjectType::Curve:
+		{
+			VECTOR<TPoint> arPoints{((const CCtrlShapeCurve*)pGeneralShape)->GetPoints()};
+
+			if (2 > arPoints.size())
+				break;
+
+			VECTOR<HWP_BYTE> arSegmentType{((const CCtrlShapeCurve*)pGeneralShape)->GetSegmentsType()};
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+
+			for (unsigned short ushIndex = 0; ushIndex < arSegmentType.size(); ++ushIndex)
+			{
+				if (0x01 == arSegmentType[ushIndex])
+				{
+					oBuilder.WriteString(L"<a:cubicBezTo>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"</a:cubicBezTo>");
+					ushIndex += 2;
+				}
+				else
+					oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/></a:lnTo>");
+			}
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			break;
+		}
 		case EShapeObjectType::Ole:
 		case EShapeObjectType::Picture:
-		case EShapeObjectType::Polygon:
 		case EShapeObjectType::Unknown:
 			break;
 	}
@@ -1792,11 +1835,14 @@ void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralSh
 
 void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (ELineStyle2::NONE == eLineStyle || 0 >= nThick)
+	if (ELineStyle2::NONE == eLineStyle)
 	{
 		oBuilder.WriteString(L"<a:ln><a:noFill/></a:ln>");
 		return;
 	}
+
+	if (0 == nThick)
+		nThick = 100;
 
 	oBuilder.WriteString(L"<a:ln");
 

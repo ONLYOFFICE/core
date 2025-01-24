@@ -1,9 +1,9 @@
 #ifndef CONVERTER2OOXML_H
 #define CONVERTER2OOXML_H
 
-#include "../HWPFile.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
+#include "../Paragraph/CCtrlField.h"
 #include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapeVideo.h"
@@ -13,6 +13,8 @@
 #include "../Paragraph/CtrlShapeOle.h"
 #include "../Paragraph/CtrlEqEdit.h"
 #include "../Paragraph/CtrlTable.h"
+#include "../Paragraph/CtrlNote.h"
+
 #include "../Paragraph/TblCell.h"
 
 #include "FootnoteConverter.h"
@@ -28,6 +30,8 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 
+	unsigned short m_ushLastCharShapeId;
+
 	unsigned short m_ushSecdIndex;
 	unsigned int m_unParaIndex;
 
@@ -41,6 +45,8 @@ struct TConversionState
 		TextWrapping,
 		None
 	} m_eBreakType;
+
+	std::map<unsigned int, const CCtrlField*> m_mOpenField;
 
 	TConversionState();
 };
@@ -113,13 +119,14 @@ class CConverter2OOXML
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const HWP_STRING& sExternStyles = L"");
 
 	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void OpenParagraph(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
@@ -133,6 +140,11 @@ class CConverter2OOXML
 	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
+	void WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
+	void WriteField(const CCtrlField* pHyperlink, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void CloseField(const CCtrlField* pHyperlink, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);

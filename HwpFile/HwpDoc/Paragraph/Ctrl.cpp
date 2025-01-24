@@ -6,6 +6,7 @@
 #include "CtrlNewNumber.h"
 #include "CtrlNote.h"
 #include "CtrlPageNumPos.h"
+#include "CCtrlField.h"
 
 namespace HWP
 {
@@ -67,6 +68,9 @@ CCtrl* CCtrl::GetCtrl(CXMLNode& oNode, int nVersion)
 		return new CCtrlNewNumber(L"onwn", oNode, nVersion);
 	else if (L"hp:pageNum" == oNode.GetName())
 		return new CCtrlPageNumPos(L"pngp", oNode, nVersion);
+	else if (L"hp:fieldBegin" == oNode.GetName() ||
+	         L"hp:fieldEnd" == oNode.GetName())
+		return new CCtrlField(L"", oNode, nVersion);
 
 	return nullptr;
 }

@@ -1793,7 +1793,7 @@ void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, 
 
 	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
+	oBuilder.WriteString(L"<w:t>");
 	oBuilder.WriteEncodeXmlString(wsText);
 	oBuilder.WriteString(L"</w:t></w:r>");
 

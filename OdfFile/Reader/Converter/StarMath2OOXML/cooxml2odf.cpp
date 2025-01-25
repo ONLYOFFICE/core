@@ -1284,8 +1284,8 @@ namespace StarMath
 		StValuePr stBarPr;
 		if(pBarPr == nullptr)
 			return stBarPr;
-		if(pBarPr->m_oPos.GetPointer() != nullptr)
-			stBarPr.m_enPos = pBarPr->m_oPos.GetPointer()->m_val.GetPointer()->GetValue();
+		if(pBarPr->m_oPos.IsInit() && pBarPr->m_oPos->m_val.IsInit())
+			stBarPr.m_enPos = pBarPr->m_oPos->m_val->GetValue();
 		stStyle = ConversionCtrlPr(pBarPr->m_oCtrlPr.GetPointer());
 		return stBarPr;		
 	}

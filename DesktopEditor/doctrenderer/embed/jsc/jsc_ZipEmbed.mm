@@ -17,6 +17,7 @@
 -(JSValue*) encodeImageData : (JSValue*)typedArray : (JSValue*)w : (JSValue*)h : (JSValue*)stride : (JSValue*)format : (JSValue*)isRgba;
 -(JSValue*) encodeImage : (JSValue*)typedArray : (JSValue*)format;
 -(JSValue*) getImageType : (JSValue*)typedArray;
+-(JSValue*) getImageBuffer : (JSValue*)path;
 @end
 
 @interface CJSCZipEmbed : NSObject<IJSCZipEmbed, JSEmbedObjectProtocol>
@@ -41,6 +42,7 @@ FUNCTION_WRAPPER_JS_2(decodeImage, decodeImage)
 FUNCTION_WRAPPER_JS_6(encodeImageData, encodeImageData)
 FUNCTION_WRAPPER_JS_2(encodeImage, encodeImage)
 FUNCTION_WRAPPER_JS_1(getImageType, getImageType)
+FUNCTION_WRAPPER_JS_1(getImageBuffer, getImageBuffer)
 @end
 
 class CZipEmbedAdapter : public CJSEmbedObjectAdapterJSC

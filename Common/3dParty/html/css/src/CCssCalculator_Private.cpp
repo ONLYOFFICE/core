@@ -5,12 +5,9 @@
 #include <fstream>
 #include <cmath>
 #include <algorithm>
-#include <iostream>
 #include <numeric>
 
 #include "../../katana-parser/src/selector.h"
-#include "../../../../../UnicodeConverter/UnicodeConverter.h"
-#include "ConstValues.h"
 #include "../../../../../DesktopEditor/common/File.h"
 #include "StaticFunctions.h"
 
@@ -41,58 +38,120 @@ bool operator<(const std::vector<NSCSS::CNode> &arLeftSelectors, const std::vect
 
 namespace NSCSS
 {
-	CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_sEncoding(L"UTF-8"){}
+	CStyleStorage::CStyleStorage()
+	{}
 
-	CCssCalculator_Private::~CCssCalculator_Private()
+	CStyleStorage::~CStyleStorage()
 	{
-		m_arFiles.clear();
-
-		for (std::map<std::wstring, CElement*>::iterator oIter = m_mData.begin(); oIter != m_mData.end(); ++oIter)
-			if (oIter->second != NULL)
-				delete oIter->second;
-
-		m_mData.clear();
+		Clear();
 	}
 
-	inline void CCssCalculator_Private::GetOutputData(KatanaOutput *oOutput)
+	void CStyleStorage::Clear()
 	{
-		if ( NULL == oOutput )
-			return;
+		for (TStyleFileData* pStyleFileData : m_arStyleFiles)
+		{
+			if (nullptr == pStyleFileData)
+				continue;
 
-		switch (oOutput->mode) {
-			case KatanaParserModeStylesheet:
-				GetStylesheet(oOutput->stylesheet);
-				break;
-			case KatanaParserModeRule:
-				GetRule(oOutput->rule);
-				break;
-			case KatanaParserModeKeyframeRule:
-			case KatanaParserModeKeyframeKeyList:
-			case KatanaParserModeMediaList:
-			case KatanaParserModeValue:
-			case KatanaParserModeSelector:
-			case KatanaParserModeDeclarationList:
-				break;
+			for (std::map<std::wstring, CElement*>::iterator oIter = pStyleFileData->m_mStyleData.begin(); oIter != pStyleFileData->m_mStyleData.end(); ++oIter)
+				if (oIter->second != nullptr)
+					delete oIter->second;
+
+			delete pStyleFileData;
 		}
 
+		m_arStyleFiles.clear();
+		m_arEmptyStyleFiles.clear();
+
+		ClearEmbeddedStyles();
+		ClearAllowedStyleFiles();
+
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		ClearPageData();
+		#endif
+	}
+
+	void CStyleStorage::AddStyles(const std::string& sStyle)
+	{
+		if (sStyle.empty())
+			return;
+
+		KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
+		this->GetOutputData(output, m_mEmbeddedStyleData);
+		katana_destroy_output(output);
+	}
+
+	void CStyleStorage::AddStyles(const std::wstring& wsStyle)
+	{
+		if (wsStyle.empty())
+			return;
+
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
+		std::wsmatch oMatch;
+		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
+
+		while (std::regex_search(oSearchStart, wsStyle.cend(), oMatch, oRegex))
+		{
+			AddPageData(oMatch[1].str(), oMatch[2].str());
+			oSearchStart = oMatch.suffix().first;
+		}
+		#endif
+
+		AddStyles(U_TO_UTF8(wsStyle));
+	}
+
+	void CStyleStorage::AddStylesFromFile(const std::wstring& wsFileName)
+	{
+		std::set<std::wstring>::const_iterator itEmptyFileFound = m_arEmptyStyleFiles.find(wsFileName);
+
+		if (m_arEmptyStyleFiles.cend() != itEmptyFileFound)
+			return;
+
+		std::vector<TStyleFileData*>::const_iterator itFound = std::find_if(m_arStyleFiles.cbegin(), m_arStyleFiles.cend(),
+		                                                                    [wsFileName](const TStyleFileData* pStyleFileData)
+		                                                                    { return wsFileName == pStyleFileData->m_wsStyleFilepath; });
+
+		m_arAllowedStyleFiles.insert(wsFileName);
+
+		if (m_arStyleFiles.cend() != itFound)
+			return;
+
+		TStyleFileData *pStyleFileData = new TStyleFileData();
+
+		pStyleFileData->m_wsStyleFilepath = wsFileName;
+
+		AddStyles(NS_STATIC_FUNCTIONS::GetContentAsUTF8(wsFileName), pStyleFileData->m_mStyleData);
+
+		if (!pStyleFileData->m_mStyleData.empty())
+			m_arStyleFiles.push_back(pStyleFileData);
+		else
+		{
+			m_arEmptyStyleFiles.insert(wsFileName);
+			delete pStyleFileData;
+		}
+	}
+
+	void CStyleStorage::ClearStylesFromFile(const std::wstring& wsFileName)
+	{
+		std::vector<TStyleFileData*>::const_iterator itFound = std::find_if(m_arStyleFiles.cbegin(), m_arStyleFiles.cend(),
+																			[wsFileName](const TStyleFileData* pStyleFileData)
+																			{ return wsFileName == pStyleFileData->m_wsStyleFilepath; });
+
+		if (m_arStyleFiles.cend() != itFound)
+		{
+			m_arStyleFiles.erase(itFound);
+			delete *itFound;
+		}
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
-	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
+	void CStyleStorage::AddPageData(const std::wstring& wsPageName, const std::wstring& wsStyles)
 	{
-		if (m_arPageDatas.empty())
-			return {};
-
-		for (const TPageData& oPageData : m_arPageDatas)
-		{
-			if (std::find(oPageData.m_wsNames.begin(), oPageData.m_wsNames.end(), wsPageName) != oPageData.m_wsNames.end())
-				return oPageData.m_mData;
-		}
-
-		return {};
+		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageName), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
 	}
-	
-	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
+
+	void CStyleStorage::SetPageData(NSProperties::CPage& oPage, const std::map<std::wstring, std::wstring>& mData, unsigned int unLevel, bool bHardMode)
 	{
 		for (const std::pair<std::wstring, std::wstring> &oData : mData)
 		{
@@ -107,149 +166,84 @@ namespace NSCSS
 		}
 	}
 
-	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors)
+	std::map<std::wstring, std::wstring> CStyleStorage::GetPageData(const std::wstring& wsPageName)
 	{
-		std::vector<std::wstring> arNodes;
-		
-		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
-		{
-			if (!oNode->m_wsName.empty())
-				arNodes.push_back(oNode->m_wsName);
-
-			if (!oNode->m_wsClass.empty())
-			{
-				if (oNode->m_wsClass.find(L' ') != std::wstring::npos)
-				{
-					std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, false, L" ");
-
-					arNodes.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
-													  [](std::wstring sRes, const std::wstring& sClass)
-														{return sRes += L'.' + sClass + L' ';}));
-				}
-				else
-					arNodes.push_back(L'.' + oNode->m_wsClass);
-			}
-
-			if (!oNode->m_wsId.empty())
-				arNodes.push_back(L'#' + oNode->m_wsId);
-		}
-
-		return arNodes;
-	}
-
-	void CCssCalculator_Private::FindPrevAndKindElements(const CElement *pElement, const std::vector<std::wstring> &arNextNodes, std::vector<CElement*>& arFindedElements, const std::wstring &wsName, const std::vector<std::wstring> &arClasses)
-	{
-		if (arNextNodes.empty())
-			return;
-
-		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.crbegin() + 1, arNextNodes.crend());
-		const std::vector<CElement*> arTempKins = pElement->GetNextOfKin(wsName, arClasses);
-
-		if (!arTempPrev.empty())
-			arFindedElements.insert(arFindedElements.end(), arTempPrev.begin(), arTempPrev.end());
-
-		if (!arTempKins.empty())
-			arFindedElements.insert(arFindedElements.end(), arTempKins.begin(), arTempKins.end());
-	}
-
-	std::vector<CElement*> CCssCalculator_Private::FindElements(std::vector<std::wstring> &arNodes, std::vector<std::wstring> &arNextNodes)
-	{
-		if (arNodes.empty())
+		if (m_arPageDatas.empty())
 			return {};
 
-		std::vector<CElement*> arFindedElements;
-
-		std::wstring wsName, wsId;
-		std::vector<std::wstring> arClasses;
-
-		if (!arNodes.empty() && arNodes.back()[0] == L'#')
+		for (const TPageData& oPageData : m_arPageDatas)
 		{
-			wsId = arNodes.back();
-			arNodes.pop_back();
-			arNextNodes.push_back(wsId);
+			if (std::find(oPageData.m_wsNames.begin(), oPageData.m_wsNames.end(), wsPageName) != oPageData.m_wsNames.end())
+				return oPageData.m_mData;
 		}
 
-		if (!arNodes.empty() && arNodes.back()[0] == L'.')
-		{
-			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arNodes.back(), false, L" ");
-			arNextNodes.push_back(arNodes.back());
-			arNodes.pop_back();
-		}
+		return {};
+	}
 
-		if (!arNodes.empty())
-		{
-			wsName = arNodes.back();
-			arNodes.pop_back();
-			arNextNodes.push_back(wsName);
-		}
-
-		const std::map<std::wstring, CElement*>::const_iterator oFindName = m_mData.find(wsName);
-		std::map<std::wstring, CElement*>::const_iterator oFindId;
-
-		if (!wsId.empty())
-		{
-			oFindId = m_mData.find(wsId);
-
-			if (m_mData.cend() != oFindId)
-			{
-				if (!oFindId->second->Empty())
-					arFindedElements.push_back(oFindId->second);
-
-				FindPrevAndKindElements(oFindId->second, arNextNodes, arFindedElements, wsName);
-			}
-		}
-
-		if (!arClasses.empty())
-		{
-			for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
-			{
-				const std::map<std::wstring, CElement*>::const_iterator oFindClass = m_mData.find(*iClass);
-				if (oFindClass != m_mData.cend())
-				{
-					if (!oFindClass->second->Empty())
-						arFindedElements.push_back(oFindClass->second);
-
-					FindPrevAndKindElements(oFindClass->second, arNextNodes, arFindedElements, wsName);
-				}
-			}
-		}
-
-		if (oFindName != m_mData.cend())
-		{
-			if (!oFindName->second->Empty())
-				arFindedElements.push_back(oFindName->second);
-
-			FindPrevAndKindElements(oFindName->second, arNextNodes, arFindedElements, wsName, arClasses);
-		}
-
-		if (arFindedElements.size() > 1)
-		{
-			std::sort(arFindedElements.rbegin(), arFindedElements.rend(),
-			          [](CElement* oFirstElement, CElement* oSecondElement)
-			          {
-			        	  return oFirstElement->GetWeight() > oSecondElement->GetWeight();
-			          });
-		}
-
-		return arFindedElements;
+	void CStyleStorage::ClearPageData()
+	{
+		m_arPageDatas.clear();
 	}
 	#endif
 
-	void CCssCalculator_Private::AddPageData(const std::wstring &wsPageNames, const std::wstring &wsStyles)
+	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector)
 	{
-		m_arPageDatas.push_back({NS_STATIC_FUNCTIONS::GetWordsW(wsPageNames), NS_STATIC_FUNCTIONS::GetRules(wsStyles)});
+		if (wsSelector.empty())
+			return nullptr;
+
+		const CElement* pFoundElement = FindSelectorFromStyleData(wsSelector, m_mEmbeddedStyleData);
+
+		if (nullptr != pFoundElement)
+			return pFoundElement;
+
+		for (std::vector<TStyleFileData*>::const_reverse_iterator itIter = m_arStyleFiles.crbegin(); itIter < m_arStyleFiles.crend(); ++itIter)
+		{
+			if (m_arAllowedStyleFiles.cend() == std::find(m_arAllowedStyleFiles.cbegin(), m_arAllowedStyleFiles.cend(), (*itIter)->m_wsStyleFilepath))
+				continue;
+
+			pFoundElement = FindSelectorFromStyleData(wsSelector, (*itIter)->m_mStyleData);
+
+			if (nullptr != pFoundElement)
+				return pFoundElement;
+		}
+
+		return nullptr;
 	}
-	
-	inline void CCssCalculator_Private::GetStylesheet(const KatanaStylesheet *oStylesheet)
+
+	void CStyleStorage::AddStyles(const std::string& sStyle, std::map<std::wstring, CElement*>& mStyleData)
+	{
+		if (sStyle.empty())
+			return;
+
+		KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
+		this->GetOutputData(output, mStyleData);
+		katana_destroy_output(output);
+	}
+
+	void CStyleStorage::ClearEmbeddedStyles()
+	{
+		for (std::map<std::wstring, CElement*>::iterator oIter = m_mEmbeddedStyleData.begin(); oIter != m_mEmbeddedStyleData.end(); ++oIter)
+			if (oIter->second != nullptr)
+				delete oIter->second;
+
+		m_mEmbeddedStyleData.clear();
+	}
+
+	void CStyleStorage::ClearAllowedStyleFiles()
+	{
+		m_arAllowedStyleFiles.clear();
+	}
+
+	void CStyleStorage::GetStylesheet(const KatanaStylesheet* oStylesheet, std::map<std::wstring, CElement*>& mStyleData)
 	{
 		for (size_t i = 0; i < oStylesheet->imports.length; ++i)
-			GetRule((KatanaRule*)oStylesheet->imports.data[i]);
+			GetRule((KatanaRule*)oStylesheet->imports.data[i], mStyleData);
 
 		for (size_t i = 0; i < oStylesheet->rules.length; ++i)
-			GetRule((KatanaRule*)oStylesheet->rules.data[i]);
+			GetRule((KatanaRule*)oStylesheet->rules.data[i], mStyleData);
 	}
 
-	inline void CCssCalculator_Private::GetRule(const KatanaRule *oRule)
+	void CStyleStorage::GetRule(const KatanaRule* oRule, std::map<std::wstring, CElement*>& mStyleData)
 	{
 		if ( NULL == oRule )
 			return;
@@ -257,7 +251,7 @@ namespace NSCSS
 		switch (oRule->type) {
 			case KatanaRuleStyle:
 			{
-				GetStyleRule((KatanaStyleRule*)oRule);
+				GetStyleRule((KatanaStyleRule*)oRule, mStyleData);
 				break;
 			}
 			default:
@@ -265,7 +259,7 @@ namespace NSCSS
 		}
 	}
 
-	inline void CCssCalculator_Private::GetStyleRule(const KatanaStyleRule *oRule)
+	void CStyleStorage::GetStyleRule(const KatanaStyleRule* oRule, std::map<std::wstring, CElement*>& mStyleData)
 	{
 		if (oRule->declarations->length == 0)
 			return;
@@ -281,7 +275,7 @@ namespace NSCSS
 
 			for (std::vector<std::wstring>::reverse_iterator oWord = arWords.rbegin(); oWord != arWords.rend(); ++oWord)
 			{
-				    const size_t posPoint = oWord->find(L'.');
+					const size_t posPoint = oWord->find(L'.');
 					const size_t posLattice = oWord->find(L'#');
 
 					const std::wstring sName = (posPoint != std::wstring::npos) ? oWord->substr(0, posPoint) : (posLattice != std::wstring::npos) ? oWord->substr(0, posLattice) : *oWord;
@@ -297,8 +291,8 @@ namespace NSCSS
 					{
 						if (NULL == oFirstElement && bCreateFirst)
 						{
-							const std::map<std::wstring, CElement*>::const_iterator& oFindId = m_mData.find(sId);
-							if (oFindId != m_mData.end())
+							const std::map<std::wstring, CElement*>::const_iterator& oFindId = mStyleData.find(sId);
+							if (oFindId != mStyleData.end())
 							{
 								oIdElement = oFindId->second;
 								bCreateFirst = false;
@@ -326,8 +320,8 @@ namespace NSCSS
 					{
 						if (NULL == oFirstElement && bCreateFirst)
 						{
-							const std::map<std::wstring, CElement*>::const_iterator& oFindClass = m_mData.find(sClass);
-							if (oFindClass != m_mData.end())
+							const std::map<std::wstring, CElement*>::const_iterator& oFindClass = mStyleData.find(sClass);
+							if (oFindClass != mStyleData.end())
 							{
 								oClassElement = oFindClass->second;
 								bCreateFirst = false;
@@ -359,8 +353,8 @@ namespace NSCSS
 					{
 						if (NULL == oFirstElement && bCreateFirst)
 						{
-							const std::map<std::wstring, CElement*>::const_iterator& oFindName = m_mData.find(sName);
-							if (oFindName != m_mData.end())
+							const std::map<std::wstring, CElement*>::const_iterator& oFindName = mStyleData.find(sName);
+							if (oFindName != mStyleData.end())
 							{
 								oNameElement = oFindName->second;
 								bCreateFirst = false;
@@ -392,11 +386,16 @@ namespace NSCSS
 				oLastElement->AddProperties(mStyle);
 
 			if (NULL != oFirstElement)
-				m_mData[oFirstElement->GetSelector()] = oFirstElement;
+				mStyleData[oFirstElement->GetSelector()] = oFirstElement;
 		}
 	}
 
-	inline std::vector<std::wstring> CCssCalculator_Private::GetSelectorList(const KatanaArray* oSelectors) const
+	std::wstring CStyleStorage::GetValueList(const KatanaArray* oValues)
+	{
+		return StringifyValueList(oValues);
+	}
+
+	std::vector<std::wstring> CStyleStorage::GetSelectorList(const KatanaArray* oSelectors) const
 	{
 		if (oSelectors->length == 0)
 			return std::vector<std::wstring>();
@@ -409,7 +408,7 @@ namespace NSCSS
 		return arSelectors;
 	}
 
-	inline std::wstring CCssCalculator_Private::GetSelector(const KatanaSelector *oSelector) const
+	std::wstring CStyleStorage::GetSelector(const KatanaSelector* oSelector) const
 	{
 		KatanaParser oParser;
 		oParser.options = &kKatanaDefaultOptions;
@@ -428,7 +427,7 @@ namespace NSCSS
 		return wsText;
 	}
 
-	inline std::map<std::wstring, std::wstring> CCssCalculator_Private::GetDeclarationList(const KatanaArray* oDeclarations) const
+	std::map<std::wstring, std::wstring> CStyleStorage::GetDeclarationList(const KatanaArray* oDeclarations) const
 	{
 		if(oDeclarations->length == 0)
 			return std::map<std::wstring, std::wstring>();
@@ -441,7 +440,7 @@ namespace NSCSS
 		return arDeclarations;
 	}
 
-	inline std::pair<std::wstring, std::wstring> CCssCalculator_Private::GetDeclaration(const KatanaDeclaration* oDecl) const
+	std::pair<std::wstring, std::wstring> CStyleStorage::GetDeclaration(const KatanaDeclaration* oDecl) const
 	{
 		std::wstring sValueList = StringifyValueList(oDecl->values);
 
@@ -451,9 +450,184 @@ namespace NSCSS
 		return std::make_pair(UTF8_TO_U(std::string(oDecl->property)), sValueList);
 	}
 
-	inline std::wstring CCssCalculator_Private::GetValueList(const KatanaArray *oValues)
+	void CStyleStorage::GetOutputData(KatanaOutput* oOutput, std::map<std::wstring, CElement*>& mStyleData)
 	{
-		return StringifyValueList(oValues);
+		if ( NULL == oOutput )
+			return;
+
+		switch (oOutput->mode) {
+			case KatanaParserModeStylesheet:
+				GetStylesheet(oOutput->stylesheet, mStyleData);
+				break;
+			case KatanaParserModeRule:
+				GetRule(oOutput->rule, mStyleData);
+				break;
+			case KatanaParserModeKeyframeRule:
+			case KatanaParserModeKeyframeKeyList:
+			case KatanaParserModeMediaList:
+			case KatanaParserModeValue:
+			case KatanaParserModeSelector:
+			case KatanaParserModeDeclarationList:
+				break;
+		}
+	}
+
+	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData)
+	{
+		std::map<std::wstring, CElement*>::const_iterator itFound = mStyleData.find(wsSelector);
+
+		if (mStyleData.cend() != itFound)
+			return itFound->second;
+
+		return nullptr;
+	}
+
+	CCssCalculator_Private::CCssCalculator_Private() : m_nDpi(96), m_nCountNodes(0), m_sEncoding(L"UTF-8"){}
+
+	CCssCalculator_Private::~CCssCalculator_Private()
+	{}
+
+	#ifdef CSS_CALCULATOR_WITH_XHTML
+	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
+	{
+		//TODO:: пересмотреть данный метод
+		m_oStyleStorage.SetPageData(oPage, mData, unLevel, bHardMode);
+	}
+
+	std::map<std::wstring, std::wstring> CCssCalculator_Private::GetPageData(const std::wstring &wsPageName)
+	{
+		return m_oStyleStorage.GetPageData(wsPageName);
+	}
+
+	void CCssCalculator_Private::ClearPageData()
+	{
+		m_oStyleStorage.ClearPageData();
+	}
+	#endif
+
+	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors)
+	{
+		std::vector<std::wstring> arNodes;
+		
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+		{
+			if (!oNode->m_wsName.empty())
+				arNodes.push_back(oNode->m_wsName);
+
+			if (!oNode->m_wsClass.empty())
+			{
+				if (oNode->m_wsClass.find(L' ') != std::wstring::npos)
+				{
+					std::vector<std::wstring> arClasses = NS_STATIC_FUNCTIONS::GetWordsW(oNode->m_wsClass, false, L" ");
+
+					arNodes.push_back(std::accumulate(arClasses.begin(), arClasses.end(), std::wstring(),
+													  [](std::wstring sRes, const std::wstring& sClass)
+														{return sRes += L'.' + sClass + L' ';}));
+				}
+				else
+					arNodes.push_back(L'.' + oNode->m_wsClass);
+			}
+
+			if (!oNode->m_wsId.empty())
+				arNodes.push_back(L'#' + oNode->m_wsId);
+		}
+
+		return arNodes;
+	}
+
+	void CCssCalculator_Private::FindPrevAndKindElements(const CElement *pElement, const std::vector<std::wstring> &arNextNodes, std::vector<const CElement*>& arFindedElements, const std::wstring &wsName, const std::vector<std::wstring> &arClasses)
+	{
+		if (arNextNodes.empty())
+			return;
+
+		const std::vector<CElement*> arTempPrev = pElement->GetPrevElements(arNextNodes.crbegin() + 1, arNextNodes.crend());
+		const std::vector<CElement*> arTempKins = pElement->GetNextOfKin(wsName, arClasses);
+
+		if (!arTempPrev.empty())
+			arFindedElements.insert(arFindedElements.end(), arTempPrev.begin(), arTempPrev.end());
+
+		if (!arTempKins.empty())
+			arFindedElements.insert(arFindedElements.end(), arTempKins.begin(), arTempKins.end());
+	}
+
+	std::vector<const CElement*> CCssCalculator_Private::FindElements(std::vector<std::wstring> &arNodes, std::vector<std::wstring> &arNextNodes)
+	{
+		if (arNodes.empty())
+			return {};
+
+		std::vector<const CElement*> arFindedElements;
+
+		std::wstring wsName, wsId;
+		std::vector<std::wstring> arClasses;
+
+		if (!arNodes.empty() && arNodes.back()[0] == L'#')
+		{
+			wsId = arNodes.back();
+			arNodes.pop_back();
+			arNextNodes.push_back(wsId);
+		}
+
+		if (!arNodes.empty() && arNodes.back()[0] == L'.')
+		{
+			arClasses = NS_STATIC_FUNCTIONS::GetWordsW(arNodes.back(), false, L" ");
+			arNextNodes.push_back(arNodes.back());
+			arNodes.pop_back();
+		}
+
+		if (!arNodes.empty())
+		{
+			wsName = arNodes.back();
+			arNodes.pop_back();
+			arNextNodes.push_back(wsName);
+		}
+
+		if (!wsId.empty())
+		{
+			const CElement* pFoundId = m_oStyleStorage.FindElement(wsId);
+
+			if(nullptr != pFoundId)
+			{
+				if (!pFoundId->Empty())
+					arFindedElements.push_back(pFoundId);
+
+				FindPrevAndKindElements(pFoundId, arNextNodes, arFindedElements, wsName);
+			}
+		}
+
+		if (!arClasses.empty())
+		{
+			for (std::vector<std::wstring>::const_reverse_iterator iClass = arClasses.rbegin(); iClass != arClasses.rend(); ++iClass)
+			{
+				const CElement* pFoundClass = m_oStyleStorage.FindElement(*iClass);
+
+				if (nullptr != pFoundClass)
+				{
+					if (!pFoundClass->Empty())
+						arFindedElements.push_back(pFoundClass);
+
+					FindPrevAndKindElements(pFoundClass, arNextNodes, arFindedElements, wsName);
+				}
+			}
+		}
+
+		const CElement* pFoundName = m_oStyleStorage.FindElement(wsName);
+
+		if (nullptr != pFoundName)
+		{
+			if (!pFoundName->Empty())
+				arFindedElements.push_back(pFoundName);
+
+			FindPrevAndKindElements(pFoundName, arNextNodes, arFindedElements, wsName, arClasses);
+		}
+
+		if (arFindedElements.size() > 1)
+		{
+			std::sort(arFindedElements.rbegin(), arFindedElements.rend(),
+			          [](const CElement* oFirstElement, const CElement* oSecondElement)
+			          { return oFirstElement->GetWeight() > oSecondElement->GetWeight(); });
+		}
+
+		return arFindedElements;
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
@@ -566,42 +740,20 @@ namespace NSCSS
 		return true;
 	}
 	#endif
-	void CCssCalculator_Private::AddStyles(const std::string &sStyle)
-	{
-		if (sStyle.empty())
-			return;
 
-		KatanaOutput *output = katana_parse(sStyle.c_str(), sStyle.length(), KatanaParserModeStylesheet);
-		this->GetOutputData(output);
-		katana_destroy_output(output);
+	void CCssCalculator_Private::AddStyles(const std::string& sStyle)
+	{
+		m_oStyleStorage.AddStyles(sStyle);
 	}
 
-	void CCssCalculator_Private::AddStyles(const std::wstring &wsStyle)
+	void CCssCalculator_Private::AddStyles(const std::wstring& wsStyle)
 	{
-		if (wsStyle.empty())
-			return;
-
-		std::wregex oRegex(L"@page\\s*([^{]*)(\\{[^}]*\\})");
-		std::wsmatch oMatch;
-		std::wstring::const_iterator oSearchStart(wsStyle.cbegin());
-		
-		while (std::regex_search(oSearchStart, wsStyle.cend(), oMatch, oRegex))
-		{
-			AddPageData(oMatch[1].str(), oMatch[2].str());
-			oSearchStart = oMatch.suffix().first;
-		}
-
-		AddStyles(U_TO_UTF8(wsStyle));
+		m_oStyleStorage.AddStyles(wsStyle);
 	}
 
 	void CCssCalculator_Private::AddStylesFromFile(const std::wstring& wsFileName)
 	{
-		if (std::find(m_arFiles.begin(), m_arFiles.end(), wsFileName) != m_arFiles.end())
-			return;
-
-		m_arFiles.push_back(wsFileName);
-
-		AddStyles(NS_STATIC_FUNCTIONS::GetContentAsUTF8(wsFileName));
+		m_oStyleStorage.AddStylesFromFile(wsFileName);
 	}
 
 	void CCssCalculator_Private::SetDpi(unsigned short int nValue)
@@ -614,9 +766,23 @@ namespace NSCSS
 		return m_nDpi;
 	}
 
-	const std::map<std::wstring, CElement *> *CCssCalculator_Private::GetData() const
+	void CCssCalculator_Private::ClearEmbeddedStyles()
 	{
-		return &m_mData;
+		m_oStyleStorage.ClearEmbeddedStyles();
+
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		m_mUsedStyles.clear();
+		#endif
+	}
+
+	void CCssCalculator_Private::ClearAllowedStyleFiles()
+	{
+		m_oStyleStorage.ClearAllowedStyleFiles();
+	}
+
+	void CCssCalculator_Private::ClearStylesFromFile(const std::wstring& wsFilePath)
+	{
+		m_oStyleStorage.ClearStylesFromFile(wsFilePath);
 	}
 
 	std::wstring CCssCalculator_Private::GetEncoding() const
@@ -629,10 +795,21 @@ namespace NSCSS
 		m_sEncoding     = L"UTF-8";
 		m_nDpi          = 96;
 
-		m_mData.clear();
-		m_arFiles.clear();
+		m_oStyleStorage.Clear();
+
+		#ifdef CSS_CALCULATOR_WITH_XHTML
+		m_mUsedStyles.clear();
+		#endif
+	}
+
+	bool IsTableElement(const std::wstring& wsNameTag)
+	{
+		return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag ||
+		        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
+		        L"th" == wsNameTag;
 	}
 }
+
 inline static std::wstring StringifyValueList(const KatanaArray* oValues)
 {
 	if (NULL == oValues)
@@ -731,13 +908,6 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
 	}
 
 	return str;
-}
-
-inline static bool IsTableElement(const std::wstring& wsNameTag)
-{
-	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag || 
-	        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
-	        L"th" == wsNameTag;
 }
 
 

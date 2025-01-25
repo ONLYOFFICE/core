@@ -36,6 +36,7 @@ public:
 	JSSmart<CJSValue> encodeImageData(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> w, JSSmart<CJSValue> h, JSSmart<CJSValue> stride, JSSmart<CJSValue> format, JSSmart<CJSValue> isRgba);
 	JSSmart<CJSValue> encodeImage(JSSmart<CJSValue> typedArray, JSSmart<CJSValue> format);
 	JSSmart<CJSValue> getImageType(JSSmart<CJSValue> typedArray);
+	JSSmart<CJSValue> getImageBuffer(JSSmart<CJSValue> path);
 
 	DECLARE_EMBED_METHODS
 };

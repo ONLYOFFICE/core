@@ -164,7 +164,8 @@ enum GfxColorSpaceMode {
   csIndexed,
   csSeparation,
   csDeviceN,
-  csPattern
+  csPattern,
+  csDeviceRGBA // used for transparent JPX images, they contain RGBA data
 };
 
 class GfxColorSpace {
@@ -306,6 +307,23 @@ public:
 
   virtual int getNComps() { return 3; }
   virtual void getDefaultColor(GfxColor *color);
+
+private:
+};
+
+//------------------------------------------------------------------------
+// GfxDeviceRGBAColorSpace
+//------------------------------------------------------------------------
+
+class GfxDeviceRGBAColorSpace : public GfxDeviceRGBColorSpace
+{
+public:
+  GfxDeviceRGBAColorSpace();
+  virtual ~GfxDeviceRGBAColorSpace();
+  virtual GfxColorSpace* copy();
+  virtual GfxColorSpaceMode getMode() { return csDeviceRGBA; }
+
+  virtual int getNComps() { return 4; }
 
 private:
 };

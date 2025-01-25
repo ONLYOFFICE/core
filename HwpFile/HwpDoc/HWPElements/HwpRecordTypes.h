@@ -1,0 +1,353 @@
+#ifndef HWPRECORDTYPES_H
+#define HWPRECORDTYPES_H
+
+#include "../Common/Common.h"
+
+namespace HWP
+{
+enum class ELineStyle1
+{
+	SOLID,
+	DASH,
+	DOT,
+	DASH_DOT,
+	DASH_DOT_DOT,
+	LONG_DASH,
+	CIRCLE,
+	DOUBLE_SLIM,
+	SLIM_THICK,
+	THICK_SLIM,
+	SLIM_THICK_SLIM,
+	WAVE,
+	DOUBLE_WAVE,
+	THICK_3D,
+	THICK_3D_REVERS_LI,
+	SOLID_3D,
+	SOLID_3D_REVERS_LI
+};
+
+inline ELineStyle1 GetLineStyle1(int nValue)
+{
+	SWITCH(ELineStyle1, nValue)
+	{
+		DEFAULT(ELineStyle1::SOLID);
+		CASE(ELineStyle1::DASH);
+		CASE(ELineStyle1::DOT);
+		CASE(ELineStyle1::DASH_DOT);
+		CASE(ELineStyle1::DASH_DOT_DOT);
+		CASE(ELineStyle1::LONG_DASH);
+		CASE(ELineStyle1::CIRCLE);
+		CASE(ELineStyle1::DOUBLE_SLIM);
+		CASE(ELineStyle1::SLIM_THICK);
+		CASE(ELineStyle1::THICK_SLIM);
+		CASE(ELineStyle1::SLIM_THICK_SLIM);
+		CASE(ELineStyle1::WAVE);
+		CASE(ELineStyle1::DOUBLE_WAVE);
+		CASE(ELineStyle1::THICK_3D);
+		CASE(ELineStyle1::THICK_3D_REVERS_LI);
+		CASE(ELineStyle1::SOLID_3D);
+		CASE(ELineStyle1::SOLID_3D_REVERS_LI);
+	}
+}
+
+inline ELineStyle1 GetLineStyle1(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(SOLID, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DASH, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DOT, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DASH_DOT, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DASH_DOT_DOT, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(LONG_DASH, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLE, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DOUBLE_SLIM, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(SLIM_THICK, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(THICK_SLIM, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(SLIM_THICK_SLIM, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(WAVE, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(DOUBLE_WAVE, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(THICK_3D, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(THICK_3D_REVERS_LI, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(SOLID_3D, sValue, ELineStyle1);
+	ELSE_IF_STRING_IN_ENUM(SOLID_3D_REVERS_LI, sValue, ELineStyle1);
+	ELSE_STRING_IN_ENUM(SOLID, ELineStyle1);
+}
+
+enum class ELineStyle2
+{
+	NONE,
+	SOLID,
+	DASH,
+	DOT,
+	DASH_DOT,
+	DASH_DOT_DOT,
+	LONG_DASH,
+	CIRCLE,
+	DOUBLE_SLIM,
+	SLIM_THICK,
+	THICK_SLIM,
+	SLIM_THICK_SLIM
+};
+
+inline ELineStyle2 GetLineStyle2(int nValue)
+{
+	SWITCH(ELineStyle2, nValue)
+	{
+		DEFAULT(ELineStyle2::NONE);
+		CASE(ELineStyle2::SOLID);
+		CASE(ELineStyle2::DASH);
+		CASE(ELineStyle2::DOT);
+		CASE(ELineStyle2::DASH_DOT);
+		CASE(ELineStyle2::DASH_DOT_DOT);
+		CASE(ELineStyle2::LONG_DASH);
+		CASE(ELineStyle2::CIRCLE);
+		CASE(ELineStyle2::DOUBLE_SLIM);
+		CASE(ELineStyle2::SLIM_THICK);
+		CASE(ELineStyle2::THICK_SLIM);
+		CASE(ELineStyle2::SLIM_THICK_SLIM);
+	}
+}
+
+inline ELineStyle2 GetLineStyle2(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(NONE, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(SOLID, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(DASH, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(DOT, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(DASH_DOT, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(DASH_DOT_DOT, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(LONG_DASH, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLE, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(DOUBLE_SLIM, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(SLIM_THICK, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(THICK_SLIM, sValue, ELineStyle2);
+	ELSE_IF_STRING_IN_ENUM(SLIM_THICK_SLIM, sValue, ELineStyle2);
+	ELSE_STRING_IN_ENUM(NONE, ELineStyle2);
+}
+
+enum class ENumberShape1
+{
+	DIGIT,
+	CIRCLE_DIGIT,
+	ROMAN_CAPITAL,
+	ROMAN_SMALL,
+	LATIN_CAPITAL,
+	LATIN_SMALL,
+	CIRCLED_LATIN_CAPITAL,
+	CIRCLED_LATIN_SMALL,
+	HANGLE_SYLLABLE,
+	CIRCLED_HANGUL_SYLLABLE,
+	HANGUL_JAMO,
+	CIRCLED_HANGUL_JAMO,
+	HANGUL_PHONETIC,
+	IDEOGRAPH,
+	CIRCLED_IDEOGRAPH
+};
+
+inline ENumberShape1 GetNumberShape1(int nValue)
+{
+	SWITCH(ENumberShape1, nValue)
+	{
+		DEFAULT(ENumberShape1::DIGIT);
+		CASE(ENumberShape1::CIRCLE_DIGIT);
+		CASE(ENumberShape1::ROMAN_CAPITAL);
+		CASE(ENumberShape1::ROMAN_SMALL);
+		CASE(ENumberShape1::LATIN_CAPITAL);
+		CASE(ENumberShape1::LATIN_SMALL);
+		CASE(ENumberShape1::CIRCLED_LATIN_CAPITAL);
+		CASE(ENumberShape1::CIRCLED_LATIN_SMALL);
+		CASE(ENumberShape1::HANGLE_SYLLABLE);
+		CASE(ENumberShape1::CIRCLED_HANGUL_SYLLABLE);
+		CASE(ENumberShape1::HANGUL_JAMO);
+		CASE(ENumberShape1::CIRCLED_HANGUL_JAMO);
+		CASE(ENumberShape1::HANGUL_PHONETIC);
+		CASE(ENumberShape1::IDEOGRAPH);
+		CASE(ENumberShape1::CIRCLED_IDEOGRAPH);
+	}
+}
+
+inline ENumberShape1 GetNumberShape1(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(DIGIT, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLE_DIGIT, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(ROMAN_CAPITAL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(ROMAN_SMALL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(LATIN_CAPITAL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(LATIN_SMALL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_LATIN_CAPITAL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_LATIN_SMALL, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(HANGLE_SYLLABLE, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_HANGUL_SYLLABLE, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(HANGUL_JAMO, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_HANGUL_JAMO, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(HANGUL_PHONETIC, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(IDEOGRAPH, sValue, ENumberShape1);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_IDEOGRAPH, sValue, ENumberShape1);
+	ELSE_STRING_IN_ENUM(DIGIT, ENumberShape1);
+}
+
+enum class ENumberShape2
+{
+	DIGIT,
+	CIRCLE_DIGIT,
+	ROMAN_CAPITAL,
+	ROMAN_SMALL,
+	LATIN_CAPITAL,
+	LATIN_SMALL,
+	CIRCLED_LATIN_CAPITAL,
+	CIRCLED_LATIN_SMALL,
+	HANGLE_SYLLABLE,
+	CIRCLED_HANGUL_SYLLABLE,
+	HANGUL_JAMO,
+	CIRCLED_HANGUL_JAMO,
+	HANGUL_PHONETIC,
+	IDEOGRAPH,
+	CIRCLED_IDEOGRAPH,
+	DECAGON_CIRCLE,
+	DECAGON_CRICLE_HANGJA,
+	SYMBOL = 0x80,
+	USER_HWP_CHAR = 0x81
+};
+
+inline ENumberShape2 GetNumberShape2(int nValue)
+{
+	SWITCH(ENumberShape2, nValue)
+	{
+		DEFAULT(ENumberShape2::DIGIT);
+		CASE(ENumberShape2::CIRCLE_DIGIT);
+		CASE(ENumberShape2::ROMAN_CAPITAL);
+		CASE(ENumberShape2::ROMAN_SMALL);
+		CASE(ENumberShape2::LATIN_CAPITAL);
+		CASE(ENumberShape2::LATIN_SMALL);
+		CASE(ENumberShape2::CIRCLED_LATIN_CAPITAL);
+		CASE(ENumberShape2::CIRCLED_LATIN_SMALL);
+		CASE(ENumberShape2::HANGLE_SYLLABLE);
+		CASE(ENumberShape2::CIRCLED_HANGUL_SYLLABLE);
+		CASE(ENumberShape2::HANGUL_JAMO);
+		CASE(ENumberShape2::CIRCLED_HANGUL_JAMO);
+		CASE(ENumberShape2::HANGUL_PHONETIC);
+		CASE(ENumberShape2::IDEOGRAPH);
+		CASE(ENumberShape2::CIRCLED_IDEOGRAPH);
+		CASE(ENumberShape2::DECAGON_CIRCLE);
+		CASE(ENumberShape2::DECAGON_CRICLE_HANGJA);
+		CASE(ENumberShape2::SYMBOL);
+		CASE(ENumberShape2::USER_HWP_CHAR);
+	}
+}
+
+inline ENumberShape2 GetNumberShape2(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(DIGIT, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLE_DIGIT, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(ROMAN_CAPITAL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(ROMAN_SMALL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(LATIN_CAPITAL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(LATIN_SMALL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_LATIN_CAPITAL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_LATIN_SMALL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(HANGLE_SYLLABLE, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_HANGUL_SYLLABLE, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(HANGUL_JAMO, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_HANGUL_JAMO, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(HANGUL_PHONETIC, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(IDEOGRAPH, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(CIRCLED_IDEOGRAPH, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(DECAGON_CIRCLE, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(DECAGON_CRICLE_HANGJA, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(SYMBOL, sValue, ENumberShape2);
+	ELSE_IF_STRING_IN_ENUM(USER_HWP_CHAR, sValue, ENumberShape2);
+	ELSE_STRING_IN_ENUM(DIGIT, ENumberShape2);
+}
+
+enum class ELineArrowStyle
+{
+	NORMAL,
+	ARROW,
+	SPEAR,
+	CONCAVE_ARROW,
+	DIAMOND,
+	CIRCLE,
+	BOX,
+	EMPTY_DIAMOND,
+	EMPTY_CIRCLE,
+	EMPTY_BOX
+};
+
+inline ELineArrowStyle GetLineArrowStyle(int nNum, bool bFill)
+{
+	switch (nNum)
+	{
+		case 0: return ELineArrowStyle::NORMAL;
+		case 1: return ELineArrowStyle::ARROW;
+		case 2: return ELineArrowStyle::SPEAR;
+		case 3: return ELineArrowStyle::CONCAVE_ARROW;
+		case 4:
+		case 7: return bFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+		case 5:
+		case 8: return bFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+		case 6:
+		case 9: return bFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+		default: return ELineArrowStyle::NORMAL;
+	}
+}
+
+inline ELineArrowStyle GetLineArrowStyle(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(NORMAL, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(ARROW, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(SPEAR, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(CONCAVE_ARROW, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(DIAMOND, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(CIRCLE, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(BOX, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(EMPTY_DIAMOND, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(EMPTY_CIRCLE, sValue, ELineArrowStyle);
+	ELSE_IF_STRING_IN_ENUM(EMPTY_BOX, sValue, ELineArrowStyle);
+	ELSE_STRING_IN_ENUM(NORMAL, ELineArrowStyle);
+}
+
+enum class ELineArrowSize
+{
+	SMALL_SMALL,
+	SMALL_MEDIUM,
+	SMALL_LARGE,
+	MEDIUM_SMALL,
+	MEDIUM_MEDIUM,
+	MEDIUM_LARGE,
+	LARGE_SMALL,
+	LARGE_MEDIUM,
+	LARGE_LARGE
+};
+
+inline ELineArrowSize GetLineArrowSize(int nValue)
+{
+	SWITCH(ELineArrowSize, nValue)
+	{
+		DEFAULT(ELineArrowSize::SMALL_SMALL);
+		CASE(ELineArrowSize::SMALL_MEDIUM);
+		CASE(ELineArrowSize::SMALL_LARGE);
+		CASE(ELineArrowSize::MEDIUM_SMALL);
+		CASE(ELineArrowSize::MEDIUM_MEDIUM);
+		CASE(ELineArrowSize::MEDIUM_LARGE);
+		CASE(ELineArrowSize::LARGE_SMALL);
+		CASE(ELineArrowSize::LARGE_MEDIUM);
+		CASE(ELineArrowSize::LARGE_LARGE);
+	}
+}
+
+inline ELineArrowSize GetLineArrowSize(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(SMALL_SMALL, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(SMALL_MEDIUM, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(SMALL_LARGE, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(MEDIUM_SMALL, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(MEDIUM_MEDIUM, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(MEDIUM_LARGE, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(LARGE_SMALL, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(LARGE_MEDIUM, sValue, ELineArrowSize);
+	ELSE_IF_STRING_IN_ENUM(LARGE_LARGE, sValue, ELineArrowSize);
+	ELSE_STRING_IN_ENUM(SMALL_SMALL, ELineArrowSize);
+}
+
+}
+
+#endif // HWPRECORDTYPES_H

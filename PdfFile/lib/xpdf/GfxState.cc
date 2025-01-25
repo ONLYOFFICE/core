@@ -174,6 +174,8 @@ GfxColorSpace *GfxColorSpace::create(GfxColorSpaceMode mode) {
     cs = new GfxDeviceRGBColorSpace();
   } else if (mode == csDeviceCMYK) {
     cs = new GfxDeviceCMYKColorSpace();
+  } else if (mode == csDeviceRGBA) {
+    cs = new GfxDeviceRGBAColorSpace();
   }
   return cs;
 }
@@ -393,6 +395,24 @@ void GfxDeviceRGBColorSpace::getDefaultColor(GfxColor *color) {
   color->c[0] = 0;
   color->c[1] = 0;
   color->c[2] = 0;
+}
+
+//------------------------------------------------------------------------
+// GfxDeviceRGBAColorSpace
+//------------------------------------------------------------------------
+
+GfxDeviceRGBAColorSpace::GfxDeviceRGBAColorSpace() {
+}
+
+GfxDeviceRGBAColorSpace::~GfxDeviceRGBAColorSpace() {
+}
+
+GfxColorSpace* GfxDeviceRGBAColorSpace::copy()
+{
+  GfxDeviceRGBAColorSpace *cs;
+
+  cs = new GfxDeviceRGBAColorSpace();
+  return cs;
 }
 
 //------------------------------------------------------------------------
@@ -4690,6 +4710,8 @@ int GfxImageColorMap::getFillType()
     case csDeviceRGB:
     case csCalRGB:
         return nComps > 2 ? 2 : 0;
+    case csDeviceRGBA:
+        return nComps > 3 ? 3 : 0;
     default:
         return 0;
     }

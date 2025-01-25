@@ -45,21 +45,23 @@ namespace SVG
 
 		const CRenderedObject *pFoundObj = dynamic_cast<CRenderedObject*>(pFile->GetMarkedObject(m_wsHref));
 
-		if (NULL != pFoundObj)
+		bool bResult = false;
+
+		if (NULL != pFoundObj && this != pFoundObj)
 		{
 			if (NULL != pOtherStyles)
 			{
 				TSvgStyles oNewStyles(m_oStyles);
 				oNewStyles += *pOtherStyles;
-				pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles, this);
+				bResult = pFoundObj->Draw(pRenderer, pFile, oMode, &oNewStyles, this);
 			}
 			else
-				pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles, this);
+				bResult = pFoundObj->Draw(pRenderer, pFile, oMode, &m_oStyles, this);
 		}
 
 		EndPath(pRenderer, pFile, oOldTransform);
 
-		return true;
+		return bResult;
 	}
 
 	TBounds CUse::GetBounds() const

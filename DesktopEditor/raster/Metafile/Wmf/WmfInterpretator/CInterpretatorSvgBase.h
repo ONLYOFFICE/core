@@ -158,6 +158,7 @@ namespace MetaFile
 		friend class CWmfInterpretatorSvg;
 	};
 
+	std::wstring CalculateColor(unsigned int unColor);
 	std::wstring CalculateColor(unsigned int unColor, BYTE uchAlpha);
 	std::wstring CalculateColor(BYTE uchRed, BYTE uchGreen, BYTE uchBlue, BYTE uchAlpha);
 }

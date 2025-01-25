@@ -1,5 +1,6 @@
 #include "DrawingFileEmbed.h"
 #include "../drawingfile.h"
+#include "../../raster/BgraFrame.h"
 
 JSSmart<CJSValue> WasmMemoryToJS(BYTE* pWasmData)
 {

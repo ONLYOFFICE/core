@@ -1188,7 +1188,7 @@ namespace PdfWriter
 		for (int i = 0; i < arrQuadPoints.size(); ++i)
 			pArray->Add(i % 2 == 0 ? (arrQuadPoints[i] + m_dPageX) : (m_dPageH - arrQuadPoints[i]));
 	}
-	void CTextMarkupAnnotation::SetAP(const std::vector<double>& arrQuadPoints)
+	void CTextMarkupAnnotation::SetAP(const std::vector<double>& arrQuadPoints, const double& dCA)
 	{
 		CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAP);
@@ -1198,20 +1198,21 @@ namespace PdfWriter
 		pN->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
 		pN->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 
+		CExtGrState* pExtGrState = m_pDocument->GetExtGState(dCA, dCA, m_nSubtype == AnnotHighLight ? blendmode_Multiply : blendmode_Unknown);
+		const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+		if (sExtGrStateName)
+		{
+			pStream->WriteEscapeName(sExtGrStateName);
+			pStream->WriteStr(" gs\012");
+		}
+		std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), m_nSubtype != AnnotHighLight);
+		pStream->WriteStr(sColor.c_str());
+		pStream->WriteChar('\012');
+
 		switch (m_nSubtype)
 		{
 		case AnnotHighLight:
 		{
-			CExtGrState* pExtGrState = m_pDocument->GetExtGState(-1, -1, blendmode_Multiply);
-			const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
-			if (sExtGrStateName)
-			{
-				pStream->WriteEscapeName(sExtGrStateName);
-				pStream->WriteStr(" gs\012");
-			}
-			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), false);
-			pStream->WriteStr(sColor.c_str());
-			pStream->WriteChar('\012');
 			pStream->WriteStr("1 w\012");
 
 			for (int i = 0; i < arrQuadPoints.size(); i += 8)
@@ -1241,10 +1242,6 @@ namespace PdfWriter
 		case AnnotSquiggly:
 		case AnnotUnderline:
 		{
-			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), true);
-			pStream->WriteStr(sColor.c_str());
-			pStream->WriteChar('\012');
-
 			for (int i = 0; i < arrQuadPoints.size(); i += 8)
 			{
 				double dX = arrQuadPoints[i + 2] - arrQuadPoints[i];
@@ -1273,10 +1270,6 @@ namespace PdfWriter
 		case AnnotStrikeOut:
 		default:
 		{
-			std::string sColor = GetColor(dynamic_cast<CArrayObject*>(Get("C")), true);
-			pStream->WriteStr(sColor.c_str());
-			pStream->WriteChar('\012');
-
 			for (int i = 0; i < arrQuadPoints.size(); i += 8)
 			{
 				double dX1 = arrQuadPoints[i] + (arrQuadPoints[i + 4] - arrQuadPoints[i]) / 2.0;

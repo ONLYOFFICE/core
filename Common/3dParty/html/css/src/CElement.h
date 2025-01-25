@@ -44,7 +44,8 @@ namespace NSCSS
 
 		CElement *FindPrevElement(const std::wstring& sSelector) const;
 
-		std::vector<unsigned short int> GetWeight();
+		void UpdateWeight();
+		std::vector<unsigned short int> GetWeight() const;
 		void IncreasedWeight();
 	};
 }

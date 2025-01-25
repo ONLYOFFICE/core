@@ -208,7 +208,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
     {
         auto charElement = cutteddateStr.at(i);
         DateElemTypes elementType;
-        if(charElement == L' ')
+        if(charElement == L' ' || charElement == L' ')
             elementType = DateElemTypes::space;
         else if(charElement >= L'0' && charElement<= L'9')
             elementType = DateElemTypes::digit;
@@ -421,12 +421,7 @@ _INT32 DateReader::getStandartDate(tm date)
     // Преобразование даты в формат excel
     auto timeT = mktime(&date);
     auto tp = std::chrono::system_clock::from_time_t(timeT);
-    auto excelTime = tp.time_since_epoch().count();
-    #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-        excelTime = excelTime / 10000000;
-    #else
-        excelTime = excelTime / 1000000000;
-    #endif
+    auto excelTime = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
     excelTime += 2209161600;
     _INT32 tempTime = round(excelTime / 86400.0);
     return tempTime;

@@ -239,8 +239,8 @@ void OoxConverter::convert(PPTX::Logic::Xfrm *oox_xfrm)
 	if (oox_xfrm->flipH.get_value_or(false))	odf_context()->drawing_context()->set_flip_H(true);
 	if (oox_xfrm->flipV.get_value_or(false))	odf_context()->drawing_context()->set_flip_V(true);
 	
-	if (oox_xfrm->rot.get_value_or(0) > 0)
-		odf_context()->drawing_context()->set_rotate(360. - oox_xfrm->rot.get_value_or(0)/60000.);
+	if (oox_xfrm->rot.IsInit())
+		odf_context()->drawing_context()->set_rotate(oox_xfrm->rot.get_value_or(0)/60000.);
 }
 void OoxConverter::convert(PPTX::Logic::Xfrm *oox_txbx, PPTX::Logic::Xfrm *oox_xfrm)
 {
@@ -1091,14 +1091,56 @@ void OoxConverter::convert(PPTX::Logic::PrstGeom *oox_geom)
 		odf_context()->drawing_context()->add_modifier(oox_geom->avLst[i].fmla.get_value_or(L"0"));
 	}
 }
+
+static std::wstring process_gd_formula(const PPTX::Logic::Gd& gd, odf_writer::odf_drawing_context* drawing_context, size_t& last_gd_index)
+{
+	std::vector<std::wstring> args;
+	boost::algorithm::split(args, gd.fmla.get_value_or(L""), boost::is_any_of("\t "), boost::token_compress_on);
+
+	std::wstring fmla = gd.fmla.get_value_or(L"");
+
+	if (args.size() >= 4 && gd.GetFormulaType(args.front()) == 0) // if formula is "('*/') - Multiply Divide Formula"
+	{
+		if (boost::algorithm::starts_with(args[3], L"gd"))
+		{
+			const std::wstring abs_name = std::wstring(L"gd") + std::to_wstring(last_gd_index + 1);
+			const std::wstring abs_fmla = L"abs " + args[3];
+
+			const std::wstring cmp_name = std::wstring(L"gd") + std::to_wstring(last_gd_index + 2);
+			const std::wstring cmp_fmla = L"?: " + abs_name + L" " + args[3] + L" 1";
+
+			last_gd_index += 2;
+
+			drawing_context->add_formula(abs_name, abs_fmla);
+			drawing_context->add_formula(cmp_name, cmp_fmla);
+
+			args[3] = cmp_name;
+
+			fmla = boost::algorithm::join(args, L" ");
+		}
+	}
+
+	return fmla;
+}
+
 void OoxConverter::convert(PPTX::Logic::CustGeom *oox_cust_geom)
 {
 	if (!oox_cust_geom) return;
 
-	for (size_t i = 0; i < oox_cust_geom->gdLst.size(); i++)
+	if (oox_cust_geom->gdLst.size())
 	{
-		odf_context()->drawing_context()->add_formula(oox_cust_geom->gdLst[i].name.get_value_or(L""), oox_cust_geom->gdLst[i].fmla.get_value_or(L""));
+		size_t last_gd_index = oox_cust_geom->gdLst.size() - 1;
+
+		for (size_t i = 0; i < oox_cust_geom->gdLst.size(); i++)
+		{
+			const PPTX::Logic::Gd& gd = oox_cust_geom->gdLst[i];
+
+			const std::wstring fmla = process_gd_formula(gd, odf_context()->drawing_context(), last_gd_index);
+
+			odf_context()->drawing_context()->add_formula(gd.name.get_value_or(L""), fmla);
+		}
 	}
+
 	for (size_t i = 0; i < oox_cust_geom->pathLst.size(); i++)
 	{
 		convert(&oox_cust_geom->pathLst[i]);
@@ -1285,35 +1327,17 @@ void OoxConverter::convert(PPTX::Logic::Path2D *oox_geom_path)
 	
 	odf_context()->drawing_context()->set_viewBox(oox_geom_path->w.get_value_or(0), oox_geom_path->h.get_value_or(0));
 
-	if (oox_geom_path->fill.IsInit())
-	{
-		odf_context()->drawing_context()->start_area_properties();
-		switch(oox_geom_path->fill->GetBYTECode())
-		{
-		case 0://darken
-		case 1://darkenLess
-		case 2://lighten
-		case 3://lightenLess
-			break;
-		case 4:
-			odf_context()->drawing_context()->set_no_fill();
-			break;
-		case 5:
-		default:
-			break;
-		}
-		odf_context()->drawing_context()->end_area_properties();
-	}
 	for (size_t i = 0 ; i < oox_geom_path->Paths.size(); i++)
 	{
 		if (oox_geom_path->Paths[i].Path2D.is<PPTX::Logic::PathBase>())
-		{
 			convert(&oox_geom_path->Paths[i].Path2D.as<PPTX::Logic::PathBase>());
-		}
 	}
 
 	if (oox_geom_path->stroke.IsInit() && *oox_geom_path->stroke == false)
 		odf_context()->drawing_context()->add_path_element(std::wstring(L"S"), L"");
+
+	if(oox_geom_path->fill.IsInit() && oox_geom_path->fill->GetBYTECode() == 4) // fill == "none"
+		odf_context()->drawing_context()->add_path_element(std::wstring(L"F"), L"");
 	
 	odf_context()->drawing_context()->add_path_element(std::wstring(L"N"), L"");
 }
@@ -1335,8 +1359,6 @@ void OoxConverter::convert(PPTX::Logic::PathBase *oox_path)
 	if (quadBezTo)	convert(quadBezTo);
 	if (arcTo)		convert(arcTo);
 	if (close)		convert(close);
-
-
 }
 
 void OoxConverter::convert(PPTX::Logic::BlipFill *oox_bitmap_fill)

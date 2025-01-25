@@ -1,9 +1,20 @@
 #include "x2tTester.h"
+
+#include <cctype>
+
 #include "../../../X2tConverter/src/run.h"
 
 class CFormatsList;
 class Cx2tTester;
 class CConverter;
+
+std::wstring GetFileExtLower(const std::wstring& file)
+{
+	std::wstring input_ext = NSFile::GetFileExtention(file);
+	for (auto& c : input_ext)
+		c = std::tolower(c);
+	return input_ext;
+}
 
 CFormatsList::CFormatsList()
 {
@@ -175,6 +186,10 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"fodt");
 	list.m_documents.push_back(L"htm");
 	list.m_documents.push_back(L"html");
+
+	list.m_documents.push_back(L"hwp");
+	list.m_documents.push_back(L"hwpx");
+
 	list.m_documents.push_back(L"mht");
 	list.m_documents.push_back(L"odt");
 	list.m_documents.push_back(L"ott");
@@ -522,7 +537,7 @@ void Cx2tTester::Start()
 	{
 		std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
+		std::wstring input_ext = GetFileExtLower(input_file);
 
 		// if no format in input formats - skip
 		if(std::find(m_inputExts.begin(), m_inputExts.end(), input_ext) == m_inputExts.end()
@@ -619,7 +634,7 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 	{
 		const std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
+		std::wstring input_ext = GetFileExtLower(input_file);
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
 
 		// takes full directory after input folder
@@ -865,6 +880,8 @@ std::vector<std::wstring> Cx2tTester::ParseExtensionsString(std::wstring extensi
 	while ((pos = extensions.find(' ')) != std::wstring::npos)
 	{
 		std::wstring ext = extensions.substr(0, pos);
+		for (auto& c : ext)
+			c = std::tolower(c);
 
 		if(ext == L"documents")
 			exts = fl.GetDocuments();
@@ -1145,7 +1162,7 @@ DWORD CConverter::ThreadProc()
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
 			report.outputFile = output_filename;
-			report.direction = input_ext.substr(1, input_ext.size() - 1) + L"-" + output_ext.substr(1, output_ext.size() - 1);
+			report.direction = m_inputExt + L"-" + output_ext.substr(1, output_ext.size() - 1);
 			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.inputSize = input_size;
 			report.outputSize = output_size;

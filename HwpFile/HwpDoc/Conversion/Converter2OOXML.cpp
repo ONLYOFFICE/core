@@ -490,27 +490,11 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 	{
 		if ((0x04 == (pParagraph->GetBreakType() & 0x04)) && (0 < oState.m_unParaIndex))
 		{
-			if (oState.m_bOpenedP)
-				oBuilder.WriteString(L"</w:p>");
-
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
-
 			oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
-
-			oState.m_bOpenedP = true;
 			++m_ushPageCount;
 		}
 		else if (0x08 == (pParagraph->GetBreakType() & 0x08))
-		{
-			if (oState.m_bOpenedP)
-				oBuilder.WriteString(L"</w:p>");
-
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
-
 			oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
-
-			oState.m_bOpenedP = true;
-		}
 	}
 
 	++oState.m_unParaIndex;

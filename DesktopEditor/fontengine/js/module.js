@@ -808,7 +808,7 @@ function onLoadFontsModule(window, undefined)
 		{
 			try
 			{
-				let blob = new Blob([result.data], {type: blobType});
+				let blob = new Blob([result.dataBlob ? result.dataBlob : result.data], {type: blobType});
 				blobUrl = window.URL.createObjectURL(blob);
 			}
 			catch (e)

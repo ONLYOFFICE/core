@@ -280,7 +280,15 @@ JSSmart<CJSValue> CZipEmbed::getImageBuffer(JSSmart<CJSValue> filePath)
 		return CJSContext::createNull();
 	}
 
-	if (oChecker.eFileType != _CXIMAGE_FORMAT_WMF && oChecker.eFileType != _CXIMAGE_FORMAT_EMF)
+	bool bIsNeedConvertMetfileToSvg = false;
+
+	// Make as wasm module
+	if (oChecker.eFileType == _CXIMAGE_FORMAT_WMF || oChecker.eFileType == _CXIMAGE_FORMAT_EMF)
+		oChecker.eFileType = _CXIMAGE_FORMAT_SVG;
+	else
+		bIsNeedConvertMetfileToSvg = false;
+
+	if (!bIsNeedConvertMetfileToSvg)
 	{
 		BYTE* pMemory = NSJSBase::NSAllocator::Alloc(nBufferSize);
 		memcpy(pMemory, pBuffer->Buffer, nBufferSize);

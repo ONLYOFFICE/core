@@ -74,7 +74,7 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-#include <memory>
+#include <boost/make_unique.hpp>
 
 #ifndef MININT32
 #define MAXUINT32   ((uint32_t)~((uint32_t)0))
@@ -1342,15 +1342,15 @@ namespace OOX
             std::unique_ptr<ParsedFormula> BinFmla;
             if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal)
             {
-                BinFmla = std::make_unique<CellParsedFormula>(false);
+                BinFmla = boost::make_unique<CellParsedFormula>(false);
             }
             else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
             {
-                BinFmla = std::make_unique<SharedParsedFormula>(false,cellBaseRef);
+                BinFmla = boost::make_unique<SharedParsedFormula>(false,cellBaseRef);
             }
             else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray)
             {
-                BinFmla = std::make_unique<ArrayParsedFormula>(false,cellBaseRef);
+                BinFmla = boost::make_unique<ArrayParsedFormula>(false,cellBaseRef);
             }
 
             if(m_oT->GetValue() != SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeDataTable)

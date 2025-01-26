@@ -13,6 +13,7 @@
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlShapeArc.h"
 #include "../Paragraph/CtrlShapePolygon.h"
 #include "../Paragraph/CtrlShapeCurve.h"
 
@@ -885,6 +886,24 @@ void CConverter2OOXML::WriteCellBorder(const TBorder& oBorder, const HWP_STRING&
 	oBuilder.WriteString(L"<w:" + sBorderName + L" w:val=\"" + sType + L"\" w:sz=\"" + std::to_wstring(Transform::LineWidth2Pt((short)oBorder.m_chWidth)) + L"\" w:space=\"0\" w:color=\"" + Transform::IntColorToHEX(oBorder.m_nColor) + L"\"/>");
 }
 
+VECTOR<TPoint> ArcToBezier(const TPoint& oStart, const TPoint& oEnd, const TPoint& oCenter)
+{
+	const double dRadiusX = std::abs(oStart.m_nX - oCenter.m_nX);
+	const double dRadiusY = std::abs(oStart.m_nY - oCenter.m_nY);
+
+	// Вычисление углов
+	double dStartAngle = std::atan2(oStart.m_nY - oCenter.m_nY, oStart.m_nX - oCenter.m_nX);
+	double dEndAngle   = std::atan2(oEnd.m_nY   - oCenter.m_nY, oEnd.m_nX   - oCenter.m_nX);
+
+	if (dEndAngle < dStartAngle)
+		std::swap(dStartAngle, dEndAngle);
+
+	TPoint oControl1{static_cast<int>(oStart.m_nX + dRadiusX * std::cos(dStartAngle)), static_cast<int>(oStart.m_nY + dRadiusY * std::sin(dStartAngle))};
+	TPoint oControl2{static_cast<int>(oEnd.m_nX   - dRadiusX * std::cos(dEndAngle  )), static_cast<int>(oEnd.m_nY   + dRadiusY * std::sin(dEndAngle  ))};
+
+	return {oStart, oControl1, oControl2, oEnd};
+}
+
 void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pGeneralShape)
@@ -897,8 +916,11 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
 
-	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetWidth()));
-	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHeight()));
+	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
+	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
+
+	const std::wstring wsWidth  = std::to_wstring(nWidth);
+	const std::wstring wsHeight = std::to_wstring(nHeight);
 
 	if (!oState.m_bOpenedP)
 		oBuilder.WriteString(L"<w:p>");
@@ -919,7 +941,22 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	{
 		case EShapeObjectType::Arc:
 		{
-			oBuilder.WriteString(L"<a:prstGeom prst=\"arc\"><a:avLst/></a:prstGeom>");
+			const CCtrlShapeArc *pShapeArc = (const CCtrlShapeArc*)pGeneralShape;
+			VECTOR<TPoint> arBezierPoints{ArcToBezier({Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nY)},
+			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nY)},
+			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nY)})};
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arBezierPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[0].m_nY) + L"\"/></a:moveTo>");
+
+			oBuilder.WriteString(L"<a:cubicBezTo>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[1].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[1].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[2].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[2].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[3].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[3].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"</a:cubicBezTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+
 			break;
 		}
 		case EShapeObjectType::Ellipse:

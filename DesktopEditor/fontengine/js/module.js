@@ -798,7 +798,7 @@ function onLoadFontsModule(window, undefined)
 			return "";
 
 		let blobUrl = "";
-		let blobType = AscCommon.openXml.GetMimeType((24 !== result.type) ? AscCommon.GetFileExtension(path) : "svg");
+		let blobType = AscCommon.openXml.GetMimeType((24 !== result["type"]) ? AscCommon.GetFileExtension(path) : "svg");
 
 		if (window["NATIVE_EDITOR_ENJINE"])
 		{
@@ -808,7 +808,7 @@ function onLoadFontsModule(window, undefined)
 		{
 			try
 			{
-				let blob = new Blob([result.dataBlob ? result.dataBlob : result.data], {type: blobType});
+				let blob = new Blob([result["dataBlob"] ? result["dataBlob"] : result["data"]], {type: blobType});
 				blobUrl = window.URL.createObjectURL(blob);
 			}
 			catch (e)

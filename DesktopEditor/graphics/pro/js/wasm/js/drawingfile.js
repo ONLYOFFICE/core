@@ -401,6 +401,95 @@ function readAction(reader, rec)
 		readAction(reader, rec["Next"]);
 	}
 }
+function readAction2(reader, rec)
+{
+	let SType = reader.readByte();
+	// 0 - Unknown, 1 - GoTo, 2 - GoToR, 3 - GoToE, 4 - Launch
+	// 5 - Thread, 6 - URI, 7 - Sound, 8 - Movie, 9 - Hide
+	// 10 - Named, 11 - SubmitForm, 12 - ResetForm, 13 - ImportData
+	// 14 - JavaScript, 15 - SetOCGState, 16 - Rendition
+	// 17 - Trans, 18 - GoTo3DView
+	rec["S"] = SType;
+	if (SType == 14)
+	{
+		rec["JS"] = reader.readString2();
+	}
+	else if (SType == 1)
+	{
+		rec["page"] = reader.readInt();
+		rec["kind"] = reader.readByte();
+		// 0 - XYZ
+		// 1 - Fit
+		// 2 - FitH
+		// 3 - FitV
+		// 4 - FitR
+		// 5 - FitB
+		// 6 - FitBH
+		// 7 - FitBV
+		switch (rec["kind"])
+		{
+			case 0:
+			case 2:
+			case 3:
+			case 6:
+			case 7:
+			{
+				let nFlag = reader.readByte();
+				if (nFlag & (1 << 0))
+					rec["left"] = reader.readDouble2();
+				if (nFlag & (1 << 1))
+					rec["top"]  = reader.readDouble2();
+				if (nFlag & (1 << 2))
+					rec["zoom"] = reader.readDouble2();
+				break;
+			}
+			case 4:
+			{
+				rec["left"]   = reader.readDouble2();
+				rec["bottom"] = reader.readDouble2();
+				rec["right"]  = reader.readDouble2();
+				rec["top"]    = reader.readDouble2();
+				break;
+			}
+			case 1:
+			case 5:
+			default:
+				break;
+		}
+	}
+	else if (SType == 10)
+	{
+		rec["N"] = reader.readString2();
+	}
+	else if (SType == 6)
+	{
+		rec["URI"] = reader.readString2();
+	}
+	else if (SType == 9)
+	{
+		rec["H"] = reader.readByte();
+		let m = reader.readInt();
+	    rec["T"] = [];
+		// array of annotation names - rec["name"]
+	    for (let j = 0; j < m; ++j)
+			rec["T"].push(reader.readString2());
+	}
+	else if (SType == 12)
+	{
+		rec["Flags"] = reader.readInt();
+		let m = reader.readInt();
+	    rec["Fields"] = [];
+		// array of annotation names - rec["name"]
+	    for (let j = 0; j < m; ++j)
+			rec["Fields"].push(reader.readString2());
+	}
+	let NextAction = reader.readByte();
+	if (NextAction)
+	{
+		rec["Next"] = {};
+		readAction2(reader, rec["Next"]);
+	}
+}
 function readAnnot(reader, rec)
 {
 	rec["AP"] = {};
@@ -1323,6 +1412,609 @@ CFile.prototype["getAnnotationsAP"] = function(pageIndex, width, height, backgro
 	}
 
 	ptr.free();
+	return res;
+};
+
+// AnnotInfo - Uint8Array with ctAnnotField format
+CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
+{
+	if (!AnnotInfo)
+		return [];
+
+	let reader = new CBinaryReader(AnnotInfo, 0, AnnotInfo.length);
+	if (!reader) return [];
+
+	let res = [];
+	while (reader.isValid())
+	{
+		let rec = {};
+		// Annotation type
+		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+		// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+		rec["Type"] = reader.readByte();
+		// Annot
+		rec["AP"] = {};
+		// number for relations with AP
+		rec["AP"]["i"] = reader.readInt();
+		rec["annotflag"] = reader.readInt();
+		// 12.5.3
+		let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
+		let bPrint = (rec["annotflag"] >> 2) & 1; // Print
+		rec["noZoom"] = (rec["annotflag"] >> 3) & 1; // NoZoom
+		rec["noRotate"] = (rec["annotflag"] >> 4) & 1; // NoRotate
+		let bNoView = (rec["annotflag"] >> 5) & 1; // NoView
+		rec["locked"] = (rec["annotflag"] >> 7) & 1; // Locked
+		rec["ToggleNoView"] = (rec["annotflag"] >> 8) & 1; // ToggleNoView
+		rec["lockedC"] = (rec["annotflag"] >> 9) & 1; // LockedContents
+		// 0 - visible, 1 - hidden, 2 - noPrint, 3 - noView
+		rec["display"] = 0;
+		if (bHidden)
+			rec["display"] = 1;
+		else
+		{
+			if (bPrint)
+			{
+				if (bNoView)
+					rec["display"] = 3;
+				else
+					rec["display"] = 0;
+			}
+			else
+			{
+				if (bNoView)
+					rec["display"] = 0; // ??? no hidden, but noView and no print
+				else
+					rec["display"] = 2;
+			}
+		}
+		rec["page"] = reader.readInt();
+		// offsets like getStructure and viewer.navigate
+		rec["rect"] = {};
+		rec["rect"]["x1"] = reader.readDouble2();
+		rec["rect"]["y1"] = reader.readDouble2();
+		rec["rect"]["x2"] = reader.readDouble2();
+		rec["rect"]["y2"] = reader.readDouble2();
+		let flags = reader.readInt();
+		// Unique name - NM
+		if (flags & (1 << 0))
+			rec["UniqueName"] = reader.readString2();
+		// Alternate annotation text - Contents
+		if (flags & (1 << 1))
+			rec["Contents"] = reader.readString2();
+		// Border effect - BE
+		if (flags & (1 << 2))
+		{
+			rec["BE"] = {};
+			rec["BE"]["S"] = reader.readByte();
+			rec["BE"]["I"] = reader.readDouble2();
+		}
+		// Special annotation color - С
+		if (flags & (1 << 3))
+		{
+			let n = reader.readInt();
+			rec["C"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["C"].push(reader.readDouble2());
+		}
+		// Border/BS
+		if (flags & (1 << 4))
+		{
+			// 0 - solid, 1 - beveled, 2 - dashed, 3 - inset, 4 - underline
+			rec["border"] = reader.readByte();
+			rec["borderWidth"] = reader.readDouble2();
+			// Border Dash Pattern
+			if (rec["border"] == 2)
+			{
+				let n = reader.readInt();
+				rec["dashed"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["dashed"].push(reader.readDouble2());
+			}
+		}
+		// Date of last change - M
+		if (flags & (1 << 5))
+			rec["LastModified"] = reader.readString2();
+		// AP
+		if (flags & (1 << 6))
+		{
+			// TODO use Render - Uint8Array
+			rec["AP"]["render"] = reader.readData();
+		}
+		// User ID
+		if (flags & (1 << 7))
+			rec["OUserID"] = reader.readString2();
+		// Markup
+		flags = 0;
+		if ((rec["Type"] < 18 && rec["Type"] != 1 && rec["Type"] != 15) || rec["Type"] == 25)
+		{
+			flags = reader.readInt();
+			if (flags & (1 << 0))
+				rec["Popup"] = reader.readInt();
+			// T
+			if (flags & (1 << 1))
+				rec["User"] = reader.readString2();
+			// CA
+			if (flags & (1 << 2))
+				rec["CA"] = reader.readDouble2();
+			// RC
+			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["RC"] = [];
+				for (let i = 0; i < n; ++i)
+				{
+					let oFont = {};
+					// 0 - left, 1 - centered, 2 - right, 3 - justify
+					oFont["alignment"] = reader.readByte();
+					let nFontFlag = reader.readInt();
+					oFont["bold"] = (nFontFlag >> 0) & 1;
+					oFont["italic"] = (nFontFlag >> 1) & 1;
+					oFont["strikethrough"] = (nFontFlag >> 3) & 1;
+					oFont["underlined"] = (nFontFlag >> 4) & 1;
+					if (nFontFlag & (1 << 5))
+						oFont["vertical"] = reader.readDouble2();
+					if (nFontFlag & (1 << 6))
+						oFont["actual"] = reader.readString2();
+					oFont["size"] = reader.readDouble2();
+					oFont["color"] = [];
+					oFont["color"].push(reader.readDouble2());
+					oFont["color"].push(reader.readDouble2());
+					oFont["color"].push(reader.readDouble2());
+					oFont["name"] = reader.readString2();
+					oFont["text"] = reader.readString2();
+					rec["RC"].push(oFont);
+				}
+			}
+			// CreationDate
+			if (flags & (1 << 4))
+				rec["CreationDate"] = reader.readString2();
+			// IRT
+			if (flags & (1 << 5))
+				rec["RefTo"] = reader.readInt();
+			// RT
+			// 0 - R, 1 - Group
+			if (flags & (1 << 6))
+				rec["RefToReason"] = reader.readByte();
+			// Subj
+			if (flags & (1 << 7))
+				rec["Subj"] = reader.readString2();
+		}
+		// Text
+		if (rec["Type"] == 0)
+		{
+			// Background color - C->IC
+			if (rec["C"])
+			{
+				rec["IC"] = rec["C"];
+				delete rec["C"];
+			}
+			rec["Open"] = (flags >> 15) & 1;
+			// icon - Name
+			// 0 - Check, 1 - Checkmark, 2 - Circle, 3 - Comment, 4 - Cross, 5 - CrossHairs, 6 - Help, 7 - Insert, 8 - Key, 9 - NewParagraph, 10 - Note, 11 - Paragraph, 12 - RightArrow, 13 - RightPointer, 14 - Star, 15 - UpArrow, 16 - UpLeftArrow
+			if (flags & (1 << 16))
+				rec["Icon"] = reader.readByte();
+			// StateModel
+			// 0 - Marked, 1 - Review
+			if (flags & (1 << 17))
+				rec["StateModel"] = reader.readByte();
+			// State
+			// 0 - Marked, 1 - Unmarked, 2 - Accepted, 3 - Rejected, 4 - Cancelled, 5 - Completed, 6 - None
+			if (flags & (1 << 18))
+				rec["State"] = reader.readByte();
+			
+		}
+		// Line
+		else if (rec["Type"] == 3)
+		{
+			// L
+			rec["L"] = [];
+			for (let i = 0; i < 4; ++i)
+				rec["L"].push(reader.readDouble2());
+			// LE
+			// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+			if (flags & (1 << 15))
+			{
+				rec["LE"] = [];
+				rec["LE"].push(reader.readByte());
+				rec["LE"].push(reader.readByte());
+			}
+			// IC
+			if (flags & (1 << 16))
+			{
+				let n = reader.readInt();
+				rec["IC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["IC"].push(reader.readDouble2());
+			}
+			// LL
+			if (flags & (1 << 17))
+				rec["LL"] = reader.readDouble2();
+			// LLE
+			if (flags & (1 << 18))
+				rec["LLE"] = reader.readDouble2();
+			// Cap
+			rec["Cap"] = (flags >> 19) & 1;
+			// IT
+			// 0 - LineDimension, 1 - LineArrow
+			if (flags & (1 << 20))
+				rec["IT"] = reader.readByte();
+			// LLO
+			if (flags & (1 << 21))
+				rec["LLO"] = reader.readDouble2();
+			// CP
+			// 0 - Inline, 1 - Top
+			if (flags & (1 << 22))
+				rec["CP"] = reader.readByte();
+			// CO
+			if (flags & (1 << 23))
+			{
+				rec["CO"] = [];
+				rec["CO"].push(reader.readDouble2());
+				rec["CO"].push(reader.readDouble2());
+			}
+		}
+		// Ink
+		else if (rec["Type"] == 14)
+		{
+			// offsets like getStructure and viewer.navigate
+			let n = reader.readInt();
+			rec["InkList"] = [];
+			for (let i = 0; i < n; ++i)
+			{
+				rec["InkList"][i] = [];
+				let m = reader.readInt();
+				for (let j = 0; j < m; ++j)
+					rec["InkList"][i].push(reader.readDouble2());
+			}
+		}
+		// Highlight, Underline, Squiggly, Strikeout
+		else if (rec["Type"] > 7 && rec["Type"] < 12)
+		{
+			// QuadPoints
+			let n = reader.readInt();
+			rec["QuadPoints"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["QuadPoints"].push(reader.readDouble2());
+		}
+		// Square, Circle
+		else if (rec["Type"] == 4 || rec["Type"] == 5)
+		{
+			// Rect and RD differences
+			if (flags & (1 << 15))
+			{
+				rec["RD"] = [];
+				for (let i = 0; i < 4; ++i)
+					rec["RD"].push(reader.readDouble2());
+			}
+			// IC
+			if (flags & (1 << 16))
+			{
+				let n = reader.readInt();
+				rec["IC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["IC"].push(reader.readDouble2());
+			}
+		}
+		// Polygon, PolyLine
+		else if (rec["Type"] == 6 || rec["Type"] == 7)
+		{
+			let nVertices = reader.readInt();
+			rec["Vertices"] = [];
+			for (let i = 0; i < nVertices; ++i)
+				rec["Vertices"].push(reader.readDouble2());
+			// LE
+			// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+			if (flags & (1 << 15))
+			{
+				rec["LE"] = [];
+				rec["LE"].push(reader.readByte());
+				rec["LE"].push(reader.readByte());
+			}
+			// IC
+			if (flags & (1 << 16))
+			{
+				let n = reader.readInt();
+				rec["IC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["IC"].push(reader.readDouble2());
+			}
+			// IT
+			// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
+			if (flags & (1 << 20))
+				rec["IT"] = reader.readByte();
+		}
+		// FreeText
+		else if (rec["Type"] == 2)
+		{
+			// Background color - C->IC
+			if (rec["C"])
+			{
+				rec["IC"] = rec["C"];
+				delete rec["C"];
+			}
+			// 0 - left-justified, 1 - centered, 2 - right-justified
+			rec["alignment"] = reader.readByte();
+			rec["Rotate"] = reader.readInt();
+			// Rect and RD differences
+			if (flags & (1 << 15))
+			{
+				rec["RD"] = [];
+				for (let i = 0; i < 4; ++i)
+					rec["RD"].push(reader.readDouble2());
+			}
+			// CL
+			if (flags & (1 << 16))
+			{
+				let n = reader.readInt();
+				rec["CL"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["CL"].push(reader.readDouble2());
+			}
+			// Default style (CSS2 format) - DS
+			if (flags & (1 << 17))
+				rec["defaultStyle"] = reader.readString2();
+			// LE
+			// 0 - Square, 1 - Circle, 2 - Diamond, 3 - OpenArrow, 4 - ClosedArrow, 5 - None, 6 - Butt, 7 - ROpenArrow, 8 - RClosedArrow, 9 - Slash
+			if (flags & (1 << 18))
+				rec["LE"] = reader.readByte();
+			// IT
+			// 0 - FreeText, 1 - FreeTextCallout, 2 - FreeTextTypeWriter
+			if (flags & (1 << 20))
+				rec["IT"] = reader.readByte();
+			// Border color - from DA (write to C)
+			if (flags & (1 << 21))
+			{
+				let n = reader.readInt();
+				rec["C"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["C"].push(reader.readDouble2());
+			}
+		}
+		// Caret
+		else if (rec["Type"] == 13)
+		{
+			// Rect and RD differenses
+			if (flags & (1 << 15))
+			{
+				rec["RD"] = [];
+				for (let i = 0; i < 4; ++i)
+					rec["RD"].push(reader.readDouble2());
+			}
+			// Sy
+			// 0 - None, 1 - P, 2 - S
+			if (flags & (1 << 16))
+				rec["Sy"] = reader.readByte();
+		}
+		// TODO FileAttachment
+		// Stamp
+		else if (rec["Type"] == 12)
+		{
+			rec["Icon"] = reader.readString2();
+			rec["Rotate"] = reader.readDouble2();
+			rec["InRect"] = [];
+			for (let i = 0; i < 4; ++i)
+				rec["InRect"].push(reader.readDouble2());
+		}
+		else if (rec["Type"] >= 26 && rec["Type"] <= 33)
+		{
+			// Widget
+			rec["font"] = {};
+			rec["font"]["name"] = reader.readString2();
+			rec["font"]["size"] = reader.readDouble2();
+			rec["font"]["sizeAP"] = reader.readDouble2();
+			rec["font"]["style"] = reader.readInt();
+			let tc = reader.readInt();
+			if (tc)
+			{
+				rec["font"]["color"] = [];
+				for (let i = 0; i < tc; ++i)
+					rec["font"]["color"].push(reader.readDouble2());
+			}
+			// 0 - left-justified, 1 - centered, 2 - right-justified
+			if (rec["Type"] != 29 && rec["Type"] != 28 && rec["Type"] != 27)
+				rec["alignment"] = reader.readByte();
+			rec["flag"] = reader.readInt();
+			// 12.7.3.1
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+			let flags = reader.readInt();
+			// Alternative field name, used in tooltip and error messages - TU
+			if (flags & (1 << 0))
+				rec["userName"] = reader.readString2();
+			// Default style string (CSS2 format) - DS
+			if (flags & (1 << 1))
+				rec["defaultStyle"] = reader.readString2();
+			// Actual font
+			if (flags & (1 << 2))
+				rec["font"]["actual"] = reader.readString2();
+			// Selection mode - H
+			// 0 - none, 1 - invert, 2 - push, 3 - outline
+			if (flags & (1 << 3))
+				rec["highlight"] = reader.readByte();
+			// Font key
+			if (flags & (1 << 4))
+				rec["font"]["key"] = reader.readString2();
+			// Border color - BC. Even if the border is not specified by BS/Border, 
+			// then if BC is present, a default border is provided (solid, thickness 1). 
+			// If the text annotation has MaxLen, borders appear for each character
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["BC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["BC"].push(reader.readDouble2());
+			}
+			// Rotate an annotation relative to the page - R
+			if (flags & (1 << 6))
+				rec["rotate"] = reader.readInt();
+			// Annotation background color - BG
+			if (flags & (1 << 7))
+			{
+				let n = reader.readInt();
+				rec["BG"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["BG"].push(reader.readDouble2());
+			}
+			// Default value - DV
+			if (flags & (1 << 8))
+				rec["defaultValue"] = reader.readString2();
+			if (flags & (1 << 17))
+				rec["Parent"] = reader.readInt();
+			if (flags & (1 << 18))
+				rec["name"] = reader.readString2();
+			if (flags & (1 << 19))
+				rec["font"]["AP"] = reader.readString2();
+			// Action
+			let nAction = reader.readInt();
+			if (nAction > 0)
+				rec["AA"] = {};
+			for (let i = 0; i < nAction; ++i)
+			{
+				let AAType = reader.readString2();
+				rec["AA"][AAType] = {};
+				readAction2(reader, rec["AA"][AAType]);
+			}
+			// Widget types
+			if (rec["type"] == 27)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString2();
+				let IFflags = reader.readInt();
+				// Header - СA
+				if (flags & (1 << 10))
+					rec["caption"] = reader.readString2();
+				// Rollover header - RC
+				if (flags & (1 << 11))
+					rec["rolloverCaption"] = reader.readString2();
+				// Alternate header - AC
+				if (flags & (1 << 12))
+					rec["alternateCaption"] = reader.readString2();
+				// Header position - TP
+				if (flags & (1 << 13))
+					// 0 - textOnly, 1 - iconOnly, 2 - iconTextV, 3 - textIconV, 4 - iconTextH, 5 - textIconH, 6 - overlay
+					rec["position"] = reader.readByte();
+				// Icons - IF
+				if (IFflags & (1 << 0))
+				{
+					rec["IF"] = {};
+					// Scaling IF.SW
+					// 0 - Always, 1 - Never, 2 - too big, 3 - too small
+					if (IFflags & (1 << 1))
+						rec["IF"]["SW"] = reader.readByte();
+					// Scaling type - IF.S
+					// 0 - Proportional, 1 - Anamorphic
+					if (IFflags & (1 << 2))
+						rec["IF"]["S"] = reader.readByte();
+					if (IFflags & (1 << 3))
+					{
+						rec["IF"]["A"] = [];
+						rec["IF"]["A"].push(reader.readDouble2());
+						rec["IF"]["A"].push(reader.readDouble2());
+					}
+					rec["IF"]["FB"] = (IFflags >> 4) & 1;
+				}
+				if (IFflags & (1 << 5))
+					rec["I"] = reader.readInt();
+				if (IFflags & (1 << 6))
+					rec["RI"] = reader.readInt();
+				if (IFflags & (1 << 7))
+					rec["IX"] = reader.readInt();
+			}
+			else if (rec["type"] == 29 || rec["type"] == 28)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString2();
+				// 0 - check, 1 - cross, 2 - diamond, 3 - circle, 4 - star, 5 - square
+				rec["style"] = reader.readByte();
+				if (flags & (1 << 14))
+					rec["ExportValue"] = reader.readString2();
+				// 12.7.4.2.1
+				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+			}
+			else if (rec["type"] == 30)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString2();
+				if (flags & (1 << 10))
+					rec["maxLen"] = reader.readInt();
+				if (rec["flag"] & (1 << 25))
+					rec["richValue"] = reader.readString2();
+				if (flags & (1 << 12))
+					rec["AP"]["V"] = reader.readString2();
+				if (flags & (1 << 13))
+				{
+					// TODO use Render - Uint8Array
+					rec["AP"]["render"] = reader.readData();
+				}	
+				// 12.7.4.3
+				rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+				rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+				rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+				rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
+			}
+			else if (rec["type"] == 31 || rec["type"] == 32)
+			{
+				if (flags & (1 << 9))
+					rec["value"] = reader.readString2();
+				if (flags & (1 << 10))
+				{
+					let n = reader.readInt();
+					rec["opt"] = [];
+					for (let i = 0; i < n; ++i)
+					{
+						let opt1 = reader.readString2();
+						let opt2 = reader.readString2();
+						if (opt1 == "")
+							rec["opt"].push(opt2);
+						else
+							rec["opt"].push([opt2, opt1]);
+					}
+				}
+				if (flags & (1 << 11))
+					rec["TI"] = reader.readInt();
+				if (flags & (1 << 12))
+					rec["AP"]["V"] = reader.readString2();
+				if (flags & (1 << 13))
+				{
+					let n = reader.readInt();
+					rec["value"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["value"].push(reader.readString2());
+				}
+				if (flags & (1 << 14))
+				{
+					let n = reader.readInt();
+					rec["I"] = [];
+					for (let i = 0; i < n; ++i)
+						rec["I"].push(reader.readInt());
+				}
+				if (flags & (1 << 15))
+				{
+					// TODO use Render - Uint8Array
+					rec["AP"]["render"] = reader.readData();
+				}
+				// 12.7.4.4
+				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+			}
+			else if (rec["type"] == 33)
+			{
+				rec["Sig"] = (flags >> 9) & 1;
+			}
+		}
+		res.push(rec);
+	}
+
 	return res;
 };
 

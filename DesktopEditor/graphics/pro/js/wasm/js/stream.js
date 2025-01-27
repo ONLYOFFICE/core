@@ -42,6 +42,12 @@ CBinaryReader.prototype.readByte = function()
 	this.pos += 1;
 	return val;
 };
+CBinaryReader.prototype.readShort = function()
+{
+	let val = this.data[this.pos] | this.data[this.pos + 1] << 8;
+	this.pos += 2;
+	return val;
+};
 CBinaryReader.prototype.readInt = function()
 {
 	let val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
@@ -61,6 +67,17 @@ CBinaryReader.prototype.readString = function()
 	let len = this.readInt();
 	let val = String.prototype.fromUtf8(this.data, this.pos, len);
 	this.pos += len;
+	return val;
+};
+CBinaryReader.prototype.readString2 = function()
+{
+	let len = this.readShort();
+	let val = "";
+	for (let i = 0; i < len; ++i)
+	{
+		let c = this.readShort();
+		val += String.prototype.fromCharCode(c);
+	}
 	return val;
 };
 CBinaryReader.prototype.readData = function()

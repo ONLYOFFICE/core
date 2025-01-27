@@ -262,6 +262,11 @@ int CHWPRecordParaShape::GetMarginNext() const
 	return m_nMarginNext;
 }
 
+int CHWPRecordParaShape::GetIndent() const
+{
+	return m_nIndent;
+}
+
 bool CHWPRecordParaShape::KeepWithNext() const
 {
 	return m_bKeepWithNext;

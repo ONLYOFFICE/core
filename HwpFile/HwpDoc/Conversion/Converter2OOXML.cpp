@@ -604,6 +604,11 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 	oBuilder.WriteString(L"<w:keepNext w:val=\"" + HWP_STRING((pParaShape->KeepWithNext()) ? L"true" : L"false") + L"\"/>");
 
+	const int nIndent = pParaShape->GetIndent();
+
+	if (0 != nIndent)
+		oBuilder.WriteString(L"<w:ind w:firstLine=\"" + std::to_wstring(static_cast<int>(std::ceil(nIndent / 10.))) + L"\"/>");
+
 	switch(pParaShape->GetHorizantalAlign())
 	{
 		case EHorizontalAlign::JUSTIFY: oBuilder.WriteString(L"<w:jc w:val=\"both\"/>"); break;

@@ -54,7 +54,7 @@ public:
  // No type info
 
     const std::wstring toString() const;
-private:
+
     Boolean<unsigned char> hasColumns;
     unsigned char          rowType;
     _UINT16                cch;

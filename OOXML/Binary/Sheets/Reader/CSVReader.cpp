@@ -290,8 +290,26 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	WCHAR wcDelimiterLeading = L'\0';
 	WCHAR wcDelimiterTrailing = L'\0';
 	int nDelimiterSize = 0;
-
-	if (sDelimiter.length() > 0)
+    if(sFileDataW.size() > 7 && sFileDataW.substr(0, 4) == L"sep=")
+    {
+        wcDelimiterLeading = sFileDataW[4];
+        nDelimiterSize = 1;
+        if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF &&( sFileDataW[5] != L'\r' || sFileDataW[5] != L'\n'))
+        {
+            wcDelimiterTrailing = sFileDataW[5];
+            nDelimiterSize = 2;
+        }
+        auto newPos = 4 + nDelimiterSize;
+        if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
+        {
+            newPos++;
+            if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
+                newPos++;
+        }
+        sFileDataW.erase(0, newPos);
+        nSize = sFileDataW.length();
+    }
+    else if (sDelimiter.length() > 0)
 	{
 		wcDelimiterLeading = sDelimiter[0];
 		nDelimiterSize = 1;

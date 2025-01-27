@@ -123,6 +123,8 @@ public:
 	HWP_STRING GetFontName(ELang eLang) const;
 	short GetSpacing(ELang eLang) const;
 	int GetTextColor() const;
+
+	short GetBorderFillID() const;
 };
 }
 

@@ -30,7 +30,7 @@
 
 namespace HWP
 {
-static std::vector<std::pair<THWPColor, std::wstring>> arHighlightColors
+static const std::vector<std::pair<THWPColor, std::wstring>> arHighlightColors
 	{{{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
 	  {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
 	  {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
@@ -850,15 +850,15 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 
 	oBuilder.WriteString(L"<w:tcBorders>");
 
-	WriteCellBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
-	WriteCellBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
-	WriteCellBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
-	WriteCellBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
+	WriteBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
+	WriteBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
+	WriteBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
+	WriteBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
 
 	oBuilder.WriteString(L"</w:tcBorders>");
 }
 
-void CConverter2OOXML::WriteCellBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (0x00 == oBorder.m_chWidth || sBorderName.empty())
 		return;
@@ -1540,6 +1540,8 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	if (nullptr != oState.m_pHighlightColor)
 		oBuilder.WriteString(L"<w:highlight w:val=\"" + ConvertIntRgbToStr(*oState.m_pHighlightColor) + L"\"/>");
 
+	WriteTextBorderStyle(pCharShape->GetBorderFillID(), oBuilder, oState);
+
 	oBuilder.WriteString(sExternStyles);
 
 	oBuilder.WriteString(L"</w:rPr>");
@@ -1557,6 +1559,21 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	}
 
 	oState.m_eBreakType = TConversionState::EBreakType::None;
+}
+
+void CConverter2OOXML::WriteTextBorderStyle(short shBorderFillId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	const CHWPRecordBorderFill* pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pContext->GetBorderFill(shBorderFillId));
+
+	if (nullptr == pBorderFill)
+		return;
+
+	TBorder oBorder{pBorderFill->GetLeftBorder()};
+
+	if (ELineStyle2::NONE == oBorder.m_eStyle)
+		return;
+
+	WriteBorder(pBorderFill->GetLeftBorder(), L"bdr", oBuilder);
 }
 
 void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)

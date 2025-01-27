@@ -183,7 +183,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		sCurrentText += sText.substr(nPrevIndex);
 
 	if (!sCurrentText.empty())
-		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex));
+		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex + 1));
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return arParas;

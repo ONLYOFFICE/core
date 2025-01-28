@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 	listOfCheckBox			= ui->centralwidget->findChildren<QCheckBox*>();
 	listOfColorLabels		= ui->centralwidget->findChildren<CustomColorLabel*>();
 	listOfParametricLines	= ui->centralwidget->findChildren<CustomParametrLineEdit*>();
+	listOfAlphas			= ui->centralwidget->findChildren<CustomAlphaLineEdit*>();
 
 	connect(ui->label_test, SIGNAL(mousePressed()), this, SLOT(on_label_test_clicked()));
 
@@ -61,6 +62,9 @@ QImage GenerateImg(std::vector<NSStructures::Point> &points, Info &info, const i
 
 	NSStructures::GradientInfo ginfo = info.ginfo;
 	ginfo.shading.f_type = NSStructures::ShadingInfo::UseNew;
+	NSStructures::CBrush brush;
+	brush.m_oGradientInfo = ginfo;
+	//pRasterRenderer->RestoreBrush(brush);
 	pRasterRenderer->put_BrushGradInfo(&ginfo);
 	auto a		= info.c;
 	auto b		= info.p;
@@ -96,6 +100,7 @@ void MainWindow::initializeColors(bool Triangle)
 	{
 		listOfColorLabels[3]->setColor(QColor(Qt::yellow));
 	}
+	listOfColorLabels[4]->setColor(QColor(Qt::black));
 }
 
 void MainWindow::on_actionLinear_Gradient_triggered()
@@ -189,6 +194,18 @@ void MainWindow::on_actionTensor_Coons_Patch_Parametric_triggered()
 	ui->statusbar->showMessage("Tensor Coons Patch Parametric");
 }
 
+void MainWindow::on_actionactionLuminocity_Gradient_triggered()
+{
+	ui->stackedWidget_1->setCurrentIndex(4);
+	ui->stackedWidget_2->setCurrentIndex(6);
+	ui->stackedWidget_3->setCurrentIndex(2);
+	info.gradient		= Luminosity;
+	info.offset			= TensorCoonsPatchOffset;
+	info.gradient_type	= c_BrushTypeTensorCurveGradient;
+	initializeColors(false);
+	ui->statusbar->showMessage("Tensor Coons Patch");
+}
+
 inline agg::rgba8 getRGB(CustomColorLabel *label)
 {
 	return {static_cast<unsigned int>(label->getColor().red()),
@@ -223,6 +240,24 @@ std::vector<std::vector<agg::rgba8>> MainWindow::qColor2rgbaMatrix()
 		for (int j = 0; j < size; j++)
 		{
 			sub_colors.push_back(getRGB(listOfColorLabels[2 * i + j]));
+		}
+		colors.push_back(sub_colors);
+	}
+
+	return colors;
+}
+
+std::vector<std::vector<agg::rgba8>> MainWindow::setAlphas()
+{
+	std::vector<std::vector<agg::rgba8>> colors;
+	size_t size = listOfAlphas.size() / 2;
+
+	for (int i = 0; i < size; i++)
+	{
+		std::vector<agg::rgba8> sub_colors;
+		for (int j = 0; j < size; j++)
+		{
+			sub_colors.push_back({0, 0, 0, listOfAlphas[2 * i + j]->text().toUInt()});
 		}
 		colors.push_back(sub_colors);
 	}
@@ -279,6 +314,7 @@ void MainWindow::setPoints(QImage *image)
 		break;
 	case TensorCoonsPatch:
 	case TensorCoonsPatchParametric:
+	case Luminosity:
 		for (std::vector<NSStructures::Point> v : info.tensorcurve)
 		{
 			for (NSStructures::Point p : v)
@@ -440,6 +476,11 @@ void MainWindow::on_pushButton_clicked()
 		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(info.tensorcurve, info.tensor_curve_parametrs,
 																	  qColor2rgbaMatrix(), info.gradient == TensorCoonsPatchParametric);
 		break;
+	case Luminosity:
+		info.ginfo = NSStructures::GInfoConstructor::get_tensor_curve(info.tensorcurve, info.tensor_curve_parametrs,
+																	  setAlphas(), false, true);
+		info.ginfo.setFillColor(getRGB(listOfColorLabels[4]));
+		break;
 	default:
 		break;
 	}
@@ -479,3 +520,6 @@ void MainWindow::on_pushButton_clicked()
 	ui->label_test->setPixmap(QPixmap::fromImage(pm));
 	ui->label_test->setScaledContents(true);
 }
+
+
+

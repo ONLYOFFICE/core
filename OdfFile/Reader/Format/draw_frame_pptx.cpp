@@ -188,13 +188,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (common_presentation_attlist_.presentation_class_)
 		{
-			std::wstring type = common_presentation_attlist_.presentation_class_->get_type_ms();
-			
+			std::wstring placeholder_type = common_presentation_attlist_.presentation_class_->get_type_ms();
+			if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+				placeholder_type = L"sldImg";
+
 			if (!Context.process_masters_ && !Context.get_slide_context().processing_notes() &&
 				common_presentation_attlist_.presentation_class_->get_type() == odf_types::presentation_class::outline)
 				Context.get_slide_context().set_is_placeHolder(true);
 			else 
-				Context.get_slide_context().set_placeHolder_type(type);
+				Context.get_slide_context().set_placeHolder_type(placeholder_type);
 
 			if (idx_in_owner >= 0)
 				Context.get_slide_context().set_placeHolder_idx(idx_in_owner);

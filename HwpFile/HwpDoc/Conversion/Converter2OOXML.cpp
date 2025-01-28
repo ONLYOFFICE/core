@@ -1764,8 +1764,8 @@ void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<T
 		{
 			if (unTextPosition + nParaTextPosition == oRangeTag.m_nStartPos)
 			{
-				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
-				unStartText = unTextPosition - 1;
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition;
 
 				switch (oRangeTag.m_chType)
 				{
@@ -1780,8 +1780,8 @@ void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<T
 			}
 			else if (unTextPosition + nParaTextPosition == oRangeTag.m_nEndPos)
 			{
-				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
-				unStartText = unTextPosition - 1;
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition;
 
 				switch (oRangeTag.m_chType)
 				{

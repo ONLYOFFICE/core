@@ -517,7 +517,9 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
 		
-	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt);
+	double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
+
+	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + tab_pos_offset;
 	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
 
 	if (tab_pos < min_tab_pos)

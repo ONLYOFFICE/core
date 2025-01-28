@@ -74,7 +74,8 @@ EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
 }
 
 CConverter2OOXML::CConverter2OOXML()
-	: m_pContext(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0), m_ushEquationCount(0)
+	: m_pContext(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0),
+	  m_ushEquationCount(0), m_ushBookmarkCount(0)
 {}
 
 CConverter2OOXML::~CConverter2OOXML()
@@ -417,22 +418,32 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 	{
 		case EFieldType::Hyperlink:
 		{
-			HWP_STRING sCommand = pShape->GetCommand();
+			HWP_STRING wsHref = pShape->GetStringParam(L"Path");
 
-			if (sCommand.empty())
-				break;
-
-			sCommand = sCommand.substr(0, sCommand.find(L';'));
-
-			size_t unFound = sCommand.find(L'\\');
-
-			while (HWP_STRING::npos != unFound)
+			if(wsHref.empty())
 			{
-				sCommand.erase(unFound, 1);
-				unFound = sCommand.find(L'\\', unFound);
+				HWP_STRING sCommand = pShape->GetStringParam(L"Command");
+
+				if (sCommand.empty())
+					sCommand = pShape->GetCommand();
+
+				sCommand = sCommand.substr(0, sCommand.find(L';'));
+
+				size_t unFound = sCommand.find(L'\\');
+
+				while (HWP_STRING::npos != unFound)
+				{
+					sCommand.erase(unFound, 1);
+					unFound = sCommand.find(L'\\', unFound);
+				}
+
+				wsHref = sCommand;
 			}
 
-			const HWP_STRING wsID = AddRelationship(L"hyperlink", sCommand);
+			if (wsHref.empty())
+				break;
+
+			const HWP_STRING wsID = AddRelationship(L"hyperlink", wsHref);
 
 			OpenParagraph(shParaShapeID, oBuilder, oState);
 			oBuilder.WriteString(L"<w:hyperlink r:id=\"" + wsID + L"\">");
@@ -444,6 +455,26 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 		case EFieldType::HyperlinkClosing:
 		{
 			oBuilder.WriteString(L"</w:hyperlink>");
+			break;
+		}
+		case EFieldType::Bookmark:
+		{
+			oBuilder.WriteString(L"<w:bookmarkStart w:id=\"" + std::to_wstring(m_ushBookmarkCount) + L"\" w:name=\"");
+			oBuilder.WriteEncodeXmlString(pShape->GetStringParam(L"bookmarkname"));
+			oBuilder.WriteString(L"\"/>");
+
+			oState.m_arOpenedBookmarks.push(m_ushBookmarkCount++);
+			oState.m_mOpenField.insert(std::make_pair(pShape->GetInstanceID(), pShape));
+
+			break;
+		}
+		case EFieldType::BookmarkClosing:
+		{
+			if (oState.m_arOpenedBookmarks.empty())
+				break;
+
+			oBuilder.WriteString(L"<w:bookmarkEnd w:id=\"" + std::to_wstring(oState.m_arOpenedBookmarks.top()) + L"\"/>");
+			oState.m_arOpenedBookmarks.pop();
 			break;
 		}
 		//TODO:: как-будто хочется определить тип закрывающей field на этапе парса hwpx
@@ -458,6 +489,15 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 					case EFieldType::Hyperlink:
 					{
 						oBuilder.WriteString(L"</w:hyperlink>");
+						break;
+					}
+					case EFieldType::Bookmark:
+					{
+						if (oState.m_arOpenedBookmarks.empty())
+							break;
+
+						oBuilder.WriteString(L"<w:bookmarkEnd w:id=\"" + std::to_wstring(oState.m_arOpenedBookmarks.top()) + L"\"/>");
+						oState.m_arOpenedBookmarks.pop();
 						break;
 					}
 					default:

@@ -3,7 +3,7 @@
 
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
-#include "../Paragraph/CCtrlField.h"
+#include "../Paragraph/CtrlField.h"
 #include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapeVideo.h"
@@ -46,6 +46,7 @@ struct TConversionState
 	THWPColor *m_pHighlightColor;
 
 	VECTOR<const CCtrlHeadFoot*> m_arCtrlsHeadFoot; //only for hwpx
+	std::stack<int> m_arOpenedBookmarks;
 
 	const CCtrlSectionDef* m_pSectionDef;
 	const CCtrlColumnDef*  m_pColumnDef;
@@ -105,6 +106,8 @@ class CConverter2OOXML
 	unsigned short m_ushPageCount;
 	unsigned short m_ushTableCount;
 	unsigned short m_ushEquationCount;
+
+	unsigned short m_ushBookmarkCount;
 
 	void CreateEmptyFiles();
 	void FillDefaultData();

@@ -12,7 +12,7 @@
 #include "../Paragraph/CtrlGeneralShape.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
-#include "../Paragraph/CCtrlField.h"
+#include "../Paragraph/CtrlField.h"
 
 #include <regex>
 
@@ -38,7 +38,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 	}
 
 	//TODO:: перейти на обычный проход по символам
-	std::wregex oRegex(L"([\\u0000-\\u001f]|.{2}[\\u0000-\u0017]{4})"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
+	std::wregex oRegex(L"([\\u0000-\\u001f]|.{2}[\\u0000-\\u0017]{4})"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
 	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
 	std::wsregex_iterator itEnd = std::wsregex_iterator();
 
@@ -133,7 +133,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 			//TODO:: Проверить
 			HWP_STRING sInfo = sText.substr(itCurrent->position(), 2);
-			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");
+			std::wregex wrReplaceRegex(L"[\\u0000-\\u0017]+$");
 			sInfo = std::regex_replace(sInfo, wrReplaceRegex, L"");
 
 			HWP_STRING sType;
@@ -144,7 +144,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			sType[2] = (sInfo[1] & 0xFF);
 			sType[3] = ((sInfo[1] >> 8) & 0xFF);
 
-			if (0x00 == sType[3])
+			if (0x17 >= sType[3])
 				sType[3] = L' ';
 
 			//TODO:: более подробно разобраться в данном моменте
@@ -170,8 +170,10 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				arParas.push_back(new CCtrlTable(sType));
 			else if (L"deqe" == sType)
 				arParas.push_back(new CCtrlEqEdit(sType));
-			else if (L"klh%" == sType ||
-			         L"klh " == sType)
+			else if (L"klh%" == sType ||  // hyperlink start
+			         L"klh " == sType ||  // hyperlink end
+			         L"kmb%" == sType ||  // bookmark start
+			         L"kmb " == sType)    // bookmark end
 				arParas.push_back(new CCtrlField(sType));
 		}
 

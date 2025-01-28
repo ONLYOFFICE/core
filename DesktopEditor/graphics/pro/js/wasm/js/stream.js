@@ -62,6 +62,10 @@ CBinaryReader.prototype.readDouble2 = function()
 {
 	return this.readInt() / 10000;
 };
+CBinaryReader.prototype.readDouble3 = function()
+{
+	return this.readInt() / 100000;
+};
 CBinaryReader.prototype.readString = function()
 {
 	let len = this.readInt();
@@ -82,7 +86,7 @@ CBinaryReader.prototype.readString2 = function()
 };
 CBinaryReader.prototype.readData = function()
 {
-	let len = this.readInt();
+	let len = this.readInt() - 4;
 	let val = this.data.slice(this.pos, this.pos + len);
 	this.pos += len;
 	return val;

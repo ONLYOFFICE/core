@@ -401,7 +401,7 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 		readAction(reader, rec["Next"], readDoubleFunc, readStringFunc);
 	}
 }
-function readAnnot(reader, rec, readDoubleFunc, readStringFunc, isRead = false)
+function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
 	rec["AP"] = {};
 	// Annot
@@ -441,10 +441,10 @@ function readAnnot(reader, rec, readDoubleFunc, readStringFunc, isRead = false)
 	rec["page"] = reader.readInt();
 	// offsets like getStructure and viewer.navigate
 	rec["rect"] = {};
-	rec["rect"]["x1"] = reader.readDouble2();
-	rec["rect"]["y1"] = reader.readDouble2();
-	rec["rect"]["x2"] = reader.readDouble2();
-	rec["rect"]["y2"] = reader.readDouble2();
+	rec["rect"]["x1"] = readDouble2Func.call(reader);
+	rec["rect"]["y1"] = readDouble2Func.call(reader);
+	rec["rect"]["x2"] = readDouble2Func.call(reader);
+	rec["rect"]["y2"] = readDouble2Func.call(reader);
 	let flags = reader.readInt();
 	// Unique name - NM
 	if (flags & (1 << 0))
@@ -465,7 +465,7 @@ function readAnnot(reader, rec, readDoubleFunc, readStringFunc, isRead = false)
 		let n = reader.readInt();
 		rec["C"] = [];
 		for (let i = 0; i < n; ++i)
-			rec["C"].push(reader.readDouble2());
+			rec["C"].push(readDouble2Func.call(reader));
 	}
 	// Border/BS
 	if (flags & (1 << 4))
@@ -527,7 +527,7 @@ function readAnnotAP(reader, AP)
 		APi["BlendMode"] = reader.readByte();
 	}
 }
-function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = false)
+function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
 	// Markup
 	let flags = 0;
@@ -563,9 +563,9 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 					oFont["actual"] = readStringFunc.call(reader);
 				oFont["size"] = readDoubleFunc.call(reader);
 				oFont["color"] = [];
-				oFont["color"].push(reader.readDouble2());
-				oFont["color"].push(reader.readDouble2());
-				oFont["color"].push(reader.readDouble2());
+				oFont["color"].push(readDouble2Func.call(reader));
+				oFont["color"].push(readDouble2Func.call(reader));
+				oFont["color"].push(readDouble2Func.call(reader));
 				oFont["name"] = readStringFunc.call(reader);
 				oFont["text"] = readStringFunc.call(reader);
 				rec["RC"].push(oFont);
@@ -630,7 +630,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 			let n = reader.readInt();
 			rec["IC"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["IC"].push(reader.readDouble2());
+				rec["IC"].push(readDouble2Func.call(reader));
 		}
 		// LL
 		if (flags & (1 << 17))
@@ -698,7 +698,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 			let n = reader.readInt();
 			rec["IC"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["IC"].push(reader.readDouble2());
+				rec["IC"].push(readDouble2Func.call(reader));
 		}
 	}
 	// Polygon, PolyLine
@@ -722,7 +722,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 			let n = reader.readInt();
 			rec["IC"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["IC"].push(reader.readDouble2());
+				rec["IC"].push(readDouble2Func.call(reader));
 		}
 		// IT
 		// 0 - PolygonCloud, 1 - PolyLineDimension, 2 - PolygonDimension
@@ -784,7 +784,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 			let n = reader.readInt();
 			rec["C"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["C"].push(reader.readDouble2());
+				rec["C"].push(readDouble2Func.call(reader));
 		}
 	}
 	// Caret
@@ -905,24 +905,24 @@ function readAnnotType(reader, rec, readDoubleFunc, readStringFunc, isRead = fal
 	else if (rec["Type"] == 12)
 	{
 		rec["Icon"] = readStringFunc.call(reader);
-		rec["Rotate"] = reader.readDouble2();
+		rec["Rotate"] = readDouble2Func.call(reader);
 		rec["InRect"] = [];
 		if (isRead)
 		{
-			let x1 = reader.readDouble2();
-			let y1 = reader.readDouble2();
-			let x2 = reader.readDouble2();
-			let y2 = reader.readDouble2();
+			let x1 = readDouble2Func.call(reader);
+			let y1 = readDouble2Func.call(reader);
+			let x2 = readDouble2Func.call(reader);
+			let y2 = readDouble2Func.call(reader);
 			rec["InRect"] = [ x1, y1, x1, y2, x2, y2, y1, x2 ];
 		}
 		else
 		{
 			for (let i = 0; i < 8; ++i)
-				rec["InRect"].push(reader.readDouble2());
+				rec["InRect"].push(readDouble2Func.call(reader));
 		}
 	}
 }
-function readWidgetType(reader, rec, readDoubleFunc, readStringFunc, isRead = false)
+function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
 	// Widget
 	rec["font"] = {};
@@ -936,7 +936,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readStringFunc, isRead = fa
 	{
 		rec["font"]["color"] = [];
 		for (let i = 0; i < tc; ++i)
-			rec["font"]["color"].push(reader.readDouble2());
+			rec["font"]["color"].push(readDouble2Func.call(reader));
 	}
 	// 0 - left-justified, 1 - centered, 2 - right-justified
 	if (!isRead || (rec["Type"] != 29 && rec["Type"] != 28 && rec["Type"] != 27))
@@ -971,7 +971,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readStringFunc, isRead = fa
 		let n = reader.readInt();
 		rec["BC"] = [];
 		for (let i = 0; i < n; ++i)
-			rec["BC"].push(reader.readDouble2());
+			rec["BC"].push(readDouble2Func.call(reader));
 	}
 	// Rotate an annotation relative to the page - R
 	if (flags & (1 << 6))
@@ -982,7 +982,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readStringFunc, isRead = fa
 		let n = reader.readInt();
 		rec["BG"] = [];
 		for (let i = 0; i < n; ++i)
-			rec["BG"].push(reader.readDouble2());
+			rec["BG"].push(readDouble2Func.call(reader));
 	}
 	// Default value - DV
 	if (flags & (1 << 8))
@@ -1216,9 +1216,9 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 		// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
 		rec["type"] = reader.readByte();
 		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readString);
+		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 		// Widget type
-		readWidgetType(reader, rec, reader.readDouble, reader.readString);
+		readWidgetType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 		
 		res["Fields"].push(rec);
 	}
@@ -1355,9 +1355,9 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
 		rec["Type"] = reader.readByte();
 		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readString);
+		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 		// Annot type
-		readAnnotType(reader, rec, reader.readDouble, reader.readString);
+		readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 		res.push(rec);
 	}
 	
@@ -1429,13 +1429,13 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
 		rec["Type"] = reader.readByte();
 		// Annot
-		readAnnot(reader, rec, reader.readDouble2, reader.readString2, true);
+		readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
 		// Annot type
-		readAnnotType(reader, rec, reader.readDouble2, reader.readString2, true);
+		readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
 		if (rec["Type"] >= 26 && rec["Type"] <= 33)
 		{
 			// Widget type
-			readWidgetType(reader, rec, reader.readDouble2, reader.readString2, true);
+			readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
 		}
 		res.push(rec);
 	}

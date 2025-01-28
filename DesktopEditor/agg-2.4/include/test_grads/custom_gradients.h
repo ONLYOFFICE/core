@@ -1000,7 +1000,14 @@ namespace agg
 				{
 					if (i < RES && j < RES)
 					{
-						precalc[i][j] = c;
+						if (m_oGradientInfo.luminocity)
+						{
+							ColorT fillC(m_oGradientInfo.shading.fill_color);
+							fillC.a = c.a;
+							precalc[i][j] = fillC;
+						}
+						else
+							precalc[i][j] = c;
 					}
 				}
 			}

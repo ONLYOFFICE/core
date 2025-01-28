@@ -305,7 +305,12 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 		fill->angle = -90 - gradient_style->draw_angle_->get_value();
 
 	if (fill->angle < 0)
-		fill->angle += 360;
+	{
+		int fullRotations = std::ceil(-fill->angle / 360.0f);
+
+		fill->angle += 360 * fullRotations;
+	}
+		
 
 	for (size_t i = 0; i < gradient_style->content_.size(); ++i)
 	{

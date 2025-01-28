@@ -1412,6 +1412,14 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 	let res = [];
 	while (reader.isValid())
 	{
+		let nCommand = reader.readByte();
+		let nPos = reader.GetCurPosition();
+		let nSize = reader.readInt();
+		if (nCommand != 164) // ctAnnotField
+		{
+			reader.Seek(nPos + nSize);
+			continue;
+		}
 		let rec = {};
 		// Annotation type
 		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,

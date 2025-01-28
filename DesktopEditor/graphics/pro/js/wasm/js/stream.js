@@ -76,7 +76,7 @@ CBinaryReader.prototype.readString2 = function()
 	for (let i = 0; i < len; ++i)
 	{
 		let c = this.readShort();
-		val += String.prototype.fromCharCode(c);
+		val += String.fromCharCode(c);
 	}
 	return val;
 };

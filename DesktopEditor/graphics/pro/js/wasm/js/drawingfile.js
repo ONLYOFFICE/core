@@ -1413,11 +1413,11 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 	while (reader.isValid())
 	{
 		let nCommand = reader.readByte();
-		let nPos = reader.GetCurPosition();
+		let nPos = reader.pos;
 		let nSize = reader.readInt();
 		if (nCommand != 164) // ctAnnotField
 		{
-			reader.Seek(nPos + nSize);
+			reader.pos = nPos + nSize;
 			continue;
 		}
 		let rec = {};

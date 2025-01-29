@@ -584,7 +584,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::AutoNumber:
 			{
-				WriteAutoNumber((const CCtrlAutoNumber*)pCtrl, pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+				WriteAutoNumber((const CCtrlAutoNumber*)pCtrl, pParagraph->GetShapeID(), oState.m_ushLastCharShapeId, oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Field:
@@ -959,6 +959,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (EShapeObjectType::Unknown == eShapeType)
 		return;
 
+	++m_ushShapeCount;
+
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
 
 	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
@@ -1156,6 +1158,8 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	if (0 == unChartIndex)
 		return;
 
+	++m_ushShapeCount;
+
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
 	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
@@ -1255,6 +1259,8 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	if (sPictureID.empty())
 		return;
 
+	++m_ushShapeCount;
+
 	WriteCaption((const CCtrlCommon*)pCtrlPic, oBuilder, oState);
 
 	if (!oState.m_bOpenedP)
@@ -1290,6 +1296,8 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 
 	if (sPictureID.empty())
 		return;
+
+	++m_ushShapeCount;
 
 	WriteCaption((const CCtrlCommon*)pCtrlVideo, oBuilder, oState);
 
@@ -1625,8 +1633,6 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 {
 	if (nullptr == pCtrlShape)
 		return;
-
-	++m_ushShapeCount;
 
 	oBuilder.WriteString(L"<w:drawing>");
 
@@ -2167,7 +2173,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

@@ -13,6 +13,14 @@ EHeadingType GetHeadingType(int nValue)
 	}
 }
 
+EHeadingType GetHeadingType(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(OUTLINE, sValue, EHeadingType);
+	ELSE_IF_STRING_IN_ENUM(NUMBER, sValue, EHeadingType);
+	ELSE_IF_STRING_IN_ENUM(BULLET, sValue, EHeadingType);
+	ELSE_STRING_IN_ENUM(NONE, EHeadingType);
+}
+
 EHorizontalAlign GetHorizontalAlign(int nValue)
 {
 	SWITCH(EHorizontalAlign, nValue)
@@ -26,6 +34,16 @@ EHorizontalAlign GetHorizontalAlign(int nValue)
 	}
 }
 
+EHorizontalAlign GetHorizontalAlign(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(RIGHT, sValue, EHorizontalAlign);
+	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EHorizontalAlign);
+	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE, sValue, EHorizontalAlign);
+	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE_SPACE, sValue, EHorizontalAlign);
+	ELSE_IF_STRING_IN_ENUM(JUSTIFY, sValue, EHorizontalAlign);
+	ELSE_STRING_IN_ENUM(LEFT, EHorizontalAlign);
+}
+
 EVerticalAlign GetVerticalAlign(int nValue)
 {
 	SWITCH(EVerticalAlign, nValue)
@@ -35,6 +53,14 @@ EVerticalAlign GetVerticalAlign(int nValue)
 		CASE(EVerticalAlign::BOTTOM);
 		DEFAULT(EVerticalAlign::BASELINE);
 	}
+}
+
+EVerticalAlign GetVerticalAlign(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(CENTER, sValue, EVerticalAlign);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVerticalAlign);
+	ELSE_IF_STRING_IN_ENUM(BASELINE, sValue, EVerticalAlign);
+	ELSE_STRING_IN_ENUM(TOP, EVerticalAlign);
 }
 
 CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -125,12 +151,12 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLNode& oNode)
 {
 	if (L"hh:align" == oNode.GetName())
 	{
-		m_eAlign = ::HWP::GetHorizontalAlign(oNode.GetAttributeInt(L"horizontal"));
-		m_eVertAlign = ::HWP::GetVerticalAlign(oNode.GetAttributeInt(L"vertical"));
+		m_eAlign = ::HWP::GetHorizontalAlign(oNode.GetAttribute(L"horizontal"));
+		m_eVertAlign = ::HWP::GetVerticalAlign(oNode.GetAttribute(L"vertical"));
 	}
 	else if (L"hh:heading" == oNode.GetName())
 	{
-		m_eHeadingType = ::HWP::GetHeadingType(oNode.GetAttributeInt(L"type"));
+		m_eHeadingType = ::HWP::GetHeadingType(oNode.GetAttribute(L"type"));
 		m_shHeadingIdRef = oNode.GetAttributeInt(L"idRef");
 		m_chHeadingLevel = (HWP_BYTE)oNode.GetAttributeInt(L"level");
 	}

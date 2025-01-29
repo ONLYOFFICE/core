@@ -540,8 +540,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 
 	++oState.m_unParaIndex;
 
-	std::vector<const CCtrlNote*> arNotes;
-
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
 		switch (pCtrl->GetCtrlType())
@@ -569,7 +567,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Note:
 			{
-				arNotes.push_back((const CCtrlNote*)pCtrl);
+				WriteNote((const CCtrlNote*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::SectionDef:
@@ -601,20 +599,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			default:
 				break;
 		}
-
-		if (!arNotes.empty() && ECtrlObjectType::Note != pCtrl->GetCtrlType() && oState.m_bOpenedP)
-		{
-			for (const CCtrlNote* pNote: arNotes)
-				WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
-
-			arNotes.clear();
-		}
-	}
-
-	if (oState.m_bOpenedP && !arNotes.empty())
-	{
-		for (const CCtrlNote* pNote: arNotes)
-			WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
 	}
 
 	CloseParagraph(oBuilder, oState);
@@ -1898,7 +1882,22 @@ void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, 
 
 	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:t>");
+	oBuilder.WriteString(L"<w:t");
+
+	bool bNeedPreserve = (wsText.cend() != std::find_if(wsText.cbegin(), wsText.cend(), [](wchar_t wChar){ return iswspace(wChar); }));
+	bool bNeedAddSpace = false;
+
+	if (oState.m_bIsNote && !iswspace(wsText[0]))
+		bNeedAddSpace = true;
+
+	if (bNeedPreserve || bNeedAddSpace)
+		oBuilder.WriteString(L" xml:space=\"preserve\">");
+	else
+		oBuilder.WriteString(L">");
+
+	if (bNeedAddSpace)
+		oBuilder.WriteString(L" ");
+
 	oBuilder.WriteEncodeXmlString(wsText);
 	oBuilder.WriteString(L"</w:t></w:r>");
 
@@ -2056,9 +2055,21 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 		case ENumType::TOTAL_PAGE:
 			ushValue = m_ushPageCount; break;
 		case ENumType::FOOTNOTE:
-			ushValue = m_oFootnoteConverter.GetFootnoteCount(); break;
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r>");
+			WriteRunnerStyle(shCharShapeID, oBuilder, oState, L"<w:vertAlign w:val=\"superscript\"/>");
+			oBuilder.WriteString(L"<w:footnoteRef/></w:r>");
+			return;
+		}
 		case ENumType::ENDNOTE:
-			ushValue = m_oFootnoteConverter.GetEndnoteCount(); break;
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r>");
+			WriteRunnerStyle(shCharShapeID, oBuilder, oState, L"<w:vertAlign w:val=\"superscript\"/>");
+			oBuilder.WriteString(L"<w:endnoteRef/></w:r>");
+			return;
+		}
 		case ENumType::FIGURE:
 		{
 			wsType = L"Figure";
@@ -2173,7 +2184,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

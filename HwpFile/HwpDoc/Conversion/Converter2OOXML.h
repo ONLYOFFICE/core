@@ -37,6 +37,7 @@ struct TConversionState
 {
 	bool m_bOpenedP;
 	bool m_bOpenedR;
+	bool m_bIsNote;
 
 	unsigned short m_ushLastCharShapeId;
 

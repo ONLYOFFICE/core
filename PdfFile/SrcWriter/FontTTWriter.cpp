@@ -32,6 +32,9 @@
 #include "FontTTWriter.h"
 #include "../../DesktopEditor/common/File.h"
 
+#include <map>
+#include <vector>
+
 #define ttcfTag 0x74746366
 #define cmapTag 0x636d6170
 #define glyfTag 0x676c7966
@@ -138,6 +141,237 @@ namespace PdfWriter
 			break;
 		}
 		}
+	}
+	struct cTopDICTOperand
+	{
+		bool bIsInteger = true;
+		int nIntegerValue = 0;
+		int nRealFractalEnd = 0;
+		double dRealValue = 0.0;
+	};
+	void ReadTopDICT(BYTE* pCFFData, BYTE* pCFFDataEnd, std::map<unsigned short, std::vector<cTopDICTOperand>>& TopDICT)
+	{
+		std::vector<cTopDICTOperand> arrOperand;
+		while (pCFFData <= pCFFDataEnd)
+		{
+			BYTE nOp = *pCFFData++;
+			if (nOp <= 27 || nOp == 31)
+			{ // operator
+				unsigned short nOperator = 0;
+				if (nOp == 12)
+					nOperator = (nOp << 8) | *pCFFData++;
+				TopDICT[nOperator] = arrOperand;
+				arrOperand.clear();
+			}
+			else
+			{ // operand
+				cTopDICTOperand oOperand;
+				if (nOp == 30) // real
+				{
+					double powerPart = 0, fractionPart = 0, fractionDecimal = 1, integerPart = 0;
+					bool notDone = true, hasFraction = false, hasPositivePower = false, hasNegativePower = false, hasNegative = false;
+					do
+					{
+						BYTE nByte = *pCFFData++;
+						BYTE nibble[2];
+						nibble[0] = (nByte >> 4) & 0xf;
+						nibble[1] = nByte & 0xf;
+						for (int i = 0; i < 2; ++i)
+						{
+							switch (nibble[i])
+							{
+							case 0xa:
+								hasFraction = true;
+								break;
+							case 0xb:
+								hasPositivePower = true;
+								break;
+							case 0xc:
+								hasNegativePower = true;
+								break;
+							case 0xd:
+								break; // reserved
+							case 0xe:
+								hasNegative = true;
+								break;
+							case 0xf:
+								notDone = false;
+								break;
+							default: // numbers
+								if (hasPositivePower || hasNegativePower)
+									powerPart = powerPart * 10 + nibble[i];
+								else if (hasFraction)
+								{
+									fractionPart = fractionPart * 10 + nibble[i];
+									fractionDecimal *= 10;
+									++oOperand.nRealFractalEnd;
+								}
+								else
+									integerPart = integerPart * 10 + nibble[i];
+								break;
+							}
+						}
+					} while (notDone);
+
+					oOperand.bIsInteger = false;
+					oOperand.dRealValue = integerPart + fractionPart / fractionDecimal;
+					if (hasNegativePower || hasPositivePower)
+						oOperand.dRealValue = oOperand.dRealValue * pow(10, hasNegativePower ? -powerPart : powerPart);
+					if (hasNegative)
+						oOperand.dRealValue = -oOperand.dRealValue;
+				}
+				else if (nOp == 28)
+				{
+					oOperand.nIntegerValue = (pCFFData[0] << 8) | pCFFData[1];
+					pCFFData += 2;
+				}
+				else if (nOp == 29)
+				{
+					oOperand.nIntegerValue = (pCFFData[0] << 24) | (pCFFData[1] << 16) | (pCFFData[2] << 8) | pCFFData[3];
+					pCFFData += 4;
+				}
+				else if (nOp >= 32 && nOp <= 246)
+				{
+					oOperand.nIntegerValue = nOp - 139;
+				}
+				else if (nOp >= 247 && nOp <= 250)
+				{
+					BYTE nByte = *pCFFData++;
+					oOperand.nIntegerValue = (nOp - 247) * 256 + nByte + 108;
+				}
+				else if (nOp >= 251 && nOp <= 254)
+				{
+					BYTE nByte = *pCFFData++;
+					oOperand.nIntegerValue = -(nOp - 251) * 256 - nByte - 108;
+				}
+				arrOperand.push_back(oOperand);
+			}
+		}
+	}
+	void SetOrWriteNibble(BYTE nValue, BYTE& bBuffer, bool& bUsedFirst, CStream* pOutputStream)
+	{
+		if (bUsedFirst)
+		{
+			bBuffer |= nValue;
+			pOutputStream->WriteUChar(bBuffer);
+			bBuffer = 0;
+			bUsedFirst = false;
+		}
+		else
+		{
+			bBuffer = (nValue << 4) & 0xf0;
+			bUsedFirst = true;
+		}
+	}
+	void WriteIntegerOfReal(double dIntegerValue, BYTE& bBuffer, bool& bUsedFirst, CStream* pOutputStream)
+	{
+		if (dIntegerValue == 0)
+			return;
+		WriteIntegerOfReal(floor(dIntegerValue / 10.0), bBuffer, bUsedFirst, pOutputStream);
+		SetOrWriteNibble(long(dIntegerValue) % 10, bBuffer, bUsedFirst, pOutputStream);
+	}
+	void WriteTopDICT(unsigned short nOperator, const std::vector<cTopDICTOperand>& arrOperand, CStream* pOutputStream)
+	{
+		for (int i = 0; i < arrOperand.size(); ++i)
+		{
+			cTopDICTOperand oOperand = arrOperand[i];
+			if (oOperand.bIsInteger)
+			{
+				if (oOperand.nIntegerValue >= -107 && oOperand.nIntegerValue <= 107)
+					pOutputStream->WriteUChar(oOperand.nIntegerValue + 139);
+				else if (oOperand.nIntegerValue >= 108 && oOperand.nIntegerValue <= 1131)
+				{
+					long nValue = oOperand.nIntegerValue - 108;
+					pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 247);
+					pOutputStream->WriteUChar(nValue & 0xff);
+				}
+				else if (oOperand.nIntegerValue >= -1131 && oOperand.nIntegerValue <= -108)
+				{
+					long nValue = -(oOperand.nIntegerValue + 108);
+					pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 251);
+					pOutputStream->WriteUChar(nValue & 0xff);
+				}
+				else if (oOperand.nIntegerValue >= -32768 && oOperand.nIntegerValue <= 32767)
+				{
+					pOutputStream->WriteUChar(28);
+					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 8) & 0xff);
+					pOutputStream->WriteUChar(oOperand.nIntegerValue & 0xff);
+				}
+				else // oOperand.nIntegerValue >= -2^31 && oOperand.nIntegerValue <= 2^31-1
+				{
+					pOutputStream->WriteUChar(29);
+					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 24) & 0xff);
+					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 16) & 0xff);
+					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 8) & 0xff);
+					pOutputStream->WriteUChar(oOperand.nIntegerValue & 0xff);
+				}
+			}
+			else
+			{
+				double dValue = oOperand.dRealValue;
+				bool bMinusSign = dValue < 0, bMinusExponent = false, bPlusExponent = false;
+				unsigned short usExponentSize = 0;
+
+				if (bMinusSign)
+					dValue = -dValue;
+				double dIntegerValue = floor(dValue);
+				double dFractalValue = dValue - dIntegerValue;
+
+				if (dFractalValue == 0)
+				{
+					if (long(dIntegerValue) % 1000 == 0 && dIntegerValue >= 1000)
+					{ // bother only if larger than 1000
+						bPlusExponent = true;
+						while (long(dIntegerValue) % 1000 == 0)
+						{
+							++usExponentSize;
+							dIntegerValue = dIntegerValue / 10;
+						}
+					}
+				}
+				else if (dIntegerValue == 0)
+				{
+					if (dFractalValue <= 0.001)
+					{ // bother only if < 0.001
+						bMinusExponent = true;
+						while (dFractalValue < 0.1)
+						{
+							++usExponentSize;
+							dFractalValue = dFractalValue * 10;
+						}
+					}
+				}
+
+				pOutputStream->WriteUChar(30);
+
+				BYTE bBuffer = bMinusSign ? 0xe0 : 0;
+				bool bUsedFirst = bMinusSign;
+
+				// Integer part
+				if (dIntegerValue != 0)
+					WriteIntegerOfReal(dIntegerValue, bBuffer, bUsedFirst, pOutputStream);
+				else
+					SetOrWriteNibble(0, bBuffer, bUsedFirst, pOutputStream);
+
+				// TODO Fractal part
+				if (dFractalValue != 0 && oOperand.nRealFractalEnd > 0)
+				{
+					SetOrWriteNibble(0xa, bBuffer, bUsedFirst, pOutputStream);
+					while (dFractalValue != 0 && oOperand.nRealFractalEnd > 0)
+					{
+						SetOrWriteNibble(floor(dFractalValue * 10), bBuffer, bUsedFirst, pOutputStream);
+						dFractalValue = dFractalValue * 10 - floor(dFractalValue * 10);
+					}
+				}
+			}
+		}
+		if (((nOperator >> 8) & 0xff) == 12)
+		{
+			pOutputStream->WriteUChar((nOperator >> 8) & 0xff);
+			pOutputStream->WriteUChar(nOperator & 0xff);
+		}
+		else
+			pOutputStream->WriteUChar(nOperator & 0xff);
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
@@ -1097,12 +1331,15 @@ namespace PdfWriter
 		}
 
 		// Header
+
 		pOutputStream->WriteUChar(pCFFData[0]); // major version - 1
 		pOutputStream->WriteUChar(pCFFData[1]); // minor version - 0
 		pOutputStream->WriteUChar(pCFFData[2]); // header size - 4
 		pOutputStream->WriteUChar(pCFFData[3]); // offset size - offsets - размер смещений в INDEX-таблицах - максимальный из размеров под offset-ы 1-4
+		pCFFData += 4;
 
 		// Name Index
+
 		BYTE nSizeOfOffset = GetMostCompressedOffsetSize(m_sName.size() + 1);
 		// Количество имён в таблице
 		pOutputStream->WriteUChar(0); // count (MSB)
@@ -1114,52 +1351,68 @@ namespace PdfWriter
 		// Массив имён шрифтов
 		pOutputStream->WriteStr(m_sName.c_str());
 
-		// Top DICT Index
-		// TODO Подготовить Top DICT segment
-		nSizeOfOffset = GetMostCompressedOffsetSize(1); // (Top DICT segment size + 1);
+		int nCount = (pCFFData[0] << 8) | pCFFData[1];
+		pCFFData += 2;
+		BYTE nOffSize = *pCFFData++;
+		pCFFData += nCount * nOffSize;
+		int nOffsetEnd = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		pCFFData += nOffsetEnd - 1;
 
-		// Количество Top DICT в таблице
-		pOutputStream->WriteUChar(0); // count (MSB)
-		pOutputStream->WriteUChar(1); // count (LSB)
-		pOutputStream->WriteUChar(nSizeOfOffset); // offset size
-		// Массив смещений начала каждого Top DICT + конец данных
-		WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
-		WriteOffset(1 /* Top DICT segment size + 1 */, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
+		// Top DICT Index
+
+		nCount = (pCFFData[0] << 8) | pCFFData[1];
+		pCFFData += 2;
+		nOffSize = *pCFFData++;
+		BYTE* pCFFDataEnd = pCFFData;
+		if (nCount > 0)
+		{
+			int nOffsetBegin1 = 0;
+			for (int i = 0; i < nOffSize; ++i)
+				nOffsetBegin1 = (nOffsetBegin1 << 8) | pCFFData[i];
+			pCFFData += nOffSize;
+			int nOffsetBegin2 = 0;
+			for (int i = 0; i < nOffSize; ++i)
+				nOffsetBegin2 = (nOffsetBegin2 << 8) | pCFFData[i];
+			pCFFData += nOffSize;
+			pCFFData += (nCount - 2) * nOffSize;
+			nOffsetEnd = 0;
+			for (int i = 0; i < nOffSize; ++i)
+				nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+			pCFFData += nOffSize;
+			pCFFDataEnd = pCFFData + nOffsetEnd - 1;
+			pCFFData += nOffsetBegin1 - 1;
+
+			std::map<unsigned short, std::vector<cTopDICTOperand>> TopDICT;
+			ReadTopDICT(pCFFData, pCFFData + nOffsetBegin2 - 1, TopDICT);
+
+			// Подготовка Top DICT segment
+			CStream* pStream = new CMemoryStream();
+			unsigned short scROS = 0xC1E;
+			std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator itROS = TopDICT.find(scROS);
+			bool bIsCID = itROS != TopDICT.end();
+			if (bIsCID)
+				WriteTopDICT(itROS->first, itROS->second, pStream);
+
+			nSizeOfOffset = GetMostCompressedOffsetSize(pStream->Size() + 1); // (Top DICT segment size + 1);
+			// Количество Top DICT в таблице
+			pOutputStream->WriteUChar(0); // count (MSB)
+			pOutputStream->WriteUChar(1); // count (LSB)
+			pOutputStream->WriteUChar(nSizeOfOffset); // offset size
+			// Массив смещений начала каждого Top DICT + конец данных
+			WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
+			WriteOffset(pStream->Size() + 1, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
+			pOutputStream->WriteStream(pStream, 0, NULL);
+			RELEASEOBJECT(pStream);
+		}
+		pCFFData = pCFFDataEnd;
 
 		// Записываем данные CFF в поток
 		// pOutputStream->Write(pCFFData, nCFFLength);
 
 		/*
-		// Начинаем формирование CFF-структуры
-		std::vector<BYTE> cffData;
-
-		// 1. Header
-		cffData.push_back(1); // major version
-		cffData.push_back(0); // minor version
-		cffData.push_back(4); // header size
-		cffData.push_back(1); // offset size
-
-		// 2. Name Index
-		std::vector<BYTE> nameIndex;
-		const char* fontName = "CustomFont"; // Имя шрифта (можно настроить)
-		size_t nameLen = strlen(fontName);
-		nameIndex.push_back(0); // count (MSB)
-		nameIndex.push_back(1); // count (LSB)
-		nameIndex.push_back(1); // offset size
-		nameIndex.push_back(1); // offset to first name
-		nameIndex.push_back(1 + nameLen); // offset to end of name
-		nameIndex.insert(nameIndex.end(), fontName, fontName + nameLen); // Имя шрифта
-		cffData.insert(cffData.end(), nameIndex.begin(), nameIndex.end());
-
-		// 3. Top DICT Index (заглушка)
-		std::vector<BYTE> topDictIndex;
-		topDictIndex.push_back(0); // count (MSB)
-		topDictIndex.push_back(1); // count (LSB)
-		topDictIndex.push_back(1); // offset size
-		topDictIndex.push_back(1); // offset to first DICT
-		topDictIndex.push_back(2); // offset to end of DICT (заглушка, обновится позже)
-		cffData.insert(cffData.end(), topDictIndex.begin(), topDictIndex.end());
-
 		// 4. String Index (пусто)
 		cffData.push_back(0); // count (MSB)
 		cffData.push_back(0); // count (LSB)

@@ -1731,7 +1731,12 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				objectBuild.userShapes = drawingName;
 			}
 
+			bool state = Context.get_drawing_state_content();
+			Context.set_drawing_state_content(!drawing->isInline || drawing->inFrame);
+
 			objectBuild.docx_convert(Context);
+
+			Context.set_drawing_state_content(state);
 		}
 		//------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
@@ -1766,8 +1771,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			{
 				drawing->type = oox::typeShape;		
 				
-				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
+				//drawing->additional.push_back(_property(L"auto-grow-width", true));
+				drawing->additional.push_back(_property(L"auto-grow-height", true));
+
+				//drawing->additional.push_back(_property(L"fit-to-size",	true));		
+				drawing->additional.push_back(_property(L"text-content", std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			

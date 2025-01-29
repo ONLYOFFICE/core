@@ -1,5 +1,6 @@
 #include "CharShape.h"
 #include "CtrlCharacter.h"
+#include "CtrlAutoNumber.h"
 #include "ParaText.h"
 #include <algorithm>
 

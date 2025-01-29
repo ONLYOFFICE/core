@@ -3,7 +3,7 @@
 
 #include "../../../DesktopEditor/common/StringBuilder.h"
 
-#include "../Paragraph/CCtrlField.h"
+#include "../Paragraph/CtrlField.h"
 #include "../Paragraph/CtrlAutoNumber.h"
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlShapeVideo.h"
@@ -37,6 +37,7 @@ struct TConversionState
 {
 	bool m_bOpenedP;
 	bool m_bOpenedR;
+	bool m_bIsNote;
 
 	unsigned short m_ushLastCharShapeId;
 
@@ -46,6 +47,7 @@ struct TConversionState
 	THWPColor *m_pHighlightColor;
 
 	VECTOR<const CCtrlHeadFoot*> m_arCtrlsHeadFoot; //only for hwpx
+	std::stack<int> m_arOpenedBookmarks;
 
 	const CCtrlSectionDef* m_pSectionDef;
 	const CCtrlColumnDef*  m_pColumnDef;
@@ -106,6 +108,8 @@ class CConverter2OOXML
 	unsigned short m_ushTableCount;
 	unsigned short m_ushEquationCount;
 
+	unsigned short m_ushBookmarkCount;
+
 	void CreateEmptyFiles();
 	void FillDefaultData();
 	void Close();
@@ -118,20 +122,21 @@ class CConverter2OOXML
 	void WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCell(const CTblCell* pCell, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, ECellCreator eCellCreator);
 	void WriteCellProperties(short shBorderFillID, NSStringUtils::CStringBuilder& oBuilder);
-	void WriteCellBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder);
 
-	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void WriteSectionSettings(TConversionState& oState);
-	void WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WritePicture(const CCtrlShapePic* pCtrlPic, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName);
 	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
 
 	void WriteParaShapeProperties(short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const HWP_STRING& sExternStyles = L"");
+	void WriteTextBorderStyle(short shBorderFillId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
@@ -152,7 +157,7 @@ class CConverter2OOXML
 
 	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
-	void WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+	void WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 

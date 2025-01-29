@@ -13,7 +13,7 @@
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEmpty.h"
-#include "../Paragraph/CCtrlField.h"
+#include "../Paragraph/CtrlField.h"
 
 namespace HWP
 {
@@ -78,7 +78,8 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 		pCtrl = new CCtrlPageNumPos(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
-	else if (L"klh%" == sCtrlID)
+	else if (L"klh%" == sCtrlID ||
+	         L"kmb%" == sCtrlID)
 	{
 		pCtrl = new CCtrlField(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();

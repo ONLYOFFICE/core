@@ -90,6 +90,8 @@ public:
 	int GetMarginPrev() const;
 	int GetMarginNext() const;
 
+	int GetIndent() const;
+
 	bool KeepWithNext() const;
 };
 }

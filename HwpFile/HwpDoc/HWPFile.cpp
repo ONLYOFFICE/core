@@ -115,35 +115,7 @@ bool CHWPFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	return m_oOleFile.GetComponent(sEntryName, oBuffer);
 }
-
-//TODO:: написанно, что данные методы используются только для отображения в LibbreOffice
-// проверить и если нужны будут, то реализовать
-VECTOR<CDirectoryEntry*> CHWPFile::GetBinData()
-{
-	return VECTOR<CDirectoryEntry*>();
-}
-
-void CHWPFile::SetBinData(const std::vector<CDirectoryEntry*>& arBinData)
-{
-
-}
-
-VECTOR<CHWPPargraph*> CHWPFile::GetParas()
-{
-	return VECTOR<CHWPPargraph*>();
-}
-
-void CHWPFile::AddParas(const std::vector<CHWPPargraph*>& arParas)
-{
-
-}
 //------------
-
-void CHWPFile::SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed)
-{
-	// TODO:: перенести
-}
-
 CDirectoryEntry* CHWPFile::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
 {
 	for (CDirectoryEntry* pEntry : m_oOleFile.GetChildEntries(&oBaseEntry))

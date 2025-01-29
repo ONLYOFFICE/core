@@ -332,13 +332,11 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	{
 		case ECtrlCharType::PARAGRAPH_BREAK:
 		{
-			if (oState.m_bOpenedP)
-			{
-				oState.m_bOpenedP = false;
-				oBuilder.WriteString(L"</w:p>");
-			}
-			else
-				WriteText(L"", shParaShapeID, pCharacter->GetCharShapeId(), oBuilder, oState);
+			if (!oState.m_bOpenedP)
+				break;
+
+			oState.m_bOpenedP = false;
+			oBuilder.WriteString(L"</w:p>");
 
 			break;
 		}
@@ -353,7 +351,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	}
 }
 
-void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pShape)
 		return;
@@ -367,27 +365,27 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 		case EShapeType::Polygon:
 		case EShapeType::Curve:
 		{
-			WriteGeometryShape(pShape, oBuilder, oState);
+			WriteGeometryShape(pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Pic:
 		{
-			WritePicture((const CCtrlShapePic*)pShape, oBuilder, oState);
+			WritePicture((const CCtrlShapePic*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::EqEdit:
 		{
-			WriteEqEditShape((const CCtrlEqEdit*)pShape, oBuilder, oState);
+			WriteEqEditShape((const CCtrlEqEdit*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Ole:
 		{
-			WriteOleShape((const CCtrlShapeOle*)pShape, oBuilder, oState);
+			WriteOleShape((const CCtrlShapeOle*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Video:
 		{
-			WriteVideo((const CCtrlShapeVideo*)pShape, oBuilder, oState);
+			WriteVideo((const CCtrlShapeVideo*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::GeneralShape:
@@ -525,7 +523,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		return;
 
 	CloseParagraph(oBuilder, oState);
-	OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
 
 	if (0 < pParagraph->GetBreakType())
 	{
@@ -557,7 +554,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Shape:
 			{
-				WriteShape((const CCtrlGeneralShape*)pCtrl, oBuilder, oState);
+				WriteShape((const CCtrlGeneralShape*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Table:
@@ -854,8 +851,18 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 	{
 		for (const CHWPPargraph* pParagraph : pCell->GetParagraphs())
 		{
+			NSStringUtils::CStringBuilder oCellBuilder;
 			TConversionState oCellState;
-			WriteParagraph(pParagraph, oBuilder, oCellState);
+
+			WriteParagraph(pParagraph, oCellBuilder, oCellState);
+
+			if (0 == oCellBuilder.GetCurSize())
+			{
+				OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
+				CloseParagraph(oBuilder, oState);
+			}
+			else
+				oBuilder.Write(oCellBuilder);
 		}
 	}
 	else
@@ -933,10 +940,12 @@ VECTOR<TPoint> ArcToBezier(const TPoint& oStart, const TPoint& oEnd, const TPoin
 	return {oStart, oControl1, oControl2, oEnd};
 }
 
-void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pGeneralShape)
 		return;
+
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	EShapeObjectType eShapeType = GetShapeObjectType(pGeneralShape->GetID());
 
@@ -952,9 +961,6 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	const std::wstring wsWidth  = std::to_wstring(nWidth);
 	const std::wstring wsHeight = std::to_wstring(nHeight);
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
@@ -1096,21 +1102,14 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"</wps:wsp></a:graphicData></a:graphic>");
 	CloseDrawingNode(pGeneralShape, oBuilder);
 	oBuilder.WriteString(L"</mc:Choice></mc:AlternateContent></w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
-void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
 
-	if (!oState.m_bOpenedP)
-	{
-		oBuilder.WriteString(L"<w:p>");
-		oState.m_bOpenedP = true;
-	}
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r>");
 
@@ -1119,7 +1118,7 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStrin
 	oBuilder.WriteString(L"</w:t></w:r>");
 }
 
-void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	//TODO:: добавить конвертацию hwp ole -> ooxml chart
 	//TODO:: необходимо добавить поддержку формата "Hwp Document File Formats - Charts" (для случаев, когда нет ooxml представления)
@@ -1148,8 +1147,7 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
 	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1161,9 +1159,6 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	oBuilder.WriteString(L"</a:graphicData></a:graphic>");
 	CloseDrawingNode(pOleShape, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 
 	AddContentType(L"charts/chart" + std::to_wstring(unChartIndex) + L".xml", L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml");
 	AddContentType(L"charts/style" + std::to_wstring(unChartIndex) + L".xml", L"application/vnd.ms-office.chartstyle+xml");
@@ -1233,7 +1228,7 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	m_oDocXml.WriteString(L"</w:sectPr>");
 }
 
-void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaShapeId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCtrlPic)
 		return;
@@ -1247,8 +1242,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 
 	WriteCaption((const CCtrlCommon*)pCtrlPic, oBuilder, oState);
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeId, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1266,12 +1260,9 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
 	CloseDrawingNode(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
-void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shParaShapeId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCtrlVideo || 1 != pCtrlVideo->GetVideoType())
 		return;
@@ -1285,8 +1276,7 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 
 	WriteCaption((const CCtrlCommon*)pCtrlVideo, oBuilder, oState);
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeId, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1316,9 +1306,6 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 
 	CloseDrawingNode(pCtrlVideo, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
 bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName)

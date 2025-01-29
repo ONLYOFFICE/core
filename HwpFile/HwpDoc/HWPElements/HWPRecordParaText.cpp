@@ -51,7 +51,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 	#define UPDATE_CURRENT_TEXT() \
 	do { \
-	if (!sCurrentText.empty()) \
+	if (!sCurrentText.empty() && (unsigned int)sCurrentText[0] > 0x001f) \
 	{ \
 		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex + 1)); \
 		sCurrentText.clear(); \

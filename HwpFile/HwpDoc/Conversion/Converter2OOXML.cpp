@@ -528,11 +528,13 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 	{
 		if ((0x04 == (pParagraph->GetBreakType() & 0x04)) && (0 < oState.m_unParaIndex))
 		{
-			oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
+			oState.m_eBreakType = TConversionState::EBreakType::Page;
+			// oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
 			++m_ushPageCount;
 		}
 		else if (0x08 == (pParagraph->GetBreakType() & 0x08))
-			oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
+			oState.m_eBreakType = TConversionState::EBreakType::Column;
+			// oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
 	}
 
 	++oState.m_unParaIndex;
@@ -1196,17 +1198,6 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 		}
 	}
 
-	if (nullptr != oState.m_pColumnDef && 1 < oState.m_pColumnDef->GetColCount())
-	{
-		//TODO:: Добавить поддержку остальный свойств
-		m_oDocXml.WriteString(L"<w:cols w:num=\"" + std::to_wstring(oState.m_pColumnDef->GetColCount()) + L"\"  w:space=\"454\" w:equalWidth=\"true\"");
-
-		if (ELineStyle2::NONE != oState.m_pColumnDef->GetColLineStyle())
-			m_oDocXml.WriteString(L" w:sep=\"true\"");
-
-		m_oDocXml.WriteString(L"/>");
-	}
-
 	const CPage *pPage = (nullptr != oState.m_pSectionDef) ? oState.m_pSectionDef->GetPage() : nullptr;
 
 	if (nullptr == pPage)
@@ -1223,8 +1214,20 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginHeader())) + L"\"  w:footer=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginFooter())) + L"\"  w:gutter=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginGutter())) + L"\"/>");
 	}
-	m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
-	m_oDocXml.WriteString(L"<w:docGrid w:linePitch=\"360\"/>");
+
+	if (nullptr != oState.m_pColumnDef && 1 < oState.m_pColumnDef->GetColCount())
+	{
+		//TODO:: Добавить поддержку остальный свойств
+		m_oDocXml.WriteString(L"<w:cols w:num=\"" + std::to_wstring(oState.m_pColumnDef->GetColCount()) + L"\"  w:space=\"454\"");
+
+		if (ELineStyle2::NONE != oState.m_pColumnDef->GetColLineStyle())
+			m_oDocXml.WriteString(L" w:sep=\"true\"");
+
+		m_oDocXml.WriteString(L"/>");
+	}
+	else
+		m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
+
 	m_oDocXml.WriteString(L"</w:sectPr>");
 }
 

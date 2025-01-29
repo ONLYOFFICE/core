@@ -2381,6 +2381,8 @@ private:
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
 
+		OpenP(pXml);
+
 		NSStringUtils::CStringBuilder oPPr;
 
 		std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);

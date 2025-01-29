@@ -49,7 +49,6 @@ public:
 
 protected:
 	std::wstring m_sTempDir;
-	std::vector<std::wstring> m_arTempFiles;
 
 	std::wstring m_sThemesDir;
 	std::wstring m_sMediaDir;

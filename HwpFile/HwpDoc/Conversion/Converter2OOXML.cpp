@@ -713,6 +713,8 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 	if (nullptr == pTable || pTable->Empty())
 		return;
 
+	CloseParagraph(oBuilder, oState);
+
 	++m_ushTableCount;
 
 	oBuilder.WriteString(L"<w:tbl>");
@@ -860,8 +862,8 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 
 			if (0 == oCellBuilder.GetCurSize())
 			{
-				OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
-				CloseParagraph(oBuilder, oState);
+				OpenParagraph(pParagraph->GetShapeID(), oBuilder, oCellState);
+				CloseParagraph(oBuilder, oCellState);
 			}
 			else
 				oBuilder.Write(oCellBuilder);
@@ -2099,7 +2101,15 @@ HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP
 	if (m_arRelationships.cend() != itFound)
 		return itFound->m_wsID;
 
-	m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
+	if (L"hyperlink" == wsType)
+	{
+		NSStringUtils::CStringBuilder oBuilder;
+		oBuilder.WriteEncodeXmlString(wsTarget);
+
+		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, oBuilder.GetData()});
+	}
+	else
+		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
 
 	return m_arRelationships.back().m_wsID;
 }

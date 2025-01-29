@@ -1286,7 +1286,7 @@ namespace StarMath
 		StValuePr stBarPr;
 		if(pBarPr == nullptr)
 			return stBarPr;
-		if(pBarPr->m_oPos.IsInit() && pBarPr->m_oPos->m_val.IsInit())
+		if(pBarPr->m_oPos.GetPointer() != nullptr && pBarPr->m_oPos->m_val.GetPointer() != nullptr)
 			stBarPr.m_enPos = pBarPr->m_oPos->m_val->GetValue();
 		stStyle = ConversionCtrlPr(pBarPr->m_oCtrlPr.GetPointer());
 		return stBarPr;		
@@ -2042,31 +2042,36 @@ namespace StarMath
 	}
 	void CRelationsAndOperationsOnSets::Conversion(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
-		pXmlWrite->WriteNodeBegin(L"mrow",false);
-		if(m_pLeftArg!= nullptr)
-		{
-			if(GetAttribute() != nullptr)
-			{
-				GetAttribute()->AddRef();
-				m_pLeftArg->SetAttribute(GetAttribute());
-			}
-			m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
-		}
-		if(m_wsAnnotationSymbol == L"\u0026lt;" || m_wsAnnotationSymbol == L"\u0026gt;")
-			COOXml2Odf::RecordingMoNode(m_wsAnnotationSymbol,pXmlWrite);
+		if(m_pLeftArg == nullptr && m_pRightArg == nullptr)
+			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsSymbol);
 		else
-			COOXml2Odf::RecordingMoNode(m_wsSymbol,pXmlWrite);
-		wsAnnotation += m_wsAnnotationSymbol + L" ";
-		if(m_pRightArg != nullptr)
 		{
-			if(GetAttribute() != nullptr)
+			pXmlWrite->WriteNodeBegin(L"mrow",false);
+			if(m_pLeftArg!= nullptr)
 			{
-				GetAttribute()->AddRef();
-				m_pRightArg->SetAttribute(GetAttribute());
+				if(GetAttribute() != nullptr)
+				{
+					GetAttribute()->AddRef();
+					m_pLeftArg->SetAttribute(GetAttribute());
+				}
+				m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
 			}
-			m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
+			if(m_wsAnnotationSymbol == L"\u0026lt;" || m_wsAnnotationSymbol == L"\u0026gt;")
+				COOXml2Odf::RecordingMoNode(m_wsAnnotationSymbol,pXmlWrite);
+			else
+				COOXml2Odf::RecordingMoNode(m_wsSymbol,pXmlWrite);
+			wsAnnotation += m_wsAnnotationSymbol + L" ";
+			if(m_pRightArg != nullptr)
+			{
+				if(GetAttribute() != nullptr)
+				{
+					GetAttribute()->AddRef();
+					m_pRightArg->SetAttribute(GetAttribute());
+				}
+				m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
+			}
+			pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 		}
-		pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 	}
 	void CRelationsAndOperationsOnSets::SetLeftArg(COneElement *pElement)
 	{

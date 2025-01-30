@@ -60,6 +60,8 @@ BiffStructurePtr PtgExtraArray::clone()
 
 void PtgExtraArray::load(CFRecord& record)
 {
+    auto tempcols = 0;
+    auto temprows = 0;
     if (record.getGlobalWorkbookInfo()->Version < 0x0800)
     {
         DColunByteU cols_xls;
@@ -67,17 +69,41 @@ void PtgExtraArray::load(CFRecord& record)
         record >> cols_xls >> rows_xls;
         cols = cols_xls;
         rows = rows_xls;
+        tempcols = cols_xls+1;
+        temprows = rows_xls+1;
     }
     else
     {
         record >> cols >> rows;
+        tempcols = cols;
+        temprows = rows;
     }
-	for(int i = 0; i < (cols + 1) * (rows + 1); ++i)
+    for(int i = 0; i < (tempcols) * (temprows); ++i)
 	{
 		if (record.getRdPtr() >= record.getDataSize())
 			break;
 		unsigned char rec_type;
 		record >> rec_type;
+        if (record.getGlobalWorkbookInfo()->Version >= 0x0800)
+        {
+            switch(rec_type)
+            {
+                case 0:
+                    rec_type = SerAr::SerType::typeSerNum;
+                    break;
+                case 1:
+                    rec_type = SerAr::SerType::typeSerStr;
+                    break;
+                case 2:
+                    rec_type = SerAr::SerType::typeSerBool;
+                case 4:
+                    rec_type = SerAr::SerType::typeSerErr;
+                    break;
+                default:
+                    rec_type = SerAr::SerType::typeSerNil;
+                    break;
+            }
+        }
 		SerArPtr ser(SerAr::createSerAr(rec_type));
         if(ser.get())
         {
@@ -112,7 +138,7 @@ void PtgExtraArray::save(CFRecord& record)
 const std::wstring PtgExtraArray::toString() const
 {
 	std::wstring ret_val;
-	unsigned char col_cnt = cols + 1;
+    unsigned char col_cnt = cols;
 
 	if (array_.empty()) return L"";
 
@@ -126,7 +152,7 @@ const std::wstring PtgExtraArray::toString() const
 		else
 		{
 			ret_val += L';';
-			col_cnt = cols + 1;
+            col_cnt = cols;
 		}
 	}
 	ret_val += array_.back()->toString();

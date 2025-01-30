@@ -94,7 +94,7 @@ void SerStr::save(CFRecord& record)
 
 const std::wstring SerStr::toString() const
 {
-	return L"\"" + boost::algorithm::replace_all_copy(std::wstring(string_), L"\"", L"\"\"") + L"\"";
+    return L"\"" + boost::algorithm::replace_all_copy(std::wstring(rgch), L"\"", L"\"\"") + L"\"";
 }
 
 

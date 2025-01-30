@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -191,22 +191,24 @@ namespace PPTX
 			pWriter->StartNode(namespace_ + L":cNvCxnSpPr");
 
 			pWriter->EndAttributes();
-
-			pWriter->StartNode(_T("a:cxnSpLocks"));
-			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("noAdjustHandles"), noAdjustHandles);
-			pWriter->WriteAttribute(_T("noChangeArrowheads"), noChangeArrowheads);
-			pWriter->WriteAttribute(_T("noChangeAspect"), noChangeAspect);
-			pWriter->WriteAttribute(_T("noChangeShapeType"), noChangeShapeType);
-			pWriter->WriteAttribute(_T("noEditPoints"), noEditPoints);
-			pWriter->WriteAttribute(_T("noGrp"), noGrp);
-			pWriter->WriteAttribute(_T("noMove"), noMove);
-			pWriter->WriteAttribute(_T("noResize"), noResize);
-			pWriter->WriteAttribute(_T("noRot"), noRot);
-			pWriter->WriteAttribute(_T("noSelect"), noSelect);
-			pWriter->EndAttributes();
-			pWriter->EndNode(_T("a:cxnSpLocks"));
-
+            if(noAdjustHandles.IsInit() || noChangeArrowheads.IsInit() || noChangeAspect.IsInit() || noChangeShapeType.IsInit() || noEditPoints.IsInit()
+            || noGrp.IsInit() || noMove.IsInit() || noResize.IsInit() || noRot.IsInit() || noRot.IsInit())
+            {
+                pWriter->StartNode(_T("a:cxnSpLocks"));
+                pWriter->StartAttributes();
+                pWriter->WriteAttribute(_T("noAdjustHandles"), noAdjustHandles);
+                pWriter->WriteAttribute(_T("noChangeArrowheads"), noChangeArrowheads);
+                pWriter->WriteAttribute(_T("noChangeAspect"), noChangeAspect);
+                pWriter->WriteAttribute(_T("noChangeShapeType"), noChangeShapeType);
+                pWriter->WriteAttribute(_T("noEditPoints"), noEditPoints);
+                pWriter->WriteAttribute(_T("noGrp"), noGrp);
+                pWriter->WriteAttribute(_T("noMove"), noMove);
+                pWriter->WriteAttribute(_T("noResize"), noResize);
+                pWriter->WriteAttribute(_T("noRot"), noRot);
+                pWriter->WriteAttribute(_T("noSelect"), noSelect);
+                pWriter->EndAttributes();
+                pWriter->EndNode(_T("a:cxnSpLocks"));
+            }
 			if (stCxn_id.is_init() || stCxn_idx.is_init())
 			{
 				pWriter->StartNode(_T("a:stCxn"));

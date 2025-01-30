@@ -1231,7 +1231,15 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
 			m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetID());
+			if (pCommand->IsStamp())
+			{
+				int nFlags = pCommand->GetMarkupAnnotPr()->GetFlag();
+				if (nFlags & (1 << 15))
+					m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetCopyAP());
+			}
+		}
 		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
 	}
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:

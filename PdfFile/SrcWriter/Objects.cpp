@@ -669,7 +669,7 @@ namespace PdfWriter
 				pXref->Add((CObjectBase*)this);
 			pXref->Add((CObjectBase*)pLength);
 
-			Add("Length", (CObjectBase*)pLength);
+			Add("Length", pLength);
 		}
 
 		m_pStream = pStream;

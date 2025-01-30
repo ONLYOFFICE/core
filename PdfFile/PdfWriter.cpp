@@ -1810,6 +1810,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	bool bRender = (nFlags >> 6) & 1;
 	if (nFlags & (1 << 7))
 		pAnnot->SetOUserID(oInfo.GetOUserID());
+	bool bRenderCopy = (nFlags >> 8) & 1;
 
 	if (oInfo.IsMarkup())
 	{
@@ -2102,7 +2103,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			if (bRender)
 			{
-				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				PdfWriter::CAnnotAppearanceObject* pAP = DrawAP(pAnnot, pRender, nLen);
@@ -2116,6 +2116,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pArray->Add(dRD3);
 				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
 				pStampAnnot->SetAPStream(pAP);
+			}
+			else if (bRenderCopy)
+			{
+				int nID = oInfo.GetCopyAP();
+				PdfWriter::CAnnotation* pAnnot2 = m_pDocument->GetAnnot(nID);
+				if (pAnnot2->GetAnnotationType() == PdfWriter::EAnnotType::AnnotStamp)
+				{
+					PdfWriter::CStampAnnotation* pStampAnnot2 = (PdfWriter::CStampAnnotation*)pAnnot2;
+					PdfWriter::CDictObject* pAPN = (PdfWriter::CDictObject*)pStampAnnot2->GetAPStream();
+					pStampAnnot->SetAPStream(pAPN, true);
+				}
 			}
 
 			pStampAnnot->SetRotate(nRotate);

@@ -270,42 +270,54 @@ namespace PdfWriter
 		WriteIntegerOfReal(floor(dIntegerValue / 10.0), bBuffer, bUsedFirst, pOutputStream);
 		SetOrWriteNibble(long(dIntegerValue) % 10, bBuffer, bUsedFirst, pOutputStream);
 	}
+	void WriteDictOperator(unsigned short nOperator, CStream* pOutputStream)
+	{
+		if (((nOperator >> 8) & 0xff) == 12)
+		{
+			pOutputStream->WriteUChar((nOperator >> 8) & 0xff);
+			pOutputStream->WriteUChar(nOperator & 0xff);
+		}
+		else
+			pOutputStream->WriteUChar(nOperator & 0xff);
+	}
+	void WriteIntegerOperand(int nIntegerValue, CStream* pOutputStream)
+	{
+		if (nIntegerValue >= -107 && nIntegerValue <= 107)
+			pOutputStream->WriteUChar(nIntegerValue + 139);
+		else if (nIntegerValue >= 108 && nIntegerValue <= 1131)
+		{
+			long nValue = nIntegerValue - 108;
+			pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 247);
+			pOutputStream->WriteUChar(nValue & 0xff);
+		}
+		else if (nIntegerValue >= -1131 && nIntegerValue <= -108)
+		{
+			long nValue = -(nIntegerValue + 108);
+			pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 251);
+			pOutputStream->WriteUChar(nValue & 0xff);
+		}
+		else if (nIntegerValue >= -32768 && nIntegerValue <= 32767)
+		{
+			pOutputStream->WriteUChar(28);
+			pOutputStream->WriteUChar((nIntegerValue >> 8) & 0xff);
+			pOutputStream->WriteUChar(nIntegerValue & 0xff);
+		}
+		else // oOperand.nIntegerValue >= -2^31 && oOperand.nIntegerValue <= 2^31-1
+		{
+			pOutputStream->WriteUChar(29);
+			pOutputStream->WriteUChar((nIntegerValue >> 24) & 0xff);
+			pOutputStream->WriteUChar((nIntegerValue >> 16) & 0xff);
+			pOutputStream->WriteUChar((nIntegerValue >> 8) & 0xff);
+			pOutputStream->WriteUChar(nIntegerValue & 0xff);
+		}
+	}
 	void WriteTopDICT(unsigned short nOperator, const std::vector<cTopDICTOperand>& arrOperand, CStream* pOutputStream)
 	{
 		for (int i = 0; i < arrOperand.size(); ++i)
 		{
 			cTopDICTOperand oOperand = arrOperand[i];
 			if (oOperand.bIsInteger)
-			{
-				if (oOperand.nIntegerValue >= -107 && oOperand.nIntegerValue <= 107)
-					pOutputStream->WriteUChar(oOperand.nIntegerValue + 139);
-				else if (oOperand.nIntegerValue >= 108 && oOperand.nIntegerValue <= 1131)
-				{
-					long nValue = oOperand.nIntegerValue - 108;
-					pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 247);
-					pOutputStream->WriteUChar(nValue & 0xff);
-				}
-				else if (oOperand.nIntegerValue >= -1131 && oOperand.nIntegerValue <= -108)
-				{
-					long nValue = -(oOperand.nIntegerValue + 108);
-					pOutputStream->WriteUChar(((nValue >> 8) & 0xff) + 251);
-					pOutputStream->WriteUChar(nValue & 0xff);
-				}
-				else if (oOperand.nIntegerValue >= -32768 && oOperand.nIntegerValue <= 32767)
-				{
-					pOutputStream->WriteUChar(28);
-					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 8) & 0xff);
-					pOutputStream->WriteUChar(oOperand.nIntegerValue & 0xff);
-				}
-				else // oOperand.nIntegerValue >= -2^31 && oOperand.nIntegerValue <= 2^31-1
-				{
-					pOutputStream->WriteUChar(29);
-					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 24) & 0xff);
-					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 16) & 0xff);
-					pOutputStream->WriteUChar((oOperand.nIntegerValue >> 8) & 0xff);
-					pOutputStream->WriteUChar(oOperand.nIntegerValue & 0xff);
-				}
-			}
+				WriteIntegerOperand(oOperand.nIntegerValue, pOutputStream);
 			else
 			{
 				double dValue = oOperand.dRealValue;
@@ -353,7 +365,7 @@ namespace PdfWriter
 				else
 					SetOrWriteNibble(0, bBuffer, bUsedFirst, pOutputStream);
 
-				// TODO Fractal part
+				// Fractal part
 				if (dFractalValue != 0 && oOperand.nRealFractalEnd > 0)
 				{
 					SetOrWriteNibble(0xa, bBuffer, bUsedFirst, pOutputStream);
@@ -361,17 +373,35 @@ namespace PdfWriter
 					{
 						SetOrWriteNibble(floor(dFractalValue * 10), bBuffer, bUsedFirst, pOutputStream);
 						dFractalValue = dFractalValue * 10 - floor(dFractalValue * 10);
+						--oOperand.nRealFractalEnd;
 					}
 				}
+
+				// Exponent part
+				if (bMinusExponent)
+				{
+					SetOrWriteNibble(0xc, bBuffer, bUsedFirst, pOutputStream);
+					WriteIntegerOfReal(usExponentSize, bBuffer, bUsedFirst, pOutputStream);
+				}
+				if (bPlusExponent)
+				{
+					SetOrWriteNibble(0xb, bBuffer, bUsedFirst, pOutputStream);
+					WriteIntegerOfReal(usExponentSize, bBuffer, bUsedFirst, pOutputStream);
+				}
+
+				// Final part
+				if (bUsedFirst)
+					SetOrWriteNibble(0xf, bBuffer, bUsedFirst, pOutputStream);
+				else
+					pOutputStream->WriteUChar(0xff);
 			}
 		}
-		if (((nOperator >> 8) & 0xff) == 12)
-		{
-			pOutputStream->WriteUChar((nOperator >> 8) & 0xff);
-			pOutputStream->WriteUChar(nOperator & 0xff);
-		}
-		else
-			pOutputStream->WriteUChar(nOperator & 0xff);
+		WriteDictOperator(nOperator, pOutputStream);
+	}
+	void WritePad5Bytes(CStream* pOutputStream)
+	{
+		BYTE pBuffer[5] = { '0', '0', '0', '0', '0' };
+		pOutputStream->Write(pBuffer, 5, false);
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
@@ -1367,47 +1397,111 @@ namespace PdfWriter
 		pCFFData += 2;
 		nOffSize = *pCFFData++;
 		BYTE* pCFFDataEnd = pCFFData;
-		if (nCount > 0)
-		{
-			int nOffsetBegin1 = 0;
-			for (int i = 0; i < nOffSize; ++i)
-				nOffsetBegin1 = (nOffsetBegin1 << 8) | pCFFData[i];
-			pCFFData += nOffSize;
-			int nOffsetBegin2 = 0;
-			for (int i = 0; i < nOffSize; ++i)
-				nOffsetBegin2 = (nOffsetBegin2 << 8) | pCFFData[i];
-			pCFFData += nOffSize;
-			pCFFData += (nCount - 2) * nOffSize;
-			nOffsetEnd = 0;
-			for (int i = 0; i < nOffSize; ++i)
-				nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
-			pCFFData += nOffSize;
-			pCFFDataEnd = pCFFData + nOffsetEnd - 1;
-			pCFFData += nOffsetBegin1 - 1;
 
-			std::map<unsigned short, std::vector<cTopDICTOperand>> TopDICT;
-			ReadTopDICT(pCFFData, pCFFData + nOffsetBegin2 - 1, TopDICT);
+		int nOffsetBegin1 = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetBegin1 = (nOffsetBegin1 << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		int nOffsetBegin2 = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetBegin2 = (nOffsetBegin2 << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		pCFFData += (nCount - 2) * nOffSize;
+		nOffsetEnd = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		pCFFDataEnd = pCFFData + nOffsetEnd - 1;
+		pCFFData += nOffsetBegin1 - 1;
 
-			// Подготовка Top DICT segment
-			CStream* pStream = new CMemoryStream();
-			unsigned short scROS = 0xC1E;
-			std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator itROS = TopDICT.find(scROS);
-			bool bIsCID = itROS != TopDICT.end();
-			if (bIsCID)
-				WriteTopDICT(itROS->first, itROS->second, pStream);
-
-			nSizeOfOffset = GetMostCompressedOffsetSize(pStream->Size() + 1); // (Top DICT segment size + 1);
-			// Количество Top DICT в таблице
-			pOutputStream->WriteUChar(0); // count (MSB)
-			pOutputStream->WriteUChar(1); // count (LSB)
-			pOutputStream->WriteUChar(nSizeOfOffset); // offset size
-			// Массив смещений начала каждого Top DICT + конец данных
-			WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
-			WriteOffset(pStream->Size() + 1, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
-			pOutputStream->WriteStream(pStream, 0, NULL);
-			RELEASEOBJECT(pStream);
-		}
+		std::map<unsigned short, std::vector<cTopDICTOperand>> TopDICT;
+		ReadTopDICT(pCFFData, pCFFData + nOffsetBegin2 - 1, TopDICT);
 		pCFFData = pCFFDataEnd;
+
+		// TODO Получить Strings count из String Index
+		// TODO Получить PrivateDictStart из Private DICT
+		int nStringsCount = 0;
+		int nPrivateDictStart = 0;
+
+		// Подготовка Top DICT segment
+		CStream* pStream = new CMemoryStream();
+		unsigned short scROS = 0xC1E;
+		unsigned short scCharset = 15;
+		unsigned short scEncoding = 16;
+		unsigned short scCharstrings = 17;
+		unsigned short scPrivate = 18;
+		unsigned short scFDArray = 0xC24;
+		unsigned short scFDSelect = 0xC25;
+		unsigned short scEmbeddedPostscript = 0xC15;
+		std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator it = TopDICT.find(scROS);
+		bool bIsCID = it != TopDICT.end();
+		if (bIsCID)
+			WriteTopDICT(it->first, it->second, pStream);
+
+		for (it = TopDICT.begin(); it != TopDICT.end(); ++it)
+		{
+			if (it->first != scROS && it->first != scCharset && it->first != scEncoding && it->first != scCharstrings && it->first != scPrivate && it->first != scFDArray && it->first != scFDSelect)
+				WriteTopDICT(it->first, it->second, pStream);
+		}
+
+		int nOS2Index = SeekTable("OS/2");
+		std::string sOptionalEmbeddedPostscript;
+		if (TopDICT.find(scEmbeddedPostscript) == TopDICT.end() && nOS2Index > 0)
+		{
+			TrueTypeTable* pOS2Table = &m_pTables[nOS2Index];
+			BYTE* pOS2Data = m_sFile + pOS2Table->nOffset;
+			pOS2Data += 8; // skip
+			unsigned short usType = (pOS2Data[0] << 8) | pOS2Data[1];
+			pOS2Data += 2;
+			sOptionalEmbeddedPostscript = "/FSType " + std::to_string(usType) + " def";
+			WriteIntegerOperand(nStringsCount + 391, pStream); // TODO
+			WriteDictOperator(scEmbeddedPostscript, pStream);
+		}
+
+		// Placeholders
+		int nCharsetPlaceHolderPos = pStream->Tell();
+		WritePad5Bytes(pStream);
+		WriteDictOperator(scCharset, pStream);
+		int nCharstringsPlaceHolderPos = pStream->Tell();
+		WritePad5Bytes(pStream);
+		WriteDictOperator(scCharstrings, pStream);
+		int nPrivatePlaceHolderPos = 0;
+		if (nPrivateDictStart != 0) // TODO
+		{
+			nPrivatePlaceHolderPos = pStream->Tell();
+			WritePad5Bytes(pStream);
+			WritePad5Bytes(pStream);
+			WriteDictOperator(scPrivate, pStream);
+		}
+		int nEncodingPlaceHolderPos = 0;
+		int nFDArrayPlaceHolderPos  = 0;
+		int nFDSelectPlaceHolderPos = 0;
+		if (bIsCID)
+		{
+			nFDArrayPlaceHolderPos = pStream->Tell();
+			WritePad5Bytes(pStream);
+			WriteDictOperator(scFDArray, pStream);
+			nFDSelectPlaceHolderPos = pStream->Tell();
+			WritePad5Bytes(pStream);
+			WriteDictOperator(scFDSelect, pStream);
+		}
+		else
+		{
+			nEncodingPlaceHolderPos = pStream->Tell();
+			WritePad5Bytes(pStream);
+			WriteDictOperator(scEncoding, pStream);
+		}
+
+		nSizeOfOffset = GetMostCompressedOffsetSize(pStream->Size() + 1); // (Top DICT segment size + 1);
+		// Количество Top DICT в таблице
+		pOutputStream->WriteUChar(0); // count (MSB)
+		pOutputStream->WriteUChar(1); // count (LSB)
+		pOutputStream->WriteUChar(nSizeOfOffset); // offset size
+		// Массив смещений начала каждого Top DICT + конец данных
+		WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
+		WriteOffset(pStream->Size() + 1, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
+		pOutputStream->WriteStream(pStream, 0, NULL);
+		RELEASEOBJECT(pStream);
 
 		// Записываем данные CFF в поток
 		// pOutputStream->Write(pCFFData, nCFFLength);

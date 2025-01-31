@@ -1442,7 +1442,7 @@ namespace PdfWriter
 
 		return pRes;
 	}
-	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex)
+	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex, int nNewPage)
 	{
 		if (!pPage || !EditXref(pXref))
 			return false;
@@ -1454,7 +1454,10 @@ namespace PdfWriter
 #endif
 
 		m_pCurPage  = pPage;
-		m_mEditPages[nPageIndex] = pPage;
+		if (nNewPage > 0)
+			m_mEditPages[nNewPage] = pPage;
+		else
+			m_mEditPages[nPageIndex] = pPage;
 
 		if (m_pPageTree)
 			m_pPageTree->ReplacePage(nPageIndex, pPage);
@@ -1586,6 +1589,16 @@ namespace PdfWriter
 			pXref->SetPrev(m_pLastXref);
 			m_pLastXref = pXref;
 			return true;
+		}
+		return false;
+	}
+	bool CDocument::MovePage(int nPageIndex, int nPos)
+	{
+		if (m_pPageTree)
+		{
+			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+				return m_pPageTree->InsertPage(nPageIndex, (CPage*)pObj);
 		}
 		return false;
 	}

@@ -1075,7 +1075,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex))
+	if (EditPage(nPageIndex, true, nPos))
 	{
 		m_nEditPage = nPos;
 		return pWriter->GetDocument()->MovePage(nPageIndex, nPos);

@@ -12,7 +12,7 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
+ADD_DEPENDENCY(kernel, UnicodeConverter, graphics, CryptoPPLib)
 
 DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
 

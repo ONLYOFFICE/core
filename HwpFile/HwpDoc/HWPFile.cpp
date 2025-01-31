@@ -4,6 +4,12 @@
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
 
+// For decrypt
+#include "../../Common/3dParty/cryptopp/modes.h"
+#include "../../Common/3dParty/cryptopp/aes.h"
+#include "../../Common/3dParty/cryptopp/filters.h"
+// ----------
+
 #define DEFAULT_BUFFER_SIZE 8096
 
 namespace HWP
@@ -67,7 +73,7 @@ bool CHWPFile::Open()
 	if (!m_oFileHeader.Distributable() && !GetBodyText(m_nVersion))
 		return false;
 
-	if (!m_oFileHeader.Distributable() && !GetViewText(m_nVersion))
+	if (m_oFileHeader.Distributable() && !GetViewText(m_nVersion))
 		return false;
 
 	return true;
@@ -292,8 +298,43 @@ bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	if (256 != nSize)
 		return false;
 
-	//TODO:: реализовать
-	return false;
+	CHWPStream oDocData(256);
+	oDocData.Copy(oInput, 256);
+	oInput.Skip(256);
+
+	int nSeed;
+	oDocData.ReadInt(nSeed);
+	oDocData.Skip(-4);
+
+	srand(nSeed);
+
+	unsigned char chKey;
+
+	for (unsigned int unIndex = 0, unCount = 0; unIndex < 256; ++unIndex)
+	{
+		if (0 == unCount)
+		{
+			chKey = rand() & 0xFF;
+			unCount = (rand() & 0xF) + 1;
+		}
+		if (unIndex >= 4)
+			*(oDocData.GetCurPtr() + unIndex) = oDocData[unIndex] ^ chKey;
+
+		--unCount;
+	}
+
+	int nHashOffset = (nSeed & 0x0f) + 4;
+
+	oBuffer.Expand(oInput.SizeToEnd());
+
+	using namespace CryptoPP;
+
+	ECB_Mode<AES>::Decryption oDecryptor;
+	oDecryptor.SetKey((byte*)(oDocData.GetCurPtr() + nHashOffset), 16);
+
+	ArraySource((byte*)oInput.GetCurPtr(), oInput.SizeToEnd(), true, new StreamTransformationFilter(oDecryptor, new ArraySink( (byte*)oBuffer.GetCurPtr(), oBuffer.GetSize()), StreamTransformationFilter::NO_PADDING));
+
+	return true;
 }
 
 bool CHWPFile::GetBodyText(int nVersion)

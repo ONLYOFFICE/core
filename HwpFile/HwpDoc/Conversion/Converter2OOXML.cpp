@@ -1561,10 +1561,11 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	if (!bStrike && pCharShape->StrikeOut())
 		oBuilder.WriteString(L"<w:strike/>");
 
-	double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
-	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
+	//TODO:: на данный момент вычисляется не правильно. Необходимо более точно разобраться
+	// double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
+	// dSpacing *= 20; // pt to twips (20 = 1440 / 72)
 
-	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+	// oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
 
 	if (nullptr != oState.m_pHighlightColor)
 		oBuilder.WriteString(L"<w:highlight w:val=\"" + ConvertIntRgbToStr(*oState.m_pHighlightColor) + L"\"/>");

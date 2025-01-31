@@ -1598,7 +1598,7 @@ namespace PdfWriter
 		{
 			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
-				return m_pPageTree->InsertPage(nPageIndex, (CPage*)pObj);
+				return m_pPageTree->InsertPage(nPos, (CPage*)pObj);
 		}
 		return false;
 	}

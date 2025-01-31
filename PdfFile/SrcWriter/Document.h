@@ -191,9 +191,10 @@ namespace PdfWriter
 		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
 		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
-		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
+		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex, int nNewPage = -1);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
+		bool              MovePage(int nPageIndex, int nPos);
 		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }

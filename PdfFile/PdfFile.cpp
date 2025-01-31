@@ -166,6 +166,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
+bool CPdfFile::MovePage(int nPageIndex, int nPos)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->MovePage(nPageIndex, nPos);
+}
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);

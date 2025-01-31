@@ -1,8 +1,6 @@
 #include "VectorGraphics.h"
 
-#include <algorithm>
 #include <string.h>
-#include <numeric>
 #include <limits>
 
 #include "../../../DesktopEditor/graphics/Matrix.h"
@@ -389,5 +387,51 @@ namespace NSDocxRenderer
 		}
 
 		return points;
+	}
+
+	CHorVerLinesCollector::CHorVerLine::CHorVerLine(const double& _min, const double& _max, const double& _pos)
+	{
+		min = _min;
+		max = _max;
+		pos = _pos;
+	}
+	const std::vector<CHorVerLinesCollector::CHorVerLine>& CHorVerLinesCollector::GetHorizontal() const
+	{
+		return m_arHorizontal;
+	}
+	const std::vector<CHorVerLinesCollector::CHorVerLine>& CHorVerLinesCollector::GetVertical() const
+	{
+		return m_arVertical;
+	}
+
+	void CHorVerLinesCollector::AddVector(const CVectorGraphics& oVector)
+	{
+		double last_x{};
+		double last_y{};
+
+		for (const auto& command : oVector.GetData())
+		{
+			if (command.type == CVectorGraphics::ePathCommandType::pctLine)
+			{
+				double x = command.points.front().x;
+				double y = command.points.front().y;
+
+				if (x - last_x <= std::numeric_limits<double>::epsilon())
+					m_arVertical.push_back({std::min(last_y, y), std::max(last_y, y), x});
+
+				else if (y - last_y <= std::numeric_limits<double>::epsilon())
+					m_arHorizontal.push_back({std::min(last_x, x), std::max(last_x, x), y});
+			}
+			if (!command.points.empty())
+			{
+				last_x = command.points.back().x;
+				last_y = command.points.back().y;
+			}
+		}
+	}
+	void CHorVerLinesCollector::Clear()
+	{
+		m_arVertical.clear();
+		m_arHorizontal.clear();
 	}
 }

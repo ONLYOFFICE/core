@@ -42,6 +42,7 @@ namespace MetaFile
 		virtual void SetImageSize(int nWidth, int nHeight) {}
 		virtual bool LoadFromFile(const wchar_t* wsFilePath) { return false; }
 		virtual bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize) { return false; }
+		virtual bool LoadFromString(const std::wstring& data) { return false; }
 		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) { return false; }
 		virtual void Close() {}
 		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) {}
@@ -50,6 +51,7 @@ namespace MetaFile
 		virtual NSFonts::IFontManager* get_FontManager() { return NULL; }
 
 		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) { return L""; }
+		virtual void SetTempDirectory(const std::wstring& dir) {}
 
 		virtual void ConvertToXml(const wchar_t* wsFilePath) {}
 		virtual void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) {}

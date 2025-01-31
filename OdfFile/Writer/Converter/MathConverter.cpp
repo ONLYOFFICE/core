@@ -178,10 +178,32 @@ namespace Oox2Odf
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
 			convert(oox_math->m_arrItems[i]);
-		}	
+		}
 
+		if (bStart)
+		{
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math);
 
-		if (bStart) odf_context()->end_math();
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
+			{
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
+
+			odf_context()->end_math();
+		}
 	}
 
 	void OoxConverter::convert(OOX::Logic::CMathPr *oox_math_pr)
@@ -220,28 +242,29 @@ namespace Oox2Odf
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
-// перенести в OMath
-		StarMath::COOXml2Odf starMathConverter;
-		starMathConverter.StartConversion(oox_math_para);
-
-		std::wstring annotation_text = starMathConverter.GetAnnotation();
-
-		if (false == annotation_text.empty())
-		{
-			CREATE_MATH_TAG(L"annotation");
-			typedef odf_writer::math_annotation* T;
-			T tmp = dynamic_cast<T>(elm.get());
-			if (tmp)
-			{
-				tmp->encoding_ = L"StarMath 5.0";
-			}
-			elm->add_text(annotation_text);
-
-			OPEN_MATH_TAG(elm);
-			CLOSE_MATH_TAG;
-		}
 		if (bStart)
+		{
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math_para);
+
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
+			{
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
 			odf_context()->end_math();
+		}
 	}
 
 	void OoxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)
@@ -1237,10 +1260,13 @@ namespace Oox2Odf
 			odf_context()->settings_context()->start_view();
 				if (oox_r_pr->m_oSz.IsInit() && oox_r_pr->m_oSz->m_oVal.IsInit())
 				{
-					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
-					
-					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
-				}	
+					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();					
+				}
+				else
+				{
+					odf_context()->math_context()->size = 12;
+				}
+				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
 					odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;

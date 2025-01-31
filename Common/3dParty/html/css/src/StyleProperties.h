@@ -224,6 +224,8 @@ namespace NSCSS
 	{
 	public:
 		CColor();
+		CColor(const CColor& oColor);
+		~CColor();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
@@ -240,6 +242,7 @@ namespace NSCSS
 		int ToInt() const override;
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
+		std::wstring ToHEX() const;
 		std::wstring EquateToColor(const std::vector<std::pair<TRGB, std::wstring>>& arColors) const;
 		TRGB ToRGB() const;
 

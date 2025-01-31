@@ -502,18 +502,41 @@ namespace Aggplus
 		return Ok;
 	}
 
-	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op)
+	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op, NSStructures::CPen* pPen)
 	{
 		Aggplus::CMatrix m;
-		return InternalClip(pPath, (m_bIntegerGrid || pPath->m_internal->m_pTransform != NULL) ? &m : &m_oFullTransform, op);
+		return InternalClip(pPath, (m_bIntegerGrid || pPath->m_internal->m_pTransform != NULL) ? &m : &m_oFullTransform, op, pPen);
 	}
 
-	Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op)
+	Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op, NSStructures::CPen* pPen)
 	{
 		if (NULL == pPath)
 			return InvalidParameter;
 
-		m_oClip.Combine(pPath, pTransform, op);
+		bool bTempRasterizer = false;
+		CClipMulti::clip_rasterizer* pRasterizer = m_oClip.GetRasterizer();
+		if (!pRasterizer)
+		{
+			pRasterizer = new CClipMulti::clip_rasterizer();
+			pRasterizer->clip_box(0, 0, m_oClip.m_lWidth, m_oClip.m_lHeight);
+			bTempRasterizer = true;
+		}
+
+		agg::trans_affine* pAffine = NULL;
+		if (pPen)
+			pAffine = DoStrokePath(pPen, pPath, pRasterizer);
+		else
+		{
+			typedef agg::conv_transform<agg::path_storage> trans_type;
+			trans_type trans(pPath->m_internal->m_agg_ps, pTransform->m_internal->m_agg_mtx);
+
+			typedef agg::conv_curve<trans_type> conv_crv_type;
+			conv_crv_type c_c_path(trans);
+
+			pRasterizer->add_path(c_c_path);
+		}
+
+		m_oClip.Combine(pPath->m_internal->m_bEvenOdd, op, pRasterizer);
 
 		// write to clips history
 		CGraphics_ClipStateRecord* pRecord = new CGraphics_ClipStateRecord();
@@ -521,6 +544,11 @@ namespace Aggplus
 		pRecord->Transform = (NULL != pTransform) ? new CMatrix(*pTransform) : new CMatrix();
 		pRecord->Operation = op;
 		m_oClipState.AddRecord(pRecord);
+
+		if (pAffine)
+			delete pAffine;
+		if (bTempRasterizer)
+			delete pRasterizer;
 
 		return Ok;
 	}
@@ -610,180 +638,7 @@ namespace Aggplus
 
 		m_rasterizer.get_rasterizer().reset();
 
-		agg::line_join_e LineJoin = agg::round_join;
-		switch(pPen->LineJoin)
-		{
-		case LineJoinMiter			: LineJoin = agg::miter_join_revert; break;
-		case LineJoinBevel			: LineJoin = agg::bevel_join; break;
-		case LineJoinRound			: LineJoin = agg::round_join; break;
-		case LineJoinMiterClipped	: LineJoin = agg::miter_join_revert; break;
-		default:	break;
-		}
-		agg::line_cap_e LineCap = agg::round_cap;
-		switch(pPen->LineStartCap)
-		{
-		case LineCapFlat         : LineCap = agg::butt_cap; break;
-		case LineCapRound        : LineCap = agg::round_cap; break;
-		case LineCapSquare       : LineCap = agg::square_cap; break;
-		default:	break;
-		}
-
-		double dWidth = pPen->Size;
-		if (!m_bIntegerGrid && m_bIs0PenWidthAs1px)
-		{
-			double dWidthMinSize, dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
-			if (0 == dWidth)
-			{
-				double dX = 0.72, dY = 0.72;
-				agg::trans_affine invert = ~m_oFullTransform.m_internal->m_agg_mtx;
-				invert.transform_2x2(&dX, &dY);
-				dWidth = std::min(abs(dX), abs(dY));
-			}
-			else if (0 != dSqrtDet && dWidth < (dWidthMinSize = 1.0 / dSqrtDet))
-				dWidth = dWidthMinSize;
-		}
-		
-		double dblMiterLimit = pPen->MiterLimit;
-		
-		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
-		bool bIsUseIdentity = m_bIntegerGrid;
-		if (!bIsUseIdentity)
-		{
-			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
-			double dDet = full_trans->determinant();
-
-			if (fabs(dDet) < 0.0001)
-			{
-				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
-				dWidth *= sqrt(fabs(dDet));
-
-				bIsUseIdentity = true;
-			}
-		}
-
-		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
-
-		conv_crv_type c_c_path(path_copy);
-		c_c_path.approximation_scale(25.0);
-		c_c_path.approximation_method(agg::curve_inc);
-		DashStyle eStyle = (DashStyle)pPen->DashStyle;
-
-		if (DashStyleCustom == eStyle)
-		{
-			if (0 == pPen->Count || NULL == pPen->DashPattern)
-			{
-				eStyle = DashStyleSolid;
-			}
-			else
-			{
-				bool bFoundNormal = false;
-				for (int i = 0; i < pPen->Count; i++)
-				{
-					if (fabs(pPen->DashPattern[i]) > 0.0001)
-					{
-						bFoundNormal = true;
-						break;
-					}
-				}
-				if (!bFoundNormal)
-					eStyle = DashStyleSolid;
-			}
-		}
-
-		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
-		if (bIsUseIdentity)
-			pAffine = new agg::trans_affine();
-
-		if (DashStyleSolid == eStyle)
-		{
-			typedef agg::conv_stroke<conv_crv_type> Path_Conv_StrokeN;
-			Path_Conv_StrokeN pgN(c_c_path);
-
-			//pgN.line_join(agg::miter_join_revert);
-
-			pgN.line_cap(LineCap);
-			
-			pgN.line_join(LineJoin);
-			pgN.inner_join(agg::inner_round);
-			
-			pgN.miter_limit(dblMiterLimit);
-			pgN.width(dWidth);
-
-			pgN.approximation_scale(25.0);
-
-			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
-
-			transStroke trans(pgN, *pAffine);
-			m_rasterizer.get_rasterizer().add_path(trans);
-		}
-		else
-		{
-			typedef agg::conv_dash<conv_crv_type> Path_Conv_Dash;
-			Path_Conv_Dash poly2_dash(c_c_path);
-
-			typedef agg::conv_stroke<Path_Conv_Dash> Path_Conv_StrokeD;
-			Path_Conv_StrokeD pgD(poly2_dash);
-
-			switch (eStyle)
-			{
-			case DashStyleDash:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				break;
-			case DashStyleDot:
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			case DashStyleDashDot:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			case DashStyleDashDotDot:
-				poly2_dash.add_dash(3.00*dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				poly2_dash.add_dash(dWidth, dWidth);
-				break;
-			default:
-			case DashStyleCustom:
-			{
-				double offset	= pPen->DashOffset;
-				double* params	= pPen->DashPattern;
-				LONG lCount		= pPen->Count;
-				LONG lCount2	= lCount / 2;
-
-				double dKoef = 1.0;
-
-				for (LONG i = 0; i < lCount2; ++i)
-				{
-					if (0 == i)
-					{
-						poly2_dash.add_dash((params[i * 2]) * dKoef, params[i * 2 + 1] * dKoef);
-					}
-					else
-					{
-						poly2_dash.add_dash(params[i * 2] * dKoef, params[i * 2 + 1] * dKoef);
-					}
-				}
-				if (1 == (lCount % 2))
-				{
-					poly2_dash.add_dash(params[lCount - 1] * dKoef, 0);
-				}
-				poly2_dash.dash_start(offset * dKoef);
-
-				break;
-			}
-			}
-
-			double dWidthMinSize = 1.0 / sqrt(abs(m_oCoordTransform.m_internal->m_agg_mtx.determinant()));
-			if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
-				dWidth = dWidthMinSize;
-
-			pgD.line_cap(LineCap);
-			pgD.line_join(LineJoin);
-			pgD.miter_limit(dblMiterLimit);
-			pgD.width(dWidth);
-
-			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, *pAffine);
-			m_rasterizer.get_rasterizer().add_path(trans);
-		}
+		agg::trans_affine* pAffine = DoStrokePath(pPen, pPath, &m_rasterizer.get_rasterizer());
 
 		CColor oColor((BYTE)(pPen->Alpha * m_dGlobalAlpha), pPen->Color, m_bSwapRGB);
 		CBrushSolid oBrush(oColor);
@@ -798,8 +653,7 @@ namespace Aggplus
 		if (gamma >= 0)
 			m_rasterizer.gamma(1.0);
 
-		if (bIsUseIdentity)
-			RELEASEOBJECT(pAffine);
+		RELEASEOBJECT(pAffine);
 
 		return Ok;
 	}
@@ -2242,6 +2096,186 @@ namespace Aggplus
 		default:
 			break;
 		}
+	}
+	template<class Rasterizer>
+	agg::trans_affine* CGraphics::DoStrokePath(NSStructures::CPen* pPen, CGraphicsPath* pPath, Rasterizer* pRasterizer)
+	{
+		agg::line_join_e LineJoin = agg::round_join;
+		switch(pPen->LineJoin)
+		{
+		case LineJoinMiter			: LineJoin = agg::miter_join_revert; break;
+		case LineJoinBevel			: LineJoin = agg::bevel_join; break;
+		case LineJoinRound			: LineJoin = agg::round_join; break;
+		case LineJoinMiterClipped	: LineJoin = agg::miter_join_revert; break;
+		default:	break;
+		}
+		agg::line_cap_e LineCap = agg::round_cap;
+		switch(pPen->LineStartCap)
+		{
+		case LineCapFlat         : LineCap = agg::butt_cap; break;
+		case LineCapRound        : LineCap = agg::round_cap; break;
+		case LineCapSquare       : LineCap = agg::square_cap; break;
+		default:	break;
+		}
+
+		double dWidth = pPen->Size;
+		if (!m_bIntegerGrid && m_bIs0PenWidthAs1px)
+		{
+			double dWidthMinSize, dSqrtDet = sqrt(abs(m_oFullTransform.m_internal->m_agg_mtx.determinant()));
+			if (0 == dWidth)
+			{
+				double dX = 0.72, dY = 0.72;
+				agg::trans_affine invert = ~m_oFullTransform.m_internal->m_agg_mtx;
+				invert.transform_2x2(&dX, &dY);
+				dWidth = std::min(abs(dX), abs(dY));
+			}
+			else if (0 != dSqrtDet && dWidth < (dWidthMinSize = 1.0 / dSqrtDet))
+				dWidth = dWidthMinSize;
+		}
+
+		double dblMiterLimit = pPen->MiterLimit;
+
+		agg::path_storage path_copy(pPath->m_internal->m_agg_ps);
+		bool bIsUseIdentity = m_bIntegerGrid;
+		if (!bIsUseIdentity)
+		{
+			agg::trans_affine* full_trans = &m_oFullTransform.m_internal->m_agg_mtx;
+			double dDet = full_trans->determinant();
+
+			if (fabs(dDet) < 0.0001)
+			{
+				path_copy.transform_all_paths(m_oFullTransform.m_internal->m_agg_mtx);
+				dWidth *= sqrt(fabs(dDet));
+
+				bIsUseIdentity = true;
+			}
+		}
+
+		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
+
+		conv_crv_type c_c_path(path_copy);
+		c_c_path.approximation_scale(25.0);
+		c_c_path.approximation_method(agg::curve_inc);
+		DashStyle eStyle = (DashStyle)pPen->DashStyle;
+
+		if (DashStyleCustom == eStyle)
+		{
+			if (0 == pPen->Count || NULL == pPen->DashPattern)
+			{
+				eStyle = DashStyleSolid;
+			}
+			else
+			{
+				bool bFoundNormal = false;
+				for (int i = 0; i < pPen->Count; i++)
+				{
+					if (fabs(pPen->DashPattern[i]) > 0.0001)
+					{
+						bFoundNormal = true;
+						break;
+					}
+				}
+				if (!bFoundNormal)
+					eStyle = DashStyleSolid;
+			}
+		}
+
+		agg::trans_affine* pAffine = &m_oFullTransform.m_internal->m_agg_mtx;
+		if (bIsUseIdentity)
+			pAffine = new agg::trans_affine();
+
+		if (DashStyleSolid == eStyle)
+		{
+			typedef agg::conv_stroke<conv_crv_type> Path_Conv_StrokeN;
+			Path_Conv_StrokeN pgN(c_c_path);
+
+			//pgN.line_join(agg::miter_join_revert);
+
+			pgN.line_cap(LineCap);
+
+			pgN.line_join(LineJoin);
+			pgN.inner_join(agg::inner_round);
+
+			pgN.miter_limit(dblMiterLimit);
+			pgN.width(dWidth);
+
+			pgN.approximation_scale(25.0);
+
+			typedef agg::conv_transform<Path_Conv_StrokeN> transStroke;
+
+			transStroke trans(pgN, *pAffine);
+			pRasterizer->add_path(trans);
+		}
+		else
+		{
+			typedef agg::conv_dash<conv_crv_type> Path_Conv_Dash;
+			Path_Conv_Dash poly2_dash(c_c_path);
+
+			typedef agg::conv_stroke<Path_Conv_Dash> Path_Conv_StrokeD;
+			Path_Conv_StrokeD pgD(poly2_dash);
+
+			switch (eStyle)
+			{
+			case DashStyleDash:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				break;
+			case DashStyleDot:
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			case DashStyleDashDot:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			case DashStyleDashDotDot:
+				poly2_dash.add_dash(3.00*dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				poly2_dash.add_dash(dWidth, dWidth);
+				break;
+			default:
+			case DashStyleCustom:
+			{
+				double offset	= pPen->DashOffset;
+				double* params	= pPen->DashPattern;
+				LONG lCount		= pPen->Count;
+				LONG lCount2	= lCount / 2;
+
+				double dKoef = 1.0;
+
+				for (LONG i = 0; i < lCount2; ++i)
+				{
+					if (0 == i)
+					{
+						poly2_dash.add_dash((params[i * 2]) * dKoef, params[i * 2 + 1] * dKoef);
+					}
+					else
+					{
+						poly2_dash.add_dash(params[i * 2] * dKoef, params[i * 2 + 1] * dKoef);
+					}
+				}
+				if (1 == (lCount % 2))
+				{
+					poly2_dash.add_dash(params[lCount - 1] * dKoef, 0);
+				}
+				poly2_dash.dash_start(offset * dKoef);
+
+				break;
+			}
+			}
+
+			double dWidthMinSize = 1.0 / sqrt(abs(m_oCoordTransform.m_internal->m_agg_mtx.determinant()));
+			if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
+				dWidth = dWidthMinSize;
+
+			pgD.line_cap(LineCap);
+			pgD.line_join(LineJoin);
+			pgD.miter_limit(dblMiterLimit);
+			pgD.width(dWidth);
+
+			agg::conv_transform<Path_Conv_StrokeD> trans(pgD, *pAffine);
+			pRasterizer->add_path(trans);
+		}
+
+		return bIsUseIdentity ? pAffine : NULL;
 	}
 	// text methods
 	int CGraphics::FillGlyph2(int nX, int nY, TGlyph* pGlyph, Aggplus::CBrush* pBrush)

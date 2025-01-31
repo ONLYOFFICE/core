@@ -530,13 +530,15 @@ namespace NSDocxRenderer
 		RELEASEINTERFACE(m_pManager);
 	}
 
-	void CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
+	bool CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
-			return;
+		if (m_oFont.IsEqual2(&oFont))
+			return true;
+
+		if (!m_pManager->LoadFontFromFile(oFont.Path, (int)oFont.FaceIndex, (float)oFont.Size, c_dDpiX, c_dDpiY))
+			return false;
 
 		m_oFont = oFont;
-		m_pManager->LoadFontFromFile(m_oFont.Path, (int)m_oFont.FaceIndex, (float)m_oFont.Size, c_dDpiX, c_dDpiY);
 		m_pManager->AfterLoad();
 
 		LoadFontMetrics();
@@ -546,18 +548,24 @@ namespace NSDocxRenderer
 			m_oFontSelectParams.wsDefaultName = m_oFont.Name;
 
 		CheckPdfResources();
+
+		return true;
 	}
-	void CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
+	bool CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
-			return;
+		if (m_oFont.IsEqual2(&oFont))
+			return true;
 
 		m_oFont = oFont;
-		m_pManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle2(), c_dDpiX, c_dDpiY);
-		m_pManager->AfterLoad();
 
+		if (!m_pManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle2(), c_dDpiX, c_dDpiY))
+			return false;
+
+		m_pManager->AfterLoad();
 		LoadFontMetrics();
 		LoadFontSelectParams();
+
+		return true;
 	}
 
 	const CFontSelectParams& CFontManager::GetFontSelectParams() const noexcept

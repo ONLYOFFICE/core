@@ -64,6 +64,15 @@ namespace OLEPS
 
 		*stream >> NumPropertySets;
 
+		if (SystemIdentifier == NumPropertySets)
+		{//oops 
+			_GUID_ Clsid2 = {};
+			_UINT32 reserved1 = 0, reserved2 = 0;
+			
+			*stream >> Clsid2 >> reserved1 >> reserved2; // ??? ReportBuilder
+			*stream >> NumPropertySets;
+		}
+
 		if (NumPropertySets != 0x01 && NumPropertySets != 0x02)
 		{
 			NumPropertySets = 0x01;

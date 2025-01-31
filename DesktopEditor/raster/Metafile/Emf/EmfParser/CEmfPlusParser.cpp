@@ -655,20 +655,15 @@ namespace MetaFile
 
 				m_oStream >> unPositionCount;
 
-				std::vector<double> arBlendPositions(unPositionCount);
-
-				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
-					m_oStream >> arBlendPositions[unIndex];
-
-				std::vector<TEmfPlusARGB> arBlendColors(unPositionCount);
-
-				for (unsigned int unIndex = 0; unIndex <  unPositionCount; ++unIndex)
-					m_oStream >> arBlendColors[unIndex];
-
-				if (1 < unPositionCount)
+				if (unPositionCount > 1)
 				{
-					pEmfPlusBrush->oColorBack = arBlendColors[0];
-					pEmfPlusBrush->oColor     = arBlendColors.back();
+					pEmfPlusBrush->arGradientColors.resize(unPositionCount);
+
+					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].second;
+
+					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
 				}
 			}
 
@@ -679,12 +674,39 @@ namespace MetaFile
 			//TODO: реализовать
 			pEmfPlusBrush->unStyle = BS_LINEARGRADIENT;
 
-			m_oStream.Skip(8); // BrushDataFlags, WrapMode
+			int nBrushDataFlags;
+			m_oStream >> nBrushDataFlags;
+
+			m_oStream.Skip(4); // WrapMode
 
 			//				m_oStream >> pEmfPlusBrush->RectF;
 			m_oStream.Skip(16);
 			m_oStream >> pEmfPlusBrush->oColor;
 			m_oStream >> pEmfPlusBrush->oColorBack;
+
+			m_oStream.Skip(8); // Reserved1, Reserved2
+
+			if (BrushDataTransform & nBrushDataFlags)
+			{
+				m_oStream.Skip(24);
+			}
+
+			if (BrushDataPresetColors & nBrushDataFlags)
+			{
+				int nPositionCount;
+				m_oStream >> nPositionCount;
+
+				if (nPositionCount > 1)
+				{
+					pEmfPlusBrush->arGradientColors.resize(nPositionCount);
+
+					for (unsigned int unIndex = 0; unIndex < nPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].second;
+
+					for (unsigned int unIndex = 0; unIndex < nPositionCount; ++unIndex)
+						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
+				}
+			}
 
 			break;
 		}

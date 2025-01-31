@@ -1625,7 +1625,7 @@ namespace StarMath
 		case StarMath::TypeElement::number:
 		{
 			pXmlWrite->WriteNodeBegin(L"mn",false);
-			pXmlWrite->WriteString(m_wsElement);
+            pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsElement));
 			pXmlWrite->WriteNodeEnd(L"mn",false,false);
 			wsAnnotation += m_wsElement + L" ";
 			break;
@@ -1635,7 +1635,7 @@ namespace StarMath
 			pXmlWrite->WriteNodeBegin(L"mi",true);
 			pXmlWrite->WriteAttribute(L"mathvariant",L"italic");
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
-			pXmlWrite->WriteString(m_wsElement);
+            pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsElement));
 			pXmlWrite->WriteNodeEnd(L"mi",false,false);
 			wsAnnotation += m_wsElement + L" ";
 			break;

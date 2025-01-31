@@ -32,6 +32,7 @@ HEADERS += \
 	src/logic/elements/ContText.h \
 	src/logic/elements/Paragraph.h \
 	src/logic/elements/Shape.h \
+	src/logic/elements/Table.h \
 	src/logic/elements/TextLine.h \
 	src/logic/managers/ExternalImageStorage.h \
 	src/logic/managers/FontStyleManager.h \
@@ -56,6 +57,7 @@ SOURCES += \
 	src/logic/elements/ContText.cpp \
 	src/logic/elements/Paragraph.cpp \
 	src/logic/elements/Shape.cpp \
+	src/logic/elements/Table.cpp \
 	src/logic/elements/TextLine.cpp \
 	src/logic/managers/FontManager.cpp \
 	src/logic/managers/FontStyleManager.cpp \

@@ -96,6 +96,9 @@ const long c_nBaselineShift		= 0xa041;
 // типы клипа
 const long c_nClipRegionTypeWinding		= 0x0000;
 const long c_nClipRegionTypeEvenOdd		= 0x0001;
+// тип преобразования пути для клипов
+const long c_nClipToPath				= 0x0000;
+const long c_nClipToStrokePath			= 0x0010;
 // тип объединения клипов
 const long c_nClipRegionIntersect		= 0x0000;
 const long c_nClipRegionUnion			= 0x0100;

@@ -2173,7 +2173,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
@@ -2183,7 +2184,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), true);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeEvenOdd;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
@@ -2193,7 +2195,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding | c_nClipToStrokePath;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToPath(GfxState* pGState, GfxPath* pPath, double* pMatrix, bool bEO)
@@ -2937,6 +2940,13 @@ namespace PdfReader
 					{
 						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
 					}
+					else if (3 == nColorMapType)
+					{
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+					}
 					else
 					{
 						GfxRGB oRGB;
@@ -2948,7 +2958,7 @@ namespace PdfReader
 
 					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
 						pLineDst[3] = 0;
-					else
+					else if (3 != nColorMapType)
 						pLineDst[3] = unAlpha;
 
 					pLine += nComps;
@@ -3496,9 +3506,7 @@ namespace PdfReader
 
 		GfxClip* pClip = pState->pClip;
 		GfxPath* pPath = pClip->GetPath(nIndex);
-		bool     bFlag = pClip->GetClipEo(nIndex);
-		int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-		nClipFlag |= c_nClipRegionIntersect;
+		int  nClipFlag = pClip->GetClipFlag(nIndex);;
 
 		m_pRenderer->BeginCommand(c_nClipType);
 		m_pRenderer->put_ClipMode(nClipFlag);

@@ -2049,6 +2049,11 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 	switch (pAutoNumber->GetNumType())
 	{
 		case ENumType::PAGE:
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"PAGE \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::TOTAL_PAGE:
 			ushValue = m_ushPageCount; break;
 		case ENumType::FOOTNOTE:

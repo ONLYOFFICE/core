@@ -2086,7 +2086,7 @@ namespace NSDocxRenderer
 						border.dWidth = shape->m_oPen.Size;
 						border.lColor = shape->m_oPen.Color;
 						border.dSpacing = 0;
-						border.eLineType = eLineType::ltSingle;
+						border.lineType = eLineType::ltSingle;
 						// TODO more info
 					};
 

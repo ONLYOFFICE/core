@@ -904,6 +904,7 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			auto& shape = m_arShapes[i];
+			// double shape_coverage = 0;
 			if (!shape || shape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
 				continue;
 
@@ -926,12 +927,13 @@ namespace NSDocxRenderer
 					if (!curr_cont)
 						continue;
 
-					bool is_width_equal = (curr_line->m_dWidth * 1.05 - shape->m_dWidth) > 0;
+					bool is_line_width_equal = (curr_line->m_dWidth * 1.05 - shape->m_dWidth) > 0;
+					bool is_line_height_equal = (curr_line->m_dHeight * 1.5 - shape->m_dHeight) > 0;
 
-					bool is_crossing_text = IsLineCrossingText(shape, curr_cont) && is_width_equal;
-					bool is_below_text = IsLineBelowText(shape, curr_cont) && is_width_equal;
+					bool is_crossing_text = IsLineCrossingText(shape, curr_cont) && is_line_width_equal;
+					bool is_below_text = IsLineBelowText(shape, curr_cont) && is_line_width_equal;
 					bool is_outline = IsOutline(shape, curr_cont);
-					bool is_highlight = IsHighlight(shape, curr_cont) && curr_line->m_dHeight * 1.5 > shape->m_dHeight && is_width_equal;
+					bool is_highlight = IsHighlight(shape, curr_cont) && is_line_height_equal && is_line_width_equal;
 
 					bool is_smth_true = is_crossing_text || is_below_text || is_outline || is_highlight;
 					if (is_smth_true)
@@ -976,6 +978,8 @@ namespace NSDocxRenderer
 							curr_cont->m_pShape = shape;
 							curr_cont->m_bIsHighlightPresent = true;
 							curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
+
+							// shape_coverage += curr_cont->m_dWidth / shape->m_dWidth;
 						}
 
 						else if (is_outline)
@@ -1000,7 +1004,7 @@ namespace NSDocxRenderer
 						shape_used = true;
 				}
 			}
-			if (shape_used)
+			if (shape_used /* && (shape_coverage == 0 || shape_coverage > 0.8) */ )
 				shape = nullptr;
 		}
 	}

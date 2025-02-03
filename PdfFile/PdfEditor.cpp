@@ -1505,10 +1505,13 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
 	if (it != m_mFonts.end())
 		wsFontPath = it->second;
-	std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
-	std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
-	if (it2 != mFonts.end())
-		wsFontPath = it2->second;
+	if (wsFontPath.empty())
+	{
+		std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+		std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
+		if (it2 != mFonts.end())
+			wsFontPath = it2->second;
+	}
 	if (wsFontPath.empty())
 		return false;
 	if (wsFontName == L"Helvetica")

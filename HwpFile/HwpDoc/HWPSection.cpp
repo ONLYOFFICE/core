@@ -979,7 +979,6 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer* pContainer, int nRunLevel
 				{
 					CCtrlGeneralShape* pCtrl = pContainer->GetLastShape();
 					int nSubParaCount = CHWPRecordListHeader::GetCount(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
-					oBuffer.Skip(6);
 
 					if (EShapeType::Rect == pCtrl->GetShapeType() || EShapeType::Polygon == pCtrl->GetShapeType())
 					{

@@ -123,16 +123,16 @@ namespace NSDocxRenderer
 		// check font effect and delete not needed cont
 		// return true if was deleted
 		static bool CheckFontEffects
-			(std::shared_ptr<CContText>& pFirstCont,
-			 std::shared_ptr<CContText>& pSecondCont,
-			 eVerticalCrossingType eVType,
-			 eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-			(std::shared_ptr<CContText> pFirstCont,
-			 std::shared_ptr<CContText> pSecondCont,
-			 eVerticalCrossingType eVType,
-			 eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
 		static bool IsUnicodeRtl(uint32_t cSym);
 		static bool IsUnicodeBullet(uint32_t cSym);
@@ -160,17 +160,17 @@ namespace NSDocxRenderer
 		// after call CContTextBuilder is empty
 		std::vector<cont_ptr_t> GetConts();
 		void AddUnicode(
-			double dTop,
-			double dBot,
-			double dLeft,
-			double dRight,
-			const NSStructures::CFont& oFont,
-			const NSStructures::CBrush& oBrush,
-			CFontManager* pFontManager,
-			const NSStringUtils::CStringUTF32& oText,
-			bool bForcedBold = false,
-			bool bUseDefaultFont = false,
-			bool bWriteStyleRaw = false);
+		        double dTop,
+		        double dBot,
+		        double dLeft,
+		        double dRight,
+		        const NSStructures::CFont& oFont,
+		        const NSStructures::CBrush& oBrush,
+		        CFontManager* pFontManager,
+		        const NSStringUtils::CStringUTF32& oText,
+		        bool bForcedBold = false,
+		        bool bUseDefaultFont = false,
+		        bool bWriteStyleRaw = false);
 
 	private:
 		std::vector<cont_ptr_t> m_arConts;

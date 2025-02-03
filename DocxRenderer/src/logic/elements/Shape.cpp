@@ -25,7 +25,7 @@ namespace NSDocxRenderer
 	}
 
 	CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) :
-		m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
+	    m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
 	{
 		m_nRelativeHeight = m_gRelativeHeight;
 		m_gRelativeHeight += c_iStandartRelativeHeight;
@@ -111,39 +111,39 @@ namespace NSDocxRenderer
 		double dVerNearby = 30;
 
 		if(
-			// только для фигур
-			(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-			 pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+		        // только для фигур
+		        (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+		         pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-			(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-			 this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+		        (this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+		         this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-				// все совпадает
-				pShape->m_eType == this->m_eType &&
-			pShape->m_oPen.IsEqual(&m_oPen) &&
-			pShape->m_oBrush.IsEqual(&m_oBrush) &&
-			pShape->m_bIsNoFill == m_bIsNoFill &&
-			pShape->m_bIsNoStroke == m_bIsNoStroke &&
+		        // все совпадает
+		        pShape->m_eType == this->m_eType &&
+		        pShape->m_oPen.IsEqual(&m_oPen) &&
+		        pShape->m_oBrush.IsEqual(&m_oBrush) &&
+		        pShape->m_bIsNoFill == m_bIsNoFill &&
+		        pShape->m_bIsNoStroke == m_bIsNoStroke &&
 
-				// не картинка
-				pShape->m_pImageInfo == nullptr &&
-			this->m_pImageInfo == nullptr &&
+		        // не картинка
+		        pShape->m_pImageInfo == nullptr &&
+		        this->m_pImageInfo == nullptr &&
 
-			// недалеко друг от друга по горизонтали
-			(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
-			 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
+		        // недалеко друг от друга по горизонтали
+		        (fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
+		         fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
 
-				 // друг в друге тоже учитываем
-				 fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
-			 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
+		         // друг в друге тоже учитываем
+		         fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
+		         fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
-			// недалеко друг от друга по вертикали
-			(fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
-			 fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
+		        // недалеко друг от друга по вертикали
+		        (fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
+		         fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
 
-				 // друг в друге
-				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
-			 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
+		         // друг в друге
+		         fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
+		         fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
 			RecalcWithNewItem(pShape.get());
 			m_oVector.Join(std::move(pShape->m_oVector));
@@ -327,7 +327,7 @@ namespace NSDocxRenderer
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
-		    fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
+		        fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
 			return; // линия должна быть одного размера по высоте
 		}
@@ -360,8 +360,8 @@ namespace NSDocxRenderer
 		}
 
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
-				 fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-				 fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+		         fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+		         fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
 			// условие первого определения
 			if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
@@ -450,14 +450,14 @@ namespace NSDocxRenderer
 			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotted ||
-					 pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy ||
-						  pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				          pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
@@ -467,13 +467,13 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+				        pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
@@ -485,13 +485,13 @@ namespace NSDocxRenderer
 			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDash ||
-					 pFirstShape->m_eLineType == eLineType::ltDashedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDashedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					passed = true;
 				}
@@ -499,14 +499,14 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotDash ||
-					 pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
 					passed = true;
@@ -516,13 +516,13 @@ namespace NSDocxRenderer
 
 		case eSimpleLineType::sltHLongDash:
 			if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) < 0.7 ||
-				pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
+			        pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
 				passed = true;
 			}
 			else if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDashLong ||
-					  pFirstShape->m_eLineType == eLineType::ltDashLongHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+			          pFirstShape->m_eLineType == eLineType::ltDashLongHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
 				passed = true;
@@ -531,8 +531,8 @@ namespace NSDocxRenderer
 
 		case eSimpleLineType::sltHWave:
 			if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltWave ||
-				 pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
-				pSecondShape->m_eLineType == eLineType::ltUnknown)
+			     pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
+			        pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
 				passed = true;

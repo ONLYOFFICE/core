@@ -5,7 +5,7 @@
 
 namespace NSDocxRenderer
 {
-    void CTable::CCell::Clear()
+	void CTable::CCell::Clear()
 	{
 		m_arParagraphs.clear();
 	}

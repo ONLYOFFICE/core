@@ -10,7 +10,7 @@
 
 namespace NSDocxRenderer
 {
-    class CTable : public CBaseItem
+	class CTable : public CBaseItem
 	{
 	public:
 		class CCell;

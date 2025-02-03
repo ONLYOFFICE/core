@@ -181,18 +181,18 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctCurrentOutsideNext;
 
 		else if (this_top < other_top && this_bot < other_bot &&
-				 (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 
 		else if (this_top > other_top && this_bot > other_bot &&
-				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot)
 			return  eVerticalCrossingType::vctDublicate;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-				 fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+		         fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
@@ -510,7 +510,7 @@ namespace NSDocxRenderer
 		bool bIf15 = m_eVertAlignType == eVertAlignType::vatBase && pCont->m_eVertAlignType == eVertAlignType::vatUnknown;
 
 		return (bIf1 && bIf2 && bIf3 && bIf4 && bIf5 && bIf6 && bIf7 &&
-				bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15));
+		        bIf8 && bIf9 && bIf10 && bIf11 && bIf12 && (bIf13 || bIf14 || bIf15));
 	}
 
 	UINT CContText::GetNumberOfFeatures() const noexcept
@@ -529,10 +529,10 @@ namespace NSDocxRenderer
 	bool CContText::IsDuplicate(CContText* pCont, eVerticalCrossingType eVType, eHorizontalCrossingType eHType) const noexcept
 	{
 		return m_oText == pCont->m_oText &&
-			   eVType == eVerticalCrossingType::vctDublicate &&
-			   (eHType == eHorizontalCrossingType::hctDublicate ||
-				eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
-				eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
+		        eVType == eVerticalCrossingType::vctDublicate &&
+		        (eHType == eHorizontalCrossingType::hctDublicate ||
+		         eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
+		         eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
 	}
 
 	bool CContText::IsOnlySpaces() const
@@ -555,7 +555,7 @@ namespace NSDocxRenderer
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
 	{
 		bool is_space_twice = m_oText.at(m_oText.length() - 1) == c_SPACE_SYM &&
-							  oText.at(0) == c_SPACE_SYM;
+		        oText.at(0) == c_SPACE_SYM;
 
 		for (size_t i = 0; i < arSymWidths.size(); ++i)
 		{
@@ -660,10 +660,10 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckFontEffects
-		(std::shared_ptr<CContText>& pFirstCont,
-		 std::shared_ptr<CContText>& pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType)
+	(std::shared_ptr<CContText>& pFirstCont,
+	 std::shared_ptr<CContText>& pSecondCont,
+	 eVerticalCrossingType eVType,
+	 eHorizontalCrossingType eHType)
 	{
 		//Условие пересечения по вертикали
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext; //текущий cont выше
@@ -743,24 +743,24 @@ namespace NSDocxRenderer
 	}
 
 	bool CContText::CheckVertAlignTypeBetweenConts
-		(std::shared_ptr<CContText> pFirstCont,
-		 std::shared_ptr<CContText> pSecondCont,
-		 eVerticalCrossingType eVType,
-		 eHorizontalCrossingType eHType)
+	(std::shared_ptr<CContText> pFirstCont,
+	 std::shared_ptr<CContText> pSecondCont,
+	 eVerticalCrossingType eVType,
+	 eHorizontalCrossingType eHType)
 	{
 
 		bool bIf1 = eVType == eVerticalCrossingType::vctCurrentAboveNext ||
-					eVType == eVerticalCrossingType::vctCurrentInsideNext;
+		        eVType == eVerticalCrossingType::vctCurrentInsideNext;
 
 		bool bIf2 = eVType == eVerticalCrossingType::vctCurrentBelowNext;
 
 		bool bIf3 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-					 eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
-					fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
+		             eHType == eHorizontalCrossingType::hctCurrentLeftOfNext) &&
+		        fabs(pFirstCont->m_dRight - pSecondCont->m_dLeft) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		bool bIf4 = (eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext ||
-					 eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
-					fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
+		             eHType == eHorizontalCrossingType::hctCurrentRightOfNext) &&
+		        fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		//Размеры шрифта должны бать разными
 		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.7 > pSecondCont->m_pFontStyle->dFontSize;
@@ -824,15 +824,15 @@ namespace NSDocxRenderer
 	{
 		// more symbols of delims
 		bool is_bullet =
-			(cSym == 0x2022) || (cSym == 0x2023) || (cSym == 0x2043) || (cSym == 0x204C) ||
-			(cSym == 0x204D) || (cSym == 0x2219) || (cSym == 0x25CB) || (cSym == 0x25CF) ||
-			(cSym == 0x25D8) || (cSym == 0x25E6) || (cSym == 0x2619) || (cSym == 0x2765) ||
-			(cSym == 0x2767) || (cSym == 0x29BE) || (cSym == 0x29BF) || (cSym == 0x25C9);
+		        (cSym == 0x2022) || (cSym == 0x2023) || (cSym == 0x2043) || (cSym == 0x204C) ||
+		        (cSym == 0x204D) || (cSym == 0x2219) || (cSym == 0x25CB) || (cSym == 0x25CF) ||
+		        (cSym == 0x25D8) || (cSym == 0x25E6) || (cSym == 0x2619) || (cSym == 0x2765) ||
+		        (cSym == 0x2767) || (cSym == 0x29BE) || (cSym == 0x29BF) || (cSym == 0x25C9);
 
 		bool is_another =
-			(cSym == 0xB7) || (cSym == 0xA7) || (cSym == 0xF076) || (cSym == 0x2013) ||
-			(cSym == 0x2713) || (cSym == 0x2714) || (cSym == 0x2756) || (cSym == 0x25C6) ||
-			(cSym == 0x25C7) || (cSym == 0x25C8);
+		        (cSym == 0xB7) || (cSym == 0xA7) || (cSym == 0xF076) || (cSym == 0x2013) ||
+		        (cSym == 0x2713) || (cSym == 0x2714) || (cSym == 0x2756) || (cSym == 0x25C6) ||
+		        (cSym == 0x25C7) || (cSym == 0x25C8);
 
 		return is_bullet || is_another;
 	}
@@ -852,9 +852,9 @@ namespace NSDocxRenderer
 	bool CContText::IsUnicodeSymbol(uint32_t cSym )
 	{
 		bool is_unicode =
-			(( 0x0009 == cSym) || (0x000A == cSym ) || (0x000D == cSym ) ||
-			(( 0x0020 <= cSym) && (0xD7FF >= cSym )) || ((0xE000 <= cSym) && (cSym <= 0xFFFD )) ||
-			(( 0x10000 <= cSym) && cSym));
+		        (( 0x0009 == cSym) || (0x000A == cSym ) || (0x000D == cSym ) ||
+		         (( 0x0020 <= cSym) && (0xD7FF >= cSym )) || ((0xE000 <= cSym) && (cSym <= 0xFFFD )) ||
+		         (( 0x10000 <= cSym) && cSym));
 
 		return is_unicode;
 	}
@@ -869,7 +869,7 @@ namespace NSDocxRenderer
 	}
 
 	CContTextBuilder::CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector) :
-		m_pFontStyleManager(pFontStyleManager), m_pFontSelector(pFontSelector)
+	    m_pFontStyleManager(pFontStyleManager), m_pFontSelector(pFontSelector)
 	{}
 
 	std::vector<CContTextBuilder::cont_ptr_t> CContTextBuilder::GetConts()
@@ -878,26 +878,26 @@ namespace NSDocxRenderer
 	}
 
 	void CContTextBuilder::AddUnicode(
-		double dTop,
-		double dBot,
-		double dLeft,
-		double dRight,
-		const NSStructures::CFont& oFont,
-		const NSStructures::CBrush& oBrush,
-		CFontManager* pFontManager,
-		const NSStringUtils::CStringUTF32& oText,
-		bool bForcedBold,
-		bool bUseDefaultFont,
-		bool bWriteStyleRaw)
+	        double dTop,
+	        double dBot,
+	        double dLeft,
+	        double dRight,
+	        const NSStructures::CFont& oFont,
+	        const NSStructures::CBrush& oBrush,
+	        CFontManager* pFontManager,
+	        const NSStringUtils::CStringUTF32& oText,
+	        bool bForcedBold,
+	        bool bUseDefaultFont,
+	        bool bWriteStyleRaw)
 	{
 		double dWidth = dRight - dLeft;
 		double dHeight = dBot - dTop;
 
 		// if new text is close to current cont
 		if (m_pCurrCont != nullptr &&
-			fabs(m_pCurrCont->m_dBaselinePos - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-			m_oPrevFont.IsEqual2(&oFont) &&
-			m_oPrevBrush.IsEqual(&oBrush))
+		        fabs(m_pCurrCont->m_dBaselinePos - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+		        m_oPrevFont.IsEqual2(&oFont) &&
+		        m_oPrevBrush.IsEqual(&oBrush))
 		{
 
 			double avg_width = dWidth / oText.length();
@@ -907,9 +907,9 @@ namespace NSDocxRenderer
 
 			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width =
-				avg_space_width != 0.0 ?
-					avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-					m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+			        avg_space_width != 0.0 ?
+			            avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+			            m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			bool is_added = false;
 
@@ -960,11 +960,11 @@ namespace NSDocxRenderer
 		// первичное получение стиля для текущего символа
 		// при дальнейшем анализе может измениться
 		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
-			oBrush,
-			m_pFontSelector->GetSelectedName(),
-			oFont.Size,
-			m_pFontSelector->IsSelectedItalic(),
-			m_pFontSelector->IsSelectedBold() || bForcedBold);
+		            oBrush,
+		            m_pFontSelector->GetSelectedName(),
+		            oFont.Size,
+		            m_pFontSelector->IsSelectedItalic(),
+		            m_pFontSelector->IsSelectedBold() || bForcedBold);
 
 		// just in case if oText contains more than 1 symbol
 		std::vector<double> ar_widths;

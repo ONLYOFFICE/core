@@ -64,9 +64,9 @@ namespace NSDocxRenderer
 		void MoveTo(const double& x1, const double& y1);
 		void LineTo(const double& x1, const double& y1);
 		void CurveTo(
-			const double& x1, const double& y1,
-			const double& x2, const double& y2,
-			const double& x3, const double& y3);
+		        const double& x1, const double& y1,
+		        const double& x2, const double& y2,
+		        const double& x3, const double& y3);
 		void Close();
 
 		void Add(const CPathCommand& command);

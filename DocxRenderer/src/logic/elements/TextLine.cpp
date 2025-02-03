@@ -82,8 +82,8 @@ namespace NSDocxRenderer
 
 			double avg_space_width = pCurrent->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
-									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-									 pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+			            avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+			            pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 
@@ -241,19 +241,19 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctCurrentOutsideNext;
 
 		else if (this_top < other_top && this_bot < other_bot &&
-				 (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (this_bot >= other_top || fabs(this_bot - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 
 		else if (this_top > other_top && this_bot > other_bot &&
-				 (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (this_top <= other_bot || fabs(this_top - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 
 		else if (this_top == other_top && this_bot == other_bot &&
-				 m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
+		         m_dLeft == pLine->m_dLeft && m_dRight == pLine->m_dRight)
 			return  eVerticalCrossingType::vctDublicate;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-				 fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+		         fabs(this_bot - other_bot) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
 
 		else if (fabs(this_top - other_top) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
@@ -294,9 +294,9 @@ namespace NSDocxRenderer
 	bool CTextLine::IsShadingPresent(const CTextLine *pLine) const noexcept
 	{
 		return (m_pDominantShape && pLine->m_pDominantShape &&
-				m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
-				fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-				fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM);
+		        m_pDominantShape->m_oBrush.Color1 == pLine->m_pDominantShape->m_oBrush.Color1 &&
+		        fabs(m_pDominantShape->m_dLeft - pLine->m_pDominantShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+		        fabs(m_pDominantShape->m_dWidth - pLine->m_pDominantShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM);
 	}
 
 	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const

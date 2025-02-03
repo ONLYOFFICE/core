@@ -67,14 +67,14 @@ namespace NSDocxRenderer
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
 		void AddText(
-			const PUINT pUnicodes,
-			const PUINT pGids,
-			const UINT& nCount,
-			const double& fX,
-			const double& fY,
-			const double& fWidth,
-			const double& fHeight,
-			const double& fBaseLineOffset);
+		        const PUINT pUnicodes,
+		        const PUINT pGids,
+		        const UINT& nCount,
+		        const double& fX,
+		        const double& fY,
+		        const double& fWidth,
+		        const double& fHeight,
+		        const double& fBaseLineOffset);
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);

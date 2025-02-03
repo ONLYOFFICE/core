@@ -26,11 +26,11 @@ namespace NSDocxRenderer
 			return true;
 
 		return m_dLeft == oSrc.m_dLeft &&
-			   m_dTop == oSrc.m_dTop &&
-			   m_dWidth == oSrc.m_dWidth &&
-			   m_dHeight == oSrc.m_dHeight &&
-			   m_dBaselinePos == oSrc.m_dBaselinePos &&
-			   m_dRight == oSrc.m_dRight;
+		        m_dTop == oSrc.m_dTop &&
+		        m_dWidth == oSrc.m_dWidth &&
+		        m_dHeight == oSrc.m_dHeight &&
+		        m_dBaselinePos == oSrc.m_dBaselinePos &&
+		        m_dRight == oSrc.m_dRight;
 	}
 
 	eVerticalCrossingType CBaseItem::GetVerticalCrossingType(const CBaseItem* oSrc) const
@@ -44,22 +44,22 @@ namespace NSDocxRenderer
 			return  eVerticalCrossingType::vctCurrentOutsideNext;
 		}
 		else if (m_dTop < oSrc->m_dTop && m_dBaselinePos < oSrc->m_dBaselinePos &&
-				 (m_dBaselinePos >= oSrc->m_dTop || fabs(m_dBaselinePos - oSrc->m_dTop) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (m_dBaselinePos >= oSrc->m_dTop || fabs(m_dBaselinePos - oSrc->m_dTop) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 		{
 			return  eVerticalCrossingType::vctCurrentAboveNext;
 		}
 		else if (m_dTop > oSrc->m_dTop && m_dBaselinePos > oSrc->m_dBaselinePos &&
-				 (m_dTop <= oSrc->m_dBaselinePos || fabs(m_dTop - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
+		         (m_dTop <= oSrc->m_dBaselinePos || fabs(m_dTop - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM))
 		{
 			return  eVerticalCrossingType::vctCurrentBelowNext;
 		}
 		else if (m_dTop == oSrc->m_dTop && m_dBaselinePos == oSrc->m_dBaselinePos &&
-				 m_dLeft == oSrc->m_dLeft && m_dRight == oSrc->m_dRight)
+		         m_dLeft == oSrc->m_dLeft && m_dRight == oSrc->m_dRight)
 		{
 			return  eVerticalCrossingType::vctDublicate;
 		}
 		else if (fabs(m_dTop - oSrc->m_dTop) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-				 fabs(m_dBaselinePos - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
+		         fabs(m_dBaselinePos - oSrc->m_dBaselinePos) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 		{
 			return  eVerticalCrossingType::vctTopAndBottomBordersMatch;
 		}
@@ -95,22 +95,22 @@ namespace NSDocxRenderer
 			return  eHorizontalCrossingType::hctCurrentOutsideNext;
 		}
 		else if (m_dLeft < oSrc->m_dLeft && m_dRight < oSrc->m_dRight &&
-				 (m_dRight >= oSrc->m_dLeft || fabs(m_dRight - oSrc->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM))
+		         (m_dRight >= oSrc->m_dLeft || fabs(m_dRight - oSrc->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM))
 		{
 			return  eHorizontalCrossingType::hctCurrentLeftOfNext;
 		}
 		else if (m_dLeft > oSrc->m_dLeft && m_dRight > oSrc->m_dRight &&
-				 (m_dLeft <= oSrc->m_dRight || fabs(m_dLeft - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM))
+		         (m_dLeft <= oSrc->m_dRight || fabs(m_dLeft - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM))
 		{
 			return  eHorizontalCrossingType::hctCurrentRightOfNext;
 		}
 		else if (m_dLeft == oSrc->m_dLeft && m_dRight == oSrc->m_dRight &&
-				 m_dTop == oSrc->m_dTop && m_dBaselinePos == oSrc->m_dBaselinePos)
+		         m_dTop == oSrc->m_dTop && m_dBaselinePos == oSrc->m_dBaselinePos)
 		{
 			return  eHorizontalCrossingType::hctDublicate;
 		}
 		else if (fabs(m_dLeft - oSrc->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM &&
-				 fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM)
+		         fabs(m_dRight - oSrc->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM)
 		{
 			return  eHorizontalCrossingType::hctLeftAndRightBordersMatch;
 		}
@@ -141,21 +141,21 @@ namespace NSDocxRenderer
 		eVerticalCrossingType eVType = GetVerticalCrossingType(pObj);
 
 		return (eVType == eVerticalCrossingType::vctNoCrossingCurrentAboveNext ||
-				eVType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
+		        eVType == eVerticalCrossingType::vctNoCrossingCurrentBelowNext);
 	}
 	bool CBaseItem::AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept
 	{
 		eHorizontalCrossingType eHType = GetHorizontalCrossingType(pObj);
 
 		return (eHType == eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext ||
-				eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
+		        eHType == eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext);
 	}
 	bool CBaseItem::IsEqual(double dTop, double dBaselinePos, double dLeft, double dRight) const noexcept
 	{
 		return m_dLeft == dLeft &&
-			   m_dTop == dTop &&
-			   m_dBaselinePos == dBaselinePos &&
-			   m_dRight == dRight;
+		        m_dTop == dTop &&
+		        m_dBaselinePos == dBaselinePos &&
+		        m_dRight == dRight;
 	}
 
 	void CBaseItem::RecalcWithNewItem(const CBaseItem* pItem)

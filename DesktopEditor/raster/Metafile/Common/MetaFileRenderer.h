@@ -1218,30 +1218,56 @@ namespace MetaFile
 			else if (PS_JOIN_MITER == ulPenJoin)
 				nJoinStyle = Aggplus::LineJoinMiter;
 
-			const double dWidth = pPen->GetWidth() * m_dScaleX;
-			const double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
+			double dWidth = pPen->GetWidth();
 
-			BYTE nDashStyle = Aggplus::DashStyleSolid;
+			// Повторение кода из Graphics для вычисления минимальной ширины пера
+			double dM11, dM12, dM21, dM22, dDx, dDy;
+			m_pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+
+			Aggplus::CMatrix oMatrix;
+
+			oMatrix.SetElements(dM11, dM12, dM21, dM22, dDx, dDy);
+			oMatrix.Scale(1. / m_dScaleX, 1. / m_dScaleY);
 
 			double *pDataDash;
 			unsigned int unSizeDash;
 
 			pPen->GetDashData(pDataDash, unSizeDash);
 
+			// Вычисление минимально возможной ширины пера
+			// # Код явялется дублированным из Graphics
+			const double dSqrtDet = sqrt(abs(oMatrix.Determinant()));
+			const double dWidthMinSize = (dSqrtDet != 0) ? (1.0 / dSqrtDet) : dWidth;
+
+			if (0 == pPen->GetWidth())
+			{
+				double dX = 0.72, dY = 0.72;
+
+				oMatrix.Invert();
+				oMatrix.TransformPoint(dX, dY);
+				dX -= oMatrix.OffsetX();
+				dY -= oMatrix.OffsetY();
+				dWidth = std::min(abs(dX), abs(dY));
+			}
+			//------------------------
+			else
+				dWidth *= m_dScaleX;
+
+			if (dWidth < dWidthMinSize)
+				dWidth = dWidthMinSize;
+
+			const double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
+
+			BYTE nDashStyle = Aggplus::DashStyleSolid;
+
 			if (NULL != pDataDash && 0 != unSizeDash)
 			{
 				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
 
-				double dM11, dTemp;
-				m_pRenderer->GetTransform(&dM11, &dTemp, &dTemp, &dTemp, &dTemp, &dTemp);
-				double dDpi;
-				m_pRenderer->get_DpiX(&dDpi);
-				const double dNewWidth{dWidth * dM11 * dDpi / 25.4};
-
 				std::vector<double> arDashes(unSizeDash);
 
 				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-					arDashes[unIndex] = pDataDash[unIndex] * dNewWidth;
+					arDashes[unIndex] = pDataDash[unIndex] * dWidth;
 
 				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
 
@@ -1251,45 +1277,39 @@ namespace MetaFile
 			{
 				std::vector<double> arDashPattern;
 
-				double dM11, dTemp;
-				m_pRenderer->GetTransform(&dM11, &dTemp, &dTemp, &dTemp, &dTemp, &dTemp);
-				double dDpi;
-				m_pRenderer->get_DpiX(&dDpi);
-				const double dNewWidth{dWidth * dM11 * dDpi / 25.4};
-
 				switch (ulPenStyle)
 				{
 					case PS_DASH:
 					{
-						arDashPattern.push_back(9 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DOT:
 					{
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOT:
 					{
-						arDashPattern.push_back(9 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(6 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(6 * dWidth);
 
 						break;
 					}
 					case PS_DASHDOTDOT:
 					{
-						arDashPattern.push_back(9 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
-						arDashPattern.push_back(3 * dNewWidth);
+						arDashPattern.push_back(9 * dWidth);
+						arDashPattern.push_back(6 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(6 * dWidth);
+						arDashPattern.push_back(3 * dWidth);
+						arDashPattern.push_back(6 * dWidth);
 
 						break;
 					}

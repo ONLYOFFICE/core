@@ -664,6 +664,9 @@ namespace MetaFile
 
 					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
 						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
+
+					pEmfPlusBrush->oColor = pEmfPlusBrush->arGradientColors[unPositionCount - 1].first;
+					pEmfPlusBrush->oColorBack = pEmfPlusBrush->arGradientColors[0].first;
 				}
 			}
 

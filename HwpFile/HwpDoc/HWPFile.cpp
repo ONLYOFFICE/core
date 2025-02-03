@@ -281,6 +281,24 @@ bool CHWPFile::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 	return DEFLATE_OK == nRes || DEFLATE_STREAM_END == nRes;
 }
 
+// Так как на всех ОС необходимо одинаковое поведение,
+// то используем свой рандомайзер
+
+class CRandomizer
+{
+	uint32_t m_unSeed;
+public:
+	CRandomizer(uint32_t unSeed)
+		: m_unSeed(unSeed)
+	{}
+
+	int rand()
+	{
+		m_unSeed = m_unSeed * 214013L + 2531011L;
+		return (m_unSeed >> 16) & 0x7fff;
+	}
+};
+
 bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 {
 	int nHeader;
@@ -306,7 +324,7 @@ bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	oDocData.ReadInt(nSeed);
 	oDocData.Skip(-4);
 
-	srand(nSeed);
+	CRandomizer oRandomizer(nSeed);
 
 	unsigned char chKey;
 
@@ -314,8 +332,8 @@ bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	{
 		if (0 == unCount)
 		{
-			chKey = rand() & 0xFF;
-			unCount = (rand() & 0xF) + 1;
+			chKey   =  oRandomizer.rand() & 0xFF;
+			unCount = (oRandomizer.rand() & 0xF) + 1;
 		}
 		if (unIndex >= 4)
 			*(oDocData.GetCurPtr() + unIndex) = oDocData[unIndex] ^ chKey;

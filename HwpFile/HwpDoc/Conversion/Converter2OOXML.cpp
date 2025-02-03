@@ -949,8 +949,6 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (nullptr == pGeneralShape)
 		return;
 
-	OpenParagraph(shParaShapeID, oBuilder, oState);
-
 	EShapeObjectType eShapeType = GetShapeObjectType(pGeneralShape->GetID());
 
 	if (EShapeObjectType::Unknown == eShapeType)
@@ -959,6 +957,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	++m_ushShapeCount;
 
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
+
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
 	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());

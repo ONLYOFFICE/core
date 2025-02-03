@@ -695,7 +695,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 			oBuilder.WriteString(L"<w:numPr>");
 
-			oBuilder.WriteString(L"<w:ilvl w:val=\"0\"/>");
+			oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring((int)pParaShape->GetHeadingLevel()) + L"\"/>");
 			oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
 
 			oBuilder.WriteString(L"</w:numPr>");
@@ -2194,7 +2194,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

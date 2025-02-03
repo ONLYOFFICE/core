@@ -47,6 +47,21 @@ EShapeType CCtrlShapeArc::GetShapeType() const
 	return EShapeType::Arc;
 }
 
+TPoint CCtrlShapeArc::GetCenterPoint() const
+{
+	return {m_nCenterX, m_nCenterY};
+}
+
+TPoint CCtrlShapeArc::GetFirstPoint() const
+{
+	return {m_nAxixX1, m_nAxixY1};
+}
+
+TPoint CCtrlShapeArc::GetSecondPoint() const
+{
+	return {m_nAxixX2, m_nAxixY2};
+}
+
 int CCtrlShapeArc::ParseElement(CCtrlShapeArc& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

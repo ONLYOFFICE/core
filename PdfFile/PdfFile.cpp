@@ -329,9 +329,7 @@ OfficeDrawingFileType CPdfFile::GetType()
 }
 std::wstring CPdfFile::GetTempDirectory()
 {
-	if (!m_pInternal->pReader)
-		return std::wstring();
-	return m_pInternal->pReader->GetTempDirectory();
+	return m_pInternal->wsTempFolder;
 }
 void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 {

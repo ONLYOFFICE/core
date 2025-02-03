@@ -24,7 +24,10 @@ int CXMLNode::GetAttributeColor(const std::wstring& wsName, const int& _default)
 		if (L'#' == sColor.front())
 			sColor.erase(0, 1);
 
-		return std::stoi(sColor, 0, 16);
+		if (sColor.length() < 6)
+			return _default;
+
+		return std::stoi(sColor.substr(0, 6), nullptr, 16);
 	}
 
 	return _default;

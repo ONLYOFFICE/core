@@ -1915,21 +1915,26 @@ namespace NSDocxRenderer
 		return tables;
 	}
 
-	// crossing is a logical intersection between two lines
-	// contains the crossing x,y and pointers to other crossings.
-	struct Crossing
-	{
-		using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
-		Point p {};
-		std::vector<Line> lines {};
-	};
 	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
 	{
+		// crossing is a logical intersection between two lines
+		// contains the crossing x,y and pointers to other crossings.
+		struct Crossing
+		{
+			using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
+			Point p {};
+			std::vector<Line> lines {};
 
+			Crossing() = default;
+			Crossing(const Point& _p, const std::vector<Line> _lines)
+			{
+				p = _p;
+				lines = _lines;
+			}
+		};
 
 		// vector contains ptrs for easy exist-check
 		std::vector<std::shared_ptr<Crossing>> crossings;
-
 		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
 			for (auto& crossing : crossings)
 			{

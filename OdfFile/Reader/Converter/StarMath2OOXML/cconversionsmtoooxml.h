@@ -49,7 +49,7 @@ namespace StarMath {
 		static void PropertiesFuncPr(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void WriteNodeConversion(const std::wstring& wsNameBlock,CElement* pValueBlock,XmlUtils::CXmlWriter* pXmlWrite);
 		static void PropertiesDPr(XmlUtils::CXmlWriter* pXmlWrite,const std::wstring& wsOpenBracket,const std::wstring& wsCloseBracket,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const TypeElement& enTypeBracket);
-		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
+		static void PropertiesMPr(XmlUtils::CXmlWriter* pXmlWrite,const TypeElement& enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const unsigned int& iDimension);
 		static void NodeGrade(XmlUtils::CXmlWriter* pXmlWrite,CElement* pValueGrade,CAttribute* pAttribute);
 		static void WriteCtrlPrNode(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion);
 		static void WriteChrNode(const std::wstring& wsTypeOp,XmlUtils::CXmlWriter* pXmlWrite);

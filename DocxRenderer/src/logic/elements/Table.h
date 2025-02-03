@@ -29,7 +29,7 @@ namespace NSDocxRenderer
 				double dWidth{};
 				double dSpacing{};
 				long lColor{};
-				eLineType eLineType{};
+				eLineType lineType{};
 			};
 
 			CCell() = default;

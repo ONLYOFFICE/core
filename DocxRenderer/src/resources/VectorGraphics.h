@@ -106,6 +106,8 @@ namespace NSDocxRenderer
 			double min{};
 			double max{};
 			double pos{};
+
+			CHorVerLine(const double& _min, const double& _max, const double& _pos);
 		};
 
 		CHorVerLinesCollector() = default;

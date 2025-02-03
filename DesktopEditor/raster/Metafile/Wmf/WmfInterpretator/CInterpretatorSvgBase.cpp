@@ -560,16 +560,18 @@ namespace MetaFile
 
 	void CInterpretatorSvgBase::IntersectClip(const TRectD &oClip)
 	{
-		double dLeft   = oClip.Left;
-		double dTop    = oClip.Top;
-		double dRight  = oClip.Right;
-		double dBottom = oClip.Bottom;
+		TRectD oUpdatedClip{oClip};
 
-		m_pParser->GetTransform().Apply(dLeft,  dTop);
-		m_pParser->GetTransform().Apply(dRight, dBottom);
+		NormalizeRect(oUpdatedClip);
+
+		m_pParser->GetTransform().Apply(oUpdatedClip.Left,  oUpdatedClip.Top);
+		m_pParser->GetTransform().Apply(oUpdatedClip.Right, oUpdatedClip.Bottom);
 
 		const std::wstring wsId    = L"INTERSECTCLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(dLeft, 0) + L"\" y=\"" + ConvertToWString(dTop, 0) + L"\" width=\"" + ConvertToWString(dRight - dLeft, 0) + L"\" height=\"" + ConvertToWString(dBottom - dTop, 0) + L"\"/>";
+		const std::wstring wsValue = L"<rect x=\"" + ConvertToWString(oUpdatedClip.Left, 0) +
+		                             L"\" y=\"" + ConvertToWString(oUpdatedClip.Top, 0) +
+		                             L"\" width=\"" + ConvertToWString(oUpdatedClip.Right - oUpdatedClip.Left, 0) +
+		                             L"\" height=\"" + ConvertToWString(oUpdatedClip.Bottom - oUpdatedClip.Top, 0) + L"\"/>";
 
 		m_oClip.AddClipValue(wsId, wsValue);
 	}
@@ -577,28 +579,24 @@ namespace MetaFile
 	void CInterpretatorSvgBase::ExcludeClip(const TRectD &oClip, const TRectD &oBB)
 	{
 		const TXForm &oTransform{m_pParser->GetTransform()};
-		
-		double dClipLeft   = oClip.Left;
-		double dClipTop    = oClip.Top;
-		double dClipRight  = oClip.Right;
-		double dClipBottom = oClip.Bottom;
 
-		oTransform.Apply(dClipLeft, dClipTop);
-		oTransform.Apply(dClipRight, dClipBottom);
+		TRectD oUpdatedClip{oClip};
+		NormalizeRect(oUpdatedClip);
 
-		double dBBLeft   = oBB.Left;
-		double dBBTop    = oBB.Top;
-		double dBBRight  = oBB.Right;
-		double dBBBottom = oBB.Bottom;
+		oTransform.Apply(oUpdatedClip.Left, oUpdatedClip.Top);
+		oTransform.Apply(oUpdatedClip.Right, oUpdatedClip.Bottom);
 
-		oTransform.Apply(dBBLeft, dBBTop);
-		oTransform.Apply(dBBRight, dBBBottom);
+		TRectD oBBRect{oBB};
+		NormalizeRect(oBBRect);
+
+		oTransform.Apply(oBBRect.Left, oBBRect.Top);
+		oTransform.Apply(oBBRect.Right, oBBRect.Bottom);
 
 		const std::wstring wsId    = L"EXCLUDECLIP_" + ConvertToWString(++m_unNumberDefs, 0);
-		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(dBBLeft) + L' ' + ConvertToWString(dBBTop) + L", L" + ConvertToWString(dBBRight) + L' ' + ConvertToWString(dBBTop) + L", " +
-		                             ConvertToWString(dBBRight) + L' ' + ConvertToWString(dBBBottom) + L", " + ConvertToWString(dBBLeft ) + L' ' + ConvertToWString(dBBBottom) + L", M" +
-		                             ConvertToWString(dClipLeft) + L' ' + ConvertToWString(dClipTop) + L", L" + ConvertToWString(dClipRight) + L' ' + ConvertToWString(dClipTop) + L", " +
-		                             ConvertToWString(dClipRight) + L' ' + ConvertToWString(dClipBottom) + L", " + ConvertToWString(dClipLeft) + L' ' + ConvertToWString(dClipLeft ) + L"\" clip-rule=\"evenodd\"/>";
+		const std::wstring wsValue = L"<path d=\"M" + ConvertToWString(oBBRect.Left) + L' ' + ConvertToWString(oBBRect.Top) + L", L" + ConvertToWString(oBBRect.Right) + L' ' + ConvertToWString(oBBRect.Top) + L", " +
+		                             ConvertToWString(oBBRect.Right) + L' ' + ConvertToWString(oBBRect.Bottom) + L", " + ConvertToWString(oBBRect.Left) + L' ' + ConvertToWString(oBBRect.Bottom) + L", Z M" +
+		                             ConvertToWString(oUpdatedClip.Left) + L' ' + ConvertToWString(oUpdatedClip.Top) + L", L" + ConvertToWString(oUpdatedClip.Right) + L' ' + ConvertToWString(oUpdatedClip.Top) + L", " +
+		                             ConvertToWString(oUpdatedClip.Right) + L' ' + ConvertToWString(oUpdatedClip.Bottom) + L", " + ConvertToWString(oUpdatedClip.Left) + L' ' + ConvertToWString(oUpdatedClip.Bottom) + L" Z\" clip-rule=\"evenodd\"/>";
 
 		m_oClip.AddClipValue(wsId, wsValue);
 	}
@@ -2080,4 +2078,21 @@ namespace MetaFile
 		return CalculateColor(unColor, chAlpha);
 	}
 
+	void NormalizeRect(TRectD& oRect)
+	{
+		if (oRect.Right < oRect.Left)
+			std::swap(oRect.Right, oRect.Left);
+
+		if (oRect.Bottom < oRect.Top)
+			std::swap(oRect.Bottom, oRect.Top);
+	}
+
+	TRectD TranslateRect(const TRectL& oRect)
+	{
+		TRectD oNewRect(oRect.Left, oRect.Top, oRect.Right, oRect.Bottom);
+
+		NormalizeRect(oNewRect);
+
+		return oNewRect;
+	}
 }

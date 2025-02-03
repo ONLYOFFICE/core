@@ -212,8 +212,9 @@ namespace StarMath
 		std::vector<COneElement*> arLine;
 		if(pMt == nullptr)
 			return arLine;
-		std::wstring wsText = pMt->m_sText,wsElement;
-		std::wstring::iterator itStart = wsText.begin(),itEnd = wsText.end();
+		std::wstring wsText = pMt->m_sText,wsElement,wsTextUTF16;
+		wsTextUTF16 = COOXml2Odf::TransformationUTF32(pMt->m_sText);
+		std::wstring::iterator itStart = wsTextUTF16.begin(),itEnd = wsTextUTF16.end();
 		COneElement* pRightTempElement = nullptr;
 		while(itStart != itEnd)
 		{
@@ -840,6 +841,7 @@ namespace StarMath
 		}
 		if(pARpr->latin.IsInit() && !pARpr->latin->typeface.empty())
 			pValue->m_enFont = FontCheck(pARpr->latin->typeface,bAttribute);
+//		if(pARpr->Fill.is_init() && pARpr->Fill.Fill.m_pData->)
 	}
 	StarMath::TypeFont COOXml2Odf::FontCheck(const std::wstring &wsFont, bool &bAttribute)
 	{
@@ -1284,8 +1286,8 @@ namespace StarMath
 		StValuePr stBarPr;
 		if(pBarPr == nullptr)
 			return stBarPr;
-		if(pBarPr->m_oPos.GetPointer() != nullptr)
-			stBarPr.m_enPos = pBarPr->m_oPos.GetPointer()->m_val.GetPointer()->GetValue();
+		if(pBarPr->m_oPos.GetPointer() != nullptr && pBarPr->m_oPos->m_val.GetPointer() != nullptr)
+			stBarPr.m_enPos = pBarPr->m_oPos->m_val->GetValue();
 		stStyle = ConversionCtrlPr(pBarPr->m_oCtrlPr.GetPointer());
 		return stBarPr;		
 	}
@@ -1427,6 +1429,168 @@ namespace StarMath
 				k++;
 			}
 		}
+	}
+	void COOXml2Odf::MTextRecording(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation, const std::wstring &wsText)
+	{
+		pXmlWrite->WriteNodeBegin(L"mtext",false);
+		pXmlWrite->WriteString(wsText);
+		pXmlWrite->WriteNodeEnd(L"mtext",false,false);
+		wsAnnotation += L"\u0026quot;" + wsText + L"\u0026quot; ";
+	}
+	std::wstring COOXml2Odf::TransformationUTF32(const std::wstring &wsText)
+	{
+		NSStringUtils::CStringUTF32 oString32(wsText);
+		std::wstring wsText16;
+		for(unsigned int i = 0;i < oString32.length();i++)
+		{
+			//Mathematical Bold Capital
+			if(oString32[i] >= 119808 && oString32[i] <= 119833)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119743));
+			//Italic Small Dotless I
+			else if(oString32[i] == 120484)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120379));
+			//Italic Small Dotless J
+			else if(oString32[i] == 120485)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120379));
+			//Bold Nabla
+			else if(oString32[i] == 120513)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 111802));
+			//Italic Nabla
+			else if(oString32[i] == 120571)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 111860));
+			//Bold Italic Nabla
+			else if(oString32[i] == 120629)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 111918));
+			//Sans-Serif Bold Nabla
+			else if(oString32[i] == 120687)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 111976));
+			//Sans-Serif Bold Italic Nabla
+			else if(oString32[i] == 120745)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 112034));
+			//Mathematical Bold Small
+			else if(oString32[i] >= 119834 && oString32[i] <= 119859)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119737));
+			//Italic Capital
+			else if(oString32[i] >= 119860 && oString32[i] <= 119885)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119795));
+			//Italic Small
+			else if(oString32[i] >= 119886 && oString32[i] <= 119911)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119789));
+			//Bold Italic Capital
+			else if(oString32[i] >= 119912 && oString32[i] <= 119937)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119847));
+			//Bold Italic Small
+			else if(oString32[i] >= 119938 && oString32[i] <= 119963)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119841));
+			//Script Capital
+			else if(oString32[i] >= 119964 && oString32[i] <= 119989)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119899));
+			//Script Small
+			else if(oString32[i] >= 119990 && oString32[i] <= 120015)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119893));
+			//Bold Script Capital
+			else if(oString32[i] >= 120016 && oString32[i] <= 120041)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119951));
+			//Bold Script Small
+			else if(oString32[i] >= 120042 && oString32[i] <= 120067)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119945));
+			//Fraktur Capital(120093?)
+			else if(oString32[i] >= 120068 && oString32[i] <= 120092)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 112003));
+			//Fraktur Small
+			else if(oString32[i] >= 120094 && oString32[i] <= 120119)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119997));
+			//Double-Struck Capital(120145?)
+			else if(oString32[i] >= 120120 && oString32[i] <= 120144)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120055));
+			//Double-Struck Small
+			else if(oString32[i] >= 120146 && oString32[i] <= 120171)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120049));
+			//Bold Fraktur Capital
+			else if(oString32[i] >= 120172 && oString32[i] <= 120197)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120107));
+			//Bold Fraktur Small
+			else if(oString32[i] >= 120198 && oString32[i] <= 120223)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120101));
+			//Sans-Serif Capital
+			else if(oString32[i] >= 120224 && oString32[i] <= 120249)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120159));
+			//Sans-Serif Small
+			else if(oString32[i] >= 120250 && oString32[i] <= 120275)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120153));
+			//Sans-Serif Bold Capital
+			else if(oString32[i] >= 120276 && oString32[i] <= 120301)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120211));
+			//Sans-Serif Bold Small
+			else if(oString32[i] >= 120302 && oString32[i] <= 120327)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120205));
+			//Sans-Serif Italic Capital
+			else if(oString32[i] >= 120328 && oString32[i] <= 120353)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120263));
+			//Sans-Serif Italic Small
+			else if(oString32[i] >= 120354 && oString32[i] <= 120379)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120257));
+			//Sans-Serif Bold Italic Capital
+			else if(oString32[i] >= 120380 && oString32[i] <= 120405)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120315));
+			//Sans-Serif Bold Italic Small
+			else if(oString32[i] >= 120406 && oString32[i] <= 120431)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120309));
+			//Monospace Capital
+			else if(oString32[i] >= 120432 && oString32[i] <= 120457)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120367));
+			//Monospace Small
+			else if(oString32[i] >= 120458 && oString32[i] <= 120483)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120361));
+			//Bold Capital Alpha 
+			else if(oString32[i] >= 120488 && oString32[i] <= 120512)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119575));
+			//Bold Small Alpha
+			else if(oString32[i] >= 120514 && oString32[i] <= 120538)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119569));
+			//Italic Capital Alpha
+			else if(oString32[i] >= 120546 && oString32[i] <= 120570)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119633));
+			//Italic Small Alpha
+			else if(oString32[i] >= 120572 && oString32[i] <= 120596)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119627));
+			//Bold Italic Capital Alpha
+			else if(oString32[i] >= 120604 && oString32[i] <= 120628)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119691));
+			//Bold Italic Small Alpha
+			else if(oString32[i] >= 120630 && oString32[i] <= 120654)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119685));
+			//Sans-Serif Bold Capital Alpha
+			else if(oString32[i] >= 120662 && oString32[i] <= 120686)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119749));
+			//Sans-Serif Bold Small Alpha
+			else if(oString32[i] >= 120688 && oString32[i] <= 120712)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119743));
+			//Sans-Serif Bold Italic Capital Alpha
+			else if(oString32[i] >= 120720 && oString32[i] <= 120744)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119807));
+			//Sans-Serif Bold Italic Small Alpha
+			else if(oString32[i] >= 120746 && oString32[i] <= 120770)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 119801));
+			//Bold Digit Zero
+			else if(oString32[i] >= 120782 && oString32[i] <= 120791)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120734));
+			//Double-Struck Digit Zero
+			else if(oString32[i] >= 120792 && oString32[i] <= 120801)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120744));
+			//Sans-Serif Digit Zero 
+			else if(oString32[i] >= 120802 && oString32[i] <= 120811)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120754));
+			//Monospace Digit Zero
+			else if(oString32[i] >= 120822 && oString32[i] <= 120831)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120774));
+			//Sans-Serif Bold Digit Zero 
+			else if(oString32[i] >= 120812 && oString32[i] <= 120821)
+				wsText16.push_back((wchar_t)((unsigned int) oString32[i] - 120764));
+			else
+				wsText16.push_back(oString32[i]);
+		}
+		return wsText16;
 	}
 //class COneElement
 	COneElement::COneElement():m_stAttribute(nullptr),m_iStyle(0)
@@ -1638,6 +1802,11 @@ namespace StarMath
             pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsElement));
 			pXmlWrite->WriteNodeEnd(L"mi",false,false);
 			wsAnnotation += m_wsElement + L" ";
+			break;
+		}
+		case StarMath::TypeElement::letter_u32:
+		{
+			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsElement);
 			break;
 		}
 		default:
@@ -1873,31 +2042,36 @@ namespace StarMath
 	}
 	void CRelationsAndOperationsOnSets::Conversion(XmlUtils::CXmlWriter *pXmlWrite, std::wstring &wsAnnotation)
 	{
-		pXmlWrite->WriteNodeBegin(L"mrow",false);
-		if(m_pLeftArg!= nullptr)
-		{
-			if(GetAttribute() != nullptr)
-			{
-				GetAttribute()->AddRef();
-				m_pLeftArg->SetAttribute(GetAttribute());
-			}
-			m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
-		}
-		if(m_wsAnnotationSymbol == L"\u0026lt;" || m_wsAnnotationSymbol == L"\u0026gt;")
-			COOXml2Odf::RecordingMoNode(m_wsAnnotationSymbol,pXmlWrite);
+		if(m_pLeftArg == nullptr && m_pRightArg == nullptr)
+			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsSymbol);
 		else
-			COOXml2Odf::RecordingMoNode(m_wsSymbol,pXmlWrite);
-		wsAnnotation += m_wsAnnotationSymbol + L" ";
-		if(m_pRightArg != nullptr)
 		{
-			if(GetAttribute() != nullptr)
+			pXmlWrite->WriteNodeBegin(L"mrow",false);
+			if(m_pLeftArg!= nullptr)
 			{
-				GetAttribute()->AddRef();
-				m_pRightArg->SetAttribute(GetAttribute());
+				if(GetAttribute() != nullptr)
+				{
+					GetAttribute()->AddRef();
+					m_pLeftArg->SetAttribute(GetAttribute());
+				}
+				m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
 			}
-			m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
+			if(m_wsAnnotationSymbol == L"\u0026lt;" || m_wsAnnotationSymbol == L"\u0026gt;")
+				COOXml2Odf::RecordingMoNode(m_wsAnnotationSymbol,pXmlWrite);
+			else
+				COOXml2Odf::RecordingMoNode(m_wsSymbol,pXmlWrite);
+			wsAnnotation += m_wsAnnotationSymbol + L" ";
+			if(m_pRightArg != nullptr)
+			{
+				if(GetAttribute() != nullptr)
+				{
+					GetAttribute()->AddRef();
+					m_pRightArg->SetAttribute(GetAttribute());
+				}
+				m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
+			}
+			pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 		}
-		pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 	}
 	void CRelationsAndOperationsOnSets::SetLeftArg(COneElement *pElement)
 	{
@@ -2049,12 +2223,7 @@ namespace StarMath
 			wsAnnotation += m_wsAnnotation + L" ";
 		}
 		else if(!m_wsSymbol.empty())
-		{
-			pXmlWrite->WriteNodeBegin(L"mtext",false);
-			pXmlWrite->WriteString(m_wsSymbol);
-			pXmlWrite->WriteNodeEnd(L"mtext",false,false);
-			wsAnnotation += L"\u0026quot;" + m_wsSymbol + L"\u0026quot; ";
-		}
+			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsSymbol);
 		COOXml2Odf::StyleClosing(stStyle,pXmlWrite);
 	}
 	std::wstring CSpecialChar::DefinitionSpecialChar(const std::wstring &wsSymbol)

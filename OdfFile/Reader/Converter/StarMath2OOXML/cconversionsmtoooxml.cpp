@@ -364,22 +364,15 @@ namespace StarMath {
 			pXmlWrite->WriteNodeEnd(L"w",true,true);
 		}
 	}
-	void CConversionSMtoOOXML::PropertiesMPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeMatrix,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesMPr(XmlUtils::CXmlWriter *pXmlWrite, const TypeElement &enTypeMatrix, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const unsigned int &iDimension)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:mPr",false);
 		pXmlWrite->WriteNodeBegin(L"m:mcs",false);
 		pXmlWrite->WriteNodeBegin(L"m:mc",false);
 		pXmlWrite->WriteNodeBegin(L"m:mcPr",false);
 		pXmlWrite->WriteNodeBegin(L"m:count",true);
-		switch(enTypeMatrix)
-		{
-			case TypeElement::matrix:
-				pXmlWrite->WriteAttribute(L"m:val",L"2");
-				break;
-			default:
-				pXmlWrite->WriteAttribute(L"m:val",L"1");
-				break;
-		}
+		const std::wstring wsNumber = std::to_wstring(iDimension);
+		pXmlWrite->WriteAttribute(L"m:val",wsNumber);
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
 		pXmlWrite->WriteNodeBegin(L"m:mcJc",true);
 		pXmlWrite->WriteAttribute(L"m:val",L"center");

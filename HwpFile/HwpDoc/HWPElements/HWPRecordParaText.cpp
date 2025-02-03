@@ -12,6 +12,7 @@
 #include "../Paragraph/CtrlGeneralShape.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlField.h"
 
 #include <regex>
 
@@ -36,7 +37,8 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		return LIST<CCtrl*>();
 	}
 
-	std::wregex oRegex(L"([\\u0000-\\u001f]|.{2}[\\u0000-\u0017]{4})"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
+	//TODO:: перейти на обычный проход по символам
+	std::wregex oRegex(L"([\\u0000-\\u001f]|.{2}[\\u0000-\\u0017]{4})"); // [\\u0000\\u000a\\u000d\\u0018-\\u001f]|[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017].{6}[\\u0001\\u0002-\\u0009\\u000b-\\u000c\\u000e-\\u0017]
 	std::wsregex_iterator itCurrent(sText.begin(), sText.end(), oRegex);
 	std::wsregex_iterator itEnd = std::wsregex_iterator();
 
@@ -49,9 +51,9 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 	#define UPDATE_CURRENT_TEXT() \
 	do { \
-	if (!sCurrentText.empty()) \
+	if (!sCurrentText.empty() && (unsigned int)sCurrentText[0] > 0x001f) \
 	{ \
-		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex)); \
+		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex + 1)); \
 		sCurrentText.clear(); \
 	}} while (false)
 
@@ -69,9 +71,6 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			{
 				case 0x00:
 				case 0x02:
-				case 0x13:
-				// case 0x03:
-				// case 0x04:
 				// case 0x17:
 				// case 0x19:
 				{
@@ -79,13 +78,9 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					break;
 				}
 				case 0x03:
-				{
-					UPDATE_CURRENT_TEXT();
-					break;
-				}
 				case 0x04:
 				{
-					bEnd = true;
+					UPDATE_CURRENT_TEXT();
 					break;
 				}
 				case 0x08:
@@ -134,9 +129,11 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		// Пока данный вариант невозможен
 		else if (6 == itCurrent->length())
 		{
+			UPDATE_CURRENT_TEXT();
+
 			//TODO:: Проверить
 			HWP_STRING sInfo = sText.substr(itCurrent->position(), 2);
-			std::wregex wrReplaceRegex(L"[\\x00-\\x20]+$");
+			std::wregex wrReplaceRegex(L"[\\u0000-\\u0017]+$");
 			sInfo = std::regex_replace(sInfo, wrReplaceRegex, L"");
 
 			HWP_STRING sType;
@@ -146,6 +143,9 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			sType[1] = ((sInfo[0] >> 8) & 0xFF);
 			sType[2] = (sInfo[1] & 0xFF);
 			sType[3] = ((sInfo[1] >> 8) & 0xFF);
+
+			if (0x17 >= sType[3])
+				sType[3] = L' ';
 
 			//TODO:: более подробно разобраться в данном моменте
 			if (L"daeh" == sType ||
@@ -170,6 +170,11 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				arParas.push_back(new CCtrlTable(sType));
 			else if (L"deqe" == sType)
 				arParas.push_back(new CCtrlEqEdit(sType));
+			else if (L"klh%" == sType ||  // hyperlink start
+			         L"klh " == sType ||  // hyperlink end
+			         L"kmb%" == sType ||  // bookmark start
+			         L"kmb " == sType)    // bookmark end
+				arParas.push_back(new CCtrlField(sType));
 		}
 
 		nPrevIndex = itCurrent->position() + itCurrent->length();
@@ -180,7 +185,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 		sCurrentText += sText.substr(nPrevIndex);
 
 	if (!sCurrentText.empty())
-		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex));
+		arParas.push_back(new CParaText(L"____", sCurrentText, nPrevIndex + 1));
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return arParas;

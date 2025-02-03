@@ -447,10 +447,12 @@ namespace StarMath
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader *pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void DimensionCalculation();
 		TFormulaSize GetSize() override;
 		CElement* m_pFirstArgument;
 		CElement* m_pSecondArgument;
 		TypeElement m_enTypeMatrix;
+		unsigned int m_iDimension;
 	};
 
 	class CElementDiacriticalMark: public CElement

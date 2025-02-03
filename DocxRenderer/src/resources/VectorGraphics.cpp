@@ -388,6 +388,13 @@ namespace NSDocxRenderer
 
 		return points;
 	}
+
+	CHorVerLinesCollector::CHorVerLine::CHorVerLine(const double& _min, const double& _max, const double& _pos)
+	{
+		min = _min;
+		max = _max;
+		pos = _pos;
+	}
 	const std::vector<CHorVerLinesCollector::CHorVerLine>& CHorVerLinesCollector::GetHorizontal() const
 	{
 		return m_arHorizontal;

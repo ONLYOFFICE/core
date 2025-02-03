@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -2682,10 +2682,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->sxaxis.bRw)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
             else if(ptr->sxaxis.bData)
-            {
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
+            if(ptr->sxaxis.bData)
                 m_oDataField = ptr->sxaxis.bData;
-            }
             if(!ptr->fCompact)
                 m_oCompact                  = ptr->fCompact;
 

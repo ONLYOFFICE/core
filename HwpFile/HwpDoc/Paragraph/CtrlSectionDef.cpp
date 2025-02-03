@@ -179,7 +179,7 @@ const CPage* CCtrlSectionDef::GetPage() const
 	return m_pPage;
 }
 
-std::vector<const CCtrlHeadFoot*> CCtrlSectionDef::GetHeaderFooters() const
+VECTOR<const CCtrlHeadFoot*> CCtrlSectionDef::GetHeaderFooters() const
 {
 	VECTOR<const CCtrlHeadFoot*> arHeaderFooters(m_arHeaderFooter.size());
 

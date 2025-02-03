@@ -44,19 +44,6 @@ CHWPRecordIDMaping::CHWPRecordIDMaping(CHWPDocInfo& oDocInfo, int nTagNum, int n
 		m_arIdMappingNum.push_back(nCount);
 
 		m_arCounts[nIndex] = nCount;
-
-		switch (GetIndex(nIndex))
-		{
-			case EIndex::BIN_DATA:
-			{
-				// TODO:: проверить
-				if (nullptr != m_pParent && m_pParent->GetParentHWP()->GetBinData().empty())
-					m_pParent->GetParentHWP()->SetBinData(m_pParent->GetParentHWP()->GetOleFile()->GetChildEntries(L"BinData"));
-
-				break;
-			}
-			default: break;
-		}
 	}
 }
 }

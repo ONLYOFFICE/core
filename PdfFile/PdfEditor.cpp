@@ -1080,15 +1080,6 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	if (!pPDFDocument || !pDoc)
 		return false;
 
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
-	if (!pEditPage)
-	{
-		pEditPage = pDoc->GetCurPage();
-		EditPage(nPageIndex);
-		pDoc->SetCurPage(pEditPage);
-		pWriter->EditPage(pEditPage);
-	}
-
 	XRef* xref = pPDFDocument->getXRef();
 	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
 	if (!xref || pPageRef.first == 0)
@@ -1116,6 +1107,15 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	{
 		oAnnotRef.free(); oAnnot.free(); oType.free();
 		return false;
+	}
+
+	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	if (!pEditPage)
+	{
+		pEditPage = pDoc->GetCurPage();
+		EditPage(nPageIndex);
+		pDoc->SetCurPage(pEditPage);
+		pWriter->EditPage(pEditPage);
 	}
 
 	// Воспроизведение словаря аннотации из reader для writer

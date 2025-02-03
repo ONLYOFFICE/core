@@ -12,6 +12,7 @@ namespace NExtractTools
 
 		oFile.SetTempDirectory(convertParams.m_sTempDir);
 
+		params.m_bMacro = false;
 		if (((bIsXmlFormat && !oFile.OpenHWPX(sFrom)) ||
 		     (!bIsXmlFormat && !oFile.OpenHWP(sFrom))) ||
 		    ((bConvertToDir && !oFile.ConvertToOOXML_Dir(sTo)) ||

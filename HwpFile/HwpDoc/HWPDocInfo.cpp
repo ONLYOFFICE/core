@@ -254,7 +254,7 @@ bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
 		for (CXMLNode& oGrandChild : oChild.GetChilds(L"opf:item"))
 		{
 			pRecordBinData = new CHWPRecordBinData(oGrandChild, nVersion);
-			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), pRecordBinData));
+			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
 		}
 	}
 
@@ -288,7 +288,7 @@ const CHWPRecord* CHWPDocInfo::GetCharShape(int nIndex) const
 
 const CHWPRecord* CHWPDocInfo::GetNumbering(int nIndex) const
 {
-	GET_RECORD(m_arNumberings, nIndex - 1);
+	GET_RECORD(m_arNumberings, nIndex);
 }
 
 const CHWPRecord* CHWPDocInfo::GetBullet(int nIndex) const
@@ -318,10 +318,33 @@ CHWPFile* CHWPDocInfo::GetParentHWP()
 
 const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 {
-	if (m_mBinDatas.end() == m_mBinDatas.find(sID))
-		return nullptr;
+	switch (m_eHanType)
+	{
+		case EHanType::HWP:
+		{
+			short shID = std::stoi(sID) - 1;
 
-	return m_mBinDatas.at(sID);
+			if (shID >= m_mBinDatas.size())
+				return nullptr;
+
+			std::map<HWP_STRING, CHWPRecord*>::const_iterator itElement = m_mBinDatas.cbegin();
+
+			for (unsigned short ushIndex = 0; ushIndex < shID; ++ushIndex)
+				++itElement;
+
+			return itElement->second;
+		}
+		case EHanType::HWPX:
+		{
+			if (m_mBinDatas.end() == m_mBinDatas.find(sID))
+				return nullptr;
+
+			return m_mBinDatas.at(sID);
+			break;
+		}
+		default:
+			return nullptr;
+	}
 }
 
 EHanType CHWPDocInfo::GetHanType() const

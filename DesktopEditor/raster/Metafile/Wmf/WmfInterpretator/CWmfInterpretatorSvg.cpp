@@ -346,12 +346,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
-
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
 		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
 		                               {L"y",      ConvertToWString(oNewRect.Top)},
@@ -369,12 +364,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
-
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
 		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
 		                               {L"y",      ConvertToWString(oNewRect.Top)},

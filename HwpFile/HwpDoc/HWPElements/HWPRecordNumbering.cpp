@@ -218,4 +218,12 @@ int CHWPRecordNumbering::GetStartNumber(unsigned short ushIndex) const
 
 	return m_arNumbering[ushIndex].m_nStartNumber;
 }
+
+int CHWPRecordNumbering::GetCharShape(unsigned short ushIndex) const
+{
+	if (ushIndex >= 7)
+		return 0;
+
+	return m_arNumbering[ushIndex].m_nCharShape;
+}
 }

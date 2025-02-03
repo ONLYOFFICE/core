@@ -13,6 +13,7 @@
 #include "../Paragraph/CtrlSectionDef.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEmpty.h"
+#include "../Paragraph/CtrlField.h"
 
 namespace HWP
 {
@@ -75,6 +76,12 @@ CCtrl* CHWPRecordCtrlHeader::Parse(int nTagNum, int nLevel, int nSize, CHWPStrea
 	else if (L"pngp" == sCtrlID)
 	{
 		pCtrl = new CCtrlPageNumPos(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
+		pCtrl->SetFullFilled();
+	}
+	else if (L"klh%" == sCtrlID ||
+	         L"kmb%" == sCtrlID)
+	{
+		pCtrl = new CCtrlField(sCtrlID, nSize - oBuffer.GetDistanceToLastPos(), oBuffer, 0, nVersion);
 		pCtrl->SetFullFilled();
 	}
 	// else if (L"klh%" == sCtrlID || // hyperlink

@@ -1512,26 +1512,5 @@ namespace MetaFile
 
 		std::swap(oFirstClip, oSecondClip);
 	}
-
-	TRectD CEmfInterpretatorSvg::TranslateRect(const TRectL &oRect) const
-	{
-		TRectD oNewRect(oRect.Left, oRect.Top, oRect.Right, oRect.Bottom);
-
-		if (oNewRect.Right < oNewRect.Left)
-		{
-			double dTempValue = oNewRect.Left;
-			oNewRect.Left    = oNewRect.Right;
-			oNewRect.Right   = dTempValue;
-		}
-
-		if (oNewRect.Bottom < oNewRect.Top)
-		{
-			double dTempValue = oNewRect.Top;
-			oNewRect.Top     = oNewRect.Bottom;
-			oNewRect.Bottom  = dTempValue;
-		}
-
-		return oNewRect;
-	}
 }
 

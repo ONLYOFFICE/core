@@ -74,7 +74,7 @@ VECTOR<HWP_STRING> CHWPXFile::GetPathsToSections() const
 		std::wstring m_wsPath;
 		unsigned short m_ushIndex;
 
-		bool operator<(const TPathInfo& oPathInfo)
+		bool operator<(const TPathInfo& oPathInfo) const
 		{
 			return m_ushIndex < oPathInfo.m_ushIndex;
 		}

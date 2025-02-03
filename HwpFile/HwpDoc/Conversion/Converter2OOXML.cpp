@@ -695,7 +695,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 			oBuilder.WriteString(L"<w:numPr>");
 
-			oBuilder.WriteString(L"<w:ilvl w:val=\"0\"/>");
+			oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring((int)pParaShape->GetHeadingLevel()) + L"\"/>");
 			oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
 
 			oBuilder.WriteString(L"</w:numPr>");
@@ -1113,6 +1113,8 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short s
 	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
 
+	WriteCaption((const CCtrlCommon*)pEqEditShape, oBuilder, oState);
+
 	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r>");
@@ -1146,6 +1148,8 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 		return;
 
 	++m_ushShapeCount;
+
+	WriteCaption((const CCtrlCommon*)pOleShape, oBuilder, oState);
 
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
@@ -2045,6 +2049,11 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 	switch (pAutoNumber->GetNumType())
 	{
 		case ENumType::PAGE:
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"PAGE \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::TOTAL_PAGE:
 			ushValue = m_ushPageCount; break;
 		case ENumType::FOOTNOTE:
@@ -2185,7 +2194,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

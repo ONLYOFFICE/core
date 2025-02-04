@@ -44,6 +44,7 @@ RoundTripExtractor::RoundTripExtractor(const CUnknownRoundTrip* rt, const std::w
 
 RoundTripExtractor::~RoundTripExtractor()
 {
+    NSDirectory::DeleteDirectory(m_extractedFolderPath);
 }
 
 vector_string RoundTripExtractor::find(const std::wstring& strRegEx) const
@@ -91,7 +92,7 @@ bool RoundTripExtractor::extract()
     COfficeUtils officeUtils(NULL);
     m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
     
-    if (m_extractedFolderPath.empty()) return false;
+    if (m_extractedFolderPath.empty())
     {
         NSFile::CFileBinary::Remove(tempZipPath);
         return false;

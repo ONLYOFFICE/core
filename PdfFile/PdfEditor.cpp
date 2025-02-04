@@ -895,14 +895,15 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 	}
 	kidsArrObj.free();
 }
-bool CPdfEditor::EditPage(int nPageIndex, bool bSet, int nNewPage)
+bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	PdfWriter::CPage* pEditPage = NULL;
+	pEditPage = bActualPos ? pDoc->GetPage(nPageIndex) : pDoc->GetEditPage(nPageIndex);
 	if (pEditPage)
 	{
 		if (bSet)
@@ -1030,7 +1031,7 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet, int nNewPage)
 	pageObj.free();
 
 	// Применение редактирования страницы для writer
-	if (pDoc->EditPage(pXref, pPage, nPageIndex, nNewPage))
+	if (pDoc->EditPage(pXref, pPage, nPageIndex))
 	{
 		if (bSet)
 		{
@@ -1075,7 +1076,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, nPos))
+	if (EditPage(nPageIndex, true, true))
 	{
 		m_nEditPage = nPos;
 		return pWriter->GetDocument()->MovePage(nPageIndex, nPos);

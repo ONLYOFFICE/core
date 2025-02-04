@@ -203,9 +203,6 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				int nPos = oReader.ReadInt();
 				pPdf->MovePage(nPageNum, nPos);
-
-				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 13) , &oCorrector);
-				oReader.Skip(nLen - 13);
 				break;
 			}
 			case AddCommandType::RemovePage:

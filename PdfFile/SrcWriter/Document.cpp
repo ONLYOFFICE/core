@@ -353,10 +353,6 @@ namespace PdfWriter
 	}
 	CPage* CDocument::GetPage(const unsigned int &unPage)
 	{
-		CPage* pRes = GetEditPage(unPage);
-		if (pRes)
-			return pRes;
-
 		if (unPage >= m_pPageTree->GetCount())
 			return NULL;
 
@@ -369,6 +365,11 @@ namespace PdfWriter
 		if (p != m_mEditPages.end())
 			pRes = p->second;
 		return pRes;
+	}
+	int CDocument::FindPage(CPage* pPage)
+	{
+		int nI = 0;
+		return m_pPageTree->Find(pPage, nI) ? nI : -1;
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
@@ -1442,7 +1443,7 @@ namespace PdfWriter
 
 		return pRes;
 	}
-	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex, int nNewPage)
+	bool CDocument::EditPage(CXref* pXref, CPage* pPage, int nPageIndex)
 	{
 		if (!pPage || !EditXref(pXref))
 			return false;
@@ -1454,10 +1455,7 @@ namespace PdfWriter
 #endif
 
 		m_pCurPage  = pPage;
-		if (nNewPage > 0)
-			m_mEditPages[nNewPage] = pPage;
-		else
-			m_mEditPages[nPageIndex] = pPage;
+		m_mEditPages[nPageIndex] = pPage;
 
 		if (m_pPageTree)
 			m_pPageTree->ReplacePage(nPageIndex, pPage);

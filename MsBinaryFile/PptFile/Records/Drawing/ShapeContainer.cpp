@@ -935,7 +935,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     case ODRAW::metroBlob:
     {
         NSFile::CFileBinary file;
-        std::wstring tempFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"Blob") + L".zip";
+        std::wstring tempFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"Blob");
 
         if (file.CreateFileW(tempFileName))
         {
@@ -2168,8 +2168,7 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
         if (xmlProp.m_pOptions && xmlProp.m_lValue > 0) // file513.ppt
         {
-            std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_pCommonInfo->tempPath);
-            std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+            std::wstring tempFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_pCommonInfo->tempPath, L"Blob");
 
             NSFile::CFileBinary file;
             if (file.CreateFileW(tempFileName))
@@ -2185,7 +2184,6 @@ std::wstring CRecordShapeContainer::getTableXmlStr() const
 
             delete[] utf8Data;
             NSFile::CFileBinary::Remove(tempFileName);
-            NSDirectory::DeleteDirectory(tempPath);
         }
     }
 

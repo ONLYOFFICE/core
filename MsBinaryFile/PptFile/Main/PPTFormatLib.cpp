@@ -133,7 +133,8 @@ _UINT32 COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
         oPPTXWriter.m_xmlApp  = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_app_xml;
         oPPTXWriter.m_xmlCore = ((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_core_xml;
 
-        oPPTXWriter.CreateFile(((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);
+		if (false == oPPTXWriter.CreateFile(((PPT::CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]))
+			return AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CREATE_TEMP_DIR;
 		oPPTXWriter.CloseFile();
 	}
 	return S_OK;

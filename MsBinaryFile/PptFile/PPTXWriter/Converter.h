@@ -60,7 +60,7 @@ namespace PPT
 		~CPPTXWriter();
 
 		void CreateFile(CDocument	* pDocument);
-		void CreateFile(CPPTUserInfo* pUserInfo);
+		bool CreateFile(CPPTUserInfo* pUserInfo);
 
 		void CloseFile();
 

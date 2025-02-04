@@ -66,6 +66,8 @@ vector_string RoundTripExtractor::find(const std::wstring& strRegEx) const
 
 std::wstring RoundTripExtractor::getOneFile(const std::wstring &shortPath) const
 {
+    if (m_hasError) return L"";
+
     const std::wstring fullPath = m_extractedFolderPath + FILE_SEPARATOR_STR + shortPath;
 
     return NSFile::CFileBinary::Exists(fullPath) ? fullPath : L"";
@@ -76,7 +78,7 @@ bool RoundTripExtractor::extract()
     if (!m_roundTripRecord)
         return false;
 
-    std::wstring tempZipPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"RndT") + L".zip";
+    std::wstring tempZipPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"RndT");
 
     BYTE* zipData = m_roundTripRecord->data.first.get();
     ULONG zipDataLen = m_roundTripRecord->data.second;
@@ -88,11 +90,16 @@ bool RoundTripExtractor::extract()
 
     COfficeUtils officeUtils(NULL);
     m_extractedFolderPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
-    if(S_FALSE == officeUtils.ExtractToDirectory(tempZipPath, m_extractedFolderPath, NULL, 0))
+    
+    if (m_extractedFolderPath.empty()) return false;
+    {
+        NSFile::CFileBinary::Remove(tempZipPath);
         return false;
+    }
+    bool result = (S_FALSE != officeUtils.ExtractToDirectory(tempZipPath, m_extractedFolderPath, NULL, 0));
    
     NSFile::CFileBinary::Remove(tempZipPath);
-    return true;
+    return result;
 }
 
 bool RoundTripExtractor::hasError() const

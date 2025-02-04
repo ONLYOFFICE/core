@@ -63,7 +63,7 @@ CPPTFileReader::CPPTFileReader(POLE::Storage* pStorage, const std::wstring& strT
 	{
 		m_oCommonInfo.tempPath = NSDirectory::GetTempPath();
 	}
-	m_oCommonInfo.tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_oCommonInfo.tempPath);
+	//m_oCommonInfo.tempPath = m_oCommonInfo.tempPath + FILE_SEPARATOR_STR + L"temp";
 
 	m_oDocumentInfo.m_pCommonInfo = &m_oCommonInfo;
 
@@ -98,7 +98,7 @@ CPPTFileReader::~CPPTFileReader()
 {
 	RELEASEOBJECT(m_pStorage);
 	
-    NSDirectory::DeleteDirectory(m_oCommonInfo.tempPath);
+    //NSDirectory::DeleteDirectory(m_oCommonInfo.tempPath);
 }
 
 bool CPPTFileReader::IsPowerPoint()

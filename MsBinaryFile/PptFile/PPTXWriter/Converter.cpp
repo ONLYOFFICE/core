@@ -110,7 +110,7 @@ namespace PPT
         RELEASEOBJECT(m_pShapeWriter);
     }
 
-    void CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo)
+    bool CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo)
     {
         m_pUserInfo = pUserInfo;
 
@@ -124,12 +124,15 @@ namespace PPT
         
         m_pShapeWriter->InitNextId();
 
-        NSDirectory::CreateDirectory(m_strDestPath);
+       if (NSDirectory::CreateDirectory(m_strDestPath) == false) 
+           return false;
+
         NSFile::CFileBinary oFile;
         std::wstring strMemory;
 
         // _rels
-        NSDirectory::CreateDirectory(m_strDestPath + FILE_SEPARATOR_STR + L"_rels");
+        if (NSDirectory::CreateDirectory(m_strDestPath + FILE_SEPARATOR_STR + L"_rels") == false)
+            return false;
 
         oFile.CreateFileW(m_strDestPath + FILE_SEPARATOR_STR + L"_rels" + FILE_SEPARATOR_STR + L".rels");
         strMemory = NSPPTXWriterConst::g_string_rels_presentation;
@@ -137,7 +140,8 @@ namespace PPT
         oFile.CloseFile();
 
         // docProps
-        NSDirectory::CreateDirectory(m_strDestPath + FILE_SEPARATOR_STR + L"docProps");
+        if (NSDirectory::CreateDirectory(m_strDestPath + FILE_SEPARATOR_STR + L"docProps") == false)
+            return false;
 
         // core
         oFile.CreateFileW(m_strDestPath + FILE_SEPARATOR_STR + L"docProps" + FILE_SEPARATOR_STR + L"core.xml");

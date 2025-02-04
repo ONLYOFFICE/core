@@ -94,7 +94,12 @@ public:
 	int m_bLockAnchor;				//shplockanchor	Lock anchor for a shape.
 	int m_nLockPosition;
 	int m_nLockRotation;
-	
+
+	int m_nBorderTopColor;
+	int m_nBorderLeftColor;
+	int m_nBorderRightColor;
+	int m_nBorderBottomColor;
+
 	int m_eXAnchor;
 	int m_eYAnchor;
 

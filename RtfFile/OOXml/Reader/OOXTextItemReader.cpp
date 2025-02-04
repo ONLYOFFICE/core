@@ -73,15 +73,28 @@ bool OOXTextItemReader::Parse(OOX::WritingElement* ooxElement, ReaderParameter o
 
 			OOXParagraphReader	oParagraphReader(pParagraph);
 			RtfParagraphPtr oNewParagraph(new RtfParagraph());
-			//применяем к новому параграфу default property
+		//применяем к новому параграфу default property
 			oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 			oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-			oNewParagraph->m_oProperty.m_nItap = 0;
+			
+			if (oParam.oReader->m_bInTable)
+			{
+				if (NULL != oParam.poTableStyle)
+					oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
+				oNewParagraph->m_oProperty.m_bInTable = 1;
+				oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
+			}
+			else
+			{
+				oNewParagraph->m_oProperty.m_nItap = 0;
+			}
 
 			if (true == oParagraphReader.Parse(oParam, (*oNewParagraph), CcnfStyle()))
 			{
 				m_oTextItems->AddItem(oNewParagraph);
 			}
+
+
 		}break;
 		case OOX::et_w_tbl:
 		{

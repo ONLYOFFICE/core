@@ -51,6 +51,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/common/Array.h"
+#include "../../DesktopEditor/common/StringExt.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 #include "../../DesktopEditor/graphics/commands/DocInfo.h"
 #include "../../DesktopEditor/graphics/AlphaMask.h"
@@ -513,14 +514,14 @@ namespace PdfReader
 		}
 		else
 		{
+			double* dDash = new double[nSize];
 			for (int nIndex = 0; nIndex < nSize; ++nIndex)
-			{
-				pDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
-			}
+				dDash[nIndex] = PDFCoordsToMM(pDash[nIndex]);
 
-			m_pRenderer->PenDashPattern(pDash, (long)nSize);
+			m_pRenderer->PenDashPattern(dDash, (long)nSize);
 			m_pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
 			m_pRenderer->put_PenDashOffset(PDFCoordsToMM(dStart));
+			RELEASEARRAYOBJECTS(dDash);
 		}
 		if (bOffCopy)
 			delete[] pDash;
@@ -586,58 +587,57 @@ namespace PdfReader
 	}
 	void RendererOutputDev::updateBlendMode(GfxState* pGState)
 	{
-		NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
-		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField() || !GRenderer)
+		if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
 			return;
 
 		switch (pGState->getBlendMode())
 		{
 		case gfxBlendNormal:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		case gfxBlendMultiply:
-			GRenderer->put_BlendMode(14);
+			m_pRenderer->put_BlendMode(14);
 			// agg::comp_op_multiply
 			break;
 		case gfxBlendScreen:
-			GRenderer->put_BlendMode(15);
+			m_pRenderer->put_BlendMode(15);
 			// agg::comp_op_screen
 			break;
 		case gfxBlendOverlay:
-			GRenderer->put_BlendMode(16);
+			m_pRenderer->put_BlendMode(16);
 			// agg::comp_op_overlay
 			break;
 		case gfxBlendDarken:
-			GRenderer->put_BlendMode(17);
+			m_pRenderer->put_BlendMode(17);
 			// agg::comp_op_darken
 			break;
 		case gfxBlendLighten:
-			GRenderer->put_BlendMode(18);
+			m_pRenderer->put_BlendMode(18);
 			// agg::comp_op_lighten
 			break;
 		case gfxBlendColorDodge:
-			GRenderer->put_BlendMode(19);
+			m_pRenderer->put_BlendMode(19);
 			// agg::comp_op_color_dodge
 			break;
 		case gfxBlendColorBurn:
-			GRenderer->put_BlendMode(20);
+			m_pRenderer->put_BlendMode(20);
 			// agg::comp_op_color_burn
 			break;
 		case gfxBlendHardLight:
-			GRenderer->put_BlendMode(21);
+			m_pRenderer->put_BlendMode(21);
 			// agg::comp_op_hard_light
 			break;
 		case gfxBlendSoftLight:
-			GRenderer->put_BlendMode(22);
+			m_pRenderer->put_BlendMode(22);
 			// agg::comp_op_soft_light
 			break;
 		case gfxBlendDifference:
-			GRenderer->put_BlendMode(23);
+			m_pRenderer->put_BlendMode(23);
 			// agg::comp_op_difference
 			break;
 		case gfxBlendExclusion:
-			GRenderer->put_BlendMode(24);
+			m_pRenderer->put_BlendMode(24);
 			// agg::comp_op_exclusion
 			break;
 		case gfxBlendHue:
@@ -645,7 +645,7 @@ namespace PdfReader
 		case gfxBlendColor:
 		case gfxBlendLuminosity:
 		default:
-			GRenderer->put_BlendMode(3);
+			m_pRenderer->put_BlendMode(3);
 			// agg::comp_op_src_over
 			break;
 		}
@@ -1282,7 +1282,6 @@ namespace PdfReader
 			case fontCIDType0:
 			case fontCIDType0C:
 			{
-				/*
 				GfxCIDFont* pFontCID = dynamic_cast<GfxCIDFont*>(pFont);
 				if (!bFontSubstitution && pFontCID && pFontCID->getCIDToGID())
 				{
@@ -1298,6 +1297,7 @@ namespace PdfReader
 					memcpy(pCodeToGID, ((GfxCIDFont*)pFont)->getCIDToGID(), nLen * sizeof(int));
 					break;
 				}
+				/*
 #ifdef FONTS_USE_ONLY_MEMORY_STREAMS
 				pT1CFontFile = FoFiType1C::make((char*)oMemoryFontStream.m_pData, oMemoryFontStream.m_nSize);
 #else
@@ -1463,7 +1463,7 @@ namespace PdfReader
 						{
 							Unicode aUnicode[2];
 							if (pToUnicode->mapToUnicode(nIndex, aUnicode, 2))
-								pCodeToUnicode[nIndex] = (unsigned short)aUnicode[0];
+								pCodeToUnicode[nIndex] = aUnicode[0];
 							else
 								pCodeToUnicode[nIndex] = 0;
 						}
@@ -1622,7 +1622,7 @@ namespace PdfReader
 			return;
 		}
 
-		if (abs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || abs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
+		if (fabs(pBBox[2] - pBBox[0] - dXStep) > 0.001 || fabs(pBBox[3] - pBBox[1] - dYStep) > 0.001)
 			return;
 
 		double dWidth, dHeight, dDpiX, dDpiY;
@@ -1678,14 +1678,12 @@ namespace PdfReader
 		oImage->Create(pBgraData, nWidth, nHeight, 4 * nWidth);
 
 		double xMin, yMin, xMax, yMax;
-		Transform(pMatrix, pBBox[0], pBBox[1], &xMin, &yMin);
-		Transform(pMatrix, pBBox[2], pBBox[3], &xMax, &yMax);
-		double dW = xMax - xMin;
-		double dH = yMax - yMin;
-		xMin += (double)nX0 * dW;
-		xMax += (double)nX1 * dW;
-		yMin += (double)nY0 * dH;
-		yMax += (double)nY1 * dH;
+		xMin = nX0 * dXStep + pBBox[0];
+		yMin = nY0 * dYStep + pBBox[1];
+		xMax = nX1 * dXStep + pBBox[0];
+		yMax = nY1 * dYStep + pBBox[1];
+		Transform(pMatrix, xMin, yMin, &xMin, &yMin);
+		Transform(pMatrix, xMax, yMax, &xMax, &yMax);
 		pGState->moveTo(xMin, yMin);
 		pGState->lineTo(xMax, yMin);
 		pGState->lineTo(xMax, yMax);
@@ -2175,7 +2173,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
@@ -2185,7 +2184,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), true);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeEvenOdd;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
@@ -2195,7 +2195,8 @@ namespace PdfReader
 
 		if (!m_sStates.back().pClip)
 			m_sStates.back().pClip = new GfxClip();
-		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), false);
+		int nClipFlag = c_nClipRegionIntersect | c_nClipRegionTypeWinding | c_nClipToStrokePath;
+		m_sStates.back().pClip->AddPath(pGState->getPath(), pGState->getCTM(), nClipFlag);
 		AddClip(pGState, &m_sStates.back(), m_sStates.back().pClip->GetPathNum() - 1);
 	}
 	void RendererOutputDev::clipToPath(GfxState* pGState, GfxPath* pPath, double* pMatrix, bool bEO)
@@ -2361,8 +2362,9 @@ namespace PdfReader
 
 		double dTextScale = std::min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
 		double dITextScale = 1 / dTextScale;
-		double dOldSize = 10.0;
+		double dOldSize = 10.0, dOldWidth = 1.0;
 		m_pRenderer->get_FontSize(&dOldSize);
+		m_pRenderer->get_PenSize(&dOldWidth);
 		if (dOldSize * dTextScale > 0)
 		{
 			m_pRenderer->put_FontSize(dOldSize * dTextScale);
@@ -2407,6 +2409,8 @@ namespace PdfReader
 				double dSize = 1;
 				m_pRenderer->get_FontSize(&dSize);
 				m_pRenderer->put_FontSize(dSize * dNorma);
+				if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
+					m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth() * dNorma));
 			}
 		}
 
@@ -2422,8 +2426,8 @@ namespace PdfReader
 
 		if (NULL != oEntry.pCodeToUnicode && nCode < oEntry.unLenUnicode)
 		{
-			unsigned short unUnicode = oEntry.pCodeToUnicode[nCode];
-			wsUnicodeText = (wchar_t(unUnicode));
+			int unUnicode = oEntry.pCodeToUnicode[nCode];
+			wsUnicodeText = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&unUnicode), 1);
 		}
 		else
 		{
@@ -2564,7 +2568,6 @@ namespace PdfReader
 			long lDrawPath = c_nStroke;
 			if (nRenderMode == 2)
 				lDrawPath |= c_nWindingFillMode;
-
 			m_pRenderer->DrawPath(lDrawPath);
 
 			m_pRenderer->EndCommand(c_nStrokeTextType);
@@ -2587,6 +2590,7 @@ namespace PdfReader
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
+		m_pRenderer->put_PenSize(dOldWidth);
 	}
 
 	GBool RendererOutputDev::beginType3Char(GfxState* state, double x, double y, double dx, double dy, CharCode code, Unicode* u, int uLen)
@@ -2936,6 +2940,13 @@ namespace PdfReader
 					{
 						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
 					}
+					else if (3 == nColorMapType)
+					{
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+					}
 					else
 					{
 						GfxRGB oRGB;
@@ -2947,7 +2958,7 @@ namespace PdfReader
 
 					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
 						pLineDst[3] = 0;
-					else
+					else if (3 != nColorMapType)
 						pLineDst[3] = unAlpha;
 
 					pLine += nComps;
@@ -3410,8 +3421,8 @@ namespace PdfReader
 				}
 			}
 
-			if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
-				m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
+			// if (!bAlpha) // pTransferFunc преобразовала результат luminosity маски в alpha маску
+			// 	m_pSoftMask->SetType(Aggplus::EMaskDataType::Alpha4Buffer);
 		}
 
 		m_sCS.pop_back();
@@ -3495,9 +3506,7 @@ namespace PdfReader
 
 		GfxClip* pClip = pState->pClip;
 		GfxPath* pPath = pClip->GetPath(nIndex);
-		bool     bFlag = pClip->GetClipEo(nIndex);
-		int  nClipFlag = bFlag ? c_nClipRegionTypeEvenOdd : c_nClipRegionTypeWinding;
-		nClipFlag |= c_nClipRegionIntersect;
+		int  nClipFlag = pClip->GetClipFlag(nIndex);;
 
 		m_pRenderer->BeginCommand(c_nClipType);
 		m_pRenderer->put_ClipMode(nClipFlag);

@@ -34,11 +34,56 @@
 #include "DiagramColors.h"
 #include "../../Common/SimpleTypes_Drawing.h"
 
+#include "../Document.h"
+#include "../../XlsxFormat/Xlsx.h"
+
 #include "../Drawing/DrawingExt.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
 {
+	CDiagramColors::CDiagramColors(OOX::Document* pMain, bool bDocument) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		m_bDocument = bDocument;
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+	}
+	CDiagramColors::CDiagramColors(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
+		read(uri.GetDirectory(), uri);
+	}
+	CDiagramColors::CDiagramColors(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
+		read(oRootPath, oPath);
+	}
+	CDiagramColors::~CDiagramColors()
+	{
+	}
+	const OOX::FileType CDiagramColors::type() const
+	{
+		return FileTypes::DiagramColors;
+	}
+	const CPath CDiagramColors::DefaultDirectory() const
+	{
+		if (m_bDocument)
+			return type().DefaultDirectory();
+		else
+			return L"../" + type().DefaultDirectory();
+	}
+	const CPath CDiagramColors::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CDiagramColors::read(const CPath& oFilePath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
 	void CDiagramColors::read(const CPath& oRootPath, const CPath& oFilePath)
 	{
 		IFileContainer::Read(oRootPath, oFilePath);
@@ -204,6 +249,8 @@ namespace OOX
 	}
 	void Diagram::CClrLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		node_name = oReader.GetName();
+
 		ReadAttributes(oReader);
 
 		if (oReader.IsEmptyNode())

@@ -70,6 +70,7 @@ namespace PdfWriter
 		CPage* GetPage(int nPageIndex);
 		CObjectBase* RemovePage(int nPageIndex);
 		bool InsertPage(int nPageIndex, CPage* pPage);
+		bool ReplacePage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
 		unsigned int GetCount()
 		{
@@ -104,6 +105,14 @@ namespace PdfWriter
 		EDictType GetDictType() const
 		{
 			return dict_type_PAGE;
+		}
+		CStream* GetStream() const
+		{
+			return m_pStream;
+		}
+		void SetStream(CStream* pStream)
+		{
+			m_pStream = pStream;
 		}
 		void      BeforeWrite();
 
@@ -168,13 +177,13 @@ namespace PdfWriter
         int       GetRotate();
 		void      ClearContent(CXref* pXref);
 		CDictObject* GetContent() const;
+		CResourcesDict* GetResourcesItem();
 
 	private:
 
 		void          Init(CDocument* pDocument);
 		void          EllipseArc(double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, bool bClockDirection);
 		CArrayObject* GetMediaBoxItem();
-		CResourcesDict* GetResourcesItem();
 		CObjectBase*  GetCropBoxItem();
         CObjectBase*  GetRotateItem();
 		TBox          GetMediaBox();

@@ -75,18 +75,18 @@ namespace svg_path
 		{
 			CP_XML_NODE(val.command)
 			{
-				if (val.command == L"a:ArcTo")
+				if (val.command == L"a:arcTo")
 				{
 					if (val.points.size() > 0)
 					{
 						CP_XML_ATTR(L"wR", val.points[0].x.get());
 						CP_XML_ATTR(L"hR", val.points[0].y.get());
 					}
-					//if (val.points.size() > 1)
-					//{
-					//	CP_XML_ATTR(L"stAng", (int)(val.points[1].x.get() * 60000));
-					//	CP_XML_ATTR(L"swAng", (int)(val.points[1].y.get() * 60000));
-					//}
+					if (val.points.size() > 1)
+					{
+						CP_XML_ATTR(L"stAng", val.points[1].x.get());
+						CP_XML_ATTR(L"swAng", val.points[1].y.get());
+					}
 				}
 				else
 				{

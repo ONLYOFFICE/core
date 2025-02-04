@@ -1,8 +1,6 @@
 #pragma once
+
 #include "../../../../DesktopEditor/common/StringBuilder.h"
-#include "../../resources/Constants.h"
-#include <vector>
-#include <memory>
 
 namespace NSDocxRenderer
 {
@@ -62,7 +60,9 @@ namespace NSDocxRenderer
 
 		bool AreObjectsNoCrossingByVertically(const CBaseItem* pObj) const noexcept;
 		bool AreObjectsNoCrossingByHorizontally(const CBaseItem* pObj) const noexcept;
+		bool IsEqual(double dTop, double dBaselinePos, double dLeft, double dRight) const noexcept;
 
 		CBaseItem& operator=(const CBaseItem& oSrc);
+		bool operator==(const CBaseItem& oSrc);
 	};
 }

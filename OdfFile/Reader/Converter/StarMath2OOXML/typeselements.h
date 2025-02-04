@@ -311,6 +311,7 @@ enum class TypeElement{
 	dotslow,
 	newline,
 	emptySquare,
+	slash,
 	//function
 	abs,
 	fact,
@@ -371,6 +372,7 @@ enum class TypeElement{
 	//string
 	letter,
 	number,
+	letter_u32,
 };
 }
 #endif // TYPESELEMENTS_H

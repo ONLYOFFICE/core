@@ -60,7 +60,7 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 private:
-	void GetPageTree(XRef* xref, Object* pPagesRefObj);
+	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 
 	std::wstring wsSrcFile;
 	std::wstring wsPassword;

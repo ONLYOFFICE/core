@@ -30,10 +30,11 @@ LIBS += \
 HEADERS += \
 	src/logic/elements/BaseItem.h \
 	src/logic/elements/ContText.h \
-	src/logic/elements/DropCap.h \
 	src/logic/elements/Paragraph.h \
 	src/logic/elements/Shape.h \
+	src/logic/elements/Table.h \
 	src/logic/elements/TextLine.h \
+	src/logic/managers/ExternalImageStorage.h \
 	src/logic/managers/FontStyleManager.h \
 	src/logic/managers/ImageManager.h \
 	src/logic/managers/FontManager.h \
@@ -54,9 +55,9 @@ HEADERS += \
 SOURCES += \
 	src/logic/elements/BaseItem.cpp \
 	src/logic/elements/ContText.cpp \
-	src/logic/elements/DropCap.cpp \
 	src/logic/elements/Paragraph.cpp \
 	src/logic/elements/Shape.cpp \
+	src/logic/elements/Table.cpp \
 	src/logic/elements/TextLine.cpp \
 	src/logic/managers/FontManager.cpp \
 	src/logic/managers/FontStyleManager.cpp \

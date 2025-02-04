@@ -11,8 +11,8 @@
 #undef DrawText
 #endif
 
-#define PRINT_WMF_RECORD(type) do {} while(false);
-#define PRINT_WMF_LOG(text)    do {} while(false);
+#define PRINT_WMF_RECORD(type) do {} while(false)
+#define PRINT_WMF_LOG(text)    do {} while(false)
 
 #ifdef _DEBUG
 #define LOG_WMF_RECORDS 1
@@ -105,13 +105,13 @@
 			};
 
 			#define PRINT_WMF_RECORD(type) \
-			{\
+			do {\
 				std::map<UINT, std::string>::const_iterator itFound = mWmfRecords.find(type); \
 				if (mWmfRecords.cend() != itFound) \
 					std::cout << itFound->second << std::endl; \
 				else \
 					std::cout << "Unknown record: " << type << std::endl; \
-			}
+			} while(false)
 		#endif
 		#endif
 	#endif

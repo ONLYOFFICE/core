@@ -80,7 +80,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (nContent != std::wstring::npos)
     {
         nContent += 11;
-        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
+        sContent = sFileContent.substr(nContent, sFileContent.find_first_of(L"\"'", nContent) - nContent);
     }
 
     std::wstring sContentPath;
@@ -155,6 +155,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     std::wstring sDocxFileTempDir = m_sTempDir + L"/tmp";
     NSDirectory::CreateDirectory(sDocxFileTempDir);
     oFile.SetTmpDirectory(sDocxFileTempDir);
+    oFile.SetCoreDirectory(NSFile::GetDirectoryName(sContent));
 
     std::vector<std::wstring> arFiles;
     for (const CBookContentItem& oContent : m_arContents)

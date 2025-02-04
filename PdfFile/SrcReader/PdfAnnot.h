@@ -145,10 +145,12 @@ private:
 	double m_dx1, m_dy1, m_dx2, m_dy2;
 	double m_dCropX, m_dCropY;
 	double m_dWScale, m_dHScale;
-	double m_dWTale;
-	double m_dHTale;
-	int m_nRx1, m_nRy1, m_nWidth, m_nHeight;
+	double m_dRWScale, m_dRHScale;
+	double m_dWTale, m_dHTale;
+	double m_dRx1, m_dRy1;
+	int m_nWidth, m_nHeight;
 	std::vector<CAnnotAPView*> m_arrAP;
+	bool m_bIsStamp;
 
 	Gfx* m_gfx;
 	CBgraFrame* m_pFrame;
@@ -167,17 +169,6 @@ public:
 
 	virtual void ToWASM(NSWasm::CData& oRes);
 
-protected:
-	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
-	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
-	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
-
-	unsigned int m_unAFlags;
-	unsigned int m_unFlags;
-	double m_dHeight; // Высота холста, для Y трансформации
-	double m_dX; // Смещение по X для трансформации
-
-private:
 	struct CBorderType final
 	{
 		CBorderType()
@@ -192,16 +183,27 @@ private:
 		double dWidth;
 		std::vector<double> arrDash;
 	};
-	CBorderType* getBorder(Object* oBorder, bool bBSorBorder);
 
+protected:
+	CAnnot(PDFDoc* pdfDoc, AcroFormField* pField);
+	CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+	std::string DictLookupString(Object* pObj, const char* sName, int nByte);
+
+	unsigned int m_unAFlags;
+	unsigned int m_unFlags;
+	double m_dHeight; // Высота холста, для Y трансформации
+	double m_dX; // Смещение по X для трансформации
+	double m_pRect[4]; // Координаты
+
+private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
-	double m_pRect[4]; // Координаты
 	std::pair<BYTE, double> m_pBE; // Эффекты границы
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
+	std::string m_sOUserID; // OO User ID
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
@@ -338,7 +340,8 @@ public:
 		std::string sText;
 
 		CFontData() : bFind(false), nAlign(0), unFontFlags(4), dFontSise(10), dVAlign(0), dColor{0, 0, 0} {}
-		CFontData(const CFontData& oFont);
+		CFontData(const CFontData& oFont) : bFind(oFont.bFind), nAlign(oFont.nAlign), unFontFlags(oFont.unFontFlags), dFontSise(oFont.dFontSise), dVAlign(oFont.dVAlign),
+			dColor{oFont.dColor[0], oFont.dColor[1], oFont.dColor[2]}, sFontFamily(oFont.sFontFamily), sActualFont(oFont.sActualFont), sText(oFont.sText) {}
 	};
 
 	void SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
@@ -350,6 +353,8 @@ protected:
 
 	virtual void ToWASM(NSWasm::CData& oRes) override;
 
+	std::vector<CFontData*> m_arrRC; // Форматированный текст
+
 private:
 	BYTE m_nRT; // Тип аннотации-ответа
 	unsigned int m_unRefNumPopup; // Номер ссылки на всплывающую аннотацию
@@ -358,7 +363,6 @@ private:
 	std::string m_sT; // Текстовая метка, пользователь добавивший аннотацию
 	std::string m_sCreationDate; // Дата создания
 	std::string m_sSubj; // Краткое описание
-	std::vector<CFontData*> m_arrRC; // Форматированный текст
 };
 
 //------------------------------------------------------------------------
@@ -561,6 +565,22 @@ private:
 	CEmbeddedFiles* m_pEF; // EF содержит F/UF/DOS/Mac/Unix со ссылками на встроенные файловые потоки по соответствующим спецификациях
 	// TODO RF содержит F/UF/DOS/Mac/Unix с массивами связанных файлов по соответствующим спецификациях
 	// TODO Cl коллекция для создания пользовательского интерфейса
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotStamp
+//------------------------------------------------------------------------
+
+class CAnnotStamp final : public CAnnotMarkup
+{
+public:
+	CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+private:
+	std::string m_sName; // Иконка
+	double m_dRotate;
+	double m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3, m_dX4, m_dY4;
 };
 
 //------------------------------------------------------------------------

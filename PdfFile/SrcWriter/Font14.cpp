@@ -44,7 +44,7 @@ namespace PdfWriter
 		"Courier-Bold",
 		"Courier-Oblique",
 		"Courier-BoldOblique",
-		"Times",
+		"Times-Roman",
 		"Times-Bold",
 		"Times-Oblique",
 		"Times-BoldOblique",

@@ -4,7 +4,6 @@
 #include "../../../../DesktopEditor/graphics/structures.h"
 #include "../../../../DesktopEditor/common/StringBuilder.h"
 
-
 namespace NSDocxRenderer
 {
 	class CFontStyle

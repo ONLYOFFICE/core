@@ -58,4 +58,13 @@ namespace NSBase64
 	KERNEL_DECL int Base64Decode(const wchar_t* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen);
 }
 
+namespace NSBase32
+{
+	KERNEL_DECL bool Decode(unsigned char* in, int inLen, unsigned char* out);
+	KERNEL_DECL bool Encode(unsigned char* in, int inLen, unsigned char* out);
+
+	KERNEL_DECL int  DecodeGetRequiredLength(int bytes);
+	KERNEL_DECL int  EncodeGetRequiredLength(int bytes);
+}
+
 #endif//_BUILD_BASE64_CROSSPLATFORM_DEFINE

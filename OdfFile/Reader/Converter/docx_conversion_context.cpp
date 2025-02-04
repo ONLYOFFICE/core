@@ -1886,7 +1886,7 @@ static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_con
 				dynamic_cast<odf_reader::text_list_level_style_number*>(newStyle->content_[i].get());
 
 			if (level_style_number)
-				level_style_number->text_list_level_style_number_attr_.text_start_value_ = context.get_list_style_occurances(s) + 1;
+				level_style_number->number_attr_.text_start_value_ = context.get_list_style_occurances(s) + 1;
 		}
 	}
 
@@ -2426,9 +2426,12 @@ void docx_conversion_context::process_headers_footers()
     process_headers_footers_ = false;
 }
 
-void docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
+bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPageName)
 {
+	if (current_master_page_name_ == MasterPageName) return false;
+
     current_master_page_name_ = MasterPageName;
+	return true;
 }
 
 const std::wstring & docx_conversion_context::get_master_page_name() const

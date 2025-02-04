@@ -32,7 +32,6 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../DesktopEditor/fontengine/ApplicationFontsWorker.h"
 
 #include "../../PdfFile/PdfFile.h"
@@ -41,8 +40,10 @@
 #include "../DocxRenderer.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+#include <fstream>
+
 #ifdef TEST_FOR_HTML_RENDERER_TEXT
-#include "../../HtmlRenderer/include/HTMLRendererText.h"
+#include "../../DesktopEditor/graphics/pro/js/wasm/src/HTMLRendererText.h"
 #endif
 
 //#define LOAD_FILE_AS_BINARY
@@ -87,11 +88,8 @@ int main(int argc, char *argv[])
 	if (!NSDirectory::Exists(sTempDirOut))
 		NSDirectory::CreateDirectory(sTempDirOut);
 
-	//Добавляем все файлы из определенного каталога
-	//std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"C:\\Folder");
-	std::vector<std::wstring> sSourceFiles;
-	//Или добавляем любой нужный файл
-	sSourceFiles.push_back(L"");
+	std::vector<std::wstring> sSourceFiles = NSDirectory::GetFiles(L"");
+	//sSourceFiles.push_back(L"");
 
 	std::wstring sTextDirOut = NSFile::GetProcessDirectory() + L"/output";
 	if (!NSDirectory::Exists(sTextDirOut))
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
 	IOfficeDrawingFile* pReader = NULL;
 
 	COfficeFileFormatChecker oChecker;
-	int	                	 nFileType = 0;
+	int nFileType = 0;
 
 	CDocxRenderer oDocxRenderer(pFonts);
 	oDocxRenderer.SetTempFolder(sTempDirOut);
@@ -163,7 +161,6 @@ int main(int argc, char *argv[])
 		std::wstring sDocx = L"/" + sFileName + L".docx";
 		std::wstring sZip = L"/" + sFileName + L".zip";
 
-		// проверить все режимы
 		NSDocxRenderer::TextAssociationType taType;
 		//taType = NSDocxRenderer::TextAssociationType::tatPlainLine;
 		//taType = NSDocxRenderer::TextAssociationType::tatShapeLine;
@@ -175,13 +172,14 @@ int main(int argc, char *argv[])
 
 		oDocxRenderer.SetTextAssociationType(taType);
 		oDocxRenderer.Convert(pReader, sTextDirOut+sDocx);
-		//auto shapes = oDocxRenderer.ScanPage(pReader, 0);
 
-		//Если сразу нужен zip-архив
-		//oDocxRenderer.Convert(pReader, sPlainParagraphDirOut+sZip);
+//		std::wstring test_txt_file = L"";
+//		std::ofstream fin(test_txt_file);
+//		auto shapes = oDocxRenderer.ScanPagePptx(pReader, 0);
+//		for (auto& s : shapes)
+//			fin << U_TO_UTF8(s);
 #endif
 		RELEASEOBJECT(pReader);
-
 		RELEASEOBJECT(pExternalImagheStorage);
 	}
 

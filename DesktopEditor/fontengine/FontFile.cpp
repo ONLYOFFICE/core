@@ -109,7 +109,7 @@ FT_Error FT_Load_Glyph_Wrapper( FT_Face   face,
 	FT_Err_Invalid_Reference              = 0x86;
 	*/
 
-	if ((bHintsSupport == TRUE) && ((nErr > 0x10 && nErr < 0x28) || nErr == 0x83 || nErr == 0x86))
+	if ((bHintsSupport == TRUE) && ((nErr > 0x10 && nErr < 0x28) || (nErr >= 0x83 && nErr <= 0x8D)))
 	{
 		int nErr2 = FT_Load_Glyph(face, glyph_index, 40970);
 

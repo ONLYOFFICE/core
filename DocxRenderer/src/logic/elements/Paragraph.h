@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "BaseItem.h"
 #include "TextLine.h"
-#include "../../../convert_params.h"
 
 namespace NSDocxRenderer
 {

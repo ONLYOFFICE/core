@@ -40,6 +40,7 @@ namespace NSCSS
 	{
 		m_sSelector = sSelector;
 		m_sFullSelector = m_sSelector;
+		UpdateWeight();
 	}
 
 	void NSCSS::CElement::AddPropertie(const std::wstring &sName, const std::wstring& sValue)
@@ -67,6 +68,7 @@ namespace NSCSS
 
 		m_arPrevElements.push_back(oPrevElement);
 		oPrevElement->m_sFullSelector += L' ' + m_sFullSelector;
+		UpdateWeight();
 	}
 
 	void CElement::AddKinElement(CElement *oKinElement)
@@ -76,6 +78,7 @@ namespace NSCSS
 
 		m_arKinElements.push_back(oKinElement);
 		oKinElement->m_sFullSelector += m_sFullSelector;
+		oKinElement->UpdateWeight();
 	}
 
 	std::map<std::wstring, std::wstring> CElement::GetStyle() const
@@ -230,11 +233,14 @@ namespace NSCSS
 		return NULL;
 	}
 
-	std::vector<unsigned short> CElement::GetWeight()
+	void CElement::UpdateWeight()
 	{
 		if (m_arWeight.empty())
 			m_arWeight = NS_STATIC_FUNCTIONS::GetWeightSelector(m_sFullSelector);
+	}
 
+	std::vector<unsigned short> CElement::GetWeight() const
+	{
 		return m_arWeight;
 	}
 

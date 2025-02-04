@@ -129,11 +129,13 @@ namespace oox {
 		oox_solid_fill_ptr		solid;
 
 		_CP_OPT(double) opacity;
+		_CP_OPT(double) image_opacity;
 
 		void clear()
 		{
 			type = -1;
 			opacity = boost::none;
+			image_opacity = boost::none;
 
 			gradient.reset();
 			hatch.reset();

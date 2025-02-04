@@ -609,7 +609,7 @@ namespace OOX
     class CDiagramData : public OOX::IFileContainer, public OOX::FileGlobalEnumerated
     {
     public:
-		CDiagramData(OOX::Document* pMain);
+		CDiagramData(OOX::Document* pMain, bool bDocument = true);
 		CDiagramData(OOX::Document* pMain, const CPath& uri);
 		CDiagramData(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 		virtual ~CDiagramData();
@@ -632,6 +632,8 @@ namespace OOX
 		nullable<Diagram::CDataModel> m_oDataModel;
 	
 		nullable<OOX::RId> id_drawing;
+	private:
+		bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 	};
 
 } // namespace OOX

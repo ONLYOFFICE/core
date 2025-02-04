@@ -1,8 +1,7 @@
 #include "CSvgParser.h"
 
-#include "SvgUtils.h"
-
-#include <iostream>
+#include <algorithm>
+#include <cctype>
 
 #include "CSvgFile.h"
 
@@ -41,17 +40,70 @@ namespace SVG
 		m_pFontManager = pFontManager;
 	}
 
+	std::string FindEncoding(const std::string& wsContent)
+	{
+		size_t unEncodingBegin = wsContent.find("encoding");
+
+		if (std::string::npos == unEncodingBegin)
+			return std::string();
+
+		unEncodingBegin += 8;
+
+		while (unEncodingBegin < wsContent.length() && std::isspace(wsContent[unEncodingBegin]))
+			++unEncodingBegin;
+
+		if (unEncodingBegin >= wsContent.length() || '=' != wsContent[unEncodingBegin++])
+			return std::string();
+
+		while (unEncodingBegin < wsContent.length() && std::isspace(wsContent[unEncodingBegin]))
+			++unEncodingBegin;
+
+		if (unEncodingBegin >= wsContent.length() || ('\'' != wsContent[unEncodingBegin] && '"' != wsContent[unEncodingBegin]))
+			return std::string();
+
+		std::string::const_iterator itEncodingValueBegin = std::find_if(wsContent.cbegin() + unEncodingBegin + 1, wsContent.cend(), [](char chElement){ return !isspace(chElement);});
+
+		if (wsContent.cend() == itEncodingValueBegin)
+			return std::string();
+
+		std::string::const_iterator itEncodingValueEnd = std::find_if(itEncodingValueBegin, wsContent.cend(), [](char chElement){ return isspace(chElement) || '\'' == chElement || '\"' == chElement;});
+
+		if (wsContent.cend() == itEncodingValueEnd)
+			return std::string();
+
+		return std::string(itEncodingValueBegin, itEncodingValueEnd);
+	}
+
 	bool CSvgParser::LoadFromFile(const std::wstring &wsFile, CGraphicsContainer* pContainer, CSvgFile* pFile) const
 	{
 		if (wsFile.empty() || NULL == pFile)
 			return false;
 
-		std::wstring wsXml;
-		if (!NSFile::CFileBinary::ReadAllTextUtf8(wsFile, wsXml))
+		std::string sXml;
+		if (!NSFile::CFileBinary::ReadAllTextUtf8A(wsFile, sXml))
+			return false;
+
+		size_t unFoundBegin = sXml.find("<svg");
+
+		NSUnicodeConverter::CUnicodeConverter oConverter;
+		std::wstring wsContent;
+
+		if (std::string::npos != unFoundBegin)
+		{
+			std::string sEncoding = FindEncoding(sXml.substr(0, unFoundBegin));
+			std::transform(sEncoding.begin(), sEncoding.end(), sEncoding.begin(), tolower);
+			sXml.erase(0, unFoundBegin);
+
+			if (!sEncoding.empty() && "utf-8" != sEncoding)
+				wsContent = oConverter.toUnicode(sXml, sEncoding.c_str());
+			else
+				wsContent = UTF8_TO_U(sXml);
+		}
+		else
 			return false;
 
 		XmlUtils::IXmlDOMDocument::DisableOutput();
-		bool bResult = LoadFromString(wsXml, pContainer, pFile);
+		bool bResult = LoadFromString(wsContent, pContainer, pFile);
 		XmlUtils::IXmlDOMDocument::EnableOutput();
 
 		return bResult;

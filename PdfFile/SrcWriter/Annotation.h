@@ -180,9 +180,11 @@ namespace PdfWriter
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
+		void SetOUserID(const std::wstring& wsOUserID);
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage(CPage* pFakePage);
+		CAnnotAppearanceObject* StartAP();
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		void SetDocument(CDocument* pDocument);
@@ -193,6 +195,8 @@ namespace PdfWriter
 		std::string GetBorderDash();
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
+		double GetPageX() { return m_dPageX; }
+		double GetPageH() { return m_dPageH; }
 	};
 	class CPopupAnnotation : public CAnnotation
 	{
@@ -316,6 +320,8 @@ namespace PdfWriter
 
 		void SetSubtype(BYTE nSubtype);
 		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
+
+		void SetAP(const std::vector<double>& arrQuadPoints, const double& dCA);
 	};
 	class CSquareCircleAnnotation : public CMarkupAnnotation
 	{
@@ -381,6 +387,21 @@ namespace PdfWriter
 		void SetSy(BYTE nSy);
 		void SetRD(const double& dRD1, const double& dRD2, const double& dRD3, const double& dRD4);
 	};
+	class CStampAnnotation : public CMarkupAnnotation
+	{
+	private:
+		CDictObject* m_pAPStream;
+	public:
+		CStampAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotStamp;
+		}
+
+		void SetRotate(double nRotate);
+		void SetName(const std::wstring& wsName);
+		void SetAPStream(CDictObject* pStream);
+	};
 	class CWidgetAnnotation : public CAnnotation
 	{
 	protected:
@@ -441,9 +462,10 @@ namespace PdfWriter
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
+		void APFromFakePage(CPage* pFakePage);
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		void StartAP();
+		CAnnotAppearanceObject* StartAP();
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};
@@ -530,6 +552,7 @@ namespace PdfWriter
 		double m_dHeight;
 		int m_nTI;
 		std::vector<int> m_arrIndex;
+		bool m_bAPV;
 	public:
 		CChoiceWidget(CXref* pXref);
 
@@ -539,12 +562,14 @@ namespace PdfWriter
 		void SetI(const std::vector<int>& arrI);
 		void SetV(const std::vector<std::wstring>& arrV);
 		void SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt);
+		void SetAPV() { m_bAPV = true; }
 
 		std::wstring GetValue(const std::wstring& wsExportV);
 		void SetListBoxHeight(double dHeight) { m_dHeight = dHeight; }
 		double GetListBoxHeight() { return m_dHeight; }
 		std::wstring SetListBoxIndex(const std::vector<std::wstring>& arrV);
 		std::vector<int> GetListBoxIndex() { return m_arrIndex; }
+		bool HaveAPV() { return m_bAPV; }
 	};
 	class CSignatureWidget : public CWidgetAnnotation
 	{

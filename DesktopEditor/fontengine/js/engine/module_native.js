@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -35,7 +35,7 @@
 window['AscFonts'] = window['AscFonts'] || {};
 var AscFonts = window['AscFonts'];
 
-var g_native_engine = CreateEmbedObject("CTextMeasurerEmbed");
+var g_native_engine = null;
 
 function CReturnObject()
 {
@@ -235,5 +235,7 @@ AscFonts.Hyphen_Word = function(lang, word)
 
 AscFonts.onLoadModule();
 AscFonts.onLoadModule();
+
+window["InitNativeTextMeasurer"] = function() { g_native_engine = CreateEmbedObject("CTextMeasurerEmbed"); };
 
 })(window, undefined);

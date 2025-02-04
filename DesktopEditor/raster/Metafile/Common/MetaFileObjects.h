@@ -33,6 +33,7 @@
 #define _METAFILE_COMMON_METAFILEOBJECTS_H
 
 #include <string>
+#include <vector>
 
 namespace MetaFile
 {
@@ -70,7 +71,16 @@ namespace MetaFile
 		virtual void         GetBounds(double& left, double& top, double& width, double& height) const = 0;
 		virtual void         GetCenterPoint(double& dX, double& dY) const = 0;
 
+		virtual void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const = 0;
+
 		virtual void         GetDibPattern(unsigned char** pBuffer, unsigned int &unWidth, unsigned int &unHeight) const = 0;
+	};
+
+	class ILineCap
+	{
+	public:
+		ILineCap(){}
+		virtual ~ILineCap(){}
 	};
 
 	class IPen
@@ -79,13 +89,15 @@ namespace MetaFile
 		IPen(){}
 		virtual ~IPen(){}
 
-		virtual int          GetColor()      const = 0;
-		virtual unsigned int GetStyle()      const = 0;
-		virtual double       GetWidth()      const = 0;
-		virtual unsigned int GetAlpha()      const = 0;
-		virtual double       GetMiterLimit() const = 0;
-		virtual double       GetDashOffset() const = 0;
-		virtual void         GetDashData(double*&, unsigned int&) const = 0;
+		virtual int             GetColor()        const = 0;
+		virtual unsigned int    GetStyle()        const = 0;
+		virtual double          GetWidth()        const = 0;
+		virtual unsigned int    GetAlpha()        const = 0;
+		virtual double          GetMiterLimit()   const = 0;
+		virtual double          GetDashOffset()   const = 0;
+		virtual void            GetDashData(double*&, unsigned int&) const = 0;
+		virtual const ILineCap* GetStartLineCap() const = 0;
+		virtual const ILineCap* GetEndLineCap()   const = 0;
 	};
 
 	class IRegion

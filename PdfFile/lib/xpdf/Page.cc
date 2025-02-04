@@ -380,7 +380,7 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
   obj.free();
 
   // draw (non-form) annotations
-  if (globalParams->getDrawAnnotations()) {
+  if (true) {
     annotList = new Annots(doc, getAnnots(&obj));
     obj.free();
     annotList->generateAnnotAppearances();
@@ -392,12 +392,10 @@ void Page::displaySlice(OutputDev *out, double hDPI, double vDPI,
 	if (abortCheckCbk && (*abortCheckCbk)(abortCheckCbkData)) {
 	  break;
 	}
-#ifdef BUILDING_WASM_MODULE
 	sType = annotList->getAnnot(i)->getType();
-	if (sType->cmp("Link") == 0 || sType->cmp("Stamp") == 0 || sType->cmp("FileAttachment") == 0 ||
+	if (globalParams->getDrawAnnotations() || sType->cmp("Link") == 0 || sType->cmp("FileAttachment") == 0 ||
 		sType->cmp("Sound") == 0 || sType->cmp("Movie") == 0 || sType->cmp("Screen") == 0 || sType->cmp("PrinterMark") == 0 ||
 		sType->cmp("TrapNet") == 0 || sType->cmp("Watermark") == 0 || sType->cmp("3D") == 0 || sType->cmp("Redact") == 0)
-#endif
 	annotList->getAnnot(i)->draw(gfx, printing);
       }
     }

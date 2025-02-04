@@ -391,15 +391,30 @@ namespace PPTX
 			std::wstring name = XmlUtils::GetNameNoNS(oReader.GetName());
 
 			if (name == L"sp" || name == L"wsp")
-				m_elem.reset(new Logic::Shape(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Shape(oReader));
+				else
+					m_elem.reset(new Logic::Shape(oReader));
+			}
 			else if (name == L"pic")
-				m_elem.reset(new Logic::Pic(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Pic(oReader));
+				else
+					m_elem.reset(new Logic::Pic(oReader));
+			}
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(oReader));
 			else if (name == L"lockedCanvas")
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(oReader));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+				else
+					m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(oReader));
+			}
 			else if (name == L"graphicFrame")
 			{
 				Logic::GraphicFrame *pGraphic = new Logic::GraphicFrame();
@@ -407,7 +422,12 @@ namespace PPTX
 				pGraphic->fromXML(oReader);
 
 				if (pGraphic && pGraphic->IsEmpty() == false)
-					m_elem.reset(pGraphic);
+				{
+					if (m_bAlternative)
+						m_elem_alternative.reset(pGraphic);
+					else
+						m_elem.reset(pGraphic);
+				}
 				else
 					RELEASEOBJECT(pGraphic);
 			}
@@ -426,12 +446,15 @@ namespace PPTX
 					if (strName == L"mc:Choice")
 					{
 						ReadAttributesRequires(oReader);
+
 						oReader.ReadNextSiblingNode(nCurDepth + 1);
 
-						fromXML(oReader);
+						fromXML(oReader);						
 						
+						m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
 						m_sRequires = L"";
-						if (m_elem.is_init())
+
+						if (m_elem.is_init() && !m_bAlternative)
 							break;
 					}
 					else if (strName == L"mc:Fallback")
@@ -441,24 +464,44 @@ namespace PPTX
 					}
 				}
 			}
+
+			m_bAlternative = false;
 		}
 		void SpTreeElem::fromXML(XmlUtils::CXmlNode& node)
 		{
 			std::wstring name = XmlUtils::GetNameNoNS(node.GetName());
 
 			if (name == L"sp" || name == L"wsp")
-				m_elem.reset(new Logic::Shape(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Shape(node));
+				else
+					m_elem.reset(new Logic::Shape(node));
+			}
 			else if (name == L"pic")
-				m_elem.reset(new Logic::Pic(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::Pic(node));
+				else
+					m_elem.reset(new Logic::Pic(node));
+			}
 			else if (name == L"cxnSp")
 				m_elem.reset(new Logic::CxnSp(node));
 			else if (name == L"lockedCanvas")
 				m_elem.reset(CreatePtrXmlContent<Logic::LockedCanvas>(node));
 			else if (name == L"grpSp" || name == L"wgp" || name == L"spTree" || name == L"wpc")
-				m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+			{
+				if (m_bAlternative)
+					m_elem_alternative.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+				else
+					m_elem.reset(CreatePtrXmlContent<Logic::SpTree>(node));
+			}
 			else if (name == L"graphicFrame")
 			{
-				m_elem.reset(new Logic::GraphicFrame(node));
+				if (m_bAlternative)
+					m_elem_alternative.reset(new Logic::GraphicFrame(node));
+				else
+					m_elem.reset(new Logic::GraphicFrame(node));
 
 				Logic::GraphicFrame *graphic_frame = dynamic_cast<Logic::GraphicFrame*>(m_elem.GetPointer());
 				if (graphic_frame)
@@ -470,18 +513,21 @@ namespace PPTX
 			else if (name == L"AlternateContent")
 			{
 				bool isEmpty = true;
+				
 				XmlUtils::CXmlNode oNodeChoice;
 				if (node.GetNode(L"mc:Choice", oNodeChoice))
 				{
 					XmlUtils::CXmlNode oNodeFall;
 					std::vector<XmlUtils::CXmlNode> oNodesC;
-					std::wstring sRequires;
+					
 					//todo better check (a14 can be math, slicer)
-					if(oNodeChoice.GetAttributeIfExist(L"Requires", sRequires) && (L"a14" == sRequires || L"cx1" == sRequires))
+					oNodeChoice.GetAttributeIfExist(L"Requires", m_sRequires);
+
+					if (L"a14" == m_sRequires || L"cx1" == m_sRequires || L"cx2" == m_sRequires)
 					{
 						oNodeChoice.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.size())
+						if (oNodesC.size() > 0)
 						{
 							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
@@ -490,11 +536,12 @@ namespace PPTX
 							isEmpty = (false == m_elem.IsInit());
 						}
 					}
-					if (isEmpty && node.GetNode(L"mc:Fallback", oNodeFall))
+					m_bAlternative = (L"cx1" == m_sRequires || L"cx2" == m_sRequires);
+					if ((isEmpty || m_bAlternative) && node.GetNode(L"mc:Fallback", oNodeFall))
 					{
 						oNodeFall.GetNodes(L"*", oNodesC);
 
-						if (1 == oNodesC.size())
+						if (oNodesC.size() > 0)
 						{
 							XmlUtils::CXmlNode & oNodeC = oNodesC[0];
 
@@ -503,7 +550,7 @@ namespace PPTX
 						}
 					}	
 				}
-				if(isEmpty)
+				if (isEmpty)
 				{
 					m_elem.reset();	
 				}
@@ -514,6 +561,8 @@ namespace PPTX
 				m_binaryData = node;
 			}
 			else m_elem.reset();
+
+			m_bAlternative = false;
 		}
 		void SpTreeElem::ReadAttributesRequires(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -627,6 +676,13 @@ namespace PPTX
 		{
 			if (m_elem.is_init())
 				m_elem->toPPTY(pWriter);
+
+			if (m_elem_alternative.is_init())
+			{
+				pWriter->StartRecord(SPTREE_TYPE_ALTERNATIVE);
+					m_elem_alternative->toPPTY(pWriter);
+				pWriter->EndRecord();
+			}
 		}
 		void SpTreeElem::InitElem(WrapperWritingElement* pElem)
 		{
@@ -689,10 +745,17 @@ namespace PPTX
 		{
 			return m_elem;
 		}
+		smart_ptr<WrapperWritingElement> SpTreeElem::GetElemAlternative()
+		{
+			return m_elem_alternative;
+		}
 		void SpTreeElem::SetParentPointer(const WrapperWritingElement* pParent)
 		{
-			if (is_init())
+			if (m_elem.is_init())
 				m_elem->SetParentPointer(pParent);
+
+			if (m_elem_alternative.is_init())
+				m_elem_alternative->SetParentPointer(pParent);
 		}
 		void SpTreeElem::FillParentPointersForChilds(){}
 	} // namespace Logic

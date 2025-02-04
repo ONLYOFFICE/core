@@ -310,7 +310,7 @@ namespace OOX
 							else if (L"o:bullet"            == wsName ) m_oBullet            = oReader.GetText();
 							else if (L"o:button"            == wsName ) m_oButton            = oReader.GetText();
 							else if (L"o:bwmode"            == wsName ) m_oBwMode            = oReader.GetText();
-							else if (L"o:bwnormal"          == wsName ) m_oBwNormal           = oReader.GetText();
+							else if (L"o:bwnormal"          == wsName ) m_oBwNormal          = oReader.GetText();
 							else if (L"o:bwpure"            == wsName ) m_oBwPure            = oReader.GetText();
 							break;
 						case 'c':  

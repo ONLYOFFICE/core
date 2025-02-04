@@ -868,11 +868,11 @@ static std::wstring convert_href(oox::pptx_conversion_context& Context, const st
 		if (result == page_names[i])
 		{
 			result = std::wstring(L"slide") + std::to_wstring(i + 1) + std::wstring(L".xml");
-			break;
+			return result;
 		}
 	}
 
-	return result;
+	return std::wstring();
 }
 
 void a::pptx_convert(oox::pptx_conversion_context & Context)
@@ -887,9 +887,9 @@ void a::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (boost::algorithm::starts_with(href, L"#"))
 	{
-		Context.get_text_context().set_action(L"ppaction://hlinksldjump");
-
 		href = convert_href(Context, href);
+		if(!href.empty())
+			Context.get_text_context().set_action(L"ppaction://hlinksldjump");
 	}
 	
 	std::wstring hId = Context.get_slide_context().add_hyperlink(href);

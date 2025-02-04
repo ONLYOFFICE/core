@@ -334,7 +334,7 @@ namespace ChartEx
 		virtual std::wstring toXML() const { return L""; }
 		virtual EElementType getType () const;
 
-		std::vector<unsigned int>	m_arIdx;
+		std::vector<unsigned int> m_arIdx;
 	};
 //------------------------------------------------------------------------------
 	class CSeriesLayoutProperties : public WritingElement

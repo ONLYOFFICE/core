@@ -128,6 +128,7 @@ namespace SVG
 		bool AddElement(IPathElement* pElement);
 
 		friend class CLine;
+		friend class CFont;
 		friend class CPolygon;
 		friend class CPolyline;
 

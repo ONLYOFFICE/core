@@ -107,26 +107,26 @@ function configure_make() {
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
-        sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
+        #sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
     elif [[ "${ARCH_NAME}" == "arm64" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
-        sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
+        #sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
     elif [[ "${ARCH_NAME}" == "i386" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure darwin-i386-cc no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
-        sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
+        #sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
         sed -i -e 's/-mtune=intel//g' "Makefile"
 
     elif [[ "${ARCH_NAME}" == "sim_arm64" ]]; then
 
         # openssl1.1.1d can be set normally, 1.1.0f does not take effect
         ./Configure iphoneos-cross no-shared --prefix="${PREFIX_DIR}" enable-ssl3 enable-ssl3-method enable-md2
-        sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
+        #sed -ie "s!-fno-common!-fno-common -fembed-bitcode !" "Makefile"
 
     else
         log_error "not support" && exit 1

@@ -504,7 +504,7 @@ namespace OOX
 	class CDiagramLayout : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CDiagramLayout(OOX::Document* pMain);
+		CDiagramLayout(OOX::Document* pMain, bool bDocument = true);
 		CDiagramLayout(OOX::Document* pMain, const CPath& uri);
 		CDiagramLayout(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
 		virtual ~CDiagramLayout();
@@ -538,6 +538,7 @@ namespace OOX
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 	};
 
 } // namespace OOX

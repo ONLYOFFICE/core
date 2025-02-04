@@ -1,4 +1,5 @@
 #include "FontStyleManager.h"
+
 #include <utility>
 
 namespace NSDocxRenderer
@@ -25,29 +26,31 @@ namespace NSDocxRenderer
 
 	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const CFontStyle& oFontStyle)
 	{
-		return GetOrAddFontStyle(oFontStyle.oBrush,
-								 oFontStyle.wsFontName,
-								 oFontStyle.dFontSize,
-								 oFontStyle.bItalic,
-								 oFontStyle.bBold);
+		return GetOrAddFontStyle(
+			oFontStyle.oBrush,
+			oFontStyle.wsFontName,
+			oFontStyle.dFontSize,
+			oFontStyle.bItalic,
+			oFontStyle.bBold);
 	}
-	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(const NSStructures::CBrush& oBrush,
-																	 const std::wstring& wsFontName,
-																	 double dFontSize,
-																	 bool bItalic,
-																	 bool bBold)
+	std::shared_ptr<CFontStyle> CFontStyleManager::GetOrAddFontStyle(
+		const NSStructures::CBrush& oBrush,
+		const std::wstring& wsFontName,
+		double dFontSize,
+		bool bItalic,
+		bool bBold)
 	{
 		for(auto it = m_arFontStyles.begin(); it != m_arFontStyles.end(); ++it)
 		{
 			if (oBrush.Type == (*it)->oBrush.Type &&
-					oBrush.Color1 == (*it)->oBrush.Color1 &&
-					oBrush.Color2 == (*it)->oBrush.Color2 &&
-					oBrush.Alpha1 == (*it)->oBrush.Alpha1 &&
-					oBrush.Alpha2 == (*it)->oBrush.Alpha2 &&
-					oBrush.LinearAngle == (*it)->oBrush.LinearAngle &&
-					dFontSize == (*it)->dFontSize &&
-					wsFontName == (*it)->wsFontName &&
-					(bItalic == (*it)->bItalic) && (bBold == (*it)->bBold))
+				oBrush.Color1 == (*it)->oBrush.Color1 &&
+				oBrush.Color2 == (*it)->oBrush.Color2 &&
+				oBrush.Alpha1 == (*it)->oBrush.Alpha1 &&
+				oBrush.Alpha2 == (*it)->oBrush.Alpha2 &&
+				oBrush.LinearAngle == (*it)->oBrush.LinearAngle &&
+				dFontSize == (*it)->dFontSize &&
+				wsFontName == (*it)->wsFontName &&
+				(bItalic == (*it)->bItalic) && (bBold == (*it)->bBold))
 			{
 				auto val = *it;
 

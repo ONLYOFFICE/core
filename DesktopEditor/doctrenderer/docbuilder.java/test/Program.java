@@ -17,7 +17,6 @@ public class Program {
         builder.createFile(FileTypes.Document.DOCX);
 
         CDocBuilderContext context = builder.getContext();
-        CDocBuilderContextScope scope = context.createScope();
 
         CDocBuilderValue global = context.getGlobal();
 

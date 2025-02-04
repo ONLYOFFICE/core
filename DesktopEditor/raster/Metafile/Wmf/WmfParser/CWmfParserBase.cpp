@@ -194,7 +194,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+		{
+			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pWmfInterpretatorSvg;
+		}
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
@@ -233,12 +237,9 @@ namespace MetaFile
 
 		m_oDCRect = m_oPlaceable.oBoundingBox;
 
-		const USHORT ushFileDpi = GetDpi();
-		const USHORT ushRendererDpi = 96;
-
-		if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
+		if (96 != m_oPlaceable.ushInch)
 		{
-			const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
+			const double dKoef = 96. / (double)m_oPlaceable.ushInch;
 
 			m_oDCRect.Left   = std::round(m_oDCRect.Left   * dKoef);
 			m_oDCRect.Top    = std::round(m_oDCRect.Top    * dKoef);
@@ -353,57 +354,7 @@ namespace MetaFile
 		}
 
 		const IFont* pFont = GetFont();
-		NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
-		if (pFont)
-		{
-			// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
-			// http://msdn.microsoft.com/en-us/library/cc194829.aspx
-			//  Charset Name       Charset Value(hex)  Codepage number
-			//  ------------------------------------------------------
-			//
-			//  DEFAULT_CHARSET           1 (x01)
-			//  SYMBOL_CHARSET            2 (x02)
-			//  OEM_CHARSET             255 (xFF)
-			//  ANSI_CHARSET              0 (x00)            1252
-			//  RUSSIAN_CHARSET         204 (xCC)            1251
-			//  EASTEUROPE_CHARSET      238 (xEE)            1250
-			//  GREEK_CHARSET           161 (xA1)            1253
-			//  TURKISH_CHARSET         162 (xA2)            1254
-			//  BALTIC_CHARSET          186 (xBA)            1257
-			//  HEBREW_CHARSET          177 (xB1)            1255
-			//  ARABIC _CHARSET         178 (xB2)            1256
-			//  SHIFTJIS_CHARSET        128 (x80)             932
-			//  HANGEUL_CHARSET         129 (x81)             949
-			//  GB2313_CHARSET          134 (x86)             936
-			//  CHINESEBIG5_CHARSET     136 (x88)             950
-			//  THAI_CHARSET            222 (xDE)             874
-			//  JOHAB_CHARSET	        130 (x82)            1361
-			//  VIETNAMESE_CHARSET      163 (xA3)            1258
-
-			switch (pFont->GetCharSet())
-			{
-			default:
-			case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-			case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-			case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-			case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-			case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-			case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-			case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-			case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-			case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-			case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-			case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-			case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-			case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-			case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-			case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
-			}
-		}
-
-		std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)unCharsCount, eCharSet);
+		std::wstring wsText = ConvertToUnicode(pString, (long)unCharsCount, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET);
 
 		if (NULL != m_pInterpretator)
 		{
@@ -411,7 +362,7 @@ namespace MetaFile
 			TranslatePoint(nX, nY, dX, dY);
 
 			double* pdDx = NULL;
-			if (NULL != pDx)
+			if (NULL != pDx && unCharsCount == wsText.length())
 			{
 				pdDx = new double[unCharsCount];
 				if (pdDx)
@@ -734,6 +685,10 @@ namespace MetaFile
 				if (oDestRect != oSrcRect)
 				{
 					TRectL oClip = oSrcRect;
+
+					oClip.Right  = oClip.Left + (std::min)(oClip.Right  - oClip.Left, (int)unWidth );
+					oClip.Bottom = oClip.Top  + (std::min)(oClip.Bottom - oClip.Top,  (int)unHeight);
+
 					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
 
 					if (NULL != pNewBuffer)
@@ -833,6 +788,8 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 		{
+			UpdateDCRect();
+
 			m_pDC->SetWindowOrg(m_oDCRect.Left, m_oDCRect.Top);
 			m_pDC->SetWindowExt(m_oDCRect.Right - m_oDCRect.Left, m_oDCRect.Bottom - m_oDCRect.Top);
 			m_pDC->SetViewportOrg(m_oDCRect.Left, m_oDCRect.Top);

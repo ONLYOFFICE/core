@@ -38,6 +38,9 @@
 #include "../xml/include/xmlutils.h"
 #include "../fontengine/TextHyphen.h"
 
+#define VALUE_TO_STRING(x) #x
+#define VALUE(x) VALUE_TO_STRING(x)
+
 namespace NSDoctRenderer
 {
 	class CAdditionalData
@@ -145,13 +148,23 @@ namespace NSDoctRenderer
 					NSHyphen::CEngine::Init(private_GetFile(sConfigDir, oNodeDict.GetText()));
 				}
 
-				bool bIsAbsoluteFontsPath = false;
 				if (!m_bIsNotUseConfigAllFontsDir)
 				{
 					std::wstring sAllFontsPath = oNode.ReadNodeText(L"allfonts");
 					if (!sAllFontsPath.empty())
 					{
-						m_strAllFonts = private_GetFile(sConfigDir, sAllFontsPath);
+						if (NSFile::CFileBinary::Exists(sConfigDir + sAllFontsPath))
+							m_strAllFonts = sConfigDir + sAllFontsPath;
+						else if (NSFile::CFileBinary::Exists(sAllFontsPath))
+							m_strAllFonts = sAllFontsPath;
+						else
+						{
+							std::wstring sAllFontsDir = NSFile::GetDirectoryName(sAllFontsPath);
+							if (NSDirectory::Exists(sConfigDir + sAllFontsDir))
+								m_strAllFonts = sConfigDir + sAllFontsPath;
+							else
+								m_strAllFonts = sAllFontsPath;
+						}
 
 						// на папку может не быть прав
 						if (!NSFile::CFileBinary::Exists(m_strAllFonts))
@@ -163,20 +176,16 @@ namespace NSDoctRenderer
 								if (NSDirectory::CreateDirectory(sAppDir + L"/docbuilder"))
 								{
 									m_strAllFonts = sAppDir + L"/docbuilder/AllFonts.js";
-									// файл может не существовать пока - и тогда private_GetFile не учтет его
-									bIsAbsoluteFontsPath = true;
 								}
 							}
 							else
 							{
 								fclose(pFileNative);
+								NSFile::CFileBinary::Remove(m_strAllFonts);
 							}
 						}
 					}
 				}
-
-				if (!bIsAbsoluteFontsPath)
-					m_strAllFonts = private_GetFile(sConfigDir, m_strAllFonts);
 			}
 
 			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
@@ -197,28 +206,14 @@ namespace NSDoctRenderer
 
 		char* GetVersion()
 		{
-			std::wstring sFile = m_strSdkPath + L"/word/sdk-all-min.js";
+			std::string sVersion = VALUE(INTVER);
 
-			std::string sData;
-			if (!NSFile::CFileBinary::ReadAllTextUtf8A(sFile, sData))
-				return NULL;
-
-			std::string::size_type startPos = sData.find("Version:");
-			if (std::string::npos == startPos)
-				return NULL;
-
-			startPos += 8;
-
-			std::string::size_type endPos = sData.find(')', startPos);
-			if (std::string::npos == endPos)
-				return NULL;
-
-			size_t sSrcLen = endPos - startPos + 1;
+			size_t sSrcLen = sVersion.size();
 			if (sSrcLen == 0)
 				return NULL;
 
 			char* sRet = new char[sSrcLen + 1];
-			memcpy(sRet, sData.c_str() + startPos, sSrcLen);
+			memcpy(sRet, sVersion.c_str(), sSrcLen);
 			sRet[sSrcLen] = '\0';
 			return sRet;
 		}

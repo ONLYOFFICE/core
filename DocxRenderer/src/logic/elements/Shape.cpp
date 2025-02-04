@@ -1,11 +1,22 @@
 #include "Shape.h"
+
+#include <limits.h>
+
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
-#include <limits.h>
 
 namespace NSDocxRenderer
 {
 	UINT CShape::m_gRelativeHeight = c_iStandartRelativeHeight;
+
+	unsigned int ClampUIntSign(const double& value)
+	{
+		if (value < 0)
+			return 0;
+		if (value > 0x7FFFFFFF)
+			return 0x7FFFFFFF;
+		return (unsigned int)value;
+	}
 
 	CShape::CShape()
 	{
@@ -59,19 +70,19 @@ namespace NSDocxRenderer
 		for(auto& path_command : arData)
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				nPeacks++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				nCurves++;
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
 			default:
 				break;
 			}
@@ -87,6 +98,12 @@ namespace NSDocxRenderer
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
+	void CShape::CalcNoRotVector()
+	{
+		m_oNoRotVector = m_oVector;
+		m_oNoRotVector.Rotate(-m_dRotation);
+	}
+
 	bool CShape::TryMergeShape(std::shared_ptr<CShape>& pShape)
 	{
 		// можно попробовать подбирать динамически, например в зависимости от размера
@@ -94,39 +111,39 @@ namespace NSDocxRenderer
 		double dVerNearby = 30;
 
 		if(
-				// только для фигур
-				(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-				 pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+			// только для фигур
+			(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+			 pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-				(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-				 this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+			(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+			 this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
 				// все совпадает
 				pShape->m_eType == this->m_eType &&
-				pShape->m_oPen.IsEqual(&m_oPen) &&
-				pShape->m_oBrush.IsEqual(&m_oBrush) &&
-				pShape->m_bIsNoFill == m_bIsNoFill &&
-				pShape->m_bIsNoStroke == m_bIsNoStroke &&
+			pShape->m_oPen.IsEqual(&m_oPen) &&
+			pShape->m_oBrush.IsEqual(&m_oBrush) &&
+			pShape->m_bIsNoFill == m_bIsNoFill &&
+			pShape->m_bIsNoStroke == m_bIsNoStroke &&
 
 				// не картинка
 				pShape->m_pImageInfo == nullptr &&
-				this->m_pImageInfo == nullptr &&
+			this->m_pImageInfo == nullptr &&
 
-				// недалеко друг от друга по горизонтали
-				(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
-				 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
+			// недалеко друг от друга по горизонтали
+			(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
+			 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
 
 				 // друг в друге тоже учитываем
 				 fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
-				 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
+			 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
-				// недалеко друг от друга по вертикали
-				(fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
-				 fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
+			// недалеко друг от друга по вертикали
+			(fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
+			 fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
 
 				 // друг в друге
 				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
-				 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
+			 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
 			RecalcWithNewItem(pShape.get());
 			m_oVector.Join(std::move(pShape->m_oVector));
@@ -142,44 +159,53 @@ namespace NSDocxRenderer
 
 	std::wstring CShape::PathToWString() const
 	{
-		auto arData = m_oVector.GetData();
+		auto& vector = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector : m_oVector;
+		auto& data = vector.GetData();
 
-		if(arData.empty())
+		if (data.empty())
 			return m_strDstMedia;
+
+		double left = vector.GetLeft();
+		double right = vector.GetRight();
+		double top = vector.GetTop();
+		double bot = vector.GetBottom();
+
+		double width = right - left;
+		double height = bot - top;
 
 		NSStringUtils::CStringBuilder oWriter;
 
 		oWriter.WriteString(L"<a:path w=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" h=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\">");
 
-		for(auto& path_command : arData)
+		for(auto& path_command : data)
 		{
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				oWriter.WriteString(L"<a:moveTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				oWriter.WriteString(L"<a:lnTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				oWriter.WriteString(L"<a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
 			default:
 				break;
 			}
 
 			for(auto& point : path_command.points)
 			{
-				LONG lX = static_cast<LONG>((point.x - m_dLeft) * c_dMMToEMU);
-				LONG lY = static_cast<LONG>((point.y - m_dTop) * c_dMMToEMU);
+				LONG lX = static_cast<LONG>((point.x - left) * c_dMMToEMU);
+				LONG lY = static_cast<LONG>((point.y - top) * c_dMMToEMU);
 
 				oWriter.WriteString(L"<a:pt x=\"");
 				oWriter.AddInt(static_cast<int>(lX));
@@ -190,27 +216,26 @@ namespace NSDocxRenderer
 
 			switch (path_command.type)
 			{
-			case CVectorGraphics::eVectorGraphicsType::vgtMove:
+			case CVectorGraphics::ePathCommandType::pctMove:
 				oWriter.WriteString(L"</a:moveTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtLine:
+			case CVectorGraphics::ePathCommandType::pctLine:
 				oWriter.WriteString(L"</a:lnTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtCurve:
+			case CVectorGraphics::ePathCommandType::pctCurve:
 				oWriter.WriteString(L"</a:cubicBezTo>");
 				break;
 
-			case CVectorGraphics::eVectorGraphicsType::vgtClose:
+			case CVectorGraphics::ePathCommandType::pctClose:
+				oWriter.WriteString(L"<a:close/>");
+				break;
 			default:
 				break;
 			}
-
 		}
-		oWriter.WriteString(L"<a:close/>");
 		oWriter.WriteString(L"</a:path>");
-
 		std::wstring strPath = oWriter.GetData();
 		oWriter.ClearNoAttack();
 		return strPath;
@@ -218,69 +243,49 @@ namespace NSDocxRenderer
 
 	void CShape::DetermineGraphicsType(double dWidth, double dHeight,size_t nPeacks, size_t nCurves) noexcept
 	{
-		//note параллельно для каждой текстовой строки создается шейп, который содержит цвет фона для данного текста.
-		if ((m_bIsNoStroke && m_bIsNoFill) ||
-				(m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
-		{
+		if ((m_bIsNoStroke && m_bIsNoFill) || (m_oBrush.Color1 == c_iWhiteColor && m_oPen.Color == c_iWhiteColor))
 			m_eGraphicsType = eGraphicsType::gtNoGraphics;
-		}
 		else if ((nPeacks == 5 || nPeacks == 2) && !nCurves) //1 move + 4 Peacks или 2 Peacks
 		{
 			m_eGraphicsType = eGraphicsType::gtRectangle;
-
 			if (dHeight < 0.7)
 			{
-				if (dWidth > 2.0) //note длинное тире - 2.8mm у times new roman
-				{
+				if (dWidth > 2.0) // длинное тире - 2.8mm у times new roman
 					m_eSimpleLineType = eSimpleLineType::sltHLongDash;
-				}
-				else if (dWidth > 0.7) //минимальное тире - 0.75mm у dotDotDash
-				{
+				else if (dWidth > 0.7) // минимальное тире - 0.75mm у dotDotDash
 					m_eSimpleLineType = eSimpleLineType::sltHDash;
-				}
-				else //максимальная точка - 0.5mm
-				{
-					m_eSimpleLineType = eSimpleLineType::sltHDot;
-				}
+				else
+					m_eSimpleLineType = eSimpleLineType::sltHDot; // максимальная точка - 0.5mm
 			}
 			else if (dWidth < 0.7)
 			{
-				if (dHeight > 2.0) //note длинное тире - 2.8mm у times new roman
-				{
+				if (dHeight > 2.0) // длинное тире - 2.8mm у times new roman
 					m_eSimpleLineType = eSimpleLineType::sltVLongDash;
-				}
-				else if (dHeight > 0.7) //минимальное тире - 0.75mm у dotDotDash
-				{
+				else if (dHeight > 0.7) // минимальное тире - 0.75mm у dotDotDash
 					m_eSimpleLineType = eSimpleLineType::sltVDash;
-				}
-				else //максимальна точка - 0.5mm
-				{
-					m_eSimpleLineType = eSimpleLineType::sltVDot;
-				}
+				else
+					m_eSimpleLineType = eSimpleLineType::sltVDot; // максимальна точка - 0.5mm
 			}
 		}
-		else if (nCurves > 0 &&  nPeacks <= 1) //1 move
+		else if (nCurves > 0 &&  nPeacks <= 1) // 1 move
 		{
 			m_eGraphicsType = eGraphicsType::gtCurve;
 			if (dHeight < dWidth)
-			{
 				m_eSimpleLineType = eSimpleLineType::sltHWave;
-			}
 			else
-			{
 				m_eSimpleLineType = eSimpleLineType::sltVWave;
-			}
 		}
 		else if (nCurves > 0 &&  nPeacks > 1)
-		{
 			m_eGraphicsType = eGraphicsType::gtComplicatedFigure;
-		}
 	}
 
 	bool CShape::IsItFitLine() const noexcept
 	{
-		return (m_eGraphicsType == eGraphicsType::gtRectangle && (m_eSimpleLineType == eSimpleLineType::sltHDot || m_eSimpleLineType == eSimpleLineType::sltHDash || m_eSimpleLineType == eSimpleLineType::sltHLongDash)) ||
-				(m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltHWave);
+		return (m_eGraphicsType == eGraphicsType::gtRectangle && (
+		            m_eSimpleLineType == eSimpleLineType::sltHDot ||
+		            m_eSimpleLineType == eSimpleLineType::sltHDash ||
+		            m_eSimpleLineType == eSimpleLineType::sltHLongDash)) ||
+		        (m_eGraphicsType == eGraphicsType::gtCurve &&  m_eSimpleLineType == eSimpleLineType::sltHWave);
 	}
 
 	bool CShape::IsCorrelated(std::shared_ptr<const CShape> pShape) const noexcept
@@ -297,10 +302,17 @@ namespace NSDocxRenderer
 	{
 		return m_eSimpleLineType == eSimpleLineType::sltHLongDash || m_eSimpleLineType == eSimpleLineType::sltVLongDash;
 	}
+	bool CShape::IsOoxmlValid() const noexcept
+	{
+		bool is_offset = m_dLeft > c_dST_PositionOffsetMin && m_dTop > c_dST_PositionOffsetMin;
+		bool is_width = m_dWidth > c_dST_PositiveCoordinatetMin && m_dWidth < c_dST_PositiveCoordinatetMax;
+		bool is_height = m_dHeight > c_dST_PositiveCoordinatetMin && m_dHeight < c_dST_PositiveCoordinatetMax;
+		return is_offset && is_width && is_height;
+	}
 
 	void CShape::CheckLineType(std::shared_ptr<CShape>& pFirstShape)
 	{
-		if(!pFirstShape)
+		if (!pFirstShape)
 			return;
 
 		if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
@@ -315,103 +327,68 @@ namespace NSDocxRenderer
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
-				fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM) // линия должна быть одного размера по высоте
+		    fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
+			return; // линия должна быть одного размера по высоте
+		}
+
+		auto set_line_type = [] (std::shared_ptr<CShape>& master, std::shared_ptr<CShape>& slave, eLineType type) {
+			master->m_eLineType = type;
+			master->RecalcWithNewItem(slave.get());
+			master->m_oVector.Join(std::move(slave->m_oVector));
+			slave = nullptr;
+		};
+
+		// проверка на двойную линию
+		if (pFirstShape->m_eLineType == eLineType::ltDouble)
+		{
+			if (pFirstShape->m_dTop < pSecondShape->m_dTop)
+				set_line_type(pFirstShape, pSecondShape, eLineType::ltDouble);
+			else
+				set_line_type(pSecondShape, pFirstShape, eLineType::ltDouble);
+
+			return;
+		}
+		if (pFirstShape->m_eLineType == eLineType::ltWavyDouble)
+		{
+			if (pFirstShape->m_dTop < pSecondShape->m_dTop)
+				set_line_type(pFirstShape, pSecondShape, eLineType::ltWavyDouble);
+			else
+				set_line_type(pSecondShape, pFirstShape, eLineType::ltWavyDouble);
+
 			return;
 		}
 
-		// проверка на двойную линию
-		if (pFirstShape->m_eLineType == eLineType::ltDouble || pFirstShape->m_eLineType == eLineType::ltWavyDouble)
-		{
-			if (pFirstShape->m_eLineType == eLineType::ltDouble)
-			{
-				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
-				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
-			}
-			else if (pFirstShape->m_eLineType == eLineType::ltWavyDouble)
-			{
-				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
-				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
-			}
-			return;
-		}
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
 				 fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
 				 fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
-			//Условие первого определения
+			// условие первого определения
 			if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
 			{
 				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
+					set_line_type(pFirstShape, pSecondShape, eLineType::ltDouble);
 				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
+					set_line_type(pSecondShape, pFirstShape, eLineType::ltDouble);
 			}
 			else if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 			{
 				if (pFirstShape->m_dTop < pSecondShape->m_dTop)
-				{
-					pFirstShape->m_eLineType = eLineType::ltWavyDouble;
-					pFirstShape->RecalcWithNewItem(pSecondShape.get());
-					pFirstShape->m_oVector.Join(std::move(pSecondShape->m_oVector));
-					pSecondShape = nullptr;
-				}
+					set_line_type(pFirstShape, pSecondShape, eLineType::ltWavyDouble);
 				else
-				{
-					pSecondShape->m_eLineType = eLineType::ltWavyDouble;
-					pSecondShape->RecalcWithNewItem(pFirstShape.get());
-					pSecondShape->m_oVector.Join(std::move(pFirstShape->m_oVector));
-					pFirstShape = nullptr;
-				}
+					set_line_type(pSecondShape, pFirstShape, eLineType::ltWavyDouble);
 			}
 			return;
 		}
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) > c_dGRAPHICS_ERROR_IN_LINES_MM)
-		{
-			// все должно быть на одной линии
-			return;
-		}
+			return; // все должно быть на одной линии
 
 		// теперь считаем, что графика находится на одной линии
-		if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
+		// расстояние между объектами на одной линии должно быть небольшим
+		if (fabs(pFirstShape->m_dLeft + pFirstShape->m_dWidth - pSecondShape->m_dLeft) > c_dGRAPHICS_ERROR_IN_LINES_MM * 5)
 		{
-			// расстояние между объектами на одной линии должно быть небольшим
 			if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
-				pFirstShape->m_eLineType =pFirstShape-> m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
+				pFirstShape->m_eLineType = pFirstShape-> m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
 
 			else if (pFirstShape->m_eLineType == eLineType::ltUnknown && pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHWave)
 				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
@@ -490,7 +467,7 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-						pSecondShape->m_eLineType == eLineType::ltUnknown)
+					pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
@@ -539,7 +516,7 @@ namespace NSDocxRenderer
 
 		case eSimpleLineType::sltHLongDash:
 			if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) < 0.7 ||
-					pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
+				pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
 				passed = true;
@@ -555,7 +532,7 @@ namespace NSDocxRenderer
 		case eSimpleLineType::sltHWave:
 			if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltWave ||
 				 pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+				pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
 				passed = true;
@@ -575,11 +552,8 @@ namespace NSDocxRenderer
 
 	void CShape::ToXml(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		//todo для уменьшения размера каждого шейпа ипользовавать только то, что необходимо - для графики, текста, графика+текст
-		//todo добавить все возможные параметры/атрибуты
-
 		oWriter.WriteString(L"<w:r>");
-		oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>"); //отключение проверки орфографии
+		oWriter.WriteString(L"<w:rPr><w:noProof/></w:rPr>");
 		oWriter.WriteString(L"<w:drawing>");
 		BuildGeneralProperties(oWriter);
 		oWriter.WriteString(L"</w:drawing>");
@@ -608,24 +582,32 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
 
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+		double width = right - left;
+		double height = bot - top;
+
 		oWriter.WriteString(L"<wp:positionH relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+		oWriter.AddInt64(static_cast<int64_t>(left * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionH>");
 
 		oWriter.WriteString(L"<wp:positionV relativeFrom=\"page\">");
 		oWriter.WriteString(L"<wp:posOffset>");
-		oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+		oWriter.AddInt64(static_cast<int64_t>(top * c_dMMToEMU));
 		oWriter.WriteString(L"</wp:posOffset>");
 		oWriter.WriteString(L"</wp:positionV>");
 
 		//координаты конца границы шейпа
 		oWriter.WriteString(L"<wp:extent");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>"); //Этот элемент определяет дополнительное расстояние, которое должно быть добавлено к каждому краю изображения, чтобы компенсировать любые эффекты рисования, применяемые к объекту DrawingML
@@ -637,9 +619,6 @@ namespace NSDocxRenderer
 		{
 		case eShapeType::stTextBox:
 			oWriter.WriteString(L"\" name=\"Text Box ");
-			break;
-		case eShapeType::stPicture:
-			oWriter.WriteString(L"\" name=\"Picture ");
 			break;
 		case eShapeType::stVectorGraphics:
 			oWriter.WriteString(L"\" name=\"Freeform: Shape ");
@@ -658,13 +637,9 @@ namespace NSDocxRenderer
 			break;
 		}
 		oWriter.AddUInt(m_nShapeId);
-		//oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
 		oWriter.WriteString(L"\"/>");
-
 		oWriter.WriteString(L"<wp:cNvGraphicFramePr/>");
-
 		BuildSpecificProperties(oWriter);
-
 		oWriter.WriteString(L"</wp:anchor>");
 	}
 
@@ -674,7 +649,6 @@ namespace NSDocxRenderer
 
 		switch (m_eType)
 		{
-		case eShapeType::stPicture:
 		case eShapeType::stVectorTexture:
 			BuildPictureProperties(oWriter);
 			break;
@@ -717,11 +691,62 @@ namespace NSDocxRenderer
 
 		oWriter.WriteString(L"</a:graphicData>");
 	}
+	void CShape::BuildBlipFill(NSStringUtils::CStringBuilder &oWriter) const
+	{
+		oWriter.WriteString(L"<a:blip r:embed=\"rId");
+		oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
+		oWriter.WriteString(L"\">");
+		oWriter.WriteString(L"<a:alphaModFix/>");
+		oWriter.WriteString(L"</a:blip>");
+		if (m_oBrush.Image != NULL)
+		{
+			oWriter.WriteString(L"<a:tile sx=\"100%\" sy=\"100%\" flip=\"none\" algn=\"tl\"/>");
+		}
+		else
+		{
+			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+			double height = bot - top;
+			double width = right - left;
+
+			// coeff
+			double offset_left = (right - m_dImageLeft) / width - 1;
+			double offset_right = (m_dImageRight - left) / width - 1;
+			double offset_top = (bot - m_dImageTop) / height - 1;
+			double offset_bot = (m_dImageBot - top) / height - 1;
+
+			// percentage
+			offset_left *= 100;
+			offset_right *= 100;
+			offset_top *= 100;
+			offset_bot *= 100;
+
+			// ooxml (percentage * 1000)
+			oWriter.WriteString(L"<a:srcRect/>");
+			oWriter.WriteString(L"<a:stretch>");
+			oWriter.WriteString(L"<a:fillRect ");
+			oWriter.WriteString(L"l=\"");
+			oWriter.AddInt(static_cast<int>(-offset_left * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"r=\"");
+			oWriter.AddInt(static_cast<int>(-offset_right * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"t=\"");
+			oWriter.AddInt(static_cast<int>(-offset_top * 1000));
+			oWriter.WriteString(L"\" ");
+			oWriter.WriteString(L"b=\"");
+			oWriter.AddInt(static_cast<int>(-offset_bot * 1000));
+			oWriter.WriteString(L"\"");
+			oWriter.WriteString(L"/>");
+			oWriter.WriteString(L"</a:stretch>");
+		}
+	}
 
 	void CShape::BuildPictureProperties(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		// TODO: Clip path as geometry + tile!!!
-
 		oWriter.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 
 		oWriter.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -731,22 +756,13 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\" name=\"Picture ");
 		oWriter.AddUInt(m_pImageInfo->m_nId);
 		oWriter.WriteString(L"\"");
-		//oWriter.WriteString(L" descr=\"Alt Text!\""); //Коммент к картинке
 		oWriter.WriteString(L"/>");
 		oWriter.WriteString(L"<pic:cNvPicPr preferRelativeResize=\"0\">");
 		oWriter.WriteString(L"<a:picLocks noChangeArrowheads=\"1\"/>");
 		oWriter.WriteString(L"</pic:cNvPicPr>");
 		oWriter.WriteString(L"</pic:nvPicPr>");
 		oWriter.WriteString(L"<pic:blipFill>");
-		oWriter.WriteString(L"<a:blip r:embed=\"rId");
-		oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
-		oWriter.WriteString(L"\">");
-		oWriter.WriteString(L"<a:alphaModFix/>");
-		oWriter.WriteString(L"</a:blip>");
-		oWriter.WriteString(L"<a:srcRect/>");
-		oWriter.WriteString(L"<a:stretch>");
-		oWriter.WriteString(L"<a:fillRect/>");
-		oWriter.WriteString(L"</a:stretch>");
+		BuildBlipFill(oWriter);
 		oWriter.WriteString(L"</pic:blipFill>");
 		oWriter.WriteString(L"<pic:spPr bwMode=\"auto\">");
 
@@ -812,20 +828,19 @@ namespace NSDocxRenderer
 
 		if (m_bIsNoFill)
 		{
-			//Нет заливки
 			oWriter.WriteString(L"<a:noFill/>");
 		}
-		else
+		else if (m_eType != CShape::eShapeType::stVectorTexture)
 		{
 			//Есть заливка
 			oWriter.WriteString(L"<a:solidFill>");
 			oWriter.WriteString(L"<a:srgbClr val=\"");
 			oWriter.WriteHexInt3(static_cast<int>(ConvertColorBGRToRGB(m_oBrush.Color1)));
-			if (0xFF != m_oBrush.TextureAlpha)
+			if (0xFF != m_oBrush.Alpha1)
 			{
 				oWriter.WriteString(L"\"><a:alpha val=\"");
-				oWriter.AddInt(static_cast<int>(m_oBrush.TextureAlpha / 255.0 * 100.0));
-				oWriter.WriteString(L"%\"/></a:srgbClr>");
+				oWriter.AddInt(static_cast<int>(m_oBrush.Alpha1 / 255.0 * 100.0 * 1000));
+				oWriter.WriteString(L"\"/></a:srgbClr>");
 			}
 			else
 			{
@@ -863,18 +878,47 @@ namespace NSDocxRenderer
 			}
 
 			oWriter.WriteString(L"</a:solidFill>");
+			if (m_oPen.DashStyle == Aggplus::DashStyleCustom)
+			{
+				// dash pattern
+				std::vector<double> dash_pattern(m_oPen.Count);
+				long count = m_oPen.Count;
+				m_oPen.GetDashPattern(dash_pattern.data(), count);
+
+				oWriter.WriteString(L"<a:custDash>");
+				for (size_t i = 0; i < count; i+= 2)
+				{
+					double to_percentage = 100.0 * 1000.0 / m_oPen.Size;
+					oWriter.WriteString(L"<a:ds d=\"");
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[i] * to_percentage));
+					oWriter.WriteString(L"\" ");
+					oWriter.WriteString(L"sp=\"");
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[i + 1] * to_percentage));
+					oWriter.WriteString(L"\" />");
+				}
+				oWriter.WriteString(L"</a:custDash>");
+			}
+			// Aggplus::DashStyleSolid
 			oWriter.WriteString(L"</a:ln>");
 		}
 	}
 
 	void CShape::BuildForm(NSStringUtils::CStringBuilder &oWriter, const bool& bIsLT) const
 	{
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+
+		double height = bot - top;
+		double width = right - left;
+
 		// отвечает за размеры прямоугольного фрейма шейпа
 		oWriter.WriteString(L"<a:xfrm");
-		if (fabs(m_dRotate) > 0.01)
+		if (fabs(m_dRotation) > c_dMIN_ROTATION)
 		{
 			oWriter.WriteString(L" rot=\"");
-			oWriter.AddInt(static_cast<int>(m_dRotate * c_dDegreeToAngle));
+			oWriter.AddInt(static_cast<int>(m_dRotation * c_dDegreeToAngle));
 			oWriter.WriteString(L"\"");
 		}
 		oWriter.WriteString(L">");
@@ -886,17 +930,17 @@ namespace NSDocxRenderer
 		else
 		{
 			oWriter.WriteString(L"<a:off x=\"");
-			oWriter.AddInt(static_cast<int>(m_dLeft * c_dMMToEMU));
+			oWriter.AddInt64(static_cast<int64_t>(left * c_dMMToEMU));
 			oWriter.WriteString(L"\" y=\"");
-			oWriter.AddInt(static_cast<int>(m_dTop * c_dMMToEMU));
+			oWriter.AddInt64(static_cast<int64_t>(top * c_dMMToEMU));
 			oWriter.WriteString(L"\"/>");
 		}
 
 		oWriter.WriteString(L"<a:ext");
 		oWriter.WriteString(L" cx=\"");
-		oWriter.AddInt(static_cast<int>(m_dWidth * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(width * c_dMMToEMU));
 		oWriter.WriteString(L"\" cy=\"");
-		oWriter.AddInt(static_cast<int>(m_dHeight * c_dMMToEMU));
+		oWriter.AddUInt(static_cast<unsigned int>(height * c_dMMToEMU));
 		oWriter.WriteString(L"\"/>");
 
 		oWriter.WriteString(L"</a:xfrm>");
@@ -957,10 +1001,8 @@ namespace NSDocxRenderer
 	}
 	void CShape::ToXmlPptx(NSStringUtils::CStringBuilder &oWriter) const
 	{
-		if (m_eType == eShapeType::stPicture ||
-				m_eType == eShapeType::stVectorTexture)
+		if (m_eType == eShapeType::stVectorTexture)
 		{
-			// TODO: Clip path as geometry + tile!!!
 			oWriter.WriteString(L"<p:pic>");
 			oWriter.WriteString(L"<p:nvPicPr>");
 			oWriter.WriteString(L"<p:cNvPr id=\"");
@@ -973,18 +1015,12 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</p:nvPicPr>");
 
 			oWriter.WriteString(L"<p:blipFill>");
-			oWriter.WriteString(L"<a:blip r:embed=\"rId");
-			oWriter.AddUInt(c_iStartingIdForImages + m_pImageInfo->m_nId);
-			oWriter.WriteString(L"\">");
-			oWriter.WriteString(L"</a:blip>");
-			oWriter.WriteString(L"<a:stretch><a:fillRect/></a:stretch>");
+			BuildBlipFill(oWriter);
 			oWriter.WriteString(L"</p:blipFill>");
 
 			oWriter.WriteString(L"<p:spPr>");
 			BuildForm(oWriter, true);
-			oWriter.WriteString(L"<a:prstGeom prst=\"rect\">");
-			oWriter.WriteString(L"<a:avLst/>");
-			oWriter.WriteString(L"</a:prstGeom>");
+			BuildGraphicProperties(oWriter);
 			oWriter.WriteString(L"</p:spPr>");
 			oWriter.WriteString(L"</p:pic>");
 			return;
@@ -1011,6 +1047,4 @@ namespace NSDocxRenderer
 		}
 		oWriter.WriteString(L"</p:sp>");
 	}
-
-
 }; // namespace NSDocxRenderer

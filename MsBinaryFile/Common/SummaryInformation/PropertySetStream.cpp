@@ -64,6 +64,15 @@ namespace OLEPS
 
 		*stream >> NumPropertySets;
 
+		if (SystemIdentifier == NumPropertySets)
+		{//oops 
+			_GUID_ Clsid2 = {};
+			_UINT32 reserved1 = 0, reserved2 = 0;
+			
+			*stream >> Clsid2 >> reserved1 >> reserved2; // ??? ReportBuilder
+			*stream >> NumPropertySets;
+		}
+
 		if (NumPropertySets != 0x01 && NumPropertySets != 0x02)
 		{
 			NumPropertySets = 0x01;
@@ -82,7 +91,7 @@ namespace OLEPS
 				property_sets_offsets.push_back(Offset);
 		}
 
-		for (_UINT32 i = 0; i < NumPropertySets; ++i)
+		for (_UINT32 i = 0; i < property_sets_offsets.size(); ++i)
 		{
 			PropertySetPtr set = PropertySetPtr(new PropertySet(stream, property_sets_offsets[i], ext));
 

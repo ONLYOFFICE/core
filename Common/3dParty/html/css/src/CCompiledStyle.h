@@ -22,6 +22,7 @@ namespace NSCSS
 		unsigned short int m_nDpi;
 		UnitMeasure m_UnitMeasure;
 
+		double m_dCoreFontSize;
 	public:
 		NSProperties::CFont       m_oFont;
 		NSProperties::CIndent     m_oMargin;
@@ -30,11 +31,12 @@ namespace NSCSS
 		NSProperties::CText       m_oText;
 		NSProperties::CBorder     m_oBorder;
 		NSProperties::CDisplay    m_oDisplay;
+		NSProperties::CTransform  m_oTransform;
 
 		CCompiledStyle();
 		CCompiledStyle(const CCompiledStyle& oStyle);
 
-		~CCompiledStyle();
+		virtual ~CCompiledStyle();
 
 		void SetDpi(const unsigned short& uiDpi);
 		void SetUnitMeasure(const UnitMeasure& enUnitMeasure);

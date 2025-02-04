@@ -572,7 +572,9 @@ extern int g_nCurFormatVersion;
 		MoveFromRangeStart = 14,
 		MoveFromRangeEnd = 15,
 		MoveToRangeStart = 16,
-		MoveToRangeEnd = 17
+		MoveToRangeEnd = 17,
+		PermStart = 18,
+		PermEnd = 19
 	};}
 	namespace c_oSerRunType{enum c_oSerRunType
 	{
@@ -609,7 +611,8 @@ extern int g_nCurFormatVersion;
 		delInstrText = 31,
 		linebreakClearAll = 32,
 		linebreakClearLeft = 33,
-		linebreakClearRight = 34
+		linebreakClearRight = 34,
+		pptxDrawingAlternative = 0x99
 	};}
 	namespace c_oSerVbaProjectTypes{enum c_oSerVbaProjectType
 	{
@@ -1074,7 +1077,9 @@ extern int g_nCurFormatVersion;
 		NoBreakHyphen = 81,
 		SoftHyphen = 82,
 		Sym = 83,
-		Tab = 84
+		Tab = 84,
+		PermStart =85,
+		PermEnd = 86
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		
@@ -1290,6 +1295,7 @@ extern int g_nCurFormatVersion;
 		PictureFormPrRespectBorders = 63,
 		PictureFormPrShiftX = 64,
 		PictureFormPrShiftY = 65,
+		PictureFormPrSignature = 66,
 		FormPrBorder = 70,
 		FormPrShd = 71,
 		TextFormPrCombWRule = 72,

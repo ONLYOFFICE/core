@@ -135,7 +135,7 @@
 	},
 	{
 		"folder": "./wasm/src/",
-		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "pdfwriter.cpp"]
+		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "pdfwriter.cpp", "HTMLRendererText.cpp"]
 	},
 	{
 		"folder": "freetype-2.10.4/src/",
@@ -143,7 +143,7 @@
 	},
 	{
 		"folder": "../../",
-		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
+		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "BooleanOperations.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
 	},
 	{
 		"folder": "../../../fontengine/",
@@ -202,10 +202,6 @@
 		"files": ["officedrawingfile.cpp"]
 	},
 	{
-		"folder": "../../../../HtmlRenderer/src/",
-		"files": ["HTMLRendererText.cpp"]
-	},
-	{
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]
 	},
@@ -227,7 +223,7 @@
 	},
 	{
 		"folder": "../../../../DocxRenderer/src/logic/elements",
-		"files": ["BaseItem.cpp", "ContText.cpp", "DropCap.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp"]
+		"files": ["BaseItem.cpp", "ContText.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp", "Table.cpp"]
 	},
 	{
 		"folder": "../../../common",

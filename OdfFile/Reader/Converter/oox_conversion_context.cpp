@@ -261,6 +261,9 @@ math_context::math_context(odf_reader::fonts_container & fonts, bool graphic) :
 }
 void math_context::start()
 {
+	width = 0;
+	height = 0;
+
 	text_properties_ = odf_reader::style_text_properties_ptr(new odf_reader::style_text_properties());
 	
 	text_properties_->content_.fo_font_family_ = base_font_name_.empty() ? L"Cambria Math" : base_font_name_;

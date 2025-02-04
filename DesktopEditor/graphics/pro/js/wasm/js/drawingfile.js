@@ -68,16 +68,6 @@ CFile.prototype.unlockPageNumForFontsLoader = function()
 	drawingFile.fontPageUpdateType = UpdateFontsSource.Undefined;
 };
 
-CFile.prototype.getOriginPage = function(originIndex)
-{
-	for (let i = 0; i < this.pages.length; ++i)
-	{
-		if (this.pages[i]["originIndex"] == originIndex)
-			return this.pages[i];
-	}
-	return null;
-};
-
 CFile.prototype["getPages"] = function()
 {
 	return this.pages;
@@ -124,6 +114,11 @@ CFile.prototype["loadFromDataWithPassword"] = function(password)
 		this.getInfo();
 	this._isNeedPassword = (4 === error) ? true : false;
 	return error;
+};
+
+CFile.prototype["getType"] = function()
+{
+	return this.type;
 };
 
 CFile.prototype["close"] = function()
@@ -236,15 +231,17 @@ CFile.prototype["getLinks"] = function(pageIndex)
 // TEXT
 CFile.prototype["getGlyphs"] = function(pageIndex)
 {
-	let page = this.getOriginPage(pageIndex);
-	if (!page || page.fonts.length > 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
+		return [];
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let res = this._getGlyphs(pageIndex);
+	let res = this._getGlyphs(page.originIndex);
 	// there is no need to delete the result; this buffer is used as a text buffer 
 	// for text commands on other pages. After receiving ALL text pages, 
 	// you need to call destroyTextInfo()
@@ -488,14 +485,18 @@ function readAnnot(reader, rec)
 	// Date of last change - M
 	if (flags & (1 << 5))
 		rec["LastModified"] = reader.readString();
+	// AP
 	rec["AP"]["have"] = (flags >> 6) & 1;
+	// User ID
+	if (flags & (1 << 7))
+		rec["OUserID"] = reader.readString();
 }
 function readAnnotAP(reader, AP)
 {
 	// number for relations with AP
 	AP["i"] = reader.readInt();
-	AP["x"] = reader.readInt();
-	AP["y"] = reader.readInt();
+	AP["x"] = reader.readDouble();
+	AP["y"] = reader.readDouble();
 	AP["w"] = reader.readInt();
 	AP["h"] = reader.readInt();
 	let n = reader.readInt();
@@ -1124,7 +1125,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 		// FreeText
 		else if (rec["Type"] == 2)
 		{
-			// Bachground color - C->IC
+			// Background color - C->IC
 			if (rec["C"])
 			{
 				rec["IC"] = rec["C"];
@@ -1274,6 +1275,15 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 			if (flags & (1 << 26))
 				rec["Desc"] = reader.readString();
 		}
+		// Stamp
+		else if (rec["Type"] == 12)
+		{
+			rec["Icon"] = reader.readString();
+			rec["Rotate"] = reader.readDouble2();
+			rec["InRect"] = [];
+			for (let i = 0; i < 8; ++i)
+				rec["InRect"].push(reader.readDouble2());
+		}
 		res.push(rec);
 	}
 	
@@ -1370,15 +1380,17 @@ CFile.prototype["free"] = function(pointer)
 // PIXMAP
 CFile.prototype["getPagePixmap"] = function(pageIndex, width, height, backgroundColor)
 {
-	let page = this.getOriginPage(pageIndex);
-	if (!page || page.fonts.length > 0)
+	let page = this.pages[pageIndex];
+	if (page.originIndex == undefined)
+		return null;
+	if (page.fonts.length > 0)
 	{
 		// waiting fonts
 		return null;
 	}
 
 	this.lockPageNumForFontsLoader(pageIndex, UpdateFontsSource.Page);
-	let ptr = this._getPixmap(pageIndex, width, height, backgroundColor);
+	let ptr = this._getPixmap(page.originIndex, width, height, backgroundColor);
 	this.unlockPageNumForFontsLoader();
 
 	if (page.fonts.length > 0)
@@ -1434,6 +1446,43 @@ function fontToMemory(file, isCheck)
 	Module["_free"](streamPointer);
 	Module["_free"](idPointer);
 }
+
+// FONTS
+CFile.prototype["addPage"] = function(pageIndex, pageObj)
+{
+	this.pages.splice(pageIndex, 0, pageObj);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] >= pageIndex)
+					pages[j] += 1;
+			}
+		}
+	}
+};
+CFile.prototype["removePage"] = function(pageIndex)
+{
+	let result = this.pages.splice(pageIndex, 1);
+	if (this.fontStreams)
+	{
+		for (let i in this.fontStreams)
+		{
+			let pages = this.fontStreams[i].pages;
+			for (let j = 0; j < pages.length; j++)
+			{
+				if (pages[j] > pageIndex)
+					pages[j] -= 1;
+				else if (pages[j] == pageIndex)
+					pages.splice(j, 1);
+			}
+		}
+	}
+	return result;
+};
 
 // ONLY WEB
 self["AscViewer"]["Free"] = function(pointer)

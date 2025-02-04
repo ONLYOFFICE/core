@@ -34,21 +34,32 @@
 #include "DiagramQuickStyle.h"
 #include "../Drawing/DrawingExt.h"
 
+#include "../Document.h"
+#include "../../XlsxFormat/Xlsx.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
 {
-	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain, bool bDocument) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = bDocument;
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 	}
 
 	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(uri.GetDirectory(), uri);
 	}
 
 	CDiagramQuickStyle::CDiagramQuickStyle(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(oRootPath, oPath);
 	}
 
@@ -148,7 +159,10 @@ namespace OOX
 
 	const CPath CDiagramQuickStyle::DefaultDirectory() const
 	{
-		return type().DefaultDirectory();
+		if (m_bDocument)
+			return type().DefaultDirectory();
+		else
+			return L"../" + type().DefaultDirectory();
 	}
 
 	const CPath CDiagramQuickStyle::DefaultFileName() const

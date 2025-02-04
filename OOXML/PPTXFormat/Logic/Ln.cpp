@@ -115,7 +115,7 @@ namespace PPTX
 			Fill.GetFillFrom(node);
 			
 			std::vector<XmlUtils::CXmlNode> oNodes;
-			if (node.GetNodes(_T("*"), oNodes))
+			if (node.GetNodes(L"*", oNodes))
 			{
 				size_t count = oNodes.size();
 				for (size_t i = 0; i < count; ++i)
@@ -123,17 +123,21 @@ namespace PPTX
 					XmlUtils::CXmlNode& oNode = oNodes[i];
 
 					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
-					if (_T("headEnd") == strName)
+					if (L"headEnd" == strName)
 					{
 						headEnd = oNode;
 					}
-					else if (_T("tailEnd") == strName)
+					else if (L"tailEnd" == strName)
 					{
 						tailEnd = oNode;
 					}
-					else if (_T("round") == strName || _T("bevel") == strName || _T("miter") == strName)
+					else if (L"round" == strName || L"bevel" == strName || L"miter" == strName)
 					{
 						join = oNode;
+					}
+					else if (L"prstDash" == strName)
+					{
+						prstDash = oNode;
 					}
 				}
 			}
@@ -143,10 +147,10 @@ namespace PPTX
 		void Ln::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
-			WritingElement_ReadAttributes_Read_if     ( oReader, L"algn", algn )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"cap",  cap )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"cmpd", cmpd )
-			WritingElement_ReadAttributes_Read_else_if( oReader, L"w",    w )
+				WritingElement_ReadAttributes_Read_if     ( oReader, L"algn", algn )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"cap",  cap )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"cmpd", cmpd )
+				WritingElement_ReadAttributes_Read_else_if( oReader, L"w",    w )
 			WritingElement_ReadAttributes_End_No_NS( oReader )
 
 			Normalize();
@@ -269,35 +273,30 @@ namespace PPTX
 				{
 					case 0:
 					{
-						Fill.fromPPTY(pReader);
-						break;
-					}
+						Fill.fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
 						prstDash = new Logic::PrstDash();
-						prstDash->fromPPTY(pReader);
-						break;
-					}
+						prstDash->fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						join.Init();
-						join->fromPPTY(pReader);
-						break;
-					}
+						join->fromPPTY(pReader);						
+					}break;
 					case 3:
 					{
 						headEnd = new Logic::LineEnd();
 						headEnd->m_name = L"a:headEnd";
-						headEnd->fromPPTY(pReader);
-						break;
-					}
+						headEnd->fromPPTY(pReader);						
+					}break;
 					case 4:
 					{
 						tailEnd = new Logic::LineEnd();
 						tailEnd->m_name = L"a:tailEnd";
-						tailEnd->fromPPTY(pReader);
-						break;
-					}
+						tailEnd->fromPPTY(pReader);						
+					}break;
 					default:
 						break;
 				}

@@ -1507,6 +1507,9 @@ XLS::BiffStructurePtr ADJH::clone()
 
 void ADJH::load(IBinaryReader* reader)
 {
+	unsigned long pos = reader->GetPosition();
+	unsigned long pos_end = reader->GetPosition() + cbElement;
+
 	_UINT32 flag = reader->ReadUInt32();
 	
 	fahInverseX			= GETBIT(flag, 31);
@@ -1552,6 +1555,8 @@ void ADJH::load(IBinaryReader* reader)
 	if (fahxMax)	xMax =  reader->ReadInt16(); 
 	if (fahyMin)	yMin =  reader->ReadInt16(); 
 	if (fahyMax)	yMax =  reader->ReadInt16(); 
+
+	reader->Seek(pos_end, 0);
 }
 
 void ADJH::load(XLS::CFRecord& record)

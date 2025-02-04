@@ -113,6 +113,7 @@ private:
   void generatePolyLineAppearance();
   void generatePolygonAppearance();
   void generateFreeTextAppearance();
+  void generateTextAppearance();
   void setLineStyle(AnnotBorderStyle *bs, double *lineWidth);
   void setStrokeColor(double *color, int nComps);
   GBool setFillColor(Object *colorObj);

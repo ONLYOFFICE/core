@@ -93,15 +93,18 @@ namespace PPTX
 
 			std::wstring GetUriElem();			
 			smart_ptr<WrapperWritingElement> GetElem();
+			smart_ptr<WrapperWritingElement> GetElemAlternative();
 
 			virtual void SetParentPointer(const WrapperWritingElement* pParent);
 			std::wstring GetSlicerRequires();
 
 			nullable<OOX::Logic::CBinData> m_binaryData;
 			std::wstring m_sRequires;//from mc:Choice
+			bool m_bAlternative = false;
 
 		private:
 			smart_ptr<WrapperWritingElement> m_elem;
+			smart_ptr<WrapperWritingElement> m_elem_alternative;
 
 		protected:
 			virtual void FillParentPointersForChilds();

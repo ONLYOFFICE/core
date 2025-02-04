@@ -84,6 +84,7 @@ public:
     bool IsHtmlFile(const std::wstring& sFile);
     bool IsMhtFile (const std::wstring& sFile);
     void SetTmpDirectory(const std::wstring& sFolder);
+    void SetCoreDirectory(const std::wstring& wsFolder);
     HRESULT OpenHtml(const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
     HRESULT OpenMht (const std::wstring& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);
     HRESULT OpenBatchHtml(const std::vector<std::wstring>& sPath, const std::wstring& sDirectory, CHtmlParams* oParams = NULL);

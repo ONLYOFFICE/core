@@ -39,7 +39,7 @@ namespace cpdoccore { namespace odf_types {
 
 std::wostream & operator << (std::wostream & _Wostream, const border_widths & _Val)
 {
-    _Wostream << _Val.get_len1() << " " << _Val.get_len2() << " " << _Val.get_len3();
+    _Wostream << _Val.get_len1() << L" " << _Val.get_len2() << L" " << _Val.get_len3();
     return _Wostream;    
 }
 

@@ -468,7 +468,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 			oMathReader.m_oCharProperty = m_oCharProperty;
 			oMathReader.m_oCharProperty.Merge(oOutputParagraph.m_oProperty.m_oCharProperty);
 
-			if(true == oMathReader.Parse( oParam, (*oNewMath) ) )
+			if (true == oMathReader.Parse( oParam, (*oNewMath) ) )
 				oOutputParagraph.AddItem( oNewMath );
 		}break;
 		case OOX::et_m_oMathPara:
@@ -482,17 +482,17 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 			oMathReader.m_oCharProperty = m_oCharProperty;
 			oMathReader.m_oCharProperty.Merge(oOutputParagraph.m_oProperty.m_oCharProperty);
 
-			if(true == oMathReader.Parse( oParam, (*oNewMath) ) )
+			if (true == oMathReader.Parse( oParam, (*oNewMath) ) )
 				oOutputParagraph.AddItem( oNewMath );
 		}break;
 		case OOX::et_w_sdt:
 		{
 			OOX::Logic::CSdt * pSdt = dynamic_cast<OOX::Logic::CSdt*>(m_ooxElement);
-			if( pSdt->m_oSdtEndPr.IsInit() )
+			if (pSdt->m_oSdtEndPr.IsInit() )
 			{
 				//todo
 			}
-			if(pSdt->m_oSdtContent.IsInit())
+			if (pSdt->m_oSdtContent.IsInit())
 			{
 				if (pSdt->m_oSdtContent->m_arrItems.size() > 0)
 				{
@@ -508,12 +508,12 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 		{
 			OOX::Logic::CCommentRangeStart * pCommentStart = dynamic_cast<OOX::Logic::CCommentRangeStart*>(m_ooxElement);
 						
-			if(pCommentStart->m_oId.IsInit())
+			if (pCommentStart->m_oId.IsInit())
 			{
 				int nId = pCommentStart->m_oId->GetValue();				
 				std::map<int, OOXReader::_comment>::iterator pFind = oParam.oReader->m_mapComments.find( nId );
 
-				if( pFind ==  oParam.oReader->m_mapComments.end())
+				if (pFind ==  oParam.oReader->m_mapComments.end())
 				{
 					RtfAnnotElemPtr oNewAnnotElem ( new RtfAnnotElem(1) );
 					oNewAnnotElem->m_sValue = std::to_wstring(0x7700000 + nId);
@@ -535,7 +535,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 			
 			std::map<int, OOXReader::_comment>::iterator pFindRef = oParam.oReader->m_mapComments.find( nId );
 			
-			if( pFindRef != oParam.oReader->m_mapComments.end())
+			if (pFindRef != oParam.oReader->m_mapComments.end())
 			{
 				RtfAnnotElemPtr oNewAnnotElem ( new RtfAnnotElem(2) );
 				oNewAnnotElem->m_sValue = pFindRef->second.ref;
@@ -546,7 +546,7 @@ bool OOXParagraphReader::Parse3( ReaderParameter oParam , RtfParagraph& oOutputP
 
 				if (pFindComment != oParam.oDocx->m_oMain.comments->m_mapComments.end())
 				{
-					if ( pFindComment->second < (int)oParam.oDocx->m_oMain.comments->m_arrComments.size() && pFindComment->second >= 0)
+					if (pFindComment->second < (int)oParam.oDocx->m_oMain.comments->m_arrComments.size() && pFindComment->second >= 0)
 					{
 						OOX::CComment* oox_comment = oParam.oDocx->m_oMain.comments->m_arrComments[pFindComment->second];
 						if (oox_comment)
@@ -688,28 +688,28 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			{
 				switch(ooxFldChar->m_oFldCharType->GetValue())
 				{
-				case SimpleTypes::fldchartypeBegin:
+					case SimpleTypes::fldchartypeBegin:
 					{
-						OOXFieldBeginPtr oNewField ( new OOXFieldBegin() );
+						OOXFieldBeginPtr oNewField(new OOXFieldBegin());
 						if (ooxFldChar->m_oFldLock.IsInit())
 							oNewField->m_bLock = ooxFldChar->m_oFldLock->ToBool();
 						if (ooxFldChar->m_oDirty.IsInit())
 							oNewField->m_bDirty = ooxFldChar->m_oDirty->ToBool();
-						
+
 						oNewField->m_oCharProperty = oNewProperty;
-						oOutputParagraph.AddItem( oNewField );
+						oOutputParagraph.AddItem(oNewField);
 					}break;
-				case SimpleTypes::fldchartypeEnd: 
+					case SimpleTypes::fldchartypeEnd: 
 					{
-						OOXFieldEndPtr oNewField ( new OOXFieldEnd() );
-						oOutputParagraph.AddItem( oNewField );
+						OOXFieldEndPtr oNewField(new OOXFieldEnd());
+						oOutputParagraph.AddItem(oNewField);
 					}break;
-				case SimpleTypes::fldchartypeSeparate:
+					case SimpleTypes::fldchartypeSeparate:
 					{
-						OOXFieldSeparatePtr oNewField ( new OOXFieldSeparate() );
-						oOutputParagraph.AddItem( oNewField );
+						OOXFieldSeparatePtr oNewField(new OOXFieldSeparate());
+						oOutputParagraph.AddItem(oNewField);
 					}break;
-                default: break;
+					default: break;
                 }
 			}
 		}break;
@@ -735,7 +735,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				int nID = ooxFootnoteReference->m_oId->GetValue();
 				std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapFootnotes.find( nID );
 				
-				if( oParam.oReader->m_mapFootnotes.end() != oPair )
+				if (oParam.oReader->m_mapFootnotes.end() != oPair )
 				{
 					RtfFootnotePtr oNewFootnote ( new RtfFootnote() );
 					oNewFootnote->m_oCharProp	= oNewProperty;
@@ -753,7 +753,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 				int nID = ooxEndnoteReference->m_oId->GetValue();
 				std::map<int, TextItemContainerPtr>::iterator oPair = oParam.oReader->m_mapEndnotes.find ( nID );
 				
-				if( oParam.oReader->m_mapEndnotes.end() != oPair )
+				if (oParam.oReader->m_mapEndnotes.end() != oPair )
 				{
 					RtfFootnotePtr oNewEndnote ( new RtfFootnote() );
 					oNewEndnote->m_oCharProp	= oNewProperty;

@@ -513,6 +513,9 @@ namespace NSCSS
 				return (*static_cast<std::wstring*>(m_oValue)) == (*static_cast<std::wstring*>(oColor.m_oValue));
 			case ColorUrl:
 				return (*static_cast<CURL*>(m_oValue)) == (*static_cast<CURL*>(oColor.m_oValue));
+			case ColorContextStroke:
+			case ColorContextFill:
+				return false;
 		}
 	}
 
@@ -532,6 +535,9 @@ namespace NSCSS
 				return (*static_cast<std::wstring*>(m_oValue)) != (*static_cast<std::wstring*>(oColor.m_oValue));
 			case ColorUrl:
 				return (*static_cast<CURL*>(m_oValue)) != (*static_cast<CURL*>(oColor.m_oValue));
+			case ColorContextStroke:
+			case ColorContextFill:
+				return false;
 		}
 	}
 
@@ -561,6 +567,9 @@ namespace NSCSS
 				m_oValue = new CURL(*static_cast<CURL*>(oColor.m_oValue));
 				break;
 			}
+			case ColorContextStroke:
+			case ColorContextFill:
+				break;
 		}
 
 		return *this;
@@ -579,6 +588,39 @@ namespace NSCSS
 	CColor::CColor()
 		: CValue(NULL, 0, false), m_oOpacity(1.), m_enType(ColorEmpty)
 	{}
+
+	CColor::CColor(const CColor& oColor)
+		: CValue(NULL, 0, false), m_oOpacity(oColor.m_oOpacity), m_enType(oColor.m_enType)
+	{
+		switch (m_enType)
+		{
+			case ColorRGB:
+			{
+				TRGB *pRGB = static_cast<TRGB*>(oColor.m_oValue);
+				m_oValue = new TRGB(*pRGB);
+				break;
+			}
+			case ColorHEX:
+			{
+				std::wstring* pValue = static_cast<std::wstring*>(oColor.m_oValue);
+				m_oValue = new std::wstring(*pValue);
+				break;
+			}
+			case ColorUrl:
+			{
+				CURL *pURL = static_cast<CURL*>(oColor.m_oValue);
+				m_oValue = new CURL(*pURL);
+				break;
+			}
+			default:
+			break;
+		}
+	}
+
+	CColor::~CColor()
+	{
+		Clear();
+	}
 
 	void CColor::SetEmpty(unsigned int unLevel)
 	{
@@ -872,6 +914,25 @@ namespace NSCSS
 			case ColorHEX: return *static_cast<std::wstring*>(m_oValue);
 			case ColorUrl: return static_cast<CURL*>(m_oValue)->GetValue();
 			default: return std::wstring();
+		}
+	}
+
+	std::wstring CColor::ToHEX() const
+	{
+		switch(m_enType)
+		{
+			case ColorRGB:
+			{
+				TRGB* pRGB = static_cast<TRGB*>(m_oValue);
+				return ConvertRGBtoHEX(*pRGB);
+			}
+			case ColorHEX:
+			{
+				std::wstring *pValue = static_cast<std::wstring*>(m_oValue);
+				return *pValue;
+			}
+			default:
+				return std::wstring();
 		}
 	}
 
@@ -2301,32 +2362,32 @@ namespace NSCSS
 		return m_oLeft.SetValue(dValue, unLevel, bHardMode);
 	}
 
-	void CIndent::UpdateAll(double dFontSize)
+	void CIndent::UpdateAll(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		UpdateTop   (dFontSize);
-		UpdateRight (dFontSize);
-		UpdateBottom(dFontSize);
-		UpdateLeft  (dFontSize);
+		UpdateTop   (dParentFontSize, dCoreFontSize);
+		UpdateRight (dParentFontSize, dCoreFontSize);
+		UpdateBottom(dParentFontSize, dCoreFontSize);
+		UpdateLeft  (dParentFontSize, dCoreFontSize);
 	}
 
-	void CIndent::UpdateTop(double dFontSize)
+	void CIndent::UpdateTop(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		UpdateSide(m_oTop, dFontSize);
+		UpdateSide(m_oTop, dParentFontSize, dCoreFontSize);
 	}
 
-	void CIndent::UpdateRight(double dFontSize)
+	void CIndent::UpdateRight(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		UpdateSide(m_oRight, dFontSize);
+		UpdateSide(m_oRight, dParentFontSize, dCoreFontSize);
 	}
 
-	void CIndent::UpdateBottom(double dFontSize)
+	void CIndent::UpdateBottom(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		UpdateSide(m_oBottom, dFontSize);
+		UpdateSide(m_oBottom, dParentFontSize, dCoreFontSize);
 	}
 
-	void CIndent::UpdateLeft(double dFontSize)
+	void CIndent::UpdateLeft(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		UpdateSide(m_oLeft, dFontSize);
+		UpdateSide(m_oLeft, dParentFontSize, dCoreFontSize);
 	}
 
 	const CDigit &CIndent::GetTop() const
@@ -2395,13 +2456,15 @@ namespace NSCSS
 		return bTopResult || bRightResult || bBottomResult || bLeftResult;
 	}
 	
-	void CIndent::UpdateSide(CDigit &oSide, double dFontSize)
+	void CIndent::UpdateSide(CDigit &oSide, const double& dParentFontSize, const double& dCoreFontSize)
 	{
 		if (oSide.Empty())
 			return;
 
-		if (NSCSS::Em == oSide.GetUnitMeasure() || NSCSS::Rem == oSide.GetUnitMeasure())
-			oSide.ConvertTo(NSCSS::Twips, dFontSize);
+		if (NSCSS::Em == oSide.GetUnitMeasure())
+			oSide.ConvertTo(NSCSS::Twips, dParentFontSize);
+		else if (NSCSS::Rem == oSide.GetUnitMeasure())
+			oSide.ConvertTo(NSCSS::Twips, dCoreFontSize);
 	}
 
 	// FONT
@@ -2644,16 +2707,20 @@ namespace NSCSS
 		                                    std::make_pair(L"700", L"bold"), std::make_pair(L"800", L"bold"), std::make_pair(L"900", L"bold")}, unLevel, bHardMode);
 	}
 
-	void CFont::UpdateSize(double dFontSize)
+	void CFont::UpdateSize(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Rem == m_oSize.GetUnitMeasure() || NSCSS::Percent == m_oSize.GetUnitMeasure())
-			m_oSize.ConvertTo(NSCSS::Point, dFontSize);
+		if (NSCSS::Em == m_oSize.GetUnitMeasure() || NSCSS::Percent == m_oSize.GetUnitMeasure())
+			m_oSize.ConvertTo(NSCSS::Point, dParentFontSize);
+		else if (NSCSS::Rem == m_oSize.GetUnitMeasure())
+			m_oSize.ConvertTo(NSCSS::Point, dCoreFontSize);
 	}
 	
-	void CFont::UpdateLineHeight(double dFontSize)
+	void CFont::UpdateLineHeight(const double& dParentFontSize, const double& dCoreFontSize)
 	{
-		if (NSCSS::Em == m_oLineHeight.GetUnitMeasure() || NSCSS::Rem == m_oLineHeight.GetUnitMeasure())
-			m_oLineHeight.ConvertTo(NSCSS::Twips, dFontSize);
+		if (NSCSS::Em == m_oLineHeight.GetUnitMeasure())
+			m_oLineHeight.ConvertTo(NSCSS::Twips, dParentFontSize);
+		else if (NSCSS::Rem == m_oLineHeight.GetUnitMeasure())
+			m_oLineHeight.ConvertTo(NSCSS::Twips, dCoreFontSize);
 	}
 
 	bool CFont::Bold() const

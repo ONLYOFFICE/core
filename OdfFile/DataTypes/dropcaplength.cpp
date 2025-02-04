@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const drop_cap_length & 
     switch(_Val.get_type())
     {
     case drop_cap_length::Word:
-        _Wostream << "word";
+        _Wostream << L"word";
         break;
     case drop_cap_length::Integer:
         _Wostream << _Val.get_value();

@@ -1345,7 +1345,7 @@ void odf_drawing_context::start_element(office_element_ptr elm, office_element_p
 	
 	//если  фейковый предыдущий уровень (для сохранения порядка выше) - привязывааем к уровню выше
 
-	for (int i = impl_->current_level_.size() - 1; elm && i >= 0; i--)
+	for (int i = (int)impl_->current_level_.size() - 1; elm && i >= 0; i--)
 	{
 		if (impl_->current_level_[i].elm)
 		{
@@ -1653,7 +1653,7 @@ int odf_drawing_context::get_formulas_count()
 	if (!impl_->current_drawing_state_.oox_shape_)
 		return 0;
 
-	return impl_->current_drawing_state_.oox_shape_->equations.size();
+	return (int)impl_->current_drawing_state_.oox_shape_->equations.size();
 }
 void odf_drawing_context::set_path(std::wstring path_string)
 {
@@ -1663,7 +1663,8 @@ void odf_drawing_context::add_path_element(std::wstring command, std::wstring st
 {
 	XmlUtils::replace_all(strE, L"gd", L"?f");
 	
-	if (command != impl_->current_drawing_state_.path_last_command_)
+	if (command != impl_->current_drawing_state_.path_last_command_ 
+		|| command == L"M") // NOTE: Две последовательые команды "Move" должны быть записаны без сокращений (включая команду "M" для каждого мува)
 	{
 		impl_->current_drawing_state_.path_ += command;
 		if (!strE.empty())
@@ -1712,10 +1713,10 @@ int GetFormulaType2(const WCHAR& c1, const WCHAR& c2)
 
 static std::wstring replace_textarea(std::wstring textarea_coord)
 {
-	XmlUtils::replace_all(textarea_coord, L"t", L"top");
-	XmlUtils::replace_all(textarea_coord, L"l", L"left");
-	XmlUtils::replace_all(textarea_coord, L"r", L"right");
-	XmlUtils::replace_all(textarea_coord, L"b", L"bottom");
+	XmlUtils::replace_all(textarea_coord, L"t", L"0");
+	XmlUtils::replace_all(textarea_coord, L"l", L"0");
+	XmlUtils::replace_all(textarea_coord, L"r", L"logwidth");
+	XmlUtils::replace_all(textarea_coord, L"b", L"logheight");
 
 	return textarea_coord;
 }
@@ -1766,6 +1767,11 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	size_t nStart = 0;
 	size_t nCurrent = 0;
 
+	XmlUtils::replace_all(fmla, L" * ", L"*");
+	XmlUtils::replace_all(fmla, L" - ", L"-");
+	XmlUtils::replace_all(fmla, L" + ", L"+");
+	XmlUtils::replace_all(fmla, L" / ", L"/");
+
     const wchar_t* pData = fmla.c_str();
 
 	int nFound = 0, x = 0, y = 0;
@@ -1791,7 +1797,10 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 				}
 				else
 				{
-					val[nFound-1] = std::wstring( pData + nStart, (ULONG)(nCurrent - nStart));
+					if (nFound > 4) 
+						return; // !
+
+					val[nFound - 1] = std::wstring(pData + nStart, (ULONG)(nCurrent - nStart));
 				}
 				nStart = nCurrent + 1;
 				++nFound;
@@ -1836,9 +1845,12 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 			{
 				odf_fmla += val[i] + L",";
 			}
-			odf_fmla += val[nFound-1] + L")"; break;
+			odf_fmla += val[nFound - 1] + L")"; break;
 		case 4:
 			odf_fmla = L"abs(" + val[0] + L")";
+			break;
+		case 5:
+			odf_fmla = L"(10800000 * atan2(" + val[1] + L", " + val[0] + L"))/pi";
 			break;
 		case 7:
 			odf_fmla = val[0] + L"*cos(pi*(" + val[1] + L")/10800000)";
@@ -1858,10 +1870,9 @@ void odf_drawing_context::add_formula (std::wstring name, std::wstring fmla)
 	}
 
 	XmlUtils::replace_all(odf_fmla, L"gd", L"?f");
-	XmlUtils::replace_all(odf_fmla, L"h", L"(bottom-top)");
-	XmlUtils::replace_all(odf_fmla, L"w", L"(right-left)");
+	XmlUtils::replace_all(odf_fmla, L"h", L"logheight");
+	XmlUtils::replace_all(odf_fmla, L"w", L"logwidth");
 	XmlUtils::replace_all(odf_fmla, L"adj", L"$");
-	//XmlUtils::replace_all(name, L"gd", L"f");
 
 	impl_->current_drawing_state_.oox_shape_->add(name, odf_fmla);
 }
@@ -1901,8 +1912,7 @@ void odf_drawing_context::set_flip_V(bool bVal)
 
 void odf_drawing_context::set_rotate(double dVal)
 {
-	if (dVal > 180) dVal = dVal - 360;
-	double dRotate = dVal / 180. * 3.14159265358979323846;
+	double dRotate = -dVal / 180. * 3.14159265358979323846;
 	impl_->current_drawing_state_.rotateAngle_ = dRotate;
 }
 
@@ -3318,6 +3328,13 @@ void odf_drawing_context::end_image()
 		else
 			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
 	}	
+	if (impl_->current_drawing_state_.flipV_)
+	{
+		if (impl_->current_graphic_properties->style_mirror_)
+			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" vertical");
+		else
+			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
+	}
 	end_element();
 	end_frame();
 }

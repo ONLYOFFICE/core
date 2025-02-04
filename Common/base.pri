@@ -148,7 +148,7 @@ mac {
 		CONFIG += core_mac
 		CONFIG += core_mac_64
 
-        DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+		DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
 	}
 }
 
@@ -185,7 +185,7 @@ core_mac {
 	QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.11
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
-    # xcode15 add new linker
+	# xcode15 add new linker
 	QMAKE_LFLAGS += -Wl,-ld_classic
 
 	QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
@@ -301,22 +301,25 @@ linux_arm64 {
 core_ios {
 	CORE_BUILDS_PLATFORM_PREFIX = ios
 
+	!versionAtLeast(QMAKE_XCODE_VERSION, 16.0) {
+		QMAKE_CFLAGS += -fembed-bitcode
+		QMAKE_CXXFLAGS += -fembed-bitcode
+		QMAKE_LFLAGS += -fembed-bitcode
+	} else {
+		CONFIG -= bitcode
+	}
+
+
 	CONFIG(iphonesimulator, iphoneos|iphonesimulator): {
 		message("iphonesimulator")
 		CORE_BUILDS_PLATFORM_PREFIX = ios_simulator
 
-		QMAKE_CFLAGS += -fembed-bitcode
-		QMAKE_CXXFLAGS += -fembed-bitcode
-		QMAKE_LFLAGS += -fembed-bitcode
 		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 	} else {
 
 		QMAKE_IOS_DEPLOYMENT_TARGET = 11.0
 
-		QMAKE_CFLAGS += -fembed-bitcode
-		QMAKE_CXXFLAGS += -fembed-bitcode
-		QMAKE_LFLAGS += -fembed-bitcode
 		QMAKE_CFLAGS += -fobjc-arc
 		QMAKE_CXXFLAGS += -fobjc-arc
 
@@ -573,7 +576,7 @@ defineTest(ADD_DEPENDENCY) {
 	libs = $$ARGS
 	for(lib, libs) {
 		CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH
-		
+
 		isEqual(lib, videoplayer) {
 			libvlc {
 				CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH/mediaplayer
@@ -586,7 +589,7 @@ defineTest(ADD_DEPENDENCY) {
 			isEqual(lib, qtascdocumentscore):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, videoplayer):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
 			isEqual(lib, ooxmlsignature):CORE_BUILDS_LIBRARIES_PATH_DST=$$CORE_BUILDS_LIBRARIES_PATH_DST/xp
-		} 
+		}
 		!bundle_dylibs:LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH_DST -l$$lib
 		bundle_dylibs:LIBS += -F$$CORE_BUILDS_LIBRARIES_PATH_DST -framework $$lib
 	}

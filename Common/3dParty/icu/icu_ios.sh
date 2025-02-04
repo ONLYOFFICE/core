@@ -20,9 +20,9 @@ CONFIG_PREFIX=" --enable-extras=yes \
 --enable-dyload=no \
 --with-data-packaging=static"
 
-CFLAGS="-O3 -D__STDC_INT64__ -fno-exceptions -fno-short-wchar -fno-short-enums -fembed-bitcode"
+CFLAGS="-O3 -D__STDC_INT64__ -fno-exceptions -fno-short-wchar -fno-short-enums"
 
-CXXFLAGS="${CFLAGS} -std=c++11 -fembed-bitcode"
+CXXFLAGS="${CFLAGS} -std=c++11"
 
 #will set value to 1
 defines_config_set_1=(
@@ -215,9 +215,9 @@ function build() {
 
     export CXX="$(xcrun -find clang++)"
     export CC="$(xcrun -find clang)"
-    export CFLAGS="-fembed-bitcode -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
-    export CXXFLAGS="${CXXFLAGS} -fembed-bitcode -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS ${ADDITION_FLAG}"
-    export LDFLAGS="-fembed-bitcode -stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip $IOS_MIN_VER -lstdc++ ${ADDITION_FLAG}"
+    export CFLAGS="-isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS $CFLAGS ${ADDITION_FLAG}"
+    export CXXFLAGS="${CXXFLAGS} -stdlib=libc++ -isysroot $SDKROOT -I$SDKROOT/usr/include/ -I./include/ -arch $ARCH $IOS_MIN_VER $ICU_FLAGS ${ADDITION_FLAG}"
+    export LDFLAGS="-stdlib=libc++ -L$SDKROOT/usr/lib/ -isysroot $SDKROOT -Wl,-dead_strip $IOS_MIN_VER -lstdc++ ${ADDITION_FLAG}"
 
     mkdir -p ${BUILD_DIR}
     cd ${BUILD_DIR}

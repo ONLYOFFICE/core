@@ -1,6 +1,5 @@
 #include "ParagraphStyleManager.h"
 
-
 namespace NSDocxRenderer
 {
 	CParagraphStyleManager::CParagraphStyleManager()

@@ -1535,6 +1535,11 @@ namespace NSFile
 		return bIsSuccess;
 	}
 
+	bool CFileBinary::IsGlobalTempPathUse()
+	{
+		return g_overrideTmpPath.empty() ? false : true;
+	}
+
 	std::wstring CFileBinary::GetTempPath()
 	{
 		if (!g_overrideTmpPath.empty())

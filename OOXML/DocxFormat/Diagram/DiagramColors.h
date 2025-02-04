@@ -114,40 +114,19 @@ namespace OOX
     class CDiagramColors : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 	{
 	public:
-		CDiagramColors(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-		}
-		CDiagramColors(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(uri.GetDirectory(), uri);
-		}
-		CDiagramColors(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
-		{
-			read(oRootPath, oPath);
-		}
-		virtual ~CDiagramColors()
-		{
-		}
-		virtual void read(const CPath& oFilePath)
-		{
-			CPath oRootPath;
-			read(oRootPath, oFilePath);
-		}
+		CDiagramColors(OOX::Document* pMain, bool bDocument = true);
+		CDiagramColors(OOX::Document* pMain, const CPath& uri);
+		CDiagramColors(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+		virtual ~CDiagramColors();
+
+		virtual void read(const CPath& oFilePath);
 		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
 		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
-		virtual const OOX::FileType type() const
-		{
-			return FileTypes::DiagramColors;
-		}
-		virtual const CPath DefaultDirectory() const
-		{
-			return type().DefaultDirectory();
-		}
-		virtual const CPath DefaultFileName() const
-		{
-			return type().DefaultFileName();
-		}
+		virtual const OOX::FileType type() const;
+		virtual const CPath DefaultDirectory() const;
+		virtual const CPath DefaultFileName() const;
+
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
@@ -163,5 +142,6 @@ namespace OOX
 		nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
 	private:
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+		bool m_bDocument = true; //for upper/lower level rels (defaultDirectory)
 	};
 } // namespace OOX

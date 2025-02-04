@@ -365,7 +365,7 @@ void RtfTable::AddToArray(std::vector<int>& aArray, int nValue)//todo можно
 	bool bNeedAdd = true;
 	for (size_t k = 0; k < aArray.size(); k++)
 	{
-		if (std::abs(aArray[k] - nValue) < 3)
+		if (std::abs(aArray[k] - nValue) < 1)
 		{
 			bNeedAdd = false;
 			break;

@@ -86,6 +86,7 @@ public:
 			const std::wstring& GetV();
 			const std::wstring& GetRV();
 			const std::wstring& GetAPV();
+			BYTE* GetRender(LONG& nLen);
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag);
 
@@ -94,6 +95,8 @@ public:
 			std::wstring m_wsV;
 			std::wstring m_wsRV;
 			std::wstring m_wsAPV;
+			LONG         m_nRenderLen;
+			BYTE*        m_pRender;
 		};
 
 		class GRAPHICS_DECL CChoiceWidgetPr
@@ -105,6 +108,7 @@ public:
 			const std::vector<int>& GetI();
 			const std::vector<std::wstring>& GetArrV();
 			const std::vector< std::pair<std::wstring, std::wstring> >& GetOpt();
+			BYTE* GetRender(LONG& nLen);
 
 			void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
 
@@ -115,6 +119,8 @@ public:
 			std::vector<int> m_arrI;
 			std::vector<std::wstring> m_arrV;
 			std::vector< std::pair<std::wstring, std::wstring> > m_arrOpt;
+			LONG         m_nRenderLen;
+			BYTE*        m_pRender;
 		};
 
 		class GRAPHICS_DECL CSignatureWidgetPr
@@ -399,6 +405,21 @@ public:
 		double m_dRD[4]{};
 	};
 
+	class GRAPHICS_DECL CStampAnnotPr
+	{
+	public:
+		double GetRotate();
+		const std::wstring& GetName();
+		void GetInRect(double& dRD1, double& dRD2, double& dRD3, double& dRD4);
+
+		void Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags);
+
+	private:
+		double m_nRotate;
+		std::wstring m_wsName;
+		double m_dInRect[4]{};
+	};
+
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
@@ -414,6 +435,7 @@ public:
 	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
 	const std::wstring& GetLM();
+	const std::wstring& GetOUserID();
 	const std::wstring& GetContents();
 	const std::vector<double>& GetC();
 
@@ -432,6 +454,7 @@ public:
 	bool IsPopup()           const;
 	bool IsFreeText()        const;
 	bool IsCaret()           const;
+	bool IsStamp()           const;
 
 	CMarkupAnnotPr*       GetMarkupAnnotPr();
 	CTextAnnotPr*         GetTextAnnotPr();
@@ -443,6 +466,7 @@ public:
 	CPopupAnnotPr*        GetPopupAnnotPr();
 	CFreeTextAnnotPr*     GetFreeTextAnnotPr();
 	CCaretAnnotPr*        GetCaretAnnotPr();
+	CStampAnnotPr*        GetStampAnnotPr();
 	CWidgetAnnotPr*       GetWidgetAnnotPr();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
@@ -466,6 +490,7 @@ private:
 	int          m_nPage;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
+	std::wstring m_wsOUserID;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
@@ -483,6 +508,7 @@ private:
 	CPopupAnnotPr*        m_pPopupPr;
 	CFreeTextAnnotPr*     m_pFreeTextPr;
 	CCaretAnnotPr*        m_pCaretPr;
+	CStampAnnotPr*        m_pStampPr;
 	CWidgetAnnotPr*       m_pWidgetPr;
 };
 

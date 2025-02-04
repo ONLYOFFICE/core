@@ -467,6 +467,62 @@ TEST_F(CJSONTest, object)
 	EXPECT_FALSE(compare(obj, jsObj->toValue(), false));
 }
 
+TEST_F(CJSONTest, image_externalize)
+{
+	int width = 1080;
+	int height = 480;
+	BYTE* bits = CValue::AllocImageBits(width, height);
+	CValue img = CValue::CreateImage(bits, width, height, ifBGRA);
+
+	EXPECT_TRUE(img.IsImage());
+	EXPECT_EQ(img.GetImageBits(), bits);
+	EXPECT_EQ(img.GetImageWidth(), width);
+	EXPECT_EQ(img.GetImageHeight(), height);
+	EXPECT_EQ(img.GetImageFormat(), ifBGRA);
+
+	CValue::FreeImageBits(bits);
+
+	width = 50;
+	height = 100;
+	bits = CValue::AllocImageBits(width, height);
+	img = CValue::CreateImage(bits, width, height, ifRGBA);
+
+	EXPECT_TRUE(img.IsImage());
+	EXPECT_EQ(img.GetImageBits(), bits);
+	EXPECT_EQ(img.GetImageWidth(), width);
+	EXPECT_EQ(img.GetImageHeight(), height);
+	EXPECT_EQ(img.GetImageFormat(), ifRGBA);
+
+	CValue::FreeImageBits(bits);
+}
+
+TEST_F(CJSONTest, image_not_externalize)
+{
+	int width = 320;
+	int height = 480;
+	BYTE* bits = CValue::AllocImageBits(width, height);
+	CValue img = CValue::CreateImage(bits, width, height, ifARGB, false);
+
+	EXPECT_TRUE(img.IsImage());
+	EXPECT_EQ(img.GetImageBits(), bits);
+	EXPECT_EQ(img.GetImageWidth(), width);
+	EXPECT_EQ(img.GetImageHeight(), height);
+	EXPECT_EQ(img.GetImageFormat(), ifARGB);
+}
+
+TEST_F(CJSONTest, image_wrong_size)
+{
+	BYTE* bits = CValue::AllocImageBits(100, 100);
+	CValue img = CValue::CreateImage(bits, 0, 100, ifARGB, false);
+	EXPECT_TRUE(img.IsUndefined());
+	img = CValue::CreateImage(bits, -1, 100, ifARGB, false);
+	EXPECT_TRUE(img.IsUndefined());
+	img = CValue::CreateImage(bits, 0, 0, ifARGB, false);
+	EXPECT_TRUE(img.IsUndefined());
+	img = CValue::CreateImage(bits, -100, -100, ifARGB, false);
+	EXPECT_TRUE(img.IsUndefined());
+}
+
 TEST_F(CJSONTest, references)
 {
 	CValue val = 42;
@@ -526,12 +582,20 @@ TEST_F(CJSONTest, wrong_usage)
 	EXPECT_THROW(val.GetPropertyNames(), std::bad_cast);
 	EXPECT_THROW(val.GetCount(), std::bad_cast);
 	EXPECT_THROW(val.GetData(), std::bad_cast);
+	EXPECT_THROW(val.GetImageBits(), std::bad_cast);
+	EXPECT_THROW(val.GetImageFormat(), std::bad_cast);
+	EXPECT_THROW(val.GetImageHeight(), std::bad_cast);
+	EXPECT_THROW(val.GetImageWidth(), std::bad_cast);
 #else
 	EXPECT_TRUE(val["name"].IsUndefined());
 	EXPECT_TRUE(val[0].IsUndefined());
 	EXPECT_TRUE(val.GetPropertyNames().empty());
 	EXPECT_EQ(val.GetCount(), 0);
 	EXPECT_EQ(val.GetData(), nullptr);
+	EXPECT_EQ(val.GetImageBits(), nullptr);
+	EXPECT_EQ(val.GetImageFormat(), ifInvalid);
+	EXPECT_EQ(val.GetImageHeight(), 0);
+	EXPECT_EQ(val.GetImageWidth(), 0);
 #endif
 	EXPECT_DOUBLE_EQ(val.ToDouble(), 42.0);
 #ifdef JSON_DEBUG
@@ -1601,7 +1665,11 @@ TEST_F(CJSONTest, FromJSON_arrays)
 	CValue val = CValue::FromJSON(strJson);
 	EXPECT_TRUE(val.IsArray());
 	EXPECT_EQ(val.GetCount(), 0);
+#ifndef JSON_DEBUG
 	EXPECT_TRUE(val[0].IsUndefined());
+#else
+	EXPECT_THROW(val[0], std::out_of_range);
+#endif
 
 	strJson = "[1, 2, 3]";
 	val = CValue::FromJSON(strJson);

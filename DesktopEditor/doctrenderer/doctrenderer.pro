@@ -121,7 +121,7 @@ drawingfile_support {
 		embed/DrawingFileEmbed.h
 
 	SOURCES += \
-		../../HtmlRenderer/src/HTMLRendererText.cpp \
+		../graphics/pro/js/wasm/src/HTMLRendererText.cpp \
 		embed/DrawingFileEmbed.cpp
 
 	ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(embed/DrawingFileEmbed.h)

@@ -1,7 +1,11 @@
 #include "FontManager.h"
-#include "../../resources/Constants.h"
+
 #include "../../../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/common/StringExt.h"
+
+#include "../../resources/Constants.h"
+
 
 namespace NSDocxRenderer
 {
@@ -316,12 +320,12 @@ namespace NSDocxRenderer
 
 	void CFontSelector::SelectFont(const CFontSelectParams& oFontSelectParams,
 								   const CFontMetrics& oFontMetrics,
-								   NSStringUtils::CStringUTF32& oText)
+								   const NSStringUtils::CStringUTF32& oText)
 	{
 		BYTE lRangeNum	= 0xFF;
 		BYTE lRange		= 0xFF;
 
-		m_oRanges.CheckRange(oText[0], lRange, lRangeNum);
+		m_oRanges.CheckRange(oText.at(0), lRange, lRangeNum);
 
 		for(auto it = m_arParamsCache.begin(); it != m_arParamsCache.end(); it++)
 		{
@@ -387,6 +391,9 @@ namespace NSDocxRenderer
 		bool bSelectItalic = false;
 		CheckFontNamePDF(sFontNameSelect, bSelectBold, bSelectItalic);
 
+		bSelectBold |= oFontSelectParams.bDefaultBold;
+		bSelectItalic |= oFontSelectParams.bDefaultItalic;
+
 		bool bIsPanosePresent = false;
 		for (int i = 0; i < 10; i++)
 		{
@@ -403,8 +410,8 @@ namespace NSDocxRenderer
 			memcpy(oFormat.pPanose, oFontSelectParams.arPANOSE, 10 * sizeof(BYTE));
 		}
 
-		oFormat.bBold = new INT(oFontSelectParams.bDefaultBold);
-		oFormat.bItalic = new INT(oFontSelectParams.bDefaultItalic);
+		oFormat.bBold = new INT(bSelectBold);
+		oFormat.bItalic = new INT(bSelectItalic);
 		oFormat.bFixedWidth = new INT(oFontSelectParams.bIsFixedWidth ? 1 : 0);
 
 		if (-1 != oFontSelectParams.lAvgWidth)
@@ -416,9 +423,6 @@ namespace NSDocxRenderer
 		oFormat.ulRange4 = new UINT(dwR4);
 		oFormat.ulCodeRange1 = new UINT(dwCodePage1);
 		oFormat.ulCodeRange2 = new UINT(dwCodePage2);
-
-//		oFormat.shAscent = new SHORT(oFontMetrics.dAscent);
-//		oFormat.shDescent = new SHORT(oFontMetrics.dDescent);
 
 		if (oFormat.bBold && *(oFormat.bBold) == 1 && oFormat.pPanose && oFormat.pPanose[2] < 7)
 			oFormat.pPanose[2] = 7;
@@ -465,7 +469,7 @@ namespace NSDocxRenderer
 		//CheckFontNameStyle(wsName, L"light");
 
 		CheckFontNameStyle(wsName, L"condensedbold");
-		CheckFontNameStyle(wsName, L"semibold");
+		if (CheckFontNameStyle(wsName, L"semibold")) bBold = true;
 		if (CheckFontNameStyle(wsName, L"boldmt")) bBold = true;
 		if (CheckFontNameStyle(wsName, L"bold")) bBold = true;
 
@@ -526,13 +530,15 @@ namespace NSDocxRenderer
 		RELEASEINTERFACE(m_pManager);
 	}
 
-	void CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
+	bool CFontManager::LoadFontByFile(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
-			return;
+		if (m_oFont.IsEqual2(&oFont))
+			return true;
+
+		if (!m_pManager->LoadFontFromFile(oFont.Path, (int)oFont.FaceIndex, (float)oFont.Size, c_dDpiX, c_dDpiY))
+			return false;
 
 		m_oFont = oFont;
-		m_pManager->LoadFontFromFile(m_oFont.Path, (int)m_oFont.FaceIndex, (float)m_oFont.Size, c_dDpiX, c_dDpiY);
 		m_pManager->AfterLoad();
 
 		LoadFontMetrics();
@@ -542,18 +548,24 @@ namespace NSDocxRenderer
 			m_oFontSelectParams.wsDefaultName = m_oFont.Name;
 
 		CheckPdfResources();
+
+		return true;
 	}
-	void CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
+	bool CFontManager::LoadFontByName(const NSStructures::CFont& oFont)
 	{
-		if(m_oFont.IsEqual2(&oFont))
-			return;
+		if (m_oFont.IsEqual2(&oFont))
+			return true;
 
 		m_oFont = oFont;
-		m_pManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle2(), c_dDpiX, c_dDpiY);
-		m_pManager->AfterLoad();
 
+		if (!m_pManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle2(), c_dDpiX, c_dDpiY))
+			return false;
+
+		m_pManager->AfterLoad();
 		LoadFontMetrics();
 		LoadFontSelectParams();
+
+		return true;
 	}
 
 	const CFontSelectParams& CFontManager::GetFontSelectParams() const noexcept
@@ -592,14 +604,15 @@ namespace NSDocxRenderer
 			m_pManager->SetStringGID(lGid);
 	}
 
-	void CFontManager::MeasureString(const std::wstring& wsText,
-									 double x,
-									 double y,
-									 double& dBoxX,
-									 double& dBoxY,
-									 double& dBoxWidth,
-									 double& dBoxHeight,
-									 MeasureType measureType) const
+	void CFontManager::MeasureString(
+		const std::wstring& wsText,
+		double x,
+		double y,
+		double& dBoxX,
+		double& dBoxY,
+		double& dBoxWidth,
+		double& dBoxHeight,
+		MeasureType measureType) const
 	{
 		dBoxX		= 0;
 		dBoxY		= 0;
@@ -626,15 +639,16 @@ namespace NSDocxRenderer
 		dBoxWidth	*= c_dPixToMM;
 		dBoxHeight	*= c_dPixToMM;
 	}
-	void CFontManager::MeasureStringGids(unsigned int* pGids,
-										 unsigned int count,
-										 double x,
-										 double y,
-										 double& dBoxX,
-										 double& dBoxY,
-										 double& dBoxWidth,
-										 double& dBoxHeight,
-										 MeasureType measureType) const
+	void CFontManager::MeasureStringGids(
+		unsigned int* pGids,
+		unsigned int count,
+		double x,
+		double y,
+		double& dBoxX,
+		double& dBoxY,
+		double& dBoxWidth,
+		double& dBoxHeight,
+		MeasureType measureType) const
 	{
 		dBoxX		= 0;
 		dBoxY		= 0;

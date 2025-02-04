@@ -173,7 +173,7 @@ void CXpsFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 	*pdDpiX   = 25.4;
 	*pdDpiY   = 25.4;
 }
-void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
+void CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams)
 {
     if (!m_pInternal->m_pDocument)
 		return;

@@ -155,9 +155,38 @@ namespace MetaFile
 		unHeight = unDibHeigth;
 	}
 
-	CEmfLogFont::CEmfLogFont(bool bFixedLength) : m_bFixedLength(bFixedLength)
+	void CEmfLogBrushEx::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
+	{
+		arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+		arPositions = {0., 1.};
+	}
+
+	CEmfLogFont::CEmfLogFont(bool bFixedLength)
+	    : m_bFixedLength(bFixedLength)
 	{
 		oDesignVector.pValues = NULL;
+
+		oLogFontEx.oLogFont.nHeight           = DEFAULT_FONT_SIZE;
+		oLogFontEx.oLogFont.nWidth            = 0;
+		oLogFontEx.oLogFont.nEscapement       = 0;
+		oLogFontEx.oLogFont.nOrientation      = 0;
+		oLogFontEx.oLogFont.nWeight           = 400;
+		oLogFontEx.oLogFont.uchItalic         = 0x00;
+		oLogFontEx.oLogFont.uchUnderline      = 0x00;
+		oLogFontEx.oLogFont.uchStrikeOut      = 0x00;
+		oLogFontEx.oLogFont.uchCharSet        = 0x01;
+		oLogFontEx.oLogFont.uchOutPrecision   = 0x00;
+		oLogFontEx.oLogFont.uchClipPrecision  = 0x00;
+		oLogFontEx.oLogFont.uchQuality        = 0x00;
+		oLogFontEx.oLogFont.uchPitchAndFamily = 0x00;
+
+		memset(oLogFontEx.oLogFont.ushFaceName, 0x00, 32);
+
+		oLogFontEx.oLogFont.ushFaceName[0] = 'A';
+		oLogFontEx.oLogFont.ushFaceName[1] = 'r';
+		oLogFontEx.oLogFont.ushFaceName[2] = 'i';
+		oLogFontEx.oLogFont.ushFaceName[3] = 'a';
+		oLogFontEx.oLogFont.ushFaceName[4] = 'l';
 	}
 
 	CEmfLogFont::~CEmfLogFont()
@@ -177,7 +206,8 @@ namespace MetaFile
 
 	std::wstring CEmfLogFont::GetFaceName() const
 	{
-		return NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32);
+		const std::wstring wsFaceName{NSFile::CUtf8Converter::GetWStringFromUTF16(oLogFontEx.oLogFont.ushFaceName, 32)};
+		return wsFaceName.substr(0, wsFaceName.find(L'\0'));
 	}
 	
 	int CEmfLogFont::GetWeight() const
@@ -268,6 +298,16 @@ namespace MetaFile
 	{
 		arDatas = NULL;
 		unSize  = 0;
+	}
+
+	const ILineCap* CEmfLogPen::GetStartLineCap() const
+	{
+		return NULL;
+	}
+
+	const ILineCap* CEmfLogPen::GetEndLineCap() const
+	{
+		return NULL;
 	}
 
 	CEmfLogPalette::CEmfLogPalette() : ushNumberOfEntries(0), pPaletteEntries(NULL)

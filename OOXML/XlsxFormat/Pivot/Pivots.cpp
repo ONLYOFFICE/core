@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -146,6 +146,7 @@
 
 #include <codecvt>
 #include "boost/date_time/gregorian/gregorian.hpp"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -2681,10 +2682,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             else if(ptr->sxaxis.bRw)
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisRow;
             else if(ptr->sxaxis.bData)
-            {
                 m_oAxis = SimpleTypes::Spreadsheet::EPivotAxisType::axisValues;
+            if(ptr->sxaxis.bData)
                 m_oDataField = ptr->sxaxis.bData;
-            }
             if(!ptr->fCompact)
                 m_oCompact                  = ptr->fCompact;
 
@@ -6947,7 +6947,13 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
         {
-            XLSB::PivotCacheRecordsStreamPtr pivotCacheRecordsStream(new XLSB::PivotCacheRecordsStream);
+            BYTE* fileStream = 0;
+            auto fileReader = xlsb->GetFileReader(oPath, fileStream);
+            ///todo чтение записей из стрима
+            m_oPivotCacheRecords.Init();
+            m_oPivotCacheRecords->fromBin(fileReader);
+            delete[] fileStream;
+            /*XLSB::PivotCacheRecordsStreamPtr pivotCacheRecordsStream(new XLSB::PivotCacheRecordsStream);
 
             xlsb->ReadBin(oPath, pivotCacheRecordsStream.get());
 
@@ -6955,7 +6961,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             {
                 if (pivotCacheRecordsStream->m_PIVOTCACHERECORDS != nullptr)
                     m_oPivotCacheRecords = pivotCacheRecordsStream->m_PIVOTCACHERECORDS;
-            }
+            }*/
 
             //pivotCacheRecordsStream.reset();
         }
@@ -7133,6 +7139,41 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			writer.WriteString(L"</pivotCacheRecords>");
 			m_strOutputXml = writer.GetData();
 			writer.Clear();
+        }
+    }
+    void CPivotCacheRecords::fromBin(XLS::StreamCacheReaderPtr& reader)
+    {
+        auto type = reader->getNextRecordType();
+        if(type == XLSB::rt_BeginPivotCacheRecords)
+        {
+            _UINT32 recordsCount;
+            {
+                auto BeginRecords = reader->getNextRecord(XLSB::rt_BeginPivotCacheRecords);
+                *BeginRecords >> recordsCount;
+                m_oCount = recordsCount;
+            }
+
+            NSStringUtils::CStringBuilder writer;
+            writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+            writer.WriteString(L"<pivotCacheRecords \
+xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+mc:Ignorable=\"xr16\" \
+xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"");
+            WritingStringAttrInt(L"count", recordsCount);
+            writer.WriteString(L">");
+
+            while(recordsCount > 0)
+            {
+                type = reader->getNextRecordType();
+                if(type!= XLSB::rt_PCRRecord && type != XLSB::rt_PCRRecordDt)
+                    break;
+                CPivotCacheRecord xmlItem;
+                xmlItem.fromBin(reader);
+                xmlItem.toXML(writer);
+                recordsCount--;
+            }
         }
     }
 	XLS::BaseObjectPtr CPivotCacheRecords::toBin()
@@ -7374,6 +7415,154 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                                 break;
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+    void CPivotCacheRecord::fromBin(XLS::StreamCacheReaderPtr& reader)
+    {
+        auto recordType = reader->getNextRecordType();
+        if(recordType == XLSB::rt_PCRRecordDt)
+        {
+            reader->SkipRecord(false);
+            recordType = reader->getNextRecordType();
+            while(1)
+            {
+                switch(recordType)
+                {
+                    case XLSB::rt_PCDIMissing:
+                    {
+                         reader->SkipRecord(false);
+                         recordType = reader->getNextRecordType();
+                         m_arrItems.push_back(new CPivotNoValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDINumber:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDINumber);
+                         XLS::Xnum number;
+                         *record >>number;
+                         auto numValue = new CPivotNumericValue;
+                         numValue->m_oValue = number.data.value;
+                         m_arrItems.push_back(numValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDIBoolean:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDIBoolean);
+                         BYTE boolval;
+                         *record >>boolval;
+                         auto BoleanValue = new CPivotBooleanValue;
+                         BoleanValue->m_oValue = boolval;
+                         m_arrItems.push_back(BoleanValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDIString:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDIString);
+                         XLSB::XLWideString StringVal;
+                         *record >>StringVal;
+                         auto CharacterValue = new CPivotCharacterValue;
+                         CharacterValue->m_oValue = StringVal;
+                         m_arrItems.push_back(CharacterValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDIDatetime:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDIDatetime);
+                         XLSB::PCDIDateTime DateVal;
+                         *record >>DateVal;
+                         auto DatetimeValue = new CPivotDateTimeValue;
+                         DatetimeValue->m_oValue = DateVal.value();
+                         m_arrItems.push_back(DatetimeValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDIIndex:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDIIndex);
+                         _UINT32 iitem;
+                         *record >>iitem;
+                         auto IndexValue = new CSharedItemsIndex;
+                         IndexValue->m_oV = iitem;
+                         m_arrItems.push_back(IndexValue);
+                         break;
+                    }
+                    case XLSB::rt_PCDIError:
+                    {
+                         auto record = reader->getNextRecord(XLSB::rt_PCDIError);
+                         BYTE erorIndex;
+                         *record >>erorIndex;
+                         auto ErrValue = new CPivotErrorValue;
+                         switch(erorIndex)
+                         {
+                             case 0x00: ErrValue->m_oValue = L"#NULL!"; break;
+                             case 0x07: ErrValue->m_oValue = L"#DIV/0!"; break;
+                             case 0x0F: ErrValue->m_oValue = L"#VALUE!"; break;
+                             case 0x17: ErrValue->m_oValue = L"#REF!"; break;
+                             case 0x1D: ErrValue->m_oValue = L"#NAME?"; break;
+                             case 0x24: ErrValue->m_oValue = L"#NUM!"; break;
+                             case 0x2A: ErrValue->m_oValue = L"#N/A"; break;
+                             case 0x2B: ErrValue->m_oValue = L"#GETTING_DATA"; break;
+                         }
+                         m_arrItems.push_back(ErrValue);
+                         break;
+                    }
+                    default:
+                        return;
+                }
+                recordType = reader->getNextRecordType();
+            }
+        }
+        else if(recordType == XLSB::rt_PCRRecord)
+        {
+            auto record = reader->getNextRecord(XLSB::rt_PCRRecord);
+            if (record->checkFitReadSafe(1))
+            {
+                auto arrPivotCacheRecordType = record->getGlobalWorkbookInfo()->pivotCacheRecordType.find(record->getGlobalWorkbookInfo()->currentPivotCacheRecord - 1);
+                if (arrPivotCacheRecordType != record->getGlobalWorkbookInfo()->pivotCacheRecordType.end())
+                {
+                    for(const auto& item : arrPivotCacheRecordType->second)
+                    switch (item)
+                    {
+                        case XLS::typePCDIIndex:
+                        {
+                            _UINT32 iitem;
+                            *record >>iitem;
+                            auto IndexValue = new CSharedItemsIndex;
+                            IndexValue->m_oV = iitem;
+                            m_arrItems.push_back(IndexValue);
+                            break;
+                        }
+                        case XLS::typePCDINumber:
+                        {
+                            XLS::Xnum number;
+                            *record >>number;
+                            auto numValue = new CPivotNumericValue;
+                            numValue->m_oValue = number.data.value;
+                            m_arrItems.push_back(numValue);
+                            break;
+                        }
+                        case XLS::typePCDIDatetime:
+                        {
+                            XLSB::PCDIDateTime DateVal;
+                            *record >>DateVal;
+                            auto DatetimeValue = new CPivotDateTimeValue;
+                            DatetimeValue->m_oValue = DateVal.value();
+                            m_arrItems.push_back(DatetimeValue);
+                            break;
+                        }
+                        case XLS::typePCDIString:
+                        {
+                             XLSB::XLWideString StringVal;
+                             *record >>StringVal;
+                             auto CharacterValue = new CPivotCharacterValue;
+                             CharacterValue->m_oValue = StringVal;
+                             m_arrItems.push_back(CharacterValue);
+                             break;
+                        }
+                        default:
+                            break;
                     }
                 }
             }

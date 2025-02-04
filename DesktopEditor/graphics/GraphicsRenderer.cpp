@@ -822,7 +822,8 @@ HRESULT CGraphicsRenderer::EndCommand(const DWORD& lType)
 			m_pPath->SetRuler(bIsIn ? false : true);
 
 			INT bIsIntersect = (c_nClipRegionIntersect == (0x0100 & m_lCurrentClipMode));
-			m_pRenderer->CombineClip(m_pPath, bIsIntersect ? agg::sbool_and : agg::sbool_or);
+			INT bIsStrokePath = (c_nClipToStrokePath == (0x0010 & m_lCurrentClipMode));
+			m_pRenderer->CombineClip(m_pPath, bIsIntersect ? agg::sbool_and : agg::sbool_or, bIsStrokePath ? &m_oPen : NULL);
 
 			//m_pRenderer->SetClip(m_pPath);
 			break;
@@ -955,61 +956,62 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				}
 
 				Aggplus::CBrushTexture* pTextureBrush = NULL;
-				
-				if (NULL != m_pCache)
-				{
-                    pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
 
-					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
+				if (NULL != m_oBrush.Image)
+				{
+					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
+				}
+				else if (m_oBrush.TexturePath.find(L"data:") == 0)
+				{
+					bool bIsOnlyOfficeHatch = false;
+					if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
+					bIsOnlyOfficeHatch = true;
+
+					int countErase = (int)(m_oBrush.TexturePath.find(',') + 1);
+					int nInputSize = (int)(m_oBrush.TexturePath.length() - countErase);
+					const wchar_t* pInputSrc = m_oBrush.TexturePath.c_str() + countErase;
+
+					int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(nInputSize);
+					BYTE* pImageData = new BYTE[nDecodeLen];
+					if (TRUE == NSBase64::Base64Decode(pInputSrc, nInputSize, pImageData, &nDecodeLen))
+					{
+						CBgraFrame oFrame;
+						if (bIsOnlyOfficeHatch)
+						{
+							int nSize = (int)sqrt(nDecodeLen >> 2);
+							oFrame.put_IsRGBA(true);
+							oFrame.put_Data(pImageData);
+							oFrame.put_Width(nSize);
+							oFrame.put_Height(nSize);
+							oFrame.put_Stride(4 * nSize);
+						}
+						else
+						{
+							oFrame.put_IsRGBA(false);
+							oFrame.Decode(pImageData, nDecodeLen);
+							RELEASEARRAYOBJECTS(pImageData);
+						}
+						// pImage отдается pTextureBrush и освобождается вместе с pBrush
+						Aggplus::CImage* pImage = new Aggplus::CImage();
+						pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
+						oFrame.ClearNoAttack();
+						pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
+						pTextureBrush->m_bReleaseImage = TRUE;
+					}
+					else
+						RELEASEARRAYOBJECTS(pImageData);
 				}
 				else
 				{
-				#ifdef BUILDING_WASM_MODULE
-					if (NULL != m_oBrush.Image)
-						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
-					else if (m_oBrush.TexturePath.find(L"data:") == 0)
+					if (NULL != m_pCache)
 					{
-						bool bIsOnlyOfficeHatch = false;
-						if (m_oBrush.TexturePath.find(L"onlyoffice_hatch") != std::wstring::npos)
-							bIsOnlyOfficeHatch = true;
-						std::string sBase64MultyByte(m_oBrush.TexturePath.begin(), m_oBrush.TexturePath.end());
-						sBase64MultyByte.erase(0, sBase64MultyByte.find(',') + 1);
-						int nDecodeLen = NSBase64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
-						BYTE* pImageData = new BYTE[nDecodeLen + 64];
-						if (TRUE == NSBase64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), pImageData, &nDecodeLen))
-						{
-							CBgraFrame oFrame;
-							if (bIsOnlyOfficeHatch)
-							{
-								int nSize = (int)sqrt(nDecodeLen >> 2);
-								oFrame.put_IsRGBA(true);
-								oFrame.put_Data(pImageData);
-								oFrame.put_Width(nSize);
-								oFrame.put_Height(nSize);
-								oFrame.put_Stride(4 * nSize);
-							}
-							else
-							{
-								oFrame.put_IsRGBA(false);
-								oFrame.Decode(pImageData, nDecodeLen);
-								RELEASEARRAYOBJECTS(pImageData);
-							}
-							// pImage отдается pTextureBrush и освобождается вместе с pBrush
-							Aggplus::CImage* pImage = new Aggplus::CImage();
-							pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
-							oFrame.ClearNoAttack();
-							pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
-							pTextureBrush->m_bReleaseImage = TRUE;
-						}
-						else
-							RELEASEARRAYOBJECTS(pImageData);
+						pCacheImage = (CCacheImage*)m_pCache->Lock(m_oBrush.TexturePath);
+						pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 					}
-				#else
-					if (NULL != m_oBrush.Image)
-						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.Image, oMode);
 					else
+					{
 						pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
-                #endif
+					}
 				}
 
 				if( pTextureBrush )

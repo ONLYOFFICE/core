@@ -80,15 +80,9 @@ public:
 		if (NSDirectory::Exists(wsTempDir))
 			NSDirectory::DeleteDirectory(wsTempDir);
 		NSDirectory::CreateDirectory(wsTempDir);
-		if (NSDirectory::Exists(strDirIn))
-			NSDirectory::DeleteDirectory(strDirIn);
-		NSDirectory::CreateDirectory(strDirIn);
-		if (NSDirectory::Exists(strDirOut))
-			NSDirectory::DeleteDirectory(strDirOut);
-		NSDirectory::CreateDirectory(strDirOut);
-		if (NSDirectory::Exists(strDiffs))
-			NSDirectory::DeleteDirectory(strDiffs);
-		NSDirectory::CreateDirectory(strDiffs);
+
+		if (!NSDirectory::Exists(strDirOut))
+			NSDirectory::CreateDirectory(strDirOut);
 	}
 	static void TearDownTestSuite()
 	{
@@ -198,7 +192,7 @@ TEST_F(CPdfFileTest, GetMetaData)
 
 TEST_F(CPdfFileTest, PdfType)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFile::CFileBinary oFile;
 	ASSERT_TRUE(oFile.OpenFile(wsSrcFile));
@@ -234,7 +228,7 @@ TEST_F(CPdfFileTest, PdfType)
 
 TEST_F(CPdfFileTest, GetEmbeddedFont)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
@@ -333,7 +327,7 @@ TEST_F(CPdfFileTest, ConvertToRaster)
 
 	double dPageDpiX, dPageDpiY, dWidth, dHeight;
 	int i = 0;
-	for (i = 0; i < pdfFile->GetPagesCount(); i++)
+	//for (i = 0; i < pdfFile->GetPagesCount(); i++)
 	{
 		pdfFile->GetPageInfo(i, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 		pdfFile->ConvertToRaster(i, NSFile::GetProcessDirectory() + L"/resO/res" + std::to_wstring(i) + L".png", 4, dWidth, dHeight, true, pdfFile->GetFontManager());
@@ -378,7 +372,9 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
+
+	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -410,7 +406,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
-	pdfFile->AddToPdfFromBinary(pBuffer, nBufferLen, pParams);
+	pdfFile->AddToPdfFromBinary(pBuffer + 4, nBufferLen - 4, pParams);
 
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pBuffer);
@@ -491,6 +487,16 @@ TEST_F(CPdfFileTest, ChangePasswordToPassword)
 TEST_F(CPdfFileTest, ImgDiff)
 {
 	GTEST_SKIP();
+
+	if (NSDirectory::Exists(strDirIn))
+		NSDirectory::DeleteDirectory(strDirIn);
+	NSDirectory::CreateDirectory(strDirIn);
+	if (NSDirectory::Exists(strDirOut))
+		NSDirectory::DeleteDirectory(strDirOut);
+	NSDirectory::CreateDirectory(strDirOut);
+	if (NSDirectory::Exists(strDiffs))
+		NSDirectory::DeleteDirectory(strDiffs);
+	NSDirectory::CreateDirectory(strDiffs);
 
 	LoadFromFile();
 

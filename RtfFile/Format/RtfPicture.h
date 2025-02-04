@@ -55,6 +55,11 @@ public:
 	int m_nCropR;
 	int m_nCropB;
 
+	RtfBorder m_oBorderTop;
+	RtfBorder m_oBorderLeft;
+	RtfBorder m_oBorderBottom;
+	RtfBorder m_oBorderRight;
+
 	bool			m_bIsCopy;		// true - надо удалять m_sPicFilename, false - не надо удалять
     std::wstring	m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
 

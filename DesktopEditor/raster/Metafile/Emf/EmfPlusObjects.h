@@ -189,6 +189,7 @@ namespace MetaFile
 		void         GetCenterPoint(double& dX, double& dY) const override;
 		void         GetBounds(double& left, double& top, double& width, double& height) const override;
 
+		void GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const override;
 	public:
 		TEmfPlusARGB   oColor;
 		TEmfPlusARGB   oColorBack;
@@ -198,6 +199,8 @@ namespace MetaFile
 		TEmfPlusPointF oCenterPoint;
 		unsigned int   unAngle;
 		std::wstring   wsDibPatternPath;
+
+		std::vector<std::pair<TEmfPlusARGB, double>> arGradientColors;
 	};
 
 	class CEmfPlusPen: public CEmfPlusObject, public IPen
@@ -209,14 +212,15 @@ namespace MetaFile
 		virtual EEmfPlusObjectType GetObjectType() const override;
 
 		// IPen
-		int          GetColor()      const override;
-		unsigned int GetStyle()      const override;
-		double       GetWidth()      const override;
-		unsigned int GetAlpha()      const override;
-		double       GetMiterLimit() const override;
-		double       GetDashOffset() const override;
-		void         GetDashData(double*& arDatas, unsigned int& unSize) const override;
-
+		int             GetColor()        const override;
+		unsigned int    GetStyle()        const override;
+		double          GetWidth()        const override;
+		unsigned int    GetAlpha()        const override;
+		double          GetMiterLimit()   const override;
+		double          GetDashOffset()   const override;
+		void            GetDashData(double*& arDatas, unsigned int& unSize) const override;
+		const ILineCap* GetStartLineCap() const override;
+		const ILineCap* GetEndLineCap()   const override;
 	public:
 		unsigned int   unStyle;
 		double         dWidth;

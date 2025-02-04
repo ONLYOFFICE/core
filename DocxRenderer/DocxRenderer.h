@@ -55,13 +55,9 @@ public:
 
 	HRESULT      Compress();
 	HRESULT      SetTempFolder(const std::wstring& wsPath);
-	//----------------------------------------------------------------------------------------
-	// Тип рендерера
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT get_Type(LONG* lType);
-	//----------------------------------------------------------------------------------------
-	// Функции для работы со страницей
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT NewPage();
 	virtual HRESULT get_Height(double* dHeight);
 	virtual HRESULT put_Height(const double& dHeight);
@@ -69,9 +65,7 @@ public:
 	virtual HRESULT put_Width(const double& dWidth);
 	virtual HRESULT get_DpiX(double* dDpiX);
 	virtual HRESULT get_DpiY(double* dDpiY);
-	//----------------------------------------------------------------------------------------
-	// Функции для работы с Pen
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT get_PenColor(LONG* lColor);
 	virtual HRESULT put_PenColor(const LONG& lColor);
 	virtual HRESULT get_PenAlpha(LONG* lAlpha);
@@ -93,9 +87,7 @@ public:
 	virtual HRESULT get_PenMiterLimit(double* dMiter);
 	virtual HRESULT put_PenMiterLimit(const double& dMiter);
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
-	//----------------------------------------------------------------------------------------
-	// Функции для работы с Brush
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT get_BrushType(LONG* lType);
 	virtual HRESULT put_BrushType(const LONG& lType);
 	virtual HRESULT get_BrushColor1(LONG* lColor);
@@ -114,16 +106,17 @@ public:
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lAlpha);
 	virtual HRESULT get_BrushLinearAngle(double* dAngle);
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
+
 	virtual HRESULT BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 	virtual HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
+
 	virtual HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
 	virtual HRESULT get_BrushTextureImage(Aggplus::CImage** pImage);
 	virtual HRESULT put_BrushTextureImage(Aggplus::CImage* pImage);
 	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
-	//----------------------------------------------------------------------------------------
-	// Функции для работы со шрифтами
-	//----------------------------------------------------------------------------------------
+	virtual void put_BrushGradInfo(void* pGradInfo) override;
+
 	virtual HRESULT get_FontName(std::wstring* wsName);
 	virtual HRESULT put_FontName(const std::wstring& wsName);
 	virtual HRESULT get_FontPath(std::wstring* wsPath);
@@ -138,21 +131,15 @@ public:
 	virtual HRESULT put_FontCharSpace(const double& dSpace);
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex);
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex);
-	//----------------------------------------------------------------------------------------
-	// Функции для вывода текста
-	//----------------------------------------------------------------------------------------
-	virtual HRESULT CommandDrawTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
+
+	virtual HRESULT CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH);
-	virtual HRESULT CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
-	virtual HRESULT CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
-	//----------------------------------------------------------------------------------------
-	// Маркеры команд
-	//----------------------------------------------------------------------------------------
+	virtual HRESULT CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
+
 	virtual HRESULT BeginCommand(const DWORD& lType);
 	virtual HRESULT EndCommand(const DWORD& lType);
-	//----------------------------------------------------------------------------------------
-	// Функции для работы с патом
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT PathCommandMoveTo(const double& dX, const double& dY);
 	virtual HRESULT PathCommandLineTo(const double& dX, const double& dY);
 	virtual HRESULT PathCommandLinesTo(double* pPoints, const int& nCount);
@@ -164,32 +151,27 @@ public:
 	virtual HRESULT DrawPath(const LONG& lType);
 	virtual HRESULT PathCommandStart();
 	virtual HRESULT PathCommandGetCurrentPoint(double* dX, double* dY);
-	virtual HRESULT PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH);
-	virtual HRESULT PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
-	virtual HRESULT PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
-	//----------------------------------------------------------------------------------------
-	// Функции для вывода изображений
-	//----------------------------------------------------------------------------------------
+	virtual HRESULT PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT PathCommandTextEx (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
+
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha = 255);
-	//----------------------------------------------------------------------------------------
-	// Функции для выставления преобразования
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY);
 	virtual HRESULT GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY);
 	virtual HRESULT ResetTransform();
-	//----------------------------------------------------------------------------------------
-	// Тип клипа
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT get_ClipMode(LONG* lMode);
 	virtual HRESULT put_ClipMode(const LONG& lMode);
-	//----------------------------------------------------------------------------------------
-	// Дополнительные функции
-	//----------------------------------------------------------------------------------------
+
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
+
+	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
+	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
 
 	// методы, которыми будет пользоваться конвертер
 	HRESULT SetTextAssociationType(const NSDocxRenderer::TextAssociationType& eType);
@@ -198,10 +180,6 @@ public:
 	std::vector<std::wstring> ScanPagePptx(IOfficeDrawingFile* pFile, size_t nPage);
 
 	void SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage);
-
-	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
-	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
-
 private:
 	CDocxRenderer_Private* m_pInternal;
 	void DrawPage(IOfficeDrawingFile* pFile, size_t nPage);

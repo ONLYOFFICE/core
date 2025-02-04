@@ -95,6 +95,23 @@ bool OOX::Spreadsheet::CXlsb::ReadBin(const CPath& oFilePath, XLS::BaseObject* o
 
     return true;
 }
+XLS::StreamCacheReaderPtr OOX::Spreadsheet::CXlsb::GetFileReader(const CPath& oFilePath, BYTE* &streamBuf)
+{
+    NSFile::CFileBinary oFile;
+    if (oFile.OpenFile(oFilePath.GetPath()) == false)
+        return nullptr;
+
+    auto m_lStreamLen = (LONG)oFile.GetFileSize();
+    streamBuf = new BYTE[m_lStreamLen];
+    DWORD dwRead = 0;
+    oFile.ReadFile(streamBuf, (DWORD)m_lStreamLen, dwRead);
+    oFile.CloseFile();
+
+    m_binaryReader->Init(streamBuf, 0, dwRead);
+
+    XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
+    return reader;
+}
 bool OOX::Spreadsheet::CXlsb::WriteBin(const CPath& oDirPath, OOX::CContentTypes& oContentTypes)
 {
     if (NULL == m_pWorkbook)
@@ -259,16 +276,16 @@ void OOX::Spreadsheet::CXlsb::ReadSheetData()
         XLS::BaseObjectPtr cell_table_temlate = XLS::BaseObjectPtr(new XLSB::CELLTABLE());
 
         XLS::StreamCacheReaderPtr reader(new XLS::BinaryStreamCacheReader(m_binaryReader, xls_global_info));
-        XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
+        //XLS::BinReaderProcessor proc(reader, cell_table_temlate.get(), true);
 
-        proc.SetRecordPosition(dataPosition);
+        reader->SetRecordPosition(dataPosition);
 
-        proc.mandatory(*cell_table_temlate.get());
-        delete[] m_pStream;
+        //proc.mandatory(*cell_table_temlate.get());
+
 
         //auto base = boost::static_pointer_cast<BaseObject>(cell_table_temlate);
-        worksheet->m_oSheetData->fromBin(cell_table_temlate);
-
+        worksheet->m_oSheetData->fromBin(reader);
+        delete[] m_pStream;
         //для оптимизации по памяти сразу записываем в файл все листы
         if(m_bWriteToXlsx)
         {
@@ -319,6 +336,10 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                     {
                         auto tableName = tableIndex->second;
                         formula.replace(formula.find(str), str.size(), tableName);
+                    }
+                    else
+                    {
+                        formula.replace(formula.find(str), str.size(), L"#NAME?");
                     }
                 }
                 str = STR::guidFromStr(formula);

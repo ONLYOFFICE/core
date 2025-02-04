@@ -477,8 +477,10 @@ void pptx_slide_context::add_background(_oox_fill & fill)
 	impl_->background_fill_ = fill;
 }
 
-void pptx_slide_context::set_name(std::wstring const & name)
+void pptx_slide_context::set_name(std::wstring name)
 {
+	boost::replace_all(name, L"&", L"&amp;");
+
 	impl_->object_description_.name_ = name;
 }
 

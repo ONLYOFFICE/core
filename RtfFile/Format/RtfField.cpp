@@ -270,8 +270,8 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 	
 	if( true == m_bTextOnly )
 	{
-		RenderParameter oNewParam	= oRenderParameter;
-		oNewParam.nType				= RENDER_TO_OOX_PARAM_RUN;
+		RenderParameter oNewParam = oRenderParameter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 
 		sResult += m_pResult->m_pTextItems->RenderToOOX(oNewParam);
 	}
@@ -303,13 +303,13 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 			m_pInsert->m_oCharProperty.m_nDeleted = PROP_DEF;
 		}
 		//поверяем на наличие гиперссылки
-		RenderParameter oNewParam	= oRenderParameter;
-		oNewParam.nType				= RENDER_TO_OOX_PARAM_PLAIN;
+		RenderParameter oNewParam = oRenderParameter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
 		
         std::wstring sInsertText = m_pInsert->m_pTextItems->RenderToOOX( oNewParam );
 		
         size_t nIndex = sInsertText.find( L"HYPERLINK" );
-		if( std::wstring::npos != nIndex )
+		if ( std::wstring::npos != nIndex && (m_pResult) && (m_pResult->m_pTextItems) && m_pResult->m_pTextItems->GetCount() < 2)
 		{
             std::wstring sHyperlink = sInsertText;
             sHyperlink.erase( nIndex, 9/*(int)_tcslen( L"HYPERLINK" )*/ );
@@ -354,8 +354,8 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		else
 		{
-			RenderParameter oNewParametr	= oRenderParameter;
-			oNewParametr.nType				= RENDER_TO_OOX_PARAM_PLAIN;
+			RenderParameter oNewParametr = oRenderParameter;
+			oNewParametr.nType = RENDER_TO_OOX_PARAM_FIELD;
 
 			std::wstring props = m_pResult->m_oCharProperty.RenderToOOX(oRenderParameter);
             if (!props.empty()) props = L"<w:rPr>" + props + L"</w:rPr>";
@@ -430,26 +430,21 @@ std::wstring RtfField::RenderToOOX(RenderParameter oRenderParameter)
 
 			sResult += L"</w:r>";
 	//-----------
-            sResult += L"<w:r>";
-            if (!props.empty())
-				sResult += props;			
-			
-			sResult += L"<w:instrText xml:space=\"preserve\">";
-
-			if (m_pInsert->m_pTextItems)
+			if ((m_pInsert->m_pTextItems) && (m_pInsert->m_pTextItems->GetCount() > 0))
 			{
-                sResult += XmlUtils::EncodeXmlString( m_pInsert->m_pTextItems->RenderToOOX(oNewParametr), true );
+				for (int i = 0; i < m_pInsert->m_pTextItems->GetCount(); i++)
+				{
+					sResult += m_pInsert->m_pTextItems->m_aArray[i]->RenderToOOX(oNewParametr);
+				}
 			}
-			sResult += L"</w:instrText></w:r>";
-			
+			oNewParametr = oRenderParameter;
 	// разделитель
 			sResult += L"<w:r>";
 			sResult += L"<w:fldChar w:fldCharType=\"separate\"/></w:r>";
 			
-	//пишем содержание-кэш		
+	//пишем содержание-кэш	
 			if ((m_pResult->m_pTextItems) && (m_pResult->m_pTextItems->GetCount() > 0))
 			{
-				oNewParametr.nType = RENDER_TO_OOX_PARAM_RUN;
 				sResult +=  m_pResult->m_pTextItems->m_aArray[0]->RenderToOOX(oNewParametr);
 
 				for (int i = 1; i < m_pResult->m_pTextItems->GetCount(); i++)

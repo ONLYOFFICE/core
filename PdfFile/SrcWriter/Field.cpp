@@ -1638,6 +1638,9 @@ namespace PdfWriter
 		{
 			m_pStream = new CMemoryStream();
 			SetStream(m_pXref, m_pStream);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+			SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 		}
 
 		Add("Type", "XObject");
@@ -1930,7 +1933,7 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::StartDrawText(CFontDict* pFont, const double& dFontSize, const double& dR, const double& dG, const double& dB, const char* sExtGStateName, const double& dWidth, const double& dHeight)
 	{
 		CResourcesDict* pResources = dynamic_cast<CResourcesDict*>(Get("Resources"));
-		if (!m_pStream || !pFont || !pResources)
+		if (!m_pStream || !pResources)
 			return;
 
 		CWidgetAnnotation* pAnnot = NULL;
@@ -2221,7 +2224,7 @@ namespace PdfWriter
 			m_pStream->WriteReal(m_dFontSize);
 			m_pStream->WriteStr(" Tf\012");
 		}
-		else
+		else if (pFont)
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 
 		m_bStart = true;
@@ -2288,7 +2291,8 @@ namespace PdfWriter
 		m_bStart = true;
 
 		m_pStream->WriteStr("BT\012");
-		m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
+		if (pFont)
+			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 	}
 	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
 	{
@@ -2622,6 +2626,17 @@ namespace PdfWriter
 		pArray->Add(dW);
 		pArray->Add(dH);
 	}
+	void CAnnotAppearanceObject::AddMatrix(double sx, double shy, double shx, double sy, double tx, double ty)
+	{
+		CArrayObject* pArray = new CArrayObject();
+		Add("Matrix", pArray);
+		pArray->Add(sx);
+		pArray->Add(shy);
+		pArray->Add(shx);
+		pArray->Add(sy);
+		pArray->Add(tx);
+		pArray->Add(ty);
+	}
 	void CAnnotAppearanceObject::DrawTextCommentN(const std::string& sColor)
 	{
 		CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(0.6, 0.6);
@@ -2765,7 +2780,7 @@ namespace PdfWriter
 	void CAnnotAppearanceObject::DrawTextNote(const std::string& sColor)
 	{
 		m_pStream->WriteStr(sColor.c_str());
-		m_pStream->WriteStr("0 G 0 i 0.61 w 4 M 0 j 0 J [] 0 d q 1 0 0 1 16.959 1.3672 cm 0 0 m 0 -0.434 -0.352 -0.785 -0.784 -0.785 c -14.911 -0.785 l");
+		m_pStream->WriteStr(" 0 G 0 i 0.61 w 4 M 0 j 0 J [] 0 d q 1 0 0 1 16.959 1.3672 cm 0 0 m 0 -0.434 -0.352 -0.785 -0.784 -0.785 c -14.911 -0.785 l ");
 		m_pStream->WriteStr("-15.345 -0.785 -15.696 -0.434 -15.696 0 c -15.696 17.266 l -15.696 17.699 -15.345 18.051 -14.911 18.051 c -0.784 18.051 l -0.352 18.051 0 17.699 0 17.266 c ");
 		m_pStream->WriteStr("h b Q q 1 0 0 1 4.4023 13.9243 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4019 11.2207 cm 0 0 m 9.418 0 l S Q q 1 0 0 1 4.4023 8.5176 cm 0 0 m 9.418 0 l S Q q ");
 		m_pStream->WriteStr("1 0 0 1 4.4023 5.8135 cm 0 0 m 9.418 0 l S Q");
@@ -2804,7 +2819,7 @@ namespace PdfWriter
 		m_pStream->WriteStr("1 0 0 1 3.7856 11.1963 cm 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
 		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c h f Q ");
 		m_pStream->WriteStr(sColor.c_str());
-		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 3.7856 11.1963 cm 0 0 m 8.554 0 l 6.045 2.51 l 7.236 3.702 l 12.135 -1.197 l 7.236 -6.096 l 6.088 -4.949 l");
+		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 0 j 0 J [] 0 d 1 0 0 1 3.7856 11.1963 cm 0 0 m 8.554 0 l 6.045 2.51 l 7.236 3.702 l 12.135 -1.197 l 7.236 -6.096 l 6.088 -4.949 l ");
 		m_pStream->WriteStr("8.644 -2.394 l 0 -2.394 l h 6.214 -10.655 m 11.438 -10.655 15.673 -6.42 15.673 -1.196 c 15.673 4.027 11.438 8.262 6.214 8.262 c ");
 		m_pStream->WriteStr("0.991 8.262 -3.244 4.027 -3.244 -1.196 c -3.244 -6.42 0.991 -10.655 6.214 -10.655 c b");
 	}

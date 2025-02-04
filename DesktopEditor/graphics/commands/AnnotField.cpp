@@ -75,6 +75,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pPopupPr        = NULL;
 	m_pFreeTextPr     = NULL;
 	m_pCaretPr        = NULL;
+	m_pStampPr        = NULL;
 	m_pWidgetPr       = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
@@ -89,6 +90,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pPopupPr);
 	RELEASEOBJECT(m_pFreeTextPr);
 	RELEASEOBJECT(m_pCaretPr);
+	RELEASEOBJECT(m_pStampPr);
 	RELEASEOBJECT(m_pWidgetPr);
 }
 
@@ -156,6 +158,15 @@ void CAnnotFieldInfo::SetType(int nType)
 		m_pTextMarkupPr = new CAnnotFieldInfo::CTextMarkupAnnotPr();
 		break;
 	}
+	case 12:
+	{
+		RELEASEOBJECT(m_pMarkupPr);
+		m_pMarkupPr = new CAnnotFieldInfo::CMarkupAnnotPr();
+
+		RELEASEOBJECT(m_pStampPr);
+		m_pStampPr = new CAnnotFieldInfo::CStampAnnotPr();
+		break;
+	}
 	case 13:
 	{
 		RELEASEOBJECT(m_pMarkupPr);
@@ -221,6 +232,7 @@ BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 }
 const std::wstring& CAnnotFieldInfo::GetNM() { return m_wsNM; }
 const std::wstring& CAnnotFieldInfo::GetLM() { return m_wsLM; }
+const std::wstring& CAnnotFieldInfo::GetOUserID() { return m_wsOUserID; }
 const std::wstring& CAnnotFieldInfo::GetContents() { return m_wsContents; }
 const std::vector<double>& CAnnotFieldInfo::GetC() { return m_arrC; }
 
@@ -284,6 +296,10 @@ bool CAnnotFieldInfo::IsCaret() const
 {
 	return (m_nType == 13);
 }
+bool CAnnotFieldInfo::IsStamp() const
+{
+	return (m_nType == 12);
+}
 
 CAnnotFieldInfo::CMarkupAnnotPr*       CAnnotFieldInfo::GetMarkupAnnotPr()       { return m_pMarkupPr; }
 CAnnotFieldInfo::CTextAnnotPr*         CAnnotFieldInfo::GetTextAnnotPr()         { return m_pTextPr; }
@@ -295,6 +311,7 @@ CAnnotFieldInfo::CPolygonLineAnnotPr*  CAnnotFieldInfo::GetPolygonLineAnnotPr() 
 CAnnotFieldInfo::CPopupAnnotPr*        CAnnotFieldInfo::GetPopupAnnotPr()        { return m_pPopupPr; }
 CAnnotFieldInfo::CFreeTextAnnotPr*     CAnnotFieldInfo::GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 CAnnotFieldInfo::CCaretAnnotPr*        CAnnotFieldInfo::GetCaretAnnotPr()        { return m_pCaretPr; }
+CAnnotFieldInfo::CStampAnnotPr*        CAnnotFieldInfo::GetStampAnnotPr()        { return m_pStampPr; }
 CAnnotFieldInfo::CWidgetAnnotPr*       CAnnotFieldInfo::GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
@@ -348,6 +365,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		m_pRender = pReader->GetCurrentBuffer();
 		pReader->Skip(m_nRenderLen);
 	}
+	if (nFlags & (1 << 7))
+		m_wsOUserID = pReader->ReadString();
 
 	if (IsMarkup())
 	{
@@ -372,6 +391,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			m_pFreeTextPr->Read(pReader, nFlags);
 		else if (IsCaret())
 			m_pCaretPr->Read(pReader, nFlags);
+		else if (IsStamp())
+			m_pStampPr->Read(pReader, nFlags);
 	}
 	else if (IsPopup())
 		m_pPopupPr->Read(pReader);
@@ -622,6 +643,19 @@ void CAnnotFieldInfo::CCaretAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader*
 	}
 	if (nFlags & (1 << 16))
 		m_nSy = pReader->ReadByte();
+}
+
+double CAnnotFieldInfo::CStampAnnotPr::GetRotate() { return m_nRotate; }
+const std::wstring& CAnnotFieldInfo::CStampAnnotPr::GetName() { return m_wsName; }
+void CAnnotFieldInfo::CStampAnnotPr::GetInRect(double& dRD1, double& dRD2, double& dRD3, double& dRD4) { dRD1 = m_dInRect[0]; dRD2 = m_dInRect[1]; dRD3 = m_dInRect[2]; dRD4 = m_dInRect[3]; }
+void CAnnotFieldInfo::CStampAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
+{
+	m_wsName = pReader->ReadString();
+	m_nRotate = pReader->ReadDouble();
+	m_dInRect[0] = pReader->ReadDouble();
+	m_dInRect[1] = pReader->ReadDouble();
+	m_dInRect[2] = pReader->ReadDouble();
+	m_dInRect[3] = pReader->ReadDouble();
 }
 
 bool CAnnotFieldInfo::CPopupAnnotPr::IsOpen()      const { return m_bOpen; }
@@ -931,6 +965,11 @@ int CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetMaxLen() const { return m
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetV()   { return m_wsV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetRV()  { return m_wsRV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetAPV() { return m_wsAPV; }
+BYTE* CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::GetRender(LONG& nLen)
+{
+	nLen = m_nRenderLen;
+	return m_pRender;
+}
 void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags, int nWidgetFlag)
 {
 	if (nFlags & (1 << 9))
@@ -941,6 +980,12 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 		m_wsRV = pReader->ReadString();
 	if (nFlags & (1 << 12))
 		m_wsAPV = pReader->ReadString();
+	if (nFlags & (1 << 13))
+	{
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
+	}
 }
 
 int CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetTI() const { return m_nTI; }
@@ -949,6 +994,11 @@ const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetAPV() {
 const std::vector<int>& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetI() { return m_arrI; }
 const std::vector<std::wstring>& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetArrV() { return m_arrV; }
 const std::vector< std::pair<std::wstring, std::wstring> >& CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetOpt() { return m_arrOpt; }
+BYTE* CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::GetRender(LONG& nLen)
+{
+	nLen = m_nRenderLen;
+	return m_pRender;
+}
 void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
 {
 	if (nFlags & (1 << 9))
@@ -978,6 +1028,12 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CChoiceWidgetPr::Read(NSOnlineOfficeBinToP
 		int n = pReader->ReadInt();
 		for (int i = 0; i < n; ++i)
 			m_arrI.push_back(pReader->ReadInt());
+	}
+	if (nFlags & (1 << 15))
+	{
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
 	}
 }
 

@@ -27,7 +27,6 @@ namespace MetaFile
 
 		void   SetStream(BYTE *pBytes, unsigned int unSize);
 		bool   GetBanEMFProcesses();
-
 	private:
 		void RegisterObject(CEmfPlusObject* pObject, unsigned int unIndex);
 
@@ -87,7 +86,7 @@ namespace MetaFile
 		template<typename T> std::vector<TEmfPlusPointF> GetConvertedPoints(std::vector<T>arPoints);
 		template<typename T> TEmfPlusRectF GetConvertedRectangle(T oRectangle);
 
-		void UpdateMatrix(TEmfPlusXForm& oMatrix);
+		double GetUnitToPixel(const double& dDpi, EEmfPlusUnitType eUnitType) const;
 
 		bool SaveImage(const CEmfPlusImage& oImage, std::wstring& wsPathToImage);
 
@@ -176,7 +175,8 @@ namespace MetaFile
 		unsigned int    m_unLogicalDpiX;
 		unsigned int    m_unLogicalDpiY;
 
-		double          m_dUnitKoef;
+		double          m_dPageTransformX;
+		double          m_dPageTransformY;
 
 		typedef std::map<unsigned int, CEmfPlusObject*> EmfPlusObjects;
 

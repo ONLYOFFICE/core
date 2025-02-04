@@ -198,6 +198,14 @@ void draw_line::docx_convert(oox::docx_conversion_context & Context)
 
 void draw_path::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool in_paragraph = !Context.get_paragraph_state();
+
+	if (in_paragraph)
+	{
+		Context.start_paragraph();
+		Context.add_new_run();
+	}
+	
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
  	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
 	{ 
@@ -209,6 +217,12 @@ void draw_path::docx_convert(oox::docx_conversion_context & Context)
 	//...
 	reset_svg_path();
 	draw_shape::docx_convert(Context);
+
+	if (in_paragraph)
+	{
+		Context.finish_run();
+		Context.finish_paragraph();	
+	}
 }
 
 void draw_connector::docx_convert(oox::docx_conversion_context & Context)

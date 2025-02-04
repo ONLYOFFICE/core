@@ -422,6 +422,7 @@ public:
 	int m_nFileType;
 	std::string m_sUtf8ArgumentJSON;
 	std::string m_sGlobalVariable;
+	std::string m_sJSCodeStart;
 
 	CJSContextData m_oContextData;
 
@@ -455,7 +456,8 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
-		bool m_bJavascriptBeforeEditor;
+
+		std::wstring m_sCommandsBeforeContextCreated;
 
 		std::wstring m_sX2tPath;
 
@@ -478,7 +480,7 @@ namespace NSDoctRenderer
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
-			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
+			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L"")
 		{
 		}
 
@@ -639,9 +641,6 @@ namespace NSDoctRenderer
 				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
 			}
 
-			if (m_bJavascriptBeforeEditor)
-				CheckWorkerAfterOpen();
-
 			return bRet;
 #else
 			std::wstring sPath = m_sX2tPath + L"/empty/new.";
@@ -728,22 +727,13 @@ namespace NSDoctRenderer
 			oBuilder.WriteEncodeXmlString(sFolder);
 			oBuilder.WriteString(L"/Editor.bin</m_sFileTo><m_nFormatTo>8192</m_nFormatTo>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			oBuilder.WriteString(L"<m_bIsNoBase64>true</m_bIsNoBase64>");
 			oBuilder.WriteString(L"<m_sThemeDir>./sdkjs/slide/themes</m_sThemeDir><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
@@ -939,11 +929,7 @@ namespace NSDoctRenderer
 			LOGGER_SPEED_LAP("open_convert");
 
 			if (0 == nReturnCode)
-			{
-				if (m_bJavascriptBeforeEditor)
-					CheckWorkerAfterOpen();
 				return 0;
-			}
 
 			NSDirectory::DeleteDirectory(m_sFileDir);
 			m_sFileDir = L"";
@@ -1054,22 +1040,13 @@ namespace NSDoctRenderer
 				oBuilder.WriteString(L"</m_sThemeDir><m_bFromChanges>true</m_bFromChanges><m_bDontSaveAdditional>true</m_bDontSaveAdditional>");
 			oBuilder.WriteString(L"<m_nCsvTxtEncoding>46</m_nCsvTxtEncoding><m_nCsvDelimiter>4</m_nCsvDelimiter>");
 
-			if (!m_bIsNotUseConfigAllFontsDir)
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(m_sX2tPath + L"/sdkjs/common");
-				oBuilder.WriteString(L"</m_sFontDir>");
-			}
-			else
-			{
-				oBuilder.WriteString(L"<m_sFontDir>");
-				oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
-				oBuilder.WriteString(L"</m_sFontDir>");
+			oBuilder.WriteString(L"<m_sFontDir>");
+			oBuilder.WriteEncodeXmlString(NSFile::GetDirectoryName(m_strAllFonts));
+			oBuilder.WriteString(L"</m_sFontDir>");
 
-				oBuilder.WriteString(L"<m_sAllFontsPath>");
-				oBuilder.WriteEncodeXmlString(m_strAllFonts);
-				oBuilder.WriteString(L"</m_sAllFontsPath>");
-			}
+			oBuilder.WriteString(L"<m_sAllFontsPath>");
+			oBuilder.WriteEncodeXmlString(m_strAllFonts);
+			oBuilder.WriteString(L"</m_sAllFontsPath>");
 
 			if (!sConvertionParams.empty())
 			{
@@ -1238,34 +1215,25 @@ namespace NSDoctRenderer
 		{
 			if (NULL == m_pWorker)
 			{
-				m_pWorker = new CV8RealTimeWorker(m_pParent, GetEditorType(), this);
+				NSDoctRenderer::DoctRendererEditorType editorType = GetEditorType();
+				if (NSDoctRenderer::DoctRendererEditorType::INVALID == editorType)
+					return false;
+
+				m_pWorker = new CV8RealTimeWorker(m_pParent, editorType, this);
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
+				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
+				m_sCommandsBeforeContextCreated = L"";
 
-				return CheckWorkerAfterOpen();
+				m_pWorker->m_nFileType = m_nFileType;
+
+				CV8Params oParams;
+				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+				oParams.DocumentDirectory = m_sFileDir;
+
+				return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams);
 			}
 			return true;
-		}
-
-		bool CheckWorkerAfterOpen()
-		{
-			if (!m_pWorker)
-				return false;
-
-			m_pWorker->m_nFileType = m_nFileType;
-			if (-1 == m_nFileType)
-			{
-				m_bJavascriptBeforeEditor = true;
-				return false;
-			}
-
-			m_bJavascriptBeforeEditor = false;
-
-			CV8Params oParams;
-			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
-			oParams.DocumentDirectory = m_sFileDir;
-
-			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetEditorType(), this, &oParams);
 		}
 
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
@@ -1279,21 +1247,26 @@ namespace NSDoctRenderer
 			if (command.length() < 7 && !retValue) // minimum command (!!!)
 				return true;
 
+			if (m_nFileType == -1)
+			{
+				m_sCommandsBeforeContextCreated += command;
+				return true;
+			}
+
 			Init();
 
-			bool bRes = CheckWorker();
+			if (CheckWorker())
+				return m_pWorker->ExecuteCommand(command, retValue);
 
-			if (!bRes && m_pWorker && m_bJavascriptBeforeEditor)
-				m_pWorker->InitVariables();
-
-			return m_pWorker->ExecuteCommand(command, retValue);
+			return false;
 		}
 
 		CDocBuilderContext GetContext(bool enterContext)
 		{
 			CDocBuilderContext ctx;
 
-			CheckWorker();
+			if (!CheckWorker())
+				return ctx;
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;

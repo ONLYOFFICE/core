@@ -445,7 +445,7 @@ namespace NSDoctRenderer
 						strError = L"code=\"save\"";
 						bIsBreak = true;
 					}
-					else
+					else if (!js_result2->isNull())
 					{
 						JSSmart<CJSTypedArray> typedArray = js_result2->toTypedArray();
 						NSJSBase::CJSDataBuffer oBuffer = typedArray->getData();
@@ -575,7 +575,6 @@ namespace NSDoctRenderer
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>(false);
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSTryCatch> try_catch = context->GetExceptions();
@@ -987,7 +986,7 @@ namespace NSDoctRenderer
 			case DoctRendererFormat::IMAGE:
 			{
 				editorType = NSDoctRenderer::DoctRendererEditorType::VISIO;
-				m_pInternal->m_strEditorType = L"draw";
+				m_pInternal->m_strEditorType = L"visio";
 				break;
 			}
 			default:
@@ -1067,7 +1066,6 @@ namespace NSDoctRenderer
 			{
 				CJSContextScope scope(context);
 				CJSContext::Embed<CNativeControlEmbed>();
-				CJSContext::Embed<CGraphicsEmbed>();
 				NSJSBase::CreateDefaults();
 
 				JSSmart<CJSObject> global = context->GetGlobal();

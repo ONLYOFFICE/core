@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+
 #include "../../../DesktopEditor/common/Types.h"
 
 namespace NSDocxRenderer

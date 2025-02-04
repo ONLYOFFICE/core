@@ -469,8 +469,8 @@ namespace MetaFile
 
 		// Обновляем обратную матрицу
 		TEmfXForm* pT = &m_oTransform;
-		double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
-		if (dDet < 0.0001 && dDet > 0.0001)
+		const double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
+		if (Equals(0., dDet, 0.0001))
 		{
 			m_oInverseTransform.M11 = 1;
 			m_oInverseTransform.M12 = 0;
@@ -479,13 +479,15 @@ namespace MetaFile
 			m_oInverseTransform.Dx  = 0;
 			m_oInverseTransform.Dy  = 0;
 		}
-
-		m_oInverseTransform.M11 = pT->M22 / dDet;
-		m_oInverseTransform.M12 = -pT->M12 / dDet;
-		m_oInverseTransform.M21 = -pT->M21 / dDet;
-		m_oInverseTransform.M22 = pT->M22 / dDet;
-		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
-		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		else
+		{
+			m_oInverseTransform.M11 = pT->M22 / dDet;
+			m_oInverseTransform.M12 = -pT->M12 / dDet;
+			m_oInverseTransform.M21 = -pT->M21 / dDet;
+			m_oInverseTransform.M22 = pT->M22 / dDet;
+			m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
+			m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
+		}
 
 		UpdateFinalTransform();
 	}
@@ -714,20 +716,20 @@ namespace MetaFile
 		const TEmfWindow& oWindow{GetWindow()};
 		const TEmfWindow& oViewPort{GetViewport()};
 
-		double dM11 = (oViewPort.ulW >= 0) ? 1 : -1;
-		double dM22 = (oViewPort.ulH >= 0) ? 1 : -1;
+		double dM11 = ((oViewPort.ulW >= 0) ? 1. : -1.) * GetPixelWidth();
+		double dM22 = ((oViewPort.ulH >= 0) ? 1. : -1.) * GetPixelHeight();
 
-		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.lX * GetPixelWidth() * dM11), -(oWindow.lY * GetPixelHeight() * dM22));
-		TEmfXForm oViewportXForm(GetPixelWidth() * dM11, 0, 0, GetPixelHeight() * dM22, oViewPort.lX, oViewPort.lY);
+		TEmfXForm oWindowXForm(1, 0, 0, 1, -(oWindow.lX *  dM11), -(oWindow.lY * dM22));
+		TEmfXForm oViewportXForm(dM11, 0, 0, dM22, oViewPort.lX, oViewPort.lY);
 
 		m_oFinalTransform.Init();
-		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
+		m_oFinalTransform.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 
 		m_oFinalTransform2.Init();
+		// m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oViewportXForm, MWT_RIGHTMULTIPLY);
-		m_oFinalTransform2.Multiply(m_oTransform, MWT_RIGHTMULTIPLY);
 		m_oFinalTransform2.Multiply(oWindowXForm, MWT_RIGHTMULTIPLY);
 	}
 

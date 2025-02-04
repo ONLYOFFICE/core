@@ -489,6 +489,8 @@ namespace cpdoccore {
 			current_master_page_name_ = layouts.content[layout_index].master_name;
 			current_layout_page_name_ = L"";
 
+			current_layout().set_name(current_master_page_name_);
+
 			std::pair<int, std::wstring> master_id = //std::pair<int,std::wstring>(1, L"smId1");
 				root()->odf_context().styleContainer().presentation_masters().add_or_find(layouts.content[layout_index].master_name);
 

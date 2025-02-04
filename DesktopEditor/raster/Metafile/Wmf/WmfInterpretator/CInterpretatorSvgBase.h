@@ -62,8 +62,8 @@ namespace MetaFile
 
 		void AddClipValue(const std::wstring& wsId, const std::wstring& wsValue, int nClipMode = RGN_AND);
 
-		inline std::wstring GetClip()   const;
-		inline std::wstring GetClipId() const;
+		std::wstring GetClip()   const;
+		std::wstring GetClipId() const;
 	private:
 		struct TClipValue
 		{
@@ -75,6 +75,14 @@ namespace MetaFile
 		std::vector<TClipValue> m_arValues;
 
 		bool m_bStartClip;
+	};
+
+	enum class EShapeRendering
+	{
+		Auto,
+		OptimizeSpeed,
+		CrispEdges,
+		GeometricPrecision
 	};
 
 	class CInterpretatorSvgBase : public IOutputDevice
@@ -89,6 +97,8 @@ namespace MetaFile
 
 		void SetXmlWriter(XmlUtils::CXmlWriter* pXmlWriter);
 		XmlUtils::CXmlWriter* GetXmlWriter();
+
+		void SetShapeRendering(EShapeRendering eShapeRenderingType);
 
 		std::wstring GetFile();
 		void IncludeSvg(const std::wstring& wsSvg, const TRectD& oRect, const TRectD& oClipRect, TXForm *pTransform);
@@ -115,14 +125,18 @@ namespace MetaFile
 		void CloseClip();
 
 		void AddNoneFill(NodeAttributes &arAttributes) const;
+		void AddShapeRendering(NodeAttributes &arAttributes) const;
+
+		void AddLineCaps(NodeAttributes &arAttributes, const CPath* pMainPath);
 
 		TPointD GetCutPos() const;
 
-		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL);
+		std::wstring CreatePath(const CPath& oPath, const TXForm* pTransform = NULL) const;
 		std::wstring CreateHatchStyle(unsigned int unHatchStyle, double dWidth, double dHeight);
 		std::wstring CreateDibPatternStyle(const IBrush* pBrush);
 		std::wstring CreatePatternStyle(const IBrush* pBrush);
 		std::wstring CreateGradient(const IBrush *pBrush);
+		std::wstring CreateLineCap(const CLineCapData* pLineCap, const double& dAngle);
 	private:
 		TSvgViewport         m_oViewport;
 		TPointD              m_oSizeWindow;
@@ -138,12 +152,17 @@ namespace MetaFile
 		bool                 m_bUpdatedClip;
 		CSvgClip             m_oClip;
 
+		EShapeRendering      m_eShapeRendering;
+
 		friend class CEmfInterpretatorSvg;
 		friend class CWmfInterpretatorSvg;
 	};
 
+	std::wstring CalculateColor(unsigned int unColor);
 	std::wstring CalculateColor(unsigned int unColor, BYTE uchAlpha);
 	std::wstring CalculateColor(BYTE uchRed, BYTE uchGreen, BYTE uchBlue, BYTE uchAlpha);
+	void NormalizeRect(TRectD& oRect);
+	TRectD TranslateRect(const TRectL &oRect);
 }
 
 #endif // CINTERPRETATORSVGBASE_H

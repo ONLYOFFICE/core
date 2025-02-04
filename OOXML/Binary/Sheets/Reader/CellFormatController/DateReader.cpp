@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,112 +31,387 @@
  */
 
 #include "DateReader.h"
+#include "LocalInfo.h"
 
-#include <iostream>
+#include <set>
 #include <string>
-#include <chrono>
-#include <locale>
-#include <sstream>
-#include <iomanip>
 #include <vector>
 #include <cmath>
+#include <cwctype>
 
- // Определение основных форматов даты
-std::vector<std::wstring> DateFormats = {
-
-    L"%X %p",
-
-    L"%d %B %Y %X", L"%d %B, %Y %X", L"%d %b %Y %X",
-    L"%d %b, %Y %X", L"%B %d %Y %X", L"%B %d, %Y %X", L"%b %d %Y %X",
-    L"%b %d, %Y %X",
-
-    L"%d.%m.%Y %X %p", L"%d.%m.%y %X %p", L"%Y-%m-%d %X %p", L"%Y-%m-%d %X %p", L"%d/%m/%Y %X %p",L"%d/%m/%y %X %p",
-    L"%m/%d/%Y %X %p", L"%m/%d/%y %X %p", L"%Y/%m/%d %X %p", L"%Y/%d/%m %X %p", L"%m-%d-%Y %X %p",
-    L"%m-%d-%y %X %p", L"%d-%m-%Y %X %p", L"%d-%m-%y %X %p",
-
-    L"%d %B %Y %X %p", L"%d %B, %Y %X %p", L"%d %b %Y %X %p",
-    L"%d %b, %Y %X %p", L"%B %d %Y %X %p", L"%B %d, %Y %X %p", L"%b %d %Y %X %p",
-    L"%b %d, %Y %X %p",
-
-    L"%d.%m.%Y %X", L"%d.%m.%y %X", L"%Y-%m-%d %X", L"%Y-%m-%d %X", L"%d/%m/%Y %X",L"%d/%m/%y %X", L"%m/%d/%Y %X",
-    L"%m/%d/%y %X", L"%Y/%m/%d %X", L"%Y/%d/%m %X", L"%m-%d-%Y %X",
-    L"%m-%d-%y %X", L"%d-%m-%Y %X", L"%d-%m-%y %X",
-
-    L"%d %B %Y", L"%d %B, %Y", L"%d %b %Y",
-    L"%d %b, %Y", L"%B %d %Y", L"%B %d, %Y", L"%b %d %Y",
-    L"%b %d, %Y"
-};
-
-// короткие форматы
-std::vector<std::wstring> DateFormatsShort = {
-
-   L"%X",
-
-   L"%d.%m.%Y", L"%d.%m.%y", L"%Y-%m-%d", L"%Y-%m-%d", L"%d/%m/%Y",L"%d/%m/%y", L"%m/%d/%Y",
-   L"%m/%d/%y", L"%Y/%m/%d", L"%Y/%d/%m", L"%m-%d-%Y",
-   L"%m-%d-%y", L"%d-%m-%Y", L"%d-%m-%y", L"%x"
-};
+DateReader::DateReader(_INT32 lcid):lcid_{lcid}
+{}
 
 bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &Hasdate, bool &Hastime)
 {
-    //делим форматы на длинные и короткие для уменьшения перебора
-    std::vector<std::wstring> * requiredFormats;
-    if(date.size() > 10)
-        requiredFormats = &DateFormats;
+
+    tm time = {};
+    if(!parseIsoDate(date,time))
+    {
+        if(!parseLocalDate(date, time, Hasdate, Hastime ))
+            return false;
+    }
     else
-        requiredFormats = &DateFormatsShort;
-
-    // Перебор форматов даты, пока не найдется подходящий
-    for (const auto& format : *requiredFormats) {
-        std::wistringstream ss(date);
-
-        // Пытаемся спарсить дату в локальном формате
-        tm time = {};
-        ss >> std::get_time(&time, format.c_str());
-
-        if (ss.fail()) {
-            continue;
-        }
-
-        //дата без времени
-        if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
-        {
-            //определяем стандартная ли дата
-            if(time.tm_year >= 70)
-                result = getStandartDate(time);
-            else
-              result = getNonUnixDate(time);
-            Hasdate = true;
-            Hastime = false;
-            return true;
-        }
-        //время без даты
-        else if(time.tm_year == 0 && time.tm_mday == 0 && time.tm_mon == 0)
-        {
-            result = getStandartTime(time);
-            Hasdate = false;
-            Hastime = true;
-            return true;
-        }
-        else //дата и время
-        {
-
-            if(time.tm_year >= 70)
-                result = getStandartDate(time);
-            else
-              result = getNonUnixDate(time);
-            result += getStandartTime(time);
-            Hasdate = true;
-            Hastime = true;
-            return true;
-        }
-        return false;
+    {
+        Hasdate = true;
+        Hastime = true;
     }
 
-    // Если не найден подходящий формат даты, возвращаем false
-    return false;
+    //дата без времени
+    if(time.tm_year > 0 && time.tm_hour == 0 && time.tm_min == 0 && time.tm_sec == 0)
+    {
+        //определяем стандартная ли дата
+        if(time.tm_year >= 70)
+            result = getStandartDate(time);
+        else
+          result = getNonUnixDate(time);
+        Hasdate = true;
+        Hastime = false;
+        return true;
+    }
+    //время без даты
+    else if(time.tm_year == 0 && time.tm_mday == 0 && time.tm_mon == 0)
+    {
+        result = getStandartTime(time);
+        Hasdate = false;
+        Hastime = true;
+        return true;
+    }
+    else //дата и время
+    {
+
+        if(time.tm_year >= 70)
+            result = getStandartDate(time);
+        else
+          result = getNonUnixDate(time);
+        result += getStandartTime(time);
+        Hasdate = true;
+        Hastime = true;
+        return true;
+    }
+    }
+
+bool tryGetInt(std::vector<wchar_t> &data, _INT32 &value)
+{
+    try
+    {
+        value  = std::stoi(std::wstring(data.begin(), data.end()));
+        return true;
+    }
+     catch (std::exception)
+    {
+        return false;
+    }
 }
 
+
+enum class DateElemTypes
+{
+    none = 0,
+    letter,
+    digit,
+    delimeter,
+    space
+};
+
+enum class ParsingElem
+{
+    none = 0,
+    date,
+    time
+};
+
+
+void SetDateElem(tm &result, _INT32 value, const std::wstring datePattern,  bool &day, bool &month, bool &year, bool &Berror)
+{
+    for(auto dateFmtPart : datePattern)
+    {
+        if((dateFmtPart == L'0' || dateFmtPart == L'1') && !day && value <= 31)
+        {
+            day = true;
+            result.tm_mday = value;
+            return;
+        }
+        else if((dateFmtPart == L'2' || dateFmtPart == L'3') && !month && value <= 12)
+        {
+            month = true;
+            result.tm_mon = value;
+            return;
+        }
+        else if((dateFmtPart == L'4' || dateFmtPart == L'5') && !year)
+        {
+            year = true;
+            result.tm_year = value;
+            return;
+        }
+    }
+    Berror = true;
+}
+
+void SetTimeElem(tm &result, _INT32 value, bool &BHour, bool &bMin,  bool &bSec, bool &Berror)
+{
+    if(!BHour)
+    {
+        result.tm_hour = value;
+        BHour = true;
+    }
+    else if (!bMin)
+    {
+        result.tm_min = value;
+        bMin = true;
+    }
+    else if (!bSec)
+    {
+        result.tm_sec = value;
+        bSec = true;
+    }
+    else
+        Berror = true;
+}
+
+std::wstring spaceCut(const std::wstring &str)
+{
+        auto first = str.find_first_not_of(L' ');
+        if (first == std::wstring::npos) return L"";
+        auto last = str.find_last_not_of(' ');
+        return str.substr(first, last - first + 1);
+}
+
+std::set<wchar_t> separators = {L'.', L'/', L'-', L':'};
+
+bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasdate, bool &Hastime)
+{
+    bool bError = false;
+    auto locInf = lcInfo::getLocalInfo(lcid_);
+    ParsingElem parsingNow = ParsingElem::none;
+    auto cutteddateStr =  spaceCut(date);
+
+    //разделитель времени отличается только в нескольких локалях
+    wchar_t timeSeparator = L':';
+    if(lcid_ == 1035 || lcid_ == 11)
+        timeSeparator = L'.';
+
+    //флаги собранных частей даты
+    bool bSec = false;
+    bool bMin = false;
+    bool bHour = false;
+    bool BDay = false;
+    bool Bmonth = false;
+    bool Byear = false;
+
+    DateElemTypes CurrentElementType = DateElemTypes::none;
+    DateElemTypes PrevType = DateElemTypes::none;
+    std::vector<wchar_t> StringBuf;
+
+    //посимвольно парсим дату
+    for(auto i = 0; i < cutteddateStr.length(); i++)
+    {
+        auto charElement = cutteddateStr.at(i);
+        DateElemTypes elementType;
+        if(charElement == L' ' || charElement == L' ')
+            elementType = DateElemTypes::space;
+        else if(charElement >= L'0' && charElement<= L'9')
+            elementType = DateElemTypes::digit;
+        else if(separators.find(charElement) != separators.end())
+            elementType = DateElemTypes::delimeter;
+        else
+            elementType = DateElemTypes::letter;
+        if(CurrentElementType == DateElemTypes::none)//первый проход
+        {
+            StringBuf.push_back(charElement);
+        }
+        else
+        {
+            if(CurrentElementType == elementType)
+            {
+                //проверяем валидность размеров элементов даты
+                if(elementType == DateElemTypes::digit && StringBuf.size() < 4)
+                {
+                    StringBuf.push_back(charElement);
+                }
+                else if(elementType == DateElemTypes::letter && StringBuf.size() < 9)
+                {
+                    StringBuf.push_back(charElement);
+                }
+                else if(elementType == DateElemTypes::space)
+                {
+                }
+                else
+                {
+                    bError = true;
+                }
+            }
+            else
+            {
+                if(CurrentElementType == DateElemTypes::digit && elementType == DateElemTypes::delimeter)
+                {
+                    if(timeSeparator != locInf.DateSeparator[0])
+                    {
+                        //парсим часть даты
+                        _INT32 datePart;
+                        if(!tryGetInt(StringBuf, datePart))
+                        {
+                            return false;
+                        }
+                        StringBuf.clear();
+                        if(charElement == timeSeparator)
+                        {
+                            Hastime = true;
+                            parsingNow = ParsingElem::time;
+                            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+                        }
+                        else
+                        {
+                            Hasdate = true;
+                            parsingNow = ParsingElem::date;
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        }
+
+                    }
+                    ///todo вариант когда и дата и время разделяются "."
+                }
+                if(CurrentElementType == DateElemTypes::letter && elementType == DateElemTypes::delimeter)
+                {
+                    if(!parseAmPm(StringBuf, result))
+                    {
+                        if(parseMonthName(StringBuf, result))
+                            Bmonth = true;
+                        else
+                            bError = true;
+                    }
+                    StringBuf.clear();
+                }
+                else if((CurrentElementType == DateElemTypes::delimeter || CurrentElementType == DateElemTypes::space) && elementType != DateElemTypes::space)
+                {
+                    //просто добавляем в буфер то что было за разделителем
+                    StringBuf.push_back(charElement);
+                }
+                else if(elementType== DateElemTypes::space)
+                {
+                    if(CurrentElementType == DateElemTypes::digit)
+                    {
+                        _INT32 datePart;
+                        if(!tryGetInt(StringBuf, datePart))
+                        {
+                            return false;
+                        }
+                        StringBuf.clear();
+                        if(parsingNow == ParsingElem::time)
+                        {
+                            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+                            parsingNow = ParsingElem::none;
+                        }
+                        else if (parsingNow == ParsingElem::date)
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        else
+                        {
+                            Hasdate = true;
+                            parsingNow = ParsingElem::date;
+                            SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+                        }
+                     }
+                    if(CurrentElementType == DateElemTypes::letter)
+                    {
+                        // если это не am pm то в дате может быть буквенным только имя месяца
+                        if(!parseAmPm(StringBuf, result))
+                        {
+                            if(parseMonthName(StringBuf, result))
+                                Bmonth = true;
+                            else
+                                bError = true;
+                        }
+                       StringBuf.clear();
+                    }
+                }
+                //анализируем собранный элемент
+                PrevType = CurrentElementType;
+            }
+        }
+        CurrentElementType = elementType;
+
+        if(bError)
+            return false;
+    }
+    //анализируем последний элемент в буфере
+    if(parsingNow == ParsingElem::date)
+    {
+        if(CurrentElementType == DateElemTypes::digit)
+        {
+            _INT32 datePart;
+            if(!tryGetInt(StringBuf, datePart))
+            {
+                return false;
+            }
+           SetDateElem(result, datePart, locInf.ShortDatePattern, BDay, Bmonth, Byear, bError);
+        }
+    }
+    else
+    {
+        if(CurrentElementType == DateElemTypes::digit)
+        {
+            _INT32 datePart;
+            if(!tryGetInt(StringBuf, datePart))
+            {
+                return false;
+            }
+            SetTimeElem(result, datePart, bHour, bMin, bSec, bError);
+        }
+        else if(CurrentElementType == DateElemTypes::letter)
+        {
+            if(!parseAmPm(StringBuf, result))
+            {
+                if(parseMonthName(StringBuf, result))
+                    Bmonth = true;
+            }
+            StringBuf.clear();
+        }
+    }
+    //нормализуем год если он есть
+    if(Hasdate)
+    {
+        result.tm_mon--;
+        result.tm_year = normalizeYear(result.tm_year);
+    }
+    if(!Hasdate && !Hastime)
+        return false;
+
+    return true;
+}
+bool DateReader::parseIsoDate(const std::wstring &date, tm &result)
+{
+    //проверка размера строки и разделителей
+    if(date.size() != 20 || date[4] != L'-' || date[7] != L'-' ||
+            date[10] != L'T' || date[13] != L':' ||
+            date[16] != L':' || date[19] != L'Z')
+        return false;
+    //проверка того что между разделителями стоят только цифры
+    for(auto i = 0; i < 4; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 5; i < 7; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 8; i < 10; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 11; i < 13; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 14; i < 16; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    for(auto i = 17; i < 19; i++)
+        if(!std::iswdigit(date[i]))
+            return false;
+    _INT16 year = std::stoi(date.substr(0,4));
+    result.tm_year = normalizeYear(year);
+    result.tm_mon = std::stoi(date.substr(5,2)) - 1;
+    result.tm_mday = std::stoi(date.substr(8,2));
+    result.tm_hour = std::stoi(date.substr(11,2));
+    result.tm_min = std::stoi(date.substr(14,2));
+    result.tm_sec = std::stoi(date.substr(17,2));
+    return true;
+}
 _INT32 DateReader::getStandartDate(tm date)
 {
     // обнуление времени, чтобы оно не влияло на дату
@@ -146,12 +421,7 @@ _INT32 DateReader::getStandartDate(tm date)
     // Преобразование даты в формат excel
     auto timeT = mktime(&date);
     auto tp = std::chrono::system_clock::from_time_t(timeT);
-    auto excelTime = tp.time_since_epoch().count();
-    #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-        excelTime = excelTime / 10000000;
-    #else
-        excelTime = excelTime / 1000000000;
-    #endif
+    auto excelTime = std::chrono::duration_cast<std::chrono::seconds>(tp.time_since_epoch()).count();
     excelTime += 2209161600;
     _INT32 tempTime = round(excelTime / 86400.0);
     return tempTime;
@@ -193,4 +463,48 @@ _INT32 DateReader::getNonUnixDate(tm date)
        days += date.tm_mday;
 
        return days;
+}
+
+_INT32 DateReader::normalizeYear(_INT32 year)
+{
+    // год полностью
+    if(year > 1900)
+        return year - 1900;
+    else if (year < 69)
+        return 100 + year;
+    else
+        return year;
+}
+
+bool DateReader::parseAmPm(std::vector<wchar_t> &stringBuf, tm &date)
+{
+    for(auto bufelemPos = 0; bufelemPos < stringBuf.size(); bufelemPos++)
+        stringBuf[bufelemPos] = std::towlower(stringBuf[bufelemPos]);
+    std::wstring timePostfix(stringBuf.begin(), stringBuf.end());
+    if(timePostfix == L"pm")
+    {
+        date.tm_hour += 12;
+    }
+    if(timePostfix== L"am" || timePostfix == L"pm")
+        return true;
+    return false;
+}
+
+bool DateReader::parseMonthName(std::vector<wchar_t> &stringBuf, tm &date)
+{
+    auto locInf = lcInfo::getLocalInfo(lcid_);
+    if(stringBuf.at(stringBuf.size()-1) == '.')
+        stringBuf.pop_back();
+    std::wstring monthName(stringBuf.begin(), stringBuf.end());
+
+    bool isShort = false;
+    if(monthName.size() <= locInf.MonthAbrvLen)
+        isShort = true;
+    auto monthindex = locInf.GetMonthNumber(monthName, isShort)+ 1;
+    if(monthindex <= 0)
+        return false;
+    if(date.tm_mon != 0 && date.tm_mday == 0)
+        date.tm_mday = date.tm_mon;
+    date.tm_mon = monthindex;
+    return true;
 }

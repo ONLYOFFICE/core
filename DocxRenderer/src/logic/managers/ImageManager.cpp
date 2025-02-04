@@ -1,5 +1,8 @@
 #include "ImageManager.h"
+
 #include "../../../../DesktopEditor/common/Directory.h"
+#include "../../../../DesktopEditor/raster/BgraFrame.h"
+
 #include "../../resources/Constants.h"
 
 namespace NSDocxRenderer
@@ -131,7 +134,6 @@ namespace NSDocxRenderer
 		m_lNextIDImage	= 0;
 
 		m_mapImageData.clear();
-		m_mapImagesFile.clear();
 	}
 
 	std::shared_ptr<CImageInfo> CImageManager::WriteImage(Aggplus::CImage* pImage, double& x, double& y, double& width, double& height)
@@ -142,106 +144,82 @@ namespace NSDocxRenderer
 			height = -height;
 			y -= height;
 		}
-
 		return GenerateImageID(pImage);
 	}
 
 	std::shared_ptr<CImageInfo> CImageManager::WriteImage(const std::wstring& strFile, double& x, double& y, double& width, double& height)
 	{
-		return GenerateImageID(strFile);
-	}
-
-	void CImageManager::CopyFile(std::wstring& strFileSrc, std::wstring& strFileDst)
-	{
-		NSFile::CFileBinary::Copy(strFileSrc, strFileDst);
-	}
-
-	void CImageManager::SaveImage(const std::wstring& strFileSrc, std::shared_ptr<CImageInfo> pInfo)
-	{
-		Aggplus::CImage oFrame(strFileSrc);
-		if (nullptr != oFrame.GetData())
-			return SaveImage(&oFrame, pInfo);
-	}
-
-	void CImageManager::SaveImage(Aggplus::CImage* pImage, std::shared_ptr<CImageInfo> pInfo)
-	{
-		if (nullptr == pImage)
-			return;
-
-		int w = pImage->GetWidth();
-		int h = pImage->GetHeight();
-
-		pInfo->m_eType = GetImageType(pImage);
-
-		UINT format = (pInfo->m_eType == CImageInfo::itJPG) ? 3 : 4;
-		pInfo->m_strFileName = L"image" + std::to_wstring(pInfo->m_nId);
-		pInfo->m_strFileName += ((pInfo->m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
-
-		std::wstring sSavedFile = m_strDstMedia + L"/" + pInfo->m_strFileName;
-
-		if (w <= m_lMaxSizeImage && h <= m_lMaxSizeImage)
-		{
-			pImage->SaveFile(sSavedFile, format);
-		}
-		else
-		{
-			int lW = 0;
-			int lH = 0;
-			double dAspect = (double)w / h;
-
-			if (w >= h)
-			{
-				lW = m_lMaxSizeImage;
-				lH = (int)((double)lW / dAspect);
-			}
-			else
-			{
-				lH = m_lMaxSizeImage;
-				lW = (LONG)(dAspect * lH);
-			}
-
-			// TODO: resize
-			pImage->SaveFile(sSavedFile, format);
-		}
+		Aggplus::CImage image(strFile);
+		return GenerateImageID(&image);
 	}
 
 	std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(Aggplus::CImage* pImage)
 	{
+		if (pImage->GetStride() > 0)
+			FlipY(pImage);
+
 		if (m_pExternalStorage)
 			return m_pExternalStorage->GenerateImageID(pImage);
 
-		BYTE* pData = pImage->GetData();
-		int nSize = pImage->GetStride() * pImage->GetHeight();
-		if (nSize < 0)
-			nSize = -nSize;
+		int size = pImage->GetStride() * pImage->GetHeight();
+		if (size < 0)
+			size = -size;
 
-		DWORD dwSum = m_oCRC.Calc(pData, nSize);
+		BYTE* data = pImage->GetData();
+		DWORD width = pImage->GetWidth();
+		DWORD height = pImage->GetHeight();
+		long stride = pImage->GetStride();
 
-		auto find = m_mapImageData.find(dwSum);
+		DWORD sum = m_oCRC.Calc(data, size);
+		auto find = m_mapImageData.find(sum);
 		if (find != m_mapImageData.end())
 			return find->second;
 
 		++m_lNextIDImage;
 		auto pInfo = std::make_shared<CImageInfo>();
 		pInfo->m_nId = m_lNextIDImage;
-		SaveImage(pImage, pInfo);
-		m_mapImageData.insert(std::pair<DWORD, std::shared_ptr<CImageInfo>>(dwSum, pInfo));
+		pInfo->m_eType = GetImageType(pImage);
+		pInfo->m_strFileName = L"image" + std::to_wstring(pInfo->m_nId);
+		pInfo->m_strFileName += ((pInfo->m_eType == CImageInfo::itJPG) ? L".jpg" : L".png");
 
-		return pInfo;
-	}
+		UINT format = (pInfo->m_eType == CImageInfo::itJPG) ? 3 : 4;
+		std::wstring saved_file = m_strDstMedia + L"/" + pInfo->m_strFileName;
 
-	std::shared_ptr<CImageInfo> CImageManager::GenerateImageID(const std::wstring& strFileName)
-	{
-		auto find = m_mapImagesFile.find(strFileName);
-		if (find != m_mapImagesFile.end())
-			return find->second;
+		if (width <= m_lMaxSizeImage && height <= m_lMaxSizeImage)
+		{
+			pImage->SaveFile(saved_file, format);
+		}
+		else
+		{
+			CBgraFrame oBgraFrame;
+			oBgraFrame.put_Width(width);
+			oBgraFrame.put_Height(height);
+			oBgraFrame.put_Stride(stride);
+			oBgraFrame.put_Data(data);
 
-		++m_lNextIDImage;
-		auto pInfo = std::make_shared<CImageInfo>();
-		pInfo->m_nId = m_lNextIDImage;
-		SaveImage(strFileName, pInfo);
-		m_mapImagesFile.insert(std::pair<std::wstring, std::shared_ptr<CImageInfo>>(strFileName, pInfo));
+			if (width > m_lMaxSizeImage || height > m_lMaxSizeImage)
+			{
+				int lW = 0;
+				int lH = 0;
+				double dAspect = (double)width / height;
 
+				if (width >= height)
+				{
+					lW = m_lMaxSizeImage;
+					lH = (int)((double)lW / dAspect);
+					if (lH < 1) lH = 1;
+				}
+				else
+				{
+					lH = m_lMaxSizeImage;
+					lW = (int)(dAspect * lH);
+					if (lW < 1) lW = 1;
+				}
+				oBgraFrame.Resize(lW, lH, false);
+			}
+			oBgraFrame.SaveFile(saved_file, format);
+		}
+		m_mapImageData.insert(std::pair<DWORD, std::shared_ptr<CImageInfo>>(sum, pInfo));
 		return pInfo;
 	}
 
@@ -295,39 +273,5 @@ namespace NSDocxRenderer
 		}
 
 		RELEASEARRAYOBJECTS(pBufferMem);
-	}
-
-	void CImageManager::FlipX(CBgraFrame* pImage)
-	{
-		if (nullptr == pImage)
-			return;
-
-		int w = pImage->get_Width();
-		int h = pImage->get_Height();
-		BYTE* pBuffer = pImage->get_Data();
-		int stride = pImage->get_Stride();
-
-		if (stride < 0)
-			stride = -stride;
-
-		if ((w * 4) != stride)
-			return;
-
-		DWORD* pBufferDWORD	= (DWORD*)pBuffer;
-
-		LONG lW2 = w / 2;
-		for (LONG lIndexV = 0; lIndexV < h; ++lIndexV)
-		{
-			DWORD* pMem1 = pBufferDWORD;
-			DWORD* pMem2 = pBufferDWORD + w - 1;
-
-			LONG lI = 0;
-			while (lI < lW2)
-			{
-				DWORD dwMem = *pMem1;
-				*pMem1++ = *pMem2;
-				*pMem2-- = dwMem;
-			}
-		}
 	}
 }

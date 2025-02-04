@@ -301,9 +301,9 @@ char* CDocBuilder_GetVersion(CDocBuilder* self)
 	return self->GetVersion();
 }
 
-CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self)
+CDocBuilderContext* CDocBuilder_GetContext(CDocBuilder* self, bool enterContext)
 {
-	return new CDocBuilderContext(self->GetContext());
+	return new CDocBuilderContext(self->GetContext(enterContext));
 }
 
 void CDocBuilder_Initialize()

@@ -34,6 +34,9 @@
 #include "DiagramLayout.h"
 #include "../Drawing/DrawingExt.h"
 
+#include "../Document.h"
+#include "../../XlsxFormat/Xlsx.h"
+
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Drawing.h"
 
@@ -124,15 +127,23 @@ for (size_t i = 0; i < m_arrItems.size(); ++i)\
 //------------------------------------------------------------------------------------------------------------------
 namespace OOX
 {
-	CDiagramLayout::CDiagramLayout(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
+	CDiagramLayout::CDiagramLayout(OOX::Document* pMain, bool bDocument) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = bDocument;
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
 	}
 	CDiagramLayout::CDiagramLayout(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(uri.GetDirectory(), uri);
 	}
 	CDiagramLayout::CDiagramLayout(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::FileGlobalEnumerated(pMain)
 	{
+		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
+		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+
 		read(oRootPath, oPath);
 	}
 	CDiagramLayout::~CDiagramLayout()
@@ -232,7 +243,10 @@ namespace OOX
 	}
 	const CPath CDiagramLayout::DefaultDirectory() const
 	{
-		return type().DefaultDirectory();
+		if (m_bDocument)
+			return type().DefaultDirectory();
+		else
+			return L"../" + type().DefaultDirectory();
 	}
 	const CPath CDiagramLayout::DefaultFileName() const
 	{
@@ -361,10 +375,13 @@ namespace OOX
 	}
 	void Diagram::CDiferentData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
+		node_name = oReader.GetName();
+
 		ReadAttributes(oReader);
 
 		if (oReader.IsEmptyNode())
 			return;
+
 		int nParentDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nParentDepth))
 		{

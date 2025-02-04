@@ -2190,7 +2190,7 @@ void Gfx::doTilingPatternFill(GfxTilingPattern *tPat,
   for (i = 0; i < 4; ++i) {
     m1[i] = m[i];
   }
-  if (out->useTilingPatternFill()) {
+  if (out->useTilingPatternFill() && fabs(bbox[2] - bbox[0] - xstep) < 0.001 && fabs(bbox[3] - bbox[1] - ystep) < 0.001) {
     m1[4] = m[4];
     m1[5] = m[5];
     out->tilingPatternFill(state, this, tPat->getContentStreamRef(),
@@ -4289,15 +4289,32 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	obj2.free();
       }
     }
-    if (!obj1.isNull()) {
-      colorSpace = GfxColorSpace::parse(&obj1
-					);
+
+    GBool haveRGBA = gFalse;
+    if (str->getKind() == strJPX && (csMode == streamCSDeviceRGB || csMode == streamCSDeviceCMYK)) {
+      // Case of transparent JPX image, they may contain RGBA data when SMaskInData=1
+      Object smaskInData;
+      dict->lookup("SMaskInData", &smaskInData);
+      haveRGBA = smaskInData.isInt() && smaskInData.getInt();
+      smaskInData.free();
+    }
+
+    if (!obj1.isNull() && !haveRGBA) {
+      colorSpace = GfxColorSpace::parse(&obj1);
     } else if (csMode == streamCSDeviceGray) {
       colorSpace = GfxColorSpace::create(csDeviceGray);
     } else if (csMode == streamCSDeviceRGB) {
-      colorSpace = GfxColorSpace::create(csDeviceRGB);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceRGB);
+      }
     } else if (csMode == streamCSDeviceCMYK) {
-      colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      }
     } else {
       colorSpace = NULL;
     }
@@ -5052,11 +5069,12 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
     }
     obj.free();
   } else if (args[0].isName("OShapes") && numArgs == 2 && args[1].isDict() && res->lookupPropertiesNF("OShapes", &obj)) {
-    Object oMetaOForm, oID, oTID, oID2, oMCID, oMetadata, oMetadataCur;
-    if (obj.fetch(xref, &oMetaOForm)->isDict("OShapes") && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
+    Object oMetaOForm, oID, oTID, oID2, oIDF, oIDF2, oMCID, oMetadata, oMetadataCur;
+    if (obj.fetch(xref, &oMetaOForm)->isDict("OShapes") && args[1].dictLookup("IDF", &oIDF)->isString() && oMetaOForm.dictLookup("IDF", &oIDF2)->isString() &&
+        oIDF.getString()->cmp(oIDF2.getString()) == 0 && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
         oTID.arrayGet(1, &oID2)->isString() && oID2.getString()->cmp(oID.getString()) == 0 && args[1].dictLookup("MCID", &oMCID)->isInt() &&
         oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray() && oMetadata.arrayGet(oMCID.getInt(), &oMetadataCur)->isString()) {
-      oID.free(); oTID.free(); oID2.free(); oMCID.free(); oMetadata.free(); obj.free();
+      oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMCID.free(); oMetadata.free(); obj.free();
       Object oImRef, oArrImage;
       if (!oMetaOForm.dictLookup("Image", &oArrImage)->isArray() || !oArrImage.arrayGetNF(oMCID.getInt(), &oImRef)->isRef())
         oImRef.free();
@@ -5073,7 +5091,7 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
       }
       oImRef.free(); oArrImage.free();
     }
-    oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); oMCID.free(), oMetadata.free(); oMetadataCur.free(); obj.free();
+    oMetaOForm.free(); oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMCID.free(), oMetadata.free(); oMetadataCur.free(); obj.free();
   }
   mc = new GfxMarkedContent(mcKind, ocState);
   markedContentStack->append(mc);
@@ -5315,6 +5333,54 @@ void Gfx::drawAnnot(Object *strRef, AnnotBorderStyle *borderStyle,
     }
     out->stroke(state);
   }
+}
+
+void Gfx::drawStamp(Object *strRef)
+{
+  Dict *dict, *resDict;
+  Object str, bboxObj, resObj, obj1;
+  double m[6], bbox[4];
+  int i;
+
+  // draw the appearance stream (if there is one)
+  strRef->fetch(xref, &str);
+  if (str.isStream()) {
+    // get stream dict
+    dict = str.streamGetDict();
+
+    // get the form bounding box
+    dict->lookup("BBox", &bboxObj);
+    if (!bboxObj.isArray() || bboxObj.arrayGetLength() != 4) {
+      error(errSyntaxError, getPos(), "Bad form bounding box");
+      bboxObj.free();
+      str.free();
+      return;
+    }
+    for (i = 0; i < 4; ++i) {
+      bboxObj.arrayGet(i, &obj1);
+      if (obj1.isNum()) {
+        bbox[i] = obj1.getNum();
+      } else {
+        bbox[i] = 0;
+      }
+      obj1.free();
+    }
+    bboxObj.free();
+
+    m[0] = 1; m[1] = 0;
+    m[2] = 0; m[3] = 1;
+    m[4] = 0; m[5] = 0;
+
+    // get the resources
+    dict->lookup("Resources", &resObj);
+    resDict = resObj.isDict() ? resObj.getDict() : (Dict *)NULL;
+
+    // draw it
+    drawForm(strRef, resDict, m, bbox);
+
+    resObj.free();
+  }
+  str.free();
 }
 
 void Gfx::saveState() {

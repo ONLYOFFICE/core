@@ -1,4 +1,5 @@
 #include "TextLine.h"
+
 #include "../../logic/elements/Shape.h"
 #include "../../resources/Constants.h"
 #include "../../resources/utils.h"
@@ -36,6 +37,25 @@ namespace NSDocxRenderer
 		return true;
 	}
 
+	double CTextLine::GetLeftNoEnum() const noexcept
+	{
+		double left_no_enum = m_dLeft;
+		const auto& first_sym = m_arConts.front()->GetText().at(0);
+
+		size_t i = 0, j = 0;
+		GetNextSym(i, j);
+
+		if (CContText::IsUnicodeBullet(first_sym))
+		{
+			while (CContText::IsUnicodeSpace(m_arConts[i]->GetText().at(j)) && i && j) GetNextSym(i, j);
+
+			// one more time to get next
+			GetNextSym(i, j);
+			left_no_enum = (!i && !j) ? m_arConts.back()->m_dRight : m_arConts[i]->GetSymLefts().at(j);
+		}
+		return left_no_enum;
+	}
+
 	void CTextLine::MergeConts()
 	{
 		if (m_arConts.empty())
@@ -62,8 +82,8 @@ namespace NSDocxRenderer
 
 			double avg_space_width = pCurrent->m_pFontStyle->GetAvgSpaceWidth();
 			double space_width = avg_space_width != 0.0 ?
-						avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
-						pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+									 avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+									 pCurrent->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			double dDifference = pCurrent->m_dLeft - pFirst->m_dRight;
 
@@ -73,6 +93,9 @@ namespace NSDocxRenderer
 
 			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
 			{
+				if (CContText::IsUnicodeSpace(pFirst->GetLastSym()))
+					pFirst->RemoveLastSym();
+
 				auto wide_space = std::make_shared<CContText>(pFirst->m_pManager);
 
 				// sets all members for wide_space except highlight things
@@ -93,9 +116,6 @@ namespace NSDocxRenderer
 					wide_space->m_pFontStyle = pFirst->m_pFontStyle;
 					wide_space->m_pShape = nullptr;
 					wide_space->m_iNumDuplicates = 0;
-
-					// cache that value? (calls rarely)
-					wide_space->CalcSelected();
 				};
 
 				if (bIsEqual)
@@ -109,9 +129,15 @@ namespace NSDocxRenderer
 				else
 					set_base();
 
-				m_arConts.insert(m_arConts.begin() + i, wide_space);
+				// pFrist cont contains only 1 space
+				if (pFirst->GetLength() == 0)
+					*pFirst = *wide_space;
+				else
+				{
+					m_arConts.insert(m_arConts.begin() + i, wide_space);
+					i++;
+				}
 
-				i++;
 				while (!m_arConts[i] && i < m_arConts.size()) i++;
 				if (i == m_arConts.size()) break;
 				pFirst = m_arConts[i];
@@ -196,7 +222,7 @@ namespace NSDocxRenderer
 		m_dHeight = 0.0;
 
 		for (const auto& cont : m_arConts)
-			if(cont)
+			if (cont)
 				RecalcWithNewItem(cont.get());
 	}
 
@@ -295,5 +321,22 @@ namespace NSDocxRenderer
 				len += cont->GetLength();
 
 		return len;
+	}
+	void CTextLine::GetNextSym(size_t& nContPos, size_t& nSymPos) const noexcept
+	{
+		++nSymPos;
+		if (m_arConts[nContPos]->GetLength() <= nSymPos)
+			for (nContPos = nContPos + 1; nContPos < m_arConts.size(); ++nContPos)
+				if (m_arConts[nContPos] && m_arConts[nContPos]->GetLength() != 0)
+				{
+					nSymPos = 0;
+					break;
+				}
+
+		if (m_arConts.size() <= nContPos)
+		{
+			nContPos = 0;
+			nSymPos = 0;
+		}
 	}
 }

@@ -101,14 +101,23 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
 		double width_pt = 0, height_pt = 0;
-		if (svg_widthVal && svg_heightVal)
 		{
-			const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
-			const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
+			double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
+			double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
 
 			double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
 			double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
+			if (width_pt <= 0)
+			{
+				width_pt = 1; 
+				Context.get_slide_context().set_property(_property(L"auto-grow-width", true));
+			}
+			if (height_pt <= 0)
+			{
+				height_pt = 1;
+				Context.get_slide_context().set_property(_property(L"auto-grow-height", true));
+			}
 			if (x_pt < 0) x_pt = 0;
 			if (y_pt < 0) y_pt = 0;
 
@@ -188,13 +197,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (common_presentation_attlist_.presentation_class_)
 		{
-			std::wstring type = common_presentation_attlist_.presentation_class_->get_type_ms();
-			
+			std::wstring placeholder_type = common_presentation_attlist_.presentation_class_->get_type_ms();
+			if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+				placeholder_type = L"sldImg";
+
 			if (!Context.process_masters_ && !Context.get_slide_context().processing_notes() &&
 				common_presentation_attlist_.presentation_class_->get_type() == odf_types::presentation_class::outline)
 				Context.get_slide_context().set_is_placeHolder(true);
 			else 
-				Context.get_slide_context().set_placeHolder_type(type);
+				Context.get_slide_context().set_placeHolder_type(placeholder_type);
 
 			if (idx_in_owner >= 0)
 				Context.get_slide_context().set_placeHolder_idx(idx_in_owner);

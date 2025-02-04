@@ -224,6 +224,8 @@ namespace NSCSS
 	{
 	public:
 		CColor();
+		CColor(const CColor& oColor);
+		~CColor();
 
 		bool SetValue(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true) override;
 		bool SetOpacity(const std::wstring& wsValue, unsigned int unLevel = 0, bool bHardMode = true);
@@ -240,6 +242,7 @@ namespace NSCSS
 		int ToInt() const override;
 		double ToDouble() const override;
 		std::wstring ToWString() const override;
+		std::wstring ToHEX() const;
 		std::wstring EquateToColor(const std::vector<std::pair<TRGB, std::wstring>>& arColors) const;
 		TRGB ToRGB() const;
 
@@ -656,11 +659,11 @@ namespace NSCSS
 		bool SetLeft   (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetLeft   (const double& dValue,        unsigned int unLevel, bool bHardMode = false);
 
-		void UpdateAll   (double dFontSize);
-		void UpdateTop   (double dFontSize);
-		void UpdateRight (double dFontSize);
-		void UpdateBottom(double dFontSize);
-		void UpdateLeft  (double dFontSize);
+		void UpdateAll   (const double& dParentFontSize, const double& dCoreFontSize);
+		void UpdateTop   (const double& dParentFontSize, const double& dCoreFontSize);
+		void UpdateRight (const double& dParentFontSize, const double& dCoreFontSize);
+		void UpdateBottom(const double& dParentFontSize, const double& dCoreFontSize);
+		void UpdateLeft  (const double& dParentFontSize, const double& dCoreFontSize);
 
 		const CDigit& GetTop   () const;
 		const CDigit& GetRight () const;
@@ -675,7 +678,7 @@ namespace NSCSS
 		bool     operator!=(const CIndent& oIndent) const;
 	private:
 		bool SetValues(const std::wstring& wsTopValue, const std::wstring& wsRightValue, const std::wstring& wsBottomValue, const std::wstring& wsLeftValue, unsigned int unLevel, bool bHardMode = false);
-		void UpdateSide(CDigit& oSide, double dFontSize);
+		void UpdateSide(CDigit& oSide, const double& dParentFontSize, const double& dCoreFontSize);
 
 		CDigit m_oLeft;
 		CDigit m_oTop;
@@ -702,8 +705,8 @@ namespace NSCSS
 		bool SetVariant       (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 		bool SetWeight        (const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
-		void UpdateSize(double dFontSize);
-		void UpdateLineHeight(double dFontSize);
+		void UpdateSize(const double& dParentFontSize, const double& dCoreFontSize);
+		void UpdateLineHeight(const double& dParentFontSize, const double& dCoreFontSize);
 
 		void Clear();
 

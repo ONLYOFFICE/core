@@ -203,7 +203,7 @@ def _loadLibrary(path):
     _lib.CDocBuilder_GetVersion.argtypes = [OBJECT_HANDLE]
     _lib.CDocBuilder_GetVersion.restype = STRING_HANDLE
 
-    _lib.CDocBuilder_GetContext.argtypes = [OBJECT_HANDLE]
+    _lib.CDocBuilder_GetContext.argtypes = [OBJECT_HANDLE, ctypes.c_bool]
     _lib.CDocBuilder_GetContext.restype = OBJECT_HANDLE
 
     _lib.CDocBuilder_Initialize.argtypes = []
@@ -492,8 +492,8 @@ class CDocBuilder:
         _lib.DeleteCharP(ctypes.cast(strVersion, ctypes.c_char_p))
         return version
 
-    def GetContext(self):
-        return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal)))
+    def GetContext(self, enterContext=True):
+        return CDocBuilderContext(OBJECT_HANDLE(_lib.CDocBuilder_GetContext(self._internal, ctypes.c_bool(enterContext))))
 
     @classmethod
     def Initialize(cls, directory=None):

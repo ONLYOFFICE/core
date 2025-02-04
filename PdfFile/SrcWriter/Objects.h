@@ -452,11 +452,11 @@ namespace PdfWriter
 		void         Add(const std::string& sKey, double dReal);
 		void         Add(const std::string& sKey, bool bBool);
 		const char*  GetKey(const CObjectBase* pObject);
-		CStream*     GetStream() const
+		virtual CStream*     GetStream() const
 		{
 			return m_pStream;
 		}
-		void SetStream(CStream* pStream);
+		virtual void SetStream(CStream* pStream);
 		unsigned int GetFilter() const
 		{
 			return m_unFilter;

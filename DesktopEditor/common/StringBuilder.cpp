@@ -648,7 +648,7 @@ namespace NSStringUtils
 	}
 	void CStringBuilder::AddInt(int val)
 	{
-		AddSize(10);
+		AddSize(11);
 		AddIntNoCheck(val);
 	}
 	void CStringBuilder::AddUInt(unsigned int val)
@@ -682,7 +682,11 @@ namespace NSStringUtils
 		}
 		if (val < 0)
 		{
-			val = -val;
+			if (val == -2147483648)
+				val = 2147483647;
+			else
+				val = -val;
+
 			*m_pDataCur++ = (wchar_t)'-';
 			++m_lSizeCur;
 		}

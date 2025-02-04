@@ -1,22 +1,26 @@
 #pragma once
-#include "../../../DesktopEditor/common/Types.h"
 #include <type_traits>
+#include <limits>
+
+#include "../../../DesktopEditor/common/Types.h"
+
 
 #define USING_DELETE_DUPLICATING_CONTS 0 // 0 - все сточки-дубликаты превращаются в shape, 1 - строчки дубликаты удаляются
 // #define USE_DEFAULT_FONT_TO_RECALC
 
-const double c_dDpiX		= 72.0;
-const double c_dDpiY		= 72.0;
+const double c_dDpiX = 72.0;
+const double c_dDpiY = 72.0;
 
-const double c_dInchToMM	= 25.4;
-constexpr double c_dPixToMM	= 25.4 / 72.0;
-constexpr double c_dPtToMM  = 25.4 / 72.0;
-constexpr double c_dMMToPt	= 72.0 / 25.4;
-constexpr double c_dMMToDx	= 72 * 20 / 25.4;
-const double c_dMMToEMU	     = 36000.0;
-const double c_dInchToEMU	= 914400.0;
-const double c_dPtToEMU  	= 12700.0;
-const double c_dDegreeToAngle = 60000.0;
+constexpr double c_dMMToPix       = 72.0 / 25.4;
+constexpr double c_dPixToMM       = 25.4 / 72.0;
+constexpr double c_dMMToPt        = 72.0 / 25.4;
+constexpr double c_dPtToMM        = 25.4 / 72.0;
+constexpr double c_dInchToMM      = 25.4;
+constexpr double c_dMMToDx        = 72 * 20 / 25.4;
+constexpr double c_dMMToEMU       = 36000.0;
+constexpr double c_dInchToEMU     = 914400.0;
+constexpr double c_dPtToEMU       = 12700.0;
+constexpr double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
 const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.02;
@@ -38,6 +42,7 @@ const double c_dLINE_SPLIT_DISTANCE_MM          = 10.0;
 const double c_dSHAPE_X_OFFSET                  = 1.5;
 const double c_dAVERAGE_SPACE_WIDTH_COEF        = 0.9;
 const double c_dSPACE_WIDTH_COEF                = 0.4;
+const double c_dMIN_ROTATION                    = 0.01;
 
 const UINT   c_iWhiteColor = 0xFFFFFF;
 const UINT   c_iBlackColor = 0x000000;
@@ -54,3 +59,14 @@ const uint32_t c_SPACE_SYM = 0x20;
 const UINT   c_iStartingIdForImages = 6;
 constexpr size_t c_nAntiZero = ~0;
 const UINT   c_iStandartRelativeHeight = 0x0400;
+
+constexpr int32_t c_iST_PositionOffsetMax = std::numeric_limits<int32_t>::max();
+constexpr int32_t c_iST_PositionOffsetMin = std::numeric_limits<int32_t>::min();
+constexpr uint64_t c_iST_PositiveCoordinatetMin = 0;
+constexpr uint64_t c_iST_PositiveCoordinatetMax = 27273042316900;
+
+constexpr double c_dST_PositionOffsetMax = c_iST_PositionOffsetMax / c_dMMToEMU;
+constexpr double c_dST_PositionOffsetMin = c_iST_PositionOffsetMin / c_dMMToEMU;
+constexpr double c_dST_PositiveCoordinatetMin = c_iST_PositiveCoordinatetMin / c_dMMToEMU;
+constexpr double c_dST_PositiveCoordinatetMax = c_iST_PositiveCoordinatetMax / c_dMMToEMU;
+

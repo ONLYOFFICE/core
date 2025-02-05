@@ -58,6 +58,11 @@ odp_conversion_context::odp_conversion_context(package::odf_document * outputDoc
 	:	odf_conversion_context (PresentationDocument, outputDocument), root_presentation_(NULL), slide_context_(*this), rId_(1)
 {
 }
+bool odp_conversion_context::is_child_text_context()
+{
+	return  (false == text_context_.empty());
+}
+
 odf_text_context* odp_conversion_context::text_context()
 {
 	if (false == text_context_.empty())

@@ -121,6 +121,8 @@ public:
 	virtual odf_text_context		* text_context()		= 0;
 	virtual odf_controls_context	* controls_context()	= 0;
 
+	virtual bool is_child_text_context() = 0;
+
     std::wstring add_image		(const std::wstring & image_file_name, bool bExternal = false);
     std::wstring add_media		(const std::wstring & file_name, bool bExternal = false);
     std::wstring add_oleobject	(const std::wstring & ole_file_name, bool bExternal = false);
@@ -144,7 +146,7 @@ public:
 	void start_chart();
 	void end_chart();
 
-	virtual bool start_math();
+	virtual bool start_math(int base_font_size, const std::wstring & base_font_color);
 	virtual void end_math();
 
 	void start_spreadsheet();

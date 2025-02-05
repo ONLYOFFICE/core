@@ -2652,10 +2652,14 @@ graphic_format_properties* odf_drawing_context::get_graphic_properties()
 {
 	return impl_->current_graphic_properties;
 }
+text_format_properties* odf_drawing_context::get_text_properties()
+{
+	return impl_->current_text_properties;
+}
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
 	switch(align)
 	{
 	case 0://SimpleTypes::textanchoringtypeB: 

@@ -18,7 +18,7 @@ namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false)
+		StValuePr():m_wsTypeName(L""),m_wsChr(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false),m_enUnderLine(SimpleTypes::EUnderline::underlineNone)
 		{
 			AddRef();
 		}
@@ -32,6 +32,7 @@ namespace StarMath
 		StarMath::TypeFont m_enFont;
 		int m_iCount;
 		bool m_bStrike;
+		SimpleTypes::EUnderline m_enUnderLine;
 		void AddRef()
 		{
 			m_iCount++;
@@ -45,10 +46,11 @@ namespace StarMath
 	};
 	struct StStyleMenClose
 	{
-		StStyleMenClose():m_iStyle(0),m_bMenClose(false)
+		StStyleMenClose():m_iStyle(0),m_bMenClose(false),m_bUnderlineClose(false)
 		{}
 		unsigned int m_iStyle;
 		bool m_bMenClose;
+		bool m_bUnderlineClose;
 	};
 	class COneElement;
 	class COOXml2Odf

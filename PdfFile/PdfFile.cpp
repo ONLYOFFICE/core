@@ -42,6 +42,7 @@
 #include "OnlineOfficeBinToPdf.h"
 
 #include "SrcWriter/Document.h"
+#include "Resources/BaseFonts.h"
 
 #else
 class CPdfEditor
@@ -913,6 +914,28 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 				if (bItalic)
 					lStyle |= 2;
 				put_FontStyle(lStyle);
+			}
+
+			NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+			if (wsFontPath == sSub && (!pMemoryStorage || !pMemoryStorage->Get(wsFontPath)))
+			{
+				const BYTE* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				std::wstring wsTempFileName = m_pInternal->wsTempFolder + L"/" + wsFontPath + L".base";
+				if (NSFile::CFileBinary::Exists(wsTempFileName))
+					wsFontPath = wsTempFileName;
+				else if (PdfReader::GetBaseFont(sSub, pData14, nSize14))
+				{
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(wsTempFileName))
+					{
+						oFile.WriteFile((BYTE*)pData14, nSize14);
+						wsFontPath = wsTempFileName;
+					}
+					else if (!wsTempFileName.empty())
+						NSFile::CFileBinary::Remove(wsTempFileName);
+					oFile.CloseFile();
+				}
 			}
 		}
 		else

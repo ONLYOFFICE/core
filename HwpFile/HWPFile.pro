@@ -12,6 +12,8 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
 DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY

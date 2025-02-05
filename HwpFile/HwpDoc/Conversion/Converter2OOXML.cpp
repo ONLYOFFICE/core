@@ -353,7 +353,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 
 void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (nullptr == pShape)
+	if (nullptr == pShape || oState.m_bInTextBox)
 		return;
 
 	switch (pShape->GetShapeType())
@@ -695,7 +695,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 			oBuilder.WriteString(L"<w:numPr>");
 
-			oBuilder.WriteString(L"<w:ilvl w:val=\"0\"/>");
+			oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring((int)pParaShape->GetHeadingLevel()) + L"\"/>");
 			oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
 
 			oBuilder.WriteString(L"</w:numPr>");
@@ -949,8 +949,6 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (nullptr == pGeneralShape)
 		return;
 
-	OpenParagraph(shParaShapeID, oBuilder, oState);
-
 	EShapeObjectType eShapeType = GetShapeObjectType(pGeneralShape->GetID());
 
 	if (EShapeObjectType::Unknown == eShapeType)
@@ -959,6 +957,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	++m_ushShapeCount;
 
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
+
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
 	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
@@ -1094,6 +1094,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		oBuilder.WriteString(L"<wps:txbx><w:txbxContent>");
 
 		TConversionState oShapeState;
+		oShapeState.m_bInTextBox = true;
 
 		for (unsigned int unParaIndex = 0; unParaIndex < nCountParagraphs; ++unParaIndex)
 			WriteParagraph(pGeneralShape->GetParagraphs(unParaIndex), oBuilder, oShapeState);
@@ -1112,6 +1113,8 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short s
 {
 	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
+
+	WriteCaption((const CCtrlCommon*)pEqEditShape, oBuilder, oState);
 
 	OpenParagraph(shParaShapeID, oBuilder, oState);
 
@@ -1146,6 +1149,8 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 		return;
 
 	++m_ushShapeCount;
+
+	WriteCaption((const CCtrlCommon*)pOleShape, oBuilder, oState);
 
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
@@ -1561,10 +1566,11 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	if (!bStrike && pCharShape->StrikeOut())
 		oBuilder.WriteString(L"<w:strike/>");
 
-	double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
-	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
+	//TODO:: на данный момент вычисляется не правильно. Необходимо более точно разобраться
+	// double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
+	// dSpacing *= 20; // pt to twips (20 = 1440 / 72)
 
-	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+	// oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
 
 	if (nullptr != oState.m_pHighlightColor)
 		oBuilder.WriteString(L"<w:highlight w:val=\"" + ConvertIntRgbToStr(*oState.m_pHighlightColor) + L"\"/>");
@@ -2044,6 +2050,11 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 	switch (pAutoNumber->GetNumType())
 	{
 		case ENumType::PAGE:
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"PAGE \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::TOTAL_PAGE:
 			ushValue = m_ushPageCount; break;
 		case ENumType::FOOTNOTE:
@@ -2184,7 +2195,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(0), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

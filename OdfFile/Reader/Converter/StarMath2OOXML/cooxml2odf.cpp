@@ -795,6 +795,11 @@ namespace StarMath
 			stTempPr->m_enStyle = SimpleTypes::EStyle::styleItalic;
 			bRpr = true;
 		}
+		else if(pRPr->m_oU.GetPointer() != nullptr && pRPr->m_oU->m_oVal.GetPointer() != nullptr)
+		{
+			stTempPr->m_enUnderLine = pRPr->m_oU->m_oVal->GetValue();
+			bRpr = true;
+		}
 		if(bRpr == true)
 			return stTempPr;
 		else
@@ -1417,8 +1422,13 @@ namespace StarMath
 	void COOXml2Odf::StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter *pXmlWrite)
 	{
 		if(stStyle.m_bMenClose)
-		{
 			pXmlWrite->WriteNodeEnd(L"menclose",false,false);
+		if(stStyle.m_bUnderlineClose)
+		{
+			pXmlWrite->WriteNodeBegin(L"mo",false);
+			pXmlWrite->WriteString(L"\u0332");
+			pXmlWrite->WriteNodeEnd(L"mo",false,false);
+			pXmlWrite->WriteNodeEnd(L"munder",false,false);
 		}
 		if(stStyle.m_iStyle != 0)
 		{
@@ -1732,6 +1742,14 @@ namespace StarMath
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
 			wsAnnotation += L"overstrike ";
 			stStyle.m_bMenClose = true;
+		}
+		if(pAttribute->m_enUnderLine == SimpleTypes::EUnderline::underlineSingle)
+		{
+			pXmlWrite->WriteNodeBegin(L"munder",true);
+			pXmlWrite->WriteAttribute(L"accentunder",L"true");
+			pXmlWrite->WriteNodeEnd(L"w",true,false);
+			wsAnnotation += L"underline ";
+			stStyle.m_bUnderlineClose = true;
 		}
 		if(!bDelimiter)
 			pAttribute->Release();

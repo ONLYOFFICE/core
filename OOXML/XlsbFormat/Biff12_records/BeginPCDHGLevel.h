@@ -53,7 +53,7 @@ namespace XLSB
 
             //static const XLS::ElementType	type = XLS::typeBeginPCDHGLevel;
 
-            bool            fGroupLevel;
+            bool            fGroupLevel = false;;
             XLWideString    stUnique;
             XLWideString    stLevelName;
     };

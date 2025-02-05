@@ -2856,6 +2856,66 @@ int BinaryWorkbookTableReader::ReadWorkbookView(BYTE type, long length, void* po
 		pWorkbookView->m_oActiveTab.Init();
 		pWorkbookView->m_oActiveTab->SetValue(m_oBufferedStream.GetLong());
 	}
+	else if (c_oSerWorkbookViewTypes::AutoFilterDateGrouping == type)
+	{
+		pWorkbookView->m_oAutoFilterDateGrouping.Init();
+		pWorkbookView->m_oAutoFilterDateGrouping->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookViewTypes::FirstSheet == type)
+	{
+		pWorkbookView->m_oActiveTab.Init();
+		pWorkbookView->m_oActiveTab->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerWorkbookViewTypes::Minimized == type)
+	{
+		pWorkbookView->m_oMinimized.Init();
+		pWorkbookView->m_oMinimized->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookViewTypes::ShowHorizontalScroll == type)
+	{
+		pWorkbookView->m_oShowHorizontalScroll.Init();
+		pWorkbookView->m_oShowHorizontalScroll->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookViewTypes::ShowSheetTabs == type)
+	{
+		pWorkbookView->m_oShowSheetTabs.Init();
+		pWorkbookView->m_oShowSheetTabs->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookViewTypes::ShowVerticalScroll == type)
+	{
+		pWorkbookView->m_oShowVerticalScroll.Init();
+		pWorkbookView->m_oShowVerticalScroll->FromBool(m_oBufferedStream.GetBool());
+	}
+	else if (c_oSerWorkbookViewTypes::TabRatio == type)
+	{
+		pWorkbookView->m_oTabRatio.Init();
+		pWorkbookView->m_oTabRatio->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerWorkbookViewTypes::Visibility == type)
+	{
+		pWorkbookView->m_oVisibility.Init();
+		pWorkbookView->m_oVisibility->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else if (c_oSerWorkbookViewTypes::WindowHeight == type)
+	{
+		pWorkbookView->m_oWindowHeight.Init();
+		pWorkbookView->m_oWindowHeight->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerWorkbookViewTypes::WindowWidth == type)
+	{
+		pWorkbookView->m_oWindowWidth.Init();
+		pWorkbookView->m_oWindowWidth->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerWorkbookViewTypes::XWindow == type)
+	{
+		pWorkbookView->m_oXWindow.Init();
+		pWorkbookView->m_oXWindow->SetValue(m_oBufferedStream.GetLong());
+	}
+	else if (c_oSerWorkbookViewTypes::YWindow == type)
+	{
+		pWorkbookView->m_oYWindow.Init();
+		pWorkbookView->m_oYWindow->SetValue(m_oBufferedStream.GetLong());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -8669,8 +8729,9 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 			UINT nCodePage;
 			std::wstring sDelimiter;
 			BYTE saveFileType;
+			_INT32 Lcid;
 
-			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid);
 			// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 
 			if (BinXlsxRW::c_oFileTypes::CSV == fileType)
@@ -8736,7 +8797,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 				OOX::Spreadsheet::CXlsx oXlsx;
 				CSVWriter oCSVWriter;
 				
-				oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, false);
+                oCSVWriter.Init(oXlsx, nCodePage, sDelimiter, Lcid, false);
 				
 				bResultOk = oCSVWriter.Start(sDstPathCSV);
 				if (!bResultOk) return AVS_FILEUTILS_ERROR_CONVERT;

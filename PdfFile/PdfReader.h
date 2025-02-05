@@ -50,6 +50,7 @@ public:
 
 	void Close();
 
+	void SetParams(COfficeDrawingPageParams* pParams);
 	std::wstring GetTempDirectory();
 	void SetTempDirectory(const std::wstring& directory);
 

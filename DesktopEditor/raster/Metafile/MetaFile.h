@@ -64,6 +64,7 @@ namespace MetaFile
 
 		bool LoadFromFile(const wchar_t* wsFilePath);
 		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
+		bool LoadFromString(const std::wstring& data);
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void Close();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
@@ -74,6 +75,8 @@ namespace MetaFile
 
 		//конвертация в Svg
 		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
+
+		void SetTempDirectory(const std::wstring& dir);
 
 		//Для тестов
 	#ifdef METAFILE_SUPPORT_WMF_EMF

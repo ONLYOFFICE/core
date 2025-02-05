@@ -661,6 +661,10 @@ namespace PdfWriter
 	{
 		return new CCaretAnnotation(m_pXref);
 	}
+	CAnnotation* CDocument::CreateStampAnnot()
+	{
+		return new CStampAnnotation(m_pXref);
+	}
 	CAnnotation* CDocument::CreateWidgetAnnot()
 	{
 		if (!CheckAcroForm())
@@ -1452,6 +1456,9 @@ namespace PdfWriter
 		m_pCurPage  = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
+		if (m_pPageTree)
+			m_pPageTree->ReplacePage(nPageIndex, pPage);
+
 		return true;
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
@@ -1774,10 +1781,10 @@ namespace PdfWriter
 	}
 	void CDocument::AddShapeXML(const std::string& sXML)
 	{
-		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		CDictObject* pResources = (CDictObject*)m_pCurPage->GetResourcesItem();
 		if (!pResources)
 		{
-			pResources = new CDictObject();
+			pResources = new CResourcesDict(NULL, true, false);
 			m_pCurPage->Add("Resources", pResources);
 		}
 		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");
@@ -1792,6 +1799,25 @@ namespace PdfWriter
 			pProperties->Remove("OShapes");
 			pObj = NULL;
 		}
+
+		CBinaryObject* sID = NULL;
+		CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
+		if (!pID)
+		{
+			BYTE arrId[16];
+			CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
+
+			pID = new CArrayObject();
+			m_pTrailer->Add("ID", pID);
+
+			pID->Add(new CBinaryObject(arrId, 16));
+			pID->Add(new CBinaryObject(arrId, 16));
+
+			sID = new CBinaryObject(arrId, 16);
+		}
+		else
+			sID = (CBinaryObject*)pID->Get(1)->Copy();
+
 		CDictObject* pMetaOForm = (CDictObject*)pObj;
 		if (!pMetaOForm)
 		{
@@ -1800,25 +1826,8 @@ namespace PdfWriter
 			pMetaOForm->Add("Type", "OShapes");
 			pProperties->Add("OShapes", pMetaOForm);
 			m_vMetaOForms.push_back(pMetaOForm);
-
-			CBinaryObject* sID = NULL;
-			CArrayObject* pID = (CArrayObject*)m_pTrailer->Get("ID");
-			if (!pID)
-			{
-				BYTE arrId[16];
-				CEncryptDict::CreateId(m_pInfo, m_pXref, (BYTE*)arrId);
-
-				pID = new CArrayObject();
-				m_pTrailer->Add("ID", pID);
-
-				pID->Add(new CBinaryObject(arrId, 16));
-				pID->Add(new CBinaryObject(arrId, 16));
-
-				sID = new CBinaryObject(arrId, 16);
-			}
-			else
-				sID = (CBinaryObject*)pID->Get(1)->Copy();
-			pMetaOForm->Add("ID", sID);
+			pMetaOForm->Add("IDF", sID->Copy());
+			pMetaOForm->Add("ID", sID->Copy());
 		}
 		CArrayObject* pArrayMeta = (CArrayObject*)pMetaOForm->Get("Metadata");
 		if (!pArrayMeta)
@@ -1832,12 +1841,13 @@ namespace PdfWriter
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);
+		pBDC->Add("IDF", sID);
 		m_pCurPage->BeginMarkedContentDict("OShapes", pBDC);
 		RELEASEOBJECT(pBDC);
 	}
 	void CDocument::EndShapeXML()
 	{
-		CDictObject* pResources = (CDictObject*)m_pCurPage->Get("Resources");
+		CDictObject* pResources = (CDictObject*)m_pCurPage->GetResourcesItem();
 		if (!pResources)
 			return;
 		CDictObject* pProperties = (CDictObject*)pResources->Get("Properties");

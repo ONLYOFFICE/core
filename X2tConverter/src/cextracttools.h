@@ -49,7 +49,7 @@
 #include <fstream>
 #include <iostream>
 
-#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes))
+#define SUCCEEDED_X2T(nRes) (0 == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_ROWLIMITS == (nRes) || AVS_FILEUTILS_ERROR_CONVERT_CELLLIMITS == (nRes))
 
 namespace NExtractTools
 {
@@ -867,6 +867,7 @@ namespace NExtractTools
 			std::wstring sRes;
 			int nCsvEncoding = 46; // 65001 utf8
 			std::wstring cDelimiter = L",";
+            int LcId = -1;
 
 			if (NULL != m_nCsvTxtEncoding)
 				nCsvEncoding = *m_nCsvTxtEncoding;
@@ -895,6 +896,12 @@ namespace NExtractTools
 			{
 				cDelimiter = *m_sCsvDelimiterChar;
 			}
+
+            if(m_nLcid != NULL)
+            {
+                LcId = *m_nLcid;
+            }
+
 			int nFileType = 1;
 			if (NULL != m_nFormatFrom && AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV == *m_nFormatFrom)
 				nFileType = 2;
@@ -915,6 +922,8 @@ namespace NExtractTools
 			sRes += L"' codePage='" + std::to_wstring(nCsvEncoding);
 			if (m_bMacro)
 				sRes += L"' macro='1";
+            if(LcId != -1)
+                sRes += L"' Lcid='" + std::to_wstring(LcId);
 			sRes += L"' delimiter='" + XmlUtils::EncodeXmlStringExtend(cDelimiter) + L"' " + sSaveType;
 			sRes += L"/><TXTOptions><Encoding>" + std::to_wstring(nCsvEncoding) + L"</Encoding></TXTOptions></xmlOptions>";
 
@@ -1171,7 +1180,9 @@ namespace NExtractTools
 			}
 			else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == toFormat || AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 			{
-				if (formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF ||
+				if (formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX ||
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX || 
+					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML ||
 					formatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT ||
@@ -1191,14 +1202,16 @@ namespace NExtractTools
 						toFormat = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 					}
 				}
-				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_SPREADSHEET & formatFrom))
 				{
 					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 					{
 						toFormat = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
 					}
 				}
-				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_PRESENTATION & formatFrom))
 				{
 					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 					{
@@ -1209,7 +1222,8 @@ namespace NExtractTools
 				{
 					return;
 				}
-				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom))
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_WORD == formatFrom || 
+						AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY == formatFrom || 0 != (AVS_OFFICESTUDIO_FILE_DOCUMENT & formatFrom))
 				{
 					if (AVS_OFFICESTUDIO_FILE_OTHER_ODF == toFormat)
 					{

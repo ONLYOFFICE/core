@@ -935,9 +935,7 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
     case ODRAW::metroBlob:
     {
         NSFile::CFileBinary file;
-
-        std::wstring tempPath = NSDirectory::CreateDirectoryWithUniqueName(m_tempPath);
-        std::wstring tempFileName = tempPath + FILE_SEPARATOR_STR + L"tempMetroBlob.zip";
+        std::wstring tempFileName = NSFile::CFileBinary::CreateTempFileWithUniqueName(m_tempPath, L"Blob") + L".zip";
 
         if (file.CreateFileW(tempFileName))
         {
@@ -964,7 +962,6 @@ void CPPTElement::SetUpPropertyShape(CElementPtr pElement, CTheme* pTheme, CSlid
             delete []utf8Data;
         }
         NSFile::CFileBinary::Remove(tempFileName);
-        NSDirectory::DeleteDirectory(tempPath);
     }break;
     case ODRAW::geoRight:
     {

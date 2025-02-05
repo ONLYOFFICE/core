@@ -81,7 +81,7 @@ namespace NSDocxRenderer
 
 		void SelectFont(const CFontSelectParams& oFontSelectParams,
 						const CFontMetrics& oFontMetrics,
-						NSStringUtils::CStringUTF32& oText);
+						const NSStringUtils::CStringUTF32& oText);
 		std::wstring GetSelectedName() const noexcept;
 		bool IsSelectedBold() const noexcept;
 		bool IsSelectedItalic() const noexcept;
@@ -117,8 +117,8 @@ namespace NSDocxRenderer
 		CFontManager(NSFonts::IApplicationFonts* pFonts);
 		~CFontManager();
 
-		void LoadFontByFile(const NSStructures::CFont& oFont);
-		void LoadFontByName(const NSStructures::CFont& oFont);
+		bool LoadFontByFile(const NSStructures::CFont& oFont);
+		bool LoadFontByName(const NSStructures::CFont& oFont);
 
 		const CFontSelectParams& GetFontSelectParams() const noexcept;
 		const CFontMetrics& GetFontMetrics() const noexcept;

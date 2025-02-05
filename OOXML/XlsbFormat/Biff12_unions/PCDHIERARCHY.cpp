@@ -35,6 +35,7 @@
 #include "../Biff12_unions/PCDHFIELDSUSAGE.h"
 #include "../Biff12_unions/PCDHGLEVELS.h"
 #include "../Biff12_unions/FRTPCDHIERARCHY.h"
+#include "../Biff12_unions/PCDH15.h"
 #include "../Biff12_records/EndPCDHierarchy.h"
 
 using namespace XLS;
@@ -79,6 +80,10 @@ namespace XLSB
         if (proc.optional<FRTPCDHIERARCHY>())
         {
             m_FRTPCDHIERARCHY = elements_.back();
+            elements_.pop_back();
+        }
+        if (proc.optional<uPCDH15>())
+        {
             elements_.pop_back();
         }
 

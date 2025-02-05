@@ -242,7 +242,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
       }
       obj2.free();
     }
-  } else {
+  } else if (type && type->cmp("FreeText")) {
     bBorder = gFalse;
   }
   obj1.free();
@@ -731,9 +731,25 @@ void Annot::generateFreeTextAppearance() {
   if (annotObj.dictLookup("CA", &obj1)->isNum()) {
     gfxStateDict.initDict(doc->getXRef());
     gfxStateDict.dictAdd(copyString("ca"), obj1.copy(&obj2));
+	gfxStateDict.dictAdd(copyString("CA"), obj1.copy(&obj2));
     appearBuf->append("/GS1 gs\n");
   }
   obj1.free();
+
+  lineWidth = 0;
+  if (borderStyle && borderStyle->getWidth() != 0) {
+	lineWidth = 0.1;
+	if (borderStyle->getWidth() > 0) {
+	  lineWidth = borderStyle->getWidth();
+	}
+  }
+
+  if (annotObj.dictLookup("C", &obj1)->isArray()) {
+	setFillColor(&obj1);
+	appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re f\n",
+		0.5 * lineWidth, 0.5 * lineWidth,
+		xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+  }
 
   //----- draw the text
   if (annotObj.dictLookup("Contents", &obj1)->isString()) {
@@ -753,7 +769,7 @@ void Annot::generateFreeTextAppearance() {
   } else {
     da = new GString();
   }
-  obj1.free();
+  appearDict.free(); obj1.free();
   // the "Rotate" field is not defined in the PDF spec, but Acrobat
   // looks at it
   if (annotObj.dictLookup("Rotate", &obj1)->isInt()) {
@@ -762,16 +778,17 @@ void Annot::generateFreeTextAppearance() {
     rot = 0;
   }
   obj1.free();
-  drawText(text, da, quadding, 0, rot);
+  drawText(text, da, quadding, lineWidth, rot);
   delete text;
   delete da;
 
   //----- draw the border
-  if (borderStyle && borderStyle->getWidth() != 0) {
-    setLineStyle(borderStyle, &lineWidth);
-    appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re s\n",
-		       0.5 * lineWidth, 0.5 * lineWidth,
-		       xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+  if (lineWidth != 0) {
+	setLineStyle(borderStyle, &lineWidth);
+	appearBuf->appendf("{0:.4f} {1:.4f} {2:.4f} {3:.4f} re S\n",
+		0.5 * lineWidth, 0.5 * lineWidth,
+		xMax - xMin - lineWidth, yMax - yMin - lineWidth);
+	obj1.free();
   }
 
   //----- build the appearance stream dictionary
@@ -1048,8 +1065,8 @@ void Annot::setLineStyle(AnnotBorderStyle *bs, double *lineWidth) {
   int dashLength, i;
 
   w = 0.1;
-  if (borderStyle && (w = borderStyle->getWidth()) <= 0) {
-    w = 0.1;
+  if (borderStyle && borderStyle->getWidth() > 0) {
+	w = borderStyle->getWidth();
   }
   *lineWidth = w;
   appearBuf->appendf("{0:.4f} w\n", w);
@@ -1374,11 +1391,11 @@ void Annot::drawCircleBottomRight(double cx, double cy, double r) {
 void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 		     int rot) {
   GString *text2, *tok;
-  GList *daToks;
+  GList *daToks, *vBreaks;
   const char *charName;
   double dx, dy, fontSize, fontSize2, x, y, w;
   Gushort charWidth;
-  int tfPos, tmPos, i, j, c;
+  int rgPos, i, j, c;
 
   // check for a Unicode string
   //~ this currently drops all non-Latin1 characters
@@ -1398,7 +1415,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   }
 
   // parse the default appearance string
-  tfPos = tmPos = -1;
+  rgPos = -1;
   if (da) {
     daToks = new GList();
     i = 0;
@@ -1414,32 +1431,13 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 	i = j;
       }
     }
-    for (i = 2; i < daToks->getLength(); ++i) {
-      if (i >= 2 && !((GString *)daToks->get(i))->cmp("Tf")) {
-	tfPos = i - 2;
-      } else if (i >= 6 && !((GString *)daToks->get(i))->cmp("Tm")) {
-	tmPos = i - 6;
-      }
+	for (i = 0; i < daToks->getLength(); ++i) {
+	  if (i >= 3 && !((GString *)daToks->get(i))->cmp("rg")) {
+	rgPos = i - 3;
+	  }
     }
   } else {
-    daToks = NULL;
-  }
-
-  // get the font and font size
-  fontSize = 0;
-  if (tfPos >= 0) {
-    //~ where do we look up the font?
-    tok = (GString *)daToks->get(tfPos);
-    tok->clear();
-    tok->append("/xpdf_default_font");
-    tok = (GString *)daToks->get(tfPos + 1);
-    fontSize = atof(tok->getCString());
-  } else {
-    error(errSyntaxError, -1,
-	  "Missing 'Tf' operator in annotation's DA string");
-    daToks->append(new GString("/xpdf_default_font"));
-    daToks->append(new GString("10"));
-    daToks->append(new GString("Tf"));
+    daToks = new GList();
   }
 
   // setup
@@ -1451,7 +1449,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   } else if (rot == 180) {
     appearBuf->appendf("-1 0 0 -1 {0:.4f} {1:.4f} cm\n",
 		       xMax - xMin, yMax - yMin);
-    dx = xMax - yMax;
+	dx = xMax - xMin;
     dy = yMax - yMin;
   } else if (rot == 270) {
     appearBuf->appendf("0 -1 1 0 0 {0:.4f} cm\n", yMax - yMin);
@@ -1465,91 +1463,198 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 
   // compute string width
   //~ this assumes we're substituting Helvetica/WinAnsiEncoding for everything
-  w = 0;
-  for (i = 0; i < text2->getLength(); ++i) {
-    charName = winAnsiEncoding[text->getChar(i) & 0xff];
-    if (charName && builtinFonts[4].widths->getWidth(charName, &charWidth)) {
-      w += charWidth;
-    } else {
-      w += 0.5;
-    }
+  fontSize = 14;
+  i = 0;
+  vBreaks = new GList();
+  double dX = 0, dWordWidth = 0, dKoef = fontSize / 1000.0;
+  unsigned int unWordStartPos = 0;
+  bool bLineStart = true, bWord = false, bFirstItemOnLine = true;
+  while (i < text2->getLength())
+  {
+	  charName = winAnsiEncoding[text->getChar(i) & 0xff];
+	  if (!charName || !builtinFonts[4].widths->getWidth(charName, &charWidth))
+		  charWidth = 500;
+
+	  char c = text->getChar(i);
+	  if (c == 0x20)
+	  {
+		  dX += dWordWidth + charWidth * dKoef;
+		  bWord             = false;
+		  dWordWidth        = 0;
+		  bLineStart        = false;
+		  bFirstItemOnLine  = false;
+	  }
+	  else if (c == 0xA || c == 0xD)
+	  {
+		  bLineStart       = true;
+		  bFirstItemOnLine = true;
+		  bWord            = false;
+		  dX               = 0;
+		  dWordWidth       = 0;
+		  vBreaks->append(new int(i + 1));
+	  }
+	  else
+	  {
+		  double dLetterWidth = charWidth * dKoef;
+		  if (dX + dWordWidth + dLetterWidth > dx - margin * 4)
+		  {
+			  if (bLineStart)
+			  {
+				  if (bFirstItemOnLine)
+				  {
+					  if (i != text2->getLength() - 1)
+						  vBreaks->append(new int(i + 1));
+					  i++;
+				  }
+				  else
+					  vBreaks->append(new int(i));
+			  }
+			  else
+			  {
+				  if (bWord)
+				  {
+					  vBreaks->append(new int(unWordStartPos));
+					  i = unWordStartPos;
+				  }
+				  else
+					  vBreaks->append(new int(i));
+			  }
+
+			  dX               = 0;
+			  bWord            = false;
+			  dWordWidth       = 0;
+			  bLineStart       = true;
+			  bFirstItemOnLine = true;
+			  continue;
+		  }
+
+		  if (bWord)
+			  dWordWidth += charWidth * dKoef;
+		  else
+		  {
+			  unWordStartPos = i;
+			  bWord          = true;
+			  dWordWidth     = charWidth * dKoef;
+		  }
+
+		  bFirstItemOnLine  = false;
+	  }
+
+	  i++;
   }
 
-  // compute font autosize
-  if (fontSize == 0) {
-    fontSize = dy - 2 * margin;
-    fontSize2 = (dx - 2 * margin) / w;
-    if (fontSize2 < fontSize) {
-      fontSize = fontSize2;
-    }
-    fontSize = floor(fontSize);
-    if (tfPos >= 0) {
-      tok = (GString *)daToks->get(tfPos + 1);
-      tok->clear();
-      tok->appendf("{0:.4f}", fontSize);
-    }
-  }
-
-  // compute text start position
-  w *= fontSize;
-  switch (quadding) {
-  case 0:
-  default:
-    x = margin + 2;
-    break;
-  case 1:
-    x = (dx - w) / 2;
-    break;
-  case 2:
-    x = dx - margin - 2 - w;
-    break;
-  }
-  y = 0.5 * dy - 0.4 * fontSize;
-
-  // set the font matrix
-  if (tmPos >= 0) {
-    tok = (GString *)daToks->get(tmPos + 4);
-    tok->clear();
-    tok->appendf("{0:.4f}", x);
-    tok = (GString *)daToks->get(tmPos + 5);
-    tok->clear();
-    tok->appendf("{0:.4f}", y);
-  }
-  
   // write the DA string
-  if (daToks) {
-    for (i = 0; i < daToks->getLength(); ++i) {
-      appearBuf->append((GString *)daToks->get(i))->append(' ');
-    }
+  appearBuf->append("/xpdf_default_font 14 Tf\n");
+  if (rgPos > 0) {
+	appearBuf->append((GString *)daToks->get(rgPos))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 1))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 2))->append(' ');
+	appearBuf->append("rg\n");
   }
 
-  // write the font matrix (if not part of the DA string)
-  if (tmPos < 0) {
-    appearBuf->appendf("1 0 0 1 {0:.4f} {1:.4f} Tm\n", x, y);
-  }
+  unsigned int unLinesCount = vBreaks->getLength() + 1;
 
-  // write the text string
-  appearBuf->append('(');
-  for (i = 0; i < text2->getLength(); ++i) {
-    c = text2->getChar(i) & 0xff;
-    if (c == '(' || c == ')' || c == '\\') {
-      appearBuf->append('\\');
-      appearBuf->append((char)c);
-    } else if (c < 0x20 || c >= 0x80) {
-      appearBuf->appendf("\\{0:03o}", c);
-    } else {
-      appearBuf->append((char)c);
-    }
+  double dShiftY = dy - margin - 2 - 0.789571 * fontSize;
+  double dLineHeight = 1.2 * fontSize;
+  double dCurX, dCurY;
+  bool bStart = true;
+  for (i = 0; i < unLinesCount; ++i)
+  {
+	  int nLineStartPos = i == 0 ? 0 : *(int*)vBreaks->get(i - 1);
+	  int nLineEndPos = i == vBreaks->getLength() ? text2->getLength() : *(int*)vBreaks->get(i);
+	  int nInLineCount = nLineEndPos - nLineStartPos;
+
+	  if (nInLineCount > 0)
+	  {
+		  // compute width
+		  w = 0;
+		  int nStart = nLineStartPos, nEnd = nLineEndPos;
+		  while (nStart < nEnd)
+		  {
+			  char c = text->getChar(nStart);
+			  if (c == 0x20)
+				  nStart++;
+			  else
+				  break;
+		  }
+
+		  while (nEnd > nStart && nEnd > 0)
+		  {
+			  char c = text->getChar(nEnd - 1);
+			  if (c == 0x20)
+				  nEnd--;
+			  else
+				  break;
+		  }
+
+		  for (unsigned int unPos = nStart; unPos < nEnd; ++unPos)
+		  {
+			  charName = winAnsiEncoding[text->getChar(unPos) & 0xff];
+			  if (!charName || !builtinFonts[4].widths->getWidth(charName, &charWidth))
+				  charWidth = 500;
+			  w += charWidth * dKoef;
+		  }
+
+		  // compute text start position
+		  x = margin * 2;
+		  if (2 == quadding)
+			  x = dx - w - margin * 2;
+		  else if (1 == quadding)
+			  x = (dx - w) / 2;
+		  y = dShiftY;
+
+		  if (bStart)
+		  {
+			  dCurX = x;
+			  dCurY = y;
+		  }
+		  else
+		  {
+			  x -= dCurX;
+			  y -= dCurY;
+
+			  dCurX += x;
+			  dCurY += y;
+		  }
+		  bStart = false;
+
+		  // write the font matrix
+		  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
+
+		  // write the text string
+		  appearBuf->append('(');
+		  for (int j = nLineStartPos; j < nLineEndPos; ++j) {
+			c = text2->getChar(j) & 0xff;
+			if (c == '(' || c == ')' || c == '\\') {
+			  appearBuf->append('\\');
+			  appearBuf->append((char)c);
+			} else if (c < 0x20 || c >= 0x80) {
+			  appearBuf->appendf("\\{0:03o}", c);
+			} else {
+			  appearBuf->append((char)c);
+			}
+		  }
+		  appearBuf->append(") Tj\n");
+	  }
+	  dShiftY -= dLineHeight;
   }
-  appearBuf->append(") Tj\n");
 
   // cleanup
   appearBuf->append("ET\n");
   appearBuf->append("Q\n");
 
+  if (rgPos > 0) {
+	appearBuf->append((GString *)daToks->get(rgPos))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 1))->append(' ');
+	appearBuf->append((GString *)daToks->get(rgPos + 2))->append(' ');
+	appearBuf->append("RG\n");
+  }
+
   if (daToks) {
     deleteGList(daToks, GString);
   }
+  if (vBreaks)
+	deleteGList(vBreaks, int);
   if (text2 != text) {
     delete text2;
   }
@@ -1572,6 +1677,13 @@ void Annot::draw(Gfx *gfx, GBool printing) {
 
   // draw the appearance stream
   isLink = type && !type->cmp("Link");
+#ifdef BUILDING_WASM_MODULE
+  if (type && !type->cmp("Stamp"))
+  {
+    gfx->drawStamp(&appearance);
+    return;
+  }
+#endif
   gfx->drawAnnot(&appearance, isLink ? borderStyle : (AnnotBorderStyle *)NULL,
 		 xMin, yMin, xMax, yMax);
 }

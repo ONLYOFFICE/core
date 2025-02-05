@@ -33,6 +33,8 @@
 
 //#include "../utils.h"
 
+#include "../../Reader/Converter/StarMath2OOXML/cooxml2odf.h"
+
 #include "../../OOXML/DocxFormat/DocxFlat.h"
 #include "../../OOXML/DocxFormat/Math/OMath.h"
 #include "../../OOXML/DocxFormat/Math/oMathContent.h"
@@ -97,56 +99,6 @@ namespace Oox2Odf
 		lvl_down_counter += val;
 	}
 
-	std::wstring& OoxConverter::annotation()
-	{
-		return odf_context()->math_context()->annotation;
-	}
-
-	void annotaionReplaceAll(std::wstring& annotation, std::wstring substr1, std::wstring substr2)
-	{
-		size_t pos = annotation.find(substr1);
-		while (pos != std::wstring::npos)
-		{
-			annotation.replace(pos, substr1.size(), substr2);
-			pos = annotation.find(substr1, pos + substr2.size());
-		}
-	}
-
-	void annotationPostProd(std::wstring& annotation)
-	{
-		annotaionReplaceAll(annotation, L"=", L"\"=\"");
-		annotaionReplaceAll(annotation, L"+", L"\"+\"");
-		annotaionReplaceAll(annotation, L"-", L"\"-\"");
-		annotaionReplaceAll(annotation, L"{) }", L")");
-		annotaionReplaceAll(annotation, L"{( }", L"(");
-		annotaionReplaceAll(annotation, L"*", L"\"*\"");
-		annotaionReplaceAll(annotation, L"|", L"\"|\"");
-		// ∥
-		size_t pos = annotation.find(L"∥");
-		std::vector<size_t> positions;
-		//positions.push_back(pos);
-		while (pos != std::wstring::npos)
-		{
-			positions.push_back(pos);
-			pos = annotation.find(L"∥", pos + 1);
-		}
-		std::wstring str1 = L"ldline";
-		std::wstring str2 = L"rdline";
-		for (int i = positions.size() - 1; i >= 0; i--)
-		{			
-			if (i % 2 == 0)
-				annotation.replace(positions[i], 1, str1);
-			else
-				annotation.replace(positions[i], 1, str2);
-		}
-
-		//if (annotation[0] == L'=')
-		//	annotation = L"\"\"" + annotation;
-
-		//if ((annotation[annotation.size() - 1] == L'=') || (annotation[annotation.size() - 1] == L' ') && annotation[annotation.size() - 2] == L'=')
-		//	annotation = annotation + L"\"\"";
-	}
-
 	std::vector<int> hexToIntColor(std::wstring clr)
 	{
 		std::vector<int> rgb;
@@ -198,11 +150,6 @@ namespace Oox2Odf
 		return arrColor[index];
 	}
 
-	bool& OoxConverter::annotation_flag()
-	{
-		return odf_context()->math_context()->annotation_flag;
-	}
-
 	void OoxConverter::mrow() // обертка для тега <mrow>
 	{
 		CREATE_MATH_TAG(L"mrow");
@@ -227,35 +174,36 @@ namespace Oox2Odf
 		brackets().resize(1);
 
 		bool bStart = odf_context()->start_math();
-
 		
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
 			convert(oox_math->m_arrItems[i]);
 		}
-		if (annotation_flag())
+
+		if (bStart)
 		{
-			CREATE_MATH_TAG(L"annotation");
-			typedef odf_writer::math_annotation* T;
-			T tmp = dynamic_cast<T>(elm.get());
-			if (tmp)
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math);
+
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
 			{
-				tmp->encoding_ = L"StarMath 5.0";
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
 			}
-			
-			annotationPostProd(annotation());
 
-			elm->add_text(annotation());
-			OPEN_MATH_TAG(elm);
-			CLOSE_MATH_TAG;
+			odf_context()->end_math();
 		}
-		else
-			annotation_flag() = true;
-		annotation().clear();
-
-		
-
-		if (bStart) odf_context()->end_math();
 	}
 
 	void OoxConverter::convert(OOX::Logic::CMathPr *oox_math_pr)
@@ -294,9 +242,29 @@ namespace Oox2Odf
 		{
 			convert(oox_math_para->m_arrItems[i]);
 		}
-
 		if (bStart)
+		{
+			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.StartConversion(oox_math_para);
+
+			std::wstring annotation_text = starMathConverter.GetAnnotation();
+
+			if (false == annotation_text.empty())
+			{
+				CREATE_MATH_TAG(L"annotation");
+				typedef odf_writer::math_annotation* T;
+				T tmp = dynamic_cast<T>(elm.get());
+				if (tmp)
+				{
+					tmp->encoding_ = L"StarMath 5.0";
+				}
+				elm->add_text(annotation_text);
+
+				OPEN_MATH_TAG(elm);
+				CLOSE_MATH_TAG;
+			}
 			odf_context()->end_math();
+		}
 	}
 
 	void OoxConverter::convert(OOX::Logic::COMathParaPr *oox_math_para_pr)
@@ -335,25 +303,9 @@ namespace Oox2Odf
 		std::wstring symbol;		
 		
 		symbol = (map[diakSymbol]);
-		std::map<std::wstring, std::wstring>& annotation_map = odf_context()->math_context()->annotation_diak_symbols;
-		bool annotation_flag;
-		if (annotation_map.find(symbol) != annotation_map.end())
-		{
-			annotation() += annotation_map[symbol] + L" ";
-			annotation_flag = true;
-		}
-		else		
-			annotation_flag = false;
-		
 
-		annotation() += L"{";
 		convert(oox_acc->m_oElement.GetPointer());
-		annotation() += L"}";
-		if (!annotation_flag)
-		{
-			annotation() += L" csup ";
-			annotation() += L"\"" + symbol + L"\"";
-		}
+
 		{
 			CREATE_MATH_TAG(L"mo");
 			elm->add_text(symbol);
@@ -366,7 +318,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -413,9 +364,6 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(tag.c_str());
 		OPEN_MATH_TAG(elm);
 		{
-			if(values.auxFlag) annotation() += L"bar {";
-			else	 annotation() += L"underline { ";
-
 			convert(oox_bar->m_oElement.GetPointer());
 			CREATE_MATH_TAG(L"mo");
 			if (values.auxFlag)	elm->add_text(L"¯");
@@ -423,8 +371,6 @@ namespace Oox2Odf
 			
 			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
-
-			annotation() += L"} ";
 		}
 		CLOSE_MATH_TAG;
 		if (values.auxFlag)
@@ -434,7 +380,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -461,7 +406,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -499,7 +443,6 @@ namespace Oox2Odf
 		if (val.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -571,10 +514,6 @@ namespace Oox2Odf
 			}
 			OPEN_MATH_TAG(elm);			
 			CLOSE_MATH_TAG;
-			if (values.begEndChrs.first == L"")
-				annotation() += L"left none "; //left none
-			else
-				annotation() += L"left " + odf_context()->math_context()->annotation_brackets_begin[values.begEndChrs.first] + L" ";
 		}
 	
 		for (size_t i = 0; i < oox_del->m_arrItems.size(); ++i)
@@ -597,17 +536,11 @@ namespace Oox2Odf
 			}
 			OPEN_MATH_TAG(elm);
 			CLOSE_MATH_TAG;
-			if (values.begEndChrs.second == L"")
-				annotation() += L"right none "; //right none
-			else
-				annotation() += L"right " + odf_context()->math_context()->annotation_brackets_end[values.begEndChrs.second] + L" ";
-
 		}	
 		endOfMrow();
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -660,8 +593,6 @@ namespace Oox2Odf
 		CREATE_MATH_TAG(L"mtable");
 		OPEN_MATH_TAG(elm);
 		{
-			for (size_t i = 1; i < oox_eq_arr->m_arrItems.size() - 1; ++i)
-				annotation() += L" binom ";
 			for (size_t i = 1; i < oox_eq_arr->m_arrItems.size(); ++i)
 			{
 				CREATE_MATH_TAG(L"mtr");
@@ -670,9 +601,7 @@ namespace Oox2Odf
 					CREATE_MATH_TAG(L"mtd");
 					OPEN_MATH_TAG(elm);
 					mrow();
-					annotation() += L"{";
 					convert(oox_eq_arr->m_arrItems[i]);
-					annotation() += L"} ";
 					endOfMrow();
 					CLOSE_MATH_TAG;
 				}
@@ -683,7 +612,6 @@ namespace Oox2Odf
 		if(values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -735,14 +663,9 @@ namespace Oox2Odf
 
 		if (val.str == L"lin")
 		{
-
-			annotation() += L"{";
-
 			mrow();
 				convert(oox_fraction->m_oNum.GetPointer());
 			endOfMrow();
-
-			annotation() += L"} / {";
 
 			CREATE_MATH_TAG(L"mo");
 			elm->add_text(L"/");
@@ -751,8 +674,6 @@ namespace Oox2Odf
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
 			endOfMrow();
-
-			annotation() += L"}";
 		}
 		else if (val.str == L"skw")
 		{
@@ -767,15 +688,12 @@ namespace Oox2Odf
 				tmp->bevelled = true;				
 			}
 			OPEN_MATH_TAG(elm);
-			annotation() += L"{";
 			mrow();
 				convert(oox_fraction->m_oNum.GetPointer());
 			endOfMrow();
-			annotation() += L"} wideslash {";
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
 			endOfMrow();
-			annotation() += L"}";
 			CLOSE_MATH_TAG;
 			lvl_up_counter_decreace(1);
 			lvl_down_counter_increace(1);
@@ -790,12 +708,12 @@ namespace Oox2Odf
 				{
 					CREATE_MATH_TAG(L"mtd");
 					OPEN_MATH_TAG(elm);
-					annotation() += L"binom{";
+
 					mrow();
 						convert(oox_fraction->m_oNum.GetPointer());
 					endOfMrow();
+					
 					CLOSE_MATH_TAG;
-					annotation() += L"} {";
 				}
 				CLOSE_MATH_TAG;
 			}
@@ -809,7 +727,6 @@ namespace Oox2Odf
 						convert(oox_fraction->m_oDen.GetPointer());
 					endOfMrow();
 					CLOSE_MATH_TAG;
-					annotation() += L"}";
 				}
 				CLOSE_MATH_TAG;
 			}
@@ -820,23 +737,22 @@ namespace Oox2Odf
 			CREATE_MATH_TAG(L"mfrac");
 			lvl_up_counter_increace(1);
 			lvl_down_counter_decreace(1);
-			annotation() += L"{";
+
 			OPEN_MATH_TAG(elm);
 			mrow();
 				convert(oox_fraction->m_oNum.GetPointer());
 			endOfMrow();
-			annotation() += L"} over {";
+
 			mrow();
 				convert(oox_fraction->m_oDen.GetPointer());
 			endOfMrow();
-			annotation() += L"}";
+
 			CLOSE_MATH_TAG;
 			lvl_up_counter_decreace(1);
 			lvl_down_counter_increace(1);
 		}
 		if (val.colorFlag)
 		{
-			annotation() += L"}";
 			CLOSE_MATH_TAG;
 		}
 	}
@@ -895,7 +811,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -969,16 +884,11 @@ namespace Oox2Odf
 			{
 				if (oox_lim)
 				{
-					annotation() += L"overbrace {";
 					convert(oox_lim);
-					annotation() += L"}";
 				}
-				else
-					annotation() += L"overbrace \"\"";
 			}
 			else
 			{
-				annotation() += L" csup ";
 				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
 			}
 		}
@@ -986,7 +896,6 @@ namespace Oox2Odf
 		{
 			if (oox_group_ch->m_oGroupChrPr->m_oChr.IsInit())
 			{
-				annotation() += L" csub ";
 				convert(oox_group_ch->m_oGroupChrPr->m_oChr.GetPointer());
 			}
 			else
@@ -995,14 +904,11 @@ namespace Oox2Odf
 				elm->add_text(L" ⏟ ");
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
+				
 				if (oox_lim)
 				{
-					annotation() += L"underbrace {";
 					convert(oox_lim);
-					annotation() += L"}";
 				}
-				else
-					annotation() += L"underbrace \"\"";
 			}			
 		}
 		CLOSE_MATH_TAG;
@@ -1013,7 +919,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1061,14 +966,11 @@ namespace Oox2Odf
 		}
 		else
 		{
-			odf_context()->math_context()->annotation_oper_flag = true;
 			mrow();
 			convert(oox_lim_low->m_oElement.GetPointer());
 			endOfMrow();
 
-			annotation() += L"from {";
 			convert(oox_lim_low->m_oLim.GetPointer());
-			annotation() += L"} ";
 		}
 
 		CLOSE_MATH_TAG;
@@ -1080,7 +982,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1121,15 +1022,11 @@ namespace Oox2Odf
 		}
 		else
 		{
-			annotation() += L"oper ";
-
 			mrow();
 			convert(oox_lim_upp->m_oElement.GetPointer());
 			endOfMrow();
 
-			annotation() += L"to {";
 			convert(oox_lim_upp->m_oLim.GetPointer());
-			annotation() += L"} ";
 		}
 
 
@@ -1139,7 +1036,6 @@ namespace Oox2Odf
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1173,7 +1069,7 @@ namespace Oox2Odf
 
 		CREATE_MATH_TAG(L"mtable");
 		OPEN_MATH_TAG(elm);
-		annotation() += L"matrix{";
+
 		for (size_t i = 0; i < oox_matrix->m_arrItems.size(); ++i)
 		{
 			if(oox_matrix->m_arrItems[i]->getType() != OOX::EElementType::et_m_mPr)
@@ -1182,11 +1078,10 @@ namespace Oox2Odf
 		CLOSE_MATH_TAG;
 
 		odf_context()->math_context()->matrix_row_counter = 0;
-		annotation() += L"} ";
+
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1293,18 +1188,14 @@ namespace Oox2Odf
 			OPEN_MATH_TAG(elm);
 			convert(oox_mr->m_arrItems[i]);
 			CLOSE_MATH_TAG;
-			if( i != oox_mr->m_arrItems.size() - 1)
-			annotation() += L"# ";
 		}
 		CLOSE_MATH_TAG;
 
 		matrix_row_counter--;
-		if(matrix_row_counter > 0)
-			annotation() += L"## ";
+
 		if(color_flag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1351,15 +1242,10 @@ namespace Oox2Odf
 		convert(oox_mrun->m_oText.GetPointer());
 		convert(oox_mrun->m_oYearLong.GetPointer());
 		convert(oox_mrun->m_oYearShort.GetPointer());
+		
 		if (clrFlag)
 		{
 			CLOSE_MATH_TAG;	
-			if(odf_context()->math_context()->annotation_oper_flag)
-				odf_context()->math_context()->annotation_oper_flag = false;
-			else
-			{
-				annotation() += L"}";
-			}
 		}
 	}
 
@@ -1374,10 +1260,13 @@ namespace Oox2Odf
 			odf_context()->settings_context()->start_view();
 				if (oox_r_pr->m_oSz.IsInit() && oox_r_pr->m_oSz->m_oVal.IsInit())
 				{
-					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();
-					
-					odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
-				}	
+					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();					
+				}
+				else
+				{
+					odf_context()->math_context()->size = 12;
+				}
+				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
 					odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
@@ -1409,12 +1298,7 @@ namespace Oox2Odf
 				clr2.erase(0, 1);
 				std::vector<int> rgb = hexToIntColor(clr2);
 				boost::to_upper(clr2);
-				if (odf_context()->math_context()->annotation_oper_flag)
-				{
-					annotation() += L" color hex " + clr2 + L" oper ";				
-				}
-				else
-					annotation() += L" color hex " + clr2  + L"{" ;
+
 				return true;
 			}
 		}
@@ -1442,7 +1326,6 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += XmlUtils::EncodeXmlString(sub_s_val);
 					sub_s_val.clear();
 				}
 				CREATE_MATH_TAG(L"mtext");
@@ -1451,7 +1334,6 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 
 			else if (w_val <= 57 && w_val >= 48)
@@ -1462,7 +1344,6 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1472,7 +1353,6 @@ namespace Oox2Odf
 				OPEN_MATH_TAG(elm);
 				
 				CLOSE_MATH_TAG;
-				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else if (mo.find(w_val) != mo.end())
 			{
@@ -1482,7 +1362,6 @@ namespace Oox2Odf
 					elm->add_text(sub_s_val);
 					OPEN_MATH_TAG(elm);
 					CLOSE_MATH_TAG;
-					annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 					sub_s_val.clear();
 				}
 				
@@ -1492,7 +1371,6 @@ namespace Oox2Odf
 
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += XmlUtils::EncodeXmlString(std::wstring(1, s_val[i])) + L" ";
 			}
 			else // <mi>
 			{				
@@ -1505,7 +1383,6 @@ namespace Oox2Odf
 				elm->add_text(sub_s_val);
 				OPEN_MATH_TAG(elm);
 				CLOSE_MATH_TAG;
-				annotation() += XmlUtils::EncodeXmlString(sub_s_val) + L" ";
 			}
 		}	
 	}
@@ -1560,22 +1437,16 @@ std::wstring str1, str2;
 
 		if (!values.narySubHide)
 		{
-
-			annotation() += str1;
-
 			//mrow();
 			convert(oox_nary->m_oSub.GetPointer());
 			//endOfMrow();			
-			annotation() += L"}";
 
 		}
 		if (!values.narySupHide)
 		{
-			annotation() += str2;
 			//mrow();
 			convert(oox_nary->m_oSup.GetPointer());
 			//endOfMrow();			
-			annotation() += L"} ";
 		}
 
 		if (flag_nary)
@@ -1591,15 +1462,12 @@ std::wstring str1, str2;
 			else if (tag == L"munder")
 				lvl_down_counter_increace(1);
 		}
-		annotation() += L" {";
 		convert(oox_nary->m_oElement.GetPointer());
-		annotation() += L"} ";
 		endOfMrow();
 
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1659,21 +1527,11 @@ std::wstring str1, str2;
 		
 		if (!oox_chr || (oox_chr && !oox_chr->m_val.IsInit()))
 		{
-			annotation() += L"int ";
 			elm->add_text(L"∫");
 		}
 		else
 		{
 			std::wstring val = oox_chr->m_val->GetValue();
-			std::map<std::wstring, std::wstring>& map = odf_context()->math_context()->annotation_operators;
-			if (map.count(val))
-			{
-				flag = true;
-				annotation() += map[val];
-			}
-			else
-				//annotation_flag() = false;
-				annotation() += (val + L" ");
 			elm->add_text(val);
 		}
 		OPEN_MATH_TAG(elm);
@@ -1720,11 +1578,11 @@ std::wstring str1, str2;
 		{
 			CREATE_MATH_TAG(L"msqrt");
 			OPEN_MATH_TAG(elm);
-			annotation() += L"sqrt {";
+
 			mrow();
 				convert(oox_rad->m_oElement.GetPointer());
 			endOfMrow();
-			annotation() += L"}";
+
 			CLOSE_MATH_TAG;
 			odf_context()->math_context()->symbol_counter++;
 		}
@@ -1734,7 +1592,6 @@ std::wstring str1, str2;
 
 		if (val.colorFlag)
 		{
-			annotation() += L"}";
 			CLOSE_MATH_TAG;
 		}
 
@@ -1766,24 +1623,13 @@ std::wstring str1, str2;
 		CREATE_MATH_TAG(L"mroot");
 		OPEN_MATH_TAG(elm);
 
-		size_t iterator = annotation().size();
-
 		convert(oox_elm);
-
-		size_t rootSize = annotation().size() - iterator;
-		std::wstring root(&annotation()[iterator], rootSize);
 
 		mrow();
 			for (size_t i = 0; i < oox_deg->m_arrItems.size(); ++i)
 				convert(oox_deg->m_arrItems[i]);
 		endOfMrow();
 		
-		size_t degreeSize = annotation().size() - rootSize - iterator;
-		std::wstring degree(&annotation()[iterator + rootSize], degreeSize);
-
-		annotation().erase(iterator);
-		annotation() += L"nroot {" + degree + L"} {" + root + L"}";
-
 		CLOSE_MATH_TAG;
 	}
 
@@ -1797,12 +1643,9 @@ std::wstring str1, str2;
 		OPEN_MATH_TAG(elm);
 		lvl_up_counter_increace(0.4);
 		lvl_down_counter_decreace(0.4);
-		annotation() += L"{";
 		mrow();
 			convert(oox_s_pre->m_oElement.GetPointer());
 		endOfMrow();
-
-		annotation() += L"} lsub {";
 
 		{
 			CREATE_MATH_TAG(L"mprescripts");
@@ -1813,20 +1656,15 @@ std::wstring str1, str2;
 				convert(oox_s_pre->m_oSub.GetPointer());
 			endOfMrow();
 
-			annotation() += L"} lsup {";
-
 			mrow();
 				convert(oox_s_pre->m_oSup.GetPointer());
 			endOfMrow();
-
-			annotation() += L"}";
 		}
 		CLOSE_MATH_TAG;
 		lvl_up_counter_decreace(0.4);
 		lvl_down_counter_increace(0.4);
 		if (values.colorFlag)
 		{
-			annotation() += L"}";
 			CLOSE_MATH_TAG;
 		}
 	}
@@ -1847,13 +1685,10 @@ std::wstring str1, str2;
 		CREATE_MATH_TAG(L"msup");
 		OPEN_MATH_TAG(elm);		
 		lvl_up_counter_increace(0.4);
-		annotation() += L"{";
 
 		mrow();
 		convert(oox_elm);	
 		endOfMrow();
-
-		annotation() += L"}^{";
 
 		mrow();
 		for (size_t i = 0; i < oox_sup->m_arrItems.size(); ++i)
@@ -1862,7 +1697,6 @@ std::wstring str1, str2;
 		}
 		endOfMrow();
 
-		annotation() += L"}";
 		CLOSE_MATH_TAG;
 		lvl_up_counter_decreace(0.4);
 	}
@@ -1874,20 +1708,16 @@ std::wstring str1, str2;
 		CREATE_MATH_TAG(L"msub");
 		OPEN_MATH_TAG(elm);
 		lvl_down_counter_decreace(0.4);
-		annotation() += L"{";
 		
 		mrow();
 		convert(oox_elm);
 		endOfMrow();
-
-		annotation() += L"}_{";
 
 		for (size_t i = 0; i < oox_sub->m_arrItems.size(); ++i)
 		{
 			convert(oox_sub->m_arrItems[i]);
 
 		}
-		annotation() += L"}";
 		CLOSE_MATH_TAG;
 		lvl_down_counter_increace(0.4);
 	}
@@ -1921,7 +1751,6 @@ std::wstring str1, str2;
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -1944,25 +1773,19 @@ std::wstring str1, str2;
 			OPEN_MATH_TAG(elm);
 			lvl_up_counter_increace(0.4);
 			lvl_down_counter_decreace(0.4);
-			annotation() += L"{";
 
 			mrow();
 			convert(oox_ssub_sup->m_oElement.GetPointer());
 			endOfMrow();
 
-			annotation() += L"}_{";
-
 			mrow();
 			convert(oox_ssub_sup->m_oSub.GetPointer());
 			endOfMrow();
-
-			annotation() += L"}^{";
 
 			mrow();
 			convert(oox_ssub_sup->m_oSup.GetPointer());
 			endOfMrow();
 
-			annotation() += L"}";
 			CLOSE_MATH_TAG;
 			lvl_up_counter_decreace(0.4);
 			lvl_down_counter_increace(0.4);
@@ -1970,7 +1793,6 @@ std::wstring str1, str2;
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -2000,7 +1822,6 @@ std::wstring str1, str2;
 		if (values.colorFlag)
 		{
 			CLOSE_MATH_TAG;
-			annotation() += L"}";
 		}
 	}
 
@@ -2016,9 +1837,6 @@ std::wstring str1, str2;
 	void OoxConverter::convert(OOX::Logic::CElement *oox_elm)
 	{
 		if (!oox_elm) return;
-
-		if (oox_elm->m_arrItems.empty())
-			annotation() += L"\"\"";
 
 		resizeBrackets();
 

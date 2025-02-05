@@ -153,6 +153,7 @@ public:
   // border style, and bounding box (in default user space).
   void drawAnnot(Object *strRef, AnnotBorderStyle *borderStyle,
 		 double xMin, double yMin, double xMax, double yMax);
+  void drawStamp(Object *strRef);
 
   // Save graphics state.
   void saveState();

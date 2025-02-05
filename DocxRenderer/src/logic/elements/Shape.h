@@ -1,4 +1,7 @@
 #pragma once
+
+#include <memory>
+
 #include "../../../../DesktopEditor/graphics/structures.h"
 
 #include "../../resources/ImageInfo.h"
@@ -61,7 +64,6 @@ namespace NSDocxRenderer
 		eLineType m_eLineType            {eLineType::ltUnknown};
 
 		std::vector<std::shared_ptr<CBaseItem>> m_arOutputObjects;
-
 
 	public:
 		CShape();

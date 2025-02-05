@@ -300,6 +300,10 @@ float RtfUtility::Emu2Pt(int emu)
 {
 	return (float)(1.0 * emu / (635 * 20.0));
 }
+int RtfUtility::Pt2Emu(int pt)
+{
+	return  pt * (635 * 20);
+}
 void RtfUtility::WriteDataToFileBinary(std::wstring& sFilename, BYTE* pbData, size_t nLength)
 {
 	if( NULL == pbData )

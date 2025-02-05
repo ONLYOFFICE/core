@@ -52,9 +52,9 @@ namespace cpdoccore {
 
 struct oox_table_position
 {
-    int col;
+	_INT32 col;
     double col_off;
-    int row;
+	_INT32 row;
     double row_off;
 };
 
@@ -88,7 +88,7 @@ namespace utils
 		else
 			return std::wstring(1, (wchar_t)(L'A' + col));
 	}
-    static int getColAddressInv(const std::wstring & a_)
+    static _INT32 getColAddressInv(const std::wstring & a_)
 	{
 		std::wstring a = a_;
         XmlUtils::GetUpper(a);
@@ -109,11 +109,11 @@ namespace utils
 		}
 		return res;
 	}
-    static int getRowAdderssInv(const std::wstring & a_)
+    static _INT32 getRowAdderssInv(const std::wstring & a_)
 	{
 		if (!a_.empty())
 		{
-           return boost::lexical_cast<int>(a_) - 1;
+           return boost::lexical_cast<_INT32>(a_) - 1;
 		}
 		else
 			return 0;
@@ -138,7 +138,7 @@ namespace utils
 		std::reverse(col.begin(), col.end());
 		std::reverse(row.begin(), row.end());
 	}
-    static void parsing_ref (std::wstring ref, int & col, int & row)
+    static void parsing_ref (std::wstring ref, _INT32& col, _INT32& row)
 	{
 		if (std::wstring::npos != ref.find(L" "))
 			return;
@@ -170,32 +170,43 @@ namespace utils
 struct ods_element_state
 {
     ods_element_state(){}
-    ods_element_state(office_element_ptr &elm_, unsigned int repeated_, const std::wstring &style_name_, office_element_ptr &style_elm_, double size_, size_t level_)
-        : elm(elm_), repeated(repeated_), style_name(style_name_), style_elm(style_elm_), size(size_), level(level_)
+    ods_element_state(office_element_ptr &elm_, _UINT32 repeated_, const std::wstring &style_name_, office_element_ptr &style_elm_, size_t level_)
+        : elm(elm_), repeated(repeated_), style_name(style_name_), style_elm(style_elm_), level(level_)
     {}
 
     office_element_ptr elm;
 	
-    unsigned int repeated = 1;
+	_UINT32 repeated = 1;
 	std::wstring style_name;
 	office_element_ptr style_elm;
 
-    double size = 0;
-
-    size_t level = 1;
-	
+    _UINT32 level = 1;
+};
+struct ods_column_state : ods_element_state
+{
+	ods_column_state(office_element_ptr& elm_, _UINT32 repeated_, const std::wstring& style_name_, office_element_ptr& style_elm_, double size_, size_t level_)
+	{
+		elm = elm_;
+		repeated = repeated_;
+		style_name = style_name_;
+		style_elm = style_elm_;
+		size = size_;
+		level = level_;
+	}
+	double size = 0;
 	std::wstring cell_style_name;
 };
+typedef ods_column_state ods_row_state;
 
 struct ods_cell_state : ods_element_state
 {
-    int col = -1;
-    int row = -1;
+    _INT32 col = -1;
+	_INT32 row = -1;
 
-    int hyperlink_idx = -1;
-    int comment_idx = -1;
+	_INT32 hyperlink_idx = -1;
+	_INT32 comment_idx = -1;
 
-	std::wstring data_validation_name;
+	_INT32 data_validation_idx = -1;
 	
     bool empty = true;
 };
@@ -203,16 +214,16 @@ struct ods_cell_state : ods_element_state
 struct ods_hyperlink_state
 {
 	std::wstring ref;
-    int col = -1;
-    int row = -1;
+	_INT32 col = -1;
+	_INT32 row = -1;
 	
 	std::wstring link;
 	bool bLocation = false;
 };
 struct ods_comment_state
 {
-    int col = -1;
-    int row = -1;
+	_INT32 col = -1;
+	_INT32 row = -1;
 	std::wstring author;
 
 	office_element_ptr elm;
@@ -223,12 +234,12 @@ struct ods_comment_state
 };
 struct ods_shared_formula_state
 {
-	unsigned int index;
+	_UINT32 index;
 	std::wstring formula;
 	std::wstring ref;
 
-    int	base_column;
-    int	base_row;
+	_INT32	base_column;
+	_INT32	base_row;
 
     int moving_type; //1 - col, 2 - row
 };
@@ -243,13 +254,13 @@ struct table_part_state
 	std::wstring name;
 	std::wstring ref;
 
-	int col_start = 0;
-	int row_start = 0;
+	_INT32 col_start = 0;
+	_INT32 row_start = 0;
 
-	int col_end = 0;
-	int row_end = 0;
+	_INT32 col_end = 0;
+	_INT32 row_end = 0;
 
-	bool in_ref(int col, int row)
+	bool in_ref(_INT32 col, _INT32 row)
 	{
 		return (col >= col_start && col <= col_end && row >= row_start && row <= row_end);
 	}
@@ -267,34 +278,34 @@ struct data_validation_state
 	struct _ref
 	{
 		std::wstring ref;
-		int col_start = 0;
-		int row_start = 0;
+		_INT32 col_start = 0;
+		_INT32 row_start = 0;
 
-		int col_end = 0;
-		int row_end = 0;
+		_INT32 col_end = 0;
+		_INT32 row_end = 0;
 	};
 	std::vector<_ref> refs;
 
 	std::wstring condition;
 
-	bool in_ref(int col, int row, unsigned int repeate_col, _ref & ref)
+	bool in_ref(_INT32 col, _INT32 row, _UINT32 repeate_col, _ref & ref)
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
 			if (row < refs[i].row_start || row > refs[i].row_end) continue;
 
-			if (col + (int)repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
+			if (col + (_INT32)repeate_col <= refs[i].col_start ||  col > refs[i].col_end) continue;
 			
 			ref = refs[i];
 			return true;
 		}
 		return false;
 	}
-	bool in_row(int row, unsigned int repeate_row, _ref & ref)
+	bool in_row(_INT32 row, _UINT32 repeate_row, _ref & ref)
 	{
 		for (size_t i = 0; i < refs.size(); i++)
 		{
-			if (row + (int)repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
+			if (row + (_INT32)repeate_row <= refs[i].row_start || row > refs[i].row_end) continue;
 
 			ref = refs[i];
 			return true;
@@ -318,7 +329,7 @@ public:
 		void set_table_master_page(std::wstring name);
 		void set_table_rtl(bool Val);
 		void set_table_tab_color(_CP_OPT(odf_types::color) & _color);
-        void set_table_dimension(int col, int row);
+        void set_table_dimension(_INT32 col, _INT32 row);
 		void set_table_print_ranges(const std::wstring &ranges);
 		
 		void set_table_protection(bool Val);
@@ -329,39 +340,42 @@ public:
 		void set_table_protection_unprotected_cells(bool Val);
 		void set_table_protection_protected_cells(bool Val);
 
-    void add_column(office_element_ptr & elm, unsigned int repeated, office_element_ptr & style);
+    void add_column(office_element_ptr & elm, _UINT32 repeated, office_element_ptr & style);
 		void set_column_width_sym(double width);
 		void set_column_width(double width);
 		void set_column_optimal_width(bool val);
 		void set_column_hidden(bool val);
 		void set_column_default_cell_style(std::wstring & style_name);
 		
-        std::wstring get_column_default_cell_style(int column);
+        std::wstring get_column_default_cell_style(_INT32 column);
 
-	void add_row_break(int val);
-	void add_column_break(int val);
+	void add_row_break(_INT32 val);
+	void add_column_break(_INT32 val);
 
 	void start_group(office_element_ptr & elm);
 	void end_group();
 		
-    int current_level() {return (int)current_level_.size()-1;}
+	void start_rows(office_element_ptr& elm);
+	void end_rows();
+
+	_INT32 current_level() {return (_INT32)current_level_.size() - 1;}
 
 	void start_headers(office_element_ptr & elm);
 	void end_headers();
 
-    void add_row(office_element_ptr & elm, unsigned int repeated , office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
+    void add_row(office_element_ptr & elm, _UINT32 repeated , office_element_ptr & style);//const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
 		void set_row_hidden(bool Val);
 		void set_row_optimal_height(bool val);
 		void set_row_height(double height);
 		void set_row_default_cell_style(std::wstring & style_name);
 		void add_row_repeated();
 
-	bool isSpannedCell(int col, int row, int &spanned_cols, int &spanned_rows );
-	bool isCoveredCell(int col, int repeated_cols = 1);
+	bool isSpannedCell(_INT32 col, _INT32 row, _INT32 &spanned_cols, _INT32 &spanned_rows);
+	bool isCoveredCell(_INT32 col, _INT32 repeated_cols = 1);
 
 	void start_cell(office_element_ptr & elm ,office_element_ptr & style);
 	void end_cell();
-    void add_default_cell(int repeated);
+    void add_default_cell(_INT32 repeated);
 
 	void check_spanned_cells();
 
@@ -371,8 +385,8 @@ public:
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
 	void set_cell_array_formula(std::wstring & formula, std::wstring ref);
-	void set_cell_spanned(int spanned_cols, int spanned_rows);
-    void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, int ind);
+	void set_cell_spanned(_INT32 spanned_cols, _INT32 spanned_rows);
+    void add_or_find_cell_shared_formula(std::wstring & formula, std::wstring ref, _INT32 ind);
 
 	void start_cell_text();
 	void end_cell_text();
@@ -454,17 +468,17 @@ public:
 		void end_sparkline_group();
 	void end_sparkline_groups();
 ///////////////////////////////
-    void add_hyperlink(const std::wstring & ref,int col, int row, const std::wstring & link, const std::wstring & location);
+    void add_hyperlink(const std::wstring & ref, _INT32 col, _INT32 row, const std::wstring & link, const std::wstring & location);
 	
 	void add_definded_expression(office_element_ptr & elm);
 
-    void start_comment(int col, int row, std::wstring & author);
+    void start_comment(_INT32 col, _INT32 row, std::wstring & author);
 		void set_comment_rect(double l, double t, double w, double h);
 		void set_comment_visible(bool val);
 		void set_comment_color(const std::wstring & color);
 	void end_comment(odf_text_context *text_context);
 	
-    void set_merge_cells(int start_col, int start_row, int end_col, int end_row);
+    void set_merge_cells(_INT32 start_col, _INT32 start_row, _INT32 end_col, _INT32 end_row);
 
 	office_element_ptr & current_row_element();
 	office_element_ptr & current_cell_element();
@@ -473,13 +487,13 @@ public:
 	bool is_cell_hyperlink();
 	bool is_cell_comment();
 
-    int is_cell_hyperlink(int col, int row);
-    int is_cell_comment(int col, int row, unsigned int repeate_col = 1);
-	int is_row_comment(int row, int repeate_row = 1);
-	int is_row_validation(int row, int & repeate_row);
-	std::wstring is_cell_data_validation(int col, int row, unsigned int repeate_col, data_validation_state::_ref & ref);
+	_INT32 is_cell_hyperlink(_INT32 col, _INT32 row);
+	_INT32 is_cell_comment(_INT32 col, _INT32 row, _UINT32 repeate_col = 1);
+	_INT32 is_row_comment(_INT32 row, _INT32 repeate_row = 1);
+	_INT32 is_row_validation(_INT32 row, _INT32& repeate_row);
+	_INT32 is_cell_data_validation(_INT32 col, _INT32 row, _UINT32 repeate_col, data_validation_state::_ref & ref);
 
-	unsigned int get_last_row_repeated ();
+	_UINT32 get_last_row_repeated ();
 
 	ods_hyperlink_state & current_hyperlink();
 
@@ -488,18 +502,18 @@ public:
 		return table_parts_;
 	}
 
-    int current_column() const;
-    int current_row() const;
+	_INT32 current_column() const;
+	_INT32 current_row() const;
 
-    int dimension_columns;
-    int dimension_row;
+	_INT32 dimension_columns;
+	_INT32 dimension_row;
 
 	double defaut_column_width_sym_ = 0;
 	double defaut_column_width_;
 	double defaut_row_height_;
 
-	std::vector<int> column_breaks_;
-	std::vector<int> row_breaks_;
+	std::vector<_INT32> column_breaks_;
+	std::vector<_INT32> row_breaks_;
 
 	void convert_position(oox_table_position & oox_pos, double & x, double & y);
 
@@ -510,50 +524,51 @@ public:
 	std::vector<ods_comment_state> comments_;
 
 	std::map<std::wstring, office_element_ptr> mapHeaderFooterImages;
+
 private:
 
 	struct _spanned_info
 	{
-		int spanned_cols = 0;
-		int spanned_rows = 0;
-		int state = 0;
+		_INT32 spanned_cols = 0;
+		_INT32 spanned_rows = 0;
+		_INT32 state = 0;
 	};
 	struct _covered_info
 	{
-		int start_col = 0;
-		int count_cols = 0;
+		_INT32 start_col = 0;
+		_INT32 count_cols = 0;
 
-		int count_rows = 0; // от текущей строки
+		_INT32 count_rows = 0; // от текущей строки
 	};
 	std::vector<_covered_info> current_covered_rows_;
-	int current_covered_cols_;
+	_INT32 current_covered_cols_;
 
     odf_conversion_context *context_;   
 	
 	office_element_ptr	office_table_;
-	style*				office_table_style_;//??? может хранить как office_element_ptr ???
+	style*				office_table_style_ = NULL;//??? может хранить как office_element_ptr ???
 	office_element_ptr	table_defined_expressions_;
 	
 	std::wstring row_default_cell_style_name_;
 
-	static int current_table_column_;
-    static int current_table_row_;
+	static _INT32 current_table_column_;
+    static _INT32 current_table_row_;
 
-    static int tmp_column_;
-    static int tmp_row_;
+    static _INT32 tmp_column_;
+    static _INT32 tmp_row_;
 
-	std::vector<ods_element_state> columns_;
-	std::vector<ods_element_state> rows_;
+	std::vector<ods_column_state> columns_;
+	std::vector<ods_row_state> rows_;
 
 //            row          column
-	std::map<int, std::map<int, _spanned_info>> map_merged_cells;
+	std::map<_INT32, std::map<_INT32, _spanned_info>> map_merged_cells;
 	
 	std::vector<office_element_ptr> current_level_;//постоянно меняющийся список уровней ("0-й элемент - сама таблица)
 	
 	std::vector<ods_cell_state>	cells_;
 	
 	std::vector<ods_hyperlink_state> hyperlinks_;
-	std::map<unsigned int, ods_shared_formula_state> shared_formulas_;
+	std::map<_UINT32, ods_shared_formula_state> shared_formulas_;
 
 	std::map<std::wstring, std::wstring> mapTabled; // for formula used ... perhaps
 

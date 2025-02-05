@@ -190,6 +190,13 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
+	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA())
+	{
+		m_bNeedUpdateTextFont = false;
+		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
+		CommandDrawTextCHAR(32, 0, 0, 0, 0);
+	}
+
 	m_oCommandManager.Flush();
 
 	if (!m_pDocument->SaveToFile(wsPath))
@@ -1710,6 +1717,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pAnnot = m_pDocument->CreateFreeTextAnnot();
 		else if (oInfo.IsCaret())
 			pAnnot = m_pDocument->CreateCaretAnnot();
+		else if (oInfo.IsStamp())
+			pAnnot = m_pDocument->CreateStampAnnot();
 
 		if (oInfo.IsWidget())
 		{
@@ -1895,8 +1904,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		if (nFlags & (1 << 7))
 			pMarkupAnnot->SetSubj(pPr->GetSubj());
 
-		pMarkupAnnot->RemoveAP();
-
 		if (oInfo.IsText())
 		{
 			CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
@@ -1910,6 +1917,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
 
+			pMarkupAnnot->RemoveAP();
 			pTextAnnot->SetAP();
 		}
 		else if (oInfo.IsInk())
@@ -1920,6 +1928,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pInkAnnot->SetInkList(pPr->GetInkList());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -1963,6 +1972,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			//pLineAnnot->SetAP();
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -1970,11 +1980,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsTextMarkup())
 		{
-			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pTMPr = oInfo.GetTextMarkupAnnotPr();
 			PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
 
-			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
-			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
+			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
+
+			pMarkupAnnot->RemoveAP();
+			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
 		}
 		else if (oInfo.IsSquareCircle())
 		{
@@ -1992,6 +2005,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pSquareCircleAnnot->SetIC(pPr->GetIC());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2016,6 +2030,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPolygonLineAnnot->SetIT(pPr->GetIT());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2050,6 +2065,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2073,6 +2089,36 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
+
+			// pMarkupAnnot->RemoveAP();
+		}
+		else if (oInfo.IsStamp())
+		{
+			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
+			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
+
+			pStampAnnot->SetName(L"#" + pPr->GetName());
+			double nRotate = pPr->GetRotate();
+
+			if (bRender)
+			{
+				pMarkupAnnot->RemoveAP();
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				PdfWriter::CAnnotAppearanceObject* pAP = DrawAP(pAnnot, pRender, nLen);
+
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
+				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+				pAP->Add("BBox", pArray);
+				pArray->Add(dRD1);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD4);
+				pArray->Add(dRD3);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
+				pStampAnnot->SetAPStream(pAP);
+			}
+
+			pStampAnnot->SetRotate(nRotate);
 		}
 	}
 	else if (oInfo.IsPopup())
@@ -3265,11 +3311,13 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 		PdfWriter::CImageDict* pImage = NULL;
 		int nImageW = 0;
 		int nImageH = 0;
+		bool bHasImage = false;
 		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
 		{
 			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
 			nImageH = pImage->GetHeight();
 			nImageW = pImage->GetWidth();
+			bHasImage = true;
 		}
 		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
 		{
@@ -3343,7 +3391,7 @@ void CPdfWriter::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::w
 
 		if (pImage)
 		{
-			if (0xFF != nAlpha)
+			if (0xFF != nAlpha && !bHasImage)
 				pImage->AddTransparency(nAlpha);
 
 			LONG lTextureMode = m_oBrush.GetTextureMode();
@@ -3596,6 +3644,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	std::wstring::size_type n2 = sUrl.find(L"http://");
 	std::wstring::size_type n3 = sUrl.find(L"ftp://");
 	std::wstring::size_type n4 = sUrl.find(L"https://");
+	std::wstring::size_type n5 = sUrl.find(L"file://");
 	std::wstring::size_type nMax = 3;
 
 	bool bIsNeedDownload = false;
@@ -3606,6 +3655,8 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 	else if (n3 != std::wstring::npos && n3 < nMax)
 		bIsNeedDownload = true;
 	else if (n4 != std::wstring::npos && n4 < nMax)
+		bIsNeedDownload = true;
+	else if (n5 != std::wstring::npos && n5 < nMax)
 		bIsNeedDownload = true;
 
 	if (!bIsNeedDownload)
@@ -3623,10 +3674,10 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	return L"";
 }
-void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
+PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
 {
 	if (!pAnnot || !pRender)
-		return;
+		return NULL;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
@@ -3648,6 +3699,8 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);
 	RELEASEOBJECT(pFakePage);
+
+	return pAP;
 }
 void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender)
 {

@@ -43,12 +43,16 @@
 #include "../../XlsbFormat/Biff12_unions/EXTERNALS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEIDS.h"
 #include "../../XlsbFormat/Biff12_unions/PIVOTCACHEID.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEIDS.h"
+#include "../../XlsbFormat/Biff12_unions/SLICERCACHESPIVOTCACHEID.h"
 #include "../../XlsbFormat/Biff12_records/FileVersion.h"
 #include "../../XlsbFormat/Biff12_records/BeginPivotCacheID.h"
 #include "../../XlsbFormat/Biff12_unions/SUP.h"
 #include "../../XlsbFormat/Biff12_records/SupSelf.h"
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_records/BundleSh.h"
+#include "../../XlsbFormat/Biff12_records/BeginSlicerCachesPivotCacheID.h"
+#include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
 
@@ -94,6 +98,14 @@ namespace OOX
 				ReadAttributes(ptr->m_BrtBeginPivotCacheID);
 			}
 		}
+        void CWorkbookPivotCache::fromBin14(XLS::BaseObjectPtr& obj)
+        {
+            auto ptr1 = static_cast<XLSB::SLICERCACHESPIVOTCACHEID*>(obj.get());
+            if(ptr1 == nullptr)
+                return;
+            auto ptr = static_cast<XLSB::BeginSlicerCachesPivotCacheID*>(ptr1->m_BrtBeginSlicerCachesPivotCacheID.get());
+            m_oRid =  ptr->FRTheader.relID.relId.value();
+        }
 		XLS::BaseObjectPtr CWorkbookPivotCache::toBin()
 		{
 			auto ptr(new XLSB::PIVOTCACHEID);
@@ -111,6 +123,22 @@ namespace OOX
 				ptr1->irstcacheRelID.value.setSize(0xFFFFFFFF);
 			return objectPtr;
 		}
+        XLS::BaseObjectPtr CWorkbookPivotCache::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEID);
+            XLS::BaseObjectPtr objectPtr(ptr);
+            auto ptr1(new XLSB::BeginSlicerCachesPivotCacheID);
+            ptr->m_BrtBeginSlicerCachesPivotCacheID = XLS::BaseObjectPtr{ptr1};
+
+            if(m_oRid.IsInit())
+            {
+                ptr1->FRTheader.relID.relId = m_oRid->GetValue();
+                ptr1->FRTheader.fRelID = true;
+            }
+            else
+                ptr1->FRTheader.relID.relId.setSize(0xFFFFFFFF);
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCache::getType() const
 		{
 			return et_x_WorkbookPivotCache;
@@ -152,7 +180,10 @@ namespace OOX
 		{
 			if (m_arrItems.empty()) return;
 
-			writer.WriteString(L"<pivotCaches>");
+            if(!pivotCaches14)
+                writer.WriteString(L"<pivotCaches>");
+            else
+                writer.WriteString(L"<x14:pivotCaches>");
 
 			for (size_t i = 0; i < m_arrItems.size(); ++i)
 			{
@@ -161,8 +192,10 @@ namespace OOX
 					m_arrItems[i]->toXML(writer);
 				}
 			}
-
-			writer.WriteString(L"</pivotCaches>");
+            if(!pivotCaches14)
+                writer.WriteString(L"</pivotCaches>");
+            else
+                writer.WriteString(L"</x14:pivotCaches>");
 		}
 		void CWorkbookPivotCaches::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -192,6 +225,20 @@ namespace OOX
 			}
 
 		}
+        void CWorkbookPivotCaches::fromBin14(XLS::BaseObjectPtr& obj)
+        {
+            auto ptr = static_cast<XLSB::SLICERCACHESPIVOTCACHEIDS*>(obj.get());
+            if(ptr != nullptr)
+            {
+                for(auto &item : ptr->m_arSLICERCACHESPIVOTCACHEID)
+                {
+                    auto bookPivotCache = new CWorkbookPivotCache;
+                    bookPivotCache->fromBin14(item);
+                    m_arrItems.push_back(bookPivotCache);
+                }
+            }
+
+        }
 		XLS::BaseObjectPtr CWorkbookPivotCaches::toBin()
 		{
 			auto ptr(new XLSB::PIVOTCACHEIDS);
@@ -202,6 +249,16 @@ namespace OOX
 
 			return objectPtr;
 		}
+        XLS::BaseObjectPtr CWorkbookPivotCaches::toBin14()
+        {
+            auto ptr(new XLSB::SLICERCACHESPIVOTCACHEIDS);
+            XLS::BaseObjectPtr objectPtr(ptr);
+
+            for(auto i:m_arrItems)
+                ptr->m_arSLICERCACHESPIVOTCACHEID.push_back(i->toBin14());
+
+            return objectPtr;
+        }
 		EElementType CWorkbookPivotCaches::getType() const
 		{
 			return et_x_WorkbookPivotCaches;
@@ -273,8 +330,34 @@ namespace OOX
 						m_oAppName = static_cast<XLSB::FileVersion*>(workBookStream->m_BrtFileVersion.get())->stAppName.value();
 
 					if (workBookStream->m_FRTWORKBOOK != nullptr)
+                    {
 						m_oExtLst = workBookStream->m_FRTWORKBOOK;
+                        auto frtWorkbook = static_cast<XLSB::FRTWORKBOOK*>(workBookStream->m_FRTWORKBOOK.get());
+                        if(frtWorkbook->m_SLICERCACHESPIVOTCACHEIDS!= nullptr && m_oExtLst.IsInit())
+                        {
+                            auto pivotCacheid = 0;
+                            if(m_oPivotCaches.IsInit())
+                            {
+                                for(auto i:m_oPivotCaches->m_arrItems)
+                                {
+                                    if(i->m_oCacheId.IsInit() && i->m_oCacheId->GetValue() >= pivotCacheid)
+                                        pivotCacheid = i->m_oCacheId->GetValue() + 1;
+                                }
+                            }
+                            for(auto ext : m_oExtLst->m_arrExt)
+                            {
+                                if(ext->m_oWorkbookPivotCaches.IsInit())
+                                {
+                                    for( auto cache : ext->m_oWorkbookPivotCaches->m_arrItems)
+                                    {
+                                        cache->m_oCacheId = pivotCacheid;
+                                        pivotCacheid++;
+                                    }
+                                }
 
+                            }
+                    	}
+					}
 					if (workBookStream->m_BrtFileSharingIso != nullptr)
 						m_oFileSharing = workBookStream->m_BrtFileSharingIso;
 					else if (workBookStream->m_BrtFileSharing != nullptr)

@@ -51,11 +51,12 @@ namespace XLSB
 			void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _UINT16             cchLevelUnq;
-            _UINT16             ichPropName;
-            _UINT32             isxtl;
-            _INT32              isxvd;
-            bool                fDisplayInReport;
+            _UINT16             cchLevelUnq = 0;
+            _UINT16             ichPropName = 0;
+            _UINT16             cchPropName = 0;
+            _UINT32             isxtl = 0;
+            _INT32              isxvd = -1;
+            bool                fDisplayInReport = false;
             XLWideString        irstProperty;
     };
 

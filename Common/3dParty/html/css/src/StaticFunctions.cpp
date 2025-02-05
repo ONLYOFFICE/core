@@ -48,7 +48,6 @@ namespace NS_STATIC_FUNCTIONS
 		if (sEncoding.empty())
 			sEncoding = "utf-8";
 
-
 		if (!sEncoding.empty() && sEncoding != "utf-8" && sEncoding != "UTF-8")
 		{
 			NSUnicodeConverter::CUnicodeConverter oConverter;

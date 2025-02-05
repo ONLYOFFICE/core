@@ -240,6 +240,14 @@ bool CV8RealTimeWorker::InitVariables()
 		if (try_catch->Check())
 			return false;
 	}
+
+	if (!m_sJSCodeStart.empty())
+	{
+		m_context->runScript(m_sJSCodeStart, try_catch);
+		if (try_catch->Check())
+			return false;
+	}
+
 	return true;
 }
 
@@ -296,7 +304,7 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 		else if (1 == m_nFileType)
 			pNative->m_strEditorType = L"presentation";
 		else if (7 == m_nFileType)
-			pNative->m_strEditorType = L"draw";
+			pNative->m_strEditorType = L"visio";
 		else
 			pNative->m_strEditorType = L"spreadsheet";
 

@@ -84,12 +84,12 @@ namespace OOX
 			if(m_oComment.IsInit())
                 ptr->comment = m_oComment.get();
             else
-                ptr->comment = 0xFFFFFFFF;
+                ptr->comment.setSize(0xFFFFFFFF);
 
 			if(m_oDescription.IsInit())
                 ptr->description = m_oDescription.get();
             else
-                ptr->description = 0xFFFFFFFF;
+                ptr->description.setSize(0xFFFFFFFF);
 			if(m_oFunction.IsInit())
                 ptr->fFunc = m_oFunction->GetValue();
             else
@@ -100,7 +100,7 @@ namespace OOX
 			if(m_oHelp.IsInit())
                 ptr->helpTopic = m_oHelp.get();
             else
-                ptr->helpTopic = 0xFFFFFFFF;
+                ptr->helpTopic.setSize(0xFFFFFFFF);
 			if(m_oHidden.IsInit())
                 ptr->fHidden = m_oHidden->GetValue();
             else
@@ -114,7 +114,7 @@ namespace OOX
 			if (m_oName.IsInit())
                 ptr->name = m_oName.get();
             else
-                ptr->name = 0xFFFFFFFF;
+                ptr->name.setSize(0xFFFFFFFF);
 			if (m_oPublishToServer.IsInit())
                 ptr->fPublished = m_oPublishToServer->GetValue();
 			else
@@ -132,8 +132,8 @@ namespace OOX
                 ptr->fProc = false;
             if(!ptr->fProc)
             {
-                ptr->unusedstring1 = 0xFFFFFFFF;
-                ptr->unusedstring2 = 0xFFFFFFFF;
+                ptr->unusedstring1.setSize(0xFFFFFFFF);
+                ptr->unusedstring2.setSize(0xFFFFFFFF);
             }
 
 			if (m_oWorkbookParameter.IsInit())

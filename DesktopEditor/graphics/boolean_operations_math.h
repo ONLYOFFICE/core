@@ -129,9 +129,7 @@ inline bool isCollinear(const Aggplus::PointD& p1, const Aggplus::PointD& p2)
 
 inline int getIterations(const double& a, const double& b)
 {
-	double n1 = 2.0, n2 = 16.0;
-
-	return std::max(n1, std::min(n2, ceil(fabs(b - a) * 32)));
+	return std::max(2, std::min(16, static_cast<int>(ceil(fabs(b - a) * 32))));
 }
 
 inline double CurveLength(const double& t, const double& ax, const double& bx, const double& cx,
@@ -143,64 +141,17 @@ inline double CurveLength(const double& t, const double& ax, const double& bx, c
 inline double integrate(const double& ax, const double& bx, const double& cx, const double& ay,
 						const double& by, const double& cy, const double& a, const double& b, size_t n = 16)
 {
-	std::vector<double> x = ABSCISSAS[n - 2],
-						w = WEIGHT[n - 2];
-
-	double A = (b - a) * 0.5,
-		   B = A + a;
-	double sum = n & 1 ? CurveLength(B, ax, bx, cx, ay, by, cy) : 0.0;
+	double A = (b - a) * 0.5;
+	double sum = n & 1 ? CurveLength(A + a, ax, bx, cx, ay, by, cy) : 0.0;
 
 	for (size_t i = 0; i < (n + 1) >> 1; i++)
-	{
-		double Ax = A * x[i];
-		sum += w[i] * (CurveLength(B + Ax, ax, bx, cx, ay, by, cy) +
-					   CurveLength(B - Ax, ax, bx, cx, ay, by, cy));
-	}
+		sum += WEIGHT[n - 2][i] * (CurveLength(A + a + A * ABSCISSAS[n - 2][i], ax, bx, cx, ay, by, cy) +
+								   CurveLength(A + a - A * ABSCISSAS[n - 2][i], ax, bx, cx, ay, by, cy));
 
 	return A * sum;
 }
 
-double fLength(const double& t, double& length, double& start, const double& offset,
-			   const double& ax, const double& bx, const double& cx, const double& ay,
-			   const double& by, const double& cy)
-{
-	length += integrate(ax, bx, cx, ay, by, cy, start, t, getIterations(start, t));
-	start = t;
-
-	return length - offset;
-}
-
-double findRoot(double& length, double& start, const double& offset, const double& ax,
-				const double& bx, const double& cx, const double& ay, const double& by,
-				const double& cy, double x, double a, double b)
-{
-	for (size_t i = 0; i < 32; i++)
-	{
-		double	fx = fLength(x, length, start, offset, ax, bx, cx, ay, by, cy),
-				dx = fx / CurveLength(x, ax, bx, cx, ay, by, cy),
-				nx = x - dx;
-		
-		if (fabs(dx) < EPSILON)
-		{
-			x = nx;
-			break;
-		}
-
-		if (fx > 0)
-		{
-			b = x;
-			x = nx <= a ? (a + b) * 0.5 : nx;
-		}
-		else{
-			a = x;
-			x = nx >= b ? (a + b) * 0.5 : nx;
-		}
-	}
-
-	return clamp(x, a, b);
-}
-
-bool intersect(std::vector<double> v, Aggplus::PointD& res)
+inline bool intersect(std::vector<double> v, Aggplus::PointD& res)
 {
 	v[2] -= v[0];
 	v[3] -= v[1];
@@ -229,7 +180,7 @@ bool intersect(std::vector<double> v, Aggplus::PointD& res)
 	return false;
 }
 
-void getConvexHull(const double& dq0, const double& dq1,
+inline void getConvexHull(const double& dq0, const double& dq1,
 				   const double& dq2, const double& dq3,
 				   std::vector<Aggplus::PointD>& top,
 				   std::vector<Aggplus::PointD>& bottom)
@@ -297,7 +248,7 @@ void getConvexHull(const double& dq0, const double& dq1,
 		std::swap(top, bottom);
 }
 
-double clipConvexHullPart(const std::vector<Aggplus::PointD>& part, const bool& top,
+inline double clipConvexHullPart(const std::vector<Aggplus::PointD>& part, const bool& top,
 								 const double& threshold)
 {
 	double	px = part[0].X,
@@ -348,7 +299,7 @@ inline int binarySearch(const std::vector<std::vector<double>>& allBounds,
 }
 
 inline double getSignedDistance(const double& px, const double& py, double vx, double vy,
-								const double& x, const double& y, bool asVector = false)
+								const double& x, const double& y, const bool& asVector)
 {
 	if (!asVector)
 	{
@@ -369,38 +320,6 @@ inline double getSignedDistance(const double& px, const double& py, double vx, d
 			distXY = ((x - px) * vy - (y - py) * vx) / (vyGvx ? distGY : distGX);
 
 	return vx0 ? distX : vy0 ? distY : distXY;
-}
-
-inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
-						  const double& x, const double& y, const bool& asVector)
-{
-	return fabs(getSignedDistance(px, py, vx, vy, x, y, asVector));
-}
-
-inline double getDistance(const double& px, const double& py, const double& vx, const double& vy,
-						  const double& x, const double& y)
-{
-	if (vx == 0)
-	{
-		if (vy > 0)
-			return std::abs(x - px);
-		else
-			return std::abs(px - x);
-	}
-	if (vy == 0)
-	{
-		if (vx < 0)
-			return std::abs(y - py);
-		else
-			return std::abs(py -y);
-	}
-
-	bool dir = vy > vx;
-	double	dist = (x- px) * vy - (y - py) * vx,
-			epsY = vy * sqrt(1 + (vx * vx) / (vy * vy)),
-			epsX = vx * sqrt(1 + (vy * vy) / (vx * vx));
-
-	return  dist / (dir ? epsY : epsX);
 }
 
 inline double getDistance(const double& x1, const double& y1, const double& x2, const double& y2)
@@ -450,7 +369,7 @@ inline double getDiscriminant(const double& a, const double& b, const double& c)
 	return D;
 }
 
-int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
+inline int solveQuadratic(double a, double b, double c, std::vector<double>& roots,
 				   const double& mn, const double& mx)
 {
 	double x1 = MAX, x2 = MAX;

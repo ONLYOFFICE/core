@@ -111,7 +111,7 @@ namespace odf_writer
 
 	odf_math_context::odf_math_context(odf_conversion_context *odf_context)
 		: impl_(new  odf_math_context::Impl(odf_context)),
-		lvl_of_me(0), style_flag(true), counter(0), symbol_counter(0), annotation_flag(true), annotation_oper_flag(false), matrix_row_counter(0)
+		lvl_of_me(0), style_flag(true), counter(0), symbol_counter(0), matrix_row_counter(0)
 	{
 		mo = { L'+', L'-', L'±', L'∓', L'∙', L'×', L'∗', L'÷', L'/', L'≂', L'⊕', L'⊖', L'⊙', L'⊗', L'⊘', L'∘', L'¬', L'∧', L'∨',		// un/bi operators
 				L'=', L'≠', L'<', L'≤', L'>', L'≥', L'≪', L'≫', L'≈', L'~', L'≃', L'≡', L'∝', L'∥', L'⟂', L'|', L'∤', L'→', L'⊷',	// relations
@@ -129,22 +129,6 @@ namespace odf_writer
 						//{L'', L''}, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }, { L'', L'' }
 		};
 
-		annotation_diak_symbols = { {L"˙",L"dot"}, {L"¨",L"ddot"}, {L"⃛",L"dddot"}, {L"&#708;", L"hat"}, {L"ˇ",L"check"}, {L"´",L"acute"}, {L"&#715;",L"grave"}, {L"˘",L"breve"},
-			                        {L"~",L"tilde"},{L"¯",L"overline"},{L"→",L"vec"}, {L"⇀",L"harpoon"}, {L"&#45;",L"underline"}/*, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""}, {L"",L""},{L"",L""}, 
-			                        {L"",L""}*/
-		};
-
-		annotation_operators = { {L"∫",L"int"}, {L"∬", L"iint "}, {L"∭", L"iiint "}, {L"∮", L"lint "}, {L"∯", L"llint "},
-								 {L"∰", L"lllint "}, {L"∑", L"sum "}, {L"∏", L"prod "}, {L"∐", L"coprod "}
-								
-		};
-
-		annotation_brackets_begin = { {L"(", L"("}, {L"[", L"["}, {L"{", L"lbrace"}, {L"⟨", L"langle"}, {L"〈", L"langle"}, {L"⌊", L"lfloor"}, {L"⌈", L"lceil"}, {L"|", L"lline"}, {L"‖", L"ldline"},
-									  {L"]", L"]"}, {L"⟦", L"ldbracket"}
-		};
-		annotation_brackets_end   = { {L")", L")"}, {L"]", L"]"}, {L"}", L"rbrace"}, {L"⟩", L"rangle"}, {L"〉", L"rangle"},{L"⌋", L"rfloor"}, {L"⌉", L"rceil"}, {L"|", L"rline"}, {L"‖", L"rdline"},
-									  {L"[", L"["}, {L"⟧", L"rdbracket"}
-		};
 		lvl_counter = 1;
 		lvl_up_counter = 1;
 		lvl_down_counter = -1;

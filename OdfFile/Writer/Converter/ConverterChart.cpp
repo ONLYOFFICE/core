@@ -129,11 +129,10 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_ChartSpace  *oox_chart)
 		bool chart3D = (oox_chart->m_chart->m_view3D) ? true : false;
 		
 		convert(oox_chart->m_chart->m_floor, 1, chart3D);
-		if (chart3D)
-		{
-			convert(oox_chart->m_chart->m_backWall, 2, chart3D);
-			convert(oox_chart->m_chart->m_view3D);
-		}
+		convert(oox_chart->m_chart->m_backWall, 2, chart3D);
+		
+		convert(oox_chart->m_chart->m_view3D);
+
 		//convert(oox_chart->m_chart->m_sizeWall, 3, chart3D);		
 	}
 	odf_context()->chart_context()->end_plot_area();
@@ -261,63 +260,55 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_PlotArea* ct_plotArea)
 	bool chart3D = false;
 
 	convert(ct_plotArea->m_layout);
-///////////////////////
+	///////////////////////
 
-	for (size_t i=0; i< ct_plotArea->m_Items.size(); i++)//
+	for (size_t i = 0; i < ct_plotArea->m_Items.size(); i++)//
 	{
 		if (!ct_plotArea->m_ItemsElementName0[i]) continue;
-		switch(*ct_plotArea->m_ItemsElementName0[i])
+		switch (*ct_plotArea->m_ItemsElementName0[i])
 		{
-			case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:	convert_before((OOX::Spreadsheet::CT_Bar3DChart*)	ct_plotArea->m_Items[i]); break;
-			case OOX::Spreadsheet::itemschoicetype5BARCHART:	convert_before((OOX::Spreadsheet::CT_BarChart*)		ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:	convert_before((OOX::Spreadsheet::CT_Bar3DChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5BARCHART:	convert_before((OOX::Spreadsheet::CT_BarChart*)ct_plotArea->m_Items[i]); break;
 
 		}
 	}
 	for (size_t i = 0; i < ct_plotArea->m_Items1.size(); i++)
 	{
 		if (!ct_plotArea->m_ItemsElementName1[i]) continue;
-		switch(*ct_plotArea->m_ItemsElementName1[i])
-		{		
-			case OOX::Spreadsheet::itemschoicetype6CATAX:	convert((OOX::Spreadsheet::CT_CatAx*)ct_plotArea->m_Items1[i]);break;
-			case OOX::Spreadsheet::itemschoicetype6DATEAX:	convert((OOX::Spreadsheet::CT_DateAx*)ct_plotArea->m_Items1[i]);break;
-			case OOX::Spreadsheet::itemschoicetype6SERAX:	convert((OOX::Spreadsheet::CT_SerAx*)ct_plotArea->m_Items1[i]);break;
-			case OOX::Spreadsheet::itemschoicetype6VALAX:	convert((OOX::Spreadsheet::CT_ValAx*)ct_plotArea->m_Items1[i]);break;				
+		switch (*ct_plotArea->m_ItemsElementName1[i])
+		{
+		case OOX::Spreadsheet::itemschoicetype6CATAX:	convert((OOX::Spreadsheet::CT_CatAx*)ct_plotArea->m_Items1[i]); break;
+		case OOX::Spreadsheet::itemschoicetype6DATEAX:	convert((OOX::Spreadsheet::CT_DateAx*)ct_plotArea->m_Items1[i]); break;
+		case OOX::Spreadsheet::itemschoicetype6SERAX:	convert((OOX::Spreadsheet::CT_SerAx*)ct_plotArea->m_Items1[i]); break;
+		case OOX::Spreadsheet::itemschoicetype6VALAX:	convert((OOX::Spreadsheet::CT_ValAx*)ct_plotArea->m_Items1[i]); break;
 		}
 	}
-	for (size_t i=0; i< ct_plotArea->m_Items.size(); i++)//
+	for (size_t i = 0; i < ct_plotArea->m_Items.size(); i++)//
 	{
 		if (!ct_plotArea->m_ItemsElementName0[i]) continue;
-		switch(*ct_plotArea->m_ItemsElementName0[i])
+		switch (*ct_plotArea->m_ItemsElementName0[i])
 		{
-			case OOX::Spreadsheet::itemschoicetype5AREA3DCHART:		convert((OOX::Spreadsheet::CT_Area3DChart*)		ct_plotArea->m_Items[i]); chart3D = true; break;
-			case OOX::Spreadsheet::itemschoicetype5AREACHART:		convert((OOX::Spreadsheet::CT_AreaChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:		convert((OOX::Spreadsheet::CT_Bar3DChart*)		ct_plotArea->m_Items[i]); chart3D = true; break;
-			case OOX::Spreadsheet::itemschoicetype5BARCHART:		convert((OOX::Spreadsheet::CT_BarChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5BUBBLECHART:		convert((OOX::Spreadsheet::CT_BubbleChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5DOUGHNUTCHART:	convert((OOX::Spreadsheet::CT_DoughnutChart*)	ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5LINE3DCHART:		convert((OOX::Spreadsheet::CT_Line3DChart*)		ct_plotArea->m_Items[i]); chart3D = true; break;
-			case OOX::Spreadsheet::itemschoicetype5LINECHART:		convert((OOX::Spreadsheet::CT_LineChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5OFPIECHART:		convert((OOX::Spreadsheet::CT_OfPieChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5PIE3DCHART:		convert((OOX::Spreadsheet::CT_Pie3DChart*)		ct_plotArea->m_Items[i]); chart3D = true; break;
-			case OOX::Spreadsheet::itemschoicetype5PIECHART:		convert((OOX::Spreadsheet::CT_PieChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5RADARCHART:		convert((OOX::Spreadsheet::CT_RadarChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5SCATTERCHART:	convert((OOX::Spreadsheet::CT_ScatterChart*)	ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5STOCKCHART:		convert((OOX::Spreadsheet::CT_StockChart*)		ct_plotArea->m_Items[i]);break;
-			case OOX::Spreadsheet::itemschoicetype5SURFACE3DCHART:	convert((OOX::Spreadsheet::CT_Surface3DChart*)	ct_plotArea->m_Items[i]); chart3D = true; break;
-			case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)	ct_plotArea->m_Items[i]);break;			
+		case OOX::Spreadsheet::itemschoicetype5AREA3DCHART:		convert((OOX::Spreadsheet::CT_Area3DChart*)ct_plotArea->m_Items[i]); chart3D = true; break;
+		case OOX::Spreadsheet::itemschoicetype5AREACHART:		convert((OOX::Spreadsheet::CT_AreaChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5BAR3DCHART:		convert((OOX::Spreadsheet::CT_Bar3DChart*)ct_plotArea->m_Items[i]); chart3D = true; break;
+		case OOX::Spreadsheet::itemschoicetype5BARCHART:		convert((OOX::Spreadsheet::CT_BarChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5BUBBLECHART:		convert((OOX::Spreadsheet::CT_BubbleChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5DOUGHNUTCHART:	convert((OOX::Spreadsheet::CT_DoughnutChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5LINE3DCHART:		convert((OOX::Spreadsheet::CT_Line3DChart*)ct_plotArea->m_Items[i]); chart3D = true; break;
+		case OOX::Spreadsheet::itemschoicetype5LINECHART:		convert((OOX::Spreadsheet::CT_LineChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5OFPIECHART:		convert((OOX::Spreadsheet::CT_OfPieChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5PIE3DCHART:		convert((OOX::Spreadsheet::CT_Pie3DChart*)ct_plotArea->m_Items[i]); chart3D = true; break;
+		case OOX::Spreadsheet::itemschoicetype5PIECHART:		convert((OOX::Spreadsheet::CT_PieChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5RADARCHART:		convert((OOX::Spreadsheet::CT_RadarChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5SCATTERCHART:	convert((OOX::Spreadsheet::CT_ScatterChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5STOCKCHART:		convert((OOX::Spreadsheet::CT_StockChart*)ct_plotArea->m_Items[i]); break;
+		case OOX::Spreadsheet::itemschoicetype5SURFACE3DCHART:	convert((OOX::Spreadsheet::CT_Surface3DChart*)ct_plotArea->m_Items[i]); chart3D = true; break;
+		case OOX::Spreadsheet::itemschoicetype5SURFACECHART:	convert((OOX::Spreadsheet::CT_SurfaceChart*)ct_plotArea->m_Items[i]); break;
 		}
 	}
 	convert(ct_plotArea->m_dTable);
 
 	convert(ct_plotArea->m_spPr.GetPointer());
-	if (chart3D/* == false*/)
-	{
-		odf_context()->chart_context()->start_wall();
-		{
-			convert(ct_plotArea->m_spPr.GetPointer());
-		}	
-		odf_context()->chart_context()->end_element();
-	}
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_DTable *dTable)
 {
@@ -1334,17 +1325,16 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_NumDataSource* val)
 }
 void OoxConverter::convert(OOX::Spreadsheet::CT_Surface* ct_surface, int type, bool chart3D)
 {
-	if (ct_surface == NULL && chart3D == false)return;
 	//floor, side, back
-	if (type == 1)odf_context()->chart_context()->start_floor();
-	if (type == 2)odf_context()->chart_context()->start_wall();
+	if (type == 1) odf_context()->chart_context()->start_floor();
+	if (type == 2) odf_context()->chart_context()->start_wall();
 	//if (type == 3)odf_context()->chart_context()->start_back_wall();
 
 	if (ct_surface)
 	{
 		convert(ct_surface->m_spPr.GetPointer());
 	}
-	else if (chart3D)//тока для 3D так - хз почему
+	else
 	{
 		odf_context()->chart_context()->set_no_fill(true);
 	}

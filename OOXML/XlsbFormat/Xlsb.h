@@ -72,11 +72,13 @@ namespace OOX
             void LinkTables();
             void ReadSheetData();
             void WriteSheetData();
+            void PrepareRichStr();
             void SetPropForWriteSheet(const std::wstring &sPath, OOX::CContentTypes& oContentTypes);
             void WriteSheet(CWorksheet* worksheet);
 
 			bool IsWriteToXlsx();
 			void WriteToXlsx(bool isXlsx);
+            XLS::StreamCacheReaderPtr GetFileReader(const CPath& oFilePath, BYTE* &streamBuf);
             
             std::unordered_map<std::wstring, _UINT32> m_mapSheetNameSheetData;
             

@@ -99,7 +99,12 @@ void draw_page::pptx_convert_placeHolder(oox::pptx_conversion_context & Context,
 		index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
 
 	Context.get_slide_context().start_shape(1);
-	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+	
+	std::wstring placeholder_type = presentation_class(PresentationClass).get_type_ms();
+	if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+		placeholder_type = L"sldImg";
+	Context.get_slide_context().set_placeHolder_type(placeholder_type);
+	
 	Context.get_slide_context().set_placeHolder_idx(index);
 	
 	Context.get_text_context().start_object();
@@ -293,9 +298,12 @@ void presentation_notes::pptx_convert_placeHolder(oox::pptx_conversion_context &
 	//if (master)
 	//	index = master->find_placeHolderIndex(PresentationClass, Context.last_idx_placeHolder);
 
+	std::wstring placeholder_type = presentation_class(PresentationClass).get_type_ms();
+	if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+		placeholder_type = L"sldImg";
 
 	Context.get_slide_context().start_shape(1);
-	Context.get_slide_context().set_placeHolder_type(presentation_class(PresentationClass).get_type_ms());
+	Context.get_slide_context().set_placeHolder_type(placeholder_type);
 	Context.get_slide_context().set_placeHolder_idx(index);
 	
 	Context.get_text_context().start_object();

@@ -358,6 +358,12 @@ void CSvmBrush::GetBounds(double& left, double& top, double& width, double& heig
 void CSvmBrush::GetDibPattern(unsigned char **pBuffer, unsigned int &unWidth, unsigned int &unHeight) const
 {}
 
+void CSvmBrush::GetGradientColors(std::vector<long>& arColors, std::vector<double>& arPositions) const
+{
+	arColors    = {(long)(GetColor()  + (GetAlpha()  << 24)), (long)(GetColor2() + (GetAlpha2() << 24))};
+	arPositions = {0., 1.};
+}
+
 int CSvmPen::GetColor() const
 {
 	return METAFILE_RGBA(Color.r, Color.g, Color.b, 0);

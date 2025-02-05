@@ -31,7 +31,8 @@
  */
 #pragma once
 
-#include <CPOptional.h>
+#include "../../Common/CPOptional.h"
+
 #include "../../../OOXML/Base/SmartPtr.h"
 #include "../../../OOXML/DocxFormat/Math/oMathContent.h"
 #include "../../../OOXML/DocxFormat/Logic/VmlWord.h"
@@ -680,8 +681,7 @@ public:
 		std::vector<std::vector<std::wstring>>& brackets();
 		int& lvl_of_me();
 		std::vector<int>& end_counter();
-		std::wstring& annotation();
-		bool& annotation_flag();
+
 		void lvl_up_counter_increace(double val);
 		void lvl_up_counter_decreace(double val);
 		void lvl_down_counter_increace(double val);

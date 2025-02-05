@@ -851,6 +851,15 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		drawing->styleHorizontalPos = graphicProperties->common_horizontal_pos_attlist_.style_horizontal_pos_;
 		drawing->styleVerticalPos = graphicProperties->common_vertical_pos_attlist_.style_vertical_pos_;
 		drawing->styleVerticalRel = graphicProperties->common_vertical_rel_attlist_.style_vertical_rel_;
+
+		if (graphicProperties->style_mirror_)
+		{
+			bool flipV = graphicProperties->style_mirror_->find(L"vertical") != std::wstring::npos;
+			bool flipH = graphicProperties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+			drawing->additional.push_back(odf_reader::_property(L"flipV", flipV));
+			drawing->additional.push_back(odf_reader::_property(L"flipH", flipH));
+		}
 	}
 	if (!drawing->styleVerticalRel && anchor)
 	{
@@ -1038,34 +1047,6 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		int max_width	= get_value_emu(pageProperties.fo_page_width_);
 		int max_height	= get_value_emu(pageProperties.fo_page_height_);
 		
-		//это бред(типо подгонка) автоподбор под размер текста ... 
-		//if (Context.process_headers_footers_ && pageLayoutInst)
-		//{
-		//	style_header_style * headerStyle = dynamic_cast<style_header_style *>(pageLayoutInst->style_page_layout_->style_header_style_.get());
-		//	style_footer_style * footerStyle = dynamic_cast<style_footer_style *>(pageLayoutInst->style_page_layout_->style_footer_style_.get());
-
-		//	style_header_footer_properties * headerProp = headerStyle ? dynamic_cast<style_header_footer_properties *>(headerStyle->style_header_footer_properties_.get()) : NULL;
-		//	style_header_footer_properties * footerProp = footerStyle ? dynamic_cast<style_header_footer_properties *>(footerStyle->style_header_footer_properties_.get()) : NULL;
-		//	
-		//	if (headerProp)
-		//	{
-		//		size_t		height	= get_value_emu(headerProp->style_header_footer_properties_attlist_.svg_height_);
-		//		if (height<1)height	= get_value_emu(headerProp->style_header_footer_properties_attlist_.fo_min_height_);
-		//		
-		//		if (height >0 && height < max_height)
-		//			max_height = height;
-		//	}
-		//	if (footerProp)
-		//	{
-		//		size_t		height	= get_value_emu(footerProp->style_header_footer_properties_attlist_.svg_height_);
-		//		if (height<1)height	= get_value_emu(footerProp->style_header_footer_properties_attlist_.fo_min_height_);
-		//		
-		//		if (height >0 && height < max_height)
-		//			max_height = height;
-
-		//	}
-		//}
-
 		//if (drawing->cx<1 && max_width >0)
 		//{
 		//	drawing->cx = std::min(762000,max_width);
@@ -1200,6 +1181,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
 	std::wstring href = xlink_attlist_.href_.get_value_or(L"");
 	
+	oox::_rels_type type = oox::typeImage;
 	if (true == href.empty())
 	{
 		office_binary_data* binary_data = dynamic_cast<office_binary_data*>(office_binary_data_.get());
@@ -1207,6 +1189,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		if (binary_data)
 		{
 			href = binary_data->write_to(Context.root()->get_folder());
+			type = (oox::_rels_type)binary_data->type_binary_data;
 		}
 	}
 	else
@@ -1229,7 +1212,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (href[0] == L'#') href = href.substr(1);
 
 	if (drawing->type == oox::typeUnknown)
-		drawing->type = oox::typeImage;
+		drawing->type = type;
 
 	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1264,10 +1247,26 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
 	drawing->fill.type = 2;
 	drawing->fill.bitmap->isInternal = false;
-    drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href, Context.get_type_place());
 	drawing->fill.bitmap->bStretch = true;
 
-    const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
+	std::wstring href_out;
+	if (drawing->type == oox::typePDF)
+	{
+		drawing->objectProgId = L"Acrobat.Document.DC";
+		drawing->objectId = Context.get_mediaitems()->add_or_find(href, type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+
+		std::wstring image_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(Context.root()->get_folder() + FILE_SEPARATOR_STR, L"img");
+		
+		if (Context.get_mediaitems()->pdf2image(Context.root()->get_folder() + FILE_SEPARATOR_STR + href, image_file))
+		{
+			int pos = image_file.rfind(FILE_SEPARATOR_STR);
+			href = image_file.substr(pos + 1);
+		}
+	}	
+
+	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+
+	const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
 									common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
@@ -1732,7 +1731,12 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				objectBuild.userShapes = drawingName;
 			}
 
+			bool state = Context.get_drawing_state_content();
+			Context.set_drawing_state_content(!drawing->isInline || drawing->inFrame);
+
 			objectBuild.docx_convert(Context);
+
+			Context.set_drawing_state_content(state);
 		}
 		//------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
@@ -1767,8 +1771,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			{
 				drawing->type = oox::typeShape;		
 				
-				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
+				//drawing->additional.push_back(_property(L"auto-grow-width", true));
+				drawing->additional.push_back(_property(L"auto-grow-height", true));
+
+				//drawing->additional.push_back(_property(L"fit-to-size",	true));		
+				drawing->additional.push_back(_property(L"text-content", std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			

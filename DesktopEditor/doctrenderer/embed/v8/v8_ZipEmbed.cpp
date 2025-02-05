@@ -20,6 +20,7 @@ namespace NSZipEmbed
 	FUNCTION_WRAPPER_V8_6(_encodeImageData, encodeImageData)
 	FUNCTION_WRAPPER_V8_2(_encodeImage, encodeImage)
 	FUNCTION_WRAPPER_V8_1(_getImageType, getImageType)
+	FUNCTION_WRAPPER_V8_1(_getImageBuffer, getImageBuffer)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -39,6 +40,7 @@ namespace NSZipEmbed
 		NSV8Objects::Template_Set(result, "encodeImageData",	_encodeImageData);
 		NSV8Objects::Template_Set(result, "encodeImage",	_encodeImage);
 		NSV8Objects::Template_Set(result, "getImageType",	_getImageType);
+		NSV8Objects::Template_Set(result, "getImageBuffer",	_getImageBuffer);
 
 		return handle_scope.Escape(result);
 	}

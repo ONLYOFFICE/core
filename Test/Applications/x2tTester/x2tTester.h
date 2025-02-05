@@ -32,6 +32,7 @@ public:
 	std::vector<std::wstring> GetPresentations() const;
 	std::vector<std::wstring> GetSpreadsheets() const;
 	std::vector<std::wstring> GetCrossplatform() const;
+	std::vector<std::wstring> GetDraw() const;
 	std::vector<std::wstring> GetImages() const;
 	std::wstring GetPdf() const;
 
@@ -39,6 +40,7 @@ public:
 	bool IsPresentation(const std::wstring& ext) const;
 	bool IsSpreadsheet(const std::wstring& ext) const;
 	bool IsCrossplatform(const std::wstring& ext) const;
+	bool IsDraw(const std::wstring& ext) const;
 	bool IsImage(const std::wstring& ext) const;
 	bool IsPdf(const std::wstring& ext) const;
 	bool IsAny(const std::wstring& ext) const;
@@ -47,6 +49,7 @@ public:
 	void AddPresentation(const std::wstring& ext);
 	void AddSpreadsheet(const std::wstring& ext);
 	void AddCrossplatform(const std::wstring& ext);
+	void AddDraw(const std::wstring& ext);
 	void AddImage(const std::wstring& ext);
 
 	std::vector<std::wstring> GetAllExts() const;
@@ -66,6 +69,7 @@ private:
 	std::vector<std::wstring> m_spreadsheets;
 	std::vector<std::wstring> m_crossplatform;
 	std::vector<std::wstring> m_images;
+	std::vector<std::wstring> m_draw;
 	std::wstring m_pdf;
 };
 

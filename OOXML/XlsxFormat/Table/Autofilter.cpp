@@ -107,7 +107,9 @@ namespace OOX
 			XLS::BaseObjectPtr CSortCondition::toBin()
 			{
 				auto ptr(new XLSB::BeginSortCond);
-				XLS::BaseObjectPtr objectPtr(ptr);
+                auto ptr1(new XLSB::SORTCOND);
+				ptr1->m_BrtBeginSortCond = XLS::BaseObjectPtr{ptr};
+				XLS::BaseObjectPtr objectPtr(ptr1);
 
                 if(m_oDescending.IsInit())
                     ptr->fSortDes = m_oDescending->GetValue();

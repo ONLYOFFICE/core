@@ -167,6 +167,7 @@ namespace NExtractTools
 		oXlsb.m_bWriteToXlsb = true;
 		oXlsb.Read(oox_path);
 		oXlsb.LinkTables();
+		oXlsb.PrepareRichStr();
 
 		OOX::CContentTypes oContentTypes;
 		oXlsb.SetPropForWriteSheet(sTo, oContentTypes);
@@ -399,8 +400,11 @@ namespace NExtractTools
 		OOX::Spreadsheet::CXlsx oXlsx;
 
 		XMLReader reader = {};
+        _INT32 lcid = -1;
+        if(params.m_nLcid != nullptr)
+            lcid = *params.m_nLcid;
 
-		reader.Read2(sFrom, oXlsx);
+        reader.Read2(sFrom, oXlsx, lcid);
 
 		oXlsx.PrepareToWrite();
 

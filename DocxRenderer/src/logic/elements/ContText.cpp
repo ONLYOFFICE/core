@@ -6,18 +6,6 @@
 
 namespace NSDocxRenderer
 {
-	bool IsTextOnlySpaces(const NSStringUtils::CStringUTF32& oText)
-	{
-		bool only_spaces = true;
-		for (size_t j = 0; j < oText.length(); ++j)
-			if (!CContText::IsUnicodeSpace(oText.at(j)))
-			{
-				only_spaces = false;
-				break;
-			}
-		return only_spaces;
-	}
-
 	CSelectedSizes::CSelectedSizes(const CSelectedSizes& oSelectedSizes)
 	{
 		*this = oSelectedSizes;
@@ -108,8 +96,13 @@ namespace NSDocxRenderer
 			double dBoxWidth;
 			double dBoxHeight;
 
-			m_pManager->SetStringGid(0);
-			m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			if (m_oText.ToStdWString() == L" ")
+				dBoxWidth = m_pManager->GetSpaceWidthMM();
+			else
+			{
+				m_pManager->SetStringGid(0);
+				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			}
 
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;
@@ -490,6 +483,11 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L",");
 		}
 		oWriter.WriteString(L"\" />");
+
+		oWriter.WriteString(L"<metaorigin:font ");
+		oWriter.WriteString(L" font=\"");
+		oWriter.WriteString(m_wsOriginFontName);
+		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</a:r>");
 	}
 
@@ -532,18 +530,26 @@ namespace NSDocxRenderer
 	{
 		return m_oText == pCont->m_oText &&
 			   eVType == eVerticalCrossingType::vctDublicate &&
-			   eHType == eHorizontalCrossingType::hctDublicate;
-
-		// return m_oText == pCont->m_oText &&
-		// 	   eVType == eVerticalCrossingType::vctDublicate &&
-		// 	   (eHType == eHorizontalCrossingType::hctDublicate ||
-		// 		eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
-		// 		eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
+			   (eHType == eHorizontalCrossingType::hctDublicate ||
+				eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
+				eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
 	}
 
 	bool CContText::IsOnlySpaces() const
 	{
-		return IsTextOnlySpaces(m_oText);
+		bool only_spaces = true;
+		for (size_t j = 0; j < m_oText.length(); ++j)
+			if (!CContText::IsUnicodeSpace(m_oText.at(j)))
+			{
+				only_spaces = false;
+				break;
+			}
+		return only_spaces;
+	}
+	bool CContText::IsDiacritical() const noexcept
+	{
+		const auto& text = GetText();
+		return text.length() == 1 && CContText::IsUnicodeDiacriticalMark(text.at(0));
 	}
 
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
@@ -830,7 +836,14 @@ namespace NSDocxRenderer
 
 		return is_bullet || is_another;
 	}
-
+	bool CContText::IsUnicodeEnumEnd(uint32_t cSym)
+	{
+		return cSym == 0x29 || cSym == 0x2e;
+	}
+	bool CContText::IsUnicodeNumber(uint32_t cSym)
+	{
+		return cSym >= 0x30 && cSym <= 0x39;
+	}
 	bool CContText::IsUnicodeSpace(uint32_t cSym)
 	{
 		return (0x20 == cSym || 0xA0 == cSym || 0x2003 == cSym);
@@ -853,5 +866,149 @@ namespace NSDocxRenderer
 	double CContText::CalculateSpace() const noexcept
 	{
 		return m_dSpaceWidthMM;
+	}
+
+	CContTextBuilder::CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector) :
+		m_pFontStyleManager(pFontStyleManager), m_pFontSelector(pFontSelector)
+	{}
+
+	std::vector<CContTextBuilder::cont_ptr_t> CContTextBuilder::GetConts()
+	{
+		return std::move(m_arConts);
+	}
+
+	void CContTextBuilder::AddUnicode(
+		double dTop,
+		double dBot,
+		double dLeft,
+		double dRight,
+		const NSStructures::CFont& oFont,
+		const NSStructures::CBrush& oBrush,
+		CFontManager* pFontManager,
+		const NSStringUtils::CStringUTF32& oText,
+		bool bForcedBold,
+		bool bUseDefaultFont,
+		bool bWriteStyleRaw)
+	{
+		double dWidth = dRight - dLeft;
+		double dHeight = dBot - dTop;
+
+		// if new text is close to current cont
+		if (m_pCurrCont != nullptr &&
+			fabs(m_pCurrCont->m_dBaselinePos - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+			m_oPrevFont.IsEqual2(&oFont) &&
+			m_oPrevBrush.IsEqual(&oBrush))
+		{
+
+			double avg_width = dWidth / oText.length();
+			for (size_t i = 0; i < oText.length(); ++i)
+				if (oText.at(i) == c_SPACE_SYM)
+					m_pCurrCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
+
+			double avg_space_width = m_pCurrCont->m_pFontStyle->GetAvgSpaceWidth();
+			double space_width =
+				avg_space_width != 0.0 ?
+					avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+					m_pCurrCont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+
+			bool is_added = false;
+
+			// some_text+more_text
+			if (fabs(m_pCurrCont->m_dRight - dLeft) < space_width && dRight > m_pCurrCont->m_dRight)
+			{
+				double left_avg_width = (dRight - m_pCurrCont->m_dRight) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(left_avg_width);
+
+				m_pCurrCont->AddTextBack(oText, ar_widths);
+				is_added = true;
+
+			}
+			// more_text+some_text
+			else if (fabs(m_pCurrCont->m_dLeft - dRight) < space_width && dLeft < m_pCurrCont->m_dLeft)
+			{
+				double right_avg_width = (m_pCurrCont->m_dLeft - dLeft) / oText.length();
+				std::vector<double> ar_widths;
+				for (size_t i = 0; i < oText.length(); ++i)
+					ar_widths.push_back(right_avg_width);
+
+				m_pCurrCont->AddTextFront(oText, ar_widths);
+				is_added = true;
+			}
+
+			if (is_added)
+			{
+				m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, dTop);
+				m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, dBot);
+				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
+				m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
+				return;
+			}
+		}
+
+		auto pCont = std::make_shared<CContText>(pFontManager);
+		const auto& oParams = pFontManager->GetFontSelectParams();
+		const auto& oMetrics = pFontManager->GetFontMetrics();
+		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
+
+		pCont->m_dBaselinePos = dBot;
+		pCont->m_dTop         = dTop;
+		pCont->m_dHeight      = dHeight;
+		pCont->m_dLeft        = dLeft;
+
+		// первичное получение стиля для текущего символа
+		// при дальнейшем анализе может измениться
+		pCont->m_pFontStyle = m_pFontStyleManager->GetOrAddFontStyle(
+			oBrush,
+			m_pFontSelector->GetSelectedName(),
+			oFont.Size,
+			m_pFontSelector->IsSelectedItalic(),
+			m_pFontSelector->IsSelectedBold() || bForcedBold);
+
+		// just in case if oText contains more than 1 symbol
+		std::vector<double> ar_widths;
+		double avg_width = abs(dRight - dLeft) / oText.length();
+		for (size_t i = 0; i < oText.length(); ++i)
+		{
+			if (oText.at(i) == c_SPACE_SYM) pCont->m_pFontStyle->UpdateAvgSpaceWidth(avg_width);
+			ar_widths.push_back(avg_width);
+		}
+
+		pCont->SetText(oText, ar_widths);
+		pCont->m_bIsRtl = CContText::IsUnicodeRtl(oText.at(0));
+
+		pCont->m_dWidth = dWidth;
+		pCont->m_dRight = dRight;
+
+		double font_size = oFont.Size;
+		double em_height = oMetrics.dEmHeight;
+		double ratio = font_size / em_height * c_dPtToMM;
+
+		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
+		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
+		pCont->m_dSpaceWidthMM = pFontManager->GetSpaceWidthMM();
+		pCont->m_wsOriginFontName = oFont.Name;
+
+		if (bUseDefaultFont)
+		{
+			pCont->m_oSelectedFont.Name = oFont.Name;
+			pCont->m_oSelectedFont.Path = oFont.Path;
+			pCont->m_oSelectedFont.Size = oFont.Size;
+			pCont->m_oSelectedFont.FaceIndex = oFont.FaceIndex;
+		}
+		else
+		{
+			pCont->m_oSelectedFont.Name = m_pFontSelector->GetSelectedName();
+			pCont->m_oSelectedFont.Size = oFont.Size;
+			pCont->m_oSelectedFont.Bold = m_pFontSelector->IsSelectedBold();
+			pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
+		}
+		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
+		m_arConts.push_back(pCont);
+
+		m_pCurrCont = pCont;
+		m_oPrevFont = oFont;
+		m_oPrevBrush = oBrush;
 	}
 }

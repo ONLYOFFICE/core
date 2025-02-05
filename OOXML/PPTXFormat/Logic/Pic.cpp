@@ -256,7 +256,8 @@ namespace PPTX
 				checker.isOfficeFile(ole_file->filename().GetPath());
 
 				if (checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS ||
-					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC ||
+					checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT)
 				{
 					std::wstring sTemp = ole_file->filename().GetDirectory();
 
@@ -273,7 +274,8 @@ namespace PPTX
 
 						ooxml_file = ole_file->filename().GetPath() + (bMacro ? L".xlsm" : L".xlsx");
 					}
-					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC)
+					else if (checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC ||
+							checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC_FLAT)
 					{
 						COfficeDocFile docFile;
 						docFile.m_sTempFolder = ole_file->filename().GetDirectory();
@@ -1413,7 +1415,14 @@ namespace PPTX
 		{
 			return (long) nvPicPr.cNvPr.id;
 		}
+		std::wstring CorrentCropString(const std::wstring val)
+		{
+			int nVal = XmlUtils::GetInteger(val);
+			double dKoef =  65536 / 100000.0;
+			nVal = (int)(dKoef * nVal + 0.5);
 
+			return std::to_wstring(nVal) + L"f";
+		}
 		void Pic::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group)
 		{
 			bool bOle = oleObject.IsInit() && oleObject->isValid();
@@ -1629,6 +1638,14 @@ namespace PPTX
 					pWriter->WriteAttribute(L"r:id", blipFill.blip->embed->ToString());
 				}
 				pWriter->WriteAttribute(L"o:title", L"");
+
+				if (blipFill.srcRect.IsInit())
+				{
+					if (blipFill.srcRect->t.IsInit()) pWriter->WriteAttribute(L"croptop", CorrentCropString(*blipFill.srcRect->t));
+					if (blipFill.srcRect->l.IsInit()) pWriter->WriteAttribute(L"cropleft", CorrentCropString(*blipFill.srcRect->l));
+					if (blipFill.srcRect->b.IsInit()) pWriter->WriteAttribute(L"cropbottom", CorrentCropString(*blipFill.srcRect->b));
+					if (blipFill.srcRect->r.IsInit()) pWriter->WriteAttribute(L"cropright", CorrentCropString(*blipFill.srcRect->r));
+				}
 				pWriter->EndAttributes();
 				pWriter->EndNode(L"v:imagedata");
 			}

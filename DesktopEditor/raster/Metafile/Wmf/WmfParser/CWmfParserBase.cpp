@@ -194,7 +194,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+		{
+			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pWmfInterpretatorSvg;
+		}
 	}
 
 	void CWmfParserBase::SetInterpretator(IOutputDevice *pOutput, const wchar_t *wsFilePath)
@@ -233,12 +237,9 @@ namespace MetaFile
 
 		m_oDCRect = m_oPlaceable.oBoundingBox;
 
-		const USHORT ushFileDpi = GetDpi();
-		const USHORT ushRendererDpi = 96;
-
-		if (ushFileDpi != ushRendererDpi && 0 != ushFileDpi)
+		if (96 != m_oPlaceable.ushInch)
 		{
-			const double dKoef = (double)ushRendererDpi / (double)ushFileDpi;
+			const double dKoef = 96. / (double)m_oPlaceable.ushInch;
 
 			m_oDCRect.Left   = std::round(m_oDCRect.Left   * dKoef);
 			m_oDCRect.Top    = std::round(m_oDCRect.Top    * dKoef);
@@ -685,8 +686,8 @@ namespace MetaFile
 				{
 					TRectL oClip = oSrcRect;
 
-					oClip.Right  = oClip.Left + (std::min)(oClip.Right  - oClip.Left, (int)unWidth ) - 1;
-					oClip.Bottom = oClip.Top  + (std::min)(oClip.Bottom - oClip.Top,  (int)unHeight) - 1;
+					oClip.Right  = oClip.Left + (std::min)(oClip.Right  - oClip.Left, (int)unWidth );
+					oClip.Bottom = oClip.Top  + (std::min)(oClip.Bottom - oClip.Top,  (int)unHeight);
 
 					BYTE* pNewBuffer = ClipBuffer(pBgra, unWidth, unHeight, oClip);
 
@@ -787,6 +788,8 @@ namespace MetaFile
 
 		if (NULL != m_pInterpretator)
 		{
+			UpdateDCRect();
+
 			m_pDC->SetWindowOrg(m_oDCRect.Left, m_oDCRect.Top);
 			m_pDC->SetWindowExt(m_oDCRect.Right - m_oDCRect.Left, m_oDCRect.Bottom - m_oDCRect.Top);
 			m_pDC->SetViewportOrg(m_oDCRect.Left, m_oDCRect.Top);

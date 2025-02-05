@@ -360,8 +360,8 @@ public:
 	Status SetClip(CGraphicsPath* pPath);
 	Status ResetClip();
 	Status ExclugeClip(CGraphicsPath* pPath);
-	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op);
-    Status InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op);
+	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op, NSStructures::CPen* pPen = NULL);
+    Status InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op, NSStructures::CPen* pPen = NULL);
 
 	// измерение текста
 	INT MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);
@@ -453,6 +453,8 @@ protected:
     void DoFillPathTextureClampSz3(const CMatrix &mImgMtx, const void *pImgBuff, DWORD dwImgWidth, DWORD dwImgHeight, int nImgStride, Aggplus::WrapMode wrapmode, BYTE Alpha = 255);
     
 	void DoFillPath(const CBrush* Brush);
+	template<class Rasterizer>
+	agg::trans_affine* DoStrokePath(NSStructures::CPen* pPen, CGraphicsPath* pPath, Rasterizer* ras);
 
 	// text methods
 	int FillGlyph2(int nX, int nY, TGlyph* pGlyph, Aggplus::CBrush* pBrush);

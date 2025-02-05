@@ -43,6 +43,8 @@
 #include "../../../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../OOXML/Base/Base.h"
+#include "../../../Common/cfcpp/compoundfile.h"
+#include "../../../Common/3dParty/pole/pole.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -133,6 +135,8 @@ content_type * content_types_file::content()
 
 bool content_types_file::add_or_find_default(const std::wstring & extension)
 {
+	if (extension.empty()) return true;
+
 	std::vector<default_content_type> & defaults = content_type_content_.get_default();
 	
 	for (size_t i = 0 ; i < defaults.size(); i++)
@@ -387,9 +391,9 @@ void media::write(const std::wstring & RootPath)
     for (size_t i = 0; i < items.size(); i++ )
     {
         if (items[i].valid && (	items[i].type == typeImage || 
-															items[i].type == typeMedia ||
-															items[i].type == typeAudio ||
-															items[i].type == typeVideo ))
+								items[i].type == typeMedia ||
+								items[i].type == typeAudio ||
+								items[i].type == typeVideo ))
         {
 			std::wstring &file_name	= items[i].href;
 			std::wstring file_name_out	= RootPath + FILE_SEPARATOR_STR + items[i].outputName;
@@ -431,17 +435,151 @@ void embeddings::write(const std::wstring & RootPath)
 
     for (size_t i = 0; i < items.size(); i++ )
     {
-        if ( items[i].mediaInternal && items[i].valid &&
-			(items[i].type == typeMsObject || items[i].type == typeOleObject))
-        {
-			int pos = items[i].outputName.rfind(L".");	
+		if (items[i].valid && (items[i].type == typeMsObject ||
+			items[i].type == typeOleObject ||
+			items[i].type == typeActiveX ||
+			items[i].type == typePDF ||
+			items[i].type == typePDF ||
+			items[i].type == typeControlProps ||
+			items[i].type == typeControl))
+		{
+
+			int pos = items[i].outputName.rfind(L".");
 			std::wstring extension = pos >= 0 ? items[i].outputName.substr(pos + 1) : L"";
-			
+
 			content_types.add_or_find_default(extension);
 
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + items[i].outputName;
-			
-			NSFile::CFileBinary::Copy(items[i].href, file_name_out);
+
+			if (items[i].mediaInternal && items[i].valid &&
+				(items[i].type == typeMsObject || items[i].type == typeOleObject))
+			{
+				NSFile::CFileBinary::Copy(items[i].href, file_name_out);
+			}
+			else if (items[i].type == typePDF)
+			{
+				std::string name = "Acrobat Document";
+				std::string class_name = "Acrobat.Document.DC";
+
+				_UINT32 name_size = name.size() + 1;
+				_UINT32 class_name_size = class_name.size() + 1;
+
+				DWORD nativeDataSize = 0;
+				BYTE* nativeData = NULL;
+
+				NSFile::CFileBinary file;
+				file.ReadAllBytes(items[i].href, &nativeData, nativeDataSize);
+
+				CFCPP::CompoundFile* storageOut = new CFCPP::CompoundFile(CFCPP::Ver_3, CFCPP::Default);
+				if (storageOut && nativeData)
+				{
+					_UINT32 tmp = 0;
+					//CompObj
+					BYTE dataCompObjHeader[28] = { 0x01, 0x00, 0xfe, 0xff, 0x03, 0x0a, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
+						0x65, 0xca, 0x01, 0xb8, 0xfc, 0xa1, 0xd0, 0x11, 0x85, 0xad, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 };
+
+					std::shared_ptr<CFCPP::CFStream> oStreamCompObj = storageOut->RootStorage()->AddStream(L"\001CompObj");
+					long long posStreamCompObj = 0;
+					oStreamCompObj->Write((char*)dataCompObjHeader, 0, 28); posStreamCompObj += 28;
+
+					oStreamCompObj->Write((char*)&name_size, posStreamCompObj, 4); posStreamCompObj += 4;
+					oStreamCompObj->Write((char*)name.c_str(), posStreamCompObj, name_size);  posStreamCompObj += name_size;
+
+					tmp = 0;
+					oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;
+
+					oStreamCompObj->Write((char*)&class_name_size, posStreamCompObj, 4); posStreamCompObj += 4;
+					oStreamCompObj->Write((char*)class_name.c_str(), posStreamCompObj, class_name_size);  posStreamCompObj += class_name_size;
+
+					tmp = 0x71B239F4;
+					oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;// UnicodeMarker
+
+					tmp = 0;
+					oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;// UnicodeUserType
+					oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;// UnicodeClipboardFormat
+					oStreamCompObj->Write((char*)&tmp, posStreamCompObj, 4); posStreamCompObj += 4;//
+
+			//Ole
+					BYTE dataOleInfo[] = { 0x01, 0x00, 0x00, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00,0x00, 0x00, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 };
+
+					std::shared_ptr<CFCPP::CFStream> oStreamOle = storageOut->RootStorage()->AddStream(L"\001Ole");
+					oStreamOle->Write((char*)dataOleInfo, 0, 20);
+
+					//ObjInfo
+					std::shared_ptr<CFCPP::CFStream> oStreamObjInfo = storageOut->RootStorage()->AddStream(L"\003ObjInfo");
+
+					BYTE dataObjInfo[] = { 0x00, 0x00, 0x03, 0x00, 0x01, 0x00 };
+					oStreamObjInfo->Write((char*)dataObjInfo, 0, 6);
+
+					//CONTENTS
+					std::shared_ptr<CFCPP::CFStream> oStreamCONTENTS = storageOut->RootStorage()->AddStream(L"CONTENTS");
+					oStreamCONTENTS->Write((char*)nativeData, 0, nativeDataSize);
+
+					bool result = storageOut->Save(file_name_out);
+					storageOut->Close();
+
+				}
+				if (storageOut) delete storageOut;
+
+				//POLE::Storage* storageOut = new POLE::Storage(file_name_out.c_str());
+				//if ((storageOut) && (storageOut->open(true, true)))
+				//{
+				//	_UINT32 tmp = 0;
+				//	std::string name = class_name;
+				//	_UINT32 name_size = (_UINT32)name.length() + 1;
+				////Ole
+				//	BYTE dataOleInfo[] = { 0x01, 0x00, 0x00, 0x02, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00 };
+				//	POLE::Stream oStream3(storageOut, L"\001Ole", true, 20);
+				//	oStream3.write(dataOleInfo, 20);
+				//	oStream3.flush();
+				////CompObj
+				//	BYTE dataCompObjHeader[28] = { 0x01, 0x00, 0xfe, 0xff, 0x03, 0x0a, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff,
+				//		0x65, 0xca, 0x01, 0xb8, 0xfc, 0xa1, 0xd0, 0x11, 0x85, 0xad, 0x44, 0x45, 0x53, 0x54, 0x00, 0x00 };
+
+				//	POLE::Stream oStream1(storageOut, L"\001CompObj", true, 28 + (class_name_size + 4) + (class_name2_size + 4) + 4 * 4);
+				//	oStream1.write(dataCompObjHeader, 28);
+
+				//	oStream1.write((BYTE*)&class_name_size, 4);
+				//	oStream1.write((BYTE*)class_name.c_str(), class_name_size);
+
+				//	tmp = 0;
+				//	oStream1.write((BYTE*)&tmp, 4);
+
+				//	oStream1.write((BYTE*)&class_name2_size, 4);
+				//	oStream1.write((BYTE*)class_name2.c_str(), class_name2_size);
+
+				//	tmp = 0x71B239F4;
+				//	oStream1.write((BYTE*)&tmp, 4); // UnicodeMarker
+
+				//	tmp = 0;
+				//	oStream1.write((BYTE*)&tmp, 4); // UnicodeUserType
+				//	oStream1.write((BYTE*)&tmp, 4); // UnicodeClipboardFormat
+				//	oStream1.write((BYTE*)&tmp, 4); //
+				//	oStream1.flush();
+
+				//	//ObjInfo
+				//	BYTE dataObjInfo[] = { 0x00,0x00,0x03,0x00,0x0D,0x00 };
+				//	POLE::Stream oStream2(storageOut, L"\003ObjInfo", true, 6);
+				//	oStream2.write(dataObjInfo, 6);
+				//	oStream2.flush();
+
+				//	POLE::Stream streamData(storageOut, L"CONTENTS", true, nativeDataSize);
+				//	_UINT32 sz_write = 0;
+				//	_UINT32 sz = 4096;
+				//	while (sz_write < nativeDataSize)
+				//	{
+				//		if (sz_write + sz > nativeDataSize)
+				//			sz = nativeDataSize - sz_write;
+				//		streamData.write(nativeData + sz_write, sz);
+				//		sz_write += sz;
+				//	}
+				//	streamData.flush();
+
+				//	storageOut->close();
+				//	delete storageOut;
+				//}
+				if (nativeData) delete[]nativeData;
+			}
 		}
     }
 }

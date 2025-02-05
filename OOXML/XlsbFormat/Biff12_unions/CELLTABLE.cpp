@@ -126,14 +126,16 @@ namespace XLSB
 
     const bool Parenthesis_CELLTABLE::loadContent(XLS::BinProcessor& proc)
     {
-        if (proc.optional<ACCELLTABLE>())
+        auto type = proc.getNextRecordType();
+        if (type == rt_ACBegin)
         {
+            proc.optional<ACCELLTABLE>();
             m_ACCELLTABLE = elements_.back();
             elements_.pop_back();
         }
         if(proc.optional<RowHdr>())
         {
-            m_BrtRowHdr = elements_.back();
+            m_BrtRowHdr = std::move(elements_.back());
             elements_.pop_back();
         }
         else return false;
@@ -159,15 +161,18 @@ namespace XLSB
         m_arCELL.reserve(countCELL);
         std::move(std::begin(elements_), std::end(elements_), std::back_inserter(m_arCELL));
 
-        int countFRT = proc.repeated<FRT>(0, 0);
-
-        while(countFRT > 0)
+        type = proc.getNextRecordType();
+        if(type == rt_FRTBegin)
         {
-           // m_arFRT.insert(m_arFRT.begin(), elements_.back());
-            elements_.pop_back();
-            countFRT--;
-        }
+            int countFRT = proc.repeated<FRT>(0, 0);
 
+            while(countFRT > 0)
+            {
+               // m_arFRT.insert(m_arFRT.begin(), elements_.back());
+                elements_.pop_back();
+                countFRT--;
+            }
+        }
         return true;
     }
 

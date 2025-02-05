@@ -110,21 +110,22 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 
 	std::wstring sResult ;
 
-	if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
+	if (RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 	{
 		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
-	else if( RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType )
+	else if (RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType ||
+			 RENDER_TO_OOX_PARAM_FIELD == oRenderParameter.nType)
 	{
 		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
-	else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
+	else if (RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
 	{
 		if (m_aArray.size() < 1)
 		{
@@ -157,7 +158,7 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 		}
 		sResult += L"><w:pPr>";
 		
-		m_oProperty.m_bOldList = (NULL != m_oOldList);
+		m_oProperty.m_bList = (NULL != m_oOldList) || m_oProperty.m_bList;
 		
 		bool bRenderProps = false;
 		if ( PROP_DEF != m_oProperty.m_nTableStyle && m_oProperty.m_bInTable > 0)

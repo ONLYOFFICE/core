@@ -8893,7 +8893,11 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 			}break;			
 			case c_oSerTableTypes::Worksheets:
 			{
-				res = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions).Read();
+                auto sheetreader = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions);
+                OOX::Spreadsheet::CXlsb* xlsb = dynamic_cast<OOX::Spreadsheet::CXlsb*>(&oXlsx);
+                if ((xlsb) && (xlsb->m_bWriteToXlsb))
+                    sheetreader.m_bWriteToXlsb = true;
+                res = sheetreader.Read();
 			}break;
 			case c_oSerTableTypes::Customs:
 			{

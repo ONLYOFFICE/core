@@ -403,6 +403,7 @@ namespace BinXlsxRW
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
 		std::wstring GetControlVmlShape(void* pControl);
+        bool m_bWriteToXlsb = false;
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader
 	{

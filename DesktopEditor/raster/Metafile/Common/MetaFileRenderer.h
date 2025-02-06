@@ -100,8 +100,6 @@ namespace MetaFile
 			m_bStartedPath = false;
 			m_bUpdatedClip = true;
 
-			m_pRenderer->CommandLong(c_nPenWidth0As1px, 1);
-
 			//int alpha = 0xff;
 			//m_pRenderer->put_BrushAlpha1(alpha);
 			//m_pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -1229,11 +1227,6 @@ namespace MetaFile
 			oMatrix.SetElements(dM11, dM12, dM21, dM22, dDx, dDy);
 			oMatrix.Scale(1. / m_dScaleX, 1. / m_dScaleY);
 
-			double *pDataDash;
-			unsigned int unSizeDash;
-
-			pPen->GetDashData(pDataDash, unSizeDash);
-
 			// Вычисление минимально возможной ширины пера
 			// # Код явялется дублированным из Graphics
 			const double dSqrtDet = sqrt(abs(oMatrix.Determinant()));
@@ -1251,76 +1244,99 @@ namespace MetaFile
 			}
 			//------------------------
 			else
+			{
 				dWidth *= m_dScaleX;
 
-			if (dWidth < dWidthMinSize)
-				dWidth = dWidthMinSize;
+				if (dWidth < dWidthMinSize)
+					dWidth = dWidthMinSize;
+			}
 
 			const double dMiterLimit = (0 != pPen->GetMiterLimit()) ? pPen->GetMiterLimit() : m_pFile->GetMiterLimit() * m_dScaleX;
 
 			BYTE nDashStyle = Aggplus::DashStyleSolid;
 
-			if (NULL != pDataDash && 0 != unSizeDash)
+			double *pDataDash;
+			unsigned int unSizeDash;
+
+			pPen->GetDashData(pDataDash, unSizeDash);
+
+			if ((NULL != pDataDash && 0 != unSizeDash) || PS_SOLID != ulPenStyle)
 			{
-				m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+				// Дублированный код из Graphics
+				// Без этого используется оригинальный код в Graphics, который отрисовывает уже неверно
+				double dDashWidth{dWidth};
 
-				std::vector<double> arDashes(unSizeDash);
-
-				for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
-					arDashes[unIndex] = pDataDash[unIndex] * dWidth;
-
-				m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
-
-				nDashStyle = Aggplus::DashStyleCustom;
-			}
-			else if (PS_SOLID != ulPenStyle)
-			{
-				std::vector<double> arDashPattern;
-
-				switch (ulPenStyle)
+				if (!Equals(dWidthMinSize, dWidth))
 				{
-					case PS_DASH:
-					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
+					double dDet = oMatrix.Determinant();
 
-						break;
-					}
-					case PS_DOT:
-					{
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-
-						break;
-					}
-					case PS_DASHDOT:
-					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(6 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(6 * dWidth);
-
-						break;
-					}
-					case PS_DASHDOTDOT:
-					{
-						arDashPattern.push_back(9 * dWidth);
-						arDashPattern.push_back(6 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(6 * dWidth);
-						arDashPattern.push_back(3 * dWidth);
-						arDashPattern.push_back(6 * dWidth);
-
-						break;
-					}
+					if (fabs(dDet) < 0.0001)
+						dDashWidth *= dSqrtDet;
 				}
+				// -----------------------------
 
-				if (!arDashPattern.empty())
+				if (NULL != pDataDash && 0 != unSizeDash)
 				{
-					m_pRenderer->PenDashPattern(arDashPattern.data(), arDashPattern.size());
+					m_pRenderer->put_PenDashOffset(pPen->GetDashOffset());
+
+					std::vector<double> arDashes(unSizeDash);
+
+					for (unsigned int unIndex = 0; unIndex < unSizeDash; ++unIndex)
+						arDashes[unIndex] = pDataDash[unIndex] * dDashWidth;
+
+					m_pRenderer->PenDashPattern(arDashes.data(), unSizeDash);
+
 					nDashStyle = Aggplus::DashStyleCustom;
-					nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
-					nJoinStyle = Aggplus::LineJoinMiter;
+				}
+				else
+				{
+					std::vector<double> arDashPattern;
+
+					switch (ulPenStyle)
+					{
+						case PS_DASH:
+						{
+							arDashPattern.push_back(9 * dDashWidth);
+							arDashPattern.push_back(3 * dDashWidth);
+
+							break;
+						}
+						case PS_DOT:
+						{
+							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(3 * dDashWidth);
+
+							break;
+						}
+						case PS_DASHDOT:
+						{
+							arDashPattern.push_back(9 * dDashWidth);
+							arDashPattern.push_back(6 * dDashWidth);
+							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(6 * dDashWidth);
+
+							break;
+						}
+						case PS_DASHDOTDOT:
+						{
+							arDashPattern.push_back(9 * dDashWidth);
+							arDashPattern.push_back(6 * dDashWidth);
+							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(6 * dDashWidth);
+							arDashPattern.push_back(3 * dDashWidth);
+							arDashPattern.push_back(6 * dDashWidth);
+
+							break;
+						}
+					}
+
+					if (!arDashPattern.empty())
+					{
+						m_pRenderer->PenDashPattern(arDashPattern.data(), arDashPattern.size());
+						nDashStyle = Aggplus::DashStyleCustom;
+						nStartCapStyle = nEndCapStyle = Aggplus::LineCapFlat;
+						nJoinStyle = Aggplus::LineJoinMiter;
+					}
 				}
 			}
 

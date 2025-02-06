@@ -4,7 +4,7 @@
 namespace StarMath
 {
 //class OOXml2Odf
-	COOXml2Odf::COOXml2Odf()
+	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_uiBaseSize(0)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 	}
@@ -12,8 +12,12 @@ namespace StarMath
 	{
 		delete m_pXmlWrite;
 	}
-	void COOXml2Odf::StartConversion(OOX::WritingElement *pNode)
+	void COOXml2Odf::StartConversion(OOX::WritingElement *pNode, std::wstring wsBaseColor, unsigned int uiBaseSize)
 	{
+		if(!wsBaseColor.empty())
+			m_wsBaseColor = wsBaseColor;
+		if(uiBaseSize != 0)
+			m_uiBaseSize = uiBaseSize;
 		m_pXmlWrite->WriteNodeBegin(L"math",true);
 		m_pXmlWrite->WriteAttribute(L"xmlns",L"http:\/\/www.w3.org/1998/Math/MathML");
 		m_pXmlWrite->WriteAttribute(L"display",L"block");
@@ -553,10 +557,13 @@ namespace StarMath
 			ConversionMRunProperties(pMRun->m_oMRPr.GetPointer(),stRpr);
 		if(pMRun->m_oMText.GetPointer() != nullptr)
 			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr,pMRun->m_oMRPr.GetPointer());
+		CreateAttribute(stRpr);
 		if(stRpr != nullptr && !arLine.empty())
 		{
 			if(!m_stAttribute.empty())
 				AttributeCheck(m_stAttribute.top(),stRpr);
+			else
+				AttributeCheck(stRpr);
 			for(int i = 0; i<arLine.size();i++)
 			{
 				if(i != 0 )
@@ -680,6 +687,29 @@ namespace StarMath
 				pChild->m_enStyle = SimpleTypes::EStyle::stylePlain;
 			if(pParent->m_enFont == pChild->m_enFont)
 				pChild->m_enFont = StarMath::TypeFont::empty;
+		}
+	}
+	void COOXml2Odf::AttributeCheck(StValuePr*& pChild)
+	{
+		if(pChild == nullptr && !pChild->m_bBaseAttribute)
+			return;
+		if(m_uiBaseSize != 0 && pChild->m_iSize == 0)
+			pChild->m_iSize = m_uiBaseSize;
+		if(!m_wsBaseColor.empty() && pChild->m_wsColor.empty())
+			pChild->m_wsColor = m_wsBaseColor;
+	}
+	void COOXml2Odf::CreateAttribute(StValuePr*& pAttribute)
+	{
+		if(pAttribute != nullptr)
+			return;
+		if(m_uiBaseSize != 0 || !m_wsBaseColor.empty())
+		{
+			pAttribute = new StValuePr;
+			pAttribute->m_bBaseAttribute = true;
+			if(m_uiBaseSize != 0)
+				pAttribute->m_iSize = m_uiBaseSize;
+			if(!m_wsBaseColor.empty())
+				pAttribute->m_wsColor = m_wsBaseColor;
 		}
 	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
@@ -1095,10 +1125,13 @@ namespace StarMath
 			pValue = ConversionRunProperties(pCtrlPr->m_oRPr.GetPointer());
 		else if(pCtrlPr->m_oARPr.GetPointer() != nullptr)
 			ConversionARpr(pCtrlPr->m_oARPr.GetPointer(),pValue);
+		CreateAttribute(pValue);
 		if(pValue != nullptr)
 		{
 			if(!m_stAttribute.empty())
 				AttributeCheck(m_stAttribute.top(),pValue);
+			else
+				AttributeCheck(pValue);
 			COneElement::ConversionAttribute(pValue,stStyle,m_pXmlWrite,m_wsAnnotationStarMath,bDelimiter);
 			if(bDelimiter)
 				m_stAttribute.push(pValue);

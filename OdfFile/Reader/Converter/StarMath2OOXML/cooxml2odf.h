@@ -18,7 +18,7 @@ namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():m_wsTypeName(L""),m_wsChr(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false),m_enUnderLine(SimpleTypes::EUnderline::underlineNone)
+		StValuePr():m_wsTypeName(L""),m_wsChr(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false),m_enUnderLine(SimpleTypes::EUnderline::underlineNone),m_bBaseAttribute(false)
 		{
 			AddRef();
 		}
@@ -33,6 +33,7 @@ namespace StarMath
 		int m_iCount;
 		bool m_bStrike;
 		SimpleTypes::EUnderline m_enUnderLine;
+		bool m_bBaseAttribute;
 		void AddRef()
 		{
 			m_iCount++;
@@ -58,7 +59,7 @@ namespace StarMath
 	public:
 		COOXml2Odf();
 		~COOXml2Odf();
-		void StartConversion(OOX::WritingElement* pNode);
+		void StartConversion(OOX::WritingElement* pNode,std::wstring wsBaseColor = L"",unsigned int uiBaseSize = 0);
 		void ConversionMathPara(OOX::Logic::COMathPara* pMathPara);
 		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
@@ -122,6 +123,8 @@ namespace StarMath
 		std::wstring TransformationUTF32(const std::wstring& wsText);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
+		void AttributeCheck(StValuePr*& pChild);
+		void CreateAttribute(StValuePr*& pAttribute);
 		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
 		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
 		void EndOdf();
@@ -132,6 +135,8 @@ namespace StarMath
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 		std::wstring m_wsAnnotationStarMath,m_wsSemantic;
 		std::stack<StValuePr*> m_stAttribute;
+		std::wstring m_wsBaseColor;
+		unsigned int m_uiBaseSize;
 	};
 	class COneElement
 	{

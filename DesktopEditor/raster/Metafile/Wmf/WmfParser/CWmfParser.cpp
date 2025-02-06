@@ -298,7 +298,7 @@ namespace MetaFile
 		m_oStream >> oBitmap;
 
 		unsigned int unRecordSizeDWORD = m_unRecordSize >> 1;
-		unsigned int unValue = (META_STRETCHBLT >> 8) + 3;
+		// unsigned int unValue = (META_STRETCHBLT >> 8) + 3;
 
 		if (unRecordSizeDWORD == ((META_STRETCHBLT >> 8) + 3))
 		{

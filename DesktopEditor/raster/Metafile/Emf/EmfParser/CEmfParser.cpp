@@ -593,6 +593,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEBRUSHINDIRECT(ulBrushIndex, pBrush);
+		else
+			delete pBrush;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTCOLOR()
@@ -630,6 +632,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEFONTINDIRECTW(ulIndex, pFont);
+		else
+			delete pFont;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTALIGN()
@@ -722,6 +726,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_CREATEPEN()
@@ -744,6 +750,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPEN(ulPenIndex, widthX, pPen);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_SETPOLYFILLMODE()
@@ -1011,6 +1019,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPALETTE(ulPaletteIndex, pPalette);
+		else
+			delete pPalette;
 	}
 
 	void CEmfParser::Read_EMR_SELECTPALETTE()

@@ -241,10 +241,10 @@ namespace MetaFile
 		{
 			const double dKoef = 96. / (double)m_oPlaceable.ushInch;
 
-			m_oDCRect.Left   = std::round(m_oDCRect.Left   * dKoef);
-			m_oDCRect.Top    = std::round(m_oDCRect.Top    * dKoef);
-			m_oDCRect.Right  = std::round(m_oDCRect.Right  * dKoef);
-			m_oDCRect.Bottom = std::round(m_oDCRect.Bottom * dKoef);
+			m_oDCRect.Left   = static_cast<int>(std::round(m_oDCRect.Left   * dKoef));
+			m_oDCRect.Top    = static_cast<int>(std::round(m_oDCRect.Top    * dKoef));
+			m_oDCRect.Right  = static_cast<int>(std::round(m_oDCRect.Right  * dKoef));
+			m_oDCRect.Bottom = static_cast<int>(std::round(m_oDCRect.Bottom * dKoef));
 		}
 
 		// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
@@ -290,6 +290,16 @@ namespace MetaFile
 		}
 
 		m_pDC->SetCurPos(shX, shY);
+	}
+
+	void CWmfParserBase::MoveToD(double dX, double dY)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->MoveTo(dX, dY);
+		else
+			RegisterPoint(static_cast<short>(dX), static_cast<short>(dY));
+
+		m_pDC->SetCurPos(static_cast<short>(dX), static_cast<short>(dY));
 	}
 
 	void CWmfParserBase::LineTo(short shX, short shY)
@@ -396,7 +406,7 @@ namespace MetaFile
 				NSFonts::IFontManager* pFontManager = GetFontManager();
 				if (pFontManager)
 				{
-					int lLogicalFontHeight = pFont->GetHeight();
+					int lLogicalFontHeight = static_cast<int>(pFont->GetHeight());
 					if (lLogicalFontHeight < 0)
 						lLogicalFontHeight = -lLogicalFontHeight;
 					if (lLogicalFontHeight < 0.01)
@@ -444,8 +454,8 @@ namespace MetaFile
 					{
 						pFontManager->LoadString1(wsText, 0, 0);
 						TBBox oBox = pFontManager->MeasureString2();
-						fL = (float)(oBox.fMinX);
-						fW = (float)(oBox.fMaxX - oBox.fMinX);
+						fL = static_cast<float>(oBox.fMinX);
+						fW = static_cast<float>(oBox.fMaxX - oBox.fMinX);
 					}
 
 					pFontManager->LoadString1(wsText, 0, 0);
@@ -520,7 +530,7 @@ namespace MetaFile
 				}
 				else
 				{
-					int lLogicalFontHeight = pFont->GetHeight();
+					int lLogicalFontHeight = static_cast<int>(pFont->GetHeight());
 					if (lLogicalFontHeight < 0)
 						lLogicalFontHeight = -lLogicalFontHeight;
 					if (lLogicalFontHeight < 0.01)
@@ -548,7 +558,7 @@ namespace MetaFile
 						fW = (float)(dFontHeight * wsText.length());
 					}
 
-					fH = dFontHeight * 1.2;
+					fH = (float)dFontHeight * 1.2f;
 
 					double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
 					double dCosTheta = (float)cos(dTheta);
@@ -724,17 +734,17 @@ namespace MetaFile
 		    oNewRect.Top  < 0 || oNewRect.Bottom < 0)
 			return NULL;
 
-		if (unHeight < (oNewRect.Bottom - oNewRect.Top))
-			oNewRect.Bottom = oNewRect.Top + unWidth;
+		if (unHeight < static_cast<unsigned int>(std::abs(oNewRect.Bottom - oNewRect.Top)))
+			oNewRect.Bottom = oNewRect.Top + unHeight;
 
-		if (unWidth < (oNewRect.Right - oNewRect.Left))
+		if (unWidth < static_cast<unsigned int>(std::abs(oNewRect.Right - oNewRect.Left)))
 			oNewRect.Right = oNewRect.Left + unWidth;
 
 		if (unHeight == (oNewRect.Bottom - oNewRect.Top) &&
 		    unWidth  == (oNewRect.Right  - oNewRect.Left))
 			return NULL;
 
-		int nBeginX, nBeginY, nEndX, nEndY;
+		ULONG nBeginX, nBeginY, nEndX, nEndY;
 
 		nBeginX = (std::min)(oNewRect.Left, oNewRect.Right);
 		nBeginY = (std::min)(oNewRect.Top,  oNewRect.Bottom);
@@ -924,7 +934,7 @@ namespace MetaFile
 
 		double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
-		MoveTo(dX1, dY1);
+		MoveToD(dX1, dY1);
 		ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}

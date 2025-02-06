@@ -196,7 +196,7 @@ namespace MetaFile
 		if (InterpretatorType::Svg == oInterpretatorType)
 		{
 			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
-			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::OptimizeSpeed);
 			m_pInterpretator = pWmfInterpretatorSvg;
 		}
 	}

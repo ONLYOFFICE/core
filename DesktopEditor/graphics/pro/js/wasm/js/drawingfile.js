@@ -747,7 +747,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 	else if (rec["Type"] == 2)
 	{
 		// Background color - C->IC
-		if (rec["C"])
+		if (!isRead && rec["C"])
 		{
 			rec["IC"] = rec["C"];
 			delete rec["C"];
@@ -785,9 +785,18 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		if (flags & (1 << 21))
 		{
 			let n = reader.readInt();
-			rec["C"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["C"].push(readDouble2Func.call(reader));
+			if (isRead)
+			{
+				rec["IC"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["IC"].push(readDouble2Func.call(reader));
+			}
+			else
+			{
+				rec["C"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["C"].push(readDouble2Func.call(reader));
+			}
 		}
 	}
 	// Caret

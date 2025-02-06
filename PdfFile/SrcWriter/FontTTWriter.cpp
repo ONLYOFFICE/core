@@ -1360,7 +1360,9 @@ namespace PdfWriter
 			return;
 		}
 
+		// ------
 		// Header
+		// ------
 
 		pOutputStream->WriteUChar(pCFFData[0]); // major version - 1
 		pOutputStream->WriteUChar(pCFFData[1]); // minor version - 0
@@ -1368,7 +1370,9 @@ namespace PdfWriter
 		pOutputStream->WriteUChar(pCFFData[3]); // offset size - offsets - размер смещений в INDEX-таблицах - максимальный из размеров под offset-ы 1-4
 		pCFFData += 4;
 
+		// ------
 		// Name Index
+		// ------
 
 		BYTE nSizeOfOffset = GetMostCompressedOffsetSize(m_sName.size() + 1);
 		// Количество имён в таблице
@@ -1391,7 +1395,9 @@ namespace PdfWriter
 		pCFFData += nOffSize;
 		pCFFData += nOffsetEnd - 1;
 
+		// ------
 		// Top DICT Index
+		// ------
 
 		nCount = (pCFFData[0] << 8) | pCFFData[1];
 		pCFFData += 2;
@@ -1424,7 +1430,7 @@ namespace PdfWriter
 		int nPrivateDictStart = 0;
 
 		// Подготовка Top DICT segment
-		CStream* pStream = new CMemoryStream();
+		CStream* pTopDictSegment = new CMemoryStream();
 		unsigned short scROS = 0xC1E;
 		unsigned short scCharset = 15;
 		unsigned short scEncoding = 16;
@@ -1436,12 +1442,12 @@ namespace PdfWriter
 		std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator it = TopDICT.find(scROS);
 		bool bIsCID = it != TopDICT.end();
 		if (bIsCID)
-			WriteTopDICT(it->first, it->second, pStream);
+			WriteTopDICT(it->first, it->second, pTopDictSegment);
 
 		for (it = TopDICT.begin(); it != TopDICT.end(); ++it)
 		{
 			if (it->first != scROS && it->first != scCharset && it->first != scEncoding && it->first != scCharstrings && it->first != scPrivate && it->first != scFDArray && it->first != scFDSelect)
-				WriteTopDICT(it->first, it->second, pStream);
+				WriteTopDICT(it->first, it->second, pTopDictSegment);
 		}
 
 		int nOS2Index = SeekTable("OS/2");
@@ -1454,54 +1460,87 @@ namespace PdfWriter
 			unsigned short usType = (pOS2Data[0] << 8) | pOS2Data[1];
 			pOS2Data += 2;
 			sOptionalEmbeddedPostscript = "/FSType " + std::to_string(usType) + " def";
-			WriteIntegerOperand(nStringsCount + 391, pStream); // TODO
-			WriteDictOperator(scEmbeddedPostscript, pStream);
+			WriteIntegerOperand(nStringsCount + 391, pTopDictSegment); // TODO
+			WriteDictOperator(scEmbeddedPostscript, pTopDictSegment);
 		}
 
 		// Placeholders
-		int nCharsetPlaceHolderPos = pStream->Tell();
-		WritePad5Bytes(pStream);
-		WriteDictOperator(scCharset, pStream);
-		int nCharstringsPlaceHolderPos = pStream->Tell();
-		WritePad5Bytes(pStream);
-		WriteDictOperator(scCharstrings, pStream);
+		int nCharsetPlaceHolderPos = pTopDictSegment->Tell();
+		WritePad5Bytes(pTopDictSegment);
+		WriteDictOperator(scCharset, pTopDictSegment);
+		int nCharstringsPlaceHolderPos = pTopDictSegment->Tell();
+		WritePad5Bytes(pTopDictSegment);
+		WriteDictOperator(scCharstrings, pTopDictSegment);
 		int nPrivatePlaceHolderPos = 0;
 		if (nPrivateDictStart != 0) // TODO
 		{
-			nPrivatePlaceHolderPos = pStream->Tell();
-			WritePad5Bytes(pStream);
-			WritePad5Bytes(pStream);
-			WriteDictOperator(scPrivate, pStream);
+			nPrivatePlaceHolderPos = pTopDictSegment->Tell();
+			WritePad5Bytes(pTopDictSegment);
+			WritePad5Bytes(pTopDictSegment);
+			WriteDictOperator(scPrivate, pTopDictSegment);
 		}
 		int nEncodingPlaceHolderPos = 0;
 		int nFDArrayPlaceHolderPos  = 0;
 		int nFDSelectPlaceHolderPos = 0;
 		if (bIsCID)
 		{
-			nFDArrayPlaceHolderPos = pStream->Tell();
-			WritePad5Bytes(pStream);
-			WriteDictOperator(scFDArray, pStream);
-			nFDSelectPlaceHolderPos = pStream->Tell();
-			WritePad5Bytes(pStream);
-			WriteDictOperator(scFDSelect, pStream);
+			nFDArrayPlaceHolderPos = pTopDictSegment->Tell();
+			WritePad5Bytes(pTopDictSegment);
+			WriteDictOperator(scFDArray, pTopDictSegment);
+			nFDSelectPlaceHolderPos = pTopDictSegment->Tell();
+			WritePad5Bytes(pTopDictSegment);
+			WriteDictOperator(scFDSelect, pTopDictSegment);
 		}
 		else
 		{
-			nEncodingPlaceHolderPos = pStream->Tell();
-			WritePad5Bytes(pStream);
-			WriteDictOperator(scEncoding, pStream);
+			nEncodingPlaceHolderPos = pTopDictSegment->Tell();
+			WritePad5Bytes(pTopDictSegment);
+			WriteDictOperator(scEncoding, pTopDictSegment);
 		}
 
-		nSizeOfOffset = GetMostCompressedOffsetSize(pStream->Size() + 1); // (Top DICT segment size + 1);
+		nSizeOfOffset = GetMostCompressedOffsetSize(pTopDictSegment->Size() + 1);
 		// Количество Top DICT в таблице
 		pOutputStream->WriteUChar(0); // count (MSB)
 		pOutputStream->WriteUChar(1); // count (LSB)
 		pOutputStream->WriteUChar(nSizeOfOffset); // offset size
 		// Массив смещений начала каждого Top DICT + конец данных
 		WriteOffset(1, nSizeOfOffset, pOutputStream);; // offset to first Top DICT
-		WriteOffset(pStream->Size() + 1, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
-		pOutputStream->WriteStream(pStream, 0, NULL);
-		RELEASEOBJECT(pStream);
+		WriteOffset(pTopDictSegment->Size() + 1, nSizeOfOffset, pOutputStream); // offset to end of Top DICT
+		int nTopDictOffset = pOutputStream->Tell();
+		pOutputStream->WriteStream(pTopDictSegment, 0, NULL);
+		RELEASEOBJECT(pTopDictSegment);
+
+		// Смещения Top DICT placeholders в pOutputStream
+		nCharsetPlaceHolderPos     += nTopDictOffset;
+		nEncodingPlaceHolderPos    += nTopDictOffset;
+		nCharstringsPlaceHolderPos += nTopDictOffset;
+		nPrivatePlaceHolderPos     += nTopDictOffset;
+		nFDArrayPlaceHolderPos     += nTopDictOffset;
+		nFDSelectPlaceHolderPos    += nTopDictOffset;
+
+		// ------
+		// String Index
+		// ------
+
+		nStringsCount = nCount = (pCFFData[0] << 8) | pCFFData[1];
+		pCFFData += 2;
+		nOffSize = *pCFFData++;
+		if (sOptionalEmbeddedPostscript.empty()) // Копирование
+		{
+			pCFFData += nCount * nOffSize;
+			nOffsetEnd = 0;
+			for (int i = 0; i < nOffSize; ++i)
+				nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+			pCFFData += nOffSize;
+			pOutputStream->Write(pCFFData, nOffsetEnd - 1);
+			pCFFData += nOffsetEnd - 1;
+		}
+		else
+		{
+			int nStringsCount1 = nStringsCount + 1;
+			pOutputStream->WriteUChar((nStringsCount1 >> 8) & 0xff); // count (MSB)
+			pOutputStream->WriteUChar(nStringsCount1 & 0xff); // count (LSB)
+		}
 
 		// Записываем данные CFF в поток
 		// pOutputStream->Write(pCFFData, nCFFLength);

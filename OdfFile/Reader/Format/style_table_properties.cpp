@@ -152,6 +152,14 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
         _tblPr << L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" << w_fill << "\"/>";
     }
 
+    if (common_writing_mode_attlist_.style_writing_mode_)
+    {
+        bool rtl = common_writing_mode_attlist_.style_writing_mode_->get_type() == odf_types::writing_mode::RlTb;
+
+        if (rtl)
+            _tblPr << L"<w:bidiVisual/>";
+    }
+
 }
 
 // style:table-properties

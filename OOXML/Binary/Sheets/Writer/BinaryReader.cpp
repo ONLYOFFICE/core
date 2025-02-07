@@ -4074,6 +4074,13 @@ int BinaryWorksheetsTableReader::Read()
 	READ_TABLE_DEF(res, this->ReadWorksheetsTableContent, this);
 	return res;
 }
+int BinaryWorksheetsTableReader::Read2xlsb(OOX::Spreadsheet::CXlsb &xlsb)
+{
+    m_pXlsb = &xlsb;
+    int res = c_oSerConstants::ReadOk;
+    READ_TABLE_DEF(res, this->ReadWorksheetsTableContent, this);
+    return res;
+}
 int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -4090,22 +4097,35 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 
 		boost::unordered_map<BYTE, std::vector<unsigned int>> mapPos;
 		READ1_DEF(length, res, this->ReadWorksheetSeekPositions, &mapPos);
-
-		m_pCurWorksheet->m_bWriteDirectlyToFile = true;
+        if(!m_bWriteToXlsb)
+            m_pCurWorksheet->m_bWriteDirectlyToFile = true;
 		
 		smart_ptr<OOX::File> oCurWorksheetFile = m_pCurWorksheet.smart_dynamic_cast<OOX::File>();
+        //for correct file extension
+        if(m_bWriteToXlsb)
+        {
+            oCurWorksheetFile->m_pMainDocument = m_pXlsb;
+        }
 		m_oWorkbook.AssignOutputFilename(oCurWorksheetFile);
 
 		std::wstring sWsPath = m_sDestinationDir + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + m_pCurWorksheet->DefaultDirectory().GetPath();
 		NSDirectory::CreateDirectories(sWsPath);
 		sWsPath += FILE_SEPARATOR_STR + m_pCurWorksheet->m_sOutputFilename;
+        if(!m_bWriteToXlsb)
+        {
 		NSFile::CStreamWriter oStreamWriter;
 		oStreamWriter.CreateFileW(sWsPath);
 		
 		m_pCurStreamWriter = &oStreamWriter;
 		res = ReadWorksheet(mapPos, oStreamWriter, poResult);
 		oStreamWriter.CloseFile();
-
+        }
+        else
+        {
+            auto streamWriter = m_pXlsb->GetFileWriter(sWsPath);
+            res = ReadWorksheet(mapPos, streamWriter, poResult);
+            m_pXlsb->WriteSreamCache(streamWriter);
+        }
 		if (m_pCurSheet->m_oName.IsInit())
 		{
 			const OOX::RId oRId = m_oWorkbook.Add(oCurWorksheetFile);
@@ -4573,6 +4593,20 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 	m_oBufferedStream.Seek(nOldPos);
 	m_pCurWorksheet->toXMLEnd(oStreamWriter);
 	return res;
+}
+int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, XLS::StreamCacheWriterPtr& oStreamWriter, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    {
+        auto beginSHeet = oStreamWriter->getNextRecord(XLSB::rt_BeginSheet);
+        oStreamWriter->storeNextRecord(beginSHeet);
+    }
+
+    {
+        auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
+        oStreamWriter->storeNextRecord(endSheet);
+    }
+    return res;
 }
 void BinaryWorksheetsTableReader::WriteComments()
 {
@@ -8896,8 +8930,12 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
                 auto sheetreader = BinaryWorksheetsTableReader(oBufferedStream, *oXlsx.m_pWorkbook, oXlsx.m_pSharedStrings, oXlsx.m_arWorksheets, oXlsx.m_mapWorksheets, mapMedia, sOutDir, sMediaDir, oSaveParams, pOfficeDrawingConverter, m_mapPivotCacheDefinitions);
                 OOX::Spreadsheet::CXlsb* xlsb = dynamic_cast<OOX::Spreadsheet::CXlsb*>(&oXlsx);
                 if ((xlsb) && (xlsb->m_bWriteToXlsb))
+                {
                     sheetreader.m_bWriteToXlsb = true;
-                res = sheetreader.Read();
+                    res = sheetreader.Read2xlsb(*xlsb);
+                }
+                else
+                    res = sheetreader.Read();
 			}break;
 			case c_oSerTableTypes::Customs:
 			{

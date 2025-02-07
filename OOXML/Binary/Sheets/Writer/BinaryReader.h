@@ -302,6 +302,7 @@ namespace BinXlsxRW
 		Binary_CommonReader2				m_oBcr2;
 		NSFile::CStreamWriter*		m_pCurStreamWriter;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
+        OOX::Spreadsheet::CXlsb* m_pXlsb;
 
         OOX::Spreadsheet::CWorkbook&					m_oWorkbook;
         OOX::Spreadsheet::CSharedStrings*				m_pSharedStrings;
@@ -330,9 +331,11 @@ namespace BinXlsxRW
             boost::unordered_map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions);
 		int Read();
+        int Read2xlsb(OOX::Spreadsheet::CXlsb &xlsb);
 		int ReadWorksheetsTableContent(BYTE type, long length, void* poResult);
 		int ReadWorksheetSeekPositions(BYTE type, long length, void* poResult);
 		int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, NSFile::CStreamWriter& oStreamWriter, void* poResult);
+        int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, XLS::StreamCacheWriterPtr& oStreamWriter, void* poResult);//2xlsb
 		int ReadPivotTable(BYTE type, long length, void* poResult);
 		int ReadWorksheetProp(BYTE type, long length, void* poResult);
 		int ReadWorksheetCols(BYTE type, long length, void* poResult);

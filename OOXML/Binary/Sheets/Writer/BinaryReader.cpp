@@ -4113,12 +4113,12 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 		sWsPath += FILE_SEPARATOR_STR + m_pCurWorksheet->m_sOutputFilename;
         if(!m_bWriteToXlsb)
         {
-		NSFile::CStreamWriter oStreamWriter;
-		oStreamWriter.CreateFileW(sWsPath);
-		
-		m_pCurStreamWriter = &oStreamWriter;
-		res = ReadWorksheet(mapPos, oStreamWriter, poResult);
-		oStreamWriter.CloseFile();
+            NSFile::CStreamWriter oStreamWriter;
+            oStreamWriter.CreateFileW(sWsPath);
+
+            m_pCurStreamWriter = &oStreamWriter;
+            res = ReadWorksheet(mapPos, oStreamWriter, poResult);
+            oStreamWriter.CloseFile();
         }
         else
         {
@@ -4134,7 +4134,8 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 			
 			m_arWorksheets.push_back(m_pCurWorksheet.GetPointer()); m_pCurWorksheet.AddRef();
 			m_mapWorksheets [m_pCurSheet->m_oName.get()] = m_pCurWorksheet.GetPointer(); //for csv
-			
+            if(!m_oWorkbook.m_oSheets.IsInit())
+                m_oWorkbook.m_oSheets.Init();
 			m_oWorkbook.m_oSheets->m_arrItems.push_back(m_pCurSheet.GetPointer()); m_pCurSheet.AddRef();
 		}
 	}
@@ -4601,7 +4602,12 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
         auto beginSHeet = oStreamWriter->getNextRecord(XLSB::rt_BeginSheet);
         oStreamWriter->storeNextRecord(beginSHeet);
     }
-
+    boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind;
+    LONG nPos;
+    LONG length;
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
+        READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
+    SEEK_TO_POS_END2();
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);
@@ -8761,6 +8767,11 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 					bResultOk = false;
 				}
 
+                OOX::CPath oXlPath = OOX::CPath(sDstPath).GetDirectory() / oXlsb.m_pWorkbook->DefaultDirectory();
+                oXlsb.WriteWorkbook(oXlPath);
+                oXlsb.m_pWorkbook->OOX::File::m_pMainDocument = &oXlsb;
+                oXlsb.m_pStyles->OOX::File::m_pMainDocument = &oXlsb;
+                oXlsb.m_pSharedStrings->OOX::File::m_pMainDocument = &oXlsb;
 				oXlsb.PrepareToWrite();
 				oXlsb.WriteBin(sDstPath, *oSaveParams.pContentTypes);
 				

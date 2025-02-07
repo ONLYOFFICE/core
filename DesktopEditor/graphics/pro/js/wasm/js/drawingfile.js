@@ -591,7 +591,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 	// Text
 	if (rec["Type"] == 0)
 	{
-		// Bachground color - C->IC
+		// Background color - C->IC
 		if (rec["C"])
 		{
 			rec["IC"] = rec["C"];
@@ -919,19 +919,8 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		rec["Icon"] = readStringFunc.call(reader);
 		rec["Rotate"] = readDouble2Func.call(reader);
 		rec["InRect"] = [];
-		if (isRead)
-		{
-			let x1 = readDouble2Func.call(reader);
-			let y1 = readDouble2Func.call(reader);
-			let x2 = readDouble2Func.call(reader);
-			let y2 = readDouble2Func.call(reader);
-			rec["InRect"] = [ x1, y1, x1, y2, x2, y2, y1, x2 ];
-		}
-		else
-		{
-			for (let i = 0; i < 8; ++i)
-				rec["InRect"].push(readDouble2Func.call(reader));
-		}
+		for (let i = 0; i < 8; ++i)
+			rec["InRect"].push(readDouble2Func.call(reader));
 	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)

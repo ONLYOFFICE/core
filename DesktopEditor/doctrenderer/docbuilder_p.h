@@ -63,9 +63,7 @@
 
 #include "../common/ProcessEnv.h"
 
-#ifdef DOCBUILDER_LICENSING
-#include "license_gen/src/common/utils.h"
-#endif
+#include "docbuilder_addon.h"
 
 #ifdef CreateFile
 #undef CreateFile
@@ -998,15 +996,11 @@ namespace NSDoctRenderer
 		{			
 			Init();
 
-#ifdef DOCBUILDER_LICENSING
-			std::wstring licenseFilePath = m_sX2tPath + L"/sdkjs/license.xml";
-			NSLicenseUtils::LicenseData licenseData = NSLicenseUtils::parseLicenseFile(licenseFilePath);
-			if (!NSLicenseUtils::verify(licenseData))
-			{
-				CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"license is invalid!");
-				return 1;
-			}
-#endif
+			CDocBuilderAddon oSaveAddon(m_sX2tPath);
+
+			int nPreSaveError = oSaveAddon.GetX2tPreSaveError();
+			if (0 != nPreSaveError)
+				return nPreSaveError;
 
 			if (-1 == m_nFileType)
 			{
@@ -1099,6 +1093,8 @@ namespace NSDoctRenderer
 			std::string sOptions = NSProcessEnv::Save();
 			if (!sOptions.empty())
 				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
+			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon());
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 

@@ -41,12 +41,13 @@ namespace NSDocxRenderer
 		NSStructures::CEdgeText     m_oEdgeText{};
 		Aggplus::CMatrix            m_oTransform{};
 
-		bool m_bIsDeleteTextClipPage{true};
-		bool m_bIsRecalcFontSize    {true};
-		bool m_bIsGradient          {false};
-		bool m_bUseDefaultFont      {false};
-		bool m_bWriteStyleRaw       {false};
-		bool m_bIsBuildTables       {false};
+		bool m_bIsDeleteTextClipPage   {true};
+		bool m_bIsRecalcFontSize	   {true};
+		bool m_bIsGradient			   {false};
+		bool m_bUseDefaultFont		   {false};
+		bool m_bWriteStyleRaw		   {false};
+		bool m_bIsBuildTables		   {false};
+		bool m_bIsLuminosityShapesFiled{false};
 
 		CPage(NSFonts::IApplicationFonts* pAppFonts, const CManagers& oManagers);
 		~CPage();
@@ -189,6 +190,11 @@ namespace NSDocxRenderer
 		static shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
 		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
 
+		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg);
+		void DrawGradient(shape_ptr_t pShape);
+
+		void FillLuminosityShapes();
+
 		CManagers m_oManagers;
 
 		CVectorGraphics m_oCurrVectorGraphics;
@@ -206,6 +212,9 @@ namespace NSDocxRenderer
 
 		std::vector<item_ptr_t>   m_arOutputObjects;
 		std::vector<std::wstring> m_arCompleteObjectsXml;
+
+		// save the luminosity shapes for later filling
+		std::vector<shape_ptr_t> m_arLuminosityShapes;
 
 		size_t m_nShapeOrder = 0;
 	};

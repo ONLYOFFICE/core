@@ -405,9 +405,22 @@ namespace NSStructures
 		{
 			discrete_step = 1.0f / n;
 		}
+		bool checkLuminosity()
+		{
+			if (shading.patch_colors.empty())
+				return false;
+
+			for (const auto& ar : shading.patch_colors)
+				for (const auto& c : ar)
+					if (c.r != c.g || c.g != c.b)
+						return false;
+
+			return true;
+		}
 		void setFillColor(const agg::rgba8& color)
 		{
 			shading.fill_color = color;
+			luminocity = true;
 		}
 		void transform(const Aggplus::CMatrix& matrix)
 		{

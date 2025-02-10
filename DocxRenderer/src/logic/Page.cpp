@@ -32,7 +32,7 @@ namespace NSDocxRenderer
 		}
 		else if (lType == c_nClipType)
 		{
-			// closing clip path if non-closed
+			//closing clip path if non-closed
 			if (!m_oCurrVectorGraphics.IsEmpty() && m_oCurrVectorGraphics.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
 				m_oCurrVectorGraphics.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
 
@@ -66,6 +66,7 @@ namespace NSDocxRenderer
 		m_oCurrVectorGraphics.Clear();
 		m_oClipVectorGraphics.Clear();
 		m_arCompleteObjectsXml.clear();
+		m_arLuminosityShapes.clear();
 	}
 
 	CPage::~CPage()
@@ -227,83 +228,29 @@ namespace NSDocxRenderer
 		}
 		shape->SetVector(std::move(m_oCurrVectorGraphics));
 
+		bool skip_shape = false;
 		auto info = pInfo;
 		if (!info && m_bIsGradient)
 		{
-			// image with gradient must be closed
-			if (!shape->m_oVector.IsEmpty() && shape->m_oVector.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
-				shape->m_oVector.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
-
-			long width_pix = static_cast<long>(shape->m_dWidth * c_dMMToPix);
-			long height_pix = static_cast<long>(shape->m_dHeight * c_dMMToPix);
-
-			if (width_pix == 0) width_pix = 1;
-			if (height_pix == 0) height_pix = 1;
-
-			const long step = 4;
-			const long stride = -step * width_pix;
-
-			std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
-			size_t data_size = width_pix * height_pix * step;
-			BYTE* data = new BYTE[data_size];
-
-			// white and alpha is min (full transparent)
-			for (size_t i = 0; i < width_pix * height_pix; ++i)
-				reinterpret_cast<unsigned int*>(data)[i] = 0x00ffffff;
-
-			frame->put_Data(data);
-			frame->put_Height(height_pix);
-			frame->put_Width(width_pix);
-			frame->put_Stride(stride);
-
-			auto shifted_vector = shape->m_oVector;
-			Aggplus::CMatrix transform_matrix;
-			transform_matrix.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop());
-			shifted_vector.Transform(transform_matrix);
-
-			NSStructures::CBrush shifted_brush = m_oBrush;
-			shifted_brush.Bounds.left = shifted_vector.GetLeft();
-			shifted_brush.Bounds.right = shifted_vector.GetRight();
-			shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
-			shifted_brush.Bounds.top = shifted_vector.GetTop();
-			shifted_brush.m_oGradientInfo.transform(transform_matrix);
-
-			NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
-			g_renderer->CreateFromBgraFrame(frame.get());
-			g_renderer->SetSwapRGB(false);
-			g_renderer->put_Width(shape->m_dWidth);
-			g_renderer->put_Height(shape->m_dHeight);
-			g_renderer->RestoreBrush(shifted_brush);
-			g_renderer->RestorePen(m_oPen);
-			g_renderer->BeginCommand(c_nPathType);
-			shifted_vector.DrawOnRenderer(g_renderer);
-			g_renderer->DrawPath(c_nWindingFillMode);
-			g_renderer->EndCommand(c_nPathType);
-
-			Aggplus::CImage img;
-			img.Create(data, width_pix, height_pix, stride, true);
-			info = m_oManagers.pImageManager->WriteImage(&img, shape->m_dTop, shape->m_dBaselinePos, shape->m_dWidth, shape->m_dHeight);
-			rotation = 0;
-			image_vector = shape->m_oVector;
+			if (m_oBrush.m_oGradientInfo.checkLuminosity())
+				m_arLuminosityShapes.push_back(shape);
+			else if (!m_arShapes.empty() && !m_bIsLuminosityShapesFiled)
+				FillLuminosityShapes();
+			else if (m_oBrush.m_oGradientInfo.shading.shading_type != NSStructures::ShadingInfo::TensorCurveInterpolation
+					 || !m_bIsLuminosityShapesFiled)
+				DrawGradient(shape);
+			else
+				skip_shape = true;
 
 			m_bIsGradient = false;
-			RELEASEINTERFACE(g_renderer)
 		}
 		shape->m_dRotation = rotation;
 
 		if (info)
-		{
-			shape->m_pImageInfo = info;
-			shape->m_eType = CShape::eShapeType::stVectorTexture;
-			image_vector.RotateAt(-shape->m_dRotation, shape->m_oVector.GetCenter());
-
-			shape->m_dImageBot = image_vector.GetBottom();
-			shape->m_dImageTop = image_vector.GetTop();
-			shape->m_dImageLeft = image_vector.GetLeft();
-			shape->m_dImageRight = image_vector.GetRight();
-		}
+			DrawImage(shape, info);
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
+
 
 		if (!shape->IsOoxmlValid())
 			return;
@@ -314,8 +261,11 @@ namespace NSDocxRenderer
 			shape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
 
-		shape->m_nOrder = ++m_nShapeOrder;
-		m_arShapes.push_back(shape);
+		if (!skip_shape)
+		{
+			shape->m_nOrder = ++m_nShapeOrder;
+			m_arShapes.push_back(shape);
+		}
 	}
 
 	void CPage::AddText(
@@ -2154,5 +2104,94 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\"/></w:sectPr><w:spacing w:line=\"1\" w:lineRule=\"exact\"/></w:pPr></w:p>");
 		else
 			oWriter.WriteString(L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\"/></w:sectPr>");
+	}
+
+	void CPage::DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImgInfo)
+	{
+		pShape->m_pImageInfo = oImgInfo;
+		pShape->m_eType = CShape::eShapeType::stVectorTexture;
+		auto image_vector = pShape->m_oVector;
+		image_vector.RotateAt(-pShape->m_dRotation, pShape->m_oVector.GetCenter());
+
+		pShape->m_dImageBot = image_vector.GetBottom();
+		pShape->m_dImageTop = image_vector.GetTop();
+		pShape->m_dImageLeft = image_vector.GetLeft();
+		pShape->m_dImageRight = image_vector.GetRight();
+	}
+
+	void CPage::DrawGradient(shape_ptr_t pShape)
+	{
+		// image with gradient must be closed
+		if (!pShape->m_oVector.IsEmpty() && pShape->m_oVector.GetData().back().type != CVectorGraphics::ePathCommandType::pctClose)
+			pShape->m_oVector.Add({CVectorGraphics::ePathCommandType::pctClose, {}});
+
+		long width_pix = static_cast<long>(pShape->m_dWidth * c_dMMToPix);
+		long height_pix = static_cast<long>(pShape->m_dHeight * c_dMMToPix);
+
+		if (width_pix == 0) width_pix = 1;
+		if (height_pix == 0) height_pix = 1;
+
+		const long step = 4;
+		const long stride = -step * width_pix;
+
+		std::unique_ptr<CBgraFrame> frame(new CBgraFrame());
+		size_t data_size = width_pix * height_pix * step;
+		BYTE* data = new BYTE[data_size];
+
+		// white and alpha is min (full transparent)
+		for (size_t i = 0; i < width_pix * height_pix; ++i)
+			reinterpret_cast<unsigned int*>(data)[i] = 0x00ffffff;
+
+		frame->put_Data(data);
+		frame->put_Height(height_pix);
+		frame->put_Width(width_pix);
+		frame->put_Stride(stride);
+
+		auto shifted_vector = pShape->m_oVector;
+		Aggplus::CMatrix transform_matrix;
+		transform_matrix.Translate(-shifted_vector.GetLeft(), -shifted_vector.GetTop());
+		shifted_vector.Transform(transform_matrix);
+
+		NSStructures::CBrush shifted_brush = pShape->m_oBrush;
+		shifted_brush.Bounds.left = shifted_vector.GetLeft();
+		shifted_brush.Bounds.right = shifted_vector.GetRight();
+		shifted_brush.Bounds.bottom = shifted_vector.GetBottom();
+		shifted_brush.Bounds.top = shifted_vector.GetTop();
+		shifted_brush.m_oGradientInfo.transform(transform_matrix);
+
+		NSGraphics::IGraphicsRenderer* g_renderer = NSGraphics::Create();
+		g_renderer->CreateFromBgraFrame(frame.get());
+		g_renderer->SetSwapRGB(false);
+		g_renderer->put_Width(pShape->m_dWidth);
+		g_renderer->put_Height(pShape->m_dHeight);
+		g_renderer->RestoreBrush(shifted_brush);
+		g_renderer->RestorePen(m_oPen);
+		g_renderer->BeginCommand(c_nPathType);
+		shifted_vector.DrawOnRenderer(g_renderer);
+		g_renderer->DrawPath(c_nWindingFillMode);
+		g_renderer->EndCommand(c_nPathType);
+
+		Aggplus::CImage img;
+		img.Create(data, width_pix, height_pix, stride, true);
+		auto info = m_oManagers.pImageManager->WriteImage(&img, pShape->m_dTop, pShape->m_dBaselinePos, pShape->m_dWidth, pShape->m_dHeight);
+		pShape->m_dRotation = 0;
+
+		DrawImage(pShape, info);
+
+		RELEASEINTERFACE(g_renderer)
+	}
+
+	void CPage::FillLuminosityShapes()
+	{
+		if (m_oBrush.m_oGradientInfo.shading.patch_colors.empty())
+			return;
+
+		for (auto s : m_arLuminosityShapes)
+		{
+			s->m_oBrush.m_oGradientInfo.setFillColor(m_oBrush.m_oGradientInfo.shading.patch_colors[0][0]);
+			DrawGradient(s);
+		}
+
+		m_bIsLuminosityShapesFiled = true;
 	}
 }

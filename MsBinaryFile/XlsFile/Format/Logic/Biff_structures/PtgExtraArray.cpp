@@ -138,7 +138,7 @@ void PtgExtraArray::save(CFRecord& record)
 const std::wstring PtgExtraArray::toString() const
 {
 	std::wstring ret_val;
-    unsigned char col_cnt = cols;
+    unsigned char col_cnt = cols + 1;
 
 	if (array_.empty()) return L"";
 
@@ -152,7 +152,7 @@ const std::wstring PtgExtraArray::toString() const
 		else
 		{
 			ret_val += L';';
-            col_cnt = cols;
+            col_cnt = cols + 1;
 		}
 	}
 	ret_val += array_.back()->toString();

@@ -215,6 +215,7 @@ namespace NSDocxRenderer
 
 		// save the luminosity shapes for later filling
 		std::vector<shape_ptr_t> m_arLuminosityShapes;
+		std::vector<shape_ptr_t> m_arOneColorGradientShape;
 
 		size_t m_nShapeOrder = 0;
 	};

@@ -44,6 +44,9 @@ namespace NSDocxRenderer
 			else
 				m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
 		}
+
+		if (!m_arLuminosityShapes.empty() && !m_arOneColorGradientShape.empty())
+			FillLuminosityShapes();
 	}
 
 	void CPage::Clear()
@@ -234,13 +237,13 @@ namespace NSDocxRenderer
 		{
 			if (m_oBrush.m_oGradientInfo.checkLuminosity())
 				m_arLuminosityShapes.push_back(shape);
-			else if (!m_arShapes.empty() && !m_bIsLuminosityShapesFiled)
-				FillLuminosityShapes();
-			else if (m_oBrush.m_oGradientInfo.shading.shading_type != NSStructures::ShadingInfo::TensorCurveInterpolation
-					 || !m_bIsLuminosityShapesFiled)
-				DrawGradient(shape);
-			else
+			else if (m_oBrush.m_oGradientInfo.isOneColor())
+			{
+				m_arOneColorGradientShape.push_back(shape);
 				skip_shape = true;
+			}
+			else
+				DrawGradient(shape);
 
 			m_bIsGradient = false;
 		}
@@ -260,7 +263,6 @@ namespace NSDocxRenderer
 			fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
 			shape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
-
 		if (!skip_shape)
 		{
 			shape->m_nOrder = ++m_nShapeOrder;
@@ -2183,15 +2185,21 @@ namespace NSDocxRenderer
 
 	void CPage::FillLuminosityShapes()
 	{
-		if (m_oBrush.m_oGradientInfo.shading.patch_colors.empty())
-			return;
-
-		for (auto s : m_arLuminosityShapes)
+		for (auto itt = m_arOneColorGradientShape.begin(); itt != m_arOneColorGradientShape.end();)
 		{
-			s->m_oBrush.m_oGradientInfo.setFillColor(m_oBrush.m_oGradientInfo.shading.patch_colors[0][0]);
-			DrawGradient(s);
+			for (auto it = m_arLuminosityShapes.begin(); it != m_arLuminosityShapes.end();)
+			{
+				if ((*it)->m_oVector.GetRight() > (*itt)->m_oVector.GetLeft() && (*it)->m_oVector.GetBottom() > (*itt)->m_oVector.GetTop() &&
+					(*it)->m_oVector.GetLeft() < (*itt)->m_oVector.GetRight() && (*it)->m_oVector.GetTop() < (*itt)->m_oVector.GetBottom())
+				{
+					(*it)->m_oBrush.m_oGradientInfo.setFillColor((*itt)->m_oBrush.m_oGradientInfo.getFillColor());
+					DrawGradient((*it));
+					it = m_arLuminosityShapes.erase(it);
+				}
+				else
+					++it;
+			}
+			itt = m_arOneColorGradientShape.erase(itt);
 		}
-
-		m_bIsLuminosityShapesFiled = true;
 	}
 }

@@ -405,7 +405,7 @@ namespace NSStructures
 		{
 			discrete_step = 1.0f / n;
 		}
-		bool checkLuminosity()
+		bool checkLuminosity() const
 		{
 			if (shading.patch_colors.empty())
 				return false;
@@ -416,6 +416,40 @@ namespace NSStructures
 						return false;
 
 			return true;
+		}
+		bool colorEqual(const agg::rgba8& c1, const agg::rgba8& c2) const
+		{
+			return	c1.r == c2.r &&
+					c1.g == c2.g &&
+					c1.b == c2.b &&
+					c1.a == c2.a;
+		}
+		bool isOneColor() const
+		{
+			switch (shading.shading_type)
+			{
+			case ShadingInfo::FunctionOnly:
+			case ShadingInfo::Parametric:
+				return false;
+			case ShadingInfo::TriangleInterpolation:
+				return	colorEqual(shading.triangle_colors[0], shading.triangle_colors[1]) &&
+						colorEqual(shading.triangle_colors[1], shading.triangle_colors[2]);
+			case ShadingInfo::CurveInterpolation:
+			case ShadingInfo::TensorCurveInterpolation:
+				return	colorEqual(shading.patch_colors[0][0], shading.patch_colors[0][1]) &&
+						colorEqual(shading.patch_colors[0][1], shading.patch_colors[1][0]) &&
+						colorEqual(shading.patch_colors[1][0], shading.patch_colors[1][1]);
+			default:
+				return false;
+			}
+		}
+		agg::rgba8 getFillColor() const
+		{
+			if (!shading.triangle_colors.empty())
+				return shading.triangle_colors[0];
+			if (!shading.patch_colors.empty())
+				return shading.patch_colors[0][0];
+			return agg::rgba8(0, 0, 0);
 		}
 		void setFillColor(const agg::rgba8& color)
 		{

@@ -1894,7 +1894,7 @@ namespace OOX
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+            setRowCol(nRow, xlsx->m_nLastReadCol);
 		}
 		void CCell::AfterRead()
 		{
@@ -2708,7 +2708,7 @@ namespace OOX
             }
             else
             {
-                CellReference.row = m_oRow.get() - 1;
+                CellReference.row = m_oRow.get();
                 CellReference.column = m_oCol.get();
             }
             if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
@@ -3507,7 +3507,7 @@ namespace OOX
 				if (parseRefA(m_oRef->c_str(), nRow, nCol))
 				{
 					bRes = true;
-					//nRow--;
+                    nRow--;
 					nCol--;
 				}
 			}

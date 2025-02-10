@@ -230,14 +230,12 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			// Attributes
-			nullable<std::wstring					> m_sAuthor;
-			nullable<SimpleTypes::CDateTime			> m_oDate;
-			nullable<SimpleTypes::CDecimalNumber	> m_oId;
-			nullable<std::wstring					> m_sUserId;
+			nullable<std::wstring> m_sAuthor;
+			nullable<SimpleTypes::CDateTime> m_oDate;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
+			nullable<std::wstring> m_sUserId;
 
-			// Childs
-			nullable<CTblPrEx						> m_pTblPrEx;
+			nullable<CTblPrEx> m_pTblPrEx;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -275,7 +273,7 @@ namespace OOX
 				fromXML( (XmlUtils::CXmlLiteReader&)oReader );
 				return *this;
 			}
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
+			virtual void fromXML(XmlUtils::CXmlNode& oNode)
 			{
 				XmlUtils::CXmlNode oChild;
 
@@ -293,7 +291,7 @@ namespace OOX
 
 				WritingElement_ReadNode( oNode, oChild, L"w:tblW",           m_oTblW );
 			}
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{
 				if ( oReader.IsEmptyNode() )
 					return;
@@ -315,23 +313,23 @@ namespace OOX
 					else if ( L"w:tblW"				== sName ) m_oTblW = oReader;
 				}
 			}
-			virtual std::wstring      toXML() const
+			virtual std::wstring toXML() const
 			{
 				std::wstring sResult = L"<w:tblPrEx>";
 
-				WritingElement_WriteNode_1( L"<w:jc ",             m_oJc );
-				WritingElement_WriteNode_1( L"<w:shd ",            m_oShd );
+				WritingElement_WriteNode_1( L"<w:jc ", m_oJc );
+				WritingElement_WriteNode_1( L"<w:shd ", m_oShd );
 				WritingElement_WriteNode_2( m_oTblBorders );
 				WritingElement_WriteNode_2( m_oTblCellMar );
 				WritingElement_WriteNode_1( L"<w:tblCellSpacing ", m_oTblCellSpacing );
-				WritingElement_WriteNode_1( L"<w:tblInd ",         m_oTblInd );
-				WritingElement_WriteNode_1( L"<w:tblLayout ",      m_oTblLayout );
-				WritingElement_WriteNode_1( L"<w:tblLook ",        m_oTblLook );
+				WritingElement_WriteNode_1( L"<w:tblInd ", m_oTblInd );
+				WritingElement_WriteNode_1( L"<w:tblLayout ", m_oTblLayout );
+				WritingElement_WriteNode_1( L"<w:tblLook ", m_oTblLook );
 
 				if ( !m_bTblPrExChange && m_oTblPrExChange.IsInit() )
 					sResult += m_oTblPrExChange->toXML();
 
-				WritingElement_WriteNode_1( L"<w:tblW ",           m_oTblW );
+				WritingElement_WriteNode_1( L"<w:tblW ", m_oTblW );
 
 				sResult += L"</w:tblPrEx>";
 
@@ -342,20 +340,18 @@ namespace OOX
 				return et_w_tblPrEx;
 			}
 
+			bool m_bTblPrExChange;
 
-			bool                                           m_bTblPrExChange;
-
-			// Childs
-			nullable<ComplexTypes::Word::CJcTable       > m_oJc;
-			nullable<ComplexTypes::Word::CShading       > m_oShd;
-			nullable<OOX::Logic::CTblBorders            > m_oTblBorders;
-			nullable<OOX::Logic::CTblCellMar            > m_oTblCellMar;
-			nullable<ComplexTypes::Word::CTblWidth      > m_oTblCellSpacing;
-			nullable<ComplexTypes::Word::CTblWidth      > m_oTblInd;
-			nullable<ComplexTypes::Word::CTblLayoutType > m_oTblLayout;
-			nullable<ComplexTypes::Word::CTblLook       > m_oTblLook;
-			nullable<OOX::Logic::CTblPrExChange         > m_oTblPrExChange;
-			nullable<ComplexTypes::Word::CTblWidth      > m_oTblW;
+			nullable<ComplexTypes::Word::CJcTable> m_oJc;
+			nullable<ComplexTypes::Word::CShading> m_oShd;
+			nullable<OOX::Logic::CTblBorders> m_oTblBorders;
+			nullable<OOX::Logic::CTblCellMar> m_oTblCellMar;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblCellSpacing;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblInd;
+			nullable<ComplexTypes::Word::CTblLayoutType> m_oTblLayout;
+			nullable<ComplexTypes::Word::CTblLook> m_oTblLook;
+			nullable<OOX::Logic::CTblPrExChange> m_oTblPrExChange;
+			nullable<ComplexTypes::Word::CTblWidth> m_oTblW;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -379,10 +375,10 @@ namespace OOX
 
 			void CreateElements(XmlUtils::CXmlLiteReader &oReader, int Depth);
 			
-			int										m_nCountRow;
+			int m_nCountRow;
 
-			nullable<OOX::Logic::CTblGrid>			m_oTblGrid;			
-			OOX::Logic::CTableProperty*				m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			nullable<OOX::Logic::CTblGrid> m_oTblGrid;			
+			OOX::Logic::CTableProperty* m_oTableProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -409,15 +405,14 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			int										m_nCountCell;
+			int m_nCountCell;
 
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidDel;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidR;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidRPr;
 			nullable<SimpleTypes::CLongHexNumber> m_oRsidTr;
 
-			// Childs
-			OOX::Logic::CTableRowProperties*	m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			OOX::Logic::CTableRowProperties* m_pTableRowProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 		//--------------------------------------------------------------------------------
@@ -444,9 +439,9 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			int									m_nNumCol; // Номер колонки
-			nullable<std::wstring >				m_sId;
-			OOX::Logic::CTableCellProperties*	m_pTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
+			int m_nNumCol; // Номер колонки
+			nullable<std::wstring> m_sId;
+			OOX::Logic::CTableCellProperties* m_pTableCellProperties; //todooo - выкинуть из m_arrItems, переделать на nullable<>
 		};
 
 	} // namespace Logic

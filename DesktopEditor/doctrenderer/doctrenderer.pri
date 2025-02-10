@@ -123,7 +123,7 @@ drawingfile_support {
 		$$PWD_CUR/embed/DrawingFileEmbed.h
 
 	SOURCES += \
-		$$PWD_CUR/../../HtmlRenderer/src/HTMLRendererText.cpp \
+		$$PWD_CUR/../graphics/pro/js/wasm/src/HTMLRendererText.cpp \
 		$$PWD_CUR/embed/DrawingFileEmbed.cpp
 
 	ADD_FILES_FOR_EMBEDDED_CLASS_HEADER($$PWD_CUR/embed/DrawingFileEmbed.h)

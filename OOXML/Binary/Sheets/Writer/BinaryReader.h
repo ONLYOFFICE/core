@@ -301,6 +301,7 @@ namespace BinXlsxRW
 	{
 		Binary_CommonReader2				m_oBcr2;
 		NSFile::CStreamWriter*		m_pCurStreamWriter;
+        XLS::StreamCacheWriterPtr		m_pCurStreamWriterBin;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
         OOX::Spreadsheet::CXlsb* m_pXlsb;
 

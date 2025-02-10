@@ -310,6 +310,7 @@ namespace OOX
             void fromBin(XLS::StreamCacheReaderPtr& reader);
             XLS::BaseObjectPtr toBin(sharedFormula &sharedFormulas);
             void toBin(XLS::StreamCacheWriterPtr& writer);
+            void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
 
 			virtual EElementType getType () const;
 
@@ -317,7 +318,6 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::CFRecordPtr& oReader);
 			void ReadAttributes(XLS::BaseObjectPtr& obj);
-            void WriteAttributes(XLS::StreamCacheWriterPtr& writer);
 			void CheckIndex();
             bool compressCell(CCell* pCell);
 

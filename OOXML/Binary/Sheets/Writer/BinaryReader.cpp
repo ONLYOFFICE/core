@@ -4097,8 +4097,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 
 		boost::unordered_map<BYTE, std::vector<unsigned int>> mapPos;
 		READ1_DEF(length, res, this->ReadWorksheetSeekPositions, &mapPos);
-        if(!m_bWriteToXlsb)
-            m_pCurWorksheet->m_bWriteDirectlyToFile = true;
+        m_pCurWorksheet->m_bWriteDirectlyToFile = true;
 		
 		smart_ptr<OOX::File> oCurWorksheetFile = m_pCurWorksheet.smart_dynamic_cast<OOX::File>();
         //for correct file extension
@@ -4123,6 +4122,7 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
         else
         {
             auto streamWriter = m_pXlsb->GetFileWriter(sWsPath);
+            m_pCurStreamWriterBin = streamWriter;
             res = ReadWorksheet(mapPos, streamWriter, poResult);
             m_pXlsb->WriteSreamCache(streamWriter);
         }
@@ -4206,7 +4206,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
 	SEEK_TO_POS_END(oCols);
 //-------------------------------------------------------------------------------------------------------------
-	SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
 		if (NULL == m_oSaveParams.pCSVWriter)
 		{
 			OOX::Spreadsheet::CSheetData oSheetData;
@@ -4608,6 +4608,19 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
         READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
     SEEK_TO_POS_END2();
+
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
+            {
+                auto begin = m_pCurStreamWriterBin->getNextRecord(XLSB::rt_BeginSheetData);
+                m_pCurStreamWriterBin->storeNextRecord(begin);
+            }
+            READ1_DEF(length, res, this->ReadSheetData, NULL);
+            {
+                auto end = m_pCurStreamWriterBin->getNextRecord(XLSB::rt_EndSheetData);
+                m_pCurStreamWriterBin->storeNextRecord(end);
+            }
+    SEEK_TO_POS_END2()
+
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);
@@ -6300,12 +6313,17 @@ int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 	}
 	else if (c_oSerRowTypes::Cells == type)
 	{
-		if (NULL == m_oSaveParams.pCSVWriter)
+        if (NULL == m_oSaveParams.pCSVWriter && NULL == m_pCurStreamWriterBin)
 		{
 			pRow->toXMLStart(*m_pCurStreamWriter);
 			READ1_DEF(length, res, this->ReadCells, pRow);
 			pRow->toXMLEnd(*m_pCurStreamWriter);
 		}
+        else if(m_pCurStreamWriterBin != NULL)
+        {
+            pRow->WriteAttributes(m_pCurStreamWriterBin);
+            READ1_DEF(length, res, this->ReadCells, pRow);
+        }
 		else
 		{
 			m_oSaveParams.pCSVWriter->WriteRowStart(pRow);
@@ -6379,10 +6397,14 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
                 oCell.m_oValue->m_sText = errText;
             }
 		}
-		if (NULL == m_oSaveParams.pCSVWriter)
+        if (NULL == m_oSaveParams.pCSVWriter && m_pCurStreamWriterBin == NULL)
 		{
 			oCell.toXML(*m_pCurStreamWriter);
 		}
+        else if(m_pCurStreamWriterBin != NULL)
+        {
+            oCell.toBin(m_pCurStreamWriterBin);
+        }
 		else
 		{
 			m_oSaveParams.pCSVWriter->WriteCell(&oCell);

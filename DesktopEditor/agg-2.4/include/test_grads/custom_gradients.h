@@ -1002,8 +1002,11 @@ namespace agg
 					{
 						if (m_oGradientInfo.luminocity)
 						{
-							ColorT fillC(m_oGradientInfo.shading.fill_color);
-							fillC.a = c.a;
+							ColorT fillC;
+							fillC.r = m_oGradientInfo.shading.fill_color.r * c.r / 255 + 255 - c.r;
+							fillC.g = m_oGradientInfo.shading.fill_color.g * c.g / 255 + 255 - c.g;
+							fillC.b = m_oGradientInfo.shading.fill_color.b * c.b / 255 + 255 - c.b;
+							fillC.a = 255;
 							precalc[i][j] = fillC;
 						}
 						else

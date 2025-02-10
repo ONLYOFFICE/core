@@ -350,6 +350,21 @@ TEST_F(CPdfFileTest, VerifySign)
 	RELEASEOBJECT(pCertificate);
 }
 
+TEST_F(CPdfFileTest, SplitPdf)
+{
+	GTEST_SKIP();
+}
+
+TEST_F(CPdfFileTest, MergePdf)
+{
+	GTEST_SKIP();
+}
+
+TEST_F(CPdfFileTest, CopyAnotherPdf)
+{
+	GTEST_SKIP();
+}
+
 TEST_F(CPdfFileTest, EditPdf)
 {
 	GTEST_SKIP();

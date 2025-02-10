@@ -167,18 +167,18 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
 	//----------------------------------------------------------------------------------------
-	CBinaryObject::CBinaryObject(const BYTE* pValue, unsigned int unLen)
+	CBinaryObject::CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
 		m_pValue = NULL;
 		m_unLen  = 0;
-		Set(pValue, unLen);
+		Set(pValue, unLen, bCopy);
 	}
 	CBinaryObject::~CBinaryObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CBinaryObject::Set(const BYTE* pValue, unsigned int unLen)
+	void CBinaryObject::Set(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
         unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
 		if (m_pValue)
@@ -192,9 +192,13 @@ namespace PdfWriter
 			return;
 
 		m_unLen  = unLen;
-		m_pValue = new BYTE[unLen];
-
-		MemCpy(m_pValue, pValue, unLen);
+		if (bCopy)
+		{
+			m_pValue = new BYTE[unLen];
+			MemCpy(m_pValue, pValue, unLen);
+		}
+		else
+			m_pValue = pValue;
 	}
 	//----------------------------------------------------------------------------------------
 	// CProxyObject

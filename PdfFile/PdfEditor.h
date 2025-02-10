@@ -45,6 +45,7 @@ public:
 	int  GetError();
 	void Close();
 	bool EditPage(int nPageIndex, bool bSet = true);
+	bool SplitPage(int nPageIndex);
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool EditAnnot(int nPageIndex, int nID);

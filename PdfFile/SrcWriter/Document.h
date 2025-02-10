@@ -92,6 +92,7 @@ namespace PdfWriter
 	class CFieldBase;
 	class CStreamData;
 	class CXObject;
+	class CObjectBase;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -195,6 +196,7 @@ namespace PdfWriter
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
+		void              AddObject(CObjectBase* pObj);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);

@@ -1289,6 +1289,10 @@ namespace PdfWriter
 		m_pCurImage = pImage;
 		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
+	void CDocument::AddObject(CObjectBase* pObj)
+	{
+		m_pXref->Add(pObj);
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];

@@ -51,6 +51,7 @@ public:
 	int  GetError() { return 0; }
 	void Close() {}
 	bool EditPage(int nPageIndex, bool bSet = true) { return false; }
+	bool SplitPage(int nPageIndex) { return false; }
 	bool DeletePage(int nPageIndex) { return false; }
 	bool AddPage(int nPageIndex) { return false; }
 	bool EditAnnot(int nPageIndex, int nID) { return false; }
@@ -165,6 +166,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 	if (!m_pInternal->pEditor)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
+}
+bool CPdfFile::SplitPage(int nPageIndex)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->SplitPage(nPageIndex);
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {

@@ -455,7 +455,7 @@ Object *Lexer::getObj(Object *obj) {
 	  if (++m == 2) {
 	    if (n == tokBufSize) {
 	      if (!s)
-		s = new GString(tokBuf, tokBufSize);
+		s = new GString(tokBuf, tokBufSize, true);
 	      else
 		s->append(tokBuf, tokBufSize);
 	      p = tokBuf;
@@ -469,7 +469,7 @@ Object *Lexer::getObj(Object *obj) {
 	}
       }
       if (!s)
-	s = new GString(tokBuf, n);
+	s = new GString(tokBuf, n, true);
       else
 	s->append(tokBuf, n);
       if (m == 1)

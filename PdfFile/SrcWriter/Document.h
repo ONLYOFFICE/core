@@ -120,7 +120,8 @@ namespace PdfWriter
 
 		void              SetPDFAConformanceMode(bool isPDFA);
 		bool              IsPDFA() const;
-			              
+
+		void              AddPage(CPage* pPage);
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);

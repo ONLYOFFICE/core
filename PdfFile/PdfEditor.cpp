@@ -149,7 +149,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::str
 		break;
 	}
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey, PdfWriter::CDocument* pDoc, XRef* xref, bool bNeedAdd)
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, std::map<int, PdfWriter::CObjectBase*>& mUniqueRef)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -206,9 +206,11 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CObjectBase* 
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
-			DictToCDictObject2(&oTemp, pArray, "", pDoc, xref, false);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef);
+			pArray->Add(pBase);
 			oTemp.free();
 		}
+		pBase = pArray;
 		break;
 	}
 	case objDict:
@@ -218,15 +220,24 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CObjectBase* 
 		{
 			char* chKey = obj->dictGetKey(nIndex);
 			obj->dictGetValNF(nIndex, &oTemp);
-			DictToCDictObject2(&oTemp, pDict, chKey, pDoc, xref, false);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef);
+			pDict->Add(chKey, pBase);
 			oTemp.free();
 		}
+		pBase = pDict;
 		break;
 	}
 	case objRef:
 	{
+		int nObjNum = obj->getRefNum();
+		std::map<int, PdfWriter::CObjectBase*>::iterator it = mUniqueRef.find(nObjNum);
+		if (it != mUniqueRef.end())
+			return it->second;
+
 		obj->fetch(xref, &oTemp);
-		pBase = DictToCDictObject2(&oTemp, pObj, "", pDoc, xref, true);
+		pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef);
+		pDoc->AddObject(pBase);
+		mUniqueRef[nObjNum] = pBase;
 		oTemp.free();
 		break;
 	}
@@ -237,6 +248,35 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CObjectBase* 
 	}
 	case objStream:
 	{
+		Dict* pODict = obj->streamGetDict();
+		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+		int nLength = 0;
+		for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+		{
+			char* chKey = pODict->getKey(nIndex);
+			if (strcmp("Length", chKey) == 0)
+			{
+				pODict->getVal(nIndex, &oTemp);
+				nLength = oTemp.getNum();
+				oTemp.free();
+			}
+			pODict->getValNF(nIndex, &oTemp);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef);
+			pDict->Add(chKey, pBase);
+			oTemp.free();
+		}
+		pBase = pDict;
+
+		PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
+		pDict->SetStream(pStream);
+		Stream* pOStream = obj->getStream()->getBaseStream();
+		pOStream->reset();
+		int nChar = pOStream->getChar();
+		while (nChar != EOF)
+		{
+			pStream->WriteChar(nChar);
+			nChar = pOStream->getChar();
+		}
 		break;
 	}
 	case objCmd:
@@ -244,9 +284,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CObjectBase* 
 	case objEOF:
 		break;
 	}
-	if (bNeedAdd)
-		pDoc->AddObject(pBase);
-	AddToObject(pBase)
+
 	return pBase;
 }
 PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
@@ -1188,21 +1226,18 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	if (!xref || !pCatalog)
 		return false;
-	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
-	if (pPageRef.first == 0)
+	Ref* pPageRef = pCatalog->getPageRef(nPageIndex + 1);
+	if (pPageRef->num == 0)
 		return false;
 
-	HRESULT nRes = m_pWriter->NewPage();
-	if (nRes == S_FALSE)
-		return false;
-	PdfWriter::CPage* pPage = m_pWriter->GetPage();
-	if (!pPage)
-		return false;
+	PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
+	pDoc->AddObject(pPage);
+	pDoc->AddPage(pPage);
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
-	if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
+	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+	if (!pageRefObj.fetch(xref, &pageObj)->isDict())
 	{
 		pageObj.free();
 		pageRefObj.free();
@@ -1210,7 +1245,8 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 	}
 	pageRefObj.free();
 
-	// Воспроизведение словаря страницы из reader для writer
+	// Копирование страницы со всеми ресурсами из reader для writer
+
 	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
@@ -1219,17 +1255,19 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 		{
 			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
 			{
-				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, true, false);
+				Object oTemp2;
+				pageObj.dictGetValNF(nIndex, &oTemp2);
+				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, !oTemp2.isRef(), false);
+				oTemp2.free();
+
 				pPage->Add("Resources", pDict);
 				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
 				{
 					Object oRes;
 					char* chKey2 = oTemp.dictGetKey(nIndex);
-					if (strcmp("Font", chKey2) == 0 || strcmp("ExtGState", chKey2) == 0 || strcmp("XObject", chKey2) == 0 || strcmp("Shading", chKey2) == 0 || strcmp("Pattern", chKey2) == 0)
-						oTemp.dictGetVal(nIndex, &oRes);
-					else
-						oTemp.dictGetValNF(nIndex, &oRes);
-					DictToCDictObject2(&oRes, pDict, chKey2, pDoc, xref, false);
+					oTemp.dictGetValNF(nIndex, &oRes);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, m_mSplitUniqueRef);
+					pDict->Add(chKey2, pBase);
 					oRes.free();
 				}
 
@@ -1242,52 +1280,20 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			}
 		}
-		else if (strcmp("Annots", chKey) == 0)
-		{
-			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
-			{
-				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
-				pPage->Add("Annots", pArray);
-				for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
-				{
-					Object oAnnot;
-					oTemp.arrayGetNF(nIndex, &oAnnot);
-					DictToCDictObject2(&oAnnot, pArray, "", pDoc, xref, false);
-					oAnnot.free();
-				}
-				oTemp.free();
-				continue;
-			}
-			else
-			{
-				oTemp.free();
-				pageObj.dictGetValNF(nIndex, &oTemp);
-			}
-		}
-		else if (strcmp("Contents", chKey) == 0)
-		{
-			if (pageObj.dictGetVal(nIndex, &oTemp)->isArray())
-			{
-				DictToCDictObject2(&oTemp, pPage, chKey, pDoc, xref, false);
-				oTemp.free();
-				continue;
-			}
-			else
-			{
-				oTemp.free();
-				pageObj.dictGetValNF(nIndex, &oTemp);
-			}
-		}
 		else if (strcmp("Parent", chKey) == 0)
 		{
-			pageObj.dictGetValNF(nIndex, &oTemp);
+			oTemp.free();
+			continue;
 		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
-		DictToCDictObject2(&oTemp, pPage, chKey, pDoc, xref, false);
+		PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, m_mSplitUniqueRef);
+		pPage->Add(chKey, pBase);
 		oTemp.free();
 	}
 	pPage->Fix();
+	// TODO pPage->AddContents чтобы можно было дописать изменения, если понадобится
+	m_pWriter->SetNeedAddHelvetica(false); // TODO дописывает шрифт для адекватного редактирования Adobe pdf без текст. Убрать при реализации map шрифтов
 	pageObj.free();
 
 	return true;

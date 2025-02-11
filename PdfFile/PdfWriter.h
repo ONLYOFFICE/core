@@ -219,6 +219,7 @@ public:
 	PdfWriter::CPage*     GetPage();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
+	void SetNeedAddHelvetica(bool bNeedAddHelvetica) { m_bNeedAddHelvetica = bNeedAddHelvetica; }
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
@@ -269,6 +270,7 @@ private:
 	CPath                        m_oPath;
 	CTransform                   m_oTransform;
 	bool                         m_bNeedUpdateTextFont;
+	bool                         m_bNeedAddHelvetica;
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;

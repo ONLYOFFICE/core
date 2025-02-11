@@ -67,6 +67,7 @@ private:
 	std::wstring m_wsSrcFile;
 	std::wstring m_wsPassword;
 	std::map<std::wstring, std::wstring> m_mFonts;
+	std::map<int, PdfWriter::CObjectBase*> m_mSplitUniqueRef; // map уникальных объектов для Split
 
 	CPdfReader* m_pReader;
 	CPdfWriter* m_pWriter;

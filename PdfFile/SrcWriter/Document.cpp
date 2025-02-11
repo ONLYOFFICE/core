@@ -337,6 +337,11 @@ namespace PdfWriter
 		m_pTrailer->Add("Encrypt", m_pEncryptDict);
 		m_bEncrypt = true;
 	}
+	void CDocument::AddPage(CPage* pPage)
+	{
+		m_pPageTree->AddPage(pPage);
+		m_pCurPage = pPage;
+	}
     CPage* CDocument::AddPage()
 	{
 		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);

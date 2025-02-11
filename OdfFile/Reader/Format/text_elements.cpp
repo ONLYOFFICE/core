@@ -270,7 +270,6 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 	if (!span_style_content)
 		return;
 
-	std::wstringstream ss;
 	style_text_properties* text_props = span_style_content->get_style_text_properties();
 
 	if (text_props)
@@ -280,20 +279,10 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 			style_instance* paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, false);
 			if (paragraph_style && paragraph_style->content())
 			{
-				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
+				paragraph_style->content()->get_style_text_properties(true)->content_.fo_color_ = text_props->content_.fo_color_;
 			}
 		}
-
-		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
-		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
-
-		if (font_weight && font_weight->get_type() == odf_types::font_weight::WBold)
-			ss << "<w:b/>";
-		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
-			ss << "<w:i/>";
 	}
-
-	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
 }
 
 void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)

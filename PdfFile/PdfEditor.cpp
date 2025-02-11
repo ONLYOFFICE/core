@@ -550,57 +550,58 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter)
 {
-	wsSrcFile  = _wsSrcFile;
-	wsPassword = _wsPassword;
-	pReader    = _pReader;
-	pWriter    = _pWriter;
+	m_wsSrcFile  = _wsSrcFile;
+	m_wsPassword = _wsPassword;
+	m_pReader    = _pReader;
+	m_pWriter    = _pWriter;
 	m_nEditPage  = -1;
-	nError     = 0;
+	m_nError     = 0;
+	m_nMode      = 0;
 
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	if (!pPDFDocument)
 	{
-		nError = 1;
+		m_nError = 1;
 		return;
 	}
 
 	// Если результат редактирования будет сохранен в тот же файл, что открыт для чтения, то файл необходимо сделать редактируемым
 	std::string sPathUtf8New = U_TO_UTF8(_wsDstFile);
-	std::string sPathUtf8Old = U_TO_UTF8(wsSrcFile);
+	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);
 	if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
 	{
-		GString* owner_pswd = NSStrings::CreateString(wsPassword);
-		GString* user_pswd  = NSStrings::CreateString(wsPassword);
+		GString* owner_pswd = NSStrings::CreateString(m_wsPassword);
+		GString* user_pswd  = NSStrings::CreateString(m_wsPassword);
 		GBool bRes = pPDFDocument->makeWritable(true, owner_pswd, user_pswd);
 		delete owner_pswd;
 		delete user_pswd;
 		if (!bRes)
 		{
-			nError = 2; // Не удалось проверить файл для записи
+			m_nError = 2; // Не удалось проверить файл для записи
 			return;
 		}
 	}
 	else
 	{
-		if (!NSFile::CFileBinary::Copy(wsSrcFile, _wsDstFile))
+		if (!NSFile::CFileBinary::Copy(m_wsSrcFile, _wsDstFile))
 		{
-			nError = 2;
+			m_nError = 2;
 			return;
 		}
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(_wsDstFile, true))
 		{
-			nError = 2;
+			m_nError = 2;
 			return;
 		}
 		oFile.CloseFile();
 	}
 
 	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!xref || !pDoc)
 	{
-		nError = 1;
+		m_nError = 1;
 		return;
 	}
 
@@ -609,14 +610,14 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
 	{
 		pagesRefObj.free(); catDict.free();
-		nError = 3; // Не удалось получить каталог и дерево страниц
+		m_nError = 3; // Не удалось получить каталог и дерево страниц
 		return;
 	}
 	Object* trailer = xref->getTrailerDict();
 	if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj)->isRef())
 	{
 		pagesRefObj.free(); catDict.free(); catRefObj.free();
-		nError = 3; // Не удалось получить каталог и дерево страниц
+		m_nError = 3; // Не удалось получить каталог и дерево страниц
 		return;
 	}
 	Ref catRef = catRefObj.getRef();
@@ -627,14 +628,14 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	if (!pXref)
 	{
 		pagesRefObj.free(); catDict.free();
-		nError = 1;
+		m_nError = 1;
 		return;
 	}
 	PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog();
 	if (!pCatalog)
 	{
 		pagesRefObj.free(); catDict.free(); RELEASEOBJECT(pXref);
-		nError = 1;
+		m_nError = 1;
 		return;
 	}
 	pXref->Add(pCatalog, catRef.gen);
@@ -777,13 +778,13 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 			pEncryptDict->SetRef(0, 0);
 			pEncryptDict->Fix();
 
-			pEncryptDict->SetPasswords(wsPassword, wsPassword);
+			pEncryptDict->SetPasswords(m_wsPassword, m_wsPassword);
 			if (!pEncryptDict->UpdateKey(nCryptAlgorithm))
 			{
 				pagesRefObj.free();
 				RELEASEOBJECT(pXref);
 				RELEASEOBJECT(pDRXref);
-				nError = 4; // Ошибка шифрования файла
+				m_nError = 4; // Ошибка шифрования файла
 				return;
 			}
 		}
@@ -801,12 +802,37 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	}
 	pagesRefObj.free();
 	if (!bRes)
-		nError = 5; // Ошибка применения редактирования
+		m_nError = 5; // Ошибка применения редактирования
+}
+CPdfEditor::CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter)
+{
+	m_pReader   = _pReader;
+	m_pWriter   = _pWriter;
+	m_nEditPage = -1;
+	m_nError    = 0;
+	m_nMode     = 1;
+
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	if (!pPDFDocument)
+	{
+		m_nError = 1;
+		return;
+	}
+
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (!xref || !pDoc)
+	{
+		m_nError = 1;
+		return;
+	}
 }
 void CPdfEditor::Close()
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	if (m_nMode != 0)
+		 return;
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return;
 	XRef* xref = pPDFDocument->getXRef();
@@ -870,7 +896,7 @@ void CPdfEditor::Close()
 	}
 	info.free();
 
-	if (!pWriter->EditClose() || !pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict))
+	if (!m_pWriter->EditClose() || !pDoc->AddToFile(pXref, pTrailer, pInfoXref, pInfoDict))
 	{
 		RELEASEOBJECT(pXref);
 		return;
@@ -878,34 +904,34 @@ void CPdfEditor::Close()
 
 	std::wstring wsPath = pDoc->GetEditPdfPath();
 	std::string sPathUtf8New = U_TO_UTF8(wsPath);
-	std::string sPathUtf8Old = U_TO_UTF8(wsSrcFile);
+	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);
 	if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
 	{
-		GString* owner_pswd = NSStrings::CreateString(wsPassword);
-		GString* user_pswd  = NSStrings::CreateString(wsPassword);
+		GString* owner_pswd = NSStrings::CreateString(m_wsPassword);
+		GString* user_pswd  = NSStrings::CreateString(m_wsPassword);
 		pPDFDocument->makeWritable(false, owner_pswd, user_pswd);
 		delete owner_pswd;
 		delete user_pswd;
 
 		NSFile::CFileBinary oFile;
-		if (oFile.OpenFile(wsSrcFile))
+		if (oFile.OpenFile(m_wsSrcFile))
 		{
-			pReader->ChangeLength(oFile.GetFileSize());
+			m_pReader->ChangeLength(oFile.GetFileSize());
 			oFile.CloseFile();
 		}
 	}
 
-	pReader = NULL;
-	pWriter = NULL;
+	m_pReader = NULL;
+	m_pWriter = NULL;
 	m_nEditPage = -1;
 }
 int CPdfEditor::GetError()
 {
-	return nError;
+	return m_nError;
 }
 void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent)
 {
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPagesRefObj || !xref || !pDoc)
 		return;
 
@@ -996,8 +1022,8 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 }
 bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1007,7 +1033,7 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 		if (bSet)
 		{
 			pDoc->SetCurPage(pEditPage);
-			pWriter->EditPage(pEditPage);
+			m_pWriter->EditPage(pEditPage);
 			m_nEditPage = nPageIndex;
 		}
 		return true;
@@ -1133,7 +1159,7 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 	{
 		if (bSet)
 		{
-			pWriter->EditPage(pPage);
+			m_pWriter->EditPage(pPage);
 			m_nEditPage = nPageIndex;
 		}
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
@@ -1153,8 +1179,8 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 }
 bool CPdfEditor::SplitPage(int nPageIndex)
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1166,10 +1192,10 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 	if (pPageRef.first == 0)
 		return false;
 
-	HRESULT nRes = pWriter->NewPage();
+	HRESULT nRes = m_pWriter->NewPage();
 	if (nRes == S_FALSE)
 		return false;
-	PdfWriter::CPage* pPage = pWriter->GetPage();
+	PdfWriter::CPage* pPage = m_pWriter->GetPage();
 	if (!pPage)
 		return false;
 
@@ -1268,29 +1294,29 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
-	return pWriter->GetDocument()->DeletePage(nPageIndex);
+	return m_pWriter->GetDocument()->DeletePage(nPageIndex);
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
 	// Применение добавления страницы для writer
-	if (!pWriter->AddPage(nPageIndex))
+	if (!m_pWriter->AddPage(nPageIndex))
 		return false;
 	// По умолчанию выставляются размеры первой страницы, в дальнейшем размеры можно изменить
 	double dPageDpiX, dPageDpiY;
 	double dWidth, dHeight;
-	pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+	m_pReader->GetPageInfo(0, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
 
 	dWidth  *= 25.4 / dPageDpiX;
 	dHeight *= 25.4 / dPageDpiY;
 
-	pWriter->put_Width(dWidth);
-	pWriter->put_Height(dHeight);
+	m_pWriter->put_Width(dWidth);
+	m_pWriter->put_Height(dHeight);
 	return true;
 }
 bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1329,7 +1355,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		pEditPage = pDoc->GetCurPage();
 		EditPage(nPageIndex);
 		pDoc->SetCurPage(pEditPage);
-		pWriter->EditPage(pEditPage);
+		m_pWriter->EditPage(pEditPage);
 	}
 
 	// Воспроизведение словаря аннотации из reader для writer
@@ -1356,7 +1382,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::map<std::wstring, std::wstring> mapFont = pReader->GetAnnotFonts(&oAnnotRef);
+		std::map<std::wstring, std::wstring> mapFont = m_pReader->GetAnnotFonts(&oAnnotRef);
 		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}
@@ -1548,8 +1574,8 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 }
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
@@ -1612,8 +1638,8 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
 	for (CWidgetsInfo::CParent* pParent : arrParents)
@@ -1633,11 +1659,11 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 }
 int CPdfEditor::GetPagesCount()
 {
-	return pWriter->GetDocument()->GetPagesCount();
+	return m_pWriter->GetDocument()->GetPagesCount();
 }
 void CPdfEditor::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
-	PdfWriter::CPage* pPage = pWriter->GetDocument()->GetPage(nPageIndex);
+	PdfWriter::CPage* pPage = m_pWriter->GetDocument()->GetPage(nPageIndex);
 	if (!pPage)
 		return;
 
@@ -1658,7 +1684,7 @@ void CPdfEditor::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, 
 }
 int CPdfEditor::GetRotate(int nPageIndex)
 {
-	PdfWriter::CPage* pPage = pWriter->GetDocument()->GetPage(nPageIndex);
+	PdfWriter::CPage* pPage = m_pWriter->GetDocument()->GetPage(nPageIndex);
 	if (!pPage)
 		return 0;
 	return pPage->GetRotate();
@@ -1669,9 +1695,9 @@ bool CPdfEditor::IsEditPage()
 }
 void CPdfEditor::ClearPage()
 {
-	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	std::pair<int, int> pPageRef = pDoc->GetPageRef(m_nEditPage);
 
 	// Получение объекта страницы
@@ -1705,11 +1731,11 @@ void CPdfEditor::ClearPage()
 }
 void CPdfEditor::AddShapeXML(const std::string& sXML)
 {
-	return pWriter->GetDocument()->AddShapeXML(sXML);
+	return m_pWriter->GetDocument()->AddShapeXML(sXML);
 }
 void CPdfEditor::EndMarkedContent()
 {
-	pWriter->GetDocument()->EndShapeXML();
+	m_pWriter->GetDocument()->EndShapeXML();
 }
 bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
 {
@@ -1718,7 +1744,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		wsFontPath = it->second;
 	if (wsFontPath.empty())
 	{
-		std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+		std::map<std::wstring, std::wstring> mFonts = m_pReader->GetFonts();
 		std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
 		if (it2 != mFonts.end())
 			wsFontPath = it2->second;

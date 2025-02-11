@@ -170,8 +170,29 @@ bool CPdfFile::AddPage(int nPageIndex)
 bool CPdfFile::SplitPage(int nPageIndex)
 {
 	if (!m_pInternal->pEditor)
-		return false;
+	{
+		if (!m_pInternal->pReader)
+			return false;
+
+		if (!m_pInternal->pWriter)
+			m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+
+		m_pInternal->pEditor = new CPdfEditor(m_pInternal->pReader, m_pInternal->pWriter);
+		if (m_pInternal->pEditor->GetError() != 0)
+			return false;
+	}
 	return m_pInternal->pEditor->SplitPage(nPageIndex);
+}
+bool CPdfFile::SplitPages(const std::vector<int>& arrPageIndex)
+{
+	return SplitPages(arrPageIndex.data(), arrPageIndex.size());
+}
+bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
+{
+	bool bRes = true;
+	for (unsigned int i = 0; i < unLength; ++i)
+		bRes &= SplitPage(arrPageIndex[i]);
+	return bRes;
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {

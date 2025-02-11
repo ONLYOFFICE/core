@@ -353,6 +353,12 @@ TEST_F(CPdfFileTest, VerifySign)
 TEST_F(CPdfFileTest, SplitPdf)
 {
 	GTEST_SKIP();
+
+	LoadFromFile();
+
+	pdfFile->CreatePdf();
+
+	pdfFile->SplitPage(0);
 }
 
 TEST_F(CPdfFileTest, MergePdf)

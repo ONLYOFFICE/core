@@ -41,6 +41,7 @@ class CPdfEditor
 {
 public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
+	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter);
 
 	int  GetError();
 	void Close();
@@ -63,14 +64,17 @@ public:
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 
-	std::wstring wsSrcFile;
-	std::wstring wsPassword;
+	std::wstring m_wsSrcFile;
+	std::wstring m_wsPassword;
 	std::map<std::wstring, std::wstring> m_mFonts;
 
-	CPdfReader* pReader;
-	CPdfWriter* pWriter;
+	CPdfReader* m_pReader;
+	CPdfWriter* m_pWriter;
 
-	int nError;
+	int m_nError;
+	// 0 - Дозапись. pReader и pWriter работают с одним файлом
+	// 1 - Split. pReader и pWriter работают с разными файлами
+	int m_nMode;
 	int m_nEditPage;
 };
 

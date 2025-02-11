@@ -98,6 +98,8 @@ public:
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
 	bool SplitPage  (int nPageIndex);
+	bool SplitPages (const std::vector<int>& arrPageIndex);
+	bool SplitPages (const int* arrPageIndex, unsigned int unLength);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 

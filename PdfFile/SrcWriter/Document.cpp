@@ -339,6 +339,7 @@ namespace PdfWriter
 	}
 	void CDocument::AddPage(CPage* pPage)
 	{
+		pPage->Add("Parent", m_pPageTree);
 		m_pPageTree->AddPage(pPage);
 		m_pCurPage = pPage;
 	}

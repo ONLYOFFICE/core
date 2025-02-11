@@ -61,6 +61,14 @@ namespace OOX
 				WritingStringNullableAttrInt(L"windowWidth", m_oWindowWidth, m_oWindowWidth->GetValue());
 				WritingStringNullableAttrInt(L"windowHeight", m_oWindowHeight, m_oWindowHeight->GetValue());
 				WritingStringNullableAttrInt(L"activeTab", m_oActiveTab, m_oActiveTab->GetValue());
+				WritingStringNullableAttrInt(L"firstSheet", m_oFirstSheet, m_oFirstSheet->GetValue());
+				WritingStringNullableAttrInt(L"tabRatio", m_oTabRatio, m_oTabRatio->GetValue());
+				WritingStringNullableAttrBool(L"autoFilterDateGrouping", m_oAutoFilterDateGrouping);
+				WritingStringNullableAttrBool(L"showSheetTabs", m_oShowSheetTabs);
+				WritingStringNullableAttrBool(L"minimized", m_oMinimized);
+				WritingStringNullableAttrBool(L"showHorizontalScroll", m_oShowHorizontalScroll);
+				WritingStringNullableAttrBool(L"showVerticalScroll", m_oShowVerticalScroll);
+				WritingStringNullableAttrString(L"visibility", m_oVisibility, m_oVisibility->ToString());
 				writer.WriteString(_T("/>"));
 			}
 			void CWorkbookView::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -151,24 +159,21 @@ namespace OOX
 			}
 			void CWorkbookView::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
-				// Читаем атрибуты
 				WritingElement_ReadAttributes_Start( oReader )
-
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeTab"),      m_oActiveTab )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("autoFilterDateGrouping"),      m_oAutoFilterDateGrouping )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("firstSheet"),      m_oFirstSheet )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("minimized"),      m_oMinimized )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showHorizontalScroll"),      m_oShowHorizontalScroll )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showSheetTabs"),      m_oShowSheetTabs )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showVerticalScroll"),      m_oShowVerticalScroll )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabRatio"),      m_oTabRatio )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("visibility"),      m_oVisibility )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowHeight"),      m_oWindowHeight )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowWidth"),      m_oWindowWidth )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xWindow"),      m_oXWindow )
-					WritingElement_ReadAttributes_Read_if     ( oReader, _T("yWindow"),      m_oYWindow )
-
-					WritingElement_ReadAttributes_End( oReader )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("activeTab"), m_oActiveTab )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("autoFilterDateGrouping"), m_oAutoFilterDateGrouping )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("firstSheet"), m_oFirstSheet )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("minimized"), m_oMinimized )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showHorizontalScroll"), m_oShowHorizontalScroll )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showSheetTabs"), m_oShowSheetTabs )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("showVerticalScroll"), m_oShowVerticalScroll )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("tabRatio"), m_oTabRatio )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("visibility"), m_oVisibility )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowHeight"), m_oWindowHeight )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("windowWidth"), m_oWindowWidth )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("xWindow"), m_oXWindow )
+					WritingElement_ReadAttributes_Read_if     ( oReader, _T("yWindow"), m_oYWindow )
+				WritingElement_ReadAttributes_End( oReader )
 			}
 			void CWorkbookView::ReadAttributes(XLS::BaseObjectPtr& obj)
 			{

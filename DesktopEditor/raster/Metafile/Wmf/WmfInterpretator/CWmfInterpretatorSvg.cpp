@@ -110,6 +110,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -136,6 +137,7 @@ namespace MetaFile
 		                               {L"ry", ConvertToWString((oNewRect.Bottom - oNewRect.Top)    / 2)}};
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -189,6 +191,7 @@ namespace MetaFile
 		NodeAttributes arAttributes = {{L"d", wsValue}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -215,6 +218,7 @@ namespace MetaFile
 		                               {L"y2", ConvertToWString(shY)}};
 
 		AddStroke(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -230,12 +234,13 @@ namespace MetaFile
 	{
 		TRectD oNewRect;
 
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(shX)},
-		                               {L"y",		ConvertToWString(shY)},
-		                               {L"width",	ConvertToWString(shW)},
-		                               {L"height",	ConvertToWString(shH)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(shX)},
+		                               {L"y",      ConvertToWString(shY)},
+		                               {L"width",  ConvertToWString(shW)},
+		                               {L"height", ConvertToWString(shH)}};
 
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -260,6 +265,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -280,6 +286,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddNoneFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -300,6 +307,7 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -327,30 +335,27 @@ namespace MetaFile
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
-		arAttributes.push_back({L"fill-rule", L"evenodd"});
+		arAttributes.Add(L"fill-rule", L"evenodd");
 
 		WriteNode(L"path", arAttributes);
 	}
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
-
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.Left)},
-		                               {L"y",		ConvertToWString(oNewRect.Top)},
-		                               {L"width",	ConvertToWString(oNewRect.Right - oNewRect.Left)},
-		                               {L"height",	ConvertToWString(oNewRect.Bottom - oNewRect.Top)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 
@@ -359,22 +364,18 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
-
-		NodeAttributes arAttributes = {{L"x",		ConvertToWString(oNewRect.Left)},
-		                               {L"y",		ConvertToWString(oNewRect.Top)},
-		                               {L"width",	ConvertToWString(oNewRect.Right - oNewRect.Left)},
-		                               {L"height",	ConvertToWString(oNewRect.Bottom - oNewRect.Top)},
-		                               {L"rx",		ConvertToWString((double)shW / 2.)},
-		                               {L"ry",		ConvertToWString((double)shH / 2.)}};
+		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
+		                               {L"y",      ConvertToWString(oNewRect.Top)},
+		                               {L"width",  ConvertToWString(oNewRect.Right - oNewRect.Left)},
+		                               {L"height", ConvertToWString(oNewRect.Bottom - oNewRect.Top)},
+		                               {L"rx",     ConvertToWString((double)shW / 2.)},
+		                               {L"ry",     ConvertToWString((double)shH / 2.)}};
 
 		AddStroke(arAttributes);
 		AddFill(arAttributes);
+		AddShapeRendering(arAttributes);
 		AddTransform(arAttributes);
 		AddClip();
 

@@ -691,7 +691,7 @@ void table_table_rows::serialize(std::wostream & strm)
         {
 			for (size_t i = 0; i < content_.size(); i++)
 			{
-				content_[i]->serialize(strm);
+				content_[i]->serialize(CP_XML_STREAM());
 			}
 		}
 	}	

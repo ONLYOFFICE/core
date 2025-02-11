@@ -298,10 +298,19 @@ void Compute_HatchFill(draw_hatch * image_style,oox::oox_hatch_fill_ptr fill)
 void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_ptr fill)
 {
 	int style = 0;
-	if (gradient_style->draw_style_)  style = gradient_style->draw_style_->get_type();
+	if (gradient_style->draw_style_) 
+		style = gradient_style->draw_style_->get_type();
 
-	if (gradient_style->draw_angle_) fill->angle = 90 - gradient_style->draw_angle_->get_value();
-	if (fill->angle < 0) fill->angle += 360;
+	if (gradient_style->draw_angle_) 
+		fill->angle = -90 - gradient_style->draw_angle_->get_value();
+
+	if (fill->angle < 0)
+	{
+		int fullRotations = std::ceil(-fill->angle / 360.0f);
+
+		fill->angle += 360 * fullRotations;
+	}
+		
 
 	for (size_t i = 0; i < gradient_style->content_.size(); ++i)
 	{

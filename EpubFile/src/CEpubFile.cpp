@@ -80,7 +80,7 @@ HRESULT CEpubFile::Convert(const std::wstring& sInputFile, const std::wstring& s
     if (nContent != std::wstring::npos)
     {
         nContent += 11;
-        sContent = sFileContent.substr(nContent, sFileContent.find(L'\"', nContent) - nContent);
+        sContent = sFileContent.substr(nContent, sFileContent.find_first_of(L"\"'", nContent) - nContent);
     }
 
     std::wstring sContentPath;

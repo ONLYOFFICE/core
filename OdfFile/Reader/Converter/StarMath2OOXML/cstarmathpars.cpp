@@ -116,7 +116,7 @@ namespace StarMath
 		T* pTempElement = dynamic_cast<T*>(pElementWhichAdd);
 		if(pTempElement->GetLeftArg() == nullptr)
 		{
-			if(CParserStarMathString::CheckNewline(pLeftArg))
+			if(CParserStarMathString::CheckNewline(pLeftArg) || CParserStarMathString::CheckGrid(pLeftArg))
 				return false;
 			pTempElement->SetLeftArg(pLeftArg);
 			pElementWhichAdd = pTempElement;
@@ -203,6 +203,19 @@ namespace StarMath
 		}
 		else
 			return false;
+	}
+	bool CParserStarMathString::CheckGrid(CElement *pElement)
+	{
+		if(pElement == nullptr)
+			return false;
+		if(pElement->GetBaseType() == TypeElement::SpecialSymbol)
+		{
+			CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pElement);
+			if(pSpecial->GetType() == TypeElement::grid || pSpecial->GetType() == TypeElement::transition)
+				return true;
+			else return false;
+		}
+		else return false;
 	}
 	void CParserStarMathString::AddingAnElementToAnArray(std::vector<CElement *> &arrEquation, CElement *pAddElement, CStarMathReader *pReader)
 	{
@@ -881,7 +894,7 @@ namespace StarMath
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion());
 		pXmlWrite->WriteNodeBegin(L"m:t",false);
-		pXmlWrite->WriteString(m_wsString);
+        pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsString));
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 		}
@@ -963,7 +976,6 @@ namespace StarMath
 		}
 		else
 		{
-			pReader->SetMarkForUnar(true);
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
 			while((IsBinOperatorLowPrior() && (pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetLocalType() == TypeElement::intersection || pReader->GetLocalType() == TypeElement::setminus || pReader->GetLocalType() == TypeElement::setquotient)) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot  && pReader->GetLocalType() != TypeElement::sqrt)))
@@ -1119,11 +1131,16 @@ namespace StarMath
 	void CElementBinOperator::UnaryCheck(CStarMathReader *pReader, CElement *pLastElement)
 	{
 		pReader->ReadingTheNextToken();
-		if(!CParserStarMathString::CheckNewline(pLastElement) && MixedOperators(pReader->GetLocalType()))
-			if(pReader->GetAttribute() != nullptr)
+		if(MixedOperators(pReader->GetLocalType()))
+		{
+			if(CParserStarMathString::CheckNewline(pLastElement))
 				pReader->SetMarkForUnar(true);
-			else pReader->SetMarkForUnar(false);
-		else pReader->SetMarkForUnar(true);
+			else if(pReader->GetAttribute() != nullptr)
+				pReader->SetMarkForUnar(true);
+			else 
+				pReader->SetMarkForUnar(false);
+		}
+		else pReader->SetMarkForUnar(false);
 	}
 	bool CElementBinOperator::IsBinOperatorLowPrior()
 	{
@@ -1238,7 +1255,10 @@ namespace StarMath
 		{	
 			pReader->ReadingTheNextToken();
 			enOpen = GetBracketOpen(pReader->GetLowerCaseString());
-			enClose = GetBracketClose(pReader->GetLowerCaseString());
+            if(pReader->GetLowerCaseString() == L"none")
+                enOpen = TypeElement::none;
+            else
+                enClose = GetBracketClose(pReader->GetLowerCaseString());
 			if(enOpen != TypeElement::undefine)
 			{
 				m_enLeftBracket = enOpen;
@@ -1689,7 +1709,7 @@ namespace StarMath
 				pXmlWrite->WriteNodeBegin(L"m:r",false);
 				CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion());
 				pXmlWrite->WriteNodeBegin(L"m:t",false);
-				pXmlWrite->WriteString(m_wsType);
+                pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsType));
 				pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 				pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 			}
@@ -3220,12 +3240,6 @@ namespace StarMath
 			m_enGlobalType = TypeElement::Operation;
 			return;
 		}
-		m_enUnderType = CElementString::GetWord(m_wsLowerCaseToken);
-		if(m_enUnderType != TypeElement::undefine)
-		{
-			m_enGlobalType = TypeElement::String;
-			return;
-		}
 		if(m_enUnderType == TypeElement::undefine && !m_wsLowerCaseToken.empty())
 		{
 			m_enGlobalType = TypeElement::String;
@@ -3312,10 +3326,8 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart)||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
-			{
+			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart) ||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart || L'(' == m_wsElement.back() || L')' == m_wsElement.back()  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||( L'+' == m_wsElement.back() && L'-' != *m_itStart ) || (L'-' == *m_itStart && L'+' != m_wsElement.back()) || (L'-' == m_wsElement.back() && L'+' != *m_itStart && L'>' != *m_itStart) || (L'+' == *m_itStart && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back())|| (iswdigit(m_wsElement.back()) && !iswdigit(*m_itStart))  || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
 				return m_wsElement;
-			}
 			else if((( CheckTokenForGetElement(*m_itStart) || L'=' == *m_itStart) && m_wsElement.empty()) || (!m_wsElement.empty() && ((L'#' == m_wsElement.back() && L'#' == *m_itStart)  || (L'-' == *m_itStart  && L'+' == m_wsElement.back()) || ((L'+' == *m_itStart || L'>' == *m_itStart) && L'-' == m_wsElement.back()) || (m_wsElement.back() == L'<' && (L'=' == *m_itStart || L'<' == *m_itStart || L'>' == *m_itStart || L'-' == *m_itStart)) ||(L'?' == m_wsElement.back() && L'>' == *m_itStart) || (m_wsElement.back() == L'>' && (L'>' == *m_itStart || L'=' == *m_itStart ))  ) ) )
 			{
 				m_wsElement.push_back(*m_itStart);
@@ -3397,7 +3409,13 @@ namespace StarMath
 			if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)
 			{
 				if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken) == TypeElement::left)
-					continue;
+                {
+                    if(GetToken() && (m_wsLowerCaseToken == L"none" || (m_wsLowerCaseToken != L"left" && CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)))
+                    {
+                        inBracketInside += 1;
+                        continue;
+                    }
+                }
 				else
 					inBracketInside +=1;
 			}
@@ -3408,7 +3426,6 @@ namespace StarMath
 				m_stBracket.push(m_itEnd);
 				m_stCloseBracket.push(m_itStart);
 				m_itEnd = itStartBracketClose;
-//				m_itEnd = m_itStart;
 				break;
 			}
 			else if(CElementBracket::GetBracketClose(m_wsLowerCaseToken) != TypeElement::undefine && inBracketInside != 0)
@@ -3712,7 +3729,7 @@ namespace StarMath
 	}
 //class methods CElementMatrix
 	CElementMatrix::CElementMatrix(const TypeElement &enType,const TypeConversion &enTypeConversion)
-		:CElement(TypeElement::Matrix,enTypeConversion), m_pFirstArgument(nullptr), m_pSecondArgument(nullptr), m_enTypeMatrix(enType)
+		:CElement(TypeElement::Matrix,enTypeConversion), m_pFirstArgument(nullptr), m_pSecondArgument(nullptr), m_enTypeMatrix(enType),m_iDimension(1)
 	{
 	}
 	CElementMatrix::~CElementMatrix()
@@ -3748,11 +3765,12 @@ namespace StarMath
 		}
 		if(GetAttribute() != nullptr)
 			SetAttribute(GetAttribute());
+		DimensionCalculation();
 	}
 	void CElementMatrix::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:m",false);
-		CConversionSMtoOOXML::PropertiesMPr(pXmlWrite,m_enTypeMatrix,GetAttribute(),GetTypeConversion());
+		CConversionSMtoOOXML::PropertiesMPr(pXmlWrite,m_enTypeMatrix,GetAttribute(),GetTypeConversion(),m_iDimension);
 		pXmlWrite->WriteNodeBegin(L"m:mr",false);
 		bool bNormal(false);
 		switch(m_enTypeMatrix)
@@ -3771,15 +3789,6 @@ namespace StarMath
 					{
 						if(pOneElement->GetBaseType() != TypeElement::undefine && pOneElement->GetBaseType() != TypeElement::SpecialSymbol)
 							pOneElement->ConversionToOOXML(pXmlWrite);
-//						{
-//							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
-//							pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
-//							pXmlWrite->WriteNodeBegin(L"m:mr",false);
-//						}
-//						else if(pOneElement->GetBaseType() != TypeElement::SpecialSymbol && pOneElement->GetBaseType()!= TypeElement::undefine && m_enTypeMatrix == TypeElement::matrix)
-//						{
-//							CConversionSMtoOOXML::WriteNodeConversion(L"m:e",pOneElement,pXmlWrite);
-//						}
 						else if(pOneElement->GetBaseType()!= TypeElement::undefine && pOneElement->GetBaseType() == TypeElement::SpecialSymbol)
 						{
 							CElementSpecialSymbol* pTempSpecial = dynamic_cast<CElementSpecialSymbol*>(pOneElement);
@@ -3890,6 +3899,27 @@ namespace StarMath
 			tSize.m_iWidth += 2;
 		}
 		return tSize;
+	}
+	void CElementMatrix::DimensionCalculation()
+	{
+		if(m_enTypeMatrix == TypeElement::matrix && m_pFirstArgument != nullptr && m_pFirstArgument->GetBaseType() == TypeElement::Bracket)
+		{
+			CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pFirstArgument);
+			std::vector<CElement*> arVec = pBracket->GetBracketValue();
+			if(arVec.empty())
+				return;
+			for(CElement* pElement:arVec)
+			{
+				if(pElement->GetBaseType() == TypeElement::SpecialSymbol)
+				{
+					CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pElement);
+					if(pSpecial->GetType() == TypeElement::grid)
+						m_iDimension ++;
+					else if(pSpecial->GetType() == TypeElement::transition)
+						return;
+				}
+			}
+		}
 	}
 //class CElementDiacriticalMark
 	CElementDiacriticalMark::CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion)

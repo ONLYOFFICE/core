@@ -25,7 +25,7 @@ namespace NSCSS
 		m_arParentsStyles(oStyle.m_arParentsStyles), m_sId(oStyle.m_sId),
 		m_nDpi(oStyle.m_nDpi), m_UnitMeasure(oStyle.m_UnitMeasure), m_dCoreFontSize(oStyle.m_dCoreFontSize),
 		m_oFont(oStyle.m_oFont), m_oMargin(oStyle.m_oMargin), m_oPadding(oStyle.m_oPadding), m_oBackground(oStyle.m_oBackground),
-		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay){}
+		m_oText(oStyle.m_oText), m_oBorder(oStyle.m_oBorder), m_oDisplay(oStyle.m_oDisplay), m_oTransform(oStyle.m_oTransform){}
 
 	CCompiledStyle::~CCompiledStyle()
 	{
@@ -44,6 +44,7 @@ namespace NSCSS
 		m_oPadding      += oElement.m_oPadding;
 		m_oText         += oElement.m_oText;
 		m_oDisplay      += oElement.m_oDisplay;
+		m_oTransform    += oElement.m_oTransform;
 
 		if (!oElement.m_sId.empty())
 			m_sId += L'+' + oElement.m_sId;
@@ -66,6 +67,7 @@ namespace NSCSS
 		m_oPadding      = oElement.m_oPadding;
 		m_oText         = oElement.m_oText;
 		m_oDisplay      = oElement.m_oDisplay;
+		m_oTransform    = oElement.m_oTransform;
 
 		return *this;
 	}
@@ -78,7 +80,8 @@ namespace NSCSS
 		       m_oMargin         == oStyle.m_oMargin         &&
 		       m_oPadding        == oStyle.m_oPadding        &&
 		       m_oText           == oStyle.m_oText           &&
-		       m_oDisplay        == oStyle.m_oDisplay;
+		       m_oDisplay        == oStyle.m_oDisplay        &&
+		       m_oTransform      == oStyle.m_oTransform;
 	}
 
 	void CCompiledStyle::StyleEquation(CCompiledStyle &oFirstStyle, CCompiledStyle &oSecondStyle)
@@ -90,6 +93,7 @@ namespace NSCSS
 		NSProperties::CText      ::Equation(oFirstStyle.m_oText,       oSecondStyle.m_oText);
 		NSProperties::CBorder    ::Equation(oFirstStyle.m_oBorder,     oSecondStyle.m_oBorder);
 		NSProperties::CDisplay   ::Equation(oFirstStyle.m_oDisplay,    oSecondStyle.m_oDisplay);
+		NSProperties::CTransform ::Equation(oFirstStyle.m_oTransform,  oSecondStyle.m_oTransform);
 	}
 
 	void CCompiledStyle::SetDpi(const unsigned short &uiDpi)
@@ -429,6 +433,12 @@ namespace NSCSS
 				CASE(L"valign"):
 				{
 					m_oDisplay.SetVAlign(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
+				//TRANSFORM
+				CASE(L"transform"):
+				{
+					m_oTransform.SetMatrix(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				default: AddOtherStyle(pPropertie, unLevel, bHardMode);

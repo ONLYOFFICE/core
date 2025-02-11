@@ -110,6 +110,13 @@ public:
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS, true));
 		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU, true));
 
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSDX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSSX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSTX, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSDM, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSSM, true));
+		m_formats.insert(std::make_pair<int, bool>(AVS_OFFICESTUDIO_FILE_DRAW_VSTM, true));
+
 		m_nCount = 0;
 		m_nCurrent = 0;
 		m_nCurrentComplete = 0;
@@ -135,12 +142,6 @@ public:
 	void OpenDir(std::wstring sDir)
 	{
 		m_sInputFolder = sDir;
-		if (m_bDiffOnly)
-		{
-			m_files = NSDirectory::GetDirectories(m_sInputFolder);
-			m_nCount = (int)m_files.size();
-			return;
-		}
 
 		std::vector<std::wstring> arFiles = NSDirectory::GetFiles(sDir, true);
 		for (std::vector<std::wstring>::iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
@@ -150,7 +151,8 @@ public:
 			if (sExt == L"docx" || sExt == L"doc" || sExt == L"odt" || sExt == L"rtf" || sExt == L"docxf" || sExt == L"oform" ||
 				sExt == L"pptx" || sExt == L"ppt" || sExt == L"odp" ||
 				sExt == L"xlsx" || sExt == L"xls" || sExt == L"ods" ||
-				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu")
+				sExt == L"pdf" || sExt == L"xps" || sExt == L"djvu" ||
+				sExt == L"vsdx")
 			{
 				m_files.push_back(*iter);
 			}
@@ -289,7 +291,6 @@ public:
 
 		NSFile::CFileBinary::SaveToFile(sLogFile, sLogContent, true);
 	}
-
 
 	int GenerateDiff(const std::wstring strDirIn, const std::wstring strDirOut, const std::wstring strDiffs)
 	{
@@ -513,6 +514,10 @@ class CConverter : public NSThreads::CBaseThread
 {
 public:
 	CInternalWorker* m_pInternal;
+
+	std::wstring m_input_dir;
+	std::wstring m_output_dir;
+
 	std::wstring m_file;
 	std::wstring m_folder_dst;
 	int m_format;
@@ -529,15 +534,40 @@ public:
 		Stop();
 	}
 
+	std::wstring GetOutputFile(const std::wstring& sFolderAddon = L"", const bool& isStandart = false)
+	{
+		std::wstring input_dir = m_input_dir;
+		NSStringUtils::string_replace(input_dir, L"\\", L"/");
+
+		std::wstring input_file = m_file;
+		NSStringUtils::string_replace(input_file, L"\\", L"/");
+
+		std::wstring output_dir = isStandart ? (m_input_dir + L"/../out/master") : (m_output_dir + L"/");
+		if (!sFolderAddon.empty())
+			output_dir += (sFolderAddon + L"/");
+
+		NSStringUtils::string_replace(output_dir, L"\\", L"/");
+		NSStringUtils::string_replace(output_dir, L"//", L"/");
+
+		std::wstring output_file = output_dir + input_file.substr(input_dir.length());
+
+		NSStringUtils::string_replace(output_file, L"//", L"/");
+
+#ifdef _WIN32
+		NSStringUtils::string_replace(output_file, L"/", L"\\");
+#endif
+
+		return output_file;
+	}
+
 	virtual DWORD ThreadProc()
 	{
 		if (m_bDiffOnly)
 		{
-			std::wstring strDirIn = m_file;
+			std::wstring strDirIn = GetOutputFile(L"", true);
 			std::wstring strDirOut = m_folder_dst;
 
-			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
-			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
+			std::wstring strDiffs = GetOutputFile(L"DIFF");
 
 			int checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
 
@@ -642,12 +672,10 @@ public:
 		if (!m_pInternal->m_bIsStandard)
 		{
 			// смотрим разницу
-			std::wstring strDirIn = NSFile::GetDirectoryName(m_file);
+			std::wstring strDirIn = GetOutputFile(L"", true);
 			std::wstring strDirOut = sDirectoryDst;
 
-			std::wstring strDiffsMain = NSFile::GetDirectoryName(strDirOut) + L"/DIFF";
-			std::wstring strDiffs = strDiffsMain + L"/" + NSFile::GetFileName(m_file);
-
+			std::wstring strDiffs = GetOutputFile(L"DIFF");
 			checkCode = m_pInternal->GenerateDiff(strDirIn, strDirOut, strDiffs);
 		}
 
@@ -665,13 +693,18 @@ CConverter* CInternalWorker::GetNextConverter()
 
 	CConverter* pConverter = new CConverter(this);
 	pConverter->DestroyOnFinish();
+
+	pConverter->m_input_dir = m_sInputFolder;
+	pConverter->m_output_dir = m_sOutputFolder;
+
 	pConverter->m_file = m_files[m_nCurrent];
 	pConverter->m_bDiffOnly = m_bDiffOnly;
 	++m_nCurrent;
 	std::wstring sName = NSFile::GetFileName(pConverter->m_file);
 
-	pConverter->m_folder_dst = m_sOutputFolder + L"/" + sName;
-	NSDirectory::CreateDirectory(pConverter->m_folder_dst);
+	pConverter->m_folder_dst = pConverter->GetOutputFile();
+
+	NSDirectory::CreateDirectories(pConverter->m_folder_dst);
 
 	if (m_bIsStandard)
 		NSFile::CFileBinary::Copy(pConverter->m_file, pConverter->m_folder_dst + L"/" + sName);

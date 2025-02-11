@@ -147,6 +147,10 @@ namespace MetaFile
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
 
+#ifdef METAFILE_DISABLE_FILESYSTEM
+			return false;
+#endif
+
 			std::wstring wsTempFileName = GetTempFilename();
 			if (wsTempFileName.empty())
 				return false;

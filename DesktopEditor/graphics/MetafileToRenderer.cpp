@@ -153,13 +153,6 @@ IMetafileToRenderter::IMetafileToRenderter(IRenderer* pRenderer)
 }
 IMetafileToRenderter::~IMetafileToRenderter()
 {
-	for (std::vector<std::wstring>::iterator i = m_arTempFiles.begin(); i != m_arTempFiles.end(); i++)
-	{
-		std::wstring sPath = *i;
-		if (NSFile::CFileBinary::Exists(sPath))
-			NSFile::CFileBinary::Remove(sPath);
-	}
-
 	if (m_pPicker)
 	{
 		CMetafileFontPicker* pPicker = (CMetafileFontPicker*)m_pPicker;
@@ -234,8 +227,6 @@ std::wstring IMetafileToRenderter::GetImagePath(const std::wstring& sPath)
 					oFrame.put_Data(NULL);
 					sImagePath = sTempFile;
 				}
-
-				m_arTempFiles.push_back(sTempFile);
 			}
 
 			RELEASEARRAYOBJECTS(pImageBuffer);

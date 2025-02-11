@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -51,12 +51,12 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        unsigned short	yr;
-        unsigned short	mon;
-        unsigned char	dom;
-        unsigned char	hr;
-        unsigned char	min;
-        unsigned char	sec;
+        unsigned short	yr = 0;
+        unsigned short	mon = 0;
+        unsigned char	dom = 0;
+        unsigned char	hr = 0;
+        unsigned char	min = 0;
+        unsigned char	sec = 0;
 
         std::wstring value();
 		void fromString(const std::wstring& str);

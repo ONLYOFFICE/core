@@ -124,10 +124,11 @@ public:
     std::wstring RenderToRtf(RenderParameter oRenderParameter);
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 
-	RtfCharProperty			m_oCharProperty;
-	TextItemContainerPtr	m_pTextItems;
+	RtfCharProperty m_oCharProperty;
+	
+	TextItemContainerPtr m_pTextItems;
 
-	RtfFormFieldPtr			m_pFormField;
+	RtfFormFieldPtr m_pFormField;
 };
 typedef boost::shared_ptr<RtfFieldInst>	RtfFieldInstPtr;
 

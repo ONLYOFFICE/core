@@ -567,6 +567,39 @@ namespace svg_path
                     }                    
                 }break;
 
+                case 'Q':
+                {
+					nPos++;
+					skipSpaces(nPos, rSvgDStatement, nLen);
+
+                    while (nPos < nLen && isOnNumberChar(rSvgDStatement, nPos))
+                    {
+                        double nX, nY;
+                        double nX1, nY1;
+
+						if (!importDoubleAndSpaces(nX1, nPos, rSvgDStatement, nLen))	return false;
+						if (!importDoubleAndSpaces(nY1, nPos, rSvgDStatement, nLen))	return false;
+						if (!importDoubleAndSpaces(nX, nPos, rSvgDStatement, nLen))	    return false;
+						if (!importDoubleAndSpaces(nY, nPos, rSvgDStatement, nLen))	    return false;
+
+                        aCurrPoly.command = L"a:quadBezTo";
+
+						aCurrPoly.points.push_back(_point(nX1, nY1));
+						aCurrPoly.points.push_back(_point(nX, nY));
+
+						Polyline.push_back(aCurrPoly);
+						aCurrPoly.points.clear();
+                        
+						// set last position
+						nLastX = nX;
+						nLastY = nY;
+
+						//keep control point
+						nLastControlX = nX1;
+						nLastControlY = nY1;
+                    }
+                }break;
+
 				case 'G':
 				{
                     nPos++;
@@ -1100,7 +1133,7 @@ namespace svg_path
                         nY += L"+" + nLastY;
                     }
 
-                    aCurrPoly.command = L"a:ArcTo";
+                    aCurrPoly.command = L"a:arcTo";
                     // append curved edge
                     aCurrPoly.points.push_back(_pointS(nX, nY));
                     aCurrPoly.points.push_back(_pointS(A1, A2));

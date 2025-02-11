@@ -159,6 +159,9 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.cpp">
       <Filter>Sheets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.cpp">
+      <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h">
@@ -304,6 +307,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\ChartFromToBinary.h">
       <Filter>Sheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.h">
+      <Filter>Sheets\Reader\CellFormat</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

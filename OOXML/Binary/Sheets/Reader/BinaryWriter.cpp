@@ -2395,7 +2395,7 @@ void BinaryWorkbookTableWriter::WriteWorkbookPr(const OOX::Spreadsheet::CWorkboo
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookPrTypes::UpdateLinks);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-		m_oBcw.m_oStream.WriteBOOL(workbookPr.m_oUpdateLinks->GetValue());
+		m_oBcw.m_oStream.WriteBYTE(workbookPr.m_oUpdateLinks->GetValue());
 	}
 }
 void BinaryWorkbookTableWriter::WriteConnectionTextFields(const OOX::Spreadsheet::CTextFields& textFields)
@@ -2440,11 +2440,83 @@ void BinaryWorkbookTableWriter::WriteBookViews(const OOX::Spreadsheet::CBookView
 void BinaryWorkbookTableWriter::WriteWorkbookView(const OOX::Spreadsheet::CWorkbookView& workbookView)
 {
 //ActiveTab
-	if(workbookView.m_oActiveTab.IsInit())
+	if (workbookView.m_oActiveTab.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::ActiveTab);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(workbookView.m_oActiveTab->GetValue());
+	}
+	if (workbookView.m_oAutoFilterDateGrouping.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::AutoFilterDateGrouping);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookView.m_oAutoFilterDateGrouping->ToBool());
+	}
+	if (workbookView.m_oFirstSheet.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::FirstSheet);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oFirstSheet->GetValue());
+	}
+	if (workbookView.m_oMinimized.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::Minimized);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookView.m_oMinimized->ToBool());
+	}
+	if (workbookView.m_oShowHorizontalScroll.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::ShowHorizontalScroll);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookView.m_oShowHorizontalScroll->ToBool());
+	}
+	if (workbookView.m_oShowSheetTabs.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::ShowSheetTabs);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookView.m_oShowSheetTabs->ToBool());
+	}
+	if (workbookView.m_oShowVerticalScroll.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::ShowVerticalScroll);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(workbookView.m_oShowVerticalScroll->ToBool());
+	}
+	if (workbookView.m_oTabRatio.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::TabRatio);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oTabRatio->GetValue());
+	}
+	if (workbookView.m_oVisibility.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::Visibility);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(workbookView.m_oVisibility->GetValue());
+	}
+	if (workbookView.m_oWindowHeight.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::WindowHeight);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oWindowHeight->GetValue());
+	}
+	if (workbookView.m_oWindowWidth.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::WindowWidth);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oWindowWidth->GetValue());
+	}
+	if (workbookView.m_oXWindow.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::XWindow);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oXWindow->GetValue());
+	}
+	if (workbookView.m_oYWindow.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerWorkbookViewTypes::YWindow);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(workbookView.m_oYWindow->GetValue());
 	}
 }
 void BinaryWorkbookTableWriter::WriteDefinedNames(const OOX::Spreadsheet::CDefinedNames& definedNames)
@@ -8565,7 +8637,8 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 	UINT nCodePage;
 	std::wstring sDelimiter;
 	BYTE saveFileType;
-	SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType);
+    _INT32 Lcid;
+    SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, sDelimiter, saveFileType, Lcid);
 
 	m_nLastFilePosOffset = 0;
 	OOX::Spreadsheet::CXlsx *pXlsx = NULL;
@@ -8577,7 +8650,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 			CSVReader csvReader;
 
 			pXlsx = new OOX::Spreadsheet::CXlsx();
-			result = csvReader.Read(sInputDir, *pXlsx, nCodePage, sDelimiter);
+            result = csvReader.Read(sInputDir, *pXlsx, nCodePage, sDelimiter, Lcid);
 		}break;
 		case BinXlsxRW::c_oFileTypes::XLSX:
         case BinXlsxRW::c_oFileTypes::XLSB:
@@ -8660,7 +8733,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 //todo 46 временно CP_UTF8
 		
 		CSVWriter oCSVWriter;
-		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), true);
+		oCSVWriter.Xlsx2Csv(sFileDst, *pXlsx, 46, std::wstring(L","), Lcid, true);
 	}
 	else
 	{

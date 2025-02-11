@@ -337,6 +337,10 @@ void OOX::Spreadsheet::CXlsb::PrepareTableFormula()
                         auto tableName = tableIndex->second;
                         formula.replace(formula.find(str), str.size(), tableName);
                     }
+                    else
+                    {
+                        formula.replace(formula.find(str), str.size(), L"#NAME?");
+                    }
                 }
                 str = STR::guidFromStr(formula);
             }

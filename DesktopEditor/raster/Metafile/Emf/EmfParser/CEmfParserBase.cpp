@@ -78,8 +78,8 @@ namespace MetaFile
 		unsigned int ulWidth, ulHeight;
 
 		if (ReadImage(oTEmfStretchDIBITS.unOffBmiSrc, oTEmfStretchDIBITS.unCbBmiSrc,
-					  oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
-					  sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+		              oTEmfStretchDIBITS.unOffBitsSrc, oTEmfStretchDIBITS.unCbBitsSrc,
+		              sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 		{
 			if (m_pInterpretator)
 			{
@@ -761,7 +761,11 @@ namespace MetaFile
 		RELEASEOBJECT(m_pInterpretator);
 
 		if (InterpretatorType::Svg == oInterpretatorType)
-			m_pInterpretator = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+		{
+			CEmfInterpretatorSvg *pEmfInterpretatorSvg = new CEmfInterpretatorSvg(this, dWidth, dHeight);
+			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			m_pInterpretator = pEmfInterpretatorSvg;
+		}
 	}
 
 	CEmfInterpretatorBase* CEmfParserBase::GetInterpretator()
@@ -1505,11 +1509,19 @@ namespace MetaFile
 		if (NULL != m_pInterpretator && (NULL == m_pPath || Svg != m_pInterpretator->GetType()))
 			m_pInterpretator->HANDLE_EMR_PIE(oBox, oStart, oEnd);
 
-		double dStartAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oStart.X, oStart.Y);
-		double dSweepAngle = GetEllipseAngle(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, oEnd.X, oEnd.Y) - dStartAngle;
+		const int nCenterX = (oBox.Left + oBox.Right) / 2;
+		const int nCenterY = (oBox.Top + oBox.Bottom) / 2;
 
-		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle, dSweepAngle);
-		LineTo((oBox.Left + oBox.Right) / 2, (oBox.Top + oBox.Bottom) / 2);
+		double dStartAngle = std::atan2(oStart.Y - nCenterY, oStart.X - nCenterX);
+		double dEndAngle   = std::atan2(oEnd.Y   - nCenterY, oEnd.X   - nCenterX);
+
+		if (dEndAngle > dStartAngle)
+			dEndAngle -= 2 * M_PI;
+
+		MoveTo(nCenterX, nCenterY);
+		LineTo(oStart.X, oStart.Y);
+		ArcTo(oBox.Left, oBox.Top, oBox.Right, oBox.Bottom, dStartAngle * 180. / M_PI, (dEndAngle - dStartAngle) * 180. / M_PI);
+		LineTo(nCenterX, nCenterY);
 		ClosePath();
 		DrawPath(true, true);
 	}

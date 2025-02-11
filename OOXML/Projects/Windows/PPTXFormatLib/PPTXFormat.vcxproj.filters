@@ -3728,9 +3728,6 @@
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
       <Filter>Binary</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\HtmlRenderer\src\ASCSVGWriter.cpp">
-      <Filter>Binary</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Limits">

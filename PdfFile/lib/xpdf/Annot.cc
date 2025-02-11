@@ -1391,7 +1391,7 @@ void Annot::drawCircleBottomRight(double cx, double cy, double r) {
 void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 		     int rot) {
   GString *text2, *tok;
-  GList *daToks;
+  GList *daToks, *vBreaks;
   const char *charName;
   double dx, dy, fontSize, fontSize2, x, y, w;
   Gushort charWidth;
@@ -1449,7 +1449,7 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   } else if (rot == 180) {
     appearBuf->appendf("-1 0 0 -1 {0:.4f} {1:.4f} cm\n",
 		       xMax - xMin, yMax - yMin);
-    dx = xMax - yMax;
+	dx = xMax - xMin;
     dy = yMax - yMin;
   } else if (rot == 270) {
     appearBuf->appendf("0 -1 1 0 0 {0:.4f} cm\n", yMax - yMin);
@@ -1463,33 +1463,86 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 
   // compute string width
   //~ this assumes we're substituting Helvetica/WinAnsiEncoding for everything
-  w = 0;
-  for (i = 0; i < text2->getLength(); ++i) {
-    charName = winAnsiEncoding[text->getChar(i) & 0xff];
-    if (charName && builtinFonts[4].widths->getWidth(charName, &charWidth)) {
-      w += charWidth;
-    } else {
-      w += 0.5;
-    }
+  fontSize = 14;
+  i = 0;
+  vBreaks = new GList();
+  double dX = 0, dWordWidth = 0, dKoef = fontSize / 1000.0;
+  unsigned int unWordStartPos = 0;
+  bool bLineStart = true, bWord = false, bFirstItemOnLine = true;
+  while (i < text2->getLength())
+  {
+	  charName = winAnsiEncoding[text->getChar(i) & 0xff];
+	  if (!charName || !builtinFonts[4].widths->getWidth(charName, &charWidth))
+		  charWidth = 500;
+
+	  char c = text->getChar(i);
+	  if (c == 0x20)
+	  {
+		  dX += dWordWidth + charWidth * dKoef;
+		  bWord             = false;
+		  dWordWidth        = 0;
+		  bLineStart        = false;
+		  bFirstItemOnLine  = false;
+	  }
+	  else if (c == 0xA || c == 0xD)
+	  {
+		  bLineStart       = true;
+		  bFirstItemOnLine = true;
+		  bWord            = false;
+		  dX               = 0;
+		  dWordWidth       = 0;
+		  vBreaks->append(new int(i + 1));
+	  }
+	  else
+	  {
+		  double dLetterWidth = charWidth * dKoef;
+		  if (dX + dWordWidth + dLetterWidth > dx - margin * 4)
+		  {
+			  if (bLineStart)
+			  {
+				  if (bFirstItemOnLine)
+				  {
+					  if (i != text2->getLength() - 1)
+						  vBreaks->append(new int(i + 1));
+					  i++;
+				  }
+				  else
+					  vBreaks->append(new int(i));
+			  }
+			  else
+			  {
+				  if (bWord)
+				  {
+					  vBreaks->append(new int(unWordStartPos));
+					  i = unWordStartPos;
+				  }
+				  else
+					  vBreaks->append(new int(i));
+			  }
+
+			  dX               = 0;
+			  bWord            = false;
+			  dWordWidth       = 0;
+			  bLineStart       = true;
+			  bFirstItemOnLine = true;
+			  continue;
+		  }
+
+		  if (bWord)
+			  dWordWidth += charWidth * dKoef;
+		  else
+		  {
+			  unWordStartPos = i;
+			  bWord          = true;
+			  dWordWidth     = charWidth * dKoef;
+		  }
+
+		  bFirstItemOnLine  = false;
+	  }
+
+	  i++;
   }
 
-  // compute text start position
-  fontSize = 14;
-  w *= fontSize;
-  switch (quadding) {
-  case 0:
-  default:
-    x = margin * 2;
-    break;
-  case 1:
-    x = (dx - w) / 2;
-    break;
-  case 2:
-    x = dx - margin * 2 - w;
-    break;
-  }
-  y = dy - margin - 2 - 0.789571 * fontSize;
-  
   // write the DA string
   appearBuf->append("/xpdf_default_font 14 Tf\n");
   if (rgPos > 0) {
@@ -1499,23 +1552,92 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
 	appearBuf->append("rg\n");
   }
 
-  // write the font matrix
-  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
+  unsigned int unLinesCount = vBreaks->getLength() + 1;
 
-  // write the text string
-  appearBuf->append('(');
-  for (i = 0; i < text2->getLength(); ++i) {
-    c = text2->getChar(i) & 0xff;
-    if (c == '(' || c == ')' || c == '\\') {
-      appearBuf->append('\\');
-      appearBuf->append((char)c);
-    } else if (c < 0x20 || c >= 0x80) {
-      appearBuf->appendf("\\{0:03o}", c);
-    } else {
-      appearBuf->append((char)c);
-    }
+  double dShiftY = dy - margin - 2 - 0.789571 * fontSize;
+  double dLineHeight = 1.2 * fontSize;
+  double dCurX, dCurY;
+  bool bStart = true;
+  for (i = 0; i < unLinesCount; ++i)
+  {
+	  int nLineStartPos = i == 0 ? 0 : *(int*)vBreaks->get(i - 1);
+	  int nLineEndPos = i == vBreaks->getLength() ? text2->getLength() : *(int*)vBreaks->get(i);
+	  int nInLineCount = nLineEndPos - nLineStartPos;
+
+	  if (nInLineCount > 0)
+	  {
+		  // compute width
+		  w = 0;
+		  int nStart = nLineStartPos, nEnd = nLineEndPos;
+		  while (nStart < nEnd)
+		  {
+			  char c = text->getChar(nStart);
+			  if (c == 0x20)
+				  nStart++;
+			  else
+				  break;
+		  }
+
+		  while (nEnd > nStart && nEnd > 0)
+		  {
+			  char c = text->getChar(nEnd - 1);
+			  if (c == 0x20)
+				  nEnd--;
+			  else
+				  break;
+		  }
+
+		  for (unsigned int unPos = nStart; unPos < nEnd; ++unPos)
+		  {
+			  charName = winAnsiEncoding[text->getChar(unPos) & 0xff];
+			  if (!charName || !builtinFonts[4].widths->getWidth(charName, &charWidth))
+				  charWidth = 500;
+			  w += charWidth * dKoef;
+		  }
+
+		  // compute text start position
+		  x = margin * 2;
+		  if (2 == quadding)
+			  x = dx - w - margin * 2;
+		  else if (1 == quadding)
+			  x = (dx - w) / 2;
+		  y = dShiftY;
+
+		  if (bStart)
+		  {
+			  dCurX = x;
+			  dCurY = y;
+		  }
+		  else
+		  {
+			  x -= dCurX;
+			  y -= dCurY;
+
+			  dCurX += x;
+			  dCurY += y;
+		  }
+		  bStart = false;
+
+		  // write the font matrix
+		  appearBuf->appendf("{0:.4f} {1:.4f} Td\n", x, y);
+
+		  // write the text string
+		  appearBuf->append('(');
+		  for (int j = nLineStartPos; j < nLineEndPos; ++j) {
+			c = text2->getChar(j) & 0xff;
+			if (c == '(' || c == ')' || c == '\\') {
+			  appearBuf->append('\\');
+			  appearBuf->append((char)c);
+			} else if (c < 0x20 || c >= 0x80) {
+			  appearBuf->appendf("\\{0:03o}", c);
+			} else {
+			  appearBuf->append((char)c);
+			}
+		  }
+		  appearBuf->append(") Tj\n");
+	  }
+	  dShiftY -= dLineHeight;
   }
-  appearBuf->append(") Tj\n");
 
   // cleanup
   appearBuf->append("ET\n");
@@ -1531,6 +1653,8 @@ void Annot::drawText(GString *text, GString *da, int quadding, double margin,
   if (daToks) {
     deleteGList(daToks, GString);
   }
+  if (vBreaks)
+	deleteGList(vBreaks, int);
   if (text2 != text) {
     delete text2;
   }

@@ -190,7 +190,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
-	if (!m_pFont && !m_pFont14)
+	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA())
 	{
 		m_bNeedUpdateTextFont = false;
 		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
@@ -1717,6 +1717,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pAnnot = m_pDocument->CreateFreeTextAnnot();
 		else if (oInfo.IsCaret())
 			pAnnot = m_pDocument->CreateCaretAnnot();
+		else if (oInfo.IsStamp())
+			pAnnot = m_pDocument->CreateStampAnnot();
 
 		if (oInfo.IsWidget())
 		{
@@ -1904,8 +1906,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		if (oInfo.IsText())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CTextAnnotPr* pPr = oInfo.GetTextAnnotPr();
 			PdfWriter::CTextAnnotation* pTextAnnot = (PdfWriter::CTextAnnotation*)pAnnot;
 
@@ -1917,18 +1917,18 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			if (nFlags & (1 << 18))
 				pTextAnnot->SetState(pPr->GetState());
 
+			pMarkupAnnot->RemoveAP();
 			pTextAnnot->SetAP();
 		}
 		else if (oInfo.IsInk())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CInkAnnotPr* pPr = oInfo.GetInkAnnotPr();
 			PdfWriter::CInkAnnotation* pInkAnnot = (PdfWriter::CInkAnnotation*)pAnnot;
 
 			pInkAnnot->SetInkList(pPr->GetInkList());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -1936,8 +1936,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsLine())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CLineAnnotPr* pPr = oInfo.GetLineAnnotPr();
 			PdfWriter::CLineAnnotation* pLineAnnot = (PdfWriter::CLineAnnotation*)pAnnot;
 
@@ -1974,6 +1972,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			//pLineAnnot->SetAP();
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -1981,18 +1980,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsTextMarkup())
 		{
-			pMarkupAnnot->RemoveAP();
-
-			CAnnotFieldInfo::CTextMarkupAnnotPr* pPr = oInfo.GetTextMarkupAnnotPr();
+			CAnnotFieldInfo::CTextMarkupAnnotPr* pTMPr = oInfo.GetTextMarkupAnnotPr();
 			PdfWriter::CTextMarkupAnnotation* pTextMarkupAnnot = (PdfWriter::CTextMarkupAnnotation*)pAnnot;
 
-			pTextMarkupAnnot->SetSubtype(pPr->GetSubtype());
-			pTextMarkupAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			pTextMarkupAnnot->SetSubtype(pTMPr->GetSubtype());
+			pTextMarkupAnnot->SetQuadPoints(pTMPr->GetQuadPoints());
+
+			pMarkupAnnot->RemoveAP();
+			pTextMarkupAnnot->SetAP(pTMPr->GetQuadPoints(), pPr->GetCA());
 		}
 		else if (oInfo.IsSquareCircle())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CSquareCircleAnnotPr* pPr = oInfo.GetSquareCircleAnnotPr();
 			PdfWriter::CSquareCircleAnnotation* pSquareCircleAnnot = (PdfWriter::CSquareCircleAnnotation*)pAnnot;
 
@@ -2007,6 +2005,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pSquareCircleAnnot->SetIC(pPr->GetIC());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2014,8 +2013,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsPolygonLine())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CPolygonLineAnnotPr* pPr = oInfo.GetPolygonLineAnnotPr();
 			PdfWriter::CPolygonLineAnnotation* pPolygonLineAnnot = (PdfWriter::CPolygonLineAnnotation*)pAnnot;
 
@@ -2033,6 +2030,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPolygonLineAnnot->SetIT(pPr->GetIT());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2040,8 +2038,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsFreeText())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CFreeTextAnnotPr* pFTPr = oInfo.GetFreeTextAnnotPr();
 			PdfWriter::CFreeTextAnnotation* pFreeTextAnnot = (PdfWriter::CFreeTextAnnotation*)pAnnot;
 
@@ -2069,6 +2065,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pFreeTextAnnot->SetIC(pFTPr->GetIC());
 			if (bRender)
 			{
+				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				DrawAP(pAnnot, pRender, nLen);
@@ -2081,8 +2078,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		}
 		else if (oInfo.IsCaret())
 		{
-			pMarkupAnnot->RemoveAP();
-
 			CAnnotFieldInfo::CCaretAnnotPr* pPr = oInfo.GetCaretAnnotPr();
 			PdfWriter::CCaretAnnotation* pCaretAnnot = (PdfWriter::CCaretAnnotation*)pAnnot;
 
@@ -2094,14 +2089,36 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
+
+			// pMarkupAnnot->RemoveAP();
 		}
 		else if (oInfo.IsStamp())
 		{
 			CAnnotFieldInfo::CStampAnnotPr* pPr = oInfo.GetStampAnnotPr();
 			PdfWriter::CStampAnnotation* pStampAnnot = (PdfWriter::CStampAnnotation*)pAnnot;
 
-			pStampAnnot->SetName(pPr->GetName());
-			pStampAnnot->SetRotate(pPr->GetRotate());
+			pStampAnnot->SetName(L"#" + pPr->GetName());
+			double nRotate = pPr->GetRotate();
+
+			if (bRender)
+			{
+				pMarkupAnnot->RemoveAP();
+				LONG nLen = 0;
+				BYTE* pRender = oInfo.GetRender(nLen);
+				PdfWriter::CAnnotAppearanceObject* pAP = DrawAP(pAnnot, pRender, nLen);
+
+				double dRD1, dRD2, dRD3, dRD4;
+				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
+				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+				pAP->Add("BBox", pArray);
+				pArray->Add(dRD1);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD4);
+				pArray->Add(dRD3);
+				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
+				pStampAnnot->SetAPStream(pAP);
+			}
+
+			pStampAnnot->SetRotate(nRotate);
 		}
 	}
 	else if (oInfo.IsPopup())
@@ -3657,10 +3674,10 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	return L"";
 }
-void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
+PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
 {
 	if (!pAnnot || !pRender)
-		return;
+		return NULL;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
 	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
@@ -3682,6 +3699,8 @@ void CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLen
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);
 	RELEASEOBJECT(pFakePage);
+
+	return pAP;
 }
 void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender)
 {

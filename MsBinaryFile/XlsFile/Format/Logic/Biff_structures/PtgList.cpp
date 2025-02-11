@@ -31,6 +31,7 @@
  */
 
 #include "PtgList.h"
+#include "PtgExtraList.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
@@ -97,6 +98,11 @@ void PtgList::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool ful
     if (tableIndex != global_info->mapTableNames.end())
     {
         tableName = tableIndex->second;
+    }
+    else if(nonresident && !extra_data.empty())
+    {
+        auto extraList = static_cast<PtgExtraList*>(extra_data.front().get());
+        tableName = extraList->table;
     }
     else
     {

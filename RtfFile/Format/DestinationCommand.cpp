@@ -2282,7 +2282,7 @@ bool RtfBackgroundReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	return true;
 }
 
-RtfFieldReader::RtfFieldReader( RtfField& oField ):m_oField(oField)
+RtfFieldReader::RtfFieldReader( RtfField& oField ) : m_oField(oField)
 {
 	m_eInternalState = is_normal;
 }
@@ -2473,8 +2473,8 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 	{
 		RtfFieldInstPtr oNewFieldInst = RtfFieldInstPtr(new RtfFieldInst());
 		oNewFieldInst->m_oCharProperty = oReader.m_oState->m_oCharProp;
-		
-		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );
+
+		RtfFieldInstReader oFieldInstReader( *oNewFieldInst );				
 		StartSubReader( oFieldInstReader, oDocument, oReader );
 		
 		if ( oNewFieldInst->IsValid() )
@@ -2492,7 +2492,6 @@ bool RtfFieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, 
 	}
 	return true;
 }
-
 RtfAnnotElemReader::RtfAnnotElemReader( RtfAnnotElem& oAnnot ) : m_oAnnot(oAnnot)
 {
 }
@@ -2558,19 +2557,18 @@ void RtfBookmarkEndReader::ExecuteText(RtfDocument& oDocument, RtfReader& oReade
 RtfFieldInstReader::RtfFieldInstReader( RtfFieldInst& oFieldInst ) :  m_oFieldInst(oFieldInst) {}
 void RtfFieldInstReader::ExecuteText( RtfDocument& oDocument, RtfReader& oReader, std::wstring sText )
 {
-	RtfParagraphPropDestination::ExecuteText( oDocument, oReader, sText );
+	RtfParagraphPropDestination::ExecuteText(oDocument, oReader, sText);
 }
 void RtfFieldInstReader::ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 {
 	RtfParagraphPropDestination::Finalize( oReader );
-
-	m_oFieldInst.m_pTextItems	= m_oTextItems;
+	m_oFieldInst.m_pTextItems = m_oTextItems;
 }
 bool RtfFieldInstReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader , std::string sCommand, bool hasParameter, int parameter)
 {
-	if( "fldinst" == sCommand )
+	if ("fldinst" == sCommand)
 		return true;
-	if( "fldrslt" == sCommand )
+	if ("fldrslt" == sCommand)
 		return true;
 	else if ("formfield" == sCommand)
 	{

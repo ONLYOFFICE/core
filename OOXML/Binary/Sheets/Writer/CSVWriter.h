@@ -53,9 +53,9 @@ public:
 	CSVWriter();
 	~CSVWriter();
 	
-	void Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
+    void Xlsx2Csv(const std::wstring &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, int Lcid, bool bJSON);
 
-	void Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, bool bJSON);
+    void Init(OOX::Spreadsheet::CXlsx &oXlsx, unsigned int nCodePage, const std::wstring& wcDelimiter, int Lcid, bool bJSON);
 
 	bool Start(const std::wstring &sFileDst);
 	void WriteSheetStart(OOX::Spreadsheet::CWorksheet* pWorksheet);

@@ -110,21 +110,22 @@ std::wstring RtfParagraph::RenderToOOX(RenderParameter oRenderParameter)
 
 	std::wstring sResult ;
 
-	if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
+	if (RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType )
 	{
 		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
-	else if( RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType )
+	else if (RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType ||
+			 RENDER_TO_OOX_PARAM_FIELD == oRenderParameter.nType)
 	{
 		for (size_t i = 0; i < m_aArray.size(); i++ )
 		{
 			sResult += m_aArray[i]->RenderToOOX(oRenderParameter);
 		}
 	}
-	else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
+	else if (RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType )
 	{
 		if (m_aArray.size() < 1)
 		{

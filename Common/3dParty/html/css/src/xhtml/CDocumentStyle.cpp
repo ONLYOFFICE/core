@@ -316,7 +316,7 @@ namespace NSCSS
 
 		std::wstring wsTextAlign{oStyle.m_oText.GetAlign().ToWString()};
 
-		if (wsTextAlign.empty() && bInTable)
+		if (wsTextAlign.empty())
 			wsTextAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 
 		oXmlElement.AddPropertiesInP(PProperties::P_Jc, wsTextAlign);
@@ -485,7 +485,7 @@ namespace NSCSS
 			return;
 
 		if (!oStyle.m_oFont.GetSize().Empty())
-			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(static_cast<int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2. + 0.5))); // Значения шрифта увеличивает на 2
+			oXmlElement.AddPropertiesInR(RProperties::R_Sz, std::to_wstring(static_cast<int>(oStyle.m_oFont.GetSize().ToDouble(NSCSS::Point) * 2. * oStyle.m_oTransform.GetMatrix().GetFinalValue().sy() + 0.5))); // Значения шрифта увеличивает на 2
 
 		if (oStyle.m_oText.GetDecoration().m_oLine.Underline())
 			oXmlElement.AddPropertiesInR(RProperties::R_U, (!oStyle.m_oText.GetDecoration().m_oStyle.Empty()) ? oStyle.m_oText.GetDecoration().m_oStyle.ToWString() : L"single");

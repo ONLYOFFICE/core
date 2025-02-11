@@ -754,7 +754,8 @@ void _docx_drawing::serialize(std::wostream & strm/*, bool insideOtherDrawing*/)
 		return docx_serialize_child(strm, *this);
 	
 	if (type == typeMsObject ||
-		type == typeOleObject)
+		type == typeOleObject ||
+		type == typePDF)
 	{
 		docx_serialize_object(strm, *this);
 	}

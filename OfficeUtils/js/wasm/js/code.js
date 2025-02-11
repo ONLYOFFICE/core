@@ -1,3 +1,5 @@
+// not intended for use in production. only for testing/debugging purposes
+
 window.onload = function()
 {
 	var holder = document.body;

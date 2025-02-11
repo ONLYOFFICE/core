@@ -135,7 +135,7 @@
 	},
 	{
 		"folder": "./wasm/src/",
-		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "pdfwriter.cpp"]
+		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "pdfwriter.cpp", "HTMLRendererText.cpp"]
 	},
 	{
 		"folder": "freetype-2.10.4/src/",
@@ -202,10 +202,6 @@
 		"files": ["officedrawingfile.cpp"]
 	},
 	{
-		"folder": "../../../../HtmlRenderer/src/",
-		"files": ["HTMLRendererText.cpp"]
-	},
-	{
 		"folder": "../../../../UnicodeConverter/",
 		"files": ["UnicodeConverter.cpp"]
 	},
@@ -227,7 +223,7 @@
 	},
 	{
 		"folder": "../../../../DocxRenderer/src/logic/elements",
-		"files": ["BaseItem.cpp", "ContText.cpp", "DropCap.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp"]
+		"files": ["BaseItem.cpp", "ContText.cpp", "Paragraph.cpp", "Shape.cpp", "TextLine.cpp", "Table.cpp"]
 	},
 	{
 		"folder": "../../../common",

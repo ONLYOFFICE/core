@@ -5,6 +5,7 @@
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 #include "../../../../OOXML/Base/Unit.h"
 #include "../../../../OOXML/Common/SimpleTypes_OMath.h"
+#include "../../../../DesktopEditor/common/StringUTF32.h"
 #include "typeselements.h"
 #include "fontType.h"
 #include <vector>
@@ -115,6 +116,8 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter* pXmlWrite);
+		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText);
+		std::wstring TransformationUTF32(const std::wstring& wsText);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
 		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
@@ -241,6 +244,8 @@ namespace StarMath
 		CSpecialChar(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_wsSymbol(wsSymbol),m_wsAnnotation(wsAnnotation)
 		{
 			SetType(TypeElement::SpecialSymbol);
+			if(m_wsSymbol == L"\u0026")
+				m_wsSymbol = L"\u0026amp;";
 		}
 		virtual ~CSpecialChar();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;

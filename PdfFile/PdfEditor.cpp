@@ -804,7 +804,7 @@ int CPdfEditor::GetError()
 {
 	return nError;
 }
-void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
+void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent)
 {
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPagesRefObj || !xref || !pDoc)
@@ -837,7 +837,40 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 	{
 		Object oTemp;
 		char* chKey = pagesObj.dictGetKey(nIndex);
-		pagesObj.dictGetValNF(nIndex, &oTemp);
+		if (strcmp("Resources", chKey) == 0)
+		{
+			if (pagesObj.dictGetVal(nIndex, &oTemp)->isDict())
+			{
+				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, true, false);
+				pPageT->Add("Resources", pDict);
+				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+				{
+					Object oRes;
+					char* chKey2 = oTemp.dictGetKey(nIndex);
+					if (strcmp("Font", chKey2) == 0 || strcmp("ExtGState", chKey2) == 0 || strcmp("XObject", chKey2) == 0 || strcmp("Shading", chKey2) == 0 || strcmp("Pattern", chKey2) == 0)
+						oTemp.dictGetVal(nIndex, &oRes);
+					else
+						oTemp.dictGetValNF(nIndex, &oRes);
+					DictToCDictObject(&oRes, pDict, false, chKey2);
+					oRes.free();
+				}
+
+				oTemp.free();
+				continue;
+			}
+			else
+			{
+				oTemp.free();
+				pagesObj.dictGetValNF(nIndex, &oTemp);
+			}
+		}
+		else if (strcmp("Parent", chKey) == 0 && pPageParent)
+		{
+			pPageT->Add("Parent", pPageParent);
+			continue;
+		}
+		else
+			pagesObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPageT, false, chKey);
 		oTemp.free();
 	}
@@ -857,7 +890,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj)
 	{
 		Object kidRefObj;
 		if (kidsArrObj.arrayGetNF(i, &kidRefObj))
-			GetPageTree(xref, &kidRefObj);
+			GetPageTree(xref, &kidRefObj, pPageT);
 		kidRefObj.free();
 	}
 	kidsArrObj.free();
@@ -982,6 +1015,10 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			}
 		}
+		else if (strcmp("Parent", chKey) == 0)
+		{
+			pageObj.dictGetValNF(nIndex, &oTemp);
+		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPage, true, chKey);
@@ -1043,15 +1080,6 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	if (!pPDFDocument || !pDoc)
 		return false;
 
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
-	if (!pEditPage)
-	{
-		pEditPage = pDoc->GetCurPage();
-		EditPage(nPageIndex);
-		pDoc->SetCurPage(pEditPage);
-		pWriter->EditPage(pEditPage);
-	}
-
 	XRef* xref = pPDFDocument->getXRef();
 	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
 	if (!xref || pPageRef.first == 0)
@@ -1079,6 +1107,15 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	{
 		oAnnotRef.free(); oAnnot.free(); oType.free();
 		return false;
+	}
+
+	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	if (!pEditPage)
+	{
+		pEditPage = pDoc->GetCurPage();
+		EditPage(nPageIndex);
+		pDoc->SetCurPage(pEditPage);
+		pWriter->EditPage(pEditPage);
 	}
 
 	// Воспроизведение словаря аннотации из reader для writer
@@ -1282,6 +1319,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				nLength = oTemp.getInt();
 			PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 			pAPN->SetStream(pStream);
+			pAPN->Add("Length", nLength);
 			Stream* pOStream = oAPN.getStream()->getUndecodedStream();
 			pOStream->reset();
 			for (int nI = 0; nI < nLength; ++nI)
@@ -1467,10 +1505,13 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
 	if (it != m_mFonts.end())
 		wsFontPath = it->second;
-	std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
-	std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
-	if (it2 != mFonts.end())
-		wsFontPath = it2->second;
+	if (wsFontPath.empty())
+	{
+		std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+		std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
+		if (it2 != mFonts.end())
+			wsFontPath = it2->second;
+	}
 	if (wsFontPath.empty())
 		return false;
 	if (wsFontName == L"Helvetica")

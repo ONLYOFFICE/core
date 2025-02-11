@@ -1,9 +1,20 @@
 #include "x2tTester.h"
+
+#include <cctype>
+
 #include "../../../X2tConverter/src/run.h"
 
 class CFormatsList;
 class Cx2tTester;
 class CConverter;
+
+std::wstring GetFileExtLower(const std::wstring& file)
+{
+	std::wstring input_ext = NSFile::GetFileExtention(file);
+	for (auto& c : input_ext)
+		c = std::tolower(c);
+	return input_ext;
+}
 
 CFormatsList::CFormatsList()
 {
@@ -33,6 +44,9 @@ CFormatsList& CFormatsList::operator=(const CFormatsList& list)
 	for(auto& val : list.m_images)
 		m_images.push_back(val);
 
+	for(auto& val : list.m_draw)
+		m_draw.push_back(val);
+
 	for(auto& val : list.m_crossplatform)
 		m_crossplatform.push_back(val);
 
@@ -55,6 +69,10 @@ std::vector<std::wstring> CFormatsList::GetSpreadsheets() const
 std::vector<std::wstring> CFormatsList::GetCrossplatform() const
 {
 	return m_crossplatform;
+}
+std::vector<std::wstring> CFormatsList::GetDraw() const
+{
+	return m_draw;
 }
 std::vector<std::wstring> CFormatsList::GetImages() const
 {
@@ -81,6 +99,10 @@ bool CFormatsList::IsCrossplatform(const std::wstring& ext) const
 {
 	return std::find(m_crossplatform.begin(), m_crossplatform.end(), ext) != m_crossplatform.end();
 }
+bool CFormatsList::IsDraw(const std::wstring& ext) const
+{
+	return std::find(m_draw.begin(), m_draw.end(), ext) != m_draw.end();
+}
 bool CFormatsList::IsImage(const std::wstring& ext) const
 {
 	return std::find(m_images.begin(), m_images.end(), ext) != m_images.end();
@@ -91,7 +113,7 @@ bool CFormatsList::IsPdf(const std::wstring& ext) const
 }
 bool CFormatsList::IsAny(const std::wstring& ext) const
 {
-	return IsDocument(ext) || IsPresentation(ext) || IsSpreadsheet(ext) || IsCrossplatform(ext) || IsImage(ext) || IsPdf(ext);
+	return IsDocument(ext) || IsPresentation(ext) || IsSpreadsheet(ext) || IsCrossplatform(ext) || IsImage(ext) || IsPdf(ext) || IsDraw(ext);
 }
 
 void CFormatsList::AddDocument(const std::wstring& ext)
@@ -109,6 +131,10 @@ void CFormatsList::AddSpreadsheet(const std::wstring& ext)
 void CFormatsList::AddCrossplatform(const std::wstring& ext)
 {
 	m_crossplatform.push_back(ext);
+}
+void CFormatsList::AddDraw(const std::wstring& ext)
+{
+	m_draw.push_back(ext);
 }
 void CFormatsList::AddImage(const std::wstring& ext)
 {
@@ -134,6 +160,9 @@ std::vector<std::wstring> CFormatsList::GetAllExts() const
 	for (const auto& val : m_crossplatform)
 		all_formats.push_back(val);
 
+	for (const auto& val : m_draw)
+		all_formats.push_back(val);
+
 	if (!m_pdf.empty())
 		all_formats.push_back(m_pdf);
 
@@ -157,6 +186,10 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"fodt");
 	list.m_documents.push_back(L"htm");
 	list.m_documents.push_back(L"html");
+
+	list.m_documents.push_back(L"hwp");
+	list.m_documents.push_back(L"hwpx");
+
 	list.m_documents.push_back(L"mht");
 	list.m_documents.push_back(L"odt");
 	list.m_documents.push_back(L"ott");
@@ -204,8 +237,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_crossplatform.push_back(L"djvu");
 	list.m_crossplatform.push_back(L"xps");
 
-//	list.m_images.push_back(L"jpg");
-//	list.m_images.push_back(L"png");
+	list.m_draw.push_back(L"vsdx");
 
 	list.m_pdf = L"pdf";
 
@@ -321,12 +353,12 @@ Cx2tTester::Cx2tTester(const std::wstring& configPath)
 		time_t now = time(0);
 		std::tm* time = std::localtime(&now);
 		std::wstring timestamp =
-				std::to_wstring(time->tm_mday) + L"_" +
-				std::to_wstring(time->tm_mon + 1) + L"_" +
-				std::to_wstring(time->tm_year + 1900) + L"_" +
-				std::to_wstring(time->tm_hour) + L"_" +
-				std::to_wstring(time->tm_min) + L"_" +
-				std::to_wstring(time->tm_sec);
+		        std::to_wstring(time->tm_mday) + L"_" +
+		        std::to_wstring(time->tm_mon + 1) + L"_" +
+		        std::to_wstring(time->tm_year + 1900) + L"_" +
+		        std::to_wstring(time->tm_hour) + L"_" +
+		        std::to_wstring(time->tm_min) + L"_" +
+		        std::to_wstring(time->tm_sec);
 
 		std::wstring report_ext = NSFile::GetFileExtention(m_reportFile);
 		m_reportFile = m_reportFile.substr(0, m_reportFile.size() - report_ext.size() - 1);
@@ -505,12 +537,12 @@ void Cx2tTester::Start()
 	{
 		std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
+		std::wstring input_ext = GetFileExtLower(input_file);
 
 		// if no format in input formats - skip
 		if(std::find(m_inputExts.begin(), m_inputExts.end(), input_ext) == m_inputExts.end()
-		|| (std::find(m_inputFiles.begin(), m_inputFiles.end(), input_filename) == m_inputFiles.end()
-		&& !m_inputFiles.empty()))
+		        || (std::find(m_inputFiles.begin(), m_inputFiles.end(), input_filename) == m_inputFiles.end()
+		            && !m_inputFiles.empty()))
 		{
 			files.erase(files.begin() + i);
 			i--;
@@ -602,12 +634,12 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 	{
 		const std::wstring& input_file = files[i];
 		std::wstring input_filename = NSFile::GetFileName(input_file);
-		std::wstring input_ext = NSFile::GetFileExtention(input_file);
+		std::wstring input_ext = GetFileExtLower(input_file);
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
 
 		// takes full directory after input folder
 		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
-																	input_file_directory.size() - m_inputDirectory.size());
+		                                                            input_file_directory.size() - m_inputDirectory.size());
 
 		std::wstring output_files_directory = m_outputDirectory + input_subfolders;
 		if(!bNoDirectory)
@@ -620,22 +652,22 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 		{
 			// documents -> documents
 			if(((m_outputFormatsList.IsDocument(ext) && m_inputFormatsList.IsDocument(input_ext))
-			// spreadsheets -> spreadsheets
-			|| (m_outputFormatsList.IsSpreadsheet(ext) && m_inputFormatsList.IsSpreadsheet(input_ext))
-			//presentations -> presentations
-			|| (m_outputFormatsList.IsPresentation(ext) && m_inputFormatsList.IsPresentation(input_ext))
-			// xps -> docx
-			|| (ext == L"docx" && input_ext == L"xps")
-			// pdf -> docx
-			|| (ext == L"docx" && m_inputFormatsList.IsPdf(input_ext))
-			// all formats -> images
-			|| m_outputFormatsList.IsImage(ext)
-			// all formats -> pdf
-			|| m_outputFormatsList.IsPdf(ext))
-			// input format != output format
-			&& ext != input_ext
-			// any good input ext
-			&& m_inputFormatsList.IsAny(input_ext))
+			    // spreadsheets -> spreadsheets
+			    || (m_outputFormatsList.IsSpreadsheet(ext) && m_inputFormatsList.IsSpreadsheet(input_ext))
+			    //presentations -> presentations
+			    || (m_outputFormatsList.IsPresentation(ext) && m_inputFormatsList.IsPresentation(input_ext))
+			    // xps -> docx
+			    || (ext == L"docx" && input_ext == L"xps")
+			    // pdf -> docx
+			    || (ext == L"docx" && m_inputFormatsList.IsPdf(input_ext))
+			    // all formats -> images
+			    || m_outputFormatsList.IsImage(ext)
+			    // all formats -> pdf
+			    || m_outputFormatsList.IsPdf(ext))
+			        // input format != output format
+			        && ext != input_ext
+			        // any good input ext
+			        && m_inputFormatsList.IsAny(input_ext))
 			{
 				output_file_exts.push_back(ext);
 			}
@@ -653,8 +685,8 @@ void Cx2tTester::Convert(const std::vector<std::wstring>& files, bool bNoDirecto
 
 		// setup csv & txt additional params
 		if(m_bIsFilenameCsvTxtParams
-				|| input_ext == L"txt"
-				|| input_ext == L"csv")
+		        || input_ext == L"txt"
+		        || input_ext == L"csv")
 		{
 			std::wstring find_str = L"[cp";
 			size_t pos1 = input_filename.find(find_str);
@@ -741,7 +773,7 @@ void Cx2tTester::Extract(const std::vector<std::wstring>& files)
 		std::wstring input_filename = NSFile::GetFileName(input_file);
 		std::wstring input_file_directory = NSFile::GetDirectoryName(input_file);
 		std::wstring input_subfolders = input_file_directory.substr(m_inputDirectory.size(),
-																	input_file_directory.size() - m_inputDirectory.size());
+		                                                            input_file_directory.size() - m_inputDirectory.size());
 		std::wstring output_files_directory = m_outputDirectory + input_subfolders + FILE_SEPARATOR_STR + input_filename;
 
 		if(!NSDirectory::Exists(output_files_directory))
@@ -848,6 +880,8 @@ std::vector<std::wstring> Cx2tTester::ParseExtensionsString(std::wstring extensi
 	while ((pos = extensions.find(' ')) != std::wstring::npos)
 	{
 		std::wstring ext = extensions.substr(0, pos);
+		for (auto& c : ext)
+			c = std::tolower(c);
 
 		if(ext == L"documents")
 			exts = fl.GetDocuments();
@@ -972,7 +1006,7 @@ DWORD CConverter::ThreadProc()
 		std::wstring xml_params_file = m_outputFilesDirectory + FILE_SEPARATOR_STR + xml_params_filename;
 
 		std::wstring output_file = m_outputFilesDirectory
-				+ FILE_SEPARATOR_STR + input_filename_no_ext + output_ext;
+		        + FILE_SEPARATOR_STR + input_filename_no_ext + output_ext;
 
 		std::wstring output_filename = NSFile::GetFileName(output_file);
 
@@ -1128,7 +1162,7 @@ DWORD CConverter::ThreadProc()
 			Cx2tTester::Report report;
 			report.inputFile = input_filename;
 			report.outputFile = output_filename;
-			report.direction = input_ext.substr(1, input_ext.size() - 1) + L"-" + output_ext.substr(1, output_ext.size() - 1);
+			report.direction = m_inputExt + L"-" + output_ext.substr(1, output_ext.size() - 1);
 			report.time = NSTimers::GetTickCount() - time_file_start;
 			report.inputSize = input_size;
 			report.outputSize = output_size;

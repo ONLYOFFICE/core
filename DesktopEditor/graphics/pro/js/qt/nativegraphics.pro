@@ -19,7 +19,7 @@ include($$CORE_ROOT_DIR/Common/base.pri)
 include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 include(../../freetype.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, HtmlRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 INCLUDEPATH += \
 	$$CORE_ROOT_DIR/DesktopEditor/agg-2.4/include \
@@ -704,7 +704,6 @@ HEADERS += \
 SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/BaseItem.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.cpp \
-	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.cpp \
@@ -720,14 +719,15 @@ SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/DocxRenderer.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/resources/resources.cpp
 
-HEADERS += $$CORE_ROOT_DIR/HtmlRenderer/include/HTMLRendererText.h
-SOURCES += $$CORE_ROOT_DIR/HtmlRenderer/src/HTMLRendererText.cpp
+HEADERS += $$CORE_ROOT_DIR/DesktopEditor/doctrenderer/drawingfile.h
 
 HEADERS += \
-	../wasm/src/drawingfile.h \
-	../wasm/src/serialize.h
+	../wasm/src/serialize.h \
+	../wasm/src/HTMLRendererText.h \
+	../wasm/src/Text.h
 
 SOURCES += \
 	../wasm/src/pdfwriter.cpp \
+	../wasm/src/HTMLRendererText.cpp \
 	../wasm/src/drawingfile.cpp \
 	../wasm/src/drawingfile_test.cpp

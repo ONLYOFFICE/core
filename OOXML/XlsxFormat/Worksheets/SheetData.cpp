@@ -4587,6 +4587,13 @@ namespace OOX
 			}
 			m_mapStyleMerges2003.clear();
 		}
+        void CSheetData::ClearSharedFmlaRefs()
+        {
+            if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
+            if(SharedFormulasRef::ArrayRefsLocations)
+                SharedFormulasRef::ArrayRefsLocations.reset();
+        }
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
             oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
@@ -4723,8 +4730,7 @@ namespace OOX
                 else
                     delete pRow;
             }
-            if(SharedFormulasRef::sharedRefsLocations)
-                SharedFormulasRef::sharedRefsLocations.reset();
+            ClearSharedFmlaRefs();
         }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{
@@ -4781,10 +4787,7 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-		if(SharedFormulasRef::sharedRefsLocations)
-			SharedFormulasRef::sharedRefsLocations.reset();
-		if(SharedFormulasRef::ArrayRefsLocations)
-			SharedFormulasRef::ArrayRefsLocations.reset();
+        ClearSharedFmlaRefs();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
             writer->storeNextRecord(record);

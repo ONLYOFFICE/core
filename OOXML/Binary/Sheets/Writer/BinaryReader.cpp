@@ -4615,6 +4615,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
                 m_pCurStreamWriterBin->storeNextRecord(begin);
             }
             READ1_DEF(length, res, this->ReadSheetData, NULL);
+            m_pCurWorksheet->m_oSheetData->ClearSharedFmlaRefs();
             {
                 auto end = m_pCurStreamWriterBin->getNextRecord(XLSB::rt_EndSheetData);
                 m_pCurStreamWriterBin->storeNextRecord(end);

@@ -59,7 +59,7 @@ namespace StarMath
 	public:
 		COOXml2Odf();
 		~COOXml2Odf();
-		void StartConversion(OOX::WritingElement* pNode,std::wstring wsBaseColor = L"",unsigned int uiBaseSize = 0);
+		void StartConversion(OOX::WritingElement* pNode);
 		void ConversionMathPara(OOX::Logic::COMathPara* pMathPara);
 		void NodeDefinition(OOX::WritingElement* pNode, const bool &bMatrix = false);
 		void ConversionMath(OOX::Logic::COMath* pMath);
@@ -131,6 +131,7 @@ namespace StarMath
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
 		std::wstring GetSemantic();
+		void SetBaseAttribute(std::wstring wsBaseColor = L"", unsigned int uiBaseSize = 0);
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 		std::wstring m_wsAnnotationStarMath,m_wsSemantic;

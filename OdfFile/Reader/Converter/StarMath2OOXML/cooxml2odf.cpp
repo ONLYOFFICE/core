@@ -12,12 +12,8 @@ namespace StarMath
 	{
 		delete m_pXmlWrite;
 	}
-	void COOXml2Odf::StartConversion(OOX::WritingElement *pNode, std::wstring wsBaseColor, unsigned int uiBaseSize)
+	void COOXml2Odf::StartConversion(OOX::WritingElement *pNode)
 	{
-		if(!wsBaseColor.empty())
-			m_wsBaseColor = wsBaseColor;
-		if(uiBaseSize != 0)
-			m_uiBaseSize = uiBaseSize;
 		m_pXmlWrite->WriteNodeBegin(L"math",true);
 		m_pXmlWrite->WriteAttribute(L"xmlns",L"http:\/\/www.w3.org/1998/Math/MathML");
 		m_pXmlWrite->WriteAttribute(L"display",L"block");
@@ -1157,6 +1153,13 @@ namespace StarMath
 	std::wstring COOXml2Odf::GetSemantic()
 	{
 		return m_wsSemantic;
+	}
+	void COOXml2Odf::SetBaseAttribute(std::wstring wsBaseColor, unsigned int uiBaseSize)
+	{
+		if(!wsBaseColor.empty())
+			m_wsBaseColor = wsBaseColor;
+		if(uiBaseSize != 0)
+			m_uiBaseSize = uiBaseSize;
 	}
 	void COOXml2Odf::ConversionRad(OOX::Logic::CRad *pRad)
 	{

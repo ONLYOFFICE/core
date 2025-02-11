@@ -197,7 +197,8 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
-			starMathConverter.StartConversion(oox_math,base_font_color,base_font_size);
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
+			starMathConverter.StartConversion(oox_math);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 
@@ -273,7 +274,8 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
-			starMathConverter.StartConversion(oox_math_para,base_font_color,base_font_size);
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
+			starMathConverter.StartConversion(oox_math_para);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 

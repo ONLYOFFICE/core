@@ -6404,6 +6404,8 @@ int BinaryWorksheetsTableReader::ReadCells(BYTE type, long length, void* poResul
 		}
         else if(m_pCurStreamWriterBin != NULL)
         {
+            if(oCell.m_oRow.IsInit())
+                *(oCell.m_oRow) += 1;
             oCell.toBin(m_pCurStreamWriterBin);
         }
 		else
@@ -8792,9 +8794,12 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
                 OOX::CPath oXlPath = OOX::CPath(sDstPath).GetDirectory() / oXlsb.m_pWorkbook->DefaultDirectory();
                 oXlsb.WriteWorkbook(oXlPath);
-                oXlsb.m_pWorkbook->OOX::File::m_pMainDocument = &oXlsb;
-                oXlsb.m_pStyles->OOX::File::m_pMainDocument = &oXlsb;
-                oXlsb.m_pSharedStrings->OOX::File::m_pMainDocument = &oXlsb;
+                if(oXlsb.m_pWorkbook)
+                    oXlsb.m_pWorkbook->OOX::File::m_pMainDocument = &oXlsb;
+                if(oXlsb.m_pStyles)
+                    oXlsb.m_pStyles->OOX::File::m_pMainDocument = &oXlsb;
+                if(oXlsb.m_pSharedStrings)
+                    oXlsb.m_pSharedStrings->OOX::File::m_pMainDocument = &oXlsb;
 				oXlsb.PrepareToWrite();
 				oXlsb.WriteBin(sDstPath, *oSaveParams.pContentTypes);
 				

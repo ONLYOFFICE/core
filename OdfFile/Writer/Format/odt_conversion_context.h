@@ -65,6 +65,8 @@ public:
 	virtual void start_document();
 	virtual void end_document();
 
+	virtual bool is_child_text_context();
+
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();
 	virtual odf_controls_context	* controls_context();
@@ -79,7 +81,7 @@ public:
 	virtual void start_drawing_context();
 	virtual void end_drawing_context();
 
-	virtual bool start_math();
+	virtual bool start_math(int base_font_size, const std::wstring& base_font_color);
 	virtual void end_math();
 
 	void add_text_content	(const std::wstring & text);

@@ -4,7 +4,7 @@
 namespace StarMath
 {
 //class OOXml2Odf
-	COOXml2Odf::COOXml2Odf()
+	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_uiBaseSize(0)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 	}
@@ -553,10 +553,13 @@ namespace StarMath
 			ConversionMRunProperties(pMRun->m_oMRPr.GetPointer(),stRpr);
 		if(pMRun->m_oMText.GetPointer() != nullptr)
 			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr,pMRun->m_oMRPr.GetPointer());
+		CreateAttribute(stRpr);
 		if(stRpr != nullptr && !arLine.empty())
 		{
 			if(!m_stAttribute.empty())
 				AttributeCheck(m_stAttribute.top(),stRpr);
+			else
+				AttributeCheck(stRpr);
 			for(int i = 0; i<arLine.size();i++)
 			{
 				if(i != 0 )
@@ -682,6 +685,29 @@ namespace StarMath
 				pChild->m_enFont = StarMath::TypeFont::empty;
 		}
 	}
+	void COOXml2Odf::AttributeCheck(StValuePr*& pChild)
+	{
+		if(pChild == nullptr && !pChild->m_bBaseAttribute)
+			return;
+		if(m_uiBaseSize != 0 && pChild->m_iSize == 0)
+			pChild->m_iSize = m_uiBaseSize;
+		if(!m_wsBaseColor.empty() && pChild->m_wsColor.empty())
+			pChild->m_wsColor = m_wsBaseColor;
+	}
+	void COOXml2Odf::CreateAttribute(StValuePr*& pAttribute)
+	{
+		if(pAttribute != nullptr)
+			return;
+		if(m_uiBaseSize != 0 || !m_wsBaseColor.empty())
+		{
+			pAttribute = new StValuePr;
+			pAttribute->m_bBaseAttribute = true;
+			if(m_uiBaseSize != 0)
+				pAttribute->m_iSize = m_uiBaseSize;
+			if(!m_wsBaseColor.empty())
+				pAttribute->m_wsColor = m_wsBaseColor;
+		}
+	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
 	{
 		std::wstring wsSymbol = pAcc->m_oAccPr->m_oChr.IsInit() ? pAcc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"",wsSign;
@@ -793,6 +819,11 @@ namespace StarMath
 		else if(pRPr->m_oItalic.GetPointer() != nullptr && pRPr->m_oItalic.GetPointer()->m_oVal.GetValue() == SimpleTypes::EOnOff::onoffTrue)
 		{
 			stTempPr->m_enStyle = SimpleTypes::EStyle::styleItalic;
+			bRpr = true;
+		}
+		else if(pRPr->m_oU.GetPointer() != nullptr && pRPr->m_oU->m_oVal.GetPointer() != nullptr)
+		{
+			stTempPr->m_enUnderLine = pRPr->m_oU->m_oVal->GetValue();
 			bRpr = true;
 		}
 		if(bRpr == true)
@@ -1090,10 +1121,13 @@ namespace StarMath
 			pValue = ConversionRunProperties(pCtrlPr->m_oRPr.GetPointer());
 		else if(pCtrlPr->m_oARPr.GetPointer() != nullptr)
 			ConversionARpr(pCtrlPr->m_oARPr.GetPointer(),pValue);
+		CreateAttribute(pValue);
 		if(pValue != nullptr)
 		{
 			if(!m_stAttribute.empty())
 				AttributeCheck(m_stAttribute.top(),pValue);
+			else
+				AttributeCheck(pValue);
 			COneElement::ConversionAttribute(pValue,stStyle,m_pXmlWrite,m_wsAnnotationStarMath,bDelimiter);
 			if(bDelimiter)
 				m_stAttribute.push(pValue);
@@ -1119,6 +1153,13 @@ namespace StarMath
 	std::wstring COOXml2Odf::GetSemantic()
 	{
 		return m_wsSemantic;
+	}
+	void COOXml2Odf::SetBaseAttribute(std::wstring wsBaseColor, unsigned int uiBaseSize)
+	{
+		if(!wsBaseColor.empty())
+			m_wsBaseColor = wsBaseColor;
+		if(uiBaseSize != 0)
+			m_uiBaseSize = uiBaseSize;
 	}
 	void COOXml2Odf::ConversionRad(OOX::Logic::CRad *pRad)
 	{
@@ -1417,8 +1458,13 @@ namespace StarMath
 	void COOXml2Odf::StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter *pXmlWrite)
 	{
 		if(stStyle.m_bMenClose)
-		{
 			pXmlWrite->WriteNodeEnd(L"menclose",false,false);
+		if(stStyle.m_bUnderlineClose)
+		{
+			pXmlWrite->WriteNodeBegin(L"mo",false);
+			pXmlWrite->WriteString(L"\u0332");
+			pXmlWrite->WriteNodeEnd(L"mo",false,false);
+			pXmlWrite->WriteNodeEnd(L"munder",false,false);
 		}
 		if(stStyle.m_iStyle != 0)
 		{
@@ -1732,6 +1778,14 @@ namespace StarMath
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
 			wsAnnotation += L"overstrike ";
 			stStyle.m_bMenClose = true;
+		}
+		if(pAttribute->m_enUnderLine == SimpleTypes::EUnderline::underlineSingle)
+		{
+			pXmlWrite->WriteNodeBegin(L"munder",true);
+			pXmlWrite->WriteAttribute(L"accentunder",L"true");
+			pXmlWrite->WriteNodeEnd(L"w",true,false);
+			wsAnnotation += L"underline ";
+			stStyle.m_bUnderlineClose = true;
 		}
 		if(!bDelimiter)
 			pAttribute->Release();

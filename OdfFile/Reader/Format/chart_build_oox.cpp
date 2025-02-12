@@ -259,6 +259,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 	}
 	else if (object_type_ == 3 && office_math_)
 	{
+		bool in_draw_frame = Context.get_drawing_state_content();
 		oox::StreamsManPtr prev = Context.get_stream_man();
 		
 		std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
@@ -268,7 +269,7 @@ void object_odf_context::docx_convert(oox::docx_conversion_context & Context)
 
 		Context.get_math_context().base_font_size_ = baseFontHeight_;	
 		Context.get_math_context().base_font_name_ = baseFontName_;
-		Context.get_math_context().base_alignment_ = baseAlignment_;
+		Context.get_math_context().base_alignment_ = in_draw_frame ? 0 : baseAlignment_;
 		Context.get_math_context().base_font_italic_ = baseFontItalic_;
 		Context.get_math_context().base_font_bold_ = baseFontBold_;
 

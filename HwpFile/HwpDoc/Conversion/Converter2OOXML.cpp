@@ -13,6 +13,9 @@
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"
 #include "../Paragraph/CtrlEqEdit.h"
+#include "../Paragraph/CtrlShapeArc.h"
+#include "../Paragraph/CtrlShapePolygon.h"
+#include "../Paragraph/CtrlShapeCurve.h"
 
 #include "../HWPElements/HWPRecordParaShape.h"
 #include "../HWPElements/HWPRecordCharShape.h"
@@ -27,7 +30,7 @@
 
 namespace HWP
 {
-static std::vector<std::pair<THWPColor, std::wstring>> arHighlightColors
+static const std::vector<std::pair<THWPColor, std::wstring>> arHighlightColors
 	{{{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
 	  {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
 	  {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
@@ -71,7 +74,8 @@ EShapeObjectType GetShapeObjectType(const std::wstring& wsID)
 }
 
 CConverter2OOXML::CConverter2OOXML()
-	: m_pContext(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0), m_ushEquationCount(0)
+	: m_pContext(nullptr), m_ushShapeCount(0), m_ushPageCount(1), m_ushTableCount(0),
+	  m_ushEquationCount(0), m_ushBookmarkCount(0)
 {}
 
 CConverter2OOXML::~CConverter2OOXML()
@@ -328,13 +332,11 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	{
 		case ECtrlCharType::PARAGRAPH_BREAK:
 		{
-			if (oState.m_bOpenedP)
-			{
-				oState.m_bOpenedP = false;
-				oBuilder.WriteString(L"</w:p>");
-			}
-			else
-				WriteText(L"", shParaShapeID, pCharacter->GetCharShapeId(), oBuilder, oState);
+			if (!oState.m_bOpenedP)
+				break;
+
+			oState.m_bOpenedP = false;
+			oBuilder.WriteString(L"</w:p>");
 
 			break;
 		}
@@ -349,9 +351,9 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	}
 }
 
-void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (nullptr == pShape)
+	if (nullptr == pShape || oState.m_bInTextBox)
 		return;
 
 	switch (pShape->GetShapeType())
@@ -360,36 +362,36 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, NSStringUtils
 		case EShapeType::Ellipse:
 		case EShapeType::Rect:
 		case EShapeType::Line:
+		case EShapeType::Polygon:
+		case EShapeType::Curve:
 		{
-			WriteGeometryShape(pShape, oBuilder, oState);
+			WriteGeometryShape(pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Pic:
 		{
-			WritePicture((const CCtrlShapePic*)pShape, oBuilder, oState);
+			WritePicture((const CCtrlShapePic*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::EqEdit:
 		{
-			WriteEqEditShape((const CCtrlEqEdit*)pShape, oBuilder, oState);
+			WriteEqEditShape((const CCtrlEqEdit*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Ole:
 		{
-			WriteOleShape((const CCtrlShapeOle*)pShape, oBuilder, oState);
+			WriteOleShape((const CCtrlShapeOle*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::Video:
 		{
-			WriteVideo((const CCtrlShapeVideo*)pShape, oBuilder, oState);
+			WriteVideo((const CCtrlShapeVideo*)pShape, shParaShapeID, oBuilder, oState);
 			break;
 		}
 		case EShapeType::GeneralShape:
 		case EShapeType::ConnectLine:
 		case EShapeType::Container:
-		case EShapeType::Polygon:
 		case EShapeType::TextArt:
-		case EShapeType::Curve:
 			break;
 	}
 }
@@ -414,22 +416,32 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 	{
 		case EFieldType::Hyperlink:
 		{
-			HWP_STRING sCommand = pShape->GetCommand();
+			HWP_STRING wsHref = pShape->GetStringParam(L"Path");
 
-			if (sCommand.empty())
-				break;
-
-			sCommand = sCommand.substr(0, sCommand.find(L';'));
-
-			size_t unFound = sCommand.find(L'\\');
-
-			while (HWP_STRING::npos != unFound)
+			if(wsHref.empty())
 			{
-				sCommand.erase(unFound, 1);
-				unFound = sCommand.find(L'\\', unFound);
+				HWP_STRING sCommand = pShape->GetStringParam(L"Command");
+
+				if (sCommand.empty())
+					sCommand = pShape->GetCommand();
+
+				sCommand = sCommand.substr(0, sCommand.find(L';'));
+
+				size_t unFound = sCommand.find(L'\\');
+
+				while (HWP_STRING::npos != unFound)
+				{
+					sCommand.erase(unFound, 1);
+					unFound = sCommand.find(L'\\', unFound);
+				}
+
+				wsHref = sCommand;
 			}
 
-			const HWP_STRING wsID = AddRelationship(L"hyperlink", sCommand);
+			if (wsHref.empty())
+				break;
+
+			const HWP_STRING wsID = AddRelationship(L"hyperlink", wsHref);
 
 			OpenParagraph(shParaShapeID, oBuilder, oState);
 			oBuilder.WriteString(L"<w:hyperlink r:id=\"" + wsID + L"\">");
@@ -441,6 +453,26 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 		case EFieldType::HyperlinkClosing:
 		{
 			oBuilder.WriteString(L"</w:hyperlink>");
+			break;
+		}
+		case EFieldType::Bookmark:
+		{
+			oBuilder.WriteString(L"<w:bookmarkStart w:id=\"" + std::to_wstring(m_ushBookmarkCount) + L"\" w:name=\"");
+			oBuilder.WriteEncodeXmlString(pShape->GetStringParam(L"bookmarkname"));
+			oBuilder.WriteString(L"\"/>");
+
+			oState.m_arOpenedBookmarks.push(m_ushBookmarkCount++);
+			oState.m_mOpenField.insert(std::make_pair(pShape->GetInstanceID(), pShape));
+
+			break;
+		}
+		case EFieldType::BookmarkClosing:
+		{
+			if (oState.m_arOpenedBookmarks.empty())
+				break;
+
+			oBuilder.WriteString(L"<w:bookmarkEnd w:id=\"" + std::to_wstring(oState.m_arOpenedBookmarks.top()) + L"\"/>");
+			oState.m_arOpenedBookmarks.pop();
 			break;
 		}
 		//TODO:: как-будто хочется определить тип закрывающей field на этапе парса hwpx
@@ -455,6 +487,15 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 					case EFieldType::Hyperlink:
 					{
 						oBuilder.WriteString(L"</w:hyperlink>");
+						break;
+					}
+					case EFieldType::Bookmark:
+					{
+						if (oState.m_arOpenedBookmarks.empty())
+							break;
+
+						oBuilder.WriteString(L"<w:bookmarkEnd w:id=\"" + std::to_wstring(oState.m_arOpenedBookmarks.top()) + L"\"/>");
+						oState.m_arOpenedBookmarks.pop();
 						break;
 					}
 					default:
@@ -482,38 +523,21 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 		return;
 
 	CloseParagraph(oBuilder, oState);
-	OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
 
 	if (0 < pParagraph->GetBreakType())
 	{
 		if ((0x04 == (pParagraph->GetBreakType() & 0x04)) && (0 < oState.m_unParaIndex))
 		{
-			if (oState.m_bOpenedP)
-				oBuilder.WriteString(L"</w:p>");
-
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
-
-			oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
-
-			oState.m_bOpenedP = true;
+			oState.m_eBreakType = TConversionState::EBreakType::Page;
+			// oBuilder.WriteString(L"<w:r><w:br w:type=\"page\"/></w:r>");
 			++m_ushPageCount;
 		}
 		else if (0x08 == (pParagraph->GetBreakType() & 0x08))
-		{
-			if (oState.m_bOpenedP)
-				oBuilder.WriteString(L"</w:p>");
-
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oState);
-
-			oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
-
-			oState.m_bOpenedP = true;
-		}
+			oState.m_eBreakType = TConversionState::EBreakType::Column;
+			// oBuilder.WriteString(L"<w:r><w:br w:type=\"column\"/></w:r>");
 	}
 
 	++oState.m_unParaIndex;
-
-	std::vector<const CCtrlNote*> arNotes;
 
 	for (const CCtrl* pCtrl : pParagraph->GetCtrls())
 	{
@@ -532,7 +556,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Shape:
 			{
-				WriteShape((const CCtrlGeneralShape*)pCtrl, oBuilder, oState);
+				WriteShape((const CCtrlGeneralShape*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Table:
@@ -542,7 +566,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Note:
 			{
-				arNotes.push_back((const CCtrlNote*)pCtrl);
+				WriteNote((const CCtrlNote*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::SectionDef:
@@ -557,7 +581,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::AutoNumber:
 			{
-				WriteAutoNumber((const CCtrlAutoNumber*)pCtrl, pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
+				WriteAutoNumber((const CCtrlAutoNumber*)pCtrl, pParagraph->GetShapeID(), oState.m_ushLastCharShapeId, oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Field:
@@ -574,20 +598,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			default:
 				break;
 		}
-
-		if (!arNotes.empty() && ECtrlObjectType::Note != pCtrl->GetCtrlType() && oState.m_bOpenedP)
-		{
-			for (const CCtrlNote* pNote: arNotes)
-				WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
-
-			arNotes.clear();
-		}
-	}
-
-	if (oState.m_bOpenedP && !arNotes.empty())
-	{
-		for (const CCtrlNote* pNote: arNotes)
-			WriteNote(pNote, pParagraph->GetShapeID(), oBuilder, oState);
 	}
 
 	CloseParagraph(oBuilder, oState);
@@ -616,6 +626,11 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 		oState.m_eBreakType = TConversionState::EBreakType::Page;
 
 	oBuilder.WriteString(L"<w:keepNext w:val=\"" + HWP_STRING((pParaShape->KeepWithNext()) ? L"true" : L"false") + L"\"/>");
+
+	const int nIndent = pParaShape->GetIndent();
+
+	if (0 != nIndent)
+		oBuilder.WriteString(L"<w:ind w:firstLine=\"" + std::to_wstring(static_cast<int>(std::ceil(nIndent / 10.))) + L"\"/>");
 
 	switch(pParaShape->GetHorizantalAlign())
 	{
@@ -680,7 +695,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, NSStringUti
 
 			oBuilder.WriteString(L"<w:numPr>");
 
-			oBuilder.WriteString(L"<w:ilvl w:val=\"0\"/>");
+			oBuilder.WriteString(L"<w:ilvl w:val=\"" + std::to_wstring((int)pParaShape->GetHeadingLevel()) + L"\"/>");
 			oBuilder.WriteString(L"<w:numId w:val=\"" + std::to_wstring(nNumId) + L"\"/>");
 
 			oBuilder.WriteString(L"</w:numPr>");
@@ -697,6 +712,8 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 {
 	if (nullptr == pTable || pTable->Empty())
 		return;
+
+	CloseParagraph(oBuilder, oState);
 
 	++m_ushTableCount;
 
@@ -838,10 +855,18 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 	{
 		for (const CHWPPargraph* pParagraph : pCell->GetParagraphs())
 		{
+			NSStringUtils::CStringBuilder oCellBuilder;
 			TConversionState oCellState;
-			// Так как даже в пустой ячейки нужен параграф, то открываем его заранее, чтобы он 100% был (закроется он автоматически в WriteParagraph)
-			OpenParagraph(pParagraph->GetShapeID(), oBuilder, oCellState);
-			WriteParagraph(pParagraph, oBuilder, oCellState);
+
+			WriteParagraph(pParagraph, oCellBuilder, oCellState);
+
+			if (0 == oCellBuilder.GetCurSize())
+			{
+				OpenParagraph(pParagraph->GetShapeID(), oBuilder, oCellState);
+				CloseParagraph(oBuilder, oCellState);
+			}
+			else
+				oBuilder.Write(oCellBuilder);
 		}
 	}
 	else
@@ -865,15 +890,15 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 
 	oBuilder.WriteString(L"<w:tcBorders>");
 
-	WriteCellBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
-	WriteCellBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
-	WriteCellBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
-	WriteCellBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
+	WriteBorder(pBorderFill->GetTopBorder(), L"top", oBuilder);
+	WriteBorder(pBorderFill->GetLeftBorder(), L"left", oBuilder);
+	WriteBorder(pBorderFill->GetBottomBorder(), L"bottom", oBuilder);
+	WriteBorder(pBorderFill->GetRightBorder(), L"right", oBuilder);
 
 	oBuilder.WriteString(L"</w:tcBorders>");
 }
 
-void CConverter2OOXML::WriteCellBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (0x00 == oBorder.m_chWidth || sBorderName.empty())
 		return;
@@ -901,7 +926,25 @@ void CConverter2OOXML::WriteCellBorder(const TBorder& oBorder, const HWP_STRING&
 	oBuilder.WriteString(L"<w:" + sBorderName + L" w:val=\"" + sType + L"\" w:sz=\"" + std::to_wstring(Transform::LineWidth2Pt((short)oBorder.m_chWidth)) + L"\" w:space=\"0\" w:color=\"" + Transform::IntColorToHEX(oBorder.m_nColor) + L"\"/>");
 }
 
-void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+VECTOR<TPoint> ArcToBezier(const TPoint& oStart, const TPoint& oEnd, const TPoint& oCenter)
+{
+	const double dRadiusX = std::abs(oStart.m_nX - oCenter.m_nX);
+	const double dRadiusY = std::abs(oStart.m_nY - oCenter.m_nY);
+
+	// Вычисление углов
+	double dStartAngle = std::atan2(oStart.m_nY - oCenter.m_nY, oStart.m_nX - oCenter.m_nX);
+	double dEndAngle   = std::atan2(oEnd.m_nY   - oCenter.m_nY, oEnd.m_nX   - oCenter.m_nX);
+
+	if (dEndAngle < dStartAngle)
+		std::swap(dStartAngle, dEndAngle);
+
+	TPoint oControl1{static_cast<int>(oStart.m_nX + dRadiusX * std::cos(dStartAngle)), static_cast<int>(oStart.m_nY + dRadiusY * std::sin(dStartAngle))};
+	TPoint oControl2{static_cast<int>(oEnd.m_nX   - dRadiusX * std::cos(dEndAngle  )), static_cast<int>(oEnd.m_nY   + dRadiusY * std::sin(dEndAngle  ))};
+
+	return {oStart, oControl1, oControl2, oEnd};
+}
+
+void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pGeneralShape)
 		return;
@@ -911,13 +954,17 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (EShapeObjectType::Unknown == eShapeType)
 		return;
 
+	++m_ushShapeCount;
+
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
 
-	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetWidth()));
-	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pGeneralShape->GetHeight()));
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
+	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
+
+	const std::wstring wsWidth  = std::to_wstring(nWidth);
+	const std::wstring wsHeight = std::to_wstring(nHeight);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 	oBuilder.WriteString(L"<mc:AlternateContent><mc:Choice Requires=\"wps\">");
@@ -935,7 +982,22 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	{
 		case EShapeObjectType::Arc:
 		{
-			oBuilder.WriteString(L"<a:prstGeom prst=\"arc\"><a:avLst/></a:prstGeom>");
+			const CCtrlShapeArc *pShapeArc = (const CCtrlShapeArc*)pGeneralShape;
+			VECTOR<TPoint> arBezierPoints{ArcToBezier({Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetFirstPoint() .m_nY)},
+			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetSecondPoint().m_nY)},
+			                                          {Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nX), Transform::HWPUINT2OOXML(pShapeArc->GetCenterPoint().m_nY)})};
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(arBezierPoints[0].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[0].m_nY) + L"\"/></a:moveTo>");
+
+			oBuilder.WriteString(L"<a:cubicBezTo>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[1].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[1].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[2].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[2].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(arBezierPoints[3].m_nX) + L"\" y=\"" + std::to_wstring(arBezierPoints[3].m_nY) + L"\"/>");
+			oBuilder.WriteString(L"</a:cubicBezTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+
 			break;
 		}
 		case EShapeObjectType::Ellipse:
@@ -954,10 +1016,53 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 			oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 			break;
 		}
+		case EShapeObjectType::Polygon:
+		{
+			VECTOR<TPoint> arPoints{((const CCtrlShapePolygon*)pGeneralShape)->GetPoints()};
+
+			if (2 > arPoints.size())
+				break;
+
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+
+			for (unsigned short ushIndex = 1; ushIndex < arPoints.size(); ++ushIndex)
+				oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex].m_nY)) + L"\"/></a:lnTo>");
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			break;
+		}
 		case EShapeObjectType::Curve:
+		{
+			VECTOR<TPoint> arPoints{((const CCtrlShapeCurve*)pGeneralShape)->GetPoints()};
+
+			if (2 > arPoints.size())
+				break;
+
+			VECTOR<HWP_BYTE> arSegmentType{((const CCtrlShapeCurve*)pGeneralShape)->GetSegmentsType()};
+			oBuilder.WriteString(L"<a:custGeom><a:pathLst><a:path>");
+			oBuilder.WriteString(L"<a:moveTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[0].m_nY)) + L"\"/></a:moveTo>");
+
+			for (unsigned short ushIndex = 0; ushIndex < arSegmentType.size(); ++ushIndex)
+			{
+				if (0x01 == arSegmentType[ushIndex])
+				{
+					oBuilder.WriteString(L"<a:cubicBezTo>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 2].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"<a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 3].m_nY)) + L"\"/>");
+					oBuilder.WriteString(L"</a:cubicBezTo>");
+					ushIndex += 2;
+				}
+				else
+					oBuilder.WriteString(L"<a:lnTo><a:pt x=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nX)) + L"\" y=\"" + std::to_wstring(Transform::HWPUINT2OOXML(arPoints[ushIndex + 1].m_nY)) + L"\"/></a:lnTo>");
+			}
+
+			oBuilder.WriteString(L"</a:path></a:pathLst></a:custGeom>");
+			break;
+		}
 		case EShapeObjectType::Ole:
 		case EShapeObjectType::Picture:
-		case EShapeObjectType::Polygon:
 		case EShapeObjectType::Unknown:
 			break;
 	}
@@ -989,6 +1094,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		oBuilder.WriteString(L"<wps:txbx><w:txbxContent>");
 
 		TConversionState oShapeState;
+		oShapeState.m_bInTextBox = true;
 
 		for (unsigned int unParaIndex = 0; unParaIndex < nCountParagraphs; ++unParaIndex)
 			WriteParagraph(pGeneralShape->GetParagraphs(unParaIndex), oBuilder, oShapeState);
@@ -1001,21 +1107,16 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	oBuilder.WriteString(L"</wps:wsp></a:graphicData></a:graphic>");
 	CloseDrawingNode(pGeneralShape, oBuilder);
 	oBuilder.WriteString(L"</mc:Choice></mc:AlternateContent></w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
-void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	//TODO:: добавить конвертацию eqn формулы в ooxml
 	++m_ushEquationCount;
 
-	if (!oState.m_bOpenedP)
-	{
-		oBuilder.WriteString(L"<w:p>");
-		oState.m_bOpenedP = true;
-	}
+	WriteCaption((const CCtrlCommon*)pEqEditShape, oBuilder, oState);
+
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r>");
 
@@ -1024,7 +1125,7 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, NSStrin
 	oBuilder.WriteString(L"</w:t></w:r>");
 }
 
-void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	//TODO:: добавить конвертацию hwp ole -> ooxml chart
 	//TODO:: необходимо добавить поддержку формата "Hwp Document File Formats - Charts" (для случаев, когда нет ooxml представления)
@@ -1047,12 +1148,15 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	if (0 == unChartIndex)
 		return;
 
+	++m_ushShapeCount;
+
+	WriteCaption((const CCtrlCommon*)pOleShape, oBuilder, oState);
+
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
 	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1064,9 +1168,6 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, NSStringUti
 	oBuilder.WriteString(L"</a:graphicData></a:graphic>");
 	CloseDrawingNode(pOleShape, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 
 	AddContentType(L"charts/chart" + std::to_wstring(unChartIndex) + L".xml", L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml");
 	AddContentType(L"charts/style" + std::to_wstring(unChartIndex) + L".xml", L"application/vnd.ms-office.chartstyle+xml");
@@ -1104,17 +1205,6 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 		}
 	}
 
-	if (nullptr != oState.m_pColumnDef && 1 < oState.m_pColumnDef->GetColCount())
-	{
-		//TODO:: Добавить поддержку остальный свойств
-		m_oDocXml.WriteString(L"<w:cols w:num=\"" + std::to_wstring(oState.m_pColumnDef->GetColCount()) + L"\"  w:space=\"454\" w:equalWidth=\"true\"");
-
-		if (ELineStyle2::NONE != oState.m_pColumnDef->GetColLineStyle())
-			m_oDocXml.WriteString(L" w:sep=\"true\"");
-
-		m_oDocXml.WriteString(L"/>");
-	}
-
 	const CPage *pPage = (nullptr != oState.m_pSectionDef) ? oState.m_pSectionDef->GetPage() : nullptr;
 
 	if (nullptr == pPage)
@@ -1131,12 +1221,24 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginHeader())) + L"\"  w:footer=\"" + std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginFooter())) + L"\"  w:gutter=\"" +
 		                        std::to_wstring(Transform::HWPUINT2Twips(pPage->GetMarginGutter())) + L"\"/>");
 	}
-	m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
-	m_oDocXml.WriteString(L"<w:docGrid w:linePitch=\"360\"/>");
+
+	if (nullptr != oState.m_pColumnDef && 1 < oState.m_pColumnDef->GetColCount())
+	{
+		//TODO:: Добавить поддержку остальный свойств
+		m_oDocXml.WriteString(L"<w:cols w:num=\"" + std::to_wstring(oState.m_pColumnDef->GetColCount()) + L"\"  w:space=\"454\"");
+
+		if (ELineStyle2::NONE != oState.m_pColumnDef->GetColLineStyle())
+			m_oDocXml.WriteString(L" w:sep=\"true\"");
+
+		m_oDocXml.WriteString(L"/>");
+	}
+	else
+		m_oDocXml.WriteString(L"<w:cols w:space=\"708\"/>");
+
 	m_oDocXml.WriteString(L"</w:sectPr>");
 }
 
-void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaShapeId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCtrlPic)
 		return;
@@ -1146,10 +1248,11 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	if (sPictureID.empty())
 		return;
 
+	++m_ushShapeCount;
+
 	WriteCaption((const CCtrlCommon*)pCtrlPic, oBuilder, oState);
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeId, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1167,14 +1270,11 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, NSStringUtils
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
 	CloseDrawingNode(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
-void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shParaShapeId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (nullptr == pCtrlVideo)
+	if (nullptr == pCtrlVideo || 1 != pCtrlVideo->GetVideoType())
 		return;
 
 	HWP_STRING sPictureID = SavePicture(pCtrlVideo->GetThumnailBinID());
@@ -1182,10 +1282,11 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 	if (sPictureID.empty())
 		return;
 
+	++m_ushShapeCount;
+
 	WriteCaption((const CCtrlCommon*)pCtrlVideo, oBuilder, oState);
 
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"<w:p>");
+	OpenParagraph(shParaShapeId, oBuilder, oState);
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
@@ -1194,17 +1295,27 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, NSStringUti
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
-	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + pCtrlVideo->GetThumnailBinID() + L"\" name=\"Video " + pCtrlVideo->GetThumnailBinID() + L"\"/>");
+	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Video " + std::to_wstring(m_ushShapeCount) + L"\" descr=\"" + pCtrlVideo->GetDesc() + L"\">");
+	oBuilder.WriteString(L"<a:hlinkClick r:id=\"" + AddRelationship(L"hyperlink", pCtrlVideo->GetWebUrl()) + L"\"/></pic:cNvPr>");
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
-	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
+	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst>");
+	oBuilder.WriteString(L"<a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext>");
+
+	const int nIFrameWidth  = (int)((double)Transform::HWPUINT2OOXML(pCtrlVideo->GetWidth())  / 22860.);
+	const int nIFrameHeight = (int)((double)Transform::HWPUINT2OOXML(pCtrlVideo->GetHeight()) / 22860.);
+
+	oBuilder.WriteString(L"<a:ext uri=\"{C809E66F-F1BF-436E-b5F7-EEA9579F0CBA}\">");
+	oBuilder.WriteString(L"<wp15:webVideoPr xmlns:wp15=\"http://schemas.microsoft.com/office/word/2012/wordprocessingDrawing\" embeddedHtml=\"");
+	oBuilder.WriteEncodeXmlString(L"<iframe width=\"" + std::to_wstring(nIFrameWidth) + L"\" height=\"" + std::to_wstring(nIFrameHeight) + L"\"");
+	oBuilder.WriteEncodeXmlString(L"src=\"" + pCtrlVideo->GetWebUrl() + L"\" frameborder=\"0\" allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share\" referrerpolicy=\"strict-origin-when-cross-origin\" allowfullscreen=\"\" title=\"\" sandbox=\"allow-scripts allow-same-origin allow-popups\"></iframe>");
+	oBuilder.WriteString(L"\" h=\"" + std::to_wstring(nIFrameWidth) + L"\" w=\"" + std::to_wstring(nIFrameHeight) + L"\"/></a:ext>");
+
+	oBuilder.WriteString(L"</a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
 	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetFinalWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlVideo->GetFinalHeight())) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/><a:ln><a:noFill/></a:ln></pic:spPr></pic:pic></a:graphicData></a:graphic>");
 
 	CloseDrawingNode(pCtrlVideo, oBuilder);
 	oBuilder.WriteString(L"</w:r>");
-
-	if (!oState.m_bOpenedP)
-		oBuilder.WriteString(L"</w:p>");
 }
 
 bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName)
@@ -1340,8 +1451,6 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 			return HWP_STRING();
 	}
 
-	++m_ushShapeCount;
-
 	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
 	return AddRelationship(L"image", L"media/" + sFileName);
 }
@@ -1457,13 +1566,16 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	if (!bStrike && pCharShape->StrikeOut())
 		oBuilder.WriteString(L"<w:strike/>");
 
-	double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
-	dSpacing *= 20; // pt to twips (20 = 1440 / 72)
+	//TODO:: на данный момент вычисляется не правильно. Необходимо более точно разобраться
+	// double dSpacing = ((double)pCharShape->GetHeight() / 100.) * ((double)pCharShape->GetSpacing(ELang::HANGUL) / 100) * 0.8 + 0.4;
+	// dSpacing *= 20; // pt to twips (20 = 1440 / 72)
 
-	oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
+	// oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring((int)std::round(dSpacing)) + L"\"/>");
 
 	if (nullptr != oState.m_pHighlightColor)
 		oBuilder.WriteString(L"<w:highlight w:val=\"" + ConvertIntRgbToStr(*oState.m_pHighlightColor) + L"\"/>");
+
+	WriteTextBorderStyle(pCharShape->GetBorderFillID(), oBuilder, oState);
 
 	oBuilder.WriteString(sExternStyles);
 
@@ -1482,6 +1594,21 @@ void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStr
 	}
 
 	oState.m_eBreakType = TConversionState::EBreakType::None;
+}
+
+void CConverter2OOXML::WriteTextBorderStyle(short shBorderFillId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	const CHWPRecordBorderFill* pBorderFill = dynamic_cast<const CHWPRecordBorderFill*>(m_pContext->GetBorderFill(shBorderFillId));
+
+	if (nullptr == pBorderFill)
+		return;
+
+	TBorder oBorder{pBorderFill->GetLeftBorder()};
+
+	if (ELineStyle2::NONE == oBorder.m_eStyle)
+		return;
+
+	WriteBorder(pBorderFill->GetLeftBorder(), L"bdr", oBuilder);
 }
 
 void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
@@ -1566,7 +1693,7 @@ void CConverter2OOXML::WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStrin
 	if (nullptr == pCtrlShape)
 		return;
 
-	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(++m_ushShapeCount) + L"\" descr=\"");
+	oBuilder.WriteString(L"<wp:docPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(m_ushShapeCount) + L"\" descr=\"");
 	oBuilder.WriteEncodeXmlString(pCtrlShape->GetDesc());
 	oBuilder.WriteString(L"\"/>");
 	oBuilder.WriteString(L"<wp:cNvGraphicFramePr/>");
@@ -1665,8 +1792,8 @@ void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<T
 		{
 			if (unTextPosition + nParaTextPosition == oRangeTag.m_nStartPos)
 			{
-				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
-				unStartText = unTextPosition - 1;
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition;
 
 				switch (oRangeTag.m_chType)
 				{
@@ -1681,8 +1808,8 @@ void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<T
 			}
 			else if (unTextPosition + nParaTextPosition == oRangeTag.m_nEndPos)
 			{
-				WriteText(wsText.substr(unStartText, unTextPosition - unStartText - 1), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
-				unStartText = unTextPosition - 1;
+				WriteText(wsText.substr(unStartText, unTextPosition - unStartText), shParaShapeID, pParaText->GetCharShapeID(), oBuilder, oState);
+				unStartText = unTextPosition;
 
 				switch (oRangeTag.m_chType)
 				{
@@ -1753,7 +1880,22 @@ void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, 
 
 	WriteRunnerStyle(shCharShapeID, oBuilder, oState);
 
-	oBuilder.WriteString(L"<w:t xml:space=\"preserve\">");
+	oBuilder.WriteString(L"<w:t");
+
+	bool bNeedPreserve = (wsText.cend() != std::find_if(wsText.cbegin(), wsText.cend(), [](wchar_t wChar){ return iswspace(wChar); }));
+	bool bNeedAddSpace = false;
+
+	if (oState.m_bIsNote && !iswspace(wsText[0]))
+		bNeedAddSpace = true;
+
+	if (bNeedPreserve || bNeedAddSpace)
+		oBuilder.WriteString(L" xml:space=\"preserve\">");
+	else
+		oBuilder.WriteString(L">");
+
+	if (bNeedAddSpace)
+		oBuilder.WriteString(L" ");
+
 	oBuilder.WriteEncodeXmlString(wsText);
 	oBuilder.WriteString(L"</w:t></w:r>");
 
@@ -1792,11 +1934,14 @@ void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralSh
 
 void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (ELineStyle2::NONE == eLineStyle || 0 >= nThick)
+	if (ELineStyle2::NONE == eLineStyle)
 	{
 		oBuilder.WriteString(L"<a:ln><a:noFill/></a:ln>");
 		return;
 	}
+
+	if (0 == nThick)
+		nThick = 100;
 
 	oBuilder.WriteString(L"<a:ln");
 
@@ -1905,12 +2050,29 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber,short 
 	switch (pAutoNumber->GetNumType())
 	{
 		case ENumType::PAGE:
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:fldSimple w:instr=\"PAGE \\* ARABIC\"><w:r><w:t>1</w:t></w:r></w:fldSimple>");
+			return;
+		}
 		case ENumType::TOTAL_PAGE:
 			ushValue = m_ushPageCount; break;
 		case ENumType::FOOTNOTE:
-			ushValue = m_oFootnoteConverter.GetFootnoteCount(); break;
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r>");
+			WriteRunnerStyle(shCharShapeID, oBuilder, oState, L"<w:vertAlign w:val=\"superscript\"/>");
+			oBuilder.WriteString(L"<w:footnoteRef/></w:r>");
+			return;
+		}
 		case ENumType::ENDNOTE:
-			ushValue = m_oFootnoteConverter.GetEndnoteCount(); break;
+		{
+			OpenParagraph(shParaShapeID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r>");
+			WriteRunnerStyle(shCharShapeID, oBuilder, oState, L"<w:vertAlign w:val=\"superscript\"/>");
+			oBuilder.WriteString(L"<w:endnoteRef/></w:r>");
+			return;
+		}
 		case ENumType::FIGURE:
 		{
 			wsType = L"Figure";
@@ -1950,7 +2112,15 @@ HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP
 	if (m_arRelationships.cend() != itFound)
 		return itFound->m_wsID;
 
-	m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
+	if (L"hyperlink" == wsType)
+	{
+		NSStringUtils::CStringBuilder oBuilder;
+		oBuilder.WriteEncodeXmlString(wsTarget);
+
+		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, oBuilder.GetData()});
+	}
+	else
+		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
 
 	return m_arRelationships.back().m_wsID;
 }
@@ -2025,7 +2195,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

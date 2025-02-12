@@ -372,4 +372,9 @@ int CHWPRecordCharShape::GetTextColor() const
 {
 	return m_nTextColor;
 }
+
+short CHWPRecordCharShape::GetBorderFillID() const
+{
+	return m_shBorderFillIDRef;
+}
 }

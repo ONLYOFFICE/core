@@ -1196,7 +1196,7 @@ public:
 					if (NULL == pCell)
 						continue;
 
-					pCell->SetColspan(unMaxIndex , MAXCOLUMNSINTABLE);
+					pCell->SetColspan(unMaxIndex, MAXCOLUMNSINTABLE);
 					continue;
 				}
 
@@ -1208,9 +1208,9 @@ public:
 				if (NULL == pCell)
 					continue;
 
-				if (1 < pCell->GetColspan() && unIndex + pCell->GetColspan() > m_arMinColspan[unIndex])
+				if (1 < pCell->GetColspan() && pCell->GetColspan() > m_arMinColspan[unIndex])
 				{
-					pCell->SetColspan(m_arMinColspan[unIndex] - unIndex, MAXCOLUMNSINTABLE);
+					pCell->SetColspan(m_arMinColspan[unIndex], MAXCOLUMNSINTABLE);
 					continue;
 				}
 
@@ -1744,6 +1744,15 @@ public:
 		{
 			oRelsWriter.WriteStringUTF8(m_oDocXmlRels.GetData());
 			oRelsWriter.CloseFile();
+		}
+
+		for (const std::pair<std::wstring, std::wstring>& oFootnote : m_mFootnotes)
+		{
+			m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+			m_oNoteXml.WriteString(oFootnote.second);
+			m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
+			m_oNoteXml.WriteEncodeXmlString(oFootnote.first);
+			m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 		}
 
 		m_oNoteXmlRels.WriteString(L"</Relationships>");
@@ -2371,6 +2380,8 @@ private:
 
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
+
+		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
 

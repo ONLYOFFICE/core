@@ -365,7 +365,19 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
-		ActiveTab = 0
+		ActiveTab = 0,
+		AutoFilterDateGrouping = 1,
+		FirstSheet = 2,
+		Minimized = 3,
+		ShowHorizontalScroll = 4,
+		ShowSheetTabs = 5,
+		ShowVerticalScroll = 6,
+		TabRatio = 7,
+		Visibility = 8,
+		WindowHeight = 9,
+		WindowWidth = 10,
+		XWindow = 11,
+		YWindow = 12
 	};}
 	namespace c_oSerDefinedNameTypes{enum c_oSerDefinedNameTypes
 	{

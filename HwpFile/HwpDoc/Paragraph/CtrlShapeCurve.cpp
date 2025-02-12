@@ -22,7 +22,7 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLNode& oNode, int
 {
 	std::vector<CXMLNode> arChilds{oNode.GetChilds(L"hp:seg")};
 
-	m_arPoints.resize(arChilds.size());
+	m_arPoints.resize(arChilds.size() + 1);
 	m_arSegmentType.resize(arChilds.size());
 
 	HWP_STRING sType;
@@ -38,12 +38,28 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLNode& oNode, int
 
 		m_arPoints[unIndex].m_nX = arChilds[unIndex].GetAttributeInt(L"x1");
 		m_arPoints[unIndex].m_nY = arChilds[unIndex].GetAttributeInt(L"y1");
+
+		if (unIndex == arChilds.size() - 1)
+		{
+			m_arPoints[unIndex + 1].m_nX = arChilds[unIndex].GetAttributeInt(L"x2");
+			m_arPoints[unIndex + 1].m_nY = arChilds[unIndex].GetAttributeInt(L"y2");
+		}
 	}
 }
 
 EShapeType CCtrlShapeCurve::GetShapeType() const
 {
 	return EShapeType::Curve;
+}
+
+VECTOR<TPoint> CCtrlShapeCurve::GetPoints() const
+{
+	return m_arPoints;
+}
+
+VECTOR<HWP_BYTE> CCtrlShapeCurve::GetSegmentsType() const
+{
+	return m_arSegmentType;
 }
 
 int CCtrlShapeCurve::ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

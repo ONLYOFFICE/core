@@ -42,6 +42,7 @@ public:
 	HWP_STRING GetNumFormat(unsigned short ushIndex) const;
 	HWP_BYTE GetAlign(unsigned short ushIndex) const;
 	int GetStartNumber(unsigned short ushIndex) const;
+	int GetCharShape(unsigned short ushIndex) const;
 };
 }
 

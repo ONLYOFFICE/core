@@ -372,6 +372,7 @@ enum class TypeElement{
 	//string
 	letter,
 	number,
+	letter_u32,
 };
 }
 #endif // TYPESELEMENTS_H

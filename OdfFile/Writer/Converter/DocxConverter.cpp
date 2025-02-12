@@ -87,8 +87,6 @@
 
 using namespace cpdoccore;
 
-std::vector<double> current_font_size;
-
 namespace Oox2Odf
 {
 

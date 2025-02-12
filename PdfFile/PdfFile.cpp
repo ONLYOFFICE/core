@@ -42,6 +42,7 @@
 #include "OnlineOfficeBinToPdf.h"
 
 #include "SrcWriter/Document.h"
+#include "Resources/BaseFonts.h"
 
 #else
 class CPdfEditor
@@ -164,6 +165,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 	if (!m_pInternal->pEditor)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
+}
+bool CPdfFile::MovePage(int nPageIndex, int nPos)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->MovePage(nPageIndex, nPos);
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
@@ -329,9 +336,7 @@ OfficeDrawingFileType CPdfFile::GetType()
 }
 std::wstring CPdfFile::GetTempDirectory()
 {
-	if (!m_pInternal->pReader)
-		return std::wstring();
-	return m_pInternal->pReader->GetTempDirectory();
+	return m_pInternal->wsTempFolder;
 }
 void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 {
@@ -909,6 +914,28 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 				if (bItalic)
 					lStyle |= 2;
 				put_FontStyle(lStyle);
+			}
+
+			NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+			if (wsFontPath == sSub && (!pMemoryStorage || !pMemoryStorage->Get(wsFontPath)))
+			{
+				const BYTE* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				std::wstring wsTempFileName = m_pInternal->wsTempFolder + L"/" + wsFontPath + L".base";
+				if (NSFile::CFileBinary::Exists(wsTempFileName))
+					wsFontPath = wsTempFileName;
+				else if (PdfReader::GetBaseFont(sSub, pData14, nSize14))
+				{
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(wsTempFileName))
+					{
+						oFile.WriteFile((BYTE*)pData14, nSize14);
+						wsFontPath = wsTempFileName;
+					}
+					else if (!wsTempFileName.empty())
+						NSFile::CFileBinary::Remove(wsTempFileName);
+					oFile.CloseFile();
+				}
 			}
 		}
 		else

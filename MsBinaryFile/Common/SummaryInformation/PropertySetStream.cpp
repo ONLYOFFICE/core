@@ -91,7 +91,7 @@ namespace OLEPS
 				property_sets_offsets.push_back(Offset);
 		}
 
-		for (_UINT32 i = 0; i < NumPropertySets; ++i)
+		for (_UINT32 i = 0; i < property_sets_offsets.size(); ++i)
 		{
 			PropertySetPtr set = PropertySetPtr(new PropertySet(stream, property_sets_offsets[i], ext));
 

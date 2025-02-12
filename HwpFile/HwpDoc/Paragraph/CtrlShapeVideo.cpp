@@ -17,15 +17,15 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
 {
-	HWP_STRING sType = oNode.GetAttribute(L"type");
+	HWP_STRING sType = oNode.GetAttribute(L"videotype");
 
-	if (L"VT_LOCAL" == sType)
+	if (L"Local" == sType)
 		m_nVideoType = 0;
-	else if (L"VT_WEB" == sType)
+	else if (L"Web" == sType)
 		m_nVideoType = 1;
 
 	m_shVideoBinID = oNode.GetAttributeInt(L"fileIDRef");
-	m_sThumnailBinID = oNode.GetAttributeInt(L"imageIDRef");
+	m_sThumnailBinID = oNode.GetAttribute(L"imageIDRef");
 
 	if (1 == m_nVideoType)
 		m_sWebURL = oNode.GetAttribute(L"tag");
@@ -65,7 +65,7 @@ int CCtrlShapeVideo::ParseElement(CCtrlShapeVideo& oObj, int nSize, CHWPStream& 
 	if (0 == oObj.m_nVideoType)
 		oBuffer.ReadShort(oObj.m_shVideoBinID);
 	else if (1 == oObj.m_nVideoType)
-		oBuffer.ReadString(oObj.m_sObjDesc, EStringCharacter::UTF16);
+		oBuffer.ReadString(oObj.m_sWebURL, EStringCharacter::UTF16);
 
 	short m_sBinID;
 	oBuffer.ReadShort(m_sBinID);

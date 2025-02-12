@@ -29,73 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#ifndef DOC_BUILDER_ADDON_PRIVATE
+#define DOC_BUILDER_ADDON_PRIVATE
 
-#include "SerStr.h"
+#include <string>
 
-#include <boost/algorithm/string.hpp>
-
-namespace XLS
+namespace NSDoctRenderer
 {
-
-
-SerStr::SerStr()
-{
-    fixed_type = typeSerStr;
+	class CDocBuilderAddon
+	{
+	private:
+		std::wstring m_sWorkDirectory;
+	public:
+		CDocBuilderAddon(const std::wstring& sWorkDir)
+		{
+			m_sWorkDirectory = sWorkDir;
+		}
+	public:
+		std::wstring GetX2tSaveAddon()
+		{
+			return L"";
+		}
+		int GetX2tPreSaveError()
+		{
+			return 0;
+		}
+	};
 }
 
-
-SerStr::SerStr(const std::wstring& word)
-:	string_(std::wstring (word.c_str()))
-{
-}
-
-
-BiffStructurePtr SerStr::clone()
-{
-	return BiffStructurePtr(new SerStr(*this));
-}
-
-void SerStr::load(CFRecord& record)
-{	
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
-        record >> string_;
-    else
-    {
-        record >> cch;
-        WCHAR value;
-        for(int i = 0; i < cch; ++i)
-        {
-            record.loadAnyData(value);
-            rgch.push_back(value);
-        }
-    }
-}
-
-void SerStr::save(CFRecord& record)
-{
-    char serType;
-    if (record.getGlobalWorkbookInfo()->Version < 0x0800)
-    {
-        serType = 2;
-        record << serType << string_;
-    }
-    else
-    {
-        serType = 1;
-        rgch = string_;
-        cch = string_.getSize();
-        record <<serType << cch;
-        for(auto i:rgch)
-        {
-            record.storeAnyData(i);
-        }
-    }
-}
-
-const std::wstring SerStr::toString() const
-{
-    return L"\"" + boost::algorithm::replace_all_copy(std::wstring(rgch), L"\"", L"\"\"") + L"\"";
-}
-
-
-} // namespace XLS
+#endif // DOC_BUILDER_ADDON_PRIVATE

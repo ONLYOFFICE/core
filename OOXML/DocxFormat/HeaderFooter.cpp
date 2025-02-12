@@ -207,46 +207,60 @@ namespace OOX
 	std::wstring CHdrFtr::toXML() const
 	{
 		std::wstring sXml;
-		if ( et_w_ftr == m_eType )
-			sXml = _T("<w:ftr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+		if (et_w_ftr == m_eType)
+		{
+			sXml = _T("<w:ftr \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
 xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
 xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
 xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">");
-
-		else if ( et_w_hdr == m_eType )
-			sXml = _T("<w:hdr xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">");
+		}
+		else if (et_w_hdr == m_eType)
+		{
+			sXml = _T("<w:hdr \
+xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
 xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
 xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 xmlns:v=\"urn:schemas-microsoft-com:vml\" \
-xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
 xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
-xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
 xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
-xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
-xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
 xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
 xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
-xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
 xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
-mc:Ignorable=\"w14 w15 wp14\">");
-
+xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+xmlns:w15=\"http://schemas.microsoft.com/office/word/2012/wordml\" \
+xmlns:w16cex=\"http://schemas.microsoft.com/office/word/2018/wordml/cex\" \
+xmlns:w16cid=\"http://schemas.microsoft.com/office/word/2016/wordml/cid\" \
+xmlns:w16=\"http://schemas.microsoft.com/office/word/2018/wordml\" \
+xmlns:w16sdtdh=\"http://schemas.microsoft.com/office/word/2020/wordml/sdtdatahash\" \
+xmlns:w16se=\"http://schemas.microsoft.com/office/word/2015/wordml/symex\" \
+mc:Ignorable=\"w14 w15 w16se w16cid w16 w16cex w16sdtdh wp14\">");
+		}
 		else
 			return sXml;
 

@@ -9720,6 +9720,16 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 		pSdtPr->m_oComplexFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
 	}
+	else if (c_oSerSdt::Border == type)
+	{
+		pSdtPr->m_oBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder, pSdtPr->m_oBorder.GetPointer());
+	}
+	else if (c_oSerSdt::Shd == type)
+	{
+		pSdtPr->m_oShd.Init();
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pSdtPr->m_oShd.GetPointer());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

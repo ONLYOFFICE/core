@@ -1047,34 +1047,6 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 		int max_width	= get_value_emu(pageProperties.fo_page_width_);
 		int max_height	= get_value_emu(pageProperties.fo_page_height_);
 		
-		//это бред(типо подгонка) автоподбор под размер текста ... 
-		//if (Context.process_headers_footers_ && pageLayoutInst)
-		//{
-		//	style_header_style * headerStyle = dynamic_cast<style_header_style *>(pageLayoutInst->style_page_layout_->style_header_style_.get());
-		//	style_footer_style * footerStyle = dynamic_cast<style_footer_style *>(pageLayoutInst->style_page_layout_->style_footer_style_.get());
-
-		//	style_header_footer_properties * headerProp = headerStyle ? dynamic_cast<style_header_footer_properties *>(headerStyle->style_header_footer_properties_.get()) : NULL;
-		//	style_header_footer_properties * footerProp = footerStyle ? dynamic_cast<style_header_footer_properties *>(footerStyle->style_header_footer_properties_.get()) : NULL;
-		//	
-		//	if (headerProp)
-		//	{
-		//		size_t		height	= get_value_emu(headerProp->style_header_footer_properties_attlist_.svg_height_);
-		//		if (height<1)height	= get_value_emu(headerProp->style_header_footer_properties_attlist_.fo_min_height_);
-		//		
-		//		if (height >0 && height < max_height)
-		//			max_height = height;
-		//	}
-		//	if (footerProp)
-		//	{
-		//		size_t		height	= get_value_emu(footerProp->style_header_footer_properties_attlist_.svg_height_);
-		//		if (height<1)height	= get_value_emu(footerProp->style_header_footer_properties_attlist_.fo_min_height_);
-		//		
-		//		if (height >0 && height < max_height)
-		//			max_height = height;
-
-		//	}
-		//}
-
 		//if (drawing->cx<1 && max_width >0)
 		//{
 		//	drawing->cx = std::min(762000,max_width);
@@ -1759,7 +1731,12 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 				objectBuild.userShapes = drawingName;
 			}
 
+			bool state = Context.get_drawing_state_content();
+			Context.set_drawing_state_content(!drawing->isInline || drawing->inFrame);
+
 			objectBuild.docx_convert(Context);
+
+			Context.set_drawing_state_content(state);
 		}
 		//------------------------------------------------------------------------------------------------------------
 		if (!frame || !drawing)
@@ -1794,8 +1771,11 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 			{
 				drawing->type = oox::typeShape;		
 				
-				drawing->additional.push_back(_property(L"fit-to-size",	true));		
-				drawing->additional.push_back(_property(L"text-content",	std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
+				//drawing->additional.push_back(_property(L"auto-grow-width", true));
+				drawing->additional.push_back(_property(L"auto-grow-height", true));
+
+				//drawing->additional.push_back(_property(L"fit-to-size",	true));		
+				drawing->additional.push_back(_property(L"text-content", std::wstring(L"<w:p>") +  content + std::wstring(L"</w:p>")));
 			}
 			else
 			{//in text			

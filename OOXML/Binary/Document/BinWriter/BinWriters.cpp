@@ -153,11 +153,12 @@ void BinaryCommonWriter::WriteBorder(const BYTE & type, const ComplexTypes::Word
 }
 void BinaryCommonWriter::WriteBorder(const ComplexTypes::Word::CBorder& border)
 {//todooo сделать все типы бордера
-	if (border.m_oVal.IsInit())
-	{
-		if (border.m_oColor.IsInit())
-			WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
 		
+	if (border.m_oColor.IsInit())
+		WriteColor(c_oSerBorderType::Color, border.m_oColor.get());
+
+	if (border.m_oVal.IsInit())
+	{		
 		WriteThemeColor(c_oSerBorderType::ColorTheme, border.m_oColor, border.m_oThemeColor, border.m_oThemeTint, border.m_oThemeShade);
 		
 		if (border.m_oSpace.IsInit())
@@ -291,6 +292,15 @@ void BinaryCommonWriter::WriteColor(BYTE type, const SimpleTypes::CHexColor& col
 	{
 		m_oStream.WriteBYTE(type);
 		m_oStream.WriteBYTE(c_oSerPropLenType::Three);
+		m_oStream.WriteBYTE(color.Get_R());
+		m_oStream.WriteBYTE(color.Get_G());
+		m_oStream.WriteBYTE(color.Get_B());
+	}
+	else if (SimpleTypes::hexcolorARGB == color.GetValue())
+	{
+		m_oStream.WriteBYTE(type);
+		m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oStream.WriteBYTE(color.Get_A());
 		m_oStream.WriteBYTE(color.Get_R());
 		m_oStream.WriteBYTE(color.Get_G());
 		m_oStream.WriteBYTE(color.Get_B());

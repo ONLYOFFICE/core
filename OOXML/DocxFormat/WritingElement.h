@@ -115,7 +115,15 @@ namespace OOX
 #define WritingElement_WriteNode_2( oValue ) \
 	if ( oValue.IsInit() )\
 	sResult += oValue->toXML();
-	//-----------------------------------------------------------------------------------------------
+
+#define WritingElement_WriteNode_3( sStartNodeString, oValue ) \
+	if ( oValue.IsInit() )\
+	{\
+	sResult += sStartNodeString;\
+	sResult += oValue->ToString(false);\
+	sResult += _T("/>");\
+}
+//-----------------------------------------------------------------------------------------------
 #define WritingElement_ReadAttributes_ReadSingle2(Reader, AttrName, Value) \
 	if ( Reader.GetAttributesCount() > 0 ){\
 	if ( Reader.MoveToFirstAttribute() ){\

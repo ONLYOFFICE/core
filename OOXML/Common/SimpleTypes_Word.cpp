@@ -1783,10 +1783,10 @@ namespace SimpleTypes
 
 		if (m_sValue.length() > 6)
 		{
-			m_unA = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
-			m_unR = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
-			m_unG = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
-			m_unB = HexToInt((int)m_sValue[7]) + (unsigned char)(HexToInt((int)m_sValue[6]) << 4);
+			m_unR = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
+			m_unG = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
+			m_unB = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
+			m_unA = HexToInt((int)m_sValue[7]) + (unsigned char)(HexToInt((int)m_sValue[6]) << 4);
 		}
 		else
 		{
@@ -1864,7 +1864,7 @@ namespace SimpleTypes
 		case hexcolorARGB:
 		{
 			std::wstringstream sstream;
-			sstream << boost::wformat(L"%02x%02x%02x%02x") % m_unA % m_unR % m_unG % m_unB;
+			sstream << boost::wformat(L"%02x%02x%02x%02x") % m_unR % m_unG % m_unB % m_unA;
 
 			return sstream.str();
 		}

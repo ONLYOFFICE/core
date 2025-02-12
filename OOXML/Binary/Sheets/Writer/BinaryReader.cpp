@@ -4652,7 +4652,41 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
                 m_pCurStreamWriterBin->storeNextRecord(end);
             }
     SEEK_TO_POS_END2()
-
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Protection);
+    OOX::Spreadsheet::CSheetProtection oProtection;
+    READ2_DEF_SPREADSHEET(length, res, this->ReadProtection, &oProtection);
+    oProtection.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::ProtectedRanges);
+    OOX::Spreadsheet::CProtectedRanges oProtectedRanges;
+    READ1_DEF(length, res, this->ReadProtectedRanges, &oProtectedRanges);
+    oProtectedRanges.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Autofilter);
+        OOX::Spreadsheet::CAutofilter oAutofilter;
+        BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        READ1_DEF(length, res, oBinaryTableReader.ReadAutoFilter, &oAutofilter);
+        oAutofilter.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SortState);
+        OOX::Spreadsheet::CSortState oSortState;
+        BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        READ1_DEF(length, res, oBinaryTableReader.ReadSortState, &oSortState);
+        oSortState.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::MergeCells);
+        OOX::Spreadsheet::CMergeCells oMergeCells;
+        READ1_DEF(length, res, this->ReadMergeCells, &oMergeCells);
+        oMergeCells.m_oCount.Init();
+        oMergeCells.m_oCount->SetValue((unsigned int)oMergeCells.m_arrItems.size());
+        oMergeCells.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
         OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
         READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);

@@ -4693,7 +4693,62 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
         pConditionalFormatting->toBin(oStreamWriter);
         delete pConditionalFormatting;
     SEEK_TO_POS_END2();
-
+    //-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Hyperlinks);
+        OOX::Spreadsheet::CHyperlinks oHyperlinks;
+        READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
+        oHyperlinks.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::PrintOptions);
+        OOX::Spreadsheet::CPrintOptions oPrintOptions;
+        READ2_DEF_SPREADSHEET(length, res, this->ReadPrintOptions, &oPrintOptions);
+        oPrintOptions.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageMargins);
+        OOX::Spreadsheet::CPageMargins oPageMargins;
+        READ2_DEF_SPREADSHEET(length, res, this->ReadPageMargins, &oPageMargins);
+        oPageMargins.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::PageSetup);
+        OOX::Spreadsheet::CPageSetup oPageSetup;
+        READ2_DEF_SPREADSHEET(length, res, this->ReadPageSetup, &oPageSetup);
+        oPageSetup.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::HeaderFooter);
+        OOX::Spreadsheet::CHeaderFooter oHeaderFooter;
+        READ1_DEF(length, res, this->ReadHeaderFooter, &oHeaderFooter);
+        oHeaderFooter.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::RowBreaks);
+        OOX::Spreadsheet::CRowColBreaks oRowBreaks;
+        READ1_DEF(length, res, this->ReadRowColBreaks, &oRowBreaks);
+        oRowBreaks.toBinRow(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::ColBreaks);
+        OOX::Spreadsheet::CRowColBreaks oColBreaks;
+        READ1_DEF(length, res, this->ReadRowColBreaks, &oColBreaks);
+        oColBreaks.toBinColumn(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    /*SEEK_TO_POS_START(c_oSerWorksheetsTypes::CellWatches);
+    OOX::Spreadsheet::CCellWatches oCellWatches;
+    READ1_DEF(length, res, this->ReadCellWatches, &oCellWatches);
+    oCellWatches.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    //important before Drawings
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
+        BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        oBinaryCommentReader.Read(length, poResult);
+        WriteComments();
+    SEEK_TO_POS_END2();*/
+//-------------------------------------------------------------------------------------------------------------
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);

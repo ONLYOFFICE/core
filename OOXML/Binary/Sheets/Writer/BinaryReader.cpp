@@ -4605,10 +4605,41 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
     boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind;
     LONG nPos;
     LONG length;
+    //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
         READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
     SEEK_TO_POS_END2();
-
+    //-------------------------------------------------------------------------------------------------------------
+    m_pCurWorksheet->m_oSheetViews.Init();
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetViews);
+        READ1_DEF(length, res, this->ReadSheetViews, m_pCurWorksheet->m_oSheetViews.GetPointer());
+    SEEK_TO_POS_END2();
+    if (m_pCurWorksheet->m_oSheetViews->m_arrItems.empty())
+        m_pCurWorksheet->m_oSheetViews->m_arrItems.push_back(new OOX::Spreadsheet::CSheetView());
+    OOX::Spreadsheet::CSheetView* pSheetView = m_pCurWorksheet->m_oSheetViews->m_arrItems.front();
+    if (false == pSheetView->m_oWorkbookViewId.IsInit())
+    {
+        pSheetView->m_oWorkbookViewId.Init();
+        pSheetView->m_oWorkbookViewId->SetValue(0);
+    }
+    m_pCurWorksheet->m_oSheetViews->toBin(oStreamWriter);
+//-------------------------------------------------------------------------------------------------------------
+    OOX::Spreadsheet::CSheetFormatPr oSheetFormatPr;
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetFormatPr);
+        READ2_DEF_SPREADSHEET(length, res, this->ReadSheetFormatPr, &oSheetFormatPr);
+    SEEK_TO_POS_END2();
+    if (!oSheetFormatPr.m_oDefaultRowHeight.IsInit())
+    {
+        oSheetFormatPr.m_oDefaultRowHeight = 15.;
+    }
+    oSheetFormatPr.toBin(oStreamWriter);
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Cols);
+        OOX::Spreadsheet::CCols oCols;
+        READ1_DEF(length, res, this->ReadWorksheetCols, &oCols);
+        oCols.toBin(oStreamWriter);
+    SEEK_TO_POS_END2()
+//-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::SheetData)
             {
                 auto begin = m_pCurStreamWriterBin->getNextRecord(XLSB::rt_BeginSheetData);
@@ -4621,6 +4652,13 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
                 m_pCurStreamWriterBin->storeNextRecord(end);
             }
     SEEK_TO_POS_END2()
+
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
+        OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
+        READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
+        pConditionalFormatting->toBin(oStreamWriter);
+        delete pConditionalFormatting;
+    SEEK_TO_POS_END2();
 
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);

@@ -283,6 +283,8 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 			}
 		}
 	}
+
+	Context.get_text_tracked_context().dumpRPrInsDel_.clear();
 }
 
 void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)

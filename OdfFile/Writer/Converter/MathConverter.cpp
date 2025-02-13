@@ -264,7 +264,7 @@ namespace Oox2Odf
 		int base_font_size = current_font_size.empty() ? 12 : current_font_size.back();
 		std::wstring base_font_color;
 
-		if (odf_context()->is_child_text_context())
+		if (odf_context()->is_child_text_context() && odf_context()->drawing_context())
 		{
 			if (odf_context()->drawing_context()->get_text_properties())
 			{
@@ -274,7 +274,16 @@ namespace Oox2Odf
 				}
 			}
 		}
-
+		else
+		{
+			if (odf_context()->text_context()->get_text_properties())
+			{
+				if (odf_context()->text_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
 
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)

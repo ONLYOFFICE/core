@@ -4688,10 +4688,30 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
     SEEK_TO_POS_END2()
 //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::ConditionalFormatting);
+        OOX::Drawing::COfficeArtExtension* pOfficeArtExtensionCF = new OOX::Drawing::COfficeArtExtension();
         OOX::Spreadsheet::CConditionalFormatting *pConditionalFormatting = new OOX::Spreadsheet::CConditionalFormatting();
         READ1_DEF(length, res, this->ReadConditionalFormatting, pConditionalFormatting);
-        pConditionalFormatting->toBin(oStreamWriter);
-        delete pConditionalFormatting;
+        if (pConditionalFormatting->IsExtended())
+        {
+            pOfficeArtExtensionCF->m_arrConditionalFormatting.push_back(pConditionalFormatting);
+        }
+        else
+        {
+            pConditionalFormatting->toBin(oStreamWriter);
+            delete pConditionalFormatting;
+        }
+        if (pOfficeArtExtensionCF->m_arrConditionalFormatting.empty())
+        {
+            delete pOfficeArtExtensionCF;
+        }
+        else
+        {
+            pOfficeArtExtensionCF->m_sUri = L"{78C0D931-6437-407d-A8EE-F0AAD7539E65}";
+
+            if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+                m_pCurWorksheet->m_oExtLst.Init();
+            m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtensionCF);
+        }
     SEEK_TO_POS_END2();
     //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::Hyperlinks);
@@ -4829,6 +4849,24 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
         //oTableParts.toBin(oStreamWriter);
     SEEK_TO_POS_END2();*/
 //-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SparklineGroups);
+        OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+        pOfficeArtExtension->m_oSparklineGroups.Init();
+
+        READ1_DEF(length, res, this->ReadSparklineGroups, pOfficeArtExtension->m_oSparklineGroups.GetPointer());
+
+        pOfficeArtExtension->m_sUri = L"{05C60535-1F16-4fd2-B633-F4F36F0B64E0}";
+        if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+            m_pCurWorksheet->m_oExtLst.Init();
+        m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    if (m_pCurWorksheet->m_oExtLst.IsInit())
+    {
+        auto extLst = m_pCurWorksheet->m_oExtLst->toBinWorksheet();
+        extLst->write(oStreamWriter, nullptr);
+    }
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);

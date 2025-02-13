@@ -79,10 +79,10 @@ void note_citation::add_space(const std::wstring & Text)
 }
 void note_citation::docx_convert(oox::docx_conversion_context & Context)
 {
- 	for (size_t i = 0; i < content_.size(); i++)
-    {
-        content_[i]->docx_convert(Context);            
-    }
+ 	//for (size_t i = 0; i < content_.size(); i++)
+  //  {
+  //      content_[i]->docx_convert(Context);            
+  //  }
 }
 
 // text:note-body

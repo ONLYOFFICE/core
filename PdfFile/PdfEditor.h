@@ -41,12 +41,13 @@ class CPdfEditor
 {
 public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
-	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter, unsigned int unPages);
+	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter, const int* arrPageIndex, unsigned int unLength);
 
 	int  GetError();
 	void Close();
 	bool EditPage(int nPageIndex, bool bSet = true);
 	bool SplitPage(int nPageIndex);
+	void SplitEnd();
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool EditAnnot(int nPageIndex, int nID);

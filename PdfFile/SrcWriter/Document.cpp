@@ -1379,6 +1379,13 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
+	void CDocument::SetAcroForm(CDictObject* pObj)
+	{
+		if (!m_pXref || !m_pCatalog)
+			return;
+		m_pCatalog->Add("AcroForm", pObj);
+		m_pAcroForm = pObj;
+	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
 		if (!pPageTree || !EditXref(pXref))

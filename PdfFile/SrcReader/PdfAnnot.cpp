@@ -1274,7 +1274,7 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 	Object oOpt;
 	// 10 - Список значений
-	if (pField->fieldLookup("Opt", &oOpt)->isArray())
+	if (oField.dictLookup("Opt", &oOpt)->isArray())
 	{
 		m_unFlags |= (1 << 10);
 		int nOptLength = oOpt.arrayGetLength();

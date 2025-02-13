@@ -149,6 +149,17 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::str
 		break;
 	}
 }
+bool SplitSkipDict(Object* obj)
+{
+	Object oType;
+	if (!obj->dictLookup("Type", &oType)->isName())
+	{
+		oType.free();
+		return false;
+	}
+	oType.free();
+	return false;
+}
 PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, std::map<int, PdfWriter::CObjectBase*>& mUniqueRef)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
@@ -215,6 +226,8 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	}
 	case objDict:
 	{
+		if (SplitSkipDict(obj))
+			return new PdfWriter::CNullObject();
 		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
 		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
 		{
@@ -1243,6 +1256,7 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 		pageRefObj.free();
 		return false;
 	}
+	m_mSplitUniqueRef[pPageRef->num] = pPage;
 	pageRefObj.free();
 
 	// Копирование страницы со всеми ресурсами из reader для writer
@@ -1253,12 +1267,23 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0)
 		{
+			Ref oResourcesRef = { -1, -1 };
+			if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
+				oResourcesRef = oTemp.getRef();
+			oTemp.free();
+
+			std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oResourcesRef.num);
+			if (oResourcesRef.num > 0 && it != m_mSplitUniqueRef.end())
+			{
+				pPage->Add("Resources", it->second);
+				continue;
+			}
+
 			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
 			{
-				Object oTemp2;
-				pageObj.dictGetValNF(nIndex, &oTemp2);
-				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, !oTemp2.isRef(), false);
-				oTemp2.free();
+				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, oResourcesRef.num < 0, false);
+				if (oResourcesRef.num > 0)
+					m_mSplitUniqueRef[oResourcesRef.num] = pDict;
 
 				pPage->Add("Resources", pDict);
 				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)

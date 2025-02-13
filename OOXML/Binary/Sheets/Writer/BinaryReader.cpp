@@ -4735,18 +4735,98 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
         READ1_DEF(length, res, this->ReadRowColBreaks, &oColBreaks);
         oColBreaks.toBinColumn(oStreamWriter);
     SEEK_TO_POS_END2();
-//-------------------------------------------------------------------------------------------------------------
-    /*SEEK_TO_POS_START(c_oSerWorksheetsTypes::CellWatches);
-    OOX::Spreadsheet::CCellWatches oCellWatches;
-    READ1_DEF(length, res, this->ReadCellWatches, &oCellWatches);
-    oCellWatches.toBin(oStreamWriter);
-    SEEK_TO_POS_END2();
+
 //-------------------------------------------------------------------------------------------------------------
     //important before Drawings
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::Comments);
         BinaryCommentReader oBinaryCommentReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
         oBinaryCommentReader.Read(length, poResult);
         WriteComments();
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Drawings);
+
+        m_pOfficeDrawingConverter->SetDstContentRels();
+        READ1_DEF(length, res, this->ReadDrawings, m_pCurDrawing.GetPointer());
+
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    OOX::Spreadsheet::CControls oControls;
+
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Controls);
+        READ1_DEF(length, res, this->ReadControls, &oControls);
+    //SEEK_TO_POS_END(oControls); ниже ...
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
+    OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
+
+    if (false == m_pCurDrawing->IsEmpty() || false == m_pCurVmlDrawing->IsEmpty())
+    {
+        OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
+        OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
+    }
+
+    if (false == m_pCurDrawing->IsEmpty())
+    {
+        NSCommon::smart_ptr<OOX::File> pFile = m_pCurDrawing.smart_dynamic_cast<OOX::File>();
+        const OOX::RId oRId = m_pCurWorksheet->Add(pFile);
+
+        OOX::Spreadsheet::CDrawingWorksheet oDrawingWorksheet;
+        oDrawingWorksheet.m_oId.Init();
+        oDrawingWorksheet.m_oId->SetValue(oRId.get());
+        oDrawingWorksheet.toBin(oStreamWriter);
+
+        OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sOutputFilename + _T(".rels");
+        m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
+    }
+//-------------------------------------------------------------------------------------------------------------
+    if (false == m_pCurVmlDrawing->IsEmpty())
+    {
+        NSCommon::smart_ptr<OOX::File> pFile = m_pCurVmlDrawing.smart_dynamic_cast<OOX::File>();
+        const OOX::RId oRId = m_pCurWorksheet->Add(pFile);
+        OOX::Spreadsheet::CLegacyDrawingWorksheet oLegacyDrawing;
+        oLegacyDrawing.m_oId.Init();
+        oLegacyDrawing.m_oId->SetValue(oRId.get());
+        oLegacyDrawing.toBin(oStreamWriter);
+    }
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::LegacyDrawingHF);
+        OOX::Spreadsheet::CLegacyDrawingHFWorksheet oLegacyDrawingHF;
+        READ1_DEF(length, res, this->ReadLegacyDrawingHF, &oLegacyDrawingHF);
+        oLegacyDrawingHF.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Picture);
+        std::wstring sPicture = m_pOfficeDrawingConverter->m_pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + m_oBufferedStream.GetString4(length);
+        smart_ptr<OOX::File> additionalFile;
+        NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = m_pOfficeDrawingConverter->m_pReader->m_pRels->WriteImage(sPicture, additionalFile, L"", L"");
+
+        NSCommon::smart_ptr<OOX::Image> pImageFileWorksheet(new OOX::Image(NULL, false));
+        pImageFileWorksheet->set_filename(oRelsGeneratorInfo.sFilepathImage, false);
+        smart_ptr<OOX::File> pFileWorksheet = pImageFileWorksheet.smart_dynamic_cast<OOX::File>();
+        OOX::RId oRId = m_pCurWorksheet->Add(pFileWorksheet);
+
+        OOX::Spreadsheet::CPictureWorksheet oPicture;
+        oPicture.m_oId.Init();
+        oPicture.m_oId->SetValue(oRId.get());
+        oPicture.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+
+    if (false == m_pCurOleObjects->m_mapOleObjects.empty())
+    {
+        m_pCurOleObjects->toBin(oStreamWriter);
+    }
+
+    oControls.toBin(oStreamWriter);
+//-------------------------------------------------------------------------------------------------------------
+    /*SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
+        BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        OOX::Spreadsheet::CTableParts oTableParts;
+        oBinaryTableReader.Read(length, &oTableParts);
+        oTableParts.m_oCount.Init();
+        oTableParts.m_oCount->SetValue((unsigned int)oTableParts.m_arrItems.size());
+        //oTableParts.toBin(oStreamWriter);
     SEEK_TO_POS_END2();*/
 //-------------------------------------------------------------------------------------------------------------
     {
@@ -4763,6 +4843,8 @@ void BinaryWorksheetsTableReader::WriteComments()
 
 	boost::unordered_map<std::wstring, unsigned int> mapByAuthors;
 	OOX::Spreadsheet::CComments* pComments = new OOX::Spreadsheet::CComments(NULL);
+    if(m_pXlsb && m_bWriteToXlsb)
+        pComments->File::m_pMainDocument = m_pXlsb;
 
 	pComments->m_oCommentList.Init();
 	std::vector<OOX::Spreadsheet::CComment*>& aComments = pComments->m_oCommentList->m_arrItems;

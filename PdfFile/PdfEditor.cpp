@@ -160,7 +160,7 @@ bool SplitSkipDict(Object* obj)
 	oType.free();
 	return false;
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, std::map<int, PdfWriter::CObjectBase*>& mUniqueRef)
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, std::map<int, PdfWriter::CObjectBase*>& mUniqueRef, int nAddObjToXRef = 0)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -214,6 +214,12 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	case objArray:
 	{
 		PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+		if (nAddObjToXRef > 0)
+		{
+			pDoc->AddObject(pArray);
+			mUniqueRef[nAddObjToXRef] = pArray;
+			nAddObjToXRef = 0;
+		}
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
@@ -229,6 +235,12 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		if (SplitSkipDict(obj))
 			return new PdfWriter::CNullObject();
 		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+		if (nAddObjToXRef > 0)
+		{
+			pDoc->AddObject(pDict);
+			mUniqueRef[nAddObjToXRef] = pDict;
+			nAddObjToXRef = 0;
+		}
 		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
 		{
 			char* chKey = obj->dictGetKey(nIndex);
@@ -248,9 +260,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 			return it->second;
 
 		obj->fetch(xref, &oTemp);
-		pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef);
-		pDoc->AddObject(pBase);
-		mUniqueRef[nObjNum] = pBase;
+		pBase = DictToCDictObject2(&oTemp, pDoc, xref, mUniqueRef, nObjNum);
 		oTemp.free();
 		break;
 	}
@@ -261,8 +271,15 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	}
 	case objStream:
 	{
-		Dict* pODict = obj->streamGetDict();
 		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+		if (nAddObjToXRef > 0)
+		{
+			pDoc->AddObject(pDict);
+			mUniqueRef[nAddObjToXRef] = pDict;
+			nAddObjToXRef = 0;
+		}
+
+		Dict* pODict = obj->streamGetDict();
 		int nLength = 0;
 		for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
 		{
@@ -296,6 +313,11 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	case objError:
 	case objEOF:
 		break;
+	}
+	if (nAddObjToXRef > 0)
+	{
+		pDoc->AddObject(pBase);
+		mUniqueRef[nAddObjToXRef] = pBase;
 	}
 
 	return pBase;
@@ -855,7 +877,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	if (!bRes)
 		m_nError = 5; // Ошибка применения редактирования
 }
-CPdfEditor::CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter)
+CPdfEditor::CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter, unsigned int unPages)
 {
 	m_pReader   = _pReader;
 	m_pWriter   = _pWriter;
@@ -876,6 +898,21 @@ CPdfEditor::CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter)
 	{
 		m_nError = 1;
 		return;
+	}
+
+	// Страницы должны быть созданы заранее для ссылки
+	Catalog* pCatalog = pPDFDocument->getCatalog();
+	for (int i = 1; i <= unPages; ++i)
+	{
+		Ref* pPageRef = pCatalog->getPageRef(i);
+		if (pPageRef->num == 0)
+		{
+			return;
+		}
+
+		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
+		pDoc->AddObject(pPage);
+		pDoc->AddPage(pPage);
 	}
 }
 void CPdfEditor::Close()

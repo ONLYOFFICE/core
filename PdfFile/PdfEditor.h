@@ -41,7 +41,7 @@ class CPdfEditor
 {
 public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
-	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter);
+	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter, unsigned int unPages);
 
 	int  GetError();
 	void Close();

@@ -418,12 +418,17 @@ int BinaryTableReader::ReadTablePart(BYTE type, long length, void* poResult)
 	if (c_oSer_TablePart::Table == type)
 	{
 		OOX::Spreadsheet::CTableFile* pTable = new OOX::Spreadsheet::CTableFile(NULL);
+        if(m_pCurWorksheet->OOX::File::m_pMainDocument)
+        {
+            pTable->OOX::File::m_pMainDocument = m_pCurWorksheet->OOX::File::m_pMainDocument;
+        }
 		pTable->m_oTable.Init();
 		READ1_DEF(length, res, this->ReadTable, pTable);
 
 		OOX::Spreadsheet::CTablePart* pTablePart = new OOX::Spreadsheet::CTablePart();
 		NSCommon::smart_ptr<OOX::File> pTableFile(pTable);
 		const OOX::RId oRId = m_pCurWorksheet->Add(pTableFile);
+
 		pTablePart->m_oRId.Init();
 		pTablePart->m_oRId->SetValue(oRId.get());
 		pTableParts->m_arrItems.push_back(pTablePart);
@@ -3427,23 +3432,36 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
 		if (-1 != oPivotCachesTemp.nId && NULL != oPivotCachesTemp.pDefinitionData)
 		{
 			OOX::Spreadsheet::CPivotCacheDefinitionFile* pDefinitionFile = new OOX::Spreadsheet::CPivotCacheDefinitionFile(NULL);
+            if(m_pXlsb)
+                pDefinitionFile->OOX::File::m_pMainDocument = m_pXlsb;
 			std::wstring srIdRecords;
 			if (NULL != oPivotCachesTemp.pRecords)
 			{
 				NSCommon::smart_ptr<OOX::File> pFileRecords(oPivotCachesTemp.pRecords);
+                if(m_pXlsb)
+                    pFileRecords->OOX::File::m_pMainDocument = m_pXlsb;
 				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
 			}
 			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, L"");
 			
 			NSCommon::smart_ptr<OOX::File> pFile(pDefinitionFile);
 			OOX::RId rIdDefinition = m_oWorkbook.Add(pFile);
-
-			m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCache cacheId=\"");
-			m_oWorkbook.m_oPivotCachesXml->append(std::to_wstring(oPivotCachesTemp.nId));
-			m_oWorkbook.m_oPivotCachesXml->append(L"\" r:id=\"");
-			m_oWorkbook.m_oPivotCachesXml->append(rIdDefinition.ToString());
-			m_oWorkbook.m_oPivotCachesXml->append(L"\"/>");
-
+            if(!m_pXlsb)
+            {
+                m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCache cacheId=\"");
+                m_oWorkbook.m_oPivotCachesXml->append(std::to_wstring(oPivotCachesTemp.nId));
+                m_oWorkbook.m_oPivotCachesXml->append(L"\" r:id=\"");
+                m_oWorkbook.m_oPivotCachesXml->append(rIdDefinition.ToString());
+                m_oWorkbook.m_oPivotCachesXml->append(L"\"/>");
+            }
+            else
+            {   auto bookPivotCache = new OOX::Spreadsheet::CWorkbookPivotCache;
+                bookPivotCache->m_oCacheId = (_UINT32)oPivotCachesTemp.nId;
+                bookPivotCache->m_oRid = rIdDefinition.ToString();
+                if(!m_oWorkbook.m_oPivotCaches.IsInit())
+                    m_oWorkbook.m_oPivotCaches.Init();
+                m_oWorkbook.m_oPivotCaches->m_arrItems.push_back(bookPivotCache);
+            }
 			m_mapPivotCacheDefinitions[oPivotCachesTemp.nId] = pFile;
 		}
 		else
@@ -3484,6 +3502,8 @@ int BinaryWorkbookTableReader::ReadSlicerCaches(BYTE type, long length, void* po
 	if (c_oSerWorkbookTypes::SlicerCache == type)
 	{
 		OOX::Spreadsheet::CSlicerCacheFile* pSlicerCache = new OOX::Spreadsheet::CSlicerCacheFile(NULL);
+        if(m_pXlsb)
+            pSlicerCache->OOX::File::m_pMainDocument = m_pXlsb;
 		pSlicerCache->m_oSlicerCacheDefinition.Init();
 
 		m_oBufferedStream.GetUChar();//type
@@ -4522,7 +4542,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		pOfficeArtExtension->m_oSlicerList.Init();
 		READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerList.GetPointer());
 
-		pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+        pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
 		pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 
 		if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
@@ -4713,7 +4733,13 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
             m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtensionCF);
         }
     SEEK_TO_POS_END2();
-    //-------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::DataValidations);
+        OOX::Spreadsheet::CDataValidations oDataValidations;
+        READ1_DEF(length, res, this->ReadDataValidations, &oDataValidations);
+        oDataValidations.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::Hyperlinks);
         OOX::Spreadsheet::CHyperlinks oHyperlinks;
         READ1_DEF(length, res, this->ReadHyperlinks, &oHyperlinks);
@@ -4840,14 +4866,25 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 
     oControls.toBin(oStreamWriter);
 //-------------------------------------------------------------------------------------------------------------
-    /*SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
         BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
         OOX::Spreadsheet::CTableParts oTableParts;
         oBinaryTableReader.Read(length, &oTableParts);
         oTableParts.m_oCount.Init();
         oTableParts.m_oCount->SetValue((unsigned int)oTableParts.m_arrItems.size());
-        //oTableParts.toBin(oStreamWriter);
-    SEEK_TO_POS_END2();*/
+        oTableParts.toBin(oStreamWriter);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::QueryTable);
+        BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        smart_ptr<OOX::Spreadsheet::CQueryTableFile> pQueryTableFile(new OOX::Spreadsheet::CQueryTableFile(NULL));
+        pQueryTableFile->m_oQueryTable.Init();
+
+        oBinaryTableReader.ReadQueryTable(length, pQueryTableFile->m_oQueryTable.GetPointer());
+
+        smart_ptr<OOX::File> oFile = pQueryTableFile.smart_dynamic_cast<OOX::File>();
+        m_pCurWorksheet->Add(oFile);
+    SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::SparklineGroups);
         OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
@@ -4862,11 +4899,58 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 
     SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::Slicers);
+        OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+        pOfficeArtExtension->m_oSlicerList.Init();
+        READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerList.GetPointer());
+
+        pOfficeArtExtension->m_sUri = L"{A8765BA9-456A-4dab-B4F3-ACF838C121DE}";
+        pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
+
+        if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+            m_pCurWorksheet->m_oExtLst.Init();
+        m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+    SEEK_TO_POS_END2();
+
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::SlicersExt);
+        OOX::Drawing::COfficeArtExtension* pOfficeArtExtension = new OOX::Drawing::COfficeArtExtension();
+        pOfficeArtExtension->m_oSlicerListExt.Init();
+        READ1_DEF(length, res, this->ReadSlicers, pOfficeArtExtension->m_oSlicerListExt.GetPointer());
+
+        pOfficeArtExtension->m_sUri = L"{3A4CF648-6AED-40f4-86FF-DC5316D8AED3}";
+        pOfficeArtExtension->m_sAdditionalNamespace = L"xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"";
+
+        if (m_pCurWorksheet->m_oExtLst.IsInit() == false)
+            m_pCurWorksheet->m_oExtLst.Init();
+        m_pCurWorksheet->m_oExtLst->m_arrExt.push_back(pOfficeArtExtension);
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
     if (m_pCurWorksheet->m_oExtLst.IsInit())
     {
         auto extLst = m_pCurWorksheet->m_oExtLst->toBinWorksheet();
         extLst->write(oStreamWriter, nullptr);
     }
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::PivotTable);
+        PivotCachesTemp oPivotCachesTemp;
+
+        READ1_DEF(length, res, this->ReadPivotTable, &oPivotCachesTemp);
+        boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
+
+        if (m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
+        {
+            NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
+            if(m_pXlsb)
+                pFileTable->m_pMainDocument = m_pXlsb;
+            oPivotCachesTemp.pTable->AddNoWrite(pair->second, L"../pivotCache");
+            m_pCurWorksheet->Add(pFileTable);
+        }
+        else
+        {
+            RELEASEOBJECT(oPivotCachesTemp.pTable);
+        }
+    SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);
@@ -7973,6 +8057,8 @@ int BinaryWorksheetsTableReader::ReadSlicers(BYTE type, long length, void* poRes
     if (c_oSerWorksheetsTypes::Slicer == type)
     {
 		OOX::Spreadsheet::CSlicerFile* pSlicer = new OOX::Spreadsheet::CSlicerFile(NULL);
+        if(m_pXlsb && m_bWriteToXlsb)
+            pSlicer->OOX::File::m_pMainDocument = m_pXlsb;
 		pSlicer->m_oSlicers.Init();
 		
 		m_oBufferedStream.GetUChar();//type
@@ -9160,7 +9246,13 @@ int BinaryFileReader::ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW:
 		oXlsx.m_pWorkbook->m_bMacroEnabled = oSaveParams.bMacroEnabled;
 
 		oBufferedStream.Seek(nWorkbookOffBits);
-		res = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter).Read();
+        auto bookReader = BinaryWorkbookTableReader(oBufferedStream, *oXlsx.m_pWorkbook, m_mapPivotCacheDefinitions, sOutDir, pOfficeDrawingConverter);
+        OOX::Spreadsheet::CXlsb* xlsb = dynamic_cast<OOX::Spreadsheet::CXlsb*>(&oXlsx);
+        if ((xlsb) && (xlsb->m_bWriteToXlsb))
+        {
+            bookReader.m_pXlsb = xlsb;
+        }
+        res = bookReader.Read();
 		if (c_oSerConstants::ReadOk != res)
 			return res;
 		oSaveParams.bMacroEnabled = oXlsx.m_pWorkbook->m_bMacroEnabled;

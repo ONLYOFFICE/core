@@ -927,10 +927,18 @@ namespace PdfWriter
 			pTrailer->Add("Size", unMaxObjId + 1);
 			if (m_pPrev && pPrev->m_unAddr)
 				pTrailer->Add("Prev", pPrev->m_unAddr);
+			int nStreamOffset = pStream->Tell();
+			int nOffsetSize = 1;
+			if (nStreamOffset > 1 << 24)
+				nOffsetSize = 4;
+			else if (nStreamOffset > 1 << 16)
+				nOffsetSize = 3;
+			else if (nStreamOffset > 1 << 8)
+				nOffsetSize = 2;
 			CArrayObject* pW = new CArrayObject();
 			pTrailer->Add("W",  pW);
 			pW->Add(1);
-			pW->Add(4);
+			pW->Add(nOffsetSize);
 			pW->Add(2);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
@@ -963,7 +971,6 @@ namespace PdfWriter
 
 			// Записываем поток
 			pXref = out;
-			int nStreamOffset = pStream->Tell();
 			pXref->m_unAddr = nStreamOffset;
 			CStream* pTrailerStream = new CMemoryStream();
 			unsigned int unEntries = 0, unEntriesSize = 0;
@@ -990,10 +997,8 @@ namespace PdfWriter
 						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
 						pTrailerStream->WriteChar('\001');
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 24));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 16));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 8));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset));
+					for (int i = 0; i < nOffsetSize; ++i)
+						pTrailerStream->WriteChar((pEntry->unByteOffset >> (8 * i)) & 0xFF);
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo >> 8));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo));
 				}

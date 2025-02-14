@@ -266,7 +266,7 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-		m_pXref->WriteToStream(pStream, pEncrypt);
+		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
 	bool CDocument::SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer)
 	{

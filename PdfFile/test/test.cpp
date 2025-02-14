@@ -356,9 +356,7 @@ TEST_F(CPdfFileTest, SplitPdf)
 
 	LoadFromFile();
 
-	pdfFile->CreatePdf();
-
-	pdfFile->SplitPages({0, 1});
+	pdfFile->SplitPages({2, 5, 6, 7});
 
 	pdfFile->SaveToFile(wsDstFile);
 }

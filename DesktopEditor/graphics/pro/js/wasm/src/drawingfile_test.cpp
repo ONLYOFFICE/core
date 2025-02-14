@@ -808,23 +808,14 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 									   "SoftLight", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity" };
 		std::cout << "Type " << arrBlendMode[nPathLength] << ", ";
 
-		int nTextSize = READ_INT(pWidgetsAP + i);
-		i += 4;
-		for (int k = 0; k < nTextSize; ++k)
+		int bText = READ_BYTE(pWidgetsAP + i);
+		i += 1;
+		if (bText != 0)
 		{
 			nPathLength = READ_INT(pWidgetsAP + i);
 			i += 4;
-			std::cout << k << " Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+			std::cout << "Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
 			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Font " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
-			i += nPathLength;
-
-			nPathLength = READ_INT(pWidgetsAP + i);
-			i += 4;
-			std::cout << "Size " << (double)nPathLength / 100.0 << ", ";
 		}
 	}
 	std::cout << std::endl;

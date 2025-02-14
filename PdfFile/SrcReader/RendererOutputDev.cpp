@@ -2519,11 +2519,7 @@ namespace PdfReader
 				}
 			}
 			if (((GlobalParamsAdaptor*)globalParams)->getDrawFormField())
-			{
-				double dFontSize;
-				m_pRenderer->get_FontSize(&dFontSize);
-				((GlobalParamsAdaptor*)globalParams)->AddTextFormField(wsUnicodeText, sFontPath, dFontSize);
-			}
+				((GlobalParamsAdaptor*)globalParams)->AddTextFormField(wsUnicodeText);
 #endif
 			m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
 			if (bReplace)

@@ -129,8 +129,8 @@ private:
 		BYTE nBlendMode;
 		std::string sAPName;
 		std::string sASName;
+		std::string sText;
 		BYTE* pAP;
-		BYTE* pText;
 	};
 
 	void WriteAppearance(unsigned int nColor, CAnnotAPView* pView);

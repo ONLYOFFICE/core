@@ -3241,6 +3241,7 @@ CAnnotAP::~CAnnotAP()
 
 	for (int i = 0; i < m_arrAP.size(); ++i)
 	{
+		RELEASEOBJECT(m_arrAP[i]->pText);
 		RELEASEOBJECT(m_arrAP[i]);
 	}
 }
@@ -3545,6 +3546,7 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
+	pView->pText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 BYTE CAnnotAP::GetBlendMode()
 {
@@ -3577,6 +3579,19 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(npSubMatrix >> 32);
 
 		oRes.WriteBYTE(m_arrAP[i]->nBlendMode);
+
+		BYTE* pTextFormField = m_arrAP[i]->pText;
+		if (pTextFormField)
+		{
+			BYTE* x = pTextFormField;
+			unsigned int nLength = x[0] | x[1] << 8 | x[2] << 16 | x[3] << 24;
+			nLength -= 4;
+			oRes.Write(pTextFormField + 4, nLength);
+		}
+		else
+			oRes.AddInt(0);
+		RELEASEARRAYOBJECTS(pTextFormField);
+		m_arrAP[i]->pText = NULL;
 	}
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)

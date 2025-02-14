@@ -519,6 +519,17 @@ function readAnnotAP(reader, AP)
 		// 0 - Normal, 1 - Multiply, 2 - Screen, 3 - Overlay, 4 - Darken, 5 - Lighten, 6 - ColorDodge, 7 - ColorBurn, 8 - HardLight,
 		// 9 - SoftLight, 10 - Difference, 11 - Exclusion, 12 - Hue, 13 - Saturation, 14 - Color, 15 - Luminosity
 		APi["BlendMode"] = reader.readByte();
+		let k = reader.readInt();
+		if (k != 0)
+			APi["fontInfo"] = [];
+		for (let j = 0; j < k; ++j)
+		{
+			let fontInfo = {};
+			fontInfo["text"] = reader.readString();
+			fontInfo["fontName"] = reader.readString();
+			fontInfo["fontSize"] = reader.readDouble();
+			APi["fontInfo"].push(fontInfo);
+		}
 	}
 }
 

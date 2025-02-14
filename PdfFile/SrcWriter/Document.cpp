@@ -1386,6 +1386,10 @@ namespace PdfWriter
 		m_pCatalog->Add("AcroForm", pObj);
 		m_pAcroForm = pObj;
 	}
+	CResourcesDict* CDocument::CreateResourcesDict(bool bInline, bool bProcSet)
+	{
+		return new CResourcesDict(m_pXref, bInline, bProcSet);
+	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
 		if (!pPageTree || !EditXref(pXref))

@@ -936,10 +936,10 @@ namespace PdfWriter
 			else if (nStreamOffset > 1 << 8)
 				nOffsetSize = 2;
 			CArrayObject* pW = new CArrayObject();
-			pTrailer->Add("W",  pW);
 			pW->Add(1);
 			pW->Add(nOffsetSize);
 			pW->Add(2);
+			pTrailer->Add("W",  pW);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
 			CNumberObject* pLength = new CNumberObject(0);
@@ -997,7 +997,7 @@ namespace PdfWriter
 						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
 						pTrailerStream->WriteChar('\001');
-					for (int i = 0; i < nOffsetSize; ++i)
+					for (int i = nOffsetSize - 1; i >= 0; --i)
 						pTrailerStream->WriteChar((pEntry->unByteOffset >> (8 * i)) & 0xFF);
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo >> 8));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo));
@@ -1010,10 +1010,8 @@ namespace PdfWriter
 			pIndex->Add(unEntries);
 			pIndex->Add(unEntriesSize);
 			pTrailerStream->WriteChar('\001');
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 24));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset));
+			for (int i = nOffsetSize - 1; i >= 0; --i)
+				pTrailerStream->WriteChar((nStreamOffset >> (8 * i)) & 0xFF);
 			pTrailerStream->WriteChar('\000');
 			pTrailerStream->WriteChar('\000');
 

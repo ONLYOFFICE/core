@@ -215,6 +215,7 @@ namespace PdfWriter
 		void              ClearPage();
 		bool              EditXref(CXref* pXref);
 		void              SetAcroForm(CDictObject* pObj);
+		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 	private:		  
 					  
 		char*             GetTTFontTag();

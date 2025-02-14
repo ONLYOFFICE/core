@@ -157,7 +157,16 @@ bool SplitSkipDict(Object* obj, std::map<int, PdfWriter::CObjectBase*>& mUniqueR
 		oTemp.free();
 		return true;
 	}
-	oTemp.free();
+	else if (oTemp.isName("Annot") && obj->dictLookupNF("P", &oTemp2)->isRef())
+	{
+		std::map<int, PdfWriter::CObjectBase*>::iterator it = mUniqueRef.find(oTemp2.getRefNum());
+		if (it == mUniqueRef.end())
+		{
+			oTemp.free(); oTemp2.free();
+			return true;
+		}
+	}
+	oTemp.free(); oTemp2.free();
 
 	if (obj->dictLookup("S", &oTemp)->isName("GoTo"))
 	{
@@ -316,7 +325,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 		pDict->SetStream(pStream);
-		Stream* pOStream = obj->getStream()->getBaseStream();
+		Stream* pOStream = obj->getStream()->getUndecodedStream();
 		pOStream->reset();
 		int nChar = pOStream->getChar();
 		while (nChar != EOF)
@@ -1338,17 +1347,16 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 			std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oResourcesRef.num);
 			if (oResourcesRef.num > 0 && it != m_mSplitUniqueRef.end())
 			{
-				pPage->Add("Resources", it->second);
+				pPage->Add(chKey, it->second);
 				continue;
 			}
 
 			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
 			{
-				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, oResourcesRef.num < 0, false);
+				PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
 				if (oResourcesRef.num > 0)
 					m_mSplitUniqueRef[oResourcesRef.num] = pDict;
-
-				pPage->Add("Resources", pDict);
+				pPage->Add(chKey, pDict);
 				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
 				{
 					Object oRes;
@@ -1411,7 +1419,54 @@ void CPdfEditor::SplitEnd()
 		{
 			Object oTemp;
 			char* chKey = oAcroForm.dictGetKey(nIndex);
-			oAcroForm.dictGetValNF(nIndex, &oTemp);
+			if (strcmp("Fields", chKey) == 0)
+			{
+				Ref oFieldsRef = { -1, -1 };
+				if (oAcroForm.dictGetValNF(nIndex, &oTemp)->isRef())
+					oFieldsRef = oTemp.getRef();
+				oTemp.free();
+
+				std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oFieldsRef.num);
+				if (oFieldsRef.num > 0 && it != m_mSplitUniqueRef.end())
+				{
+					pAcroForm->Add(chKey, it->second);
+					continue;
+				}
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
+				{
+					PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+					if (oFieldsRef.num > 0)
+					{
+						pDoc->AddObject(pArray);
+						m_mSplitUniqueRef[oFieldsRef.num] = pArray;
+					}
+					pAcroForm->Add(chKey, pArray);
+					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
+					{
+						Object oRes;
+						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+						{
+							it = m_mSplitUniqueRef.find(oRes.getRefNum());
+							if (it != m_mSplitUniqueRef.end())
+							{
+								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, m_mSplitUniqueRef);
+								pArray->Add(pBase);
+							}
+						}
+						oRes.free();
+					}
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					oAcroForm.dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else
+				oAcroForm.dictGetValNF(nIndex, &oTemp);
 			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, m_mSplitUniqueRef);
 			pAcroForm->Add(chKey, pBase);
 			oTemp.free();

@@ -684,6 +684,7 @@ namespace OOX
 			nullable<CPivotCacheDefinition> m_oPivotCashDefinition;
 		private:
 			CPath m_oReadPath;
+            std::wstring prepareData() const;
 
 			BYTE *m_pData;
 			long m_nDataLength;

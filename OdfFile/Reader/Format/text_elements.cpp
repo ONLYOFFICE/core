@@ -279,7 +279,7 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 			style_instance* paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, false);
 			if (paragraph_style && paragraph_style->content())
 			{
-				paragraph_style->content()->get_style_text_properties(true)->content_.fo_color_ = text_props->content_.fo_color_;
+				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
 			}
 		}
 	}

@@ -773,7 +773,7 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 		end_element();
 		
 		need_break_		= fo_break(fo_break::Page);
-		need_restart	= true;
+		need_restart	= clear != 0; // brclearAll = 0,
 	}
 	else //brtypeTextWrapping
 	{

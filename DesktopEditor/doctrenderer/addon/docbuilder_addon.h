@@ -29,38 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#ifndef DOC_BUILDER_ADDON_PRIVATE
+#define DOC_BUILDER_ADDON_PRIVATE
 
-#include "style_graphic_properties.h"
-#include "style_text_properties.h"
-#include "style_paragraph_properties.h"
-#include "style_table_properties.h"
-#include "style_presentation.h"
+#include <string>
 
-#include "odfcontext.h"
-#include <vector>
-
-namespace cpdoccore 
-{ 
-	namespace oox
+namespace NSDoctRenderer
+{
+	class CDocBuilderAddon
 	{
-		class tabs_context;
-	}
-	namespace odf_reader 
-	{
-		graphic_format_properties_ptr calc_graphic_properties_content(const style_instance* styleInstance, bool noParents = false);
-		graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances, bool noParents = false);
-
-		text_format_properties_ptr calc_text_properties_content(const style_instance * styleInstance);
-		text_format_properties_ptr calc_text_properties_content(const std::vector<const style_instance *> & styleInstances);
-
-		paragraph_format_properties calc_paragraph_properties_content(const style_instance * styleInstance);
-		paragraph_format_properties calc_paragraph_properties_content(const std::vector<const style_instance *> & styleInstances);
-
-		style_table_cell_properties_attlist calc_table_cell_properties(const style_instance * styleInstance);
-		style_table_cell_properties_attlist calc_table_cell_properties(const std::vector<const style_instance *> & styleInstances);
-
-		void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & context);
-		_CP_OPT(int) calc_outline_level(_CP_OPT(int) value, const style_instance * styleInstance);
-	}
+	private:
+		std::wstring m_sWorkDirectory;
+	public:
+		CDocBuilderAddon(const std::wstring& sWorkDir)
+		{
+			m_sWorkDirectory = sWorkDir;
+		}
+	public:
+		std::wstring GetX2tSaveAddon()
+		{
+			return L"";
+		}
+		int GetX2tPreSaveError()
+		{
+			return 0;
+		}
+	};
 }
+
+#endif // DOC_BUILDER_ADDON_PRIVATE

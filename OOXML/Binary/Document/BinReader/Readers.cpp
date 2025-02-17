@@ -260,15 +260,21 @@ docRGB Binary_CommonReader2::ReadColor()
 	oRGB.B = m_oBufferedStream.GetUChar();
 	return oRGB;
 }
-void Binary_CommonReader2::ReadHexColor(SimpleTypes::CHexColor *pColor)
+void Binary_CommonReader2::ReadHexColor(SimpleTypes::CHexColor *pColor, long length)
 {
 	if (!pColor)
 	{
-		m_oBufferedStream.Skip(3);
+		m_oBufferedStream.Skip(length);
 		return;
 	}
-
 	pColor->SetValue(SimpleTypes::hexcolorRGB);
+	
+	if (length == 4)
+	{
+		pColor->SetValue(SimpleTypes::hexcolorARGB);
+		
+		pColor->Set_A(m_oBufferedStream.GetUChar());
+	}
 
 	pColor->Set_R(m_oBufferedStream.GetUChar());
 	pColor->Set_G(m_oBufferedStream.GetUChar());
@@ -341,7 +347,7 @@ int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poRes
 		case c_oSerShdType::Color:
 		{
 			pShd->m_oColor.Init();
-			ReadHexColor(pShd->m_oColor.GetPointer());
+			ReadHexColor(pShd->m_oColor.GetPointer(), length);
 		}break;
 		case c_oSerShdType::ColorTheme:
 		{
@@ -352,7 +358,7 @@ int Binary_CommonReader2::ReadShdComplexType(BYTE type, long length, void* poRes
 		case c_oSerShdType::Fill:
 		{
 			pShd->m_oFill.Init();
-			ReadHexColor(pShd->m_oFill.GetPointer());
+			ReadHexColor(pShd->m_oFill.GetPointer(), length);
 		}break;
 		case c_oSerShdType::FillTheme:
 		{
@@ -1339,7 +1345,8 @@ int Binary_pPrReader::ReadBorder(BYTE type, long length, void* poResult)
 	{
 		pBorder->m_oColor.Init();
 		pBorder->m_oColor->SetValue(SimpleTypes::hexcolorRGB);
-		oBinary_CommonReader2.ReadHexColor(pBorder->m_oColor.GetPointer());
+		
+		oBinary_CommonReader2.ReadHexColor(pBorder->m_oColor.GetPointer(), length);
 	}
 	else if ( c_oSerBorderType::Space == type )
 	{
@@ -9719,6 +9726,16 @@ int Binary_DocumentTableReader::ReadSdtPr(BYTE type, long length, void* poResult
 	{
 		pSdtPr->m_oComplexFormPr.Init();
 		READ1_DEF(length, res, this->ReadSdtComplexFormPr, pSdtPr->m_oComplexFormPr.GetPointer());
+	}
+	else if (c_oSerSdt::Border == type)
+	{
+		pSdtPr->m_oBorder.Init();
+		READ2_DEF(length, res, oBinary_pPrReader.ReadBorder, pSdtPr->m_oBorder.GetPointer());
+	}
+	else if (c_oSerSdt::Shd == type)
+	{
+		pSdtPr->m_oShd.Init();
+		READ2_DEF(length, res, oBinary_CommonReader2.ReadShdComplexType, pSdtPr->m_oShd.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

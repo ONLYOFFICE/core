@@ -73,6 +73,7 @@ public:
 	odp_page_state & current_slide() { return slide_context_.state();}
 
 /////////////////////////////////////////////////////
+	virtual bool is_child_text_context();
 
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_controls_context	* controls_context();

@@ -153,7 +153,13 @@ namespace MetaFile
 
 		const std::wstring wsText{ConvertToUnicode(pString, (long)shStringLength, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET)};
 
-		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
+		TPointD oScale(1, 1);
+
+		if (NULL != m_pParser)
+		{
+			oScale.X = m_pParser->IsWindowFlippedX() ? -1 : 1;
+			oScale.Y = m_pParser->IsWindowFlippedY() ? -1 : 1;
+		}
 
 		std::vector<double> arDx(0);
 

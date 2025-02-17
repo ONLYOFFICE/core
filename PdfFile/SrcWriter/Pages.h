@@ -72,6 +72,7 @@ namespace PdfWriter
 		bool InsertPage(int nPageIndex, CPage* pPage);
 		bool ReplacePage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
+		bool Find(CPage* pPage, int& nI);
 		unsigned int GetCount()
 		{
 			return m_pCount ? m_pCount->Get() : 0;

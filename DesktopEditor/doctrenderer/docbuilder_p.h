@@ -63,6 +63,8 @@
 
 #include "../common/ProcessEnv.h"
 
+#include "docbuilder_addon.h"
+
 #ifdef CreateFile
 #undef CreateFile
 #endif
@@ -980,6 +982,12 @@ namespace NSDoctRenderer
 		{
 			Init();
 
+			CDocBuilderAddon oSaveAddon(m_sX2tPath);
+
+			int nPreSaveError = oSaveAddon.GetX2tPreSaveError();
+			if (0 != nPreSaveError)
+				return nPreSaveError;
+
 			if (-1 == m_nFileType)
 			{
 				CV8RealTimeWorker::_LOGGING_ERROR_(L"error (save)", L"file not opened!");
@@ -1062,6 +1070,8 @@ namespace NSDoctRenderer
 			std::string sOptions = NSProcessEnv::Save();
 			if (!sOptions.empty())
 				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
+			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon());
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 

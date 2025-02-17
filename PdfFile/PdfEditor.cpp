@@ -1412,7 +1412,15 @@ void CPdfEditor::SplitEnd()
 	{
 		PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
 		if (oAcroForm.isRef())
+		{
 			pDoc->AddObject(pAcroForm);
+			oAcroForm.free();
+			if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
+			{
+				oAcroForm.free(); oCatalog.free();
+				return;
+			}
+		}
 		pDoc->SetAcroForm(pAcroForm);
 
 		for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
@@ -1449,10 +1457,7 @@ void CPdfEditor::SplitEnd()
 						{
 							it = m_mSplitUniqueRef.find(oRes.getRefNum());
 							if (it != m_mSplitUniqueRef.end())
-							{
-								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, m_mSplitUniqueRef);
-								pArray->Add(pBase);
-							}
+								pArray->Add(it->second);
 						}
 						oRes.free();
 					}

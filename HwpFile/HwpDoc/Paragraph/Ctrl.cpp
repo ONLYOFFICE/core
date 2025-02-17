@@ -6,7 +6,7 @@
 #include "CtrlNewNumber.h"
 #include "CtrlNote.h"
 #include "CtrlPageNumPos.h"
-#include "CCtrlField.h"
+#include "CtrlField.h"
 
 namespace HWP
 {

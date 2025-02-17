@@ -1318,6 +1318,10 @@ namespace OOX
 			}
 			if (oNode.GetNode(L"w15:color", oChild))
 				m_oColor = oChild;
+			if (oNode.GetNode(L"w:border", oChild))
+				m_oBorder = oChild;
+			if (oNode.GetNode(L"w:shd", oChild))
+				m_oShd = oChild;
 
 			if (oNode.GetNode(L"w:dataBinding", oChild))
 				m_oDataBinding = oChild;
@@ -1434,6 +1438,10 @@ namespace OOX
 				}
 				else if (L"color" == sName)
 					m_oColor = oReader;
+				else if (L"border" == sName)
+					m_oBorder = oReader;
+				else if (L"shd" == sName)
+					m_oShd = oReader;
 				else if (L"dataBinding" == sName)
 					m_oDataBinding = oReader;
 				else if (sdttypeUnknown == m_eType && L"date" == sName)
@@ -1627,6 +1635,8 @@ namespace OOX
 			WritingElement_WriteNode_2(m_oFormPr);
 			WritingElement_WriteNode_2(m_oTextFormPr);
 			WritingElement_WriteNode_2(m_oComplexFormPr);
+			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
+			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
 
 			return sResult;
 		}

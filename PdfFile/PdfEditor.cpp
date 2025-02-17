@@ -895,14 +895,15 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 	}
 	kidsArrObj.free();
 }
-bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
+bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	PdfWriter::CPage* pEditPage = NULL;
+	pEditPage = bActualPos ? pDoc->GetPage(nPageIndex) : pDoc->GetEditPage(nPageIndex);
 	if (pEditPage)
 	{
 		if (bSet)
@@ -1073,21 +1074,21 @@ bool CPdfEditor::AddPage(int nPageIndex)
 	pWriter->put_Height(dHeight);
 	return true;
 }
+bool CPdfEditor::MovePage(int nPageIndex, int nPos)
+{
+	if (EditPage(nPageIndex, true, true))
+	{
+		m_nEditPage = nPos;
+		return pWriter->GetDocument()->MovePage(nPageIndex, nPos);
+	}
+	return false;
+}
 bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 {
 	PDFDoc* pPDFDocument = pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
-
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
-	if (!pEditPage)
-	{
-		pEditPage = pDoc->GetCurPage();
-		EditPage(nPageIndex);
-		pDoc->SetCurPage(pEditPage);
-		pWriter->EditPage(pEditPage);
-	}
 
 	XRef* xref = pPDFDocument->getXRef();
 	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
@@ -1116,6 +1117,15 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	{
 		oAnnotRef.free(); oAnnot.free(); oType.free();
 		return false;
+	}
+
+	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
+	if (!pEditPage)
+	{
+		pEditPage = pDoc->GetCurPage();
+		EditPage(nPageIndex);
+		pDoc->SetCurPage(pEditPage);
+		pWriter->EditPage(pEditPage);
 	}
 
 	// Воспроизведение словаря аннотации из reader для writer
@@ -1505,10 +1515,13 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
 	if (it != m_mFonts.end())
 		wsFontPath = it->second;
-	std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
-	std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
-	if (it2 != mFonts.end())
-		wsFontPath = it2->second;
+	if (wsFontPath.empty())
+	{
+		std::map<std::wstring, std::wstring> mFonts = pReader->GetFonts();
+		std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
+		if (it2 != mFonts.end())
+			wsFontPath = it2->second;
+	}
 	if (wsFontPath.empty())
 		return false;
 	if (wsFontName == L"Helvetica")

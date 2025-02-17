@@ -12,6 +12,8 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
 DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
@@ -50,7 +52,6 @@ SOURCES += \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
-    HwpDoc/Paragraph/CCtrlField.cpp \
     HwpDoc/Paragraph/CapParagraph.cpp \
     HwpDoc/Paragraph/CellParagraph.cpp \
     HwpDoc/Paragraph/CharShape.cpp \
@@ -63,6 +64,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlContainer.cpp \
     HwpDoc/Paragraph/CtrlEmpty.cpp \
     HwpDoc/Paragraph/CtrlEqEdit.cpp \
+    HwpDoc/Paragraph/CtrlField.cpp \
     HwpDoc/Paragraph/CtrlForm.cpp \
     HwpDoc/Paragraph/CtrlGeneralShape.cpp \
     HwpDoc/Paragraph/CtrlHeadFoot.cpp \
@@ -135,7 +137,6 @@ HEADERS += \
     HwpDoc/OLEdoc/DirectoryEntry.h \
     HwpDoc/OLEdoc/Sector.h \
     HwpDoc/OLEdoc/SectorType.h \
-    HwpDoc/Paragraph/CCtrlField.h \
     HwpDoc/Paragraph/CapParagraph.h \
     HwpDoc/Paragraph/CellParagraph.h \
     HwpDoc/Paragraph/CharShape.h \
@@ -149,6 +150,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlContainer.h \
     HwpDoc/Paragraph/CtrlEmpty.h \
     HwpDoc/Paragraph/CtrlEqEdit.h \
+    HwpDoc/Paragraph/CtrlField.h \
     HwpDoc/Paragraph/CtrlForm.h \
     HwpDoc/Paragraph/CtrlGeneralShape.h \
     HwpDoc/Paragraph/CtrlHeadFoot.h \

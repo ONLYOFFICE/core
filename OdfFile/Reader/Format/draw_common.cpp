@@ -301,11 +301,22 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 	if (gradient_style->draw_style_) 
 		style = gradient_style->draw_style_->get_type();
 
-	if (gradient_style->draw_angle_) 
-		fill->angle = -90 - gradient_style->draw_angle_->get_value();
+	if (gradient_style->draw_angle_)
+	{
+		double angle = std::fmod(gradient_style->draw_angle_->get_value(), 360.0);
+		if (angle < 0)
+			angle += 360.0;
+
+		fill->angle = -angle + 90;
+	}
 
 	if (fill->angle < 0)
-		fill->angle += 360;
+	{
+		int fullRotations = std::ceil(-fill->angle / 360.0f);
+
+		fill->angle += 360 * fullRotations;
+	}
+		
 
 	for (size_t i = 0; i < gradient_style->content_.size(); ++i)
 	{
@@ -317,7 +328,7 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 			if (gradient_stop->color_value_)
 				fill->colors[i].color_ref = gradient_stop->color_value_->get_hex_value();
 			if (gradient_stop->svg_offset_)
-				fill->colors[i].pos = 100 - *gradient_stop->svg_offset_ * 100;
+				fill->colors[i].pos = *gradient_stop->svg_offset_ * 100;
 		}
 	}
 	fill->style = 0;

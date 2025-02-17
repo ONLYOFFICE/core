@@ -36,6 +36,11 @@ void CHWPStream::Clear()
 		m_arSavedPositions.pop();
 }
 
+void CHWPStream::Copy(CHWPStream& oStream, unsigned long ulSize)
+{
+	memcpy(m_pCur, oStream.GetCurPtr(), (std::min)(SizeToEnd(), (unsigned long)(std::min)(ulSize, oStream.SizeToEnd())));
+}
+
 void CHWPStream::SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer)
 {
 	m_pBegin = pBuffer;

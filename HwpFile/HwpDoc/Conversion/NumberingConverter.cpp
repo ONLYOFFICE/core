@@ -27,12 +27,14 @@ int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, 
 	if (nullptr == pNumbering || eHeadingType == EHeadingType::NONE || EHeadingType::OUTLINE == eHeadingType)
 		return 0;
 
-	std::vector<const CHWPRecordNumbering*>::const_iterator itFound = std::find(m_arUsedNumbering.cbegin(), m_arUsedNumbering.cend(), pNumbering);
+	std::vector<std::pair<EHeadingType, const CHWPRecordNumbering*>>::const_iterator itFound = std::find_if(m_arUsedNumbering.cbegin(), m_arUsedNumbering.cend(),
+	                                                                                                        [pNumbering, eHeadingType](const std::pair<EHeadingType, const CHWPRecordNumbering*>& oValue)
+	                                                                                                        { return eHeadingType == oValue.first && pNumbering == oValue.second;});
 
 	if (m_arUsedNumbering.cend() != itFound)
 		return itFound - m_arUsedNumbering.cbegin() + 1;
 
-	m_arUsedNumbering.push_back(pNumbering);
+	m_arUsedNumbering.push_back(std::make_pair(eHeadingType, pNumbering));
 
 	m_oNumberXml.WriteString(L"<w:abstractNum w:abstractNumId=\"" + std::to_wstring(m_arUsedNumbering.size()) + L"\">");
 
@@ -51,7 +53,15 @@ int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, 
 			m_oNumberXml.WriteString(L"<w:suff w:val=\"space\"/>");
 
 			wsLvlText = pNumbering->GetNumFormat(shIndex);
-			std::replace(wsLvlText.begin(), wsLvlText.end(), L'^', L'%');
+
+			if (wsLvlText.empty())
+			{
+				for (short shLvl = 0; shLvl <= shIndex; ++shLvl)
+					wsLvlText += L'%' + std::to_wstring(shLvl + 1) + L'.';
+			}
+			else
+				std::replace(wsLvlText.begin(), wsLvlText.end(), L'^', L'%');
+
 			m_oNumberXml.WriteString(L"<w:lvlText w:val=\"" + wsLvlText + L"\"/>");
 
 			m_oNumberXml.WriteString(L"<w:lvlJc w:val=\"");
@@ -73,9 +83,8 @@ int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, 
 		{
 			m_oNumberXml.WriteString(L"<w:lvl w:ilvl=\"" + std::to_wstring(shIndex) + L"\">");
 
+			m_oNumberXml.WriteString(L"<w:start w:val=\"1\"/>");
 			m_oNumberXml.WriteString(L"<w:numFmt w:val=\"" + wsNumFormat + L"\"/>");
-			m_oNumberXml.WriteString(L"<w:suff w:val=\"space\"/>");
-			m_oNumberXml.WriteString(L"<w:isLgl w:val=\"false\"/>");
 
 			m_oNumberXml.WriteString(L"<w:lvlJc w:val=\"");
 			switch(pNumbering->GetAlign(shIndex))
@@ -174,7 +183,7 @@ bool CNumberingConverter::SaveToFile(const std::wstring& wsDirectory)
 	else
 	{
 		for (unsigned short ushIndex = 1; ushIndex <= m_arUsedNumbering.size(); ++ushIndex)
-			m_oNumberXml.WriteString(L"<w:num w:numId=\"" + std::to_wstring(ushIndex) + L"\"><w:abstractNumId w:val=\"" + std::to_wstring(ushIndex) + L"\"/></w:num>");
+			oNumberingData.WriteString(L"<w:num w:numId=\"" + std::to_wstring(ushIndex) + L"\"><w:abstractNumId w:val=\"" + std::to_wstring(ushIndex) + L"\"/></w:num>");
 	}
 
 	oNumberingData.WriteString(L"</w:numbering>");

@@ -125,10 +125,6 @@ namespace NSDoctRenderer
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/engine/drawingfile_native.js");
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/annotations/stamps.json", "window[\"native_pdf_stamps\"]=", ";");
 				sCachePath = config->m_strSdkPath + L"/pdf/sdk-all";
-
-				std::string ss = builder->GetData();
-				NSFile::CFileBinary::SaveToFile(L"D:\\222.js", UTF8_TO_U(ss));
-
 				break;
 			}
 			default:

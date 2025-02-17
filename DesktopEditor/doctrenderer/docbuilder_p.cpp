@@ -240,6 +240,14 @@ bool CV8RealTimeWorker::InitVariables()
 		if (try_catch->Check())
 			return false;
 	}
+
+	if (!m_sJSCodeStart.empty())
+	{
+		m_context->runScript(m_sJSCodeStart, try_catch);
+		if (try_catch->Check())
+			return false;
+	}
+
 	return true;
 }
 

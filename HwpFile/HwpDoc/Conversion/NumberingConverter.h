@@ -11,7 +11,7 @@ namespace HWP
 class CNumberingConverter
 {
 	NSStringUtils::CStringBuilder m_oNumberXml;
-	std::vector<const CHWPRecordNumbering*> m_arUsedNumbering;
+	std::vector<std::pair<EHeadingType, const CHWPRecordNumbering*>> m_arUsedNumbering;
 public:
 	CNumberingConverter();
 

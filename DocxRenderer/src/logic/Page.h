@@ -106,6 +106,9 @@ namespace NSDocxRenderer
 		// returns std::vector of cells for tables
 		std::vector<CTable::cell_ptr_t> BuildCells();
 
+		// return std::vector of cell groups
+		std::vector<std::vector<CTable::cell_ptr_t>> BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells);
+
 		// returns std::vector of rows for tables
 		std::vector<CTable::row_ptr_t> BuildRows(std::vector<CTable::cell_ptr_t>& arCells);
 

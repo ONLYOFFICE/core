@@ -32,6 +32,7 @@ const double c_dCENTER_POSITION_ERROR_MM        = 1.5;
 const double c_dTHE_STRING_X_PRECISION_MM       = 0.5;
 const double c_dERROR_FOR_TEXT_WITH_GRAPHICS_MM = 0.1;
 const double c_dGRAPHICS_ERROR_MM               = 0.5;
+const double c_dMAX_TABLE_LINE_WIDTH            = 2.2;
 const double c_dGRAPHICS_ERROR_IN_LINES_MM      = 0.3;
 const double c_dMAX_LINE_HEIGHT_MM              = 2.5;
 const double c_dMAX_LINE_WITH_TEXT_ERROR_MM     = 2.5;

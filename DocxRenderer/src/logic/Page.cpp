@@ -1,6 +1,8 @@
 #include "Page.h"
 
 #include <memory>
+#include <map>
+#include <set>
 
 #include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
@@ -904,7 +906,7 @@ namespace NSDocxRenderer
 		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
 			auto& shape = m_arShapes[i];
-			// double shape_coverage = 0;
+			double shape_coverage = 0;
 			if (!shape || shape->m_eGraphicsType == eGraphicsType::gtNoGraphics)
 				continue;
 
@@ -979,7 +981,7 @@ namespace NSDocxRenderer
 							curr_cont->m_bIsHighlightPresent = true;
 							curr_cont->m_lHighlightColor = shape->m_oBrush.Color1;
 
-							// shape_coverage += curr_cont->m_dWidth / shape->m_dWidth;
+							shape_coverage += curr_cont->m_dWidth / shape->m_dWidth;
 						}
 
 						else if (is_outline)
@@ -1004,7 +1006,7 @@ namespace NSDocxRenderer
 						shape_used = true;
 				}
 			}
-			if (shape_used /* && (shape_coverage == 0 || shape_coverage > 0.8) */ )
+			if (shape_used && (shape_coverage == 0 || shape_coverage > 0.8))
 				shape = nullptr;
 		}
 	}
@@ -1906,7 +1908,7 @@ namespace NSDocxRenderer
 			{
 				curr_table = std::make_shared<CTable>();
 			}
-			else if (fabs(curr_table->m_dBaselinePos - row->m_dTop) > c_dGRAPHICS_ERROR_MM)
+			else if (fabs(curr_table->m_dBaselinePos - row->m_dTop) > c_dMAX_TABLE_LINE_WIDTH)
 			{
 				tables.push_back(std::move(curr_table));
 				curr_table = std::make_shared<CTable>();
@@ -1916,16 +1918,37 @@ namespace NSDocxRenderer
 		if (!curr_table->IsEmpty())
 			tables.push_back(std::move(curr_table));
 
+
+		for (auto& t : tables)
+			t->CalcGridCols();
+
 		return tables;
 	}
 
 	std::vector<CTable::cell_ptr_t> CPage::BuildCells()
 	{
+		struct Crossing;
+		struct Line;
+
+		enum class eLineDirection
+		{
+			ldTop,
+			ldBot,
+			ldLeft,
+			ldRight
+		};
+
+		struct Line
+		{
+			Crossing* crossing;
+			size_t shape_index;
+			eLineDirection direction;
+		};
+
 		// crossing is a logical intersection between two lines
-		// contains the crossing x,y and pointers to other crossings.
+		// contains the lines from this crossing
 		struct Crossing
 		{
-			using Line = std::pair<Crossing*, std::shared_ptr<CShape>&>;
 			Point p {};
 			std::vector<Line> lines {};
 
@@ -1937,21 +1960,177 @@ namespace NSDocxRenderer
 			}
 		};
 
+		// returns index of the line with a direction
+		auto get_line = [] (const eLineDirection& direction, const std::vector<Line>& lines) -> const Line* {
+			for (size_t i = 0; i < lines.size(); ++i)
+				if (lines[i].direction == direction)
+					return &lines[i];
+			return nullptr;
+		};
+
+		// goes into direction through crossings (like a graph).
+		// add used shapes into out_indexes to remove it later
+		auto go_direction_until = [&get_line] (Crossing* crossing,
+		        const Point& p,
+		        const eLineDirection& direction,
+		        std::set<size_t>& out_indexes) -> bool {
+
+			// difference depends on direction
+			auto diff = [&crossing, &p, &direction] () -> double {
+				if (direction == eLineDirection::ldRight) return p.x - crossing->p.x;
+				if (direction == eLineDirection::ldLeft) return crossing->p.x - p.x;
+				if (direction == eLineDirection::ldBot) return p.y - crossing->p.y;
+				if (direction == eLineDirection::ldTop) return crossing->p.y - p.y;
+			};
+
+			while (diff() > c_dMAX_TABLE_LINE_WIDTH)
+			{
+				auto curr_line = get_line(direction, crossing->lines);
+				if (!curr_line)
+					return false;
+
+				out_indexes.insert(curr_line->shape_index);
+				crossing = curr_line->crossing;
+
+				if (fabs(diff()) < c_dMAX_TABLE_LINE_WIDTH)
+					return true;
+			}
+			return false;
+		};
+
 		// vector contains ptrs for easy exist-check
 		std::vector<std::shared_ptr<Crossing>> crossings;
 		auto find_crossing = [&crossings] (const Point& p) -> Crossing* {
 			for (auto& crossing : crossings)
 			{
-				if (fabs(crossing->p.x - p.x) < c_dGRAPHICS_ERROR_MM &&
-				        fabs(crossing->p.y - p.y) < c_dGRAPHICS_ERROR_MM)
+				if (!crossing)
+					continue;
+
+				if (fabs(crossing->p.x - p.x) < c_dMAX_TABLE_LINE_WIDTH &&
+				        fabs(crossing->p.y - p.y) < c_dMAX_TABLE_LINE_WIDTH)
 					return crossing.get();
 			}
 			return nullptr;
 		};
 
+		// check and adds points
+		auto add_crossings = [&crossings, &find_crossing, this] (const Point& p1, const Point& p2, size_t index) {
+			Crossing* crossing1 = find_crossing(p1);
+			Crossing* crossing2 = find_crossing(p2);
+
+			eLineDirection direction12;
+			eLineDirection direction21;
+
+			if (fabs(p1.y - p2.y) < c_dMAX_TABLE_LINE_WIDTH)
+			{
+				direction12 = p1.x > p2.x ? eLineDirection::ldLeft : eLineDirection::ldRight;
+				direction21 = p1.x < p2.x ? eLineDirection::ldLeft : eLineDirection::ldRight;
+			}
+
+			else if (fabs(p1.x - p2.x) < c_dMAX_TABLE_LINE_WIDTH)
+			{
+				direction12 = p1.y > p2.y ? eLineDirection::ldTop : eLineDirection::ldBot;
+				direction21 = p1.y < p2.y ? eLineDirection::ldTop : eLineDirection::ldBot;
+			}
+
+			// add empty crossing if no exists
+			if (!crossing1)
+			{
+				Crossing cr;
+				cr.p = p1;
+				crossings.push_back(std::make_shared<Crossing>(cr));
+				crossing1 = crossings.back().get();
+			}
+			if (!crossing2)
+			{
+				Crossing cr;
+				cr.p = p2;
+				crossings.push_back(std::make_shared<Crossing>(cr));
+				crossing2 = crossings.back().get();
+			}
+
+			auto curr_crossing_eq = [&crossing1] (const Line& line) -> bool {
+				return line.crossing == crossing1;
+			};
+			if (std::find_if(crossing2->lines.begin(), crossing2->lines.end(), curr_crossing_eq) == crossing2->lines.end())
+			{
+				Line line {crossing1, index, direction21};
+				crossing2->lines.push_back(std::move(line));
+			}
+
+			auto prev_crossing_eq = [&crossing2] (const Line& line) -> bool {
+				return line.crossing == crossing2;
+			};
+			if (std::find_if(crossing1->lines.begin(), crossing1->lines.end(), prev_crossing_eq) == crossing1->lines.end())
+			{
+				Line line {crossing2, index, direction12};
+				crossing1->lines.push_back(std::move(line));
+			}
+
+		};
+
+		// 2 main cases
+		// 1. lines of tables as a big rectangles with lines (onlyoffice), work with path commands
+		// 2. lines of tables as a small rectangels for a single line (adobe), work with entire shape
+		// also word -> pdf adobe sets points as crossings of the table lines, so we can use it
+
+		// check for adobe points
+		std::vector<std::pair<const Crossing*, shape_ptr_t&>> points_delete_later;
 		for (auto& shape : m_arShapes)
 		{
-			if (!shape)
+			if (!shape || shape->m_eGraphicsType != eGraphicsType::gtRectangle || shape->m_pImageInfo != nullptr)
+				continue;
+
+			if (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown)
+			{
+				// possible point of crossing in a adobe table
+				if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+				{
+					Crossing cr;
+					cr.p.x = shape->m_dLeft + shape->m_dWidth / 2;
+					cr.p.y = shape->m_dTop + shape->m_dHeight;
+					auto cr_ptr = std::make_shared<Crossing>(cr);
+					crossings.push_back(cr_ptr);
+					points_delete_later.push_back({cr_ptr.get(), shape});
+				}
+			}
+		}
+
+		for (size_t i = 0; i < m_arShapes.size(); ++i)
+		{
+			auto& shape = m_arShapes[i];
+			if (!shape || shape->m_eGraphicsType != eGraphicsType::gtRectangle || shape->m_pImageInfo != nullptr)
+				continue;
+
+			bool is_done = false;
+			if (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown)
+			{
+				// possible point of crossing in a adobe table
+				if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+				{
+					is_done = true;
+				}
+
+				// vertical line
+				else if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight > c_dMAX_TABLE_LINE_WIDTH)
+				{
+					Point p1(shape->m_dLeft + shape->m_dWidth / 2, shape->m_dTop);
+					Point p2(shape->m_dLeft + shape->m_dWidth / 2, shape->m_dBaselinePos);
+					add_crossings(p1, p2, i);
+					is_done = true;
+				}
+
+				// horizontal line
+				else if (shape->m_dWidth > c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+				{
+					Point p1(shape->m_dLeft, shape->m_dTop + shape->m_dHeight / 2);
+					Point p2(shape->m_dRight, shape->m_dTop + shape->m_dHeight / 2);
+					add_crossings(p1, p2, i);
+					is_done = true;
+				}
+			}
+
+			if (is_done)
 				continue;
 
 			Point prev {};
@@ -1965,61 +2144,41 @@ namespace NSDocxRenderer
 
 						// pure vertical / horizontal lines only
 						// not small lines
-						if (fabs(prev.x - curr.x) > 2 * c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) > 2 * c_dGRAPHICS_ERROR_MM ||
-						        (fabs(prev.x - curr.x) < 4 * c_dGRAPHICS_ERROR_MM && fabs(prev.y - curr.y) < 4 * c_dGRAPHICS_ERROR_MM))
+						if (fabs(prev.x - curr.x) > c_dMAX_TABLE_LINE_WIDTH && fabs(prev.y - curr.y) > c_dMAX_TABLE_LINE_WIDTH ||
+						        (fabs(prev.x - curr.x) < c_dMAX_TABLE_LINE_WIDTH && fabs(prev.y - curr.y) < c_dMAX_TABLE_LINE_WIDTH))
 						{
 							prev = curr;
 							continue;
 						}
-
-						auto prev_crossing = find_crossing(prev);
-						auto curr_crossing = find_crossing(curr);
-
-						// add empty crossing if no exists
-						if (!prev_crossing)
-						{
-							Crossing cr;
-							cr.p = prev;
-							crossings.push_back(std::make_shared<Crossing>(cr));
-							prev_crossing = crossings.back().get();
-						}
-						if (!curr_crossing)
-						{
-							Crossing cr;
-							cr.p = curr;
-							crossings.push_back(std::make_shared<Crossing>(cr));
-							curr_crossing = crossings.back().get();
-						}
-
-						// if crossing not exists
-						auto curr_crossing_eq = [&curr_crossing] (const Crossing::Line& line) -> bool {
-							return line.first == curr_crossing;
-						};
-						if (std::find_if(prev_crossing->lines.begin(), prev_crossing->lines.end(), curr_crossing_eq) == prev_crossing->lines.end())
-							prev_crossing->lines.push_back({curr_crossing, shape});
-
-						auto prev_crossing_eq = [&prev_crossing] (const Crossing::Line& line) -> bool {
-							return line.first == prev_crossing;
-						};
-						if (std::find_if(curr_crossing->lines.begin(), curr_crossing->lines.end(), prev_crossing_eq) == curr_crossing->lines.end())
-							curr_crossing->lines.push_back({prev_crossing, shape});
-
-						prev = curr;
+						add_crossings(prev, curr, i);
 					}
 					prev = command.points.back();
 				}
 			}
 		}
 
+		// remove adobe points line crossing shapes if used
+		for (auto& cr : points_delete_later)
+			if (!cr.first->lines.empty())
+				cr.second = nullptr;
+
+		// remove empty crossings
+		for (auto& cr : crossings)
+			if (cr && cr->lines.empty())
+				cr = nullptr;
+
+		auto cr_right = MoveNullptr(crossings.begin(), crossings.end());
+		crossings.erase(cr_right, crossings.end());
+
 		// sorting guarantee creating cell once (by taking second cross j > i)
 		std::sort(crossings.begin(), crossings.end(), [] (const std::shared_ptr<Crossing>& c1, const std::shared_ptr<Crossing>& c2) {
-			if (fabs(c1->p.y - c2->p.y) < c_dGRAPHICS_ERROR_MM)
+			if (fabs(c1->p.y - c2->p.y) < c_dMAX_TABLE_LINE_WIDTH)
 				return c1->p.x < c2->p.x;
 			return c1->p.y < c2->p.y;
 		});
 
 		std::vector<CTable::cell_ptr_t> cells;
-		std::vector<std::reference_wrapper<shape_ptr_t>> remove_later;
+		std::map<size_t, bool> remove_later;
 		for (size_t i = 0; i < crossings.size(); ++i)
 		{
 			for (size_t j = i + 1; j < crossings.size(); ++j)
@@ -2029,85 +2188,161 @@ namespace NSDocxRenderer
 
 				// first should be top left corner
 				// and second right bot (not the same line ofc)
-				if (fabs(cr_first->p.x - cr_second->p.x) < c_dGRAPHICS_ERROR_MM ||
+				if (fabs(cr_first->p.x - cr_second->p.x) < c_dMAX_TABLE_LINE_WIDTH ||
 				        cr_first->p.x > cr_second->p.x ||
-				        fabs(cr_first->p.y - cr_second->p.y) < c_dGRAPHICS_ERROR_MM ||
+				        fabs(cr_first->p.y - cr_second->p.y) < c_dMAX_TABLE_LINE_WIDTH ||
 				        cr_first->p.y > cr_second->p.y)
 					continue;
 
-				// 2 points should be the same
-				size_t equals = 0;
-				for (const auto& fl : cr_first->lines)
-					for (const auto& sl : cr_second->lines)
-						if (fabs(fl.first->p.x - sl.first->p.x) < c_dGRAPHICS_ERROR_MM && fabs(fl.first->p.y - sl.first->p.y) < c_dGRAPHICS_ERROR_MM)
-							++equals;
+				const Line* cr_f_top = get_line(eLineDirection::ldRight, cr_first->lines);
+				const Line* cr_f_left = get_line(eLineDirection::ldBot, cr_first->lines);
+				const Line* cr_s_bot = get_line(eLineDirection::ldLeft, cr_second->lines);
+				const Line* cr_s_right = get_line(eLineDirection::ldTop, cr_second->lines);
 
-				if (equals == 2)
-				{
-					auto cell = std::make_shared<CTable::CCell>();
-					cell->m_dLeft = cr_first->p.x;
-					cell->m_dRight = cr_second->p.x;
-					cell->m_dTop = cr_first->p.y;
-					cell->m_dBaselinePos = cr_second->p.y;
-					cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
-					cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
+				if (!cr_f_top || !cr_f_left || !cr_s_bot ||  !cr_s_right)
+					continue;
 
-					// borders style
-					shape_ptr_t l_top {nullptr};
-					shape_ptr_t l_bot {nullptr};
-					shape_ptr_t l_left {nullptr};
-					shape_ptr_t l_right {nullptr};
+				std::set<size_t> shape_indexes;
+				bool is_connected = go_direction_until(cr_first.get(), cr_second->p, eLineDirection::ldRight, shape_indexes);
+				is_connected &= go_direction_until(cr_first.get(), cr_second->p, eLineDirection::ldBot, shape_indexes);
+				is_connected &= go_direction_until(cr_second.get(), cr_first->p, eLineDirection::ldLeft, shape_indexes);
+				is_connected &= go_direction_until(cr_second.get(), cr_first->p, eLineDirection::ldTop, shape_indexes);
 
-					for (const auto& fl : cr_first->lines)
+				if (!is_connected)
+					continue;
+
+				for (const auto& index : shape_indexes)
+					remove_later[index] = true;
+
+				auto cell = std::make_shared<CTable::CCell>();
+				cell->m_dLeft = cr_first->p.x;
+				cell->m_dRight = cr_second->p.x;
+				cell->m_dTop = cr_first->p.y;
+				cell->m_dBaselinePos = cr_second->p.y;
+				cell->m_dWidth = cell->m_dRight - cell->m_dLeft;
+				cell->m_dHeight = cell->m_dBaselinePos - cell->m_dTop;
+
+				auto set_border_info = [] (CTable::CCell::CBorder& border, shape_ptr_t shape) {
+					if (shape->m_eLineType != eLineType::ltUnknown)
 					{
-						if (fl.first->p.x - cr_first->p.x > 0 && fabs(fl.first->p.y - cr_first->p.y) < c_dGRAPHICS_ERROR_MM)
-						{
-							l_top = fl.second;
-							remove_later.push_back(fl.second);
-						}
-						if (fl.first->p.y - cr_first->p.y > 0 && fabs(fl.first->p.x - cr_first->p.x) < c_dGRAPHICS_ERROR_MM)
-						{
-							l_left = fl.second;
-							remove_later.push_back(fl.second);
-						}
-					}
-					for (const auto& sl : cr_second->lines)
-					{
-						// TODO not to remove full shape. Remove only needed commands (split the shape)
-						if (cr_second->p.x - sl.first->p.x > 0 && fabs(sl.first->p.y - cr_second->p.y) < c_dGRAPHICS_ERROR_MM)
-						{
-							l_bot = sl.second;
-							remove_later.push_back(sl.second);
-						}
-						if (cr_second->p.y - sl.first->p.y > 0 && fabs(sl.first->p.x - cr_second->p.x) < c_dGRAPHICS_ERROR_MM)
-						{
-							l_right = sl.second;
-							remove_later.push_back(sl.second);
-						}
-					}
-
-					auto set_border_info = [] (CTable::CCell::CBorder& border, shape_ptr_t shape) {
 						border.dWidth = shape->m_oPen.Size;
-						border.lColor = shape->m_oPen.Color;
-						border.dSpacing = 0;
+						border.lineType = shape->m_eLineType;
+					}
+					else
+					{
+						if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH || shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+							border.dWidth = std::min(shape->m_dWidth, shape->m_dHeight);
+						else
+							border.dWidth = shape->m_oPen.Size;
 						border.lineType = eLineType::ltSingle;
-						// TODO more info
-					};
+					}
+					border.lColor = shape->m_oPen.Color;
+					border.dSpacing = 0;
+					// TODO more info
+				};
 
-					set_border_info(cell->m_oBorderTop, l_top);
-					set_border_info(cell->m_oBorderBot, l_bot);
-					set_border_info(cell->m_oBorderLeft, l_left);
-					set_border_info(cell->m_oBorderRight, l_right);
+				set_border_info(cell->m_oBorderTop, m_arShapes[cr_f_top->shape_index]);
+				set_border_info(cell->m_oBorderBot, m_arShapes[cr_s_bot->shape_index]);
+				set_border_info(cell->m_oBorderLeft, m_arShapes[cr_f_left->shape_index]);
+				set_border_info(cell->m_oBorderRight, m_arShapes[cr_s_right->shape_index]);
 
-					cells.push_back(cell);
+				cells.push_back(cell);
+				break;
+			}
+		}
+
+		if (cells.empty())
+			return {};
+
+		// grouping cells
+		auto cell_groups = BuildCellGroups(cells);
+
+		auto add_if_no_exists = [] (double val, std::vector<double>& grid) {
+			bool exists = false;
+			for (const auto& curr : grid)
+			{
+				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH)
+				{
+					exists = true;
 					break;
+				}
+			}
+			if (!exists)
+				grid.push_back(val);
+		};
+
+		auto split_cell_vert = [] (const CTable::cell_ptr_t cell, double y) -> CTable::cell_ptr_t {
+			CTable::cell_ptr_t cell_new = std::make_shared<CTable::CCell>();
+			*cell_new = *cell;
+
+			cell_new->m_dTop = y;
+			cell->m_dBaselinePos = y;
+
+			return cell_new;
+		};
+
+		// building a x and y grids
+		for (const auto& group : cell_groups)
+		{
+			std::vector<double> grid_x;
+			std::vector<double> grid_y;
+
+			for (const auto& cell : group)
+			{
+				add_if_no_exists(cell->m_dLeft, grid_x);
+				add_if_no_exists(cell->m_dTop, grid_y);
+			}
+			add_if_no_exists(group.back()->m_dRight, grid_x);
+			add_if_no_exists(group.back()->m_dBaselinePos, grid_y);
+
+			std::sort(grid_x.begin(), grid_x.end(), std::less{});
+			std::sort(grid_y.begin(), grid_y.end(), std::less{});
+
+			// GridSpan calc
+			for (auto& cell : group)
+			{
+				size_t first = 0;
+				size_t second = grid_x.size();
+				for (size_t i = 0; i < grid_x.size(); ++i)
+				{
+					if (fabs(grid_x[i] - cell->m_dLeft) < c_dMAX_TABLE_LINE_WIDTH)
+						first = i;
+					else if (fabs(grid_x[i] - cell->m_dRight) < c_dMAX_TABLE_LINE_WIDTH)
+						second = i;
+				}
+				cell->m_nGridSpan = second - first;
+			}
+
+			// merge vert calc
+			for (auto& cell : group)
+			{
+				size_t first = 0;
+				size_t second = grid_y.size();
+				for (size_t i = 0; i < grid_y.size(); ++i)
+				{
+					if (fabs(grid_y[i] - cell->m_dTop) < c_dMAX_TABLE_LINE_WIDTH)
+						first = i;
+					else if (fabs(grid_y[i] - cell->m_dBaselinePos) < c_dMAX_TABLE_LINE_WIDTH)
+						second = i;
+				}
+				while (++first < second)
+				{
+					auto cell_new = split_cell_vert(cell, grid_y[first]);
+					cell_new->m_eVMerge = CTable::CCell::eVMerge::vmContinue;
+					cells.push_back(cell_new);
 				}
 			}
 		}
 
+		std::sort(cells.begin(), cells.end(), [] (const CTable::cell_ptr_t& c1, const CTable::cell_ptr_t& c2) {
+			if (fabs(c1->m_dBaselinePos - c2->m_dBaselinePos) < c_dMAX_TABLE_LINE_WIDTH)
+				return c1->m_dLeft < c2->m_dLeft;
+			return c1->m_dBaselinePos < c2->m_dBaselinePos;
+		});
+
 		for (auto& elem : remove_later)
-			if (elem.get())
-				elem.get() = nullptr;
+			if (m_arShapes[elem.first] && elem.second)
+				m_arShapes[elem.first] = nullptr;
 
 		// sets paragraphs into cells
 		for (auto& cell : cells)
@@ -2144,10 +2379,33 @@ namespace NSDocxRenderer
 		});
 		return cells;
 	}
+
+	std::vector<std::vector<CTable::cell_ptr_t>> CPage::BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells)
+	{
+		std::vector<std::vector<CTable::cell_ptr_t>> cell_groups;
+		std::vector<CTable::cell_ptr_t> curr_group = {arCells[0]};
+
+		double curr_bot = arCells[0]->m_dBaselinePos;
+		for (size_t i = 1; i < arCells.size(); ++i)
+		{
+			const auto& cell = arCells[i];
+			if (cell->m_dTop - curr_bot < c_dMAX_TABLE_LINE_WIDTH)
+				curr_group.push_back(cell);
+			else
+			{
+				cell_groups.push_back(std::move(curr_group));
+				curr_group.push_back(cell);
+			}
+			curr_bot = cell->m_dBaselinePos;
+		}
+		cell_groups.push_back(curr_group);
+		return cell_groups;
+	}
+
 	std::vector<CTable::row_ptr_t> CPage::BuildRows(std::vector<CTable::cell_ptr_t>& arCells)
 	{
 		std::sort(arCells.begin(), arCells.end(), [] (const CTable::cell_ptr_t c1, const CTable::cell_ptr_t& c2) {
-			if (fabs(c1->m_dBaselinePos - c2->m_dBaselinePos) < c_dGRAPHICS_ERROR_MM)
+			if (fabs(c1->m_dBaselinePos - c2->m_dBaselinePos) < c_dMAX_TABLE_LINE_WIDTH)
 				return c1->m_dLeft < c2->m_dLeft;
 			return c1->m_dBaselinePos < c2->m_dBaselinePos;
 		});
@@ -2160,7 +2418,7 @@ namespace NSDocxRenderer
 			{
 				curr_row = std::make_shared<CTable::CRow>();
 			}
-			else if (fabs(curr_row->m_dBaselinePos - cell->m_dBaselinePos) > c_dGRAPHICS_ERROR_MM)
+			else if (fabs(curr_row->m_dBaselinePos - cell->m_dBaselinePos) > c_dMAX_TABLE_LINE_WIDTH)
 			{
 				rows.push_back(std::move(curr_row));
 				curr_row = std::make_shared<CTable::CRow>();

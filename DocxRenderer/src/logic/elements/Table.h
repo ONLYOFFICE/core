@@ -23,6 +23,7 @@ namespace NSDocxRenderer
 	public:
 		class CCell : public CBaseItem
 		{
+			friend class CTable;
 		public:
 			struct CBorder
 			{
@@ -32,11 +33,20 @@ namespace NSDocxRenderer
 				eLineType lineType{};
 			};
 
+			enum class eVMerge
+			{
+				vmRestart,
+				vmContinue
+			};
+
 			CCell() = default;
+			CCell(const CCell& other);
 			virtual ~CCell() = default;
 			virtual void Clear() override final;
 			virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+
+			CCell& operator=(const CCell& other);
 
 			void AddParagraph(const paragraph_ptr_t& pParagraph);
 
@@ -45,11 +55,15 @@ namespace NSDocxRenderer
 			CBorder m_oBorderLeft;
 			CBorder m_oBorderRight;
 
+			unsigned int m_nGridSpan = 1;
+			eVMerge m_eVMerge = CTable::CCell::eVMerge::vmRestart;
+
 		private:
 			std::vector<paragraph_ptr_t> m_arParagraphs;
 		};
 		class CRow : public CBaseItem
 		{
+			friend class CTable;
 		public:
 			CRow() = default;
 			virtual ~CRow() = default;
@@ -71,10 +85,12 @@ namespace NSDocxRenderer
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
 		void AddRow(const row_ptr_t& pRow);
+		void CalcGridCols();
 		bool IsEmpty() const;
 
 	private:
 		std::vector<row_ptr_t> m_arRows;
+		std::vector<double> m_arGridCols;
 	};
 } // namespace NSDocxRenderer
 

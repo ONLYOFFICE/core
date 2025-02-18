@@ -41,13 +41,12 @@ class CPdfEditor
 {
 public:
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
-	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter, const int* arrPageIndex, unsigned int unLength);
+	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter);
 
 	int  GetError();
 	void Close();
+	int Close(const std::wstring& wsPath);
 	bool EditPage(int nPageIndex, bool bSet = true);
-	bool SplitPage(int nPageIndex);
-	void SplitEnd();
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool EditAnnot(int nPageIndex, int nID);
@@ -62,10 +61,14 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
+	bool SplitPage(int nPageIndex);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
+
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 
 	std::wstring m_wsSrcFile;
+	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
 	std::map<std::wstring, std::wstring> m_mFonts;
 	std::map<int, PdfWriter::CObjectBase*> m_mSplitUniqueRef; // map уникальных объектов для Split

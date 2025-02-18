@@ -356,14 +356,21 @@ TEST_F(CPdfFileTest, SplitPdf)
 
 	LoadFromFile();
 
-	pdfFile->SplitPages({2, 5, 6, 7});
+	std::vector<int> arrPages = { 0, 1, 2, 3 };
+	pdfFile->SplitPages(arrPages.empty() ? NULL : arrPages.data(), arrPages.size());
 
 	pdfFile->SaveToFile(wsDstFile);
 }
 
 TEST_F(CPdfFileTest, MergePdf)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
+
+	LoadFromFile();
+
+	pdfFile->MergePages(wsSrcFile);
+
+	pdfFile->SaveToFile(wsDstFile);
 }
 
 TEST_F(CPdfFileTest, CopyAnotherPdf)

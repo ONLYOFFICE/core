@@ -203,8 +203,6 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
-		m_wsDocumentID      = L"";
-		m_wsFilePath        = L"";
 
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
@@ -1402,7 +1400,7 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
 	{
 		if (!pXref || !pCatalog)
 			return false;
@@ -1435,7 +1433,6 @@ namespace PdfWriter
 		}
 
 		m_unFormFields = nFormField;
-		m_wsFilePath = wsPath;
 		return true;
 	}
 	bool CDocument::EditResources(CXref* pXref, CResourcesDict* pResources)
@@ -1610,16 +1607,16 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
+	bool CDocument::AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
-		if (!pTrailer || m_wsFilePath.empty())
+		if (!pTrailer || wsPath.empty())
 			return false;
 
 		CFileStream* pStream = new CFileStream();
 		if (!pStream)
 			return false;
 
-		if (!pStream->OpenFile(m_wsFilePath, false))
+		if (!pStream->OpenFile(wsPath, false))
 		{
 			RELEASEOBJECT(pStream);
 			return false;
@@ -1708,7 +1705,7 @@ namespace PdfWriter
 		RELEASEOBJECT(pStream);
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(m_wsFilePath, nSizeXRef, bNeedStreamXRef);
+		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;

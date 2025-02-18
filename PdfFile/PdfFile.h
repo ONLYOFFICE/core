@@ -94,11 +94,12 @@ public:
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	// Манипуляции со страницами возможны в режиме редактирования
-	bool EditPage   (int nPageIndex);
-	bool DeletePage (int nPageIndex);
-	bool AddPage    (int nPageIndex);
-	bool SplitPages (const std::vector<int>& arrPageIndex);
-	bool SplitPages (const int* arrPageIndex, unsigned int unLength);
+	bool EditPage  (int nPageIndex);
+	bool DeletePage(int nPageIndex);
+	bool AddPage   (int nPageIndex);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
+	bool MergePages(CPdfFile* pMergeFile, const int* arrPageIndex = NULL, unsigned int unLength = 0, int nMergePos = -1);
+	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0, int nMergePos = -1);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 

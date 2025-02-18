@@ -165,10 +165,6 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::SplitPages(const std::vector<int>& arrPageIndex)
-{
-	return SplitPages(arrPageIndex.data(), arrPageIndex.size());
-}
 bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (!m_pInternal->pEditor)
@@ -179,15 +175,46 @@ bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 		if (!m_pInternal->pWriter)
 			m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
 
-		m_pInternal->pEditor = new CPdfEditor(m_pInternal->pReader, m_pInternal->pWriter, arrPageIndex, unLength);
+		m_pInternal->pEditor = new CPdfEditor(m_pInternal->pReader, m_pInternal->pWriter);
 		if (m_pInternal->pEditor->GetError() != 0)
 			return false;
 	}
-	bool bRes = true;
-	for (unsigned int i = 0; i < unLength; ++i)
-		bRes &= m_pInternal->pEditor->SplitPage(arrPageIndex[i]);
-	if (bRes)
-		m_pInternal->pEditor->SplitEnd();
+	return m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
+}
+bool CPdfFile::MergePages(CPdfFile* pMergeFile, const int* arrPageIndex, unsigned int unLength, int nMergePos)
+{
+	if (!pMergeFile || !pMergeFile->m_pInternal || !pMergeFile->m_pInternal->pReader)
+		return false;
+
+	if (!m_pInternal->pEditor)
+	{
+		if (!m_pInternal->pReader)
+			return false;
+
+		if (!m_pInternal->pWriter)
+			m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+
+		m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, m_pInternal->pReader, L"", m_pInternal->pWriter);
+		if (m_pInternal->pEditor->GetError() != 0)
+			return false;
+	}
+
+	// TODO
+	return m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
+}
+bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength, int nMergePos)
+{
+	CPdfFile* pMergeFile = new CPdfFile(m_pInternal->pAppFonts);
+	pMergeFile->SetTempDirectory(m_pInternal->wsTempFolder);
+
+	if (!pMergeFile->LoadFromFile(wsPath, L"", wsPassword, wsPassword))
+	{
+		RELEASEOBJECT(pMergeFile);
+		return false;
+	}
+
+	bool bRes = MergePages(pMergeFile, arrPageIndex, unLength, nMergePos);
+	RELEASEOBJECT(pMergeFile);
 	return bRes;
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
@@ -503,6 +530,8 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
 	if (!m_pInternal->pWriter)
 		return 1;
+	if (m_pInternal->pEditor)
+		return m_pInternal->pEditor->Close(wsPath);
 	return m_pInternal->pWriter->SaveToFile(wsPath);
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)

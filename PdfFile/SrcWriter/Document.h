@@ -190,16 +190,15 @@ namespace PdfWriter
 		void              SetCurImage(CImageDict* pImage) { m_pCurImage = pImage; }
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
-		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
 		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
-		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
+		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              AddObject(CObjectBase* pObj);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
-		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
 		bool              DeleteAnnot(int nObjNum, int nObjGen);
@@ -309,7 +308,6 @@ namespace PdfWriter
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
 		std::wstring                       m_wsDocumentID;
-		std::wstring                       m_wsFilePath;
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;

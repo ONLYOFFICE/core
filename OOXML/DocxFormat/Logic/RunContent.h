@@ -71,10 +71,8 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
 
 			SimpleTypes::CBrClear m_oClear;
@@ -97,14 +95,12 @@ namespace OOX
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			std::wstring							m_namespace;
-			nullable<PPTX::Logic::Xfrm>				m_oXfrm;
-			//nullable<nvContentPartPr>				m_oNvContentPartPr;
+			std::wstring m_namespace;
+			nullable<PPTX::Logic::Xfrm> m_oXfrm;
+			//nullable<nvContentPartPr> m_oNvContentPartPr;
 			nullable<SimpleTypes::CRelationshipId > m_oId;
 
 		};
@@ -173,18 +169,14 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			// Attributes
 			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
-			// Value
-            std::wstring                             m_sText;
+            std::wstring m_sText;
 
 		};
 
@@ -283,19 +275,17 @@ namespace OOX
 			CPTab(OOX::Document *pMain = NULL);
 			virtual ~CPTab();
 			
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::CPTabAlignment > m_oAlignment;
-			nullable<SimpleTypes::CPTabLeader    > m_oLeader;
+			nullable<SimpleTypes::CPTabAlignment> m_oAlignment;
+			nullable<SimpleTypes::CPTabLeader> m_oLeader;
 			nullable<SimpleTypes::CPTabRelativeTo> m_oRelativeTo;
 
 		};
@@ -310,11 +300,10 @@ namespace OOX
 			CRuby(OOX::Document *pMain = NULL);
 			virtual ~CRuby();
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -327,12 +316,11 @@ namespace OOX
 			WritingElement_AdditionMethods(CSoftHyphen)
 			CSoftHyphen(OOX::Document *pMain = NULL);
 			virtual ~CSoftHyphen();
-			
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -346,19 +334,16 @@ namespace OOX
 			CSym(OOX::Document *pMain = NULL);
 			virtual ~CSym();
 			
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			nullable<SimpleTypes::CShortHexNumber>		m_oChar;
-			nullable<std::wstring>						m_oFont;
+			nullable<SimpleTypes::CShortHexNumber> m_oChar;
+			nullable<std::wstring> m_oFont;
 
 		};
 
@@ -379,16 +364,11 @@ namespace OOX
 			virtual EElementType getType() const;
 
 			static void ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable<SimpleTypes::CXmlSpace>& oSpace);
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			// Attributes
 			nullable<SimpleTypes::CXmlSpace> m_oSpace;
-
-			// Value
-            std::wstring                             m_sText;
+            std::wstring m_sText;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -401,11 +381,10 @@ namespace OOX
 			CTab(OOX::Document *pMain = NULL);
 			virtual ~CTab();
 
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -419,11 +398,10 @@ namespace OOX
 			CYearLong(OOX::Document *pMain = NULL);
 			virtual ~CYearLong();
 			
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -437,11 +415,10 @@ namespace OOX
 			CYearShort(OOX::Document *pMain = NULL);
 			virtual ~CYearShort();
 			
-		public:
-			virtual void         fromXML(XmlUtils::CXmlNode& oNode);
-			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void fromXML(XmlUtils::CXmlNode& oNode);
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -458,7 +435,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -475,9 +452,8 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -498,7 +474,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -515,18 +491,16 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			// Attributes
 			nullable<SimpleTypes::CXmlSpace> m_oSpace;
 
-			// Value
-            std::wstring                             m_sText;
+            std::wstring m_sText;
 
 		};
 
@@ -543,7 +517,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -562,13 +536,11 @@ namespace OOX
 
 			virtual std::wstring      toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
-			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<SimpleTypes::COnOff> m_oCustomMarkFollows;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
 
 		};
 
@@ -585,7 +557,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 
@@ -602,15 +574,15 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable<SimpleTypes::COnOff>			m_oCustomMarkFollows;
-			nullable<SimpleTypes::CDecimalNumber>	m_oId;
+			nullable<SimpleTypes::COnOff> m_oCustomMarkFollows;
+			nullable<SimpleTypes::CDecimalNumber> m_oId;
 		};
 
 		//--------------------------------------------------------------------------------
@@ -626,18 +598,13 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
 		public:
-			// Attributes
 			nullable<SimpleTypes::CXmlSpace> m_oSpace;
-
-			// Value
-            std::wstring                             m_sText;
+            std::wstring m_sText;
 
 		};
 
@@ -654,7 +621,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
-			virtual std::wstring      toXML() const;
+			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 		};
 

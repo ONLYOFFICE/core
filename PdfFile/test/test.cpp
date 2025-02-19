@@ -352,7 +352,7 @@ TEST_F(CPdfFileTest, VerifySign)
 
 TEST_F(CPdfFileTest, SplitPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
@@ -365,13 +365,14 @@ TEST_F(CPdfFileTest, SplitPdf)
 
 TEST_F(CPdfFileTest, MergePdf)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
+	ASSERT_TRUE(pdfFile->EditPdf(NSFile::GetProcessDirectory() + L"/test3.pdf"));
 
-	pdfFile->MergePages(wsSrcFile);
+	pdfFile->MergePages(wsDstFile);
 
-	pdfFile->SaveToFile(wsDstFile);
+	pdfFile->Close();
 }
 
 TEST_F(CPdfFileTest, CopyAnotherPdf)

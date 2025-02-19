@@ -181,7 +181,7 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 		return false;
 	}
 
-	bool bRes = m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
+	bool bRes = m_pInternal->pEditor->MergePages(pMergeFile->m_pInternal->pReader, arrPageIndex, unLength, nMergePos);
 	RELEASEOBJECT(pMergeFile);
 	return bRes;
 }

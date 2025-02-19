@@ -335,12 +335,6 @@ namespace PdfWriter
 		m_pTrailer->Add("Encrypt", m_pEncryptDict);
 		m_bEncrypt = true;
 	}
-	void CDocument::AddPage(CPage* pPage)
-	{
-		pPage->Add("Parent", m_pPageTree);
-		m_pPageTree->AddPage(pPage);
-		m_pCurPage = pPage;
-	}
     CPage* CDocument::AddPage()
 	{
 		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);
@@ -1569,22 +1563,20 @@ namespace PdfWriter
 
 		return true;
 	}
-	CPage* CDocument::AddPage(int nPageIndex)
+	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)
 	{
 		if (!m_pPageTree)
 			return NULL;
 
-		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		CPage* pNewPage = _pNewPage ? _pNewPage : new CPage(m_pXref, NULL, this);
 		if (!pNewPage)
 			return NULL;
 		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
 		if (!bRes)
 			return NULL;
 
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_unCompressMode & COMP_TEXT)
+		if (!_pNewPage)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}

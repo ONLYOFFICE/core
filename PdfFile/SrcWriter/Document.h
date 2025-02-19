@@ -121,7 +121,6 @@ namespace PdfWriter
 		void              SetPDFAConformanceMode(bool isPDFA);
 		bool              IsPDFA() const;
 
-		void              AddPage(CPage* pPage);
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);
@@ -194,7 +193,7 @@ namespace PdfWriter
 		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
-		CPage*            AddPage(int nPageIndex);
+		CPage*            AddPage(int nPageIndex, CPage* _pNewPage = NULL);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              AddObject(CObjectBase* pObj);
@@ -214,6 +213,7 @@ namespace PdfWriter
 		void              ClearPage();
 		bool              EditXref(CXref* pXref);
 		void              SetAcroForm(CDictObject* pObj);
+		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 	private:		  
 					  

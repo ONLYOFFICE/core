@@ -1253,49 +1253,125 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader, int nMergePos)
 {
-	if (m_nMode >= 0)
+	if (m_nMode == 1 || (m_nMode == 0 && !_pReader))
 		return false;
-	m_nMode = 1;
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	if (m_nMode < 0)
+		m_nMode = 1;
+	PDFDoc* pPDFDocument = _pReader ? _pReader->GetPDFDocument() : m_pReader->GetPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
-	// Страницы должны быть созданы заранее для ссылки
+	if (unLength == 0)
+		unLength = pPDFDocument->getNumPages();
+
+	// Страницы должны быть созданы заранее для ссылки на них
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
-		Ref* pPageRef = pCatalog->getPageRef(arrPageIndex[i] + 1);
+		Ref* pPageRef = pCatalog->getPageRef((arrPageIndex ? arrPageIndex[i] : i) + 1);
 		if (pPageRef->num == 0)
-		{
-			m_nError = 3;
 			return false;
-		}
 
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		pDoc->AddPage(pPage);
+		pDoc->AddPage(nMergePos == -1 ? pDoc->GetPagesCount() : (nMergePos + i), pPage);
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;
 		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
 		{
-			pageObj.free();
-			pageRefObj.free();
-			m_nError = 3;
+			pageObj.free(); pageRefObj.free();
 			return false;
 		}
 		m_mSplitUniqueRef[pPageRef->num] = pPage;
-		pageRefObj.free();
+		pageObj.free(); pageRefObj.free();
 	}
 
-	bool bRes = true;
 	for (unsigned int i = 0; i < unLength; ++i)
-		bRes &= SplitPage(arrPageIndex[i]);
-	if (!bRes)
-		return false;
+	{
+		Ref* pPageRef = pCatalog->getPageRef((arrPageIndex ? arrPageIndex[i] : i) + 1);
+		if (pPageRef->num == 0)
+			return false;
+
+		// Получение объекта страницы
+		PdfWriter::CPage* pPage = (PdfWriter::CPage*)m_mSplitUniqueRef[pPageRef->num];
+		Object pageRefObj, pageObj;
+		pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+		if (!pageRefObj.fetch(xref, &pageObj)->isDict())
+		{
+			pageObj.free();
+			pageRefObj.free();
+			return false;
+		}
+		pageRefObj.free();
+
+		// Копирование страницы со всеми ресурсами из reader для writer
+		for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
+		{
+			Object oTemp;
+			char* chKey = pageObj.dictGetKey(nIndex);
+			if (strcmp("Resources", chKey) == 0)
+			{
+				Ref oResourcesRef = { -1, -1 };
+				if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
+					oResourcesRef = oTemp.getRef();
+				oTemp.free();
+
+				std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oResourcesRef.num);
+				if (oResourcesRef.num > 0 && it != m_mSplitUniqueRef.end())
+				{
+					pPage->Add(chKey, it->second);
+					continue;
+				}
+
+				if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
+					if (oResourcesRef.num > 0)
+						m_mSplitUniqueRef[oResourcesRef.num] = pDict;
+					pPage->Add(chKey, pDict);
+					for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
+					{
+						Object oRes;
+						char* chKey2 = oTemp.dictGetKey(nIndex);
+						oTemp.dictGetValNF(nIndex, &oRes);
+						PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, m_mSplitUniqueRef);
+						pDict->Add(chKey2, pBase);
+						oRes.free();
+					}
+
+					oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					pageObj.dictGetValNF(nIndex, &oTemp);
+				}
+			}
+			else if (strcmp("Parent", chKey) == 0)
+			{
+				oTemp.free();
+				continue;
+			}
+			else
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, m_mSplitUniqueRef);
+			pPage->Add(chKey, pBase);
+			oTemp.free();
+		}
+		pPage->Fix();
+		if (m_nMode == 0)
+		{
+			// pPage->AddContents(); // TODO pPage->AddContents чтобы можно было дописать изменения, если понадобится
+		}
+		else
+			m_pWriter->SetNeedAddHelvetica(false); // TODO дописывает шрифт для адекватного редактирования Adobe pdf без текст. Убрать при реализации map шрифтов
+		pageObj.free();
+	}
 
 	Object oCatalog;
 	if (!xref->getCatalog(&oCatalog)->isDict())
@@ -1307,10 +1383,17 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	Object oAcroForm;
 	if (oCatalog.dictLookupNF("AcroForm", &oAcroForm)->isRef() || oAcroForm.isDict())
 	{
-		PdfWriter::CDictObject* pAcroForm = new PdfWriter::CDictObject();
+		PdfWriter::CDictObject* pAcroForm = pDoc->GetAcroForm();
+		if (!pAcroForm)
+		{
+			pAcroForm = new PdfWriter::CDictObject();
+			if (oAcroForm.isRef())
+				pDoc->AddObject(pAcroForm);
+			pDoc->SetAcroForm(pAcroForm);
+		}
+
 		if (oAcroForm.isRef())
 		{
-			pDoc->AddObject(pAcroForm);
 			oAcroForm.free();
 			if (!oCatalog.dictLookup("AcroForm", &oAcroForm)->isDict())
 			{
@@ -1318,7 +1401,6 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 				return false;
 			}
 		}
-		pDoc->SetAcroForm(pAcroForm);
 
 		for (int nIndex = 0; nIndex < oAcroForm.dictGetLength(); ++nIndex)
 		{
@@ -1331,41 +1413,64 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 					oFieldsRef = oTemp.getRef();
 				oTemp.free();
 
-				std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oFieldsRef.num);
-				if (oFieldsRef.num > 0 && it != m_mSplitUniqueRef.end())
+				PdfWriter::CArrayObject* pFields = dynamic_cast<PdfWriter::CArrayObject*>(pAcroForm->Get("Fields"));
+				if (!pFields)
 				{
-					pAcroForm->Add(chKey, it->second);
-					continue;
+					std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oFieldsRef.num);
+					if (oFieldsRef.num > 0 && it != m_mSplitUniqueRef.end())
+					{
+						pAcroForm->Add(chKey, it->second);
+						continue;
+					}
 				}
 
 				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
 				{
-					PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
-					if (oFieldsRef.num > 0)
+					if (!pFields)
 					{
-						pDoc->AddObject(pArray);
-						m_mSplitUniqueRef[oFieldsRef.num] = pArray;
+						pFields = new PdfWriter::CArrayObject();
+						if (oFieldsRef.num > 0)
+						{
+							pDoc->AddObject(pFields);
+							m_mSplitUniqueRef[oFieldsRef.num] = pFields;
+						}
+						pAcroForm->Add(chKey, pFields);
 					}
-					pAcroForm->Add(chKey, pArray);
+
 					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
 					{
 						Object oRes;
 						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
 						{
-							it = m_mSplitUniqueRef.find(oRes.getRefNum());
+							std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oRes.getRefNum());
 							if (it != m_mSplitUniqueRef.end())
-								pArray->Add(it->second);
+								pFields->Add(it->second);
 						}
 						oRes.free();
 					}
 					oTemp.free();
 					continue;
 				}
-				else
+				else if (!pFields)
 				{
 					oTemp.free();
 					oAcroForm.dictGetValNF(nIndex, &oTemp);
 				}
+				else
+				{
+					oTemp.free();
+					continue;
+				}
+			}
+			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")))
+			{
+				oTemp.free();
+				continue;
+			}
+			else if (strcmp("DR", chKey) == 0)
+			{
+				// TODO объединение ресурсов >(0o0)<
+				oAcroForm.dictGetValNF(nIndex, &oTemp);
 			}
 			else
 				oAcroForm.dictGetValNF(nIndex, &oTemp);
@@ -1376,96 +1481,13 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	}
 	oAcroForm.free(); oCatalog.free();
 
-	return bRes;
-}
-bool CPdfEditor::SplitPage(int nPageIndex)
-{
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
-		return false;
-
-	XRef* xref = pPDFDocument->getXRef();
-	Catalog* pCatalog = pPDFDocument->getCatalog();
-	if (!xref || !pCatalog)
-		return false;
-	Ref* pPageRef = pCatalog->getPageRef(nPageIndex + 1);
-	if (pPageRef->num == 0)
-		return false;
-
-	// Получение объекта страницы
-	PdfWriter::CPage* pPage = (PdfWriter::CPage*)m_mSplitUniqueRef[pPageRef->num];
-	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
-	if (!pageRefObj.fetch(xref, &pageObj)->isDict())
-	{
-		pageObj.free();
-		pageRefObj.free();
-		return false;
-	}
-	pageRefObj.free();
-
-	// Копирование страницы со всеми ресурсами из reader для writer
-	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
-	{
-		Object oTemp;
-		char* chKey = pageObj.dictGetKey(nIndex);
-		if (strcmp("Resources", chKey) == 0)
-		{
-			Ref oResourcesRef = { -1, -1 };
-			if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
-				oResourcesRef = oTemp.getRef();
-			oTemp.free();
-
-			std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oResourcesRef.num);
-			if (oResourcesRef.num > 0 && it != m_mSplitUniqueRef.end())
-			{
-				pPage->Add(chKey, it->second);
-				continue;
-			}
-
-			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
-			{
-				PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(oResourcesRef.num < 0, false);
-				if (oResourcesRef.num > 0)
-					m_mSplitUniqueRef[oResourcesRef.num] = pDict;
-				pPage->Add(chKey, pDict);
-				for (int nIndex = 0; nIndex < oTemp.dictGetLength(); ++nIndex)
-				{
-					Object oRes;
-					char* chKey2 = oTemp.dictGetKey(nIndex);
-					oTemp.dictGetValNF(nIndex, &oRes);
-					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, m_mSplitUniqueRef);
-					pDict->Add(chKey2, pBase);
-					oRes.free();
-				}
-
-				oTemp.free();
-				continue;
-			}
-			else
-			{
-				oTemp.free();
-				pageObj.dictGetValNF(nIndex, &oTemp);
-			}
-		}
-		else if (strcmp("Parent", chKey) == 0)
-		{
-			oTemp.free();
-			continue;
-		}
-		else
-			pageObj.dictGetValNF(nIndex, &oTemp);
-		PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, m_mSplitUniqueRef);
-		pPage->Add(chKey, pBase);
-		oTemp.free();
-	}
-	pPage->Fix();
-	// TODO pPage->AddContents чтобы можно было дописать изменения, если понадобится
-	m_pWriter->SetNeedAddHelvetica(false); // TODO дописывает шрифт для адекватного редактирования Adobe pdf без текст. Убрать при реализации map шрифтов
-	pageObj.free();
-
 	return true;
+}
+bool CPdfEditor::MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, int nMergePos)
+{
+	if (m_nMode != 0 && !IncrementalUpdates())
+		return false;
+	return SplitPages(arrPageIndex, unLength, _pReader, nMergePos);
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {

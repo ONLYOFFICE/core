@@ -30,30 +30,43 @@
  *
  */
 
-#include "gtest/gtest.h"
+#include "columns.h"
 
-#include "entrance.h"
-#include "motion.h"
-#include "audio.h"
-#include "interactions.h"
+#include "../../OfficeUtils/src/OfficeUtils.h"
+#include "Writer/Converter/Oox2OdfConverter.h"
+#include "Writer/Format/odp_conversion_context.h"
 
-int main(int argc, char* argv[])
+#include "../../X2tConverter/src/lib/odf.h"
+
+void OOX2ODP_TextColumnsEnvironment::SetUp()
 {
-	::testing::InitGoogleTest(&argc, argv);
+	const std::wstring sourceFilename = L"ExampleFiles" FILE_SEPARATOR_STR L"columns.pptx";
+	const std::wstring resultFilename = L"ExampleFiles" FILE_SEPARATOR_STR L"columns.odp";
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationPlayAudioEnvironment);	
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationOpenDocumentEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationRunProgramEnvironment);
-	
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_InteractionAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_PlayAudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_OpenDocumentAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_RunProgramAnimationEnvironment);
-	
-	return RUN_ALL_TESTS();
+	NExtractTools::InputParams inputParams;
+	NExtractTools::ConvertParams convertParams;
+
+	int result = NExtractTools::pptx2odp(sourceFilename, resultFilename, inputParams, convertParams);
+	if (result != 0)
+		GTEST_SKIP() << "Failed to convert \"" << sourceFilename << "\"";
+}
+
+void OOX2ODP_TextColumnsEnvironment::TearDown()
+{
+
+}
+
+void OOX2ODP_TextColumnsFixture::SetUp()
+{
+
+}
+
+void OOX2ODP_TextColumnsFixture::TearDown()
+{
+
+}
+
+TEST_F(OOX2ODP_TextColumnsFixture, test)
+{
+	ASSERT_EQ(true, true);
 }

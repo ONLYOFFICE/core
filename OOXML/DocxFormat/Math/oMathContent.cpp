@@ -499,8 +499,8 @@ namespace OOX
 		void CBrk::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start( oReader )
-					WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:alnAt"), m_alnAt )
-					WritingElement_ReadAttributes_End( oReader )
+				WritingElement_ReadAttributes_ReadSingle( oReader, _T("m:alnAt"), m_alnAt )
+			WritingElement_ReadAttributes_End( oReader )
 		}
 
 		//--------------------------------------------------------------------------------
@@ -2289,11 +2289,22 @@ namespace OOX
 		// CMRun 22.1.2.87  (Math Run)
 		//--------------------------------------------------------------------------------
 
-		CMRun::CMRun(OOX::Document *pMain) : WritingElement(pMain)
+		CMRun::CMRun(OOX::Document *pMain) : WritingElementWithChilds<>(pMain)
 		{
 		}
 		CMRun::~CMRun()
 		{
+			ClearItems();
+		}
+		void CMRun::ClearItems()
+		{
+			m_oARPr.reset();
+			m_oMRPr.reset();
+			m_oRPr.reset();
+			m_oDel.reset();
+			m_oIns.reset();
+
+			WritingElementWithChilds<>::ClearItems();
 		}
 		void CMRun::fromXML(XmlUtils::CXmlNode& oNode)
 		{
@@ -2306,83 +2317,89 @@ namespace OOX
 					if ( oItem.IsValid( ) )
 					{
 						std::wstring sName = oItem.GetName();
+						WritingElement* pItem = NULL;
 
-						if ( _T("w:annotationRef") == sName )
-							m_oAnnotationRef = oItem;
-						else if ( _T("w:br") == sName )
-							m_oBr = oItem;
-						else if ( _T("w:commentReference") == sName )
-							m_oCommentReference = oItem;
-						else if ( _T("w:contentPart") == sName )
-							m_oContentPart = oItem;
-						else if ( _T("w:continuationSeparator") == sName )
-							m_oContinuationSeparator = oItem;
-						else if ( _T("w:cr") == sName )
-							m_oCr = oItem;
-						else if ( _T("w:dayLong") == sName )
-							m_oDayLong = oItem;
-						else if ( _T("w:dayShort") == sName )
-							m_oDayShort = oItem;
-						else if ( _T("w:del") == sName )
+						if (L"w:annotationRef" == sName)
+							AssignPtrXmlContent(pItem, CAnnotationRef, oItem)
+						else if (L"w:br" == sName)
+							AssignPtrXmlContent(pItem, CBr, oItem)
+						else if (L"w:commentReference" == sName)
+							AssignPtrXmlContent(pItem, CCommentReference, oItem)
+						else if (L"w:contentPart" == sName)
+							AssignPtrXmlContent(pItem, CContentPart, oItem)
+						else if (L"w:continuationSeparator" == sName)
+							AssignPtrXmlContent(pItem, CContinuationSeparator, oItem)
+						else if (L"w:cr" == sName)
+							AssignPtrXmlContent(pItem, CCr, oItem)
+						else if (L"w:dayLong" == sName)
+							AssignPtrXmlContent(pItem, CDayLong, oItem)
+						else if (L"w:dayShort" == sName)
+							AssignPtrXmlContent(pItem, CDayShort, oItem)
+						else if (L"w:delInstrText" == sName)
+							AssignPtrXmlContent(pItem, CDelInstrText, oItem)
+						else if (L"w:delText" == sName)
+							AssignPtrXmlContent(pItem, CDelText, oItem)
+						else if (L"w:drawing" == sName)
+							AssignPtrXmlContent(pItem, CDrawing, oItem)
+						else if (L"w:endnoteRef" == sName)
+							AssignPtrXmlContent(pItem, CEndnoteRef, oItem)
+						else if (L"w:endnoteReference" == sName)
+							AssignPtrXmlContent(pItem, CEndnoteReference, oItem)
+						else if (L"w:fldChar" == sName)
+							AssignPtrXmlContent(pItem, CFldChar, oItem)
+						else if (L"w:footnoteRef" == sName)
+							AssignPtrXmlContent(pItem, CFootnoteRef, oItem)
+						else if (L"w:footnoteReference" == sName)
+							AssignPtrXmlContent(pItem, CFootnoteReference, oItem)
+						else if (L"w:instrText" == sName)
+							AssignPtrXmlContent(pItem, CInstrText, oItem)
+						else if (L"w:lastRenderedPageBreak" == sName)
+							AssignPtrXmlContent(pItem, CLastRenderedPageBreak, oItem)
+						else if (L"w:monthLong" == sName)
+							AssignPtrXmlContent(pItem, CMonthLong, oItem)
+						else if (L"w:monthShort" == sName)
+							AssignPtrXmlContent(pItem, CMonthShort, oItem)
+						else if (L"w:noBreakHyphen" == sName)
+							AssignPtrXmlContent(pItem, CNoBreakHyphen, oItem)
+						else if (L"w:object" == sName)
+							AssignPtrXmlContent(pItem, CObject, oItem)
+						else if (L"w:pgNum" == sName)
+							AssignPtrXmlContent(pItem, CPgNum, oItem)
+						else if (L"w:pict" == sName)
+							AssignPtrXmlContent(pItem, CPicture, oItem)
+						else if (L"w:ptab" == sName)
+							AssignPtrXmlContent(pItem, CPTab, oItem)
+						else if (L"w:ruby" == sName)
+							AssignPtrXmlContent(pItem, CRuby, oItem)
+						else if (L"w:separator" == sName)
+							AssignPtrXmlContent(pItem, CSeparator, oItem)
+						else if (L"w:softHyphen" == sName)
+							AssignPtrXmlContent(pItem, CSoftHyphen, oItem)
+						else if (L"w:sym" == sName)
+							AssignPtrXmlContent(pItem, CSym, oItem)
+						else if (L"m:t" == sName)
+							AssignPtrXmlContent(pItem, CMText, oItem)
+						else if (L"w:t" == sName)
+							AssignPtrXmlContent(pItem, CText, oItem)
+						else if (L"w:tab" == sName)
+							AssignPtrXmlContent(pItem, CTab, oItem)
+						else if (L"w:yearLong" == sName)
+							AssignPtrXmlContent(pItem, CYearLong, oItem)
+						else if (L"w:yearShort" == sName)
+							AssignPtrXmlContent(pItem, CYearShort, oItem)
+						else if ( L"w:del" == sName )
 							m_oDel = oItem;
-						else if ( _T("w:delInstrText") == sName )
-							m_oDelInstrText = oItem;
-						else if ( _T("w:delText") == sName )
-							m_oDelText = oItem;
-						else if ( _T("w:drawing") == sName )
-							m_oDrawing = oItem;
-						else if ( _T("w:endnoteRef") == sName )
-							m_oEndnoteRef = oItem;
-						else if ( _T("w:endnoteReference") == sName )
-							m_oEndnoteReference = oItem;
-						else if ( _T("w:fldChar") == sName )
-							m_oFldChar = oItem;
-						else if ( _T("w:footnoteRef") == sName )
-							m_oFootnoteRef = oItem;
-						else if ( _T("w:footnoteReference") == sName )
-							m_oFootnoteReference = oItem;
-						else if ( _T("w:ins") == sName )
+						else if ( L"w:ins" == sName )
 							m_oIns = oItem;
-						else if ( _T("w:instrText") == sName )
-							m_oInstrText = oItem;
-						else if ( _T("w:lastRenderedPageBreak") == sName )
-							m_oLastRenderedPageBreak = oItem;
-						else if ( _T("w:monthLong") == sName )
-							m_oMonthLong = oItem;
-						else if ( _T("w:monthShort") == sName )
-							m_oMonthShort = oItem;
-						else if ( _T("w:noBreakHyphen") == sName )
-							m_oNoBreakHyphen = oItem;
-						else if ( _T("w:object") == sName )
-							m_oObject = oItem;
-						else if ( _T("w:pgNum") == sName )
-							m_oPgNum = oItem;
-						else if ( _T("w:ptab") == sName )
-							m_oPtab = oItem;
-						else if ( _T("m:rPr") == sName )
+						else if ( L"m:rPr" == sName )
 							m_oMRPr = oItem ;
-						else if ( _T("w:rPr") == sName )
+						else if ( L"w:rPr" == sName )
 							m_oRPr = oItem;
-						else if ( _T("a:rPr") == sName )
+						else if ( L"a:rPr" == sName )
 							m_oARPr = oItem;
-						else if ( _T("w:ruby") == sName )
-							m_oRuby = oItem;
-						else if ( _T("w:separator") == sName )
-							m_oSeparator = oItem;
-						else if ( _T("w:softHyphen") == sName )
-							m_oSoftHyphen = oItem;
-						else if ( _T("w:sym") == sName )
-							m_oSym = oItem;
-						else if ( _T("m:t") == sName )
-							m_oMText = oItem ;
-						else if ( _T("w:t") == sName )
-							m_oText = oItem;
-						else if ( _T("w:tab") == sName )
-							m_oTab = oItem;
-						else if ( _T("w:yearLong") == sName )
-							m_oYearLong = oItem;
-						else if ( _T("w:yearShort") == sName )
-							m_oYearShort = oItem;
+
+						if (pItem)
+							m_arrItems.push_back(pItem);
 					}
 				}
 			}
@@ -2395,63 +2412,83 @@ namespace OOX
 			while( oReader.ReadNextSiblingNode( nParentDepth ) )
 			{
 				std::wstring sName = oReader.GetName();
-				if ( _T("w:annotationRef") == sName )
-					m_oAnnotationRef = oReader;
-				else if ( _T("w:br") == sName )
-					m_oBr = oReader;
-				else if ( _T("w:commentReference") == sName )
-					m_oCommentReference = oReader;
-				else if ( _T("w:contentPart") == sName )
-					m_oContentPart = oReader;
-				else if ( _T("w:continuationSeparator") == sName )
-					m_oContinuationSeparator = oReader;
-				else if ( _T("w:cr") == sName )
-					m_oCr = oReader;
-				else if ( _T("w:dayLong") == sName )
-					m_oDayLong = oReader;
-				else if ( _T("w:dayShort") == sName )
-					m_oDayShort = oReader;
-				else if ( _T("w:del") == sName )
+				WritingElement* pItem = NULL;
+
+				if (L"w:annotationRef" == sName)
+					pItem = new CAnnotationRef();
+				else if (L"w:br" == sName)
+					pItem = new CBr();
+				else if (L"w:commentReference" == sName)
+					pItem = new CCommentReference();
+				else if (L"w:contentPart" == sName)
+					pItem = new CContentPart();
+				else if (L"w:continuationSeparator" == sName)
+					pItem = new CContinuationSeparator();
+				else if (L"w:cr" == sName)
+					pItem = new CCr();
+				else if (L"w:dayLong" == sName)
+					pItem = new CDayLong();
+				else if (L"w:dayShort" == sName)
+					pItem = new CDayShort();
+				else if (L"w:delInstrText" == sName)
+					pItem = new CDelInstrText();
+				else if (L"w:delText" == sName)
+					pItem = new CDelText();
+				else if (L"w:drawing" == sName)
+					pItem = new CDrawing();
+				else if (L"w:endnoteRef" == sName)
+					pItem = new CEndnoteRef();
+				else if (L"w:endnoteReference" == sName)
+					pItem = new CEndnoteReference();
+				else if (L"w:fldChar" == sName)
+					pItem = new CFldChar();
+				else if (L"w:footnoteRef" == sName)
+					pItem = new CFootnoteRef();
+				else if (L"w:footnoteReference" == sName)
+					pItem = new CFootnoteReference();
+				else if (L"w:instrText" == sName)
+					pItem = new CInstrText();
+				else if (L"w:lastRenderedPageBreak" == sName)
+					pItem = new CLastRenderedPageBreak();
+				else if (L"w:monthLong" == sName)
+					pItem = new CMonthLong();
+				else if (L"w:monthShort" == sName)
+					pItem = new CMonthShort();
+				else if (L"w:noBreakHyphen" == sName)
+					pItem = new CNoBreakHyphen();
+				else if (L"w:object" == sName)
+					pItem = new CObject();
+				else if (L"w:pgNum" == sName)
+					pItem = new CPgNum();
+				else if (L"w:pict" == sName)
+					pItem = new CPicture();
+				else if (L"w:ptab" == sName)
+					pItem = new CPTab();
+				else if (L"w:ruby" == sName)
+					pItem = new CRuby();
+				else if (L"w:separator" == sName)
+					pItem = new CSeparator();
+				else if (L"w:softHyphen" == sName)
+					pItem = new CSoftHyphen();
+				else if (L"w:sym" == sName)
+					pItem = new CSym();
+				else if (L"w:t" == sName)
+					pItem = new CText();
+				else if (L"w:tab" == sName)
+					pItem = new CTab();
+				else if (L"w:yearLong" == sName)
+					pItem = new CYearLong();
+				else if (L"m:t" == sName)
+					pItem = new CMText();
+				else if (L"w:del" == sName)
 					m_oDel = oReader;
-				else if ( _T("w:delInstrText") == sName )
-					m_oDelInstrText = oReader;
-				else if ( _T("w:delText") == sName )
-					m_oDelText = oReader;
-				else if ( _T("w:drawing") == sName )
-					m_oDrawing = oReader;
-				else if ( _T("w:endnoteRef") == sName )
-					m_oEndnoteRef = oReader;
-				else if ( _T("w:endnoteReference") == sName )
-					m_oEndnoteReference = oReader;
-				else if ( _T("w:fldChar") == sName )
-					m_oFldChar = oReader;
-				else if ( _T("w:footnoteRef") == sName )
-					m_oFootnoteRef = oReader;
-				else if ( _T("w:footnoteReference") == sName )
-					m_oFootnoteReference = oReader;
-				else if ( _T("w:ins") == sName )
+				else if (L"w:ins" == sName)
 					m_oIns = oReader;
-				else if ( _T("w:instrText") == sName )
-					m_oInstrText = oReader;
-				else if ( _T("w:lastRenderedPageBreak") == sName )
-					m_oLastRenderedPageBreak = oReader;
-				else if ( _T("w:monthLong") == sName )
-					m_oMonthLong = oReader;
-				else if ( _T("w:monthShort") == sName )
-					m_oMonthShort = oReader;
-				else if ( _T("w:noBreakHyphen") == sName )
-					m_oNoBreakHyphen = oReader;
-				else if ( _T("w:object") == sName )
-					m_oObject = oReader;
-				else if ( _T("w:pgNum") == sName )
-					m_oPgNum = oReader;
-				else if ( _T("w:ptab") == sName )
-					m_oPtab = oReader;
-				else if ( _T("m:rPr") == sName )
-					m_oMRPr = oReader ;
-				else if ( _T("w:rPr") == sName )
+				else if (L"m:rPr" == sName)
+					m_oMRPr = oReader;
+				else if (L"w:rPr" == sName)
 					m_oRPr = oReader;
-				else if ( _T("a:rPr") == sName )
+				else if (L"a:rPr" == sName)
 				{
 					std::wstring sXml = oReader.GetOuterXml();
 					XmlUtils::CXmlNode node;
@@ -2459,24 +2496,11 @@ namespace OOX
 
 					m_oARPr = node;
 				}
-				else if ( _T("w:ruby") == sName )
-					m_oRuby = oReader;
-				else if ( _T("w:separator") == sName )
-					m_oSeparator = oReader;
-				else if ( _T("w:softHyphen") == sName )
-					m_oSoftHyphen = oReader;
-				else if ( _T("w:sym") == sName )
-					m_oSym = oReader;
-				else if ( _T("m:t") == sName )
-					m_oMText = oReader ;
-				else if ( _T("w:t") == sName )
-					m_oText = oReader;
-				else if ( _T("w:tab") == sName )
-					m_oTab = oReader;
-				else if ( _T("w:yearLong") == sName )
-					m_oYearLong = oReader;
-				else if ( _T("w:yearShort") == sName )
-					m_oYearShort = oReader;
+				if (pItem)
+				{
+					pItem->fromXML(oReader);
+					m_arrItems.push_back(pItem);
+				}
 			}
 		}
 		EElementType CMRun::getType() const
@@ -4216,7 +4240,7 @@ namespace OOX
 			return sResult;
 		}
 
-		std::wstring      CMc::toXML() const
+		std::wstring CMc::toXML() const
 		{
 			std::wstring sResult = L"<m:mc>";
 
@@ -4228,7 +4252,7 @@ namespace OOX
 			return sResult;
 		}
 
-		std::wstring      CNary::toXML() const
+		std::wstring CNary::toXML() const
 		{
 			std::wstring sResult = L"<m:nary>";
 
@@ -4249,7 +4273,7 @@ namespace OOX
 			return sResult;
 		}
 
-		std::wstring      CPhant::toXML() const
+		std::wstring CPhant::toXML() const
 		{
 			std::wstring sResult = L"<m:phant>";
 
@@ -4264,7 +4288,7 @@ namespace OOX
 			return sResult;
 		}
 
-		std::wstring      CMRun::toXML() const
+		std::wstring CMRun::toXML() const
 		{
 			std::wstring sResult = L"<m:r>";
 
@@ -4274,81 +4298,15 @@ namespace OOX
 
 			return sResult;
 		}
-		std::wstring      CMRun::toXMLInner() const
+		std::wstring CMRun::toXMLInner() const
 	{
 		std::wstring sResult;
 
-		if ( m_oAnnotationRef.IsInit() )
-			sResult += m_oAnnotationRef->toXML();
+		if (m_oIns.IsInit() )
+			sResult += m_oIns->toXML();
 
-		if ( m_oBr.IsInit() )
-			sResult += m_oBr->toXML();
-
-		if ( m_oCommentReference.IsInit() )
-			sResult += m_oCommentReference->toXML();
-
-		if ( m_oContentPart.IsInit() )
-			sResult += m_oContentPart->toXML();
-
-		if ( m_oContinuationSeparator.IsInit() )
-			sResult += m_oContinuationSeparator->toXML();
-
-		if ( m_oCr.IsInit() )
-			sResult += m_oCr->toXML();
-
-		if ( m_oDayLong.IsInit() )
-			sResult += m_oDayLong->toXML();
-
-		if ( m_oDayShort.IsInit() )
-			sResult += m_oDayShort->toXML();
-
-		if ( m_oDelInstrText.IsInit() )
-			sResult += m_oDelInstrText->toXML();
-
-		if ( m_oDelText.IsInit() )
-			sResult += m_oDelText->toXML();
-
-		if ( m_oDrawing.IsInit() )
-			sResult += m_oDrawing->toXML();
-
-		if ( m_oEndnoteRef.IsInit() )
-			sResult += m_oEndnoteRef->toXML();
-
-		if ( m_oEndnoteReference.IsInit() )
-			sResult += m_oEndnoteReference->toXML();
-
-		if ( m_oFldChar.IsInit() )
-			sResult += m_oFldChar->toXML();
-
-		if ( m_oFootnoteRef.IsInit() )
-			sResult += m_oFootnoteRef->toXML();
-
-		if ( m_oFootnoteReference.IsInit() )
-			sResult += m_oFootnoteReference->toXML();
-
-		if ( m_oInstrText.IsInit() )
-			sResult += m_oInstrText->toXML();
-
-		if ( m_oLastRenderedPageBreak.IsInit() )
-			sResult += m_oLastRenderedPageBreak->toXML();
-
-		if ( m_oMonthLong.IsInit() )
-			sResult += m_oMonthLong->toXML();
-
-		if ( m_oMonthShort.IsInit() )
-			sResult += m_oMonthShort->toXML();
-
-		if ( m_oNoBreakHyphen.IsInit() )
-			sResult += m_oNoBreakHyphen->toXML();
-
-		if ( m_oObject.IsInit() )
-			sResult += m_oObject->toXML();
-
-		if ( m_oPgNum.IsInit() )
-			sResult += m_oPgNum->toXML();
-
-		if ( m_oPtab.IsInit() )
-			sResult += m_oPtab->toXML();
+		if ( m_oDel.IsInit() )
+			sResult += m_oDel->toXML();
 
 		if ( m_oMRPr.IsInit() )
 			sResult += m_oMRPr->toXML();
@@ -4359,33 +4317,13 @@ namespace OOX
 		if ( m_oRPr.IsInit() )
 			sResult += m_oRPr->toXML();
 
-		if ( m_oRuby.IsInit() )
-			sResult += m_oRuby->toXML();
-
-		if ( m_oSeparator.IsInit() )
-			sResult += m_oSeparator->toXML();
-
-		if ( m_oSoftHyphen.IsInit() )
-			sResult += m_oSoftHyphen->toXML();
-
-		if ( m_oSym.IsInit() )
-			sResult += m_oSym->toXML();
-
-		if ( m_oMText.IsInit() )
-			sResult += m_oMText->toXML();
-
-		if ( m_oText.IsInit() )
-			sResult += m_oText->toXML();
-
-		if ( m_oTab.IsInit() )
-			sResult += m_oTab->toXML();
-
-		if ( m_oYearLong.IsInit() )
-			sResult += m_oYearLong->toXML();
-
-		if ( m_oYearShort.IsInit() )
-			sResult += m_oYearShort->toXML();
-
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			if (m_arrItems[i])
+			{
+				sResult += m_arrItems[i]->toXML();
+			}
+		}
 		return sResult;
 	}
 	}

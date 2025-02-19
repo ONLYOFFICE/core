@@ -106,6 +106,16 @@ namespace MetaFile
 			chRed   = oARGB.chRed;
 			chAlpha = oARGB.chAlpha;
 		}
+
+		TEmfPlusARGB& operator=(const TEmfPlusARGB& oARGB)
+		{
+			chBlue  = oARGB.chBlue;
+			chGreen = oARGB.chGreen;
+			chRed   = oARGB.chRed;
+			chAlpha = oARGB.chAlpha;
+
+			return *this;
+		}
 	};
 
 	struct TGUID

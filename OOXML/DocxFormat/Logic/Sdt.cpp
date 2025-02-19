@@ -1635,8 +1635,8 @@ namespace OOX
 			WritingElement_WriteNode_2(m_oFormPr);
 			WritingElement_WriteNode_2(m_oTextFormPr);
 			WritingElement_WriteNode_2(m_oComplexFormPr);
-			WritingElement_WriteNode_1(L"<w:border ", m_oBorder);
-			WritingElement_WriteNode_1(L"<w:shd ", m_oShd);
+			WritingElement_WriteNode_3(L"<w:border ", m_oBorder);
+			WritingElement_WriteNode_3(L"<w:shd ", m_oShd);
 
 			return sResult;
 		}

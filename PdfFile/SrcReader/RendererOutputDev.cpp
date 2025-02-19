@@ -2890,9 +2890,10 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		StreamKind nSK = pStream->getKind();
 		int nComponentsCount = pColorMap->getNumPixelComps();
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (pMaskColors || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
+		if (pMaskColors || unAlpha != 255 || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -2906,7 +2907,6 @@ namespace PdfReader
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
 			pImageStream->reset();
 
-			BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 			int nComps = pImageStream->getComps();
 			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
 			GfxRenderingIntent intent = pGState->getRenderingIntent();

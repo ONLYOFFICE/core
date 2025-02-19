@@ -258,7 +258,13 @@ std::wstring RtfAbstractReader::ExecuteTextInternal(RtfDocument& oDocument, RtfR
 	if ("u" == sKey)
 	{
 		if (true == bHasPar)
+		{
+			if (m_bUseGlobalCodepage && sizeof(wchar_t) != 2)
+			{
+				nPar = nPar & 0x0FFF;
+			}
 			sResult += wchar_t(nPar);
+		}
 	}
 	else
 	{

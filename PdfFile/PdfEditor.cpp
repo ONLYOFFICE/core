@@ -647,7 +647,7 @@ void GetCTM(XRef* pXref, Object* oPage, double* dCTM)
 	oContents.free();
 }
 
-CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter)
+CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
 {
 	m_wsSrcFile  = _wsSrcFile;
 	m_wsDstFile  = _wsDstFile;
@@ -656,7 +656,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	m_pWriter    = _pWriter;
 	m_nEditPage  = -1;
 	m_nError     = 0;
-	m_nMode      = 0;
+	m_nMode      = -1;
 
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	if (!pPDFDocument)
@@ -665,7 +665,24 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 		return;
 	}
 
-	// Если результат редактирования будет сохранен в тот же файл, что открыт для чтения, то файл необходимо сделать редактируемым
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (!xref || !pDoc)
+	{
+		m_nError = 1;
+		return;
+	}
+}
+bool CPdfEditor::IncrementalUpdates()
+{
+	if (m_nMode == 0)
+		return true;
+
+	m_nMode = 0;
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+
 	std::string sPathUtf8New = U_TO_UTF8(m_wsDstFile);
 	std::string sPathUtf8Old = U_TO_UTF8(m_wsSrcFile);
 	if (sPathUtf8Old == sPathUtf8New || NSSystemPath::NormalizePath(sPathUtf8Old) == NSSystemPath::NormalizePath(sPathUtf8New))
@@ -676,33 +693,16 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 		delete owner_pswd;
 		delete user_pswd;
 		if (!bRes)
-		{
-			m_nError = 2; // Не удалось проверить файл для записи
-			return;
-		}
+			return false;
 	}
-	else if (!m_wsDstFile.empty())
+	else
 	{
 		if (!NSFile::CFileBinary::Copy(m_wsSrcFile, m_wsDstFile))
-		{
-			m_nError = 2;
-			return;
-		}
+			return false;
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(m_wsDstFile, true))
-		{
-			m_nError = 2;
-			return;
-		}
+			return false;
 		oFile.CloseFile();
-	}
-
-	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!xref || !pDoc)
-	{
-		m_nError = 1;
-		return;
 	}
 
 	// Получение каталога и дерева страниц из reader
@@ -710,15 +710,13 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	if (!xref->getCatalog(&catDict)->isDict() || !catDict.dictLookupNF("Pages", &pagesRefObj))
 	{
 		pagesRefObj.free(); catDict.free();
-		m_nError = 3; // Не удалось получить каталог и дерево страниц
-		return;
+		return false;
 	}
 	Object* trailer = xref->getTrailerDict();
 	if (!trailer || !trailer->isDict() || !trailer->dictLookupNF("Root", &catRefObj)->isRef())
 	{
 		pagesRefObj.free(); catDict.free(); catRefObj.free();
-		m_nError = 3; // Не удалось получить каталог и дерево страниц
-		return;
+		return false;
 	}
 	Ref catRef = catRefObj.getRef();
 	catRefObj.free();
@@ -728,15 +726,13 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	if (!pXref)
 	{
 		pagesRefObj.free(); catDict.free();
-		m_nError = 1;
-		return;
+		return false;
 	}
 	PdfWriter::CCatalog* pCatalog = new PdfWriter::CCatalog();
 	if (!pCatalog)
 	{
 		pagesRefObj.free(); catDict.free(); RELEASEOBJECT(pXref);
-		m_nError = 1;
-		return;
+		return false;
 	}
 	pXref->Add(pCatalog, catRef.gen);
 	PdfWriter::CResourcesDict* pDR = NULL;
@@ -884,8 +880,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 				pagesRefObj.free();
 				RELEASEOBJECT(pXref);
 				RELEASEOBJECT(pDRXref);
-				m_nError = 4; // Ошибка шифрования файла
-				return;
+				return false;
 			}
 		}
 	}
@@ -901,49 +896,22 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 			bRes = pDoc->EditResources(pDRXref, pDR);
 	}
 	pagesRefObj.free();
-	if (!bRes)
-		m_nError = 5; // Ошибка применения редактирования
-}
-CPdfEditor::CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter)
-{
-	m_pReader   = _pReader;
-	m_pWriter   = _pWriter;
-	m_nEditPage = -1;
-	m_nError    = 0;
-	m_nMode     = 1;
-
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
-	if (!pPDFDocument)
-	{
-		m_nError = 1;
-		return;
-	}
-
-	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!xref || !pDoc)
-	{
-		m_nError = 1;
-		return;
-	}
-}
-int CPdfEditor::Close(const std::wstring& wsPath)
-{
-	m_wsDstFile = wsPath;
-	Close();
-	return 0;
+	return bRes;
 }
 void CPdfEditor::Close()
 {
-	if (m_nMode != 0 || m_wsDstFile.empty())
+	if (m_wsDstFile.empty())
 		 return;
+
+	if (m_nMode == 1)
+	{
+		m_pWriter->SaveToFile(m_wsDstFile);
+		return;
+	}
+
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
-		return;
 	XRef* xref = pPDFDocument->getXRef();
-	if (!xref)
-		return;
 
 	// Добавляем первый элемент в таблицу xref
 	// он должен иметь вид 0000000000 65535 f
@@ -1127,6 +1095,9 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 }
 bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 {
+	if (m_nMode != 0 && !IncrementalUpdates())
+		return false;
+
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
@@ -1284,13 +1255,16 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet)
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
+	if (m_nMode >= 0)
+		return false;
+	m_nMode = 1;
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
 	// Страницы должны быть созданы заранее для ссылки
 	Catalog* pCatalog = pPDFDocument->getCatalog();
-	for (int i = 0; i < unLength; ++i)
+	for (unsigned int i = 0; i < unLength; ++i)
 	{
 		Ref* pPageRef = pCatalog->getPageRef(arrPageIndex[i] + 1);
 		if (pPageRef->num == 0)
@@ -1316,6 +1290,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 		m_mSplitUniqueRef[pPageRef->num] = pPage;
 		pageRefObj.free();
 	}
+
 	bool bRes = true;
 	for (unsigned int i = 0; i < unLength; ++i)
 		bRes &= SplitPage(arrPageIndex[i]);
@@ -1494,10 +1469,16 @@ bool CPdfEditor::SplitPage(int nPageIndex)
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
+	if (m_nMode != 0 && !IncrementalUpdates())
+		return false;
+
 	return m_pWriter->GetDocument()->DeletePage(nPageIndex);
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
+	if (m_nMode != 0 && !IncrementalUpdates())
+		return false;
+
 	// Применение добавления страницы для writer
 	if (!m_pWriter->AddPage(nPageIndex))
 		return false;
@@ -1837,6 +1818,9 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 }
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
+	if (m_nMode != 0 && !IncrementalUpdates())
+		return false;
+
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();

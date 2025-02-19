@@ -98,7 +98,6 @@ public:
 	bool DeletePage(int nPageIndex);
 	bool AddPage   (int nPageIndex);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
-	bool MergePages(CPdfFile* pMergeFile, const int* arrPageIndex = NULL, unsigned int unLength = 0, int nMergePos = -1);
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0, int nMergePos = -1);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif

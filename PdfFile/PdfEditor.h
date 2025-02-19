@@ -40,12 +40,12 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 class CPdfEditor
 {
 public:
-	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, CPdfReader* _pReader, const std::wstring& _wsDstFile, CPdfWriter* _pWriter);
-	CPdfEditor(CPdfReader* _pReader, CPdfWriter* _pWriter);
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter);
+
+	bool IncrementalUpdates();
 
 	int  GetError();
 	void Close();
-	int Close(const std::wstring& wsPath);
 	bool EditPage(int nPageIndex, bool bSet = true);
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
@@ -61,10 +61,10 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
-	bool SplitPage(int nPageIndex);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 
 private:
+	bool SplitPage(int nPageIndex);
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 
 	std::wstring m_wsSrcFile;

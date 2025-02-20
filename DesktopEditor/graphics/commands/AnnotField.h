@@ -431,6 +431,7 @@ public:
 	int   GetID()        const;
 	int   GetAnnotFlag() const;
 	int   GetPage()      const;
+	int   GetCopyAP()    const;
 	void  GetBE(BYTE& nS, double& dI);
 	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
@@ -488,6 +489,7 @@ private:
 	int          m_nID;
 	int          m_nAnnotFlag;
 	int          m_nPage;
+	int          m_nCopyAP;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
 	std::wstring m_wsOUserID;

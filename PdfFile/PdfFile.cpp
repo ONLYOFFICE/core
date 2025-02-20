@@ -185,6 +185,12 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 	RELEASEOBJECT(pMergeFile);
 	return bRes;
 }
+bool CPdfFile::MovePage(int nPageIndex, int nPos)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->MovePage(nPageIndex, nPos);
+}
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
@@ -1273,7 +1279,15 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CAnnotFieldInfo* pCommand = (CAnnotFieldInfo*)command;
 		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+		{
 			m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetID());
+			if (pCommand->IsStamp())
+			{
+				int nFlags = pCommand->GetMarkupAnnotPr()->GetFlag();
+				if (nFlags & (1 << 15))
+					m_pInternal->pEditor->EditAnnot(pCommand->GetPage(), pCommand->GetCopyAP());
+			}
+		}
 		return m_pInternal->pWriter->AddAnnotField(m_pInternal->pAppFonts, pCommand);
 	}
 	case IAdvancedCommand::AdvancedCommandType::DeleteAnnot:

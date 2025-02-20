@@ -351,10 +351,6 @@ namespace PdfWriter
 	}
 	CPage* CDocument::GetPage(const unsigned int &unPage)
 	{
-		CPage* pRes = GetEditPage(unPage);
-		if (pRes)
-			return pRes;
-
 		if (unPage >= m_pPageTree->GetCount())
 			return NULL;
 
@@ -367,6 +363,11 @@ namespace PdfWriter
 		if (p != m_mEditPages.end())
 			pRes = p->second;
 		return pRes;
+	}
+	int CDocument::FindPage(CPage* pPage)
+	{
+		int nI = 0;
+		return m_pPageTree->Find(pPage, nI) ? nI : -1;
 	}
 	unsigned int CDocument::GetPagesCount() const
 	{
@@ -1596,6 +1597,16 @@ namespace PdfWriter
 			pXref->SetPrev(m_pLastXref);
 			m_pLastXref = pXref;
 			return true;
+		}
+		return false;
+	}
+	bool CDocument::MovePage(int nPageIndex, int nPos)
+	{
+		if (m_pPageTree)
+		{
+			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+				return m_pPageTree->InsertPage(nPos, (CPage*)pObj);
 		}
 		return false;
 	}

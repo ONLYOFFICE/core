@@ -1254,7 +1254,7 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader, int nMergePos)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader, const int* arrPositions)
 {
 	if (m_nMode == 1 || (m_nMode == 0 && !_pReader))
 		return false;
@@ -1277,7 +1277,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		pDoc->AddPage(nMergePos == -1 ? pDoc->GetPagesCount() : (nMergePos + i), pPage);
+		pDoc->AddPage(arrPositions ? arrPositions[i] : pDoc->GetPagesCount(), pPage);
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;
@@ -1574,11 +1574,11 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 
 	return true;
 }
-bool CPdfEditor::MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, int nMergePos)
+bool CPdfEditor::MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, const int* arrPositions)
 {
 	if (m_nMode != 0 && !IncrementalUpdates())
 		return false;
-	return SplitPages(arrPageIndex, unLength, _pReader, nMergePos);
+	return SplitPages(arrPageIndex, unLength, _pReader, arrPositions);
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
@@ -1612,7 +1612,7 @@ bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 	if (EditPage(nPageIndex, true, true))
 	{
 		m_nEditPage = nPos;
-		return pWriter->GetDocument()->MovePage(nPageIndex, nPos);
+		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	}
 	return false;
 }

@@ -167,7 +167,7 @@ bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 		return false;
 	return m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength, int nMergePos)
+bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength, const int* arrPosition)
 {
 	if (!m_pInternal->pEditor)
 		return false;
@@ -181,7 +181,7 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 		return false;
 	}
 
-	bool bRes = m_pInternal->pEditor->MergePages(pMergeFile->m_pInternal->pReader, arrPageIndex, unLength, nMergePos);
+	bool bRes = m_pInternal->pEditor->MergePages(pMergeFile->m_pInternal->pReader, arrPageIndex, unLength, arrPosition);
 	RELEASEOBJECT(pMergeFile);
 	return bRes;
 }

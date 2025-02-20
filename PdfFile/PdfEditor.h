@@ -62,8 +62,8 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader = NULL, int nMergePos = -1);
-	bool MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, int nMergePos);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader = NULL, const int* arrPositions = NULL);
+	bool MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, const int* arrPositions);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);

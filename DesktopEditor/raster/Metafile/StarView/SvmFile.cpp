@@ -266,6 +266,7 @@ void CSvmFile::Read_META_LINE()
 			{
 				case LINE_SOLID:	last_pen->PenStyle = PS_SOLID ; break;
 				case LINE_DASH:		last_pen->PenStyle = PS_DASH ; break;
+				default: break;
 			}
 		}
 	}
@@ -323,6 +324,7 @@ void CSvmFile::Read_META_POLYLINE()
 			{
 				case LINE_SOLID:	last_pen->PenStyle = PS_SOLID ; break;
 				case LINE_DASH:		last_pen->PenStyle = PS_DASH ; break;
+				default: break;
 			}
 
 			if (last_pen->Width < 1)

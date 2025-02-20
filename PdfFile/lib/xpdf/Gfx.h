@@ -355,6 +355,7 @@ private:
   void opBeginMarkedContent(Object args[], int numArgs);
   void opEndMarkedContent(Object args[], int numArgs);
   void opMarkPoint(Object args[], int numArgs);
+  void SkipBDC();
 
   GfxState *saveStateStack();
   void restoreStateStack(GfxState *oldState);

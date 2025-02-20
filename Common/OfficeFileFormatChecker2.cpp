@@ -451,6 +451,20 @@ bool COfficeFileFormatChecker::isVbaProjectFile(POLE::Storage *storage)
 	}
 	return true;
 }
+bool COfficeFileFormatChecker::isHwpFile(POLE::Storage* storage)
+{
+	if (storage == NULL)
+		return false;
+
+	unsigned char buffer[10];
+
+	POLE::Stream stream(storage, L"BodyText/Section0");
+	if (stream.read(buffer, 10) < 1)
+	{
+		return false;
+	}	
+	return true;
+}
 bool COfficeFileFormatChecker::isXlsFormatFile(POLE::Storage *storage)
 {
 	if (storage == NULL)
@@ -721,6 +735,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
 			return true;
 		}
+		else if (isHwpFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
+			return true;
+		}
 	}
 	NSFile::CFileBinary file;
 	if (!file.OpenFile(fileName))
@@ -767,6 +786,13 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
             bufferDetect = NULL;
             return true;
         }
+		else if (isMacFormatFile(fileName))
+		{
+			if (bufferDetect)
+				delete[] bufferDetect;
+			bufferDetect = NULL;
+			return true;
+		}
 	}
 
 	//-----------------------------------------------------------------------------------------------
@@ -1130,6 +1156,58 @@ bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring &fileNa
 
 		if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 			return true;
+	}
+	return false;
+}
+bool COfficeFileFormatChecker::isMacFormatFile(const std::wstring& fileName)
+{
+	COfficeUtils OfficeUtils(NULL);
+
+	ULONG nBufferSize = 0;
+	BYTE* pBuffer = NULL;
+
+	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Document.iwa", &pBuffer, nBufferSize);
+	if (hresult == S_OK && pBuffer != NULL)
+	{
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+
+		delete[] pBuffer;
+		pBuffer = NULL;
+
+		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Slide.iwa", &pBuffer, nBufferSize);
+		if (hresult == S_OK && pBuffer != NULL)
+		{
+			delete[] pBuffer;
+			pBuffer = NULL;
+
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
+			return true;
+		}
+		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Tables/DataList.iwa", &pBuffer, nBufferSize);
+		if (hresult == S_OK && pBuffer != NULL)
+		{
+			delete[] pBuffer;
+			pBuffer = NULL;
+
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
+			return true;
+		}
+		std::wstring::size_type nExtPos = fileName.rfind(L'.');
+		std::wstring sExt = L"unknown";
+
+		if (nExtPos != std::wstring::npos)
+			sExt = fileName.substr(nExtPos);
+
+		std::transform(sExt.begin(), sExt.end(), sExt.begin(), tolower);
+
+		if (0 == sExt.compare(L".pages"))
+			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+		else if (0 == sExt.compare(L".numbers"))
+			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
+		else if (0 == sExt.compare(L".key"))
+			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
+
+		return true;
 	}
 	return false;
 }

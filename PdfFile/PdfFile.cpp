@@ -36,14 +36,12 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
 #include "lib/xpdf/PDFDoc.h"
+#include "Resources/BaseFonts.h"
 
 #ifndef BUILDING_WASM_MODULE
 #include "PdfEditor.h"
 #include "OnlineOfficeBinToPdf.h"
-
 #include "SrcWriter/Document.h"
-#include "Resources/BaseFonts.h"
-
 #else
 class CPdfEditor
 {

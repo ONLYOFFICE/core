@@ -1391,6 +1391,10 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 				pDoc->AddObject(pAcroForm);
 			pDoc->SetAcroForm(pAcroForm);
 		}
+		else
+		{
+			pAcroForm->Remove("NeedAppearances");
+		}
 
 		if (oAcroForm.isRef())
 		{
@@ -1423,6 +1427,11 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 						continue;
 					}
 				}
+
+				// TODO нужна проверка полных имён
+				// Если имя совпадает, то:
+				// Если другие поля - тип, флаг и т.д. совпадает, то выносим общее в общего родителя
+				// Иначе переименовываем, action обрубаем
 
 				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isArray())
 				{
@@ -1462,15 +1471,96 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 					continue;
 				}
 			}
-			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")))
-			{
+			else if (strcmp("SigFlags", chKey) == 0 || strcmp("XFA", chKey) == 0 || (strcmp("DA", chKey) == 0 && pAcroForm->Get("DA")) || strcmp("NeedAppearances", chKey) == 0)
+			{ // Нельзя гарантировать их выполнение
 				oTemp.free();
 				continue;
 			}
 			else if (strcmp("DR", chKey) == 0)
-			{
-				// TODO объединение ресурсов >(0o0)<
-				oAcroForm.dictGetValNF(nIndex, &oTemp);
+			{ // Добавляем только уникальные ключи
+				PdfWriter::CDictObject* pDR = dynamic_cast<PdfWriter::CDictObject*>(pAcroForm->Get("DR"));
+				if (!pDR)
+				{
+					pDR = new PdfWriter::CDictObject();
+					pDoc->AddObject(pDR);
+					pAcroForm->Add(chKey, pDR);
+				}
+
+				PdfWriter::CArrayObject* pProcset = new PdfWriter::CArrayObject();
+				pDR->Add("ProcSet", pProcset);
+				pProcset->Add(new PdfWriter::CNameObject("PDF"));
+				pProcset->Add(new PdfWriter::CNameObject("Text"));
+				pProcset->Add(new PdfWriter::CNameObject("ImageB"));
+				pProcset->Add(new PdfWriter::CNameObject("ImageC"));
+				pProcset->Add(new PdfWriter::CNameObject("ImageI"));
+
+				if (oAcroForm.dictGetVal(nIndex, &oTemp)->isDict())
+				{
+					Object oTemp2;
+					for (int nIndex2 = 0; nIndex2 < oTemp.dictGetLength(); ++nIndex2)
+					{
+						char* chKey2 = oTemp.dictGetKey(nIndex2);
+						if (strcmp("ProcSet", chKey2) == 0 || !oTemp.dictGetVal(nIndex2, &oTemp2)->isDict())
+						{
+							oTemp2.free();
+							continue;
+						}
+						PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pDR->Get(chKey2));
+						if (!pDict)
+						{
+							Object oTempRef;
+							if (oTemp.dictGetValNF(nIndex2, &oTempRef)->isRef())
+							{
+								std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oTempRef.getRefNum());
+								if (it != m_mSplitUniqueRef.end())
+								{
+									pDR->Add(chKey2, it->second);
+									oTemp2.free(); oTempRef.free();
+									continue;
+								}
+							}
+							PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, m_mSplitUniqueRef);
+							if (oTempRef.isRef())
+								pDoc->AddObject(pBase);
+							pDR->Add(chKey2, pBase);
+							oTemp2.free(); oTempRef.free();
+							continue;
+						}
+						else
+						{
+							for (int nIndex3 = 0; nIndex3 < oTemp2.dictGetLength(); ++nIndex3)
+							{
+								char* chKey3 = oTemp2.dictGetKey(nIndex3);
+								if (pDict->Get(chKey3))
+									continue;
+								Object oTempRef;
+								if (oTemp2.dictGetValNF(nIndex3, &oTempRef)->isRef())
+								{
+									std::map<int, PdfWriter::CObjectBase*>::iterator it = m_mSplitUniqueRef.find(oTempRef.getRefNum());
+									if (it != m_mSplitUniqueRef.end())
+									{
+										pDict->Add(chKey3, it->second);
+										oTemp2.free(); oTempRef.free();
+										continue;
+									}
+								}
+								PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp2, pDoc, xref, m_mSplitUniqueRef);
+								if (oTempRef.isRef())
+									pDoc->AddObject(pBase);
+								pDict->Add(chKey3, pBase);
+								oTemp2.free(); oTempRef.free();
+								continue;
+							}
+						}
+					}
+					oTemp2.free(); oTemp.free();
+					continue;
+				}
+				else
+				{
+					oTemp.free();
+					oAcroForm.dictGetValNF(nIndex, &oTemp);
+				}
 			}
 			else
 				oAcroForm.dictGetValNF(nIndex, &oTemp);

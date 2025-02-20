@@ -755,6 +755,12 @@ const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::
                 return true;
             }
         }
+        else
+        {
+            ixti = XMLSTUFF::AddXti(boost::algorithm::replace_all_copy(sheets_names, L"''", L"'"));
+            first = results[0].second;
+            return true;
+        }
     }
     return false;
 }

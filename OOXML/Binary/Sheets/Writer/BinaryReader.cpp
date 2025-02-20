@@ -2154,6 +2154,8 @@ BinaryWorkbookTableReader::BinaryWorkbookTableReader(NSBinPptxRW::CBinaryFileRea
 }
 int BinaryWorkbookTableReader::Read()
 {
+    if(m_pXlsb)
+        m_oWorkbook.OOX::File::m_pMainDocument= m_pXlsb;
 	int res = c_oSerConstants::ReadOk;
 	READ_TABLE_DEF(res, this->ReadWorkbookTableContent, this);
 
@@ -2280,6 +2282,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 	else if (c_oSerWorkbookTypes::Connections == type)
 	{
 		smart_ptr<OOX::Spreadsheet::CConnectionsFile> oConnection(new OOX::Spreadsheet::CConnectionsFile(NULL));
+        if(m_pXlsb)
+            oConnection->OOX::File::m_pMainDocument = m_pXlsb;
 		oConnection->m_oConnections.Init();
 		READ1_DEF(length, res, this->ReadConnections, oConnection->m_oConnections.GetPointer());
 
@@ -9187,8 +9191,6 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
 
                 OOX::CPath oXlPath = OOX::CPath(sDstPath).GetDirectory() / oXlsb.m_pWorkbook->DefaultDirectory();
                 oXlsb.WriteWorkbook(oXlPath);
-                if(oXlsb.m_pWorkbook)
-                    oXlsb.m_pWorkbook->OOX::File::m_pMainDocument = &oXlsb;
                 if(oXlsb.m_pStyles)
                     oXlsb.m_pStyles->OOX::File::m_pMainDocument = &oXlsb;
                 if(oXlsb.m_pSharedStrings)

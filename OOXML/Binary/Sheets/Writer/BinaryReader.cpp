@@ -410,7 +410,12 @@ int BinaryTableReader::ReadQueryTableField(BYTE type, long length, void* poResul
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-
+int BinaryTableReader::ReadTableCache(long length, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    READ1_DEF(length, res, this->ReadCacheParts, poResult);
+    return res;
+}
 int BinaryTableReader::ReadTablePart(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -437,6 +442,72 @@ int BinaryTableReader::ReadTablePart(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 };
+int BinaryTableReader::ReadCacheParts(BYTE type,long length, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    if (c_oSer_TablePart::Table == type)
+    {
+        OOX::Spreadsheet::CTable Table;
+        READ1_DEF(length, res, this->ReadCachePart, &Table);
+        if(Table.m_oId.IsInit() && Table.m_oTableColumns.IsInit() && !Table.m_oTableColumns->m_arrItems.empty())
+        {
+            XLS::GlobalWorkbookInfo::mapTableColumnNames_static.emplace(Table.m_oId->GetValue(),
+                std::vector<std::wstring>(Table.m_oTableColumns->m_arrItems.size()));
+                auto colInd = 0;
+            for(auto i:Table.m_oTableColumns->m_arrItems)
+            {
+                if(i->m_oName.IsInit())
+                {
+                    i->m_oName = boost::algorithm::replace_all_copy(i->m_oName.get(), L"_x000a_", L"\n");
+                    std::unordered_map<int, std::vector<std::wstring>>::iterator pFind = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(Table.m_oId->GetValue());
+                    if (pFind != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
+                    {
+                        if (colInd < pFind->second.size())
+                        {
+                            pFind->second[colInd] = i->m_oName.get();
+                        }
+                    }
+                }
+                colInd++;
+            }
+        }
+        if(Table.m_oId.IsInit() && Table.m_oName.IsInit())
+        {
+            XLS::GlobalWorkbookInfo::mapTableNames_static.emplace(Table.m_oId->GetValue(), Table.m_oName.get());
+            auto curXti = XLS::GlobalWorkbookInfo::arXti_External_static.size()-1;
+            if(!XLS::GlobalWorkbookInfo::mapXtiTables_static.count(curXti))
+            {
+                XLS::GlobalWorkbookInfo::mapXtiTables_static.emplace(curXti, std::vector<int>());
+            }
+            XLS::GlobalWorkbookInfo::mapXtiTables_static.at(curXti).push_back(Table.m_oId->GetValue());
+        }
+    }
+    else
+        res = c_oSerConstants::ReadUnknown;
+    return res;
+}
+int BinaryTableReader::ReadCachePart(BYTE type, long length, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    auto tablePtr = static_cast<OOX::Spreadsheet::CTable*>(poResult);
+    if (c_oSer_TablePart::Id == type)
+    {
+        tablePtr->m_oId.Init();
+        tablePtr->m_oId->SetValue(m_oBufferedStream.GetLong());
+    }
+    else if (c_oSer_TablePart::Name == type)
+    {
+        tablePtr->m_oName = m_oBufferedStream.GetString4(length);
+    }
+    else if (c_oSer_TablePart::TableColumns == type)
+    {
+        tablePtr->m_oTableColumns.Init();
+        READ1_DEF(length, res, this->ReadTableColumns, tablePtr->m_oTableColumns.GetPointer());
+    }
+    else
+        res = c_oSerConstants::ReadUnknown;
+    return res;
+}
 int BinaryTableReader::ReadTable(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -4162,6 +4233,12 @@ int BinaryWorksheetsTableReader::Read2xlsb(OOX::Spreadsheet::CXlsb &xlsb)
 {
     m_pXlsb = &xlsb;
     int res = c_oSerConstants::ReadOk;
+    //читаем листы для получения их имен  и названий таблиц(используется в формулах)
+    auto worksheetsPos = m_oBufferedStream.GetPos();
+    READ_TABLE_DEF(res, this->ReadWorksheetsCache, this);
+    m_oWorkbook.m_oSheets->m_arrItems.resize(0);
+    m_oBufferedStream.Seek(worksheetsPos);
+
     READ_TABLE_DEF(res, this->ReadWorksheetsTableContent, this);
     return res;
 }
@@ -4226,6 +4303,21 @@ int BinaryWorksheetsTableReader::ReadWorksheetsTableContent(BYTE type, long leng
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+int BinaryWorksheetsTableReader::ReadWorksheetsCache(BYTE type, long length, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    if (c_oSerWorksheetsTypes::Worksheet == type)
+    {
+        m_pCurSheet.reset(new OOX::Spreadsheet::CSheet());
+        boost::unordered_map<BYTE, std::vector<unsigned int>> mapPos;
+        READ1_DEF(length, res, this->ReadWorksheetSeekPositions, &mapPos);
+        ReadSheetCache(mapPos, poResult);
+        m_pCurSheet.Release();
+    }
+    else
+        res = c_oSerConstants::ReadUnknown;
+    return res;
 }
 int BinaryWorksheetsTableReader::ReadWorksheetSeekPositions(BYTE type, long length, void* poResult)
 {
@@ -4689,6 +4781,7 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
     boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind;
     LONG nPos;
     LONG length;
+    LONG nOldPos = m_oBufferedStream.GetPos();
     //-------------------------------------------------------------------------------------------------------------
     SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
         READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
@@ -5014,11 +5107,36 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
         }
     SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------
-
+    m_oBufferedStream.Seek(nOldPos);
     {
         auto endSheet = oStreamWriter->getNextRecord(XLSB::rt_EndSheet);
         oStreamWriter->storeNextRecord(endSheet);
     }
+    return res;
+}
+int BinaryWorksheetsTableReader::ReadSheetCache(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    boost::unordered_map<BYTE, std::vector<unsigned int>>::iterator pFind;
+    LONG nPos;
+    LONG length;
+    LONG nOldPos = m_oBufferedStream.GetPos();
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::WorksheetProp);
+        READ2_DEF_SPREADSHEET(length, res, this->ReadWorksheetProp, poResult);
+    SEEK_TO_POS_END2();
+    if(!m_oWorkbook.m_oSheets.IsInit())
+                m_oWorkbook.m_oSheets.Init();
+    if (m_pCurSheet->m_oName.IsInit())
+    {
+        m_oWorkbook.m_oSheets->AddSheetRef(m_pCurSheet->m_oName.get(), m_oWorkbook.m_oSheets->m_arrItems.size());
+        m_oWorkbook.m_oSheets->m_arrItems.push_back(m_pCurSheet.GetPointer());
+    }
+    SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableParts);
+        BinaryTableReader oBinaryTableReader(m_oBufferedStream, m_pCurWorksheet.GetPointer());
+        OOX::Spreadsheet::CTableParts oTableParts;
+        oBinaryTableReader.ReadTableCache(length, &oTableParts);
+    SEEK_TO_POS_END2();
+    m_oBufferedStream.Seek(nOldPos);
     return res;
 }
 void BinaryWorksheetsTableReader::WriteComments()

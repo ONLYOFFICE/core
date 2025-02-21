@@ -725,16 +725,7 @@ unsigned short sheetsnames2ixti(std::wstring name)
      XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
      return newXti.iSup;
  }
-unsigned short AddXti(const std::wstring& name)
-{
-    XLS::GlobalWorkbookInfo::_xti newXti;
-    newXti.iSup = XLS::GlobalWorkbookInfo::arXti_External_static.size();
-    newXti.itabFirst = XLS::GlobalWorkbookInfo::arXti_External_static.size();
-    newXti.itabLast = XLS::GlobalWorkbookInfo::arXti_External_static.size();
-    newXti.link = name;
-    XLS::GlobalWorkbookInfo::arXti_External_static.push_back(newXti);
-    return newXti.iSup;
-}
+
  unsigned int AddDefinedName(const std::wstring& name)
  {
 	XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(name);

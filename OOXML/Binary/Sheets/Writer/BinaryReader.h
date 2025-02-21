@@ -143,6 +143,9 @@ namespace BinXlsxRW
 		int ReadQueryTableField(BYTE type, long length, void* poResult);
 		int ReadQueryTableDeletedFields(BYTE type, long length, void* poResult);
 		int ReadQueryTableDeletedField(BYTE type, long length, void* poResult);
+        int ReadTableCache(long length, void* poResult);
+        int ReadCacheParts(BYTE type,long length, void* poResult);
+        int ReadCachePart(BYTE type, long length, void* poResult);
 	};
 	class BinarySharedStringTableReader : public Binary_CommonReader
 	{
@@ -335,9 +338,11 @@ namespace BinXlsxRW
 		int Read();
         int Read2xlsb(OOX::Spreadsheet::CXlsb &xlsb);
 		int ReadWorksheetsTableContent(BYTE type, long length, void* poResult);
+        int ReadWorksheetsCache(BYTE type, long length, void* poResult);
 		int ReadWorksheetSeekPositions(BYTE type, long length, void* poResult);
 		int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, NSFile::CStreamWriter& oStreamWriter, void* poResult);
         int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, XLS::StreamCacheWriterPtr& oStreamWriter, void* poResult);//2xlsb
+        int ReadSheetCache(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, void* poResult);
 		int ReadPivotTable(BYTE type, long length, void* poResult);
 		int ReadWorksheetProp(BYTE type, long length, void* poResult);
 		int ReadWorksheetCols(BYTE type, long length, void* poResult);

@@ -526,6 +526,7 @@ namespace NSDoctRenderer
 		CDocBuilder_Private* m_pInternal;
 
 		friend class CBuilderDocumentEmbed;
+		friend class CBuilderEmbed;
 	};
 
 	/**

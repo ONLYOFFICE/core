@@ -611,6 +611,9 @@ namespace MetaFile
 
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
+		if (nWidth == 0 || nHeight == 0)
+			return;
+
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
 		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();

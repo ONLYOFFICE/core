@@ -62,7 +62,6 @@ class GlobalParamsAdaptor : public GlobalParams
     bool m_bDrawFormField;
 
 public:
-    NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
     {
         m_bCMapData = NULL;

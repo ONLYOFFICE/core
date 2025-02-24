@@ -129,6 +129,7 @@ public:
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
 	bool ValidMetaData();
+	bool AddPdf(BYTE* data, DWORD length, const std::wstring& wsPassword = L"");
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

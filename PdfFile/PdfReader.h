@@ -32,21 +32,34 @@
 #ifndef _PDF_READER_H
 #define _PDF_READER_H
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
-#include "../../DesktopEditor/xmlsec/src/include/Certificate.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../DesktopEditor/xmlsec/src/include/Certificate.h"
 #include "SrcReader/RendererOutputDev.h"
 
+#include <map>
+#include <vector>
+
 class PDFDoc;
+struct CPdfReaderContext
+{
+	PDFDoc* m_pDocument;
+	PdfReader::CPdfFontList* m_pFontList;
+
+	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL) {}
+	CPdfReaderContext(PDFDoc* pDocument, PdfReader::CPdfFontList* pFontList) : m_pDocument(pDocument), m_pFontList(pFontList) {}
+	~CPdfReaderContext();
+};
+
 class CPdfReader
 {
 public:
-
 	CPdfReader(NSFonts::IApplicationFonts* pAppFonts);
 	~CPdfReader();
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+	bool AddFromMemory (BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"");
 
 	void Close();
 
@@ -67,11 +80,10 @@ public:
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
 	std::wstring GetFontPath(const std::wstring& wsFontName, bool bSave = true);
-
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
-	void ChangeLength(DWORD nLength);
+
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
-	PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
+	// PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
@@ -87,12 +99,14 @@ public:
 	std::map<std::wstring, std::wstring> GetFonts() { return m_mFonts; }
 
 private:
-	PDFDoc*                m_pPDFDocument;
+	void Clear();
+	void ReadFonts();
+
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;
-	PdfReader::CPdfFontList*  m_pFontList;
 	DWORD                  m_nFileLength;
 	int                    m_eError;
+	std::vector<CPdfReaderContext*> m_vPDFContext;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

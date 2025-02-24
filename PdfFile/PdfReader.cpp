@@ -44,7 +44,6 @@
 #include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
-#include "lib/xpdf/PDFCore.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/TextString.h"
@@ -56,57 +55,15 @@
 #include "lib/xpdf/AcroForm.h"
 #include "lib/goo/GList.h"
 
-#include <vector>
-
-CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
+NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
 {
-	m_pPDFDocument = NULL;
-	m_nFileLength  = 0;
-
-	globalParams  = new GlobalParamsAdaptor(NULL);
-#ifndef _DEBUG
-	globalParams->setErrQuiet(gTrue);
-#endif
-
-	m_pFontList = new PdfReader::CPdfFontList();
-
-	// Создаем менеджер шрифтов с собственным кэшем
-	m_pFontManager = pAppFonts->GenerateFontManager();
+	NSFonts::IFontManager* m_pFontManager = pAppFonts->GenerateFontManager();
 	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
-#ifndef BUILDING_WASM_MODULE
-	globalParams->setupBaseFonts(NULL);
-	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
-#else
-	globalParams->setDrawFormFields(gFalse);
-	globalParams->setDrawAnnotations(gFalse);
-	SetCMapMemory(NULL, 0);
-#endif
-
-	m_eError = errNone;
+	return m_pFontManager;
 }
-CPdfReader::~CPdfReader()
-{
-	if (m_pFontList)
-	{
-		m_pFontList->Clear();
-		delete m_pFontList;
-	}
-
-	if (!m_wsTempFolder.empty())
-	{
-		NSDirectory::DeleteDirectory(m_wsTempFolder);
-		m_wsTempFolder = L"";
-	}
-
-	RELEASEOBJECT(m_pPDFDocument);
-	RELEASEOBJECT(globalParams);
-	RELEASEINTERFACE(m_pFontManager);
-}
-
 bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nDepth, std::vector<int>& arrUniqueResources)
 {
 	if (nDepth > 5)
@@ -238,109 +195,164 @@ bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::v
 	oAP.free();
 	return bRes;
 }
+
+CPdfReaderContext::~CPdfReaderContext()
+{
+	if (m_pFontList)
+	{
+		m_pFontList->Clear();
+		RELEASEOBJECT(m_pFontList)
+	}
+	RELEASEOBJECT(m_pDocument);
+}
+
+CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
+{
+	m_nFileLength  = 0;
+
+	globalParams  = new GlobalParamsAdaptor(NULL);
+#ifndef _DEBUG
+	globalParams->setErrQuiet(gTrue);
+#endif
+
+	// Создаем менеджер шрифтов с собственным кэшем
+	m_pFontManager = InitFontManager(pAppFonts);
+#ifndef BUILDING_WASM_MODULE
+	globalParams->setupBaseFonts(NULL);
+	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+#else
+	globalParams->setDrawFormFields(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
+	SetCMapMemory(NULL, 0);
+#endif
+
+	m_eError = errNone;
+}
+CPdfReader::~CPdfReader()
+{
+	Clear();
+
+	if (!m_wsTempFolder.empty())
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
+
+	RELEASEOBJECT(globalParams);
+	RELEASEINTERFACE(m_pFontManager);
+}
+void CPdfReader::Clear()
+{
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+		delete pPDFContext;
+	m_vPDFContext.clear();
+}
+
 bool CPdfReader::IsNeedCMap()
 {
-	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
-										"GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
-										"UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
-										"UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
-										"HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
-										"HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
-										"CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
-										"UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
-										"78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
-										"90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
-										"EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
-										"UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
-										"UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
-										"UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
-										"UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
-										"WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
-										"KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
-										"UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
-										"UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
-
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	if (m_vPDFContext.empty())
 		return false;
 
+	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
+"GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
+"UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
+"UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
+"HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
+"HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
+"CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
+"UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
+"78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
+"90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
+"EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
+"UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
+"UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
+"UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
+"UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
+"WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
+"KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
+"UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
+"UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
 	std::vector<int> arrUniqueResources;
 
-	for (int nPage = 1, nLastPage = m_pPDFDocument->getNumPages(); nPage <= nLastPage; ++nPage)
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
-		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage);
-		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
-			return true;
-
-		Object oAnnots;
-		if (!pPage->getAnnots(&oAnnots)->isArray())
-		{
-			oAnnots.free();
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (!pDoc || !pDoc->getCatalog())
 			continue;
-		}
-		for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+
+		for (int nPage = 1, nLastPage = pDoc->getNumPages(); nPage <= nLastPage; ++nPage)
 		{
-			Object oAnnot;
-			if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+			Page* pPage = pDoc->getCatalog()->getPage(nPage);
+			Dict* pResources = pPage->getResourceDict();
+			if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
+				return true;
+
+			Object oAnnots;
+			if (!pPage->getAnnots(&oAnnots)->isArray())
 			{
-				oAnnot.free();
+				oAnnots.free();
 				continue;
 			}
-
-			Object oDR;
-			if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+			for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 			{
-				oDR.free(); oAnnot.free(); oAnnots.free();
-				return true;
-			}
-			oDR.free();
+				Object oAnnot;
+				if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+				{
+					oAnnot.free();
+					continue;
+				}
 
-			if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
-			{
-				oAnnot.free(); oAnnots.free();
-				return true;
+				Object oDR;
+				if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+				{
+					oDR.free(); oAnnot.free(); oAnnots.free();
+					return true;
+				}
+				oDR.free();
+
+				if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
+				{
+					oAnnot.free(); oAnnots.free();
+					return true;
+				}
+				oAnnot.free();
 			}
-			oAnnot.free();
+			oAnnots.free();
 		}
-		oAnnots.free();
-	}
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
-	if (!pAcroForms)
-		return false;
-	Object oDR;
-	Object* oAcroForm = pAcroForms->getAcroFormObj();
-	if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
-	{
-		oDR.free();
-		return true;
-	}
-	oDR.free();
-
-	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
-	{
-		AcroFormField* pField = pAcroForms->getField(i);
-
-		if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+		AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
+		if (!pAcroForms)
+			continue;
+		Object oDR;
+		Object* oAcroForm = pAcroForms->getAcroFormObj();
+		if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
 		{
 			oDR.free();
 			return true;
 		}
 		oDR.free();
 
-		Object oWidgetRef, oWidget;
-		pField->getFieldRef(&oWidgetRef);
-		oWidgetRef.fetch(m_pPDFDocument->getXRef(), &oWidget);
-		oWidgetRef.free();
-
-		if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
+		for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 		{
+			AcroFormField* pField = pAcroForms->getField(i);
+
+			if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+			{
+				oDR.free();
+				return true;
+			}
+			oDR.free();
+
+			Object oWidgetRef, oWidget;
+			pField->getFieldRef(&oWidgetRef);
+			oWidgetRef.fetch(pDoc->getXRef(), &oWidget);
+			oWidgetRef.free();
+
+			if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
+			{
+				oWidget.free();
+				return true;
+			}
 			oWidget.free();
-			return true;
 		}
-		oWidget.free();
 	}
-
 	return false;
 }
 void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
@@ -355,17 +367,12 @@ void CPdfReader::SetCMapFile(const std::wstring& sFile)
 {
 	((GlobalParamsAdaptor*)globalParams)->SetCMapFile(sFile);
 }
+
 bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 {
+	Clear();
 	RELEASEINTERFACE(m_pFontManager);
-	m_pFontManager = pAppFonts->GenerateFontManager();
-	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-	m_pFontManager->SetOwnerCache(pMeasurerCache);
-	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
-
-	RELEASEOBJECT(m_pPDFDocument);
+	m_pFontManager = InitFontManager(pAppFonts);
 
 	if (m_wsTempFolder == L"")
 		SetTempDirectory(NSDirectory::GetTempPath());
@@ -373,10 +380,13 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 	m_eError = errNone;
 	GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
 	GString* user_pswd  = NSStrings::CreateString(wsUserPassword);
-
 	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
 	std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
-	m_pPDFDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
+
+	CPdfReaderContext* pContext = new CPdfReaderContext();
+	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
+	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	PDFDoc* pDoc = pContext->m_pDocument;
 
 	delete owner_pswd;
 	delete user_pswd;
@@ -388,17 +398,14 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 		oFile.CloseFile();
 	}
 
-	m_eError = m_pPDFDocument ? m_pPDFDocument->getErrorCode() : errMemory;
-
-	if (!m_pPDFDocument || !m_pPDFDocument->isOk())
+	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
+	if (!pDoc || !pDoc->isOk())
 	{
-		RELEASEOBJECT(m_pPDFDocument);
+		Clear();
 		return false;
 	}
 
-	m_pFontList->Clear();
-
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
@@ -411,7 +418,6 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
 
 	RELEASEOBJECT(m_pPDFDocument);
 	m_eError = errNone;
@@ -441,6 +447,10 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
+	return true;
+}
+bool CPdfReader::AddFromMemory(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
+{
 	return true;
 }
 void CPdfReader::Close()
@@ -595,10 +605,6 @@ std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStrea
 	}
 
 	return wsXml;
-}
-void CPdfReader::ChangeLength(DWORD nLength)
-{
-	m_nFileLength = nLength;
 }
 
 std::wstring CPdfReader::GetInfo()

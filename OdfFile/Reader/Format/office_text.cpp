@@ -218,6 +218,14 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 					}
 				}
 			}
+
+			_CP_OPT(std::wstring) next_master_name = Context.get_next_master_page_name();
+			if (next_master_name)
+			{
+				masterPageName = *next_master_name;
+				Context.set_next_master_page_name(boost::none);
+			}
+
 			if (masterPageName)
 			{
 				std::wstring masterPageNameLayout = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(*masterPageName);
@@ -261,6 +269,12 @@ void office_text::docx_convert(oox::docx_conversion_context & Context)
 					{
 						if (next_para_props->content_.fo_break_before_ && next_para_props->content_.fo_break_before_->get_type() == odf_types::fo_break::Page)
 						{
+							std::wstring currentMasterPageName = Context.get_master_page_name();
+							style_master_page* masterPage = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(currentMasterPageName);
+
+							if (masterPage && masterPage->attlist_.style_next_style_name_)
+								Context.set_next_master_page_name(*masterPage->attlist_.style_next_style_name_);
+
 							Context.next_dump_page_properties(true);
 						}
 					}

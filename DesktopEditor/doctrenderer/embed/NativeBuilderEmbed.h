@@ -50,6 +50,7 @@ public:
 	~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
 
 	virtual void* getObject() { return (void*)m_pBuilder; }
+	NSDoctRenderer::CDocBuilder_Private* GetPrivate() { return m_pBuilder->GetPrivate(); }
 
 public:
 	JSSmart<CJSValue> OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);

@@ -46,6 +46,7 @@
 
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
+#include "text_elements.h"
 
 #include "odfcontext.h"
 
@@ -130,8 +131,19 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
+		ElementType type = content_[i]->get_type();
+		if (type == typeTextP)
+		{
+			auto _p = dynamic_cast<text::p*>(content_[i].get());
+			if (_p)
+			{
+				if(!_p->paragraph_.content_.size() && _p->paragraph_.attrs_.text_style_name_.empty())
+					continue;
+			}
+		}
+
 		content_[i]->docx_convert(Context);
-    }
+	}
 
 	Context.back_context_state();
 

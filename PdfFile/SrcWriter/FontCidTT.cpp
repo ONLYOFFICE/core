@@ -484,6 +484,7 @@ namespace PdfWriter
 					for (unsigned int i = 0; i < unCount; i++)
 						vUnicodes.push_back(pUnicodes[i]);
 					m_vUnicodes[ushCurCode] = vUnicodes;
+					m_mGlyphs[unGID] = true;
 				}
 				return ushCurCode;
 			}
@@ -530,7 +531,7 @@ namespace PdfWriter
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
-				EncodeGID(nSubGID, NULL, 0); // TODO необходимо верно указать Unicode для случая записи подсимволов
+				EncodeGID(nSubGID, NULL, 0);
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}

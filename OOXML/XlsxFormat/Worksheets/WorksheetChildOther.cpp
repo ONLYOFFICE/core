@@ -2812,32 +2812,47 @@ namespace OOX
                     if(m_oOddHeader.IsInit())
                         dataString = m_oOddHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                 XLSB::XLNullableWideString dataString;
                     if(m_oOddFooter.IsInit())
                         dataString = m_oOddFooter->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oEvenHeader.IsInit())
                         dataString = m_oEvenHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oEvenFooter.IsInit())
                         dataString = m_oEvenFooter->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                      *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oFirstHeader.IsInit())
                         dataString = m_oFirstHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oFirstFooter.IsInit())
                         dataString = m_oFirstFooter->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
                 }
                 writer->storeNextRecord(begin);

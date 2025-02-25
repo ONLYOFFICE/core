@@ -100,7 +100,7 @@ public:
 
 private:
 	void Clear();
-	void ReadFonts();
+	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL);
 
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;

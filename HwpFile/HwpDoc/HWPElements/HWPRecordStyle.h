@@ -23,6 +23,15 @@ public:
 	CHWPRecordStyle(int nTagNum, int nLevel, int nSize);
 	CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+
+	HWP_STRING GetName() const;
+	HWP_STRING GetEngName() const;
+	HWP_BYTE GetType() const;
+	HWP_BYTE GetNextStyle() const;
+	short GetLangId() const;
+	int GetParaShapeId() const;
+	int GetCharShapeId() const;
+	bool LockForm() const;
 };
 }
 

@@ -151,27 +151,28 @@ inline double integrate(const double& ax, const double& bx, const double& cx, co
 	return A * sum;
 }
 
-inline bool intersect(std::vector<double> v, Aggplus::PointD& res)
+inline bool intersect(double v0, double v1, double v2, double v3, double v4,
+					  double v5, double v6, double v7, Aggplus::PointD& res)
 {
-	v[2] -= v[0];
-	v[3] -= v[1];
-	v[6] -= v[4];
-	v[7] -= v[5];
+	v2 -= v0;
+	v3 -= v1;
+	v6 -= v4;
+	v7 -= v5;
 
-	double cross = v[2] * v[7] - v[3] * v[6];
+	double cross = v2 * v7 - v3 * v6;
 	if (!isMachineZero(cross))
 	{
-		double	dx = v[0] - v[4],
-				dy = v[1] - v[5],
-				u1 = (v[6] * dy - v[7] * dx) / cross,
-				u2 = (v[2] * dy - v[3] * dx) / cross,
+		double	dx = v0 - v4,
+				dy = v1 - v5,
+				u1 = (v6 * dy - v7 * dx) / cross,
+				u2 = (v2 * dy - v3 * dx) / cross,
 				uMin = -EPSILON,
 				uMax = 1 + EPSILON;
 		
 		if (uMin < u1 && u1 < uMax && uMin < u2 && u2 < uMax)
 		{
 			u1 = u1 <= 0 ? 0 : u1 >= 1 ? 1 : u1;
-			res = Aggplus::PointD(v[0] + u1 * v[2], v[1] + u1 * v[3]);
+			res = Aggplus::PointD(v0 + u1 * v2, v1 + u1 * v3);
 
 			return true;
 		}

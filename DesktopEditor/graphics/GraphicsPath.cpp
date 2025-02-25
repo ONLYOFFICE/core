@@ -837,12 +837,13 @@ namespace Aggplus
 	{
 		std::vector<PointD> points;
 		unsigned length = m_internal->m_agg_ps.total_vertices();
+		points.resize(count);
 		for (unsigned i = 0; i < count; i++)
 		{
 			double x,y;
 			if (idx + i > length) break;
 			this->m_internal->m_agg_ps.vertex(idx + i, &x, &y);
-			points.push_back(PointD(x, y));
+			points[i] = PointD(x, y);
 		}
 
 		return points;
@@ -885,37 +886,37 @@ namespace Aggplus
 	{
 		std::vector<CGraphicsPath> result;
 
-		CGraphicsPath subPath;
 		bool close = true;
+		CGraphicsPath sub_path;
 		for (unsigned i = 0; i < m_internal->m_agg_ps.total_vertices(); i++)
 		{
 			if (IsMovePoint(i))
 			{
 				if (!close)
 				{
-					PointD firstPoint = subPath.GetPoints(0, 1)[0];
+					PointD firstPoint = sub_path.GetPoints(0, 1)[0];
 					double x, y;
-					subPath.GetLastPoint(x, y);
+					sub_path.GetLastPoint(x, y);
 					if ((abs(firstPoint.X - x) <= 1e-2 && abs(firstPoint.Y - y) <= 1e-2) ||
-						subPath.GetPointCount() == 1)
+						sub_path.GetPointCount() == 1)
 					{
-						if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
-							subPath.LineTo(firstPoint.X, firstPoint.Y);
-						subPath.CloseFigure();
+						if (!firstPoint.Equals(PointD(x, y)) || sub_path.GetPointCount() == 1)
+							sub_path.LineTo(firstPoint.X, firstPoint.Y);
+						sub_path.CloseFigure();
 					}
 
-					result.push_back(subPath);
-					subPath.Reset();
+					result.push_back(sub_path);
+					sub_path.Reset();
 				}
-				subPath.StartFigure();
+				sub_path.StartFigure();
 				PointD point = GetPoints(i, 1)[0];
-				subPath.MoveTo(point.X, point.Y);
+				sub_path.MoveTo(point.X, point.Y);
 				close = false;
 			}
 			else if (IsCurvePoint(i))
 			{
 				std::vector<PointD> points = GetPoints(i, 3);
-				subPath.CurveTo(points[0].X, points[0].Y,
+				sub_path.CurveTo(points[0].X, points[0].Y,
 								points[1].X, points[1].Y,
 								points[2].X, points[2].Y);
 				i += 2;
@@ -923,40 +924,40 @@ namespace Aggplus
 			else if (IsLinePoint(i))
 			{
 				PointD point = GetPoints(i, 1)[0];
-				subPath.LineTo(point.X, point.Y);
+				sub_path.LineTo(point.X, point.Y);
 			}
 			else if (IsClosePoint(i))
 			{
-				PointD firstPoint = subPath.GetPoints(0, 1)[0];
+				PointD firstPoint = sub_path.GetPoints(0, 1)[0];
 				double x, y;
-				subPath.GetLastPoint(x, y);
+				sub_path.GetLastPoint(x, y);
 
-				if (!firstPoint.Equals(PointD(x, y)) || subPath.GetPointCount() == 1)
-					subPath.LineTo(firstPoint.X, firstPoint.Y);
+				if (!firstPoint.Equals(PointD(x, y)) || sub_path.GetPointCount() == 1)
+					sub_path.LineTo(firstPoint.X, firstPoint.Y);
 
-				subPath.CloseFigure();
-				result.push_back(subPath);
-				subPath.Reset();
+				sub_path.CloseFigure();
+				result.push_back(sub_path);
+				sub_path.Reset();
 				close = true;
 			}
 		}
 
 		if (!close)
 		{
-			PointD firstPoint = subPath.GetPoints(0, 1)[0];
+			PointD firstPoint = sub_path.GetPoints(0, 1)[0];
 			double x, y;
-			subPath.GetLastPoint(x, y);
+			sub_path.GetLastPoint(x, y);
 
 			if ((abs(firstPoint.X - x) <= 1e-2 && abs(firstPoint.Y - y) <= 1e-2) ||
-				subPath.GetPointCount() == 1)
+				sub_path.GetPointCount() == 1)
 			{
 				if (!firstPoint.Equals(PointD(x, y)) ||
-					subPath.GetPointCount() == 1)
-					subPath.LineTo(firstPoint.X, firstPoint.Y);
-				subPath.CloseFigure();
+					sub_path.GetPointCount() == 1)
+					sub_path.LineTo(firstPoint.X, firstPoint.Y);
+				sub_path.CloseFigure();
 			}
 
-			result.push_back(subPath);
+			result.push_back(sub_path);
 		}
 
 		return result;

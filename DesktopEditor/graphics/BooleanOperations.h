@@ -140,7 +140,7 @@ namespace Aggplus
 		void AddCurveLineIntersection(const Curve& curve1, const Curve& curve2, bool flip);
 		int  AddCurveIntersection(const Curve& curve1, const Curve& curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
-		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& touchCount) const;
+		int  CheckInters(const Segment& segment, const Curve& curve, int& touchCount) const;
 		void SetWinding();
 
 		// Location

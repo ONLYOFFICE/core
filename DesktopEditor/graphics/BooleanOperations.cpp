@@ -730,14 +730,14 @@ bool Location::IsTouching() noexcept
 	PointD pt;
 	bool straight = C.IsStraight() && Inters->C.IsStraight();
 
-	return !straight || !intersect({C.Segment1.P.X,
-									C.Segment1.P.Y,
-									C.Segment2.P.X,
-									C.Segment2.P.Y,
-									Inters->C.Segment1.P.X,
-									Inters->C.Segment1.P.Y,
-									Inters->C.Segment2.P.X,
-									Inters->C.Segment2.P.Y}, pt);
+	return !straight || !intersect(C.Segment1.P.X,
+								   C.Segment1.P.Y,
+								   C.Segment2.P.X,
+								   C.Segment2.P.Y,
+								   Inters->C.Segment1.P.X,
+								   Inters->C.Segment1.P.Y,
+								   Inters->C.Segment2.P.X,
+								   Inters->C.Segment2.P.Y, pt);
 }
 
 CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
@@ -943,7 +943,7 @@ void CBooleanOperations::TraceAllOverlap()
 			{
 				int touchCount = 0;
 				for (const auto& c : OriginCurves2)
-					count1 += CheckInters(MIN_POINT, s, c, touchCount);
+					count1 += CheckInters(s, c, touchCount);
 				break;
 			}
 		}
@@ -954,7 +954,7 @@ void CBooleanOperations::TraceAllOverlap()
 			{
 				int touchCount = 0;
 				for (const auto& c : OriginCurves1)
-					count2 += CheckInters(MIN_POINT, s, c, touchCount);
+					count2 += CheckInters(s, c, touchCount);
 				break;
 			}
 		}
@@ -1255,20 +1255,26 @@ void CBooleanOperations::SetVisited(const Segment& segment)
 
 std::vector<std::vector<int>> CBooleanOperations::FindBoundsCollisions()
 {
+	int length1	= static_cast<int>(Curves1.size()),
+		length2 = static_cast<int>(Curves2.size());
 	std::vector<std::vector<double>> allBounds, bounds2;
+	allBounds.reserve(length1 + length2);
+	bounds2.reserve(length2);
 	for (const auto& c : Curves1)
-		allBounds.push_back(c.GetBound());
+		allBounds.emplace_back(c.GetBound());
 	for (const auto& c : Curves2)
-		bounds2.push_back(c.GetBound());
+		bounds2.emplace_back(c.GetBound());
 
 	bool self = allBounds == bounds2;
 
 	if (!self)
-		for (auto it = bounds2.begin(); it != bounds2.end(); ++it)
-			allBounds.push_back(*it);
+	{
+		allBounds.resize(length1 + length2);
+		for (size_t i =	0; i < length2; i++)
+			allBounds[i + length1] = std::move(bounds2[i]);
+	}
 
-	int	allLength = static_cast<int>(allBounds.size()),
-		length1	  = static_cast<int>(Curves1.size());
+	int	allLength = static_cast<int>(allBounds.size());
 
 	std::vector<int> allIdicesByPri1(allLength);
 	for (int i = 0; i < allLength; i++)
@@ -1502,8 +1508,8 @@ void CBooleanOperations::LinkIntersection(std::shared_ptr<Location> from,
 void CBooleanOperations::AddLineIntersection(const Curve& curve1, const Curve& curve2)
 {
 	PointD pt;
-	if (intersect({curve1.Segment1.P.X, curve1.Segment1.P.Y, curve1.Segment2.P.X, curve1.Segment2.P.Y,
-				   curve2.Segment1.P.X, curve2.Segment1.P.Y, curve2.Segment2.P.X, curve2.Segment2.P.Y}, pt))
+	if (intersect(curve1.Segment1.P.X, curve1.Segment1.P.Y, curve1.Segment2.P.X, curve1.Segment2.P.Y,
+				  curve2.Segment1.P.X, curve2.Segment1.P.Y, curve2.Segment2.P.X, curve2.Segment2.P.Y, pt))
 		AddLocation(curve1, curve2, curve1.GetTimeOf(pt), curve2.GetTimeOf(pt));
 }
 
@@ -1626,10 +1632,10 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 	return calls;
 }
 
-int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& touchCount) const
+int CBooleanOperations::CheckInters(const Segment& segment, const Curve& curve, int& touchCount) const
 {
 	PointD pt{};
-	if (intersect({point.X, point.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y}, pt))
+	if (intersect(MIN_POINT.X, MIN_POINT.Y, segment.P.X, segment.P.Y, curve.Segment1.P.X, curve.Segment1.P.Y, curve.Segment2.P.X, curve.Segment2.P.Y, pt))
 	{
 		if (getDistance(segment.P, pt) <= GEOMETRIC_EPSILON) return (touchCount + 1) % 2;
 		if (getDistance(curve.Segment1.P, pt) <= GEOMETRIC_EPSILON || getDistance(curve.Segment2.P, pt) <= GEOMETRIC_EPSILON)
@@ -1642,8 +1648,8 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	}
 	if (!curve.IsStraight())
 	{
-		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
-		Curve line(segment, Segment(point));
+		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, MIN_POINT.X - segment.P.X, MIN_POINT.Y - segment.P.Y);
+		Curve line(segment, Segment(MIN_POINT));
 
 		int count = 0;
 		for (const auto& r : roots)
@@ -1672,7 +1678,7 @@ void CBooleanOperations::SetWinding()
 		int count = 0,
 			touchCount = 0;
 		for (const auto& c : OriginCurves2)
-			count += CheckInters(MIN_POINT, s1, c, touchCount);
+			count += CheckInters(s1, c, touchCount);
 
 		for (auto& s : Segments1)
 			s.Winding = count % 2;
@@ -1680,7 +1686,7 @@ void CBooleanOperations::SetWinding()
 		count = 0;
 		touchCount = 0;
 		for (const auto& c : OriginCurves1)
-			count += CheckInters(MIN_POINT, s2, c, touchCount);
+			count += CheckInters(s2, c, touchCount);
 
 		for (auto& s : Segments2)
 			s.Winding = count % 2;
@@ -1698,7 +1704,7 @@ void CBooleanOperations::SetWinding()
 			int count = 0,
 				touchCount = 0;
 			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
-				count += CheckInters(MIN_POINT, s, c, touchCount);
+				count += CheckInters(s, c, touchCount);
 
 			do
 			{

@@ -218,15 +218,10 @@ namespace NSOnlineOfficeBinToPdf
 				std::wstring wsPassword = oReader.ReadString();
 				int nLength = oReader.ReadInt();
 				int* pPageIndex = new int[nLength];
-				int* pPositions = new int[nLength];
 				for (int i = 0; i < nLength; ++i)
-				{
 					pPageIndex[i] = oReader.ReadInt();
-					pPositions[i] = oReader.ReadInt();
-				}
-				pPdf->MergePages(wsPath, wsPassword, pPageIndex, nLength, pPositions);
+				pPdf->MergePages(wsPath, wsPassword, pPageIndex, nLength);
 				delete[] pPageIndex;
-				delete[] pPositions;
 				break;
 			}
 			case AddCommandType::SplitPages:

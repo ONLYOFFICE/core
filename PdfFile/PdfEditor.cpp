@@ -34,6 +34,7 @@
 #include "../DesktopEditor/common/Path.h"
 
 #include "SrcReader/Adaptors.h"
+#include "SrcReader/PdfAnnot.h"
 #include "lib/xpdf/PDFDoc.h"
 #include "lib/xpdf/AcroForm.h"
 #include "lib/xpdf/TextString.h"
@@ -402,7 +403,7 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 {
 	if (!_pReader || !_pWriter)
 		return S_FALSE;
-	PDFDoc* pPDFDocument = _pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = _pReader->GetFirstPDFDocument();
 	if (!pPDFDocument)
 		return S_FALSE;
 	XRef* xref = pPDFDocument->getXRef();
@@ -658,7 +659,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	m_nError     = 0;
 	m_nMode      = -1;
 
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	if (!pPDFDocument)
 	{
 		m_nError = 1;
@@ -679,7 +680,7 @@ bool CPdfEditor::IncrementalUpdates()
 		return true;
 
 	m_nMode = 0;
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
@@ -909,7 +910,7 @@ void CPdfEditor::Close()
 		return;
 	}
 
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	XRef* xref = pPDFDocument->getXRef();
 
@@ -1093,25 +1094,31 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 	}
 	kidsArrObj.free();
 }
-bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
+bool CPdfEditor::EditPage(int _nPageIndex, bool bSet)
 {
 	if (m_nMode != 0 && !IncrementalUpdates())
 		return false;
 
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex - 1, &pPDFDocument);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return NULL;
+
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pPDFDocument || !pDoc)
 		return false;
 
 	PdfWriter::CPage* pEditPage = NULL;
-	pEditPage = bActualPos ? pDoc->GetPage(nPageIndex) : pDoc->GetEditPage(nPageIndex);
+	pEditPage = pDoc->GetEditPage(_nPageIndex);
+	if (!pEditPage)
+		pEditPage = pDoc->GetPage(nPageIndex);
 	if (pEditPage)
 	{
 		if (bSet)
 		{
 			pDoc->SetCurPage(pEditPage);
 			m_pWriter->EditPage(pEditPage);
-			m_nEditPage = nPageIndex;
+			m_nEditPage = _nPageIndex;
 		}
 		return true;
 	}
@@ -1232,12 +1239,12 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 	pageObj.free();
 
 	// Применение редактирования страницы для writer
-	if (pDoc->EditPage(pXref, pPage, nPageIndex))
+	if (pDoc->EditPage(pXref, pPage, _nPageIndex))
 	{
 		if (bSet)
 		{
 			m_pWriter->EditPage(pPage);
-			m_nEditPage = nPageIndex;
+			m_nEditPage = _nPageIndex;
 		}
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
 		pPage->SetStrokeColor(0, 0, 0);
@@ -1254,13 +1261,13 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 	RELEASEOBJECT(pXref);
 	return false;
 }
-bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader, const int* arrPositions)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc)
 {
-	if (m_nMode == 1 || (m_nMode == 0 && !_pReader))
+	if (m_nMode == 1 || (m_nMode == 0 && !_pDoc))
 		return false;
 	if (m_nMode < 0)
 		m_nMode = 1;
-	PDFDoc* pPDFDocument = _pReader ? _pReader->GetPDFDocument() : m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = _pDoc ? _pDoc : m_pReader->GetFirstPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
@@ -1277,7 +1284,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		pDoc->AddPage(arrPositions ? arrPositions[i] : pDoc->GetPagesCount(), pPage);
+		pDoc->AddPage(pDoc->GetPagesCount(), pPage);
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;
@@ -1574,11 +1581,11 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, CPdf
 
 	return true;
 }
-bool CPdfEditor::MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, const int* arrPositions)
+bool CPdfEditor::MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != 0 && !IncrementalUpdates())
 		return false;
-	return SplitPages(arrPageIndex, unLength, _pReader, arrPositions);
+	return SplitPages(arrPageIndex, unLength, pDoc);
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
@@ -1609,18 +1616,20 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, true))
+	if (EditPage(nPageIndex))
 	{
 		m_nEditPage = nPos;
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	}
 	return false;
 }
-bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
+bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 {
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex - 1, &pPDFDocument, &pFontList);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
+	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return false;
 
 	XRef* xref = pPDFDocument->getXRef();
@@ -1652,14 +1661,8 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		return false;
 	}
 
-	PdfWriter::CPage* pEditPage = pDoc->GetEditPage(nPageIndex);
-	if (!pEditPage)
-	{
-		pEditPage = pDoc->GetCurPage();
-		EditPage(nPageIndex);
-		pDoc->SetCurPage(pEditPage);
-		m_pWriter->EditPage(pEditPage);
-	}
+	if (!pDoc->GetEditPage(_nPageIndex))
+		EditPage(_nPageIndex, false);
 
 	// Воспроизведение словаря аннотации из reader для writer
 	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, oAnnotRef.getRefNum());
@@ -1685,7 +1688,7 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
 	else if (oType.isName("FreeText"))
 	{
-		std::map<std::wstring, std::wstring> mapFont = m_pReader->GetAnnotFonts(&oAnnotRef);
+		std::map<std::wstring, std::wstring> mapFont = PdfReader::CAnnotFonts::GetAnnotFont(pPDFDocument, m_pReader->GetFontManager(), pFontList, &oAnnotRef);
 		m_mFonts.insert(mapFont.begin(), mapFont.end());
 		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
 	}
@@ -1877,16 +1880,18 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 }
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage - 1, &pPDFDocument);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
+	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return false;
 
 	XRef* xref = pPDFDocument->getXRef();
 	bool bClear = false;
 	if (!oAnnots)
 	{
-		std::pair<int, int> pPageRef = pDoc->GetPageRef(m_nEditPage);
+		PdfWriter::CPage* pPage = pDoc->GetCurPage();
+		std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetObjId() };
 		if (pPageRef.first == 0)
 			return false;
 
@@ -1944,7 +1949,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
@@ -2001,10 +2006,14 @@ bool CPdfEditor::IsEditPage()
 }
 void CPdfEditor::ClearPage()
 {
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument();
-	XRef* xref = pPDFDocument->getXRef();
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage - 1, &pPDFDocument);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	std::pair<int, int> pPageRef = pDoc->GetPageRef(m_nEditPage);
+	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
+		return;
+	XRef* xref = pPDFDocument->getXRef();
+	PdfWriter::CPage* pPage = pDoc->GetCurPage();
+	std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetObjId() };
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;

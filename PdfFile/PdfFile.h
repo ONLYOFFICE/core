@@ -99,7 +99,7 @@ public:
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
-	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0, const int* arrPosition = NULL);
+	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 

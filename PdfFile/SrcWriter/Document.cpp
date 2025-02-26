@@ -1466,7 +1466,7 @@ namespace PdfWriter
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-		m_pCurPage  = pPage;
+		m_pCurPage = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
 		if (m_pPageTree)

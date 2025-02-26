@@ -167,23 +167,13 @@ bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 		return false;
 	return m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength, const int* arrPosition)
+bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength)
 {
 	if (!m_pInternal->pEditor)
 		return false;
 
-	CPdfFile* pMergeFile = new CPdfFile(m_pInternal->pAppFonts);
-	pMergeFile->SetTempDirectory(m_pInternal->wsTempFolder);
-
-	if (!pMergeFile->LoadFromFile(wsPath, L"", wsPassword, wsPassword))
-	{
-		RELEASEOBJECT(pMergeFile);
-		return false;
-	}
-
-	bool bRes = m_pInternal->pEditor->MergePages(pMergeFile->m_pInternal->pReader, arrPageIndex, unLength, arrPosition);
-	RELEASEOBJECT(pMergeFile);
-	return bRes;
+	if (m_pInternal->pReader->AddFromFile(wsPath, wsPassword))
+		return m_pInternal->pEditor->MergePages(m_pInternal->pReader->GetLastPDFDocument(), arrPageIndex, unLength);
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
 {
@@ -367,15 +357,13 @@ int CPdfFile::GetPagesCount()
 {
 	if (!m_pInternal->pReader)
 		return 0;
-	PDFDoc* pPdfDoc = m_pInternal->pReader->GetPDFDocument();
-	int nPages = pPdfDoc ? pPdfDoc->getNumPages() : 0;
 	if (m_pInternal->pEditor)
 	{
 		int nWPages = m_pInternal->pEditor->GetPagesCount();
 		if (nWPages > 0)
-			nPages = nWPages;
+			return nWPages;
 	}
-	return nPages;
+	return m_pInternal->pReader->GetNumPages();
 }
 void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {

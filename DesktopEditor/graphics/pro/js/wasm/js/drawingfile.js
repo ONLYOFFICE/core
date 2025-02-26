@@ -1161,71 +1161,78 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 	let reader = ptr.getReader();
 	if (!reader) return {};
 
-	let res = {};
-	let k = reader.readInt();
-	if (k > 0)
-		res["CO"] = [];
-	for (let i = 0; i < k; ++i)
-		res["CO"].push(reader.readInt());
-	
-	k = reader.readInt();
-	if (k > 0)
-		res["Parents"] = [];
-	for (let i = 0; i < k; ++i)
-	{
-		let rec = {};
-		rec["i"] = reader.readInt();
-		let flags = reader.readInt();
-		if (flags & (1 << 0))
-			rec["name"] = reader.readString();
-		if (flags & (1 << 1))
-			rec["value"] = reader.readString();
-		if (flags & (1 << 2))
-			rec["defaultValue"] = reader.readString();
-		if (flags & (1 << 3))
-		{
-			let n = reader.readInt();
-			rec["curIdxs"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["curIdxs"].push(reader.readInt());
-		}
-		if (flags & (1 << 4))
-			rec["Parent"] = reader.readInt();
-		if (flags & (1 << 5))
-		{
-			let n = reader.readInt();
-			rec["value"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["value"].push(reader.readString());
-		}
-		if (flags & (1 << 6))
-		{
-			let n = reader.readInt();
-			rec["Opt"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["Opt"].push(reader.readString());
-		}
-		res["Parents"].push(rec);
-	}
+	let arrRes = [];
 
-	res["Fields"] = [];
-	k = reader.readInt();
-	for (let q = 0; reader.isValid() && q < k; ++q)
+	while (reader.isValid())
 	{
-		let rec = {};
-		// Widget type - FT
-		// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
-		rec["type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		// Widget type
-		readWidgetType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+		let res = {};
+		let k = reader.readInt();
+		if (k > 0)
+			res["CO"] = [];
+		for (let i = 0; i < k; ++i)
+			res["CO"].push(reader.readInt());
 		
-		res["Fields"].push(rec);
+		k = reader.readInt();
+		if (k > 0)
+			res["Parents"] = [];
+		for (let i = 0; i < k; ++i)
+		{
+			let rec = {};
+			rec["i"] = reader.readInt();
+			let flags = reader.readInt();
+			if (flags & (1 << 0))
+				rec["name"] = reader.readString();
+			if (flags & (1 << 1))
+				rec["value"] = reader.readString();
+			if (flags & (1 << 2))
+				rec["defaultValue"] = reader.readString();
+			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["curIdxs"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["curIdxs"].push(reader.readInt());
+			}
+			if (flags & (1 << 4))
+				rec["Parent"] = reader.readInt();
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["value"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["value"].push(reader.readString());
+			}
+			if (flags & (1 << 6))
+			{
+				let n = reader.readInt();
+				rec["Opt"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["Opt"].push(reader.readString());
+			}
+			res["Parents"].push(rec);
+		}
+	
+		res["Fields"] = [];
+		k = reader.readInt();
+		for (let q = 0; reader.isValid() && q < k; ++q)
+		{
+			let rec = {};
+			// Widget type - FT
+			// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
+			rec["type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			// Widget type
+			readWidgetType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			
+			res["Fields"].push(rec);
+		}
+
+		arrRes.push(res);
 	}
 
 	ptr.free();
-	return res;
+	return arrRes;
 };	
 
 // optional nWidget     - rec["AP"]["i"]

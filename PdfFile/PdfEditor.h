@@ -46,7 +46,7 @@ public:
 
 	int  GetError();
 	void Close();
-	bool EditPage(int nPageIndex, bool bSet = true, bool bActualPos = false);
+	bool EditPage(int nPageIndex, bool bSet = true);
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool MovePage(int nPageIndex, int nPos);
@@ -62,8 +62,8 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, CPdfReader* _pReader = NULL, const int* arrPositions = NULL);
-	bool MergePages(CPdfReader* _pReader, const int* arrPageIndex, unsigned int unLength, const int* arrPositions);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* pDoc = NULL);
+	bool MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);

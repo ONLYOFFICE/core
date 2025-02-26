@@ -59,6 +59,7 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
+	bool AddFromFile   (const std::wstring& wsFile, const std::wstring& wsPassword = L"");
 	bool AddFromMemory (BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"");
 
 	void Close();
@@ -75,32 +76,33 @@ public:
 	int GetError();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
+	int GetNumPages();
 	bool ValidMetaData();
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
 	std::wstring GetFontPath(const std::wstring& wsFontName, bool bSave = true);
 	std::wstring ToXml(const std::wstring& wsXmlPath, bool isPrintStreams = false);
+	void ChangeLength(DWORD nLength) { m_nFileLength = nLength; }
 
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
-	// PDFDoc* GetPDFDocument() { return m_pPDFDocument; }
+	PDFDoc* GetFirstPDFDocument();
+	PDFDoc* GetLastPDFDocument();
+	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL);
 
 	BYTE* GetStructure();
 	BYTE* GetLinks(int nPageIndex);
 	BYTE* GetWidgets();
 	BYTE* GetFonts(bool bStandart);
 	BYTE* GetAnnots(int nPageIndex = -1);
-	BYTE* GetShapes(int nPageIndex);
 	BYTE* VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
-	std::map<std::wstring, std::wstring> GetAnnotFonts(Object* pRefAnnot);
 	std::map<std::wstring, std::wstring> GetFonts() { return m_mFonts; }
 
 private:
 	void Clear();
-	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL);
 
 	std::wstring           m_wsTempFolder;
 	NSFonts::IFontManager* m_pFontManager;

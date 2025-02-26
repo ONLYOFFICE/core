@@ -387,6 +387,7 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
 	PDFDoc* pDoc = pContext->m_pDocument;
+	m_vPDFContext.push_back(pContext);
 
 	delete owner_pswd;
 	delete user_pswd;
@@ -428,6 +429,7 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
 	PDFDoc* pDoc = pContext->m_pDocument;
+	m_vPDFContext.push_back(pContext);
 
 	delete owner_pswd;
 	delete user_pswd;
@@ -1522,19 +1524,20 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
+int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex, int nStartPage)
 {
-	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
 	if (!pPage)
-		return;
+		return 0;
 
 	Object oAnnots;
 	if (!pPage->getAnnots(&oAnnots)->isArray())
 	{
 		oAnnots.free();
-		return;
+		return 0;
 	}
 
+	int nRes = 0;
 	for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 	{
 		Object oAnnot;
@@ -1610,11 +1613,16 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		oAnnotRef.free();
 
 		if (pAnnot)
+		{
+			pAnnot->SetPage(nStartPage + nPageIndex);
 			pAnnot->ToWASM(oRes);
+			nRes++;
+		}
 		RELEASEOBJECT(pAnnot);
 	}
 
 	oAnnots.free();
+	return nRes;
 }
 BYTE* CPdfReader::GetAnnots(int _nPageIndex)
 {
@@ -1631,17 +1639,32 @@ BYTE* CPdfReader::GetAnnots(int _nPageIndex)
 		int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList);
 		if (nPageIndex < 0 || !pDoc || !pFontList || !pDoc->getCatalog())
 			return NULL;
-		GetPageAnnots(pDoc, m_pFontManager, pFontList, oRes, nPageIndex - 1);
+
+		int nAnnots = 0;
+		int nPosAnnots = oRes.GetSize();
+		oRes.AddInt(nAnnots);
+
+		nAnnots = GetPageAnnots(pDoc, m_pFontManager, pFontList, oRes, nPageIndex, _nPageIndex + 1 - nPageIndex);
+
+		oRes.AddInt(nAnnots, nPosAnnots);
 	}
 	else
 	{
+		int nStartPage = 0;
 		for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 		{
 			PDFDoc* pDoc = pPDFContext->m_pDocument;
 			if (!pDoc || !pDoc->getCatalog() || !pPDFContext->m_pFontList)
 				continue;
-			for (int nPage = 0, nLastPage = pDoc->getNumPages(); nPage < nLastPage; ++nPage)
-				GetPageAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, oRes, nPage);
+			int nAnnots = 0;
+			int nPosAnnots = oRes.GetSize();
+			oRes.AddInt(nAnnots);
+
+			for (int nPage = 1, nPages = pDoc->getNumPages(); nPage <= nPages; ++nPage)
+				nAnnots += GetPageAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, oRes, nPage, nStartPage);
+
+			oRes.AddInt(nAnnots, nPosAnnots);
+			nStartPage += pDoc->getNumPages();
 		}
 	}
 

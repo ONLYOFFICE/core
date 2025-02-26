@@ -168,6 +168,7 @@ public:
 	virtual ~CAnnot();
 
 	virtual void ToWASM(NSWasm::CData& oRes);
+	void SetPage(unsigned int nPage) { m_unPage = nPage; }
 
 	struct CBorderType final
 	{

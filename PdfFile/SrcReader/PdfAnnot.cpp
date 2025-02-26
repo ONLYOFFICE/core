@@ -2933,12 +2933,10 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 
 	// Номер страницы - P
 	m_unPage = pField->getPageNum();
-	if (m_unPage > 0)
-		--m_unPage;
 
 	// Координаты - Rect
 	pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
-	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage + 1)->getCropBox();
+	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage)->getCropBox();
 	m_dHeight = pCropBox->y2;
 	m_dX = pCropBox->x1;
 	double dTemp = m_pRect[1];
@@ -3059,7 +3057,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 
 	// Номер страницы - P
 	m_unPage = nPageIndex;
-	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage + 1)->getCropBox();
+	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage)->getCropBox();
 	m_dHeight = pCropBox->y2;
 	m_dX = pCropBox->x1;
 
@@ -3630,7 +3628,7 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.AddInt(m_unRefNum);
 	oRes.AddInt(m_unAnnotFlag);
-	oRes.AddInt(m_unPage);
+	oRes.AddInt(m_unPage - 1);
 	for (int i = 0; i < 4; ++i)
 		oRes.WriteDouble(m_pRect[i]);
 	oRes.AddInt(m_unAFlags);

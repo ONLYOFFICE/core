@@ -1351,26 +1351,32 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 
 	if (!reader) return [];
 
-	let res = [];
+	let arrRes = [];
 	while (reader.isValid())
 	{
-		let rec = {};
-		// Annotation type
-		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
-		// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
-		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
-		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
-		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-		rec["Type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		// Annot type
-		readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		res.push(rec);
+		let res = [];
+		let n = reader.readInt();
+		for (let i = 0; i < n; ++i)
+		{
+			let rec = {};
+			// Annotation type
+			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+			rec["Type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			// Annot type
+			readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			res.push(rec);
+		}
+		arrRes.push(res);
 	}
 	
 	ptr.free();
-	return res;
+	return arrRes;
 };
 // optional nAnnot ...
 // optional sView ...

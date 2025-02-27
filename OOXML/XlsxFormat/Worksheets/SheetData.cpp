@@ -1894,7 +1894,7 @@ namespace OOX
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+            setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
 		}
 		void CCell::AfterRead()
 		{
@@ -2708,7 +2708,7 @@ namespace OOX
             }
             else
             {
-                CellReference.row = m_oRow.get() - 1;
+                CellReference.row = m_oRow.get() -1;
                 CellReference.column = m_oCol.get();
             }
             if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
@@ -3507,7 +3507,7 @@ namespace OOX
 				if (parseRefA(m_oRef->c_str(), nRow, nCol))
 				{
 					bRes = true;
-					//nRow--;
+                    //nRow--;
 					nCol--;
 				}
 			}
@@ -4587,6 +4587,13 @@ namespace OOX
 			}
 			m_mapStyleMerges2003.clear();
 		}
+        void CSheetData::ClearSharedFmlaRefs()
+        {
+            if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
+            if(SharedFormulasRef::ArrayRefsLocations)
+                SharedFormulasRef::ArrayRefsLocations.reset();
+        }
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
             oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
@@ -4723,8 +4730,7 @@ namespace OOX
                 else
                     delete pRow;
             }
-            if(SharedFormulasRef::sharedRefsLocations)
-                SharedFormulasRef::sharedRefsLocations.reset();
+            ClearSharedFmlaRefs();
         }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{
@@ -4781,10 +4787,7 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-		if(SharedFormulasRef::sharedRefsLocations)
-			SharedFormulasRef::sharedRefsLocations.reset();
-		if(SharedFormulasRef::ArrayRefsLocations)
-			SharedFormulasRef::ArrayRefsLocations.reset();
+        ClearSharedFmlaRefs();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
             writer->storeNextRecord(record);

@@ -8784,7 +8784,7 @@ _UINT32 BinaryFileWriter::Open(const std::wstring& sInputDir, const std::wstring
 				
 				if (fileType == 1)
 				{
-					pXlsx->m_pXlsbWriter = &oXlsbWriter; // todooo xlsb -> xlst without xlsx write folder 
+                    //pXlsx->m_pXlsbWriter = &oXlsbWriter; // todooo xlsb -> xlst without xlsx write folder
 				}
 				//parse
 				pXlsx->Read(OOX::CPath(sInputDir));

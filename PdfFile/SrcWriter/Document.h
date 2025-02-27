@@ -123,6 +123,7 @@ namespace PdfWriter
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);
+		int               FindPage   (CPage* pPage);
 		unsigned int      GetPagesCount() const;
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
@@ -194,6 +195,7 @@ namespace PdfWriter
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
 		CPage*            AddPage(int nPageIndex);
 		bool              DeletePage(int nPageIndex);
+		bool              MovePage(int nPageIndex, int nPos);
 		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		std::wstring      GetEditPdfPath() { return m_wsFilePath; }

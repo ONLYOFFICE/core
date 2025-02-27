@@ -97,6 +97,7 @@ public:
 	bool EditPage   (int nPageIndex);
 	bool DeletePage (int nPageIndex);
 	bool AddPage    (int nPageIndex);
+	bool MovePage   (int nPageIndex, int nPos);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 #endif
 

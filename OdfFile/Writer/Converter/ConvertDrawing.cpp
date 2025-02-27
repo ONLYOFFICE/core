@@ -916,7 +916,11 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 				odf_context()->start_text_context();
 
 					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
-					
+					convert(oox_shape->oTextBoxBodyPr.GetPointer());
+
+					if (oox_shape->style.IsInit())
+						convert(&oox_shape->style->fontRef);
+
                     for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
 					{
 						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);

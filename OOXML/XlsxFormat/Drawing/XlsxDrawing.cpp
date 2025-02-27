@@ -31,6 +31,7 @@
  */
 
 #include "Drawing.h"
+#include "../../PPTXFormat/Logic/Shape.h"
 
 namespace OOX
 {
@@ -210,8 +211,15 @@ namespace OOX
 							nCurDepth--;
 						}
 
-						if ( pItem )
-							m_arrItems.push_back( pItem );
+						if (pItem)
+						{
+							m_arrItems.push_back(pItem);
+
+							if (pItem->m_nId.IsInit() && pItem->m_oElement.is_init())
+							{
+								m_mapShapes.insert(std::make_pair(*pItem->m_nId, pItem->m_oElement->GetElem().GetPointer()));
+							}
+						}
 					}
 				}
 			}
@@ -254,17 +262,17 @@ namespace OOX
 		{
 		}
 		void CDrawing::ClearItems()
+		{
+			m_mapShapes.clear();
+			for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
 			{
-				for ( unsigned int nIndex = 0; nIndex < m_arrItems.size(); nIndex++ )
-				{
-					if ( m_arrItems[nIndex] )
-						delete m_arrItems[nIndex];
-
-					m_arrItems[nIndex] = NULL;
-				}
-
-				m_arrItems.clear();
+				if ( m_arrItems[nIndex] )
+					delete m_arrItems[nIndex];
+				
+				m_arrItems[nIndex] = NULL;
 			}
+			m_arrItems.clear();
+		}
 
 	} //Spreadsheet
 } // namespace OOX

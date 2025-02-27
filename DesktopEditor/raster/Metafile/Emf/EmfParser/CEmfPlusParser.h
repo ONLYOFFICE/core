@@ -1,8 +1,6 @@
 #ifndef CEMFPLUSPARSER_H
 #define CEMFPLUSPARSER_H
 
-//#include "../../Common/MetaFileUtils.h"
-//#include "../../Common/MetaFile.h"
 #include "../EmfPlusObjects.h"
 #include "CEmfParserBase.h"
 #include "../EmfPlusTypes.h"

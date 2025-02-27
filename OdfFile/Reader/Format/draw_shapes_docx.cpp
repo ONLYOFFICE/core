@@ -46,6 +46,7 @@
 
 #include "serialize_elements.h"
 #include "style_graphic_properties.h"
+#include "text_elements.h"
 
 #include "odfcontext.h"
 
@@ -130,8 +131,19 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 
 	for (size_t i = 0; i < content_.size(); i++)
     {
+		ElementType type = content_[i]->get_type();
+		if (type == typeTextP)
+		{
+			auto _p = dynamic_cast<text::p*>(content_[i].get());
+			if (_p)
+			{
+				if(!_p->paragraph_.content_.size() && _p->paragraph_.attrs_.text_style_name_.empty())
+					continue;
+			}
+		}
+
 		content_[i]->docx_convert(Context);
-    }
+	}
 
 	Context.back_context_state();
 
@@ -197,15 +209,7 @@ void draw_line::docx_convert(oox::docx_conversion_context & Context)
 }
 
 void draw_path::docx_convert(oox::docx_conversion_context & Context)
-{
-	bool in_paragraph = !Context.get_paragraph_state();
-
-	if (in_paragraph)
-	{
-		Context.start_paragraph();
-		Context.add_new_run();
-	}
-	
+{	
 	//if (Context.get_drawing_context().get_current_level() >0 )return;
  	if (Context.get_drawing_context().get_current_level() > 0 && !Context.get_drawing_context().in_group() )
 	{ 
@@ -217,12 +221,6 @@ void draw_path::docx_convert(oox::docx_conversion_context & Context)
 	//...
 	reset_svg_path();
 	draw_shape::docx_convert(Context);
-
-	if (in_paragraph)
-	{
-		Context.finish_run();
-		Context.finish_paragraph();	
-	}
 }
 
 void draw_connector::docx_convert(oox::docx_conversion_context & Context)

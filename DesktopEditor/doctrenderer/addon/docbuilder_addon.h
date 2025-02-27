@@ -29,40 +29,32 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _BUILD_NATIVE_BUILDER_EMBED_H_
-#define _BUILD_NATIVE_BUILDER_EMBED_H_
+#ifndef DOC_BUILDER_ADDON_PRIVATE
+#define DOC_BUILDER_ADDON_PRIVATE
 
-#include "../docbuilder.h"
-#include "../js_internal/js_base.h"
+#include <string>
 
-// For windows fileapi
-#ifdef CreateFile
-#undef CreateFile
-#endif
-
-using namespace NSJSBase;
-class CBuilderEmbed : public CJSEmbedObject
+namespace NSDoctRenderer
 {
-public:
-	NSDoctRenderer::CDocBuilder* m_pBuilder;
+	class CDocBuilderAddon
+	{
+	private:
+		std::wstring m_sWorkDirectory;
+	public:
+		CDocBuilderAddon(const std::wstring& sWorkDir)
+		{
+			m_sWorkDirectory = sWorkDir;
+		}
+	public:
+		std::wstring GetX2tSaveAddon()
+		{
+			return L"";
+		}
+		int GetX2tPreSaveError()
+		{
+			return 0;
+		}
+	};
+}
 
-	CBuilderEmbed() : m_pBuilder(NULL) {}
-	~CBuilderEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
-
-	virtual void* getObject() { return (void*)m_pBuilder; }
-	NSDoctRenderer::CDocBuilder_Private* GetPrivate() { return m_pBuilder->GetPrivate(); }
-
-public:
-	JSSmart<CJSValue> OpenFile(JSSmart<CJSValue> sPath, JSSmart<CJSValue> sParams);
-	JSSmart<CJSValue> CreateFile(JSSmart<CJSValue> type);
-	JSSmart<CJSValue> SetTmpFolder(JSSmart<CJSValue> path);
-	JSSmart<CJSValue> SaveFile(JSSmart<CJSValue> type, JSSmart<CJSValue> path, JSSmart<CJSValue> params);
-	JSSmart<CJSValue> CloseFile();
-	JSSmart<CJSValue> OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJSValue> params);
-
-	DECLARE_EMBED_METHODS
-};
-
-void builder_CreateNative(const std::string& name, JSSmart<CJSContext> context, NSDoctRenderer::CDocBuilder* builder);
-
-#endif // _BUILD_NATIVE_BUILDER_EMBED_H_
+#endif // DOC_BUILDER_ADDON_PRIVATE

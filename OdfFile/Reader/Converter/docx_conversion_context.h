@@ -984,6 +984,9 @@ public:
 	void add_alphabetical_index_text (odf_reader::office_element_ptr & elem);
 
 	void set_process_headers_footers(bool Val)				{ process_headers_footers_ = Val; }
+
+	void set_next_master_page_name(_CP_OPT(std::wstring) masterPageName) { next_master_page_name_ = masterPageName; }
+	_CP_OPT(std::wstring) get_next_master_page_name() { return next_master_page_name_; }
    
 	headers_footers			& get_headers_footers()			{ return headers_footers_; }
 	header_footer_context	& get_header_footer_context()	{ return header_footer_context_; }
@@ -1095,6 +1098,8 @@ private:
 
 	std::vector<_CP_PTR(odf_reader::text_list_style)>					restarted_list_styles;
 	std::unordered_map<std::wstring, size_t>							list_styles_occurances_;
+
+	_CP_OPT(std::wstring) next_master_page_name_;
 };
 
 }

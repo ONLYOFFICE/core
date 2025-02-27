@@ -44,6 +44,7 @@
 #include "../Format/math_layout_elements.h"
 #include "../Format/math_limit_elements.h"
 #include "../Format/math_token_elements.h"
+#include "../Format/style_text_properties.h"
 
 #include <set>
 #include <vector>
@@ -173,7 +174,30 @@ namespace Oox2Odf
 		
 		brackets().resize(1);
 
-		bool bStart = odf_context()->start_math();
+		int base_font_size = current_font_size.empty() ? 12 : current_font_size.back();
+		std::wstring base_font_color;
+
+		if (odf_context()->is_child_text_context() && odf_context()->drawing_context())
+		{
+			if (odf_context()->drawing_context()->get_text_properties())
+			{
+				if (odf_context()->drawing_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		else
+		{
+			if (odf_context()->text_context()->get_text_properties())
+			{
+				if (odf_context()->text_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
 		
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
@@ -183,6 +207,7 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
 			starMathConverter.StartConversion(oox_math);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
@@ -236,7 +261,30 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para) return;
 
-		bool bStart = odf_context()->start_math();
+		int base_font_size = current_font_size.empty() ? 12 : current_font_size.back();
+		std::wstring base_font_color;
+
+		if (odf_context()->is_child_text_context() && odf_context()->drawing_context())
+		{
+			if (odf_context()->drawing_context()->get_text_properties())
+			{
+				if (odf_context()->drawing_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		else
+		{
+			if (odf_context()->text_context()->get_text_properties())
+			{
+				if (odf_context()->text_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
 
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
 		{
@@ -245,6 +293,7 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
 			starMathConverter.StartConversion(oox_math_para);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
@@ -1260,16 +1309,18 @@ namespace Oox2Odf
 			odf_context()->settings_context()->start_view();
 				if (oox_r_pr->m_oSz.IsInit() && oox_r_pr->m_oSz->m_oVal.IsInit())
 				{
-					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();					
+					odf_context()->math_context()->font_size = oox_r_pr->m_oSz->m_oVal->GetValue();
 				}
-				else
+
+				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring((int)odf_context()->math_context()->font_size));
+				if (!odf_context()->math_context()->font_color.empty())
 				{
-					odf_context()->math_context()->size = 12;
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontColor", L"string", L"#" + odf_context()->math_context()->font_color);
 				}
-				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
+				
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
-					odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
+					odf_context()->math_context()->font_name = *oox_r_pr->m_oRFonts->m_sAscii;
 
 					odf_context()->settings_context()->add_config_content_item(L"FontNameFunctions", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
 					odf_context()->settings_context()->add_config_content_item(L"FontNameNumbers", L"string", *oox_r_pr->m_oRFonts->m_sAscii);

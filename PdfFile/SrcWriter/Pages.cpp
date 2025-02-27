@@ -271,6 +271,22 @@ namespace PdfWriter
 			return true;
 		return false;
 	}
+	bool CPageTree::Find(CPage* pPage, int& nI)
+	{
+		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
+		{
+			CObjectBase* pObj = m_pPages->Get(i);
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGES && ((CPageTree*)pObj)->Find(pPage, nI))
+				return true;
+			else
+			{
+				if (pPage == pObj)
+					return true;
+				nI++;
+			}
+		}
+		return false;
+	}
 	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
 	{
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)

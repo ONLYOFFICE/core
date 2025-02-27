@@ -200,6 +200,15 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 				std::wstring strRectClip = properties->fo_clip_.get();
 				Context.get_drawing_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
 			}
+
+			if (properties->style_mirror_)
+			{
+				bool flipV = properties->style_mirror_->find(L"vertical") != std::wstring::npos;
+				bool flipH = properties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+				Context.get_drawing_context().set_property(odf_reader::_property(L"flipV", flipV));
+				Context.get_drawing_context().set_property(odf_reader::_property(L"flipH", flipH));
+			}
 		}
 
 		Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));

@@ -39,6 +39,7 @@
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
+#include "../../../PPTXFormat/Logic/Shape.h"
 
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../XlsxFormat/XlsxFlat.h"
@@ -5887,6 +5888,14 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				pShapeElem	= pFind->second.pElement;
 			}			
 		}
+		if (!pShapeElem && pDrawing)
+		{
+			std::map<unsigned int, OOX::WritingElement*>::iterator pFind = pDrawing->m_mapShapes.find(pOleObject->m_oShapeId->GetValue());
+			if (pFind != pDrawing->m_mapShapes.end())
+			{
+				pShapeElem = pFind->second;
+			}
+		}
 		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);		
 		bool bSetAnchor = false;
@@ -5947,13 +5956,13 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 		smart_ptr<OOX::Image> pImageFileCache;
 
-		std::wstring	sIdImageFileCache;
+		std::wstring sIdImageFileCache;
 		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
 		{
-			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
-			for (size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			OOX::Vml::CShape* pShapeVml = dynamic_cast<OOX::Vml::CShape*>(pShapeElem);
+			for (size_t j = 0; (pShapeVml) && (j < pShapeVml->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = pShapeVml->m_arrItems[j];
 				if (!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
@@ -5982,7 +5991,17 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 					}
 				}
 			}
+
+			if (!pShapeVml)
+			{
+				PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pShapeElem);
+				if (pShape && pShape->spPr.xfrm.IsInit())
+				{
+					olePic->spPr.xfrm = pShape->spPr.xfrm;
+				}
+			}
 		}
+
 		if (false == pImageFileCache.IsInit() && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 		{
 			sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
@@ -6567,6 +6586,8 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 	if (pCellAnchor->m_oElement.IsInit() == false && 
 		pCellAnchor->m_sVmlSpId.IsInit() == false) return;
+
+	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
 
 	WriteCellAnchor(pCellAnchor);
 

@@ -30,7 +30,6 @@
  *
  */
 #include "../../../raster/ImageFileFormatChecker.h"
-#include "../../../graphics/Image.h"
 
 #include "../Common/MetaFileUtils.h"
 

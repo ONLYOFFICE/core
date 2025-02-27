@@ -44,7 +44,8 @@ namespace MetaFile
 		: r(_r), g(_g), b(_b), a(_a)
 	{}
 
-	TRGBA::TRGBA(int nValue) : r((nValue >> 0)  & 0xFF), g((nValue >> 8)  & 0xFF), b((nValue >> 16)  & 0xFF), a((nValue >> 24)  & 0xFF)
+	TRGBA::TRGBA(int nValue)
+		: r((nValue >> 0)  & 0xFF), g((nValue >> 8)  & 0xFF), b((nValue >> 16)  & 0xFF), a((nValue >> 24)  & 0xFF)
 	{}
 
 	void TRGBA::Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a)
@@ -94,7 +95,18 @@ namespace MetaFile
 		return a;
 	}
 
-	TXForm::TXForm() : M11(1), M12(0), M21(0), M22(1), Dx(0), Dy(0)
+	TRGBA& TRGBA::operator=(const TRGBA& oRGBA)
+	{
+		r = oRGBA.r;
+		g = oRGBA.g;
+		b = oRGBA.b;
+		a = oRGBA.a;
+
+		return *this;
+	}
+
+	TXForm::TXForm()
+		: M11(1), M12(0), M21(0), M22(1), Dx(0), Dy(0)
 	{}
 
 	TXForm::TXForm(const TXForm &oXForm) 

@@ -36,14 +36,12 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
 #include "lib/xpdf/PDFDoc.h"
+#include "Resources/BaseFonts.h"
 
 #ifndef BUILDING_WASM_MODULE
 #include "PdfEditor.h"
 #include "OnlineOfficeBinToPdf.h"
-
 #include "SrcWriter/Document.h"
-#include "Resources/BaseFonts.h"
-
 #else
 class CPdfEditor
 {
@@ -165,6 +163,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 	if (!m_pInternal->pEditor)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
+}
+bool CPdfFile::MovePage(int nPageIndex, int nPos)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->MovePage(nPageIndex, nPos);
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {

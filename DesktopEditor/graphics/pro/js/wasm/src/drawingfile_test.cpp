@@ -952,6 +952,14 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	// ADD PDF
+	if (AddPDF(pGrFile, pFileData, (LONG)nFileDataLen, "") == 0)
+	{
+		Close(pGrFile);
+		RELEASEARRAYOBJECTS(pFileData);
+		return 1;
+	}
+
 	// INFO
 	BYTE* pInfo = GetInfo(pGrFile);
 	int nLength = READ_INT(pInfo);
@@ -1024,7 +1032,7 @@ int main(int argc, char* argv[])
 	free(pInfo);
 
 	// LINKS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
 		BYTE* pLinks = GetLinks(pGrFile, nTestPage);
 		nLength = READ_INT(pLinks);
@@ -1060,7 +1068,7 @@ int main(int argc, char* argv[])
 	}
 
 	// STRUCTURE
-	if (false)
+	if (true)
 	{
 		BYTE* pStructure = GetStructure(pGrFile);
 		nLength = READ_INT(pStructure);
@@ -1090,7 +1098,7 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (false && nPagesCount > 0)
+	if (true && nPagesCount > 0)
 	{
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);

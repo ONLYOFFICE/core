@@ -128,8 +128,10 @@ public:
 	virtual std::wstring GetInfo();
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
+
+	bool AddFromFile  (const std::wstring& file, const std::wstring& wsPassword = L"");
+	bool AddFromMemory(BYTE* data, DWORD length, const std::wstring& wsPassword = L"");
 	bool ValidMetaData();
-	bool AddPdf(BYTE* data, DWORD length, const std::wstring& wsPassword = L"");
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

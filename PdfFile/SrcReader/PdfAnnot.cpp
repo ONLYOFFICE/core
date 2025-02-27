@@ -2478,7 +2478,7 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 // Annots
 //------------------------------------------------------------------------
 
-CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage)
 {
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
@@ -2562,6 +2562,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
 			if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
 				pAnnot->SetButtonFont(pdfDoc, pField, pFontManager, pFontList);
+			pAnnot->SetPage(nStartPage + pField->getPageNum());
 			m_arrAnnots.push_back(pAnnot);
 		}
 	}

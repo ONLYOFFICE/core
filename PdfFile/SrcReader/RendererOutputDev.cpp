@@ -1812,12 +1812,13 @@ namespace PdfReader
 			return true;
 		case 6:
 		case 7:
-			int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
+			// int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading*)pShading)->getNPatches();
 
 			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 			if (GRenderer)
 				GRenderer->SetSoftMask(NULL);
+
 			m_pRenderer->BeginCommand(c_nLayerType);
 
 			for (int i = 0; i < nPatches; i++) {
@@ -2307,10 +2308,6 @@ namespace PdfReader
 		if (3 == nRendererMode) // Невидимый текст
 			return;
 
-		double* pCTM  = pGState->getCTM();
-		double* pTm   = pGState->getTextMat();
-		GfxFont* pFont = pGState->getFont();
-
 		unsigned int unGidsCount = seString->getLength();
 		unsigned int* pGids = new unsigned int[unGidsCount];
 		if (!pGids)
@@ -2319,7 +2316,7 @@ namespace PdfReader
 		std::wstring  wsUnicodeText;
 		for (int nIndex = 0; nIndex < seString->getLength(); nIndex++)
 		{
-			char nChar = seString->getChar(nIndex);
+			int nChar = seString->getChar(nIndex);
 
 			if (NULL != oEntry.pCodeToUnicode)
 			{
@@ -2416,9 +2413,6 @@ namespace PdfReader
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-
-		// Здесь мы посылаем координаты текста в пунктах
-		double dPageHeight = pGState->getPageHeight();
 
 		std::wstring wsUnicodeText;
 

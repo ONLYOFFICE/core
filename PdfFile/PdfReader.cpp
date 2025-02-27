@@ -378,10 +378,33 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 		SetTempDirectory(NSDirectory::GetTempPath());
 
 	m_eError = errNone;
-	GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsUserPassword);
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(wsSrcPath))
+	{
+		m_nFileLength = oFile.GetFileSize();
+		oFile.CloseFile();
+	}
+	return AddFromFile(wsSrcPath, wsOwnerPassword);
+}
+bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+{
+	Clear();
+	RELEASEINTERFACE(m_pFontManager);
+	m_pFontManager = InitFontManager(pAppFonts);
+
+	m_eError = errNone;
+	m_nFileLength = length;
+
+	return AddFromMemory(data, length, wsOwnerPassword);
+}
+bool CPdfReader::AddFromFile(const std::wstring& wsFile, const std::wstring& wsPassword)
+{
+	if (m_eError)
+		return false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	GString* user_pswd  = NSStrings::CreateString(wsPassword);
 	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
-	std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
+	std::string sPathUtf8 = U_TO_UTF8(wsFile);
 
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
@@ -392,17 +415,11 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 	delete owner_pswd;
 	delete user_pswd;
 
-	NSFile::CFileBinary oFile;
-	if (oFile.OpenFile(wsSrcPath))
-	{
-		m_nFileLength = oFile.GetFileSize();
-		oFile.CloseFile();
-	}
-
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
 	{
-		Clear();
+		delete pContext;
+		m_vPDFContext.pop_back();
 		return false;
 	}
 
@@ -411,20 +428,17 @@ bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::
 
 	return true;
 }
-bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
+bool CPdfReader::AddFromMemory(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
 {
-	Clear();
-	RELEASEINTERFACE(m_pFontManager);
-	m_pFontManager = InitFontManager(pAppFonts);
-
-	m_eError = errNone;
-	GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsUserPassword);
+	if (m_eError)
+		return false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	GString* user_pswd  = NSStrings::CreateString(wsPassword);
 
 	Object obj;
 	obj.initNull();
 	// будет освобожден в деструкторе PDFDoc
-	BaseStream *str = new MemStream((char*)data, 0, length, &obj);
+	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj);
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
@@ -434,26 +448,17 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 	delete owner_pswd;
 	delete user_pswd;
 
-	m_nFileLength = length;
-
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
 	{
-		Clear();
+		delete pContext;
+		m_vPDFContext.pop_back();
 		return false;
 	}
 
 	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
-	return true;
-}
-bool CPdfReader::AddFromFile(const std::wstring& wsFile, const std::wstring& wsPassword)
-{
-	return true;
-}
-bool CPdfReader::AddFromMemory(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
-{
 	return true;
 }
 void CPdfReader::Close()
@@ -1073,6 +1078,7 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
+	int nStartPage = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		PDFDoc* pDoc = pPDFContext->m_pDocument;
@@ -1081,10 +1087,11 @@ BYTE* CPdfReader::GetWidgets()
 		if (!pDoc->getCatalog()->getForm() || !pDoc->getXRef())
 			continue;
 
-		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList);
+		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, nStartPage);
 		if (pAnnots)
 			pAnnots->ToWASM(oRes);
 		RELEASEOBJECT(pAnnots);
+		nStartPage += pDoc->getNumPages();
 	}
 
 	oRes.WriteLen();

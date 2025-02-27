@@ -171,7 +171,6 @@ public:
 
 		return m_pFile ? true : false;
 	}
-
 	bool OpenFile(BYTE* data, LONG size, const std::wstring& sPassword)
 	{
 		CloseFile();
@@ -221,6 +220,20 @@ public:
 		}
 
 		return m_pFile ? true : false;
+	}
+	bool AddFile(const std::wstring& sFile, const std::wstring& sPassword)
+	{
+		if (0 != m_nType)
+			return false;
+
+		return ((CPdfFile*)m_pFile)->AddFromFile(sFile, sPassword);
+	}
+	bool AddFile(BYTE* data, LONG size, const std::wstring& sPassword)
+	{
+		if (0 != m_nType)
+			return false;
+
+		return ((CPdfFile*)m_pFile)->AddFromMemory(data, size, sPassword);
 	}
 
 	void CloseFile()

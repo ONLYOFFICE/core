@@ -374,14 +374,17 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 	else
 		m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-bool CPdfFile::AddPdf(BYTE* data, DWORD length, const std::wstring& wsPassword)
+bool CPdfFile::AddFromFile(const std::wstring& file, const std::wstring& wsPassword)
 {
-	m_pInternal->pReader = new CPdfReader(m_pInternal->pAppFonts);
 	if (!m_pInternal->pReader)
 		return false;
-	m_pInternal->wsSrcFile.clear();
-	m_pInternal->wsPassword = wsPassword;
-	return m_pInternal->pReader->LoadFromMemory(m_pInternal->pAppFonts, data, length, wsPassword, wsPassword) && (m_pInternal->pReader->GetError() == 0);
+	return m_pInternal->pReader->AddFromFile(file, wsPassword) && (m_pInternal->pReader->GetError() == 0);
+}
+bool CPdfFile::AddFromMemory(BYTE* data, DWORD length, const std::wstring& wsPassword)
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->AddFromMemory(data, length, wsPassword) && (m_pInternal->pReader->GetError() == 0);
 }
 int CPdfFile::GetRotate(int nPageIndex)
 {

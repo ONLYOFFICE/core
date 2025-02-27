@@ -591,7 +591,7 @@ private:
 class CAnnots
 {
 public:
-	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage);
 	~CAnnots();
 
 	void ToWASM(NSWasm::CData& oRes);

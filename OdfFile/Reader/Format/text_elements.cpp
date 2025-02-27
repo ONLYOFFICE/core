@@ -255,6 +255,9 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
+	if (Context.get_list_style_level() == 0)
+		return;
+
 	if (content_.size() <= 0)
 		return;
 

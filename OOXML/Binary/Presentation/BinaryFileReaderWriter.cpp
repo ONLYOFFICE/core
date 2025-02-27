@@ -701,7 +701,7 @@ namespace NSBinPptxRW
 	}
 	double CBinaryFileWriter::GetShapeWidth()
 	{
-		if (m_dCyCurShape < 0.001)
+		if (m_dCxCurShape < 0.001)
 			return -1;
 		return m_dCxCurShape / 36000;
 	}

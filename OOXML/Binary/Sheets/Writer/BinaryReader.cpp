@@ -3075,6 +3075,8 @@ int BinaryWorkbookTableReader::ReadDefinedName(BYTE type, long length, void* poR
 	if (c_oSerDefinedNameTypes::Name == type)
 	{
 		pDefinedName->m_oName = m_oBufferedStream.GetString4(length);
+        if(m_pXlsb)
+            XLS::GlobalWorkbookInfo::arDefineNames_static.push_back(pDefinedName->m_oName.get());
 	}
 	else if (c_oSerDefinedNameTypes::Ref == type)
 	{

@@ -107,7 +107,7 @@ WASM_EXPORT int AddPDF(CDrawingFile* pFile, BYTE* data, LONG size, const char* p
 	std::wstring sPassword = L"";
 	if (NULL != password)
 		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	return pFile->AddFile(data, size, sPassword);
+	return pFile->AddFile(data, size, sPassword) ? 1 : 0;
 }
 WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 {

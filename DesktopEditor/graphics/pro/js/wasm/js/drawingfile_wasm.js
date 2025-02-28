@@ -86,8 +86,9 @@ CFile.prototype._openFile = function(buffer, password)
 	{
 		let data = new Uint8Array(buffer);
 		this.stream_size = data.length;
-		this.stream = Module["_malloc"](this.stream_size);
-		Module["HEAP8"].set(data, this.stream);
+		let stream = Module["_malloc"](this.stream_size);
+		Module["HEAP8"].set(data, stream);
+		this.stream.push(stream);
 	}
 
 	let passwordPtr = 0;
@@ -98,7 +99,7 @@ CFile.prototype._openFile = function(buffer, password)
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 
-	this.nativeFile = Module["_Open"](this.stream, this.stream_size, passwordPtr);
+	this.nativeFile = Module["_Open"](this.stream[0], this.stream_size, passwordPtr);
 
 	if (passwordPtr)
 		Module["_free"](passwordPtr);
@@ -112,12 +113,40 @@ CFile.prototype._closeFile = function()
 
 CFile.prototype._getType = function()
 {
-	return Module["_GetType"](this.stream, this.stream_size);
+	return Module["_GetType"](this.stream[0], this.stream_size);
 };
 
 CFile.prototype._getError = function()
 {
 	return Module["_GetErrorCode"](this.nativeFile);
+};
+
+CFile.prototype._addPDF = function(buffer, password)
+{
+	if (!buffer)
+		return false;
+
+	let data = new Uint8Array(buffer);
+	let stream = Module["_malloc"](data.length);
+	Module["HEAP8"].set(data, stream);
+
+	let passwordPtr = 0;
+	if (password)
+	{
+		let passwordBuf = password.toUtf8();
+		passwordPtr = Module["_malloc"](passwordBuf.length);
+		Module["HEAP8"].set(passwordBuf, passwordPtr);
+	}
+
+	let bRes = Module["_addPDF"](this.nativeFile, stream, data.length, passwordPtr);
+	if (bRes == 1)
+		this.stream.push(stream);
+	else
+		this._free(stream);
+
+	if (passwordPtr)
+		Module["_free"](passwordPtr);
+	return bRes == 1;
 };
 
 // FONTS

@@ -29,6 +29,7 @@
 		"_GetType",
 		"_Open",
 		"_Close",
+		"_AddPDF",
 		"_GetErrorCode",
 		"_GetInfo",
 		"_GetPixmap",

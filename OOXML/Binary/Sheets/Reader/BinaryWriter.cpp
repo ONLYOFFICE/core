@@ -5659,6 +5659,21 @@ void BinaryWorksheetTableWriter::WriteSheetData(const OOX::Spreadsheet::CSheetDa
 			nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
 			WriteRow(*pRow);
 			m_oBcw.WriteItemEnd(nCurPos);
+            if(pRow->m_oRepeated.IsInit())
+            {
+                _INT32 rowTimes = pRow->m_oRepeated.get() - 1;
+                while(rowTimes > 0)
+                {
+                    if(pRow->m_oR.IsInit())
+                        pRow->m_oR = pRow->m_oR->GetValue() + 1;
+                    if(!pRow->m_arrItems.empty() && pRow->m_arrItems.at(0)->m_oRow.IsInit())
+                        pRow->m_arrItems.at(0)->m_oRow = pRow->m_oR->GetValue();
+                    nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Row);
+                    WriteRow(*pRow);
+                    m_oBcw.WriteItemEnd(nCurPos);
+                    rowTimes--;
+                }
+            }
 		}
 	}
 }
@@ -5720,6 +5735,13 @@ void BinaryWorksheetTableWriter::WriteRow(const OOX::Spreadsheet::CRow& oRows)
 		WriteCells(oRows);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+    else
+    {
+        m_oBcw.m_oStream.WriteBYTE(c_oSerRowTypes::Cells);
+        m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+        nCurPos = m_oBcw.WriteItemWithLengthStart();
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
 }
 void BinaryWorksheetTableWriter::WriteCells(const OOX::Spreadsheet::CRow& oRows)
 {
@@ -5730,6 +5752,25 @@ void BinaryWorksheetTableWriter::WriteCells(const OOX::Spreadsheet::CRow& oRows)
 		nCurPos = m_oBcw.WriteItemStart(c_oSerRowTypes::Cell);
 		WriteCell(*oCell);
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+        if(oCell->m_oRepeated.IsInit())
+        {
+            _INT32 cellTimes = oCell->m_oRepeated.get() - 1;
+            _INT32 originalCol = 0;
+            if(oCell->m_oCol.IsInit())
+                originalCol = oCell->m_oCol.get();
+            while(cellTimes > 0)
+            {
+                if(oCell->m_oCol.IsInit())
+                    oCell->m_oCol = oCell->m_oCol.get() + 1;
+                nCurPos = m_oBcw.WriteItemStart(c_oSerRowTypes::Cell);
+                WriteCell(*oCell);
+                m_oBcw.WriteItemWithLengthEnd(nCurPos);
+                cellTimes--;
+            }
+            if(oCell->m_oCol.IsInit())
+                oCell->m_oCol = originalCol;
+
+        }
 	}
 }
 void BinaryWorksheetTableWriter::WriteCell(const OOX::Spreadsheet::CCell& oCell)

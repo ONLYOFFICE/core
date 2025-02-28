@@ -85,6 +85,8 @@ namespace NSDocxRenderer
 		m_arParagraphs.clear();
 		for (const auto& p : other.m_arParagraphs)
 			m_arParagraphs.push_back(p);
+
+		return *this;
 	}
 	void CTable::CCell::AddParagraph(const paragraph_ptr_t& pParagraph)
 	{

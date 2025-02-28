@@ -100,7 +100,8 @@ namespace OOX
 			void ClearItems();
 
 		public:
-			std::vector<CCellAnchor *>	m_arrItems;
+			std::vector<CCellAnchor*> m_arrItems;
+			std::map<unsigned int, OOX::WritingElement*> m_mapShapes;
 		};
 	} //Spreadsheet
 } // namespace OOX

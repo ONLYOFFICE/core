@@ -260,10 +260,13 @@
 		"folder": "../../../OfficeUtils/js",
 		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
 	},
-
 	{
 		"folder": "../../",
-		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp"]
+		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp", "graphics/Matrix.cpp"]
+	},
+	{
+		"folder": "../../agg-2.4/src/",
+		"files": ["agg_trans_affine.cpp"]
 	},
 	{
 		"folder": "../../raster/",

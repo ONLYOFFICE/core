@@ -9316,6 +9316,7 @@ int BinaryFileReader::ReadFile(const std::wstring& sSrcFileName, std::wstring sD
                 if(oXlsb.m_pSharedStrings)
                     oXlsb.m_pSharedStrings->OOX::File::m_pMainDocument = &oXlsb;
 				oXlsb.PrepareToWrite();
+                oXlsb.PrepareRichStr();
 				oXlsb.WriteBin(sDstPath, *oSaveParams.pContentTypes);
 				
 				bMacro = oSaveParams.bMacroEnabled;

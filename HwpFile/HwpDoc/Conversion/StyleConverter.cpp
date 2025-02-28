@@ -715,7 +715,7 @@ bool TU::operator!=(const TU& oU) const
 EHighlightColors NormalizeHighlightColor(const TColor& oCurrentColor)
 {
 	EHighlightColors eSelectedColor;
-	double dMinDistance = DBL_MAX;
+	double dMinDistance = 999.;
 	double dDistance;
 
 	for (const std::pair<TColor, EHighlightColors>& oColor : s_arHighlightColors)

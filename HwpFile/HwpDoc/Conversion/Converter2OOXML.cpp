@@ -291,7 +291,7 @@ bool CConverter2OOXML::IsRasterFormat(const HWP_STRING& sFormat)
 	return L"png" == sFormat || L"jpg" == sFormat || L"jpeg" == sFormat || L"bmp" == sFormat;
 }
 
-void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
 	if (nullptr == pCharacter)
 		return;
@@ -301,7 +301,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 		case ECtrlCharType::PARAGRAPH_BREAK:
 		{
 			if (!oState.m_bOpenedP)
-				break;
+				OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
 			oState.m_bOpenedP = false;
 			oBuilder.WriteString(L"</w:p>");
@@ -522,7 +522,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::Character:
 			{
-				WriteCharacter((const CCtrlCharacter*)pCtrl, pParagraph->GetShapeID(), oBuilder, oState);
+				WriteCharacter((const CCtrlCharacter*)pCtrl, pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Shape:

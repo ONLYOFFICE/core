@@ -30,22 +30,26 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 	HWP_STRING sText;
 	oBuffer.ReadString(sText, nSize, EStringCharacter::UTF16);
+	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 
 	if (sText.empty())
-	{
-		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 		return LIST<CCtrl*>();
-	}
+
+	HWP_STRING::const_iterator itFound = std::find_if(sText.cbegin(), sText.cend(), [](wchar_t wChar){ return wChar < 0x20; });
+
+	if (sText.cend() == itFound)
+		return {new CParaText(L"____", sText, 0)};
 
 	LIST<CCtrl*> arParas;
 
 	HWP_STRING sCurrentText;
+	int nStartText = -1;
 
 	#define UPDATE_CURRENT_TEXT()\
 	do{\
 	if (!sCurrentText.empty())\
 	{\
-		arParas.push_back(new CParaText(L"____", sCurrentText, unIndex + 1));\
+		arParas.push_back(new CParaText(L"____", sCurrentText, nStartText + 1));\
 		sCurrentText.clear();\
 	}}\
 	while(false)
@@ -58,13 +62,10 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			{
 				case 0x00: // Unusable
 					continue;
-				case 0x02: // Define Zones/Define Units
-				{
-					sCurrentText.clear();
-					continue;
-				}
 				case 0x01: // Scheduling
+				case 0x02: // Define Zones/Define Units
 				case 0x03: // Field start
+				case 0x04: // End of field
 				case 0x0b: // Drawing objects/tables
 				case 0x0c: // Scheduling
 				case 0x0e: // Scheduling
@@ -78,10 +79,17 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 				{
 					HWP_STRING sType;
 
-					if (sText.length() < unIndex + 7 || sText[unIndex] != sText[unIndex + 7])
+					unsigned int unInfoLength = 0;
+
+					if (sText.length() >= unIndex + 6 && sText[unIndex] == sText[unIndex + 6])
+						unInfoLength = 4;
+					else if (sText.length() >= unIndex + 7 && sText[unIndex] == sText[unIndex + 7])
+						unInfoLength = 5;
+					else
 					{
-						if (6 == unIndex) //Случай, когда запись в самом начале
+						if (7 >= unIndex) //Случай, когда запись в самом начале
 						{
+							nStartText = -1;
 							sCurrentText.clear();
 
 							sType.resize(4);
@@ -90,8 +98,7 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 							sType[2] = (sText[1] & 0xFF);
 							sType[3] = ((sText[1] >> 8) & 0xFF);
 
-							CLEAR_ARRAY(CCtrl, arParas);
-
+							unInfoLength = 4;
 							unIndex = 0;
 						}
 						else
@@ -141,10 +148,9 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					         L"kmb " == sType)    // bookmark end
 						arParas.push_back(new CCtrlField(sType));
 
-					unIndex += 6;
+					unIndex += unInfoLength + 2;
 					break;
 				}
-				case 0x04: // End of field
 				case 0x05: // Scheduling
 				case 0x06: // Scheduling
 				case 0x07: // Scheduling
@@ -197,13 +203,17 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 			}
 		}
 		else
+		{
+			if (nStartText < 0)
+				nStartText = unIndex;
+
 			sCurrentText.push_back(sText[unIndex]);
+		}
 	}
 
 	if (!sCurrentText.empty())
-		arParas.push_back(new CParaText(L"____", sCurrentText, sText.length() - sCurrentText.length() - 1));
+		arParas.push_back(new CParaText(L"____", sCurrentText, (0 == nStartText) ? 0 : (nStartText + 1)));
 
-	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return arParas;
 }
 }

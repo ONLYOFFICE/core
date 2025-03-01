@@ -416,10 +416,10 @@ namespace NSDocxRenderer
 				double x = command.points.front().x;
 				double y = command.points.front().y;
 
-				if (x - last_x <= std::numeric_limits<double>::epsilon())
+				if (fabs(x - last_x) <= std::numeric_limits<double>::epsilon())
 					m_arVertical.push_back({std::min(last_y, y), std::max(last_y, y), x});
 
-				else if (y - last_y <= std::numeric_limits<double>::epsilon())
+				else if (fabs(y - last_y) <= std::numeric_limits<double>::epsilon())
 					m_arHorizontal.push_back({std::min(last_x, x), std::max(last_x, x), y});
 			}
 			if (!command.points.empty())

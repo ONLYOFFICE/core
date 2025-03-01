@@ -720,7 +720,7 @@ namespace NSDocxRenderer
 				        shape->m_dRight > this->m_dWidth * out_of_page_coeff;
 
 
-				bool is_too_big = (!shape->m_bIsNoFill && (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM || shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM));
+				bool is_too_big = (!shape->m_bIsNoFill && (shape->m_dWidth > c_dSHAPE_TROUGH_MAX_MM && shape->m_dHeight > c_dSHAPE_TROUGH_MAX_MM));
 
 				if (is_too_big || is_out_of_page)
 					continue;

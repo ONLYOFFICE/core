@@ -38,33 +38,9 @@
 #include "lib/xpdf/PDFDoc.h"
 #include "Resources/BaseFonts.h"
 
-#ifndef BUILDING_WASM_MODULE
 #include "PdfEditor.h"
 #include "OnlineOfficeBinToPdf.h"
 #include "SrcWriter/Document.h"
-#else
-class CPdfEditor
-{
-public:
-	int  GetError() { return 0; }
-	void Close() {}
-	bool EditPage(int nPageIndex, bool bSet = true) { return false; }
-	bool SplitPage(int nPageIndex) { return false; }
-	bool DeletePage(int nPageIndex) { return false; }
-	bool AddPage(int nPageIndex) { return false; }
-	bool EditAnnot(int nPageIndex, int nID) { return false; }
-	bool DeleteAnnot(int nID, Object* oAnnots = NULL) { return false; }
-	bool EditWidgets(IAdvancedCommand* pCommand) { return false; }
-	int  GetPagesCount() { return 0; }
-	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) {}
-	int  GetRotate(int nPageIndex) { return 0; }
-	bool IsEditPage() { return false; }
-	void ClearPage() {}
-	void AddShapeXML(const std::string& sXML) {}
-	void EndMarkedContent() {}
-	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath) { return false; }
-};
-#endif // BUILDING_WASM_MODULE
 
 class CPdfFile_Private
 {
@@ -130,7 +106,6 @@ void CPdfFile::RotatePage(int nRotate)
 	// Применение поворота страницы для writer
 	m_pInternal->pWriter->PageRotate(nRotate);
 }
-#ifndef BUILDING_WASM_MODULE
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 {
 	if (wsDstFile.empty() || !m_pInternal->pReader)
@@ -174,6 +149,7 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 
 	if (m_pInternal->pReader->AddFromFile(wsPath, wsPassword))
 		return m_pInternal->pEditor->MergePages(m_pInternal->pReader->GetLastPDFDocument(), arrPageIndex, unLength);
+	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
 {
@@ -187,7 +163,6 @@ HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring&
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false);
 	return _ChangePassword(wsPath, wsPassword, m_pInternal->pReader, m_pInternal->pWriter);
 }
-#endif // BUILDING_WASM_MODULE
 
 // ------------------------------------------------------------------------
 
@@ -526,26 +501,20 @@ void CPdfFile::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-#ifndef BUILDING_WASM_MODULE
 	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false, pParams))
 		return S_FALSE;
-#endif
 	return S_OK;
 }
 HRESULT CPdfFile::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
-#ifndef BUILDING_WASM_MODULE
 	if (!m_pInternal->pWriter || !NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true, pParams))
 		return S_FALSE;
-#endif
 	return S_OK;
 }
 HRESULT CPdfFile::AddToPdfFromBinary(BYTE* pBuffer, unsigned int nLen, CConvertFromBinParams* pParams)
 {
-#ifndef BUILDING_WASM_MODULE
 	if (!m_pInternal->pEditor || !NSOnlineOfficeBinToPdf::AddBinToPdf(this, pBuffer, nLen, pParams))
 		return S_FALSE;
-#endif
 	return S_OK;
 }
 HRESULT CPdfFile::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)

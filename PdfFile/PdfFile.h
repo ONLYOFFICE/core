@@ -90,7 +90,6 @@ public:
 	virtual void Close();
 
 	// --- EDIT ---
-#ifndef BUILDING_WASM_MODULE
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	// Манипуляции со страницами возможны в режиме редактирования
@@ -101,7 +100,6 @@ public:
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
-#endif
 
 	// --- READER ---
 

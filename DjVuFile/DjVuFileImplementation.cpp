@@ -247,14 +247,12 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 		long lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
 
-#ifndef BUILDING_WASM_MODULE
 		if (c_nPDFWriter == lRendererType)
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
 		}
 		else
-#endif
 		{
 			XmlUtils::CXmlNode oText = ParseText(pPage);
 			CreateFrame(pRenderer, pPage, nPageIndex, oText);

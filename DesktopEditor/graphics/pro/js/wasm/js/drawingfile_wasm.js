@@ -127,8 +127,8 @@ CFile.prototype._addPDF = function(buffer, password)
 		return false;
 
 	let data = new Uint8Array(buffer);
-	let stream = Module["_malloc"](data.length);
-	Module["HEAP8"].set(data, stream);
+	let stream2 = Module["_malloc"](data.length);
+	Module["HEAP8"].set(data, stream2);
 
 	let passwordPtr = 0;
 	if (password)
@@ -138,11 +138,11 @@ CFile.prototype._addPDF = function(buffer, password)
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 
-	let bRes = Module["_addPDF"](this.nativeFile, stream, data.length, passwordPtr);
+	let bRes = Module["_AddPDF"](this.nativeFile, stream2, data.length, passwordPtr);
 	if (bRes == 1)
-		this.stream.push(stream);
+		this.stream.push(stream2);
 	else
-		this._free(stream);
+		Module["_free"](stream2);
 
 	if (passwordPtr)
 		Module["_free"](passwordPtr);

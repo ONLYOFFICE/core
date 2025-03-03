@@ -146,9 +146,9 @@ CFile.prototype["isNeedPassword"] = function()
 	return this._isNeedPassword;
 };
 
-CFile.prototype["addPDF"] = function()
+CFile.prototype["addPDF"] = function(arrayBuffer, password)
 {
-	return this._addPDF();
+	return this._addPDF(arrayBuffer, password);
 };
 
 // INFO DOCUMENT

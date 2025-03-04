@@ -2924,7 +2924,7 @@ namespace OOX
                 case SimpleTypes::Spreadsheet::celltypeInlineStr:
                 case SimpleTypes::Spreadsheet::celltypeStr:
                 {
-                    if(m_oValue.IsInit() || m_oRichText.IsInit())
+                    if(m_oValue.IsInit() || m_oRichText.IsInit() || m_oFormula.IsInit())
                     {
                         if(!m_oFormula.IsInit())
                             CellRecord = writer->getNextRecord(XLSB::rt_CellSt);
@@ -2934,8 +2934,10 @@ namespace OOX
                         XLSB::XLWideString str;
                         if(m_oValue.IsInit())
                             str = m_oValue->m_sText;
-                        else
+                        else if (m_oRichText.IsInit())
                             str = m_oRichText->ToString();
+                        else
+                            str = L"";
                         *CellRecord << str;
                     }
                     else

@@ -57,7 +57,9 @@
 #include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 
 #include "../UnicodeConverter/UnicodeConverter.h"
+#ifndef BUILDING_WASM_MODULE
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
+#endif
 
 #if defined(GetTempPath)
 #undef GetTempPath
@@ -3675,7 +3677,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	if (!bIsNeedDownload)
 		return L"";
-
+#ifndef BUILDING_WASM_MODULE
 	std::wstring sTempFile = GetTempFile(wsTempDirectory);
 	NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
 	oDownloader.SetFilePath(sTempFile);
@@ -3685,7 +3687,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	if (NSFile::CFileBinary::Exists(sTempFile))
 		NSFile::CFileBinary::Remove(sTempFile);
-
+#endif
 	return L"";
 }
 PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)

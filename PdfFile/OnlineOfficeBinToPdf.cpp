@@ -146,13 +146,12 @@ namespace NSOnlineOfficeBinToPdf
 
 	enum class AddCommandType
 	{
-		EditPage   = 0, // ранее Annotation
+		EditPage   = 0,
 		AddPage    = 1,
 		RemovePage = 2,
 		WidgetInfo = 3,
 		MovePage   = 4,
 		MergePages = 5,
-		SplitPages = 6,
 		Undefined  = 255
 	};
 
@@ -177,7 +176,7 @@ namespace NSOnlineOfficeBinToPdf
 			int nLen = oReader.ReadInt();
 			AddCommandType CommandType = (AddCommandType)oReader.ReadByte();
 			int nPageNum = 0;
-			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages && CommandType != AddCommandType::SplitPages)
+			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages)
 				nPageNum = oReader.ReadInt();
 
 			if (nPageNum < 0)
@@ -221,16 +220,6 @@ namespace NSOnlineOfficeBinToPdf
 				for (int i = 0; i < nLength; ++i)
 					pPageIndex[i] = oReader.ReadInt();
 				pPdf->MergePages(wsPath, wsPassword, pPageIndex, nLength);
-				delete[] pPageIndex;
-				break;
-			}
-			case AddCommandType::SplitPages:
-			{
-				int nLength = oReader.ReadInt();
-				int* pPageIndex = new int[nLength];
-				for (int i = 0; i < nLength; ++i)
-					pPageIndex[i] = oReader.ReadInt();
-				pPdf->SplitPages(pPageIndex, nLength);
 				delete[] pPageIndex;
 				break;
 			}

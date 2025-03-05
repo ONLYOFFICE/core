@@ -952,12 +952,18 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	// ADD PDF
-	if (AddPDF(pGrFile, pFileData, (LONG)nFileDataLen, "") == 0)
+	// SPLIT & MERGE
+	BYTE* pSplitPages = NULL;
+	if (true)
 	{
-		Close(pGrFile);
-		RELEASEARRAYOBJECTS(pFileData);
-		return 1;
+		std::vector<int> arrPages = { 0, 1 };
+		pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size());
+		if (pSplitPages)
+		{
+			int nLength = READ_INT(pSplitPages);
+			if (MergePages(pGrFile, pSplitPages + 4, nLength - 4) == 0)
+				RELEASEARRAYOBJECTS(pSplitPages);
+		}
 	}
 
 	// INFO
@@ -1953,6 +1959,7 @@ int main(int argc, char* argv[])
 
 	Close(pGrFile);
 	RELEASEARRAYOBJECTS(pFileData);
+	RELEASEARRAYOBJECTS(pSplitPages);
 	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;

@@ -221,20 +221,6 @@ public:
 
 		return m_pFile ? true : false;
 	}
-	bool AddFile(const std::wstring& sFile, const std::wstring& sPassword)
-	{
-		if (0 != m_nType)
-			return false;
-
-		return ((CPdfFile*)m_pFile)->AddFromFile(sFile, sPassword);
-	}
-	bool AddFile(BYTE* data, LONG size, const std::wstring& sPassword)
-	{
-		if (0 != m_nType)
-			return false;
-
-		return ((CPdfFile*)m_pFile)->AddFromMemory(data, size, sPassword);
-	}
 
 	void CloseFile()
 	{
@@ -296,6 +282,18 @@ public:
 		if (!m_pFile)
 			return NULL;
 		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
+	}
+	BYTE* SplitPages(int* arrPageIndex, int nLength)
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength);
+		return NULL;
+	}
+	bool MergePages(BYTE* data, LONG size)
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->MergePages(data, size);
+		return false;
 	}
 
 	BYTE* GetGlyphs(int nPageIndex)

@@ -136,18 +136,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
-{
-	if (!m_pInternal->pEditor)
-		return false;
-	return m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
-}
 bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength)
 {
 	if (!m_pInternal->pEditor)
 		return false;
 
-	if (m_pInternal->pReader->AddFromFile(wsPath, wsPassword))
+	if (m_pInternal->pReader->MergePages(wsPath, wsPassword))
 		return m_pInternal->pEditor->MergePages(m_pInternal->pReader->GetLastPDFDocument(), arrPageIndex, unLength);
 	return false;
 }
@@ -349,17 +343,11 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 	else
 		m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-bool CPdfFile::AddFromFile(const std::wstring& file, const std::wstring& wsPassword)
+bool CPdfFile::MergePages(BYTE* data, DWORD length)
 {
 	if (!m_pInternal->pReader)
 		return false;
-	return m_pInternal->pReader->AddFromFile(file, wsPassword) && (m_pInternal->pReader->GetError() == 0);
-}
-bool CPdfFile::AddFromMemory(BYTE* data, DWORD length, const std::wstring& wsPassword)
-{
-	if (!m_pInternal->pReader)
-		return false;
-	return m_pInternal->pReader->AddFromMemory(data, length, wsPassword) && (m_pInternal->pReader->GetError() == 0);
+	return m_pInternal->pReader->MergePages(data, length) && (m_pInternal->pReader->GetError() == 0);
 }
 int CPdfFile::GetRotate(int nPageIndex)
 {
@@ -442,6 +430,18 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 	if (!m_pInternal->pReader)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
+}
+BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
+{
+	if (!m_pInternal->pReader)
+		return false;
+	RELEASEOBJECT(m_pInternal->pWriter);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+
+	RELEASEOBJECT(m_pInternal->pEditor);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
+
+	return m_pInternal->pReader->SplitPages(arrPageIndex, unLength);
 }
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {

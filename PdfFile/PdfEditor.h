@@ -40,6 +40,14 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 class CPdfEditor
 {
 public:
+	enum class Mode
+	{
+		Unknown,
+		ReadOnly,
+		WriteNew,
+		WriteAppend
+	};
+
 	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter);
 
 	bool IncrementalUpdates();
@@ -80,7 +88,7 @@ private:
 	int m_nError;
 	// 0 - Дозапись. pReader и pWriter работают с одним файлом
 	// 1 - Split. pReader и pWriter работают с разными файлами
-	int m_nMode;
+	Mode m_nMode;
 	int m_nEditPage;
 };
 

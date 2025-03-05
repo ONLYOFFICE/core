@@ -97,7 +97,6 @@ public:
 	bool DeletePage(int nPageIndex);
 	bool AddPage   (int nPageIndex);
 	bool MovePage  (int nPageIndex, int nPos);
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPassword = L"", const int* arrPageIndex = NULL, unsigned int unLength = 0);
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
 
@@ -127,8 +126,7 @@ public:
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
 
-	bool AddFromFile  (const std::wstring& file, const std::wstring& wsPassword = L"");
-	bool AddFromMemory(BYTE* data, DWORD length, const std::wstring& wsPassword = L"");
+	bool MergePages(BYTE* data, DWORD length);
 	bool ValidMetaData();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
@@ -136,6 +134,7 @@ public:
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
 	BYTE* GetAnnots    (int nPageIndex = -1);
+	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);

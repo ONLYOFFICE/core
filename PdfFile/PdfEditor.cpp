@@ -657,7 +657,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	m_pWriter    = _pWriter;
 	m_nEditPage  = -1;
 	m_nError     = 0;
-	m_nMode      = -1;
+	m_nMode      = Mode::Unknown;
 
 	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	if (!pPDFDocument)
@@ -676,10 +676,10 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 }
 bool CPdfEditor::IncrementalUpdates()
 {
-	if (m_nMode == 0)
+	if (m_nMode == Mode::Unknown)
 		return true;
 
-	m_nMode = 0;
+	m_nMode = Mode::WriteAppend;
 	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -904,7 +904,7 @@ void CPdfEditor::Close()
 	if (m_wsDstFile.empty())
 		 return;
 
-	if (m_nMode == 1)
+	if (m_nMode == Mode::WriteAppend)
 	{
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
@@ -1096,7 +1096,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 }
 bool CPdfEditor::EditPage(int _nPageIndex, bool bSet)
 {
-	if (m_nMode != 0 && !IncrementalUpdates())
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	PDFDoc* pPDFDocument = NULL;
@@ -1263,10 +1263,10 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet)
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc)
 {
-	if (m_nMode == 1 || (m_nMode == 0 && !_pDoc))
+	if (m_nMode == Mode::WriteNew || (m_nMode == Mode::WriteAppend && !_pDoc))
 		return false;
-	if (m_nMode < 0)
-		m_nMode = 1;
+	if (m_nMode == Mode::Unknown)
+		m_nMode = Mode::WriteNew;
 	PDFDoc* pPDFDocument = _pDoc ? _pDoc : m_pReader->GetFirstPDFDocument();
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -1372,7 +1372,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			oTemp.free();
 		}
 		pPage->Fix();
-		if (m_nMode == 0)
+		if (m_nMode == Mode::WriteAppend)
 		{
 			// pPage->AddContents(); // TODO pPage->AddContents чтобы можно было дописать изменения, если понадобится
 		}
@@ -1583,20 +1583,20 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 }
 bool CPdfEditor::MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength)
 {
-	if (m_nMode != 0 && !IncrementalUpdates())
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 	return SplitPages(arrPageIndex, unLength, pDoc);
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
-	if (m_nMode != 0 && !IncrementalUpdates())
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	return m_pWriter->GetDocument()->DeletePage(nPageIndex);
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode != 0 && !IncrementalUpdates())
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	// Применение добавления страницы для writer
@@ -1945,7 +1945,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 }
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
-	if (m_nMode != 0 && !IncrementalUpdates())
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;

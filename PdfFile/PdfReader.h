@@ -59,8 +59,6 @@ public:
 
 	bool LoadFromFile  (NSFonts::IApplicationFonts* pAppFonts, const std::wstring& file, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
-	bool AddFromFile   (const std::wstring& wsFile, const std::wstring& wsPassword = L"");
-	bool AddFromMemory (BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"");
 
 	void Close();
 
@@ -78,6 +76,8 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
+	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"");
+	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"");
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();

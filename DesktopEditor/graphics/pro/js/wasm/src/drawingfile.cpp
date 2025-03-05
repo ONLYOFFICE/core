@@ -102,13 +102,6 @@ WASM_EXPORT CDrawingFile* Open(BYTE* data, LONG size, const char* password)
 	pFile->OpenFile(data, size, sPassword);
 	return pFile;
 }
-WASM_EXPORT int AddPDF(CDrawingFile* pFile, BYTE* data, LONG size, const char* password)
-{
-	std::wstring sPassword = L"";
-	if (NULL != password)
-		sPassword = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)password, strlen(password));
-	return pFile->AddFile(data, size, sPassword) ? 1 : 0;
-}
 WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 {
 	if (!pFile)
@@ -132,7 +125,7 @@ WASM_EXPORT BYTE* GetGlyphs(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetGlyphs(nPageIndex);
 }
-WASM_EXPORT BYTE* GetLinks  (CDrawingFile* pFile, int nPageIndex)
+WASM_EXPORT BYTE* GetLinks(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetLinks(nPageIndex);
 }
@@ -183,6 +176,14 @@ WASM_EXPORT void SetCMapData(CDrawingFile* pFile, BYTE* data, int size)
 WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
 	return pFile->ScanPage(nPageIndex, mode);
+}
+WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength)
+{
+	return pFile->SplitPages(arrPageIndex, nLength);
+}
+WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size)
+{
+	return pFile->MergePages(data, size) ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

@@ -685,6 +685,7 @@ const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetDV() { return m_wsDV; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetT()  { return m_wsT; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetFontName()  { return m_wsFN; }
 const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetFontKey()   { return m_wsFK; }
+const std::wstring& CAnnotFieldInfo::CWidgetAnnotPr::GetOMetadata() { return m_wsOMetadata; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetTC() { return m_arrTC; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetBC() { return m_arrBC; }
 const std::vector<double>& CAnnotFieldInfo::CWidgetAnnotPr::GetBG() { return m_arrBG; }
@@ -880,6 +881,8 @@ void CAnnotFieldInfo::CWidgetAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader
 		m_nParentID = pReader->ReadInt();
 	if (nFlags & (1 << 18))
 		m_wsT = pReader->ReadString();
+	if (nFlags & (1 << 20))
+		m_wsOMetadata = pReader->ReadString();
 
 	// Action
 	int nAction = pReader->ReadInt();

@@ -1502,6 +1502,9 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	// 18 - Частичное имя поля - T
 	m_sT = DictLookupString(&oField, "T", 18);
 
+	// 20 - OO метаданные форм - OMetadata
+	m_sOMetadata = DictLookupString(&oField, "OMetadata", 20);
+
 	// Action - A
 	Object oAction;
 	if (pField->fieldLookup("A", &oAction)->isDict())
@@ -3729,6 +3732,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 19))
 		oRes.WriteString(m_sButtonFontName);
+	if (m_unFlags & (1 << 20))
+		oRes.WriteString(m_sOMetadata);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

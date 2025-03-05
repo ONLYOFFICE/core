@@ -542,6 +542,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
+		if (nFlags & (1 << 20))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 
 		//Action
 

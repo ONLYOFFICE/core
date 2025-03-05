@@ -654,6 +654,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			rec["name"] = reader.readString();
 		if (flags & (1 << 19))
 			rec["font"]["AP"] = reader.readString();
+		if (flags & (1 << 20))
+			rec["meta"] = reader.readString();
 		// Action
 		let nAction = reader.readInt();
 		if (nAction > 0)

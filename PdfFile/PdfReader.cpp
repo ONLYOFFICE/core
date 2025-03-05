@@ -684,6 +684,15 @@ PDFDoc* CPdfReader::GetLastPDFDocument()
 		return pPDFContext->m_pDocument;
 	return NULL;
 }
+PDFDoc* CPdfReader::GetPDFDocument(int PDFIndex)
+{
+	if (m_vPDFContext.empty())
+		return NULL;
+
+	if (PDFIndex >= 0 && PDFIndex < m_vPDFContext.size())
+		return m_vPDFContext[PDFIndex]->m_pDocument;
+	return NULL;
+}
 
 std::wstring CPdfReader::GetInfo()
 {

@@ -88,6 +88,7 @@ public:
 	NSFonts::IFontManager* GetFontManager() { return m_pFontManager; }
 	PDFDoc* GetFirstPDFDocument();
 	PDFDoc* GetLastPDFDocument();
+	PDFDoc* GetPDFDocument(int PDFIndex);
 	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL);
 
 	BYTE* GetStructure();

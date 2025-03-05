@@ -1590,11 +1590,26 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	if (!pDoc)
 		return NULL;
 
+	int nTotalPages = 0;
+	int nPDFIndex = 0;
+	std::map<int, std::vector<int>> mFileToPages;
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
-		PDFDoc* pPDFDocument = NULL;
-		int nPageIndex = m_pReader->GetPageIndex(arrPageIndex[i], &pPDFDocument);
-		SplitPages(&nPageIndex, 1, pPDFDocument);
+		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
+		if (!pPDFDocument)
+			break;
+		int nPages = pPDFDocument->getNumPages();
+		if (arrPageIndex[i] < nTotalPages + nPages)
+			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages + 1);
+		else
+			++nPDFIndex;
+	}
+
+	for (const std::pair<const int, std::vector<int>>& it : mFileToPages)
+	{
+		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(it.first);
+		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument))
+			return NULL;
 	}
 
 	BYTE* pRes = NULL;

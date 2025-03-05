@@ -70,7 +70,8 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* pDoc = NULL);
+	BYTE* SplitPages(const int* arrPageIndex, unsigned int unLength);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc);
 	bool MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength);
 
 private:

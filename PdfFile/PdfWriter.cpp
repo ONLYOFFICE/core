@@ -207,6 +207,19 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+{
+	// TODO: Переделать на код ошибки
+	if (!IsValid())
+		return 1;
+
+	m_oCommandManager.Flush();
+
+	if (!m_pDocument->SaveToMemory(pData, pLength))
+		return 1;
+
+	return 0;
+}
 void CPdfWriter::SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords)
 {
 	if (!IsValid())

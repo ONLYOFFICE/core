@@ -236,6 +236,22 @@ namespace PdfWriter
 
 		return true;
 	}
+	bool CDocument::SaveToMemory(BYTE** pData, int* pLength)
+	{
+		CMemoryStream* pStream = new CMemoryStream();
+		if (!pStream)
+			return false;
+
+		if (m_pJbig2)
+			m_pJbig2->FlushStreams();
+
+		SaveToStream(pStream);
+
+		*pData = pStream->GetBuffer();
+		*pLength = pStream->Size();
+		pStream->ClearWithoutAttack();
+		return true;
+	}
     void CDocument::SaveToStream(CStream* pStream)
 	{
 		m_pCatalog->AddMetadata(m_pXref, m_pInfo);

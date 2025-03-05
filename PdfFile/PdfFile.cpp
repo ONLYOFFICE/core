@@ -434,14 +434,18 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (!m_pInternal->pReader)
-		return false;
+		return NULL;
 	RELEASEOBJECT(m_pInternal->pWriter);
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
 
-	return m_pInternal->pReader->SplitPages(arrPageIndex, unLength);
+	BYTE* pRes = m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
+
+	RELEASEOBJECT(m_pInternal->pWriter);
+	RELEASEOBJECT(m_pInternal->pEditor);
+	return pRes;
 }
 BYTE* CPdfFile::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {

@@ -158,6 +158,8 @@ namespace PdfWriter
 		{
 			return StreamMemory;
 		}
+		BYTE* GetBuffer();
+		void ClearWithoutAttack();
 
 	private:
 

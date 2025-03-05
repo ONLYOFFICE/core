@@ -1100,7 +1100,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet)
 		return false;
 
 	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex - 1, &pPDFDocument);
+	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument);
 	if (nPageIndex < 0 || !pPDFDocument)
 		return NULL;
 
@@ -1581,11 +1581,45 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 	return true;
 }
-bool CPdfEditor::MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength)
+BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
+{
+	if (m_nMode != Mode::Unknown)
+		return NULL;
+	m_nMode = Mode::WriteNew;
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (!pDoc)
+		return NULL;
+
+	for (unsigned int i = 0; i < unLength; ++i)
+	{
+		PDFDoc* pPDFDocument = NULL;
+		int nPageIndex = m_pReader->GetPageIndex(arrPageIndex[i], &pPDFDocument);
+		SplitPages(&nPageIndex, 1, pPDFDocument);
+	}
+
+	BYTE* pRes = NULL;
+	int nLength = 0;
+	if (m_pWriter->SaveToMemory(&pRes, &nLength))
+	{
+		NSWasm::CData oRes;
+		oRes.SkipLen();
+
+		oRes.Write(pRes, nLength);
+		RELEASEARRAYOBJECTS(pRes);
+
+		oRes.WriteLen();
+		BYTE* bRes = oRes.GetBuffer();
+		oRes.ClearWithoutAttack();
+		return bRes;
+	}
+	RELEASEARRAYOBJECTS(pRes);
+	return NULL;
+}
+bool CPdfEditor::MergePages(PDFDoc* pDocument, const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
-	return SplitPages(arrPageIndex, unLength, pDoc);
+	return SplitPages(arrPageIndex, unLength, pDocument);
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
@@ -1627,7 +1661,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex - 1, &pPDFDocument, &pFontList);
+	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument, &pFontList);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return false;
@@ -1881,7 +1915,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
 	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage - 1, &pPDFDocument);
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return false;
@@ -2007,7 +2041,7 @@ bool CPdfEditor::IsEditPage()
 void CPdfEditor::ClearPage()
 {
 	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage - 1, &pPDFDocument);
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return;

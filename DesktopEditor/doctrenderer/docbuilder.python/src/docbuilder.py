@@ -612,4 +612,10 @@ builder_path = os.path.dirname(os.path.realpath(__file__))
 _loadLibrary(builder_path)
 CDocBuilder.Initialize(builder_path)
 
+def registerLibrary(license_path):
+    docbuilder_bin = os.path.dirname(os.path.realpath(__file__)) + os.pathsep + "docbuilder"
+    if ("windows" == platform.system().lower()):
+        docbuilder_bin += ".exe"
+    return subprocess.call([docbuilder_bin, license_path], stderr=subprocess.STDOUT, shell=True)    
+
 atexit.register(CDocBuilder.Dispose)

@@ -194,6 +194,7 @@ public:
 		const std::wstring& GetT();
 		const std::wstring& GetFontName();
 		const std::wstring& GetFontKey();
+		const std::wstring& GetOMetadata();
 		const std::vector<double>& GetTC();
 		const std::vector<double>& GetBC();
 		const std::vector<double>& GetBG();
@@ -223,6 +224,7 @@ public:
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
 		std::wstring m_wsFK;
+		std::wstring m_wsOMetadata;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;

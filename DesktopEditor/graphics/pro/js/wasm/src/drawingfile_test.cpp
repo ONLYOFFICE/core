@@ -542,6 +542,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
+		if (nFlags & (1 << 20))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 
 		//Action
 
@@ -807,6 +814,16 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		std::string arrBlendMode[] = { "Normal", "Multiply", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "HardLight",
 									   "SoftLight", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity" };
 		std::cout << "Type " << arrBlendMode[nPathLength] << ", ";
+
+		int bText = READ_BYTE(pWidgetsAP + i);
+		i += 1;
+		if (bText != 0)
+		{
+			nPathLength = READ_INT(pWidgetsAP + i);
+			i += 4;
+			std::cout << "Text " << std::string((char*)(pWidgetsAP + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 	}
 	std::cout << std::endl;
 }
@@ -1090,7 +1107,7 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);
@@ -1165,7 +1182,7 @@ int main(int argc, char* argv[])
 	}
 
 	// INTERACTIVE FORMS
-	if (false)
+	if (true)
 	{
 		ReadInteractiveFormsFonts(pGrFile, 1);
 		ReadInteractiveFormsFonts(pGrFile, 2);

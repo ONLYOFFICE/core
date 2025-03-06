@@ -1274,7 +1274,7 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 	Object oOpt;
 	// 10 - Список значений
-	if (pField->fieldLookup("Opt", &oOpt)->isArray())
+	if (oField.dictLookup("Opt", &oOpt)->isArray())
 	{
 		m_unFlags |= (1 << 10);
 		int nOptLength = oOpt.arrayGetLength();
@@ -1501,6 +1501,9 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// 18 - Частичное имя поля - T
 	m_sT = DictLookupString(&oField, "T", 18);
+
+	// 20 - OO метаданные форм - OMetadata
+	m_sOMetadata = DictLookupString(&oField, "OMetadata", 20);
 
 	// Action - A
 	Object oAction;
@@ -3545,6 +3548,7 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
+	pView->sText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 BYTE CAnnotAP::GetBlendMode()
 {
@@ -3577,6 +3581,14 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(npSubMatrix >> 32);
 
 		oRes.WriteBYTE(m_arrAP[i]->nBlendMode);
+
+		if (m_arrAP[i]->sText.empty())
+			oRes.WriteBYTE(0);
+		else
+		{
+			oRes.WriteBYTE(1);
+			oRes.WriteString(m_arrAP[i]->sText);
+		}
 	}
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)
@@ -3720,6 +3732,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 19))
 		oRes.WriteString(m_sButtonFontName);
+	if (m_unFlags & (1 << 20))
+		oRes.WriteString(m_sOMetadata);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

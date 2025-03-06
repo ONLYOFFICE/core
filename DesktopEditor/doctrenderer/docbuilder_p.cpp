@@ -1596,6 +1596,15 @@ namespace NSDoctRenderer
 		return this->SetProperty(sA.c_str(), value);
 	}
 
+	int CDocBuilder::GetPropertyInt(const wchar_t* param)
+	{
+		std::wstring sParam = std::wstring(param);
+		std::string sParamA = U_TO_UTF8(sParam);
+		if ("--save-use-only-names" == sParamA)
+			return m_pInternal->m_bIsServerSafeVersion ? 1 : 0;
+		return -1;
+	}
+
 	void CDocBuilder::Initialize(const wchar_t* directory)
 	{
 		std::wstring sDirectory = L"";

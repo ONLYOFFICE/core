@@ -542,17 +542,34 @@ namespace StarMath
 	}
 	std::vector<COneElement*> COOXml2Odf::ConversionMRun(OOX::Logic::CMRun *pMRun)
 	{
-		StValuePr* stRpr(nullptr);
 		std::vector<COneElement*> arLine;
 		if(pMRun == nullptr) return arLine;
+
+		StValuePr* stRpr(nullptr);		
 		if(pMRun->m_oRPr.GetPointer() != nullptr)
 			stRpr = ConversionRunProperties(pMRun->m_oRPr.GetPointer());
 		else if (pMRun->m_oARPr.GetPointer() != nullptr)
 			ConversionARpr(pMRun->m_oARPr.GetPointer(),stRpr);
+
 		if(pMRun->m_oMRPr.GetPointer() != nullptr)
 			ConversionMRunProperties(pMRun->m_oMRPr.GetPointer(),stRpr);
-		if(pMRun->m_oMText.GetPointer() != nullptr)
-			arLine = ConversionMT(pMRun->m_oMText.GetPointer(),stRpr,pMRun->m_oMRPr.GetPointer());
+
+		for (size_t i = 0; i < pMRun->m_arrItems.size(); ++i)
+		{
+			switch (pMRun->m_arrItems[i]->getType())
+			{
+			case OOX::et_m_t:
+			{
+				std::vector<COneElement*> arLine_run;
+				arLine_run = ConversionMT(dynamic_cast<OOX::Logic::CMText*>(pMRun->m_arrItems[i]), stRpr, pMRun->m_oMRPr.GetPointer());
+				arLine.insert(arLine.end(), arLine_run.begin(), arLine_run.end());
+				arLine_run.clear();
+			}break;
+			default:
+				break;
+			}
+		}
+
 		CreateAttribute(stRpr);
 		if(stRpr != nullptr && !arLine.empty())
 		{
@@ -564,8 +581,8 @@ namespace StarMath
 			{
 				if(i != 0 )
 				{
-						arLine[i]->SetAttribute(stRpr);
-						stRpr->AddRef();
+					arLine[i]->SetAttribute(stRpr);
+					stRpr->AddRef();
 				}
 				else if(i == 0 )
 					arLine[i]->SetAttribute(stRpr);

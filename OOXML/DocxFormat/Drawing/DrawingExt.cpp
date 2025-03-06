@@ -343,6 +343,7 @@ namespace OOX
 					}
 					else if (sName == L"pivotCacheDefinition")
 					{
+                        m_sAdditionalNamespace = L"xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"";
 						m_oPivotCacheDefinitionExt = oReader;
 					}
 					else if (sName == L"externalReference")

@@ -179,7 +179,7 @@ void _docx_drawing::serialize_text(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
 	{			
-		if (strTextContent)
+		if (strTextContent && !strTextContent->empty())
 		{
 			CP_XML_NODE(L"wps:txbx")
 			{  

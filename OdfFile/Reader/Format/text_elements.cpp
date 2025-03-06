@@ -255,6 +255,9 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
+	if (Context.get_list_style_level() == 0)
+		return;
+
 	if (content_.size() <= 0)
 		return;
 
@@ -279,7 +282,7 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 			style_instance* paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, false);
 			if (paragraph_style && paragraph_style->content())
 			{
-				paragraph_style->content()->get_style_text_properties(true)->content_.fo_color_ = text_props->content_.fo_color_;
+				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
 			}
 		}
 	}
@@ -515,6 +518,15 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.process_headers_footers_) 
 		return;
+
+	std::wstring currentMasterPageName = Context.get_master_page_name();
+	style_master_page* masterPage = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(currentMasterPageName);
+
+	if (masterPage && masterPage->attlist_.style_next_style_name_)
+	{
+		Context.set_next_master_page_name(*masterPage->attlist_.style_next_style_name_);
+		Context.next_dump_page_properties(true);
+	}
 	
 	if (0 == Context.get_page_break_after() && 0 == Context.get_page_break_before())
 	{

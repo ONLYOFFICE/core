@@ -172,12 +172,13 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		oox::_oox_fill fill;
 		
-		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances, is_object_);
 		if (properties)
 		{
 			properties->apply_to(Context.get_slide_context().get_properties());
 
 			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
+
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
@@ -188,6 +189,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top", Compute_BorderWidth(properties, sideTop)));
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
+
+			if (properties->style_mirror_)
+			{
+				bool flipV = properties->style_mirror_->find(L"vertical") != std::wstring::npos;
+				bool flipH = properties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+				Context.get_slide_context().set_property(odf_reader::_property(L"flipV", flipV));
+				Context.get_slide_context().set_property(odf_reader::_property(L"flipH", flipH));
+			}
 
 			if (properties->style_columns_)
 				properties->style_columns_->pptx_convert(Context);
@@ -403,7 +413,7 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	if (draw_frame_ptr)
+	if (draw_frame_ptr) 
 	{
 		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
 		if (frame)

@@ -71,17 +71,16 @@ public:
 
     std::wstring get_draw_name() const;
 
+	office_element_ptr_array	content_;
+	office_element_ptr			animation_;
+	office_element_ptr			presentation_notes_;
+
+	draw_page_attr				attlist_;
 private:
 	void pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, odf_types::presentation_class::type PresentationClass);
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
-
-    office_element_ptr_array	content_;
-	office_element_ptr			animation_;
-	office_element_ptr			presentation_notes_;
-
-	draw_page_attr				attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_page);

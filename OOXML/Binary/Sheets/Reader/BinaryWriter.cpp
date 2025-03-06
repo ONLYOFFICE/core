@@ -39,6 +39,7 @@
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
+#include "../../../PPTXFormat/Logic/Shape.h"
 
 #include "../../../XlsxFormat/Xlsx.h"
 #include "../../../XlsxFormat/XlsxFlat.h"
@@ -2149,6 +2150,23 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 		WriteCalcPr(workbook.m_oCalcPr.get());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+    if (workbook.m_oPivotCaches.IsInit())
+    {
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCaches);
+        WritePivotCaches(workbook, workbook.m_oPivotCaches.get());
+        if (workbook.m_oExtLst.IsInit())
+        {
+            for(size_t i = 0; i < workbook.m_oExtLst->m_arrExt.size(); ++i)
+            {
+                OOX::Drawing::COfficeArtExtension* pExt = workbook.m_oExtLst->m_arrExt[i];
+                if ( pExt->m_oWorkbookPivotCaches.IsInit() )
+                {
+                   WritePivotCaches(workbook, pExt->m_oWorkbookPivotCaches.get());
+                }
+            }
+        }
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
 //ExternalReferences
 	if(workbook.m_oExternalReferences.IsInit())
 	{
@@ -2612,6 +2630,61 @@ void BinaryWorkbookTableWriter::WriteCalcPr(const OOX::Spreadsheet::CCalcPr& CCa
 		m_oBcw.m_oStream.WriteBOOL(CCalcPr.m_oForceFullCalc->ToBool());
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
+}
+void BinaryWorkbookTableWriter::WritePivotCaches(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCaches& CPivotCaches)
+{
+    int nCurPos = 0;
+    for(size_t i = 0, length = CPivotCaches.m_arrItems.size(); i < length; ++i)
+    {
+        OOX::Spreadsheet::CWorkbookPivotCache* pivotCache = CPivotCaches.m_arrItems[i];
+        //cache
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCache);
+        WritePivotCache(workbook, *pivotCache);
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
+}
+void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& workbook, const OOX::Spreadsheet::CWorkbookPivotCache& CPivotCache)
+{
+     int nCurPos = 0;
+
+    if(CPivotCache.m_oCacheId.IsInit())
+    {
+        nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::id);
+        m_oBcw.m_oStream.WriteULONG(CPivotCache.m_oCacheId->GetValue());
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
+    if(CPivotCache.m_oRid.IsInit())
+    {
+        smart_ptr<OOX::File> pFile = workbook.Find(OOX::RId(CPivotCache.m_oRid->GetValue()));
+        if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheDefinition == pFile->type())
+        {
+            auto pivotCacheFile = static_cast<OOX::Spreadsheet::CPivotCacheDefinitionFile*>(pFile.GetPointer());
+            if(pivotCacheFile->m_oPivotCashDefinition.IsInit())
+            {
+                nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cache);
+                NSStringUtils::CStringBuilder writer;
+                pivotCacheFile->m_oPivotCashDefinition->toXML(writer);
+                auto wstringData = writer.GetData();
+                m_oBcw.m_oStream.WriteStringUtf8(wstringData);
+                m_oBcw.WriteItemWithLengthEnd(nCurPos);
+            }
+            auto records = pivotCacheFile->GetContainer();
+            if(!records.empty())
+            {
+                for(auto recordFile:records)
+                {
+                    if(recordFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheRecords == recordFile->type())
+                    {
+                        auto record = static_cast<OOX::Spreadsheet::CPivotCacheRecordsFile*>(recordFile.GetPointer());
+                        nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::record);
+                        m_oBcw.m_oStream.WriteBYTEArray(record->m_pData, record->m_nDataLength);
+                        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+                    }
+                }
+            }
+        }
+    }
+
 }
 void BinaryWorkbookTableWriter::WriteConnections(const OOX::Spreadsheet::CConnections& connections)
 {
@@ -4691,15 +4764,26 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
             }
         }
     }
-	//pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
-	//OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
-	//if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTable.IsInit()))
-	//{
-	//	BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
-	//	nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
-	//	oBinaryTableWriter.WriteQueryTable(pPivotTableFile->m_oPivotTable.get());
-	//	m_oBcw.WriteItemWithLengthEnd(nCurPos);		
-	//}
+    pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
+    OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
+    if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTableDefinition.IsInit()))
+    {
+        BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
+        if(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId.IsInit())
+        {
+            auto cachePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cacheId);
+            m_oBcw.m_oStream.WriteULONG(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId->GetValue());
+            m_oBcw.WriteItemWithLengthEnd(cachePos);
+        }
+        NSStringUtils::CStringBuilder writer;
+        pPivotTableFile->m_oPivotTableDefinition->toXML(writer);
+        auto wstringData = writer.GetData();
+        auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
+        m_oBcw.m_oStream.WriteStringUtf8(wstringData);
+        m_oBcw.WriteItemWithLengthEnd(tablePos);
+        m_oBcw.WriteItemWithLengthEnd(nCurPos);
+    }
 }
 void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 {
@@ -5887,6 +5971,14 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 				pShapeElem	= pFind->second.pElement;
 			}			
 		}
+		if (!pShapeElem && pDrawing)
+		{
+			std::map<unsigned int, OOX::WritingElement*>::iterator pFind = pDrawing->m_mapShapes.find(pOleObject->m_oShapeId->GetValue());
+			if (pFind != pDrawing->m_mapShapes.end())
+			{
+				pShapeElem = pFind->second;
+			}
+		}
 		SimpleTypes::Spreadsheet::CCellAnchorType eAnchorType;
 		eAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);		
 		bool bSetAnchor = false;
@@ -5947,13 +6039,13 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 
 		smart_ptr<OOX::Image> pImageFileCache;
 
-		std::wstring	sIdImageFileCache;
+		std::wstring sIdImageFileCache;
 		if ((NULL != pShapeElem) && (OOX::et_v_shapetype != pShapeElem->getType()))
 		{
-			OOX::Vml::CShape* pShape = static_cast<OOX::Vml::CShape*>(pShapeElem);
-			for (size_t j = 0; (pShape) && (j < pShape->m_arrItems.size()); ++j)
+			OOX::Vml::CShape* pShapeVml = dynamic_cast<OOX::Vml::CShape*>(pShapeElem);
+			for (size_t j = 0; (pShapeVml) && (j < pShapeVml->m_arrItems.size()); ++j)
 			{
-				OOX::WritingElement* pChildElemShape = pShape->m_arrItems[j];
+				OOX::WritingElement* pChildElemShape = pShapeVml->m_arrItems[j];
 				if (!bSetAnchor && OOX::et_v_ClientData == pChildElemShape->getType())
 				{
 					OOX::Vml::CClientData* pClientData = static_cast<OOX::Vml::CClientData*>(pChildElemShape);
@@ -5982,7 +6074,17 @@ void BinaryWorksheetTableWriter::WriteOleObjects(const OOX::Spreadsheet::CWorksh
 					}
 				}
 			}
+
+			if (!pShapeVml)
+			{
+				PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>(pShapeElem);
+				if (pShape && pShape->spPr.xfrm.IsInit())
+				{
+					olePic->spPr.xfrm = pShape->spPr.xfrm;
+				}
+			}
 		}
+
 		if (false == pImageFileCache.IsInit() && pOleObject->m_oObjectPr.IsInit() && pOleObject->m_oObjectPr->m_oRid.IsInit())
 		{
 			sIdImageFileCache = pOleObject->m_oObjectPr->m_oRid->GetValue();
@@ -6567,6 +6669,8 @@ void BinaryWorksheetTableWriter::WriteDrawing(const OOX::Spreadsheet::CWorksheet
 
 	if (pCellAnchor->m_oElement.IsInit() == false && 
 		pCellAnchor->m_sVmlSpId.IsInit() == false) return;
+
+	m_oBcw.m_oStream.ClearCurShapePositionAndSizes();
 
 	WriteCellAnchor(pCellAnchor);
 

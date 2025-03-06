@@ -2,7 +2,7 @@
 	"name": "drawingfile",
 	"res_folder": "./deploy",
 	"wasm": true,
-	"asm": true,
+	"asm": false,
 	"embed_mem_file": true,
 	"run_before": "before.py",
 	"run_after": "after.py",
@@ -144,7 +144,7 @@
 	},
 	{
 		"folder": "../../",
-		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "BooleanOperations.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
+		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "BooleanOperations.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp", "MetafileToRenderer.cpp"]
 	},
 	{
 		"folder": "../../../fontengine/",
@@ -156,7 +156,7 @@
 	},
 	{
 		"folder": "../../../common/",
-		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp"]
+		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp", "SystemUtils.cpp"]
 	},
 	{
 		"folder": "../../../../Common/3dParty/icu/icu/source/common/",
@@ -180,11 +180,15 @@
 	},
 	{
 		"folder": "../../../../PdfFile/",
-		"files": ["PdfFile.cpp", "PdfReader.cpp"]
+		"files": ["PdfFile.cpp", "PdfReader.cpp", "PdfWriter.cpp", "PdfEditor.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/SrcReader/",
 		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp"]
+	},
+	{
+		"folder": "../../../../PdfFile/SrcWriter/",
+		"files": ["AcroForm.cpp", "Annotation.cpp", "Catalog.cpp", "Destination.cpp", "Document.cpp", "Encrypt.cpp", "EncryptDictionary.cpp", "Field.cpp", "Font.cpp", "Font14.cpp", "FontCidTT.cpp", "FontTT.cpp", "FontTTWriter.cpp", "GState.cpp", "Image.cpp", "Info.cpp", "Metadata.cpp", "Objects.cpp", "Outline.cpp", "Pages.cpp", "Pattern.cpp", "ResourcesDictionary.cpp", "Shading.cpp", "States.cpp", "Streams.cpp", "Utils.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/Resources/",
@@ -192,7 +196,7 @@
 	},
 	{
 		"folder": "../../../../PdfFile/lib/",
-		"files": ["fofi/FofiBase.cc", "fofi/FofiEncodings.cc", "fofi/FofiIdentifier.cc", "fofi/FofiTrueType.cc", "fofi/FofiType1.cc", "fofi/FofiType1C.cc", "goo/FixedPoint.cc", "goo/gfile.cc", "goo/GHash.cc", "goo/GList.cc", "goo/gmem.cc", "goo/gmempp.cc", "goo/GString.cc", "goo/parseargs.c", "goo/Trace.cc", "splash/Splash.cc", "splash/SplashBitmap.cc", "splash/SplashClip.cc", "splash/SplashFont.cc", "splash/SplashFontEngine.cc", "splash/SplashFontFile.cc", "splash/SplashFontFileID.cc", "splash/SplashFTFont.cc", "splash/SplashFTFontEngine.cc", "splash/SplashFTFontFile.cc", "splash/SplashPath.cc", "splash/SplashPattern.cc", "splash/SplashScreen.cc", "splash/SplashState.cc", "splash/SplashXPath.cc", "splash/SplashXPathScanner.cc", "xpdf/AcroForm.cc", "xpdf/Annot.cc", "xpdf/Array.cc", "xpdf/BuiltinFont.cc", "xpdf/BuiltinFontTables.cc", "xpdf/Catalog.cc", "xpdf/CharCodeToUnicode.cc", "xpdf/CMap.cc", "xpdf/Decrypt.cc", "xpdf/Dict.cc", "xpdf/DisplayState.cc", "xpdf/Error.cc", "xpdf/FontEncodingTables.cc", "xpdf/Function.cc", "xpdf/Gfx.cc", "xpdf/GfxFont.cc", "xpdf/GfxState.cc", "xpdf/GlobalParams.cc", "xpdf/ImageOutputDev.cc", "xpdf/JArithmeticDecoder.cc", "xpdf/JBIG2Stream.cc", "xpdf/JPXStream.cc", "xpdf/Lexer.cc", "xpdf/Link.cc", "xpdf/NameToCharCode.cc", "xpdf/Object.cc", "xpdf/OptionalContent.cc", "xpdf/Outline.cc", "xpdf/OutputDev.cc", "xpdf/Page.cc", "xpdf/Parser.cc", "xpdf/PDF417Barcode.cc", "xpdf/PDFCore.cc", "xpdf/PDFDoc.cc", "xpdf/PDFDocEncoding.cc", "xpdf/PreScanOutputDev.cc", "xpdf/PSOutputDev.cc", "xpdf/PSTokenizer.cc", "xpdf/SecurityHandler.cc", "xpdf/ShadingImage.cc", "xpdf/SplashOutputDev.cc", "xpdf/Stream.cc", "xpdf/TextOutputDev.cc", "xpdf/TextString.cc", "xpdf/TileCache.cc", "xpdf/TileCompositor.cc", "xpdf/TileMap.cc", "xpdf/UnicodeMap.cc", "xpdf/UnicodeRemapping.cc", "xpdf/UnicodeTypeTable.cc", "xpdf/UTF8.cc", "xpdf/WebFont.cc", "xpdf/XFAScanner.cc", "xpdf/XRef.cc", "xpdf/Zoox.cc", "PdfFile.cpp", "PdfReader.cpp"]
+		"files": ["fofi/FofiBase.cc", "fofi/FofiEncodings.cc", "fofi/FofiIdentifier.cc", "fofi/FofiTrueType.cc", "fofi/FofiType1.cc", "fofi/FofiType1C.cc", "goo/FixedPoint.cc", "goo/gfile.cc", "goo/GHash.cc", "goo/GList.cc", "goo/gmem.cc", "goo/gmempp.cc", "goo/GString.cc", "goo/parseargs.c", "goo/Trace.cc", "splash/Splash.cc", "splash/SplashBitmap.cc", "splash/SplashClip.cc", "splash/SplashFont.cc", "splash/SplashFontEngine.cc", "splash/SplashFontFile.cc", "splash/SplashFontFileID.cc", "splash/SplashFTFont.cc", "splash/SplashFTFontEngine.cc", "splash/SplashFTFontFile.cc", "splash/SplashPath.cc", "splash/SplashPattern.cc", "splash/SplashScreen.cc", "splash/SplashState.cc", "splash/SplashXPath.cc", "splash/SplashXPathScanner.cc", "xpdf/AcroForm.cc", "xpdf/Annot.cc", "xpdf/Array.cc", "xpdf/BuiltinFont.cc", "xpdf/BuiltinFontTables.cc", "xpdf/Catalog.cc", "xpdf/CharCodeToUnicode.cc", "xpdf/CMap.cc", "xpdf/Decrypt.cc", "xpdf/Dict.cc", "xpdf/DisplayState.cc", "xpdf/Error.cc", "xpdf/FontEncodingTables.cc", "xpdf/Function.cc", "xpdf/Gfx.cc", "xpdf/GfxFont.cc", "xpdf/GfxState.cc", "xpdf/GlobalParams.cc", "xpdf/ImageOutputDev.cc", "xpdf/JArithmeticDecoder.cc", "xpdf/JBIG2Stream.cc", "xpdf/JPXStream.cc", "xpdf/Lexer.cc", "xpdf/Link.cc", "xpdf/NameToCharCode.cc", "xpdf/Object.cc", "xpdf/OptionalContent.cc", "xpdf/Outline.cc", "xpdf/OutputDev.cc", "xpdf/Page.cc", "xpdf/Parser.cc", "xpdf/PDF417Barcode.cc", "xpdf/PDFCore.cc", "xpdf/PDFDoc.cc", "xpdf/PDFDocEncoding.cc", "xpdf/PreScanOutputDev.cc", "xpdf/PSOutputDev.cc", "xpdf/PSTokenizer.cc", "xpdf/SecurityHandler.cc", "xpdf/ShadingImage.cc", "xpdf/SplashOutputDev.cc", "xpdf/Stream.cc", "xpdf/TextOutputDev.cc", "xpdf/TextString.cc", "xpdf/TileCache.cc", "xpdf/TileCompositor.cc", "xpdf/TileMap.cc", "xpdf/UnicodeMap.cc", "xpdf/UnicodeRemapping.cc", "xpdf/UnicodeTypeTable.cc", "xpdf/UTF8.cc", "xpdf/WebFont.cc", "xpdf/XFAScanner.cc", "xpdf/XRef.cc", "xpdf/Zoox.cc"]
 	},
 	{
 		"folder": "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2/",

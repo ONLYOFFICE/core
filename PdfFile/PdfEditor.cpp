@@ -1585,7 +1585,6 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::Unknown)
 		return NULL;
-	m_nMode = Mode::WriteNew;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return NULL;
@@ -1593,28 +1592,32 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	int nTotalPages = 0;
 	int nPDFIndex = 0;
 	std::map<int, std::vector<int>> mFileToPages;
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
+	int nPages = pPDFDocument->getNumPages();
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
-		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
-		if (!pPDFDocument)
-			break;
-		int nPages = pPDFDocument->getNumPages();
 		if (arrPageIndex[i] < nTotalPages + nPages)
-			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages + 1);
+			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages);
 		else
+		{
 			++nPDFIndex;
+			pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
+			if (!pPDFDocument)
+				break;
+			nPages = pPDFDocument->getNumPages();
+		}
 	}
 
 	for (const std::pair<const int, std::vector<int>>& it : mFileToPages)
 	{
-		PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(it.first);
+		pPDFDocument = m_pReader->GetPDFDocument(it.first);
 		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument))
 			return NULL;
 	}
 
 	BYTE* pRes = NULL;
 	int nLength = 0;
-	if (m_pWriter->SaveToMemory(&pRes, &nLength))
+	if (m_pWriter->SaveToMemory(&pRes, &nLength) == 0)
 	{
 		NSWasm::CData oRes;
 		oRes.SkipLen();

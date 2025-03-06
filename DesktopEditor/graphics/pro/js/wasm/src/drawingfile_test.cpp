@@ -961,6 +961,12 @@ int main(int argc, char* argv[])
 		if (pSplitPages)
 		{
 			int nLength = READ_INT(pSplitPages);
+
+			NSFile::CFileBinary oFile;
+			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test2.pdf"))
+				oFile.WriteFile(pSplitPages + 4, nLength - 4);
+			oFile.CloseFile();
+
 			if (MergePages(pGrFile, pSplitPages + 4, nLength - 4) == 0)
 				RELEASEARRAYOBJECTS(pSplitPages);
 		}
@@ -1104,7 +1110,7 @@ int main(int argc, char* argv[])
 	}
 
 	// GLYPHS
-	if (true && nPagesCount > 0)
+	if (false && nPagesCount > 0)
 	{
 		BYTE* pGlyphs = GetGlyphs(pGrFile, nTestPage);
 		nLength = READ_INT(pGlyphs);

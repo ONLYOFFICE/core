@@ -2176,6 +2176,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetDV(pPr->GetDV());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
+		if (nFlags & (1 << 20))
+			pWidgetAnnot->SetOMetadata(pPr->GetOMetadata());
 
 		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
 		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)

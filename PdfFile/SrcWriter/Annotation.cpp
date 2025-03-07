@@ -1628,6 +1628,16 @@ namespace PdfWriter
 			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 		}
 	}
+	void CWidgetAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
+	{
+		std::string sValue = U_TO_UTF8(wsOMetadata);
+		CDictObject* pOwner = GetObjOwnValue("OMetadata");
+		if (!pOwner)
+		{
+			pOwner = this;
+			pOwner->Add("OMetadata", new CStringObject(sValue.c_str(), true));
+		}
+	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{
 		CheckMK();

@@ -185,6 +185,14 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
 
     return false;
 }
+void GlobalParamsAdaptor::AddTextFormField(const std::wstring& sText)
+{
+	m_sTextFormField += sText;
+}
+std::string GlobalParamsAdaptor::GetTextFormField()
+{
+	return U_TO_UTF8(m_sTextFormField);
+}
 
 bool operator==(const Ref &a, const Ref &b)
 {

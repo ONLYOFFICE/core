@@ -141,7 +141,8 @@ SOURCES += \
 	../../../Common/SimpleTypes_Shared.cpp \
 	../../../Common/SimpleTypes_Spreadsheet.cpp \
 	../../../Common/SimpleTypes_Vml.cpp \
-	../../../Common/ComplexTypes.cpp \
+        ../../../Common/SimpleTypes_Draw.cpp \
+        ../../../Common/ComplexTypes.cpp \
 	../../../SystemUtility/SystemUtility.cpp \
 	../../../SystemUtility/FileUtils.cpp \
 	../../../XML/XmlSimple.cpp \
@@ -187,8 +188,15 @@ SOURCES += \
 	../../../XlsxFormat/ExternalLinks/ExternalLinks.cpp \
         ../../../XlsxFormat/Workbook/Metadata.cpp \
         ../../../XlsxFormat/RichData/RdRichValue.cpp \
-        ../../../XlsxFormat/Ole/OleObjects.cpp
-}
+        ../../../XlsxFormat/Ole/OleObjects.cpp \
+        ../../../VsdxFormat/Vsdx.cpp \
+        ../../../VsdxFormat/VisioPages.cpp \
+        ../../../VsdxFormat/VisioDocument.cpp \
+        ../../../VsdxFormat/VisioConnections.cpp \
+        ../../../VsdxFormat/Shapes.cpp \
+        ../../../VsdxFormat/FileFactory_Draw.cpp \
+        ../../../VsdxFormat/FileTypes_Draw.cpp
+        }
 
 
 SOURCES += \
@@ -212,7 +220,8 @@ HEADERS += \
 	../../../Common/SimpleTypes_Shared.h \
 	../../../Common/SimpleTypes_Vml.h \
 	../../../Common/SimpleTypes_Word.h \
-	../../../Common/Size.h \
+        ../../../Common/SimpleTypes_Draw.h \
+        ../../../Common/Size.h \
 	../../../Common/Unit.h \
 	../../../Common/Wrap.h \
 	../../../Common/ZIndex.h \
@@ -383,4 +392,11 @@ HEADERS += \
 	../../../XlsxFormat/NamedSheetViews/NamedSheetViews.h \
         ../../../XlsxFormat/Workbook/Metadata.h \
         ../../../XlsxFormat/RichData/RdRichValue.h \
+        ../../../VsdxFormat/Vsdx.h \
+        ../../../VsdxFormat/VisioPages.h \
+        ../../../VsdxFormat/VisioDocument.h \
+        ../../../VsdxFormat/VisioConnections.h \
+        ../../../VsdxFormat/Shapes.h \
+        ../../../VsdxFormat/FileFactory_Draw.h \
+        ../../../VsdxFormat/FileTypes_Draw.h \
         docx_format.h

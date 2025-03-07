@@ -34,6 +34,7 @@
 #include "lib/docx.h"
 #include "lib/xlsx.h"
 #include "lib/pptx.h"
+#include "lib/vsdx.h"
 
 #include "lib/doc.h"
 
@@ -1393,7 +1394,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	// visio
+	// draw
 	_UINT32 fromVsdxDir(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = 0;
@@ -1682,6 +1683,18 @@ namespace NExtractTools
 			oInputParams.m_bMacro = false;
 			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
 			result = xlst2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDX2VSDT:
+		{
+			result = vsdx2vsdt(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT2VSDX:
+		{
+			oInputParams.m_bMacro = false;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DRAW_VSDX);
+			result = vsdt2vsdx(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_PPTX2PPTT:

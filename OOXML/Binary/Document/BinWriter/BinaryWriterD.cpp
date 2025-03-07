@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "BinWriters.h"
+#include "BinaryWriterD.h"
 
 #include "../DocWrapper/FontProcessor.h"
 #include "../../../../Common/Base64.h"
@@ -37,7 +37,7 @@
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
-#include "../../Sheets/Reader/BinaryWriter.h"
+#include "../../Sheets/Reader/BinaryWriterS.h"
 #include "BinEquationWriter.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"

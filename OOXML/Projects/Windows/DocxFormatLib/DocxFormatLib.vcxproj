@@ -242,6 +242,7 @@
     <ClInclude Include="..\..\..\Base\WinColor.h" />
     <ClInclude Include="..\..\..\Common\ComplexTypes.h" />
     <ClInclude Include="..\..\..\Common\SimpleTypes_Base.h" />
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Draw.h" />
     <ClInclude Include="..\..\..\Common\SimpleTypes_Drawing.h" />
     <ClInclude Include="..\..\..\Common\SimpleTypes_OMath.h" />
     <ClInclude Include="..\..\..\Common\SimpleTypes_Rtf.h" />
@@ -327,6 +328,13 @@
     <ClInclude Include="..\..\..\DocxFormat\WritingElement.h" />
     <ClInclude Include="..\..\..\SystemUtility\File.h" />
     <ClInclude Include="..\..\..\SystemUtility\SystemUtility.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\FileFactory_Draw.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\FileTypes_Draw.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\Shapes.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\VisioConnections.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\VisioDocument.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\VisioPages.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\Vsdx.h" />
     <ClInclude Include="..\..\..\XlsxFormat\CalcChain\CalcChain.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Chart\Chart.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Chart\ChartColors.h" />
@@ -412,6 +420,7 @@
     <ClCompile Include="..\..\..\Base\WinColor.cpp" />
     <ClCompile Include="..\..\..\Common\ComplexTypes.cpp" />
     <ClCompile Include="..\..\..\Common\SimpleTypes_Base.cpp" />
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Draw.cpp" />
     <ClCompile Include="..\..\..\Common\SimpleTypes_Drawing.cpp" />
     <ClCompile Include="..\..\..\Common\SimpleTypes_OMath.cpp" />
     <ClCompile Include="..\..\..\Common\SimpleTypes_Rtf.cpp" />
@@ -493,6 +502,13 @@
     <ClCompile Include="..\..\..\DocxFormat\WritingElement.cpp" />
     <ClCompile Include="..\..\..\SystemUtility\FileUtils.cpp" />
     <ClCompile Include="..\..\..\SystemUtility\SystemUtility.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\FileFactory_Draw.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\FileTypes_Draw.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\Shapes.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\VisioConnections.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\VisioDocument.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\VisioPages.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\Vsdx.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\CalcChain\CalcChain.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\Chart.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Chart\ChartColors.cpp" />

@@ -222,6 +222,16 @@ bool COfficeFileFormatChecker::isBinaryPpttFormatFile(unsigned char *pBuffer, in
 
 	return false;
 }
+bool COfficeFileFormatChecker::isBinaryVsdtFormatFile(unsigned char* pBuffer, int dwBytes)
+{
+	if (pBuffer == NULL)
+		return false;
+
+	if ((4 <= dwBytes) && ('V' == pBuffer[0] && 'S' == pBuffer[1] && 'D' == pBuffer[2] && 'Y' == pBuffer[3]))
+		return true;
+
+	return false;
+}
 bool COfficeFileFormatChecker::isPdfFormatFile(unsigned char *pBuffer, int dwBytes, std::wstring &documentID)
 {
 	if (pBuffer == NULL)
@@ -816,6 +826,10 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION;
 		}
+		else if (isBinaryVsdtFormatFile(bufferDetect, sizeRead)) // min size - 4
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_DRAW;
+		}
 		else if (isOOXFlatFormatFile(bufferDetect, sizeRead))
 		{
 			// nFileType;
@@ -1149,6 +1163,10 @@ bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring &fileNa
 		else if (isBinaryPpttFormatFile(pBuffer, nBufferSize))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY;
+		}
+		else if (isBinaryVsdtFormatFile(pBuffer, nBufferSize))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY;
 		}
 
 		delete[] pBuffer;
@@ -1568,12 +1586,15 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 	case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
 	case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
 	case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:
+	case AVS_OFFICESTUDIO_FILE_CANVAS_DRAW:
 		return L".bin";
 	case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DOCUMENT:
 	case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:
 		return L".doct";
 	case AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY:
 		return L".xlst";
+	case AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY:
+		return L".vsdt";
 	case AVS_OFFICESTUDIO_FILE_OTHER_OLD_PRESENTATION:
 	case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DRAWING:
 	case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:
@@ -1735,6 +1756,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY;
 	if (L".pptt" == ext)
 		return AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY;
+	if (L".vsdt" == ext)
+		return AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY;
 
 	if (L".vsdx" == ext)
 		return AVS_OFFICESTUDIO_FILE_DRAW_VSDX;

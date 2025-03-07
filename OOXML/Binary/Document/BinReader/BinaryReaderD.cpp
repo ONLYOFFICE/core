@@ -30,10 +30,10 @@
  *
  */
 
-#include "Readers.h"
+#include "BinaryReaderD.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
-#include "../../Sheets/Writer/BinaryReader.h"
+#include "../../Sheets/Writer/BinaryReaderS.h"
 
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 

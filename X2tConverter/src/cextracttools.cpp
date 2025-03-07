@@ -161,6 +161,24 @@ namespace NExtractTools
 					}
 				}
 				break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDM:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSM:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTM:
+				{
+					if (0 == sExt2.compare(L".vsdt"))
+						res = TCD_VSDX2VSDT;
+					else if (0 == sExt2.compare(L".bin"))
+						res = TCD_VSDX2VSDT_BIN;
+				}break;
+				case AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY:
+				{
+					if (0 == sExt2.compare(L".vsdx"))
+						res = TCD_VSDT2VSDX;
+				}
+				break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:

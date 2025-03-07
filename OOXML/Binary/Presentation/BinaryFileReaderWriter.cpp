@@ -1821,10 +1821,12 @@ namespace NSBinPptxRW
 
 		m_pRels				= new CRelsGenerator();
 		m_nCurrentRelsStack = -1;
+		m_pCurrentContainer = new NSCommon::smart_ptr<OOX::IFileContainer>();
 	}
 	CBinaryFileReader::~CBinaryFileReader()
 	{
 		RELEASEOBJECT(m_pRels);
+		RELEASEOBJECT(m_pCurrentContainer);
 
 		size_t nCountStackRels = m_stackRels.size();
 		for (size_t i = 0; i < nCountStackRels; ++i)
@@ -1834,7 +1836,19 @@ namespace NSBinPptxRW
 		}
 		m_stackRels.clear();
 	}
-
+	void CBinaryFileReader::SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container)
+	{
+		*m_pCurrentContainer = container;
+	}
+	void CBinaryFileReader::SetRels(OOX::IFileContainer* container)
+	{
+		*m_pCurrentContainer = NSCommon::smart_ptr<OOX::IFileContainer>(container);
+		m_pCurrentContainer->AddRef();
+	}
+	NSCommon::smart_ptr<OOX::IFileContainer> CBinaryFileReader::GetRels()
+	{
+		return *m_pCurrentContainer;
+	}
 	void CBinaryFileReader::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)
 	{
 		m_pMainDocument = pMainDoc;

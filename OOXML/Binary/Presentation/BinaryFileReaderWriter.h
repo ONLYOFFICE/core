@@ -515,17 +515,23 @@ namespace NSBinPptxRW
 	class CBinaryFileReader
 	{
 	protected:
-		BYTE*	m_pData;
+
+		BYTE*	m_pData = NULL;
 		LONG	m_lSize;
 		LONG	m_lPos;
-		BYTE*	m_pDataCur;
+		BYTE*	m_pDataCur = NULL;
 
 		_INT32 m_lNextId;
 
-		std::vector<CRelsGenerator*>	m_stackRels;
-		int								m_nCurrentRelsStack;
+		std::vector<CRelsGenerator*> m_stackRels;
+		int m_nCurrentRelsStack;
+		NSCommon::smart_ptr<OOX::IFileContainer>* m_pCurrentContainer = NULL;
 	public:
-		CRelsGenerator*					m_pRels;
+		void SetRels(NSCommon::smart_ptr<OOX::IFileContainer> container);
+		void SetRels(OOX::IFileContainer* container);
+		NSCommon::smart_ptr<OOX::IFileContainer> GetRels();
+
+		CRelsGenerator*					m_pRels = NULL;
 
 		std::wstring					m_strFolder;
 		std::wstring					m_strFolderThemes;
@@ -537,7 +543,7 @@ namespace NSBinPptxRW
 		_INT32							m_nCountActiveX = 1;
 		_INT32							m_nThemeOverrideCount = 1;
 
-		BinDocxRW::CDocxSerializer*		m_pMainDocument;
+		BinDocxRW::CDocxSerializer*		m_pMainDocument = NULL;
 		int								m_nDocumentType;
 	
 		CBinaryFileReader();

@@ -83,8 +83,8 @@ namespace OOX
 	{
 		smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation, OOX::Document *pMain)
 		{
-			OOX::CPath	oRelationFilename = oRelation.Filename();
-			CPath		oFileName;
+			OOX::CPath oRelationFilename = oRelation.Filename();
+			CPath oFileName;
 			
 			if (oRelation.IsExternal())
 			{

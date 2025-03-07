@@ -937,12 +937,14 @@ namespace OOX
 		//--------------------------------------------------------------------------------
 		// CMRun 22.1.2.87  (Math Run)
 		//--------------------------------------------------------------------------------
-		class CMRun : public WritingElement
+		class CMRun : public WritingElementWithChilds<>
 		{
 		public:
 			WritingElement_AdditionMethods(CMRun)
 			CMRun(OOX::Document *pMain = NULL);
 			virtual ~CMRun();
+
+			virtual void ClearItems();
 
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
@@ -952,45 +954,11 @@ namespace OOX
 
 			virtual EElementType getType() const;
 
-	// Childs
-			nullable<OOX::Logic::CAnnotationRef>			m_oAnnotationRef;
-			nullable<OOX::Logic::CBr>						m_oBr;
-			nullable<OOX::Logic::CCommentReference>			m_oCommentReference;
-			nullable<OOX::Logic::CContentPart>				m_oContentPart;
-			nullable<OOX::Logic::CContinuationSeparator>	m_oContinuationSeparator;
-			nullable<OOX::Logic::CCr>						m_oCr;
-			nullable<OOX::Logic::CDayLong>					m_oDayLong;
-			nullable<OOX::Logic::CDayShort>					m_oDayShort;
-			nullable<OOX::Logic::CMDel>						m_oDel;
-			nullable<OOX::Logic::CDelInstrText>				m_oDelInstrText;
-			nullable<OOX::Logic::CDelText>					m_oDelText;
-			nullable<OOX::Logic::CDrawing>					m_oDrawing;
-			nullable<OOX::Logic::CEndnoteRef>				m_oEndnoteRef;
-			nullable<OOX::Logic::CEndnoteReference>			m_oEndnoteReference;
-			nullable<OOX::Logic::CFldChar>					m_oFldChar;
-			nullable<OOX::Logic::CFootnoteRef>				m_oFootnoteRef;
-			nullable<OOX::Logic::CFootnoteReference>		m_oFootnoteReference;
-			nullable<OOX::Logic::CMIns>						m_oIns;
-			nullable<OOX::Logic::CInstrText>				m_oInstrText;
-			nullable<OOX::Logic::CLastRenderedPageBreak>	m_oLastRenderedPageBreak;
-			nullable<OOX::Logic::CMonthLong>				m_oMonthLong;
-			nullable<OOX::Logic::CMonthShort>				m_oMonthShort;
-			nullable<OOX::Logic::CNoBreakHyphen>			m_oNoBreakHyphen;
-			nullable<OOX::Logic::CObject>					m_oObject;
-			nullable<OOX::Logic::CPgNum>					m_oPgNum;
-			nullable<OOX::Logic::CPTab>						m_oPtab;
-			nullable<OOX::Logic::CRunProperty>				m_oRPr;
-			nullable<OOX::Logic::CMRPr>						m_oMRPr;
-			nullable<PPTX::Logic::RunProperties>			m_oARPr;
-			nullable<OOX::Logic::CRuby>						m_oRuby;
-			nullable<OOX::Logic::CSeparator>				m_oSeparator;
-			nullable<OOX::Logic::CSoftHyphen>				m_oSoftHyphen;
-			nullable<OOX::Logic::CSym>						m_oSym;
-			nullable<OOX::Logic::CMText>					m_oMText;
-			nullable<OOX::Logic::CText>						m_oText;
-			nullable<OOX::Logic::CTab>						m_oTab;
-			nullable<OOX::Logic::CYearLong>					m_oYearLong;
-			nullable<OOX::Logic::CYearShort>				m_oYearShort;
+			nullable<PPTX::Logic::RunProperties> m_oARPr;
+			nullable<OOX::Logic::CRunProperty> m_oRPr;
+			nullable<OOX::Logic::CMRPr> m_oMRPr;
+			nullable<OOX::Logic::CMDel> m_oDel;
+			nullable<OOX::Logic::CMIns>m_oIns;
 		};
 
 		class CMDel : public WritingElement

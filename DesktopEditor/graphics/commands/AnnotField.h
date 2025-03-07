@@ -39,6 +39,36 @@ class IMetafileToRenderter;
 class GRAPHICS_DECL CAnnotFieldInfo : public IAdvancedCommand
 {
 public:
+	enum EAnnotType
+	{
+		Unknown = -1,
+		Text = 0,
+		Link = 1,
+		FreeText = 2,
+		Line = 3,
+		Square = 4,
+		Circle = 5,
+		PolygonLine = 6,
+		PolyLine = 7,
+		Highlight = 8,
+		Underline = 9,
+		Squiggly = 10,
+		Strikeout = 11,
+		Stamp = 12,
+		Caret = 13,
+		Ink = 14,
+		Popup = 15,
+		FileAttachment = 16,
+		Widget = 26,
+		WidgetPushButton = 27,
+		WidgetRadioButton = 28,
+		WidgetCheckBox = 29,
+		WidgetText = 30,
+		WidgetCombobox = 31,
+		WidgetListbox = 32,
+		WidgetSignature = 33
+	};
+
 	class GRAPHICS_DECL CWidgetAnnotPr
 	{
 	public:
@@ -423,7 +453,9 @@ public:
 	CAnnotFieldInfo();
 	virtual ~CAnnotFieldInfo();
 
+	void CreateMarkup();
 	void SetType(int nType);
+	EAnnotType GetType();
 
 	void  GetBounds(double& dX1, double& dY1, double& dX2, double& dY2);
 	void  GetBorder(BYTE& nType, double& dWidth, std::vector<double>& arrDash);
@@ -479,7 +511,7 @@ private:
 		std::vector<double> arrDash;
 	};
 
-	int          m_nType;
+	EAnnotType   m_nType;
 	double       m_dX1;
 	double       m_dY1;
 	double       m_dX2;

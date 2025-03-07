@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{EFE72A4B-8FC3-3276-9920-DFF64F96257E}</ProjectGuid>
+    <RootNamespace>test_odf</RootNamespace>
+    <Keyword>Qt4VSv1.0</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <PlatformToolset>v142</PlatformToolset>
+    <OutputDirectory>.\</OutputDirectory>
+    <ATLMinimizesCRunTimeLibraryUsage>false</ATLMinimizesCRunTimeLibraryUsage>
+    <CharacterSet>NotSet</CharacterSet>
+    <ConfigurationType>Application</ConfigurationType>
+    <PrimaryOutput>test_odf</PrimaryOutput>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)build\$(Platform)\$(Configuration)\</OutDir>
+    <IntermediateOutputPath Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)build\$(Platform)\$(Configuration)\int</IntermediateOutputPath>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">test_odf</TargetName>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</IgnoreImportLibrary>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest;$(ProjectDir)../../../Common\3dParty\googletest\googletest\googletest\include;$(ProjectDir)../../../Common\3dParty\boost\build\win_64\include;$(ProjectDir)../../../OdfFile/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
+      <AssemblerListingLocation>.\</AssemblerListingLocation>
+      <BrowseInformation>false</BrowseInformation>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <DisableSpecificWarnings>4577;4467;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_GUI_LIB;QT_CORE_LIB;DONT_WRITE_EMBEDDED_FONTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessToFile>false</PreprocessToFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TreatWChar_tAsBuiltInType>true</TreatWChar_tAsBuiltInType>
+      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Common\OdfCommon-static.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Reader\OdfFormatReaderLib.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Writer\OdfFormatWriterLib.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Oox2Odf\Oox2OdfConverter.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Formulas\OdfFormulasConvert.lib;$(ProjectDir)../../../OdfFile\Projects\Windows\x64\Debug\Xml\xml_wrapper.lib;$(ProjectDir)../../../OOXML\Projects\Windows\DocxFormatLib\x64\Debug\DocxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\PptxFormatLib\x64\Debug\PptxFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\XlsbFormatLib\x64\Debug\XlsbFormatLib.lib;$(ProjectDir)../../../OOXML\Projects\Windows\BinaryFormatLib\x64\Debug\BinaryFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\DocFormatLib\Windows\x64\Debug\DocFormat\DocFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\PPTFormatLib\Windows\x64\Debug\PPTFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\VbaFormatLib\Windows\x64\Debug\VbaFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsFormatLib.lib;$(ProjectDir)../../../MsBinaryFile\Projects\XlsFormatLib\Windows\x64\Debug\XlsConvert\XlsXlsxConverter.lib;$(ProjectDir)../../../RtfFile\Projects\Windows\Win32\x64\Debug\RtfFormatLib.lib;$(ProjectDir)../../../Common\cfcpp\x64\Debug\CompoundFileLib.lib;shell32.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)../../../Common\3dParty\boost\build\win_64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
+      <DataExecutionPrevention>true</DataExecutionPrevention>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreImportLibrary>true</IgnoreImportLibrary>
+      <OutputFile>$(OutDir)\test_odf.exe</OutputFile>
+      <RandomizedBaseAddress>true</RandomizedBaseAddress>
+      <SubSystem>Console</SubSystem>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Link>
+    <Midl>
+      <DefaultCharType>Unsigned</DefaultCharType>
+      <EnableErrorChecks>None</EnableErrorChecks>
+      <WarningLevel>0</WarningLevel>
+    </Midl>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_GUI_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\Common\3dParty\pole\pole.cpp" />
+    <ClCompile Include="..\..\..\Common\OfficeFileFormatChecker2.cpp" />
+    <ClCompile Include="..\..\..\OOXML\Base\unicode_util.cpp" />
+    <ClCompile Include="..\..\..\OOXML\Base\Unit.cpp" />
+    <ClCompile Include="..\..\..\OOXML\SystemUtility\SystemUtility.cpp" />
+    <ClCompile Include="src\Common.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="..\..\..\Common\3dParty\googletest\googletest\googletest\src\gtest-all.cc" />
+    <ClCompile Include="src\tests\Test44363.cpp" />
+    <ClCompile Include="src\tests\Test57197.cpp" />
+    <ClCompile Include="src\tests\Test59708.cpp" />
+    <ClCompile Include="src\tests\Test61364.cpp" />
+    <ClCompile Include="src\tests\Test69238.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\Common.h" />
+    <ClInclude Include="src\tests\Test44363.h" />
+    <ClInclude Include="src\tests\Test57197.h" />
+    <ClInclude Include="src\tests\Test59708.h" />
+    <ClInclude Include="src\tests\Test61364.h" />
+    <ClInclude Include="src\tests\Test69238.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>

@@ -51,11 +51,11 @@ namespace XLSB
 			void readFields(XLS::CFRecord& record) override;
 			void writeFields(XLS::CFRecord& record) override;
 
-            _INT32              isxvd;
-            _UINT32             isxvi;
-            _INT32              isxth;
-            bool                fUnique;
-            bool                fDisplay;
+            _INT32              isxvd = 0;
+            _UINT32             isxvi = 0x001000FE;
+            _INT32              isxth = -1;
+            bool                fUnique = false;
+            bool                fDisplay = false;
             XLWideString        irstUnique;
             XLWideString        irstDisplay;
     };

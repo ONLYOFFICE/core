@@ -1885,13 +1885,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oHier.IsInit())
 			ptr->isxth = m_oHier.get();
 		if(m_oName.IsInit())
+        {
 			ptr->irstUnique = m_oName.get();
-		else
-		 	ptr->irstUnique = 0xFFFFFFFF;
+            ptr->fUnique = true;
+        }
 		if(m_oCap.IsInit())
+        {
 			ptr->irstDisplay = m_oCap.get();
-		else
-			ptr->irstDisplay = 0xFFFFFFFF;
+            ptr->fDisplay = true;
+        }
 		return objectPtr;
 	}
     void CPageField::fromBin(XLS::BaseObjectPtr& obj)
@@ -4172,7 +4174,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<cacheField");
 			WritingStringNullableAttrEncodeXmlString2(L"name",	m_oName);
 			WritingStringNullableAttrEncodeXmlString2(L"caption",m_oCaption);
-			WritingStringNullableAttrBool2(L"databaseField",	m_oDatabaseField);
 			WritingStringNullableAttrBool2(L"serverField",	m_oServerField);
 			WritingStringNullableAttrEncodeXmlString2(L"pPropertyName",m_oPropertyName);
 			WritingStringNullableAttrEncodeXmlString2(L"formula",m_oFormula);
@@ -4183,6 +4184,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"level", m_oLevel, m_oLevel->GetValue());
 			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
 			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
+            WritingStringNullableAttrBool2(L"databaseField",	m_oDatabaseField);
         if(!m_oSharedItems.IsInit() && !m_oFieldGroup.IsInit())
         {
             writer.WriteString(L"/>");
@@ -4406,22 +4408,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CSharedItems::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<sharedItems");
-			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+            WritingStringNullableAttrBool2(L"containsSemiMixedTypes",	m_oContainsSemiMixedTypes);
+            WritingStringNullableAttrBool2(L"containsNonDate",	m_oContainsNonDate);
+            WritingStringNullableAttrBool2(L"containsDate",	m_oContainsDate);
+            WritingStringNullableAttrBool2(L"containsString",	m_oContainsString);
 			WritingStringNullableAttrBool2(L"containsBlank",	m_oContainsBlank);
-			WritingStringNullableAttrBool2(L"containsDate",	m_oContainsDate);
+            WritingStringNullableAttrBool2(L"containsMixedTypes",	m_oContainsMixedTypes);
+            WritingStringNullableAttrBool2(L"containsNumber",	m_oContainsNumber);
 			WritingStringNullableAttrBool2(L"containsInteger",	m_oContainsInteger);
-			WritingStringNullableAttrBool2(L"containsMixedTypes",	m_oContainsMixedTypes);
-			WritingStringNullableAttrBool2(L"containsNonDate",	m_oContainsNonDate);
-			WritingStringNullableAttrBool2(L"containsNumber",	m_oContainsNumber);
-			WritingStringNullableAttrBool2(L"containsSemiMixedTypes",	m_oContainsSemiMixedTypes);
-			WritingStringNullableAttrBool2(L"containsString",	m_oContainsString);
-			WritingStringNullableAttrBool2(L"longText",	m_oLongText);
 			WritingStringNullableAttrDouble2(L"minValue",	m_oMinValue);
 			WritingStringNullableAttrDouble2(L"maxValue",	m_oMaxValue);
 			WritingStringNullableAttrString(L"minDate", m_oMinDate, m_oMinDate->ToString());
 			WritingStringNullableAttrString(L"maxDate", m_oMaxDate, m_oMaxDate->ToString());
-		writer.WriteString(L">");
-
+            if(!m_arrItems.empty())
+            {
+                WritingStringAttrInt(L"count", (int)m_arrItems.size());
+            }
+            WritingStringNullableAttrBool2(L"longText",	m_oLongText);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+        writer.WriteString(L">");
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -5127,7 +5136,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CRangeGroupingProperties::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<reference");
+        writer.WriteString(L"<rangePr");
 			WritingStringNullableAttrString(L"groupBy",		m_oGroupBy, m_oGroupBy->ToString());
 			WritingStringNullableAttrBool2(L"autoStart",	m_oAutoStart);
 			WritingStringNullableAttrBool2(L"autoEnd",		m_oAutoEnd);
@@ -5835,6 +5844,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -5967,6 +5981,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -6864,8 +6883,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CFieldGroupProperties::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<fieldGroup");
-			WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
 			WritingStringNullableAttrInt(L"par", m_oPar, m_oPar->GetValue());
+            WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
 		writer.WriteString(L">");
 
 		if(m_oDiscretePr.IsInit())

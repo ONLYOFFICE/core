@@ -1011,4 +1011,9 @@ namespace NSDocxRenderer
 		m_oPrevFont = oFont;
 		m_oPrevBrush = oBrush;
 	}
+
+	void CContTextBuilder::NullCurrCont()
+	{
+		m_pCurrCont = nullptr;
+	}
 }

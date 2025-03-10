@@ -172,6 +172,8 @@ namespace NSDocxRenderer
 		        bool bUseDefaultFont = false,
 		        bool bWriteStyleRaw = false);
 
+		void NullCurrCont();
+
 	private:
 		std::vector<cont_ptr_t> m_arConts;
 		cont_ptr_t m_pCurrCont {nullptr};

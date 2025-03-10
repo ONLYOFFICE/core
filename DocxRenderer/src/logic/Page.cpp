@@ -45,6 +45,12 @@ namespace NSDocxRenderer
 			else
 				m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
 		}
+
+		// write in a new cont if new text command
+		else if (lType == c_nTextType)
+		{
+			m_oContBuilder.NullCurrCont();
+		}
 	}
 
 	void CPage::Clear()
@@ -2013,8 +2019,33 @@ namespace NSDocxRenderer
 			return nullptr;
 		};
 
+		auto precise_crossing_p = [] (Crossing* cr, const Point& p, const eLineDirection& direction) {
+			if (cr->lines.size() == 1)
+			{
+				switch (cr->lines[0].direction)
+				{
+				case eLineDirection::ldLeft:
+				case eLineDirection::ldRight:
+					if (direction == eLineDirection::ldLeft || direction == eLineDirection::ldRight)
+						cr->p.x = (cr->p.x + p.x) / 2;
+					else
+						cr->p.x = p.x;
+					break;
+				case eLineDirection::ldBot:
+				case eLineDirection::ldTop:
+					if (direction == eLineDirection::ldBot || direction == eLineDirection::ldTop)
+						cr->p.y = (cr->p.y + p.y) / 2;
+					else
+						cr->p.y = p.y;
+					break;
+				default:
+					break;
+				}
+			}
+		};
+
 		// check and adds points
-		auto add_crossings = [&crossings, &find_crossing, this] (const Point& p1, const Point& p2, size_t index) {
+		auto add_crossings = [&precise_crossing_p, &crossings, &find_crossing, this] (const Point& p1, const Point& p2, size_t index) {
 			Crossing* crossing1 = find_crossing(p1);
 			Crossing* crossing2 = find_crossing(p2);
 
@@ -2054,6 +2085,7 @@ namespace NSDocxRenderer
 			};
 			if (std::find_if(crossing2->lines.begin(), crossing2->lines.end(), curr_crossing_eq) == crossing2->lines.end())
 			{
+				precise_crossing_p(crossing2, p2, direction21);
 				Line line {crossing1, index, direction21};
 				crossing2->lines.push_back(std::move(line));
 			}
@@ -2063,6 +2095,7 @@ namespace NSDocxRenderer
 			};
 			if (std::find_if(crossing1->lines.begin(), crossing1->lines.end(), prev_crossing_eq) == crossing1->lines.end())
 			{
+				precise_crossing_p(crossing1, p1, direction12);
 				Line line {crossing2, index, direction12};
 				crossing1->lines.push_back(std::move(line));
 			}
@@ -2075,24 +2108,22 @@ namespace NSDocxRenderer
 		// also word -> pdf adobe sets points as crossings of the table lines, so we can use it
 
 		// check for adobe points
-		std::vector<std::pair<const Crossing*, shape_ptr_t&>> points_delete_later;
-		for (auto& shape : m_arShapes)
+		std::vector<std::pair<const Crossing*, size_t>> points_delete_later;
+		for (size_t i = 0; i < m_arShapes.size(); ++i)
 		{
+			auto& shape = m_arShapes[i];
 			if (!shape || shape->m_eGraphicsType != eGraphicsType::gtRectangle || shape->m_pImageInfo != nullptr)
 				continue;
 
-			if (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown)
+			// possible point of crossing in a adobe table
+			if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
 			{
-				// possible point of crossing in a adobe table
-				if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
-				{
-					Crossing cr;
-					cr.p.x = shape->m_dLeft + shape->m_dWidth / 2;
-					cr.p.y = shape->m_dTop + shape->m_dHeight;
-					auto cr_ptr = std::make_shared<Crossing>(cr);
-					crossings.push_back(cr_ptr);
-					points_delete_later.push_back({cr_ptr.get(), shape});
-				}
+				Crossing cr;
+				cr.p.x = shape->m_dLeft + shape->m_dWidth / 2;
+				cr.p.y = shape->m_dTop + shape->m_dHeight;
+				auto cr_ptr = std::make_shared<Crossing>(cr);
+				crossings.push_back(cr_ptr);
+				points_delete_later.push_back({cr_ptr.get(), i});
 			}
 		}
 
@@ -2160,7 +2191,7 @@ namespace NSDocxRenderer
 		// remove adobe points line crossing shapes if used
 		for (auto& cr : points_delete_later)
 			if (!cr.first->lines.empty())
-				cr.second = nullptr;
+				m_arShapes[cr.second] = nullptr;
 
 		// remove empty crossings
 		for (auto& cr : crossings)

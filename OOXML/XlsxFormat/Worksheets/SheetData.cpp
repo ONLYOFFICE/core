@@ -2912,6 +2912,8 @@ namespace OOX
                         XLSB::XLWideString str;
                         if(m_oValue.IsInit())
                             str = m_oValue->m_sText;
+                        else
+                            str = L"";
                         *CellRecord << str;
                     }
                     else

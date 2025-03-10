@@ -33,6 +33,7 @@
 #define DOC_BUILDER_ADDON_PRIVATE
 
 #include <string>
+#include "../docbuilder.h"
 
 namespace NSDoctRenderer
 {
@@ -46,11 +47,11 @@ namespace NSDoctRenderer
 			m_sWorkDirectory = sWorkDir;
 		}
 	public:
-		std::wstring GetX2tSaveAddon()
+		std::wstring GetX2tSaveAddon(NSDoctRenderer::CDocBuilder* builder, const int& filetype)
 		{
 			return L"";
 		}
-		int GetX2tPreSaveError()
+		int GetX2tPreSaveError(NSDoctRenderer::CDocBuilder* builder, const int& filetype)
 		{
 			return 0;
 		}

@@ -693,6 +693,13 @@ namespace NSShaper
 			g_userfeatures_init = true;
 		}
 
+		// Turn on ligatures on arabic script
+		if (nScript == HB_SCRIPT_ARABIC ||
+			nScript == HB_SCRIPT_SYRIAC)
+		{
+			nFeatures |= 1;
+		}
+
 		// font
 		hb_font_t* pFont;
 		if (NULL == font)

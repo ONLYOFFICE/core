@@ -1003,7 +1003,7 @@ namespace NSDoctRenderer
 
 			CDocBuilderAddon oSaveAddon(m_sX2tPath);
 
-			int nPreSaveError = oSaveAddon.GetX2tPreSaveError();
+			int nPreSaveError = oSaveAddon.GetX2tPreSaveError(m_pParent, m_nFileType);
 			if (0 != nPreSaveError)
 				return nPreSaveError;
 
@@ -1090,7 +1090,7 @@ namespace NSDoctRenderer
 			if (!sOptions.empty())
 				oBuilder.WriteString(UTF8_TO_U(sOptions));
 
-			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon());
+			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon(m_pParent, m_nFileType));
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 

@@ -594,6 +594,13 @@ WASM_EXPORT unsigned char* ASC_HB_ShapeText(FT_Face pFace, hb_font_t* pFont, cha
 		g_userfeatures_init = true;
 	}
 
+	// Turn on ligatures on arabic script
+	if (nScript == HB_SCRIPT_ARABIC ||
+		nScript == HB_SCRIPT_SYRIAC)
+	{
+		nFeatures |= 1;
+	}
+
 	// font
 	if (NULL == pFont)
 	{

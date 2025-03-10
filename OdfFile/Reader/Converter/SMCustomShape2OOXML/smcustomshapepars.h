@@ -3,6 +3,7 @@
 #include<iostream>
 #include<iterator>
 #include<cctype>
+#include<string>
 #include<vector>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
@@ -23,6 +24,15 @@ namespace StarMathCustomShape
 		multiplication,
 		//function
 		sqrt,
+		abs,
+		sin,
+		cos,
+		tan,
+		min,
+		max,
+		If,
+		atan,
+		atan2,
 		empty,
 		comma,
 	};
@@ -65,8 +75,10 @@ namespace StarMathCustomShape
 	public:
 		SMCustomShapeConversion();
 		~SMCustomShapeConversion();
-		void StartConversion(std::vector<CElement*>& arElements);
+		void StartConversion(std::vector<CElement*>& arElements, const std::wstring& wsFormulaName = L"");
 		std::wstring GetStringXml();
+		static void WritingFormulaXml(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsNameFormula,const std::wstring& wsFormula);
+		static std::wstring ParsFormulaName(const std::wstring& wsFormulaName, std::wstring& wsName);
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWriter;
 	};
@@ -76,12 +88,15 @@ namespace StarMathCustomShape
 		CElement();
 		virtual ~CElement();
 		virtual void Parse(CSMReader* pReader) = 0;
-		virtual void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) = 0;
+		virtual void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsName = L"") = 0;
 		static CElement* CreateElement(const std::wstring& wsElement);
 		void SetBaseType(const TypeElement& enType);
 		TypeElement GetBaseType();
+		void SetNameFormula(const std::wstring& wsName);
+		std::wstring GetNameFormula();
 	private:
 		TypeElement m_enBaseType;
+		std::wstring m_wsNameFormula;
 	};
 	class CElementNumber:public CElement
 	{
@@ -90,8 +105,9 @@ namespace StarMathCustomShape
 		CElementNumber(const std::wstring& wsName);
 		virtual ~CElementNumber();
 		void Parse(CSMReader* pReader) override;
-		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) override;
+		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsName = L"") override;
 		static bool CheckNumber(const std::wstring& wsNumber);
+		std::wstring GetString();
 	private:
 		std::wstring m_wsNumber;
 	};
@@ -102,7 +118,7 @@ namespace StarMathCustomShape
 		CElementArithmeticOperations(const std::wstring& wsSign);
 		virtual ~CElementArithmeticOperations();
 		void Parse(CSMReader* pReader) override;
-		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) override;
+		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
 		static bool CheckArithmeticOperators(const std::wstring& wsElement);
 		bool ComparisonSign(const std::wstring& wsSign);
 		bool ComparingPriorities(const std::wstring& wsSign);
@@ -117,6 +133,8 @@ namespace StarMathCustomShape
 		CElement* m_pSecondSign;
 		CElement* m_pFirstValue;
 		CElement* m_pSecondValue;
+		unsigned int m_uiNumberFormula;
+		std::wstring m_wsNameFormula,m_wsNumberFormula;
 	};
 	class CElementBracket: public CElement
 	{
@@ -124,7 +142,8 @@ namespace StarMathCustomShape
 		CElementBracket();
 		virtual ~CElementBracket();
 		void Parse(CSMReader* pReader) override;
-		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) override;
+		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsName = L"") override;
+		std::vector<CElement*> GetVector();
 	private:
 		std::vector<CElement*> m_arElements;
 	};
@@ -135,7 +154,8 @@ namespace StarMathCustomShape
 		CElementFunction(const TypeElement& enType);
 		virtual ~CElementFunction();
 		void Parse(CSMReader* pReader) override;
-		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) override;
+		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
+		void ConversionElement(XmlUtils::CXmlWriter* pXmlWriter,CElement* pElement, std::wstring& wsFormula);
 		static TypeElement TypeCheckingByFunction(const std::wstring& wsFunction);
 	private:
 		TypeElement m_enTypeFunction;
@@ -147,7 +167,7 @@ namespace StarMathCustomShape
 		CElementComma();
 		virtual ~CElementComma();
 		void Parse(CSMReader* pReader) override;
-		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter) override;
+		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
 	};
 }
 #endif // SMCUSTOMSHAPEPARS_H

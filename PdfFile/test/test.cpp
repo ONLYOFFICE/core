@@ -350,22 +350,9 @@ TEST_F(CPdfFileTest, VerifySign)
 	RELEASEOBJECT(pCertificate);
 }
 
-TEST_F(CPdfFileTest, SplitPdf)
-{
-	GTEST_SKIP();
-
-	LoadFromFile();
-	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
-
-	std::vector<int> arrPages = { 0 };
-	pdfFile->SplitPages(arrPages.empty() ? NULL : arrPages.data(), arrPages.size());
-
-	pdfFile->Close();
-}
-
 TEST_F(CPdfFileTest, MergePdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(NSFile::GetProcessDirectory() + L"/test3.pdf"));

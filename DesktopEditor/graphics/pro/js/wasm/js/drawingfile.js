@@ -145,10 +145,36 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
-
-CFile.prototype["addPDF"] = function(arrayBuffer, password)
+CFile.prototype["SplitPages"] = function(arrPageIndex)
 {
-	return this._addPDF(arrayBuffer, password);
+	let ptr = this._SplitPages(arrPageIndex);
+
+	if (!ptr)
+		return null;
+
+	let lenArr = new Int32Array(Module["HEAP8"].buffer, ptr, 1);
+	if (!lenArr)
+	{
+		Module["_free"](ptr);
+		return null;
+	}
+
+	let len = lenArr[0];
+	if (len <= 4)
+	{
+		Module["_free"](ptr);
+		return null;
+	}
+	len -= 4;
+
+	let buffer = new Uint8Array(len);
+	buffer.set(new Uint8Array(Module["HEAP8"].buffer, ptr + 4, len));
+	Module["_free"](ptr);
+	return buffer;
+};
+CFile.prototype["MergePages"] = function(arrayBuffer)
+{
+	return this._MergePages(arrayBuffer);
 };
 
 // INFO DOCUMENT

@@ -121,31 +121,30 @@ CFile.prototype._getError = function()
 	return Module["_GetErrorCode"](this.nativeFile);
 };
 
-CFile.prototype._addPDF = function(buffer, password)
+CFile.prototype._SplitPages = function(memoryBuffer)
+{
+	let pointer = Module["_malloc"](memoryBuffer.length * 4);
+	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
+	let ptr = Module["_SplitPages"](this.nativeFile, pointer, memoryBuffer.length);
+	Module["_free"](pointer);
+	return ptr;
+};
+
+CFile.prototype._MergePages = function(buffer)
 {
 	if (!buffer)
 		return false;
 
-	let data = new Uint8Array(buffer);
+	let data = (undefined !== buf.byteLength) ? new Uint8Array(buffer) : buffer;
 	let stream2 = Module["_malloc"](data.length);
 	Module["HEAP8"].set(data, stream2);
 
-	let passwordPtr = 0;
-	if (password)
-	{
-		let passwordBuf = password.toUtf8();
-		passwordPtr = Module["_malloc"](passwordBuf.length);
-		Module["HEAP8"].set(passwordBuf, passwordPtr);
-	}
-
-	let bRes = Module["_AddPDF"](this.nativeFile, stream2, data.length, passwordPtr);
+	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length);
 	if (bRes == 1)
 		this.stream.push(stream2);
 	else
 		Module["_free"](stream2);
 
-	if (passwordPtr)
-		Module["_free"](passwordPtr);
 	return bRes == 1;
 };
 

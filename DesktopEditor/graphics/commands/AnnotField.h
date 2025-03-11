@@ -574,6 +574,7 @@ public:
 		std::wstring sDV;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
+		std::vector< std::pair<std::wstring, std::wstring> > arrOpt;
 	};
 
 	CWidgetsInfo();

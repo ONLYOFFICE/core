@@ -2664,17 +2664,41 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		for (int j = 0; j < nOptLength; ++j)
 		{
 			Object oOptJ;
-			if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+			if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
 			{
 				oOptJ.free();
 				continue;
 			}
 
-			TextString* s = new TextString(oOptJ.getString());
-			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
-			delete s;
+			std::string sOpt1, sOpt2;
+			if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
+			{
+				Object oOptJ2;
+				if (oOptJ.arrayGet(0, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+				if (oOptJ.arrayGet(1, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+			}
+			else if (oOptJ.isString())
+			{
+				TextString* s = new TextString(oOptJ.getString());
+				sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				delete s;
+			}
+			pAnnotParent->arrOpt.push_back(std::make_pair(sOpt1, sOpt2));
 			oOptJ.free();
 		}
+
 		if (!pAnnotParent->arrOpt.empty())
 			pAnnotParent->unFlags |= (1 << 6);
 	}
@@ -3644,9 +3668,12 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 6))
 	{
-		oRes.AddInt((unsigned int)arrOpt.size());
+		oRes.AddInt(arrOpt.size());
 		for (int i = 0; i < arrOpt.size(); ++i)
-			oRes.WriteString(arrOpt[i]);
+		{
+			oRes.WriteString(arrOpt[i].first);
+			oRes.WriteString(arrOpt[i].second);
+		}
 	}
 	if (unFlags & (1 << 7))
 		oRes.AddInt(unFieldFlag);

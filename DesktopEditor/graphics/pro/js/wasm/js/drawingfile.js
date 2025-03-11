@@ -571,9 +571,16 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 		if (flags & (1 << 6))
 		{
 			let n = reader.readInt();
-			rec["Opt"] = [];
+			rec["opt"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["Opt"].push(reader.readString());
+			{
+				let opt1 = reader.readString();
+				let opt2 = reader.readString();
+				if (opt1 == "")
+					rec["opt"].push(opt2);
+				else
+					rec["opt"].push([opt2, opt1]);
+			}
 		}
 		if (flags & (1 << 7))
 		{

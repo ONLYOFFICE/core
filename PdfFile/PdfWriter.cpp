@@ -2716,6 +2716,31 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		if (nFlags & (1 << 6))
+		{
+			PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
+			pParentObj->Add("Opt", pArray);
+
+			for (const std::pair<std::wstring, std::wstring>& PV : pParent->arrOpt)
+			{
+				if (PV.first.empty())
+				{
+					std::string sValue = U_TO_UTF8(PV.second);
+					pArray->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
+				}
+				else
+				{
+					PdfWriter::CArrayObject* pArray2 = new PdfWriter::CArrayObject();
+					pArray->Add(pArray2);
+
+					std::string sValue = U_TO_UTF8(PV.first);
+					pArray2->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
+
+					sValue = U_TO_UTF8(PV.second);
+					pArray2->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
+				}
+			}
+		}
 		if (nFlags & (1 << 7))
 			pParentObj->Add("Ff", pParent->nFieldFlag);
 	}

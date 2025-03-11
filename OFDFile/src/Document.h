@@ -4,21 +4,10 @@
 #include "Page.h"
 #include "PublicRes.h"
 
+#include "Utils/Types.h"
+
 namespace OFD
 {
-struct TBox
-{
-	double m_dX;
-	double m_dY;
-	double m_dWidth;
-	double m_dHeight;
-
-	TBox();
-
-	bool Empty() const;
-	bool Read(const std::wstring& wsValue);
-};
-
 class CPageArea
 {
 	TBox m_oPhysicalBox;

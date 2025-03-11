@@ -20,16 +20,28 @@ ADD_DEPENDENCY(graphics, kernel, UnicodeConverter)
 HEADERS += \
     OFDFile.h \
     src/Base.h \
+    src/Content/Content.h \
+    src/Content/GraphicUnit.h \
+    src/Content/IPageBlock.h \
+    src/Content/Layer.h \
+    src/Content/TextObject.h \
     src/Document.h \
     src/Page.h \
-    src/PublicRes.h
+    src/PublicRes.h \
+    src/Utils/Types.h \
+    src/Utils/Utils.h
 
 SOURCES += \
     OFDFile.cpp \
     src/Base.cpp \
+    src/Content/Content.cpp \
+    src/Content/GraphicUnit.cpp \
+    src/Content/Layer.cpp \
+    src/Content/TextObject.cpp \
     src/Document.cpp \
     src/Page.cpp \
-    src/PublicRes.cpp
+    src/PublicRes.cpp \
+    src/Utils/Types.cpp
 
 HEADERS += $$CORE_ROOT_DIR/OOXML/Base/Unit.h
 SOURCES += $$CORE_ROOT_DIR/OOXML/Base/Unit.cpp

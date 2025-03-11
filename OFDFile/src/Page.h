@@ -1,12 +1,13 @@
 #ifndef PAGE_H
 #define PAGE_H
 
-#include "../../OfficeUtils/src/ZipFolder.h"
+#include "Content/Content.h"
 
 namespace OFD
 {
 class CPage
 {
+	CContent m_oContent;
 public:
 	CPage();
 

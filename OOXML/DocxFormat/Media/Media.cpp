@@ -112,6 +112,11 @@ namespace OOX
 				copy_to(newFilePath);
 			}
 		}
+		else
+		{
+			std::wstring ext = filename.GetExtention();
+			if (false == ext.empty()) content.AddDefault(ext.substr(1));
+		}
 	}
 	void Media::set_filename(const std::wstring & file_path, bool bExternal)
 	{

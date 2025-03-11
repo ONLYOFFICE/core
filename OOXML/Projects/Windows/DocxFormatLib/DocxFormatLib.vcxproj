@@ -333,6 +333,7 @@
     <ClInclude Include="..\..\..\VsdxFormat\Shapes.h" />
     <ClInclude Include="..\..\..\VsdxFormat\VisioConnections.h" />
     <ClInclude Include="..\..\..\VsdxFormat\VisioDocument.h" />
+    <ClInclude Include="..\..\..\VsdxFormat\VisioOthers.h" />
     <ClInclude Include="..\..\..\VsdxFormat\VisioPages.h" />
     <ClInclude Include="..\..\..\VsdxFormat\Vsdx.h" />
     <ClInclude Include="..\..\..\XlsxFormat\CalcChain\CalcChain.h" />
@@ -507,6 +508,7 @@
     <ClCompile Include="..\..\..\VsdxFormat\Shapes.cpp" />
     <ClCompile Include="..\..\..\VsdxFormat\VisioConnections.cpp" />
     <ClCompile Include="..\..\..\VsdxFormat\VisioDocument.cpp" />
+    <ClCompile Include="..\..\..\VsdxFormat\VisioOthers.cpp" />
     <ClCompile Include="..\..\..\VsdxFormat\VisioPages.cpp" />
     <ClCompile Include="..\..\..\VsdxFormat\Vsdx.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\CalcChain\CalcChain.cpp" />

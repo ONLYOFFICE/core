@@ -61,6 +61,10 @@ namespace OOX
 			extern const FileType Recordsets;
 			
 			extern const FileType Recordset;
+
+			extern const FileType Solutions;
+
+			extern const FileType Solution;
 		} // namespace FileTypes
 	}
 } // namespace OOX

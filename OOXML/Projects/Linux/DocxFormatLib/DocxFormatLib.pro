@@ -193,6 +193,7 @@ SOURCES += \
         ../../../VsdxFormat/VisioPages.cpp \
         ../../../VsdxFormat/VisioDocument.cpp \
         ../../../VsdxFormat/VisioConnections.cpp \
+        ../../../VsdxFormat/VisioOthers.cpp \
         ../../../VsdxFormat/Shapes.cpp \
         ../../../VsdxFormat/FileFactory_Draw.cpp \
         ../../../VsdxFormat/FileTypes_Draw.cpp
@@ -396,6 +397,7 @@ HEADERS += \
         ../../../VsdxFormat/VisioPages.h \
         ../../../VsdxFormat/VisioDocument.h \
         ../../../VsdxFormat/VisioConnections.h \
+        ../../../VsdxFormat/VisioOthers.h \
         ../../../VsdxFormat/Shapes.h \
         ../../../VsdxFormat/FileFactory_Draw.h \
         ../../../VsdxFormat/FileTypes_Draw.h \

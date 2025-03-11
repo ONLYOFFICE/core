@@ -46,6 +46,16 @@ namespace Draw
 	};
 	DEFINE_SIMPLE_TYPE(CForeignType, EForeignType, typeBitmap)
 
+	enum ECompressionType
+	{
+		typeJPEG = 0,
+		typeDIB = 1,
+		typePNG = 2,
+		typeTIFF = 3,
+		typeGIF = 4
+	};
+	DEFINE_SIMPLE_TYPE(CCompressionType, ECompressionType, typeJPEG)
+	
 	enum EShapeType
 	{
 		typeGroup = 0,
@@ -58,7 +68,8 @@ namespace Draw
 	enum EWindowType
 	{
 		typeDrawing = 0,
-		typeSheet = 1
+		typeSheet = 1,
+		typeStencil =2
 	};
 	DEFINE_SIMPLE_TYPE(CWindowType, EWindowType, typeDrawing)
 		

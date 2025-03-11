@@ -109,6 +109,7 @@ namespace Draw
 		NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), oXmlWriter.GetXmlString());
 
 		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
+		IFileContainer::Write(oFilePath, oDirectory, oContent);
 	}
 	const OOX::FileType CMasterFile::type() const
 	{
@@ -908,10 +909,10 @@ namespace Draw
 		pWriter->StartNode(L"Page");
 		pWriter->StartAttributes();
 		pWriter->WriteAttribute2(L"ID", ID);
-		pWriter->WriteAttribute2(L"Name", Name);
 		pWriter->WriteAttribute2(L"NameU", NameU);
-		pWriter->WriteAttribute(L"IsCustomName", IsCustomName);
 		pWriter->WriteAttribute(L"IsCustomNameU", IsCustomNameU);
+		pWriter->WriteAttribute2(L"Name", Name);
+		pWriter->WriteAttribute(L"IsCustomName", IsCustomName);
 		pWriter->WriteAttribute(L"Background", Background);
 		pWriter->WriteAttribute2(L"BackPage", BackPage);
 		pWriter->WriteAttribute(L"ViewScale", ViewScale);
@@ -1143,19 +1144,19 @@ namespace Draw
 		pWriter->StartNode(L"Master");
 		pWriter->StartAttributes();
 		pWriter->WriteAttribute2(L"ID", ID);
-		pWriter->WriteAttribute2(L"Name", Name);
 		pWriter->WriteAttribute2(L"NameU", NameU);
-		pWriter->WriteAttribute2(L"BaseID", BaseID);
-		pWriter->WriteAttribute2(L"UniqueID", UniqueID);
-		pWriter->WriteAttribute(L"MatchByName", MatchByName);
-		pWriter->WriteAttribute(L"IsCustomName", IsCustomName);
 		pWriter->WriteAttribute(L"IsCustomNameU", IsCustomNameU);
-		pWriter->WriteAttribute2(L"IconSize", IconSize);
-		pWriter->WriteAttribute2(L"PatternFlags", PatternFlags);
+		pWriter->WriteAttribute2(L"Name", Name);
+		pWriter->WriteAttribute(L"IsCustomName", IsCustomName);
 		pWriter->WriteAttribute2(L"Prompt", Prompt);
-		pWriter->WriteAttribute(L"Hidden", Hidden);
-		pWriter->WriteAttribute(L"IconUpdate", IconUpdate);
+		pWriter->WriteAttribute2(L"IconSize", IconSize);
 		pWriter->WriteAttribute2(L"AlignName", AlignName);
+		pWriter->WriteAttribute(L"MatchByName", MatchByName);
+		pWriter->WriteAttribute(L"IconUpdate", IconUpdate);
+		pWriter->WriteAttribute2(L"UniqueID", UniqueID);
+		pWriter->WriteAttribute2(L"BaseID", BaseID);
+		pWriter->WriteAttribute2(L"PatternFlags", PatternFlags);
+		pWriter->WriteAttribute(L"Hidden", Hidden);
 		pWriter->WriteAttribute2(L"MasterType", MasterType);
 		pWriter->EndAttributes();
 
@@ -1298,10 +1299,10 @@ namespace Draw
 	{
 		pWriter->StartNode(L"PageSheet");
 		pWriter->StartAttributes();
-		pWriter->WriteAttribute2(L"UniqueID", UniqueID);
 		pWriter->WriteAttribute2(L"LineStyle", LineStyle);
 		pWriter->WriteAttribute2(L"FillStyle", FillStyle);
 		pWriter->WriteAttribute2(L"TextStyle", TextStyle);
+		pWriter->WriteAttribute2(L"UniqueID", UniqueID);
 		pWriter->EndAttributes();
 
 		for (size_t i = 0; i < m_arrItems.size(); ++i)

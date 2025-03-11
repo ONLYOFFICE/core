@@ -34,6 +34,7 @@
 #include "VisioDocument.h"
 #include "VisioConnections.h"
 #include "VisioPages.h"
+#include "VisioOthers.h"
  //#include "Comments.h"
 #include "../DocxFormat/Rels.h"
 
@@ -83,6 +84,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CValidation(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::Comments)
 				return smart_ptr<OOX::File>(new CComments(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::Solutions)
+				return smart_ptr<OOX::File>(new CSolutionsFile(pMain, oRootPath, oFileName));
+			else if (oRelation.Type() == FileTypes::Solution)
+				return smart_ptr<OOX::File>(new CSolutionFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
@@ -126,7 +131,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CRecordsetsFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Recordset)
 				return smart_ptr<OOX::File>(new CRecordsetFile(pMain, oRootPath, oFileName));
-
+			else if (pRelation->Type() == FileTypes::Solutions)
+				return smart_ptr<OOX::File>(new CSolutionsFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::Solution)
+				return smart_ptr<OOX::File>(new CSolutionFile(pMain, oRootPath, oFileName));
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
 	}

@@ -364,21 +364,19 @@ namespace OOX
 			nullable_uint ParentWindow;
 			nullable_bool ReadOnly;
 
-			//nullable_bool ShowRulers;
-			//nullable_bool ShowGrid;
-			//nullable_bool ShowPageBreaks;
-			//nullable_bool ShowGuides;
-			//nullable_bool ShowConnectionPoints;
-			//nullable_bool ShowGuides;
-			//nullable_bool ShowGuides;
-			//nullable_uint GlueSettings;
-			//nullable_uint SnapSettings;
-			//nullable_uint SnapExtensions;
-			//nullable_bool SnapAngles;
-			//nullable_bool DynamicGridEnabled;
-			//nullable_double TabSplitterPos;
-			//nullable_uint StencilGroup;
-			//nullable_uint StencilGroupPos
+			nullable_bool ShowRulers;
+			nullable_bool ShowGrid;
+			nullable_bool ShowPageBreaks;
+			nullable_bool ShowGuides;
+			nullable_bool ShowConnectionPoints;
+			nullable_uint GlueSettings;
+			nullable_uint SnapSettings;
+			nullable_uint SnapExtensions;
+			nullable_bool SnapAngles;
+			nullable_bool DynamicGridEnabled;
+			nullable_double TabSplitterPos;
+			nullable_uint StencilGroup;
+			nullable_uint StencilGroupPos;
 		};
 		class CWindows : public WritingElementWithChilds<CWindow>
 		{

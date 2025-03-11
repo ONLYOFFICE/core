@@ -32,6 +32,7 @@
 #include "VisioDocument.h"
 #include "VisioPages.h"
 #include "VisioConnections.h"
+#include "VisioOthers.h"
 #include "Shapes.h"
 #include "../PPTXFormat/Theme.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
@@ -1317,6 +1318,14 @@ namespace Draw
 
 				pReader->GetRels()->Add(oFile);
 			}break;
+			case 11:
+			{
+				CSolutionsFile* pSolutions = new CSolutionsFile(((OOX::File*)this)->m_pMainDocument);
+				pSolutions->fromPPTY(pReader);
+				smart_ptr<OOX::File> oFile(pSolutions);
+
+				pReader->GetRels()->Add(oFile);
+			}break;
 			case 14:
 			{
 				CWindowsFile* pWindows = new CWindowsFile(((OOX::File*)this)->m_pMainDocument);
@@ -1389,6 +1398,15 @@ namespace Draw
 		{
 			pWriter->StartRecord(10);
 			pRecordsets->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}
+		
+		pFile = this->Find(OOX::Draw::FileTypes::Solutions);
+		CSolutionsFile* pSolutions = dynamic_cast<CSolutionsFile*>(pFile.GetPointer());
+		if (pSolutions)
+		{
+			pWriter->StartRecord(11);
+			pSolutions->toPPTY(pWriter);
 			pWriter->EndRecord();
 		}
 
@@ -1475,6 +1493,65 @@ namespace Draw
 
 		if (oReader.IsEmptyNode())
 			return;
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetName();
+
+			if (L"ShowRulers" == sName)
+			{
+				ShowRulers = oReader.GetText2();
+			}
+			else if (L"ShowGrid" == sName)
+			{
+				ShowGrid = oReader.GetText2();
+			} 
+			else if (L"ShowPageBreaks" == sName)
+			{
+				ShowPageBreaks = oReader.GetText2();
+			}
+			else if (L"GlueSettings" == sName)
+			{
+				GlueSettings = oReader.GetText2();
+			}
+			else if (L"ShowGuides" == sName)
+			{
+				ShowGuides = oReader.GetText2();
+			}
+			else if (L"ShowConnectionPoints" == sName)
+			{
+				ShowConnectionPoints = oReader.GetText2();
+			}
+			else if (L"SnapSettings" == sName)
+			{
+				SnapSettings = oReader.GetText2();
+			}
+			else if (L"SnapExtensions" == sName)
+			{
+				SnapExtensions = oReader.GetText2();
+			}
+			else if (L"SnapAngles" == sName)
+			{
+				SnapAngles = oReader.GetText2();
+			}
+			else if (L"DynamicGridEnabled" == sName)
+			{
+				DynamicGridEnabled = oReader.GetText2();
+			}
+			else if (L"TabSplitterPos" == sName)
+			{
+				TabSplitterPos = oReader.GetText2();
+			}
+			else if (L"StencilGroup" == sName)
+			{
+				StencilGroup = oReader.GetText2();
+			}
+			else if (L"StencilGroupPos" == sName)
+			{
+				StencilGroupPos = oReader.GetText2();
+			}
+		}
+
 	}
 	void CWindow::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1496,6 +1573,19 @@ namespace Draw
 		pWriter->WriteString2(14, Document);
 		pWriter->WriteUInt2(15, ParentWindow);
 		pWriter->WriteBool2(16, ReadOnly);
+		pWriter->WriteBool2(17, ShowRulers);
+		pWriter->WriteBool2(18, ShowGrid);
+		pWriter->WriteBool2(19, ShowPageBreaks);
+		pWriter->WriteBool2(20, ShowGuides);
+		pWriter->WriteBool2(21, ShowConnectionPoints);
+		pWriter->WriteUInt2(22, GlueSettings);
+		pWriter->WriteUInt2(23, SnapSettings);
+		pWriter->WriteUInt2(24, SnapExtensions);
+		pWriter->WriteBool2(25, SnapAngles);
+		pWriter->WriteBool2(26, DynamicGridEnabled);
+		pWriter->WriteDoubleReal2(27, TabSplitterPos);
+		pWriter->WriteUInt2(28, StencilGroup);
+		pWriter->WriteUInt2(29, StencilGroupPos);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 	}
 
@@ -1578,11 +1668,62 @@ namespace Draw
 			{
 				ReadOnly = pReader->GetBool();
 			}break;
+			case 17:
+			{
+				ShowRulers = pReader->GetBool();
+			}break;
+			case 18:
+			{
+				ShowGrid = pReader->GetBool();
+			}break;
+			case 19:
+			{
+				ShowPageBreaks = pReader->GetBool();
+			}break;
+			case 20:
+			{
+				ShowGuides = pReader->GetBool();
+			}break;
+			case 21:
+			{
+				ShowConnectionPoints = pReader->GetBool();
+			}break;
+			case 22:
+			{
+				GlueSettings = pReader->GetULong();
+			}break;
+			case 23:
+			{
+				SnapSettings = pReader->GetULong();
+			}break;
+			case 24:
+			{
+				SnapExtensions = pReader->GetULong();
+			}break;
+			case 25:
+			{
+				SnapAngles = pReader->GetBool();
+			}break;
+			case 26:
+			{
+				DynamicGridEnabled = pReader->GetBool();
+			}break;
+			case 27:
+			{
+				TabSplitterPos = pReader->GetDoubleReal();
+			}break;			
+			case 28:
+			{
+				StencilGroup = pReader->GetULong();
+			}break;
+			case 29:
+			{
+				StencilGroupPos = pReader->GetULong();
+			}break;
 			}
 		}
 		pReader->Seek(_end_rec);
 	}
-
 	void CWindow::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
 		pWriter->StartNode(L"Window");
@@ -1607,6 +1748,20 @@ namespace Draw
 		pWriter->WriteAttribute2(L"ParentWindow", ParentWindow);
 		pWriter->WriteAttribute(L"ReadOnly", ReadOnly);
 		pWriter->EndAttributes();
+
+		pWriter->WriteNodeValue(L"ShowRulers", ShowRulers);
+		pWriter->WriteNodeValue(L"ShowGrid", ShowGrid);
+		pWriter->WriteNodeValue(L"ShowPageBreaks", ShowPageBreaks);
+		pWriter->WriteNodeValue(L"ShowGuides", ShowGuides);
+		pWriter->WriteNodeValue(L"ShowConnectionPoints", ShowConnectionPoints);
+		pWriter->WriteNodeValue(L"GlueSettings", GlueSettings);
+		pWriter->WriteNodeValue(L"SnapSettings", SnapSettings);
+		pWriter->WriteNodeValue(L"SnapExtensions", SnapExtensions);
+		pWriter->WriteNodeValue(L"SnapAngles", SnapAngles);
+		pWriter->WriteNodeValue(L"DynamicGridEnabled", DynamicGridEnabled);
+		pWriter->WriteNodeValue(L"TabSplitterPos", TabSplitterPos);
+		pWriter->WriteNodeValue(L"StencilGroup", StencilGroup);
+		pWriter->WriteNodeValue(L"StencilGroupPos", StencilGroupPos);
 
 		pWriter->WriteNodeEnd(L"Window");
 	}

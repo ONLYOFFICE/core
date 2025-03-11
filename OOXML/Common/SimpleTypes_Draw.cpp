@@ -40,6 +40,7 @@ namespace Draw
 		if (L"Bitmap" == sValue) this->m_eValue = typeBitmap;
 		else if (L"EnhMetaFile" == sValue) this->m_eValue = typeEnhMetaFile;
 		else if (L"Ink" == sValue) this->m_eValue = typeInk;
+		else if (L"Object" == sValue) this->m_eValue = typeObject;
 		else this->m_eValue = typeBitmap;
 
 		return this->m_eValue;
@@ -51,7 +52,32 @@ namespace Draw
 		case typeBitmap: return L"Bitmap";
 		case typeEnhMetaFile: return L"EnhMetaFile";
 		case typeInk:  return L"Ink";
+		case typeObject:  return L"Object";
 		default: return L"Bitmap";
+
+		}
+	}
+	ECompressionType CCompressionType::FromString(const std::wstring& sValue)
+	{
+		if (L"JPEG" == sValue || L"JPG" == sValue) this->m_eValue = typeJPEG;
+		else if (L"DIB" == sValue) this->m_eValue = typeDIB;
+		else if (L"PNG" == sValue) this->m_eValue = typePNG;
+		else if (L"TIFF" == sValue) this->m_eValue = typeTIFF;
+		else if (L"GIF" == sValue) this->m_eValue = typeGIF;
+		else this->m_eValue = typeJPEG;
+
+		return this->m_eValue;
+	}
+	std::wstring CCompressionType::ToString() const
+	{
+		switch (this->m_eValue)
+		{
+		case typeJPEG: return L"JPEG";
+		case typeDIB: return L"DIB";
+		case typePNG:  return L"PNG";
+		case typeTIFF:  return L"TIFF";
+		case typeGIF:  return L"GIF";
+		default: return L"JPEG";
 
 		}
 	}
@@ -98,8 +124,10 @@ namespace Draw
 
 	EWindowType CWindowType::FromString(const std::wstring& sValue)
 	{
-		if (L"Drawing" == sValue) this->m_eValue = typeDrawing;
-		else this->m_eValue = EWindowType::typeSheet;
+		if (L"Drawing" == sValue) this->m_eValue = EWindowType::typeDrawing;
+		else if (L"Sheet" == sValue) this->m_eValue = EWindowType::typeSheet;
+		else if (L"Stencil" == sValue) this->m_eValue = EWindowType::typeStencil;
+		else  this->m_eValue = EWindowType::typeSheet;
 
 		return this->m_eValue;
 	}
@@ -107,8 +135,9 @@ namespace Draw
 	{
 		switch (this->m_eValue)
 		{
-		case typeDrawing: return L"Drawing";
-		case typeSheet: return L"Sheet";
+		case EWindowType::typeDrawing: return L"Drawing";
+		case EWindowType::typeSheet: return L"Sheet";
+		case EWindowType::typeStencil: return L"Stencil";
 		default: return L"Sheet";
 
 		}

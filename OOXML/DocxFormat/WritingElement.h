@@ -1570,6 +1570,7 @@ namespace OOX
 			et_dr_text_pp,
 			et_dr_text_tp,
 			et_dr_text_fld,
+			et_dr_text_text,
 			et_dr_ForeignData,
 			et_dr_Rel,
 			et_dr_RefBy,
@@ -1589,7 +1590,9 @@ namespace OOX
 			et_dr_RowKeyValue,
 			et_dr_RowMap,
 			et_dr_Windows,
-			et_dr_Window
+			et_dr_Window,
+			et_dr_Solutions,
+			et_dr_Solution
 	};
 
 	class File;

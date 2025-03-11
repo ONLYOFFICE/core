@@ -59,30 +59,6 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 		}
-		void CRel::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-		}
-		void CRel::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-			pReader->Skip(1); // start attributes
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-				switch (_at)
-				{
-				case 0:
-				{
-				}break;
-				}
-			}
-			pReader->Seek(_end_rec);
-		}
 		void CRel::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
 			pWriter->StartNode(L"Rel");
@@ -127,6 +103,8 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "ForeignType", ForeignType)
+				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "CompressionType", CompressionType)
+				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "CompressionLevel", CompressionLevel)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ObjectType", ObjectType)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ShowAsIcon", ShowAsIcon)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ObjectWidth", ObjectWidth)
@@ -135,6 +113,8 @@ namespace OOX
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ExtentY", ExtentY)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
+		nullable<SimpleTypes::Draw::CCompressionType> CompressionType;
+		nullable_double CompressionLevel;
 		void CForeignData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
@@ -162,6 +142,8 @@ namespace OOX
 			pWriter->WriteDoubleReal2(4, ObjectHeight);
 			pWriter->WriteDoubleReal2(5, ExtentX);
 			pWriter->WriteDoubleReal2(6, ExtentY);
+			if (CompressionType.IsInit()) pWriter->WriteByte1(7, CompressionType->GetValue());
+			pWriter->WriteDoubleReal2(8, CompressionLevel);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			if (Rel.IsInit() && Rel->Rid.IsInit())
@@ -245,6 +227,15 @@ namespace OOX
 				{
 					ExtentY = pReader->GetDoubleReal();
 				}break;
+				case 7:
+				{
+					CompressionType.Init();
+					CompressionType->SetValueFromByte(pReader->GetUChar());
+				}break;
+				case 8:
+				{
+					CompressionLevel = pReader->GetDoubleReal();
+				}break;
 				}
 			}
 			while (pReader->GetPos() < _end_rec)
@@ -302,7 +293,7 @@ namespace OOX
 				NSFile::CFileBinary::Copy(srcMedia + media_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
 
 				Image* pImage = new Image(NULL, false);
-				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + media_filename, false);
+				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename, false);
 
 				smart_ptr<OOX::File> oFile(pImage);
 				Rel.Init(); Rel->Rid.Init();
@@ -314,6 +305,8 @@ namespace OOX
 			pWriter->StartNode(L"ForeignData");
 			pWriter->StartAttributes();
 			if (ForeignType.IsInit()) pWriter->WriteAttribute(L"ForeignType", ForeignType->ToString());
+			if (CompressionType.IsInit()) pWriter->WriteAttribute(L"CompressionType", CompressionType->ToString());
+			pWriter->WriteAttribute(L"CompressionLevel", CompressionLevel);
 			pWriter->WriteAttribute2(L"ObjectType", ObjectType);
 			pWriter->WriteAttribute(L"ShowAsIcon", ShowAsIcon);
 			pWriter->WriteAttribute(L"ObjectWidth", ObjectWidth);
@@ -340,37 +333,51 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
+			int nDepth = oReader.GetDepth();
+			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+		
+			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 			{
-				std::wstring sName = oReader.GetName();
+				if (eNodeType == XmlUtils::XmlNodeType_Text
+					|| eNodeType == XmlUtils::XmlNodeType_Whitespace
+					|| eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE
+					|| eNodeType == XmlUtils::XmlNodeType_CDATA)
+				{
+					const char* pValue = oReader.GetTextChar();
 
-				WritingElement* pItem = NULL;
-				if (L"cp" == sName)
-				{
-					pItem = new CText_cp();
+					if ('\0' != pValue[0])
+					{
+						CText_text* pText = new CText_text();
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), pText->content);
+						m_arrItems.push_back(pText);
+					}
 				}
-				else if (L"pp" == sName)
+				else if (eNodeType == XmlUtils::XmlNodeType_Element)
 				{
-					pItem = new CText_pp();
-				}
-				else if (L"tp" == sName)
-				{
-					pItem = new CText_tp();
-				}
-				else if (L"fld" == sName)
-				{
-					pItem = new CText_fld();
-				}
-				else
-				{
-					content += oReader.GetText2();
-				}
-				content += oReader.GetText2();
-				if (pItem)
-				{
-					pItem->fromXML(oReader);
-					m_arrItems.push_back(pItem);
+					std::wstring sName = oReader.GetName();
+
+					WritingElement* pItem = NULL;
+					if (L"cp" == sName)
+					{
+						pItem = new CText_cp();
+					}
+					else if (L"pp" == sName)
+					{
+						pItem = new CText_pp();
+					}
+					else if (L"tp" == sName)
+					{
+						pItem = new CText_tp();
+					}
+					else if (L"fld" == sName)
+					{
+						pItem = new CText_fld();
+					}
+					if (pItem)
+					{
+						pItem->fromXML(oReader);
+						m_arrItems.push_back(pItem);
+					}
 				}
 			}
 		}
@@ -385,6 +392,7 @@ namespace OOX
 					case et_dr_text_pp: type = 1; break;
 					case et_dr_text_tp: type = 2; break;
 					case et_dr_text_fld: type = 3; break;
+					case et_dr_text_text: type = 4; break;
 				}
 				if (type != 0xff)
 					pWriter->WriteRecord2(type, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
@@ -418,6 +426,11 @@ namespace OOX
 					m_arrItems.push_back(new CText_fld());
 					m_arrItems.back()->fromPPTY(pReader);
 				}break;
+				case 4:
+				{
+					m_arrItems.push_back(new CText_text());
+					m_arrItems.back()->fromPPTY(pReader);
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -436,9 +449,41 @@ namespace OOX
 			{
 				m_arrItems[i]->toXmlWriter(pWriter);
 			}
-			pWriter->WriteString(content);
 
 			pWriter->WriteNodeEnd(L"Text");
+		}
+		EElementType CText_text::getType() const
+		{
+			return et_dr_text_text;
+		}
+		void CText_text::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteString1(0, content);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void CText_text::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+				switch (_at)
+				{
+				case 0:
+				{
+					content = pReader->GetString2();
+				}break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void CText_text::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->WriteStringXML(content);
 		}
 		EElementType CText_fld::getType() const
 		{
@@ -456,7 +501,7 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
-			content = oReader.GetText();
+			content = oReader.GetText2();
 		}
 		void CText_fld::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -495,7 +540,7 @@ namespace OOX
 			pWriter->WriteAttribute2(L"IX", IX);
 			pWriter->EndAttributes();
 			
-			pWriter->WriteString(content);
+			pWriter->WriteStringXML(content);
 			
 			pWriter->WriteNodeEnd(L"fld");
 		}
@@ -771,8 +816,8 @@ namespace OOX
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"N", N);
 			pWriter->WriteAttribute2(L"LocalName", LocalName);
-			pWriter->WriteAttribute2(L"IX", IX);
 			pWriter->WriteAttribute2(L"T", T);
+			pWriter->WriteAttribute2(L"IX", IX);
 			pWriter->WriteAttribute(L"Del", Del);
 			pWriter->EndAttributes();
 
@@ -903,8 +948,8 @@ namespace OOX
 		{
 			pWriter->StartNode(L"Section");
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute2(L"IX", IX);
 			pWriter->WriteAttribute2(L"N", N);
+			pWriter->WriteAttribute2(L"IX", IX);
 			pWriter->WriteAttribute(L"Del", Del);
 			pWriter->EndAttributes();
 
@@ -964,8 +1009,8 @@ namespace OOX
 		{
 			pWriter->StartNode(L"RefBy");
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute2(L"ID", ID);
 			pWriter->WriteAttribute2(L"T", T);
+			pWriter->WriteAttribute2(L"ID", ID);
 			pWriter->EndAttributes();
 			pWriter->WriteNodeEnd(L"RefBy");
 		}
@@ -1073,10 +1118,11 @@ namespace OOX
 			pWriter->WriteAttribute2(L"E", E);
 			pWriter->WriteAttribute2(L"F", F);
 			pWriter->EndAttributes();
-			pWriter->WriteNodeEnd(L"Cell");
 
 			if (RefBy.IsInit())
 				RefBy->toXmlWriter(pWriter);
+
+			pWriter->WriteNodeEnd(L"Cell");
 		}
 		EElementType CTrigger::getType() const
 		{
@@ -1155,10 +1201,11 @@ namespace OOX
 			pWriter->WriteAttribute2(L"N", N);
 
 			pWriter->EndAttributes();
-			pWriter->WriteNodeEnd(L"Trigger");
 			
 			if (RefBy.IsInit())
 				RefBy->toXmlWriter(pWriter);
+
+			pWriter->WriteNodeEnd(L"Trigger");
 		}
 		EElementType CShape::getType() const
 		{
@@ -1379,12 +1426,12 @@ namespace OOX
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"ID", ID);
 			pWriter->WriteAttribute2(L"OriginalID", OriginalID);
+			if (Type.IsInit()) pWriter->WriteAttribute2(L"Type", Type->ToString());
 			pWriter->WriteAttribute(L"Del", Del);
 			pWriter->WriteAttribute2(L"MasterShape", MasterShape);
 			pWriter->WriteAttribute2(L"UniqueID", UniqueID);
 			pWriter->WriteAttribute2(L"NameU", NameU);
 			pWriter->WriteAttribute2(L"Name", Name);
-			if (Type.IsInit()) pWriter->WriteAttribute2(L"Type", Type->ToString());
 			pWriter->WriteAttribute(L"IsCustomName", IsCustomName);
 			pWriter->WriteAttribute(L"IsCustomNameU", IsCustomNameU);
 			pWriter->WriteAttribute2(L"Master", Master);

@@ -75,6 +75,10 @@ namespace OOX
 												L"application/vnd.ms-visio.recordsets+xml",
 												L"http://schemas.microsoft.com/visio/2010/relationships/recordsets");
 
+			const FileType Solutions		(L"solutions", L"solutions.xml",
+												L"application/vnd.ms-visio.solutions+xml",
+												L"http://schemas.microsoft.com/visio/2010/relationships/solutions");
+
 			const FileType Page				(L"", L"page.xml",
 												L"application/vnd.ms-visio.page+xml",
 												L"http://schemas.microsoft.com/visio/2010/relationships/page",
@@ -90,6 +94,10 @@ namespace OOX
 												L"http://schemas.microsoft.com/visio/2010/relationships/recordset",
 												L"data/recordset", true);
 
+			const FileType Solution			(L"", L"solution.xml",
+												L"application/vnd.ms-visio.solution+xml",
+												L"http://schemas.microsoft.com/visio/2010/relationships/solution",
+												L"solutions/solution", true);
 		} // namespace FileTypes
 	}
 } // namespace OOX

@@ -161,6 +161,7 @@ namespace Draw
 				oFile.WriteFile((BYTE*)m_sXmlA.c_str(), m_sXmlA.length());
 			oFile.CloseFile();
 		}
+		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
 	}
 	const OOX::FileType OOX::Draw::CRecordsetFile::type() const
 	{

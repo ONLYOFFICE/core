@@ -580,6 +580,9 @@
     <ClInclude Include="..\..\..\VsdxFormat\VisioPages.h">
       <Filter>VsdxFormat</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\VisioOthers.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -1024,6 +1027,9 @@
       <Filter>VsdxFormat</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\VsdxFormat\VisioPages.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\VisioOthers.cpp">
       <Filter>VsdxFormat</Filter>
     </ClCompile>
   </ItemGroup>

@@ -34,6 +34,7 @@
 #include "../../../VsdxFormat/VisioPages.cpp"
 #include "../../../VsdxFormat/VisioDocument.cpp"
 #include "../../../VsdxFormat/VisioConnections.cpp"
+#include "../../../VsdxFormat/VisioOthers.cpp"
 #include "../../../VsdxFormat/Shapes.cpp"
 #include "../../../VsdxFormat/FileFactory_Draw.cpp"
 #include "../../../VsdxFormat/FileTypes_Draw.cpp"

@@ -58,8 +58,6 @@ namespace OOX
 
 			virtual EElementType getType() const;
 
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 		private:
@@ -111,6 +109,8 @@ namespace OOX
 
 		public:
 			nullable<SimpleTypes::Draw::CForeignType> ForeignType;
+			nullable<SimpleTypes::Draw::CCompressionType> CompressionType;
+			nullable_double CompressionLevel;
 			nullable_uint ObjectType;
 			nullable_bool ShowAsIcon;
 			nullable_double ObjectWidth;
@@ -217,6 +217,26 @@ namespace OOX
 			nullable_uint IX;
 			std::wstring content;
 		};
+		class CText_text : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CText_text)
+			CText_text() {}
+			virtual ~CText_text() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			std::wstring content;
+		};
 		class CText : public WritingElementWithChilds<>
 		{
 		public:
@@ -235,8 +255,6 @@ namespace OOX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const;
-			
-			std::wstring content; // todooo !!!
 		};
 		class CRow : public WritingElementWithChilds<>
 		{

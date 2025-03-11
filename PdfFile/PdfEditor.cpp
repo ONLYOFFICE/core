@@ -1263,11 +1263,11 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet)
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc)
 {
-	if (m_nMode == Mode::WriteNew || (m_nMode == Mode::WriteAppend && !_pDoc))
+	if (m_nMode == Mode::WriteNew)
 		return false;
 	if (m_nMode == Mode::Unknown)
 		m_nMode = Mode::WriteNew;
-	PDFDoc* pPDFDocument = _pDoc ? _pDoc : m_pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
@@ -1637,7 +1637,9 @@ bool CPdfEditor::MergePages(PDFDoc* pDocument, const int* arrPageIndex, unsigned
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
-	return SplitPages(arrPageIndex, unLength, pDocument);
+	bool bRes = SplitPages(arrPageIndex, unLength, pDocument);
+	m_mSplitUniqueRef.clear();
+	return bRes;
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {

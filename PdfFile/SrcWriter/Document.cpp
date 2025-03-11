@@ -1490,6 +1490,10 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDocument::AddEditPage(CPage* pPage, int nPageIndex)
+	{
+		m_mEditPages[nPageIndex] = pPage;
+	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
 	{
 		if (!pAnnot || !EditXref(pXref))

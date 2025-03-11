@@ -195,6 +195,7 @@ namespace PdfWriter
 		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
+		void              AddEditPage(CPage* pPage, int nPageIndex);
 		CPage*            AddPage(int nPageIndex, CPage* _pNewPage = NULL);
 		bool              DeletePage(int nPageIndex);
 		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);

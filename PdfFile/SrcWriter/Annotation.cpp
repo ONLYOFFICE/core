@@ -2278,6 +2278,9 @@ namespace PdfWriter
 	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
 	{
 		m_arrOpt = arrOpt;
+		if (m_arrOpt.empty())
+			return;
+
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;

@@ -355,11 +355,16 @@ TEST_F(CPdfFileTest, MergePdf)
 	GTEST_SKIP();
 
 	LoadFromFile();
-	ASSERT_TRUE(pdfFile->EditPdf(NSFile::GetProcessDirectory() + L"/test3.pdf"));
+	std::vector<int> arrPages = { 0, 1 };
+	BYTE* pFile = pdfFile->SplitPages(arrPages.data(), arrPages.size());
+
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
 	pdfFile->MergePages(wsDstFile);
 
 	pdfFile->Close();
+
+	RELEASEARRAYOBJECTS(pFile);
 }
 
 TEST_F(CPdfFileTest, CopyAnotherPdf)

@@ -1418,7 +1418,10 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	}
 
 	// Флаг - Ff
-	m_unFieldFlag = pField->getFlags();
+	m_unFieldFlag = -1;
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+		m_unFieldFlag = oObj.getInt();
+	oObj.free();
 
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 	m_sTU = FieldLookupString(pField, "TU", 0);
@@ -2677,6 +2680,14 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 	}
 	oOpt.free();
 
+	// 7 - Флаг - Ff
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+	{
+		pAnnotParent->unFieldFlag = oObj.getInt();
+		pAnnotParent->unFlags |= (1 << 7);
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -3637,6 +3648,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 		for (int i = 0; i < arrOpt.size(); ++i)
 			oRes.WriteString(arrOpt[i]);
 	}
+	if (unFlags & (1 << 7))
+		oRes.AddInt(unFieldFlag);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {
@@ -3875,7 +3888,7 @@ void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sV);
 	if (m_unFlags & (1 << 10))
 		oRes.AddInt(m_unMaxLen);
-	if (m_unFieldFlag & (1 << 25))
+	if (m_unFlags & (1 << 11))
 		oRes.WriteString(m_sRV);
 }
 void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)

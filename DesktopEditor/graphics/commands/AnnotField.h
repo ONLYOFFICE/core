@@ -568,6 +568,7 @@ public:
 		int nID;
 		int nFlags;
 		int nParentID;
+		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;

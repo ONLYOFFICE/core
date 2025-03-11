@@ -1104,6 +1104,8 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 			for (int i = 0; i < n; ++i)
 				pParent->arrV.push_back(pReader->ReadString());
 		}
+		if (nFlags & (1 << 7))
+			pParent->nFieldFlag = pReader->ReadInt();
 		m_arrParents.push_back(pParent);
 	}
 

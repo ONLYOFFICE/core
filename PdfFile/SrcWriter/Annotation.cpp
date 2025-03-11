@@ -1582,6 +1582,8 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		CDictObject* pOwner = GetObjOwnValue("Ff");
 		if (!pOwner)
 			pOwner = this;
@@ -1876,6 +1878,8 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		nFlags |= (1 << 16);
 		CWidgetAnnotation::SetFlag(nFlags);
@@ -2144,6 +2148,8 @@ namespace PdfWriter
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		if (m_nSubtype == WidgetRadiobutton)
 			nFlags |= (1 << 15);
@@ -2208,6 +2214,8 @@ namespace PdfWriter
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		if (m_nSubtype == WidgetCombobox)
 			nFlags |= (1 << 17);

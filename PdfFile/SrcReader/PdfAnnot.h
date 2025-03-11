@@ -611,6 +611,7 @@ private:
 
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
+		unsigned int unFieldFlag; // Флаг Ff
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;

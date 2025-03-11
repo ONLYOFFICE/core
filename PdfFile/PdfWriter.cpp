@@ -2155,9 +2155,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		BYTE nAlign = pPr->GetQ();
 		if (nWidgetType != 27 && nWidgetType != 28 && nWidgetType != 29)
 			pWidgetAnnot->SetQ(nAlign);
-		int nWidgetFlag = pPr->GetFlag();
 		pWidgetAnnot->SetSubtype(nWidgetType);
-		pWidgetAnnot->SetFlag(nWidgetFlag);
+		pWidgetAnnot->SetFlag(pPr->GetFlag());
 
 		int nFlags = pPr->GetFlags();
 		if (nFlags & (1 << 0))
@@ -2419,7 +2418,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 10))
 				pTextWidget->SetMaxLen(pPr->GetMaxLen());
-			if (nWidgetFlag & (1 << 25))
+			if (nFlags & (1 << 11))
 				pTextWidget->SetRV(pPr->GetRV());
 			bool bAPValue = false;
 			if (nFlags & (1 << 12))
@@ -2717,6 +2716,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		if (nFlags & (1 << 7))
+			pParentObj->Add("Ff", pParent->nFieldFlag);
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

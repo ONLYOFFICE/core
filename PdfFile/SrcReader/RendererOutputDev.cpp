@@ -474,6 +474,13 @@ namespace PdfReader
 	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
+		if (m_sStates.empty())
+		{ // Несбалансированный q/Q - сломанный файл
+			updateAll(pGState);
+			UpdateAllClip(pGState);
+			return;
+		}
+
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{

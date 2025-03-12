@@ -39,6 +39,8 @@
 #include "../DocxFormat/Media/OleObject.h"
 #include "../DocxFormat/Media/Image.h"
 
+#include "../../Common/OfficeFileFormatChecker.h"
+
 namespace OOX
 {
 	namespace Draw
@@ -271,6 +273,12 @@ namespace OOX
 				OleObject* pOle = new OleObject(NULL, false, false);
 				pOle->set_filename(pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename, false);
 				pOle->set_filename_cache(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+
+				COfficeFileFormatChecker checker;
+				if (checker.isOOXFormatFile(pOle->filename().GetPath()))
+				{
+					pOle->set_MsPackage(true);
+				}
 				
 				smart_ptr<OOX::File> oFile(pOle);
 

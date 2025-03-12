@@ -5110,16 +5110,16 @@ void BinaryDocumentTableWriter::WriteMathRunContent(OOX::Logic::CMRun* pMRun)
 				int nBreakType = -1;
 				switch (pBr->m_oType.GetValue())
 				{
-				case SimpleTypes::brtypeColumn:			nBreakType = c_oSerRunType::columnbreak;	break;
-				case SimpleTypes::brtypePage:			nBreakType = c_oSerRunType::pagebreak;		break;
+				case SimpleTypes::brtypeColumn:			nBreakType = c_oSer_OMathContentType::columnbreak;	break;
+				case SimpleTypes::brtypePage:			nBreakType = c_oSer_OMathContentType::pagebreak;	break;
 				case SimpleTypes::brtypeTextWrapping:
 				{
 					switch (pBr->m_oClear.GetValue())
 					{
-					case SimpleTypes::brclearAll:	nBreakType = c_oSerRunType::linebreakClearAll;		break;
-					case SimpleTypes::brclearLeft:	nBreakType = c_oSerRunType::linebreakClearLeft;		break;
-					case SimpleTypes::brclearRight:	nBreakType = c_oSerRunType::linebreakClearRight;	break;
-					default:						nBreakType = c_oSerRunType::linebreak;				break;
+					//case SimpleTypes::brclearAll:		nBreakType = c_oSer_OMathContentType::linebreakClearAll;	break;
+					//case SimpleTypes::brclearLeft:	nBreakType = c_oSer_OMathContentType::linebreakClearLeft;	break;
+					//case SimpleTypes::brclearRight:	nBreakType = c_oSer_OMathContentType::linebreakClearRight;	break;
+					default: nBreakType = c_oSer_OMathContentType::linebreak; break;
 					}
 
 				}break;

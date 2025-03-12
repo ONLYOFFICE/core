@@ -82,6 +82,7 @@ OfficeArtRecordPtr OfficeArtContainer::CreateOfficeArt(unsigned short type)
 		case FSP:
 			art_record = OfficeArtRecordPtr(new OfficeArtFSP);							break;
 		case FOPT:
+		case SecondaryFOPT:
 			art_record = OfficeArtRecordPtr(new OfficeArtFOPT);							break;
 		case ChildAnchor:
 			art_record = OfficeArtRecordPtr(new OfficeArtChildAnchor);					break;
@@ -116,8 +117,6 @@ OfficeArtRecordPtr OfficeArtContainer::CreateOfficeArt(unsigned short type)
 			art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);				break;
 		case TertiaryFOPT:
 			art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);					break;
-		case SecondaryFOPT:
-		
 		case FPSPL:
 		case FDGSL:
 		case FBSE:

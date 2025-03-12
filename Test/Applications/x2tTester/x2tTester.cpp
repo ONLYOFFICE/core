@@ -194,6 +194,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"odt");
 	list.m_documents.push_back(L"ott");
 	list.m_documents.push_back(L"oxps");
+	list.m_documents.push_back(L"pages");
 	list.m_documents.push_back(L"rtf");
 	list.m_documents.push_back(L"stw");
 	list.m_documents.push_back(L"sxw");
@@ -205,6 +206,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_presentations.push_back(L"dps");
 	list.m_presentations.push_back(L"dpt");
 	list.m_presentations.push_back(L"fodp");
+	list.m_presentations.push_back(L"key");
 	list.m_presentations.push_back(L"odp");
 	list.m_presentations.push_back(L"otp");
 	list.m_presentations.push_back(L"pot");
@@ -223,6 +225,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_spreadsheets.push_back(L"et");
 	list.m_spreadsheets.push_back(L"ett");
 	list.m_spreadsheets.push_back(L"fods");
+	list.m_spreadsheets.push_back(L"numbers");
 	list.m_spreadsheets.push_back(L"ods");
 	list.m_spreadsheets.push_back(L"ots");
 	list.m_spreadsheets.push_back(L"sxc");

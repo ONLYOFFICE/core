@@ -19,7 +19,6 @@ static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|df
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
-static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2","h3","h4","h5","h6",
@@ -436,9 +435,25 @@ static void substitute_xml_entities_into_text(std::string& text)
 	replace_all(text, ">", "&gt;");
 }
 
+// After running through Gumbo, the values of type "&#1;" are replaced with the corresponding code '0x01'
+// Since the attribute value does not use control characters (value <= 0x1F),
+// then just delete them, otherwise XmlUtils::CXmlLiteReader crashes on them.
+// bug#73486
+static void remove_control_symbols(std::string& text)
+{
+	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](char chValue){ return chValue <= 0x1F; });
+
+	while (itFound != text.end())
+	{
+		itFound = text.erase(itFound);
+		itFound = std::find_if(itFound, text.end(), [](char chValue){ return chValue <= 0x1F; });
+	}
+}
+
 // Заменяет сущности " в text
 static void substitute_xml_entities_into_attributes(std::string& text)
 {
+	remove_control_symbols(text);
 	substitute_xml_entities_into_text(text);
 	replace_all(text, "\"", "&quot;");
 }
@@ -486,7 +501,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 	}
 }
 
-static void build_attributes(const GumboVector* attribs, bool no_entities, NSStringUtils::CStringBuilderA& atts)
+static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringBuilderA& atts)
 {
 	std::vector<std::string> arrRepeat;
 	for (size_t i = 0; i < attribs->length; ++i)
@@ -532,8 +547,7 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 		std::string qs ="\"";
 		atts.WriteString("=");
 		atts.WriteString(qs);
-		if(!no_entities)
-			substitute_xml_entities_into_attributes(sVal);
+		substitute_xml_entities_into_attributes(sVal);
 		atts.WriteString(sVal);
 		atts.WriteString(qs);
 	}
@@ -542,7 +556,6 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents, bool bCheckValidNode)
 {
 	std::string key             = "|" + get_tag_name(node) + "|";
-	bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
 	bool keep_whitespace        = preserve_whitespace.find(key) != std::string::npos;
 	bool is_inline              = nonbreaking_inline.find(key) != std::string::npos;
 	bool is_like_inline         = treat_like_inline.find(key) != std::string::npos;
@@ -556,8 +569,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 		if (child->type == GUMBO_NODE_TEXT)
 		{
 			std::string val(child->v.text.text);
-			if(!no_entity_substitution)
-				substitute_xml_entities_into_text(val);
+			substitute_xml_entities_into_text(val);
 
 			// Избавление от FF
 			size_t found = val.find_first_of("\014");
@@ -613,7 +625,6 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	std::string closeTag           = "";
 	std::string key                = "|" + tagname + "|";
 	bool is_empty_tag              = empty_tags.find(key) != std::string::npos;
-	bool no_entity_substitution    = no_entity_sub.find(key) != std::string::npos;
 	
 	// determine closing tag type
 	if (is_empty_tag)
@@ -626,7 +637,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 
 	// build attr string
 	const GumboVector* attribs = &node->v.element.attributes;
-	build_attributes(attribs, no_entity_substitution, oBuilder);
+	build_attributes(attribs, oBuilder);
 	oBuilder.WriteString(close + ">");
 
 	// prettyprint your contents

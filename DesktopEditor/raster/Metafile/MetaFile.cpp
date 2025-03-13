@@ -47,11 +47,18 @@ namespace MetaFile
 		return new CMetaFile(pAppFonts);
 	}
 
+	/**
+	 * @brief CMetaFile Constructor
+	 * @param pAppFonts
+	 *
+	 * Create a font manager accordingly Applications Fonts for the
+	 * appropriate metafile.
+	 */
 	CMetaFile::CMetaFile(NSFonts::IApplicationFonts *pAppFonts) : MetaFile::IMetaFile(pAppFonts)
 	{
 		m_pFontManager = NULL;
 		m_pAppFonts = pAppFonts;
-		// Создаем менеджер шрифтов с собственным кэшем
+
 		if (pAppFonts)
 		{
 			m_pFontManager = pAppFonts->GenerateFontManager();
@@ -71,17 +78,32 @@ namespace MetaFile
 		m_lType  = 0;
 	}
 
+	/**
+	 * @brief CMetaFile::get_FontManager
+	 * @return Pointer of current Font Manager
+	 */
 	NSFonts::IFontManager* CMetaFile::get_FontManager()
 	{
 		return m_pFontManager;
 	}
 
+	/**
+	 * @brief CMetaFile Destructor
+	 *
+	 * Close metafile and release memory, allocated for Font Manager
+	 */
 	CMetaFile::~CMetaFile()
 	{
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
 	}
 
+	/**
+	 * @brief CMetaFile::ConvertToSvg
+	 * @param unWidth - width of picture from metafile (0 - default)
+	 * @param unHeight - height of picture from metafile (0 - default)
+	 * @return Name of the .svg file storing result
+	 */
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
 
@@ -102,7 +124,16 @@ namespace MetaFile
 		return L"";
 	}
 
+	/**
+	 * @brief Methods for conversation in test examples
+	 */
 #ifdef METAFILE_SUPPORT_WMF_EMF
+	/**
+	 * @brief CMetaFile::ConvertToXml
+	 * @param wsFilePath - path to the file being saving (must be .xml)
+	 *
+	 * Convert and save metafile data to .xml
+	 */
 	void CMetaFile::ConvertToXml(const wchar_t *wsFilePath)
 	{
 		if (NULL == wsFilePath)
@@ -112,6 +143,17 @@ namespace MetaFile
 		m_oEmfFile.PlayMetaFile();
 	}
 
+	/**
+	 * @brief CMetaFile::ConvertToXmlAndRaster
+	 * @param wsXmlFilePath - path to the file being saving (must be .xml)
+	 * @param wsOutFilePath - path to the file being saving (must be raster graphics like .bmp, .png, etc.)
+	 * @param unFileType - type of raster file, see ENUM_CXIMAGE_FORMATS
+	 * 	for example .bmp = 1, .png = 4
+	 * @param nWidth - width of picture from metafile
+	 * @param nHeight - height of picture from metafile (-1 - default)
+	 *
+	 * Simultaneous saving to .xml and raster iamge
+	 */
 	void CMetaFile::ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t *wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		if (NULL == wsXmlFilePath || NULL == wsOutFilePath)
@@ -142,20 +184,19 @@ namespace MetaFile
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
 
-		double dWidth  = 25.4 * nWidth / 96;
-		double dHeight = 25.4 * nHeight / 96;
+		double dWidth  = 25.4 * nWidth / 96;				// Get the width and height from pixels to mm
+		double dHeight = 25.4 * nHeight / 96;				// 96 - standart DPI for inch
 
 		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 		if (!pBgraData)
 			return;
 
 		unsigned int alfa = 0xffffff;
-		//дефолтный тон должен быть прозрачным, а не белым
-		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		for (int i = 0; i < nWidth * nHeight; i++)
 		{
-			((unsigned int*)pBgraData)[i] = alfa;
+			((unsigned int*)pBgraData)[i] = alfa;			// Set default tone (must be transparent and not white)
 		}
+
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
 		oFrame.put_Width(nWidth);
@@ -173,8 +214,24 @@ namespace MetaFile
 
 		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
+
+		if (pBgraData)
+			delete[] pBgraData;
 	}
 
+	/**
+	 * @brief CMetaFile::DrawOnRenderer
+	 * @param wsXmlFilePath - path to the file being saving (must be .xml)
+	 * @param pRenderer - class instance of CGraphicsRenderer, which will render
+	 *  meta content
+	 * @param dX - start coordinate for X axis
+	 * @param dY - start coordinate for Y axis
+	 * @param dWidth - width of picture from metafile
+	 * @param dHeight - height of picture from metafile
+	 * @return if none render or file path - return false, else - true
+	 *
+	 * Draw the meta file picture on renderer, but save in .xml file
+	 */
 	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == wsXmlFilePath || NULL == pRenderer)
@@ -224,6 +281,14 @@ namespace MetaFile
 		return true;
 	}
 
+	/**
+	 * @brief CMetaFile::LoadFromXmlFile
+	 * @param wsFilePath - path to the source file (must be .xml)
+	 * @return if correct reading - return true, elde - false
+	 *
+	 * Load meta file content from source .xml file.
+	 * Remake Font Manager for metafile
+	 */
 	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
 	{
 		RELEASEINTERFACE(m_pFontManager);
@@ -264,6 +329,10 @@ namespace MetaFile
 		return false;
 	}
 
+	/**
+	 * @brief CMetaFile::ConvertToEmf
+	 * @param wsFilePath - path to the file being saving (must be .emf)
+	 */
 	void CMetaFile::ConvertToEmf(const wchar_t *wsFilePath)
 	{
 		if (m_lType != c_lMetaEmf || m_oEmfFile.GetEmfParser()->GetType() != EmfParserType::EmfxParser)
@@ -276,12 +345,17 @@ namespace MetaFile
 	}
 #endif
 
+	/**
+	 * @brief CMetaFile::LoadFromFile
+	 * @param wsFilePath
+	 * @return
+	 *
+	 * Load from source file
+	 * Remake Font Manager for metafile, for each picture
+	 * Check file extansion (wmf, emf, svm, svg)
+	 */
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
-		//------------------------------------------------------
-
 		RELEASEINTERFACE(m_pFontManager);
 
 		if (m_pAppFonts)
@@ -305,10 +379,7 @@ namespace MetaFile
 		m_oSvgFile.SetFontManager(m_pFontManager);
 	#endif
 
-		//------------------------------------------------------
-
 	#ifdef METAFILE_SUPPORT_WMF_EMF
-		// Сначала пытаемся открыть файл как Wmf
 		if (m_oWmfFile.OpenFromWmfFile(wsFilePath) == true)
 		{
 			m_oWmfFile.Scan();
@@ -320,7 +391,7 @@ namespace MetaFile
 			}
 			m_oWmfFile.Close();
 		}
-		// Это не Wmf
+
 		if (m_oEmfFile.OpenFromEmfFile(wsFilePath) == true)
 		{
 			m_oEmfFile.Scan();
@@ -333,7 +404,7 @@ namespace MetaFile
 			m_oEmfFile.Close();
 		}
 	#endif
-		// Это не Emf
+
 	#ifdef METAFILE_SUPPORT_SVM
 		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
 		{
@@ -348,27 +419,45 @@ namespace MetaFile
 			m_oSvmFile.Close();
 		}
 	#endif
-		// Это не svm
+
 	#ifdef METAFILE_SUPPORT_SVG
 		if (m_oSvgFile.OpenFromFile(wsFilePath) == true)
 		{
 			m_lType = c_lMetaSvg;
 			return true;
 		}
-
 	#endif
 
 		return false;
 	}
 
+	/**
+	 * @brief CMetaFile::LoadFromBuffer
+	 * @param pBuffer - pointer of buffer whith metacontent
+	 *  for example, the buffer obtained after reading the file
+	 *   @code
+	 *   	NSFile::CFileBinary file;
+	 *  	file.OpenFile(L"file_name");
+	 *  	DWORD file_size = file.GetFileSize();
+	 *  	BYTE* data = new BYTE[file_size];
+	 *  	file.ReadFile(data, file_size);
+	 *   @endcode
+	 * @param unSize - buffer size (size of file or readed size)
+	 *   @code
+	 *   	DWORD readed_size;
+	 *   	file.ReadFile(data, file_size, readed_size);
+	 *   @endcode
+	 * @return if correct format load for extansion - return true,
+	 *   else - false
+	 *
+	 * Load metafile content from buffer
+	 * Remake Font Manager for metafile, for each picture
+	 * Check type of content in buffer, appropriate extension (wmf, emf, svm, svg)
+	 */
 	bool CMetaFile::LoadFromBuffer(BYTE *pBuffer, unsigned int unSize)
 	{
 		if (NULL == pBuffer || 0 == unSize)
 			return false;
-
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
-		//------------------------------------------------------
 
 		RELEASEINTERFACE(m_pFontManager);
 
@@ -393,10 +482,7 @@ namespace MetaFile
 		m_oSvgFile.SetFontManager(m_pFontManager);
 	#endif
 
-		//------------------------------------------------------
-
 	#ifdef METAFILE_SUPPORT_WMF_EMF
-		// Сначала пытаемся открыть файл как Wmf
 		if (m_oWmfFile.ReadFromBuffer(pBuffer, unSize) == true)
 		{
 			m_oWmfFile.Scan();
@@ -408,7 +494,7 @@ namespace MetaFile
 			}
 			m_oWmfFile.Close();
 		}
-		// Это не Wmf
+
 		if (m_oEmfFile.ReadFromBuffer(pBuffer, unSize) == true)
 		{
 			m_oEmfFile.Scan();
@@ -421,7 +507,7 @@ namespace MetaFile
 			m_oEmfFile.Close();
 		}
 	#endif
-		// Это не Emf
+
 	#ifdef METAFILE_SUPPORT_SVM
 		if (m_oSvmFile.ReadFromBuffer(pBuffer, unSize) == true)
 		{
@@ -436,7 +522,7 @@ namespace MetaFile
 			m_oSvmFile.Close();
 		}
 	#endif
-		// Это не svm
+
 	#ifdef METAFILE_SUPPORT_SVG
 		if (m_oSvgFile.ReadFromBuffer(pBuffer, unSize) == true)
 		{
@@ -448,6 +534,14 @@ namespace MetaFile
 		return false;
 	}
 
+	/**
+	 * @brief CMetaFile::LoadFromString
+	 * @param data - source string, containing metadata (.svg extension type)
+	 * @return if correct read svg content - return true, else - false
+	 *
+	 * Load .svg content from wide string
+	 * Remake Font Manager for metafile, for each picture
+	 */
 	bool CMetaFile::LoadFromString(const std::wstring& data)
 	{
 #ifdef METAFILE_SUPPORT_SVG
@@ -472,6 +566,10 @@ namespace MetaFile
 		return false;
 	}
 
+	/**
+	 * @brief CMetaFile::SetTempDirectory
+	 * @param dir - path to working directory
+	 */
 	void CMetaFile::SetTempDirectory(const std::wstring& dir)
 	{
 #ifdef METAFILE_SUPPORT_SVG
@@ -479,6 +577,19 @@ namespace MetaFile
 #endif
 	}
 
+	/**
+	 * @brief CMetaFile::DrawOnRenderer
+	 * @param pRenderer - class instance of CGraphicsRenderer, which will render
+	 *  meta content
+	 * @param dX - start coordinate for X axis
+	 * @param dY - start coordinate for Y axis
+	 * @param dWidth - width of picture from metafile
+	 * @param dHeight - height of picture from metafile
+	 * @return if none render - return false, else - true
+	 *
+	 * Check type of metacontent
+	 * Draw the meta file picture on renderer
+	 */
 	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
 	{
 		if (NULL == pRenderer)
@@ -528,6 +639,11 @@ namespace MetaFile
 		return true;
 	}
 
+	/**
+	 * @brief CMetaFile::Close
+	 *
+	 * Close each type file (type = 0)
+	 */
 	void CMetaFile::Close()
 	{
 	#ifdef METAFILE_SUPPORT_WMF_EMF
@@ -542,11 +658,27 @@ namespace MetaFile
 		m_lType  = 0;
 	}
 
+	/**
+	 * @brief CMetaFile::GetType
+	 * @return type of metafile
+	 * @enum
+	 *	c_lMetaWmf = 0x01;
+	 *  c_lMetaEmf = 0x02;
+	 *  c_lMetaSvg = 0x04;
+	 *  c_lMetaSvm = 0x05;
+	 */
 	int  CMetaFile::GetType()
 	{
 		return m_lType;
 	}
 
+	/**
+	 * @brief CMetaFile::GetBounds
+	 * @param pdX - pointer to saving X coordinate of bounds
+	 * @param pdY - pointer to saving Y coordinate of bounds
+	 * @param pdW - pointer to saving Width of bounds
+	 * @param pdH - pointer to saving height of bounds
+	 */
 	void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
 	{
 		switch (m_lType)
@@ -609,6 +741,18 @@ namespace MetaFile
 		if (*pdH < 0) *pdH = -*pdH;
 	}
 
+	/**
+	 * @brief CMetaFile::ConvertToRaster
+	 * @param wsOutFilePath - path to the file being saving (must be raster graphics
+	 *  like .bmp, .png, etc.)
+	 * @param unFileType - type of raster file, see ENUM_CXIMAGE_FORMATS
+	 * 	for example .bmp = 1, .png = 4
+	 * @param unWidth - width of picture from metafile
+	 * @param unHeight - height of picture from metafile (default -1)
+	 *
+	 * Create Graphics Renderer and Font Manager
+	 * Draw metafile content on created renderer and save in raster graphics file
+	 */
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		if (nWidth == 0 || nHeight == 0)
@@ -637,8 +781,8 @@ namespace MetaFile
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
 
-		double dWidth  = 25.4 * nWidth / 96;
-		double dHeight = 25.4 * nHeight / 96;
+		double dWidth  = 25.4 * nWidth / 96;				// Get the width and height from pixels to mm
+		double dHeight = 25.4 * nHeight / 96;				// 96 - standart DPI for inch
 
 		BYTE* pBgraData = (BYTE*)malloc(nWidth * nHeight * 4);
 		if (!pBgraData)
@@ -658,12 +802,11 @@ namespace MetaFile
 			return;
 
 		unsigned int alfa = 0xffffff;
-		//дефолтный тон должен быть прозрачным, а не белым
-		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		for (int i = 0; i < nWidth * nHeight; i++)
 		{
-			((unsigned int*)pBgraData)[i] = alfa;
+			((unsigned int*)pBgraData)[i] = alfa;			// Set default tone (must be transparent and not white)
 		}
+
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
 		oFrame.put_Width(nWidth);
@@ -679,6 +822,7 @@ namespace MetaFile
 
 		oFrame.SaveFile(wsOutFilePath, unFileType);
 		oFrame.put_Data(NULL);
+
 		RELEASEINTERFACE(pFontManager);
 		RELEASEINTERFACE(pGrRenderer);
 

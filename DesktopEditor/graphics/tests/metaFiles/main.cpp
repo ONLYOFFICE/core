@@ -1,13 +1,11 @@
 /**
- * @file main.cpp
  * @brief Metafile converter
  *
- * @details Convert metafile(wmf, emf, svg, svn) to raster graphics like bmp, png, etc.
+ * @details Convert metafile(wmf, emf, svg, svm) to raster graphics like bmp, png, etc.
  */
 
 #include "../../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../pro/Graphics.h"
-#include "../../../common/File.h"
 
 /**
  * @param argv[1] - path to the metafile

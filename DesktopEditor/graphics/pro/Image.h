@@ -110,11 +110,21 @@ namespace NSImages
 #ifndef GRAPHICS_DISABLE_METAFILE
 namespace MetaFile
 {
+	/**
+	 * @brief Meta file extension constants
+	 */
 	const int c_lMetaWmf = 0x01;
 	const int c_lMetaEmf = 0x02;
 	const int c_lMetaSvg = 0x04;
 	const int c_lMetaSvm = 0x05;
 
+	/**
+	 * @interface IMetaFile
+	 * @brief Interface provodong metafile conversion
+	 *
+	 * The interface provides various options for loading a metafile and saving it
+	 * in another format.
+	 */
 	class GRAPHICS_DECL IMetaFile : public NSBase::CBaseRefCounter
 	{
 	public:

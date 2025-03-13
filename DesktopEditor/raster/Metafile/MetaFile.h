@@ -61,24 +61,23 @@ namespace MetaFile
 	public:
 		CMetaFile(NSFonts::IApplicationFonts *pAppFonts);
 		virtual ~CMetaFile();
+		void Close();
+
+		void SetTempDirectory(const std::wstring& dir);
 
 		bool LoadFromFile(const wchar_t* wsFilePath);
 		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool LoadFromString(const std::wstring& data);
-		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
-		void Close();
-		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
-		int GetType();
-		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 
+		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
+		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
+
+		int GetType();
+		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
 		NSFonts::IFontManager* get_FontManager();
 
-		//конвертация в Svg
-		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
-
-		void SetTempDirectory(const std::wstring& dir);
-
-		//Для тестов
+		// For tests
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);

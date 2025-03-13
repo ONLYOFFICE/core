@@ -110,6 +110,26 @@ namespace NExtractTools
 		convertParams.m_sTempResultOOXMLDirectory = sResultVsdxDir;
 		_UINT32 nRes = vsdt_bin2vsdx_dir(sFrom, sTo, params, convertParams);
 
+		if (SUCCEEDED_X2T(nRes) && params.m_nFormatTo)
+		{
+			if (AVS_OFFICESTUDIO_FILE_DRAW_VSTX == *params.m_nFormatTo ||
+				AVS_OFFICESTUDIO_FILE_DRAW_VSTM == *params.m_nFormatTo)
+			{
+				std::wstring sCTFrom = _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml");
+				std::wstring sCTTo;
+				switch (*params.m_nFormatTo)
+				{
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTX:
+					sCTTo = _T("application/vnd.ms-visio.template.main+xml");
+					break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTM:
+					sCTFrom = _T("application/vnd.ms-visio.drawing.macroEnabled.main+xml");
+					sCTTo = _T("application/vnd.ms-visio.template.macroEnabled.main+xml");
+					break;
+				}
+				nRes = replaceContentType(sResultVsdxDir, sCTFrom, sCTTo);
+			}
+		}
 		if (SUCCEEDED_X2T(nRes))
 		{
 			nRes = dir2zipMscrypt(sResultVsdxDir, sTo, params, convertParams);

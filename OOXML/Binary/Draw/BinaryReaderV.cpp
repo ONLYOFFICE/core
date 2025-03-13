@@ -263,12 +263,15 @@ namespace BinVsdxRW
 				case c_oSerTableTypes::Document:
 				{
 					OOX::Draw::CDocumentFile* pDocument = new OOX::Draw::CDocumentFile(&oVsdx);
+					pDocument->m_bMacroEnabled = oSaveParams.bMacroEnabled;
 
 					smart_ptr<OOX::File> oCurFile(pDocument);
 					oVsdx.m_pDocument = oCurFile.smart_dynamic_cast<OOX::Draw::CDocumentFile>();
 
 					pDocument->fromPPTY(&oBufferedStream);
-					oVsdx.Add(oCurFile);					
+					oVsdx.Add(oCurFile);			
+
+					oSaveParams.bMacroEnabled = pDocument->m_bMacroEnabled;
 				}break;
 
 			}	

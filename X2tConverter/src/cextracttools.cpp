@@ -177,6 +177,12 @@ namespace NExtractTools
 				{
 					if (0 == sExt2.compare(L".vsdx"))
 						res = TCD_VSDT2VSDX;
+					else if (0 == sExt2.compare(L".vsdm"))
+						res = TCD_VSDT2VSDM;
+					else if (0 == sExt2.compare(L".vstx"))
+						res = TCD_VSDT2VSTX;
+					else if (0 == sExt2.compare(L".vstm"))
+						res = TCD_VSDT2VSTM;
 				}
 				break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:

@@ -1137,15 +1137,19 @@ namespace Draw
 //-----------------------------------------------------------------------------------------------------------------------------
 	OOX::Draw::CDocumentFile::CDocumentFile(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::File(pMain)
 	{
+		m_bMacroEnabled = false;
 		m_bVisioPages = true;
 	}
 	OOX::Draw::CDocumentFile::CDocumentFile(OOX::Document* pMain, const CPath& uri) : OOX::IFileContainer(pMain), OOX::File(pMain)
 	{
+		m_bMacroEnabled = false;
 		m_bVisioPages = true;
+		
 		read(uri.GetDirectory(), uri);
 	}
 	OOX::Draw::CDocumentFile::CDocumentFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::IFileContainer(pMain), OOX::File(pMain)
 	{
+		m_bMacroEnabled = false;
 		m_bVisioPages = true;
 
 		read(oRootPath, oPath);
@@ -1162,6 +1166,12 @@ namespace Draw
 	{
 		IFileContainer::Read(oRootPath, oFilePath);
 
+		smart_ptr<OOX::File> pFile = this->Find(OOX::FileTypes::VbaProject);
+		if (pFile.IsInit())
+		{
+			m_bMacroEnabled = true;
+
+		}
 		XmlUtils::CXmlLiteReader oReader;
 
 		if (!oReader.FromFile(oFilePath.GetPath()))
@@ -1226,7 +1236,8 @@ namespace Draw
 	}
 	const OOX::FileType OOX::Draw::CDocumentFile::type() const
 	{
-		return FileTypes::Document;
+		if (m_bMacroEnabled)	return OOX::Draw::FileTypes::DocumentMacro;
+		else					return OOX::Draw::FileTypes::Document;
 	}
 	const OOX::CPath OOX::Draw::CDocumentFile::DefaultDirectory() const
 	{
@@ -1344,6 +1355,40 @@ namespace Draw
 
 				pReader->GetRels()->Add(oFile);
 			}break;
+			case 16:
+			{
+				if (m_bMacroEnabled)
+				{
+					OOX::VbaProject* pVbaProject = new OOX::VbaProject(((OOX::File*)this)->m_pMainDocument);
+					pVbaProject->fromPPTY(pReader);
+					smart_ptr<OOX::File> oFile(pVbaProject);
+
+					pReader->GetRels()->Add(oFile);
+				}
+				else
+				{
+					pReader->SkipRecord();
+				}
+			}break;
+			case 17:
+			{
+				_INT32 _len = pReader->GetRecordSize();
+
+				BYTE* pData = pReader->GetPointer(_len);
+				OOX::CPath oJsaProject = OOX::FileTypes::JsaProject.DefaultFileName();
+				std::wstring filePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("visio") + FILE_SEPARATOR_STR + oJsaProject.GetPath();
+
+				NSFile::CFileBinary oBinaryFile;
+				oBinaryFile.CreateFileW(filePath);
+				oBinaryFile.WriteFile(pData, _len);
+				oBinaryFile.CloseFile();
+
+				smart_ptr<OOX::JsaProject> oFileJsaProject(new OOX::JsaProject(NULL));
+				smart_ptr<OOX::File> oFile = oFileJsaProject.smart_dynamic_cast<OOX::File>();
+				pReader->GetRels()->Add(oFile);
+
+				pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oJsaProject.GetExtention(false));
+			}break;
 			default:
 			{
 				pReader->SkipRecord();
@@ -1430,6 +1475,42 @@ namespace Draw
 				pWriter->StartRecord(15);
 				pTheme->toPPTY(pWriter);
 				pWriter->EndRecord();
+			}
+		}
+		pFile = this->Find(OOX::FileTypes::VbaProject);
+		OOX::VbaProject *pVbaProject = dynamic_cast<OOX::VbaProject*>(pFile.GetPointer());
+		if (pVbaProject)
+		{
+			pWriter->StartRecord(16);
+			pVbaProject->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}
+		pFile = this->Find(OOX::FileTypes::JsaProject);
+		OOX::JsaProject* pJsaProject = dynamic_cast<OOX::JsaProject*>(pFile.GetPointer());
+		if (pJsaProject)
+		{
+			if (pJsaProject->IsExist() && !pJsaProject->IsExternal())
+			{
+				std::wstring pathJsa = pJsaProject->filename().GetPath();
+				if (std::wstring::npos != pathJsa.find(pWriter->m_strMainFolder))
+				{
+					BYTE* pData = NULL;
+					DWORD nBytesCount;
+					if (NSFile::CFileBinary::ReadAllBytes(pJsaProject->filename().GetPath(), &pData, nBytesCount))
+					{
+						pWriter->StartRecord(17);
+						pWriter->WriteBYTEArray(pData, nBytesCount);
+						pWriter->EndRecord();
+
+						RELEASEARRAYOBJECTS(pData);
+					}
+				}
+			}
+			if (pJsaProject->IsExternal())
+			{
+				//pWriter->StartRecord(18);
+				//m_oBcw.m_oStream.WriteStringW3(pJsaProject->filename().GetPath());
+				//pWriter->EndRecord();
 			}
 		}
 		pWriter->EndRecord();

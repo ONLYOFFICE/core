@@ -65,8 +65,6 @@ namespace OOX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring m_strFilename;
-
-
 		};
 		class CComments : public OOX::File
 		{

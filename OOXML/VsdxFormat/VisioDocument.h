@@ -422,6 +422,7 @@ namespace OOX
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring m_strFilename;
+			bool m_bMacroEnabled;
 
 			nullable<CDocumentSettings> DocumentSettings;
 			nullable<CColors> Colors;

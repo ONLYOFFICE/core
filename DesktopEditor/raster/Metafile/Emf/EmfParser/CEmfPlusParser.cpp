@@ -645,6 +645,9 @@ namespace MetaFile
 				//TODO::реализовать при встрече
 			}
 
+			if (BrushDataTransform & unBrushDataFlags)
+				m_oStream.Skip(24);
+
 			if (BrushDataPresetColors & unBrushDataFlags)
 			{
 				unsigned int unPositionCount;

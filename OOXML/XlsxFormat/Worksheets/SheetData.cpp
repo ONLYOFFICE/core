@@ -1205,12 +1205,12 @@ namespace OOX
                     auto ColumnPart = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get());
                     if(!SharedFormulasRef::sharedRefsLocations)
                         return;
-                    for(auto i = 0; i <SharedFormulasRef::sharedRefsLocations->size(); i++)
+                    for(const auto& location : *SharedFormulasRef::sharedRefsLocations)
                     {
-                        if(SharedFormulasRef::sharedRefsLocations->at(i).row == rowPart->rowXlsb &&
-                            SharedFormulasRef::sharedRefsLocations->at(i).column == ColumnPart->col)
+                        if(location.second.row == rowPart->rowXlsb &&
+                            location.second.column == ColumnPart->col)
                         {
-                            m_oSi = i;
+                            m_oSi = location.first;
                             m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared;
                         }
                     }

@@ -1158,7 +1158,7 @@ namespace OOX
                         ColumnRef = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get())->col;
                         if(!SharedFormulasRef::sharedRefsLocations)
                             SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::map<_UINT32, XLS::CellRef>>(new std::map<_UINT32, XLS::CellRef>);
-                        m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size() - 1;
+                        m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size();
                         SharedFormulasRef::sharedRefsLocations->emplace(m_oSi->GetValue(), XLS::CellRef(rowRef, ColumnRef, true, true));
 
                     }
@@ -4369,7 +4369,7 @@ namespace OOX
         }
         bool CRow::compressCell(CCell* pCell)
         {
-            if(!pCell->m_oValue.IsInit() && !m_arrItems.empty())
+            if(!pCell->m_oValue.IsInit() && !pCell->m_oFormula.IsInit() && !m_arrItems.empty())
             {
                 auto prevCell = m_arrItems.back();
                 if(!prevCell->m_oRepeated.IsInit())

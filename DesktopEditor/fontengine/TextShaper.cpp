@@ -451,7 +451,7 @@ namespace NSShaper
 		CheckUnicodeFaceName(face, family_name, family_name_len);
 
 		unsigned int nLen1 = (unsigned int)family_name_len;
-		unsigned int nLen2 = (unsigned int)strlen(face->style_name);
+		unsigned int nLen2 = (unsigned int)((face->style_name != NULL) ? strlen(face->style_name) : 0);
 
 		unsigned int nLen = 28 + nLen1 + 1 + nLen2 + 1 + 1 + (int)face->num_fixed_sizes;
 

@@ -1637,7 +1637,25 @@ bool CPdfEditor::MergePages(PDFDoc* pDocument, const int* arrPageIndex, unsigned
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
+	int nPagesBefore = m_pReader->GetNumPages() - pDocument->getNumPages();
 	bool bRes = SplitPages(arrPageIndex, unLength, pDocument);
+	if (!bRes)
+	{
+		m_mSplitUniqueRef.clear();
+		return false;
+	}
+
+	// Добавление merge страниц в редактируемые
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	Catalog* pCatalog = pDocument->getCatalog();
+	for (int i = 0, nPages = unLength == 0 ? pDocument->getNumPages() : unLength; i < nPages; ++i)
+	{
+		Ref* pPageRef = pCatalog->getPageRef((arrPageIndex ? arrPageIndex[i] : i) + 1);
+		PdfWriter::CObjectBase* pObj = m_mSplitUniqueRef[pPageRef->num];
+		if (pObj->GetType() == PdfWriter::object_type_DICT && ((PdfWriter::CDictObject*)pObj)->GetDictType() == PdfWriter::dict_type_PAGE)
+			pDoc->AddEditPage((PdfWriter::CPage*)pObj, nPagesBefore + i);
+	}
+
 	m_mSplitUniqueRef.clear();
 	return bRes;
 }

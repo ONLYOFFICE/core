@@ -128,13 +128,13 @@ namespace StarMathCustomShape
 		void SignRecording(XmlUtils::CXmlWriter* pXmlWriter, const TypeElement &enTypeSign);
 		CElement* GetSecondValue();
 		std::wstring ConversionValueSign(XmlUtils::CXmlWriter* pXmlWriter, CElement* pElement);
+		void RecordingTheValuesSign(XmlUtils::CXmlWriter* pXmlWriter,const std::wstring& wsNameFirst, const std::wstring& wsNameSecond);
 	private:
 		TypeElement m_enTypeSign;
 		CElement* m_pSecondSign;
 		CElement* m_pFirstValue;
 		CElement* m_pSecondValue;
 		unsigned int m_uiNumberFormula;
-		std::wstring m_wsNameFormula,m_wsNumberFormula;
 	};
 	class CElementBracket: public CElement
 	{

@@ -182,7 +182,7 @@ namespace Draw
 
 		pWriter->WriteNodeEnd(L"MasterContents");
 	}
-	//-----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------------
 	CPageFile::CPageFile(OOX::Document* pMain) : OOX::IFileContainer(pMain), OOX::File(pMain)
 	{
 		m_bVisioPages = true;

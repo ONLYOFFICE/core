@@ -1514,6 +1514,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".fodp";
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP:
 		return L".otp";
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG:
+		return L".odg";
 
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 		return L".xlsx";
@@ -1683,6 +1685,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP_FLAT;
 	if (L".otp" == ext)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
+	if (L".odg" == ext)
+		return AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG;
 
 	if (L".xlsx" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;

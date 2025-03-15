@@ -42,56 +42,7 @@ namespace OOX
 	namespace Draw
 	{
 		class CDocumentFile;
-//---------------------------------------------------------------------------------------------------------------------------------
-		class CValidation : public OOX::File
-		{
-		public:
-			CValidation(OOX::Document* pMain);
-			CValidation(OOX::Document* pMain, const CPath& uri);
-			CValidation(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
-			virtual ~CValidation();
 
-			virtual void read(const CPath& oFilePath);
-			virtual void read(const CPath& oRootPath, const CPath& oFilePath);
-			virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
-
-			virtual const OOX::FileType type() const;
-
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const;
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			std::wstring m_strFilename;
-		};
-		class CComments : public OOX::File
-		{
-		public:
-			CComments(OOX::Document* pMain);
-			CComments(OOX::Document* pMain, const CPath& uri);
-			CComments(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
-			virtual ~CComments();
-
-			virtual void read(const CPath& oFilePath);
-			virtual void read(const CPath& oRootPath, const CPath& oFilePath);
-			virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
-
-			virtual const OOX::FileType type() const;
-
-			virtual const CPath DefaultDirectory() const;
-			virtual const CPath DefaultFileName() const;
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			std::wstring m_strFilename;
-
-
-		};
-//---------------------------------------------------------------------------------------------------------------------------------
 		class CVsdx : public OOX::Document, public OOX::IFileContainer
 		{
 		public:

@@ -1306,7 +1306,9 @@ namespace NExtractTools
 				nRes = ppt2pptx_dir(sFrom, sPptxDir, params, convertParams);
 			}
 		}
-		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
+		else if (	AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || 
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom || 
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG == nFormatFrom)
 		{
 			nRes = odf2oox_dir(sFrom, sPptxDir, params, convertParams);
 		}

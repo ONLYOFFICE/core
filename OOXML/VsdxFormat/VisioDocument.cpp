@@ -1337,6 +1337,22 @@ namespace Draw
 
 				pReader->GetRels()->Add(oFile);
 			}break;
+			case 12:
+			{
+				CValidationFile* pValidation = new CValidationFile(((OOX::File*)this)->m_pMainDocument);
+				pValidation->fromPPTY(pReader);
+				smart_ptr<OOX::File> oFile(pValidation);
+
+				pReader->GetRels()->Add(oFile);
+			}break;
+			case 13:
+			{
+				CCommentsFile* pComments = new CCommentsFile(((OOX::File*)this)->m_pMainDocument);
+				pComments->fromPPTY(pReader);
+				smart_ptr<OOX::File> oFile(pComments);
+
+				pReader->GetRels()->Add(oFile);
+			}break;
 			case 14:
 			{
 				CWindowsFile* pWindows = new CWindowsFile(((OOX::File*)this)->m_pMainDocument);
@@ -1455,6 +1471,24 @@ namespace Draw
 			pWriter->EndRecord();
 		}
 
+		pFile = this->Find(OOX::Draw::FileTypes::Validation);
+		CValidationFile* pValidation = dynamic_cast<CValidationFile*>(pFile.GetPointer());
+		if (pValidation)
+		{
+			pWriter->StartRecord(12);
+			pValidation->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}		
+		
+		pFile = this->Find(OOX::Draw::FileTypes::Comments);
+		CCommentsFile* pComments = dynamic_cast<CCommentsFile*>(pFile.GetPointer());
+		if (pComments)
+		{
+			pWriter->StartRecord(13);
+			pComments->toPPTY(pWriter);
+			pWriter->EndRecord();
+		}
+
 		pFile = this->Find(OOX::Draw::FileTypes::Windows);
 		CWindowsFile* pWindows = dynamic_cast<CWindowsFile*>(pFile.GetPointer());
 		if (pPages)
@@ -1463,8 +1497,6 @@ namespace Draw
 			pWindows->toPPTY(pWriter);
 			pWriter->EndRecord();
 		}
-		//comments
-		//validation	
 		std::vector<smart_ptr<OOX::File>>& container = ((OOX::IFileContainer*)(this))->GetContainer();
 		for (size_t k = 0; k < container.size(); ++k)
 		{

@@ -510,7 +510,7 @@ namespace NExtractTools
 						res = TCD_OTF2ODF;
 					else if (0 == sExt2.compare(L".ods") && type == AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS)
 						res = TCD_OTF2ODF;
-					else if (0 == sExt2.compare(L".odp") && type == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
+					else if ((0 == sExt2.compare(L".odp") || 0 == sExt2.compare(L".odg")) && type == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
 						res = TCD_OTF2ODF;
 				}
 				break;

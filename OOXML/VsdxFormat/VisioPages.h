@@ -101,7 +101,6 @@ namespace OOX
 // from masters
 			nullable_uint ID;
 			nullable_string UniqueID;
-
 		};
 		//---------------------------------------------------------------------------------------------------------------------------------
 		class CPageSheet : public WritingElementWithChilds<>

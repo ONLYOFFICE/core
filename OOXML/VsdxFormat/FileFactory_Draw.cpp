@@ -81,9 +81,9 @@ namespace OOX
 			else if (oRelation.Type() == FileTypes::Windows)
 				return smart_ptr<OOX::File>(new CWindowsFile(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::Validation)
-				return smart_ptr<OOX::File>(new CValidation(pMain, oRootPath, oFileName));
+				return smart_ptr<OOX::File>(new CValidationFile(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::Comments)
-				return smart_ptr<OOX::File>(new CComments(pMain, oRootPath, oFileName));
+				return smart_ptr<OOX::File>(new CCommentsFile(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::Solutions)
 				return smart_ptr<OOX::File>(new CSolutionsFile(pMain, oRootPath, oFileName));
 			else if (oRelation.Type() == FileTypes::Solution)
@@ -120,13 +120,13 @@ namespace OOX
 			else if (pRelation->Type() == FileTypes::Master)
 				return smart_ptr<OOX::File>(new CMasterFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Comments)
-				return smart_ptr<OOX::File>(new CComments(pMain, oRootPath, oFileName));
+				return smart_ptr<OOX::File>(new CCommentsFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Connections)
 				return smart_ptr<OOX::File>(new CConnectionsFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Windows)
 				return smart_ptr<OOX::File>(new CWindowsFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Validation)
-				return smart_ptr<OOX::File>(new CValidation(pMain, oRootPath, oFileName));
+				return smart_ptr<OOX::File>(new CValidationFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Recordsets)
 				return smart_ptr<OOX::File>(new CRecordsetsFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::Recordset)

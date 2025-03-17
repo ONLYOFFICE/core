@@ -403,7 +403,7 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 {
 	if (!_pReader || !_pWriter)
 		return S_FALSE;
-	PDFDoc* pPDFDocument = _pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = _pReader->GetPDFDocument(0);
 	if (!pPDFDocument)
 		return S_FALSE;
 	XRef* xref = pPDFDocument->getXRef();
@@ -659,7 +659,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	m_nError     = 0;
 	m_nMode      = Mode::Unknown;
 
-	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	if (!pPDFDocument)
 	{
 		m_nError = 1;
@@ -680,7 +680,7 @@ bool CPdfEditor::IncrementalUpdates()
 		return true;
 
 	m_nMode = Mode::WriteAppend;
-	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
@@ -910,7 +910,7 @@ void CPdfEditor::Close()
 		return;
 	}
 
-	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	XRef* xref = pPDFDocument->getXRef();
 
@@ -2021,7 +2021,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
-	PDFDoc* pPDFDocument = m_pReader->GetFirstPDFDocument();
+	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();

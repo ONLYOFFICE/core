@@ -367,11 +367,6 @@ TEST_F(CPdfFileTest, MergePdf)
 	RELEASEARRAYOBJECTS(pFile);
 }
 
-TEST_F(CPdfFileTest, CopyAnotherPdf)
-{
-	GTEST_SKIP();
-}
-
 TEST_F(CPdfFileTest, EditPdf)
 {
 	GTEST_SKIP();

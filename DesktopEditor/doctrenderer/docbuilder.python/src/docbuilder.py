@@ -609,14 +609,15 @@ class FileTypes:
         PNG = _IMAGE_MASK + 0x0005
         BMP = _IMAGE_MASK + 0x0008
 
-builder_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'lib')
+# NOTE: do not change builder_path manually!
+builder_path = os.path.dirname(os.path.realpath(__file__))
 _loadLibrary(builder_path)
 CDocBuilder.Initialize(builder_path)
 
 def registerLibrary(license_path):
-    docbuilder_bin = os.path.dirname(os.path.realpath(__file__)) + "/lib/docbuilder"
+    docbuilder_bin = os.path.join(builder_path, "docbuilder")
     if ("windows" == platform.system().lower()):
         docbuilder_bin += ".exe"
-    return subprocess.call([docbuilder_bin, "-register", license_path], stderr=subprocess.STDOUT, shell=True)    
+    return subprocess.call([docbuilder_bin, "-register", license_path], stderr=subprocess.STDOUT, shell=True)
 
 atexit.register(CDocBuilder.Dispose)

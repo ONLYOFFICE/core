@@ -609,6 +609,7 @@ class FileTypes:
         PNG = _IMAGE_MASK + 0x0005
         BMP = _IMAGE_MASK + 0x0008
 
+# NOTE: do not change builder_path manually!
 builder_path = os.path.dirname(os.path.realpath(__file__))
 _loadLibrary(builder_path)
 CDocBuilder.Initialize(builder_path)

@@ -619,6 +619,7 @@ namespace PPT
 
         WriteSlides();
         WriteNotes();
+        m_pShapeWriter->SetRelsGenerator(NULL);
     }
 
     // todo reforming and refactoring!
@@ -1544,6 +1545,8 @@ namespace PPT
 
             oRels.StartSlide(nLayout, pSlide->m_lNotesID);
         }
+        
+        m_pShapeWriter->SetRelsGenerator(&oRels);
 
         oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
         oWriter.WriteString(std::wstring(L"<p:sld \
@@ -1637,10 +1640,12 @@ xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\""));
     {
         CStringWriter oWriter;
         CRelsGenerator oRels(&m_oManager);
-
+        
         CSlide* pNotes = m_pDocument->m_arNotes[nIndexNotes];
 
         oRels.StartNotes(pNotes->m_lSlideID, m_pDocument->m_pNotesMaster != NULL);
+        
+        m_pShapeWriter->SetRelsGenerator(&oRels);
 
         oWriter.WriteString(std::wstring(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
         oWriter.WriteString(std::wstring(L"<p:notes xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\""));

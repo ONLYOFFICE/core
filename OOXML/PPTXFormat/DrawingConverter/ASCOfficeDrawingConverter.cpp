@@ -2592,6 +2592,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		
 		if (bPicture && false == pPPTShape->m_oSignatureLine.IsInit())
 		{
+			bStroked = false;
+
 			pPicture = new PPTX::Logic::Pic();
 			elem->InitElem(pPicture);
 

@@ -2816,7 +2816,7 @@ namespace OOX
                     *begin << dataString;
                 }
                 {
-                 XLSB::XLNullableWideString dataString;
+                    XLSB::XLNullableWideString dataString;
                     if(m_oOddFooter.IsInit())
                         dataString = m_oOddFooter->m_sText;
                     else
@@ -2837,10 +2837,11 @@ namespace OOX
                         dataString = m_oEvenFooter->m_sText;
                     else
                         dataString.setSize(0xFFFFFFFF);
-                     *begin << dataString;
+                    *begin << dataString;
                 }
                 {
                     XLSB::XLNullableWideString dataString;
+
                     if(m_oFirstHeader.IsInit())
                         dataString = m_oFirstHeader->m_sText;
                     else

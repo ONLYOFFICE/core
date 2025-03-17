@@ -963,10 +963,7 @@ bool CPdfEditor::EditPage(int nPageIndex, bool bSet, bool bActualPos)
 				{
 					Object oRes;
 					char* chKey2 = oTemp.dictGetKey(nIndex);
-					if (strcmp("Font", chKey2) == 0 || strcmp("ExtGState", chKey2) == 0 || strcmp("XObject", chKey2) == 0 || strcmp("Shading", chKey2) == 0 || strcmp("Pattern", chKey2) == 0)
-						oTemp.dictGetVal(nIndex, &oRes);
-					else
-						oTemp.dictGetValNF(nIndex, &oRes);
+					oTemp.dictGetVal(nIndex, &oRes);
 					DictToCDictObject(&oRes, pDict, false, chKey2);
 					oRes.free();
 				}

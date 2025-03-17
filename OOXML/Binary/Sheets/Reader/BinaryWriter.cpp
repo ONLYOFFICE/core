@@ -2663,6 +2663,9 @@ void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& wor
             {
                 nCurPos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cache);
                 NSStringUtils::CStringBuilder writer;
+                writer.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
+                if(pivotCacheFile->m_oPivotCashDefinition->m_oRid.IsInit())
+                    pivotCacheFile->m_oPivotCashDefinition->m_oRid.reset();
                 pivotCacheFile->m_oPivotCashDefinition->toXML(writer);
                 auto wstringData = writer.GetData();
                 m_oBcw.m_oStream.WriteStringUtf8(wstringData);

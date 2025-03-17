@@ -427,8 +427,18 @@ namespace OOX
 				workBookStream->m_FRTWORKBOOK = m_oExtLst->toBinWorkBook();
 
 			if (m_oFileSharing.IsInit())
-				workBookStream->m_BrtFileSharing = m_oFileSharing->toBin();
-
+            {
+                auto sharingVector = m_oFileSharing->toBin();
+                if(sharingVector.size() == 2)
+                {
+                    workBookStream->m_BrtFileSharingIso = sharingVector.at(0);
+                    workBookStream->m_BrtFileSharing = sharingVector.at(1);
+                }
+                else if(sharingVector.size() == 1)
+                {
+                    workBookStream->m_BrtFileSharing = sharingVector.at(0);
+                }
+            }
 			return workBookStream;
 		}
 		void CWorkbook::read(const CPath& oPath)

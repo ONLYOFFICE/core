@@ -56,6 +56,12 @@ typedef CSVGTransformer CSvgFile;
 
 namespace MetaFile
 {
+	/**
+	 * @class CMetaFile
+	 *
+	 * The interface provides various options for loading a metafile and saving it
+	 * in another format.
+	 */
 	class CMetaFile : public IMetaFile
 	{
 	public:
@@ -78,13 +84,11 @@ namespace MetaFile
 		NSFonts::IFontManager* get_FontManager();
 
 		// For tests
-	#ifdef METAFILE_SUPPORT_WMF_EMF
 		void ConvertToXml(const wchar_t *wsFilePath);
 		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		bool LoadFromXmlFile(const wchar_t* wsFilePath);
 		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void ConvertToEmf(const wchar_t* wsFilePath);
-	#endif
 
 
 	private:

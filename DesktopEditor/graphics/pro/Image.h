@@ -120,7 +120,6 @@ namespace MetaFile
 
 	/**
 	 * @interface IMetaFile
-	 * @brief Interface provodong metafile conversion
 	 *
 	 * The interface provides various options for loading a metafile and saving it
 	 * in another format.
@@ -144,13 +143,10 @@ namespace MetaFile
 		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 		virtual void SetTempDirectory(const std::wstring& dir) = 0;
 
-		//Для тестов
-	#ifdef METAFILE_SUPPORT_WMF_EMF
 		virtual void ConvertToXml(const wchar_t *wsFilePath) = 0;
 		virtual void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual bool LoadFromXmlFile(const wchar_t* wsFilePath) = 0;
 		virtual void ConvertToEmf(const wchar_t *wsFilePath) = 0;
-	#endif
 	};
 
 	GRAPHICS_DECL IMetaFile* Create(NSFonts::IApplicationFonts *pAppFonts);

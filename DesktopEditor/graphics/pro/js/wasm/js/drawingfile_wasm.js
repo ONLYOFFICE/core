@@ -135,7 +135,7 @@ CFile.prototype._MergePages = function(buffer)
 	if (!buffer)
 		return false;
 
-	let data = (undefined !== buf.byteLength) ? new Uint8Array(buffer) : buffer;
+	let data = (undefined !== buffer.byteLength) ? new Uint8Array(buffer) : buffer;
 	let stream2 = Module["_malloc"](data.length);
 	Module["HEAP8"].set(data, stream2);
 

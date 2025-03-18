@@ -63,7 +63,7 @@ double ArrGetNum(Object* pArr, int nI)
 	oObj.free();
 	return dRes;
 }
-TextString* getName(Object* oField)
+TextString* getFullFieldName(Object* oField)
 {
 	TextString* sResName = NULL;
 
@@ -262,7 +262,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 			if (oHide.isString())
 				s = new TextString(oHide.getString());
 			else if (oHide.isDict())
-				s = getName(&oHide);
+				s = getFullFieldName(&oHide);
 
 			if (s)
 			{
@@ -298,7 +298,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 					if (oField.isString())
 						s = new TextString(oField.getString());
 					else if (oField.isDict())
-						s = getName(&oField);
+						s = getFullFieldName(&oField);
 
 					if (s)
 					{
@@ -317,9 +317,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 	}
 
 	if (pRes)
-	{
 		pRes->pNext = NULL;
-	}
 
 	Object oNextAction;
 	if (pRes && oAction->dictLookup("Next", &oNextAction)->isDict())
@@ -343,18 +341,14 @@ std::string getValue(Object* oV, bool bArray = true)
 		{
 			Object oContents;
 			if (oV->dictLookup("Contents", &oContents)->isString())
-			{
 				s = new TextString(oContents.getString());
-			}
 			oContents.free();
 		}
 		else if (bArray && oV->isArray())
 		{
 			Object oContents;
 			if (oV->arrayGet(0, &oContents)->isString())
-			{
 				s = new TextString(oContents.getString());
-			}
 			oContents.free();
 		}
 		if (s)
@@ -428,12 +422,12 @@ CAnnotFileAttachment::CEmbeddedFile* getEF(Object* oObj)
 		pRes->nLength = oObj2.getInt();
 	oObj2.free();
 
-	Stream* pImage = oObj->getStream();
-	pImage->reset();
+	Stream* pFile = oObj->getStream();
+	pFile->reset();
 	pRes->pFile = new BYTE[pRes->nLength];
 	BYTE* pBufferPtr = pRes->pFile;
 	for (int nI = 0; nI < pRes->nLength; ++nI)
-		*pBufferPtr++ = (BYTE)pImage->getChar();
+		*pBufferPtr++ = (BYTE)pFile->getChar();
 
 	return pRes;
 }
@@ -1330,8 +1324,7 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField, int nStart
 	if (oField.dictLookup("I", &oOpt)->isArray())
 	{
 		m_unFlags |= (1 << 12);
-		int nILength = oOpt.arrayGetLength();
-		for (int j = 0; j < nILength; ++j)
+		for (int j = 0; j < oOpt.arrayGetLength(); ++j)
 		{
 			if (oOpt.arrayGet(j, &oObj)->isInt())
 				m_arrI.push_back(oObj.getInt());
@@ -2330,21 +2323,16 @@ CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, in
 	oEF.free();
 
 	// 25 - Встроенные файловые потоки - RF
-	Object oRF;
-	if (oFS.dictLookup("RF", &oRF)->isDict())
-	{
+	if (oFS.dictLookup("RF", &oObj)->isDict())
 		m_unFlags |= (1 << 25);
-	}
-	oRF.free();
+	oObj.free();
 
 	// 26 - Описание файла - Desc
 	m_sDesc = DictLookupString(&oFS, "Desc", 26);
 
 	// 27 - Коллекция - Cl
 	if (oFS.dictLookup("Cl", &oObj)->isDict())
-	{
 		m_unFlags |= (1 << 27);
-	}
 	oObj.free();
 
 	oFS.free(); oAnnot.free();
@@ -2366,9 +2354,7 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 
 	// Иконка - Name
 	if (oAnnot.dictLookup("Name", &oObj)->isName())
-	{
 		m_sName = oObj.getName();
-	}
 	oObj.free();
 
 	m_dRotate = 0;
@@ -2391,8 +2377,8 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 				oObj1.free();
 			}
 		}
-
 		oObj.free();
+
 		if (oObj2.streamGetDict()->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
 		{
 			for (int i = 0; i < 6; ++i)
@@ -3260,13 +3246,13 @@ void CAnnotAP::Clear()
 }
 void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
-	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* pCropBox = pPage->getCropBox();
 	m_dCropX = pCropBox->x1;
 	m_dCropY = pCropBox->y1;
 
-	double dWidth  = round(pdfDoc->getPageCropWidth(nPageIndex + 1));
-	double dHeight = round(pdfDoc->getPageCropHeight(nPageIndex + 1));
+	double dWidth  = round(pdfDoc->getPageCropWidth(nPageIndex));
+	double dHeight = round(pdfDoc->getPageCropHeight(nPageIndex));
 	double dRasterW = (double)nRasterW * m_dRWScale;
 	double dRasterH = (double)nRasterH * m_dRHScale;
 
@@ -3314,11 +3300,11 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	pPage->makeBox(72.0, 72.0, 0, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
 	PDFRectangle* cropBox = pPage->getCropBox();
 
-	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
+	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 	// Координаты внешнего вида
 	m_dRx1 = (m_dx1 - m_dCropX) * m_dWScale - 1;
-	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex + 1) - m_dy2 + m_dCropY) * m_dHScale - 1;
+	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex) - m_dy2 + m_dCropY) * m_dHScale - 1;
 }
 void CAnnotAP::Init(Object* oAnnot)
 {
@@ -3435,7 +3421,6 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 	double dOffsetX = -(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2;
 	double dOffsetY = (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2;
-	nPageIndex++;
 
 	std::vector<const char*> arrAPName { "N", "D", "R" };
 	for (unsigned int j = 0; j < arrAPName.size(); ++j)

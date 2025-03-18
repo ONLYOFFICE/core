@@ -19,6 +19,7 @@ public:
 };
 
 int ConvertWidthToHWP(const std::wstring& wsValue);
+int ConvertHexToInt(const std::string& wsValue, const int& _default = 0x00000000);
 }
 
 #endif // XMLNODEH_H

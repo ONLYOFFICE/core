@@ -48,8 +48,16 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_BULLET, 0, 0), m_pParent(&oDocInfo)
 {
-	m_chBulletChar = oNode.GetAttribute(L"char").at(0);
-	m_chCheckBulletChar = oNode.GetAttribute(L"checkedChar").at(0);
+	std::wstring wsAttributeValue = oNode.GetAttribute(L"char");
+
+	if (!wsAttributeValue.empty())
+		m_chBulletChar = wsAttributeValue.at(0);
+
+	wsAttributeValue = oNode.GetAttribute(L"checkedChar");
+
+	if (!wsAttributeValue.empty())
+		m_chCheckBulletChar = wsAttributeValue.at(0);
+
 	m_nBulletImage = oNode.GetAttributeInt(L"useImage");
 
 	for (CXMLNode& oChild : oNode.GetChilds())

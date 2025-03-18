@@ -956,19 +956,22 @@ int main(int argc, char* argv[])
 	BYTE* pSplitPages = NULL;
 	if (true)
 	{
-		std::vector<int> arrPages = { 0, 1 };
-		pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size());
-		if (pSplitPages)
+		std::vector<int> arrPages = { 0 };
+		for (int i = 0; i < 3; i++)
 		{
-			int nLength = READ_INT(pSplitPages);
+			pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size());
+			if (pSplitPages)
+			{
+				int nLength = READ_INT(pSplitPages);
 
-			NSFile::CFileBinary oFile;
-			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test2.pdf"))
-				oFile.WriteFile(pSplitPages + 4, nLength - 4);
-			oFile.CloseFile();
+				NSFile::CFileBinary oFile;
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test" + std::to_wstring(i) + L".pdf"))
+					oFile.WriteFile(pSplitPages + 4, nLength - 4);
+				oFile.CloseFile();
 
-			if (MergePages(pGrFile, pSplitPages + 4, nLength - 4) == 0)
-				RELEASEARRAYOBJECTS(pSplitPages);
+				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4) == 0)
+					RELEASEARRAYOBJECTS(pSplitPages);
+			}
 		}
 	}
 

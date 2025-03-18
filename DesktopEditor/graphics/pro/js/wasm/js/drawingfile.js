@@ -1192,19 +1192,17 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 	let reader = ptr.getReader();
 	if (!reader) return {};
 
-	let arrRes = [];
-
+	let res = {};
 	while (reader.isValid())
 	{
-		let res = {};
 		let k = reader.readInt();
-		if (k > 0)
+		if (k > 0 && res["CO"] == undefined)
 			res["CO"] = [];
 		for (let i = 0; i < k; ++i)
 			res["CO"].push(reader.readInt());
 		
 		k = reader.readInt();
-		if (k > 0)
+		if (k > 0 && res["Parents"] == undefined)
 			res["Parents"] = [];
 		for (let i = 0; i < k; ++i)
 		{
@@ -1243,8 +1241,9 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			res["Parents"].push(rec);
 		}
 	
-		res["Fields"] = [];
 		k = reader.readInt();
+		if (k > 0 && res["Fields"] == undefined)
+			res["Fields"] = [];
 		for (let q = 0; reader.isValid() && q < k; ++q)
 		{
 			let rec = {};
@@ -1258,12 +1257,10 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			
 			res["Fields"].push(rec);
 		}
-
-		arrRes.push(res);
 	}
 
 	ptr.free();
-	return arrRes;
+	return res;
 };	
 
 // optional nWidget     - rec["AP"]["i"]
@@ -1382,10 +1379,9 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 
 	if (!reader) return [];
 
-	let arrRes = [];
+	let res = [];
 	while (reader.isValid())
 	{
-		let res = [];
 		let n = reader.readInt();
 		for (let i = 0; i < n; ++i)
 		{
@@ -1403,11 +1399,10 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 			readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 			res.push(rec);
 		}
-		arrRes.push(res);
 	}
 	
 	ptr.free();
-	return arrRes;
+	return res;
 };
 // optional nAnnot ...
 // optional sView ...

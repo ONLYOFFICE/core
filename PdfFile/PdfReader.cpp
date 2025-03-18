@@ -415,7 +415,8 @@ void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
 int CPdfReader::GetPageIndex(int nAbsPageIndex, PDFDoc** _pDoc, PdfReader::CPdfFontList** pFontList, int* nStartRefID)
 {
 	int nTotalPages = 0;
-	nStartRefID = 0;
+	if (nStartRefID)
+		*nStartRefID = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		if (!pPDFContext || !pPDFContext->m_pDocument)
@@ -431,7 +432,8 @@ int CPdfReader::GetPageIndex(int nAbsPageIndex, PDFDoc** _pDoc, PdfReader::CPdfF
 				*pFontList = pPDFContext->m_pFontList;
 			return nAbsPageIndex - nTotalPages + 1;
 		}
-		nStartRefID += pDoc->getXRef()->getNumObjects();
+		if (nStartRefID)
+			*nStartRefID += pDoc->getXRef()->getNumObjects();
 		nTotalPages += nPages;
 	}
 	return -1;

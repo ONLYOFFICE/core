@@ -94,7 +94,7 @@ namespace NSDocxRenderer
 		if (m_dHeight < 0.0001)
 			m_dHeight = 0.0001;
 
-		m_dBaselinePos = m_dTop + m_dHeight;
+		m_dBot = m_dTop + m_dHeight;
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
@@ -138,11 +138,11 @@ namespace NSDocxRenderer
 		         fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
 		        // недалеко друг от друга по вертикали
-		        (fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
-		         fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
+		        (fabs(pShape->m_dBot - this->m_dTop) < dVerNearby ||
+		         fabs(pShape->m_dTop - this->m_dBot) < dVerNearby ||
 
 		         // друг в друге
-		         fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
+		         fabs(pShape->m_dBot - this->m_dBot) < dVerNearby ||
 		         fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
 			RecalcWithNewItem(pShape.get());
@@ -585,7 +585,7 @@ namespace NSDocxRenderer
 		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 		double width = right - left;
 		double height = bot - top;
@@ -707,7 +707,7 @@ namespace NSDocxRenderer
 			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 			double height = bot - top;
 			double width = right - left;
@@ -908,7 +908,7 @@ namespace NSDocxRenderer
 		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 		double height = bot - top;
 		double width = right - left;

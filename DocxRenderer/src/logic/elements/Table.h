@@ -5,12 +5,13 @@
 
 #include "BaseItem.h"
 #include "Paragraph.h"
+#include "Shape.h"
 
 #include "../../resources/LinesTable.h"
 
 namespace NSDocxRenderer
 {
-	class CTable : public CBaseItem
+	class CTable : public CBaseItem, IOoxmlItem
 	{
 	public:
 		class CCell;
@@ -21,7 +22,7 @@ namespace NSDocxRenderer
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 
 	public:
-		class CCell : public CBaseItem
+		class CCell : public CBaseItem, public IOoxmlItem
 		{
 			friend class CTable;
 		public:
@@ -42,7 +43,7 @@ namespace NSDocxRenderer
 			CCell() = default;
 			CCell(const CCell& other);
 			virtual ~CCell() = default;
-			virtual void Clear() override final;
+			virtual void Clear();
 			virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
@@ -61,13 +62,13 @@ namespace NSDocxRenderer
 		private:
 			std::vector<paragraph_ptr_t> m_arParagraphs;
 		};
-		class CRow : public CBaseItem
+		class CRow : public CBaseItem, IOoxmlItem
 		{
 			friend class CTable;
 		public:
 			CRow() = default;
 			virtual ~CRow() = default;
-			virtual void Clear() override final;
+			virtual void Clear();
 			virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
@@ -80,7 +81,7 @@ namespace NSDocxRenderer
 
 		CTable() = default;
 		virtual ~CTable() = default;
-		virtual void Clear() override final;
+		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 
@@ -91,6 +92,11 @@ namespace NSDocxRenderer
 	private:
 		std::vector<row_ptr_t> m_arRows;
 		std::vector<double> m_arGridCols;
+	};
+
+	class CGraphicalCell : public CBaseItem
+	{
+	public:
 	};
 } // namespace NSDocxRenderer
 

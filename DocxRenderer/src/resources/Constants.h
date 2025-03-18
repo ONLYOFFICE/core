@@ -23,7 +23,7 @@ constexpr double c_dPtToEMU       = 12700.0;
 constexpr double c_dDegreeToAngle = 60000.0;
 
 const double c_dSTANDART_STRING_HEIGHT_MM       = 4.2333333333333334;
-const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.02;
+const double c_dTHE_SAME_STRING_Y_PRECISION_MM  = 0.05;
 const double c_dTHE_SAME_STRING_X_PRECISION_MM  = 0.02;
 const double c_dLINE_DISTANCE_ERROR_MM          = 0.3;
 const double c_dERROR_OF_PARAGRAPH_BORDERS_MM   = 1.0;

@@ -475,7 +475,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L" x=\"");
 		oWriter.AddDouble(m_dLeft, 4);
 		oWriter.WriteString(L"\" y=\"");
-		oWriter.AddDouble(m_dBaselinePos, 4);
+		oWriter.AddDouble(m_dBot, 4);
 		oWriter.WriteString(L"\" widths=\"");
 		for (auto& w : m_arSymWidths)
 		{
@@ -876,6 +876,10 @@ namespace NSDocxRenderer
 	{
 		return std::move(m_arConts);
 	}
+	std::vector<CContTextBuilder::cont_ptr_t> CContTextBuilder::GetDiacs()
+	{
+		return std::move(m_arDiacs);
+	}
 
 	void CContTextBuilder::AddUnicode(
 	        double dTop,
@@ -895,7 +899,7 @@ namespace NSDocxRenderer
 
 		// if new text is close to current cont
 		if (m_pCurrCont != nullptr &&
-		        fabs(m_pCurrCont->m_dBaselinePos - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+		        fabs(m_pCurrCont->m_dBot - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		        m_oPrevFont.IsEqual2(&oFont) &&
 		        m_oPrevBrush.IsEqual(&oBrush))
 		{
@@ -940,8 +944,8 @@ namespace NSDocxRenderer
 			if (is_added)
 			{
 				m_pCurrCont->m_dTop = std::min(m_pCurrCont->m_dTop, dTop);
-				m_pCurrCont->m_dBaselinePos = std::max(m_pCurrCont->m_dBaselinePos, dBot);
-				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBaselinePos - m_pCurrCont->m_dTop;
+				m_pCurrCont->m_dBot = std::max(m_pCurrCont->m_dBot, dBot);
+				m_pCurrCont->m_dHeight = m_pCurrCont->m_dBot - m_pCurrCont->m_dTop;
 				m_pCurrCont->m_dWidth = m_pCurrCont->m_dRight - m_pCurrCont->m_dLeft;
 				return;
 			}
@@ -952,7 +956,7 @@ namespace NSDocxRenderer
 		const auto& oMetrics = pFontManager->GetFontMetrics();
 		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
 
-		pCont->m_dBaselinePos = dBot;
+		pCont->m_dBot = dBot;
 		pCont->m_dTop         = dTop;
 		pCont->m_dHeight      = dHeight;
 		pCont->m_dLeft        = dLeft;
@@ -985,8 +989,8 @@ namespace NSDocxRenderer
 		double em_height = oMetrics.dEmHeight;
 		double ratio = font_size / em_height * c_dPtToMM;
 
-		pCont->m_dTopWithAscent = pCont->m_dBaselinePos - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
-		pCont->m_dBotWithDescent = pCont->m_dBaselinePos + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
+		pCont->m_dTopWithAscent = pCont->m_dBot - (oMetrics.dAscent * ratio) - oMetrics.dBaselineOffset;
+		pCont->m_dBotWithDescent = pCont->m_dBot + (oMetrics.dDescent * ratio) - oMetrics.dBaselineOffset;
 		pCont->m_dSpaceWidthMM = pFontManager->GetSpaceWidthMM();
 		pCont->m_wsOriginFontName = oFont.Name;
 
@@ -1005,7 +1009,11 @@ namespace NSDocxRenderer
 			pCont->m_oSelectedFont.Italic = m_pFontSelector->IsSelectedItalic();
 		}
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
-		m_arConts.push_back(pCont);
+
+		if (pCont->IsDiacritical())
+			m_arDiacs.push_back(std::move(pCont));
+		else
+			m_arConts.push_back(pCont);
 
 		m_pCurrCont = pCont;
 		m_oPrevFont = oFont;

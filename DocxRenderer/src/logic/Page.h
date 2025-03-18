@@ -86,16 +86,18 @@ namespace NSDocxRenderer
 	private:
 		using shape_ptr_t = std::shared_ptr<CShape>;
 		using cont_ptr_t = std::shared_ptr<CContText>;
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		using item_ptr_t = std::shared_ptr<CBaseItem>;
+		using text_line_ptr_t = std::shared_ptr<CTextLine>;
+		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
+		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 		using table_ptr_t = std::shared_ptr<CTable>;
+		using graphical_cell_ptr = std::shared_ptr<CGraphicalCell>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
 
 		// returns std::vector of text lines builded from m_arConts
-		std::vector<line_ptr_t> BuildTextLines();
+		std::vector<text_line_ptr_t> BuildTextLines(const std::vector<cont_ptr_t>& arConts);
 
 		// returns std::vector of paragraphs builded from m_arTextLines
 		std::vector<paragraph_ptr_t> BuildParagraphs();
@@ -103,17 +105,11 @@ namespace NSDocxRenderer
 		// returns std::vector of tables builded from shapes and paragraphes
 		std::vector<table_ptr_t> BuildTables();
 
-		// returns std::vector of cells for tables
-		std::vector<CTable::cell_ptr_t> BuildCells();
-
 		// return std::vector of cell groups
-		std::vector<std::vector<CTable::cell_ptr_t>> BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells);
-
-		// returns std::vector of rows for tables
-		std::vector<CTable::row_ptr_t> BuildRows(std::vector<CTable::cell_ptr_t>& arCells);
+		std::vector<graphical_cell_ptr> BuildGraphicalCells();
 
 		// returns std::vector of base items builded from m_arParagraphs
-		std::vector<item_ptr_t> BuildOutputObjects();
+		std::vector<ooxml_item_ptr_t> BuildOutputObjects();
 
 		// analyze shapes (set lines type)
 		void AnalyzeShapes();
@@ -123,6 +119,9 @@ namespace NSDocxRenderer
 
 		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
 		void AnalyzeTextLines();
+
+		// build text line groups
+		void BuildTextLineGroups();
 
 		// analyze drop caps (creates shapes)
 		void AnalyzeDropCaps();
@@ -134,7 +133,7 @@ namespace NSDocxRenderer
 		void AnalyzeEffects();
 
 		// adds diacritical symbols in conts
-		void AddDiacriticalSymbols();
+		void AddDiacriticalSymbols(const std::vector<cont_ptr_t>& arDiac);
 
 		// super-sub scripts line merge
 		void MergeTextLinesByVatType();
@@ -169,27 +168,24 @@ namespace NSDocxRenderer
 		// for drawingml is no tag behind-doc - so we need to reorder shapes
 		void ReorderShapesForPptx();
 
-		// get lines by groups by X
-		std::vector<std::vector<line_ptr_t>> GetLinesByGroups();
-
 		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 
-		bool IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
-		bool IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
+		bool IsVerticalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
 
-		bool IsVerticalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
-		bool IsHorizontalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+		bool IsVerticalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 
-		bool IsVerticalLineTrough(item_ptr_t pFirst) const noexcept;
-		bool IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept;
+		bool IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept;
+		bool IsHorizontalLineTrough(base_item_ptr_t pFirst) const noexcept;
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;
 
-		static shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
+		static shape_ptr_t CreateSingleLineShape(text_line_ptr_t& pLine);
 		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
 
 		CManagers m_oManagers;
@@ -200,14 +196,14 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
-		std::vector<cont_ptr_t>      m_arConts;
-		std::vector<line_ptr_t>      m_arTextLines;
-		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
 		std::vector<shape_ptr_t>     m_arShapes;
+		std::vector<text_line_ptr_t> m_arTextLines;
 		std::vector<paragraph_ptr_t> m_arParagraphs;
 		std::vector<table_ptr_t>     m_arTables;
 
-		std::vector<item_ptr_t>   m_arOutputObjects;
+		std::vector<std::vector<text_line_ptr_t>> m_arTextLineGroups;
+
+		std::vector<ooxml_item_ptr_t>   m_arOutputObjects;
 		std::vector<std::wstring> m_arCompleteObjectsXml;
 
 		size_t m_nShapeOrder = 0;

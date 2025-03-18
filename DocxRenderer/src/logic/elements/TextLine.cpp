@@ -17,14 +17,14 @@ namespace NSDocxRenderer
 		m_arConts.clear();
 		m_pLine = nullptr;
 	}
-	void CTextLine::AddCont(std::shared_ptr<CContText> oCont)
+	void CTextLine::AddCont(const std::shared_ptr<CContText>& oCont)
 	{
 		RecalcWithNewItem(oCont.get());
 		m_arConts.push_back(oCont);
 	}
 	void CTextLine::AddConts(const std::vector<std::shared_ptr<CContText>>& arConts)
 	{
-		for (auto& cont : arConts)
+		for (const auto& cont : arConts)
 			AddCont(cont);
 	}
 
@@ -104,7 +104,7 @@ namespace NSDocxRenderer
 					wide_space->m_dRight = pCurrent->m_dLeft;
 					wide_space->m_dWidth = wide_space->m_dRight - wide_space->m_dLeft;
 
-					wide_space->m_dBaselinePos = pCurrent->m_dBaselinePos;
+					wide_space->m_dBot = pCurrent->m_dBot;
 					wide_space->m_dTop = pCurrent->m_dTop;
 
 					wide_space->m_dTopWithAscent = pCurrent->m_dTopWithAscent;
@@ -217,7 +217,7 @@ namespace NSDocxRenderer
 		m_dTop = 0.0;
 		m_dWidth = 0.0;
 		m_dHeight = 0.0;
-		m_dBaselinePos = 0.0;
+		m_dBot = 0.0;
 		m_dRight = 0.0;
 		m_dHeight = 0.0;
 

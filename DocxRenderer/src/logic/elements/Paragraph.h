@@ -4,7 +4,7 @@
 
 namespace NSDocxRenderer
 {
-	class CParagraph : public CBaseItem
+	class CParagraph : public CBaseItem, public IOoxmlItem
 	{
 	public:
 		enum TextAlignmentType
@@ -37,7 +37,7 @@ namespace NSDocxRenderer
 	public:
 		CParagraph() : CBaseItem() {}
 		virtual ~CParagraph();
-		virtual void Clear() override final;
+		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
 

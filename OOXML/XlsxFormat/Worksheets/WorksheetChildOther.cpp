@@ -3632,7 +3632,7 @@ namespace OOX
         void CSheetProtection::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CFRecordPtr record;
-            unsigned char *flagBuf;
+            unsigned char *flagBuf = NULL;
             if(m_oSpinCount.IsInit() || m_oHashValue.IsInit() || m_oSaltValue.IsInit())
             {
                 record = writer->getNextRecord(XLSB::rt_SheetProtectionIso);

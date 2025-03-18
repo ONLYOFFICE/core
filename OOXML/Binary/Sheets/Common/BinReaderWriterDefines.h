@@ -238,7 +238,8 @@ namespace BinXlsxRW
 		ExternalLinksAutoRefresh = 26,
 		TimelineCaches = 27,
 		TimelineCache = 28,
-		Metadata = 29
+		Metadata = 29,
+		PivotCachesTmp = 107
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -456,6 +457,8 @@ namespace BinXlsxRW
 		TimelinesList = 48,
 		Timelines = 49,
 		Timeline = 50,
+		PivotTableTmp = 126,
+
 
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes

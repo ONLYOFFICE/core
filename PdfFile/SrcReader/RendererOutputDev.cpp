@@ -474,6 +474,13 @@ namespace PdfReader
 	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
+		if (m_sStates.empty())
+		{ // Несбалансированный q/Q - сломанный файл
+			updateAll(pGState);
+			UpdateAllClip(pGState);
+			return;
+		}
+
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{
@@ -2168,7 +2175,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2179,7 +2186,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2190,7 +2197,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2244,7 +2251,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
-		if (m_sStates.back().pTextClip && 4 <= pGState->getRender())
+		if (!m_sStates.empty() && m_sStates.back().pTextClip && 4 <= pGState->getRender())
 		{
 			AddTextClip(pGState, &m_sStates.back());
 			updateFont(pGState);
@@ -2586,9 +2593,13 @@ namespace PdfReader
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
 			// tmpchange
-			if (!m_sStates.back().pTextClip)
-				m_sStates.back().pTextClip = new GfxTextClip();
-			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+			if (!m_sStates.empty())
+			{
+				if (!m_sStates.back().pTextClip)
+					m_sStates.back().pTextClip = new GfxTextClip();
+				m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+
+			}
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);

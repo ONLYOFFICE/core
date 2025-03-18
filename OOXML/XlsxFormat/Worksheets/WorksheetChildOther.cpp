@@ -2837,7 +2837,7 @@ namespace OOX
                         dataString = m_oEvenFooter->m_sText;
                     else
                         dataString.setSize(0xFFFFFFFF);
-                     *begin << dataString;
+                    *begin << dataString;
                 }
                 {
                     XLSB::XLNullableWideString dataString;

@@ -84,6 +84,7 @@ namespace OOX
 		class CTimelineStyle;
 		class CTimelineStyles;
 		class CTimelineStyleElement;
+		class CXmlColumnPr;
 		
 		class CMetadata;
 		class CFutureMetadata;
@@ -138,6 +139,7 @@ namespace BinXlsxRW
 		void WriteQueryTableField(const OOX::Spreadsheet::CQueryTableField& oQueryTableField);
 		void WriteQueryTableDeletedFields(const OOX::Spreadsheet::CQueryTableDeletedFields& oQueryTableDeletedFields);
 		void WriteQueryTableDeletedField(const OOX::Spreadsheet::CQueryTableDeletedField& oQueryTableDeletedField);
+		void WriteTableXmlColumnPr(const OOX::Spreadsheet::CXmlColumnPr & oXmlColumnPr);
 	};
 	class BinaryStyleTableWriter
 	{

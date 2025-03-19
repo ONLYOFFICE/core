@@ -72,6 +72,7 @@
 #include "../../../XlsxFormat/Controls/Controls.h"
 #include "../../../XlsxFormat/Timelines/Timeline.h"
 #include "../../../XlsxFormat/Workbook/Metadata.h"
+#include "../../../XlsxFormat/Workbook/CustomsXml.h"
 
 #include "../../../DocxFormat/Media/VbaProject.h"
 #include "../../../DocxFormat/Media/JsaProject.h"
@@ -996,6 +997,32 @@ int BinaryTableReader::ReadTableColumns(BYTE type, long length, void* poResult)
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
+int BinaryTableReader::ReadTableXmlColumnPr(BYTE type, long length, void* poResult)
+{
+	int res = c_oSerConstants::ReadOk;
+	OOX::Spreadsheet::CXmlColumnPr* pXmlColumnPr = static_cast<OOX::Spreadsheet::CXmlColumnPr*>(poResult);
+
+	if (c_oSer_TableColumns::MapId == type)
+	{
+		pXmlColumnPr->mapId = m_oBufferedStream.GetLong();
+	}
+	else if (c_oSer_TableColumns::Xpath == type)
+	{
+		pXmlColumnPr->xpath = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_TableColumns::Denormalized == type)
+	{
+		pXmlColumnPr->denormalized = m_oBufferedStream.GetBool();
+	}
+	else if (c_oSer_TableColumns::XmlDataType == type)
+	{
+		pXmlColumnPr->xmlDataType.Init();
+		pXmlColumnPr->xmlDataType->SetValueFromByte(m_oBufferedStream.GetUChar());
+	}
+	else
+		res = c_oSerConstants::ReadUnknown;
+	return res;
+}
 int BinaryTableReader::ReadTableColumn(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
@@ -1062,6 +1089,11 @@ int BinaryTableReader::ReadTableColumn(BYTE type, long length, void* poResult)
 	else if (c_oSer_TableColumns::UniqueName == type)
 	{
 		pTableColumn->m_oUniqueName = m_oBufferedStream.GetString4(length);
+	}
+	else if (c_oSer_TableColumns::XmlColumnPr == type)
+	{
+		pTableColumn->m_oXmlColumnPr.Init();
+		READ2_DEF_SPREADSHEET(length, res, this->ReadTableXmlColumnPr, pTableColumn->m_oXmlColumnPr.GetPointer());
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;
@@ -2330,6 +2362,16 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		READ1_DEF(length, res, this->ReadMetadata, oMetadataFile->m_oMetadata.GetPointer());
 
 		smart_ptr<OOX::File> oFile = oMetadataFile.smart_dynamic_cast<OOX::File>();
+		m_oWorkbook.Add(oFile);
+	}
+	else if (c_oSerWorkbookTypes::XmlMap == type)
+	{
+		m_oBufferedStream.Skip(1); //skip type
+
+		smart_ptr<OOX::Spreadsheet::CXmlMapsFile> oXmlMapFile(new OOX::Spreadsheet::CXmlMapsFile(NULL));
+		oXmlMapFile->fromPPTY(&m_oBufferedStream);
+
+		smart_ptr<OOX::File> oFile = oXmlMapFile.smart_dynamic_cast<OOX::File>();
 		m_oWorkbook.Add(oFile);
 	}
 	else
@@ -4627,6 +4669,16 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 		pNamedSheetViewFile->m_oNamedSheetViews.Init();
 		pNamedSheetViewFile->m_oNamedSheetViews->fromPPTY(&m_oBufferedStream);
 		smart_ptr<OOX::File> oFile = pNamedSheetViewFile.smart_dynamic_cast<OOX::File>();
+		m_pCurWorksheet->Add(oFile);
+	SEEK_TO_POS_END2();
+//-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::TableSingleCells);
+		
+		m_oBufferedStream.Skip(1); //skip type
+
+		smart_ptr<OOX::Spreadsheet::CTableSingleCellsFile> pTableSingleCellsFile(new OOX::Spreadsheet::CTableSingleCellsFile(NULL));
+		pTableSingleCellsFile->fromPPTY(&m_oBufferedStream);
+		smart_ptr<OOX::File> oFile = pTableSingleCellsFile.smart_dynamic_cast<OOX::File>();
 		m_pCurWorksheet->Add(oFile);
 	SEEK_TO_POS_END2();
 //-------------------------------------------------------------------------------------------------------------

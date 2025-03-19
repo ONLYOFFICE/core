@@ -137,6 +137,7 @@ namespace BinXlsxRW
 		int ReadTableColumns(BYTE type, long length, void* poResult);
 		int ReadTableColumn(BYTE type, long length, void* poResult);
 		int ReadTableStyleInfo(BYTE type, long length, void* poResult);
+		int ReadTableXmlColumnPr(BYTE type, long length, void* poResult);
 		int ReadQueryTableContent(BYTE type, long length, void* poResult);
 		int ReadQueryTableRefresh(BYTE type, long length, void* poResult);
 		int ReadQueryTableFields(BYTE type, long length, void* poResult);

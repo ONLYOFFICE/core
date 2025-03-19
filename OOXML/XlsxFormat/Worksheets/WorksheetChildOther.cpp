@@ -40,7 +40,7 @@
 #include "../../XlsbFormat/Biff12_records/BeginHeaderFooter.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtection.h"
-#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
+#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h" 
 #include "../../XlsbFormat/Biff12_records/Margins.h"
 #include "../../XlsbFormat/Biff12_records/PrintOptions.h"
 #include "../../XlsbFormat/Biff12_records/WsProp.h"
@@ -3632,7 +3632,7 @@ namespace OOX
         void CSheetProtection::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CFRecordPtr record;
-            unsigned char *flagBuf;
+            unsigned char *flagBuf = NULL;
             if(m_oSpinCount.IsInit() || m_oHashValue.IsInit() || m_oSaltValue.IsInit())
             {
                 record = writer->getNextRecord(XLSB::rt_SheetProtectionIso);

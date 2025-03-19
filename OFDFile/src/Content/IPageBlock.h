@@ -1,7 +1,7 @@
 #ifndef IPAGEBLOCK_H
 #define IPAGEBLOCK_H
 
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../Utils/XmlReader.h"
 
 namespace OFD
 {
@@ -11,7 +11,7 @@ class IPageBlock
 public:
 	IPageBlock(){};
 	virtual ~IPageBlock(){};
-	virtual bool Read(XmlUtils::CXmlLiteReader& oLiteReader) = 0;
+	virtual bool Read(CXmlReader& oLiteReader) = 0;
 };
 }
 

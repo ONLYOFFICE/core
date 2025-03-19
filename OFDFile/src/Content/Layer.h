@@ -17,10 +17,10 @@ class CLayer
 	unsigned int m_unID;
 	std::vector<IPageBlock*> m_arPageBlocks;
 public:
-	CLayer(XmlUtils::CXmlLiteReader& oLiteReader);
+	CLayer(CXmlReader& oLiteReader);
 	~CLayer();
 
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader);
 };
 }
 

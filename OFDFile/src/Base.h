@@ -36,7 +36,7 @@ class CDocInfo
 	std::vector<std::wstring> m_arCustomData;
 public:
 	CDocInfo();
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader);
 };
 
 class CDocBody
@@ -48,7 +48,7 @@ class CDocBody
 	std::wstring m_wsSignature;
 public:
 	CDocBody();
-	static CDocBody* Read(XmlUtils::CXmlLiteReader& oLiteReader, IFolder* pFolder);
+	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder);
 };
 
 
@@ -61,12 +61,12 @@ public:
 
 	bool Read(IFolder* pFolder);
 
-	std::wstring GetDocId() const;
-	std::wstring GetCreationDate() const;
-	std::wstring GetCreator() const;
-	std::wstring GetCreatorVersion() const;
+	// std::wstring GetDocId() const;
+	// std::wstring GetCreationDate() const;
+	// std::wstring GetCreator() const;
+	// std::wstring GetCreatorVersion() const;
 
-	std::wstring GetpathToDocRoot() const;
+	// std::wstring GetPathToDocRoot() const;
 };
 }
 

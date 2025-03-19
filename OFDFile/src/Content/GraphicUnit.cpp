@@ -3,10 +3,10 @@
 
 namespace OFD
 {
-CGraphicUnit::CGraphicUnit(XmlUtils::CXmlLiteReader& oLiteReader)
-    : m_bVisible(true), m_dLineWidth(0.353), m_eCap(ECap::Butt),
-      m_eJoin(EJoin::Miter), m_dMiterLimit(4.234), m_dDashOffset(0.),
-      m_uchAlpha(255)
+CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
+	: m_bVisible(true), m_dLineWidth(0.353), m_eCap(ECap::Butt),
+	  m_eJoin(EJoin::Miter), m_dMiterLimit(4.234), m_dDashOffset(0.),
+	  m_uchAlpha(255)
 {
 	if (0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;
@@ -18,17 +18,17 @@ CGraphicUnit::CGraphicUnit(XmlUtils::CXmlLiteReader& oLiteReader)
 		wsAttributeName = oLiteReader.GetName();
 
 		if (L"Boundary" == wsAttributeName)
-			m_oBoundary.Read(oLiteReader.GetText());
+			m_oBoundary.Read(oLiteReader.GetTextA());
 		else if (L"Name" == wsAttributeName)
 			m_wsName = oLiteReader.GetText();
 		else if (L"Visible" == wsAttributeName)
-			m_bVisible = XmlUtils::GetBoolean(oLiteReader.GetText());
+			m_bVisible = oLiteReader.GetBoolean(true);
 		else if (L"CTM" == wsAttributeName)
-			m_oCTM.Read(oLiteReader.GetText());
+			m_oCTM.Read(oLiteReader.GetTextA());
 		else if (L"DrawParam" == wsAttributeName)
-			m_unDrawParam = XmlUtils::GetUInteger(oLiteReader.GetText());
+			m_unDrawParam = oLiteReader.GetUInteger(true);
 		else if (L"LineWidth" == wsAttributeName)
-			m_dLineWidth = XmlUtils::GetDouble(oLiteReader.GetText());
+			m_dLineWidth = oLiteReader.GetDouble(true);
 		else if (L"Cap" == wsAttributeName)
 		{
 			const std::wstring wsValue{oLiteReader.GetText()};
@@ -52,11 +52,11 @@ CGraphicUnit::CGraphicUnit(XmlUtils::CXmlLiteReader& oLiteReader)
 				m_eJoin = EJoin::Bevel;
 		}
 		else if (L"MiterLimit" == wsAttributeName)
-			m_dMiterLimit = XmlUtils::GetDouble(oLiteReader.GetText());
+			m_dMiterLimit = oLiteReader.GetDouble(true);
 		else if (L"DashOffset" == wsAttributeName)
-			m_dDashOffset = XmlUtils::GetDouble(oLiteReader.GetText());
+			m_dDashOffset = oLiteReader.GetDouble(true);
 		else if (L"Alpha" == wsAttributeName)
-			m_uchAlpha = XmlUtils::GetUInteger(oLiteReader.GetText());
+			m_uchAlpha = oLiteReader.GetUInteger(true);
 	} while (oLiteReader.MoveToNextAttribute());
 
 	oLiteReader.MoveToElement();

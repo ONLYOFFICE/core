@@ -6,7 +6,7 @@
 
 namespace OFD
 {
-CLayer::CLayer(XmlUtils::CXmlLiteReader& oLiteReader)
+CLayer::CLayer(CXmlReader& oLiteReader)
 	: m_eType(EType::Body)
 {
 	Read(oLiteReader);
@@ -18,7 +18,7 @@ CLayer::~CLayer()
 		delete pPageBlock;
 }
 
-bool CLayer::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CLayer::Read(CXmlReader& oLiteReader)
 {
 	if (L"ofd:Layer" != oLiteReader.GetName())
 		return false;
@@ -28,7 +28,7 @@ bool CLayer::Read(XmlUtils::CXmlLiteReader& oLiteReader)
 		do
 		{
 			if (L"ID" == oLiteReader.GetName())
-				m_unID = XmlUtils::GetUInteger(oLiteReader.GetText());
+				m_unID = oLiteReader.GetUInteger(true);
 		} while (oLiteReader.MoveToNextAttribute());
 
 		oLiteReader.MoveToElement();

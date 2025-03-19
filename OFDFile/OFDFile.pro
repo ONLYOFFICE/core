@@ -28,8 +28,10 @@ HEADERS += \
     src/Document.h \
     src/Page.h \
     src/PublicRes.h \
+    src/Types/Color.h \
     src/Utils/Types.h \
-    src/Utils/Utils.h
+    src/Utils/Utils.h \
+    src/Utils/XmlReader.h
 
 SOURCES += \
     OFDFile.cpp \
@@ -41,7 +43,6 @@ SOURCES += \
     src/Document.cpp \
     src/Page.cpp \
     src/PublicRes.cpp \
-    src/Utils/Types.cpp
-
-HEADERS += $$CORE_ROOT_DIR/OOXML/Base/Unit.h
-SOURCES += $$CORE_ROOT_DIR/OOXML/Base/Unit.cpp
+    src/Types/Color.cpp \
+    src/Utils/Types.cpp \
+    src/Utils/XmlReader.cpp

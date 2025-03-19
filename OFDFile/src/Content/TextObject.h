@@ -4,6 +4,8 @@
 #include "IPageBlock.h"
 #include "GraphicUnit.h"
 
+#include "../Types/Color.h"
+
 namespace OFD
 {
 class CTextCode
@@ -16,7 +18,7 @@ class CTextCode
 
 	std::wstring m_wsText;
 public:
-	CTextCode(XmlUtils::CXmlLiteReader& oLiteReader);
+	CTextCode(CXmlReader& oLiteReader);
 };
 
 class CTextObject : public IPageBlock, public CGraphicUnit
@@ -31,15 +33,15 @@ class CTextObject : public IPageBlock, public CGraphicUnit
 	unsigned int m_unWeight;
 	bool m_bItalic;
 
-	TColor* m_pFillColor;
-	TColor* m_pStrokeColor;
+	CColor* m_pFillColor;
+	CColor* m_pStrokeColor;
 
 	std::vector<CTextCode*> m_arTextCodes;
 public:
-	CTextObject(XmlUtils::CXmlLiteReader& oLiteReader);
+	CTextObject(CXmlReader& oLiteReader);
 	~CTextObject();
 
-	virtual bool Read(XmlUtils::CXmlLiteReader& oLiteReader) override;
+	virtual bool Read(CXmlReader& oLiteReader) override;
 };
 }
 

@@ -1,8 +1,6 @@
 #include "Types.h"
 
-#include <vector>
-#include "../../../DesktopEditor/common/StringExt.h"
-#include "../../../OOXML/Base/Unit.h"
+#include "Utils.h"
 
 namespace OFD
 {
@@ -15,35 +13,19 @@ bool TBox::Empty() const
 	return m_dWidth < OFD_EPSILON || m_dHeight < OFD_EPSILON;
 }
 
-bool TBox::Read(const std::wstring& wsValue)
+bool TBox::Read(const std::string& sValue)
 {
-	const std::vector<std::wstring> arValues{NSStringExt::Split(wsValue, L' ')};
+	const std::vector<std::string> arValues{Split(sValue, ' ')};
 
 	if (4 > arValues.size())
 		return false;
 
-	m_dX      = XmlUtils::GetDouble(arValues[0]);
-	m_dY      = XmlUtils::GetDouble(arValues[1]);
-	m_dWidth  = XmlUtils::GetDouble(arValues[2]);
-	m_dHeight = XmlUtils::GetDouble(arValues[3]);
+	if (!StringToDouble(arValues[0], m_dX)     ||
+	    !StringToDouble(arValues[1], m_dY)     ||
+	    !StringToDouble(arValues[2], m_dWidth) ||
+	    !StringToDouble(arValues[3], m_dHeight))
+		return false;
 
 	return true;
 }
-
-
-
-TColor::TColor()
-{
-}
-
-TColor::TColor(XmlUtils::CXmlLiteReader& oLiteReader)
-{
-	Read(oLiteReader);
-}
-
-bool TColor::Read(XmlUtils::CXmlLiteReader& oLiteReader)
-{
-	return false;
-}
-
 }

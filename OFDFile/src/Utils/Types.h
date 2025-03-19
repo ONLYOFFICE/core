@@ -2,13 +2,10 @@
 #define TYPES_H
 
 #include <string>
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
-
 
 namespace OFD
 {
 #define OFD_EPSILON 0.0001
-
 struct TBox
 {
 	double m_dX;
@@ -19,15 +16,7 @@ struct TBox
 	TBox();
 
 	bool Empty() const;
-	bool Read(const std::wstring& wsValue);
-};
-
-struct TColor
-{
-	TColor();
-	TColor(XmlUtils::CXmlLiteReader& oLiteReader);
-
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(const std::string& wsValue);
 };
 }
 

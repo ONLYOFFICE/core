@@ -26,7 +26,7 @@ CDocInfo::CDocInfo()
 	: m_eDocUsage(EDocUsege::Normal)
 {}
 
-bool CDocInfo::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CDocInfo::Read(CXmlReader& oLiteReader)
 {
 	if (L"ofd:DocInfo" != oLiteReader.GetName())
 		return false;
@@ -61,7 +61,7 @@ CDocBody::CDocBody()
 
 }
 
-CDocBody* CDocBody::Read(XmlUtils::CXmlLiteReader& oLiteReader, IFolder* pFolder)
+CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder)
 {
 	if (L"ofd:DocBody" != oLiteReader.GetName())
 		return nullptr;
@@ -114,7 +114,7 @@ bool CBase::Read(IFolder* pFolder)
 	if (nullptr == pFolder || !pFolder->existsXml(L"OFD.xml"))
 		return false;
 
-	XmlUtils::CXmlLiteReader oLiteReader;
+	CXmlReader oLiteReader;
 	if (!oLiteReader.FromFile(pFolder->getFullFilePath(L"OFD.xml")) || !oLiteReader.ReadNextNode() || L"ofd:OFD" != oLiteReader.GetName())
 		return false;
 

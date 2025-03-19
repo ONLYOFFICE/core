@@ -1,6 +1,5 @@
 #include "Page.h"
 
-#include <iostream>
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Path.h"
 
@@ -22,7 +21,7 @@ CPage* CPage::Read(const std::wstring& wsFilePath)
 		wsNormalizedPath = NSSystemPath::Combine(wsNormalizedPath, L"Content.xml");
 
 
-	XmlUtils::CXmlLiteReader oLiteReader;
+	CXmlReader oLiteReader;
 	if (!oLiteReader.FromFile(wsNormalizedPath) || !oLiteReader.ReadNextNode() || L"ofd:Page" != oLiteReader.GetName())
 		return nullptr;
 

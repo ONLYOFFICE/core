@@ -12,7 +12,7 @@ public:
 	CContent();
 	~CContent();
 
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader);
 };
 }
 

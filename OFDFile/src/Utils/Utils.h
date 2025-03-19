@@ -1,49 +1,96 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-
-#include <vector>
+#include <algorithm>
 #include <string>
-#include "../../../OOXML/Base/Unit.h"
-#include "../../../DesktopEditor/common/StringExt.h"
+#include <vector>
+#include <sstream>
+#include <cstdlib>
 
-bool GetBoolean(const std::wstring& wsValue)
+namespace OFD
 {
-	return false;
+inline std::vector<std::string> Split(const std::string& sValue, char chDelim)
+{
+	if (sValue.empty())
+		return std::vector<std::string>();
+
+	std::vector<std::string> arValues;
+	std::stringstream oStringStream(sValue);
+	std::string sItem;
+
+	while (std::getline(oStringStream, sItem, chDelim))
+		arValues.push_back(sItem);
+
+	return arValues;
 }
 
-int GetInt(const std::wstring& wsValue)
+inline bool StringToBoolean(const std::string& sValue, bool& bValue)
 {
-	return 0;
+	//TODO:: скорректировать метод, если возможно чтение не стандартных значений с плавающей запятой
+	if (sValue.empty())
+		return false;
+
+	size_t unStart = sValue.find_first_not_of(" \t\n\r\f\v");
+
+	if (std::string::npos == unStart)
+		return false;
+
+	size_t unEnd = sValue.find_last_not_of(" \t\n\r\f\v");
+
+	std::string sTrimmed = sValue.substr(unStart, unEnd - unStart + 1);
+
+	std::transform(sTrimmed.begin(), sTrimmed.end(), sTrimmed.begin(),
+	               [](unsigned char c){ return std::tolower(c); });
+
+	return "true" == sTrimmed;
 }
 
-unsigned int GetUInt(const std::wstring& wsValue)
+inline bool StringToInteger(const std::string& sValue, int& nValue)
 {
-	return 0;
+	//TODO:: скорректировать метод, если возможно чтение не стандартных значений с плавающей запятой
+	if (sValue.empty())
+		return false;
+
+	char* pEnd = nullptr;
+
+	nValue = std::strtol(sValue.c_str(), &pEnd, 10);
+
+	if (pEnd == sValue.c_str() || '\0' != *pEnd)
+		return false;
+
+	return true;
 }
 
-double GetDouble(const std::wstring& wsValue)
+inline bool StringToUInteger(const std::string& sValue, unsigned int& unValue)
 {
-	return 0.;
+	//TODO:: скорректировать метод, если возможно чтение не стандартных значений с плавающей запятой
+	if (sValue.empty())
+		return false;
+
+	char* pEnd = nullptr;
+
+	unValue = std::strtoul(sValue.c_str(), &pEnd, 10);
+
+	if (pEnd == sValue.c_str() || '\0' != *pEnd)
+		return false;
+
+	return true;
 }
 
-
-
-std::vector<double> GetDoubleValues(const std::wstring& wsValue)
+inline bool StringToDouble(const std::string& sValue, double& dValue)
 {
-	const std::vector<std::wstring> arValues{NSStringExt::Split(wsValue, L' ')};
+	//TODO:: скорректировать метод, если возможно чтение не стандартных значений с плавающей запятой
+	if (sValue.empty())
+		return false;
 
-	if(arValues.empty())
-		return std::vector<double>();
+	char* pEnd = nullptr;
 
-	std::vector<double> arDoubleValues(arValues.size());
+	dValue = std::strtod(sValue.c_str(), &pEnd);
 
-	for (unsigned int unIndex = 0; unIndex < arValues.size(); ++unIndex)
-		arDoubleValues[unIndex] = XmlUtils::GetDouble(arValues[unIndex]);
+	if (pEnd == sValue.c_str() || '\0' != *pEnd)
+		return false;
 
-	return arDoubleValues;
+	return true;
 }
-
-#define NO_VALID_NODE(lite_reader, node_name) node_name != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid()
-
+}
 #endif // UTILS_H

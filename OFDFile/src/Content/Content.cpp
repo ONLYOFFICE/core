@@ -3,9 +3,7 @@
 namespace OFD
 {
 CContent::CContent()
-{
-
-}
+{}
 
 CContent::~CContent()
 {
@@ -13,7 +11,7 @@ CContent::~CContent()
 		delete pLayer;
 }
 
-bool CContent::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CContent::Read(CXmlReader& oLiteReader)
 {
 	if (L"ofd:Content" != oLiteReader.GetName())
 		return false;

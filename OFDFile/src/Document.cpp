@@ -1,13 +1,11 @@
 #include "Document.h"
 
-#include "../../OOXML/Base/Unit.h"
-
 namespace OFD
 {
 CPageArea::CPageArea()
 {}
 
-bool CPageArea::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CPageArea::Read(CXmlReader& oLiteReader)
 {
 	if (L"ofd:PageArea" != oLiteReader.GetName())
 		return false;
@@ -20,13 +18,13 @@ bool CPageArea::Read(XmlUtils::CXmlLiteReader& oLiteReader)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:PhysicalBox" == wsNodeName)
-			m_oPhysicalBox.Read(oLiteReader.GetText2());
+			m_oPhysicalBox.Read(oLiteReader.GetText2A());
 		else if (L"ofd:ApplicationBox" == wsNodeName)
-			m_oApplicationBox.Read(oLiteReader.GetText2());
+			m_oApplicationBox.Read(oLiteReader.GetText2A());
 		else if (L"ofd:ContentBox" == wsNodeName)
-			m_oContentBox.Read(oLiteReader.GetText2());
+			m_oContentBox.Read(oLiteReader.GetText2A());
 		else if (L"ofd:BleedBox" == wsNodeName)
-			m_oBleedBox.Read(oLiteReader.GetText2());
+			m_oBleedBox.Read(oLiteReader.GetText2A());
 	}
 
 	return true;
@@ -36,7 +34,7 @@ CCommonData::CCommonData()
 	: m_unMaxUnitID(0)
 {}
 
-bool CCommonData::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CCommonData::Read(CXmlReader& oLiteReader)
 {
 	if (L"ofd:CommonData" != oLiteReader.GetName())
 		return false;
@@ -55,10 +53,34 @@ bool CCommonData::Read(XmlUtils::CXmlLiteReader& oLiteReader)
 			// m_oPublicRes.Read();
 		}
 		else if (L"ofd:MaxUnitID" == wsNodeName)
-			m_unMaxUnitID = XmlUtils::GetUInteger(oLiteReader.GetText2());
+			m_unMaxUnitID = oLiteReader.GetUInteger();
 		// else if (L"ofd:DocumentRes" == wsNodeName)
 		// else if (L"ofd:TemplatePage" == wsNodeName)
 		// else if (L"ofd:DefaultCS" == wsNodeName)
+	}
+
+	return true;
+}
+
+CPermission::CPermission()
+	: m_bEdit(true), m_bAnnot(true), m_bExport(true),
+	  m_bSignature(true), m_bWatermark(true), m_bPrintScreen(true)
+{}
+
+bool CPermission::Read(CXmlReader& oLiteReader)
+{
+	if (L"ofd:Permission" != oLiteReader.GetName())
+		return false;
+
+	const int nDepth = oLiteReader.GetDepth();
+	std::wstring wsNodeName;
+
+	while (oLiteReader.ReadNextSiblingNode(nDepth))
+	{
+		wsNodeName = oLiteReader.GetName();
+
+		if (L"ofd:Edit" == wsNodeName)
+			m_bEdit = oLiteReader.GetBoolean();
 	}
 
 	return true;
@@ -83,7 +105,7 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 	if (wsFilePath.empty())
 		return false;
 
-	XmlUtils::CXmlLiteReader oLiteReader;
+	CXmlReader oLiteReader;
 	if (!oLiteReader.FromFile(wsFilePath) || !oLiteReader.ReadNextNode() || L"ofd:Document" != oLiteReader.GetName())
 		return false;
 
@@ -111,7 +133,7 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 				do
 				{
 					if (L"ID" == oLiteReader.GetName())
-						nID = XmlUtils::GetUInteger(oLiteReader.GetText());
+						nID = oLiteReader.GetInteger(true);
 					else if (L"BaseLoc" == oLiteReader.GetName())
 						wsBaseLoc = oLiteReader.GetText();
 				}while (oLiteReader.MoveToNextAttribute());

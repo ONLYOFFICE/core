@@ -1,7 +1,7 @@
 #ifndef GRAPHICUNIT_H
 #define GRAPHICUNIT_H
 
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../Utils/XmlReader.h"
 #include "../Utils/Types.h"
 #include <vector>
 
@@ -35,7 +35,7 @@ class CGraphicUnit
 	std::vector<double> m_arDashPattern;
 	unsigned char m_uchAlpha;
 public:
-	CGraphicUnit(XmlUtils::CXmlLiteReader& oLiteReader);
+	CGraphicUnit(CXmlReader& oLiteReader);
 };
 }
 

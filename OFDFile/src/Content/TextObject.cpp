@@ -1,12 +1,10 @@
 #include "TextObject.h"
 
-#include "../Utils/Utils.h"
-
 namespace OFD
 {
-CTextCode::CTextCode(XmlUtils::CXmlLiteReader& oLiteReader)
+CTextCode::CTextCode(CXmlReader& oLiteReader)
 {
-	if (NO_VALID_NODE(oLiteReader, L"ofd:TextCode"))
+	if (L"ofd:TextCode" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
 		return;
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
@@ -18,13 +16,13 @@ CTextCode::CTextCode(XmlUtils::CXmlLiteReader& oLiteReader)
 			wsAttributeName = oLiteReader.GetName();
 
 			if (L"X" == wsAttributeName)
-				m_dX = XmlUtils::GetDouble(oLiteReader.GetText());
+				m_dX = oLiteReader.GetDouble(true);
 			else if (L"Y" == wsAttributeName)
-				m_dY = XmlUtils::GetDouble(oLiteReader.GetText());
+				m_dY = oLiteReader.GetDouble(true);
 			else if (L"DeltaX" == wsAttributeName)
-				m_arDeltaX = GetDoubleValues(oLiteReader.GetText());
+				m_arDeltaX = oLiteReader.GetArrayDoubles(true);
 			else if (L"DeltaY" == wsAttributeName)
-				m_arDeltaY = GetDoubleValues(oLiteReader.GetText());
+				m_arDeltaY = oLiteReader.GetArrayDoubles(true);
 		} while (oLiteReader.MoveToNextAttribute());
 	}
 
@@ -33,12 +31,12 @@ CTextCode::CTextCode(XmlUtils::CXmlLiteReader& oLiteReader)
 	m_wsText = oLiteReader.GetText2();
 }
 
-CTextObject::CTextObject(XmlUtils::CXmlLiteReader& oLiteReader)
+CTextObject::CTextObject(CXmlReader& oLiteReader)
 	: CGraphicUnit(oLiteReader),
-      m_bStroke(false), m_bFill(false), m_dHScale(1.),
-      m_unReadDirection(0), m_unCharDirection(0), m_unWeight(400),
-      m_bItalic(false),
-      m_pFillColor(nullptr), m_pStrokeColor(nullptr)
+	  m_bStroke(false), m_bFill(false), m_dHScale(1.),
+	  m_unReadDirection(0), m_unCharDirection(0), m_unWeight(400),
+	  m_bItalic(false),
+	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
 {
 	CTextObject::Read(oLiteReader);
 }
@@ -55,9 +53,9 @@ CTextObject::~CTextObject()
 		delete pTextCode;
 }
 
-bool CTextObject::Read(XmlUtils::CXmlLiteReader& oLiteReader)
+bool CTextObject::Read(CXmlReader& oLiteReader)
 {
-	if (NO_VALID_NODE(oLiteReader, L"ofd:TextObject"))
+	if (L"ofd:TextObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
 		return false;
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
@@ -69,25 +67,23 @@ bool CTextObject::Read(XmlUtils::CXmlLiteReader& oLiteReader)
 			wsAttributeName = oLiteReader.GetName();
 
 			if (L"Font" == wsAttributeName)
-			{
-					m_unFont = XmlUtils::GetUInteger(oLiteReader.GetText());
-			}
+				m_unFont = oLiteReader.GetUInteger(true);
 			else if (L"Size" == wsAttributeName)
-				m_dSize = XmlUtils::GetDouble(oLiteReader.GetText());
+				m_dSize = oLiteReader.GetDouble(true);
 			else if (L"Stroke" == wsAttributeName)
-				m_bStroke = XmlUtils::GetBoolean(oLiteReader.GetText());
+				m_bStroke = oLiteReader.GetBoolean(true);
 			else if (L"Fill" == wsAttributeName)
-				m_bFill = XmlUtils::GetBoolean(oLiteReader.GetText());
+				m_bFill = oLiteReader.GetBoolean(true);
 			else if (L"HScale" == wsAttributeName)
-				m_dHScale = XmlUtils::GetDouble(oLiteReader.GetText());
+				m_dHScale = oLiteReader.GetDouble(true);
 			else if (L"ReadDirection" == wsAttributeName)
-				m_unReadDirection = XmlUtils::GetUInteger(oLiteReader.GetText());
+				m_unReadDirection = oLiteReader.GetUInteger(true);
 			else if (L"CharDirection" == wsAttributeName)
-				m_unCharDirection = XmlUtils::GetUInteger(oLiteReader.GetText());
+				m_unCharDirection =oLiteReader.GetUInteger(true);
 			else if (L"Weight" == wsAttributeName)
-				m_unWeight = XmlUtils::GetUInteger(oLiteReader.GetText());
+				m_unWeight = oLiteReader.GetUInteger(true);
 			else if (L"Italic" == wsAttributeName)
-				m_bItalic =  XmlUtils::GetBoolean(oLiteReader.GetText());
+				m_bItalic = oLiteReader.GetBoolean(true);
 		} while (oLiteReader.MoveToNextAttribute());
 	}
 
@@ -105,14 +101,14 @@ bool CTextObject::Read(XmlUtils::CXmlLiteReader& oLiteReader)
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
-			m_pFillColor = new TColor(oLiteReader);
+			m_pFillColor = new CColor(oLiteReader);
 		}
 		else if (L"ofd:StrokeColor" == wsNodeName && m_bStroke)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
 
-			m_pStrokeColor = new TColor(oLiteReader);
+			m_pStrokeColor = new CColor(oLiteReader);
 		}
 		else if (L"ofd:TextCode" == wsNodeName)
 			m_arTextCodes.push_back(new CTextCode(oLiteReader));

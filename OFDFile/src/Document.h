@@ -17,7 +17,7 @@ class CPageArea
 public:
 	CPageArea();
 
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader);
 };
 
 class CCommonData
@@ -28,7 +28,21 @@ class CCommonData
 public:
 	CCommonData();
 
-	bool Read(XmlUtils::CXmlLiteReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader);
+};
+
+class CPermission
+{
+	bool m_bEdit;
+	bool m_bAnnot;
+	bool m_bExport;
+	bool m_bSignature;
+	bool m_bWatermark;
+	bool m_bPrintScreen;
+public:
+	CPermission();
+
+	bool Read(CXmlReader& oLiteReader);
 };
 
 class CDocument

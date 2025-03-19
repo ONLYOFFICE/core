@@ -317,21 +317,24 @@ void CConditionalFormatValueObject::toBin(XLS::StreamCacheWriterPtr& writer, con
         cfvo.fGTE = m_oGte->GetValue();
     else
         cfvo.fGTE = true;
-    if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Number)
+
+    auto valType = m_oType->GetValue();
+    if (valType == SimpleTypes::Spreadsheet::ECfvoType::Number)
         cfvo.iType = XLSB::CFVOtype::CFVONUM;
-    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Minimum)
+    else if (valType == SimpleTypes::Spreadsheet::ECfvoType::Minimum || valType == SimpleTypes::Spreadsheet::ECfvoType::autoMin)
         cfvo.iType = XLSB::CFVOtype::CFVOMIN;
-    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Maximum)
+    else if (valType == SimpleTypes::Spreadsheet::ECfvoType::Maximum || valType == SimpleTypes::Spreadsheet::ECfvoType::autoMax)
         cfvo.iType = XLSB::CFVOtype::CFVOMAX;
-    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Percent)
+    else if (valType == SimpleTypes::Spreadsheet::ECfvoType::Percent)
         cfvo.iType = XLSB::CFVOtype::CFVOPERCENT;
-    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Percentile)
+    else if (valType == SimpleTypes::Spreadsheet::ECfvoType::Percentile)
         cfvo.iType = XLSB::CFVOtype::CFVOPERCENTILE;
-    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Formula)
+    else if (valType == SimpleTypes::Spreadsheet::ECfvoType::Formula)
         cfvo.iType = XLSB::CFVOtype::CFVOFMLA;
     else
         cfvo.iType = XLSB::CFVOtype::CFVONUM;
-
+    if(valType == SimpleTypes::Spreadsheet::ECfvoType::Formula && !(m_oVal.IsInit()) && m_oFormula.IsInit())
+        m_oVal = m_oFormula->m_sText;
     if(m_oVal.IsInit() && cfvo.iType != XLSB::CFVOtype::CFVOFMLA)
         try
         {
@@ -394,6 +397,10 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
         ptr1->iType = XLSB::CFVOtype::CFVOPERCENTILE;
     else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::Formula)
         ptr1->iType = XLSB::CFVOtype::CFVOFMLA;
+    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::autoMin)
+        ptr1->iType = XLSB::CFVOType14::CFVOAUTOMIN_14;
+    else if (m_oType == SimpleTypes::Spreadsheet::ECfvoType::autoMax)
+        ptr1->iType = XLSB::CFVOType14::CFVOAUTOMAX_14;
     else
         ptr1->iType = XLSB::CFVOtype::CFVONUM;
 
@@ -401,19 +408,17 @@ XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
         ptr1->numParam.data.value = 0;
     else if(ptr1->iType.get_type() == XLSB::CFVOtype::CFVOMAX)
         ptr1->numParam.data.value = 0;
-
+    if(static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && !(m_oVal.IsInit()) && m_oFormula.IsInit() && !m_oFormula->m_sText.empty())
+        m_oVal = m_oFormula->m_sText;
     if(static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && m_oVal.IsInit())
     {
         XLSB::FRTFormula tempFmla;
         tempFmla.formula = m_oVal.get();
-        ptr1->FRTheader.rgFormulas.array.push_back(tempFmla);
-        ptr1->FRTheader.fFormula = true;
-        ptr1->cbFmla = 1;
-    }
-    else if (static_cast<_UINT32>(ptr1->iType) == XLSB::CFVOtype::CFVOFMLA && m_oFormula.IsInit() && !m_oFormula->m_sText.empty())
-    {
-        XLSB::FRTFormula tempFmla;
-        tempFmla.formula = m_oFormula->m_sText;
+        auto lastValType = GETBITS(tempFmla.formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+        if(lastValType == 1 || lastValType == 3)
+        {
+            SETBITS(tempFmla.formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+        }
         ptr1->FRTheader.rgFormulas.array.push_back(tempFmla);
         ptr1->FRTheader.fFormula = true;
         ptr1->cbFmla = 1;
@@ -2414,8 +2419,6 @@ void CConditionalFormattingRule::toBin(XLS::StreamCacheWriterPtr& writer, const 
 
         beginExt->guid = m_oExtId.get();
         auto ruleBegin(new XLSB::FRTBegin);
-        ruleBegin->productVersion.product = 0;
-        ruleBegin->productVersion.version = 0;
         ext.m_BrtFRTBegin = XLS::BaseObjectPtr{ruleBegin};
         ext.write(writer, nullptr);
     }
@@ -3869,7 +3872,11 @@ void CConditionalFormatting::toBin(XLS::StreamCacheWriterPtr& writer)
         writer->storeNextRecord(begin);
     }
      for(auto i: m_arrItems)
+     {
+        if(m_bIsExtended)
+            i->m_oExtId = L"{" + XmlUtils::GenerateGuid() + L"}";
         i->toBin(writer, formatingfirstCell);
+     }
     {
         auto end = writer->getNextRecord(XLSB::rt_EndConditionalFormatting);
         writer->storeNextRecord(end);

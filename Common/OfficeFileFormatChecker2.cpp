@@ -1159,58 +1159,222 @@ bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring &fileNa
 	}
 	return false;
 }
-bool COfficeFileFormatChecker::isMacFormatFile(const std::wstring& fileName)
+
+struct TIWAField
+{
+	size_t m_unStart;
+	size_t m_unEnd;
+	unsigned m_uIndex;
+	unsigned m_unWireType;
+	uint64_t m_oValue;
+};
+
+bool ReadUVar(BYTE* pBuffer, size_t unEndPos, size_t& unPos, uint64_t& unValue)
+{
+	std::vector<unsigned char> arBytes;
+	arBytes.reserve(8);
+
+	unValue = 0;
+
+	bool bNext = true;
+	while (unPos < unEndPos && bNext)
+	{
+		const unsigned char c = pBuffer[unPos++];
+		arBytes.push_back((unsigned char)(c & ~0x80));
+		bNext = c & 0x80;
+	}
+
+	if (bNext && unPos == unEndPos)
+		return false;
+
+	for (std::vector<unsigned char>::const_reverse_iterator it = arBytes.rbegin(); it != arBytes.rend(); ++it)
+	{
+		if (std::numeric_limits<uint64_t>::max() >> 7 < unValue ||
+		    std::numeric_limits<uint64_t>::max() - (unValue << 7) < *it) // overflow
+		return false;
+
+		unValue = (unValue << 7) + *it;
+	}
+
+	return true;
+}
+
+bool ReadIWAField(BYTE* pBuffer, size_t unEndPos, size_t& unPos, TIWAField& oIWAField)
+{
+	if (NULL == pBuffer || unPos + 2 > unEndPos)
+		return false;
+
+	unsigned uSpec;
+
+	uSpec = (unsigned)pBuffer[unPos++];
+	oIWAField.m_unWireType = uSpec & 0x7;
+
+	oIWAField.m_unStart = unPos;
+
+	switch (oIWAField.m_unWireType)
+	{
+		case 0:
+		{
+			if (!ReadUVar(pBuffer, unEndPos, unPos, oIWAField.m_oValue))
+				return false;
+
+			break;
+		}
+		case 1:
+		{
+			unPos += 4;
+			break;
+		}
+		case 2:
+		{
+			uint64_t unLen;
+			if (!ReadUVar(pBuffer, unEndPos, unPos, unLen) || unPos + unLen > unEndPos)
+				return false;
+
+			oIWAField.m_unStart = unPos;
+			unPos += unLen;
+			break;
+		}
+		case 5:
+		{
+			unPos += 2;
+			break;
+		}
+		default:
+			return false;
+	}
+
+	oIWAField.m_unEnd = unPos;
+	oIWAField.m_uIndex = uSpec >> 3;
+
+	return true;
+}
+
+bool DetectIWorkFormat(const std::wstring& fileName, int &nType)
 {
 	COfficeUtils OfficeUtils(NULL);
 
-	ULONG nBufferSize = 0;
+	ULONG unSize = 0;
 	BYTE* pBuffer = NULL;
 
-	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Document.iwa", &pBuffer, nBufferSize);
-	if (hresult == S_OK && pBuffer != NULL)
+	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Document.iwa", &pBuffer, unSize);
+
+	if (hresult != S_OK || NULL == pBuffer)
+		return false;
+
+	#define CLEAR_BUFFER_AND_RETURN(return_value)\
+	do{\
+		delete[] pBuffer;\
+		return return_value;\
+	}while(false)
+
+	if (unSize < 13)
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	size_t uPos = 6;
+
+	for (; uPos < 12; ++uPos)
 	{
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
-
-		delete[] pBuffer;
-		pBuffer = NULL;
-
-		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Slide.iwa", &pBuffer, nBufferSize);
-		if (hresult == S_OK && pBuffer != NULL)
+		if (0x08 == pBuffer[uPos] && 0x01 == pBuffer[uPos + 1])
 		{
-			delete[] pBuffer;
-			pBuffer = NULL;
-
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
-			return true;
+			--uPos;
+			break;
 		}
-		hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Index/Tables/DataList.iwa", &pBuffer, nBufferSize);
-		if (hresult == S_OK && pBuffer != NULL)
-		{
-			delete[] pBuffer;
-			pBuffer = NULL;
-
-			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
-			return true;
-		}
-		std::wstring::size_type nExtPos = fileName.rfind(L'.');
-		std::wstring sExt = L"unknown";
-
-		if (nExtPos != std::wstring::npos)
-			sExt = fileName.substr(nExtPos);
-
-		std::transform(sExt.begin(), sExt.end(), sExt.begin(), tolower);
-
-		if (0 == sExt.compare(L".pages"))
-			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
-		else if (0 == sExt.compare(L".numbers"))
-			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
-		else if (0 == sExt.compare(L".key"))
-			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
-
-		return true;
 	}
-	return false;
+
+	if (12 == uPos)
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	uint64_t unHeaderLen;
+	if (!ReadUVar(pBuffer, unSize, uPos, unHeaderLen))
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	const size_t uStartPos = uPos;
+
+	if (unHeaderLen < 8 || unSize < unHeaderLen + uStartPos)
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	uPos += 2;
+
+	TIWAField oMessageField;
+
+	if (!ReadIWAField(pBuffer, uStartPos + unHeaderLen, uPos, oMessageField) || 2 != oMessageField.m_unWireType ||
+	    2 != oMessageField.m_uIndex)
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	size_t uSubPos = oMessageField.m_unStart;
+	TIWAField oField;
+
+	if (!ReadIWAField(pBuffer, oMessageField.m_unEnd, uSubPos, oField) || 0 != oField.m_unWireType ||
+	    1 != oField.m_uIndex)
+		CLEAR_BUFFER_AND_RETURN(false);
+
+	switch (oField.m_oValue)
+	{
+		case 1:
+		{
+			uint32_t unDataLen = 0;
+
+			TIWAField oTempField;
+			if (ReadIWAField(pBuffer, oMessageField.m_unEnd, uSubPos, oTempField) &&
+			    ReadIWAField(pBuffer, oMessageField.m_unEnd, uSubPos, oTempField) && 0 == oTempField.m_unWireType &&
+			    3 == oTempField.m_uIndex)
+				unDataLen += oTempField.m_oValue;
+
+			size_t unTempPos = uStartPos + unHeaderLen;
+
+			// keynote: presentation ref in 2
+			// number: sheet ref in 1
+			if (ReadIWAField(pBuffer, uStartPos + unDataLen, unTempPos, oTempField) &&
+			    (2 != oTempField.m_unWireType || 1 != oTempField.m_uIndex || oTempField.m_unEnd - oTempField.m_unStart < 2))
+			{
+				nType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
+				CLEAR_BUFFER_AND_RETURN(true);
+			}
+			else if (ReadIWAField(pBuffer, uStartPos + unDataLen, unTempPos, oTempField) &&
+			        (2 != oTempField.m_unWireType || 2 != oTempField.m_uIndex || oTempField.m_unEnd - oTempField.m_unStart < 2))
+			{
+				nType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
+				CLEAR_BUFFER_AND_RETURN(true);
+			}
+
+			break;
+		}
+		case 10000:
+		{
+			nType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+			CLEAR_BUFFER_AND_RETURN(true);
+		}
+	}
+
+	CLEAR_BUFFER_AND_RETURN(false);
 }
+
+bool COfficeFileFormatChecker::isMacFormatFile(const std::wstring& fileName)
+{
+	if (DetectIWorkFormat(fileName, nFileType))
+		return true;
+
+	std::wstring::size_type nExtPos = fileName.rfind(L'.');
+	std::wstring sExt = L"unknown";
+
+	if (nExtPos != std::wstring::npos)
+		sExt = fileName.substr(nExtPos);
+
+	std::transform(sExt.begin(), sExt.end(), sExt.begin(), tolower);
+
+	if (0 == sExt.compare(L".pages"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+	else if (0 == sExt.compare(L".numbers"))
+		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
+	else if (0 == sExt.compare(L".key"))
+		nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
+	else
+		return false;
+
+	return true;
+}
+
 bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring &fileName, std::wstring &documentID)
 {
 	documentID.clear();

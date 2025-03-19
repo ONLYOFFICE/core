@@ -589,7 +589,7 @@ namespace SimpleTypes
 				this->m_eValue = underlineDouble;
 			else if(L"doubleAccounting" == sValue)
 				this->m_eValue = underlineDoubleAccounting;
-			else if(L"none" == sValue)
+            else if(L"none" == sValue || L"0" == sValue)
 				this->m_eValue = underlineNone;
 			else if(L"single" == sValue)
 				this->m_eValue = underlineSingle;

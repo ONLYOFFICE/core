@@ -94,11 +94,14 @@ void CheckUnicodeFaceName(FT_Face pFace, int*& UName, unsigned int& ULen)
 	bool isBadASCII = false;
 
 	unsigned int face_name_len = 0;
-	while ('\0' != face_name[face_name_len])
+	if (NULL != face_name)
 	{
-		if ('?' == face_name[face_name_len])
-			isBadASCII = true;
-		++face_name_len;
+		while ('\0' != face_name[face_name_len])
+		{
+			if ('?' == face_name[face_name_len])
+				isBadASCII = true;
+			++face_name_len;
+		}
 	}
 
 	if (face_name_len > 6 &&

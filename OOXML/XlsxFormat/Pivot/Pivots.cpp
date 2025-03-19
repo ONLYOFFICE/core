@@ -147,6 +147,7 @@
 #include <codecvt>
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -1884,13 +1885,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		if(m_oHier.IsInit())
 			ptr->isxth = m_oHier.get();
 		if(m_oName.IsInit())
+        {
 			ptr->irstUnique = m_oName.get();
-		else
-		 	ptr->irstUnique = 0xFFFFFFFF;
+            ptr->fUnique = true;
+        }
 		if(m_oCap.IsInit())
+        {
 			ptr->irstDisplay = m_oCap.get();
-		else
-			ptr->irstDisplay = 0xFFFFFFFF;
+            ptr->fDisplay = true;
+        }
 		return objectPtr;
 	}
     void CPageField::fromBin(XLS::BaseObjectPtr& obj)
@@ -4171,7 +4174,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		writer.WriteString(L"<cacheField");
 			WritingStringNullableAttrEncodeXmlString2(L"name",	m_oName);
 			WritingStringNullableAttrEncodeXmlString2(L"caption",m_oCaption);
-			WritingStringNullableAttrBool2(L"databaseField",	m_oDatabaseField);
 			WritingStringNullableAttrBool2(L"serverField",	m_oServerField);
 			WritingStringNullableAttrEncodeXmlString2(L"pPropertyName",m_oPropertyName);
 			WritingStringNullableAttrEncodeXmlString2(L"formula",m_oFormula);
@@ -4182,6 +4184,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			WritingStringNullableAttrInt(L"level", m_oLevel, m_oLevel->GetValue());
 			WritingStringNullableAttrInt(L"mappingCount", m_oMappingCount, m_oMappingCount->GetValue());
 			WritingStringNullableAttrInt(L"numFmtId", m_oNumFmtId, m_oNumFmtId->GetValue());
+            WritingStringNullableAttrBool2(L"databaseField",	m_oDatabaseField);
         if(!m_oSharedItems.IsInit() && !m_oFieldGroup.IsInit())
         {
             writer.WriteString(L"/>");
@@ -4405,22 +4408,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CSharedItems::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<sharedItems");
-			WritingStringAttrInt(L"count", (int)m_arrItems.size());
+            WritingStringNullableAttrBool2(L"containsSemiMixedTypes",	m_oContainsSemiMixedTypes);
+            WritingStringNullableAttrBool2(L"containsNonDate",	m_oContainsNonDate);
+            WritingStringNullableAttrBool2(L"containsDate",	m_oContainsDate);
+            WritingStringNullableAttrBool2(L"containsString",	m_oContainsString);
 			WritingStringNullableAttrBool2(L"containsBlank",	m_oContainsBlank);
-			WritingStringNullableAttrBool2(L"containsDate",	m_oContainsDate);
+            WritingStringNullableAttrBool2(L"containsMixedTypes",	m_oContainsMixedTypes);
+            WritingStringNullableAttrBool2(L"containsNumber",	m_oContainsNumber);
 			WritingStringNullableAttrBool2(L"containsInteger",	m_oContainsInteger);
-			WritingStringNullableAttrBool2(L"containsMixedTypes",	m_oContainsMixedTypes);
-			WritingStringNullableAttrBool2(L"containsNonDate",	m_oContainsNonDate);
-			WritingStringNullableAttrBool2(L"containsNumber",	m_oContainsNumber);
-			WritingStringNullableAttrBool2(L"containsSemiMixedTypes",	m_oContainsSemiMixedTypes);
-			WritingStringNullableAttrBool2(L"containsString",	m_oContainsString);
-			WritingStringNullableAttrBool2(L"longText",	m_oLongText);
 			WritingStringNullableAttrDouble2(L"minValue",	m_oMinValue);
 			WritingStringNullableAttrDouble2(L"maxValue",	m_oMaxValue);
 			WritingStringNullableAttrString(L"minDate", m_oMinDate, m_oMinDate->ToString());
 			WritingStringNullableAttrString(L"maxDate", m_oMaxDate, m_oMaxDate->ToString());
-		writer.WriteString(L">");
-
+            if(!m_arrItems.empty())
+            {
+                WritingStringAttrInt(L"count", (int)m_arrItems.size());
+            }
+            WritingStringNullableAttrBool2(L"longText",	m_oLongText);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
+        writer.WriteString(L">");
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
         {
             if (  m_arrItems[i] )
@@ -5126,7 +5136,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 //------------------------------------
 	void CRangeGroupingProperties::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
-		writer.WriteString(L"<reference");
+        writer.WriteString(L"<rangePr");
 			WritingStringNullableAttrString(L"groupBy",		m_oGroupBy, m_oGroupBy->ToString());
 			WritingStringNullableAttrBool2(L"autoStart",	m_oAutoStart);
 			WritingStringNullableAttrBool2(L"autoEnd",		m_oAutoEnd);
@@ -5544,6 +5554,24 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			return objectPtr;
 		}
 	}
+    void CPivotErrorValue::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+         auto record = writer->getNextRecord(XLSB::rt_PCDIError);
+         BYTE errVal = 0;
+         if(m_oValue.IsInit())
+         {
+             if (m_oValue == L"#NULL!") errVal = 0x00;
+             else if (m_oValue == L"#DIV/0!") errVal = 0x07;
+             else if (m_oValue == L"#VALUE!") errVal = 0x0F;
+             else if (m_oValue == L"#REF!") errVal = 0x17;
+             else if (m_oValue == L"#NAME?") errVal = 0x1D;
+             else if (m_oValue == L"#NUM!") errVal = 0x24;
+             else if (m_oValue == L"#N/A") errVal = 0x2A;
+             else if (m_oValue == L"#GETTING_DATA") errVal = 0x2B;
+         }
+         *record << errVal;
+         writer->storeNextRecord(record);
+    }
     void CPivotErrorValue::fromBin(XLS::BaseObjectPtr& obj)
     {
         ReadAttributes(obj);
@@ -5816,6 +5844,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -5948,6 +5981,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			}
 			WritingStringNullableAttrBool2(L"f",	m_oCalculated);
 			WritingStringNullableAttrBool2(L"u",	m_oUnused);
+        if(m_arrItems.empty())
+        {
+            writer.WriteString(L"/>");
+            return;
+        }
 		writer.WriteString(L">");
 
 		for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -6845,8 +6883,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	void CFieldGroupProperties::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
 		writer.WriteString(L"<fieldGroup");
-			WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
 			WritingStringNullableAttrInt(L"par", m_oPar, m_oPar->GetValue());
+            WritingStringNullableAttrInt(L"base", m_oBase, m_oBase->GetValue());
 		writer.WriteString(L">");
 
 		if(m_oDiscretePr.IsInit())
@@ -6983,6 +7021,50 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return XLS::BaseObjectPtr{pivotCacheRecordsStream};
 	}
+    void CPivotCacheRecordsFile::WriteBin(XLS::StreamCacheWriterPtr& writer) const
+    {
+        if(m_oPivotCacheRecords.IsInit())
+            m_oPivotCacheRecords->toBin(writer);
+        else
+        {
+            CPivotCacheRecords records;
+            XmlUtils::CXmlLiteReader reader;
+            auto wstringData = prepareData();
+            reader.FromString(wstringData);
+            reader.ReadNextNode();
+            records.ReadAttributes(reader);
+            {
+                auto record = writer->getNextRecord(XLSB::rt_BeginPivotCacheRecords);
+                _UINT32 size = 0;
+                if(records.m_oCount.IsInit())
+                    size = records.m_oCount->GetValue();
+                *record << size;
+                 writer->storeNextRecord(record);
+            }
+            if ( reader.IsEmptyNode() )
+                return;
+            int nCurDepth = reader.GetDepth();
+            while( reader.ReadNextSiblingNode( nCurDepth ) )
+            {
+                std::wstring sName = XmlUtils::GetNameNoNS(reader.GetName());
+
+                if (L"r" == sName)
+                {
+                    CPivotCacheRecord pPivotCacheRecord;
+                    pPivotCacheRecord.fromXML(reader);
+                    pPivotCacheRecord.toBin(writer);
+
+                }
+                else if (L"extLst" == sName)
+                    records.m_oExtLst = reader;
+            }
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndPivotCacheRecords);
+                writer->storeNextRecord(record);
+            }
+
+        }
+    }
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
 		m_oReadPath = oPath;
@@ -7012,8 +7094,10 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 			if ((xlsb) && (xlsb->m_bWriteToXlsb))
 			{
-				XLS::BaseObjectPtr object = WriteBin();
-				xlsb->WriteBin(oPath, object.get());
+                auto sreamWriter = xlsb->GetFileWriter(oPath);
+                WriteBin(sreamWriter);
+                xlsb->WriteSreamCache(sreamWriter);
+
 			}
 		else
 		{
@@ -7188,6 +7272,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		return objectPtr;
 	}
+    void CPivotCacheRecords::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+
+        {
+            auto record = writer->getNextRecord(XLSB::rt_BeginPivotCacheRecords);
+            _UINT32 size = m_arrItems.size();
+            *record << size;
+             writer->storeNextRecord(record);
+        }
+        for(auto i:m_arrItems)
+        {
+            i->toBin(writer);
+        }
+        {
+            auto record = writer->getNextRecord(XLSB::rt_EndPivotCacheRecords);
+            writer->storeNextRecord(record);
+        }
+
+
+    }
 	void CPivotCacheRecords::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -7330,6 +7434,89 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return objectPtr;
 	}
+    void CPivotCacheRecord::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        {
+            auto record = writer->getNextRecord(XLSB::rt_PCRRecordDt);
+            writer->storeNextRecord(record);
+        }
+        for(auto i:m_arrItems)
+        {
+            auto elemType = i->getType();
+            switch(elemType)
+            {
+                case et_x_PivotBooleanValue:
+                {
+                    auto boolValue = static_cast<CPivotBooleanValue*>(i);
+                    auto record = writer->getNextRecord(XLSB::rt_PCDIBoolean);
+                    BYTE recordVal = 0;
+                    if(boolValue->m_oValue.IsInit())
+                        recordVal = boolValue->m_oValue.get();
+                    *record << recordVal;
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                case et_x_PivotDateTimeValue:
+                {
+                    auto dataValue = static_cast<CPivotDateTimeValue*>(i);
+                    auto record = writer->getNextRecord(XLSB::rt_PCDIDatetime);
+                    XLSB::PCDIDateTime recordVal;
+                    if(dataValue->m_oValue.IsInit())
+                        recordVal.fromString(dataValue->m_oValue->GetValue());
+                    *record << recordVal;
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                case et_x_PivotErrorValue:
+                {
+                    auto errorValue = static_cast<CPivotErrorValue*>(i);
+                    errorValue->toBin(writer);
+                    continue;
+                }
+                case et_x_PivotNoValue:
+                {
+                    auto record = writer->getNextRecord(XLSB::rt_PCDIMissing);
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                case et_x_PivotNumericValue:
+                {
+                    auto numValue = static_cast<CPivotNumericValue*>(i);
+                    auto record = writer->getNextRecord(XLSB::rt_PCDINumber);
+                    XLS::Xnum recordVal;
+                    if(numValue->m_oValue.IsInit())
+                        recordVal.data.value = numValue->m_oValue.get();
+                    *record << recordVal;
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                case et_x_PivotCharacterValue:
+                {
+                    auto charValue = static_cast<CPivotCharacterValue*>(i);
+                    auto record = writer->getNextRecord(XLSB::rt_PCDIString);
+                    XLSB::XLWideString recordVal;
+                    if(charValue->m_oValue.IsInit())
+                        recordVal = charValue->m_oValue.get();
+                    *record << recordVal;
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                case et_x_SharedItemsIndex:
+                {
+                    auto itemIndex = static_cast<CSharedItemsIndex*>(i);
+                    auto record = writer->getNextRecord(XLSB::rt_PCDIIndex);
+                    _UINT32 recordVal = 0;
+                    if(itemIndex->m_oV.IsInit())
+                        recordVal = itemIndex->m_oV->GetValue();
+                    *record << recordVal;
+                    writer->storeNextRecord(record);
+                    continue;
+                }
+                default:
+                    continue;
+            }
+        }
+    }
     void CPivotCacheRecord::fromBin(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::PIVOTCACHERECORD*>(obj.get());

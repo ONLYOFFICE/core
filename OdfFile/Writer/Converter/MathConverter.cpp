@@ -1252,46 +1252,72 @@ namespace Oox2Odf
 	{
 		if (!oox_mrun) return;	
 
-		convert(oox_mrun->m_oAnnotationRef.GetPointer());
-		convert(oox_mrun->m_oARPr.GetPointer());
-		convert(oox_mrun->m_oBr.GetPointer());
-		convert(oox_mrun->m_oCommentReference.GetPointer());
-		convert(oox_mrun->m_oContentPart.GetPointer());
-		convert(oox_mrun->m_oContinuationSeparator.GetPointer());
-		convert(oox_mrun->m_oCr.GetPointer());
-		convert(oox_mrun->m_oDayLong.GetPointer());
-		convert(oox_mrun->m_oDayShort.GetPointer());
 		convert(oox_mrun->m_oDel.GetPointer());
-		convert(oox_mrun->m_oDelInstrText.GetPointer());
-		convert(oox_mrun->m_oDelText.GetPointer());
-		convert(oox_mrun->m_oDrawing.GetPointer());
-		convert(oox_mrun->m_oEndnoteRef.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oFldChar.GetPointer());
-		convert(oox_mrun->m_oFootnoteRef.GetPointer());
-		convert(oox_mrun->m_oFootnoteReference.GetPointer());
 		convert(oox_mrun->m_oIns.GetPointer());
-		convert(oox_mrun->m_oInstrText.GetPointer());
-		convert(oox_mrun->m_oLastRenderedPageBreak.GetPointer());
-		convert(oox_mrun->m_oMonthLong.GetPointer());
-		convert(oox_mrun->m_oMonthShort.GetPointer());
-		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		convert(oox_mrun->m_oARPr.GetPointer());
 		bool clrFlag = convert(oox_mrun->m_oRPr.GetPointer());
-		convert(oox_mrun->m_oMText.GetPointer());
-		convert(oox_mrun->m_oNoBreakHyphen.GetPointer());
-		convert(oox_mrun->m_oObject.GetPointer());
-		convert(oox_mrun->m_oPgNum.GetPointer());
-		convert(oox_mrun->m_oPtab.GetPointer());
-		convert(oox_mrun->m_oRuby.GetPointer());
-		convert(oox_mrun->m_oSeparator.GetPointer());
-		convert(oox_mrun->m_oSoftHyphen.GetPointer());
-		convert(oox_mrun->m_oSym.GetPointer());
-		convert(oox_mrun->m_oTab.GetPointer());
-		convert(oox_mrun->m_oText.GetPointer());
-		convert(oox_mrun->m_oYearLong.GetPointer());
-		convert(oox_mrun->m_oYearShort.GetPointer());
-		
+		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		for (size_t i = 0; i < oox_mrun->m_arrItems.size(); ++i)
+		{
+			switch (oox_mrun->m_arrItems[i]->getType())
+			{
+			case OOX::et_w_fldChar:
+			{
+				OOX::Logic::CFldChar* pFldChar = dynamic_cast<OOX::Logic::CFldChar*>(oox_mrun->m_arrItems[i]);
+				convert(pFldChar);
+			}break;
+			case OOX::et_w_instrText:
+			{
+				OOX::Logic::CInstrText* pInstrText = dynamic_cast<OOX::Logic::CInstrText*>(oox_mrun->m_arrItems[i]);
+				convert(pInstrText);
+			}break;
+			case OOX::et_w_delText:
+			{
+				OOX::Logic::CDelText* pDelText = dynamic_cast<OOX::Logic::CDelText*>(oox_mrun->m_arrItems[i]);
+				convert(pDelText);
+			}break;
+			case OOX::et_w_lastRenderedPageBreak: // не информативное .. может быть неверно записано
+			{
+			}break;
+			case OOX::et_w_t:
+			{
+				OOX::Logic::CText* pText = dynamic_cast<OOX::Logic::CText*>(oox_mrun->m_arrItems[i]);
+				convert(pText);
+			}break;
+			case OOX::et_m_t:
+			{
+				OOX::Logic::CMText* pMText = dynamic_cast<OOX::Logic::CMText*>(oox_mrun->m_arrItems[i]);
+				convert(pMText);
+			}break;
+			case OOX::et_w_sym:
+			{
+				OOX::Logic::CSym* pSym = dynamic_cast<OOX::Logic::CSym*>(oox_mrun->m_arrItems[i]);
+				convert(pSym);
+			}break;
+			case OOX::et_w_tab:
+			{
+				OOX::Logic::CTab* pTab = dynamic_cast<OOX::Logic::CTab*>(oox_mrun->m_arrItems[i]);
+			}break;
+
+			case OOX::et_w_separator:
+			case OOX::et_w_continuationSeparator:
+			{
+			}break;
+			//contentPart
+			//cr
+			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
+			//noBreakHyphen
+			//pgNum
+			//ruby
+			//softHyphen
+			//delInstrText
+			default:
+				convert(oox_mrun->m_arrItems[i]);
+			}
+		}
+
 		if (clrFlag)
 		{
 			CLOSE_MATH_TAG;	

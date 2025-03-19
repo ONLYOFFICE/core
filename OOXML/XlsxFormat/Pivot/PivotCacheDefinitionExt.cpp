@@ -43,7 +43,10 @@ void CPivotCacheDefinitionExt::toXML(NSStringUtils::CStringBuilder& writer, cons
     writer.StartNode(sName);
     writer.StartAttributes();
     WritingNullable(m_oSlicerData, writer.WriteAttribute(L"slicerData", *m_oSlicerData););
-    WritingNullable(m_oPivotCacheId, writer.WriteAttribute(L"pivotCacheId", *m_oPivotCacheId););
+    if(m_oPivotCacheId.IsInit())
+        writer.WriteAttribute(L"pivotCacheId", *m_oPivotCacheId);
+    else
+        writer.WriteAttribute(L"pivotCacheId", 0);
     WritingNullable(m_oSrvSupportSubQueryNonVisual, writer.WriteAttribute(L"supportSubqueryNonVisual", *m_oSrvSupportSubQueryNonVisual););
     WritingNullable(m_oSrvSupportSubQueryCalcMem, writer.WriteAttribute(L"supportSubqueryCalcMem", *m_oSrvSupportSubQueryCalcMem););
     WritingNullable(m_oSrvSupportAddCalcMems, writer.WriteAttribute(L"supportAddCalcMems", *m_oSrvSupportAddCalcMems););

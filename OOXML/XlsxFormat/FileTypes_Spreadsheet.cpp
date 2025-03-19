@@ -86,6 +86,11 @@ namespace OOX
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table", 
 												L"tables/table", true, true);
 
+			const FileType TableSingleCells	(L"../tables", L"tableSingleCells.xml",
+												L"application/vnd.openxmlformats-officedocument.spreadsheetml.tableSingleCells+xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/tableSingleCells",
+												L"tables/tableSingleCells", true, true);
+
 			const FileType QueryTable		(L"../queryTables", L"queryTable.xml",
 												L"application/vnd.openxmlformats-officedocument.spreadsheetml.queryTable+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/queryTable", 
@@ -172,9 +177,13 @@ namespace OOX
 												L"application/vnd.ms-excel.rdrichvaluestructure+xml",
 												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValueStructure");
 
-			const FileType RdRichValueTypes	(L"richData", L"rdRichValueTypes..xml",
+			const FileType RdRichValueTypes	(L"richData", L"rdRichValueTypes.xml",
 												L"application/vnd.ms-excel.rdrichvaluetypes+xml",
 												L"http://schemas.microsoft.com/office/2017/06/relationships/rdRichValueTypes");
+
+			const FileType XmlMaps				(L"", L"xmlMaps.xml",
+												L"application/xml",
+												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/xmlMaps");
 
 			const FileType SpreadsheetFlat	(L"", L"", L"", L"");
 

@@ -393,6 +393,7 @@
     <ClInclude Include="..\..\..\XlsxFormat\WorkbookComments.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\BookViews.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\CalcPr.h" />
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\CustomsXml.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\DefinedNames.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.h" />
     <ClInclude Include="..\..\..\XlsxFormat\Workbook\Metadata.h" />
@@ -563,6 +564,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Timelines\Timeline.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\BookViews.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\CalcPr.cpp" />
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\CustomsXml.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\DefinedNames.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\ExternalReferences.cpp" />
     <ClCompile Include="..\..\..\XlsxFormat\Workbook\Metadata.cpp" />

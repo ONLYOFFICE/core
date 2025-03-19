@@ -1342,6 +1342,7 @@ namespace OOX
 		et_x_TableColumns,
 		et_x_TableColumn,
 		et_x_TableStyleInfo,
+		et_x_xmlColumnPr,
 		et_x_AltTextTable,
 		et_x_SortState,
 		et_x_SortCondition,
@@ -1542,9 +1543,16 @@ namespace OOX
 		et_x_MdxSet,
 		et_x_MdxMemeberProp,
 		et_x_MdxKPI,
-
 		et_x_DynamicArrayProperties,
 		et_x_RichValueBlock,
+		et_x_MapInfo,
+		et_x_Schema,
+		et_x_Map,
+		et_x_DataBinding,
+		et_x_SingleXmlCells,
+		et_x_SingleXmlCell,
+		et_x_xmlCellPr,
+		et_x_xmlPr,
 
 		et_dr_Masters,
 		et_dr_Pages,
@@ -1608,6 +1616,7 @@ namespace OOX
 		et_dr_AuthorList,
 		et_dr_CommentEntry,
 		et_dr_AuthorEntry
+
 	};
 
 	class File;

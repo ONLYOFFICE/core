@@ -582,6 +582,8 @@
     </ClInclude>
     <ClInclude Include="..\..\..\VsdxFormat\VisioOthers.h">
       <Filter>VsdxFormat</Filter>
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\CustomsXml.h">
+      <Filter>XlsxFormat\Workbook</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1005,6 +1007,7 @@
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.cpp">
       <Filter>XlsxFormat\Pivots</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="..\..\..\VsdxFormat\FileFactory_Draw.cpp">
       <Filter>VsdxFormat</Filter>
     </ClCompile>
@@ -1031,6 +1034,10 @@
     </ClCompile>
     <ClCompile Include="..\..\..\VsdxFormat\VisioOthers.cpp">
       <Filter>VsdxFormat</Filter>
+=======
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\CustomsXml.cpp">
+      <Filter>XlsxFormat\Workbook</Filter>
+>>>>>>> origin/release/v9.0.0
     </ClCompile>
   </ItemGroup>
 </Project>

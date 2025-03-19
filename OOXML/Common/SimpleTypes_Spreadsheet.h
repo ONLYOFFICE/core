@@ -1449,5 +1449,12 @@ namespace SimpleTypes
 		};
 		DEFINE_SIMPLE_TYPE(CUserProtectedRangeType, EUserProtectedRangeType, typeView)
 
+		enum EXmlDataType
+		{
+			typeString = 0,
+			typeDate = 1,
+			typeFloat = 2 //...
+		};
+		DEFINE_SIMPLE_TYPE(CXmlDataType, EXmlDataType, typeString)
 	}// Spreadsheet
 } // SimpleTypes

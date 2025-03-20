@@ -780,20 +780,5 @@ bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexC
 	}
 	return false;
 }
-unsigned int getColumnsCount(_UINT32 listIndex)
-{
-    auto arrColumn = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(listIndex);
-	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
-	{
-		auto counter = 0;
-		for(auto i:arrColumn->second)
-		{
-			if(!i.empty())
-				counter++;
-		}
-		return counter;
-	}
-	return 0;
-}
 } //namespace XMLSTUFF
 

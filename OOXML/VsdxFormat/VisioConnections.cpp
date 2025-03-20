@@ -307,7 +307,8 @@ namespace Draw
 	}
 	void OOX::Draw::CRecordsetsFile::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		DataRecordSets->toXmlWriter(pWriter);
+		if (DataRecordSets.IsInit())
+			DataRecordSets->toXmlWriter(pWriter);
 	}
 //-----------------------------------------------------------------------------------------------------------------------------
 	EElementType CDataConnection::getType() const

@@ -56,7 +56,7 @@ namespace XLSB
             FRTBlank                    FRTheader;
             BYTE                        bLenMin = 0;
             BYTE                        bLenMax = 100;
-            XLS::Boolean<unsigned char> fShowValue = 0;
+            XLS::Boolean<unsigned char> fShowValue = 1;
             BYTE                        bDirection = 0;
             BYTE                        bAxisPosType = 0;
 

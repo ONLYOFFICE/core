@@ -1066,6 +1066,7 @@ namespace OOX
 			long m_nDataLength;
 
 			CPath m_oReadPath;
+            std::wstring prepareData() const;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}

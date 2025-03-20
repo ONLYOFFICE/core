@@ -546,7 +546,7 @@ namespace PdfWriter
 		if (m_pStream)
 			delete m_pStream;
 	}
-	CObjectBase*  CDictObject::Get(const std::string& sKey) const
+	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
 		std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.find(sKey);
 		if (m_mList.end() != oIter)
@@ -619,7 +619,7 @@ namespace PdfWriter
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
-	const char*   CDictObject::GetKey(const CObjectBase* pObject)
+	const char* CDictObject::GetKey(const CObjectBase* pObject)
 	{
 		for (auto const &oIter : m_mList)
 		{

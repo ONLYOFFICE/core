@@ -216,11 +216,13 @@ namespace NSOnlineOfficeBinToPdf
 				std::wstring wsPath = oReader.ReadString();
 				std::wstring wsPassword = oReader.ReadString();
 				int nLength = oReader.ReadInt();
-				int* pPageIndex = new int[nLength];
+				int* pPageIndex = NULL;
+				if (nLength > 0)
+					pPageIndex = new int[nLength];
 				for (int i = 0; i < nLength; ++i)
 					pPageIndex[i] = oReader.ReadInt();
 				pPdf->MergePages(wsPath, wsPassword, pPageIndex, nLength);
-				delete[] pPageIndex;
+				RELEASEARRAYOBJECTS(pPageIndex);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

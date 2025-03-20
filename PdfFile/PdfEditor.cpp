@@ -349,11 +349,11 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 	return pBase;
 }
-PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef)
+PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef, int nStartRefID)
 {
 	if (!pParentRef || !pParentRef->isRef() || !pdfDoc)
 		return NULL;
-	PdfWriter::CDictObject* pParent = pDoc->GetParent(pParentRef->getRefNum());
+	PdfWriter::CDictObject* pParent = pDoc->GetParent(pParentRef->getRefNum() + nStartRefID);
 	if (pParent)
 		return pParent;
 
@@ -367,7 +367,7 @@ PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pD
 	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pParentRef->getRefNum());
 	pParent = new PdfWriter::CDictObject();
 	pXref->Add(pParent, pParentRef->getRefGen());
-	if (!pDoc->EditParent(pXref, pParent, pParentRef->getRefNum()))
+	if (!pDoc->EditParent(pXref, pParent, pParentRef->getRefNum() + nStartRefID))
 	{
 		RELEASEOBJECT(pXref);
 		oParent.free();
@@ -381,7 +381,7 @@ PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pD
 		{
 			Object oParentRef;
 			oParent.dictGetValNF(i, &oParentRef);
-			PdfWriter::CDictObject* pParent2 = GetWidgetParent(pdfDoc, pDoc, &oParentRef);
+			PdfWriter::CDictObject* pParent2 = GetWidgetParent(pdfDoc, pDoc, &oParentRef, nStartRefID);
 			if (pParent2)
 			{
 				pParent->Add("Parent", pParent2);
@@ -1633,10 +1633,11 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	RELEASEARRAYOBJECTS(pRes);
 	return NULL;
 }
-bool CPdfEditor::MergePages(PDFDoc* pDocument, const int* arrPageIndex, unsigned int unLength)
+bool CPdfEditor::MergePages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
+	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nPagesBefore = m_pReader->GetNumPages() - pDocument->getNumPages();
 	bool bRes = SplitPages(arrPageIndex, unLength, pDocument);
 	if (!bRes)
@@ -1668,7 +1669,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown)
 		return false;
 
 	// Применение добавления страницы для writer
@@ -1699,7 +1700,8 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 {
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument, &pFontList);
+	int nStartRefID = 0;
+	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument, &pFontList, &nStartRefID);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return false;
@@ -1722,7 +1724,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 	Object oAnnotRef, oAnnot, oType;
 	for (int i = 0; i < oAnnots.arrayGetLength(); ++i)
 	{
-		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
+		if (oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() + nStartRefID == nID)
 			break;
 		oAnnotRef.free();
 	}
@@ -1857,9 +1859,9 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		if (!strcmp("Popup", chKey))
 		{
 			Object oPopupRef;
-			if (oAnnot.dictGetValNF(nIndex, &oPopupRef)->isRef() && EditAnnot(nPageIndex, oPopupRef.getRefNum()))
+			if (oAnnot.dictGetValNF(nIndex, &oPopupRef)->isRef() && EditAnnot(nPageIndex, oPopupRef.getRefNum() + nStartRefID))
 			{
-				PdfWriter::CAnnotation* pPopup = pDoc->GetAnnot(oPopupRef.getRefNum());
+				PdfWriter::CAnnotation* pPopup = pDoc->GetAnnot(oPopupRef.getRefNum() + nStartRefID);
 				if (pPopup)
 				{
 					pAnnot->Add("Popup", pPopup);
@@ -1872,7 +1874,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		{
 			Object oParentRef;
 			oAnnot.dictGetValNF(nIndex, &oParentRef);
-			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+			PdfWriter::CDictObject* pParent = GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
 
 			if (!pParent)
 			{
@@ -2021,7 +2023,6 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
-	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(0);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
 	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
@@ -2031,10 +2032,16 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		if (pDParent)
 			continue;
 
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefID = m_pReader->FindRefNum(pParent->nID, &pPDFDocument, &nStartRefID);
+		if (nRefID < 0)
+			continue;
+
 		Object oParentRef;
 		// TODO узнать gen родителя
-		oParentRef.initRef(pParent->nID, 0);
-		GetWidgetParent(pPDFDocument, pDoc, &oParentRef);
+		oParentRef.initRef(nRefID, 0);
+		GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
 		// TODO перевыставить детей
 		oParentRef.free();
 	}
@@ -2132,9 +2139,9 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 	if (wsFontPath.empty())
 	{
 		std::map<std::wstring, std::wstring> mFonts = m_pReader->GetFonts();
-		std::map<std::wstring, std::wstring>::iterator it2 = mFonts.find(wsFontName);
-		if (it2 != mFonts.end())
-			wsFontPath = it2->second;
+		it = mFonts.find(wsFontName);
+		if (it != mFonts.end())
+			wsFontPath = it->second;
 	}
 	if (wsFontPath.empty())
 		return false;

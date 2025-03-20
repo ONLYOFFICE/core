@@ -1508,9 +1508,7 @@ namespace PdfWriter
 	{
 		if (!pParent || !EditXref(pXref))
 			return false;
-
 		m_mParents[nID] = pParent;
-
 		return true;
 	}
 	bool CDocument::EditXref(CXref* pXref)
@@ -1550,10 +1548,6 @@ namespace PdfWriter
 		if (p != m_mParents.end())
 			return p->second;
 		return NULL;
-	}
-	CPage* CDocument::CreateFakePage()
-	{
-		return new CPage(this, NULL);
 	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
@@ -1627,6 +1621,8 @@ namespace PdfWriter
 			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
 				return m_pPageTree->InsertPage(nPos, (CPage*)pObj);
+			else
+				delete pObj;
 		}
 		return false;
 	}

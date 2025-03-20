@@ -72,7 +72,7 @@ public:
 
 	BYTE* SplitPages(const int* arrPageIndex, unsigned int unLength);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc);
-	bool MergePages(PDFDoc* pDoc, const int* arrPageIndex, unsigned int unLength);
+	bool MergePages(const int* arrPageIndex, unsigned int unLength);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);

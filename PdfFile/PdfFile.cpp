@@ -140,9 +140,8 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 {
 	if (!m_pInternal->pEditor)
 		return false;
-
 	if (m_pInternal->pReader->MergePages(wsPath, wsPassword))
-		return m_pInternal->pEditor->MergePages(m_pInternal->pReader->GetLastPDFDocument(), arrPageIndex, unLength);
+		return m_pInternal->pEditor->MergePages(arrPageIndex, unLength);
 	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
@@ -174,28 +173,23 @@ bool CPdfFile::IsNeedCMap()
 }
 void CPdfFile::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 {
-	if (!m_pInternal->pReader)
-		return;
-	m_pInternal->pReader->SetCMapMemory(pData, nSizeData);
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetCMapMemory(pData, nSizeData);
 }
 void CPdfFile::SetCMapFolder(const std::wstring& sFolder)
 {
-	if (!m_pInternal->pReader)
-		return;
-	m_pInternal->pReader->SetCMapFolder(sFolder);
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetCMapFolder(sFolder);
 }
 void CPdfFile::SetCMapFile(const std::wstring& sFile)
 {
-	if (!m_pInternal->pReader)
-		return;
-	m_pInternal->pReader->SetCMapFile(sFile);
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->SetCMapFile(sFile);
 }
 void CPdfFile::ToXml(const std::wstring& sFile, bool bSaveStreams)
 {
-	if (!m_pInternal->pReader)
-		return;
-	
-	m_pInternal->pReader->ToXml(sFile, bSaveStreams);
+	if (m_pInternal->pReader)
+		m_pInternal->pReader->ToXml(sFile, bSaveStreams);
 }
 
 bool CPdfFile::GetMetaData(const std::wstring& sFile, const std::wstring& sMetaName, BYTE** pMetaData, DWORD& nMetaLength)
@@ -487,21 +481,18 @@ int CPdfFile::SaveToFile(const std::wstring& wsPath)
 }
 void CPdfFile::SetPassword(const std::wstring& wsPassword)
 {
-	if (!m_pInternal->pWriter)
-		return;
-	m_pInternal->pWriter->SetPassword(wsPassword);
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetPassword(wsPassword);
 }
 void CPdfFile::SetDocumentID(const std::wstring& wsDocumentID)
 {
-	if (!m_pInternal->pWriter)
-		return;
-	m_pInternal->pWriter->SetDocumentID(wsDocumentID);
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetDocumentID(wsDocumentID);
 }
 void CPdfFile::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength)
 {
-	if (!m_pInternal->pWriter)
-		return;
-	m_pInternal->pWriter->AddMetaData(sMetaName, pMetaData, nMetaLength);
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->AddMetaData(sMetaName, pMetaData, nMetaLength);
 }
 HRESULT CPdfFile::OnlineWordToPdf(const std::wstring& wsSrcFile, const std::wstring& wsDstFile, CConvertFromBinParams* pParams)
 {
@@ -855,28 +846,24 @@ HRESULT CPdfFile::get_BrushTextureImage(Aggplus::CImage** pImage)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-
 	return m_pInternal->pWriter->get_BrushTextureImage(pImage);
 }
 HRESULT CPdfFile::put_BrushTextureImage(Aggplus::CImage* pImage)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-
 	return m_pInternal->pWriter->put_BrushTextureImage(pImage);
 }
 HRESULT CPdfFile::get_BrushTransform(Aggplus::CMatrix& oMatrix)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-
 	return m_pInternal->pWriter->get_BrushTransform(oMatrix);
 }
 HRESULT CPdfFile::put_BrushTransform(const Aggplus::CMatrix& oMatrix)
 {
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
-
 	return m_pInternal->pWriter->put_BrushTransform(oMatrix);
 }
 

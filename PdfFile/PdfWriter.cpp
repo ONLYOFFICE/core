@@ -3709,7 +3709,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 		return NULL;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
-	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
 	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
@@ -3739,7 +3739,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	PdfWriter::CWidgetAnnotation* pAnnot = (PdfWriter::CWidgetAnnotation*)pA;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
-	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
 	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom));

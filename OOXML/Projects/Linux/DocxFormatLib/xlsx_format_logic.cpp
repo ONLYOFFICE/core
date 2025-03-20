@@ -82,6 +82,7 @@
 #include "../../../XlsxFormat/Workbook/ExternalReferences.cpp"
 #include "../../../XlsxFormat/Workbook/Sheets.cpp"
 #include "../../../XlsxFormat/Workbook/WorkbookPr.cpp"
+#include "../../../XlsxFormat/Workbook/CustomsXml.cpp"
 #include "../../../XlsxFormat/Comments/XlsxComments.cpp"
 #include "../../../XlsxFormat/Comments/ThreadedComments.cpp"
 #include "../../../XlsxFormat/Drawing/CellAnchor.cpp"

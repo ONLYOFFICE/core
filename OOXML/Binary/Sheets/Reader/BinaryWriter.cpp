@@ -71,6 +71,8 @@
 #include "../../../XlsxFormat/Styles/TableStyles.h"
 #include "../../../XlsxFormat/Timelines/Timeline.h"
 #include "../../../XlsxFormat/Workbook/Metadata.h"
+#include "../../../XlsxFormat/Table/Table.h"
+#include "../../../XlsxFormat/Workbook/CustomsXml.h"
 
 #include "../../../../DesktopEditor/common/Directory.h"
 #include "../../../../Common/OfficeFileFormatChecker.h"
@@ -990,6 +992,12 @@ void BinaryTableWriter::WriteTableColumn(const OOX::Spreadsheet::CTableColumn& o
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::UniqueName);
 		m_oBcw.m_oStream.WriteStringW(*oTableColumn.m_oUniqueName);
 	}
+	if (oTableColumn.m_oXmlColumnPr.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSer_TableColumns::XmlColumnPr);
+		WriteTableXmlColumnPr(oTableColumn.m_oXmlColumnPr.get());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void BinaryTableWriter::WriteTableColumns(const OOX::Spreadsheet::CTableColumns& oTableColumns)
 {
@@ -1001,15 +1009,43 @@ void BinaryTableWriter::WriteTableColumns(const OOX::Spreadsheet::CTableColumns&
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
 }
+void BinaryTableWriter::WriteTableXmlColumnPr(const OOX::Spreadsheet::CXmlColumnPr & oXmlColumnPr)
+{
+	if (oXmlColumnPr.mapId.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::MapId);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*oXmlColumnPr.mapId);
+	}
+	if (oXmlColumnPr.xpath.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::Xpath);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+		m_oBcw.m_oStream.WriteStringW(*oXmlColumnPr.xpath);
+	}
+	if (oXmlColumnPr.denormalized.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::Denormalized);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBOOL(*oXmlColumnPr.denormalized);
+	}
+	if (oXmlColumnPr.xmlDataType.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableColumns::XmlDataType);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
+		m_oBcw.m_oStream.WriteBYTE(oXmlColumnPr.xmlDataType->GetValue());
+	}
+}
+
 void BinaryTableWriter::WriteTableStyleInfo(const OOX::Spreadsheet::CTableStyleInfo& oTableStyleInfo)
 {
-	if(oTableStyleInfo.m_oName.IsInit())
+	if (oTableStyleInfo.m_oName.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyleInfo::Name);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
 		m_oBcw.m_oStream.WriteStringW(oTableStyleInfo.m_oName.get2());
 	}
-	if(oTableStyleInfo.m_oShowColumnStripes.IsInit())
+	if (oTableStyleInfo.m_oShowColumnStripes.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSer_TableStyleInfo::ShowColumnStripes);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
@@ -2288,6 +2324,16 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::Metadata);
 		WriteMetadata(pMetadataFile->m_oMetadata.GetPointer());
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
+	pFile = workbook.Find(OOX::Spreadsheet::FileTypes::XmlMaps);
+	OOX::Spreadsheet::CXmlMapsFile* pXmlMapFile = dynamic_cast<OOX::Spreadsheet::CXmlMapsFile*>(pFile.GetPointer());
+	if (pXmlMapFile)
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::XmlMap);
+		m_oBcw.m_oStream.StartRecord(0);
+		pXmlMapFile->toPPTY(&m_oBcw.m_oStream);
+		m_oBcw.m_oStream.EndRecord();
 		m_oBcw.WriteItemWithLengthEnd(nCurPos);
 	}
 }
@@ -4787,6 +4833,16 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
         m_oBcw.WriteItemWithLengthEnd(tablePos);
         m_oBcw.WriteItemWithLengthEnd(nCurPos);
     }
+	pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::TableSingleCells);
+	OOX::Spreadsheet::CTableSingleCellsFile* pTableSingleCells = dynamic_cast<OOX::Spreadsheet::CTableSingleCellsFile*>(pFile.GetPointer());
+	if (pTableSingleCells) 
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::TableSingleCells);
+		m_oBcw.m_oStream.StartRecord(0);
+		pTableSingleCells->toPPTY(&m_oBcw.m_oStream);
+		m_oBcw.m_oStream.EndRecord();
+		m_oBcw.WriteItemWithLengthEnd(nCurPos);
+	}
 }
 void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 {

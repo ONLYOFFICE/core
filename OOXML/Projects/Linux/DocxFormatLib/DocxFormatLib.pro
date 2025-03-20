@@ -177,7 +177,8 @@ SOURCES += \
 	../../../XlsxFormat/Workbook/ExternalReferences.cpp \
 	../../../XlsxFormat/Workbook/Sheets.cpp \
 	../../../XlsxFormat/Workbook/WorkbookPr.cpp \
-	../../../XlsxFormat/Comments/XlsxComments.cpp \
+        ../../../XlsxFormat/Workbook/CustomsXml.cpp \
+        ../../../XlsxFormat/Comments/XlsxComments.cpp \
 	../../../XlsxFormat/Comments/ThreadedComments.cpp \
 	../../../XlsxFormat/Drawing/CellAnchor.cpp \
 	../../../XlsxFormat/Drawing/XlsxDrawing.cpp \
@@ -334,7 +335,8 @@ HEADERS += \
 	../../../XlsxFormat/Workbook/Workbook.h \
 	../../../XlsxFormat/Workbook/WorkbookPr.h \
 	../../../XlsxFormat/Workbook/ExternalReferences.h \
-	../../../XlsxFormat/Worksheets/Cols.h \
+        ../../../XlsxFormat/Workbook/CustomsXml.h \
+        ../../../XlsxFormat/Worksheets/Cols.h \
 	../../../XlsxFormat/Worksheets/ConditionalFormatting.h \
 	../../../XlsxFormat/Worksheets/DataValidation.h \
 	../../../XlsxFormat/Worksheets/Hyperlinks.h \

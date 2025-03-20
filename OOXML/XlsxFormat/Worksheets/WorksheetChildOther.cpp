@@ -1472,9 +1472,9 @@ namespace OOX
             BYTE flags = 0;
             if(m_oState.IsInit())
             {
-                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
+                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
                     SETBIT(flags, 0, 1)
-                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
                     SETBIT(flags, 1, 1)
             }
             *record << flags;

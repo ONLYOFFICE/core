@@ -2945,46 +2945,17 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes14(const  XLS::Cel
                 XLSB::FRTFormula tempFmla;
                 tempFmla.formula.set_base_ref(cellRef);
                 tempFmla.formula = i->m_sText;
+                auto lastValType = GETBITS(tempFmla.formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6);
+                if(lastValType == 1 || lastValType == 3)
+                {
+                    SETBITS(tempFmla.formula.rgce.sequence.rbegin()->get()->ptg_id.get(),5,6,2);
+                }
                 ptr->FRTheader.rgFormulas.array.push_back(tempFmla);
             }
         }
         if(!ptr->FRTheader.rgFormulas.array.empty())
             ptr->FRTheader.fFormula = true;
-      
-        if(m_oType == SimpleTypes::Spreadsheet::ECfType::colorScale || m_oType == SimpleTypes::Spreadsheet::ECfType::dataBar 
-        || m_oType == SimpleTypes::Spreadsheet::ECfType::iconSet)
-            ptr->cbFmla3 = 1;
-        else
-            ptr->cbFmla1 = 1;
-        if(m_arrFormula.size() > 1)
-            ptr->cbFmla2 = 1;
-    }
-
-    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
-    {
-        ptr->cbFmla1 = 1;
-    }
-    else
-    {
-        ptr->cbFmla1 = 0;
-    }
-    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
-    {
-        ptr->cbFmla2 = 1;
-    }
-    else
-    {
-        ptr->cbFmla2 = 0;
-    }
-    if(!m_arrFormula.empty() && !m_arrFormula.front()->m_sText.empty())
-    {
-        ptr->cbFmla3 = 1;
-    }
-    else
-    {
-        ptr->cbFmla3 = 0;
-    }
-
+      }
     ptr->iType = XLSB::CFType::CF_TYPE_EXPRIS;
     ptr->iParam =0;
     ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_EXPR;
@@ -3148,6 +3119,23 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes14(const  XLS::Cel
         else
             ptr->iParam = 1;
         ptr->iTemplate = XLSB::CFTemp::CF_TEMPLATE_FILTER;
+    }
+
+    if(!ptr->FRTheader.rgFormulas.array.empty())
+    {
+    if(ptr->iType != XLSB::CFType::CF_TYPE_GRADIENT && ptr->iType != XLSB::CFType::CF_TYPE_DATABAR
+        && ptr->iType != XLSB::CFType::CF_TYPE_MULTISTATE)
+            {
+                ptr->cbFmla1 = 1;
+                ptr->cbFmla3 = 0;
+            }
+        else
+            {
+                ptr->cbFmla1 = 0;
+                ptr->cbFmla3 = 1;
+            }
+        if(m_arrFormula.size() > 1 && ptr->cbFmla1)
+            ptr->cbFmla2 = 1;
     }
     return objPtr;
 }

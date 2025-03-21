@@ -5,6 +5,7 @@
 #include<cctype>
 #include<string>
 #include<vector>
+#include<stack>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
 namespace StarMathCustomShape
@@ -54,6 +55,7 @@ namespace StarMathCustomShape
 	private:
 		std::wstring::iterator m_itStart;
 		std::wstring::iterator m_itEnd,m_itEndForBrecket;
+		std::stack<std::wstring::iterator> m_stEndBrecket;
 		std::wstring m_wsElement;
 		CElement* m_pElement;
 		bool m_bDoubleSign;
@@ -157,9 +159,11 @@ namespace StarMathCustomShape
 		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
 		void ConversionElement(XmlUtils::CXmlWriter* pXmlWriter,CElement* pElement, std::wstring& wsFormula);
 		static TypeElement TypeCheckingByFunction(const std::wstring& wsFunction);
+		void ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter *pXmlWriter, std::wstring &wsFormula);
 	private:
 		TypeElement m_enTypeFunction;
 		CElement* m_pValue;
+		unsigned int m_uiNumberFormula;
 	};
 	class CElementComma: public CElement
 	{

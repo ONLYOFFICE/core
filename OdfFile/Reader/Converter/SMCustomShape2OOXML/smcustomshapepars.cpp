@@ -42,6 +42,20 @@ namespace StarMathCustomShape
 				arVec.push_back(pElement);
 			}
 		}
+		if(!pReader->GetElement().empty())
+		{
+			CElement* pElement = SMCustomShapePars::ParseElement(pReader);
+			if(pElement != nullptr)
+			{
+				if(pElement->GetBaseType() == TypeElement::ArithmeticOperation && !arVec.empty())
+				{
+					CElementArithmeticOperations* pSign = static_cast<CElementArithmeticOperations*>(pElement);
+					pSign->SetFirstValue(arVec.back());
+					arVec.pop_back();
+				}
+				arVec.push_back(pElement);
+			}
+		}
 	}
 	std::vector<CElement*>& SMCustomShapePars::GetVector()
 	{
@@ -65,6 +79,8 @@ namespace StarMathCustomShape
 		TypeElement enType = CElementFunction::TypeCheckingByFunction(wsElement);
 		if(enType != TypeElement::empty)
 			return new CElementFunction(enType);
+		if(!wsElement.empty())
+			return new CElementNumber(wsElement);
 		return nullptr;
 	}
 	void CElement::SetBaseType(const TypeElement& enType)
@@ -145,7 +161,10 @@ namespace StarMathCustomShape
 			return;
 		pReader->ReadingNextElement();
 		if(pElement->GetBaseType() != TypeElement::ArithmeticOperation && pElement->GetBaseType() != TypeElement::comma && !ComparingPriorities(pReader->GetElement()))//утечка данных, если тип ариф знаки
+		{
 			m_pSecondValue = pElement;
+			pElement = nullptr;
+		}
 		else if(ComparingPriorities(pReader->GetElement()))
 		{
 			CElement* pTempElement = SMCustomShapePars::ParseElement(pReader);
@@ -177,10 +196,7 @@ namespace StarMathCustomShape
 	void CElementArithmeticOperations::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
 		if(wsName != L"")
-		{
 			SetNameFormula(wsName);
-//			m_wsNumberFormula = SMCustomShapeConversion::ParsFormulaName(wsName,m_wsNameFormula);
-		}
 		if(m_pSecondSign != nullptr)
 		{
 			CElementArithmeticOperations* pTemp = dynamic_cast<CElementArithmeticOperations*>(m_pSecondSign);
@@ -190,7 +206,7 @@ namespace StarMathCustomShape
 			if(m_pFirstValue != nullptr)
 				wsNameFirstValue = ConversionValueSign(pXmlWriter,m_pFirstValue);
 			if(m_pSecondValue != nullptr)
-				wsNameSecondValue = ConversionValueSign(pXmlWriter,m_pFirstValue);
+				wsNameSecondValue = ConversionValueSign(pXmlWriter,m_pSecondValue);
 			pXmlWriter->WriteNodeBegin(L"a:gd",true);
 			if(!GetNameFormula().empty())
 				pXmlWriter->WriteAttribute(L"name",GetNameFormula());
@@ -205,6 +221,7 @@ namespace StarMathCustomShape
 				pXmlWriter->WriteString(wsNameValueSecondSign + L" ");
 			else if(pTemp->GetSecondValue() != nullptr)
 				pTemp->GetSecondValue()->ConversionOOXml(pXmlWriter);
+			pXmlWriter->WriteString(L"\"");
 			pXmlWriter->WriteNodeEnd(L"",true,true);
 		}
 		else
@@ -252,6 +269,7 @@ namespace StarMathCustomShape
 				pXmlWriter->WriteString(L"0 ");
 				RecordingTheValuesSign(pXmlWriter,wsNameFirstValue,wsNameSecondValue);
 			}
+			pXmlWriter->WriteString(L"\"");
 			pXmlWriter->WriteNodeEnd(L"",true,true);
 		}
 	}
@@ -404,6 +422,8 @@ namespace StarMathCustomShape
 	}
 	bool CSMReader::ReadingNextElement()
 	{
+		if(!m_wsElement.empty())
+			return true;
 		m_wsElement = GetElement(m_itStart,m_itEnd);
 		if(!m_wsElement.empty())
 			return true;
@@ -428,21 +448,35 @@ namespace StarMathCustomShape
 	void CSMReader::FindingTheEndOfTheBrackets()
 	{
 		std::wstring::iterator itStartTemp = m_itStart;
+		unsigned int uiOpenBracket{0};
 		for(;m_itStart !=m_itEnd;m_itStart++)
 		{
-			if(*m_itStart == L')')
+			if(*m_itStart == L')' && uiOpenBracket == 0)
 			{
-				m_itEndForBrecket = m_itEnd;
+				// m_itEndForBrecket = m_itEnd;
+				m_stEndBrecket.push(m_itEnd);
 				m_itEnd = m_itStart;
 				m_itStart = itStartTemp;
 				return;
 			}
+			else if(*m_itStart == L')' && uiOpenBracket != 0)
+			{
+				// m_stEndBrecket.push(m_itStart);
+				uiOpenBracket--;
+			}
+			else if(*m_itStart == L'(')
+				uiOpenBracket++;
 		}
 	}
 	void CSMReader::RemovingTheParenthesisIterator()
 	{
-		if(m_itEndForBrecket != m_itEnd)
-			m_itEnd = m_itEndForBrecket;
+		if(!m_stEndBrecket.empty())
+		{
+			m_itEnd = m_stEndBrecket.top();
+			m_stEndBrecket.pop();
+		}
+		m_wsElement = GetElement(m_itStart,m_itEnd);
+		m_wsElement.clear();
 	}
 	void CSMReader::SetDoubleSign(const bool& bDoubleSign)
 	{
@@ -470,10 +504,12 @@ namespace StarMathCustomShape
 	}
 	void CElementBracket::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
+		if(!wsName.empty())
+			SetNameFormula(wsName);
 		for(CElement* pElement:m_arElements)
 		{
 			if(pElement != nullptr)
-				pElement->ConversionOOXml(pXmlWriter);
+				pElement->ConversionOOXml(pXmlWriter,wsName);
 		}
 
 	}
@@ -482,11 +518,11 @@ namespace StarMathCustomShape
 		return m_arElements;
 	}
 //CElementFunction
-	CElementFunction::CElementFunction():m_enTypeFunction(TypeElement::empty),m_pValue(nullptr)
+	CElementFunction::CElementFunction():m_enTypeFunction(TypeElement::empty),m_pValue(nullptr),m_uiNumberFormula(1)
 	{
 		SetBaseType(TypeElement::Function);
 	}
-	CElementFunction::CElementFunction(const TypeElement& enType):m_pValue(nullptr)
+	CElementFunction::CElementFunction(const TypeElement& enType):m_pValue(nullptr),m_uiNumberFormula(1)
 	{
 		SetBaseType(TypeElement::Function);
 		m_enTypeFunction = enType;
@@ -513,22 +549,15 @@ namespace StarMathCustomShape
 			return TypeElement::max;
 		// else if(wsFunction == L"atan2")
 		// 	return TypeElement::atan2;
-		// else if(wsFunction == L"atan")
-		// 	return TypeElement::atan;
+		else if(wsFunction == L"atan")
+			return TypeElement::atan;
 		else
 			return TypeElement::empty;
 	}
 	void CElementFunction::Parse(CSMReader* pReader)
 	{
+		pReader->ClearElement();
 		m_pValue = SMCustomShapePars::ParseElement(pReader);
-		pReader->ReadingNextElement();
-		if(CElementArithmeticOperations::CheckArithmeticOperators(pReader->GetElement()))
-		{
-			CElement* pSign = SMCustomShapePars::ParseElement(pReader);
-			CElementArithmeticOperations* pTempSign = dynamic_cast<CElementArithmeticOperations*>(pSign);
-			pTempSign->SetFirstValue(m_pValue);
-			m_pValue = pTempSign;
-		}
 	}
 	void CElementFunction::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
@@ -612,24 +641,21 @@ namespace StarMathCustomShape
 		}
 		case TypeElement::sin:
 		case TypeElement::cos:
+		case TypeElement::atan:
+		case TypeElement::tan:
 		{
 			std::wstring wsFormula;
 			if(m_enTypeFunction == TypeElement::sin)
 				wsFormula = L"sin 1 ";
-			else
+			else if(m_enTypeFunction == TypeElement::cos)
 				wsFormula = L"cos 1 ";
-			if(m_pValue->GetBaseType() == TypeElement::Bracket)
-			{
-				CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
-				std::vector<CElement*> arVec = pBracket->GetVector();
-				if(arVec[0] != nullptr && arVec[0]->GetBaseType() != TypeElement::comma)
-					ConversionElement(pXmlWriter,arVec[0],wsFormula);
-			}
-			else if(m_pValue->GetBaseType() != TypeElement::comma)
-				ConversionElement(pXmlWriter,m_pValue,wsFormula);
+			else if(m_enTypeFunction == TypeElement::tan)
+				wsFormula = L"tan 1 ";
 			else
-				wsFormula += L"1 ";
+				wsFormula = L"at2 1 ";
+			ConvertBracketsForTrigonometry(pXmlWriter,wsFormula);
 			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
+			break;
 		}
 		default:
 			break;
@@ -646,10 +672,25 @@ namespace StarMathCustomShape
 		}
 		else
 		{
-			std::wstring wsNewNameFormula = GetNameFormula() + L".1";
+			std::wstring wsNewNameFormula = GetNameFormula() + L"." + std::to_wstring(m_uiNumberFormula);
+			m_uiNumberFormula++;
 			pElement->ConversionOOXml(pXmlWriter,wsNewNameFormula);
 			wsFormula += pElement->GetNameFormula() + L" ";
 		}
+	}
+	void CElementFunction::ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula)
+	{
+		if(m_pValue->GetBaseType() == TypeElement::Bracket)
+		{
+			CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
+			std::vector<CElement*> arVec = pBracket->GetVector();
+			if(arVec[0] != nullptr && arVec[0]->GetBaseType() != TypeElement::comma)
+				ConversionElement(pXmlWriter,arVec[0],wsFormula);
+		}
+		else if(m_pValue->GetBaseType() != TypeElement::comma)
+			ConversionElement(pXmlWriter,m_pValue,wsFormula);
+		else
+			wsFormula += L"1 ";
 	}
 //CElementComma
 	CElementComma::CElementComma()
@@ -678,10 +719,14 @@ namespace StarMathCustomShape
 		if(arElements.size() == 1 && arElements[0]->GetBaseType() == TypeElement::NumberOrName)
 		{
 			m_pXmlWriter->WriteNodeBegin(L"a:gd",true);
-			m_pXmlWriter->WriteAttribute(L"name",L"Text");
+			if(!wsFormulaName.empty())
+				m_pXmlWriter->WriteAttribute(L"name",wsFormulaName);
+			else
+				m_pXmlWriter->WriteAttribute(L"name",L"Text");
 			m_pXmlWriter->WriteString(L" fmla=\"val ");
 			arElements[0]->ConversionOOXml(m_pXmlWriter,wsFormulaName);
 			m_pXmlWriter->WriteString(L"\"");
+			m_pXmlWriter->WriteNodeEnd(L"",true,true);
 		}
 		else
 		{

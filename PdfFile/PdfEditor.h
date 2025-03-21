@@ -37,6 +37,27 @@
 
 HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword, CPdfReader* _pReader, CPdfWriter* _pWriter);
 
+struct CObjectInfo
+{
+	PdfWriter::CObjectBase* pObj;
+	int nRefCount;
+
+	CObjectInfo() { pObj = NULL; nRefCount = 0; }
+	CObjectInfo(PdfWriter::CObjectBase* _pObj, int _nRefCount) : pObj(_pObj), nRefCount(_nRefCount) {}
+};
+
+class CObjectsManager
+{
+public:
+	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
+	PdfWriter::CObjectBase* GetObj(int nID);
+	void IncRefCount(int nID);
+	void DecRefCount(int nID);
+
+private:
+	std::map<int, CObjectInfo> m_mUniqueRef; // map уникальных объектов
+};
+
 class CPdfEditor
 {
 public:
@@ -71,17 +92,17 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 	BYTE* SplitPages(const int* arrPageIndex, unsigned int unLength);
-	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc);
 	bool MergePages(const int* arrPageIndex, unsigned int unLength);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 
 	std::wstring m_wsSrcFile;
 	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
 	std::map<std::wstring, std::wstring> m_mFonts;
-	std::map<int, PdfWriter::CObjectBase*> m_mSplitUniqueRef; // map уникальных объектов для Split
+	CObjectsManager m_mObjManager;
 
 	CPdfReader* m_pReader;
 	CPdfWriter* m_pWriter;

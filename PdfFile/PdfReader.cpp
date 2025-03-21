@@ -412,6 +412,20 @@ void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
 	globalParams->setDrawAnnotations(bDraw);
 }
 
+int CPdfReader::GetStartRefID(PDFDoc* _pDoc)
+{
+	int nStartRefID = 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (_pDoc == pDoc)
+			return nStartRefID;
+		nStartRefID += pDoc->getXRef()->getNumObjects();
+	}
+	return -1;
+}
 int CPdfReader::FindRefNum(int nObjID, PDFDoc** _pDoc, int* _nStartRefID)
 {
 	int nStartRefID = 0;

@@ -1,13 +1,8 @@
-#CONFIG += c++11 cmdline
+CONFIG += c++11
 
-#SOURCES += \
-QT       -= core
+QMAKE_CXXFLAGS += /permissive-
 
-QT       -= gui
-
-TARGET = test
-CONFIG   += console
-TEMPLATE = app
+QT += core gui widgets
 
 CORE_ROOT_DIR = $$PWD/../../../..
 PWD_ROOT_DIR = $$PWD
@@ -21,6 +16,13 @@ GRAPHICS_AGG_PATH = $$PWD/../../../agg-2.4
 INCLUDEPATH += \
     $$GRAPHICS_AGG_PATH/include
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+	mainwindow.cpp
 
 DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX
+
+FORMS += \
+	mainwindow.ui
+
+HEADERS += \
+	mainwindow.h

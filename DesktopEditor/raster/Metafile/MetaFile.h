@@ -75,9 +75,11 @@ namespace MetaFile
 		bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize);
 		bool LoadFromString(const std::wstring& data);
 
-		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType,
+							 int nWidth, int nHeight = -1, const wchar_t* wsXmlOutFile = NULL);
 		std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0);
-		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
+		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY,
+							double dWidth, double dHeight, const wchar_t* wsXmlFilePath = NULL);
 
 		int GetType();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
@@ -85,9 +87,7 @@ namespace MetaFile
 
 		// For tests
 		void ConvertToXml(const wchar_t *wsFilePath);
-		void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		bool LoadFromXmlFile(const wchar_t* wsFilePath);
-		bool DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void ConvertToEmf(const wchar_t* wsFilePath);
 
 

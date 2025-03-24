@@ -144,144 +144,6 @@ namespace MetaFile
 	}
 
 	/**
-	 * @brief CMetaFile::ConvertToXmlAndRaster
-	 * @param wsXmlFilePath - path to the file being saving (must be .xml)
-	 * @param wsOutFilePath - path to the file being saving (must be raster graphics like .bmp, .png, etc.)
-	 * @param unFileType - type of raster file, see ENUM_CXIMAGE_FORMATS
-	 * 	for example .bmp = 1, .png = 4
-	 * @param nWidth - width of picture from metafile
-	 * @param nHeight - height of picture from metafile (-1 - default)
-	 *
-	 * Simultaneous saving to .xml and raster iamge
-	 */
-	void CMetaFile::ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t *wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
-	{
-		if (NULL == wsXmlFilePath || NULL == wsOutFilePath)
-			return;
-
-		m_oEmfFile.SetOutputDevice(NULL, wsXmlFilePath);
-
-		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-
-		NSFonts::IFontManager* pFontManager = m_pAppFonts->GenerateFontManager();
-		NSFonts::IFontsCache* pFontCache = NSFonts::NSFontCache::Create();
-		pFontCache->SetStreams(m_pAppFonts->GetStreams());
-		pFontManager->SetOwnerCache(pFontCache);
-
-		pGrRenderer->SetFontManager(pFontManager);
-
-		if (-1 == nHeight)
-		{
-			double dX, dY, dW, dH;
-			GetBounds(&dX, &dY, &dW, &dH);
-
-			if (dW < 0)
-				dW = -dW;
-			if (dH < 0)
-				dH = -dH;
-
-			if (nWidth < 0) nWidth = (int)(dW * 96 / 25.4);
-			nHeight = (int)((double)nWidth * dH / dW);
-		}
-
-		double dWidth  = 25.4 * nWidth / 96;				// Get the width and height from pixels to mm
-		double dHeight = 25.4 * nHeight / 96;				// 96 - standart DPI for inch
-
-		BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
-		if (!pBgraData)
-			return;
-
-		unsigned int alfa = 0xffffff;
-		for (int i = 0; i < nWidth * nHeight; i++)
-		{
-			((unsigned int*)pBgraData)[i] = alfa;			// Set default tone (must be transparent and not white)
-		}
-
-		CBgraFrame oFrame;
-		oFrame.put_Data(pBgraData);
-		oFrame.put_Width(nWidth);
-		oFrame.put_Height(nHeight);
-		oFrame.put_Stride(-4 * nWidth);
-
-		pGrRenderer->CreateFromBgraFrame(&oFrame);
-		pGrRenderer->SetSwapRGB(false);
-		pGrRenderer->put_Width(dWidth);
-		pGrRenderer->put_Height(dHeight);
-
-		DrawOnRenderer(wsXmlFilePath, pGrRenderer, 0, 0, dWidth, dHeight);
-
-		oFrame.SaveFile(wsOutFilePath, unFileType);
-
-		RELEASEINTERFACE(pFontManager);
-		RELEASEINTERFACE(pGrRenderer);
-
-		if (pBgraData)
-			delete[] pBgraData;
-	}
-
-	/**
-	 * @brief CMetaFile::DrawOnRenderer
-	 * @param wsXmlFilePath - path to the file being saving (must be .xml)
-	 * @param pRenderer - class instance of CGraphicsRenderer, which will render
-	 *  meta content
-	 * @param dX - start coordinate for X axis
-	 * @param dY - start coordinate for Y axis
-	 * @param dWidth - width of picture from metafile
-	 * @param dHeight - height of picture from metafile
-	 * @return if none render or file path - return false, else - true
-	 *
-	 * Draw the meta file picture on renderer, but save in .xml file
-	 */
-	bool CMetaFile::DrawOnRenderer(const wchar_t *wsXmlFilePath, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
-	{
-		if (NULL == wsXmlFilePath || NULL == pRenderer)
-			return false;
-
-		pRenderer->BeginCommand(c_nImageType);
-
-		switch (m_lType)
-		{
-		#ifdef METAFILE_SUPPORT_WMF_EMF
-			case c_lMetaWmf:
-			{
-				CMetaFileRenderer oWmfOut(m_oWmfFile.GetWmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-				m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
-				m_oWmfFile.PlayMetaFile();
-				break;
-			}
-			case c_lMetaEmf:
-			{
-				CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-				m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
-				m_oEmfFile.PlayMetaFile();
-				break;
-			}
-		#endif
-		#ifdef METAFILE_SUPPORT_SVM
-			case c_lMetaSvm:
-			{
-				CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
-				m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
-				m_oSvmFile.PlayMetaFile();
-				break;
-			}
-		#endif
-		#ifdef METAFILE_SUPPORT_SVG
-			case c_lMetaSvg:
-			{
-				m_oSvgFile.Draw(pRenderer, dX, dY, dWidth, dHeight);
-				break;
-			}
-		#endif
-			default:
-				break;
-		}
-
-		pRenderer->EndCommand(c_nImageType);
-		return true;
-	}
-
-	/**
 	 * @brief CMetaFile::LoadFromXmlFile
 	 * @param wsFilePath - path to the source file (must be .xml)
 	 * @return if correct reading - return true, elde - false
@@ -347,8 +209,8 @@ namespace MetaFile
 
 	/**
 	 * @brief CMetaFile::LoadFromFile
-	 * @param wsFilePath
-	 * @return
+	 * @param wsFilePath - path to source file
+	 * @return if correct reading - return true, elde - false
 	 *
 	 * Load from source file
 	 * Remake Font Manager for metafile, for each picture
@@ -585,12 +447,15 @@ namespace MetaFile
 	 * @param dY - start coordinate for Y axis
 	 * @param dWidth - width of picture from metafile
 	 * @param dHeight - height of picture from metafile
+	 * @param wsXmlFilePath - path to the file being saveing as xml commands from
+	 * 	metafile (default - nullptr)
 	 * @return if none render - return false, else - true
 	 *
 	 * Check type of metacontent
 	 * Draw the meta file picture on renderer
 	 */
-	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight)
+	bool CMetaFile::DrawOnRenderer(IRenderer* pRenderer, double dX, double dY,
+								   double dWidth, double dHeight, const wchar_t* wsXmlFilePath)
 	{
 		if (NULL == pRenderer)
 			return false;
@@ -610,7 +475,10 @@ namespace MetaFile
 			case c_lMetaEmf:
 			{
 				CMetaFileRenderer oEmfOut(m_oEmfFile.GetEmfParser(), pRenderer, dX, dY, dWidth, dHeight);
-				m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
+				if (wsXmlFilePath)
+					m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut, wsXmlFilePath);
+				else
+					m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
 				m_oEmfFile.PlayMetaFile();
 				break;
 			}
@@ -749,14 +617,22 @@ namespace MetaFile
 	 * 	for example .bmp = 1, .png = 4
 	 * @param unWidth - width of picture from metafile
 	 * @param unHeight - height of picture from metafile (default -1)
+	 * @param wsXmlOutFile(optional) - path to the file being saving metafile
+	 *	commands to .xml (default nullptr)
 	 *
 	 * Create Graphics Renderer and Font Manager
 	 * Draw metafile content on created renderer and save in raster graphics file
 	 */
-	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
+	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight, const wchar_t* wsXmlOutFile)
 	{
 		if (nWidth == 0 || nHeight == 0)
 			return;
+
+		if (NULL == wsOutFilePath)
+			return;
+
+		if (wsXmlOutFile != NULL)
+			m_oEmfFile.SetOutputDevice(NULL, wsXmlOutFile);
 
 		NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
 
@@ -818,7 +694,7 @@ namespace MetaFile
 		pGrRenderer->put_Width(dWidth);
 		pGrRenderer->put_Height(dHeight);
 
-		DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
+		DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight, wsXmlOutFile);
 
 		oFrame.SaveFile(wsOutFilePath, unFileType);
 		oFrame.put_Data(NULL);

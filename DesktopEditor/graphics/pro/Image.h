@@ -113,10 +113,10 @@ namespace MetaFile
 	/**
 	 * @brief Meta file extension constants
 	 */
-	const int c_lMetaWmf = 0x01;
-	const int c_lMetaEmf = 0x02;
-	const int c_lMetaSvg = 0x04;
-	const int c_lMetaSvm = 0x05;
+	const long c_lMetaWmf = 0x0001;
+	const long c_lMetaEmf = 0x0002;
+	const long c_lMetaSvg = 0x0004;
+	const long c_lMetaSvm = 0x0005;
 
 	/**
 	 * @interface IMetaFile
@@ -133,19 +133,19 @@ namespace MetaFile
 		virtual bool LoadFromFile(const wchar_t* wsFilePath) = 0;
 		virtual bool LoadFromBuffer(BYTE* pBuffer, unsigned int unSize) = 0;
 		virtual bool LoadFromString(const std::wstring& data) = 0;
-		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight) = 0;
+		virtual bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY,
+									double dWidth, double dHeight, const wchar_t* wsXmlFilePath = NULL) = 0;
 		virtual void Close() = 0;
 		virtual void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH) = 0;
 		virtual int GetType() = 0;
-		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
+		virtual void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1, const wchar_t* wsXmlOutFile = NULL) = 0;
 		virtual NSFonts::IFontManager* get_FontManager() = 0;
 
 		virtual std::wstring ConvertToSvg(unsigned int unWidth = 0, unsigned int unHeight = 0) = 0;
 		virtual void SetTempDirectory(const std::wstring& dir) = 0;
 
-		virtual void ConvertToXml(const wchar_t *wsFilePath) = 0;
-		virtual void ConvertToXmlAndRaster(const wchar_t *wsXmlFilePath, const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1) = 0;
 		virtual bool LoadFromXmlFile(const wchar_t* wsFilePath) = 0;
+		virtual void ConvertToXml(const wchar_t *wsFilePath) = 0;
 		virtual void ConvertToEmf(const wchar_t *wsFilePath) = 0;
 	};
 

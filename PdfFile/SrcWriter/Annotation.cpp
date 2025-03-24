@@ -2117,27 +2117,24 @@ namespace PdfWriter
 	{
 		CObjectBase* pAP, *pAPN;
 		Add("AS", "Off");
-		if (!m_sAP_N_Yes.empty())
+		CObjectBase* pObj = GetObjValue("Opt");
+		if (!m_sAP_N_Yes.empty() && pObj && pObj->GetType() == object_type_ARRAY)
 		{
-			CObjectBase* pObj = GetObjValue("Opt");
-			if (pObj && pObj->GetType() == object_type_ARRAY)
+			CArrayObject* pArr = (CArrayObject*)pObj;
+			for (int i = 0; i < pArr->GetCount(); ++i)
 			{
-				CArrayObject* pArr = (CArrayObject*)pObj;
-				for (int i = 0; i < pArr->GetCount(); ++i)
+				pObj = pArr->Get(i);
+				if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
+					pObj = ((CArrayObject*)pObj)->Get(0);
+				if (pObj->GetType() == object_type_STRING)
 				{
-					pObj = pArr->Get(i);
-					if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
-						pObj = ((CArrayObject*)pObj)->Get(0);
-					if (pObj->GetType() == object_type_STRING)
+					CStringObject* pStr = (CStringObject*)pObj;
+					const BYTE* pBinary = pStr->GetString();
+					if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
 					{
-						CStringObject* pStr = (CStringObject*)pObj;
-						const BYTE* pBinary = pStr->GetString();
-						if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
-						{
-							m_sAP_N_Yes = std::to_string(i);
-							SetV(UTF8_TO_U(m_sAP_N_Yes));
-							break;
-						}
+						m_sAP_N_Yes = std::to_string(i);
+						SetV(UTF8_TO_U(m_sAP_N_Yes));
+						break;
 					}
 				}
 			}

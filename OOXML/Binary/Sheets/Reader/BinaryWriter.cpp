@@ -2152,7 +2152,7 @@ void BinaryWorkbookTableWriter::WriteWorkbook(OOX::Spreadsheet::CWorkbook& workb
 	}
     if (workbook.m_oPivotCaches.IsInit())
     {
-        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCaches);
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorkbookTypes::PivotCachesTmp);
         WritePivotCaches(workbook, workbook.m_oPivotCaches.get());
         if (workbook.m_oExtLst.IsInit())
         {
@@ -4772,7 +4772,7 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
     if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTableDefinition.IsInit()))
     {
         BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
-        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
+        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTableTmp);
         if(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId.IsInit())
         {
             auto cachePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cacheId);

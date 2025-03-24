@@ -142,11 +142,6 @@ namespace NExtractTools
 		else
 		{
 			BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
-			if (oCXlsxSerializer.hasPivot(sFrom))
-			{
-				// save Editor.xlsx for pivot
-				nRes = CopyOOXOrigin(sToDir, sFrom, L"Editor.xlsx", convertParams.m_sTempParamOOXMLFile);
-			}
 
 			// Save to file (from temp dir)
 			oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());

@@ -367,9 +367,13 @@ PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pD
 		return pParent;
 	}
 
-	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pParentRef->getRefNum());
+	PdfWriter::CXref* pXref = NULL;
 	pParent = new PdfWriter::CDictObject();
-	pXref->Add(pParent, pParentRef->getRefGen());
+	if (nStartRefID == 0)
+	{
+		pXref = new PdfWriter::CXref(pDoc, pParentRef->getRefNum());
+		pXref->Add(pParent, pParentRef->getRefGen());
+	}
 	if (!pDoc->EditParent(pXref, pParent, pParentRef->getRefNum() + nStartRefID))
 	{
 		RELEASEOBJECT(pXref);
@@ -670,6 +674,13 @@ void CObjectsManager::IncRefCount(int nID)
 void CObjectsManager::DecRefCount(int nID)
 {
 
+}
+int CObjectsManager::FindObj(PdfWriter::CObjectBase* pObj)
+{
+	std::map<int, CObjectInfo>::iterator it = std::find_if(m_mUniqueRef.begin(), m_mUniqueRef.end(), [pObj](const std::pair<int, CObjectInfo>& t){ return t.second.pObj == pObj; });
+	if (it != m_mUniqueRef.end())
+		return it->first;
+	return -1;
 }
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
@@ -1693,7 +1704,13 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
-	return m_pWriter->GetDocument()->DeletePage(nPageIndex);
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
+	int nObjID = m_mObjManager.FindObj(pPage);
+	if (nObjID > 0)
+		pPage->SetHidden();
+
+	return pDoc->DeletePage(nPageIndex);
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
@@ -1726,6 +1743,13 @@ bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 }
 bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 {
+	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
+	if (pObj)
+	{
+		pObj->SetHidden();
+		return true;
+	}
+
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
 	int nStartRefID = 0;
@@ -1982,6 +2006,13 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 }
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
+	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
+	if (pObj)
+	{
+		pObj->SetHidden();
+		return true;
+	}
+
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();

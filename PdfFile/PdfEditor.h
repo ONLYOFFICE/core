@@ -53,6 +53,7 @@ public:
 	PdfWriter::CObjectBase* GetObj(int nID);
 	void IncRefCount(int nID);
 	void DecRefCount(int nID);
+	int FindObj(PdfWriter::CObjectBase* pObj);
 
 private:
 	std::map<int, CObjectInfo> m_mUniqueRef; // map уникальных объектов

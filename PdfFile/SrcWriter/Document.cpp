@@ -1514,7 +1514,7 @@ namespace PdfWriter
 	bool CDocument::EditXref(CXref* pXref)
 	{
 		if (!pXref)
-			return false;
+			return true;
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
@@ -1603,6 +1603,8 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 		if (pObj)
 		{
+			if (pObj->IsIndirect())
+				return true;
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)

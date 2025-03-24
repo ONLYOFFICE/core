@@ -2,19 +2,29 @@ QT -= core
 QT -= gui
 
 TARGET = test
-CONFIG += console
-CONFIG -= app_bundle
 TEMPLATE = app
 
-DEFINES += OFD_USE_DYNAMIC_LIBRARY
-
-SOURCES += main.cpp
-
+CONFIG += console
+CONFIG -= app_bundle
+s
 CORE_ROOT_DIR = $$PWD/../../
 PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-ADD_DEPENDENCY(kernel, UnicodeConverter, OFDFile)
+ADD_DEPENDENCY(kernel, graphics, UnicodeConverter, OFDFile)
 
-DESTDIR = $$PWD/build/$$CORE_BUILDS_PLATFORM_PREFIX
+win32 {
+LIBS += -lgdi32 \
+        -ladvapi32 \
+        -luser32 \
+        -lshell32
+}
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    LIBS += -lz
+}
+
+SOURCES += main.cpp
+
+DESTDIR = $$PWD_ROOT_DIR/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX

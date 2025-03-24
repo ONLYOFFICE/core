@@ -31,8 +31,16 @@ CTextCode::CTextCode(CXmlReader& oLiteReader)
 	m_wsText = oLiteReader.GetText2();
 }
 
+void CTextCode::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr == pRenderer || m_wsText.empty())
+		return;
+
+	pRenderer->CommandDrawText(m_wsText, m_dX, m_dY, 0, 0);
+}
+
 CTextObject::CTextObject(CXmlReader& oLiteReader)
-	: CGraphicUnit(oLiteReader),
+	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
 	  m_bStroke(false), m_bFill(false), m_dHScale(1.),
 	  m_unReadDirection(0), m_unCharDirection(0), m_unWeight(400),
 	  m_bItalic(false),
@@ -49,7 +57,7 @@ CTextObject::~CTextObject()
 	if (nullptr != m_pStrokeColor)
 		delete m_pStrokeColor;
 
-	for (CTextCode* pTextCode : m_arTextCodes)
+	for (const CTextCode* pTextCode : m_arTextCodes)
 		delete pTextCode;
 }
 
@@ -96,14 +104,14 @@ bool CTextObject::Read(CXmlReader& oLiteReader)
 	{
 		wsNodeName = oLiteReader.GetName();
 
-		if (L"ofd:FillColor" == wsNodeName && m_bFill)
+		if (L"ofd:FillColor" == wsNodeName)
 		{
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
 			m_pFillColor = new CColor(oLiteReader);
 		}
-		else if (L"ofd:StrokeColor" == wsNodeName && m_bStroke)
+		else if (L"ofd:StrokeColor" == wsNodeName)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
@@ -115,6 +123,28 @@ bool CTextObject::Read(CXmlReader& oLiteReader)
 	}
 
 	return true;
+}
+
+void CTextObject::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr == pRenderer || m_arTextCodes.empty())
+		return;
+
+	((CGraphicUnit*)this)->Apply(pRenderer);
+
+	if (m_bFill && nullptr != m_pFillColor)
+	{
+		pRenderer->put_BrushType(c_BrushTypeSolid);
+		pRenderer->put_BrushColor1(255);
+		pRenderer->put_BrushAlpha1(255);
+	}
+	else
+		pRenderer->put_BrushType(c_BrushTypeNotSet);
+
+	pRenderer->put_FontSize(m_dSize);
+
+	for (const CTextCode* pTextCode : m_arTextCodes)
+		pTextCode->Draw(pRenderer);
 }
 
 }

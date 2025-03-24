@@ -13,6 +13,7 @@ public:
 	~CContent();
 
 	bool Read(CXmlReader& oLiteReader);
+	void Draw(IRenderer* pRenderer) const;
 };
 }
 

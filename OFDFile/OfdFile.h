@@ -1,10 +1,6 @@
 #ifndef OFDFILE_H
 #define OFDFILE_H
 
-#include "../OfficeUtils/src/ZipFolder.h"
-
-#include "src/Base.h"
-
 #ifndef OFD_USE_DYNAMIC_LIBRARY
 #define OFD_DECL_EXPORT
 #else
@@ -12,30 +8,49 @@
 #define OFD_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-namespace OFD
-{
-class OFD_DECL_EXPORT COfdFile
-{
-	std::wstring m_wsTempDir;
+#include "../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../DesktopEditor/graphics/pro/Fonts.h"
 
-	CBase     m_oBase;
-
-	bool Read(IFolder* pFolder);
-	IFolder* CreateTempDir() const;
+class COFDFile_Private;
+class OFD_DECL_EXPORT COFDFile : public IOfficeDrawingFile
+{
+	COFDFile_Private* m_pInternal;
 public:
-	COfdFile();
-	~COfdFile();
+	COFDFile(NSFonts::IApplicationFonts* pFonts);
+	virtual ~COFDFile();
 
-	void Close();
+	// Open
+	virtual bool LoadFromFile(const std::wstring& file, const std::wstring& options = L"",
+	                          const std::wstring& owner_password = L"", const std::wstring& user_password = L"") override;
+	virtual bool LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options = L"",
+	                            const std::wstring& owner_password = L"", const std::wstring& user_password = L"") override;
 
-	void SetTempDir(const std::wstring& wsPath);
-	std::wstring GetTempDir() const;
+	// Close
+	virtual void Close() override;
 
-	bool LoadFromFile(const std::wstring& wsFilePath);
+	// Get IApplicationFonts for wrappers
+	virtual NSFonts::IApplicationFonts* GetFonts() override;
 
-	bool SaveToFile(const std::wstring& wsFilePath);
-	bool SaveToDir(const std::wstring& wsDir);
+	// Type
+	virtual OfficeDrawingFileType GetType() override;
+
+	// Temp directory
+	virtual std::wstring GetTempDirectory() override;
+	virtual void SetTempDirectory(const std::wstring& directory) override;
+
+	// Pages info/draw
+	virtual int GetPagesCount() override;
+	virtual void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) override;
+	virtual void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams = NULL) override;
+
+	#ifndef DISABLE_PDF_CONVERTATION
+	void ConvertToPdf(const std::wstring& wsDstPath);
+	#endif
+
+	// Common methods for viewer
+	virtual std::wstring GetInfo() override;
+	virtual unsigned char* GetStructure() override;
+	virtual unsigned char* GetLinks(int nPageIndex) override;
 };
-}
 
 #endif // OFDFILE_H

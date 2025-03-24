@@ -9,7 +9,7 @@ class CColor
 {
 	struct TColorChannels
 	{
-		unsigned char m_chRed;
+		BYTE m_chRed;
 		BYTE m_chGreen;
 		BYTE m_chBlue;
 	} m_oValue;
@@ -26,6 +26,9 @@ public:
 	CColor(CXmlReader& oXmlReader);
 
 	bool Read(CXmlReader& oXmlReader);
+
+	int ToInt() const;
+	BYTE GetAlpha() const;
 };
 }
 

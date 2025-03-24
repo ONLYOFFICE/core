@@ -99,6 +99,20 @@ CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder)
 	return pDocBody;
 }
 
+bool CDocBody::DrawPage(IRenderer* pRenderer, int nPageIndex) const
+{
+	return m_oDocument.DrawPage(pRenderer, nPageIndex);
+}
+
+unsigned int CDocBody::GetPageCount() const
+{
+	return m_oDocument.GetPageCount();
+}
+
+bool CDocBody::GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const
+{
+	return m_oDocument.GetPageSize(nPageIndex, dWidth, dHeight);
+}
 
 CBase::CBase()
 {}
@@ -130,5 +144,29 @@ bool CBase::Read(IFolder* pFolder)
 	}
 
 	return false;
+}
+
+void CBase::DrawPage(IRenderer* pRenderer, int nPageIndex) const
+{
+	for (const CDocBody* pDocBody : m_arDocBodies)
+		if (pDocBody->DrawPage(pRenderer, nPageIndex))
+			return;
+}
+
+unsigned int CBase::GetPageCount() const
+{
+	unsigned int unCount = 0;
+
+	for (const CDocBody* pDocBody : m_arDocBodies)
+		unCount += pDocBody->GetPageCount();
+
+	return unCount;
+}
+
+void CBase::GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const
+{
+	for (const CDocBody* pDocBody : m_arDocBodies)
+		if (pDocBody->GetPageSize(nPageIndex, dWidth, dHeight))
+			return;
 }
 }

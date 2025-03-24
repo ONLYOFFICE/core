@@ -5,7 +5,7 @@
 
 namespace OFD
 {
-class CLayer
+class CLayer : public IPageBlock
 {
 	enum class EType
 	{
@@ -20,7 +20,8 @@ public:
 	CLayer(CXmlReader& oLiteReader);
 	~CLayer();
 
-	bool Read(CXmlReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader) override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

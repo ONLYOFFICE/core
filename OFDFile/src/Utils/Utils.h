@@ -42,7 +42,8 @@ inline bool StringToBoolean(const std::string& sValue, bool& bValue)
 	std::transform(sTrimmed.begin(), sTrimmed.end(), sTrimmed.begin(),
 	               [](unsigned char c){ return std::tolower(c); });
 
-	return "true" == sTrimmed;
+	bValue = "true" == sTrimmed;
+	return true;
 }
 
 inline bool StringToInteger(const std::string& sValue, int& nValue)

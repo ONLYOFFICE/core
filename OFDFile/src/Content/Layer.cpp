@@ -3,13 +3,14 @@
 #include "../../../OOXML/Base/Unit.h"
 
 #include "TextObject.h"
+#include "PathObject.h"
 
 namespace OFD
 {
 CLayer::CLayer(CXmlReader& oLiteReader)
-	: m_eType(EType::Body)
+	: IPageBlock(oLiteReader), m_eType(EType::Body)
 {
-	Read(oLiteReader);
+	CLayer::Read(oLiteReader);
 }
 
 CLayer::~CLayer()
@@ -23,17 +24,6 @@ bool CLayer::Read(CXmlReader& oLiteReader)
 	if (L"ofd:Layer" != oLiteReader.GetName())
 		return false;
 
-	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
-	{
-		do
-		{
-			if (L"ID" == oLiteReader.GetName())
-				m_unID = oLiteReader.GetUInteger(true);
-		} while (oLiteReader.MoveToNextAttribute());
-
-		oLiteReader.MoveToElement();
-	}
-
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
 
@@ -46,11 +36,22 @@ bool CLayer::Read(CXmlReader& oLiteReader)
 
 		if (L"ofd:TextObject" == wsNodeName)
 			pPageBlock = new CTextObject(oLiteReader);
+		else if (L"ofd:PathObject" == wsNodeName)
+			pPageBlock = new CPathObject(oLiteReader);
 
 		if (nullptr != pPageBlock)
 			m_arPageBlocks.push_back(pPageBlock);
 	}
 
 	return true;
+}
+
+void CLayer::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr == pRenderer)
+		return;
+
+	for (const IPageBlock* pPageBlock : m_arPageBlocks)
+		pPageBlock->Draw(pRenderer);
 }
 }

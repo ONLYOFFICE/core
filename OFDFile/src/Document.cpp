@@ -2,34 +2,6 @@
 
 namespace OFD
 {
-CPageArea::CPageArea()
-{}
-
-bool CPageArea::Read(CXmlReader& oLiteReader)
-{
-	if (L"ofd:PageArea" != oLiteReader.GetName())
-		return false;
-
-	const int nDepth = oLiteReader.GetDepth();
-	std::wstring wsNodeName;
-
-	while (oLiteReader.ReadNextSiblingNode(nDepth))
-	{
-		wsNodeName = oLiteReader.GetName();
-
-		if (L"ofd:PhysicalBox" == wsNodeName)
-			m_oPhysicalBox.Read(oLiteReader.GetText2A());
-		else if (L"ofd:ApplicationBox" == wsNodeName)
-			m_oApplicationBox.Read(oLiteReader.GetText2A());
-		else if (L"ofd:ContentBox" == wsNodeName)
-			m_oContentBox.Read(oLiteReader.GetText2A());
-		else if (L"ofd:BleedBox" == wsNodeName)
-			m_oBleedBox.Read(oLiteReader.GetText2A());
-	}
-
-	return true;
-}
-
 CCommonData::CCommonData()
 	: m_unMaxUnitID(0)
 {}
@@ -60,6 +32,17 @@ bool CCommonData::Read(CXmlReader& oLiteReader)
 	}
 
 	return true;
+}
+
+void CCommonData::GetPageSize(double& dWidth, double& dHeight) const
+{
+	TBox oPhysicalBox{m_oPageArea.GetPhysicalBox()};
+
+	if (oPhysicalBox.Empty())
+		return;
+
+	dWidth  = oPhysicalBox.m_dWidth;
+	dHeight = oPhysicalBox.m_dHeight;
 }
 
 CPermission::CPermission()
@@ -147,14 +130,50 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 				CPage* pPage = CPage::Read(NSSystemPath::Combine(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc));
 
 				if (nullptr != pPage)
-					m_mPages.insert(std::make_pair(nID, pPage));
+					m_mPages.insert(std::make_pair(m_mPages.size(), pPage));
 
 				wsBaseLoc.clear();
 				oLiteReader.MoveToElement();
 			}
 		}
+		else if (L"ofd:Permissions" == wsNodeName)
+			m_oPermission.Read(oLiteReader);
 	}
 
 	return false;
+}
+
+bool CDocument::DrawPage(IRenderer* pRenderer, int nPageIndex) const
+{
+	if (nullptr == pRenderer)
+		return false;
+
+	std::map<unsigned int, CPage*>::const_iterator itFound = m_mPages.find(nPageIndex);
+
+	if (itFound == m_mPages.cend())
+		return false;
+
+	itFound->second->Draw(pRenderer);
+
+	return true;
+}
+
+unsigned int CDocument::GetPageCount() const
+{
+	return m_mPages.size();
+}
+
+bool CDocument::GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const
+{
+	m_oCommonData.GetPageSize(dWidth, dHeight);
+
+	std::map<unsigned int, CPage*>::const_iterator itFound = m_mPages.find(nPageIndex);
+
+	if (itFound == m_mPages.cend())
+		return false;
+
+	itFound->second->GetPageSize(dWidth, dHeight);
+
+	return true;
 }
 }

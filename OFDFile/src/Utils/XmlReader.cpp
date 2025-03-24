@@ -35,7 +35,7 @@ unsigned int CXmlReader::GetUInteger(bool bIsAttribute)
 {
 	unsigned int unValue = 0;
 	StringToUInteger(GetTextValueA(bIsAttribute), unValue);
-	return 0;
+	return unValue;
 }
 
 double CXmlReader::GetDouble(bool bIsAttribute)

@@ -18,6 +18,20 @@ struct TBox
 	bool Empty() const;
 	bool Read(const std::string& wsValue);
 };
+
+struct TMatrix
+{
+	double m_dM11;
+	double m_dM12;
+	double m_dM21;
+	double m_dM22;
+	double m_dDx;
+	double m_dDy;
+
+	TMatrix();
+
+	bool Read(const std::string& sValue);
+};
 }
 
 #endif // TYPES_H

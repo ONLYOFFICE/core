@@ -19,6 +19,8 @@ class CTextCode
 	std::wstring m_wsText;
 public:
 	CTextCode(CXmlReader& oLiteReader);
+
+	void Draw(IRenderer* pRenderer) const;
 };
 
 class CTextObject : public IPageBlock, public CGraphicUnit
@@ -36,12 +38,13 @@ class CTextObject : public IPageBlock, public CGraphicUnit
 	CColor* m_pFillColor;
 	CColor* m_pStrokeColor;
 
-	std::vector<CTextCode*> m_arTextCodes;
+	std::vector<const CTextCode*> m_arTextCodes;
 public:
 	CTextObject(CXmlReader& oLiteReader);
 	~CTextObject();
 
-	virtual bool Read(CXmlReader& oLiteReader) override;
+	bool Read(CXmlReader& oLiteReader) override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

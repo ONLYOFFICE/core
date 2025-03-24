@@ -1,6 +1,7 @@
 #ifndef BASE_H
 #define BASE_H
 
+#include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../OfficeUtils/src/ZipFolder.h"
 
 #include "Document.h"
@@ -49,8 +50,12 @@ class CDocBody
 public:
 	CDocBody();
 	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder);
-};
 
+	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;
+
+	unsigned int GetPageCount() const;
+	bool GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const;
+};
 
 class CBase
 {
@@ -60,13 +65,10 @@ public:
 	~CBase();
 
 	bool Read(IFolder* pFolder);
+	void DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 
-	// std::wstring GetDocId() const;
-	// std::wstring GetCreationDate() const;
-	// std::wstring GetCreator() const;
-	// std::wstring GetCreatorVersion() const;
-
-	// std::wstring GetPathToDocRoot() const;
+	unsigned int GetPageCount() const;
+	void GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const;
 };
 }
 

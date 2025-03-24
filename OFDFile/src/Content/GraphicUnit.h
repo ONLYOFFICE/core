@@ -3,6 +3,9 @@
 
 #include "../Utils/XmlReader.h"
 #include "../Utils/Types.h"
+
+#include "../../../DesktopEditor/graphics/IRenderer.h"
+
 #include <vector>
 
 namespace OFD
@@ -12,7 +15,7 @@ class CGraphicUnit
 	TBox m_oBoundary;
 	std::wstring m_wsName;
 	bool m_bVisible;
-	TBox m_oCTM;
+	TMatrix m_oCTM;
 	unsigned int m_unDrawParam;
 	double m_dLineWidth;
 
@@ -36,6 +39,8 @@ class CGraphicUnit
 	unsigned char m_uchAlpha;
 public:
 	CGraphicUnit(CXmlReader& oLiteReader);
+
+	void Apply(IRenderer* pRenderer);
 };
 }
 

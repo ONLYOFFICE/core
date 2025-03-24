@@ -4,9 +4,9 @@
 namespace OFD
 {
 CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
-	: m_bVisible(true), m_dLineWidth(0.353), m_eCap(ECap::Butt),
-	  m_eJoin(EJoin::Miter), m_dMiterLimit(4.234), m_dDashOffset(0.),
-	  m_uchAlpha(255)
+	: m_bVisible(true), m_unDrawParam(0), m_dLineWidth(0.353),
+	  m_eCap(ECap::Butt), m_eJoin(EJoin::Miter), m_dMiterLimit(4.234),
+	  m_dDashOffset(0.), m_uchAlpha(255)
 {
 	if (0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;
@@ -60,6 +60,19 @@ CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
 	} while (oLiteReader.MoveToNextAttribute());
 
 	oLiteReader.MoveToElement();
+}
+
+void CGraphicUnit::Apply(IRenderer* pRenderer)
+{
+	if (nullptr == pRenderer)
+		return;
+
+	//TODO:: apply boundary -> clipping -> apply CTM
+	// pRenderer->SetTransform(1., 0., 0., 1., m_oBoundary.m_dX, m_oBoundary.m_dY);
+
+	//Clipping
+
+	pRenderer->SetTransform(m_oCTM.m_dM11 * 96. / 25.4, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22 * 96. / 25.4, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
 }
 
 }

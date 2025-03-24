@@ -1,93 +1,147 @@
 #include "OFDFile.h"
+#include "src/OFDFile_Private.h"
 
-#include "../OfficeUtils/src/OfficeUtils.h"
+#ifndef DISABLE_PDF_CONVERTATION
+#include "../PdfFile/PdfFile.h"
+#endif
 
-namespace OFD
-{
-COfdFile::COfdFile()
+COFDFile::COFDFile(NSFonts::IApplicationFonts* pFonts)
+	: m_pInternal(new COFDFile_Private(pFonts))
 {}
 
-COfdFile::~COfdFile()
-{
-	Close();
-}
-
-void COfdFile::Close()
-{
-}
-
-void COfdFile::SetTempDir(const std::wstring& wsPath)
-{
-	m_wsTempDir = wsPath;
-}
-
-std::wstring COfdFile::GetTempDir() const
-{
-	return m_wsTempDir;
-}
-
-bool COfdFile::Read(IFolder* pFolder)
-{
-	if (nullptr == pFolder)
-		return false;
-
-	if (!m_oBase.Read(pFolder))
-		return false;
-
-	return false;
-}
-
-IFolder* COfdFile::CreateTempDir() const
-{
-	if (!NSDirectory::Exists(m_wsTempDir))
-		NSDirectory::CreateDirectory(m_wsTempDir);
-
-	int nCounter = 0;
-	std::wstring wsTempFolder = m_wsTempDir + L"/OFD/";
-
-	while (NSDirectory::Exists(wsTempFolder))
-	{
-		wsTempFolder = m_wsTempDir + L"/OFD" + std::to_wstring(nCounter) + L'/';
-		nCounter++;
-	}
-
-	NSDirectory::CreateDirectory(wsTempFolder);
-
-	return new CFolderSystem(wsTempFolder);
-}
-
-bool COfdFile::LoadFromFile(const std::wstring& wsFilePath)
+COFDFile::~COFDFile()
 {
 	Close();
 
-	IFolder* pFolder = CreateTempDir();
+	if (nullptr != m_pInternal)
+		delete m_pInternal;
+}
 
-	if (nullptr == pFolder)
+bool COFDFile::LoadFromFile(const std::wstring& file, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+{
+	if (nullptr == m_pInternal)
 		return false;
 
-	COfficeUtils oUtils(NULL);
+	Close();
 
-	if (S_OK != oUtils.ExtractToDirectory(wsFilePath, pFolder->getFullFilePath(L""), NULL, 0))
+	return m_pInternal->LoadFromFile(file);
+}
+
+bool COFDFile::LoadFromMemory(unsigned char* data, unsigned long length, const std::wstring& options, const std::wstring& owner_password, const std::wstring& user_password)
+{
+	if (nullptr == m_pInternal)
 		return false;
 
-	bool bResult = Read(pFolder);
+	Close();
 
-	if (!bResult)
+	return m_pInternal->LoadFromMemory(data, length);
+}
+
+void COFDFile::Close()
+{
+	if (nullptr != m_pInternal)
+		m_pInternal->Close();
+}
+
+NSFonts::IApplicationFonts* COFDFile::GetFonts()
+{
+	return (nullptr != m_pInternal) ? m_pInternal->GetFonts() : nullptr;
+}
+
+OfficeDrawingFileType COFDFile::GetType()
+{
+	return odftOFD;
+}
+
+std::wstring COFDFile::GetTempDirectory()
+{
+	if (nullptr != m_pInternal)
+		return m_pInternal->GetTempDir();
+
+	return std::wstring();
+}
+
+void COFDFile::SetTempDirectory(const std::wstring& directory)
+{
+	if (nullptr != m_pInternal)
+		m_pInternal->SetTempDir(directory);
+}
+
+int COFDFile::GetPagesCount()
+{
+	if (nullptr != m_pInternal)
+		return m_pInternal->GetPageCount();
+
+	return 0;
+}
+
+void COFDFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
+{
+	if (nullptr == m_pInternal)
+		return;
+
+	m_pInternal->GetPageSize(nPageIndex, *pdWidth, *pdHeight);
+
+	*pdDpiX = 25.4;
+	*pdDpiY = 25.4;
+}
+
+void COFDFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak, COfficeDrawingPageParams* pParams)
+{
+	if (nullptr == pRenderer || nullptr == m_pInternal)
+		return;
+
+	m_pInternal->DrawPage(pRenderer, nPageIndex);
+}
+
+#ifndef DISABLE_PDF_CONVERTATION
+void COFDFile::ConvertToPdf(const std::wstring& wsDstPath)
+{
+	CPdfFile oPdf(GetFonts());
+	oPdf.CreatePdf();
+	bool bBreak = false;
+
+	int nPagesCount = GetPagesCount();
+	for (int nPageIndex = 0; nPageIndex < nPagesCount; nPageIndex++)
 	{
-		pFolder->removeDirectory(L"");
-		delete pFolder;
+		oPdf.NewPage();
+		oPdf.BeginCommand(c_nPageType);
+
+		double dPageDpiX = 96., dPageDpiY = 96.;
+		double dWidth = 0., dHeight = 0.;
+
+		GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+		dWidth  *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
+
+		oPdf.put_Width(dWidth);
+		oPdf.put_Height(dHeight);
+
+		DrawPageOnRenderer(&oPdf, nPageIndex, &bBreak);
+
+		oPdf.EndCommand(c_nPageType);
+
+#ifdef _DEBUG
+		printf("page %d / %d\n", nPageIndex + 1, nPagesCount);
+#endif
 	}
 
-	return false;
+	oPdf.SaveToFile(wsDstPath);
 }
 
-bool COfdFile::SaveToFile(const std::wstring& wsFilePath)
+std::wstring COFDFile::GetInfo()
 {
-	return false;
+	return std::wstring();
 }
 
-bool COfdFile::SaveToDir(const std::wstring& wsDir)
+unsigned char* COFDFile::GetStructure()
 {
-	return false;
+	return nullptr;
 }
+
+unsigned char* COFDFile::GetLinks(int nPageIndex)
+{
+	return nullptr;
 }
+#endif

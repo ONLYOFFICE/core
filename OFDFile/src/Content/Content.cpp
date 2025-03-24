@@ -29,4 +29,13 @@ bool CContent::Read(CXmlReader& oLiteReader)
 
 	return false;
 }
+
+void CContent::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr == pRenderer)
+		return;
+
+	for (const CLayer* pLayer : m_arLayers)
+		pLayer->Draw(pRenderer);
+}
 }

@@ -156,6 +156,35 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool GLOBALS::saveContent(BinProcessor& proc)
+{
+    if(m_CalcMode != nullptr)
+        proc.mandatory(*m_CalcMode);
+    if(m_CalcMode != nullptr)
+        proc.mandatory(*m_CalcMode);
+    proc.optional<CalcCount>();
+
+    if(m_CalcRefMode != nullptr)
+        proc.mandatory(*m_CalcRefMode);
+    proc.optional<CalcIter>();
+    proc.optional<CalcDelta>();
+    proc.optional<CalcSaveRecalc>();
+    proc.optional<PrintRowCol>();
+    proc.optional<PrintGrid>();
+    proc.optional<GridSet>();
+
+    if(m_Guts != nullptr)
+        proc.mandatory(*m_Guts);
+    if(m_DefaultRowHeight != nullptr)
+        proc.mandatory(*m_DefaultRowHeight);
+    if(m_WsBool != nullptr)
+        proc.mandatory(*m_WsBool);
+    if(m_HorizontalPageBreaks != nullptr)
+        proc.mandatory(*m_HorizontalPageBreaks);
+    if(m_VerticalPageBreaks != nullptr)
+        proc.mandatory(*m_VerticalPageBreaks);
+    return true;
+}
 int GLOBALS::serialize_calcPr(std::wostream & stream)
 {
 	if (!m_CalcMode) return 0;

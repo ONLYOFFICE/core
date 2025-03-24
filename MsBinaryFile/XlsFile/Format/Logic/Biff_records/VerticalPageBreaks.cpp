@@ -52,6 +52,15 @@ namespace XLS
 			rgbrk.push_back(vb);
 		}
 	}
+    void VerticalPageBreaks::writeFields(CFRecord& record)
+    {
+        cbrk = rgbrk.size();
+        record << cbrk;
+        for (auto i:rgbrk)
+        {
+            record << *i;
+        }
+    }
 	int VerticalPageBreaks::serialize(std::wostream & stream)
 	{
 		if (rgbrk.empty()) return 0;

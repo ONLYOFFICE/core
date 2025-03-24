@@ -50,11 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
+
 
 	static const ElementType	type = typePrintGrid;
 
 //-----------------------------
-	bool fPrintGrid;
+    bool fPrintGrid = false;
 
 };
 

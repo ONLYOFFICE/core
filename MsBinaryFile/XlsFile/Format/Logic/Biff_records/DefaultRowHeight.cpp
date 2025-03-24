@@ -78,5 +78,18 @@ namespace XLS
 		}
 
 	}
+
+    void DefaultRowHeight::writeFields(CFRecord& record)
+    {
+        unsigned short flags;
+        record >> flags;
+
+        SETBIT(flags, 0, fUnsynced);
+        SETBIT(flags, 1, fDyZero);
+        SETBIT(flags, 2, fExAsc);
+        SETBIT(flags, 3, fExDsc);
+
+        record << flags << miyRw;
+    }
 } // namespace XLS
 

@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeGuts;
 
 //-----------------------------
-	_UINT16 iLevelRwMac;
-	_UINT16 iLevelColMac;
+    _UINT16 iLevelRwMac = 0;
+    _UINT16 iLevelColMac = 0;
 
 };
 

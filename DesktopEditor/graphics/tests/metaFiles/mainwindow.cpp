@@ -61,9 +61,9 @@ void MainWindow::on_pushButton_2_clicked()
 		else if (ui->radioButton_2->isChecked())
 			meta_file->ConvertToXml(converter.toUnicode(QDir(save_dir).filePath("res.xml").toStdString(), 1).c_str());
 		else if (ui->radioButton_3->isChecked())
-			meta_file->ConvertToXmlAndRaster(converter.toUnicode(QDir(save_dir).filePath("res.xml").toStdString(), 1).c_str(),
-											 converter.toUnicode(QDir(save_dir).filePath("res.bmp").toStdString(), 1).c_str(), 1,
-											 static_cast<int>(w) + 1, static_cast<int>(h) + 1);
+			meta_file->ConvertToRaster(converter.toUnicode(QDir(save_dir).filePath("res.bmp").toStdString(), 1).c_str(), 1,
+									   static_cast<int>(w) + 1, static_cast<int>(h) + 1,
+									   converter.toUnicode(QDir(save_dir).filePath("res.xml").toStdString(), 1).c_str());
 		else if (ui->radioButton_4->isChecked())
 			meta_file->ConvertToSvg(static_cast<int>(w) + 1, static_cast<int>(h) + 1);
 		else if (ui->radioButton_5->isChecked())

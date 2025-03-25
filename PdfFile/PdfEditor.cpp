@@ -666,14 +666,25 @@ PdfWriter::CObjectBase* CObjectsManager::GetObj(int nID)
 		return m_mUniqueRef[nID].pObj;
 	return NULL;
 }
-void CObjectsManager::IncRefCount(int nID)
+bool CObjectsManager::IncRefCount(int nID)
 {
 	if (m_mUniqueRef.find(nID) != m_mUniqueRef.end())
+	{
 		m_mUniqueRef[nID].nRefCount++;
+		return true;
+	}
+	return false;
 }
-void CObjectsManager::DecRefCount(int nID)
+bool CObjectsManager::DecRefCount(int nID)
 {
-
+	if (m_mUniqueRef.find(nID) != m_mUniqueRef.end())
+	{
+		if (m_mUniqueRef[nID].pObj->IsHidden())
+			return false;
+		m_mUniqueRef[nID].pObj->SetHidden();
+		return true;
+	}
+	return false;
 }
 int CObjectsManager::FindObj(PdfWriter::CObjectBase* pObj)
 {
@@ -681,6 +692,69 @@ int CObjectsManager::FindObj(PdfWriter::CObjectBase* pObj)
 	if (it != m_mUniqueRef.end())
 		return it->first;
 	return -1;
+}
+void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
+{
+	Object oTemp;
+	switch (obj->getType())
+	{
+	case objBool:
+	case objInt:
+	case objReal:
+	case objString:
+	case objName:
+	case objNull:
+	case objNone:
+	case objCmd:
+	case objError:
+	case objEOF:
+		break;
+	case objArray:
+	{
+		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
+		{
+			obj->arrayGetNF(nIndex, &oTemp);
+			DeleteObjTree(&oTemp, xref, nStartRefID);
+			oTemp.free();
+		}
+		break;
+	}
+	case objDict:
+	{
+		if (SplitSkipDict(obj, this, nStartRefID))
+			return;
+		for (int nIndex = 0; nIndex < obj->dictGetLength(); ++nIndex)
+		{
+			obj->dictGetValNF(nIndex, &oTemp);
+			DeleteObjTree(&oTemp, xref, nStartRefID);
+			oTemp.free();
+		}
+		break;
+	}
+	case objRef:
+	{
+		int nObjNum = obj->getRefNum();
+		PdfWriter::CObjectBase* pObj = GetObj(nObjNum + nStartRefID);
+		if (pObj && DecRefCount(nObjNum + nStartRefID))
+			return;
+
+		obj->fetch(xref, &oTemp);
+		DeleteObjTree(&oTemp, xref, nStartRefID);
+		oTemp.free();
+		break;
+	}
+	case objStream:
+	{
+		Dict* pODict = obj->streamGetDict();
+		for (int nIndex = 0; nIndex < pODict->getLength(); ++nIndex)
+		{
+			pODict->getValNF(nIndex, &oTemp);
+			DeleteObjTree(&oTemp, xref, nStartRefID);
+			oTemp.free();
+		}
+		break;
+	}
+	}
 }
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
@@ -1708,7 +1782,19 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 	PdfWriter::CPage* pPage = pDoc->GetPage(nPageIndex);
 	int nObjID = m_mObjManager.FindObj(pPage);
 	if (nObjID > 0)
+	{
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefID = m_pReader->FindRefNum(nObjID, &pPDFDocument, &nStartRefID);
+		if (nRefID > 0)
+		{
+			Object oRef;
+			// TODO узнать gen
+			oRef.initRef(nRefID, 0);
+			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
+		}
 		pPage->SetHidden();
+	}
 
 	return pDoc->DeletePage(nPageIndex);
 }
@@ -2009,6 +2095,16 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
 	if (pObj)
 	{
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefID = m_pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
+		if (nRefID > 0)
+		{
+			Object oRef;
+			// TODO узнать gen
+			oRef.initRef(nRefID, 0);
+			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
+		}
 		pObj->SetHidden();
 		return true;
 	}

@@ -53,5 +53,10 @@ void VCenter::readFields(CFRecord& record)
 	record >> vcenter;
 }
 
+void VCenter::writeFields(CFRecord& record)
+{
+    record << vcenter;
+}
+
 } // namespace XLS
 

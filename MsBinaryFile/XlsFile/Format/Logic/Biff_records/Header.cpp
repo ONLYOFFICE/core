@@ -68,5 +68,10 @@ void Header::readFields(CFRecord& record)
 	}
 }
 
+void Header::writeFields(CFRecord& record)
+{
+    record << ast;
+}
+
 } // namespace XLS
 

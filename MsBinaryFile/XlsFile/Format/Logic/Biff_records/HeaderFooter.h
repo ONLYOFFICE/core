@@ -47,21 +47,22 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeHeaderFooter;
 
 //-----------------------------
-	std::wstring	guidSView;
+    std::wstring	guidSView = L"";
 	
-	bool			fHFDiffOddEven;
-	bool			fHFDiffFirst;
-	bool			fHFScaleWithDoc;
-	bool			fHFAlignMargins;
+    bool			fHFDiffOddEven = false;
+    bool			fHFDiffFirst = false;
+    bool			fHFScaleWithDoc = false;
+    bool			fHFAlignMargins = false;
 	
-	_UINT16			cchHeaderEven;
-	_UINT16			cchFooterEven;
-	_UINT16			cchHeaderFirst;
-	_UINT16			cchFooterFirst;
+    _UINT16			cchHeaderEven = 0;
+    _UINT16			cchFooterEven = 0;
+    _UINT16			cchHeaderFirst = 0;
+    _UINT16			cchFooterFirst = 0;
 
 	XLUnicodeString strHeaderEven;
 	XLUnicodeString strFooterEven;

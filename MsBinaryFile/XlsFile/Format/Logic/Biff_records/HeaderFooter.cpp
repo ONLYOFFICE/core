@@ -80,5 +80,39 @@ void HeaderFooter::readFields(CFRecord& record)
 	}
 }
 
+void HeaderFooter::writeFields(CFRecord& record)
+{
+    FrtHeader frtHeader(rt_HeaderFooter);
+    frtHeader.grbitFrt.fFrtRef = 0;
+    frtHeader.grbitFrt.fFrtAlert = 0;
+    record << frtHeader;
+    _GUID_ guid_num(0, 0, 0, 0);
+    record << guid_num;
+    _UINT16 flags = 0;
+    SETBIT(flags, 0, fHFDiffOddEven);
+    SETBIT(flags, 1, fHFDiffFirst);
+    SETBIT(flags, 2, fHFScaleWithDoc);
+    SETBIT(flags, 3, fHFAlignMargins);
+    record << flags;
+    record << cchHeaderEven << cchFooterEven << cchHeaderFirst << cchFooterFirst;
+    if(cchHeaderEven && strHeaderEven.getSize())
+    {
+        record << strHeaderEven;
+    }
+    if(cchFooterEven && strFooterEven.getSize())
+    {
+        record << strFooterEven;
+    }
+    if(cchHeaderFirst && strHeaderFirst.getSize())
+    {
+        record << strHeaderFirst;
+    }
+    if(cchFooterFirst && strFooterFirst.getSize())
+    {
+        record << strFooterFirst;
+    }
+
+}
+
 } // namespace XLS
 

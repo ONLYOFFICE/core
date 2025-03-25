@@ -71,4 +71,22 @@ namespace NSDocxRenderer
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const = 0;
 	};
+
+	enum class eBaseItemCmpType
+	{
+		bictVertical,
+		bictHorizontal
+	};
+
+	template <eBaseItemCmpType CmpType>
+	struct CBaseItemCmp
+	{
+		bool operator() (const CBaseItem& item1, const CBaseItem& item2) const
+		{
+			if (CmpType == eBaseItemCmpType::bictVertical)
+				return item1.m_dBot < item2.m_dBot;
+			if (CmpType == eBaseItemCmpType::bictHorizontal)
+				return item1.m_dLeft < item2.m_dLeft;
+		}
+	};
 }

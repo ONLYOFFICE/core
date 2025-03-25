@@ -45,12 +45,6 @@ namespace NSDocxRenderer
 			else
 				m_oClipVectorGraphics = std::move(m_oCurrVectorGraphics);
 		}
-
-		// write in a new cont if new text command
-		else if (lType == c_nTextType)
-		{
-			m_oContBuilder.NullCurrCont();
-		}
 	}
 
 	void CPage::Clear()
@@ -746,6 +740,10 @@ namespace NSDocxRenderer
 		SplitLines();
 		AnalyzeOverlapLines();
 
+		for (auto& line : m_arTextLines)
+			if (line && line->m_arConts.empty())
+				line = nullptr;
+
 		auto right = MoveNullptr(m_arTextLines.begin(), m_arTextLines.end());
 		m_arTextLines.erase(right, m_arTextLines.end());
 
@@ -1410,72 +1408,95 @@ namespace NSDocxRenderer
 
 	void CPage::BuildTextLineGroups()
 	{
-		struct Group {
-			double left{};
-			double right{};
-			double top{};
-			double bot{};
-			bool closed{false};
-		};
+		if (m_arTextLines.empty())
+			return;
 
-		std::vector<Group> groups;
+		double curr_bot = std::numeric_limits<double>::max();
+		std::vector<std::vector<text_line_ptr_t>> bot_aligned_text_lines;
 
-		for (auto& line : m_arTextLines)
+		for (const auto& line : m_arTextLines)
 		{
-			bool is_found = false;
-			bool is_create_new = false;
-			size_t insert_index = 0;
-
-			for (size_t index = 0; index < groups.size(); ++index)
+			if (fabs(line->m_dBotWithMaxDescent - curr_bot) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
 			{
-				auto& group = groups[index];
-				bool is_crossing_h = !((line->m_dRight <= group.left) || (line->m_dLeft >= group.right));
-				bool is_crossing_v = !((line->m_dBotWithMaxDescent <= group.top) || (line->m_dTopWithMaxAscent >= group.bot));
-
-				if (!group.closed && is_crossing_h)
-				{
-					if (is_crossing_v)
-					{
-						groups[index].closed = true;
-						continue;
-					}
-					if (!is_found && !is_create_new)
-					{
-						is_found = true;
-						insert_index = index;
-					}
-					else
-					{
-						groups[insert_index].closed = true;
-						groups[index].closed = true;
-						is_create_new = true;
-						is_found = false;
-					}
-				}
-			}
-			if (is_found)
-			{
-				groups[insert_index].left = std::min(groups[insert_index].left, line->m_dLeft);
-				groups[insert_index].right = std::max(groups[insert_index].right, line->m_dRight);
-				groups[insert_index].bot = std::max(groups[insert_index].bot, line->m_dBot);
-				groups[insert_index].top = std::min(groups[insert_index].top, line->m_dTop);
-				m_arTextLineGroups[insert_index].push_back(line);
+				bot_aligned_text_lines.back().push_back(line);
 			}
 			else
 			{
-				Group new_group;
-				new_group.left = line->m_dLeft;
-				new_group.right = line->m_dRight;
-				new_group.top = line->m_dTop;
-				new_group.bot = line->m_dBot;
-				new_group.closed = false;
-				groups.push_back(new_group);
-
-				std::vector<text_line_ptr_t> line_group;
-				line_group.push_back(line);
-				m_arTextLineGroups.push_back(line_group);
+				bot_aligned_text_lines.push_back({});
+				bot_aligned_text_lines.back().push_back(line);
+				curr_bot = line->m_dBotWithMaxDescent;
 			}
 		}
+
+		std::vector<bool> ar_is_group_open;
+		for (const auto& text_lines : bot_aligned_text_lines)
+		{
+			// lines [i] belongs group [j] (like a matrix)
+			// only 1 [i] to 1 [j].
+			std::vector<std::vector<bool>> lines_x_groups(text_lines.size());
+			for (auto& lxg : lines_x_groups)
+				lxg.resize(m_arTextLineGroups.size());
+
+			for (size_t i = 0; i < text_lines.size(); ++i)
+			{
+				for (size_t j = 0; j < m_arTextLineGroups.size(); ++j)
+				{
+					if (!ar_is_group_open[j])
+						continue;
+
+					// line inside of the group
+					if (CmpOrEqual(text_lines[i]->m_dLeft, m_arTextLineGroups[j]->m_dRight, c_dTHE_SAME_STRING_X_PRECISION_MM) &&
+					        CmpOrEqual(m_arTextLineGroups[j]->m_dLeft, text_lines[i]->m_dRight, c_dTHE_SAME_STRING_X_PRECISION_MM))
+					{
+						lines_x_groups[i][j] = true;
+					}
+				}
+			}
+
+			for (size_t j = 0; j < m_arTextLineGroups.size(); ++j)
+			{
+				size_t lines_counter = 0;
+				for (size_t i = 0; i < text_lines.size(); ++i)
+					if (lines_x_groups[i][j])
+						lines_counter++;
+
+				// if lines_counter > 1 then group is overloaded - 1 group 1 text line
+				if (lines_counter > 1)
+					ar_is_group_open[j] = false;
+			}
+
+			std::vector<group_text_line_ptr_t> groups_add_later;
+
+			for (size_t i = 0; i < text_lines.size(); ++i)
+			{
+				std::vector<size_t> groups_taken;
+				for (size_t j = 0; j < m_arTextLineGroups.size(); ++j)
+				{
+					if (!ar_is_group_open[j])
+						continue;
+
+					if (lines_x_groups[i][j])
+						groups_taken.push_back(j);
+				}
+				if (groups_taken.size() != 1)
+				{
+					for (const auto& taken : groups_taken)
+						ar_is_group_open[taken] = false;
+
+					auto group_new = std::make_shared<CTextLineGroup>();
+					group_new->AddTextLine(text_lines[i]);
+					groups_add_later.push_back(std::move(group_new));
+					ar_is_group_open.push_back(true);
+				}
+				else
+				{
+					m_arTextLineGroups[groups_taken[0]]->AddTextLine(text_lines[i]);
+				}
+			}
+			for (auto&& group : groups_add_later)
+				m_arTextLineGroups.push_back(std::move(group));
+		}
+		return;
 	}
 
 	void CPage::AnalyzeOverlapLines()
@@ -1873,7 +1894,7 @@ namespace NSDocxRenderer
 		         m_eTextAssociationType == TextAssociationType::tatParagraphToShape)
 		{
 			for (auto& g : m_arTextLineGroups)
-				build_paragraphs(g);
+				build_paragraphs(g->m_arTextLines);
 		}
 
 		std::sort(ar_paragraphs.begin(), ar_paragraphs.end(), [] (const paragraph_ptr_t& a, const paragraph_ptr_t& b) {

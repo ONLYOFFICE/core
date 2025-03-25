@@ -59,10 +59,7 @@ namespace NSDocxRenderer
 	class CTextLineGroup : public CBaseItem
 	{
 	public:
-
 		void AddTextLine(const std::shared_ptr<CTextLine>& pTextLine);
-
-	private:
 		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 	};
 }

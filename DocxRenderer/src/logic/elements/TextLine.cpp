@@ -339,4 +339,10 @@ namespace NSDocxRenderer
 			nSymPos = 0;
 		}
 	}
+
+	void CTextLineGroup::AddTextLine(const std::shared_ptr<CTextLine>& pTextLine)
+	{
+		this->CBaseItem::RecalcWithNewItem(pTextLine.get());
+		m_arTextLines.push_back(pTextLine);
+	}
 }

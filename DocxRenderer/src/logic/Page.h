@@ -87,6 +87,7 @@ namespace NSDocxRenderer
 		using shape_ptr_t = std::shared_ptr<CShape>;
 		using cont_ptr_t = std::shared_ptr<CContText>;
 		using text_line_ptr_t = std::shared_ptr<CTextLine>;
+		using group_text_line_ptr_t = std::shared_ptr<CTextLineGroup>;
 		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
 		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
@@ -196,14 +197,13 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
-		std::vector<shape_ptr_t>     m_arShapes;
-		std::vector<text_line_ptr_t> m_arTextLines;
-		std::vector<paragraph_ptr_t> m_arParagraphs;
-		std::vector<table_ptr_t>     m_arTables;
+		std::vector<shape_ptr_t>           m_arShapes;
+		std::vector<text_line_ptr_t>       m_arTextLines;
+		std::vector<group_text_line_ptr_t> m_arTextLineGroups;
+		std::vector<paragraph_ptr_t>       m_arParagraphs;
+		std::vector<table_ptr_t>           m_arTables;
+		std::vector<ooxml_item_ptr_t>      m_arOutputObjects;
 
-		std::vector<std::vector<text_line_ptr_t>> m_arTextLineGroups;
-
-		std::vector<ooxml_item_ptr_t>   m_arOutputObjects;
 		std::vector<std::wstring> m_arCompleteObjectsXml;
 
 		size_t m_nShapeOrder = 0;

@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <limits>
 
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../DesktopEditor/common/StringUTF32.h"
@@ -26,4 +27,13 @@ It MoveNullptr(It start, It end)
 		++right;
 
 	return right;
+}
+
+template <class T, class Cmp = std::less<T>>
+bool CmpOrEqual(const T& val1,
+                const T& val2,
+                const T& eps = std::numeric_limits<T>::epsilon(),
+                const Cmp& cmp = Cmp())
+{
+	return std::abs(val1 - val2) < eps || cmp(val1, val2);
 }

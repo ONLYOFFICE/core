@@ -49,6 +49,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeBOF;
 
@@ -87,9 +88,9 @@ public:
 	bool fGlJmp;
 	bool fFontLimit;
 	
-	_UINT16 verXLHigh;
-	unsigned char	verLowestBiff;
-	unsigned char	verLastXLSaved;
+    _UINT16 verXLHigh = 0;
+    unsigned char	verLowestBiff = 0;
+    unsigned char	verLastXLSaved = 0;
 	
 	_CP_OPT(unsigned int) stream_ptr;
 

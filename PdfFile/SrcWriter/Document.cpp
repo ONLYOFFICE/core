@@ -732,7 +732,6 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
-		m_pXref->Add(pAnnot);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
@@ -1503,6 +1502,10 @@ namespace PdfWriter
 		m_mAnnotations[nID] = pAnnot;
 
 		return true;
+	}
+	void CDocument::AddParent(int nID, CDictObject* pParent)
+	{
+		m_mParents[nID] = pParent;
 	}
 	bool CDocument::EditParent(CXref* pXref, CDictObject* pParent, int nID)
 	{

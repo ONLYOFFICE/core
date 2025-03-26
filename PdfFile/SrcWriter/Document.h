@@ -203,6 +203,7 @@ namespace PdfWriter
 		bool              MovePage(int nPageIndex, int nPos);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
+		void              AddParent(int nID, CDictObject* pParent);
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
 		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);

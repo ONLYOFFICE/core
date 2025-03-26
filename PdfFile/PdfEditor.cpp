@@ -187,6 +187,104 @@ bool SplitSkipDict(Object* obj, CObjectsManager* pManager, int nStartRefID)
 
 	return false;
 }
+PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CXref* pXref)
+{
+	PdfWriter::CAnnotation* pAnnot = NULL;
+	if (oType->isName("Text"))
+		pAnnot = new PdfWriter::CTextAnnotation(pXref);
+	else if (oType->isName("Ink"))
+		pAnnot = new PdfWriter::CInkAnnotation(pXref);
+	else if (oType->isName("Line"))
+		pAnnot = new PdfWriter::CLineAnnotation(pXref);
+	else if (oType->isName("Highlight") || oType->isName("Underline") || oType->isName("Squiggly") || oType->isName("StrikeOut"))
+		pAnnot = new PdfWriter::CTextMarkupAnnotation(pXref);
+	else if (oType->isName("Square") || oType->isName("Circle"))
+		pAnnot = new PdfWriter::CSquareCircleAnnotation(pXref);
+	else if (oType->isName("Polygon") || oType->isName("PolyLine"))
+		pAnnot = new PdfWriter::CPolygonLineAnnotation(pXref);
+	else if (oType->isName("FreeText"))
+		pAnnot = new PdfWriter::CFreeTextAnnotation(pXref);
+	else if (oType->isName("Caret"))
+		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
+	else if (oType->isName("Stamp"))
+		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+	else if (oType->isName("Popup"))
+		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
+	else if (oType->isName("Widget"))
+	{
+		char* sName = NULL;
+		Object oFT;
+		if (oAnnot->dictLookup("FT", &oFT)->isName())
+			sName = oFT.getName();
+
+		if (!sName)
+		{
+			Object oParent, oParent2;
+			oAnnot->dictLookup("Parent", &oParent);
+			while (oParent.isDict())
+			{
+				if (oParent.dictLookup("FT", &oFT)->isName())
+				{
+					sName = oFT.getName();
+					break;
+				}
+				oFT.free();
+				oParent.dictLookup("Parent", &oParent2);
+				oParent.free();
+				oParent = oParent2;
+			}
+			oParent.free();
+		}
+
+		if (!sName)
+		{
+			oFT.free();
+			return new PdfWriter::CWidgetAnnotation(pXref, PdfWriter::EAnnotType::AnnotWidget);
+		}
+		if (strcmp("Btn", sName) == 0)
+		{
+			bool bPushButton = false;
+			oFT.free();
+			int nFf = 0;
+			if (oAnnot->dictLookup("Ff", &oFT)->isInt())
+				nFf = oFT.getInt();
+			if (!nFf)
+			{
+				Object oParent, oParent2;
+				oAnnot->dictLookup("Parent", &oParent);
+				while (oParent.isDict())
+				{
+					if (oParent.dictLookup("Ff", &oFT)->isInt())
+					{
+						nFf = oFT.getInt();
+						break;
+					}
+					oFT.free();
+					oParent.dictLookup("Parent", &oParent2);
+					oParent.free();
+					oParent = oParent2;
+				}
+				oParent.free();
+			}
+
+			bPushButton = (bool)((nFf >> 16) & 1);
+			if (bPushButton)
+				pAnnot = new PdfWriter::CPushButtonWidget(pXref);
+			else
+				pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+		}
+		else if (strcmp("Tx", sName) == 0)
+			pAnnot = new PdfWriter::CTextWidget(pXref);
+		else if (strcmp("Ch", sName) == 0)
+			pAnnot = new PdfWriter::CChoiceWidget(pXref);
+		else if (strcmp("Sig", sName) == 0)
+			pAnnot = new PdfWriter::CSignatureWidget(pXref);
+		else
+			pAnnot = new PdfWriter::CWidgetAnnotation(pXref, PdfWriter::EAnnotType::AnnotWidget);
+		oFT.free();
+	}
+	return pAnnot;
+}
 PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
@@ -261,7 +359,19 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	{
 		if (SplitSkipDict(obj, pManager, nStartRefID))
 			return NULL;
-		PdfWriter::CDictObject* pDict = new PdfWriter::CDictObject();
+
+		Object oType, oSubtype;
+		PdfWriter::CDictObject* pDict = NULL;
+		if (obj->dictLookup("Type", &oType)->isName("Annot") && obj->dictLookup("Subtype", &oSubtype)->isName())
+		{
+			PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, NULL);
+			pDoc->AddAnnotation(nAddObjToXRef + nStartRefID, pAnnot);
+			pDict = pAnnot;
+		}
+		oType.free(); oSubtype.free();
+
+		if (!pDict)
+			pDict = new PdfWriter::CDictObject();
 		if (nAddObjToXRef > 0)
 		{
 			pDoc->AddObject(pDict);
@@ -351,6 +461,27 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 	}
 
 	return pBase;
+}
+void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfWriter::CObjectBase* pObj)
+{
+	if (pObj->GetType() != PdfWriter::object_type_DICT)
+		return;
+	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObj;
+	if (pDict->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+		return;
+
+	int nID = pManager->FindObj(pObj);
+	if (pDoc->GetParent(nID))
+		return;
+	pDoc->AddParent(nID, pDict);
+
+	PdfWriter::CObjectBase* pObjKids = pDict->Get("Kids");
+	if (!pObjKids || pObjKids->GetType() != PdfWriter::object_type_ARRAY)
+		return;
+
+	PdfWriter::CArrayObject* pKids = (PdfWriter::CArrayObject*)pObjKids;
+	for (int i = 0; i < pKids->GetCount(); ++i)
+		AddWidgetParent(pDoc, pManager, pKids->Get(i));
 }
 PdfWriter::CDictObject* GetWidgetParent(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, Object* pParentRef, int nStartRefID)
 {
@@ -1379,6 +1510,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	int nPagesBefore = m_pReader->GetNumPages() - pPDFDocument->getNumPages();
 
 	if (unLength == 0)
 		unLength = pPDFDocument->getNumPages();
@@ -1394,6 +1526,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
 		pDoc->AddPage(pDoc->GetPagesCount(), pPage);
+		pDoc->AddEditPage(pPage, nPagesBefore + i);
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;
@@ -1573,6 +1706,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 							{
 								pFields->Add(pObj);
 								m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+								AddWidgetParent(pDoc, &m_mObjManager, pObj);
 								continue;
 							}
 						}
@@ -1754,22 +1888,10 @@ bool CPdfEditor::MergePages(const int* arrPageIndex, unsigned int unLength)
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
-	int nPagesBefore = m_pReader->GetNumPages() - pDocument->getNumPages();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
 	bool bRes = SplitPages(arrPageIndex, unLength, pDocument, nStartRefID);
 	if (!bRes)
 		return false;
-
-	// Добавление merge страниц в редактируемые
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	Catalog* pCatalog = pDocument->getCatalog();
-	for (int i = 0, nPages = unLength == 0 ? pDocument->getNumPages() : unLength; i < nPages; ++i)
-	{
-		Ref* pPageRef = pCatalog->getPageRef((arrPageIndex ? arrPageIndex[i] : i) + 1);
-		PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(pPageRef->num + nStartRefID);
-		if (pObj && pObj->GetType() == PdfWriter::object_type_DICT && ((PdfWriter::CDictObject*)pObj)->GetDictType() == PdfWriter::dict_type_PAGE)
-			pDoc->AddEditPage((PdfWriter::CPage*)pObj, nPagesBefore + i);
-	}
 
 	return bRes;
 }
@@ -1788,9 +1910,9 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 		int nRefID = m_pReader->FindRefNum(nObjID, &pPDFDocument, &nStartRefID);
 		if (nRefID > 0)
 		{
+			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 			Object oRef;
-			// TODO узнать gen
-			oRef.initRef(nRefID, 0);
+			oRef.initRef(nRefID, pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
 		pPage->SetHidden();
@@ -1831,10 +1953,7 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 {
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
 	if (pObj)
-	{
-		pObj->SetHidden();
 		return true;
-	}
 
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
@@ -2100,9 +2219,9 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		int nRefID = m_pReader->FindRefNum(nID, &pPDFDocument, &nStartRefID);
 		if (nRefID > 0)
 		{
+			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 			Object oRef;
-			// TODO узнать gen
-			oRef.initRef(nRefID, 0);
+			oRef.initRef(nRefID, pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
 		pObj->SetHidden();
@@ -2193,9 +2312,9 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 		if (nRefID < 0)
 			continue;
 
+		XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 		Object oParentRef;
-		// TODO узнать gen родителя
-		oParentRef.initRef(nRefID, 0);
+		oParentRef.initRef(nRefID, pEntry->gen);
 		GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
 		// TODO перевыставить детей
 		oParentRef.free();

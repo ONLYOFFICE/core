@@ -1779,6 +1779,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		if (pAnnot)
 		{
+			m_pDocument->AddObject(pAnnot);
 			m_pDocument->AddAnnotation(nID, pAnnot);
 			pPage->AddAnnotation(pAnnot);
 		}

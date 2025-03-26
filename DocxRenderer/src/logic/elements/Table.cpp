@@ -209,4 +209,10 @@ namespace NSDocxRenderer
 		return m_arRows.empty();
 	}
 
+	void CTextCell::AddTextLine(const std::shared_ptr<CTextLine>& pTextLine)
+	{
+		CBaseItem::RecalcWithNewItem(pTextLine.get());
+		m_arTextLines.push_back(pTextLine);
+	}
+
 } // namespace NSDocxRenderer

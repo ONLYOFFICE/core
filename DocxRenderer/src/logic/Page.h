@@ -100,8 +100,11 @@ namespace NSDocxRenderer
 		// returns std::vector of text lines builded from m_arConts
 		std::vector<text_line_ptr_t> BuildTextLines(const std::vector<cont_ptr_t>& arConts);
 
+		// build text line groups
+		std::vector<std::shared_ptr<CTextLineGroup>> BuildTextLineGroups();
+
 		// returns std::vector of paragraphs builded from m_arTextLines
-		std::vector<paragraph_ptr_t> BuildParagraphs();
+		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<std::shared_ptr<CTextLineGroup>>& arTextLineGroups);
 
 		// returns std::vector of tables builded from shapes and paragraphes
 		std::vector<table_ptr_t> BuildTables();
@@ -120,9 +123,6 @@ namespace NSDocxRenderer
 
 		// analyze m_arTextLines and add effects, adds diac, super-sub scripts etc.
 		void AnalyzeTextLines();
-
-		// build text line groups
-		void BuildTextLineGroups();
 
 		// analyze drop caps (creates shapes)
 		void AnalyzeDropCaps();
@@ -197,12 +197,11 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
-		std::vector<shape_ptr_t>           m_arShapes;
-		std::vector<text_line_ptr_t>       m_arTextLines;
-		std::vector<group_text_line_ptr_t> m_arTextLineGroups;
-		std::vector<paragraph_ptr_t>       m_arParagraphs;
-		std::vector<table_ptr_t>           m_arTables;
-		std::vector<ooxml_item_ptr_t>      m_arOutputObjects;
+		std::vector<shape_ptr_t>      m_arShapes;
+		std::vector<text_line_ptr_t>  m_arTextLines;
+		std::vector<paragraph_ptr_t>  m_arParagraphs;
+		std::vector<table_ptr_t>      m_arTables;
+		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
 
 		std::vector<std::wstring> m_arCompleteObjectsXml;
 

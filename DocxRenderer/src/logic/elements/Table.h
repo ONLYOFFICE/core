@@ -103,6 +103,7 @@ namespace NSDocxRenderer
 	class CTextCell : public CBaseItem
 	{
 	public:
+		void AddTextLine(const std::shared_ptr<CTextLine>& pTextLine);
 		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 	};
 } // namespace NSDocxRenderer

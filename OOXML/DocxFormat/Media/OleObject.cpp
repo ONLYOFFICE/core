@@ -31,17 +31,41 @@
  */
 
 #include "OleObject.h"
+#include "Image.h"
 
 namespace OOX
 {
-	OleObject::OleObject(OOX::Document *pMain, bool bMsPackage, bool bDocument) : Media (pMain, bDocument)
+	OleObject::OleObject(OOX::Document *pMain, bool bMsPackage, bool bDocument) : OOX::IFileContainer(pMain), Media (pMain, bDocument)
 	{
 		m_bMsPackage = bMsPackage;
 	}
-	OleObject::OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage) : Media (pMain)
+	OleObject::OleObject(OOX::Document *pMain, const OOX::CPath& filename, bool bMsPackage) : OOX::IFileContainer(pMain), Media (pMain)
 	{
 		m_bMsPackage = bMsPackage;
 		read(filename);
+	}
+	void OleObject::read(const CPath& oFilePath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
+	void OleObject::read(const CPath& oRootPath, const CPath& oFilePath)
+	{
+		IFileContainer::Read(oRootPath, oFilePath);
+		
+		Media::read(oFilePath);
+
+		smart_ptr<OOX::File> pFile = this->Find(OOX::FileTypes::Image);
+		Image* pImage = dynamic_cast<Image*>(pFile.GetPointer());
+		if (pImage)
+		{
+			m_filenameCache = pImage->filename();
+		}
+	}
+	void OleObject::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		Media::write(oFilePath, oDirectory, oContent);
+		IFileContainer::Write(oFilePath, oDirectory, oContent);
 	}
 	const FileType OleObject::type() const
 	{

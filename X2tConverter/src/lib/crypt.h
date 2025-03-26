@@ -231,6 +231,14 @@ namespace NExtractTools
 					return fromPresentation(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX, params, convertParams);
 				}
 				break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDM:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTM:
+				{
+					return fromDraw(sResultDecryptFile, AVS_OFFICESTUDIO_FILE_DRAW_VSDX, params, convertParams);
+				}
+				break;
 				}
 			}
 		}

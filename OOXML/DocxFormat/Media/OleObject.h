@@ -30,15 +30,14 @@
  *
  */
 #pragma once
-#ifndef OOX_OLE_OBJECT_INCLUDE_H_
-#define OOX_OLE_OBJECT_INCLUDE_H_
 
+#include "../../DocxFormat/IFileContainer.h"
 #include "Media.h"
 #include "../../XlsxFormat/FileTypes_Spreadsheet.h"
 
 namespace OOX
 {
-	class OleObject : public Media
+	class OleObject : public OOX::IFileContainer, public Media
 	{
 	public:
 		OleObject(OOX::Document *pMain, bool bMsPackage = false, bool bDocument = true);
@@ -48,6 +47,10 @@ namespace OOX
 
 		virtual const CPath DefaultDirectory() const;
 		virtual const CPath DefaultFileName() const;
+
+		virtual void read(const CPath& oFilePath);
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath);
+		virtual void write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const;
 
 		void set_filename_cache(const std::wstring & file_path);
 		void set_filename_cache(CPath & file_path);
@@ -61,5 +64,3 @@ namespace OOX
 		bool	m_bMsPackage;
 	};
 } // namespace OOX
-
-#endif // OOX_OLE_OBJECT_INCLUDE_H_

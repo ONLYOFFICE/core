@@ -447,6 +447,7 @@ namespace PdfWriter
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
+		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);

@@ -102,10 +102,8 @@ namespace OOX
 		virtual const CPath DefaultDirectory() const;
 		virtual const CPath DefaultFileName() const;
 
-	// Attributes
 		SimpleTypes::CGuid   m_oItemID;
 
-	// Childs
 		nullable<CShemaRefs> m_oShemaRefs;
 //------------- for write from binary
 		std::wstring m_oCustomXmlContent;

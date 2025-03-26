@@ -44,6 +44,7 @@
 #include "../Format/math_layout_elements.h"
 #include "../Format/math_limit_elements.h"
 #include "../Format/math_token_elements.h"
+#include "../Format/style_text_properties.h"
 
 #include <set>
 #include <vector>
@@ -173,7 +174,30 @@ namespace Oox2Odf
 		
 		brackets().resize(1);
 
-		bool bStart = odf_context()->start_math();
+		int base_font_size = current_font_size.empty() ? 12 : current_font_size.back();
+		std::wstring base_font_color;
+
+		if (odf_context()->is_child_text_context() && odf_context()->drawing_context())
+		{
+			if (odf_context()->drawing_context()->get_text_properties())
+			{
+				if (odf_context()->drawing_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		else
+		{
+			if (odf_context()->text_context()->get_text_properties())
+			{
+				if (odf_context()->text_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
 		
 		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
 		{
@@ -183,6 +207,7 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
 			starMathConverter.StartConversion(oox_math);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
@@ -236,7 +261,30 @@ namespace Oox2Odf
 	{
 		if (!oox_math_para) return;
 
-		bool bStart = odf_context()->start_math();
+		int base_font_size = current_font_size.empty() ? 12 : current_font_size.back();
+		std::wstring base_font_color;
+
+		if (odf_context()->is_child_text_context() && odf_context()->drawing_context())
+		{
+			if (odf_context()->drawing_context()->get_text_properties())
+			{
+				if (odf_context()->drawing_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		else
+		{
+			if (odf_context()->text_context()->get_text_properties())
+			{
+				if (odf_context()->text_context()->get_text_properties()->fo_color_)
+				{
+					base_font_color = odf_context()->drawing_context()->get_text_properties()->fo_color_->get_hex_value();
+				}
+			}
+		}
+		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
 
 		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
 		{
@@ -245,6 +293,7 @@ namespace Oox2Odf
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
+			starMathConverter.SetBaseAttribute(base_font_color,base_font_size);
 			starMathConverter.StartConversion(oox_math_para);
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
@@ -1203,46 +1252,72 @@ namespace Oox2Odf
 	{
 		if (!oox_mrun) return;	
 
-		convert(oox_mrun->m_oAnnotationRef.GetPointer());
-		convert(oox_mrun->m_oARPr.GetPointer());
-		convert(oox_mrun->m_oBr.GetPointer());
-		convert(oox_mrun->m_oCommentReference.GetPointer());
-		convert(oox_mrun->m_oContentPart.GetPointer());
-		convert(oox_mrun->m_oContinuationSeparator.GetPointer());
-		convert(oox_mrun->m_oCr.GetPointer());
-		convert(oox_mrun->m_oDayLong.GetPointer());
-		convert(oox_mrun->m_oDayShort.GetPointer());
 		convert(oox_mrun->m_oDel.GetPointer());
-		convert(oox_mrun->m_oDelInstrText.GetPointer());
-		convert(oox_mrun->m_oDelText.GetPointer());
-		convert(oox_mrun->m_oDrawing.GetPointer());
-		convert(oox_mrun->m_oEndnoteRef.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oFldChar.GetPointer());
-		convert(oox_mrun->m_oFootnoteRef.GetPointer());
-		convert(oox_mrun->m_oFootnoteReference.GetPointer());
 		convert(oox_mrun->m_oIns.GetPointer());
-		convert(oox_mrun->m_oInstrText.GetPointer());
-		convert(oox_mrun->m_oLastRenderedPageBreak.GetPointer());
-		convert(oox_mrun->m_oMonthLong.GetPointer());
-		convert(oox_mrun->m_oMonthShort.GetPointer());
-		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		convert(oox_mrun->m_oARPr.GetPointer());
 		bool clrFlag = convert(oox_mrun->m_oRPr.GetPointer());
-		convert(oox_mrun->m_oMText.GetPointer());
-		convert(oox_mrun->m_oNoBreakHyphen.GetPointer());
-		convert(oox_mrun->m_oObject.GetPointer());
-		convert(oox_mrun->m_oPgNum.GetPointer());
-		convert(oox_mrun->m_oPtab.GetPointer());
-		convert(oox_mrun->m_oRuby.GetPointer());
-		convert(oox_mrun->m_oSeparator.GetPointer());
-		convert(oox_mrun->m_oSoftHyphen.GetPointer());
-		convert(oox_mrun->m_oSym.GetPointer());
-		convert(oox_mrun->m_oTab.GetPointer());
-		convert(oox_mrun->m_oText.GetPointer());
-		convert(oox_mrun->m_oYearLong.GetPointer());
-		convert(oox_mrun->m_oYearShort.GetPointer());
-		
+		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		for (size_t i = 0; i < oox_mrun->m_arrItems.size(); ++i)
+		{
+			switch (oox_mrun->m_arrItems[i]->getType())
+			{
+			case OOX::et_w_fldChar:
+			{
+				OOX::Logic::CFldChar* pFldChar = dynamic_cast<OOX::Logic::CFldChar*>(oox_mrun->m_arrItems[i]);
+				convert(pFldChar);
+			}break;
+			case OOX::et_w_instrText:
+			{
+				OOX::Logic::CInstrText* pInstrText = dynamic_cast<OOX::Logic::CInstrText*>(oox_mrun->m_arrItems[i]);
+				convert(pInstrText);
+			}break;
+			case OOX::et_w_delText:
+			{
+				OOX::Logic::CDelText* pDelText = dynamic_cast<OOX::Logic::CDelText*>(oox_mrun->m_arrItems[i]);
+				convert(pDelText);
+			}break;
+			case OOX::et_w_lastRenderedPageBreak: // не информативное .. может быть неверно записано
+			{
+			}break;
+			case OOX::et_w_t:
+			{
+				OOX::Logic::CText* pText = dynamic_cast<OOX::Logic::CText*>(oox_mrun->m_arrItems[i]);
+				convert(pText);
+			}break;
+			case OOX::et_m_t:
+			{
+				OOX::Logic::CMText* pMText = dynamic_cast<OOX::Logic::CMText*>(oox_mrun->m_arrItems[i]);
+				convert(pMText);
+			}break;
+			case OOX::et_w_sym:
+			{
+				OOX::Logic::CSym* pSym = dynamic_cast<OOX::Logic::CSym*>(oox_mrun->m_arrItems[i]);
+				convert(pSym);
+			}break;
+			case OOX::et_w_tab:
+			{
+				OOX::Logic::CTab* pTab = dynamic_cast<OOX::Logic::CTab*>(oox_mrun->m_arrItems[i]);
+			}break;
+
+			case OOX::et_w_separator:
+			case OOX::et_w_continuationSeparator:
+			{
+			}break;
+			//contentPart
+			//cr
+			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
+			//noBreakHyphen
+			//pgNum
+			//ruby
+			//softHyphen
+			//delInstrText
+			default:
+				convert(oox_mrun->m_arrItems[i]);
+			}
+		}
+
 		if (clrFlag)
 		{
 			CLOSE_MATH_TAG;	
@@ -1260,16 +1335,18 @@ namespace Oox2Odf
 			odf_context()->settings_context()->start_view();
 				if (oox_r_pr->m_oSz.IsInit() && oox_r_pr->m_oSz->m_oVal.IsInit())
 				{
-					odf_context()->math_context()->size = oox_r_pr->m_oSz->m_oVal->GetValue();					
+					odf_context()->math_context()->font_size = oox_r_pr->m_oSz->m_oVal->GetValue();
 				}
-				else
+
+				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring((int)odf_context()->math_context()->font_size));
+				if (!odf_context()->math_context()->font_color.empty())
 				{
-					odf_context()->math_context()->size = 12;
+					odf_context()->settings_context()->add_config_content_item(L"BaseFontColor", L"string", L"#" + odf_context()->math_context()->font_color);
 				}
-				odf_context()->settings_context()->add_config_content_item(L"BaseFontHeight", L"short", std::to_wstring(odf_context()->math_context()->size));
+				
 				if (oox_r_pr->m_oRFonts.IsInit() && oox_r_pr->m_oRFonts->m_sAscii.IsInit())
 				{
-					odf_context()->math_context()->font = *oox_r_pr->m_oRFonts->m_sAscii;
+					odf_context()->math_context()->font_name = *oox_r_pr->m_oRFonts->m_sAscii;
 
 					odf_context()->settings_context()->add_config_content_item(L"FontNameFunctions", L"string", *oox_r_pr->m_oRFonts->m_sAscii);
 					odf_context()->settings_context()->add_config_content_item(L"FontNameNumbers", L"string", *oox_r_pr->m_oRFonts->m_sAscii);

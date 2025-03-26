@@ -519,6 +519,9 @@ function readAnnotAP(reader, AP)
 		// 0 - Normal, 1 - Multiply, 2 - Screen, 3 - Overlay, 4 - Darken, 5 - Lighten, 6 - ColorDodge, 7 - ColorBurn, 8 - HardLight,
 		// 9 - SoftLight, 10 - Difference, 11 - Exclusion, 12 - Hue, 13 - Saturation, 14 - Color, 15 - Luminosity
 		APi["BlendMode"] = reader.readByte();
+		let k = reader.readByte();
+		if (k != 0)
+			APi["apValue"] = reader.readString();
 	}
 }
 
@@ -651,6 +654,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			rec["name"] = reader.readString();
 		if (flags & (1 << 19))
 			rec["font"]["AP"] = reader.readString();
+		if (flags & (1 << 20))
+			rec["meta"] = reader.readString();
 		// Action
 		let nAction = reader.readInt();
 		if (nAction > 0)

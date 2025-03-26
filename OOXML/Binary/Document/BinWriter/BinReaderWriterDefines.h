@@ -1305,7 +1305,9 @@ extern int g_nCurFormatVersion;
 		StoreItemChecksum = 85,
 		ComplexFormPr     = 90,
 		ComplexFormPrType = 91,
-		OformMaster = 92
+		OformMaster = 92,
+		Border = 93,
+		Shd = 94
 	};}
 	namespace c_oSerFFData{enum c_oSerFFData
 	{

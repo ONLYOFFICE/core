@@ -39,6 +39,8 @@ struct TConversionState
 	bool m_bOpenedR;
 	bool m_bIsNote;
 
+	bool m_bInTextBox; // TODO:: используется, чтобы в wps:txbx не появилась новая фигура (посмотреть этот момент нужно подробнее)
+
 	unsigned short m_ushLastCharShapeId;
 
 	unsigned short m_ushSecdIndex;

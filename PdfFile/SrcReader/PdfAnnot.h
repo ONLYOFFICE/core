@@ -129,6 +129,7 @@ private:
 		BYTE nBlendMode;
 		std::string sAPName;
 		std::string sASName;
+		std::string sText;
 		BYTE* pAP;
 	};
 
@@ -246,6 +247,7 @@ private:
 	std::string m_sT; // Частичное имя поля - T
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
 	std::string m_sButtonFontName; // Имя шрифта кнопки
 };

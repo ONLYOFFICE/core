@@ -59,6 +59,7 @@ class GlobalParamsAdaptor : public GlobalParams
     BYTE* m_bCMapData;
     DWORD m_nCMapDataLength;
 
+	std::wstring m_sTextFormField;
     bool m_bDrawFormField;
 
 public:
@@ -90,6 +91,8 @@ public:
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 
+	void AddTextFormField(const std::wstring& sText);
+	std::string GetTextFormField();
     void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
     bool getDrawFormField() { return m_bDrawFormField; }
 private:

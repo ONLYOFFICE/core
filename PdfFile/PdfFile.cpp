@@ -36,13 +36,12 @@
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
 #include "lib/xpdf/PDFDoc.h"
+#include "Resources/BaseFonts.h"
 
 #ifndef BUILDING_WASM_MODULE
 #include "PdfEditor.h"
 #include "OnlineOfficeBinToPdf.h"
-
 #include "SrcWriter/Document.h"
-
 #else
 class CPdfEditor
 {
@@ -164,6 +163,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 	if (!m_pInternal->pEditor)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
+}
+bool CPdfFile::MovePage(int nPageIndex, int nPos)
+{
+	if (!m_pInternal->pEditor)
+		return false;
+	return m_pInternal->pEditor->MovePage(nPageIndex, nPos);
 }
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
@@ -907,6 +912,28 @@ HRESULT CPdfFile::put_FontName(const std::wstring& wsName)
 				if (bItalic)
 					lStyle |= 2;
 				put_FontStyle(lStyle);
+			}
+
+			NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+			if (wsFontPath == sSub && (!pMemoryStorage || !pMemoryStorage->Get(wsFontPath)))
+			{
+				const BYTE* pData14 = NULL;
+				unsigned int nSize14 = 0;
+				std::wstring wsTempFileName = m_pInternal->wsTempFolder + L"/" + wsFontPath + L".base";
+				if (NSFile::CFileBinary::Exists(wsTempFileName))
+					wsFontPath = wsTempFileName;
+				else if (PdfReader::GetBaseFont(sSub, pData14, nSize14))
+				{
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(wsTempFileName))
+					{
+						oFile.WriteFile((BYTE*)pData14, nSize14);
+						wsFontPath = wsTempFileName;
+					}
+					else if (!wsTempFileName.empty())
+						NSFile::CFileBinary::Remove(wsTempFileName);
+					oFile.CloseFile();
+				}
 			}
 		}
 		else

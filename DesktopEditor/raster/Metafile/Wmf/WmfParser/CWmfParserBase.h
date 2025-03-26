@@ -188,6 +188,7 @@ namespace MetaFile
 		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle) const;
 
 		void MoveTo(short shX, short shY);
+		void MoveToD(double dX, double dY);
 		void LineTo(short shX, short shY);
 		void ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep);
 		void ClosePath();

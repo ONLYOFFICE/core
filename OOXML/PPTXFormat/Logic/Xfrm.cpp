@@ -292,7 +292,7 @@ namespace PPTX
 		void Xfrm::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
 			if (chExtX.IsInit() && extX.IsInit())
-				pWriter->m_dCxCurShape = pWriter->m_dCyCurShape * (double)*extX / (double)*chExtX;
+				pWriter->m_dCxCurShape = pWriter->m_dCxCurShape * (double)*extX / (double)*chExtX;
 			else if (extX.IsInit())
 				pWriter->m_dCxCurShape = ((pWriter->m_bInGroup && pWriter->m_dCxCurShape > 0) ? pWriter->m_dCxCurShape : 1) * *extX;
 			

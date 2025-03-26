@@ -35,13 +35,13 @@
 #include "../../../MsBinaryFile/XlsFile/Converter/ConvertXls2Xlsx.h"
 #include "../../../MsBinaryFile/DocFile/Main/DocFormatLib.h"
 #include "../../Binary/Document/BinWriter/BinEquationWriter.h"
-#include "../../Binary/Document/BinWriter/BinWriters.h"
-#include "../../Binary/Document/BinReader/Readers.h"
+#include "../../Binary/Document/BinWriter/BinaryWriterD.h"
+#include "../../Binary/Document/BinReader/BinaryReaderD.h"
 #include "../../Binary/Document/BinReader/FileWriter.h"
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
 #include "../../Binary/Document/DocWrapper/XlsxSerializer.h"
-#include "../../Binary/Sheets/Reader/BinaryWriter.h"
-#include "../../Binary/Sheets/Writer/BinaryReader.h"
+#include "../../Binary/Sheets/Reader/BinaryWriterS.h"
+#include "../../Binary/Sheets/Writer/BinaryReaderS.h"
 #include "../../Binary/MathEquation/MathEquation.h"
 
 #include "SpTree.h"
@@ -1800,7 +1800,7 @@ namespace PPTX
 			oDrawingConverter.SetMainDocument(&oDocxSerializer);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"word");
-			oDrawingConverter.SetSrcPath(pReader->m_strFolder, 1);
+			oDrawingConverter.SetSrcPath(pReader->m_strFolder, XMLWRITER_DOC_TYPE_DOCX);
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
@@ -1873,7 +1873,7 @@ namespace PPTX
 			oDrawingConverter.m_pReader->Init(pData, 0, length);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
-			oDrawingConverter.SetSrcPath(pReader->m_strFolder, 2);
+			oDrawingConverter.SetSrcPath(pReader->m_strFolder, XMLWRITER_DOC_TYPE_XLSX);
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);

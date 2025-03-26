@@ -847,7 +847,9 @@ namespace SimpleTypes
 	enum EHexColor
 	{
 		hexcolorAuto = 0,
-		hexcolorRGB  = 1
+		hexcolorRGB  = 1,
+		hexcolorARGB = 2
+
 	};
 
 	//--------------------------------------------------------------------------------
@@ -877,10 +879,11 @@ namespace SimpleTypes
 
 	DEFINE_SIMPLE_TYPE_START(CHexColor, EHexColor, hexcolorAuto)
 	public:
-		CHexColor(unsigned char r, unsigned char g, unsigned char b);
+		CHexColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a = 255);
 
-		std::wstring   ToStringNoAlpha  () const;
+		std::wstring ToStringNoAlpha  () const;
 
+		void Set_A(unsigned char R);
 		void Set_R(unsigned char R);
 		void Set_G(unsigned char G);
 		void Set_B(unsigned char B);
@@ -896,6 +899,7 @@ namespace SimpleTypes
 
 		std::wstring m_sValue;
 
+		unsigned char m_unA = 255;
 		unsigned char m_unR = 0;
 		unsigned char m_unG = 0;
 		unsigned char m_unB = 0;

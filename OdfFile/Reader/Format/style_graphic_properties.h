@@ -96,6 +96,8 @@ public:
 	_CP_OPT(bool)							draw_fit_to_contour_;
 	_CP_OPT(std::wstring)					draw_wrap_influence_on_position_;
 
+    _CP_OPT(unsigned int)					draw_ole_draw_aspect_;
+
 	odf_types::common_draw_rel_size_attlist			common_draw_rel_size_attlist_;
 	odf_types::common_draw_fill_attlist				common_draw_fill_attlist_;  
 	odf_types::common_horizontal_margin_attlist		common_horizontal_margin_attlist_;

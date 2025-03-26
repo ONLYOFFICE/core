@@ -53,11 +53,11 @@ public:
 	static const ElementType	type = typeDVal;
 
 //-----------------------------
-	bool fWnClosed;
-	_UINT32	xLeft;
-	_UINT32	yTop;
-	_INT32	idObj;
-	_UINT32	idvMac;
+    bool fWnClosed = 0;
+    _UINT32	xLeft = 0;
+    _UINT32	yTop = 0;
+    _INT32	idObj = 0;
+    _UINT32	idvMac = 0;
 
 };
 

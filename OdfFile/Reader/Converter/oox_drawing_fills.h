@@ -135,6 +135,7 @@ namespace oox {
 		{
 			type = -1;
 			opacity = boost::none;
+			image_opacity = boost::none;
 
 			gradient.reset();
 			hatch.reset();

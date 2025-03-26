@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -58,6 +58,7 @@
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -142,11 +143,55 @@ namespace OOX
                 }
                 else
                     ptr->sortOn = 0;
-
-
                 ptr->stSslist = L"";
 				return objectPtr;
 			}
+            void CSortCondition::toBin(XLS::StreamCacheWriterPtr& writer)
+            {
+                {
+                    auto begin = writer->getNextRecord(XLSB::rt_BeginSortCond);
+                    XLS::CondDataValue condDataValue;
+                    {
+                        _UINT16 flags = 0;
+                        if(m_oDescending.IsInit())
+                            SETBIT(flags, 0, m_oDescending->GetValue())
+                        if(m_oSortBy.IsInit())
+                        {
+                            if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyValue)
+                                SETBITS(flags, 1, 4, 0)
+                            else if(m_oSortBy ==  SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor)
+                            {
+                                SETBITS(flags, 1, 4, 1)
+                                condDataValue.condDataValue = m_oDxfId->GetValue();
+                            }
+                            else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
+                            {
+                                SETBITS(flags, 1, 4, 2)
+                                condDataValue.condDataValue = m_oDxfId->GetValue();
+                            }
+                            else if(m_oSortBy == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
+                            {
+                                SETBITS(flags, 1, 4, 3)
+                            }
+
+                        }
+                        *begin << flags;
+                    }
+                    {
+                        XLSB::UncheckedRfX ref;
+                        if(m_oRef.IsInit())
+                            ref = m_oRef->GetValue();
+                        XLSB::XLNullableWideString stSslist;
+                        stSslist.setSize(0xFFFFFFFF);
+                        *begin << ref << condDataValue << stSslist;
+                    }
+                    writer->storeNextRecord(begin);
+                }
+                {
+                    auto end = writer->getNextRecord(XLSB::rt_EndSortCond);
+                    writer->storeNextRecord(end);
+                }
+            }
 			EElementType CSortCondition::getType () const
 			{
 				return et_x_SortCondition;
@@ -330,6 +375,33 @@ namespace OOX
 
 				return objectPtr;
 			}
+            void CSortState::toBin(XLS::StreamCacheWriterPtr& writer)
+            {
+                {
+                    auto begin = writer->getNextRecord(XLSB::rt_BeginSortState);
+                    _UINT16 flags = 0;
+                    if(m_oColumnSort.IsInit())
+                        SETBIT(flags, 0, m_oColumnSort->GetValue())
+                    if(m_oCaseSensitive.IsInit())
+                        SETBIT(flags, 1, m_oCaseSensitive->GetValue())
+                    if(m_oSortMethod.IsInit() && m_oSortMethod == SimpleTypes::Spreadsheet::ESortMethod::sortmethodStroke)
+                        SETBIT(flags, 2, true)
+                    *begin << flags;
+                    XLSB::UncheckedRfX rfx;
+                    if(m_oRef.IsInit())
+                        rfx = m_oRef->GetValue();
+                    *begin << rfx;
+                    writer->storeNextRecord(begin);
+                }
+                for(auto i:m_arrItems)
+                {
+                    i->toBin(writer);
+                }
+                {
+                    auto end = writer->getNextRecord(XLSB::rt_EndSortState);
+                    writer->storeNextRecord(end);
+                }
+            }
 			EElementType CSortState::getType () const
 			{
 				return et_x_SortState;
@@ -1575,6 +1647,23 @@ namespace OOX
 
 				return objectPtr;
 			}
+            void CAutofilter::toBin(XLS::StreamCacheWriterPtr& writer)
+            {
+                {
+                    auto beginRecord = writer->getNextRecord(XLSB::rt_BeginAFilter);
+                    XLSB::UncheckedRfX ref;
+                    if(m_oRef.IsInit())
+                        ref.fromString(m_oRef->GetValue());
+                    *beginRecord << ref;
+                    writer->storeNextRecord(beginRecord);
+                }
+                if(m_oSortState.IsInit())
+                     m_oSortState->toBin(writer);
+                {
+                    auto endRecord = writer->getNextRecord(XLSB::rt_EndAFilter);
+                    writer->storeNextRecord(endRecord);
+                }
+            }
 			EElementType CAutofilter::getType () const
 			{
 				return et_x_Autofilter;

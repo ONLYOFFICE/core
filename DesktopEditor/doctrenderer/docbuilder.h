@@ -476,6 +476,13 @@ namespace NSDoctRenderer
 		void SetPropertyW(const wchar_t* param, const wchar_t* value);
 
 		/**
+		 * GetProperty method.
+		 * @param param The parameter name in the Unicode format, the value is always --argument.
+		 * @return int value for property
+		 */
+		int GetPropertyInt(const wchar_t* param);
+
+		/**
 		 * Writes data to the log file. It is used for logs in JS code.
 		 * @param path The path to the file where all the logs will be written.
 		 * @param value The data which will be written to the log file.
@@ -526,6 +533,7 @@ namespace NSDoctRenderer
 		CDocBuilder_Private* m_pInternal;
 
 		friend class CBuilderDocumentEmbed;
+		friend class CBuilderEmbed;
 	};
 
 	/**

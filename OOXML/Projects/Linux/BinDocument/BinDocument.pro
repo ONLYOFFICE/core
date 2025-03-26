@@ -35,16 +35,19 @@ SOURCES += \
 	../../../Binary/Document/DocWrapper/FontProcessor.cpp \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.cpp \
 	../../../Binary/Document/DocWrapper/ChartSerializer.cpp \
-	../../../Binary/Document/BinWriter/BinWriters.cpp \
+        ../../../Binary/Document/DocWrapper/VsdxSerializer.cpp \
+        ../../../Binary/Document/BinWriter/BinaryWriterD.cpp \
 	../../../Binary/Sheets/Common/Common.cpp \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.cpp \
 	../../../Binary/Sheets/Reader/CommonWriter.cpp \
 	../../../Binary/Sheets/Reader/CSVReader.cpp \
-	../../../Binary/Sheets/Reader/BinaryWriter.cpp \
-	../../../Binary/Sheets/Writer/BinaryReader.cpp \
+        ../../../Binary/Sheets/Reader/BinaryWriterS.cpp \
+        ../../../Binary/Sheets/Writer/BinaryReaderS.cpp \
 	../../../Binary/Sheets/Writer/CSVWriter.cpp \
-	../../../Binary/Document/BinReader/ReaderClasses.cpp \
-	../../../Binary/Document/BinReader/Readers.cpp \
+        ../../../Binary/Draw/BinaryWriterV.cpp \
+        ../../../Binary/Draw/BinaryReaderV.cpp \
+        ../../../Binary/Document/BinReader/ReaderClasses.cpp \
+        ../../../Binary/Document/BinReader/BinaryReaderD.cpp \
 	../../../Binary/Document/BinReader/CustomXmlWriter.cpp \
 	../../../Binary/Document/BinReader/FileWriter.cpp \
 	../../../Binary/Document/BinReader/ChartWriter.cpp \
@@ -76,7 +79,8 @@ HEADERS += \
 	../../../Binary/Document/DocWrapper/DocxSerializer.h \
 	../../../Binary/Document/DocWrapper/FontProcessor.h \
 	../../../Binary/Document/DocWrapper/XlsxSerializer.h \
-	../../../Binary/Document/BinReader/ChartWriter.h \
+        ../../../Binary/Document/DocWrapper/VsdxSerializer.h \
+        ../../../Binary/Document/BinReader/ChartWriter.h \
 	../../../Binary/Document/BinReader/CommentsWriter.h \
 	../../../Binary/Document/BinReader/DocumentRelsWriter.h \
 	../../../Binary/Document/BinReader/DocumentWriter.h \
@@ -86,22 +90,25 @@ HEADERS += \
 	../../../Binary/Document/BinReader/MediaWriter.h \
 	../../../Binary/Document/BinReader/NumberingWriter.h \
 	../../../Binary/Document/BinReader/ReaderClasses.h \
-	../../../Binary/Document/BinReader/Readers.h \
+        ../../../Binary/Document/BinReader/BinaryReaderD.h \
 	../../../Binary/Document/BinReader/SettingWriter.h \
 	../../../Binary/Document/BinReader/StylesWriter.h \
 	../../../Binary/Document/BinWriter/BinEquationWriter.h \
 	../../../Binary/Document/BinWriter/BinReaderWriterDefines.h \
-	../../../Binary/Document/BinWriter/BinWriters.h \
+        ../../../Binary/Document/BinWriter/BinaryWriterD.h \
 	../../../Binary/Sheets/Common/BinReaderWriterDefines.h \
 	../../../Binary/Sheets/Common/Common.h \
-	../../../Binary/Sheets/Reader/BinaryWriter.h \
+        ../../../Binary/Sheets/Reader/BinaryWriterS.h \
 	../../../Binary/Sheets/Reader/ChartFromToBinary.h \
 	../../../Binary/Sheets/Reader/CommonWriter.h \
 	../../../Binary/Sheets/Reader/CSVReader.h \
 	../../../Binary/Sheets/Writer/BinaryCommonReader.h \
-	../../../Binary/Sheets/Writer/BinaryReader.h \
+        ../../../Binary/Sheets/Writer/BinaryReaderS.h \
 	../../../Binary/Sheets/Writer/CSVWriter.h \
-	../../../Binary/Document/BinReader/webSettingsWriter.h \
+        ../../../Binary/Draw/BinaryReaderV.h \
+        ../../../Binary/Draw/BinaryWriterV.h \
+        ../../../Binary/Draw/BinReaderWriterDefines.h \
+        ../../../Binary/Document/BinReader/webSettingsWriter.h \
 	../../../../Common/FileDownloader/FileDownloader.h \
 	../../../Binary/Document/BinReader/DefaultThemeWriter.h \
 	../../../Binary/Document/DocWrapper/ChartWriter.h \

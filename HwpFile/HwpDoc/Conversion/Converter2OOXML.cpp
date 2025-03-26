@@ -353,7 +353,7 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 
 void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (nullptr == pShape)
+	if (nullptr == pShape || oState.m_bInTextBox)
 		return;
 
 	switch (pShape->GetShapeType())
@@ -949,8 +949,6 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	if (nullptr == pGeneralShape)
 		return;
 
-	OpenParagraph(shParaShapeID, oBuilder, oState);
-
 	EShapeObjectType eShapeType = GetShapeObjectType(pGeneralShape->GetID());
 
 	if (EShapeObjectType::Unknown == eShapeType)
@@ -959,6 +957,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 	++m_ushShapeCount;
 
 	WriteCaption((const CCtrlCommon*)pGeneralShape, oBuilder, oState);
+
+	OpenParagraph(shParaShapeID, oBuilder, oState);
 
 	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
 	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
@@ -1094,6 +1094,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		oBuilder.WriteString(L"<wps:txbx><w:txbxContent>");
 
 		TConversionState oShapeState;
+		oShapeState.m_bInTextBox = true;
 
 		for (unsigned int unParaIndex = 0; unParaIndex < nCountParagraphs; ++unParaIndex)
 			WriteParagraph(pGeneralShape->GetParagraphs(unParaIndex), oBuilder, oShapeState);
@@ -2194,7 +2195,7 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 }
 
 TConversionState::TConversionState()
-	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
+	: m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0), m_pHighlightColor(nullptr),
       m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 {}
 

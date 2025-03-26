@@ -999,11 +999,17 @@ void note::docx_convert(oox::docx_conversion_context & Context)
 
     if (text_note_class_.get_type() == noteclass::Footnote)
     {
-	   Context.output_stream() << "<w:footnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.output_stream() << L"<w:rPr>";
+		Context.output_stream() << L"<w:vertAlign w:val=\"superscript\"/>";
+		Context.output_stream() << L"</w:rPr>";
+
+		Context.output_stream() << "<w:footnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.add_new_run();
     }
     else 
     {
 		Context.output_stream() << "<w:endnoteReference w:id=\"" << Context.get_notes_context().next_id() << "\"/>";
+		Context.add_new_run();
     }
 
     if (text_note_citation_)

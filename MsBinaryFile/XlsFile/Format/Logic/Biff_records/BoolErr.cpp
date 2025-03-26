@@ -56,6 +56,11 @@ void BoolErr::readFields(CFRecord& record)
 	record >> cell >> bes;
 }
 
+void BoolErr::writeFields(CFRecord& record)
+{
+    record << cell << bes;
+}
+
 const CellRef BoolErr::getLocation() const
 {
 	return cell.getLocation();

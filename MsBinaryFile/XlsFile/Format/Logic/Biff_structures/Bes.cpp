@@ -49,6 +49,11 @@ void Bes::load(CFRecord& record)
 	record >> bBoolErr >> fError;
 }
 
+void Bes::save(CFRecord& record)
+{
+    record << bBoolErr << fError;
+}
+
 
 const std::wstring Bes::toString()
 {

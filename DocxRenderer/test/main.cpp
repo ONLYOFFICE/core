@@ -40,6 +40,8 @@
 #include "../DocxRenderer.h"
 #include "../../Common/OfficeFileFormatChecker.h"
 
+#include "TextCommandRenderer/TextCommandRenderer.h"
+
 #include <fstream>
 
 #ifdef TEST_FOR_HTML_RENDERER_TEXT
@@ -178,6 +180,10 @@ int main(int argc, char *argv[])
 //		auto shapes = oDocxRenderer.ScanPagePptx(pReader, 0);
 //		for (auto& s : shapes)
 //			fin << U_TO_UTF8(s);
+
+		CTextCommandRenderer oTextCommandRenderer(pFonts);
+		oTextCommandRenderer.Do(pReader);
+
 #endif
 		RELEASEOBJECT(pReader);
 		RELEASEOBJECT(pExternalImagheStorage);

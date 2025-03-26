@@ -1,5 +1,6 @@
 #pragma once
 #include <type_traits>
+#include <cstdlib>
 #include <limits>
 
 #include "../../../DesktopEditor/common/Types.h"

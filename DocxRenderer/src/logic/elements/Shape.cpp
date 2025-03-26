@@ -110,7 +110,7 @@ namespace NSDocxRenderer
 		double dHorNearby = 30;
 		double dVerNearby = 30;
 
-		if(
+		if (
 		        // только для фигур
 		        (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
 		         pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&

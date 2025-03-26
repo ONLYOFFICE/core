@@ -11,7 +11,7 @@ namespace NSDocxRenderer
 
 	void CParagraph::Clear()
 	{
-		m_arLines.clear();
+		m_arTextLines.clear();
 	}
 
 	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
@@ -20,7 +20,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:pPr>");
 
 		// styles
-		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
+		if (!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
 
 		oWriter.WriteString(L"<w:spacing");
 
@@ -105,7 +105,7 @@ namespace NSDocxRenderer
 		}
 
 		oWriter.WriteString(L"</w:pPr>");
-		for(const auto& line : m_arLines)
+		for(const auto& line : m_arTextLines)
 			if(line)
 				line->ToXml(oWriter);
 		oWriter.WriteString(L"</w:p>");
@@ -165,7 +165,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:lnSpc>");
 
 		oWriter.WriteString(L"</a:pPr>");
-		for(const auto& line : m_arLines)
+		for(const auto& line : m_arTextLines)
 			if(line)
 				line->ToXmlPptx(oWriter);
 		oWriter.WriteString(L"</a:p>");
@@ -176,9 +176,9 @@ namespace NSDocxRenderer
 		if (!m_bIsShadingPresent)
 			return;
 
-		for(size_t i = 0; i < m_arLines.size(); ++i)
+		for(size_t i = 0; i < m_arTextLines.size(); ++i)
 		{
-			auto& pLine = m_arLines[i];
+			auto& pLine = m_arTextLines[i];
 			if (pLine || pLine->m_pDominantShape)
 			{
 				for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
@@ -194,9 +194,9 @@ namespace NSDocxRenderer
 
 	void CParagraph::MergeLines()
 	{
-		for(size_t i = 0; i < m_arLines.size() - 1; ++i)
+		for(size_t i = 0; i < m_arTextLines.size() - 1; ++i)
 		{
-			auto pLine = m_arLines[i];
+			auto pLine = m_arTextLines[i];
 			auto pLastCont = pLine->m_arConts.back();
 			size_t iNumConts = pLine->m_arConts.size() - 1;
 
@@ -206,7 +206,7 @@ namespace NSDocxRenderer
 			auto text = pLastCont->GetText();
 			auto last_sym = text[text.length() - 1];
 
-			if (last_sym != c_SPACE_SYM && m_arLines.size() != 1)
+			if (last_sym != c_SPACE_SYM && m_arTextLines.size() != 1)
 				pLastCont->AddSymBack(c_SPACE_SYM, 0);
 		}
 	}

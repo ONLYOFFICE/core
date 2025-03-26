@@ -314,7 +314,7 @@ namespace NSDocxRenderer
 
 	void CFontSelector::ClearCache()
 	{
-		if(!m_arParamsCache.empty())
+		if (!m_arParamsCache.empty())
 			m_arParamsCache.clear();
 	}
 

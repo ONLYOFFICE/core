@@ -31,7 +31,7 @@ namespace NSDocxRenderer
 		double m_dSpaceAfter {0.0}; // в shape по умолчанию выставляется 8pt, если отсутсвует w:after
 		double m_dLineHeight {0.0};
 
-		std::vector<std::shared_ptr<CTextLine>> m_arLines;
+		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 		std::wstring m_wsStyleId;
 
 	public:

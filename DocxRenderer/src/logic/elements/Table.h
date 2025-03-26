@@ -31,7 +31,7 @@ namespace NSDocxRenderer
 				double dWidth{};
 				double dSpacing{};
 				long lColor{};
-				eLineType lineType{};
+				eLineType lineType{eLineType::ltNone};
 			};
 
 			enum class eVMerge
@@ -97,6 +97,13 @@ namespace NSDocxRenderer
 	class CGraphicalCell : public CBaseItem
 	{
 	public:
+		// realization
+	};
+
+	class CTextCell : public CBaseItem
+	{
+	public:
+		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 	};
 } // namespace NSDocxRenderer
 

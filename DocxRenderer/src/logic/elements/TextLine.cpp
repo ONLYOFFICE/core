@@ -71,7 +71,7 @@ namespace NSDocxRenderer
 		std::shared_ptr<CContText> pFirst;
 		size_t j = 0;
 
-		for(; j < m_arConts.size() && !pFirst; ++j)
+		for (; j < m_arConts.size() && !pFirst; ++j)
 			pFirst = m_arConts[j];
 
 		for (size_t i = j; i < m_arConts.size(); ++i)

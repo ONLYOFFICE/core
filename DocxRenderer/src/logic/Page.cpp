@@ -4,7 +4,6 @@
 #include <map>
 #include <set>
 
-#include "../../../DesktopEditor/graphics/GraphicsPath.h"
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
 #include "../resources/Constants.h"
@@ -1432,7 +1431,7 @@ namespace NSDocxRenderer
 		for (const auto& text_lines : bot_aligned_text_lines)
 		{
 			// lines [i] belongs group [j] (like a matrix)
-			// only 1 [i] to 1 [j].
+			// only 1 [i] to 1 [j] on the same bot position
 			std::vector<std::vector<bool>> lines_x_groups(text_lines.size());
 			for (auto& lxg : lines_x_groups)
 				lxg.resize(m_arTextLineGroups.size());
@@ -1567,8 +1566,8 @@ namespace NSDocxRenderer
 		// lamda to setup and add paragpraph
 		auto add_paragraph = [this, &max_right, &min_left, &ar_paragraphs] (paragraph_ptr_t& paragraph) {
 
-			paragraph->m_dBot = paragraph->m_arLines.back()->m_dBot;
-			paragraph->m_dTop = paragraph->m_arLines.front()->m_dTop;
+			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot;
+			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTop;
 			paragraph->m_dRight = max_right + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
 			paragraph->m_dLeft = min_left;
 
@@ -1578,7 +1577,7 @@ namespace NSDocxRenderer
 			paragraph->m_dRightBorder = m_dWidth - paragraph->m_dRight;
 			paragraph->m_dLeftBorder = min_left;
 
-			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arLines.size();
+			paragraph->m_dLineHeight = paragraph->m_dHeight / paragraph->m_arTextLines.size();
 			paragraph->m_bIsNeedFirstLineIndent = false;
 			paragraph->m_dFirstLine = 0;
 			paragraph->m_wsStyleId = m_oManagers.pParagraphStyleManager->GetDefaultParagraphStyleId(*paragraph);
@@ -1586,7 +1585,7 @@ namespace NSDocxRenderer
 			paragraph->MergeLines();
 
 			// setting TextAlignmentType
-			if (paragraph->m_arLines.size() > 1)
+			if (paragraph->m_arTextLines.size() > 1)
 			{
 				Position position_curr;
 				position_curr.left   = true;
@@ -1595,10 +1594,10 @@ namespace NSDocxRenderer
 
 				bool first_left = false;
 
-				for (size_t index = 1; index < paragraph->m_arLines.size(); ++index)
+				for (size_t index = 1; index < paragraph->m_arTextLines.size(); ++index)
 				{
-					auto& curr_line = paragraph->m_arLines[index];
-					auto& prev_line = paragraph->m_arLines[index - 1];
+					auto& curr_line = paragraph->m_arTextLines[index];
+					auto& prev_line = paragraph->m_arTextLines[index - 1];
 
 					// indent check
 					if (index == 1)
@@ -1625,7 +1624,7 @@ namespace NSDocxRenderer
 				// indent check
 				if (paragraph->m_eTextAlignmentType == CParagraph::tatByLeft && !first_left)
 				{
-					double left_diff = paragraph->m_arLines[0]->m_dLeft - paragraph->m_arLines[1]->m_dLeft;
+					double left_diff = paragraph->m_arTextLines[0]->m_dLeft - paragraph->m_arTextLines[1]->m_dLeft;
 					paragraph->m_bIsNeedFirstLineIndent = true;
 					paragraph->m_dFirstLine = left_diff;
 
@@ -1645,7 +1644,7 @@ namespace NSDocxRenderer
 		auto add_line = [&min_left, &max_right] (paragraph_ptr_t& paragraph, const text_line_ptr_t& curr_line) {
 			min_left = std::min(min_left, curr_line->m_dLeft);
 			max_right = std::max(max_right, curr_line->m_dRight);
-			paragraph->m_arLines.push_back(curr_line);
+			paragraph->m_arTextLines.push_back(curr_line);
 		};
 
 		auto build_paragraphs = [this, add_line, add_paragraph] (const std::vector<text_line_ptr_t>& text_lines) {
@@ -1907,6 +1906,9 @@ namespace NSDocxRenderer
 	std::vector<CPage::table_ptr_t> CPage::BuildTables()
 	{
 		auto graphical_cells = BuildGraphicalCells();
+		// auto text_cells = BuildTextCells();
+		// MergeGrapgicalTextCells();
+		// ..
 		std::vector<table_ptr_t> tables;
 		return tables;
 	}
@@ -2244,7 +2246,7 @@ namespace NSDocxRenderer
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
 
-		pParagraph->m_arLines.push_back(pLine);
+		pParagraph->m_arTextLines.push_back(pLine);
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBot = pLine->m_dBot;

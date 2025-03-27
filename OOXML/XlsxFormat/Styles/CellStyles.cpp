@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -93,7 +93,7 @@ namespace OOX
 				ptr->fHidden = m_oHidden->GetValue();
             else
                 ptr->fHidden = false;
-			if (m_oILevel.IsInit())
+            if (m_oILevel.IsInit() && m_oILevel->GetValue() >= 0 && m_oILevel->GetValue() <= 6)
 				ptr->iLevel = m_oILevel->GetValue();
             else
                 ptr->iLevel = 0;

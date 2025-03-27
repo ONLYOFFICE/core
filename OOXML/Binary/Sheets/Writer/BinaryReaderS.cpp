@@ -6762,14 +6762,43 @@ int BinaryWorksheetsTableReader::ReadPos(BYTE type, long length, void* poResult)
 int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poResult)
 {
 	int res = c_oSerConstants::ReadOk;
-	if (c_oSerWorksheetsTypes::XlsbPos == type)
+    if (c_oSerWorksheetsTypes::XlsbPos == type)
 	{
 		int nOldPos = m_oBufferedStream.GetPos();
 		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
+        if(m_pCurStreamWriterBin)
+        {
+            auto type = XLSB::rt_BeginSheetData;
+            while(type!= XLSB::rt_EndSheetData)
+            {
+                type = (XLSB::CF_RECORD_TYPE)m_oBufferedStream.XlsbReadRecordType();
+                if(type == XLSB::rt_BeginSheetData)
+                {
+                    m_oBufferedStream.XlsbSkipRecord();
+                    continue;
+                }
+                else if(type == XLSB::rt_EndSheetData)
+                {
+                    m_oBufferedStream.XlsbSkipRecord();
+                    break;
+                }
+                auto record = m_pCurStreamWriterBin->getNextRecord(type);
+                auto size = m_oBufferedStream.XlsbReadRecordLength();
+                if(size)
+                {
+                    std::vector<BYTE> tempBuf(size);
+                    m_oBufferedStream.GetArray(tempBuf.data(), size);
+                    record->appendRawDataToStatic(tempBuf.data(), size);
+                }
+                m_pCurStreamWriterBin->storeNextRecord(record);
+            }
 
-		OOX::Spreadsheet::CSheetData oSheetData;
-		oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
-
+        }
+        else
+        {
+            OOX::Spreadsheet::CSheetData oSheetData;
+            oSheetData.fromXLSB(m_oBufferedStream, m_oBufferedStream.XlsbReadRecordType(), m_oSaveParams.pCSVWriter, *m_pCurStreamWriter);
+        }
 		m_oBufferedStream.Seek(nOldPos);
 		res = c_oSerConstants::ReadUnknown;
 	}

@@ -372,7 +372,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	// GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
@@ -417,7 +417,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 
 TEST_F(CPdfFileTest, EditPdfFromBin)
 {
-	// GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));

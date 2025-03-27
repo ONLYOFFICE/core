@@ -611,16 +611,18 @@ private:
 
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
+		unsigned int unFieldFlag; // Флаг Ff
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;
-		std::vector<std::string> arrOpt;
+		std::vector< std::pair<std::string, std::string> > arrOpt;
+		std::vector<CAction*> arrAction; // Действия
 		std::string sT;
 		std::string sV;
 		std::string sDV;
 	};
 
-	void getParents(XRef* xref, Object* oFieldRef);
+	void getParents(PDFDoc* pdfDoc, Object* oFieldRef);
 
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields

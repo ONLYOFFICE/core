@@ -1418,7 +1418,10 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	}
 
 	// Флаг - Ff
-	m_unFieldFlag = pField->getFlags();
+	m_unFieldFlag = -1;
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+		m_unFieldFlag = oObj.getInt();
+	oObj.free();
 
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 	m_sTU = FieldLookupString(pField, "TU", 0);
@@ -1507,7 +1510,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Action - A
 	Object oAction;
-	if (pField->fieldLookup("A", &oAction)->isDict())
+	if (oField.dictLookup("A", &oAction)->isDict())
 	{
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
@@ -1521,11 +1524,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Actions - AA
 	Object oAA;
-	Object parent, parent2;
-	bool bParent = oField.dictLookup("Parent", &parent)->isDict();
-	bool bAA = bParent && parent.dictLookup("AA", &oAA)->isDict();
-	oAA.free();
-
 	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
@@ -1533,8 +1531,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
-				if (bAA && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
-					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
 				{
@@ -1546,39 +1542,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 		}
 	}
 	oAA.free();
-
-	if (bParent)
-	{
-		int depth = 0;
-		while (parent.isDict() && depth < 50)
-		{
-			if (parent.dictLookup("AA", &oAA)->isDict())
-			{
-				for (int j = 0; j < oAA.dictGetLength(); ++j)
-				{
-					if (oAA.dictGetVal(j, &oAction)->isDict())
-					{
-						std::string sAA(oAA.dictGetKey(j));
-						if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
-							continue;
-						CAction* pA = getAction(pdfDoc, &oAction);
-						if (pA)
-						{
-							pA->sType = sAA;
-							m_arrAction.push_back(pA);
-						}
-					}
-					oAction.free();
-				}
-			}
-			oAA.free();
-			parent.dictLookup("Parent", &parent2);
-			parent.free();
-			parent = parent2;
-			++depth;
-		}
-	}
-	parent.free();
 
 	oField.free();
 }
@@ -2523,7 +2486,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		// Родители
 		Object oParentRefObj;
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-			getParents(xref, &oParentRefObj);
+			getParents(pdfDoc, &oParentRefObj);
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
@@ -2577,15 +2540,15 @@ CAnnots::~CAnnots()
 	for (int i = 0; i < m_arrAnnots.size(); ++i)
 		RELEASEOBJECT(m_arrAnnots[i]);
 }
-void CAnnots::getParents(XRef* xref, Object* oFieldRef)
+void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef)
 {
-	if (!oFieldRef || !xref || !oFieldRef->isRef() ||
+	if (!oFieldRef || !pdfDoc || !oFieldRef->isRef() ||
 		std::find_if(m_arrParents.begin(), m_arrParents.end(), [oFieldRef] (CAnnotParent* pAP) { return oFieldRef->getRefNum() == pAP->unRefNum; }) != m_arrParents.end())
 		return;
 
 	Object oField;
 	CAnnotParent* pAnnotParent = new CAnnotParent();
-	if (!pAnnotParent || !oFieldRef->fetch(xref, &oField)->isDict())
+	if (!pAnnotParent || !oFieldRef->fetch(pdfDoc->getXRef(), &oField)->isDict())
 	{
 		oField.free();
 		RELEASEOBJECT(pAnnotParent);
@@ -2661,21 +2624,89 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		for (int j = 0; j < nOptLength; ++j)
 		{
 			Object oOptJ;
-			if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+			if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
 			{
 				oOptJ.free();
 				continue;
 			}
 
-			TextString* s = new TextString(oOptJ.getString());
-			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
-			delete s;
+			std::string sOpt1, sOpt2;
+			if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
+			{
+				Object oOptJ2;
+				if (oOptJ.arrayGet(0, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+				if (oOptJ.arrayGet(1, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+			}
+			else if (oOptJ.isString())
+			{
+				TextString* s = new TextString(oOptJ.getString());
+				sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				delete s;
+			}
+			pAnnotParent->arrOpt.push_back(std::make_pair(sOpt1, sOpt2));
 			oOptJ.free();
 		}
+
 		if (!pAnnotParent->arrOpt.empty())
 			pAnnotParent->unFlags |= (1 << 6);
 	}
 	oOpt.free();
+
+	// 7 - Флаг - Ff
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+	{
+		pAnnotParent->unFieldFlag = oObj.getInt();
+		pAnnotParent->unFlags |= (1 << 7);
+	}
+	oObj.free();
+
+	// 8 - Actions - A/AA
+	Object oAction;
+	if (oField.dictLookup("A", &oAction)->isDict())
+	{
+		std::string sAA = "A";
+		CAction* pA = getAction(pdfDoc, &oAction);
+		if (pA)
+		{
+			pA->sType = sAA;
+			pAnnotParent->arrAction.push_back(pA);
+			pAnnotParent->unFlags |= (1 << 8);
+		}
+	}
+	oAction.free();
+
+	Object oAA;
+	if (oField.dictLookup("AA", &oAA)->isDict())
+	{
+		for (int j = 0; j < oAA.dictGetLength(); ++j)
+		{
+			if (oAA.dictGetVal(j, &oAction)->isDict())
+			{
+				std::string sAA(oAA.dictGetKey(j));
+				CAction* pA = getAction(pdfDoc, &oAction);
+				if (pA)
+				{
+					pA->sType = sAA;
+					pAnnotParent->arrAction.push_back(pA);
+					pAnnotParent->unFlags |= (1 << 8);
+				}
+			}
+			oAction.free();
+		}
+	}
+	oAA.free();
 
 	m_arrParents.push_back(pAnnotParent);
 
@@ -2684,7 +2715,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 	{
 		pAnnotParent->unFlags |= (1 << 4);
 		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum();
-		getParents(xref, &oParentRefObj);
+		getParents(pdfDoc, &oParentRefObj);
 	}
 	oParentRefObj.free();
 
@@ -3633,9 +3664,23 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 6))
 	{
-		oRes.AddInt((unsigned int)arrOpt.size());
+		oRes.AddInt(arrOpt.size());
 		for (int i = 0; i < arrOpt.size(); ++i)
-			oRes.WriteString(arrOpt[i]);
+		{
+			oRes.WriteString(arrOpt[i].first);
+			oRes.WriteString(arrOpt[i].second);
+		}
+	}
+	if (unFlags & (1 << 7))
+		oRes.AddInt(unFieldFlag);
+	if (unFlags & (1 << 8))
+	{
+		oRes.AddInt(arrAction.size());
+		for (int i = 0; i < arrAction.size(); ++i)
+		{
+			oRes.WriteString(arrAction[i]->sType);
+			arrAction[i]->ToWASM(oRes);
+		}
 	}
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
@@ -3875,7 +3920,7 @@ void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sV);
 	if (m_unFlags & (1 << 10))
 		oRes.AddInt(m_unMaxLen);
-	if (m_unFieldFlag & (1 << 25))
+	if (m_unFlags & (1 << 11))
 		oRes.WriteString(m_sRV);
 }
 void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)

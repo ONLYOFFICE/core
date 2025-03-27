@@ -571,9 +571,53 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 		if (flags & (1 << 6))
 		{
 			let n = reader.readInt();
-			rec["Opt"] = [];
+			rec["opt"] = [];
 			for (let i = 0; i < n; ++i)
-				rec["Opt"].push(reader.readString());
+			{
+				let opt1 = reader.readString();
+				let opt2 = reader.readString();
+				if (opt1 == "")
+					rec["opt"].push(opt2);
+				else
+					rec["opt"].push([opt2, opt1]);
+			}
+		}
+		if (flags & (1 << 7))
+		{
+			rec["flag"] = reader.readInt();
+
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+
+			rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+			if ((rec["flag"] >> 15) & 1) // If radiobutton
+				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+			else
+				rec["richText"]       = (rec["flag"] >> 25) & 1; // RichText
+
+			rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+			rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+			rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+			rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+			rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+			rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+
+			rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+			rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+			rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+		}
+		if (flags & (1 << 8))
+		{
+			let nAction = reader.readInt();
+			if (nAction > 0)
+				rec["AA"] = {};
+			for (let i = 0; i < nAction; ++i)
+			{
+				let AAType = reader.readString();
+				rec["AA"][AAType] = {};
+				readAction(reader, rec["AA"][AAType]);
+			}
 		}
 		res["Parents"].push(rec);
 	}
@@ -604,9 +648,12 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 		rec["alignment"] = reader.readByte();
 		rec["flag"] = reader.readInt();
 		// 12.7.3.1
-		rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
-		rec["required"] = (rec["flag"] >> 1) & 1; // Required
-		rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+		if (rec["flag"] >= 0)
+		{
+			rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+			rec["required"] = (rec["flag"] >> 1) & 1; // Required
+			rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+		}
 		let flags = reader.readInt();
 		// Alternative field name, used in tooltip and error messages - TU
 		if (flags & (1 << 0))
@@ -715,8 +762,11 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 		    if (flags & (1 << 14))
 				rec["ExportValue"] = reader.readString();
 			// 12.7.4.2.1
-			rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
-			rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+			if (rec["flag"] >= 0)
+			{
+				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+				rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+			}
 		}
 		else if (rec["type"] == 30)
 		{
@@ -724,16 +774,19 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 				rec["value"] = reader.readString();
 			if (flags & (1 << 10))
 				rec["maxLen"] = reader.readInt();
-			if (rec["flag"] & (1 << 25))
+			if (flags & (1 << 11))
 				rec["richValue"] = reader.readString();
 			// 12.7.4.3
-			rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
-			rec["password"]        = (rec["flag"] >> 13) & 1; // Password
-			rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
-			rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
-			rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
-			rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
-			rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
+			if (rec["flag"] >= 0)
+			{
+				rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+				rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+				rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+				rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+				rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
+			}
 		}
 		else if (rec["type"] == 31 || rec["type"] == 32)
 		{
@@ -770,15 +823,20 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 					rec["value"].push(reader.readString());
 			}
 			// 12.7.4.4
-			rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
-			rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
-			rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
-			rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+			if (rec["flag"] >= 0)
+			{
+				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+				rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+			}
 		}
 		else if (rec["type"] == 33)
 		{
 			rec["Sig"] = (flags >> 9) & 1;
 		}
+		if (rec["flag"] < 0)
+			delete rec["flag"];
 		
 		res["Fields"].push(rec);
 	}

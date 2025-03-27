@@ -568,11 +568,14 @@ public:
 		int nID;
 		int nFlags;
 		int nParentID;
+		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
+		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;
+		std::vector< std::pair<std::wstring, std::wstring> > arrOpt;
 	};
 
 	CWidgetsInfo();

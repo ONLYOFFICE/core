@@ -1582,6 +1582,8 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		CDictObject* pOwner = GetObjOwnValue("Ff");
 		if (!pOwner)
 			pOwner = this;
@@ -1655,6 +1657,22 @@ namespace PdfWriter
 
 		if (pAction->m_sType == "A")
 		{
+			Add(pAction->m_sType.c_str(), pAction);
+			return;
+		}
+
+		CDictObject* pAA = (CDictObject*)Get("AA");
+		if (!pAA)
+		{
+			pAA = new CDictObject();
+			Add("AA", pAA);
+		}
+
+		pAA->Add(pAction->m_sType.c_str(), pAction);
+
+		/*
+		if (pAction->m_sType == "A")
+		{
 			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
 			if (!pOwner)
 				pOwner = this;
@@ -1689,6 +1707,7 @@ namespace PdfWriter
 
 		if (pAA)
 			pAA->Add(sAA.c_str(), pAction);
+		*/
 	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{
@@ -1876,6 +1895,8 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		nFlags |= (1 << 16);
 		CWidgetAnnotation::SetFlag(nFlags);
@@ -2113,27 +2134,24 @@ namespace PdfWriter
 	{
 		CObjectBase* pAP, *pAPN;
 		Add("AS", "Off");
-		if (!m_sAP_N_Yes.empty())
+		CObjectBase* pObj = GetObjValue("Opt");
+		if (!m_sAP_N_Yes.empty() && pObj && pObj->GetType() == object_type_ARRAY)
 		{
-			CObjectBase* pObj = GetObjValue("Opt");
-			if (pObj && pObj->GetType() == object_type_ARRAY)
+			CArrayObject* pArr = (CArrayObject*)pObj;
+			for (int i = 0; i < pArr->GetCount(); ++i)
 			{
-				CArrayObject* pArr = (CArrayObject*)pObj;
-				for (int i = 0; i < pArr->GetCount(); ++i)
+				pObj = pArr->Get(i);
+				if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
+					pObj = ((CArrayObject*)pObj)->Get(0);
+				if (pObj->GetType() == object_type_STRING)
 				{
-					pObj = pArr->Get(i);
-					if (pObj->GetType() == object_type_ARRAY && ((CArrayObject*)pObj)->GetCount() > 0)
-						pObj = ((CArrayObject*)pObj)->Get(0);
-					if (pObj->GetType() == object_type_STRING)
+					CStringObject* pStr = (CStringObject*)pObj;
+					const BYTE* pBinary = pStr->GetString();
+					if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
 					{
-						CStringObject* pStr = (CStringObject*)pObj;
-						const BYTE* pBinary = pStr->GetString();
-						if (pStr->GetLength() == m_sAP_N_Yes.length() && !StrCmp((const char*)pBinary, m_sAP_N_Yes.c_str()))
-						{
-							m_sAP_N_Yes = std::to_string(i);
-							SetV(UTF8_TO_U(m_sAP_N_Yes));
-							break;
-						}
+						m_sAP_N_Yes = std::to_string(i);
+						SetV(UTF8_TO_U(m_sAP_N_Yes));
+						break;
 					}
 				}
 			}
@@ -2144,6 +2162,8 @@ namespace PdfWriter
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		if (m_nSubtype == WidgetRadiobutton)
 			nFlags |= (1 << 15);
@@ -2208,6 +2228,8 @@ namespace PdfWriter
 	}
 	void CChoiceWidget::SetFlag(const int& nFlag)
 	{
+		if (nFlag < 0)
+			return;
 		int nFlags = nFlag;
 		if (m_nSubtype == WidgetCombobox)
 			nFlags |= (1 << 17);
@@ -2270,6 +2292,9 @@ namespace PdfWriter
 	void CChoiceWidget::SetOpt(const std::vector< std::pair<std::wstring, std::wstring> >& arrOpt)
 	{
 		m_arrOpt = arrOpt;
+		if (m_arrOpt.empty())
+			return;
+
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
 			return;
@@ -2374,6 +2399,11 @@ namespace PdfWriter
 	void CAction::SetType(const std::wstring& wsType)
 	{
 		m_sType = U_TO_UTF8(wsType);
+		Add("S", m_sType.c_str());
+	}
+	void CAction::SetNext(CAction* pNext)
+	{
+		Add("Next", pNext);
 	}
 	//----------------------------------------------------------------------------------------
 	CActionResetForm::CActionResetForm(CXref* pXref) : CAction(pXref)

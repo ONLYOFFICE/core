@@ -2299,7 +2299,8 @@ int BinaryWorkbookTableReader::ReadWorkbookTableContent(BYTE type, long length, 
 		m_oWorkbook.m_oExternalReferences.Init();
 		READ1_DEF(length, res, this->ReadExternalReferences, poResult);
 	}
-	else if (c_oSerWorkbookTypes::PivotCaches == type)
+	else if (c_oSerWorkbookTypes::PivotCaches == type ||
+			c_oSerWorkbookTypes::PivotCachesTmp == type)
 	{
 		m_oWorkbook.m_oPivotCachesXml.Init();
 		m_oWorkbook.m_oPivotCachesXml->append(L"<pivotCaches>");
@@ -4802,7 +4803,25 @@ int BinaryWorksheetsTableReader::ReadWorksheet(boost::unordered_map<BYTE, std::v
 			RELEASEOBJECT(oPivotCachesTemp.pTable);
 		}
 	SEEK_TO_POS_END2();
-//-------------------------------------------------------------------------------------------------------------
+//tmp-------------------------------------------------------------------------------------------------------------
+	SEEK_TO_POS_START(c_oSerWorksheetsTypes::PivotTableTmp);
+	PivotCachesTemp oPivotCachesTemp;
+
+	READ1_DEF(length, res, this->ReadPivotTable, &oPivotCachesTemp);
+	boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>::const_iterator pair = m_mapPivotCacheDefinitions.find(oPivotCachesTemp.nCacheId);
+
+	if (m_mapPivotCacheDefinitions.end() != pair && NULL != oPivotCachesTemp.pTable)
+	{
+		NSCommon::smart_ptr<OOX::File> pFileTable(oPivotCachesTemp.pTable);
+		oPivotCachesTemp.pTable->AddNoWrite(pair->second, L"../pivotCache");
+		m_pCurWorksheet->Add(pFileTable);
+	}
+	else
+	{
+		RELEASEOBJECT(oPivotCachesTemp.pTable);
+	}
+	SEEK_TO_POS_END2();
+//tmp-------------------------------------------------------------------------------------------------------------
 	SEEK_TO_POS_START(c_oSerWorksheetsTypes::NamedSheetView);
 		smart_ptr<OOX::Spreadsheet::CNamedSheetViewFile> pNamedSheetViewFile(new OOX::Spreadsheet::CNamedSheetViewFile(NULL));
 		pNamedSheetViewFile->m_oNamedSheetViews.Init();

@@ -324,11 +324,4 @@ namespace BinXlsxRW{
 		NSDirectory::DeleteDirectory(sTempDir);
 		return res;
 	}
-	bool CXlsxSerializer::hasPivot(const std::wstring& sSrcPath)
-	{
-		//todo CXlsx
-		std::wstring sData;
-		NSFile::CFileBinary::ReadAllTextUtf8(sSrcPath + FILE_SEPARATOR_STR + L"[Content_Types].xml", sData);
-		return std::wstring::npos != sData.find(OOX::Spreadsheet::FileTypes::PivotTable.OverrideType());
-	}
 };

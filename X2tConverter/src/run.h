@@ -181,32 +181,28 @@ namespace NSX2T
 
 			char** penv;
 #ifndef _MAC
+			char* nenv[2];
+			nenv[0] = &sLibraryDir[0];
+			nenv[1] = NULL;
+			penv = nenv;
+
 			if(bIsSaveEnvironment)
 			{
 				putenv(&sLibraryDir[0]);
 				penv = environ;
 			}
-			else
-			{
-				char* nenv[2];
-				nenv[0] = &sLibraryDir[0];
-				nenv[1] = NULL;
-				penv = nenv;
-			}
 #else
+			char* nenv[3];
+			nenv[0] = &sLibraryDir[0];
+			nenv[1] = &sPATH[0];
+			nenv[2] = NULL;
+			penv = nenv;
+
 			if(bIsSaveEnvironment)
 			{
 				putenv(&sLibraryDir[0]);
 				putenv(&sPATH[0]);
 				penv = environ;
-			}
-			else
-			{
-				char* nenv[3];
-				nenv[0] = &sLibraryDir[0];
-				nenv[1] = &sPATH[0];
-				nenv[2] = NULL;
-				penv = nenv;
 			}
 #endif
 			execve(sProgramm.c_str(),

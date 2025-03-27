@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "CustomsXML.h"
+#include "CustomsXml.h"
 
 #include "../FileTypes_Spreadsheet.h"
 

@@ -985,7 +985,7 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 		m_wsV = pReader->ReadString();
 	if (nFlags & (1 << 10))
 		m_nMaxLen = pReader->ReadInt();
-	if (nWidgetFlag & (1 << 25))
+	if (nFlags & (1 << 11))
 		m_wsRV = pReader->ReadString();
 	if (nFlags & (1 << 12))
 		m_wsAPV = pReader->ReadString();

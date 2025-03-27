@@ -2765,7 +2765,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					continue;
 
 				if (pA->m_sType == "A")
-					pParentObj->Add(pA->m_sType.c_str(), pAction);
+					pParentObj->Add(pA->m_sType.c_str(), pA);
 				else
 				{
 					PdfWriter::CDictObject* pAA = (PdfWriter::CDictObject*)pParentObj->Get("AA");
@@ -2774,7 +2774,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						pAA = new PdfWriter::CDictObject();
 						pParentObj->Add("AA", pAA);
 					}
-					pAA->Add(pA->m_sType.c_str(), pAction);
+					pAA->Add(pA->m_sType.c_str(), pA);
 				}
 			}
 		}

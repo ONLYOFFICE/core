@@ -1669,6 +1669,121 @@ void GetRCSpanStyle(CAnnotFieldInfo::CMarkupAnnotPr::CFontData* pFontData, NSStr
 		oRC.AddDouble(pFontData->dVAlign, 2);
 	}
 }
+PdfWriter::CAction* GetAction(PdfWriter::CDocument* m_pDocument, CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction)
+{
+	PdfWriter::CAction* pA = m_pDocument->CreateAction(pAction->nActionType);
+	if (!pA)
+		return NULL;
+	pA->SetType(pAction->wsType);
+
+	switch (pAction->nActionType)
+	{
+	case 1:
+	{
+		PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
+		PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
+		PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
+		if (!pDest)
+			break;
+		ppA->SetDestination(pDest);
+
+		PdfWriter::CArrayObject* pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("CropBox");
+		if (!pPageBoxD)
+			pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("MediaBox");
+		if (!pPageBoxD)
+			return NULL;
+		PdfWriter::CObjectBase* pD = pPageBoxD->Get(3);
+		double dPageDH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+		pD = pPageBoxD->Get(0);
+		double dPageDX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+
+		switch (pAction->nKind)
+		{
+		case 0:
+		{
+			pDest->SetXYZ(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2]);
+			break;
+		}
+		case 1:
+		{
+			pDest->SetFit();
+			break;
+		}
+		case 2:
+		{
+			pDest->SetFitH(dPageDH - pAction->dD[1]);
+			break;
+		}
+		case 3:
+		{
+			pDest->SetFitV(pAction->dD[0] + dPageDX);
+			break;
+		}
+		case 4:
+		{
+			pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[3]);
+			break;
+		}
+		case 5:
+		{
+			pDest->SetFitB();
+			break;
+		}
+		case 6:
+		{
+			pDest->SetFitBH(dPageDH - pAction->dD[1]);
+			break;
+		}
+		case 7:
+		{
+			pDest->SetFitBV(pAction->dD[0] + dPageDX);
+			break;
+		}
+		}
+		break;
+	}
+	case 6:
+	{
+		PdfWriter::CActionURI* ppA = (PdfWriter::CActionURI*)pA;
+		ppA->SetURI(pAction->wsStr1);
+		break;
+	}
+	case 9:
+	{
+		PdfWriter::CActionHide* ppA = (PdfWriter::CActionHide*)pA;
+		ppA->SetH(pAction->nKind);
+		ppA->SetT(pAction->arrStr);
+		break;
+	}
+	case 10:
+	{
+		PdfWriter::CActionNamed* ppA = (PdfWriter::CActionNamed*)pA;
+		ppA->SetN(pAction->wsStr1);
+		break;
+	}
+	case 12:
+	{
+		PdfWriter::CActionResetForm* ppA = (PdfWriter::CActionResetForm*)pA;
+		ppA->SetFlags(pAction->nInt1);
+		ppA->SetFields(pAction->arrStr);
+		break;
+	}
+	case 14:
+	{
+		PdfWriter::CActionJavaScript* ppA = (PdfWriter::CActionJavaScript*)pA;
+		ppA->SetJS(pAction->wsStr1);
+		break;
+	}
+	}
+
+	if (pAction->pNext)
+	{
+		PdfWriter::CAction* pANext = GetAction(m_pDocument, pAction->pNext);
+		pA->SetNext(pANext);
+	}
+
+	return pA;
+}
 HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo)
 {
 	if (!m_pDocument || 0 == m_pDocument->GetPagesCount() || !pFieldInfo)
@@ -2181,110 +2296,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
 		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
 		{
-			PdfWriter::CAction* pA = (PdfWriter::CAction*)m_pDocument->CreateAction(pAction->nActionType);
-			if (!pA)
-				continue;
-			pA->SetType(pAction->wsType);
-
-			switch (pAction->nActionType)
-			{
-			case 1:
-			{
-				PdfWriter::CActionGoTo* ppA = (PdfWriter::CActionGoTo*)pA;
-				PdfWriter::CPage* pPageD = m_pDocument->GetPage(pAction->nInt1);
-				PdfWriter::CDestination* pDest = m_pDocument->CreateDestination(pPageD);
-				if (!pDest)
-					break;
-				ppA->SetDestination(pDest);
-
-				PdfWriter::CArrayObject* pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("CropBox");
-				if (!pPageBoxD)
-					pPageBoxD = (PdfWriter::CArrayObject*)pPageD->Get("MediaBox");
-				if (!pPageBoxD)
-					pPageBoxD = pPageBox;
-				pD = pPageBoxD->Get(3);
-				double dPageDH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-				pD = pPageBoxD->Get(0);
-				double dPageDX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
-
-				switch (pAction->nKind)
-				{
-				case 0:
-				{
-					pDest->SetXYZ(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2]);
-					break;
-				}
-				case 1:
-				{
-					pDest->SetFit();
-					break;
-				}
-				case 2:
-				{
-					pDest->SetFitH(dPageDH - pAction->dD[1]);
-					break;
-				}
-				case 3:
-				{
-					pDest->SetFitV(pAction->dD[0] + dPageDX);
-					break;
-				}
-				case 4:
-				{
-					pDest->SetFitR(pAction->dD[0] + dPageDX, dPageDH - pAction->dD[1], pAction->dD[2] + dPageDX, dPageDH - pAction->dD[3]);
-					break;
-				}
-				case 5:
-				{
-					pDest->SetFitB();
-					break;
-				}
-				case 6:
-				{
-					pDest->SetFitBH(dPageDH - pAction->dD[1]);
-					break;
-				}
-				case 7:
-				{
-					pDest->SetFitBV(pAction->dD[0] + dPageDX);
-					break;
-				}
-				}
-				break;
-			}
-			case 6:
-			{
-				PdfWriter::CActionURI* ppA = (PdfWriter::CActionURI*)pA;
-				ppA->SetURI(pAction->wsStr1);
-				break;
-			}
-			case 9:
-			{
-				PdfWriter::CActionHide* ppA = (PdfWriter::CActionHide*)pA;
-				ppA->SetH(pAction->nKind);
-				ppA->SetT(pAction->arrStr);
-				break;
-			}
-			case 10:
-			{
-				PdfWriter::CActionNamed* ppA = (PdfWriter::CActionNamed*)pA;
-				ppA->SetN(pAction->wsStr1);
-				break;
-			}
-			case 12:
-			{
-				PdfWriter::CActionResetForm* ppA = (PdfWriter::CActionResetForm*)pA;
-				ppA->SetFlags(pAction->nInt1);
-				ppA->SetFields(pAction->arrStr);
-				break;
-			}
-			case 14:
-			{
-				PdfWriter::CActionJavaScript* ppA = (PdfWriter::CActionJavaScript*)pA;
-				ppA->SetJS(pAction->wsStr1);
-				break;
-			}
-			}
+			PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
 			pWidgetAnnot->AddAction(pA);
 		}
 
@@ -2743,6 +2755,29 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		}
 		if (nFlags & (1 << 7))
 			pParentObj->Add("Ff", pParent->nFieldFlag);
+		if (nFlags & (1 << 8))
+		{
+			const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pParent->arrAction;
+			for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
+			{
+				PdfWriter::CAction* pA = GetAction(m_pDocument, pAction);
+				if (!pA)
+					continue;
+
+				if (pA->m_sType == "A")
+					pParentObj->Add(pA->m_sType.c_str(), pAction);
+				else
+				{
+					PdfWriter::CDictObject* pAA = (PdfWriter::CDictObject*)pParentObj->Get("AA");
+					if (!pAA)
+					{
+						pAA = new PdfWriter::CDictObject();
+						pParentObj->Add("AA", pAA);
+					}
+					pAA->Add(pA->m_sType.c_str(), pAction);
+				}
+			}
+		}
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

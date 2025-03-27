@@ -607,6 +607,18 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
 			rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
 		}
+		if (flags & (1 << 8))
+		{
+			let nAction = reader.readInt();
+			if (nAction > 0)
+				rec["AA"] = {};
+			for (let i = 0; i < nAction; ++i)
+			{
+				let AAType = reader.readString();
+				rec["AA"][AAType] = {};
+				readAction(reader, rec["AA"][AAType]);
+			}
+		}
 		res["Parents"].push(rec);
 	}
 

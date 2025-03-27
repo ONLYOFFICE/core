@@ -1117,6 +1117,21 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		}
 		if (nFlags & (1 << 7))
 			pParent->nFieldFlag = pReader->ReadInt();
+		if (nFlags & (1 << 8))
+		{
+			// Action
+			int nAction = pReader->ReadInt();
+			for (int i = 0; i < nAction; ++i)
+			{
+				std::wstring wsType = pReader->ReadString();
+				CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pA = ReadAction(pReader);
+				if (pA)
+				{
+					pA->wsType = wsType;
+					pParent->arrAction.push_back(pA);
+				}
+			}
+		}
 		m_arrParents.push_back(pParent);
 	}
 

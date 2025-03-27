@@ -1657,6 +1657,22 @@ namespace PdfWriter
 
 		if (pAction->m_sType == "A")
 		{
+			Add(pAction->m_sType.c_str(), pAction);
+			return;
+		}
+
+		CDictObject* pAA = (CDictObject*)Get("AA");
+		if (!pAA)
+		{
+			pAA = new CDictObject();
+			Add("AA", pAA);
+		}
+
+		pAA->Add(pAction->m_sType.c_str(), pAction);
+
+		/*
+		if (pAction->m_sType == "A")
+		{
 			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
 			if (!pOwner)
 				pOwner = this;
@@ -1691,6 +1707,7 @@ namespace PdfWriter
 
 		if (pAA)
 			pAA->Add(sAA.c_str(), pAction);
+		*/
 	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{
@@ -2382,6 +2399,11 @@ namespace PdfWriter
 	void CAction::SetType(const std::wstring& wsType)
 	{
 		m_sType = U_TO_UTF8(wsType);
+		Add("S", m_sType.c_str());
+	}
+	void CAction::SetNext(CAction* pNext)
+	{
+		Add("Next", pNext);
 	}
 	//----------------------------------------------------------------------------------------
 	CActionResetForm::CActionResetForm(CXref* pXref) : CAction(pXref)

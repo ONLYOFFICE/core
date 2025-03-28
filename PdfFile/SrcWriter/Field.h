@@ -418,6 +418,8 @@ namespace PdfWriter
 		void DrawTextUpArrow(const std::string& sColor);
 		void DrawTextUpLeftArrow(const std::string& sColor);
 
+		void DrawRadiobuttonCircle();
+
 		CStream* GetStream() const { return m_pStream; }
 		CFontDict* GetFont() { return m_pFont; }
 

@@ -686,6 +686,7 @@ namespace PdfWriter
 
 		CWidgetAnnotation* pWidget = new CPushButtonWidget(m_pXref);
 		m_pXref->Add(pWidget);
+		pWidget->Add("FT", "Btn");
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pWidget);
 
@@ -698,6 +699,7 @@ namespace PdfWriter
 
 		CWidgetAnnotation* pWidget = new CCheckBoxWidget(m_pXref);
 		m_pXref->Add(pWidget);
+		pWidget->Add("FT", "Btn");
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pWidget);
 
@@ -723,6 +725,7 @@ namespace PdfWriter
 
 		CAnnotation* pWidget = new CChoiceWidget(m_pXref);
 		m_pXref->Add(pWidget);
+		pWidget->Add("FT", "Ch");
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pWidget);
 

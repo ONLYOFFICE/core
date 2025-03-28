@@ -1180,7 +1180,7 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 
 	// 14 - Имя вкл состояния - AP - N - Yes
 	Object oNorm;
-	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
+	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict() && oOpt.isNull())
 	{
 		for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
 		{
@@ -1189,36 +1189,6 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 			{
 				m_unFlags |= (1 << 14);
 				m_sAP_N_Yes = sNormName;
-
-				int nOptI;
-				if (oOpt.isArray() && isdigit(sNormName[0]) && (nOptI = std::stoi(sNormName)) >= 0 && nOptI < oOpt.arrayGetLength())
-				{
-					Object oOptJ;
-					if (!oOpt.arrayGet(nOptI, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
-					{
-						oOptJ.free();
-						break;
-					}
-
-					if (oOptJ.isString())
-					{
-						TextString* s = new TextString(oOptJ.getString());
-						m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-						delete s;
-					}
-					else if (oOptJ.isArray() && oOptJ.arrayGetLength() > 0)
-					{
-						Object oOptJ2;
-						if (oOptJ.arrayGet(0, &oOptJ2)->isString())
-						{
-							TextString* s = new TextString(oOptJ2.getString());
-							m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-							delete s;
-						}
-						oOptJ2.free();
-					}
-					oOptJ.free();
-				}
 				break;
 			}
 		}

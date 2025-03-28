@@ -380,6 +380,11 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				i += 4;
 				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
 				i += nPathLength;
+
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+				i += nPathLength;
 			}
 			std::cout << " ], ";
 		}

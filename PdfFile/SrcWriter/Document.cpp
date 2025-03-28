@@ -672,8 +672,7 @@ namespace PdfWriter
 			return NULL;
 
 		CWidgetAnnotation* pWidget = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
-		if (!pWidget)
-			return NULL;
+		m_pXref->Add(pWidget);
 
 		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
 		ppFields->Add(pWidget);
@@ -682,21 +681,52 @@ namespace PdfWriter
 	}
 	CAnnotation* CDocument::CreatePushButtonWidget()
 	{
-		return new CPushButtonWidget(m_pXref);
+		if (!CheckAcroForm())
+			return NULL;
+
+		CWidgetAnnotation* pWidget = new CPushButtonWidget(m_pXref);
+		m_pXref->Add(pWidget);
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
 	CAnnotation* CDocument::CreateCheckBoxWidget()
 	{
-		return new CCheckBoxWidget(m_pXref);
+		if (!CheckAcroForm())
+			return NULL;
+
+		CWidgetAnnotation* pWidget = new CCheckBoxWidget(m_pXref);
+		m_pXref->Add(pWidget);
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
 	CAnnotation* CDocument::CreateTextWidget()
 	{
-		CAnnotation* pNew = new CTextWidget(m_pXref);
-		pNew->Add("FT", "Tx");
-		return pNew;
+		if (!CheckAcroForm())
+			return NULL;
+
+		CAnnotation* pWidget = new CTextWidget(m_pXref);
+		m_pXref->Add(pWidget);
+		pWidget->Add("FT", "Tx");
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
 	CAnnotation* CDocument::CreateChoiceWidget()
 	{
-		return new CChoiceWidget(m_pXref);
+		if (!CheckAcroForm())
+			return NULL;
+
+		CAnnotation* pWidget = new CChoiceWidget(m_pXref);
+		m_pXref->Add(pWidget);
+		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+		ppFields->Add(pWidget);
+
+		return pWidget;
 	}
 	CAnnotation* CDocument::CreateSignatureWidget()
 	{
@@ -718,7 +748,6 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
-		m_pXref->Add(pAnnot);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()
@@ -1472,6 +1501,13 @@ namespace PdfWriter
 
 		return true;
 	}
+	CDictObject* CDocument::CreateParent(int nID)
+	{
+		CDictObject* pParent = new CDictObject();
+		m_pXref->Add(pParent);
+		m_mParents[nID] = pParent;
+		return pParent;
+	}
 	bool CDocument::EditParent(CXref* pXref, CDictObject* pParent, int nID)
 	{
 		if (!pParent || !EditXref(pXref))
@@ -1518,6 +1554,52 @@ namespace PdfWriter
 		if (p != m_mParents.end())
 			return p->second;
 		return NULL;
+	}
+	void CDocument::SetParentKids(int nParentID)
+	{
+		CDictObject* pParent = GetParent(nParentID);
+		if (!pParent)
+			return;
+
+		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
+		{
+			CAnnotation* pAnnot = it->second;
+			if (pAnnot->GetAnnotationType() != AnnotWidget)
+				continue;
+
+			CWidgetAnnotation* pWidget = (CWidgetAnnotation*)pAnnot;
+			int nWidgetParentID = pWidget->GetParentID();
+			if (nWidgetParentID != nParentID)
+				continue;
+
+			pWidget->SetParent(pParent);
+
+			CObjectBase* pFT = pParent->Get("FT");
+			CObjectBase* pWidgetFT = pWidget->Get("FT");
+			if (!pFT && pParent->Get("T") && pWidgetFT)
+				pParent->Add("FT", pWidgetFT->Copy());
+
+			CArrayObject* pKids = dynamic_cast<CArrayObject*>(pParent->Get("Kids"));
+			if (!pKids)
+			{
+				pKids = new CArrayObject();
+				pParent->Add("Kids", pKids);
+			}
+			bool bReplase = false;
+			int nID = pWidget->GetObjId();
+			for (int i = 0; i < pKids->GetCount(); ++i)
+			{
+				CObjectBase* pKid = pKids->Get(i);
+				if (pKid->GetObjId() == nID)
+				{
+					pKids->Insert(pKid, pWidget, true);
+					bReplase = true;
+					break;
+				}
+			}
+			if (!bReplase)
+				pKids->Add(pWidget);
+		}
 	}
 	CPage* CDocument::CreateFakePage()
 	{

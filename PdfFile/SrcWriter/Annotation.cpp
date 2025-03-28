@@ -1456,6 +1456,7 @@ namespace PdfWriter
 		m_pAppearance = NULL;
 		m_pFont       = NULL;
 		m_dFontSizeAP = 0;
+		m_nParentID   = 0;
 		m_nQ          = 0;
 		m_dFontSize   = 10.0;
 		m_bBold       = false;
@@ -1595,6 +1596,10 @@ namespace PdfWriter
 			return;
 		m_pParent = pParent;
 		Add("Parent", pParent);
+	}
+	void CWidgetAnnotation::SetParentID(int nParentID)
+	{
+		m_nParentID = nParentID;
 	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{

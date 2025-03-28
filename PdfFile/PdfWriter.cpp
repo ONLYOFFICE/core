@@ -2288,6 +2288,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetBG(pPr->GetBG());
 		if (nFlags & (1 << 8))
 			pWidgetAnnot->SetDV(pPr->GetDV());
+		if (nFlags & (1 << 17))
+			pWidgetAnnot->SetParentID(pPr->GetParentID());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
 		if (nFlags & (1 << 20))
@@ -2631,51 +2633,55 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		CWidgetsInfo::CParent* pParent = arrParents[j];
 		PdfWriter::CDictObject* pParentObj = m_pDocument->GetParent(pParent->nID);
 		if (!pParentObj)
-			continue;
+			pParentObj = m_pDocument->CreateParent(pParent->nID);
 
 		std::vector<std::wstring> arrValue;
 
 		int nFlags = pParent->nFlags;
 		// Adobe не может смешивать юникод и utf имена полей
-		// if (nFlags & (1 << 0))
-		// 	pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str(), true));
+		if (nFlags & (1 << 0))
+			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str()));
+
+		m_pDocument->SetParentKids(pParent->nID);
+		PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParentObj->Get("Kids"));
+		if (!pKids)
+		{
+			pKids = new PdfWriter::CArrayObject();
+			pParentObj->Add("Kids", pKids);
+		}
+
 		if (nFlags & (1 << 1))
 		{
 			std::string sV = U_TO_UTF8(pParent->sV);
 			bool bName = !sV.empty() && (iswdigit(pParent->sV[0]) || sV == "Off");
 
-			PdfWriter::CObjectBase* pKids = pParentObj->Get("Kids");
-			if (pKids && pKids->GetType() == PdfWriter::object_type_ARRAY)
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				PdfWriter::CArrayObject* pAKids = (PdfWriter::CArrayObject*)pKids;
-				for (int i = 0; i < pAKids->GetCount(); ++i)
+				PdfWriter::CObjectBase* pObj = pKids->Get(i);
+				if (pObj->GetType() != PdfWriter::object_type_DICT ||
+					((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
+					((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
+					continue;
+				PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
+				if (nType == PdfWriter::WidgetCheckbox || nType == PdfWriter::WidgetRadiobutton)
 				{
-					PdfWriter::CObjectBase* pObj = pAKids->Get(i);
-					if (pObj->GetType() != PdfWriter::object_type_DICT ||
-						((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
-						((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
-						continue;
-					PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
-					if (nType == PdfWriter::WidgetCheckbox || nType == PdfWriter::WidgetRadiobutton)
-					{
-						PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
-						if (pKid)
-							pKid->SwitchAP(sV);
-					}
-					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
-					{
-						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						if (!pKid->HaveAPV())
-							DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
-						bName = false;
-					}
-					if (nType == PdfWriter::WidgetText)
-					{
-						PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
-						if (!pKid->HaveAPV())
-							DrawTextWidget(pAppFonts, pKid, pParent->sV);
-						bName = false;
-					}
+					PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
+					if (pKid)
+						pKid->SwitchAP(sV);
+				}
+				if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
+				{
+					PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+					if (!pKid->HaveAPV())
+						DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
+					bName = false;
+				}
+				if (nType == PdfWriter::WidgetText)
+				{
+					PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
+					if (!pKid->HaveAPV())
+						DrawTextWidget(pAppFonts, pKid, pParent->sV);
+					bName = false;
 				}
 			}
 
@@ -2698,6 +2704,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		if (nFlags & (1 << 4))
 		{
 			PdfWriter::CDictObject* pParentObj2 = m_pDocument->GetParent(pParent->nParentID);
+			if (!pParentObj2)
+				pParentObj2 = m_pDocument->CreateParent(pParent->nParentID);
 			if (pParentObj2)
 				pParentObj->Add("Parent", pParentObj2);
 		}
@@ -2707,24 +2715,20 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pParentObj->Add("V", pArray);
 			for (int i = 0; i < pParent->arrV.size(); ++i)
 				pArray->Add(new PdfWriter::CStringObject(U_TO_UTF8(pParent->arrV[i]).c_str(), true));
-			PdfWriter::CObjectBase* pKids = pParentObj->Get("Kids");
-			if (pKids && pKids->GetType() == PdfWriter::object_type_ARRAY)
+
+			for (int i = 0; i < pKids->GetCount(); ++i)
 			{
-				PdfWriter::CArrayObject* pAKids = (PdfWriter::CArrayObject*)pKids;
-				for (int i = 0; i < pAKids->GetCount(); ++i)
+				PdfWriter::CObjectBase* pObj = pKids->Get(i);
+				if (pObj->GetType() != PdfWriter::object_type_DICT ||
+					((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
+					((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
+					continue;
+				PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
+				if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 				{
-					PdfWriter::CObjectBase* pObj = pAKids->Get(i);
-					if (pObj->GetType() != PdfWriter::object_type_DICT ||
-						((PdfWriter::CDictObject*)pObj)->GetDictType() != PdfWriter::dict_type_ANNOTATION ||
-						((PdfWriter::CAnnotation*)pObj)->GetAnnotationType() != PdfWriter::AnnotWidget)
-						continue;
-					PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pObj)->GetWidgetType();
-					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
-					{
-						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						if (!pKid->HaveAPV())
-							DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
-					}
+					PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
+					if (!pKid->HaveAPV())
+						DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
 				}
 			}
 		}
@@ -2800,14 +2804,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		arrForm.push_back(m_pDocument->CreateForm(pImage, std::to_string(i)));
 	}
 
-	if (arrForm.empty())
-		return S_OK;
-
 	std::map<int, PdfWriter::CAnnotation*> mAnnots = m_pDocument->GetAnnots();
 	for (auto it = mAnnots.begin(); it != mAnnots.end(); it++)
 	{
 		PdfWriter::CAnnotation* pAnnot = it->second;
-		if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget || ((PdfWriter::CWidgetAnnotation*)pAnnot)->GetWidgetType() != PdfWriter::WidgetPushbutton)
+		if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget)
+			continue;
+
+		PdfWriter::CWidgetAnnotation* pWidget = (PdfWriter::CWidgetAnnotation*)pAnnot;
+		if (pWidget->GetWidgetType() != PdfWriter::WidgetPushbutton)
 			continue;
 
 		PdfWriter::CPushButtonWidget* pPBWidget = (PdfWriter::CPushButtonWidget*)pAnnot;
@@ -2837,6 +2842,38 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nI]);
 			}
 		}
+	}
+
+	std::map<int, PdfWriter::CDictObject*> mParents = m_pDocument->GetParents();
+	for (auto it = mParents.begin(); it != mParents.end(); it++)
+	{
+		PdfWriter::CDictObject* pP = it->second;
+		PdfWriter::CObjectBase* pParentOfParent = pP->Get("Parent");
+		if (!pParentOfParent || pParentOfParent->GetType() != PdfWriter::object_type_DICT)
+			continue;
+
+		PdfWriter::CDictObject* pParent = (PdfWriter::CDictObject*)pParentOfParent;
+		PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParent->Get("Kids"));
+		if (!pKids)
+		{
+			pKids = new PdfWriter::CArrayObject();
+			pParent->Add("Kids", pKids);
+		}
+
+		bool bReplase = false;
+		int nID = pP->GetObjId();
+		for (int i = 0; i < pKids->GetCount(); ++i)
+		{
+			PdfWriter::CObjectBase* pKid = pKids->Get(i);
+			if (pKid->GetObjId() == nID)
+			{
+				pKids->Insert(pKid, pP, true);
+				bReplase = true;
+				break;
+			}
+		}
+		if (!bReplase)
+			pKids->Add(pP);
 	}
 
 	return S_OK;

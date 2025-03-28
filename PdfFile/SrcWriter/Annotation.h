@@ -418,6 +418,7 @@ namespace PdfWriter
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
 		BYTE m_nQ;
+		int m_nParentID;
 
 		void CheckMK();
 
@@ -443,6 +444,7 @@ namespace PdfWriter
 		void SetR(const int& nR);
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
+		void SetParentID(int nParentID);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);
@@ -457,6 +459,7 @@ namespace PdfWriter
 		std::string GetBCforAP();
 		CFontCidTrueType* GetFont() { return m_pFont; }
 		double GetFontSize()   { return m_dFontSize; }
+		int  GetParentID()     { return m_nParentID; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
 		bool HaveBG();

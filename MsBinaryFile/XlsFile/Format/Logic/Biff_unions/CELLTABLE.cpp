@@ -42,133 +42,121 @@
 namespace XLS
 {
 
-class CELL_GROUP : public CompositeObject
+
+const bool CELL_GROUP::loadContent(BinProcessor& proc)
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CELL_GROUP)
-public:
-	CELL_GROUP(std::vector<CellRangeRef>& shared_formulas_locations_ref) : 
-							shared_formulas_locations_ref_(shared_formulas_locations_ref)
-	{
-	}
+    global_info_ = proc.getGlobalWorkbookInfo();
+    int index_sheet_info_ = global_info_->current_sheet - 1;
 
-	BaseObjectPtr clone()
-	{
-		return BaseObjectPtr(new CELL_GROUP(*this));
-	}
+    GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->sheets_info[index_sheet_info_];
 
-	const bool loadContent(BinProcessor& proc)
-	{
-		global_info_ = proc.getGlobalWorkbookInfo();
-		int index_sheet_info_ = global_info_->current_sheet - 1;
+    int count, count_row = 0;
 
-		GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->sheets_info[index_sheet_info_];
-		
-		int count, count_row = 0;
-		
-		bool bRow = false;
+    bool bRow = false;
 
-		bRow = (global_info_->Version == 0x0200) ? proc.mandatory<Row_BIFF2>() : proc.mandatory<Row>();
-		
-		if (bRow == true)
-		{
-			count_row = count =  1 + ((global_info_->Version == 0x0200) ? proc.repeated<Row_BIFF2>(0, 0) : proc.repeated<Row>(0, 0));
-		
-			while(count > 0)
-			{
-				Row* row = dynamic_cast<Row*>(elements_.front().get());
-				if (row)
-				{
-					if (row->miyRw > 0 && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.001)
-					{
-						sheet_info.customRowsHeight.insert(std::make_pair(row->rw, row->miyRw / 20.));
-					}
-				}
-				std::map<int, GlobalWorkbookInfo::_row_info>::iterator pFindRow = sheet_info.mapRows.find(row->rw);
-				if (pFindRow == sheet_info.mapRows.end())
-				{
-					GlobalWorkbookInfo::_row_info row_info;
+    bRow = (global_info_->Version == 0x0200) ? proc.mandatory<Row_BIFF2>() : proc.mandatory<Row>();
 
-					row_info.row_info = elements_.front();
-					sheet_info.mapRows.insert(std::make_pair(row->rw, row_info));
-				}
-				else
-				{
-					if (!pFindRow->second.row_info)
-					{
-						pFindRow->second.row_info = elements_.front();
-					}
-					else
-					{
-						Row* row_find = dynamic_cast<Row*>(pFindRow->second.row_info.get());
-						if ((row_find) && (false == row_find->bValid) && row->bValid)
-						{
-							pFindRow->second.row_info = elements_.front();
-						}
+    if (bRow == true)
+    {
+        count_row = count =  1 + ((global_info_->Version == 0x0200) ? proc.repeated<Row_BIFF2>(0, 0) : proc.repeated<Row>(0, 0));
 
-					}
-				}
+        while(count > 0)
+        {
+            Row* row = dynamic_cast<Row*>(elements_.front().get());
+            if (row)
+            {
+                if (row->miyRw > 0 && std::abs(row->miyRw/20. - sheet_info.defaultRowHeight) > 0.001)
+                {
+                    sheet_info.customRowsHeight.insert(std::make_pair(row->rw, row->miyRw / 20.));
+                }
+            }
+            std::map<int, GlobalWorkbookInfo::_row_info>::iterator pFindRow = sheet_info.mapRows.find(row->rw);
+            if (pFindRow == sheet_info.mapRows.end())
+            {
+                GlobalWorkbookInfo::_row_info row_info;
 
-				elements_.pop_front();
-				count--;				
-			}
-		}	
-		
-		//------------------------------------------------------------------------------------------------------------------
-        CELL cell(shared_formulas_locations_ref_);
+                row_info.row_info = elements_.front();
+                sheet_info.mapRows.insert(std::make_pair(row->rw, row_info));
+            }
+            else
+            {
+                if (!pFindRow->second.row_info)
+                {
+                    pFindRow->second.row_info = elements_.front();
+                }
+                else
+                {
+                    Row* row_find = dynamic_cast<Row*>(pFindRow->second.row_info.get());
+                    if ((row_find) && (false == row_find->bValid) && row->bValid)
+                    {
+                        pFindRow->second.row_info = elements_.front();
+                    }
 
-        int count_cells = count = proc.repeated(cell, 0, 0);
+                }
+            }
 
-		while(count > 0)
-		{
-			CELL * cell = dynamic_cast<CELL *>(elements_.front().get());
-			if (cell)
-			{
-				std::map<int, GlobalWorkbookInfo::_row_info>::iterator pFindRow = sheet_info.mapRows.find(cell->RowNumber);
-				if (pFindRow == sheet_info.mapRows.end())
-				{
-					GlobalWorkbookInfo::_row_info row_info;
-					sheet_info.mapRows.insert(std::make_pair(cell->RowNumber, row_info));
+            elements_.pop_front();
+            count--;
+        }
+    }
 
-					pFindRow = sheet_info.mapRows.find(cell->RowNumber);
-				}
-				std::map<int, BaseObjectPtr>::iterator pFindCell = pFindRow->second.mapCells.find(cell->ColumnNumber);
+    //------------------------------------------------------------------------------------------------------------------
+    CELL cell(shared_formulas_locations_ref_);
 
-				if (pFindCell != pFindRow->second.mapCells.end())
-				{
-					CELL* cell_prev = dynamic_cast<CELL *>(pFindCell->second.get());
+    int count_cells = count = proc.repeated(cell, 0, 0);
 
-					pFindCell->second = elements_.front();
-				}
-				else
-				{
-					pFindRow->second.mapCells.insert(std::make_pair(cell->ColumnNumber, elements_.front()));
-				}
-			}
-			elements_.pop_front();
-			count--;				
-		}
-		count = proc.repeated<DBCell>(0, 0); 
-		// OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
-		while(count > 0)
-		{
-			m_DBCells.insert(m_DBCells.begin(), elements_.back());
-			elements_.pop_back();
-			count--;
-		}	
-		if (count_cells > 0 || count_row > 0)	return true;
-		else									return false;
-	}
-	
-	static const ElementType type = typeCELL_GROUP;
+    while(count > 0)
+    {
+        CELL * cell = dynamic_cast<CELL *>(elements_.front().get());
+        if (cell)
+        {
+            std::map<int, GlobalWorkbookInfo::_row_info>::iterator pFindRow = sheet_info.mapRows.find(cell->RowNumber);
+            if (pFindRow == sheet_info.mapRows.end())
+            {
+                GlobalWorkbookInfo::_row_info row_info;
+                sheet_info.mapRows.insert(std::make_pair(cell->RowNumber, row_info));
 
-//---------------------------------------------------------------------------
-	std::list<BaseObjectPtr> m_DBCells;
+                pFindRow = sheet_info.mapRows.find(cell->RowNumber);
+            }
+            std::map<int, BaseObjectPtr>::iterator pFindCell = pFindRow->second.mapCells.find(cell->ColumnNumber);
 
-private:
-	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
+            if (pFindCell != pFindRow->second.mapCells.end())
+            {
+                CELL* cell_prev = dynamic_cast<CELL *>(pFindCell->second.get());
 
-	GlobalWorkbookInfoPtr global_info_;
-};
+                pFindCell->second = elements_.front();
+            }
+            else
+            {
+                pFindRow->second.mapCells.insert(std::make_pair(cell->ColumnNumber, elements_.front()));
+            }
+        }
+        elements_.pop_front();
+        count--;
+    }
+    count = proc.repeated<DBCell>(0, 0);
+    // OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
+    while(count > 0)
+    {
+        m_DBCells.insert(m_DBCells.begin(), elements_.back());
+        elements_.pop_back();
+        count--;
+    }
+    if (count_cells > 0 || count_row > 0)	return true;
+    else									return false;
+}
+const bool CELL_GROUP::saveContent(BinProcessor& proc)
+{
+    if(m_row != nullptr)
+        proc.mandatory(*m_row);
+    for(auto i : m_arCells)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_DBCells)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
 //-----------------------------------------------------------------------------------------------------------------
 CELLTABLE::CELLTABLE(std::vector<CellRangeRef>& shared_formulas_locations_ref) : 
 											isConcatinate_(false), shared_formulas_locations_ref_(shared_formulas_locations_ref)
@@ -222,6 +210,16 @@ const bool CELLTABLE::loadContent(BinProcessor& proc)
 	}	
 	return true;
 }
+
+const bool CELLTABLE::saveContent(BinProcessor& proc)
+{
+    for(auto i: m_arCellGroups)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
+
 int CELLTABLE::serialize(std::wostream & stream)
 {
 	GlobalWorkbookInfo::_sheet_info & sheet_info = global_info_->sheets_info[index_sheet_info_];

@@ -73,6 +73,18 @@ void Formula::readFields(CFRecord& record)
 	formula.load(record);
 }
 
+void Formula::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fAlwaysCalc);
+    SETBIT(flags, 2, fFill);
+    SETBIT(flags, 3, fShrFmla);
+    SETBIT(flags, 5, fClearErrors);
+    record << cell << val << flags;
+    record.reserveNunBytes(4);
+    formula.save(record);
+}
+
 const CellRef Formula::getLocation() const
 {
 	return cell.getLocation();

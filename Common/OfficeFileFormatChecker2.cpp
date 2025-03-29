@@ -44,7 +44,7 @@
 
 #include "3dParty/pole/pole.h"
 #include <algorithm>
-
+#include <limits>
 #include "OfficeFileFormatDefines.h"
 
 #define MIN_SIZE_BUFFER 4096

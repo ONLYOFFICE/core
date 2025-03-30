@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-sys.path.append('../../../../build_tools/scripts')
+sys.path.append('../../../../build_tools-local-qt-default-jdk/scripts')
 import config
 import base
 import os

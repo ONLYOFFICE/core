@@ -1,21 +1,21 @@
 #!/usr/bin/env python
 
 import sys
-#sys.path.append('../../../../build_tools/scripts')
+sys.path.append('../../../../build_tools/scripts')
 import config
 import base
 import os
 
 base_directory = os.getcwd()
 
-if not base.isdir(getpath("gumbo-parser")):
+if not base.is_dir("gumbo-parser"):
   base.cmd("git", ["clone", "https://github.com/google/gumbo-parser.git"])
   base.cmd_in_dir("gumbo-parser", "git", ["checkout", "aa91b27b02c0c80c482e24348a457ed7c3c088e0"])
 
   # fix gumbo
   base.replaceInFile(base_directory + "/gumbo-parser/src/tag.c", "isspace(*c)", "isspace((unsigned char)*c)")
 
-if not base.isdir(getpath("katana-parser")):
+if not base.is_dir("katana-parser"):
   base.cmd("git", ["clone", "https://github.com/jasenhuang/katana-parser.git"])
   base.cmd_in_dir("katana-parser", "git", ["checkout", "be6df458d4540eee375c513958dcb862a391cdd1"])
 

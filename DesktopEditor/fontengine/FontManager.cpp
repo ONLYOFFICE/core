@@ -351,9 +351,15 @@ CFontManager::~CFontManager()
 	RELEASEINTERFACE(m_pFont);
 	RELEASEOBJECT(m_pOwnerCache);
 }
+
 void CFontManager::SetOwnerCache(NSFonts::IFontsCache* pCache)
 {
 	m_pOwnerCache = (CFontsCache*)pCache;
+}
+
+void CFontManager::ClearOwnerCache()
+{
+	m_pOwnerCache->Clear();
 }
 
 NSFonts::IFontsCache* CFontManager::GetCache() { return m_pOwnerCache; }

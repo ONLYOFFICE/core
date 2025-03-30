@@ -132,6 +132,7 @@ public:
 
 	virtual void Initialize();
 	virtual void SetOwnerCache(NSFonts::IFontsCache* pCache);
+	virtual void ClearOwnerCache();
 
 	virtual NSFonts::IFontsCache* GetCache();
 	virtual NSFonts::IApplicationFonts* GetApplication();

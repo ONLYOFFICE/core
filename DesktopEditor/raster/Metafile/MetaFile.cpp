@@ -67,14 +67,6 @@ namespace MetaFile
 			m_pFontManager->SetOwnerCache(pMeasurerCache);
 		}
 
-	#ifdef METAFILE_SUPPORT_WMF_EMF
-		m_oWmfFile.SetFontManager(m_pFontManager);
-		m_oEmfFile.SetFontManager(m_pFontManager);
-	#endif
-
-	#ifdef METAFILE_SUPPORT_SVM
-		m_oSvmFile.SetFontManager(m_pFontManager);
-	#endif
 		m_lType  = 0;
 	}
 
@@ -102,7 +94,7 @@ namespace MetaFile
 	 * @brief CMetaFile::ConvertToSvg
 	 * @param unWidth - width of picture from metafile (0 - default)
 	 * @param unHeight - height of picture from metafile (0 - default)
-	 * @return Name of the .svg file storing result
+	 * @return string containing svg content
 	 */
 	std::wstring CMetaFile::ConvertToSvg(unsigned int unWidth, unsigned int unHeight)
 	{
@@ -153,15 +145,7 @@ namespace MetaFile
 	 */
 	bool CMetaFile::LoadFromXmlFile(const wchar_t *wsFilePath)
 	{
-		RELEASEINTERFACE(m_pFontManager);
-
-		if (m_pAppFonts)
-		{
-			m_pFontManager = m_pAppFonts->GenerateFontManager();
-			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
+		m_pFontManager->ClearOwnerCache();
 
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
@@ -218,15 +202,7 @@ namespace MetaFile
 	 */
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
-		RELEASEINTERFACE(m_pFontManager);
-
-		if (m_pAppFonts)
-		{
-			m_pFontManager = m_pAppFonts->GenerateFontManager();
-			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
+		m_pFontManager->ClearOwnerCache();
 
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		m_oWmfFile.SetFontManager(m_pFontManager);
@@ -321,15 +297,7 @@ namespace MetaFile
 		if (NULL == pBuffer || 0 == unSize)
 			return false;
 
-		RELEASEINTERFACE(m_pFontManager);
-
-		if (m_pAppFonts)
-		{
-			m_pFontManager = m_pAppFonts->GenerateFontManager();
-			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
+		m_pFontManager->ClearOwnerCache();
 
 	#ifdef METAFILE_SUPPORT_WMF_EMF
 		m_oWmfFile.SetFontManager(m_pFontManager);
@@ -398,7 +366,7 @@ namespace MetaFile
 
 	/**
 	 * @brief CMetaFile::LoadFromString
-	 * @param data - source string, containing metadata (.svg extension type)
+	 * @param data - source string, containing svg metadata (.svg extension type)
 	 * @return if correct read svg content - return true, else - false
 	 *
 	 * Load .svg content from wide string
@@ -406,17 +374,8 @@ namespace MetaFile
 	 */
 	bool CMetaFile::LoadFromString(const std::wstring& data)
 	{
+		m_pFontManager->ClearOwnerCache();
 #ifdef METAFILE_SUPPORT_SVG
-		RELEASEINTERFACE(m_pFontManager);
-
-		if (m_pAppFonts)
-		{
-			m_pFontManager = m_pAppFonts->GenerateFontManager();
-			NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-			pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-			m_pFontManager->SetOwnerCache(pMeasurerCache);
-		}
-
 		m_oSvgFile.SetFontManager(m_pFontManager);
 
 		if (m_oSvgFile.ReadFromWString(data) == true)

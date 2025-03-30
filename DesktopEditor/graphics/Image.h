@@ -61,6 +61,7 @@ public:
 	void Create(const std::wstring& filename);
 	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride, bool bExternalBuffer = false);
 	void Decode(BYTE *pBuffer, unsigned int unSize);
+    bool GetInsideFrom(const std::wstring& file_inp, const std::wstring& file_out);
 	bool SaveFile(const std::wstring& strFileName, UINT nFileType);
 	void Destroy();
 

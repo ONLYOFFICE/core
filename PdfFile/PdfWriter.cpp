@@ -3862,8 +3862,8 @@ void CPdfWriter::DrawTextWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWriter
 	if (!pTextWidget->HaveBorder() && pTextWidget->HaveBC())
 		pTextWidget->SetBorder(0, 1, {});
 	double dShiftBorder = pTextWidget->GetBorderWidth();
-	BYTE nType = pTextWidget->GetBorderType();
-	if (nType == 1 || nType == 3)
+	PdfWriter::EBorderType nType = pTextWidget->GetBorderType();
+	if (nType == PdfWriter::EBorderType::Beveled || nType == PdfWriter::EBorderType::Inset)
 		dShiftBorder *= 2;
 
 	// Коды, шрифты, количество
@@ -4024,8 +4024,8 @@ void CPdfWriter::DrawChoiceWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (!pChoiceWidget->HaveBorder() && pChoiceWidget->HaveBC())
 		pChoiceWidget->SetBorder(0, 1, {});
 	double dShiftBorder = pChoiceWidget->GetBorderWidth();
-	BYTE nType = pChoiceWidget->GetBorderType();
-	if (nType == 1 || nType == 3)
+	PdfWriter::EBorderType nType = pChoiceWidget->GetBorderType();
+	if (nType == PdfWriter::EBorderType::Beveled || nType == PdfWriter::EBorderType::Inset)
 		dShiftBorder *= 2;
 
 	if (arrValue.empty())
@@ -4200,8 +4200,8 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 		double dHeight   = pButtonWidget->GetHeight();
 
 		double dShiftBorder = pButtonWidget->GetBorderWidth();
-		BYTE nType = pButtonWidget->GetBorderType();
-		if (nType == 1 || nType == 3)
+		PdfWriter::EBorderType nType = pButtonWidget->GetBorderType();
+		if (nType == PdfWriter::EBorderType::Beveled || nType == PdfWriter::EBorderType::Inset)
 			dShiftBorder *= 2;
 		if (dShiftBorder == 0)
 			dShiftBorder = 1;

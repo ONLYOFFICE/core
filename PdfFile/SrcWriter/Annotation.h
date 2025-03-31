@@ -202,6 +202,7 @@ namespace PdfWriter
 		EBorderType GetBorderType() { return m_oBorder.nType; }
 		double GetBorderWidth() { return m_oBorder.dWidth; }
 		std::string GetBorderDash();
+		std::string GetColorName(const std::string& sName, bool bCAPS);
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
 		double GetPageX() { return m_dPageX; }

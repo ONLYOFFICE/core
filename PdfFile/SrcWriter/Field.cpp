@@ -307,31 +307,6 @@ namespace PdfWriter
 		DrawArrow(pStream, nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
 		DrawArrow(pStream, nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
 	}
-	std::string GetColor(CArrayObject* pArr, bool bCAPS, float dDiff = 0)
-	{
-		std::string sDA;
-		if (!pArr)
-			return sDA;
-
-		int nSize = pArr->GetCount();
-		for (int i = 0; i < nSize; ++i)
-		{
-			CObjectBase* pColor = pArr->Get(i);
-			float fColor = pColor->GetType() == object_type_REAL ? ((CRealObject*)pColor)->Get() : ((CNumberObject*)pColor)->Get();
-
-			sDA.append(std::to_string(fColor + dDiff));
-			sDA.append(" ");
-		}
-
-		if (nSize == 3)
-			sDA.append(bCAPS ? "RG" : "rg");
-		else if (nSize == 4)
-			sDA.append(bCAPS ? "K" : "k");
-		else if (nSize == 1)
-			sDA.append(bCAPS ? "G" : "g");
-
-		return sDA;
-	}
 
 	//----------------------------------------------------------------------------------------
 	// CFieldBase
@@ -2055,7 +2030,7 @@ namespace PdfWriter
 			BYTE nType = 0;
 			if (pAnnot)
 			{
-				nType = pAnnot->GetBorderType();
+				nType = (BYTE)pAnnot->GetBorderType();
 				switch (nType)
 				{
 				case 1: // Beveled
@@ -2277,7 +2252,7 @@ namespace PdfWriter
 			dBorderSize      = pAnnot->GetBorderWidth();
 			dBorderSizeStyle = dBorderSize;
 
-			if (pAnnot->GetBorderType() == 1 || pAnnot->GetBorderType() == 3)
+			if (pAnnot->GetBorderType() == EBorderType::Beveled || pAnnot->GetBorderType() == EBorderType::Inset)
 				dBorderSizeStyle *= 2;
 		}
 
@@ -2291,7 +2266,7 @@ namespace PdfWriter
 			BYTE nType = 0;
 			if (pAnnot)
 			{
-				nType = pAnnot->GetBorderType();
+				nType = (BYTE)pAnnot->GetBorderType();
 				switch (nType)
 				{
 				case 1: // Beveled
@@ -2540,8 +2515,8 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 
 		double dBorderSize = pAnnot->GetBorderWidth();
-		BYTE nType = pAnnot->GetBorderType();
-		if (nType == 1 || nType == 3)
+		EBorderType nType = pAnnot->GetBorderType();
+		if (nType == EBorderType::Beveled || nType == EBorderType::Inset)
 			dBorderSize *= 2;
 
 		if (pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
@@ -2607,8 +2582,8 @@ namespace PdfWriter
 			double dHeight = fabs(oRect.fBottom - oRect.fTop);
 
 			double dBorderSize = pAnnot->GetBorderWidth();
-			BYTE nType = pAnnot->GetBorderType();
-			if (nType == 1 || nType == 3)
+			EBorderType nType = pAnnot->GetBorderType();
+			if (nType == EBorderType::Beveled || nType == EBorderType::Inset)
 				dBorderSize *= 2;
 
 			m_pStream->WriteReal(2 * dBorderSize);
@@ -2669,14 +2644,14 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 
 		double dBorderSize = pAnnot->GetBorderWidth();
-		BYTE nType = pAnnot->GetBorderType();
+		EBorderType nType = pAnnot->GetBorderType();
 
 		switch (nType)
 		{
-		case 1: // Beveled
-		case 3: // Inset
+		case EBorderType::Beveled:
+		case EBorderType::Inset:
 		{
-			m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+			m_pStream->WriteStr(nType == EBorderType::Beveled ? "1 g\012" : "0.501953 g\012");
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteChar(' ');
@@ -2710,7 +2685,7 @@ namespace PdfWriter
 
 			m_pStream->WriteStr("f\012");
 
-			if (nType == 1 && pAnnot->HaveBG())
+			if (nType == EBorderType::Beveled && pAnnot->HaveBG())
 			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
 				m_pStream->WriteStr("\012");
@@ -2751,7 +2726,7 @@ namespace PdfWriter
 			m_pStream->WriteStr("f\012");
 			break;
 		}
-		case 2: // Dashed
+		case EBorderType::Dashed:
 		{
 			m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
 			break;
@@ -2764,7 +2739,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dBorderSize);
 		m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-		if (nType == 4) // Underline
+		if (nType == EBorderType::Underline)
 		{
 			m_pStream->WriteInt(0);
 			m_pStream->WriteChar(' ');
@@ -3154,17 +3129,11 @@ namespace PdfWriter
 		m_pStream->WriteReal(dBorderSize);
 		m_pStream->WriteStr(" w\012");
 
-		CObjectBase* pObj = m_pAnnot->Get("IC");
-		if (pObj && pObj->GetType() == object_type_ARRAY)
-		{
-			m_pStream->WriteStr(GetColor(dynamic_cast<CArrayObject*>(pObj), false).c_str());
-			m_pStream->WriteStr("\012");
-		}
+		m_pStream->WriteStr(m_pAnnot->GetColorName("IC", false).c_str());
 
-		m_pStream->WriteStr(GetColor(dynamic_cast<CArrayObject*>(Get("C")), true).c_str());
-		m_pStream->WriteStr("\012");
+		m_pStream->WriteStr(m_pAnnot->GetColorName("C", true).c_str());
 
-		pObj = m_pAnnot->Get("CA");
+		CObjectBase* pObj = m_pAnnot->Get("CA");
 		if (pObj && pObj->GetType() == object_type_REAL)
 		{
 			float dAlpha = ((CRealObject*)pObj)->Get();

@@ -308,6 +308,17 @@ namespace PdfWriter
 		sRes.append(" ] 0 d\012");
 		return sRes;
 	}
+	std::string CAnnotation::GetColorName(const std::string& sName, bool bCAPS)
+	{
+		std::string sRes;
+		CObjectBase* pObj = Get(sName);
+		if (pObj && pObj->GetType() == object_type_ARRAY)
+		{
+			sRes += GetColor(dynamic_cast<CArrayObject*>(pObj), bCAPS).c_str();
+			sRes += "\012";
+		}
+		return sRes;
+	}
 	CAnnotAppearanceObject* CAnnotation::StartAP()
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -1738,7 +1749,7 @@ namespace PdfWriter
 				|| (3 == m_nScaleType && dOriginH < dH && dOriginW < dW));
 
 			double dBorderSize = m_oBorder.dWidth;
-			if (m_oBorder.nType == 1 || m_oBorder.nType == 3)
+			if (m_oBorder.nType == EBorderType::Beveled || m_oBorder.nType == EBorderType::Inset)
 				dBorderSize *= 2;
 
 			double dDstW = dOriginW;
@@ -1845,10 +1856,10 @@ namespace PdfWriter
 
 		if (m_nStyle == ECheckBoxStyle::Circle)
 		{
-			pAP->GetYesN()->DrawCheckBoxCircle(true);
-			pAP->GetOffN()->DrawCheckBoxCircle(false);
-			pAP->GetYesD()->DrawCheckBoxCircle(true);
-			pAP->GetOffD()->DrawCheckBoxCircle(false);
+			pAP->GetYesN()->DrawCheckBoxCircle(true, true);
+			pAP->GetOffN()->DrawCheckBoxCircle(false, true);
+			pAP->GetYesD()->DrawCheckBoxCircle(true, false);
+			pAP->GetOffD()->DrawCheckBoxCircle(false, false);
 		}
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)

@@ -46,25 +46,8 @@ CTextObject::CTextObject(CXmlReader& oLiteReader)
 	  m_bItalic(false),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
 {
-	CTextObject::Read(oLiteReader);
-}
-
-CTextObject::~CTextObject()
-{
-	if (nullptr != m_pFillColor)
-		delete m_pFillColor;
-
-	if (nullptr != m_pStrokeColor)
-		delete m_pStrokeColor;
-
-	for (const CTextCode* pTextCode : m_arTextCodes)
-		delete pTextCode;
-}
-
-bool CTextObject::Read(CXmlReader& oLiteReader)
-{
 	if (L"ofd:TextObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
-		return false;
+		return;
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 	{
@@ -121,11 +104,21 @@ bool CTextObject::Read(CXmlReader& oLiteReader)
 		else if (L"ofd:TextCode" == wsNodeName)
 			m_arTextCodes.push_back(new CTextCode(oLiteReader));
 	}
-
-	return true;
 }
 
-void CTextObject::Draw(IRenderer* pRenderer) const
+CTextObject::~CTextObject()
+{
+	if (nullptr != m_pFillColor)
+		delete m_pFillColor;
+
+	if (nullptr != m_pStrokeColor)
+		delete m_pStrokeColor;
+
+	for (const CTextCode* pTextCode : m_arTextCodes)
+		delete pTextCode;
+}
+
+void CTextObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 {
 	if (nullptr == pRenderer || m_arTextCodes.empty())
 		return;
@@ -135,13 +128,13 @@ void CTextObject::Draw(IRenderer* pRenderer) const
 	if (m_bFill && nullptr != m_pFillColor)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(255);
-		pRenderer->put_BrushAlpha1(255);
+		pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
+		pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
 	}
 	else
 		pRenderer->put_BrushType(c_BrushTypeNotSet);
 
-	pRenderer->put_FontSize(m_dSize);
+	pRenderer->put_FontSize(m_dSize * 72. / 25.4);
 
 	for (const CTextCode* pTextCode : m_arTextCodes)
 		pTextCode->Draw(pRenderer);

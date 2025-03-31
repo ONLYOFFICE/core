@@ -2,7 +2,7 @@
 #define DOCUMENT_H
 
 #include "Page.h"
-#include "PublicRes.h"
+#include "Res.h"
 
 #include "Types/PageArea.h"
 
@@ -14,13 +14,18 @@ class CCommonData
 {
 	unsigned int m_unMaxUnitID;
 	CPageArea    m_oPageArea;
-	CPublicRes   m_oPublicRes;
+	CRes*        m_pPublicRes;
+	CRes*        m_pDocumentRes;
 public:
 	CCommonData();
+	~CCommonData();
 
-	bool Read(CXmlReader& oLiteReader);
+	bool Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath);
 
 	void GetPageSize(double& dWidth, double &dHeight) const;
+
+	const CRes* GetPublicRes()   const;
+	const CRes* GetDocumentRes() const;
 };
 
 class CPermission

@@ -6,11 +6,9 @@
 namespace OFD
 {
 CPage::CPage()
-{
+{}
 
-}
-
-CPage* CPage::Read(const std::wstring& wsFilePath)
+CPage* CPage::Read(const std::wstring& wsFilePath, const CRes* pDocumentRes)
 {
 	if (wsFilePath.empty())
 		return nullptr;
@@ -34,7 +32,7 @@ CPage* CPage::Read(const std::wstring& wsFilePath)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Content" == wsNodeName)
-			pPage->m_oContent.Read(oLiteReader);
+			pPage->m_oContent.Read(oLiteReader, pDocumentRes);
 		else if (L"ofd:Area" == wsNodeName)
 			pPage->m_oArea.Read(oLiteReader);
 	}
@@ -42,14 +40,14 @@ CPage* CPage::Read(const std::wstring& wsFilePath)
 	return pPage;
 }
 
-void CPage::Draw(IRenderer* pRenderer) const
+void CPage::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	pRenderer->BeginCommand(c_nImageType);
 
-	m_oContent.Draw(pRenderer);
+	m_oContent.Draw(pRenderer, pPublicRes);
 
 	pRenderer->EndCommand(c_nImageType);
 }
@@ -61,7 +59,7 @@ void CPage::GetPageSize(double& dWidth, double& dHeight) const
 	if (oPhysicalBox.Empty())
 		return;
 
-	dWidth  = oPhysicalBox.m_dWidth  * 25.4 / 96.;
-	dHeight = oPhysicalBox.m_dHeight * 25.4 / 96.;
+	dWidth  = oPhysicalBox.m_dWidth;
+	dHeight = oPhysicalBox.m_dHeight;
 }
 }

@@ -2,6 +2,7 @@
 #define LAYER_H
 
 #include "IPageBlock.h"
+#include "../Res.h"
 
 namespace OFD
 {
@@ -17,11 +18,10 @@ class CLayer : public IPageBlock
 	unsigned int m_unID;
 	std::vector<IPageBlock*> m_arPageBlocks;
 public:
-	CLayer(CXmlReader& oLiteReader);
+	CLayer(CXmlReader& oLiteReader, const CRes* pDocumentRes);
 	~CLayer();
 
-	bool Read(CXmlReader& oLiteReader) override;
-	void Draw(IRenderer* pRenderer) const override;
+	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
 };
 }
 

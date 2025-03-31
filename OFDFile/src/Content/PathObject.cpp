@@ -8,25 +8,8 @@ CPathObject::CPathObject(CXmlReader& oLiteReader)
 	  m_bStroke(true), m_bFill(true), m_eRule(ERule::NonZero),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
 {
-	CPathObject::Read(oLiteReader);
-}
-
-CPathObject::~CPathObject()
-{
-	for (const IPathElement* pElement : m_arElements)
-		delete pElement;
-}
-
-void CPathObject::AddElement(const IPathElement* pElement)
-{
-	if (nullptr != pElement)
-		m_arElements.push_back(pElement);
-}
-
-bool CPathObject::Read(CXmlReader& oLiteReader)
-{
 	if (L"ofd:PathObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
-		return false;
+		return;
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 	{
@@ -114,7 +97,7 @@ bool CPathObject::Read(CXmlReader& oLiteReader)
 					}
 					case 'B':
 					{
-						AddElement(CBezierCurve3Element::ReadFromArray(arValues));
+						AddElement(CBezierCurveElement::ReadFromArray(arValues));
 						break;
 					}
 					case 'A':
@@ -133,16 +116,78 @@ bool CPathObject::Read(CXmlReader& oLiteReader)
 			}
 		}
 	}
-
-	return true;
 }
 
-void CPathObject::Draw(IRenderer* pRenderer) const
+CPathObject::~CPathObject()
+{
+	for (const IPathElement* pElement : m_arElements)
+		delete pElement;
+}
+
+void CPathObject::AddElement(const IPathElement* pElement)
+{
+	if (nullptr != pElement)
+		m_arElements.push_back(pElement);
+}
+
+void CPathObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 {
 	if (nullptr == pRenderer || m_arElements.empty())
 		return;
 
 	((CGraphicUnit*)this)->Apply(pRenderer);
+
+	pRenderer->BeginCommand(c_nPathType);
+	pRenderer->PathCommandStart();
+
+	for (const IPathElement* pElement : m_arElements)
+		pElement->Draw(pRenderer);
+
+	int nEndType = -1;
+
+	if (m_bStroke)
+		nEndType = c_nStroke;
+
+	if (m_bFill)
+	{
+		switch (m_eRule)
+		{
+			case ERule::NonZero:
+			{
+				nEndType = (-1 == nEndType ? c_nWindingFillMode : nEndType | c_nWindingFillMode);
+				break;
+			}
+			case ERule::Even_Odd:
+			{
+				nEndType = (-1 == nEndType ? c_nEvenOddFillMode : nEndType | c_nEvenOddFillMode);
+				break;
+			}
+		}
+	}
+
+	if (m_bFill && nullptr != m_pFillColor)
+	{
+		pRenderer->put_BrushType(c_BrushTypeSolid);
+		pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
+		pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
+	}
+	else
+		pRenderer->put_BrushType(c_BrushTypeNotSet);
+
+	if (m_bStroke && nullptr != m_pStrokeColor)
+	{
+		pRenderer->put_PenSize(m_dLineWidth);
+		pRenderer->put_PenColor(m_pStrokeColor->ToInt(pPublicRes));
+		pRenderer->put_PenAlpha(m_pStrokeColor->GetAlpha());
+	}
+	else
+		pRenderer->put_PenSize(0.);
+
+	if (-1 != nEndType)
+		pRenderer->DrawPath(nEndType);
+
+	pRenderer->PathCommandEnd();
+	pRenderer->EndCommand(c_nPathType);
 }
 
 CStartElement::CStartElement()
@@ -167,6 +212,12 @@ IPathElement* CStartElement::ReadFromArray(std::vector<std::string>& arValues)
 	return nullptr;
 }
 
+void CStartElement::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr != pRenderer)
+		pRenderer->PathCommandMoveTo(m_dX, m_dY);
+}
+
 CMoveElement::CMoveElement()
 {}
 
@@ -188,6 +239,12 @@ IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>& arValues)
 	return nullptr;
 }
 
+void CMoveElement::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr != pRenderer)
+		pRenderer->PathCommandMoveTo(m_dX, m_dY);
+}
+
 CLineElement::CLineElement()
 {}
 
@@ -206,6 +263,12 @@ IPathElement* CLineElement::ReadFromArray(std::vector<std::string>& arValues)
 
 	delete pElement;
 	return nullptr;
+}
+
+void CLineElement::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr != pRenderer)
+		pRenderer->PathCommandLineTo(m_dX, m_dY);
 }
 
 CBezierCurve2Element::CBezierCurve2Element()
@@ -229,15 +292,21 @@ IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>& arVa
 	return nullptr;
 }
 
-CBezierCurve3Element::CBezierCurve3Element()
+void CBezierCurve2Element::Draw(IRenderer* pRenderer) const
+{
+	// if (nullptr != pRenderer)
+	// 	pRenderer->PathCommandCurveTo()
+}
+
+CBezierCurveElement::CBezierCurveElement()
 {}
 
-IPathElement* CBezierCurve3Element::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>& arValues)
 {
 	if (arValues.size() < 4)
 		return nullptr;
 
-	CBezierCurve3Element *pElement = new CBezierCurve3Element();
+	CBezierCurveElement *pElement = new CBezierCurveElement();
 
 	if (nullptr == pElement)
 		return nullptr;
@@ -248,6 +317,12 @@ IPathElement* CBezierCurve3Element::ReadFromArray(std::vector<std::string>& arVa
 
 	delete pElement;
 	return nullptr;
+}
+
+void CBezierCurveElement::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr != pRenderer)
+		pRenderer->PathCommandCurveTo(m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3);
 }
 
 CArcElement::CArcElement()
@@ -273,6 +348,12 @@ IPathElement* CArcElement::ReadFromArray(std::vector<std::string>& arValues)
 	return nullptr;
 }
 
+void CArcElement::Draw(IRenderer* pRenderer) const
+{
+	// if (nullptr != pRenderer)
+		// pRenderer->PathCommandArcTo(m_dX, m_dY, m_dRadiusX * 2., m_dRadiusY * 2., )
+}
+
 CCloseElement::CCloseElement()
 {}
 
@@ -281,4 +362,9 @@ IPathElement* CCloseElement::ReadFromArray(std::vector<std::string>& arValues)
 	return new CCloseElement();
 }
 
+void CCloseElement::Draw(IRenderer* pRenderer) const
+{
+	if (nullptr != pRenderer)
+		pRenderer->PathCommandClose();
+}
 }

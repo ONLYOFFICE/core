@@ -1,32 +1,20 @@
 #ifndef IPAGEBLOCK_H
 #define IPAGEBLOCK_H
 
-#include "../Utils/XmlReader.h"
+#include "../IOFDElement.h"
 
 #include "../../../DesktopEditor/graphics/IRenderer.h"
+#include "../Res.h"
 
 namespace OFD
 {
-class IPageBlock
+class IPageBlock : public IOFDElement
 {
-	unsigned int m_unID;
 public:
 	IPageBlock(CXmlReader& oLiteReader)
-	{
-		if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
-		{
-			do
-			{
-				if (L"ID" == oLiteReader.GetName())
-					m_unID = oLiteReader.GetUInteger(true);
-			} while (oLiteReader.MoveToNextAttribute());
-
-			oLiteReader.MoveToElement();
-		}
-	};
+		: IOFDElement(oLiteReader){};
 	virtual ~IPageBlock(){};
-	virtual bool Read(CXmlReader& oLiteReader) = 0;
-	virtual void Draw(IRenderer* pRenderer) const = 0;
+	virtual void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const = 0;
 };
 }
 

@@ -15,6 +15,7 @@ public:
 	virtual ~IPathElement(){};
 
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues) { return nullptr; };
+	virtual void Draw(IRenderer* pRenderer) const = 0;
 };
 
 class CStartElement : public IPathElement
@@ -24,6 +25,7 @@ class CStartElement : public IPathElement
 public:
 	CStartElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CMoveElement : public IPathElement
@@ -33,6 +35,7 @@ class CMoveElement : public IPathElement
 public:
 	CMoveElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CLineElement :  public IPathElement
@@ -42,6 +45,7 @@ class CLineElement :  public IPathElement
 public:
 	CLineElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CBezierCurve2Element : public IPathElement
@@ -53,9 +57,10 @@ class CBezierCurve2Element : public IPathElement
 public:
 	CBezierCurve2Element();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
-class CBezierCurve3Element : public IPathElement
+class CBezierCurveElement : public IPathElement
 {
 	double m_dX1;
 	double m_dY1;
@@ -64,8 +69,9 @@ class CBezierCurve3Element : public IPathElement
 	double m_dX3;
 	double m_dY3;
 public:
-	CBezierCurve3Element();
+	CBezierCurveElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CArcElement : public IPathElement
@@ -80,6 +86,7 @@ class CArcElement : public IPathElement
 public:
 	CArcElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CCloseElement : public IPathElement
@@ -87,6 +94,7 @@ class CCloseElement : public IPathElement
 public:
 	CCloseElement();
 	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	void Draw(IRenderer* pRenderer) const override;
 };
 
 class CPathObject : public IPageBlock, public CGraphicUnit
@@ -110,8 +118,7 @@ public:
 	CPathObject(CXmlReader& oLiteReader);
 	~CPathObject();
 
-	bool Read(CXmlReader& oLiteReader) override;
-	void Draw(IRenderer* pRenderer) const override;
+	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
 };
 }
 

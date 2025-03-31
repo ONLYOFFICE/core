@@ -2,17 +2,13 @@
 #define COLOR_H
 
 #include "../Utils/XmlReader.h"
+#include "../Res.h"
 
 namespace OFD
 {
 class CColor
 {
-	struct TColorChannels
-	{
-		BYTE m_chRed;
-		BYTE m_chGreen;
-		BYTE m_chBlue;
-	} m_oValue;
+	BYTE m_oValues[4];
 
 	int m_nIndex;
 	unsigned int m_unColorSpace;
@@ -27,7 +23,7 @@ public:
 
 	bool Read(CXmlReader& oXmlReader);
 
-	int ToInt() const;
+	int ToInt(const CRes* pPublicRes) const;
 	BYTE GetAlpha() const;
 };
 }

@@ -62,7 +62,7 @@ CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
 	oLiteReader.MoveToElement();
 }
 
-void CGraphicUnit::Apply(IRenderer* pRenderer)
+void CGraphicUnit::Apply(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer)
 		return;
@@ -72,7 +72,12 @@ void CGraphicUnit::Apply(IRenderer* pRenderer)
 
 	//Clipping
 
-	pRenderer->SetTransform(m_oCTM.m_dM11 * 96. / 25.4, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22 * 96. / 25.4, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
+	pRenderer->SetTransform(m_oCTM.m_dM11, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
+}
+
+TBox CGraphicUnit::GetBoundary() const
+{
+	return m_oBoundary;
 }
 
 }

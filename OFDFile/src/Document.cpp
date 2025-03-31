@@ -3,10 +3,19 @@
 namespace OFD
 {
 CCommonData::CCommonData()
-	: m_unMaxUnitID(0)
+	: m_unMaxUnitID(0), m_pPublicRes(nullptr), m_pDocumentRes(nullptr)
 {}
 
-bool CCommonData::Read(CXmlReader& oLiteReader)
+CCommonData::~CCommonData()
+{
+	if (nullptr != m_pPublicRes)
+		delete m_pPublicRes;
+
+	if (nullptr != m_pDocumentRes)
+		delete m_pDocumentRes;
+}
+
+bool CCommonData::Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath)
 {
 	if (L"ofd:CommonData" != oLiteReader.GetName())
 		return false;
@@ -22,11 +31,20 @@ bool CCommonData::Read(CXmlReader& oLiteReader)
 			m_oPageArea.Read(oLiteReader);
 		else if (L"ofd:PublicRes" == wsNodeName)
 		{
-			// m_oPublicRes.Read();
+			if (nullptr == m_pPublicRes)
+				m_pPublicRes = new CRes();
+
+			m_pPublicRes->Read(NSSystemPath::Combine(wsRootPath, oLiteReader.GetText2()));
+		}
+		else if (L"ofd:DocumentRes" == wsNodeName)
+		{
+			if(nullptr == m_pDocumentRes)
+				m_pDocumentRes = new CRes();
+
+			m_pDocumentRes->Read(NSSystemPath::Combine(wsRootPath, oLiteReader.GetText2()));
 		}
 		else if (L"ofd:MaxUnitID" == wsNodeName)
 			m_unMaxUnitID = oLiteReader.GetUInteger();
-		// else if (L"ofd:DocumentRes" == wsNodeName)
 		// else if (L"ofd:TemplatePage" == wsNodeName)
 		// else if (L"ofd:DefaultCS" == wsNodeName)
 	}
@@ -43,6 +61,16 @@ void CCommonData::GetPageSize(double& dWidth, double& dHeight) const
 
 	dWidth  = oPhysicalBox.m_dWidth;
 	dHeight = oPhysicalBox.m_dHeight;
+}
+
+const CRes* CCommonData::GetPublicRes() const
+{
+	return m_pPublicRes;
+}
+
+const CRes* CCommonData::GetDocumentRes() const
+{
+	return m_pDocumentRes;
 }
 
 CPermission::CPermission()
@@ -100,7 +128,7 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:CommonData" == wsNodeName)
-			m_oCommonData.Read(oLiteReader);
+			m_oCommonData.Read(oLiteReader, NSSystemPath::GetDirectoryName(wsFilePath));
 		else if (L"ofd:Pages" == wsNodeName)
 		{
 			const int nPagesDepth = oLiteReader.GetDepth();
@@ -127,7 +155,7 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 				if (-1 == nID)
 					nID = m_mPages.size() + 1;
 
-				CPage* pPage = CPage::Read(NSSystemPath::Combine(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc));
+				CPage* pPage = CPage::Read(NSSystemPath::Combine(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc), m_oCommonData.GetDocumentRes());
 
 				if (nullptr != pPage)
 					m_mPages.insert(std::make_pair(m_mPages.size(), pPage));
@@ -153,7 +181,7 @@ bool CDocument::DrawPage(IRenderer* pRenderer, int nPageIndex) const
 	if (itFound == m_mPages.cend())
 		return false;
 
-	itFound->second->Draw(pRenderer);
+	itFound->second->Draw(pRenderer, m_oCommonData.GetPublicRes());
 
 	return true;
 }

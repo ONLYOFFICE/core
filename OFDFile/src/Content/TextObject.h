@@ -43,8 +43,7 @@ public:
 	CTextObject(CXmlReader& oLiteReader);
 	~CTextObject();
 
-	bool Read(CXmlReader& oLiteReader) override;
-	void Draw(IRenderer* pRenderer) const override;
+	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
 };
 }
 

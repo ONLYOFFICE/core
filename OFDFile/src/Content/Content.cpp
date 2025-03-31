@@ -11,7 +11,7 @@ CContent::~CContent()
 		delete pLayer;
 }
 
-bool CContent::Read(CXmlReader& oLiteReader)
+bool CContent::Read(CXmlReader& oLiteReader, const CRes* pDocumentRes)
 {
 	if (L"ofd:Content" != oLiteReader.GetName())
 		return false;
@@ -24,18 +24,18 @@ bool CContent::Read(CXmlReader& oLiteReader)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Layer" == wsNodeName)
-			m_arLayers.push_back(new CLayer(oLiteReader));
+			m_arLayers.push_back(new CLayer(oLiteReader, pDocumentRes));
 	}
 
 	return false;
 }
 
-void CContent::Draw(IRenderer* pRenderer) const
+void CContent::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const CLayer* pLayer : m_arLayers)
-		pLayer->Draw(pRenderer);
+		pLayer->Draw(pRenderer, pPublicRes);
 }
 }

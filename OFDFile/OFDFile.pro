@@ -30,7 +30,10 @@ INCLUDEPATH += \
 
 HEADERS += \
 	OFDFile.h \
+	src/Content/ImageObject.h \
+	src/Content/PageBlock.h \
 	src/Content/PathObject.h \
+	src/IOFDElement.h \
 	src/OFDFile_Private.h \
 	src/Base.h \
 	src/Content/Content.h \
@@ -40,8 +43,13 @@ HEADERS += \
 	src/Content/TextObject.h \
 	src/Document.h \
 	src/Page.h \
-	src/PublicRes.h \
+	src/Res.h \
 	src/Types/Color.h \
+	src/Types/ColorSpace.h \
+	src/Types/CompositeGraphicUnit.h \
+	src/Types/DrawParam.h \
+	src/Types/Font.h \
+	src/Types/MultiMedia.h \
 	src/Types/PageArea.h \
 	src/Utils/Types.h \
 	src/Utils/Utils.h \
@@ -49,6 +57,8 @@ HEADERS += \
 
 SOURCES += \
 	OFDFile.cpp \
+	src/Content/ImageObject.cpp \
+	src/Content/PageBlock.cpp \
 	src/Content/PathObject.cpp \
 	src/OFDFile_Private.cpp \
 	src/Base.cpp \
@@ -58,8 +68,13 @@ SOURCES += \
 	src/Content/TextObject.cpp \
 	src/Document.cpp \
 	src/Page.cpp \
-	src/PublicRes.cpp \
+	src/Res.cpp \
 	src/Types/Color.cpp \
+	src/Types/ColorSpace.cpp \
+	src/Types/CompositeGraphicUnit.cpp \
+	src/Types/DrawParam.cpp \
+	src/Types/Font.cpp \
+	src/Types/MultiMedia.cpp \
 	src/Types/PageArea.cpp \
 	src/Utils/Types.cpp \
 	src/Utils/XmlReader.cpp

@@ -37,10 +37,14 @@ class CGraphicUnit
 	double m_dDashOffset;
 	std::vector<double> m_arDashPattern;
 	unsigned char m_uchAlpha;
+
+	friend class CPathObject;
 public:
 	CGraphicUnit(CXmlReader& oLiteReader);
 
-	void Apply(IRenderer* pRenderer);
+	void Apply(IRenderer* pRenderer) const;
+
+	TBox GetBoundary() const;
 };
 }
 

@@ -13,8 +13,8 @@ class CPage
 public:
 	CPage();
 
-	static CPage* Read(const std::wstring& wsFilePath);
-	void Draw(IRenderer* pRenderer) const;
+	static CPage* Read(const std::wstring& wsFilePath, const CRes* pDocumentRes);
+	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const;
 
 	void GetPageSize(double& dWidth, double& dHeight) const;
 };

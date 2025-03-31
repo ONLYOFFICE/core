@@ -52,8 +52,7 @@ CMatrix::CMatrix()
 
 CMatrix::CMatrix(const CMatrix& other)
 {
-	m_internal = new CMatrix_private();
-	m_internal->m_agg_mtx = other.m_internal->m_agg_mtx;
+	*this = other;
 }
 
 CMatrix::CMatrix(CMatrix&& other)
@@ -313,12 +312,19 @@ double CMatrix::z_Rotation() const
 
 const CMatrix& CMatrix::operator=(const CMatrix& other)
 {
+	if (this == &other)
+		return *this;
+
+	m_internal = new CMatrix_private();
 	m_internal->m_agg_mtx = other.m_internal->m_agg_mtx;
 	return *this;
 }
 
 CMatrix& CMatrix::operator=(CMatrix&& other)
 {
+	if (this == &other)
+		return *this;
+
 	m_internal = other.m_internal;
 	other.m_internal = nullptr;
 	return *this;

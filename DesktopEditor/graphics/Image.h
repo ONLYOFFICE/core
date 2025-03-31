@@ -49,6 +49,8 @@ public:
 public:
 	CImage();
 	CImage(const std::wstring& filename);
+	CImage(const CImage& other);
+	CImage(CImage&& other);
 	virtual ~CImage();
 
 	DWORD GetWidth() const;
@@ -63,6 +65,9 @@ public:
 	void Decode(BYTE *pBuffer, unsigned int unSize);
 	bool SaveFile(const std::wstring& strFileName, UINT nFileType);
 	void Destroy();
+
+	CImage& operator=(const CImage& other);
+	CImage& operator=(CImage&& other);
 
 protected:
 	Status m_Status;

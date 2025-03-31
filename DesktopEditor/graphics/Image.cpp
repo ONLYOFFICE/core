@@ -51,6 +51,16 @@ namespace Aggplus
 		Create(filename);		
 	}
 
+	CImage::CImage(const CImage& other)
+	{
+		*this = other;
+	}
+
+	CImage::CImage(CImage&& other)
+	{
+		*this = std::move(other);
+	}
+
 	CImage::~CImage()
 	{
 		Destroy();
@@ -134,6 +144,47 @@ namespace Aggplus
 		m_nStride	= 0;
 		
 		m_bExternalBuffer = false;
+	}
+
+	CImage& CImage::operator=(const CImage& other)
+	{
+		if (this == &other)
+			return *this;
+
+		m_Status = other.m_Status;
+
+		m_dwHeight = other.m_dwHeight;
+		m_dwWidth = other.m_dwWidth;
+		m_nStride = other.m_nStride;
+
+		m_bExternalBuffer = other.m_bExternalBuffer;
+
+		size_t size_of_data = m_dwHeight * m_nStride > 0 ? m_nStride : -m_nStride;
+		m_pImgData = new BYTE[size_of_data];
+
+		for (size_t i = 0; i < size_of_data; i++)
+			m_pImgData[i] = other.m_pImgData[i];
+
+		return *this;
+	}
+
+	CImage& CImage::operator=(CImage&& other)
+	{
+		if (this == &other)
+			return *this;
+
+		m_Status = other.m_Status;
+
+		m_dwHeight = other.m_dwHeight;
+		m_dwWidth = other.m_dwWidth;
+		m_nStride = other.m_nStride;
+
+		m_bExternalBuffer = other.m_bExternalBuffer;
+
+		m_pImgData = other.m_pImgData;
+		other.m_pImgData = nullptr;
+
+		return *this;
 	}
 
 	DWORD CImage::GetWidth() const { return(m_dwWidth); }

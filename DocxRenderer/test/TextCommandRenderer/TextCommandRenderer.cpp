@@ -32,6 +32,8 @@
 
 #include "TextCommandRenderer.h"
 
+#include <array>
+
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
 #include "Utils.h"
@@ -64,23 +66,56 @@ private:
 	void CreateFrame();
 	void ResetMinMax();
 
+	long GetNextColor();
+
 	std::unique_ptr<NSGraphics::IGraphicsRenderer> m_pRenderer{nullptr};
 	std::unique_ptr<CBgraFrame> m_pFrame{nullptr};
 	std::unique_ptr<NSFonts::IFontManager> m_pManager{nullptr};
 
-	double x_min = c_dX_MIN_DEFAULT;
-	double y_min = c_dY_MIN_DEFAULT;
+	double m_dXMin = c_dX_MIN_DEFAULT;
+	double m_dYMin = c_dY_MIN_DEFAULT;
 
-	double x_max = c_dX_MAX_DEFAULT;
-	double y_max = c_dY_MAX_DEFAULT;
+	double m_dXMax = c_dX_MAX_DEFAULT;
+	double m_dYMax = c_dY_MAX_DEFAULT;
+
+	double m_dPrevCenterX = 0;
+	double m_dPrevCenterY = 0;
+	bool m_bIsFirst = true;
 
 	std::wstring m_wsFolder = L"./output";
 	size_t m_nPage = 1;
-	size_t m_nCurrCommand = 0;
+
+	const double m_dPenSizeRect = 0.6;
+	const double m_dPenSizeLine = 0.3;
+	const double m_dPenSizeDot = 1;
 
 	const std::wstring m_wsBaseFilename = L"page";
 	const std::wstring m_wsBaseExt = L".png";
 	const std::wstring m_wsBaseSep = L"/";
+
+	size_t m_nCurrColorIndex = 0;
+	const std::array<long, 20> m_arColors = {
+	    0xFF400000, // Deep Red
+	    0xFF800000, // Dark Red
+	    0xFFFF0000, // Pure Red
+	    0xFFFF4000, // Red-Orange
+	    0xFFFF8000, // Orange
+	    0xFFFFC000, // Light Orange
+	    0xFFFFFF00, // Yellow
+	    0xFFC0FF00, // Yellow-Green
+	    0xFF80FF00, // Lime
+	    0xFF40FF00, // Green-Yellow
+	    0xFF00FF00, // Pure Green
+	    0xFF00FF80, // Green-Cyan
+	    0xFF00FFFF, // Cyan
+	    0xFF0080FF, // Light Blue
+	    0xFF0040FF, // Blue
+	    0xFF0000FF, // Pure Blue
+	    0xFF4000FF, // Blue-Purple
+	    0xFF8000FF, // Purple
+	    0xFFC000FF, // Violet
+	    0xFFFF00FF  // Magenta
+	};
 };
 
 CTextCommandRenderer::CTextCommandRendererImpl::CTextCommandRendererImpl(NSFonts::IApplicationFonts* pFonts)
@@ -112,16 +147,64 @@ void CTextCommandRenderer::CTextCommandRendererImpl::EndCommand(const DWORD& lTy
 	}
 	else if (lType == c_nTextType)
 	{
-		double w = x_max - x_min;
-		double h = y_max - y_min;
+		// 1. draw rect of command
+		double w = m_dXMax - m_dXMin;
+		double h = m_dYMax - m_dYMin;
 
 		m_pRenderer->BeginCommand(c_nPathType);
-		m_pRenderer->AddRect(x_min, y_max, w, h);
+		m_pRenderer->AddRect(m_dXMin, m_dYMin, w, h);
 
-		m_pRenderer->put_PenSize(0.1);
-		m_pRenderer->put_PenColor(0);
+		m_pRenderer->put_PenSize(m_dPenSizeRect);
+
+		long color = GetNextColor();
+		m_pRenderer->put_PenColor(color);
 
 		m_pRenderer->Stroke();
+		m_pRenderer->PathCommandEnd();
+		m_pRenderer->EndCommand(c_nPathType);
+
+		// 2. draw line from prev command to curr
+		double curr_center_x = m_dXMin + w / 2;
+		double curr_center_y = m_dYMin + h / 2;
+
+		if (m_bIsFirst)
+		{
+			m_bIsFirst = false;
+			m_dPrevCenterX = curr_center_x;
+			m_dPrevCenterY = curr_center_y;
+			return;
+		}
+
+		m_pRenderer->BeginCommand(c_nPathType);
+		m_pRenderer->PathCommandMoveTo(m_dPrevCenterX, m_dPrevCenterY);
+		m_pRenderer->PathCommandLineTo(curr_center_x, curr_center_y);
+		m_pRenderer->PathCommandClose();
+
+		m_pRenderer->put_PenSize(m_dPenSizeLine);
+		m_pRenderer->put_PenColor(0); // black color
+
+		m_pRenderer->Stroke();
+		m_pRenderer->PathCommandEnd();
+		m_pRenderer->EndCommand(c_nPathType);
+
+		m_dPrevCenterX = curr_center_x;
+		m_dPrevCenterY = curr_center_y;
+
+		// 3. draw a point of center
+		const double half_dot_size = m_dPenSizeDot / 2;
+		const double dot_x = curr_center_x - half_dot_size;
+		const double dot_y = curr_center_y - half_dot_size;
+		const double dot_w = m_dPenSizeDot;
+		const double dot_h = m_dPenSizeDot;
+
+		m_pRenderer->BeginCommand(c_nPathType);
+		m_pRenderer->AddRect(dot_x, dot_y, dot_w, dot_h);
+
+		m_pRenderer->put_PenSize(m_dPenSizeLine);
+		m_pRenderer->put_PenColor(0); // black color
+
+		m_pRenderer->Stroke();
+		m_pRenderer->PathCommandEnd();
 		m_pRenderer->EndCommand(c_nPathType);
 	}
 }
@@ -143,15 +226,16 @@ void CTextCommandRenderer::CTextCommandRendererImpl::AddText(double x, double y,
 	m_oTransform.TransformPoint(x, y);
 	m_oTransform.TransformPoint(x2, y2);
 
-	x_min = std::min(x_min, x);
-	y_min = std::min(y_min, y);
+	m_dXMin = std::min(m_dXMin, x);
+	m_dYMin = std::min(m_dYMin, y);
 
-	x_max = std::max(x_max, x2);
-	y_max = std::max(y_max, y2);
+	m_dXMax = std::max(m_dXMax, x2);
+	m_dYMax = std::max(m_dYMax, y2);
 }
 void CTextCommandRenderer::CTextCommandRendererImpl::NewPage()
 {
 	ResetMinMax();
+	m_nCurrColorIndex = 0;
 }
 void CTextCommandRenderer::CTextCommandRendererImpl::SetFolder(const std::wstring& wsFolder)
 {
@@ -181,17 +265,22 @@ void CTextCommandRenderer::CTextCommandRendererImpl::CreateFrame()
 
 	m_pRenderer->NewPage();
 	m_pRenderer->CreateFromBgraFrame(m_pFrame.get());
-	m_pRenderer->SetSwapRGB(false);
+	m_pRenderer->SetSwapRGB(true);
 	m_pRenderer->put_Width(m_dWidth);
 	m_pRenderer->put_Height(m_dHeight);
 }
 void CTextCommandRenderer::CTextCommandRendererImpl::ResetMinMax()
 {
-	x_min = c_dX_MIN_DEFAULT;
-	y_min = c_dY_MIN_DEFAULT;
+	m_dXMin = c_dX_MIN_DEFAULT;
+	m_dYMin = c_dY_MIN_DEFAULT;
 
-	x_max = c_dX_MAX_DEFAULT;
-	y_max = c_dY_MAX_DEFAULT;
+	m_dXMax = c_dX_MAX_DEFAULT;
+	m_dYMax = c_dY_MAX_DEFAULT;
+}
+long CTextCommandRenderer::CTextCommandRendererImpl::GetNextColor()
+{
+	m_nCurrColorIndex = (m_nCurrColorIndex + 1) % m_arColors.size();
+	return m_arColors[m_nCurrColorIndex];
 }
 
 CTextCommandRenderer::CTextCommandRenderer(NSFonts::IApplicationFonts* pFonts)
@@ -872,7 +961,6 @@ void CTextCommandRenderer::Do(IOfficeDrawingFile* pFile, const std::wstring& wsF
 void CTextCommandRenderer::DrawPage(IOfficeDrawingFile* pFile, int nPage)
 {
 	NewPage();
-	BeginCommand(c_nPageType);
 
 	double width, height, dpi_x, dpi_y;
 	pFile->GetPageInfo(nPage, &width, &height, &dpi_x, &dpi_y);
@@ -884,6 +972,4 @@ void CTextCommandRenderer::DrawPage(IOfficeDrawingFile* pFile, int nPage)
 	put_Height(height);
 
 	pFile->DrawPageOnRenderer(this, nPage, nullptr);
-
-	EndCommand(c_nPageType);
 }

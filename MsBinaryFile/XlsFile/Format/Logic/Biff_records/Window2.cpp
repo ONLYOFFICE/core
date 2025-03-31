@@ -202,6 +202,7 @@ void Window2::writeFields(CFRecord& record)
 		record.reserveNunBytes(2); // reserved
 
 		record << wScaleSLV << wScaleNormal;
+        record.reserveNunBytes(4); // must be ignored
 	}
 
 	else

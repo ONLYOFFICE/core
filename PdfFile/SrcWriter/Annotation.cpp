@@ -73,7 +73,12 @@ namespace PdfWriter
 	};
 	const static char* c_sCheckBoxStyleNames[] =
 	{
-		"4", "8", "u", "l", "H", "n"
+		"4", // Check
+		"8", // Cross
+		"u", // Diamond
+		"l", // Circle
+		"H", // Star
+		"n" // Square
 	};
 
 	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
@@ -1461,10 +1466,10 @@ namespace PdfWriter
 
 		return sDA;
 	}
-	std::string CWidgetAnnotation::GetBGforAP(double dDiff)
+	std::string CWidgetAnnotation::GetBGforAP(double dDiff, bool bCAPS)
 	{
 		if (m_pMK)
-			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BG")), false, dDiff);
+			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BG")), bCAPS, dDiff);
 		return "";
 	}
 	std::string CWidgetAnnotation::GetBCforAP()
@@ -1860,6 +1865,13 @@ namespace PdfWriter
 			pAP->GetOffN()->DrawCheckBoxCircle(false, true);
 			pAP->GetYesD()->DrawCheckBoxCircle(true, false);
 			pAP->GetOffD()->DrawCheckBoxCircle(false, false);
+		}
+		else
+		{
+			pAP->GetYesN()->DrawCheckBoxSquare(true, true);
+			pAP->GetOffN()->DrawCheckBoxSquare(false, true);
+			pAP->GetYesD()->DrawCheckBoxSquare(true, false);
+			pAP->GetOffD()->DrawCheckBoxSquare(false, false);
 		}
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)

@@ -465,7 +465,7 @@ namespace PdfWriter
 		void AddAction(CAction* pAction);
 
 		std::string GetDAforAP(CFontDict* pFont);
-		std::string GetBGforAP(double dDiff = 0);
+		std::string GetBGforAP(double dDiff = 0, bool bCAPS = false);
 		std::string GetBCforAP();
 		CFontCidTrueType* GetFont() { return m_pFont; }
 		double GetFontSize()   { return m_dFontSize; }
@@ -536,6 +536,7 @@ namespace PdfWriter
 
 		void SetV(const std::wstring& wsV);
 		void SetStyle(BYTE nStyle);
+		ECheckBoxStyle GetStyle() { return m_nStyle; }
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 		virtual void SetFlag (const int& nFlag);
 		void SetAP();

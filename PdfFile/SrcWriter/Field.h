@@ -420,11 +420,7 @@ namespace PdfWriter
 
 		void DrawLine();
 
-		void DrawCheckBoxCheck(bool bSet, bool bN);
-		void DrawCheckBoxCross(bool bSet, bool bN);
-		void DrawCheckBoxDiamond(bool bSet, bool bN);
 		void DrawCheckBoxCircle(bool bSet, bool bN);
-		void DrawCheckBoxStar(bool bSet, bool bN);
 		void DrawCheckBoxSquare(bool bSet, bool bN);
 
 		CStream* GetStream() const { return m_pStream; }

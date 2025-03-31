@@ -3440,6 +3440,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 	// Отрисовка внешних видов аннотации
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
+	((GlobalParamsAdaptor*)globalParams)->ResetTextFormField();
 
 	double dOffsetX = -(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2;
 	double dOffsetY = (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2;
@@ -3493,6 +3494,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
+	((GlobalParamsAdaptor*)globalParams)->ResetTextFormField();
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();

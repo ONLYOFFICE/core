@@ -185,6 +185,10 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
 
     return false;
 }
+void GlobalParamsAdaptor::ResetTextFormField()
+{
+	m_sTextFormField.clear();
+}
 void GlobalParamsAdaptor::AddTextFormField(const std::wstring& sText)
 {
 	m_sTextFormField += sText;

@@ -41,12 +41,12 @@
 namespace PdfWriter
 {
 	class CDestination;
-	enum ELineIntentType
+	enum class ELineIntentType
 	{
 		LineDimension = 0,
 		LineArrow
 	};
-	enum ELineEndType
+	enum class ELineEndType
 	{
 		Square = 0,
 		Circle,
@@ -59,18 +59,27 @@ namespace PdfWriter
 		RClosedArrow,
 		Slash
 	};
-	enum ECaptionPositioning
+	enum class ECaptionPositioning
 	{
 		Inline = 0,
 		Top
 	};
-	enum EBorderType
+	enum class EBorderType
 	{
 		Solid = 0,
 		Beveled,
 		Dashed,
 		Inset,
 		Underline
+	};
+	enum class ECheckBoxStyle
+	{
+		Check = 0,
+		Cross,
+		Diamond,
+		Circle,
+		Star,
+		Square
 	};
 
 	class CAction : public CDictObject
@@ -284,10 +293,10 @@ namespace PdfWriter
 	};
 	class CLineAnnotation : public CMarkupAnnotation
 	{
-	private:
+	public:
 		ELineEndType m_nLE1, m_nLE2;
 		double dL[4];
-	public:
+
 		CLineAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
 		{
@@ -519,15 +528,16 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sAP_N_Yes;
+		ECheckBoxStyle m_nStyle;
 
 	public:
 		CCheckBoxWidget(CXref* pXref);
 
 		void SetV(const std::wstring& wsV);
-		std::wstring SetStyle(BYTE nStyle);
+		void SetStyle(BYTE nStyle);
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 		virtual void SetFlag (const int& nFlag);
-
+		void SetAP();
 		void SwitchAP(const std::string& sV);
 	};
 	class CTextWidget : public CWidgetAnnotation

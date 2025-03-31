@@ -363,6 +363,7 @@ namespace PdfWriter
 	{
 	public:
 		CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName = NULL);
+		CCheckBoxAnnotAppearance(CXref* pXref, CAnnotation* pAnnot, const char* sYesName = NULL);
 		
 		CAnnotAppearanceObject* GetYesN();
 		CAnnotAppearanceObject* GetOffN();
@@ -372,7 +373,6 @@ namespace PdfWriter
 	private:
 
 		CXref*                  m_pXref;
-		CFieldBase*             m_pField;
 		CAnnotAppearanceObject* m_pYesN;
 		CAnnotAppearanceObject* m_pOffN;
 		CAnnotAppearanceObject* m_pYesD;
@@ -418,7 +418,14 @@ namespace PdfWriter
 		void DrawTextUpArrow(const std::string& sColor);
 		void DrawTextUpLeftArrow(const std::string& sColor);
 
-		void DrawRadiobuttonCircle();
+		void DrawLine();
+
+		void DrawCheckBoxCheck(bool bSet, bool bN);
+		void DrawCheckBoxCross(bool bSet, bool bN);
+		void DrawCheckBoxDiamond(bool bSet, bool bN);
+		void DrawCheckBoxCircle(bool bSet, bool bN);
+		void DrawCheckBoxStar(bool bSet, bool bN);
+		void DrawCheckBoxSquare(bool bSet, bool bN);
 
 		CStream* GetStream() const { return m_pStream; }
 		CFontDict* GetFont() { return m_pFont; }

@@ -71,6 +71,10 @@ namespace PdfWriter
 	{
 		"Check", "Checkmark", "Circle", "Comment", "Cross", "CrossHairs", "Help", "Insert", "Key", "NewParagraph", "Note", "Paragraph", "RightArrow", "RightPointer", "Star", "UpArrow", "UpLeftArrow"
 	};
+	const static char* c_sCheckBoxStyleNames[] =
+	{
+		"4", "8", "u", "l", "H", "n"
+	};
 
 	void AddToVectorD(CDictObject* pObj, const std::string& sName, const std::vector<double>& arrV)
 	{
@@ -168,6 +172,7 @@ namespace PdfWriter
 		m_pAppearance = NULL;
 		m_pDocument = NULL;
 		m_pXref = pXref;
+		m_oBorder.bHave = false;
 
 		Add("Type", "Annot");
 		Add("Subtype", c_sAnnotTypeNames[(int)eType]);
@@ -766,299 +771,12 @@ namespace PdfWriter
 	{
 		AddToVectorD(this, "IC", arrIC);
 	}
-	void AdjustLineEndpoint(ELineEndType nType, double x, double y, double dx, double dy, double w, double& tx, double& ty)
-	{
-		tx = x;
-		ty = y;
-
-		switch (nType)
-		{
-		case ELineEndType::ClosedArrow:
-		case ELineEndType::OpenArrow:
-		case ELineEndType::Diamond:
-		{
-			tx += w * dx;
-			if ((dx > 0.001 && dy > 0) || (dx < -0.001 && dy < 0))
-				ty += w * dy;
-			break;
-		}
-		case ELineEndType::Square:
-		case ELineEndType::Circle:
-		{
-			if ((dx > -0.02 && dy < 0.02) || (dx < 0.02 && dy > -0.02))
-				tx += w * dx;
-			break;
-		}
-		case ELineEndType::Slash:
-		case ELineEndType::Butt:
-		case ELineEndType::ROpenArrow:
-		case ELineEndType::RClosedArrow:
-		case ELineEndType::None:
-		default:
-			break;
-		}
-	}
-	void SreamWriteXYMove(CStream* pStream, double x, double y)
-	{
-		pStream->WriteReal(x);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y);
-		pStream->WriteStr(" m\012");
-	}
-	void SreamWriteXYLine(CStream* pStream, double x, double y)
-	{
-		pStream->WriteReal(x);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y);
-		pStream->WriteStr(" l\012");
-	}
-	void SreamWriteXYCurve(CStream* pStream, double x1, double y1, double x2, double y2, double x3, double y3)
-	{
-		pStream->WriteReal(x1);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y1);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(x2);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y2);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(x3);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y3);
-		pStream->WriteStr(" c\012");
-	}
-	void StreamWriteRect(CStream* pStream, double x1, double y1, double x2, double y2)
-	{
-		pStream->WriteReal(x1);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y1);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(x2);
-		pStream->WriteChar(' ');
-		pStream->WriteReal(y2);
-		pStream->WriteStr(" re\012");
-	}
-	void SreamWriteCircle(CStream* pStream, double cx, double cy, double r)
-	{
-		double bezierCircle = 0.55228475 * r;
-		SreamWriteXYMove(pStream, cx + r, cy);
-		SreamWriteXYCurve(pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
-		SreamWriteXYCurve(pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
-		SreamWriteXYCurve(pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
-		SreamWriteXYCurve(pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
-	}
-	void DrawArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
-	{
-		double lineEndSize1 = 3, pi = 3.14159265358979323846;
-		switch (nType)
-		{
-		case ELineEndType::Butt:
-		{
-			w *= lineEndSize1;
-			SreamWriteXYMove(pStream, x + w * dy, y - w * dx);
-			SreamWriteXYLine(pStream, x - w * dy, y + w * dx);
-			pStream->WriteStr("S\012");
-			break;
-		}
-		case ELineEndType::Circle:
-		{
-			SreamWriteCircle(pStream, x, y, w * lineEndSize1);
-			pStream->WriteStr("h\012B\012");
-			break;
-		}
-		case ELineEndType::Diamond:
-		{
-			w *= lineEndSize1;
-			SreamWriteXYMove(pStream, x - w, y);
-			SreamWriteXYLine(pStream, x, y + w);
-			SreamWriteXYLine(pStream, x + w, y);
-			SreamWriteXYLine(pStream, x, y - w);
-			pStream->WriteStr("b\012");
-			break;
-		}
-		case ELineEndType::OpenArrow:
-		case ELineEndType::ClosedArrow:
-		{
-			w *= lineEndSize1 * lineEndSize1;
-			double d32 = pi * 32.0 / 180.0;
-			double d28 = pi * 28.0 / 180.0;
-			if ((dx > 0.001 && dy < 0) || (dx < -0.001 && dy > 0))
-			{
-				SreamWriteXYMove(pStream, x + w * cos(d32) * dx + w * sin(d32) * dy, y + w * cos(d32) * dy - w * sin(d32) * dx);
-				SreamWriteXYLine(pStream, x, y);
-				SreamWriteXYLine(pStream, x + w * cos(d28) * dx - w * sin(d28) * dy, y + w * cos(d28) * dy + w * sin(d28) * dx);
-			}
-			else
-			{
-				double dCos = w * cos(pi / 6.0);
-				double dSin = w * sin(pi / 6.0);
-
-				SreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
-				SreamWriteXYLine(pStream, x, y);
-				SreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
-			}
-			pStream->WriteStr(nType == ELineEndType::OpenArrow ? "S\012" : "b\012");
-			break;
-		}
-		case ELineEndType::ROpenArrow:
-		case ELineEndType::RClosedArrow:
-		{
-			x -= cos(pi / 18.0) * dx * w;
-			y -= cos(pi / 18.0) * dy * w;
-			w *= lineEndSize1 * lineEndSize1;
-			double dCos = w * cos(pi / 6.0);
-			double dSin = w * sin(pi / 6.0);
-			SreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
-			SreamWriteXYLine(pStream, x, y);
-			SreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
-			pStream->WriteStr(nType == ELineEndType::ROpenArrow ? "S\012" : "b\012");
-			break;
-		}
-		case ELineEndType::Slash:
-		{
-			w *= lineEndSize1 * lineEndSize1;
-			double dCos = w * cos(pi / 6.0);
-			double dSin = w * sin(pi / 6.0);
-			SreamWriteXYMove(pStream, x + dCos * dy - dSin * dx, y - dCos * dx - dSin * dy);
-			SreamWriteXYLine(pStream, x - dCos * dy + dSin * dx, y + dCos * dx + dSin * dy);
-			pStream->WriteStr("S\012");
-			break;
-		}
-		case ELineEndType::Square:
-		{
-			w *= lineEndSize1;
-			pStream->WriteReal(x - w);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(y - w);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(w * 2);
-			pStream->WriteChar(' ');
-			pStream->WriteReal(w * 2);
-			pStream->WriteStr(" re\012");
-			pStream->WriteStr("B\012");
-			break;
-		}
-		case ELineEndType::None:
-		default:
-		{
-			break;
-		}
-		}
-	}
-	void DrawLineArrow(CStream* pStream, double dBorderSize, double x1, double y1, double x2, double y2, ELineEndType nLE1, ELineEndType nLE2, double dLL = 0, double dLLO = 0, double dLLE = 0)
-	{
-		double dDX = x2 - x1;
-		double dDY = y2 - y1;
-		double dLen = sqrt(dDX * dDX + dDY * dDY);
-		if (dLen > 0)
-		{
-			dDX /= dLen;
-			dDY /= dLen;
-		}
-
-		double lx1, ly1, lx2, ly2;
-		double ax1, ay1, ax2, ay2;
-		double bx1, by1, bx2, by2;
-		if (dLL != 0)
-		{
-			ax1 = x1 + dLLO * dDY;
-			ay1 = y1 - dLLO * dDX;
-			lx1 = ax1 + dLL * dDY;
-			ly1 = ay1 - dLL * dDX;
-			bx1 = lx1 + dLLE * dDY;
-			by1 = ly1 - dLLE * dDX;
-			ax2 = x2 + dLLO * dDY;
-			ay2 = y2 - dLLO * dDX;
-			lx2 = ax2 + dLL * dDY;
-			ly2 = ay2 - dLL * dDX;
-			bx2 = lx2 + dLLE * dDY;
-			by2 = ly2 - dLLE * dDX;
-		}
-		else
-		{
-			lx1 = x1;
-			ly1 = y1;
-			lx2 = x2;
-			ly2 = y2;
-			ax1 = ay1 = ax2 = ay2 = 0;
-			bx1 = by1 = bx2 = by2 = 0;
-		  }
-
-		double tx1, ty1, tx2, ty2;
-		AdjustLineEndpoint(nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
-		AdjustLineEndpoint(nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
-
-		if (dLL)
-		{
-			SreamWriteXYMove(pStream, ax1, ay1);
-			SreamWriteXYLine(pStream, bx1, by1);
-
-			SreamWriteXYMove(pStream, ax2, ay2);
-			SreamWriteXYLine(pStream, bx2, by2);
-		}
-
-		SreamWriteXYMove(pStream, tx1, ty1);
-		SreamWriteXYLine(pStream, tx2, ty2);
-		pStream->WriteStr("S\012");
-
-		DrawArrow(pStream, nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
-		DrawArrow(pStream, nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
-	}
 	void CLineAnnotation::SetAP()
 	{
 		CAnnotAppearance* pAppearance = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAppearance);
 		CAnnotAppearanceObject* pNormal = pAppearance->GetNormal();
-		CStream* pStream = pNormal->GetStream();
-
-		pNormal->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
-		pNormal->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
-
-		if (GetBorderType() == EBorderType::Dashed)
-			pStream->WriteStr(GetBorderDash().c_str());
-
-		double dBorderSize = GetBorderWidth();
-		pStream->WriteReal(dBorderSize);
-		pStream->WriteStr(" w\012");
-
-		CObjectBase* pObj = Get("IC");
-		if (pObj && pObj->GetType() == object_type_ARRAY)
-		{
-			pStream->WriteStr(GetColor(dynamic_cast<CArrayObject*>(pObj), false).c_str());
-			pStream->WriteStr("\012");
-		}
-
-		pStream->WriteStr(GetColor(dynamic_cast<CArrayObject*>(Get("C")), true).c_str());
-		pStream->WriteStr("\012");
-
-		pObj = Get("CA");
-		if (pObj && pObj->GetType() == object_type_REAL)
-		{
-			float dAlpha = ((CRealObject*)pObj)->Get();
-			if (dAlpha != 1)
-			{
-				CExtGrState* pExtGrState = m_pDocument->GetExtGState(dAlpha, dAlpha);
-				const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
-				if (sExtGrStateName)
-				{
-					pStream->WriteEscapeName(sExtGrStateName);
-					pStream->WriteStr(" gs\012");
-				}
-			}
-		}
-
-		double dLL = 0, dLLE = 0, dLLO = 0;
-		pObj = Get("LL");
-		if (pObj && pObj->GetType() == object_type_REAL)
-			dLL = ((CRealObject*)pObj)->Get();
-		pObj = Get("LLE");
-		if (pObj && pObj->GetType() == object_type_REAL)
-			dLLE = ((CRealObject*)pObj)->Get();
-		pObj = Get("LLO");
-		if (pObj && pObj->GetType() == object_type_REAL)
-			dLLO = ((CRealObject*)pObj)->Get();
-
-		DrawLineArrow(pStream, dBorderSize, dL[0], dL[1], dL[2], dL[3], m_nLE1, m_nLE2, dLL, dLLE, dLLO);
+		pNormal->DrawLine();
 	}
 	//----------------------------------------------------------------------------------------
 	// CPopupAnnotation
@@ -2091,6 +1809,7 @@ namespace PdfWriter
 	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
 		m_nSubtype = WidgetRadiobutton;
+		m_nStyle = ECheckBoxStyle::Circle;
 	}
 	void CCheckBoxWidget::SetV(const std::wstring& wsV)
 	{
@@ -2104,36 +1823,33 @@ namespace PdfWriter
 		else
 			pOwner->Add("V", new CStringObject(sV.c_str(), true));
 	}
-	std::wstring CCheckBoxWidget::SetStyle(BYTE nStyle)
+	void CCheckBoxWidget::SetStyle(BYTE nStyle)
 	{
+		m_nStyle = ECheckBoxStyle(nStyle);
 		CheckMK();
 
-		std::string sValue;
-		switch (nStyle)
-		{
-		case 1:
-		{ sValue = "8"; break; }
-		case 2:
-		{ sValue = "u"; break; }
-		case 3:
-		{ sValue = "l"; break; }
-		case 4:
-		{ sValue = "H"; break; }
-		case 5:
-		{ sValue = "n"; break; }
-		default:
-		case 0:
-		{ sValue = "4"; break; }
-		}
-
-		m_pMK->Add("CA", new CStringObject(sValue.c_str()));
-
-		return UTF8_TO_U(sValue);
+		m_pMK->Add("CA", new CStringObject(c_sCheckBoxStyleNames[(int)nStyle]));
 	}
 	void CCheckBoxWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
+	}
+	void CCheckBoxWidget::SetAP()
+	{
+		if (Get("AP"))
+			return;
+
+		CCheckBoxAnnotAppearance* pAP = new CCheckBoxAnnotAppearance(m_pXref, this, m_sAP_N_Yes.empty() ? NULL : m_sAP_N_Yes.c_str());
+		Add("AP", pAP);
+
+		if (m_nStyle == ECheckBoxStyle::Circle)
+		{
+			pAP->GetYesN()->DrawCheckBoxCircle(true);
+			pAP->GetOffN()->DrawCheckBoxCircle(false);
+			pAP->GetYesD()->DrawCheckBoxCircle(true);
+			pAP->GetOffD()->DrawCheckBoxCircle(false);
+		}
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV)
 	{

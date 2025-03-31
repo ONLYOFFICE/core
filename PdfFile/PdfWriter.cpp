@@ -2387,7 +2387,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					pButtonWidget->SetV(wsValue);
 				}
 
-				std::wstring wsStyleValue = pButtonWidget->SetStyle(pPrB->GetStyle());
+				pButtonWidget->SetStyle(pPrB->GetStyle());
 
 				// ВНЕШНИЙ ВИД
 				// Если изменился текущий внешний вид
@@ -2398,6 +2398,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					return S_OK;
 				}
 
+				pButtonWidget->SetAP();
+				/*
 				put_FontName(wsFontName);
 				put_FontStyle(nStyle);
 				put_FontSize(dFontSize);
@@ -2415,6 +2417,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 					double dBaseLine = dY2 - dY1 - dFontSize - dMargin;
 					pButtonWidget->SetAP(wsStyleValue, NULL, 0, 0, dBaseLine, NULL, NULL);
 				}
+				*/
 			}
 		}
 		else if (oInfo.IsTextWidget())

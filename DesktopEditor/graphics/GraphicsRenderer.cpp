@@ -180,11 +180,11 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
         Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
 
 		Aggplus::CBrushHatch* pNew = new Aggplus::CBrushHatch();
-		pNew->m_dwColor1	= o1;
-		pNew->m_dwColor2	= o2;
-		pNew->m_name		= pBrush->TexturePath;
+		pNew->SetColor1(o1);
+		pNew->SetColor2(o2);
+		pNew->SetName(pBrush->TexturePath);
 
-		pNew->Bounds		= pBrush->Bounds;
+		pNew->SetBounds(pBrush->Bounds);
 
 		return pNew;
 	}
@@ -197,7 +197,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 		else
 			pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, Aggplus::WrapModeClamp);
 
-		pNew->SetTransform(&m_oBrush.Transform);
+		pNew->SetTransform(m_oBrush.Transform);
 
 		return pNew;
 	}
@@ -996,7 +996,7 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 						pImage->Create(oFrame.get_Data(), oFrame.get_Width(), oFrame.get_Height(), oFrame.get_Stride());
 						oFrame.ClearNoAttack();
 						pTextureBrush = new Aggplus::CBrushTexture(pImage, oMode);
-						pTextureBrush->m_bReleaseImage = TRUE;
+						pTextureBrush->SetReleaseImage(true);
 					}
 					else
 						RELEASEARRAYOBJECTS(pImageData);
@@ -1018,15 +1018,14 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 				{
 					pTextureBrush->SetTransform(&m_oBrush.Transform);
 
-					pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
+					pTextureBrush->SetAlpha(static_cast<BYTE>(m_oBrush.TextureAlpha));
 
                     if (m_oBrush.Rectable == 1)
                     {
-                        pTextureBrush->m_bUseBounds = true;
-                        pTextureBrush->m_oBounds.left = m_oBrush.Rect.X;
-                        pTextureBrush->m_oBounds.top = m_oBrush.Rect.Y;
-                        pTextureBrush->m_oBounds.right = pTextureBrush->m_oBounds.left + m_oBrush.Rect.Width;
-                        pTextureBrush->m_oBounds.bottom = pTextureBrush->m_oBounds.top + m_oBrush.Rect.Height;
+						pTextureBrush->SetBounds({m_oBrush.Rect.X,
+												  m_oBrush.Rect.Y,
+												  m_oBrush.Rect.X + m_oBrush.Rect.Width,
+												  m_oBrush.Rect.Y + m_oBrush.Rect.Height});
                     }
 				}
 

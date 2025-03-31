@@ -48,49 +48,61 @@ class CBrush
 	friend class CGraphics;
 
 protected:
-
-	CBrush(BrushType bType);
+	CBrush();
+	CBrush(const BrushType& type);
 	 
 public:
 	virtual ~CBrush();
 
-	virtual CBrush* Clone() const = 0;
 	BrushType GetType() const;
 
 public:
-	BrushType m_bType;
+	BrushType m_bType = BrushTypeSolidColor;
 };
 
 class CBrushSolid : public CBrush
 {
 public:
-	CBrushSolid(CColor dwColor);
+	CBrushSolid();
+	CBrushSolid(CColor color);
 	virtual ~CBrushSolid();
-	virtual CBrush *Clone() const;
+	CBrushSolid(const CBrushSolid& other);
 
 	void GetColor(CColor* color) const;
 	void SetColor(const CColor &color);
 	
+	CBrushSolid& operator=(const CBrushSolid& other);
 protected:
-	CColor m_dwColor;
+	CColor m_dwColor{};
 };
 
 class CBrushHatch : public CBrush
 {
 public:
 	CBrushHatch();
+	CBrushHatch(const CBrushHatch& other);
+	CBrushHatch(CBrushHatch&& other) noexcept;
 	virtual ~CBrushHatch();
-	virtual CBrush *Clone() const;
 
-	inline CDoubleRect& GetBounds() { return Bounds; }
+	void SetName(const std::wstring& name);
+	std::wstring GetName() const;
 
-		
-public:
-	std::wstring	m_name;
-	CColor			m_dwColor1;
-	CColor			m_dwColor2;
+	void SetColor1(const CColor& color);
+	CColor GetColor1() const;
+	void SetColor2(const CColor& color);
+	CColor GetColor2() const;
 
-	CDoubleRect		Bounds;
+	void SetBounds(const CDoubleRect& rect);
+	CDoubleRect& GetBounds();
+
+	CBrushHatch& operator=(const CBrushHatch& other);
+	CBrushHatch& operator=(CBrushHatch&& other) noexcept;
+protected:
+	std::wstring	m_wsName;
+	CColor			m_dwColor1{};
+	CColor			m_dwColor2{};
+
+	CDoubleRect		m_oBounds{};
 };
 
 
@@ -99,113 +111,143 @@ class CBrushLinearGradient : public CBrush
 	friend class CGraphics;
 
 public:
-	CBrushLinearGradient( const PointF& p1, const PointF& p2, const CColor& c1, const CColor& c2 );
-	CBrushLinearGradient( const Point& p1, const Point& p2, const CColor& c1, const CColor& c2 );
-	CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable );
-	CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, float angle, INT isAngleScalable );
-	CBrushLinearGradient( const RectF& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode );
-	CBrushLinearGradient( const Rect& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode );
-	CBrushLinearGradient( const CBrushLinearGradient& out );
+	CBrushLinearGradient();
+	CBrushLinearGradient(const PointF& p1, const PointF& p2, const CColor& c1, const CColor& c2);
+	CBrushLinearGradient(const Point& p1, const Point& p2, const CColor& c1, const CColor& c2);
+	CBrushLinearGradient(const RectF& rect, const CColor& c1, const CColor& c2, float angle, bool isAngleScalable);
+	CBrushLinearGradient(const Rect& rect, const CColor& c1, const CColor& c2, float angle, bool isAngleScalable);
+	CBrushLinearGradient(const RectF& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode);
+	CBrushLinearGradient(const Rect& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode);
+	CBrushLinearGradient(const CBrushLinearGradient& other);
+	CBrushLinearGradient(CBrushLinearGradient&& other) noexcept;
 
-	Status GetLinearColors( CColor* colors ) const;
-	Status GetRectangle( Rect *rect ) const;
-	Status GetRectangle( RectF *rect ) const;
+	Status GetLinearColors(CColor* colors) const;
+	Status GetRectangle(Rect *rect) const;
+	Status GetRectangle(RectF *rect) const;
 
-	Status GetTransform( CMatrix* matrix ) const;
-	Status MultiplyTransform( const CMatrix *matrix, MatrixOrder order = MatrixOrderPrepend);
+	Status GetTransform(CMatrix* matrix) const;
+	Status MultiplyTransform(const CMatrix *matrix, MatrixOrder order = MatrixOrderPrepend);
 	Status ResetTransform();
-	Status RotateTransform( REAL angle, MatrixOrder order = MatrixOrderPrepend );
-	Status ScaleTransform( REAL sx, REAL sy, MatrixOrder order = MatrixOrderPrepend );
+	Status RotateTransform(float angle, MatrixOrder order = MatrixOrderPrepend );
+	Status ScaleTransform(float sx, float sy, MatrixOrder order = MatrixOrderPrepend );
 
-	void SetWrapMode( WrapMode mode );
+	void SetWrapMode(WrapMode mode);
 	WrapMode GetWrapMode() const;
 
-	virtual CBrush *Clone() const;
+	Status SetInterpolationColors(const CColor *presetColors, const float *blendPositions, int count);
+	Status GetInterpolationColors(CColor *presetColors, float *blendPositions, int count) const;
+	int GetInterpolationColorsCount() const;
 
-	Status SetInterpolationColors( const CColor *presetColors, const REAL *blendPositions, INT count );
-	Status GetInterpolationColors( CColor *presetColors, REAL *blendPositions, INT count ) const;
-	INT GetInterpolationColorsCount() const;
-
-	// additional methods
-	void GetSubColor( int nIndex, CColor* pColor, float* pPosition ) const;
+	void GetSubColor(int index, CColor* color, float* position) const;
 	
-	void SetRelativeCoords( INT bRelative );
-	INT IsRelativeCoords() const;
-	INT IsAngleScalable() const;
-	INT IsRectable() const;
+	void SetRelativeCoords(bool relative);
+	bool IsRelativeCoords() const;
+	bool IsAngleScalable() const;
+	bool IsRectable() const;
 	float GetAngle() const;
-	inline void SetBounds(const CDoubleRect& oRect) { Bounds = oRect; }
-	inline CDoubleRect& GetBounds() { return Bounds; }
 
-    // info about gradient
-    NSStructures::GradientInfo m_oGradientInfo; // used in 60xx grad types
+	void SetBounds(const CDoubleRect& rect);
+	CDoubleRect& GetBounds();
+
+	CBrushLinearGradient& operator=(const CBrushLinearGradient& other);
+	CBrushLinearGradient& operator=(CBrushLinearGradient&& other) noexcept;
+
+	NSStructures::GradientInfo m_oGradientInfo{};
 protected:
-	CColor m_colors[2];
-	PointF m_points[2];
+	CColor m_arColors[2];
+	PointF m_arPoints[2];
 
 	struct TSubColor
 	{
-		CColor color;
-		float position;
+		CColor color{};
+		float position = 0;
 	};
 	
-    std::vector<TSubColor> m_subcolors;
+	std::vector<TSubColor> m_arSubColors;
 
-	CMatrix m_matrix;
-	float m_angle; // угол поворота в градусах базовой линии p1 -> p2
+	CMatrix m_Matrix{};
 
-	CDoubleRect Bounds;
+	/**
+	 * @brief m_angle - rotation angle of line p1 - p2 (measured in degrees)
+	 */
+	float m_fAngle = 0;
 
-	Aggplus::WrapMode m_wrap;
+	CDoubleRect m_oBounds{};
 
-	INT m_bAngleScalable; // масштабировать угол поворота относительно заданных точек b = arctan( width / height * tan(angle) );
-	INT m_bRectable; // в качестве направляющей используется диагональ прямоугольника
-	INT m_bRelativeCoords; // координаты точек считаются относительно рисуемого примитива
+	Aggplus::WrapMode m_eWrap = Aggplus::WrapModeTile;
+
+	/**
+	 * @brief m_bAngleScalable - whether to scale the rotation angle relative
+	 *   to the given points
+	 *
+	 * calculated like this b = arctan(width / height * tan(angle));
+	 */
+	bool m_bAngleScalable = false;
+
+	/**
+	 * @brief m_bRectable - is the diagonal of a rectangle a guide
+	 */
+	bool m_bRectable = false;
+
+	/**
+	 * @brief m_bRelativeCoords - are the coordinates of the points calculated
+	 *   relative to the resulting primitive
+	 */
+	bool m_bRelativeCoords = false;
 };
 
 class CBrushTexture : public CBrush
 {
 	friend class CGraphics;
-	
-protected:
-	CBrushTexture();
 
 public:
-	CBrushTexture(const std::wstring& strName, WrapMode wrapMode = WrapModeTile);
-	CBrushTexture(CImage *pImage, WrapMode wrapMode = WrapModeTile);
+	CBrushTexture();
+	CBrushTexture(const std::wstring& name, WrapMode mode = WrapModeTile);
+	CBrushTexture(CImage *image, WrapMode mode = WrapModeTile);
+	CBrushTexture(const CBrushTexture& other);
+	CBrushTexture(CBrushTexture&& other);
 	virtual ~CBrushTexture();
-	virtual CBrush* Clone() const;
 
-	void TranslateTransform(double dX, double dY, MatrixOrder order = MatrixOrderPrepend);
-	void ScaleTransform(double dX, double dY, MatrixOrder order = MatrixOrderPrepend);
+	void TranslateTransform(double x, double y, MatrixOrder order = MatrixOrderPrepend);
+	void ScaleTransform(double x, double y, MatrixOrder order = MatrixOrderPrepend);
 	void RotateTransform(double angle, MatrixOrder order = MatrixOrderPrepend);
 	void GetTransform(CMatrix* matrix) const;
 	void SetTransform(const CMatrix* matrix);
 
-	void SetWrapMode(WrapMode wMode);
+	void SetWrapMode(WrapMode mode);
 	WrapMode GetWrapMode() const;
-	 
-public:
+
+	void SetBounds(const CDoubleRect& rect);
+	CDoubleRect& GetBounds();
+
+	void SetReleaseImage(bool isReleaseImage);
+	bool IsReleaseImage() const;
+
+	void SetAlpha(BYTE alpha);
+	BYTE GetAlpha() const;
 
 	void* GetData();
 	void* PatternFinalize();
 	DWORD PatternGetWidth();
 	DWORD PatternGetHeight();
 	int PatternGetStride();
-		
-public:
-	CImage* m_pImage;
-	INT m_bReleaseImage;
+
+	CBrushTexture& operator=(const CBrushTexture& other);
+	CBrushTexture& operator=(CBrushTexture&& other);
+
+protected:
+	CImage* m_pImage{nullptr};
+	bool m_bReleaseImage = false;
 	
-	WrapMode m_wrapMode;
-	CMatrix m_mtx;
+	WrapMode m_eWrapMode = WrapModeTile;
+	CMatrix m_Matrix{};
 
-	CColor m_colors[2];
+	CColor m_arColors[2];
 
-	bool m_bUseBounds;
-	CDoubleRect m_oBounds;
+	bool m_bUseBounds = false;
+	CDoubleRect m_oBounds{};
 
-	BYTE Alpha;
+	BYTE m_Alpha = 255;
 };
 }
 

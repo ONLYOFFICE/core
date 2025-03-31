@@ -832,7 +832,8 @@ namespace Aggplus
 				b = ptxBrush->m_oBounds.bottom;
 			}
 
-			CMatrix brushMatrix(ptxBrush->m_mtx);
+			CMatrix brushMatrix;
+			ptxBrush->GetTransform(&brushMatrix);
 			if (ptxBrush->GetWrapMode() == Aggplus::WrapModeClamp)
 			{
 				double dScaleX = (r - x) / dwPatternWidth;
@@ -1652,11 +1653,11 @@ namespace Aggplus
 			m_rasterizer.gamma(1.0);
 		}
 #else
-		agg::rgba8 c1 = agg::rgba8(pBrush->m_dwColor1.GetR(), pBrush->m_dwColor1.GetG(), pBrush->m_dwColor1.GetB(), pBrush->m_dwColor1.GetA());
-		agg::rgba8 c2 = agg::rgba8(pBrush->m_dwColor2.GetR(), pBrush->m_dwColor2.GetG(), pBrush->m_dwColor2.GetB(), pBrush->m_dwColor2.GetA());
+		agg::rgba8 c1 = agg::rgba8(pBrush->GetColor1().GetR(), pBrush->GetColor1().GetG(), pBrush->GetColor1().GetB(), pBrush->GetColor1().GetA());
+		agg::rgba8 c2 = agg::rgba8(pBrush->GetColor2().GetR(), pBrush->GetColor2().GetG(), pBrush->GetColor2().GetB(), pBrush->GetColor2().GetA());
 
 		BYTE* pPattern = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE * 4];
-		agg::GetHatchPattern(pBrush->m_name, (agg::rgba8*)pPattern, c1, c2);
+		agg::GetHatchPattern(pBrush->GetName(), (agg::rgba8*)pPattern, c1, c2);
 
 		agg::trans_affine mtx_Work(m_oTransform.m_internal->m_agg_mtx);
 		if (m_dDpiTile > 1)
@@ -2049,22 +2050,22 @@ namespace Aggplus
 
 				if(pImgBuff && dwImgWidth && dwImgHeight)
 				{
-					Aggplus::WrapMode wrapmode = ptxBrush->m_wrapMode;
-					Aggplus::CMatrix matrix = ptxBrush->m_mtx;
+					Aggplus::WrapMode wrapmode = ptxBrush->m_eWrapMode;
+					Aggplus::CMatrix matrix = ptxBrush->m_Matrix;
 
 					if(wrapmode == WrapModeClamp)
 					{
-						DoFillPathTextureClampSz2( matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, ptxBrush->Alpha);
+						DoFillPathTextureClampSz2( matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, ptxBrush->m_Alpha);
 					}
 					else
 					{
 						if (!m_bSwapRGB)
 						{
-							DoFillPathTextureClampSz3<agg::pixfmt_bgra32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->Alpha);
+							DoFillPathTextureClampSz3<agg::pixfmt_bgra32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->m_Alpha);
 						}
 						else
 						{
-							DoFillPathTextureClampSz3<agg::pixfmt_rgba32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->Alpha);
+							DoFillPathTextureClampSz3<agg::pixfmt_rgba32>(matrix, pImgBuff, dwImgWidth, dwImgHeight, nImgStride, wrapmode, ptxBrush->m_Alpha);
 						}
 					}
 				}

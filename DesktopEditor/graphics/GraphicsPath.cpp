@@ -48,7 +48,7 @@ namespace Aggplus
 
 	CGraphicsPath::CGraphicsPath(CGraphicsPath&& other) noexcept
 	{
-		*this = other;
+		*this = std::move(other);
 	}
 
 	CGraphicsPath::CGraphicsPath(const std::vector<CGraphicsPath>& paths) noexcept : CGraphicsPath()

@@ -94,7 +94,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
         Aggplus::CColor o1((BYTE)(pBrush->Alpha1 * m_dGlobalAlpha), pBrush->Color1, bIsSwappedRGB);
         Aggplus::CColor o2((BYTE)(pBrush->Alpha2 * m_dGlobalAlpha), pBrush->Color2, bIsSwappedRGB);
 
-		Aggplus::CBrushLinearGradient* pNew = new Aggplus::CBrushLinearGradient( Aggplus::RectF(0.0f, 0.0f, 1.0f, 1.0f), o1, o2, (float)pBrush->LinearAngle, TRUE );
+		Aggplus::CBrushLinearGradient* pNew = new Aggplus::CBrushLinearGradient(Aggplus::RectF(0.0f, 0.0f, 1.0f, 1.0f), o1, o2, (float)pBrush->LinearAngle, true);
 		if( pNew )
 		{
 			pNew->SetRelativeCoords( TRUE );
@@ -197,7 +197,7 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 		else
 			pNew = new Aggplus::CBrushTexture(pBrush->TexturePath, Aggplus::WrapModeClamp);
 
-		pNew->SetTransform(m_oBrush.Transform);
+		pNew->SetTransform(&m_oBrush.Transform);
 
 		return pNew;
 	}

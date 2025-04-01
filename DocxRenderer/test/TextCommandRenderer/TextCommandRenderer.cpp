@@ -236,6 +236,7 @@ void CTextCommandRenderer::CTextCommandRendererImpl::NewPage()
 {
 	ResetMinMax();
 	m_nCurrColorIndex = 0;
+	m_bIsFirst = true;
 }
 void CTextCommandRenderer::CTextCommandRendererImpl::SetFolder(const std::wstring& wsFolder)
 {

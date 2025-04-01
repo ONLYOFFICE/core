@@ -3440,7 +3440,6 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 	// Отрисовка внешних видов аннотации
 	AcroFormFieldType oType = pField->getAcroFormFieldType();
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
-	((GlobalParamsAdaptor*)globalParams)->ResetTextFormField();
 
 	double dOffsetX = -(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2;
 	double dOffsetY = (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2;
@@ -3494,7 +3493,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
-	((GlobalParamsAdaptor*)globalParams)->ResetTextFormField();
+
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -3551,7 +3550,6 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
-	pView->sText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 BYTE CAnnotAP::GetBlendMode()
 {
@@ -3584,14 +3582,6 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(npSubMatrix >> 32);
 
 		oRes.WriteBYTE(m_arrAP[i]->nBlendMode);
-
-		if (m_arrAP[i]->sText.empty())
-			oRes.WriteBYTE(0);
-		else
-		{
-			oRes.WriteBYTE(1);
-			oRes.WriteString(m_arrAP[i]->sText);
-		}
 	}
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)

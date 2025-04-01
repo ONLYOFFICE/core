@@ -1993,8 +1993,8 @@ namespace NSDocxRenderer
 			add_if_no_exists(group.back()->m_dRight, grid_x);
 			add_if_no_exists(group.back()->m_dBot, grid_y);
 
-			std::sort(grid_x.begin(), grid_x.end(), std::less{});
-			std::sort(grid_y.begin(), grid_y.end(), std::less{});
+			std::sort(grid_x.begin(), grid_x.end(), std::less<double>{});
+			std::sort(grid_y.begin(), grid_y.end(), std::less<double>{});
 
 			// GridSpan calc
 			for (auto& cell : group)

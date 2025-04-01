@@ -251,7 +251,7 @@ void CTextCommandRenderer::CTextCommandRendererImpl::CreateFrame()
 	const long step = 4;
 	const long stride = -step * width_pix;
 
-	m_pFrame = std::make_unique<CBgraFrame>();
+	m_pFrame = std::unique_ptr<CBgraFrame>(new CBgraFrame());
 	size_t data_size = width_pix * height_pix * step;
 	BYTE* data = new BYTE[data_size];
 
@@ -285,7 +285,7 @@ long CTextCommandRenderer::CTextCommandRendererImpl::GetNextColor()
 }
 
 CTextCommandRenderer::CTextCommandRenderer(NSFonts::IApplicationFonts* pFonts)
-    : m_pImpl(std::make_unique<CTextCommandRendererImpl>(pFonts))
+    : m_pImpl(std::unique_ptr<CTextCommandRendererImpl>(new CTextCommandRendererImpl(pFonts)))
 {
 }
 CTextCommandRenderer::~CTextCommandRenderer()

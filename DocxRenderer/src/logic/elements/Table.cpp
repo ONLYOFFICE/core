@@ -197,7 +197,7 @@ namespace NSDocxRenderer
 				add_if_no_exists(cell->m_dLeft);
 			}
 		}
-		std::sort(cells_left.begin(), cells_left.end(), std::less{});
+		std::sort(cells_left.begin(), cells_left.end(), std::less<double>{});
 
 		for (size_t i = 0; i < cells_left.size() - 1; ++i)
 			m_arGridCols.push_back(cells_left[i + 1] - cells_left[i]);

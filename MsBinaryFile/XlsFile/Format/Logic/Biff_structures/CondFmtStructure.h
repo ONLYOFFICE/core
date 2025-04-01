@@ -46,6 +46,7 @@ public:
 	static const ElementType	type = typeCondFmtStructure;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	const CellRef getLocation() const;

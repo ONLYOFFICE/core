@@ -79,6 +79,26 @@ void CF::readFields(CFRecord& record)
 	dxfId_ = global_info_->RegistrDxfn(strm.str());
 }
 
+void CF::writeFields(CFRecord& record)
+{
+    record << ct << cp;
+    record.reserveNunBytes(4);
+    auto ccePos = record.getRdPtr();
+    rgce1.save(record);
+    unsigned short rgceSize = record.getRdPtr() - ccePos;
+    record.RollRdPtrBack(rgceSize + 4);
+    record << rgceSize;
+    record.skipNunBytes(rgceSize + 2);
+
+    auto rgce2pos = record.getRdPtr();
+    rgce2.save(record);
+    rgceSize = record.getRdPtr() - rgce2pos;
+    record.RollRdPtrBack((record.getRdPtr() - ccePos) + 2);
+    record << rgceSize;
+    record.skipNunBytes(rgce2pos+ rgceSize);
+
+}
+
 int CF::serialize(std::wostream & stream)
 {
 	if (ct != 1 && ct != 2 && ct !=6) 

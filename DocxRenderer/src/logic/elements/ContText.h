@@ -75,7 +75,7 @@ namespace NSDocxRenderer
 
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
-		bool m_bPossibleSplit{false};
+		bool m_bPossibleHorSplit{false};
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}

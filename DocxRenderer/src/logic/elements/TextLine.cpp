@@ -91,7 +91,7 @@ namespace NSDocxRenderer
 			bool bIsSpaceDelta = dDifference > space_width;
 			bool bIsWideSpaceDelta = dDifference > space_width * 3;
 
-			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleSplit && bIsSpaceDelta))
+			if (bIsWideSpaceDelta || (pCurrent->m_bPossibleHorSplit && bIsSpaceDelta))
 			{
 				if (CContText::IsUnicodeSpace(pFirst->GetLastSym()))
 					pFirst->RemoveLastSym();

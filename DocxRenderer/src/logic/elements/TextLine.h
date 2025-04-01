@@ -31,6 +31,8 @@ namespace NSDocxRenderer
 
 		double m_dFirstWordWidth{0.0};
 
+		bool m_bIsPossibleVerSplit = false;
+
 	public:
 		CTextLine() = default;
 		virtual ~CTextLine();

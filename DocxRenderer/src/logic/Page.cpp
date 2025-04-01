@@ -486,7 +486,14 @@ namespace NSDocxRenderer
 			if (!cont)
 				continue;
 
-			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+			double avg_space_width = cont->m_pFontStyle->GetAvgSpaceWidth();
+			double space_width =
+			        avg_space_width != 0.0 ?
+			            avg_space_width * c_dAVERAGE_SPACE_WIDTH_COEF :
+			            cont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
+
+			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 2 * space_width)
 			{
 				curr_line->AddCont(cont);
 				continue;
@@ -495,10 +502,11 @@ namespace NSDocxRenderer
 			bool skip = false;
 			for (size_t i = 0; i < text_lines.size(); ++i)
 			{
-				if (fabs(text_lines[i]->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				if (fabs(text_lines[i]->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
+				        fabs(curr_line->m_dRight - cont->m_dLeft) <= 2 * space_width)
 				{
 					curr_line = text_lines[i];
-					cont->m_bPossibleSplit = true;
+					cont->m_bPossibleHorSplit = true;
 					curr_line->AddCont(cont);
 					skip = true;
 				}
@@ -1363,7 +1371,7 @@ namespace NSDocxRenderer
 				bool is_cont_wide = line->m_arConts[i]->m_dWidth > c_dLINE_SPLIT_DISTANCE_MM;
 				bool is_shape_trough = IsVerticalLineTrough(line->m_arConts[i]);
 
-				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleSplit && is_space)
+				if ((i != line->m_arConts.size() - 1 && line->m_arConts[i + 1]->m_bPossibleHorSplit && is_space)
 				        || (is_space && is_cont_wide)
 				        || is_shape_trough)
 				{

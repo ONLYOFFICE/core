@@ -70,7 +70,7 @@ namespace NSDocxRenderer
 		m_dBotWithDescent = rCont.m_dBotWithDescent;
 
 		m_oSelectedFont = rCont.m_oSelectedFont;
-		m_bPossibleSplit = rCont.m_bPossibleSplit;
+		m_bPossibleHorSplit = rCont.m_bPossibleHorSplit;
 		m_bWriteStyleRaw = rCont.m_bWriteStyleRaw;
 
 		m_arSymWidths.clear();
@@ -135,7 +135,7 @@ namespace NSDocxRenderer
 		m_dRight = cont->m_dLeft;
 		m_dWidth = m_dRight - m_dLeft;
 		m_arSymWidths.resize(index + 1);
-		m_bPossibleSplit = false;
+		m_bPossibleHorSplit = false;
 
 		return cont;
 	}
@@ -774,7 +774,7 @@ namespace NSDocxRenderer
 				pSecondCont->m_pCont = pFirstCont;
 				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pFirstCont->m_pCont = pSecondCont;
-				pFirstCont->m_bPossibleSplit = false;
+				pFirstCont->m_bPossibleHorSplit = false;
 				return true;
 			}
 			else if (bIf2 && bIf5)
@@ -783,7 +783,7 @@ namespace NSDocxRenderer
 				pSecondCont->m_pCont = pFirstCont;
 				pFirstCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pFirstCont->m_pCont = pSecondCont;
-				pFirstCont->m_bPossibleSplit = false;
+				pFirstCont->m_bPossibleHorSplit = false;
 				return true;
 			}
 			else if (bIf1 && bIf6)
@@ -792,7 +792,7 @@ namespace NSDocxRenderer
 				pFirstCont->m_pCont = pSecondCont;
 				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pSecondCont->m_pCont = pFirstCont;
-				pSecondCont->m_bPossibleSplit = false;
+				pSecondCont->m_bPossibleHorSplit = false;
 				return true;
 			}
 			else if (bIf2 && bIf6)
@@ -801,7 +801,7 @@ namespace NSDocxRenderer
 				pFirstCont->m_pCont = pSecondCont;
 				pSecondCont->m_eVertAlignType = eVertAlignType::vatBase;
 				pSecondCont->m_pCont = pFirstCont;
-				pSecondCont->m_bPossibleSplit = false;
+				pSecondCont->m_bPossibleHorSplit = false;
 				return true;
 			}
 		}
@@ -901,7 +901,8 @@ namespace NSDocxRenderer
 		if (m_pCurrCont != nullptr &&
 		        fabs(m_pCurrCont->m_dBot - dBot) < c_dTHE_SAME_STRING_Y_PRECISION_MM &&
 		        m_oPrevFont.IsEqual2(&oFont) &&
-		        m_oPrevBrush.IsEqual(&oBrush))
+		        m_oPrevBrush.IsEqual(&oBrush) && !(
+		            oText.length() == 1 && CContText::IsUnicodeDiacriticalMark(oText.at(0))))
 		{
 
 			double avg_width = dWidth / oText.length();
@@ -956,10 +957,10 @@ namespace NSDocxRenderer
 		const auto& oMetrics = pFontManager->GetFontMetrics();
 		m_pFontSelector->SelectFont(oParams, oMetrics, oText);
 
-		pCont->m_dBot = dBot;
-		pCont->m_dTop         = dTop;
-		pCont->m_dHeight      = dHeight;
-		pCont->m_dLeft        = dLeft;
+		pCont->m_dBot    = dBot;
+		pCont->m_dTop    = dTop;
+		pCont->m_dHeight = dHeight;
+		pCont->m_dLeft   = dLeft;
 
 		// первичное получение стиля для текущего символа
 		// при дальнейшем анализе может измениться
@@ -1011,7 +1012,9 @@ namespace NSDocxRenderer
 		pCont->m_bWriteStyleRaw = bWriteStyleRaw;
 
 		if (pCont->IsDiacritical())
+		{
 			m_arDiacs.push_back(std::move(pCont));
+		}
 		else
 			m_arConts.push_back(pCont);
 

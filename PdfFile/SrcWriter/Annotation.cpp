@@ -1824,7 +1824,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		m_nSubtype = WidgetRadiobutton;
+		m_nSubtype = WidgetCheckbox;
 		m_nStyle = ECheckBoxStyle::Circle;
 	}
 	void CCheckBoxWidget::SetV(const std::wstring& wsV)
@@ -1859,7 +1859,7 @@ namespace PdfWriter
 		CCheckBoxAnnotAppearance* pAP = new CCheckBoxAnnotAppearance(m_pXref, this, m_sAP_N_Yes.empty() ? NULL : m_sAP_N_Yes.c_str());
 		Add("AP", pAP);
 
-		if (m_nStyle == ECheckBoxStyle::Circle)
+		if (m_nStyle == ECheckBoxStyle::Circle && m_nSubtype == WidgetRadiobutton)
 		{
 			pAP->GetYesN()->DrawCheckBoxCircle(true, true);
 			pAP->GetOffN()->DrawCheckBoxCircle(false, true);
@@ -1909,8 +1909,8 @@ namespace PdfWriter
 		if (nFlag < 0)
 			return;
 		int nFlags = nFlag;
-		if (m_nSubtype == WidgetRadiobutton)
-			nFlags |= (1 << 15);
+		if (nFlags & (1 << 15))
+			m_nSubtype = WidgetRadiobutton;
 		CWidgetAnnotation::SetFlag(nFlags);
 	}
 	//----------------------------------------------------------------------------------------

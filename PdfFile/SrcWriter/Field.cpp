@@ -3316,45 +3316,106 @@ namespace PdfWriter
 			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
 		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
 
-		StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
+		if (nBorderType == EBorderType::Underline)
+		{
+			StreamWriteXYMove(m_pStream, 0, dBorder / 2.0);
+			StreamWriteXYLine(m_pStream, dW, dBorder / 2.0);
+		}
+		else
+			StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
 		m_pStream->WriteStr("s\012");
 
 		// Установлен
 		if (!bSet)
 			return;
+		double dDiff = std::abs(dW - dH) / 2.0;
+		double dShift = dBorder;
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			dShift *= 2;
+		dShift += 1;
+		bool bW = dW > dH;
+		double dCX = dW / 2.0, dCY = dH / 2.0;
+		double dC = std::min(dW, dH) / 2.0;
+
 		ECheckBoxStyle nStyle = pAnnot->GetStyle();
 		switch (nStyle)
 		{
-		case ECheckBoxStyle::Check:
-		{
-			break;
-		}
 		case ECheckBoxStyle::Cross:
 		{
+			m_pStream->WriteStr("q\012");
+			StreamWriteRect(m_pStream, dBorder * 2.0, dBorder * 2.0, dW - dBorder * 4.0, dH - dBorder * 4.0);
+			m_pStream->WriteStr("W\012n\0120 G\0121 w\012");
+
+			double x1 = dShift + (bW ? dDiff : 0);
+			double y1 = dShift + (bW ? 0 : dDiff);
+			double x2 = dW - dShift - (bW ? dDiff : 0);
+			double y2 = dH - dShift - (bW ? 0 : dDiff);
+			StreamWriteXYMove(m_pStream, x1, y2);
+			StreamWriteXYLine(m_pStream, x2, y1);
+			StreamWriteXYMove(m_pStream, x2, y2);
+			StreamWriteXYLine(m_pStream, x1, y1);
+
+			m_pStream->WriteStr("s\012Q\012");
 			break;
 		}
 		case ECheckBoxStyle::Diamond:
 		{
+			double dSq = dC - dShift;
+			double ca = cos(45.0 / 180.0 * M_PI);
+
+			m_pStream->WriteStr("0 g\012q\012");
+			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
+			StreamWriteRect(m_pStream, -dSq / 2.0, -dSq / 2.0, dSq / 2.0, dSq / 2.0);
+			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}
+		case ECheckBoxStyle::Check:
 		case ECheckBoxStyle::Circle:
 		{
+			double dR = dC - dShift;
+
 			m_pStream->WriteStr("0 g\012q\012");
 			m_pStream->WriteStr("1 0 0 1 ");
-			m_pStream->WriteReal(dW / 2.0);
+			m_pStream->WriteReal(dCX);
 			m_pStream->WriteChar(' ');
-			m_pStream->WriteReal(dH / 2.0);
+			m_pStream->WriteReal(dCY);
 			m_pStream->WriteStr(" cm\012");
-			StreamWriteCircle(m_pStream, 0, 0, std::min(dW, dH) / 2.0 - dBorder);
+			StreamWriteCircle(m_pStream, 0, 0, dR);
 			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}
 		case ECheckBoxStyle::Star:
 		{
+			double dROuter = dC - dShift;
+			double dRInner = dROuter / 2.5;
+			int nPoints = 5;
+
+			m_pStream->WriteStr("0 g\012q\012");
+			for (int i = 0; i < nPoints * 2; ++i)
+			{
+				double dR = i % 2 == 0 ? dROuter : dRInner;
+				double dAngle = M_PI / nPoints * i;
+				double dX = dCX + dR * std::sin(dAngle);
+				double dY = dCY - dR * std::cos(dAngle);
+				if (i == 0)
+					StreamWriteXYMove(m_pStream, dX, dY);
+				else
+					StreamWriteXYLine(m_pStream, dX, dY);
+			}
+			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}
 		case ECheckBoxStyle::Square:
 		{
+			double dSq = dC - dShift;
+			double x1 = dCX - dSq / 2.0;
+			double y1 = dCY - dSq / 2.0;
+			double x2 = x1 + dSq;
+			double y2 = y1 + dSq;
+
+			m_pStream->WriteStr("0 g\012q\012");
+			StreamWriteRect(m_pStream, x1, y1, x2, y2);
+			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}
 		}

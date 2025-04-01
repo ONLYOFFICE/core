@@ -3245,13 +3245,16 @@ namespace PdfWriter
 		// Установлен
 		if (!bSet)
 			return;
+		double dShift = dBorder / 2.0;
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			dShift *= 2.0;
 		m_pStream->WriteStr("0 g\012q\012");
 		m_pStream->WriteStr("1 0 0 1 ");
 		m_pStream->WriteReal(dCX);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dCY);
 		m_pStream->WriteStr(" cm\012");
-		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dBorder);
+		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dShift);
 		m_pStream->WriteStr("f\012Q\012");
 	}
 	void CAnnotAppearanceObject::DrawCheckBoxSquare(bool bSet, bool bN)

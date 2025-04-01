@@ -1829,6 +1829,7 @@ namespace PdfWriter
 	{
 		m_nSubtype = WidgetCheckbox;
 		m_nStyle = ECheckBoxStyle::Circle;
+		m_pAP = NULL;
 	}
 	void CCheckBoxWidget::SetV(const std::wstring& wsV)
 	{
@@ -1856,34 +1857,41 @@ namespace PdfWriter
 	}
 	void CCheckBoxWidget::SetAP()
 	{
-		if (Get("AP"))
-			return;
-
-		CCheckBoxAnnotAppearance* pAP = new CCheckBoxAnnotAppearance(m_pXref, this, m_sAP_N_Yes.empty() ? NULL : m_sAP_N_Yes.c_str());
-		Add("AP", pAP);
+		if (!m_pAP)
+		{
+			m_pAP = new CCheckBoxAnnotAppearance(m_pXref, this, m_sAP_N_Yes.empty() ? NULL : m_sAP_N_Yes.c_str());
+			Add("AP", m_pAP);
+		}
 
 		if (m_nStyle == ECheckBoxStyle::Circle && m_nSubtype == WidgetRadiobutton)
 		{
-			pAP->GetYesN()->DrawCheckBoxCircle(true, true);
-			pAP->GetOffN()->DrawCheckBoxCircle(false, true);
-			pAP->GetYesD()->DrawCheckBoxCircle(true, false);
-			pAP->GetOffD()->DrawCheckBoxCircle(false, false);
+			m_pAP->GetYesN()->DrawCheckBoxCircle(true, true);
+			m_pAP->GetOffN()->DrawCheckBoxCircle(false, true);
+			m_pAP->GetYesD()->DrawCheckBoxCircle(true, false);
+			m_pAP->GetOffD()->DrawCheckBoxCircle(false, false);
 		}
 		else
 		{
-			pAP->GetYesN()->DrawCheckBoxSquare(true, true);
-			pAP->GetOffN()->DrawCheckBoxSquare(false, true);
-			pAP->GetYesD()->DrawCheckBoxSquare(true, false);
-			pAP->GetOffD()->DrawCheckBoxSquare(false, false);
+			m_pAP->GetYesN()->DrawCheckBoxSquare(true, true);
+			m_pAP->GetOffN()->DrawCheckBoxSquare(false, true);
+			m_pAP->GetYesD()->DrawCheckBoxSquare(true, false);
+			m_pAP->GetOffD()->DrawCheckBoxSquare(false, false);
 		}
 	}
-	void CCheckBoxWidget::SwitchAP(const std::string& sV)
+	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{
 		CObjectBase* pAP, *pAPN;
 		Add("AS", "Off");
 		CObjectBase* pObj = GetObjValue("Opt");
 		if (!m_sAP_N_Yes.empty() && pObj && pObj->GetType() == object_type_ARRAY)
 		{
+			if (m_pAP)
+			{
+				CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
+				pDict->Remove(m_sAP_N_Yes);
+				pDict = (CDictObject*)m_pAP->Get("D");
+				pDict->Remove(m_sAP_N_Yes);
+			}
 			CArrayObject* pArr = (CArrayObject*)pObj;
 			for (int i = 0; i < pArr->GetCount(); ++i)
 			{
@@ -1903,9 +1911,25 @@ namespace PdfWriter
 				}
 			}
 			Add("AS", m_sAP_N_Yes.c_str());
+			if (nI >= 0 && m_pAP)
+			{
+				CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
+				pDict->Add(m_sAP_N_Yes, m_pAP->GetYesN());
+				pDict = (CDictObject*)m_pAP->Get("D");
+				pDict->Add(m_sAP_N_Yes, m_pAP->GetYesD());
+			}
 		}
 		else if ((pAP = Get("AP")) && pAP->GetType() == object_type_DICT && (pAPN = ((CDictObject*)pAP)->Get("N")) && pAPN->GetType() == object_type_DICT && ((CDictObject*)pAPN)->Get(sV))
 			Add("AS", sV.c_str());
+		else if (nI >= 0 && m_pAP)
+		{
+			CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
+			pDict->Add(std::to_string(nI), m_pAP->GetYesN());
+			pDict->Remove("Yes");
+			pDict = (CDictObject*)m_pAP->Get("D");
+			pDict->Add(std::to_string(nI), m_pAP->GetYesD());
+			pDict->Remove("Yes");
+		}
 	}
 	void CCheckBoxWidget::SetFlag(const int& nFlag)
 	{

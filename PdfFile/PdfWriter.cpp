@@ -2670,7 +2670,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				{
 					PdfWriter::CCheckBoxWidget* pKid = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pObj);
 					if (pKid)
-						pKid->SwitchAP(sV);
+						pKid->SwitchAP(sV, i);
 				}
 				if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 				{

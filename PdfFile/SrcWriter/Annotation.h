@@ -530,6 +530,7 @@ namespace PdfWriter
 	private:
 		std::string m_sAP_N_Yes;
 		ECheckBoxStyle m_nStyle;
+		CCheckBoxAnnotAppearance* m_pAP;
 
 	public:
 		CCheckBoxWidget(CXref* pXref);
@@ -540,7 +541,7 @@ namespace PdfWriter
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
 		virtual void SetFlag (const int& nFlag);
 		void SetAP();
-		void SwitchAP(const std::string& sV);
+		void SwitchAP(const std::string& sV, int nI = -1);
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{

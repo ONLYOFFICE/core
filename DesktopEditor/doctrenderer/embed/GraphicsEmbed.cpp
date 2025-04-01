@@ -165,9 +165,14 @@ JSSmart<CJSValue> CGraphicsEmbed::create(JSSmart<CJSValue> Native, JSSmart<CJSVa
 		JSSmart<CJSObject> pNativeObject = Native->toObject();
 		CJSEmbedObject* pNativeEmbedObject = pNativeObject->getNative();
 
-		if (m_pInternal->m_pAppImage)
+		if (m_pInternal->m_pAppImage && pNativeEmbedObject)
+		{
 			delete m_pInternal->m_pAppImage;
-		m_pInternal->m_pAppImage = new CGraphicsAppImage();
+			m_pInternal->m_pAppImage = NULL;
+		}
+
+		if (NULL == m_pInternal->m_pAppImage)
+			m_pInternal->m_pAppImage = new CGraphicsAppImage();
 
 		if (pNativeEmbedObject)
 		{

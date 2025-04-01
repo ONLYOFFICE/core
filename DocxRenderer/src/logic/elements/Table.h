@@ -11,7 +11,10 @@
 
 namespace NSDocxRenderer
 {
-	class CTable : public CBaseItem, IOoxmlItem
+	class CGraphicalCell;
+	class CTextCell;
+
+	class CTable : public CBaseItem, public IOoxmlItem
 	{
 	public:
 		class CCell;
@@ -20,6 +23,9 @@ namespace NSDocxRenderer
 		using cell_ptr_t = std::shared_ptr<CCell>;
 		using row_ptr_t = std::shared_ptr<CRow>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
+
+		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
+		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
 
 	public:
 		class CCell : public CBaseItem, public IOoxmlItem
@@ -59,7 +65,6 @@ namespace NSDocxRenderer
 			unsigned int m_nGridSpan = 1;
 			eVMerge m_eVMerge = CTable::CCell::eVMerge::vmRestart;
 
-		private:
 			std::vector<paragraph_ptr_t> m_arParagraphs;
 		};
 		class CRow : public CBaseItem, IOoxmlItem
@@ -105,6 +110,8 @@ namespace NSDocxRenderer
 	public:
 		void AddTextLine(const std::shared_ptr<CTextLine>& pTextLine);
 		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
+
+		double m_dMaxPossibleBot = std::numeric_limits<double>::max();
 	};
 } // namespace NSDocxRenderer
 

@@ -532,7 +532,10 @@ namespace NSDocxRenderer
 				}
 			}
 			if (only_spaces)
+			{
 				text_lines.erase(text_lines.begin() + i, text_lines.begin() + i + 1);
+				--i;
+			}
 		}
 		return text_lines;
 	}
@@ -600,7 +603,7 @@ namespace NSDocxRenderer
 					else
 						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBot;
 
-					output_objects.push_back(std::static_pointer_cast<IOoxmlItem>(p));
+					output_objects.push_back(p);
 					prev_p = p.get();
 				}
 				else
@@ -1473,7 +1476,7 @@ namespace NSDocxRenderer
 					ar_is_group_open[j] = false;
 			}
 
-			std::vector<group_text_line_ptr_t> groups_add_later;
+			std::vector<text_line_group_ptr_t> groups_add_later;
 
 			for (size_t i = 0; i < text_lines.size(); ++i)
 			{
@@ -1577,7 +1580,7 @@ namespace NSDocxRenderer
 
 			paragraph->m_dBot = paragraph->m_arTextLines.back()->m_dBot;
 			paragraph->m_dTop = paragraph->m_arTextLines.front()->m_dTop;
-			paragraph->m_dRight = max_right + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+			paragraph->m_dRight = max_right;
 			paragraph->m_dLeft = min_left;
 
 			paragraph->m_dWidth = paragraph->m_dRight - paragraph->m_dLeft;
@@ -1912,17 +1915,211 @@ namespace NSDocxRenderer
 		return ar_paragraphs;
 	}
 
-	std::vector<CPage::table_ptr_t> CPage::BuildTables()
+	std::vector<std::vector<CTable::cell_ptr_t>> CPage::BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells)
+	{
+		std::vector<std::vector<CTable::cell_ptr_t>> cell_groups;
+		std::vector<CTable::cell_ptr_t> curr_group = {arCells[0]};
+
+		double curr_bot = arCells[0]->m_dBot;
+		for (size_t i = 1; i < arCells.size(); ++i)
+		{
+			const auto& cell = arCells[i];
+			if (cell->m_dTop - curr_bot < c_dMAX_TABLE_LINE_WIDTH)
+				curr_group.push_back(cell);
+			else
+			{
+				cell_groups.push_back(std::move(curr_group));
+				curr_group.push_back(cell);
+			}
+			curr_bot = cell->m_dBot;
+		}
+		cell_groups.push_back(curr_group);
+		return cell_groups;
+	}
+
+	std::vector<CPage::table_ptr_t> CPage::BuildTables(const std::vector<std::shared_ptr<CTextLineGroup>>& arTextLineGroups)
 	{
 		auto graphical_cells = BuildGraphicalCells();
-		// auto text_cells = BuildTextCells();
-		// MergeGrapgicalTextCells();
-		// ..
+		auto text_cells = BuildTextCells(arTextLineGroups);
+
+		std::vector<CTable::cell_ptr_t> cells;
+		for (const auto& text_cell : text_cells)
+		{
+			auto cell_new = std::make_shared<CTable::CCell>();
+			cell_new->RecalcWithNewItem(text_cell.get());
+			cells.push_back(std::move(cell_new));
+		}
+
+		if (cells.empty())
+			return {};
+
+		auto cell_groups = BuildCellGroups(cells);
+
+		auto add_if_no_exists = [] (double val, std::vector<double>& grid) {
+			bool exists = false;
+			for (const auto& curr : grid)
+			{
+				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH)
+				{
+					exists = true;
+					break;
+				}
+			}
+			if (!exists)
+				grid.push_back(val);
+		};
+
+		auto split_cell_vert = [] (const CTable::cell_ptr_t cell, double y) -> CTable::cell_ptr_t {
+			CTable::cell_ptr_t cell_new = std::make_shared<CTable::CCell>();
+			*cell_new = *cell;
+
+			cell_new->m_dTop = y;
+			cell->m_dBot = y;
+
+			return cell_new;
+		};
+
+		// building a x and y grids
+		for (const auto& group : cell_groups)
+		{
+			std::vector<double> grid_x;
+			std::vector<double> grid_y;
+
+			for (const auto& cell : group)
+			{
+				add_if_no_exists(cell->m_dLeft, grid_x);
+				add_if_no_exists(cell->m_dTop, grid_y);
+			}
+			add_if_no_exists(group.back()->m_dRight, grid_x);
+			add_if_no_exists(group.back()->m_dBot, grid_y);
+
+			std::sort(grid_x.begin(), grid_x.end(), std::less{});
+			std::sort(grid_y.begin(), grid_y.end(), std::less{});
+
+			// GridSpan calc
+			for (auto& cell : group)
+			{
+				size_t first = 0;
+				size_t second = grid_x.size();
+				for (size_t i = 0; i < grid_x.size(); ++i)
+				{
+					if (fabs(grid_x[i] - cell->m_dLeft) < c_dMAX_TABLE_LINE_WIDTH)
+						first = i;
+					else if (fabs(grid_x[i] - cell->m_dRight) < c_dMAX_TABLE_LINE_WIDTH)
+						second = i;
+				}
+				cell->m_nGridSpan = second - first;
+			}
+
+			// merge vert calc
+			for (auto& cell : group)
+			{
+				size_t first = 0;
+				size_t second = grid_y.size();
+				for (size_t i = 0; i < grid_y.size(); ++i)
+				{
+					if (fabs(grid_y[i] - cell->m_dTop) < c_dMAX_TABLE_LINE_WIDTH)
+						first = i;
+					else if (fabs(grid_y[i] - cell->m_dBot) < c_dMAX_TABLE_LINE_WIDTH)
+						second = i;
+				}
+				while (++first < second)
+				{
+					auto cell_new = split_cell_vert(cell, grid_y[first]);
+					cell_new->m_eVMerge = CTable::CCell::eVMerge::vmContinue;
+					cells.push_back(cell_new);
+				}
+			}
+		}
+
+		std::sort(cells.begin(), cells.end(), [] (const CTable::cell_ptr_t& c1, const CTable::cell_ptr_t& c2) {
+			if (fabs(c1->m_dBot - c2->m_dBot) < c_dMAX_TABLE_LINE_WIDTH)
+				return c1->m_dLeft < c2->m_dLeft;
+			return c1->m_dBot < c2->m_dBot;
+		});
+
+		// sets paragraphs into cells
+		for (auto& cell : cells)
+			for (auto& paragraph : m_arParagraphs)
+			{
+				if (!paragraph)
+					continue;
+
+				bool top = fabs(cell->m_dTop - paragraph->m_arTextLines.front()->m_dTopWithMaxAscent) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_arTextLines.front()->m_dTopWithMaxAscent > cell->m_dTop;
+				bool bot = fabs(cell->m_dBot - paragraph->m_dBot) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dBot < cell->m_dBot;
+				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dLeft > cell->m_dLeft;
+				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM
+				        || paragraph->m_dRight < cell->m_dRight;
+				if (top && bot && left && right)
+				{
+					paragraph->m_dLeftBorder = paragraph->m_dLeft - cell->m_dLeft;
+					paragraph->m_dRightBorder = 0;
+					if (!cell->m_arParagraphs.empty())
+						paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_arParagraphs.back()->m_dBot;
+					else if (paragraph->m_dTop - cell->m_dTop > 0)
+						paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_dTop;
+					else
+						paragraph->m_dSpaceBefore = 0;
+					paragraph->m_dSpaceAfter = 0;
+					cell->AddParagraph(paragraph);
+					paragraph = nullptr;
+				}
+			}
+
+		auto right = MoveNullptr(m_arParagraphs.begin(), m_arParagraphs.end());
+		m_arParagraphs.erase(right, m_arParagraphs.end());
+
+		std::sort(m_arParagraphs.begin(), m_arParagraphs.end(), [] (const paragraph_ptr_t& p1, const paragraph_ptr_t& p2) {
+			return p1->m_dBot < p2->m_dBot;
+		});
+
+		std::vector<CTable::row_ptr_t> rows;
+		CTable::row_ptr_t curr_row = nullptr;
+		for (auto& cell : cells)
+		{
+			if (!curr_row)
+			{
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			else if (fabs(curr_row->m_dBot - cell->m_dBot) > c_dMAX_TABLE_LINE_WIDTH)
+			{
+				rows.push_back(std::move(curr_row));
+				curr_row = std::make_shared<CTable::CRow>();
+			}
+			curr_row->AddCell(cell);
+		}
+		if (!curr_row->IsEmpty())
+			rows.push_back(std::move(curr_row));
+
 		std::vector<table_ptr_t> tables;
+		table_ptr_t curr_table = nullptr;
+		for (const auto& row : rows)
+		{
+			if (!curr_table)
+			{
+				curr_table = std::make_shared<CTable>();
+			}
+			else if (fabs(curr_table->m_dBot - row->m_dTop) > c_dMAX_TABLE_LINE_WIDTH)
+			{
+				tables.push_back(std::move(curr_table));
+				curr_table = std::make_shared<CTable>();
+			}
+			curr_table->AddRow(row);
+		}
+		if (!curr_table->IsEmpty())
+			tables.push_back(std::move(curr_table));
+
+
+		for (auto& t : tables)
+			t->CalcGridCols();
+
 		return tables;
 	}
 
-	std::vector<CPage::graphical_cell_ptr> CPage::BuildGraphicalCells()
+	std::vector<CTable::graphical_cell_ptr_t> CPage::BuildGraphicalCells()
 	{
 		struct Crossing;
 		struct Line;
@@ -2199,7 +2396,7 @@ namespace NSDocxRenderer
 			return c1->p.y < c2->p.y;
 		});
 
-		std::vector<graphical_cell_ptr> graphical_cells;
+		std::vector<CTable::graphical_cell_ptr_t> graphical_cells;
 		std::map<size_t, bool> remove_later;
 		for (size_t i = 0; i < crossings.size(); ++i)
 		{
@@ -2251,6 +2448,34 @@ namespace NSDocxRenderer
 		return graphical_cells;
 	}
 
+	std::vector<CTable::text_cell_ptr_t> CPage::BuildTextCells(const std::vector<text_line_group_ptr_t>& arTextLineGroups)
+	{
+		std::vector<CTable::text_cell_ptr_t> text_cells;
+
+		// -> <-
+		for (const auto& text_line_group : arTextLineGroups)
+		{
+			auto text_cell_new = std::make_shared<CTextCell>();
+			text_cell_new->RecalcWithNewItem(text_line_group.get());
+			text_cells.push_back(std::move(text_cell_new));
+		}
+
+		// calc max gaps between groups vertically
+		for (size_t i = 0; i < text_cells.size(); ++i)
+		{
+			for (size_t j = 0; j < text_cells.size(); ++j)
+			{
+				if (i == j)
+					continue;
+
+				if (!(text_cells[j]->m_dLeft > text_cells[i]->m_dRight &&
+				      text_cells[j]->m_dRight < text_cells[i]->m_dLeft))
+					text_cells[i]->m_dMaxPossibleBot = std::min(text_cells[i]->m_dMaxPossibleBot, text_cells[j]->m_dTop);
+			}
+		}
+		return text_cells;
+	}
+
 	CPage::shape_ptr_t CPage::CreateSingleLineShape(text_line_ptr_t& pLine)
 	{
 		auto pParagraph = std::make_shared<CParagraph>();
@@ -2259,7 +2484,7 @@ namespace NSDocxRenderer
 		pParagraph->m_dLeft = pLine->m_dLeft;
 		pParagraph->m_dTop = pLine->m_dTop;
 		pParagraph->m_dBot = pLine->m_dBot;
-		pParagraph->m_dWidth = pLine->m_dWidth + c_dERROR_OF_PARAGRAPH_BORDERS_MM;
+		pParagraph->m_dWidth = pLine->m_dWidth;
 		pParagraph->m_dHeight = pLine->m_dHeight;
 		pParagraph->m_dRight = pLine->m_dRight;
 		pParagraph->m_dLineHeight = pParagraph->m_dHeight;
@@ -2272,7 +2497,7 @@ namespace NSDocxRenderer
 		}
 
 		auto pShape = std::make_shared<CShape>();
-		pShape->m_arOutputObjects.push_back(std::static_pointer_cast<IOoxmlItem>(pParagraph));
+		pShape->m_arOutputObjects.push_back(pParagraph);
 		pShape->m_eType = CShape::eShapeType::stTextBox;
 
 		pShape->m_dLeft = pParagraph->m_dLeft;
@@ -2309,7 +2534,7 @@ namespace NSDocxRenderer
 
 		pParagraph->m_dSpaceAfter = 0;
 
-		pShape->m_arOutputObjects.push_back(std::static_pointer_cast<IOoxmlItem>(pParagraph));
+		pShape->m_arOutputObjects.push_back(pParagraph);
 		pShape->m_eType = CShape::eShapeType::stTextBox;
 		pShape->m_bIsBehindDoc = false;
 

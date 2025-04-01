@@ -952,6 +952,9 @@ namespace NSDocxRenderer
 			}
 		}
 
+		if (m_pCurrCont)
+			m_arConts.push_back(std::move(m_pCurrCont));
+
 		auto pCont = std::make_shared<CContText>(pFontManager);
 		const auto& oParams = pFontManager->GetFontSelectParams();
 		const auto& oMetrics = pFontManager->GetFontMetrics();
@@ -1015,8 +1018,6 @@ namespace NSDocxRenderer
 		{
 			m_arDiacs.push_back(std::move(pCont));
 		}
-		else
-			m_arConts.push_back(pCont);
 
 		m_pCurrCont = pCont;
 		m_oPrevFont = oFont;

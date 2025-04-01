@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <iterator>
+
 #include <QImage>
 #include <QPixmap>
 #include <QString>
@@ -20,8 +22,8 @@ MainWindow::MainWindow(QWidget *parent)
 	fonts_cache->SetStreams(m_oAppFonts->GetStreams());
 	m_oFontManager->SetOwnerCache(fonts_cache);
 
-	for (const auto& f : *m_oAppFonts->GetList()->GetFonts())
-		ui->comboBox->addItem(QString::fromWCharArray(f->m_wsFontName.c_str()));
+	for (auto it = m_oAppFonts->GetList()->GetFonts()->cbegin(); it != m_oAppFonts->GetList()->GetFonts()->cend(); it++)
+		ui->comboBox->addItem(QString::fromWCharArray((*it)->m_wsFontName.c_str()));
 
 	connect(ui->textEdit,	&QTextEdit::textChanged,		this, &MainWindow::Draw);
 	connect(ui->spinBox,	&QSpinBox::valueChanged,		this, &MainWindow::Draw);
@@ -55,6 +57,9 @@ void MainWindow::Draw()
 	frame.put_Height(height);
 	frame.put_Stride(4 * width);
 
+	renderer->put_Width(100);
+	renderer->put_Height(100);
+
 	renderer->CreateFromBgraFrame(&frame);
 	renderer->SetSwapRGB(false);
 
@@ -70,8 +75,17 @@ void MainWindow::Draw()
 
 	renderer->put_BrushColor1(ui->pushButton->GetColor().rgb());
 
+	auto lines = ui->textEdit->toPlainText().split('\n');
+	double x = 1.0;
+	double y =  (ui->spinBox->value() * 25.4 / 96.0) + 3.0;
+	double scale_y = y;
+
 	renderer->BeginCommand(c_nTextGraphicType);
-	renderer->CommandDrawText(ui->textEdit->toPlainText().toStdWString(), 3.0, 10.0, 0.0, 0.0);
+	for (auto it = lines.cbegin(); it != lines.cend(); it++)
+	{
+		renderer->CommandDrawText((*it).toStdWString(), x, y, 0.0, 0.0);
+		y += scale_y;
+	}
 	renderer->EndCommand(c_nTextGraphicType);
 
 	QImage img = QImage(data, width, height, QImage::Format_RGBA8888, [](void *data){

@@ -3177,7 +3177,7 @@ namespace PdfWriter
 			nBorderType = m_pAnnot->GetBorderType();
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
-		double dH = m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop;
+		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
 		double dCX = dW / 2.0, dCY = dH / 2.0;
 		double dR = std::min(dW, dH) / 2.0;
 
@@ -3201,7 +3201,7 @@ namespace PdfWriter
 		if (nBorderType == EBorderType::Dashed)
 			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
 		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
-		m_pStream->WriteStr("q\012");
+		m_pStream->WriteStr("\012q\012");
 		m_pStream->WriteStr("1 0 0 1 ");
 		m_pStream->WriteReal(dCX);
 		m_pStream->WriteChar(' ');
@@ -3268,9 +3268,10 @@ namespace PdfWriter
 			nBorderType = m_pAnnot->GetBorderType();
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
-		double dH = m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop;
+		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
 
 		// Задний фон
+		m_pStream->WriteStr("q\012");
 		m_pStream->WriteStr(pAnnot->GetBGforAP(!bN && nBorderType != EBorderType::Beveled ? -0.250977 : 0).c_str());
 		m_pStream->WriteStr("\012");
 		StreamWriteRect(m_pStream, 0, 0, dW, dH);
@@ -3297,6 +3298,7 @@ namespace PdfWriter
 				m_pStream->WriteStr(bN ? "0.75293 g" : "1 g");
 			else // Beveled
 				m_pStream->WriteStr(bN ? pAnnot->GetBGforAP(-0.250977).c_str() : "1 g");
+			m_pStream->WriteStr("\012");
 
 			StreamWriteXYMove(m_pStream, dW - dBorder, dH - dBorder);
 			StreamWriteXYLine(m_pStream, dW - dBorder, dBorder);
@@ -3315,6 +3317,7 @@ namespace PdfWriter
 		if (nBorderType == EBorderType::Dashed)
 			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
 		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012");
 
 		if (nBorderType == EBorderType::Underline)
 		{
@@ -3323,7 +3326,7 @@ namespace PdfWriter
 		}
 		else
 			StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
-		m_pStream->WriteStr("s\012");
+		m_pStream->WriteStr("s\012Q\012");
 
 		// Установлен
 		if (!bSet)
@@ -3332,7 +3335,6 @@ namespace PdfWriter
 		double dShift = dBorder;
 		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
 			dShift *= 2;
-		dShift += 1;
 		bool bW = dW > dH;
 		double dCX = dW / 2.0, dCY = dH / 2.0;
 		double dC = std::min(dW, dH) / 2.0;
@@ -3340,16 +3342,39 @@ namespace PdfWriter
 		ECheckBoxStyle nStyle = pAnnot->GetStyle();
 		switch (nStyle)
 		{
+		case ECheckBoxStyle::Check:
+		{
+			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal((bW ? dDiff : 0) + dShift);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal((bW ? 0 : dDiff) + dShift);
+			m_pStream->WriteStr(" cm\012");
+
+			double dScale = (std::min(dW, dH) - dShift * 2.0) / 20.0;
+			StreamWriteXYMove(m_pStream, 5.2381 * dScale, 11.2 * dScale);
+			StreamWriteXYLine(m_pStream, 4 * dScale, 8.2 * dScale);
+			StreamWriteXYLine(m_pStream, 7.71429 * dScale, 4 * dScale);
+			StreamWriteXYCurve(m_pStream, 12.0476 * dScale, 10.6 * dScale, 13.2857 * dScale, 11.8 * dScale, 17 * dScale, 16 * dScale);
+			StreamWriteXYCurve(m_pStream, 14.5238 * dScale, 16 * dScale, 9.77778 * dScale, 11.2 * dScale, 7.71429 * dScale, 8.2 * dScale);
+			StreamWriteXYLine(m_pStream, 5.2381 * dScale, 11.2 * dScale);
+
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
 		case ECheckBoxStyle::Cross:
 		{
+			double dCross = dBorder;
+			if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+				dCross *= 2;
 			m_pStream->WriteStr("q\012");
-			StreamWriteRect(m_pStream, dBorder * 2.0, dBorder * 2.0, dW - dBorder * 4.0, dH - dBorder * 4.0);
+			StreamWriteRect(m_pStream, dCross, dCross, dW - dCross, dH - dCross);
 			m_pStream->WriteStr("W\012n\0120 G\0121 w\012");
 
-			double x1 = dShift + (bW ? dDiff : 0);
-			double y1 = dShift + (bW ? 0 : dDiff);
-			double x2 = dW - dShift - (bW ? dDiff : 0);
-			double y2 = dH - dShift - (bW ? 0 : dDiff);
+			double x1 = dShift + 1 + (bW ? dDiff : 0);
+			double y1 = dShift + 1 + (bW ? 0 : dDiff);
+			double x2 = dW - dShift - 1 - (bW ? dDiff : 0);
+			double y2 = dH - dShift - 1 - (bW ? 0 : dDiff);
 			StreamWriteXYMove(m_pStream, x1, y2);
 			StreamWriteXYLine(m_pStream, x2, y1);
 			StreamWriteXYMove(m_pStream, x2, y2);
@@ -3360,19 +3385,23 @@ namespace PdfWriter
 		}
 		case ECheckBoxStyle::Diamond:
 		{
-			double dSq = dC - dShift;
-			double ca = cos(45.0 / 180.0 * M_PI);
-
+			double dSq = dC - dShift * 2.0 - 1;
 			m_pStream->WriteStr("0 g\012q\012");
-			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
-			StreamWriteRect(m_pStream, -dSq / 2.0, -dSq / 2.0, dSq / 2.0, dSq / 2.0);
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
+			StreamWriteXYMove(m_pStream, -dSq, 0);
+			StreamWriteXYLine(m_pStream, 0, dSq);
+			StreamWriteXYLine(m_pStream, dSq, 0);
+			StreamWriteXYLine(m_pStream, 0, -dSq);
 			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}
-		case ECheckBoxStyle::Check:
 		case ECheckBoxStyle::Circle:
 		{
-			double dR = dC - dShift;
+			double dR = dC - dShift * 2.0 - 1;
 
 			m_pStream->WriteStr("0 g\012q\012");
 			m_pStream->WriteStr("1 0 0 1 ");
@@ -3386,7 +3415,7 @@ namespace PdfWriter
 		}
 		case ECheckBoxStyle::Star:
 		{
-			double dROuter = dC - dShift;
+			double dROuter = dC - dShift * 2.0 - 1;
 			double dRInner = dROuter / 2.5;
 			int nPoints = 5;
 
@@ -3395,8 +3424,8 @@ namespace PdfWriter
 			{
 				double dR = i % 2 == 0 ? dROuter : dRInner;
 				double dAngle = M_PI / nPoints * i;
-				double dX = dCX + dR * std::sin(dAngle);
-				double dY = dCY - dR * std::cos(dAngle);
+				double dX = dCX - dR * std::sin(dAngle);
+				double dY = dCY + dR * std::cos(dAngle);
 				if (i == 0)
 					StreamWriteXYMove(m_pStream, dX, dY);
 				else
@@ -3407,14 +3436,10 @@ namespace PdfWriter
 		}
 		case ECheckBoxStyle::Square:
 		{
-			double dSq = dC - dShift;
-			double x1 = dCX - dSq / 2.0;
-			double y1 = dCY - dSq / 2.0;
-			double x2 = x1 + dSq;
-			double y2 = y1 + dSq;
+			double dSq = std::min(dW, dH) * 2.0 / 3.0 - dShift * 2.0 - 1;
 
 			m_pStream->WriteStr("0 g\012q\012");
-			StreamWriteRect(m_pStream, x1, y1, x2, y2);
+			StreamWriteRect(m_pStream, dCX - dSq / 2.0, dCY - dSq / 2.0, dSq, dSq);
 			m_pStream->WriteStr("f\012Q\012");
 			break;
 		}

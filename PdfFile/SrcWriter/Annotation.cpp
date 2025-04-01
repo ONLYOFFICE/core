@@ -95,7 +95,8 @@ namespace PdfWriter
 	std::string AddLE(const BYTE& nLE)
 	{
 		std::string sValue;
-		switch (nLE)
+		ELineEndType eLE = ELineEndType(nLE);
+		switch (eLE)
 		{
 		case ELineEndType::Square:       sValue = "Square";       break;
 		case ELineEndType::Circle:       sValue = "Circle";       break;
@@ -704,7 +705,8 @@ namespace PdfWriter
 	void CLineAnnotation::SetIT(BYTE nIT)
 	{
 		std::string sValue;
-		switch (nIT)
+		ELineIntentType eIT = ELineIntentType(nIT);
+		switch (eIT)
 		{
 		case ELineIntentType::LineDimension: sValue = "LineDimension"; break;
 		case ELineIntentType::LineArrow:     sValue = "LineArrow";     break;
@@ -719,7 +721,8 @@ namespace PdfWriter
 			return;
 
 		std::string sValue;
-		switch (nCP)
+		ECaptionPositioning eCP = ECaptionPositioning(nCP);
+		switch (eCP)
 		{
 		case ECaptionPositioning::Inline: sValue = "Inline"; break;
 		case ECaptionPositioning::Top:    sValue = "Top";    break;

@@ -76,6 +76,29 @@ void CFColor::load(CFRecord& record)
 	record >> numTint;
 }
 
+void CFColor::save(CFRecord& record)
+{
+    record << xclrType;
+    switch(xclrType.type)
+    {
+        case XColorType::XCLRINDEXED:
+            record << icv;
+            break;
+        case XColorType::XCLRRGB:
+            record << rgb;
+            break;
+        case XColorType::XCLRTHEMED:
+            record << theme;
+            break;
+        case XColorType::XCLRNINCHED:
+        case XColorType::XCLRAUTO:
+            record.reserveNunBytes(4); // ignored
+            break;
+        default:
+            break;
+    }
+    record << numTint;
+}
 
 } // namespace XLS
 

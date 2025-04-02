@@ -123,6 +123,7 @@ namespace StarMathCustomShape
 		void ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring& wsName = L"") override;
 		static bool CheckArithmeticOperators(const std::wstring& wsElement);
 		bool ComparisonSign(const std::wstring& wsSign);
+		bool ComparisonSign(CElement* pElement);
 		bool ComparingPriorities(const std::wstring& wsSign);
 		void SetFirstValue(CElement* pElement);
 		static TypeElement SetTypeSign(const std::wstring& wsSign);

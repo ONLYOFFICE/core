@@ -165,6 +165,11 @@ namespace StarMathCustomShape
 			m_pSecondValue = pElement;
 			pElement = nullptr;
 		}
+		else if(pElement->GetBaseType() == TypeElement::ArithmeticOperation && ComparisonSign(pElement))
+		{
+			m_pSecondSign = pElement;
+			pElement = nullptr;
+		}
 		else if(ComparingPriorities(pReader->GetElement()))
 		{
 			CElement* pTempElement = SMCustomShapePars::ParseElement(pReader);
@@ -172,6 +177,7 @@ namespace StarMathCustomShape
 			{
 				CElementArithmeticOperations* pTempArithOp = dynamic_cast<CElementArithmeticOperations*>(pTempElement);
 				pTempArithOp->SetFirstValue(pElement);
+				pElement = nullptr;
 				m_pSecondValue = pTempArithOp;
 			}
 			else
@@ -221,6 +227,10 @@ namespace StarMathCustomShape
 				pXmlWriter->WriteString(wsNameValueSecondSign + L" ");
 			else if(pTemp->GetSecondValue() != nullptr)
 				pTemp->GetSecondValue()->ConversionOOXml(pXmlWriter);
+			else if(pTemp->GetTypeSign() == TypeElement::division)
+				pXmlWriter->WriteString(L"1 ");
+			else
+				pXmlWriter->WriteString(L"0 ");
 			pXmlWriter->WriteString(L"\"");
 			pXmlWriter->WriteNodeEnd(L"",true,true);
 		}
@@ -298,6 +308,18 @@ namespace StarMathCustomShape
 	{
 		return((m_enTypeSign == TypeElement::multiplication && wsSign == L"/") || (m_enTypeSign == TypeElement::plus && wsSign == L"-"));
 	}
+	bool CElementArithmeticOperations::ComparisonSign(CElement *pElement)
+	{
+		if(pElement == nullptr)
+			return false;
+		if(pElement->GetBaseType() == TypeElement::ArithmeticOperation)
+		{
+			CElementArithmeticOperations* pSign = dynamic_cast<CElementArithmeticOperations*>(pElement);
+			return((m_enTypeSign == TypeElement::plus && pSign->GetTypeSign() == TypeElement::minus) || (m_enTypeSign == TypeElement::multiplication && pSign->GetTypeSign() == TypeElement::division));
+		}
+		else
+			return false;
+	}
 	bool CElementArithmeticOperations::ComparingPriorities(const std::wstring& wsSign)
 	{
 		return ((m_enTypeSign == TypeElement::plus || m_enTypeSign == TypeElement::minus) && (wsSign == L"/" || wsSign == L"*"));
@@ -368,13 +390,15 @@ namespace StarMathCustomShape
 			pXmlWriter->WriteString(wsNameFirst + L" ");
 		else if(m_pFirstValue != nullptr)
 			m_pFirstValue->ConversionOOXml(pXmlWriter);
-		else
-			pXmlWriter->WriteString(L"1 ");
+		else 
+			pXmlWriter->WriteString(L"0 ");
 		if(!wsNameSecond.empty())
 			pXmlWriter->WriteString(wsNameSecond + L" ");
 		else if(m_pSecondValue != nullptr)
 			m_pSecondValue->ConversionOOXml(pXmlWriter);
-		else 
+		else if(m_enTypeSign == TypeElement::minus)
+			pXmlWriter->WriteString(L"0 ");
+		else
 			pXmlWriter->WriteString(L"1 ");
 	}
 //CSMReader
@@ -562,7 +586,13 @@ namespace StarMathCustomShape
 	void CElementFunction::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
 		if(m_pValue == nullptr)
+		{
+			if(!wsName.empty())
+				SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsName,L"sqrt 0 ");
+			else
+				SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,L"gdTemp",L"sqrt 0 ");
 			return;
+		}
 		if(!wsName.empty())
 			SetNameFormula(wsName);
 		else
@@ -575,20 +605,23 @@ namespace StarMathCustomShape
 			{
 				CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
 				std::vector<CElement*> arVector = pBracket->GetVector();
-				for(unsigned int i = 0;	i	<	arVector.size(); i++)
-				{
-					if(arVector[i]->GetBaseType() == TypeElement::comma)
+				if(!arVector.empty())
+					for(unsigned int i = 0;	i	<	arVector.size(); i++)
 					{
-						if(i - 1 >= 0)
+						if(arVector[i]->GetBaseType() == TypeElement::comma)
 						{
-							ConversionElement(pXmlWriter,arVector[i - 1],wsFormula);
+							if(i - 1 >= 0)
+							{
+								ConversionElement(pXmlWriter,arVector[i - 1],wsFormula);
+							}
+							else
+								wsFormula += L"1 ";
 						}
-						else
-							wsFormula += L"1 ";
+						else if(i + 1 == arVector.size() && arVector[i]->GetBaseType() != TypeElement::comma)
+							ConversionElement(pXmlWriter,arVector[i],wsFormula);
 					}
-					else if(i + 1 == arVector.size() && arVector[i]->GetBaseType() != TypeElement::comma)
-						ConversionElement(pXmlWriter,arVector[i],wsFormula);
-				}
+				else
+					wsFormula += L"0 0 0 ";
 			}
 			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
 			break;
@@ -605,7 +638,10 @@ namespace StarMathCustomShape
 			{
 				CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
 				std::vector<CElement*> arValues = pBracket->GetVector();
-				ConversionElement(pXmlWriter,arValues[0],wsFormula);
+				if(!arValues.empty())
+					ConversionElement(pXmlWriter,arValues[0],wsFormula);
+				else
+					wsFormula += L"0 ";
 			}
 			else
 				ConversionElement(pXmlWriter,m_pValue,wsFormula);
@@ -623,18 +659,21 @@ namespace StarMathCustomShape
 			if(m_pValue->GetBaseType() == TypeElement::Bracket)
 			{
 				CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
-				std::vector<CElement*> pElements = pBracket->GetVector();
-				for(unsigned int i = 0; i < pElements.size();i++)
-				{
-					if(pElements[i]->GetBaseType() == TypeElement::comma)
+				std::vector<CElement*> arElements = pBracket->GetVector();
+				if(!arElements.empty())	
+					for(unsigned int i = 0; i < arElements.size();i++)
 					{
-						if(i - 1 >= 0)
-							ConversionElement(pXmlWriter,pElements[i-1],wsFormula);
-						if(i + 1 <= pElements.size() && pElements[i+1]->GetBaseType() != TypeElement::comma)
-							ConversionElement(pXmlWriter,pElements[i+1],wsFormula);
-						i = pElements.size();
+						if(arElements[i]->GetBaseType() == TypeElement::comma)
+						{
+							if(i - 1 >= 0)
+								ConversionElement(pXmlWriter,arElements[i-1],wsFormula);
+							if(i + 1 <= arElements.size() && arElements[i+1]->GetBaseType() != TypeElement::comma)
+								ConversionElement(pXmlWriter,arElements[i+1],wsFormula);
+							i = arElements.size();
+						}
 					}
-				}
+				else
+					wsFormula += L"0 0 ";
 				SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
 			}
 			break;
@@ -684,7 +723,9 @@ namespace StarMathCustomShape
 		{
 			CElementBracket* pBracket = dynamic_cast<CElementBracket*>(m_pValue);
 			std::vector<CElement*> arVec = pBracket->GetVector();
-			if(arVec[0] != nullptr && arVec[0]->GetBaseType() != TypeElement::comma)
+			if(arVec.empty())
+				wsFormula += L"0 ";
+			else if(arVec[0] != nullptr && arVec[0]->GetBaseType() != TypeElement::comma)
 				ConversionElement(pXmlWriter,arVec[0],wsFormula);
 		}
 		else if(m_pValue->GetBaseType() != TypeElement::comma)

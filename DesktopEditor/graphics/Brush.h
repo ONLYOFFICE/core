@@ -43,6 +43,12 @@
 
 namespace Aggplus
 {
+/**
+ * @abstract CBrush
+ *
+ * Base class for brushes (by default a solid brush
+ * is created).
+ */
 class CBrush
 {
 	friend class CGraphics;
@@ -60,6 +66,12 @@ public:
 	BrushType m_bType = BrushTypeSolidColor;
 };
 
+/**
+ * @class CBrushSolid
+ *
+ * A single-color brush used to draw text, graphic paths,
+ * and fills with a single color.
+ */
 class CBrushSolid : public CBrush
 {
 public:
@@ -76,6 +88,12 @@ protected:
 	CColor m_dwColor{};
 };
 
+/**
+ * @class CBrushHatch
+ *
+ * A two-color brush used to fill graphic paths using
+ * one of the hatch patterns
+ */
 class CBrushHatch : public CBrush
 {
 public:
@@ -98,6 +116,13 @@ public:
 	CBrushHatch& operator=(const CBrushHatch& other);
 	CBrushHatch& operator=(CBrushHatch&& other) noexcept;
 protected:
+	/**
+	 * @brief m_wsName - hatch brush pattern name
+	 *   (as default - cross)
+	 *
+	 * See all patterns in agg_span_hatch.h, array -
+	 * c_resource_hatches_names.
+	 */
 	std::wstring	m_wsName;
 	CColor			m_dwColor1{};
 	CColor			m_dwColor2{};
@@ -105,7 +130,13 @@ protected:
 	CDoubleRect		m_oBounds{};
 };
 
-
+/**
+ * @class CBrushLinearGradient
+ *
+ * brush for drawing gradients, stores information about the gradient.
+ * According to the pdf documentation, it stores the start and end point
+ * and color, as well as the linear interpolation of the colors.
+ */
 class CBrushLinearGradient : public CBrush
 {
 	friend class CGraphics;
@@ -120,6 +151,7 @@ public:
 	CBrushLinearGradient(const Rect& rect, const CColor& c1, const CColor& c2, Aggplus::LinearGradientMode mode);
 	CBrushLinearGradient(const CBrushLinearGradient& other);
 	CBrushLinearGradient(CBrushLinearGradient&& other) noexcept;
+	virtual ~CBrushLinearGradient();
 
 	Status GetLinearColors(CColor* colors) const;
 	Status GetRectangle(Rect *rect) const;
@@ -174,7 +206,11 @@ protected:
 
 	CDoubleRect m_oBounds{};
 
-	Aggplus::WrapMode m_eWrap = Aggplus::WrapModeTile;
+	/**
+	 * @brief m_eWrapMode - Used to determine the rotation of the image tiles
+	 *   (by default, we do not change the position).
+	 */
+	WrapMode m_eWrap = Aggplus::WrapModeTile;
 
 	/**
 	 * @brief m_bAngleScalable - whether to scale the rotation angle relative
@@ -196,6 +232,11 @@ protected:
 	bool m_bRelativeCoords = false;
 };
 
+/**
+ * @class CBrushTexture
+ *
+ * A texture brush that is used to draw images on the renderer.
+ */
 class CBrushTexture : public CBrush
 {
 	friend class CGraphics;
@@ -239,10 +280,13 @@ protected:
 	CImage* m_pImage{nullptr};
 	bool m_bReleaseImage = false;
 	
+	/**
+	 * @brief m_eWrapMode - Used to determine the rotation of the image tiles
+	 *   (by default, we do not change the position).
+	 */
 	WrapMode m_eWrapMode = WrapModeTile;
-	CMatrix m_Matrix{};
 
-	CColor m_arColors[2];
+	CMatrix m_Matrix{};
 
 	bool m_bUseBounds = false;
 	CDoubleRect m_oBounds{};

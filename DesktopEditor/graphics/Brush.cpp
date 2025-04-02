@@ -305,6 +305,10 @@ CBrushLinearGradient::CBrushLinearGradient(CBrushLinearGradient&& other) noexcep
 	*this = std::move(other);
 }
 
+CBrushLinearGradient::~CBrushLinearGradient()
+{
+}
+
 Status CBrushLinearGradient::GetLinearColors(CColor* colors) const
 {
 	if(!colors)

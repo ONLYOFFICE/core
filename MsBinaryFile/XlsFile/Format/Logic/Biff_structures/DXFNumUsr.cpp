@@ -55,6 +55,17 @@ void DXFNumUsr::load(CFRecord& record)
 	record >> fmt;
 }
 
+void DXFNumUsr::save(CFRecord& record)
+{
+    record.reserveNunBytes(2);
+    record << fmt;
+    cb = record.getRdPtr();
+    record.resetPointerToBegin();
+    record << cb;
+    record.skipNunBytes(cb - 2);
+
+}
+
 
 } // namespace XLS
 

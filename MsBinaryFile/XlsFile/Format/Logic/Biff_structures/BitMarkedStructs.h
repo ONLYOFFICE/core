@@ -258,9 +258,9 @@ private:
 struct DXFNumIFmt
 {
 private:
-	unsigned char unused;
+    unsigned char unused = 0;
 public:
-	unsigned char ifmt;
+    unsigned char ifmt = 0;
 };
 
 struct FFErrorCheck

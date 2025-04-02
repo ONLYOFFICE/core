@@ -57,13 +57,13 @@ void DXFNumUsr::load(CFRecord& record)
 
 void DXFNumUsr::save(CFRecord& record)
 {
+    auto cbPos = record.getRdPtr();
     record.reserveNunBytes(2);
     record << fmt;
-    cb = record.getRdPtr();
-    record.resetPointerToBegin();
+    cb = record.getRdPtr() - cbPos;
+    record.RollRdPtrBack(cb);
     record << cb;
     record.skipNunBytes(cb - 2);
-
 }
 
 

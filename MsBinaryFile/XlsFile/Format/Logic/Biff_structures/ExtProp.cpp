@@ -83,5 +83,45 @@ void ExtProp::load(CFRecord& record)
 	}
 }
 
+void ExtProp::save(CFRecord& record)
+{
+    unsigned short t = extType;
+    record << t << cb;
+    auto dataPos = record.getRdPtr();
+    switch(extType)
+    {
+        case 0x0004:
+        case 0x0005:
+        case 0x0007:
+        case 0x0008:
+        case 0x0009:
+        case 0x000A:
+        case 0x000B:
+        case 0x000C:
+        case 0x000D:
+        {
+            record << extPropData.color;
+        }break;
+        case 0x0006:
+        {
+            record << extPropData.gradient_fill;
+        }break;
+        case 0x000E:
+        {
+            record << extPropData.font_scheme;
+        }break;
+        case 0x000F:
+        {
+            record << extPropData.indent_level;
+        }break;
+        default:
+            break;
+    }
+    cb = record.getRdPtr() - dataPos;
+    record.RollRdPtrBack(cb + 2);
+    cb += 4;
+    record << cb;
+    record.skipNunBytes(cb - 4);
+}
 
 } // namespace XLS

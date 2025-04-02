@@ -60,13 +60,13 @@ public:
 	void serialize_attr(CP_ATTR_NODE);
 	int  deserialize(XmlUtils::CXmlLiteReader& oReader);
 
-	bool	type1;
+    bool	type1 = 0;
 
-	double numDegree;
-	double numFillToLeft;
-	double numFillToRight;
-	double numFillToTop;
-	double numFillToBottom;
+    double numDegree = 0;
+    double numFillToLeft = 0;
+    double numFillToRight = 0;
+    double numFillToTop = 0;
+    double numFillToBottom = 0;
 };
 
 } // namespace XLS

@@ -48,10 +48,11 @@ public:
 	static const ElementType type = typeDXFN12;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	_UINT32			cbDxf;
+    _UINT32			cbDxf = 0;
 	DXFNPtr			dxfn;
 };
 

@@ -75,7 +75,7 @@ namespace NSOpenSSL
 	OPENSSL_DECL unsigned char* GetHash(const unsigned char* data, const unsigned int& size, const int& alg, unsigned int& len);
 
 	// rsa
-	OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey);
+	OPENSSL_DECL bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey, const int keyLen = 2048);
 	OPENSSL_DECL bool RSA_EncryptPublic(const unsigned char* publicKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_crypt, unsigned int& data_crypt_len);
 	OPENSSL_DECL bool RSA_DecryptPrivate(const unsigned char* privateKey, const unsigned char* data, const unsigned int& size, unsigned char*& data_decrypt, unsigned int& data_decrypt_len);
 
@@ -91,8 +91,8 @@ namespace NSOpenSSL
 	OPENSSL_DECL CMemoryData Sign(const unsigned char* data, const int& len, const std::string& privateKey);
 	OPENSSL_DECL bool Verify(const unsigned char* data, const int& data_len, const std::string& publicKey,
 							 const unsigned char* signature, const int& signature_len);
-	OPENSSL_DECL CMemoryData Enrypt(const unsigned char* data, const int& data_len, const std::string& publicKey);
-	OPENSSL_DECL CMemoryData Decrypt(const unsigned char* data, const int& data_len, const std::string& privateKey);
+	OPENSSL_DECL CMemoryData Encrypt(const unsigned char* data, const int& data_len, const std::string& publicKey, const bool& isLenToBuffer = false);
+	OPENSSL_DECL CMemoryData Decrypt(const unsigned char* data, const int& data_len, const std::string& privateKey, const bool& isLenToBuffer = false);
 
 	// aes
 	OPENSSL_DECL int AES_GetKeySize(int type);

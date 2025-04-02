@@ -133,7 +133,7 @@ namespace NSOpenSSL
 	}
 
 	// rsa
-	bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey)
+	bool RSA_GenerateKeys(unsigned char*& publicKey, unsigned char*& privateKey, const int keyLen)
 	{
 		publicKey = NULL;
 		privateKey = NULL;
@@ -142,7 +142,8 @@ namespace NSOpenSSL
 		BIGNUM *exponent = BN_new();
 
 		BN_set_word(exponent, RSA_F4);
-		int result = RSA_generate_multi_prime_key(rsa, 2048, 2, exponent, NULL);
+		int primes = (keyLen < 4096) ? 2 : 4;
+		int result = RSA_generate_multi_prime_key(rsa, keyLen, primes, exponent, NULL);
 		if (0 == result)
 			return false;
 
@@ -370,6 +371,27 @@ namespace NSOpenSSL
 	// new algs
 	bool GenerateKeysByAlgs(const std::string& alg, std::string& publicKey, std::string& privateKey)
 	{
+		int nRsaKeyLen = 0;
+		if ("rsa2048" == alg)
+			nRsaKeyLen = 2048;
+		else if ("rsa4096" == alg)
+			nRsaKeyLen = 4096;
+
+		if (nRsaKeyLen > 0)
+		{
+			unsigned char* publicKeyPtr = NULL;
+			unsigned char* privateKeyPtr = NULL;
+			if (!RSA_GenerateKeys(publicKeyPtr, privateKeyPtr))
+				return false;
+
+			publicKey = std::string((char*)publicKeyPtr);
+			privateKey = std::string((char*)privateKeyPtr);
+
+			openssl_free(publicKeyPtr);
+			openssl_free(privateKeyPtr);
+			return true;
+		}
+
 		EVP_PKEY* pkey = NULL;
 		EVP_PKEY_CTX* pctx = NULL;
 
@@ -453,7 +475,7 @@ namespace NSOpenSSL
 		return (1 == nResult) ? true : false;
 	}
 
-	CMemoryData Enrypt(const unsigned char* data, const int& data_len, const std::string& publicKey)
+	CMemoryData Encrypt(const unsigned char* data, const int& data_len, const std::string& publicKey, const bool& isLenToBuffer)
 	{
 		CMemoryData returnData;
 
@@ -477,8 +499,19 @@ namespace NSOpenSSL
 
 		size_t ciphertextLen = 0;
 		EVP_PKEY_encrypt(ctx, NULL, &ciphertextLen, data, (size_t)data_len);
-		returnData.Alloc(ciphertextLen);
-		EVP_PKEY_encrypt(ctx, returnData.Data, &returnData.Size, data, (size_t)data_len);
+
+		if (isLenToBuffer)
+		{
+			returnData.Alloc(ciphertextLen + 4);
+			EVP_PKEY_encrypt(ctx, returnData.Data + 4, &returnData.Size, data, (size_t)data_len);
+			int nLen = (int)returnData.Size;
+			memcpy(returnData.Data, &nLen, 4);
+		}
+		else
+		{
+			returnData.Alloc(ciphertextLen);
+			EVP_PKEY_encrypt(ctx, returnData.Data, &returnData.Size, data, (size_t)data_len);
+		}
 
 		EVP_PKEY_free(pkey);
 		EVP_PKEY_CTX_free(ctx);
@@ -486,7 +519,7 @@ namespace NSOpenSSL
 		return returnData;
 	}
 
-	CMemoryData Decrypt(const unsigned char* data, const int& data_len, const std::string& privateKey)
+	CMemoryData Decrypt(const unsigned char* data, const int& data_len, const std::string& privateKey, const bool& isLenToBuffer)
 	{
 		CMemoryData returnData;
 
@@ -510,8 +543,19 @@ namespace NSOpenSSL
 
 		size_t ciphertextLen = 0;
 		EVP_PKEY_decrypt(ctx, NULL, &ciphertextLen, data, (size_t)data_len);
-		returnData.Alloc(ciphertextLen);
-		EVP_PKEY_decrypt(ctx, returnData.Data, &returnData.Size, data, (size_t)data_len);
+
+		if (isLenToBuffer)
+		{
+			returnData.Alloc(ciphertextLen + 4);
+			EVP_PKEY_decrypt(ctx, returnData.Data + 4, &returnData.Size, data, (size_t)data_len);
+			int nLen = (int)returnData.Size;
+			memcpy(returnData.Data, &nLen, 4);
+		}
+		else
+		{
+			returnData.Alloc(ciphertextLen);
+			EVP_PKEY_decrypt(ctx, returnData.Data, &returnData.Size, data, (size_t)data_len);
+		}
 
 		EVP_PKEY_free(pkey);
 		EVP_PKEY_CTX_free(ctx);

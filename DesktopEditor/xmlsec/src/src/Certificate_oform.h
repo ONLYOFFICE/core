@@ -72,6 +72,11 @@ public:
 	}
 
 public:
+	bool Sign(unsigned char* pData, unsigned int nSize, unsigned char*& pDataDst, unsigned int& nSizeDst)
+	{
+		return false;
+	}
+
 	std::string Sign(unsigned char* pData, unsigned int nSize)
 	{
 		NSOpenSSL::CMemoryData data = NSOpenSSL::Sign(pData, (int)nSize, m_pem_key);

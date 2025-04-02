@@ -209,7 +209,7 @@ namespace PdfWriter
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
 		CPage*            CreateFakePage();
 		bool              EditCO(const std::vector<int>& arrCO);
-		void              SetParentKids(int nParentID);
+		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
 		void              AddShapeXML(const std::string& sXML);

@@ -1558,11 +1558,11 @@ namespace PdfWriter
 			return p->second;
 		return NULL;
 	}
-	void CDocument::SetParentKids(int nParentID)
+	std::string CDocument::SetParentKids(int nParentID)
 	{
 		CDictObject* pParent = GetParent(nParentID);
 		if (!pParent)
-			return;
+			return "";
 
 		for (auto it = m_mAnnotations.begin(); it != m_mAnnotations.end(); it++)
 		{
@@ -1603,6 +1603,11 @@ namespace PdfWriter
 			if (!bReplase)
 				pKids->Add(pWidget);
 		}
+
+		CObjectBase* pFT = pParent->Get("FT");
+		if (pFT && pFT->GetType() == object_type_NAME)
+			return ((CNameObject*)pFT)->Get();
+		return "";
 	}
 	CPage* CDocument::CreateFakePage()
 	{

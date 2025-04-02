@@ -1854,6 +1854,20 @@ namespace PdfWriter
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
 		m_sAP_N_Yes = sValue;
+
+		if (m_pAP)
+		{
+			CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
+			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesN());
+			pDict->Remove("Yes");
+			pDict = (CDictObject*)m_pAP->Get("D");
+			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesD());
+			pDict->Remove("Yes");
+		}
+	}
+	bool CCheckBoxWidget::NeedAP_N_Yes()
+	{
+		return m_sAP_N_Yes.empty();
 	}
 	void CCheckBoxWidget::SetAP()
 	{
@@ -1877,6 +1891,16 @@ namespace PdfWriter
 			m_pAP->GetYesD()->DrawCheckBoxSquare(true, false);
 			m_pAP->GetOffD()->DrawCheckBoxSquare(false, false);
 		}
+	}
+	std::string CCheckBoxWidget::Yes()
+	{
+		std::string sName = m_sAP_N_Yes.empty() ? "Yes" : m_sAP_N_Yes;
+		Add("AS", sName.c_str());
+		return sName;
+	}
+	void CCheckBoxWidget::Off()
+	{
+		Add("AS", "Off");
 	}
 	void CCheckBoxWidget::SwitchAP(const std::string& sV, int nI)
 	{

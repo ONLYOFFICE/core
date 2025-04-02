@@ -539,9 +539,14 @@ namespace PdfWriter
 		void SetStyle(BYTE nStyle);
 		ECheckBoxStyle GetStyle() { return m_nStyle; }
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
+		std::string GetAP_N_Yes() { return m_sAP_N_Yes; }
+		bool NeedAP_N_Yes();
 		virtual void SetFlag (const int& nFlag);
 		void SetAP();
 		void SwitchAP(const std::string& sV, int nI = -1);
+
+		std::string Yes();
+		void Off();
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{

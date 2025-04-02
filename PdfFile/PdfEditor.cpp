@@ -1288,9 +1288,32 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				}
 			}
 			oParentRef.free();
+			continue;
 		}
 		else if (!strcmp("Opt", chKey))
 			bUnicode = true;
+		else if (!strcmp("AP", chKey) && pAnnot->GetAnnotationType() == PdfWriter::AnnotWidget)
+		{
+			PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pAnnot)->GetWidgetType();
+			if (nType == PdfWriter::WidgetRadiobutton || nType == PdfWriter::WidgetCheckbox)
+			{
+				PdfWriter::CCheckBoxWidget* pCAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pAnnot);
+
+				Object oAP, oN;
+				if (oAnnot.dictGetVal(nIndex, &oAP)->isDict() && oAP.dictLookup("N", &oN)->isDict())
+				{
+					for (int j = 0, nNormLength = oN.dictGetLength(); j < nNormLength; ++j)
+					{
+						std::string sNormName(oN.dictGetKey(j));
+						if (sNormName != "Off")
+						{
+							pCAnnot->SetAP_N_Yes(UTF8_TO_U(sNormName));
+							break;
+						}
+					}
+				}
+			}
+		}
 		Object oTemp;
 		oAnnot.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pAnnot, false, chKey, bUnicode);

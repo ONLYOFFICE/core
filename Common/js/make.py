@@ -10,6 +10,8 @@ import common
 
 base.configure_common_apps()
 
+python_binary = sys.executable
+
 # fetch emsdk
 command_prefix = "" if ("windows" == base.host_platform()) else "./"
 if not base.is_dir("emsdk"):
@@ -141,9 +143,9 @@ for param in argv:
   if json_data["run_before"]:
     base.print_info("before")
     if base.is_file(work_dir + json_data["run_before"]):
-      base.cmd_in_dir(work_dir, "python", [json_data["run_before"]])
+      base.cmd_in_dir(work_dir, python_binary, [json_data["run_before"]])
     else:
-      base.cmd_in_dir(work_dir, "python", ["-c", json_data["run_before"]])
+      base.cmd_in_dir(work_dir, python_binary, ["-c", json_data["run_before"]])
 
   # remove previous version
   common.clear_dir(work_dir + "/o")
@@ -169,6 +171,6 @@ for param in argv:
   if json_data["run_after"]:
     base.print_info("after")
     if base.is_file(work_dir + json_data["run_after"]):
-      base.cmd_in_dir(work_dir, "python", [json_data["run_after"]])
+      base.cmd_in_dir(work_dir, python_binary, [json_data["run_after"]])
     else:
-      base.cmd_in_dir(work_dir, "python", ["-c", json_data["run_after"]])
+      base.cmd_in_dir(work_dir, python_binary, ["-c", json_data["run_after"]])

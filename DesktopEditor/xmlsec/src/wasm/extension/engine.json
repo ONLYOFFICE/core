@@ -15,7 +15,8 @@
 		"-s FILESYSTEM=0",
 		"-s ENVIRONMENT='web'",
 		"-s ASSERTIONS",
-		"-s LLD_REPORT_UNDEFINED"
+		"-s LLD_REPORT_UNDEFINED",
+		"-s TOTAL_MEMORY=4MB"
 	],
 	"exported_functions": [
 		"_malloc",
@@ -29,10 +30,10 @@
 		"_Crypto_Encrypt"
 	],
 	"include_path": [
-		"./../3rdParty/openssl/include", "./../3rdParty/openssl", "emsdk/node/14.15.5_64bit/include/node/openssl/archs/linux-x86_64/no-asm/include"
+		"./../3rdParty/openssl/include", "./../3rdParty/openssl"
 	],
 	"define": [
-		"__linux__", "_LINUX",
+		"__linux__", "_LINUX"
 	],
 	"compile_files_array": [
 	{

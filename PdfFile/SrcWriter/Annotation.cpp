@@ -1853,7 +1853,8 @@ namespace PdfWriter
 	void CCheckBoxWidget::SetAP_N_Yes(const std::wstring& wsAP_N_Yes)
 	{
 		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
-		m_sAP_N_Yes = sValue;
+		if (m_sAP_N_Yes.empty())
+			m_sAP_N_Yes = sValue;
 
 		if (m_pAP)
 		{

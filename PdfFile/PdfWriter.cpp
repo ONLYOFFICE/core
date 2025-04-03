@@ -2386,6 +2386,15 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				// ВНЕШНИЙ ВИД
 				if (!pButtonWidget->Get("AP"))
 					pButtonWidget->SetAP();
+
+				if (nFlags & (1 << 9))
+				{
+					std::wstring sValue = pPrB->GetV();
+					if (sValue != L"Off")
+						pButtonWidget->Yes();
+					else
+						pButtonWidget->Off();
+				}
 			}
 		}
 		else if (oInfo.IsTextWidget())
@@ -2663,15 +2672,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
-		int nIndexName = 0;
 		std::map<std::wstring, std::wstring> mNameAP_N_Yes;
 		if (nFlags & (1 << 6))
 		{
 			PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 			pParentObj->Add("Opt", pArray);
 
-			for (const std::pair<std::wstring, std::wstring>& PV : pParent->arrOpt)
+			for (int i = 0; i < pParent->arrOpt.size(); ++i)
 			{
+				std::pair<std::wstring, std::wstring> PV = pParent->arrOpt[i];
 				std::string sValue;
 				if (PV.first.empty())
 				{
@@ -2679,7 +2688,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					pArray->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
 
 					if (mNameAP_N_Yes.find(PV.second) == mNameAP_N_Yes.end())
-						mNameAP_N_Yes[PV.second] = std::to_wstring(nIndexName++);
+						mNameAP_N_Yes[PV.second] = std::to_wstring(i);
 				}
 				else
 				{
@@ -2690,7 +2699,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					pArray2->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
 
 					if (mNameAP_N_Yes.find(PV.first) == mNameAP_N_Yes.end())
-						mNameAP_N_Yes[PV.first] = std::to_wstring(nIndexName++);
+						mNameAP_N_Yes[PV.first] = std::to_wstring(i);
 
 					sValue = U_TO_UTF8(PV.second);
 					pArray2->Add(new PdfWriter::CStringObject(sValue.c_str(), true));
@@ -2702,6 +2711,10 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			std::string sV = U_TO_UTF8(pParent->sV);
 			if (sFT == "Btn")
 			{
+				int nFf = 0;
+				if (nFlags & (1 << 7))
+					nFf = pParent->nFieldFlag;
+				bool bRadiosInUnison = nFf & (1 << 25);
 				int nOptIndex = -1;
 				if (isdigit(sV[0]))
 					nOptIndex = std::stoi(sV);
@@ -2730,9 +2743,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 						PV = pParent->arrOpt[i];
 						std::wstring sOptI = PV.first.empty() ? PV.second : PV.first;
 						if (pKid->NeedAP_N_Yes())
-							pKid->SetAP_N_Yes(mNameAP_N_Yes[sOptI]);
+							pKid->SetAP_N_Yes((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sOptI] : std::to_wstring(i));
 
-						if (sOptI == sOpt)
+						if (((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) && sOptI == sOpt) || (!bRadiosInUnison && i == nOptIndex))
 							sV = pKid->Yes();
 						else
 							pKid->Off();

@@ -1401,14 +1401,120 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		Object oAnnotRef, oAnnot;
 		if (oAnnots->arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
 		{
-			bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+			bool bNeed = false;
 			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
 			{
-				Object oPopupRef;
-				if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-					pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
-				oPopupRef.free();
+				Object oType;
+				if (oAnnot.dictLookup("Subtype", &oType)->isName("Widget"))
+				{
+					char* sName = NULL;
+					Object oFT;
+					if (oAnnot.dictLookup("FT", &oFT)->isName())
+						sName = oFT.getName();
+
+					if (!sName)
+					{
+						Object oParent, oParent2;
+						oAnnot.dictLookup("Parent", &oParent);
+						while (oParent.isDict())
+						{
+							if (oParent.dictLookup("FT", &oFT)->isName())
+							{
+								sName = oFT.getName();
+								break;
+							}
+							oFT.free();
+							oParent.dictLookup("Parent", &oParent2);
+							oParent.free();
+							oParent = oParent2;
+						}
+						oParent.free();
+					}
+
+					if (sName && strcmp("Btn", sName) == 0)
+					{
+						bool bPushButton = false;
+						oFT.free();
+						int nFf = 0;
+						if (oAnnot.dictLookup("Ff", &oFT)->isInt())
+							nFf = oFT.getInt();
+						if (!nFf)
+						{
+							Object oParent, oParent2;
+							oAnnot.dictLookup("Parent", &oParent);
+							while (oParent.isDict())
+							{
+								if (oParent.dictLookup("Ff", &oFT)->isInt())
+								{
+									nFf = oFT.getInt();
+									break;
+								}
+								oFT.free();
+								oParent.dictLookup("Parent", &oParent2);
+								oParent.free();
+								oParent = oParent2;
+							}
+							oParent.free();
+						}
+
+						bPushButton = (bool)((nFf >> 16) & 1);
+						if (!bPushButton)
+						{
+							oFT.free();
+							bNeed = oAnnot.dictLookup("Opt", &oFT)->isArray();
+							if (!bNeed)
+							{
+								Object oParent, oParent2;
+								oAnnot.dictLookup("Parent", &oParent);
+								while (oParent.isDict())
+								{
+									if (oParent.dictLookup("Opt", &oFT)->isArray())
+									{
+										bNeed = true;
+										break;
+									}
+									oFT.free();
+									oParent.dictLookup("Parent", &oParent2);
+									oParent.free();
+									oParent = oParent2;
+								}
+								oParent.free();
+							}
+							if (bNeed && EditAnnot(m_nEditPage, nID))
+							{
+								PdfWriter::CAnnotation* pAnnot = pDoc->GetAnnot(nID);
+								if (pAnnot)
+								{
+									pAnnot->SetHidden();
+
+									// TODO у родителя убрать аннотацию из Kids и Opt. У всех детей переименовать AP.N.Yes
+
+									Object oPopupRef;
+									if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+									{
+										pAnnot = pDoc->GetAnnot(oPopupRef.getRefNum());
+										if (pAnnot)
+											pAnnot->SetHidden();
+									}
+									oPopupRef.free();
+								}
+							}
+						}
+					}
+					oFT.free();
+				}
+				oType.free();
+
+				if (!bNeed)
+				{
+					Object oPopupRef;
+					if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+						pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+					oPopupRef.free();
+				}
 			}
+			if (!bNeed)
+				bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
 		}
 		else if (oAnnots->arrayGet(i, &oAnnot)->isDict())
 		{

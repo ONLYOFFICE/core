@@ -96,6 +96,17 @@ const bool CONDFMT12::loadContent(BinProcessor& proc)
 	return true;
 
 }
+
+const bool CONDFMT12::saveContent(BinProcessor& proc)
+{
+    if(m_CondFmt12 != nullptr)
+        proc.mandatory(*m_CondFmt12);
+    for(auto i : m_arCF12)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 int CONDFMT12::serialize(std::wostream & stream)
 {
 	if (!m_CondFmt12)			return 0;

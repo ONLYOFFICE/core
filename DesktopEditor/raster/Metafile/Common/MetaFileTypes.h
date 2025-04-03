@@ -34,6 +34,7 @@
 
 #include <string>
 #include <cfloat>
+#include <cmath>
 #include "../../../common/StringExt.h"
 
 #ifndef BYTE

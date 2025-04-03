@@ -109,6 +109,35 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
 	CONFIG += core_win_32
 }
 
+linux-clang-libc++ {
+    CONFIG += core_linux
+	CONFIG += core_linux_64
+	CONFIG += core_linux_clang
+	message("linux-64-clang-libc++")
+}
+linux-clang-libc++-32 {
+    CONFIG += core_linux
+	CONFIG += core_linux_32
+	CONFIG += core_linux_clang
+	message("linux-32-clang-libc++")
+}
+linux-clang {
+	CONFIG += core_linux
+	CONFIG += core_linux_64
+	CONFIG += core_linux_clang
+	message("linux-64-clang")
+}
+linux-clang-32 {
+	CONFIG += core_linux
+	CONFIG += core_linux_32
+	CONFIG += core_linux_clang
+	message("linux-32-clang")
+}
+
+core_linux_clang {
+    CONFIG += c++1z
+}
+
 linux-g++ {
 	CONFIG += core_linux
 linux-g++:contains(QMAKE_HOST.arch, x86_64): {
@@ -246,8 +275,10 @@ core_linux {
 }
 
 core_linux {
+!core_linux_clang {
 	equals(TEMPLATE, app):CONFIG += core_static_link_libstd
 	plugin:CONFIG += core_static_link_libstd
+}
 }
 
 core_win_32 {
@@ -414,7 +445,7 @@ core_windows:CONFIG += no_batch
 message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 
 # COMPILER
-CONFIG += c++11
+# CONFIG += c++11
 
 !core_windows {
 	QMAKE_CXXFLAGS += -Wno-register

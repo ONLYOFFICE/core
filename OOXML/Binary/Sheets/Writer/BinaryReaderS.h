@@ -280,7 +280,7 @@ namespace BinXlsxRW
 		int ReadMdxMemeberProp(BYTE type, long length, void* poResult);
 		int ReadMetadataStringIndex(BYTE type, long length, void* poResult);
 		int ReadDynamicArrayProperties(BYTE type, long length, void* poResult);
-        OOX::Spreadsheet::CXlsb* m_pXlsb;
+        OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{

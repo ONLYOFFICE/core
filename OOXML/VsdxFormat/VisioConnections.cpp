@@ -1250,8 +1250,8 @@ namespace Draw
 	{
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 		pWriter->WriteUInt2(0, RowID);
-		pWriter->WriteUInt2(0, PageID);
-		pWriter->WriteUInt2(0, ShapeID);
+		pWriter->WriteUInt2(1, PageID);
+		pWriter->WriteUInt2(2, ShapeID);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 	}
 	void CRowMap::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

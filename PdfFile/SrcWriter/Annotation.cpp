@@ -1411,45 +1411,6 @@ namespace PdfWriter
 		}
 
 		pAA->Add(pAction->m_sType.c_str(), pAction);
-
-		/*
-		if (pAction->m_sType == "A")
-		{
-			CDictObject* pOwner = GetObjOwnValue(pAction->m_sType);
-			if (!pOwner)
-				pOwner = this;
-
-			pOwner->Add(pAction->m_sType.c_str(), pAction);
-			return;
-		}
-
-		std::string sAA = pAction->m_sType;
-		CDictObject* pAA = NULL;
-		if (m_pParent && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
-			pAA = (CDictObject*)m_pParent->Get("AA");
-		else if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
-		{
-			pAA = (CDictObject*)Get("AA");
-			if (!pAA)
-			{
-				pAA = new CDictObject();
-				Add("AA", pAA);
-			}
-		}
-
-		if (!pAA)
-		{
-			pAA = (CDictObject*)GetObjValue("AA");
-			if (!pAA)
-			{
-				pAA = new CDictObject();
-				Add("AA", pAA);
-			}
-		}
-
-		if (pAA)
-			pAA->Add(sAA.c_str(), pAction);
-		*/
 	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{
@@ -1825,9 +1786,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CCheckBoxWidget
 	//----------------------------------------------------------------------------------------
-	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref) : CWidgetAnnotation(pXref, AnnotWidget)
+	CCheckBoxWidget::CCheckBoxWidget(CXref* pXref, EWidgetType nSubtype) : CWidgetAnnotation(pXref, AnnotWidget)
 	{
-		m_nSubtype = WidgetCheckbox;
+		m_nSubtype = nSubtype;
 		m_nStyle = ECheckBoxStyle::Circle;
 		m_pAP = NULL;
 	}
@@ -1891,12 +1852,28 @@ namespace PdfWriter
 				std::map<std::string, CObjectBase*> mDict = pDictAPN->GetDict();
 				for (std::pair<std::string, CObjectBase*> it : mDict)
 				{
-					if (it.first != "Off")
+					if (it.first != "Off" && it.first != m_sAP_N_Yes)
 					{
 						CObjectBase* pObject = it.second;
-						if (pObject && object_type_PROXY == pObject->GetType())
-							pObject = ((CProxyObject*)pObject)->Get();
-						pDictAPN->Add(m_sAP_N_Yes, pObject);
+						pDictAPN->Add(m_sAP_N_Yes, pObject->Copy());
+						pDictAPN->Remove(it.first);
+						break;
+					}
+				}
+			}
+			pAPN = NULL;
+			if (pAP->GetType() == object_type_DICT)
+				pAPN = ((CDictObject*)pAP)->Get("D");
+			if (pAPN && pAPN->GetType() == object_type_DICT)
+			{
+				CDictObject* pDictAPN = (CDictObject*)pAPN;
+				std::map<std::string, CObjectBase*> mDict = pDictAPN->GetDict();
+				for (std::pair<std::string, CObjectBase*> it : mDict)
+				{
+					if (it.first != "Off" && it.first != m_sAP_N_Yes)
+					{
+						CObjectBase* pObject = it.second;
+						pDictAPN->Add(m_sAP_N_Yes, pObject->Copy());
 						pDictAPN->Remove(it.first);
 						break;
 					}
@@ -2038,12 +2015,18 @@ namespace PdfWriter
 	}
 	bool CTextWidget::IsCombFlag()
 	{
-		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
+		int nFlags = 0;
+		CNumberObject* pFf = (CNumberObject*)GetObjValue("Ff");
+		if (pFf)
+			nFlags = pFf->Get();
 		return (nFlags & (1 << 24));
 	}
 	bool CTextWidget::IsMultiLine()
 	{
-		int nFlags = ((CNumberObject*)GetObjValue("Ff"))->Get();
+		int nFlags = 0;
+		CNumberObject* pFf = (CNumberObject*)GetObjValue("Ff");
+		if (pFf)
+			nFlags = pFf->Get();
 		return (nFlags & (1 << 12));
 	}
 	unsigned int CTextWidget::GetMaxLen()
@@ -2233,7 +2216,8 @@ namespace PdfWriter
 	void CAction::SetType(const std::wstring& wsType)
 	{
 		m_sType = U_TO_UTF8(wsType);
-		Add("S", m_sType.c_str());
+		if (wsType != L"A")
+			Add("S", m_sType.c_str());
 	}
 	void CAction::SetNext(CAction* pNext)
 	{

@@ -3182,15 +3182,31 @@ namespace PdfWriter
 		double dR = std::min(dW, dH) / 2.0;
 
 		// Задний фон
-		m_pStream->WriteStr(pAnnot->GetBGforAP(!bN && nBorderType != EBorderType::Beveled ? -0.250977 : 0).c_str());
-		m_pStream->WriteStr("\012q\012");
-		m_pStream->WriteStr("1 0 0 1 ");
-		m_pStream->WriteReal(dCX);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dCY);
-		m_pStream->WriteStr(" cm\012");
-		StreamWriteCircle(m_pStream, 0, 0, dR);
-		m_pStream->WriteStr("f\012Q\012");
+		std::string sBG;
+		if (!bN && nBorderType != EBorderType::Beveled)
+		{
+			sBG = pAnnot->GetBGforAP();
+			if (sBG == "1 g")
+				sBG = "0.749023 -0.250977 -0.250977 rg";
+			else if (sBG.empty())
+				sBG = "0.749023 g";
+			else
+				sBG = pAnnot->GetBGforAP(-0.250977);
+		}
+		else
+			sBG = pAnnot->GetBGforAP();
+		if (!sBG.empty())
+		{
+			m_pStream->WriteStr(sBG.c_str());
+			m_pStream->WriteStr("\012q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
+			StreamWriteCircle(m_pStream, 0, 0, dR);
+			m_pStream->WriteStr("f\012Q\012");
+		}
 
 		// Граница
 		if (dBorder != 1)

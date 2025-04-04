@@ -533,7 +533,7 @@ namespace PdfWriter
 		CCheckBoxAnnotAppearance* m_pAP;
 
 	public:
-		CCheckBoxWidget(CXref* pXref);
+		CCheckBoxWidget(CXref* pXref, EWidgetType nSubtype = WidgetCheckbox);
 
 		void SetV(const std::wstring& wsV);
 		void SetStyle(BYTE nStyle);

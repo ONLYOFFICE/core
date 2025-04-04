@@ -1218,10 +1218,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				}
 
 				bPushButton = (bool)((nFf >> 16) & 1);
+				bool bRadiobutton = (bool)((nFf >> 15) & 1);
 				if (bPushButton)
 					pAnnot = new PdfWriter::CPushButtonWidget(pXref);
 				else
-					pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+					pAnnot = new PdfWriter::CCheckBoxWidget(pXref, bRadiobutton ? PdfWriter::WidgetRadiobutton : PdfWriter::WidgetCheckbox);
 			}
 			else if (strcmp("Tx", sName) == 0)
 				pAnnot = new PdfWriter::CTextWidget(pXref);
@@ -1510,18 +1511,6 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 									{
 										for (int i = 0; i < pKids->GetCount(); ++i)
 										{
-											pObj = pOpt->Get(i);
-											if (pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
-												pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
-											std::wstring sNameOpt;
-											if (pObj->GetType() == PdfWriter::object_type_STRING)
-											{
-												PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
-												sNameOpt = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pStr->GetString(), pStr->GetLength());
-												if (mNameAP_N_Yes.find(sNameOpt) == mNameAP_N_Yes.end())
-													mNameAP_N_Yes[sNameOpt] = std::to_wstring(i);
-											}
-
 											pObj = pKids->Get(i);
 											if (pObj == pAnnot)
 											{
@@ -1531,14 +1520,27 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 											}
 											else
 											{
+												pObj = pOpt->Get(i);
+												if (pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
+													pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
+												std::wstring sNameOpt;
+												if (pObj->GetType() == PdfWriter::object_type_STRING)
+												{
+													PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
+													sNameOpt = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pStr->GetString(), pStr->GetLength());
+													if (mNameAP_N_Yes.find(sNameOpt) == mNameAP_N_Yes.end())
+														mNameAP_N_Yes[sNameOpt] = std::to_wstring(i);
+												}
+												pObj = pKids->Get(i);
 												Object oAnnot, oSubtype, oPageRef;
-												if (xref->fetch(pObj->GetObjId(), pObj->GetGenNo(), &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Sybtype", &oSubtype)->isName("Widget") &&
+												if (xref->fetch(pObj->GetObjId(), pObj->GetGenNo(), &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Widget") &&
 													oAnnot.dictLookupNF("P", &oPageRef)->isRef())
 												{
-													int nPage = pPDFDocument->findPage(oPageRef.getRefNum(), oPageRef.getRefGen());
+													int nPage = pPDFDocument->findPage(oPageRef.getRefNum(), oPageRef.getRefGen()) - 1;
 													PdfWriter::CCheckBoxWidget* pKidAnnot = NULL;
-													if (nPage > 0 && EditAnnot(nPage, pObj->GetObjId()))
-														pKidAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pDoc->GetAnnot(pObj->GetObjId()));
+													int nObjId = pObj->GetObjId();
+													if (nPage >= 0 && EditAnnot(nPage, nObjId))
+														pKidAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pDoc->GetAnnot(nObjId));
 													if (pKidAnnot && !sNameOpt.empty())
 														pKidAnnot->RenameAP_N_Yes((bRadiosInUnison || pKidAnnot->GetWidgetType() == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sNameOpt] : std::to_wstring(i));
 												}

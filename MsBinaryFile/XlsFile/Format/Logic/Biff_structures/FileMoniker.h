@@ -49,15 +49,16 @@ public:
 	static const XLS::ElementType	type = XLS::typeFileMoniker;
 
 	virtual void load(XLS::CFRecord& record);
+    virtual void save(XLS::CFRecord& record);
 
 
-	_UINT16			cAnti;
-	std::string		ansiPath;
-	_UINT16			endServer;
-	_UINT16			versionNumber;
-	_UINT32			cbUnicodePathSize;
-	_UINT16			usKeyValue;
-	std::wstring	unicodePath;
+    _UINT16			cAnti = 0;
+    std::string		ansiPath = "";
+    _UINT16			endServer = 0;
+    _UINT16			versionNumber = 0;
+    _UINT32			cbUnicodePathSize = 0;
+    _UINT16			usKeyValue = 3;
+    std::wstring	unicodePath = L"";
 };
 
 } // namespace OSHARED

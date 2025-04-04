@@ -131,6 +131,16 @@ void HyperlinkMoniker::load(XLS::CFRecord& record)
 	}
 }
 
+void HyperlinkMoniker::save(XLS::CFRecord& record)
+{
+    _GUID_ clsid(0, 0, 0, 0);
+    STR::bstr2guid(monikerClsid, clsid);
+    record << clsid;
+    if (data)
+    {
+        data->save(record);
+    }
+}
 
 } // namespace OSHARED
 

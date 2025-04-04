@@ -2714,7 +2714,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				int nFf = 0;
 				if (nFlags & (1 << 7))
 					nFf = pParent->nFieldFlag;
-				bool bRadiosInUnison = nFf & (1 << 25);
+				bool bRadiosInUnison = (bool)(nFf & (1 << 25));
 				int nOptIndex = -1;
 				if (isdigit(sV[0]))
 					nOptIndex = std::stoi(sV);

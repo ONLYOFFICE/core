@@ -1866,6 +1866,44 @@ namespace PdfWriter
 			pDict->Remove("Yes");
 		}
 	}
+	void CCheckBoxWidget::RenameAP_N_Yes(const std::wstring& wsAP_N_Yes)
+	{
+		std::string sValue = U_TO_UTF8(wsAP_N_Yes);
+		m_sAP_N_Yes = sValue;
+		if (m_pAP)
+		{
+			CDictObject* pDict = (CDictObject*)m_pAP->Get("N");
+			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesN());
+			pDict->Remove("Yes");
+			pDict = (CDictObject*)m_pAP->Get("D");
+			pDict->Add(m_sAP_N_Yes, m_pAP->GetYesD());
+			pDict->Remove("Yes");
+		}
+		else
+		{
+			CObjectBase* pAPN = NULL;
+			CObjectBase* pAP = Get("AP");
+			if (pAP->GetType() == object_type_DICT)
+				pAPN = ((CDictObject*)pAP)->Get("N");
+			if (pAPN && pAPN->GetType() == object_type_DICT)
+			{
+				CDictObject* pDictAPN = (CDictObject*)pAPN;
+				std::map<std::string, CObjectBase*> mDict = pDictAPN->GetDict();
+				for (std::pair<std::string, CObjectBase*> it : mDict)
+				{
+					if (it.first != "Off")
+					{
+						CObjectBase* pObject = it.second;
+						if (pObject && object_type_PROXY == pObject->GetType())
+							pObject = ((CProxyObject*)pObject)->Get();
+						pDictAPN->Add(m_sAP_N_Yes, pObject);
+						pDictAPN->Remove(it.first);
+						break;
+					}
+				}
+			}
+		}
+	}
 	bool CCheckBoxWidget::NeedAP_N_Yes()
 	{
 		return m_sAP_N_Yes.empty();

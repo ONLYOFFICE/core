@@ -396,7 +396,7 @@ namespace StarMathCustomShape
 			pXmlWriter->WriteString(wsNameSecond + L" ");
 		else if(m_pSecondValue != nullptr)
 			m_pSecondValue->ConversionOOXml(pXmlWriter);
-		else if(m_enTypeSign == TypeElement::minus)
+		else if(m_enTypeSign == TypeElement::minus || m_pSecondSign != nullptr)
 			pXmlWriter->WriteString(L"0 ");
 		else
 			pXmlWriter->WriteString(L"1 ");

@@ -1087,6 +1087,9 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 	if (!pPDFDocument || !pDoc)
 		return false;
 
+	if (pDoc->GetAnnot(nID))
+		return true;
+
 	XRef* xref = pPDFDocument->getXRef();
 	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
 	if (!xref || pPageRef.first == 0)
@@ -1215,10 +1218,11 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				}
 
 				bPushButton = (bool)((nFf >> 16) & 1);
+				bool bRadiobutton = (bool)((nFf >> 15) & 1);
 				if (bPushButton)
 					pAnnot = new PdfWriter::CPushButtonWidget(pXref);
 				else
-					pAnnot = new PdfWriter::CCheckBoxWidget(pXref);
+					pAnnot = new PdfWriter::CCheckBoxWidget(pXref, bRadiobutton ? PdfWriter::WidgetRadiobutton : PdfWriter::WidgetCheckbox);
 			}
 			else if (strcmp("Tx", sName) == 0)
 				pAnnot = new PdfWriter::CTextWidget(pXref);
@@ -1288,9 +1292,32 @@ bool CPdfEditor::EditAnnot(int nPageIndex, int nID)
 				}
 			}
 			oParentRef.free();
+			continue;
 		}
 		else if (!strcmp("Opt", chKey))
 			bUnicode = true;
+		else if (!strcmp("AP", chKey) && pAnnot->GetAnnotationType() == PdfWriter::AnnotWidget)
+		{
+			PdfWriter::EWidgetType nType = ((PdfWriter::CWidgetAnnotation*)pAnnot)->GetWidgetType();
+			if (nType == PdfWriter::WidgetRadiobutton || nType == PdfWriter::WidgetCheckbox)
+			{
+				PdfWriter::CCheckBoxWidget* pCAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pAnnot);
+
+				Object oAP, oN;
+				if (oAnnot.dictGetVal(nIndex, &oAP)->isDict() && oAP.dictLookup("N", &oN)->isDict())
+				{
+					for (int j = 0, nNormLength = oN.dictGetLength(); j < nNormLength; ++j)
+					{
+						std::string sNormName(oN.dictGetKey(j));
+						if (sNormName != "Off")
+						{
+							pCAnnot->SetAP_N_Yes(UTF8_TO_U(sNormName));
+							break;
+						}
+					}
+				}
+			}
+		}
 		Object oTemp;
 		oAnnot.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pAnnot, false, chKey, bUnicode);
@@ -1378,14 +1405,176 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		Object oAnnotRef, oAnnot;
 		if (oAnnots->arrayGetNF(i, &oAnnotRef)->isRef() && oAnnotRef.getRefNum() == nID)
 		{
-			bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
+			bool bNeed = false;
 			if (oAnnotRef.fetch(xref, &oAnnot)->isDict())
 			{
-				Object oPopupRef;
-				if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
-					pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
-				oPopupRef.free();
+				Object oType;
+				if (oAnnot.dictLookup("Subtype", &oType)->isName("Widget"))
+				{
+					char* sName = NULL;
+					Object oFT;
+					if (oAnnot.dictLookup("FT", &oFT)->isName())
+						sName = oFT.getName();
+
+					if (!sName)
+					{
+						Object oParent, oParent2;
+						oAnnot.dictLookup("Parent", &oParent);
+						while (oParent.isDict())
+						{
+							if (oParent.dictLookup("FT", &oFT)->isName())
+							{
+								sName = oFT.getName();
+								break;
+							}
+							oFT.free();
+							oParent.dictLookup("Parent", &oParent2);
+							oParent.free();
+							oParent = oParent2;
+						}
+						oParent.free();
+					}
+
+					if (sName && strcmp("Btn", sName) == 0)
+					{
+						bool bPushButton = false;
+						oFT.free();
+						int nFf = 0;
+						if (oAnnot.dictLookup("Ff", &oFT)->isInt())
+							nFf = oFT.getInt();
+						if (!nFf)
+						{
+							Object oParent, oParent2;
+							oAnnot.dictLookup("Parent", &oParent);
+							while (oParent.isDict())
+							{
+								if (oParent.dictLookup("Ff", &oFT)->isInt())
+								{
+									nFf = oFT.getInt();
+									break;
+								}
+								oFT.free();
+								oParent.dictLookup("Parent", &oParent2);
+								oParent.free();
+								oParent = oParent2;
+							}
+							oParent.free();
+						}
+
+						bPushButton = (bool)((nFf >> 16) & 1);
+						bool bRadiosInUnison = (bool)(nFf & (1 << 25));
+						if (!bPushButton)
+						{
+							oFT.free();
+							bNeed = oAnnot.dictLookup("Opt", &oFT)->isArray() == gTrue;
+							if (!bNeed)
+							{
+								Object oParent, oParent2;
+								oAnnot.dictLookup("Parent", &oParent);
+								while (oParent.isDict())
+								{
+									if (oParent.dictLookup("Opt", &oFT)->isArray())
+									{
+										bNeed = true;
+										break;
+									}
+									oFT.free();
+									oParent.dictLookup("Parent", &oParent2);
+									oParent.free();
+									oParent = oParent2;
+								}
+								oParent.free();
+							}
+							if (bNeed && EditAnnot(m_nEditPage, nID))
+							{
+								PdfWriter::CAnnotation* pAnnot = pDoc->GetAnnot(nID);
+								if (pAnnot)
+								{
+									pAnnot->SetHidden();
+
+									PdfWriter::CObjectBase* pObj = pAnnot->Get("Parent");
+									PdfWriter::CDictObject* pParent = NULL;
+									if (pObj && pObj->GetType() == PdfWriter::object_type_DICT)
+										pParent = (PdfWriter::CDictObject*)pObj;
+									PdfWriter::CArrayObject* pOpt = NULL, *pKids = NULL;
+									if (pParent)
+									{
+										pObj = pParent->Get("Kids");
+										if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
+											pKids = (PdfWriter::CArrayObject*)pObj;
+										pObj = pParent->Get("Opt");
+										if (pObj && pObj->GetType() == PdfWriter::object_type_ARRAY)
+											pOpt = (PdfWriter::CArrayObject*)pObj;
+									}
+									std::map<std::wstring, std::wstring> mNameAP_N_Yes;
+									if (pKids && pOpt && pKids->GetCount() == pOpt->GetCount())
+									{
+										for (int i = 0; i < pKids->GetCount(); ++i)
+										{
+											pObj = pKids->Get(i);
+											if (pObj == pAnnot)
+											{
+												pKids->Remove(i);
+												pOpt->Remove(i);
+												--i;
+											}
+											else
+											{
+												pObj = pOpt->Get(i);
+												if (pObj->GetType() == PdfWriter::object_type_ARRAY && ((PdfWriter::CArrayObject*)pObj)->GetCount() > 0)
+													pObj = ((PdfWriter::CArrayObject*)pObj)->Get(0);
+												std::wstring sNameOpt;
+												if (pObj->GetType() == PdfWriter::object_type_STRING)
+												{
+													PdfWriter::CStringObject* pStr = (PdfWriter::CStringObject*)pObj;
+													sNameOpt = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pStr->GetString(), pStr->GetLength());
+													if (mNameAP_N_Yes.find(sNameOpt) == mNameAP_N_Yes.end())
+														mNameAP_N_Yes[sNameOpt] = std::to_wstring(i);
+												}
+												pObj = pKids->Get(i);
+												Object oAnnot, oSubtype, oPageRef;
+												if (xref->fetch(pObj->GetObjId(), pObj->GetGenNo(), &oAnnot)->isDict("Annot") && oAnnot.dictLookup("Subtype", &oSubtype)->isName("Widget") &&
+													oAnnot.dictLookupNF("P", &oPageRef)->isRef())
+												{
+													int nPage = pPDFDocument->findPage(oPageRef.getRefNum(), oPageRef.getRefGen()) - 1;
+													PdfWriter::CCheckBoxWidget* pKidAnnot = NULL;
+													int nObjId = pObj->GetObjId();
+													if (nPage >= 0 && EditAnnot(nPage, nObjId))
+														pKidAnnot = dynamic_cast<PdfWriter::CCheckBoxWidget*>(pDoc->GetAnnot(nObjId));
+													if (pKidAnnot && !sNameOpt.empty())
+														pKidAnnot->RenameAP_N_Yes((bRadiosInUnison || pKidAnnot->GetWidgetType() == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sNameOpt] : std::to_wstring(i));
+												}
+												oAnnot.free(); oSubtype.free(); oPageRef.free();
+											}
+										}
+									}
+
+									Object oPopupRef;
+									if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+									{
+										pAnnot = pDoc->GetAnnot(oPopupRef.getRefNum());
+										if (pAnnot)
+											pAnnot->SetHidden();
+									}
+									oPopupRef.free();
+								}
+							}
+						}
+					}
+					oFT.free();
+				}
+				oType.free();
+
+				if (!bNeed)
+				{
+					Object oPopupRef;
+					if (oAnnot.dictLookupNF("Popup", &oPopupRef)->isRef())
+						pDoc->DeleteAnnot(oPopupRef.getRefNum(), oPopupRef.getRefGen());
+					oPopupRef.free();
+				}
 			}
+			if (!bNeed)
+				bRes = pDoc->DeleteAnnot(oAnnotRef.getRefNum(), oAnnotRef.getRefGen());
 		}
 		else if (oAnnots->arrayGet(i, &oAnnot)->isDict())
 		{

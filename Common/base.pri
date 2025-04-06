@@ -134,10 +134,6 @@ linux-clang-32 {
 	message("linux-32-clang")
 }
 
-core_linux_clang {
-    CONFIG += c++1z
-}
-
 linux-g++ {
 	CONFIG += core_linux
 linux-g++:contains(QMAKE_HOST.arch, x86_64): {
@@ -223,6 +219,10 @@ core_mac {
 		QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 		!apple_silicon:QMAKE_APPLE_DEVICE_ARCHS = x86_64
 	}
+}
+
+core_linux_clang {
+	QMAKE_CFLAGS += -Wno-implicit-function-declaration
 }
 
 # PREFIXES
@@ -445,7 +445,14 @@ core_windows:CONFIG += no_batch
 message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 
 # COMPILER
-# CONFIG += c++11
+CONFIG += c++11
+
+#CONFIG += ENABLE_CPP_17
+
+ENABLE_CPP_17 {
+	CONFIG += c++1z
+	DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+}
 
 !core_windows {
 	QMAKE_CXXFLAGS += -Wno-register

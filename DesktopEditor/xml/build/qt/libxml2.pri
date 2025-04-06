@@ -1,7 +1,3 @@
-core_linux_clang {
-    QMAKE_CFLAGS += -std=c99
-}
-
 DEFINES += HAVE_VA_COPY
 
 core_static_link_xml_full {

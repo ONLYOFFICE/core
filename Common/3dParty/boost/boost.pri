@@ -6,10 +6,6 @@ core_android:CONFIG += disable_enum_constexpr_conversion
 core_mac:CONFIG += disable_enum_constexpr_conversion
 core_linux_clang:CONFIG += disable_enum_constexpr_conversion
 
-core_linux_clang {
-    DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
-}
-
 core_android {
     INCLUDEPATH += $$PWD/build/android/include
     CORE_BOOST_LIBS = $$PWD/build/android/lib/$$CORE_BUILDS_PLATFORM_PREFIX

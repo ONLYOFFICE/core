@@ -5,9 +5,6 @@ core_mac {
     QMAKE_CXXFLAGS += -Wall -Wno-ignored-qualifiers
     DEFINES += unix
 }
-core_linux_clang {
-    QMAKE_CFLAGS += -Wno-implicit-function-declaration
-}
 
 build_zlib_as_sources {
     DEFINES += BUILD_ZLIB_AS_SOURCES

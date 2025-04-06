@@ -275,10 +275,8 @@ core_linux {
 }
 
 core_linux {
-!core_linux_clang {
 	equals(TEMPLATE, app):CONFIG += core_static_link_libstd
 	plugin:CONFIG += core_static_link_libstd
-}
 }
 
 core_win_32 {
@@ -460,7 +458,11 @@ enable_cpp_17 {
 
 core_linux {
 core_static_link_libstd {
-	QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+	!core_linux_clang {
+		QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+	} else {
+		# TODO: add libc++abi?
+	}
 	message(core_static_link_libstd)
 }
 plugin {

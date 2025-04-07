@@ -89,7 +89,7 @@ public:
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 
-    void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
+	void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
     bool getDrawFormField() { return m_bDrawFormField; }
 private:
 

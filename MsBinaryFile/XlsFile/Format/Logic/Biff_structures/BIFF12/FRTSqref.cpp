@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -71,10 +71,9 @@ namespace XLSB
 
 	void FRTSqref::save(XLS::CFRecord& record)
 	{
-		_UINT32 flags = 0;
+        _UINT32 flags = 2;
 
 		SETBIT(flags, 0, fAdjDelete)
-		SETBIT(flags, 1, fDoAdjust)
 		SETBIT(flags, 2, fAdjChange)
 		SETBIT(flags, 3, fEdit)
 

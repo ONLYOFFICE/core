@@ -148,6 +148,15 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(potm2pptx);
 	DECLARE_CONVERT_FUNC(potm2pptx_dir);
 
+	// vsdx
+	DECLARE_CONVERT_FUNC(vsdx2vsdt);
+	DECLARE_CONVERT_FUNC(vsdx2vsdt_bin);
+	DECLARE_CONVERT_FUNC(vsdx_dir2vsdt);
+	DECLARE_CONVERT_FUNC(vsdx_dir2vsdt_bin);
+	DECLARE_CONVERT_FUNC(vsdt_bin2vsdx);
+	DECLARE_CONVERT_FUNC(vsdt_bin2vsdx_dir);
+	DECLARE_CONVERT_FUNC(vsdt2vsdx);
+
 	// doc
 	DECLARE_CONVERT_FUNC(doc2docx);
 	DECLARE_CONVERT_FUNC(doc2docx_dir);

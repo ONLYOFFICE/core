@@ -161,6 +161,30 @@ namespace NExtractTools
 					}
 				}
 				break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTX:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDM:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSM:
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTM:
+				{
+					if (0 == sExt2.compare(L".vsdt"))
+						res = TCD_VSDX2VSDT;
+					else if (0 == sExt2.compare(L".bin"))
+						res = TCD_VSDX2VSDT_BIN;
+				}break;
+				case AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY:
+				{
+					if (0 == sExt2.compare(L".vsdx"))
+						res = TCD_VSDT2VSDX;
+					else if (0 == sExt2.compare(L".vsdm"))
+						res = TCD_VSDT2VSDM;
+					else if (0 == sExt2.compare(L".vstx"))
+						res = TCD_VSDT2VSTX;
+					else if (0 == sExt2.compare(L".vstm"))
+						res = TCD_VSDT2VSTM;
+				}
+				break;
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM:
 				case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOTX:
@@ -486,7 +510,7 @@ namespace NExtractTools
 						res = TCD_OTF2ODF;
 					else if (0 == sExt2.compare(L".ods") && type == AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS)
 						res = TCD_OTF2ODF;
-					else if (0 == sExt2.compare(L".odp") && type == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
+					else if ((0 == sExt2.compare(L".odp") || 0 == sExt2.compare(L".odg")) && type == AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP)
 						res = TCD_OTF2ODF;
 				}
 				break;

@@ -38,6 +38,7 @@
 #include "../../../Common/SimpleTypes_Shared.cpp"
 #include "../../../Common/SimpleTypes_Spreadsheet.cpp"
 #include "../../../Common/SimpleTypes_Vml.cpp"
+#include "../../../Common/SimpleTypes_Draw.cpp"
 #include "../../../Common/ComplexTypes.cpp"
 
 #include "../../../SystemUtility/SystemUtility.cpp"

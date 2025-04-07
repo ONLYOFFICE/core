@@ -77,7 +77,7 @@ public:
 
 	int  GetError();
 	void Close();
-	bool EditPage(int nPageIndex, bool bSet = true);
+	bool EditPage(int nPageIndex, bool bSet = true, bool bActualPos = false);
 	bool DeletePage(int nPageIndex);
 	bool AddPage(int nPageIndex);
 	bool MovePage(int nPageIndex, int nPos);

@@ -137,12 +137,16 @@ namespace BinXlsxRW
 		int ReadTableColumns(BYTE type, long length, void* poResult);
 		int ReadTableColumn(BYTE type, long length, void* poResult);
 		int ReadTableStyleInfo(BYTE type, long length, void* poResult);
+		int ReadTableXmlColumnPr(BYTE type, long length, void* poResult);
 		int ReadQueryTableContent(BYTE type, long length, void* poResult);
 		int ReadQueryTableRefresh(BYTE type, long length, void* poResult);
 		int ReadQueryTableFields(BYTE type, long length, void* poResult);
 		int ReadQueryTableField(BYTE type, long length, void* poResult);
 		int ReadQueryTableDeletedFields(BYTE type, long length, void* poResult);
 		int ReadQueryTableDeletedField(BYTE type, long length, void* poResult);
+        int ReadTableCache(long length, void* poResult);
+        int ReadCacheParts(BYTE type,long length, void* poResult);
+        int ReadCachePart(BYTE type, long length, void* poResult);
 	};
 	class BinarySharedStringTableReader : public Binary_CommonReader
 	{
@@ -276,6 +280,7 @@ namespace BinXlsxRW
 		int ReadMdxMemeberProp(BYTE type, long length, void* poResult);
 		int ReadMetadataStringIndex(BYTE type, long length, void* poResult);
 		int ReadDynamicArrayProperties(BYTE type, long length, void* poResult);
+        OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -301,7 +306,9 @@ namespace BinXlsxRW
 	{
 		Binary_CommonReader2				m_oBcr2;
 		NSFile::CStreamWriter*		m_pCurStreamWriter;
+        XLS::StreamCacheWriterPtr		m_pCurStreamWriterBin;
 		NSBinPptxRW::CDrawingConverter*		m_pOfficeDrawingConverter;
+        OOX::Spreadsheet::CXlsb* m_pXlsb;
 
         OOX::Spreadsheet::CWorkbook&					m_oWorkbook;
         OOX::Spreadsheet::CSharedStrings*				m_pSharedStrings;
@@ -330,9 +337,13 @@ namespace BinXlsxRW
             boost::unordered_map<long, ImageObject*>& mapMedia, const std::wstring& sDestinationDir, const std::wstring& sMediaDir, SaveParams& oSaveParams,
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, boost::unordered_map<long, NSCommon::smart_ptr<OOX::File>>& mapPivotCacheDefinitions);
 		int Read();
+        int Read2xlsb(OOX::Spreadsheet::CXlsb &xlsb);
 		int ReadWorksheetsTableContent(BYTE type, long length, void* poResult);
+        int ReadWorksheetsCache(BYTE type, long length, void* poResult);
 		int ReadWorksheetSeekPositions(BYTE type, long length, void* poResult);
 		int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, NSFile::CStreamWriter& oStreamWriter, void* poResult);
+        int ReadWorksheet(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, XLS::StreamCacheWriterPtr& oStreamWriter, void* poResult);//2xlsb
+        int ReadSheetCache(boost::unordered_map<BYTE, std::vector<unsigned int>>& mapPos, void* poResult);
 		int ReadPivotTable(BYTE type, long length, void* poResult);
 		int ReadWorksheetProp(BYTE type, long length, void* poResult);
 		int ReadWorksheetCols(BYTE type, long length, void* poResult);
@@ -403,6 +414,7 @@ namespace BinXlsxRW
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
 		std::wstring GetControlVmlShape(void* pControl);
+        bool m_bWriteToXlsb = false;
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader
 	{

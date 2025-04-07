@@ -380,8 +380,35 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				i += 4;
 				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
 				i += nPathLength;
+
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << " " << std::string((char*)(pWidgets + i), nPathLength);
+				i += nPathLength;
 			}
 			std::cout << " ], ";
+		}
+		if (nFlags & (1 << 7))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "Ff " << nPathLength;
+		}
+		if (nFlags & (1 << 8))
+		{
+			int nActLength = READ_INT(pWidgets + i);
+			i += 4;
+			for (int j = 0; j < nActLength; ++j)
+			{
+				std::cout << std::endl;
+				nPathLength = READ_INT(pWidgets + i);
+				i += 4;
+				std::cout << std::to_string(j) << " Action " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+				i += nPathLength;
+
+				ReadAction(pWidgets, i);
+			}
+			std::cout << std::endl;
 		}
 
 		std::cout << std::endl;
@@ -542,6 +569,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
+		if (nFlags & (1 << 20))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 
 		//Action
 
@@ -669,7 +703,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				i += 4;
 				std::cout << "MaxLen " << nPathLength << ", ";
 			}
-			if (nFieldFlag & (1 << 25))
+			if (nFlags & (1 << 11))
 			{
 				nPathLength = READ_INT(pWidgets + i);
 				i += 4;
@@ -806,7 +840,7 @@ void ReadAnnotAP(BYTE* pWidgetsAP, int& i)
 		i += 1;
 		std::string arrBlendMode[] = { "Normal", "Multiply", "Screen", "Overlay", "Darken", "Lighten", "ColorDodge", "ColorBurn", "HardLight",
 									   "SoftLight", "Difference", "Exclusion", "Hue", "Saturation", "Color", "Luminosity" };
-		std::cout << "Type " << arrBlendMode[nPathLength] << ", ";
+		std::cout << "Type " << arrBlendMode[nPathLength];
 	}
 	std::cout << std::endl;
 }

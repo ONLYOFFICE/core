@@ -1886,7 +1886,7 @@ bool RtfListLevelProperty::IsValid()
 {
 	//return -1 != m_nFollow && -1 != m_nStart && -1 != m_nNumberType && -1 != m_nJustification &&
 	//	false == m_sText.empty() && false == m_sNumber.empty();
-	return  PROP_DEF != m_nNumberType && false == m_sText.empty();
+	return  PROP_DEF != m_nNumberType && false == m_sLevelText.empty();
 }
 std::wstring RtfListLevelProperty::GenerateListText()
  {//заменяем на булеты
@@ -1918,7 +1918,7 @@ void RtfListLevelProperty::SetDefault()
 	DEFAULT_PROPERTY	( m_nJustification )
 	DEFAULT_PROPERTY	( m_nFollow )
 	DEFAULT_PROPERTY	( m_nStart )
-	DEFAULT_PROPERTY_DEF( m_sText, L"" )
+	DEFAULT_PROPERTY_DEF(m_sLevelText, L"" )
 	DEFAULT_PROPERTY_DEF( m_sNumber, L"" )
 	DEFAULT_PROPERTY	( m_nNoRestart )
 	DEFAULT_PROPERTY	( m_nLegal )
@@ -1940,8 +1940,8 @@ void RtfListLevelProperty::Merge(RtfListLevelProperty& oListLevel)
 	MERGE_PROPERTY( m_nFollow, oListLevel)
 	MERGE_PROPERTY( m_nStart, oListLevel)
 
-	if (!oListLevel.m_sText.empty())
-		m_sText = oListLevel.m_sText;
+	if (!oListLevel.m_sLevelText.empty())
+		m_sLevelText = oListLevel.m_sLevelText;
 
 	if (!oListLevel.m_sNumber.empty())
 		m_sNumber = oListLevel.m_sNumber;
@@ -2119,7 +2119,7 @@ std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//чтобы при последующем чтении из rtf не потерялась информация о шрифте
 	sResult +=  m_oCharProp.RenderToRtf( oRenderParameter ); 
 
-    sResult += L"{\\leveltext" +  m_sText + L";}";
+    sResult += L"{\\leveltext" + m_sLevelText + L";}";
     sResult += L"{\\levelnumbers" + m_sNumber + L";}";
 
 	RENDER_RTF_INT( m_nFirstIndent, sResult, L"fi" )
@@ -2138,7 +2138,7 @@ std::wstring RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 }
 std::wstring RtfListLevelProperty::GetLevelTextOOX()
 {
-    std::wstring sResult = m_sText;
+    std::wstring sResult = m_sLevelText;
     if ( sResult.length() > 0 )
 	{
 		size_t nLevelTextLength = sResult[0];
@@ -2174,8 +2174,8 @@ std::wstring RtfListLevelProperty::GetLevelTextOOX()
 
 void RtfListLevelProperty::SetLevelTextOOX(const std::wstring& sText)
 {
-	m_sText		= L"";
-	m_sNumber	= L"";
+	m_sLevelText.clear();
+	m_sNumber.clear();
 
 	int nLevelOffsets = 0;
 	int nText = 0;
@@ -2186,7 +2186,7 @@ void RtfListLevelProperty::SetLevelTextOOX(const std::wstring& sText)
 		{
 			int nLevel = RtfUtility::ToByte( sText[ i + 1 ] );
 
-			m_sText += L"\\'" + XmlUtils::ToString(nLevel - 1, L"%02x");
+			m_sLevelText += L"\\'" + XmlUtils::ToString(nLevel - 1, L"%02x");
 			m_sNumber += L"\\'" + XmlUtils::ToString(nLevelOffsets + 1, L"%02x");
 			i++; //т.к. следующий симовл уже учли
 
@@ -2195,12 +2195,12 @@ void RtfListLevelProperty::SetLevelTextOOX(const std::wstring& sText)
 		else
 		{
 			std::wstring s (sText.c_str() + i, 1);
-			m_sText += RtfChar::renderRtfText(s);
+			m_sLevelText += RtfChar::renderRtfText(s);
 			nText++;
 		}
 		 nLevelOffsets++;
 	 }
-	 m_sText = L"\\'"  + XmlUtils::ToString(nText, L"%02x") + m_sText;
+	 m_sLevelText = L"\\'"  + XmlUtils::ToString(nText, L"%02x") + m_sLevelText;
 }
 std::wstring RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
 {

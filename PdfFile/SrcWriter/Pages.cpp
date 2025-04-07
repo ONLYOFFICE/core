@@ -1116,8 +1116,8 @@ namespace PdfWriter
 
 		for (int i = 0; i < pArray->GetCount(); i++)
 		{
-			CObjectBase* pObj = pArray->Get(i, false);
-			if (pObj->GetType() == object_type_PROXY && ((CProxyObject*)pObj)->Get()->GetObjId() == nID)
+			CObjectBase* pObj = pArray->Get(i);
+			if (pObj->GetObjId() == nID)
 			{
 				CObjectBase* pDelete = pArray->Remove(i);
 				RELEASEOBJECT(pDelete);

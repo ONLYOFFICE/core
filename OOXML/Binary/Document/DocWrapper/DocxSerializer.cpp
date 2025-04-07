@@ -31,8 +31,8 @@
  */
 #include "DocxSerializer.h"
  
-#include "../BinWriter/BinWriters.h"
-#include "../BinReader/Readers.h"
+#include "../BinWriter/BinaryWriterD.h"
+#include "../BinReader/BinaryReaderD.h"
 
 #include "../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../Presentation/FontPicker.h"

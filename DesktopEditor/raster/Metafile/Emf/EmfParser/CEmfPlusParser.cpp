@@ -67,15 +67,11 @@
 #define EMFPLUS_TRANSLATEWORLDTRANSFORM 0x402D
 
 #include <map>
-#include <iostream>
 
 #include "CEmfParser.h"
-#include "../../Wmf/WmfFile.h"
-#include "../../Wmf/WmfInterpretator/CWmfInterpretatorSvg.h"
 
 #include "../EmfInterpretator/CEmfInterpretator.h"
 #include "../EmfInterpretator/CEmfInterpretatorSvg.h"
-#include "../EmfInterpretator/CEmfInterpretatorArray.h"
 #include "../EmfInterpretator/CEmfInterpretatorRender.h"
 
 #ifdef METAFILE_SUPPORT_WMF_EMF_XML
@@ -649,6 +645,9 @@ namespace MetaFile
 				//TODO::реализовать при встрече
 			}
 
+			if (BrushDataTransform & unBrushDataFlags)
+				m_oStream.Skip(24);
+
 			if (BrushDataPresetColors & unBrushDataFlags)
 			{
 				unsigned int unPositionCount;
@@ -665,8 +664,8 @@ namespace MetaFile
 					for (unsigned int unIndex = 0; unIndex < unPositionCount; ++unIndex)
 						m_oStream >> pEmfPlusBrush->arGradientColors[unIndex].first;
 
-					pEmfPlusBrush->oColor = pEmfPlusBrush->arGradientColors[unPositionCount - 1].first;
-					pEmfPlusBrush->oColorBack = pEmfPlusBrush->arGradientColors[0].first;
+					pEmfPlusBrush->oColor     = pEmfPlusBrush->arGradientColors.back() .first;
+					pEmfPlusBrush->oColorBack = pEmfPlusBrush->arGradientColors.front().first;
 				}
 			}
 
@@ -775,7 +774,7 @@ namespace MetaFile
 
 			switch (nEndCap)
 			{
-				case 0:	pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_FLAT;   break;
+				case 0: pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_FLAT;   break;
 				case 1: pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_SQUARE; break;
 				case 2: pEmfPlusPen->unStyle |= PS_ENDCAP_MASK & PS_ENDCAP_ROUND;  break;
 			}
@@ -788,7 +787,7 @@ namespace MetaFile
 
 			switch (nJoin)
 			{
-				case 0:	pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_JOIN_MITER;   break;
+				case 0: pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_JOIN_MITER;   break;
 				case 1: pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_JOIN_BEVEL;   break;
 				case 2: pEmfPlusPen->unStyle |= PS_JOIN_MASK & PS_ENDCAP_ROUND; break;
 			}
@@ -874,7 +873,7 @@ namespace MetaFile
 				m_oStream >> *pLineCapData;
 
 				if (CustomLineCapDataFillPath == pLineCapData->unCustomLineCapDataFlags ||
-						CustomLineCapDataLinePath == pLineCapData->unCustomLineCapDataFlags)
+				    CustomLineCapDataLinePath == pLineCapData->unCustomLineCapDataFlags)
 				{
 					m_oStream.Skip(4); // FillPathLength or LinePathLength
 					pLineCapData->pPath = ReadPath();
@@ -1346,7 +1345,7 @@ namespace MetaFile
 		if (oImageAttributes.eWrapMode == WrapModeClamp)
 		{
 			if (oRectangle.dX < 0 || oRectangle.dX < 0 ||
-					oRectangle.dX >= oRectangle.dWidth || oRectangle.dY >= oRectangle.dHeight)
+			    oRectangle.dX >= oRectangle.dWidth || oRectangle.dY >= oRectangle.dHeight)
 				return oImageAttributes.oClampColor;
 
 		}
@@ -1544,14 +1543,10 @@ namespace MetaFile
 				case MetafileDataTypeEmf:
 				case MetafileDataTypeEmfPlusOnly:
 				case MetafileDataTypeEmfPlusDual:
-				{
 					return DrawMetafile<CEmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
-				}
 				case MetafileDataTypeWmf:
 				case MetafileDataTypeWmfPlaceable:
-				{
 					return DrawMetafile<CWmfParser>(pBuffer, unSizeBuffer, oSrcRect, arPoints);
-				}
 			}
 		}
 	}
@@ -1664,7 +1659,7 @@ namespace MetaFile
 			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect, nW, nH);
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-										 (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);
+			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);
 
 			RELEASEINTERFACE(pGrRenderer);
 			RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1743,7 +1738,7 @@ namespace MetaFile
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect, nW, nH);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-				(NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH);
+		                             (NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH);
 
 		if (!bExternalBuffer)
 			RELEASEARRAYOBJECTS(pBytes);
@@ -1806,17 +1801,15 @@ namespace MetaFile
 		m_pDC->SetPen(pPen);
 
 		if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
-		{
 			dSweepAngle = dSweepAngle - 360;
-		}
 
 		TEmfPlusRectF oConvertedRect = GetConvertedRectangle(oRect);
 
 		MoveTo(oConvertedRect.dX, oConvertedRect.dY);
 		ArcTo(oConvertedRect.dX, oConvertedRect.dY,
-			  oConvertedRect.dX + oConvertedRect.dWidth,
-			  oConvertedRect.dY + oConvertedRect.dHeight,
-			  dStartAngle, dSweepAngle);
+		      oConvertedRect.dX + oConvertedRect.dWidth,
+		      oConvertedRect.dY + oConvertedRect.dHeight,
+		      dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 
 		if (NULL != m_pInterpretator)
@@ -2293,13 +2286,13 @@ namespace MetaFile
 
 			if (NULL != m_pInterpretator)
 			{
-				CPathConverter oPathConverter;
-				CPath oNewPath, oLineCapPath;
-
-				oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
-
 				if (InterpretatorType::Render == m_pInterpretator->GetType())
 				{
+					CPathConverter oPathConverter;
+					CPath oNewPath, oLineCapPath;
+
+					oPathConverter.GetUpdatedPath(oNewPath, oLineCapPath, *pPath, *pEmfPlusPen);
+
 					oNewPath.DrawOn(m_pInterpretator, true, false);
 					oLineCapPath.DrawOn(m_pInterpretator, false, true);
 				}
@@ -2836,7 +2829,7 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_FILLREGION(unsigned short unShFlags)
 	{
-		short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
+		// short shOgjectIndex = ExpressValue(unShFlags, 0, 7);
 		unsigned int unBrushId;
 
 		m_oStream >> unBrushId;
@@ -2995,34 +2988,34 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETANTIALIASMODE(unsigned short unShFlags)
 	{
-		short shSmoothingMode = ExpressValue(unShFlags, 1,  7);
+		// short shSmoothingMode = ExpressValue(unShFlags, 1,  7);
 
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGMODE(unsigned short unShFlags)
 	{
-		short shCompositingMode = ExpressValue(unShFlags, 0, 7);
+		// short shCompositingMode = ExpressValue(unShFlags, 0, 7);
 
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETCOMPOSITINGQUALITY(unsigned short unShFlags)
 	{
-		short shCompositingQuality = ExpressValue(unShFlags, 0, 7);
+		// short shCompositingQuality = ExpressValue(unShFlags, 0, 7);
 
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETINTERPOLATIONMODE(unsigned short unShFlags)
 	{
-		short shInterpolationMode = ExpressValue(unShFlags, 0, 7);
+		// short shInterpolationMode = ExpressValue(unShFlags, 0, 7);
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_SETPIXELOFFSETMODE(unsigned short unShFlags)
 	{
-		short shPixelOffsetMode = ExpressValue(unShFlags, 0, 7);
+		// short shPixelOffsetMode = ExpressValue(unShFlags, 0, 7);
 
 		//TODO: реализовать
 	}
@@ -3039,20 +3032,20 @@ namespace MetaFile
 
 	void CEmfPlusParser::Read_EMFPLUS_SETTEXTCONTRAST(unsigned short unShFlags)
 	{
-		short shTextContrast  = ExpressValue(unShFlags, 0, 11);
+		// short shTextContrast  = ExpressValue(unShFlags, 0, 11);
 
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMRPLUS_SETTEXTRENDERINGHINT(unsigned short unShFlags)
 	{
-		short shTextRenderingHint = ExpressValue(unShFlags, 0, 7);
+		// short shTextRenderingHint = ExpressValue(unShFlags, 0, 7);
 		//TODO: реализовать
 	}
 
 	void CEmfPlusParser::Read_EMFPLUS_BEGINCONTAINER(unsigned short unShFlags)
 	{
-		short shPageUnit = ExpressValue(unShFlags, 8, 15);
+		// short shPageUnit = ExpressValue(unShFlags, 8, 15);
 		TEmfPlusRectF oDestRect, oSrcRect;
 		unsigned int unStackIndex;
 

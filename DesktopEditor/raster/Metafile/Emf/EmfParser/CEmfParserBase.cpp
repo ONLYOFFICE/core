@@ -763,7 +763,7 @@ namespace MetaFile
 		if (InterpretatorType::Svg == oInterpretatorType)
 		{
 			CEmfInterpretatorSvg *pEmfInterpretatorSvg = new CEmfInterpretatorSvg(this, dWidth, dHeight);
-			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			pEmfInterpretatorSvg->SetShapeRendering(EShapeRendering::OptimizeSpeed);
 			m_pInterpretator = pEmfInterpretatorSvg;
 		}
 	}

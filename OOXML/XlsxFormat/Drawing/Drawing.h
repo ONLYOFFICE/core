@@ -63,6 +63,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
 			virtual EElementType getType () const;
 
 		private:
@@ -99,7 +100,8 @@ namespace OOX
 			void ClearItems();
 
 		public:
-			std::vector<CCellAnchor *>	m_arrItems;
+			std::vector<CCellAnchor*> m_arrItems;
+			std::map<unsigned int, OOX::WritingElement*> m_mapShapes;
 		};
 	} //Spreadsheet
 } // namespace OOX

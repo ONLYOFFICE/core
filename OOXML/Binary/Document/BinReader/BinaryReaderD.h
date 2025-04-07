@@ -57,7 +57,7 @@ class Binary_CommonReader2 : public Binary_CommonReader
 public:
 	Binary_CommonReader2(NSBinPptxRW::CBinaryFileReader& poBufferedStream);
 	docRGB ReadColor();
-	void ReadHexColor(SimpleTypes::CHexColor *pColor);
+	void ReadHexColor(SimpleTypes::CHexColor *pColor, long length);
 	void ReadThemeColor(int length, CThemeColor& oCThemeColor);
 	int ReadThemeColorContent(BYTE type, long length, void* poResult);
 	template<typename T> int ReadTrackRevision(long length, T* poResult);

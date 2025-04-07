@@ -389,7 +389,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	// GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 
@@ -441,7 +441,7 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 
 	// чтение бинарника
 	NSFile::CFileBinary oFile;
-	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes0.json"));
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes.bin"));
 
 	DWORD dwFileSize = oFile.GetFileSize();
 	BYTE* pFileContent = new BYTE[dwFileSize];
@@ -457,7 +457,7 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
-	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, pParams);
+	pdfFile->AddToPdfFromBinary(pFileContent + 4, dwReaded - 4, pParams);
 
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pFileContent);

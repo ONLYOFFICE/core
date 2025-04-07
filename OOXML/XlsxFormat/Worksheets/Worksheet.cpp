@@ -50,6 +50,7 @@
 #include "../../XlsbFormat/Biff12_unions/MERGECELLS.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -358,6 +359,123 @@ namespace OOX
 			}
 
 		}
+        void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const
+        {
+            {
+                auto record = writer->getNextRecord(XLSB::rt_BeginSheet);
+                 writer->storeNextRecord(record);
+            }
+            if(!m_bIsChartSheet)
+            {
+            if (m_oSheetPr.IsInit())
+                m_oSheetPr->toBin(writer);
+            if (m_oDimension.IsInit())
+                    m_oDimension->toBin(writer);
+            if (m_oSheetViews.IsInit())
+                    m_oSheetViews->toBin(writer);
+            if (m_oSheetFormatPr.IsInit())
+                    m_oSheetFormatPr->toBin(writer);
+            if (m_oCols.IsInit())
+                    m_oCols->toBin(writer);
+
+            if ( m_oSheetData.IsInit())
+                m_oSheetData->toBin(writer);
+
+            if(m_oSheetProtection.IsInit())
+                m_oSheetProtection->toBin(writer);
+            if (m_oProtectedRanges.IsInit() && !m_oProtectedRanges->m_arrItems.empty())
+                m_oProtectedRanges->toBin(writer);
+
+            if (m_oAutofilter.IsInit())
+                m_oAutofilter->toBin(writer);
+            if (m_oSortState.IsInit())
+                m_oSortState->toBin(writer);
+
+            if (m_oDataConsolidate.IsInit())
+                m_oDataConsolidate->toBin(writer);
+            if (m_oMergeCells.IsInit())
+                    m_oMergeCells->toBin(writer);
+            if (!m_arrConditionalFormatting.empty())
+                for(auto &item : m_arrConditionalFormatting)
+                    item->toBin(writer);
+            if (m_oDataValidations.IsInit())
+                m_oDataValidations->toBin(writer);
+            if (m_oHyperlinks.IsInit())
+                m_oHyperlinks->toBin(writer);
+            if (m_oPrintOptions.IsInit())
+                m_oPrintOptions->toBin(writer);
+            if (m_oPageMargins.IsInit())
+                m_oPageMargins->toBin(writer);
+            if (m_oPageSetup.IsInit())
+                m_oPageSetup->toBin(writer);
+            if (m_oHeaderFooter.IsInit())
+                m_oHeaderFooter->toBin(writer);
+            if (m_oRowBreaks.IsInit())
+                m_oRowBreaks->toBinRow(writer);
+            if (m_oColBreaks.IsInit())
+                m_oColBreaks->toBinColumn(writer);
+            if (m_oDrawing.IsInit())
+                m_oDrawing->toBin(writer);
+            if (m_oLegacyDrawing.IsInit())
+                m_oLegacyDrawing->toBin(writer);
+            if (m_oLegacyDrawingHF.IsInit())
+                m_oLegacyDrawingHF->toBin(writer);
+            if (m_oPicture.IsInit())
+                m_oPicture->toBin(writer);
+            if (m_oOleObjects.IsInit())
+                m_oOleObjects->toBin(writer);
+            if (m_oControls.IsInit())
+                m_oControls->toBin(writer);
+            if (m_oTableParts.IsInit())
+                m_oTableParts->toBin(writer);
+            if (m_oExtLst.IsInit())
+            {
+                auto extLst = m_oExtLst->toBinWorksheet();
+                extLst->write(writer, nullptr);
+            }
+            }
+            else
+            {
+                if (m_oSheetPr.IsInit())
+                {
+                    XLS::BaseObjectPtr props;
+                    props = m_oSheetPr->toBinCs();
+                    props->write(writer, nullptr);
+                }
+                if(m_oSheetViews.IsInit())
+                {
+                    XLS::BaseObjectPtr views;
+                    views = m_oSheetViews->toBinCs();
+                    views->write(writer, nullptr);
+                }
+                if(m_oSheetProtection.IsInit())
+                    m_oSheetProtection->toBinCS(writer);
+                if (m_oPageMargins.IsInit())
+                    m_oPageMargins->toBin(writer);
+                if (m_oPageSetup.IsInit())
+                {
+                    XLS::BaseObjectPtr pageSetup;
+                    pageSetup = m_oPageSetup->toBinCs();
+                    pageSetup->write(writer, nullptr);
+                }
+                if (m_oHeaderFooter.IsInit())
+                    m_oHeaderFooter->toBin(writer);
+                if (m_oDrawing.IsInit())
+                    m_oDrawing->toBin(writer);
+                if (m_oLegacyDrawing.IsInit())
+                    m_oLegacyDrawing->toBin(writer);
+                if (m_oLegacyDrawingHF.IsInit())
+                    m_oLegacyDrawingHF->toBin(writer);
+                if (m_oPicture.IsInit())
+                    m_oPicture->toBin(writer);
+
+            }
+            {
+                auto record = writer->getNextRecord(XLSB::rt_EndSheet);
+                 writer->storeNextRecord(record);
+            }
+
+        }
 		void CWorksheet::read(const CPath& oRootPath, const CPath& oPath)
 		{
 			m_oReadPath = oPath;
@@ -723,8 +841,9 @@ namespace OOX
 				CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
 				if ((xlsb) && (xlsb->m_bWriteToXlsb))
 				{
-					XLS::BaseObjectPtr object = WriteBin();
-					xlsb->WriteBin(oPath, object.get());
+                    auto writerCache = xlsb->GetFileWriter(oPath);
+                    WriteBin(writerCache);
+                    xlsb->WriteSreamCache(writerCache);
 				}
 				else
 				{

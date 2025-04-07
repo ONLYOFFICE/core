@@ -88,6 +88,9 @@
     <Filter Include="XlsxFormat\RichData">
       <UniqueIdentifier>{db25162b-705e-4c13-b6c5-f7c018c6f39a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VsdxFormat">
+      <UniqueIdentifier>{ca654de5-6ef9-42b5-8833-8832f0d9de31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Base\Base.h">
@@ -553,6 +556,35 @@
     <ClInclude Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.h">
       <Filter>XlsxFormat\Pivots</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\FileFactory_Draw.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\FileTypes_Draw.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\Vsdx.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\VisioDocument.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\Shapes.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Common\SimpleTypes_Draw.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\VisioConnections.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\VisioPages.h">
+      <Filter>VsdxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\VsdxFormat\VisioOthers.h">
+      <Filter>VsdxFormat</Filter>
+    <ClInclude Include="..\..\..\XlsxFormat\Workbook\CustomsXml.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Base\codecvt.cpp">
@@ -974,6 +1006,38 @@
     </ClCompile>
     <ClCompile Include="..\..\..\XlsxFormat\Pivot\PivotHierarchies.cpp">
       <Filter>XlsxFormat\Pivots</Filter>
+    </ClCompile>
+<<<<<<< HEAD
+    <ClCompile Include="..\..\..\VsdxFormat\FileFactory_Draw.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\FileTypes_Draw.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\Vsdx.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\VisioDocument.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\Shapes.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Common\SimpleTypes_Draw.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\VisioConnections.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\VisioPages.cpp">
+      <Filter>VsdxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\VsdxFormat\VisioOthers.cpp">
+      <Filter>VsdxFormat</Filter>
+=======
+    <ClCompile Include="..\..\..\XlsxFormat\Workbook\CustomsXml.cpp">
+      <Filter>XlsxFormat\Workbook</Filter>
+>>>>>>> origin/release/v9.0.0
     </ClCompile>
   </ItemGroup>
 </Project>

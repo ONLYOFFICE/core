@@ -246,6 +246,7 @@ private:
 	std::string m_sT; // Частичное имя поля - T
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
 	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
@@ -609,10 +610,12 @@ private:
 
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
+		unsigned int unFieldFlag; // Флаг Ff
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;
-		std::vector<std::string> arrOpt;
+		std::vector< std::pair<std::string, std::string> > arrOpt;
+		std::vector<CAction*> arrAction; // Действия
 		std::string sT;
 		std::string sV;
 		std::string sDV;

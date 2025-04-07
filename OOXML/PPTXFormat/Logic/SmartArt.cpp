@@ -37,11 +37,11 @@
 
 #include "../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
-#include "../../Binary/Sheets/Reader/BinaryWriter.h"
+#include "../../Binary/Sheets/Reader/BinaryWriterS.h"
 
 #include "../../Binary/Document/DocWrapper/XlsxSerializer.h"
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
-#include "../../Binary/Document/BinWriter/BinWriters.h"
+#include "../../Binary/Document/BinWriter/BinaryWriterD.h"
 
 #include "../../XlsxFormat/Chart/Chart.h"
 

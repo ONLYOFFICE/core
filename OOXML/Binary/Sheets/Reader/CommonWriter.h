@@ -29,8 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef COMMON_WRITER
-#define COMMON_WRITER
+#pragma once
 
 #include "../../Presentation/BinaryFileReaderWriter.h"
 #include "../../../XlsxFormat/Xlsx.h"
@@ -59,4 +58,3 @@ namespace BinXlsxRW
 		void WriteBytesArray(BYTE* pData, long nDataSize);
 	};
 }
-#endif	// #ifndef COMMON_WRITER

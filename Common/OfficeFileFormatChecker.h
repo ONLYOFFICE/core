@@ -68,6 +68,7 @@ public:
 	bool isOOXFormatFile(const std::wstring& fileName, bool unpacked = false);
 	bool isOpenOfficeFormatFile(const std::wstring& fileName, std::wstring& documentID);
 	bool isOnlyOfficeFormatFile(const std::wstring& fileName);
+	bool isMacFormatFile(const std::wstring& fileName);
 
 	bool isDocFormatFile(const std::wstring& fileName);
 	bool isXlsFormatFile(const std::wstring& fileName);
@@ -80,6 +81,7 @@ public:
 	bool isMS_MITCRYPTOFormatFile(POLE::Storage* storage, std::wstring& documentID);
 	bool isVbaProjectFile(POLE::Storage* storage);
 	bool isMS_OFFCRYPTOFormatFile(const std::wstring& fileName, std::wstring& documentID);
+	bool isHwpFile(POLE::Storage* storage);
 
 	bool iXmlFile(const std::wstring& fileName);
 
@@ -101,6 +103,7 @@ public:
 	bool isBinaryDoctFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isBinaryXlstFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isBinaryPpttFormatFile(unsigned char* pBuffer, int dwBytes);
+	bool isBinaryVsdtFormatFile(unsigned char* pBuffer, int dwBytes);
 
 	bool isDjvuFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isMobiFormatFile(unsigned char* pBuffer, int dwBytes);

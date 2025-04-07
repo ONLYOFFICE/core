@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,31 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+#include <unordered_map>
 
-#include "gtest/gtest.h"
+#include "BinReaderWriterDefines.h"
+#include "../Presentation/BinaryFileReaderWriter.h"
+#include "../Presentation/BinReaderWriterDefines.h"
 
-#include "entrance.h"
-#include "motion.h"
-#include "audio.h"
-#include "interactions.h"
+#include "../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
+#include "../../VsdxFormat/Vsdx.h"
 
-int main(int argc, char* argv[])
+namespace BinVsdxRW 
 {
-	::testing::InitGoogleTest(&argc, argv);
+	struct SaveParams
+	{
+		SaveParams(bool bMacro = false);
 
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationEntranceEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationMotionEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationAudioEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationPlayAudioEnvironment);	
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationOpenDocumentEnvironment);
-	::testing::AddGlobalTestEnvironment(new ODP2OOX_AnimationRunProgramEnvironment);
-	
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_EntranceAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_AudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_InteractionAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_PlayAudioAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_OpenDocumentAnimationEnvironment);
-	::testing::AddGlobalTestEnvironment(new OOX2ODP_RunProgramAnimationEnvironment);
-	
-	return RUN_ALL_TESTS();
+		bool bMacroEnabled = false;
+	};
+
+	class BinaryFileReader
+	{
+	public: 
+		BinaryFileReader();
+        int ReadFile(const std::wstring& sSrcFileName, std::wstring sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, bool &bMacro);
+        int ReadContent(OOX::Draw::CVsdx& oVsdx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const std::wstring& sFileInDir, const std::wstring& sOutDir, SaveParams& oSaveParams);
+	};
 }

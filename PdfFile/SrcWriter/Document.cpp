@@ -1643,10 +1643,6 @@ namespace PdfWriter
 			return ((CNameObject*)pFT)->Get();
 		return "";
 	}
-	CPage* CDocument::CreateFakePage()
-	{
-		return new CPage(this, NULL);
-	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
 		if (arrCO.empty())

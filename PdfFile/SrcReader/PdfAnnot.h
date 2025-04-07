@@ -621,7 +621,7 @@ private:
 		std::string sDV;
 	};
 
-	void getParents(XRef* xref, Object* oFieldRef, int nStartRefID);
+	void getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID);
 
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields

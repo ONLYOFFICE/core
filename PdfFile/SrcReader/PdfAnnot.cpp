@@ -2442,7 +2442,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		// Родители
 		Object oParentRefObj;
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-			getParents(xref, &oParentRefObj, nStartRefID);
+			getParents(pdfDoc, &oParentRefObj, nStartRefID);
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
@@ -2497,9 +2497,9 @@ CAnnots::~CAnnots()
 	for (int i = 0; i < m_arrAnnots.size(); ++i)
 		RELEASEOBJECT(m_arrAnnots[i]);
 }
-void CAnnots::getParents(XRef* xref, Object* oFieldRef, int nStartRefID)
+void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 {
-	if (!oFieldRef || !xref || !oFieldRef->isRef() ||
+	if (!oFieldRef || !pdfDoc || !oFieldRef->isRef() ||
 		std::find_if(m_arrParents.begin(), m_arrParents.end(), [oFieldRef, nStartRefID] (CAnnotParent* pAP) { return oFieldRef->getRefNum() + nStartRefID == pAP->unRefNum; }) != m_arrParents.end())
 		return;
 
@@ -2672,7 +2672,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef, int nStartRefID)
 	{
 		pAnnotParent->unFlags |= (1 << 4);
 		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum() + nStartRefID;
-		getParents(xref, &oParentRefObj, nStartRefID);
+		getParents(pdfDoc, &oParentRefObj, nStartRefID);
 	}
 	oParentRefObj.free();
 

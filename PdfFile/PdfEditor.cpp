@@ -466,14 +466,27 @@ void AddWidgetParent(PdfWriter::CDocument* pDoc, CObjectsManager* pManager, PdfW
 {
 	if (pObj->GetType() != PdfWriter::object_type_DICT)
 		return;
-	PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pObj;
-	if (pDict->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+	PdfWriter::CDictObject* pDict = dynamic_cast<PdfWriter::CDictObject*>(pObj);
+	if (!pDict)
 		return;
 
 	int nID = pManager->FindObj(pObj);
-	if (pDoc->GetParent(nID))
+	if (nID < 0)
 		return;
-	pDoc->AddParent(nID, pDict);
+
+	if (pDict->GetDictType() == PdfWriter::dict_type_UNKNOWN)
+	{
+		if (pDoc->GetParent(nID))
+			return;
+		pDoc->AddParent(nID, pDict);
+	}
+
+	PdfWriter::CObjectBase* pObjParent = pDict->Get("Parent");
+	if (pObjParent && pObjParent->GetType() == PdfWriter::object_type_DICT)
+		AddWidgetParent(pDoc, pManager, pObjParent);
+
+	if (pDict->GetDictType() != PdfWriter::dict_type_UNKNOWN)
+		return;
 
 	PdfWriter::CObjectBase* pObjKids = pDict->Get("Kids");
 	if (!pObjKids || pObjKids->GetType() != PdfWriter::object_type_ARRAY)
@@ -1697,16 +1710,16 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					for (int nIndex = 0; nIndex < oTemp.arrayGetLength(); ++nIndex)
 					{
 						Object oRes;
+						PdfWriter::CObjectBase* pObj = NULL;
 						if (oTemp.arrayGetNF(nIndex, &oRes)->isRef())
+							pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
+						if (pObj)
 						{
-							PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(oRes.getRefNum() + nStartRefID);
-							if (pObj)
-							{
-								pFields->Add(pObj);
-								m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
-								AddWidgetParent(pDoc, &m_mObjManager, pObj);
-								continue;
-							}
+							pFields->Add(pObj);
+							m_mObjManager.IncRefCount(oRes.getRefNum() + nStartRefID);
+							AddWidgetParent(pDoc, &m_mObjManager, pObj);
+							oRes.free();
+							continue;
 						}
 						oRes.free();
 					}

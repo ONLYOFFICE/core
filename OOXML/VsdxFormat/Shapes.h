@@ -360,6 +360,8 @@ namespace OOX
 			nullable_string V;
 
 			nullable<CRefBy> RefBy;
+			
+			std::wstring content;
 		};
 		class CTrigger : public WritingElement
 		{

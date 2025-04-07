@@ -550,8 +550,13 @@ namespace Draw
 			}
 			else if (strcmp("RefreshConflict", sName) == 0) //unbounded
 			{
+				pItem = new CRefreshConflict();
 			}
 			else if (strcmp("AutoLinkComparison", sName) == 0) //unbounded
+			{
+				pItem = new CAutoLinkComparison();
+			}
+			else if (strcmp("ADOData", sName) == 0) //unbounded ???
 			{
 			}
 			if (pItem)
@@ -588,6 +593,8 @@ namespace Draw
 			{
 			case et_dr_PrimaryKey: type = 1; break;
 			case et_dr_RowMap: type = 2; break;
+			case et_dr_RefreshConflict: type = 3; break;
+			case et_dr_AutoLinkComparison: type = 4; break;
 			}
 			if (type != 0xff)
 				pWriter->WriteRecord2(type, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
@@ -687,6 +694,16 @@ namespace Draw
 			case 2:
 			{
 				m_arrItems.push_back(new CRowMap());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			case 3:
+			{
+				m_arrItems.push_back(new CRefreshConflict());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			case 4:
+			{
+				m_arrItems.push_back(new CAutoLinkComparison());
 				m_arrItems.back()->fromPPTY(pReader);
 			}break;
 			case 5:
@@ -1290,6 +1307,132 @@ namespace Draw
 		pWriter->WriteAttribute2(L"ShapeID", ShapeID);
 		pWriter->EndAttributes();
 		pWriter->WriteNodeEnd(L"RowMap");
+	}
+	EElementType CRefreshConflict::getType() const
+	{
+		return et_dr_RefreshConflict;
+	}
+	void CRefreshConflict::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "RowID", RowID)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "PageID", PageID)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ShapeID", ShapeID)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CRefreshConflict::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+		if (oReader.IsEmptyNode())
+			return;
+	}
+	void CRefreshConflict::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, RowID);
+		pWriter->WriteUInt2(1, PageID);
+		pWriter->WriteUInt2(2, ShapeID);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CRefreshConflict::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				RowID = pReader->GetULong();
+			}break;
+			case 1:
+			{
+				PageID = pReader->GetULong();
+			}break;
+			case 2:
+			{
+				ShapeID = pReader->GetULong();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CRefreshConflict::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"RefreshConflict");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"RowID", RowID);
+		pWriter->WriteAttribute2(L"PageID", PageID);
+		pWriter->WriteAttribute2(L"ShapeID", ShapeID);
+		pWriter->EndAttributes();
+		pWriter->WriteNodeEnd(L"RefreshConflict");
+	}
+	EElementType CAutoLinkComparison::getType() const
+	{
+		return et_dr_AutoLinkComparison;
+	}
+	void CAutoLinkComparison::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "ColumnName", ColumnName)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ContextType", ContextType)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ContextTypeLabel", ContextTypeLabel)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CAutoLinkComparison::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+		if (oReader.IsEmptyNode())
+			return;
+	}
+	void CAutoLinkComparison::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteString2(0, ColumnName);
+		pWriter->WriteUInt2(1, ContextType);
+		pWriter->WriteString2(2, ContextTypeLabel);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CAutoLinkComparison::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				ColumnName = pReader->GetString2();
+			}break;
+			case 1:
+			{
+				ContextType = pReader->GetULong();
+			}break;
+			case 2:
+			{
+				ContextTypeLabel = pReader->GetString2();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CAutoLinkComparison::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"AutoLinkComparison");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"ColumnName", ColumnName);
+		pWriter->WriteAttribute2(L"ContextType", ContextType);
+		pWriter->WriteAttribute2(L"ContextTypeLabel", ContextTypeLabel);
+		pWriter->EndAttributes();
+		pWriter->WriteNodeEnd(L"AutoLinkComparison");
 	}
 }
 } // namespace OOX

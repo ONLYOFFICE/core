@@ -1570,7 +1570,7 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		pSectPr->m_oDocGrid.Init();
 		READ1_DEF(length, res, this->ReadDocGrid, pSectPr->m_oDocGrid.GetPointer());
 	}
-	else if (c_oSerProp_secPrType::docGrid == type)
+	else if (c_oSerProp_secPrType::bidi == type)
 	{
 		pSectPr->m_oBidi.Init();
 		pSectPr->m_oBidi->m_oVal.FromBool(m_oBufferedStream.GetBool());

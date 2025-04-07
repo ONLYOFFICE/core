@@ -43,6 +43,185 @@ namespace OOX
 {
 namespace Draw
 {
+	EElementType CPublishedPage::getType() const
+	{
+		return et_dr_PublishedPage;
+	}
+	void CPublishedPage::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "ID", ID)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CPublishedPage::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+		if (oReader.IsEmptyNode())
+			return;
+	}
+	void CPublishedPage::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, ID);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CPublishedPage::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				ID = pReader->GetULong();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CPublishedPage::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"PublishedPage");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"ID", ID);
+		pWriter->EndAttributes();
+		pWriter->WriteNodeEnd(L"PublishedPage");
+	}
+	EElementType CRefreshableData::getType() const
+	{
+		return et_dr_RefreshableData;
+	}
+	void CRefreshableData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "ID", ID)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CRefreshableData::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+		if (oReader.IsEmptyNode())
+			return;
+	}
+	void CRefreshableData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, ID);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CRefreshableData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				ID = pReader->GetULong();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CRefreshableData::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"RefreshableData");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"ID", ID);
+		pWriter->EndAttributes();
+		pWriter->WriteNodeEnd(L"RefreshableData");
+	}
+	EElementType CPublishSettings::getType() const
+	{
+		return et_dr_PublishSettings;
+	}
+	void CPublishSettings::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetName();
+
+			WritingElement* pItem = NULL;
+			if (L"PublishedPage" == sName)
+			{
+				pItem = new CPublishedPage();
+			}
+			else if (L"RefreshableData" == sName)
+			{
+				pItem = new CRefreshableData();
+			}
+			if (pItem)
+			{
+				pItem->fromXML(oReader);
+				m_arrItems.push_back(pItem);
+			}
+		}
+	}
+	void CPublishSettings::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+		{
+			int type = 0xff;					 //todooo predefine type for ???
+			switch (m_arrItems[i]->getType())
+			{
+			case et_dr_PublishedPage: type = 0; break;
+			case et_dr_RefreshableData: type = 1; break;
+			}
+			if (type != 0xff)
+				pWriter->WriteRecord2(type, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
+		}
+	}
+	void CPublishSettings::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _rec = pReader->GetUChar();
+			switch (_rec)
+			{
+			case 0:
+			{
+				m_arrItems.push_back(new CPublishedPage());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			case 1:
+			{
+				m_arrItems.push_back(new CRefreshableData());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CPublishSettings::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"PublishSettings");
+		pWriter->EndAttributes();
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			m_arrItems[i]->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"PublishSettings");
+	}
+//----------------------------------------------------------------------------------------------------------------
 	EElementType CHeaderFooter::getType() const
 	{
 		return et_dr_HeaderFooter;
@@ -1573,6 +1752,107 @@ namespace Draw
 
 		pWriter->WriteNodeEnd(L"VisioDocument");
 	}
+	//-----------------------------------------------------------------------------------------------------------------------------
+	EElementType CSnapAngle::getType() const
+	{
+		return et_dr_SnapAngle;
+	}
+	void CSnapAngle::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		content = oReader.GetText2();
+	}
+	void CSnapAngle::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteDoubleReal2(0, content);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CSnapAngle::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				content = pReader->GetDoubleReal();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CSnapAngle::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->WriteNodeValue(L"SnapAngle", content);
+	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	void CSnapAngles::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetName();
+
+			if (L"SnapAngle" == sName)
+			{
+				CSnapAngle* pItem = new CSnapAngle();
+				*pItem = oReader;
+
+				if (pItem)
+					m_arrItems.push_back(pItem);
+			}
+		}
+	}
+	EElementType CSnapAngles::getType() const
+	{
+		return et_dr_SnapAngles;
+	}
+	void CSnapAngles::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		while (pReader->GetPos() < end)
+		{
+			BYTE _rec = pReader->GetUChar();
+			switch (_rec)
+			{
+			case 0:
+			{
+				m_arrItems.push_back(new CSnapAngle());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(end);
+	}
+	void CSnapAngles::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
+	}
+	void CSnapAngles::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"SnapAngles");
+		pWriter->EndAttributes();
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			m_arrItems[i]->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"SnapAngles");
+	}
 //-----------------------------------------------------------------------------------------------------------------------------
 	EElementType CWindow::getType() const
 	{
@@ -1645,7 +1925,7 @@ namespace Draw
 			}
 			else if (L"SnapAngles" == sName)
 			{
-				SnapAngles = oReader.GetText2();
+				SnapAngles = oReader;
 			}
 			else if (L"DynamicGridEnabled" == sName)
 			{
@@ -1694,12 +1974,13 @@ namespace Draw
 		pWriter->WriteUInt2(22, GlueSettings);
 		pWriter->WriteUInt2(23, SnapSettings);
 		pWriter->WriteUInt2(24, SnapExtensions);
-		pWriter->WriteBool2(25, SnapAngles);
 		pWriter->WriteBool2(26, DynamicGridEnabled);
 		pWriter->WriteDoubleReal2(27, TabSplitterPos);
 		pWriter->WriteUInt2(28, StencilGroup);
 		pWriter->WriteUInt2(29, StencilGroupPos);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		
+		pWriter->WriteRecord2(0, SnapAngles);
 	}
 
 	void CWindow::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -1727,11 +2008,11 @@ namespace Draw
 			}break;
 			case 3:
 			{
-				WindowLeft = pReader->GetULong();
+				WindowLeft = pReader->GetLong();
 			}break;
 			case 4:
 			{
-				WindowTop = pReader->GetULong();
+				WindowTop = pReader->GetLong();
 			}break;
 			case 5:
 			{
@@ -1813,10 +2094,6 @@ namespace Draw
 			{
 				SnapExtensions = pReader->GetULong();
 			}break;
-			case 25:
-			{
-				SnapAngles = pReader->GetBool();
-			}break;
 			case 26:
 			{
 				DynamicGridEnabled = pReader->GetBool();
@@ -1832,6 +2109,23 @@ namespace Draw
 			case 29:
 			{
 				StencilGroupPos = pReader->GetULong();
+			}break;
+			}
+		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _rec = pReader->GetUChar();
+
+			switch (_rec)
+			{
+			case 0:
+			{
+				SnapAngles.Init();
+				SnapAngles->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
 			}break;
 			}
 		}
@@ -1870,11 +2164,13 @@ namespace Draw
 		pWriter->WriteNodeValue(L"GlueSettings", GlueSettings);
 		pWriter->WriteNodeValue(L"SnapSettings", SnapSettings);
 		pWriter->WriteNodeValue(L"SnapExtensions", SnapExtensions);
-		pWriter->WriteNodeValue(L"SnapAngles", SnapAngles);
 		pWriter->WriteNodeValue(L"DynamicGridEnabled", DynamicGridEnabled);
 		pWriter->WriteNodeValue(L"TabSplitterPos", TabSplitterPos);
 		pWriter->WriteNodeValue(L"StencilGroup", StencilGroup);
 		pWriter->WriteNodeValue(L"StencilGroupPos", StencilGroupPos);
+
+		if (SnapAngles.IsInit())
+			SnapAngles->toXmlWriter(pWriter);
 
 		pWriter->WriteNodeEnd(L"Window");
 	}

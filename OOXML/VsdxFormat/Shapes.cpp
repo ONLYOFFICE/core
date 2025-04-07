@@ -1039,8 +1039,11 @@ namespace OOX
 		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
+			
 			if (oReader.IsEmptyNode())
 				return;
+
+			content = oReader.GetText2();
 
 			int nParentDepth = oReader.GetDepth();
 			while (oReader.ReadNextSiblingNode(nParentDepth))
@@ -1064,6 +1067,13 @@ namespace OOX
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, RefBy);
+			
+			if (false == content.empty())
+			{
+				pWriter->StartRecord(1);
+				pWriter->WriteString(content);
+				pWriter->EndRecord();
+			}
 		}
 		void CCell::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -1108,6 +1118,10 @@ namespace OOX
 					RefBy.Init();
 					RefBy->fromPPTY(pReader);
 				}break;
+				case 1:
+				{
+					content = pReader->GetString2();
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -1129,6 +1143,11 @@ namespace OOX
 
 			if (RefBy.IsInit())
 				RefBy->toXmlWriter(pWriter);
+
+			if (false == content.empty())
+			{
+				pWriter->WriteStringXML(content);
+			}
 
 			pWriter->WriteNodeEnd(L"Cell");
 		}

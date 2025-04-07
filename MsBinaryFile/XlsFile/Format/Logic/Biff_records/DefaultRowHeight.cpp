@@ -81,8 +81,9 @@ namespace XLS
 
     void DefaultRowHeight::writeFields(CFRecord& record)
     {
-        unsigned short flags;
-        record >> flags;
+        if(miyRw == -1)
+            miyRw = 290;
+        unsigned short flags = 0;
 
         SETBIT(flags, 0, fUnsynced);
         SETBIT(flags, 1, fDyZero);

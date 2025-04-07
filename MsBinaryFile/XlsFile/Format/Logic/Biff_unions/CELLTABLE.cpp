@@ -147,14 +147,25 @@ const bool CELL_GROUP::loadContent(BinProcessor& proc)
 }
 const bool CELL_GROUP::saveContent(BinProcessor& proc)
 {
-    if(m_row != nullptr)
-        proc.mandatory(*m_row);
+    for(auto i: m_arRows)
+        if(i != nullptr)
+            proc.mandatory(*i);
     for(auto i : m_arCells)
         if(i != nullptr)
             proc.mandatory(*i);
-    for(auto i : m_DBCells)
+    {
+        DBCell dbcell;
+        for(auto i: m_arRows)
+        {
+            FileOffsetPtr element(new FileOffset);
+            dbcell.rgdb.push_back(element);
+        }
+        proc.mandatory(dbcell);
+
+    }
+    /*for(auto i : m_DBCells)
         if(i != nullptr)
-            proc.mandatory(*i);
+            proc.mandatory(*i);*/
     return true;
 }
 //-----------------------------------------------------------------------------------------------------------------

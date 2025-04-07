@@ -51,7 +51,7 @@ public:
 	static const ElementType type = typeCalcSaveRecalc;
 
 //-----------------------------
-    Boolean<unsigned short> fSaveRecalc = false;
+    Boolean<unsigned short> fSaveRecalc = true;
 };
 
 } // namespace XLS

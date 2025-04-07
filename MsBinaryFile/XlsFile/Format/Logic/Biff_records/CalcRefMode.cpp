@@ -55,5 +55,10 @@ void CalcRefMode::readFields(CFRecord& record)
 	record >> fRef;
 }
 
+void CalcRefMode::writeFields(CFRecord& record)
+{
+    record << fRef;
+}
+
 } // namespace XLS
 

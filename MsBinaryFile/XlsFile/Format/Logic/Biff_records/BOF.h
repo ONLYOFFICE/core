@@ -72,21 +72,21 @@ public:
 
 
 //-----------------------------
-	_UINT16 vers = 0;
+    _UINT16 vers = 0x0600;
 	_UINT16 dt = 0;
 	_UINT16 rupBuild = 0;
-	_UINT16 rupYear = 0;
+    _UINT16 rupYear = 0x07CC;
 	
-	bool fWin;
-	bool fRisc;
-	bool fBeta;
-	bool fWinAny;
-	bool fMacAny;
-	bool fBetaAny;
-	bool fRiscAny;
-	bool fOOM;
-	bool fGlJmp;
-	bool fFontLimit;
+    bool fWin = 1;
+    bool fRisc = 0;
+    bool fBeta = 0;
+    bool fWinAny = 1;
+    bool fMacAny = 0;
+    bool fBetaAny = 0;
+    bool fRiscAny = 0;
+    bool fOOM = 0;
+    bool fGlJmp = 0;
+    bool fFontLimit = 0;
 	
     _UINT16 verXLHigh = 0;
     unsigned char	verLowestBiff = 0;

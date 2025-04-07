@@ -54,7 +54,7 @@ public:
 
 	static const ElementType	type = typeDBCell;
 //-----------------------------
-	_UINT32	dbRtrw;
+    _UINT32	dbRtrw = 0;
 	BiffStructurePtrVector rgdb;
 };	
 

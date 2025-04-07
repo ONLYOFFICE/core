@@ -86,7 +86,7 @@ public:
     static const ElementType type = typeCELL_GROUP;
 
 //---------------------------------------------------------------------------
-    BaseObjectPtr               m_row;//for xls writing
+    std::vector<BaseObjectPtr>	m_arRows;//for xls writing
     std::vector<BaseObjectPtr>	m_arCells;
 
     std::list<BaseObjectPtr>    m_DBCells;

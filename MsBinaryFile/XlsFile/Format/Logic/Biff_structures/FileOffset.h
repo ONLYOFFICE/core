@@ -50,7 +50,7 @@ public:
     virtual void save(CFRecord& record);
 
 
-	unsigned short offset;
+    unsigned short offset = 0;
 };
 
 typedef boost::shared_ptr<FileOffset> FileOffsetPtr;

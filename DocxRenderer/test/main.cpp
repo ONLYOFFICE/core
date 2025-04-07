@@ -77,6 +77,8 @@ int main(int argc, char *argv[])
 	oWorker.m_sDirectory = NSFile::GetProcessDirectory() + L"/fonts_cache";
 	oWorker.m_bIsNeedThumbnails = false;
 
+	oWorker.m_arAdditionalFolders.push_back(L"/home/flexus/Work/fonts");
+
 	if (!NSDirectory::Exists(oWorker.m_sDirectory))
 		NSDirectory::CreateDirectory(oWorker.m_sDirectory);
 

@@ -176,6 +176,7 @@ namespace NSDocxRenderer
 		        bool bWriteStyleRaw = false);
 
 		void NullCurrCont();
+		void Clear();
 
 	private:
 		std::vector<cont_ptr_t> m_arConts;

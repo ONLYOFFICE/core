@@ -875,10 +875,12 @@ namespace NSDocxRenderer
 	std::vector<CContTextBuilder::cont_ptr_t> CContTextBuilder::GetConts()
 	{
 		return std::move(m_arConts);
+		m_pCurrCont = nullptr;
 	}
 	std::vector<CContTextBuilder::cont_ptr_t> CContTextBuilder::GetDiacs()
 	{
 		return std::move(m_arDiacs);
+		m_pCurrCont = nullptr;
 	}
 
 	void CContTextBuilder::AddUnicode(
@@ -1027,5 +1029,13 @@ namespace NSDocxRenderer
 	void CContTextBuilder::NullCurrCont()
 	{
 		m_pCurrCont = nullptr;
+	}
+	void CContTextBuilder::Clear()
+	{
+		m_pCurrCont = nullptr;
+		m_arConts.clear();
+		m_arDiacs.clear();
+		m_oPrevFont.SetDefaultParams();
+		m_oPrevBrush.SetDefaultParams();
 	}
 }

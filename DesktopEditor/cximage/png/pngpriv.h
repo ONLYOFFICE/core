@@ -332,6 +332,7 @@
     *  DBL_MAX  Maximum floating point number (can be set to an arbitrary value)
     */
 #  include <float.h>
+#  include <math.h>
 
 #  if (defined(__MWERKS__) && defined(macintosh)) || defined(applec) || \
     defined(THINK_C) || defined(__SC__) || defined(TARGET_OS_MAC)

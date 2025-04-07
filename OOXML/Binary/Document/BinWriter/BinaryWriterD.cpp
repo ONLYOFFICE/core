@@ -1559,6 +1559,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 		WriteDocGrid(pSectPr->m_oDocGrid.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (pSectPr->m_oBidi.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::bidi);
+		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oBidi->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 {
@@ -2158,14 +2164,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::Style);
 		m_oBcw.m_oStream.WriteStringW(p_tblPr->m_oTblStyle->ToString2());
 	}
-	//Look
 	if (p_tblPr->m_oTblLook.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Look);
 		m_oBcw.m_oStream.WriteLONG(p_tblPr->m_oTblLook->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	//Layout
 	if (p_tblPr->m_oTblLayout.IsInit() && p_tblPr->m_oTblLayout->m_oType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Layout);
@@ -2212,7 +2216,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)p_tblPr->m_oTblOverlap->m_oVal->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-}
+	if (p_tblPr->m_oBidiVisual.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::bidiVisual);
+		m_oBcw.m_oStream.WriteBOOL(p_tblPr->m_oBidiVisual->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}}
 void Binary_tblPrWriter::WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 {
 	int nCurPos = 0;

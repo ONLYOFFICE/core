@@ -443,24 +443,11 @@ public:
 class CWiterTblPr
 {
 public:
-    std::wstring Jc;
-    std::wstring TableInd;
-    std::wstring TableW;
-    std::wstring TableCellMar;
-    std::wstring TableBorders;
-    std::wstring Shd;
-    std::wstring tblpPr;
-    std::wstring Style;
-    std::wstring RowBandSize;
-    std::wstring ColBandSize;
-    std::wstring Look;
-    std::wstring Layout;
     std::wstring tblPrChange;
-    std::wstring TableCellSpacing;
 	std::wstring Caption;
 	std::wstring Description;
-	std::wstring Overlap;
 
+	std::wstring Props;
 	bool IsEmpty();
 	std::wstring Write();
 };

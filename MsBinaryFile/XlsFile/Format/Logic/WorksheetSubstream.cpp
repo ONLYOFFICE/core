@@ -729,5 +729,52 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool WorksheetSubstream::saveContent(BinProcessor& proc)
+{
+    {
+        BOF bof;
+        bof.dt= 0x0010;
+        proc.mandatory(bof);
+    }
+    {
+        Index sheetIndex;
+        if(m_CELLTABLE != nullptr)
+        {
+            CELLTABLE *cellTable = dynamic_cast<CELLTABLE*>(m_CELLTABLE.get());
+            auto blocks = cellTable->m_arCellGroups.size();
+            for(auto i = 0; i < blocks; i ++)
+            {
+                FilePointerPtr CellBlockPointer(new FilePointer);
+                sheetIndex.rgibRw.push_back(CellBlockPointer);
+            }
+        }
+        proc.mandatory(sheetIndex);
+    }
+    if(m_GLOBALS != nullptr)
+        proc.mandatory(*m_GLOBALS);
+    else
+        proc.mandatory<GLOBALS>();
+    if(m_PAGESETUP != nullptr)
+        proc.mandatory(*m_PAGESETUP);
+    else
+        proc.mandatory<PAGESETUP>();
+    if(m_COLUMNS != nullptr)
+        proc.mandatory(*m_COLUMNS);
+    else
+        proc.mandatory<COLUMNS>();
+    if(m_Dimensions != nullptr)
+        proc.mandatory(*m_Dimensions);
+    else
+        proc.mandatory<Dimensions>();
+
+    if(m_CELLTABLE != nullptr)
+        proc.mandatory(*m_CELLTABLE);
+
+    if(m_CONDFMTS != nullptr)
+        proc.mandatory(*m_CONDFMTS);
+
+    return true;
+}
+
 } // namespace XLS
 

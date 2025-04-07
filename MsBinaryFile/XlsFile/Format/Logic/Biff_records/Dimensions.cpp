@@ -83,6 +83,15 @@ void Dimensions::readFields(CFRecord& record)
 
 void Dimensions::writeFields(CFRecord& record)
 {
+    if(ref_ != L"")
+    {
+        CellRangeRef rangeRef;
+        rangeRef.fromString(ref_);
+        rwMic = rangeRef.rowFirst;
+        colMic = rangeRef.columnFirst;
+        rwMac = rangeRef.rowLast;
+        colMac = rangeRef.columnLast;
+    }
     record << rwMic << rwMac;
     record << colMic << colMac;
     record.reserveNunBytes(2); // reserved

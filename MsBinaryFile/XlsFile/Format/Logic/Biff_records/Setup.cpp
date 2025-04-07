@@ -135,7 +135,7 @@ void Setup::readFields(CFRecord& record)
 
 void Setup::writeFields(CFRecord& record)
 {
-	_UINT16 flags;
+    _UINT16 flags = 0;
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{

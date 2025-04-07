@@ -172,14 +172,24 @@ const bool PAGESETUP::saveContent(BinProcessor& proc)
 {
     if(m_Header != nullptr)
         proc.mandatory(*m_Header);
+    else
+        proc.mandatory<Header>();
     if(m_Footer != nullptr)
         proc.mandatory(*m_Footer);
+    else
+        proc.mandatory<Footer>();
     if(m_HCenter != nullptr)
         proc.mandatory(*m_HCenter);
+    else
+        proc.mandatory<HCenter>();
     if(m_VCenter != nullptr)
         proc.mandatory(*m_VCenter);
+    else
+        proc.mandatory<VCenter>();
     if(m_Setup != nullptr)
         proc.mandatory(*m_Setup);
+    else
+        proc.mandatory<Setup>();
     return true;
 }
 

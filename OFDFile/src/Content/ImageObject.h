@@ -15,7 +15,7 @@ class CImageObject : public IPageBlock, public CGraphicUnit
 public:
 	CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes);
 
-	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

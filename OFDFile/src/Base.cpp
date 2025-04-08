@@ -61,7 +61,7 @@ CDocBody::CDocBody()
 
 }
 
-CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder)
+CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder, NSFonts::IFontManager* pFontManager)
 {
 	if (L"ofd:DocBody" != oLiteReader.GetName())
 		return nullptr;
@@ -91,7 +91,7 @@ CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder)
 			const std::wstring wsPath = NSSystemPath::ShortenPath(oLiteReader.GetText2());
 
 			if (!wsPath.empty() && L'.' != wsPath.front())
-				pDocBody->m_oDocument.Read(pFolder->getFullFilePath(wsPath));
+				pDocBody->m_oDocument.Read(pFolder->getFullFilePath(wsPath), pFontManager);
 		}
 		ELSE_IF_CHECK_NODE(L"ofd:Signatures", pDocBody->m_wsSignature);
 	}
@@ -123,7 +123,7 @@ CBase::~CBase()
 		RELEASEOBJECT(pDocBody);
 }
 
-bool CBase::Read(IFolder* pFolder)
+bool CBase::Read(IFolder* pFolder, NSFonts::IFontManager* pFontManager)
 {
 	if (nullptr == pFolder || !pFolder->existsXml(L"OFD.xml"))
 		return false;
@@ -138,7 +138,7 @@ bool CBase::Read(IFolder* pFolder)
 
 	while (oLiteReader.ReadNextSiblingNode(nDepth))
 	{
-		pDocBody = CDocBody::Read(oLiteReader, pFolder);
+		pDocBody = CDocBody::Read(oLiteReader, pFolder, pFontManager);
 		if (nullptr != pDocBody)
 			m_arDocBodies.push_back(pDocBody);
 	}

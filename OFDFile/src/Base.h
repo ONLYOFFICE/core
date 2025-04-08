@@ -2,6 +2,7 @@
 #define BASE_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../OfficeUtils/src/ZipFolder.h"
 
 #include "Document.h"
@@ -49,7 +50,7 @@ class CDocBody
 	std::wstring m_wsSignature;
 public:
 	CDocBody();
-	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder);
+	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder, NSFonts::IFontManager* pFontManager);
 
 	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 
@@ -64,7 +65,7 @@ public:
 	CBase();
 	~CBase();
 
-	bool Read(IFolder* pFolder);
+	bool Read(IFolder* pFolder, NSFonts::IFontManager* pFontManager);
 	void DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 
 	unsigned int GetPageCount() const;

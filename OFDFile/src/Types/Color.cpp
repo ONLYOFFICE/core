@@ -2,16 +2,11 @@
 
 namespace OFD
 {
-CColor::CColor(CXmlReader& oXmlReader)
-    : m_oValues{0, 0, 0}, m_nIndex(0), m_unColorSpace(0), m_chAlpha(255)
-{
-	Read(oXmlReader);
-}
-
-bool CColor::Read(CXmlReader& oXmlReader)
+CColor::CColor(CXmlReader& oXmlReader, const CRes* pPublicRes)
+    : m_oValues{0, 0, 0, 0}, m_nIndex(0), m_chAlpha(255), m_pColorSpace(nullptr)
 {
 	if (0 == oXmlReader.GetAttributesCount() || !oXmlReader.MoveToFirstAttribute())
-		return false;
+		return;
 
 	std::string sAttributeName;
 
@@ -20,18 +15,16 @@ bool CColor::Read(CXmlReader& oXmlReader)
 		sAttributeName = oXmlReader.GetNameA();
 
 		if ("ColorSpace" == sAttributeName)
-			m_unColorSpace = oXmlReader.GetUInteger(true);
+		{
+			if (nullptr != pPublicRes)
+				m_pColorSpace = pPublicRes->GetColorSpace(oXmlReader.GetUInteger(true));
+		}
 		else if ("Value" == sAttributeName)
 		{
 			const std::vector<double> arValues{oXmlReader.GetArrayDoubles(true)};
 
-			if (4 > arValues.size())
-				continue;
-
-			m_oValues[0] = static_cast<BYTE>(arValues[0]);
-			m_oValues[1] = static_cast<BYTE>(arValues[1]);
-			m_oValues[2] = static_cast<BYTE>(arValues[2]);
-			m_oValues[3] = static_cast<BYTE>(arValues[3]);
+			for (unsigned int unIndex = 0; unIndex < (std::min)((unsigned int)arValues.size(), (unsigned int)4); ++unIndex)
+				m_oValues[unIndex] = static_cast<BYTE>(arValues[unIndex]);
 		}
 		else if ("Alpha" == sAttributeName)
 			m_chAlpha = oXmlReader.GetUInteger(true);
@@ -40,46 +33,39 @@ bool CColor::Read(CXmlReader& oXmlReader)
 	} while (oXmlReader.MoveToNextAttribute());
 
 	oXmlReader.MoveToElement();
-
-	return true;
 }
 
-int CColor::ToInt(const CRes* pPublicRes) const
+int CColor::ToInt() const
 {
-	if (nullptr != pPublicRes)
+	if (nullptr != m_pColorSpace)
 	{
-		const CColorSpace *pColorSpace = pPublicRes->GetColorSpace(m_unColorSpace);
-
-		if (nullptr != pColorSpace)
+		switch(m_pColorSpace->GetType())
 		{
-			switch(pColorSpace->GetType())
+			case CColorSpace::EType::GRAY:
+				return (255 << 24) | (m_oValues[0] << 16) | (m_oValues[0] << 8) | (m_oValues[0] << 0);
+			case CColorSpace::EType::RGB:
+				return (255 << 24) | (m_oValues[2] << 16) | (m_oValues[1] << 8) | (m_oValues[0] << 0);
+			case CColorSpace::EType::CMYK:
 			{
-				case CColorSpace::EType::GRAY:
-					return (255 << 24) | (128 << 16) | (128 << 8) | (128 << 0);
-				case CColorSpace::EType::RGB:
-					return (255 << 24) | (m_oValues[0] << 16) | (m_oValues[1] << 8) | (m_oValues[2] << 0);
-				case CColorSpace::EType::CMYK:
-				{
-					const float cF = m_oValues[0] / 255.0f;
-					const float mF = m_oValues[1] / 255.0f;
-					const float yF = m_oValues[2] / 255.0f;
-					const float kF = m_oValues[3] / 255.0f;
+				const float cF = m_oValues[0] / 255.0f;
+				const float mF = m_oValues[1] / 255.0f;
+				const float yF = m_oValues[2] / 255.0f;
+				const float kF = m_oValues[3] / 255.0f;
 
-					const float r = (1.0f - cF) * (1.0f - kF);
-					const float g = (1.0f - mF) * (1.0f - kF);
-					const float b = (1.0f - yF) * (1.0f - kF);
+				const float r = (1.0f - cF) * (1.0f - kF);
+				const float g = (1.0f - mF) * (1.0f - kF);
+				const float b = (1.0f - yF) * (1.0f - kF);
 
-					const unsigned char rByte = static_cast<unsigned char>(r * 255);
-					const unsigned char gByte = static_cast<unsigned char>(g * 255);
-					const unsigned char bByte = static_cast<unsigned char>(b * 255);
+				const unsigned char rByte = static_cast<unsigned char>(r * 255);
+				const unsigned char gByte = static_cast<unsigned char>(g * 255);
+				const unsigned char bByte = static_cast<unsigned char>(b * 255);
 
-					return (rByte << 0) | (gByte << 8) | (bByte << 16);
-				}
+				return (rByte << 0) | (gByte << 8) | (bByte << 16);
 			}
 		}
 	}
 
-	return (255 << 24) | (m_oValues[0] << 16) | (m_oValues[1] << 8) | (m_oValues[2] << 0);
+	return 0;
 }
 
 BYTE CColor::GetAlpha() const

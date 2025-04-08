@@ -1,5 +1,9 @@
 #include "Res.h"
 
+#include "Utils/Utils.h"
+
+#include "../../DesktopEditor/common/Directory.h"
+
 namespace OFD
 {
 CRes::CRes()
@@ -52,7 +56,7 @@ bool CRes::Read(const std::wstring& wsFilePath)
 
 			if ("BaseLoc" == sNodeName)
 			{
-				wsRootPath = NSSystemPath::Combine(NSDirectory::GetFolderPath(wsFilePath), oLiteReader.GetText());
+				wsRootPath = CombinePaths(NSDirectory::GetFolderPath(wsFilePath), oLiteReader.GetText());
 				break;
 			}
 		} while (oLiteReader.MoveToNextAttribute());
@@ -60,48 +64,42 @@ bool CRes::Read(const std::wstring& wsFilePath)
 
 	oLiteReader.MoveToElement();
 
-	const int nDepth = oLiteReader.GetDepth();
 	std::string sNodeName;
 
-	#define PARSE_CONTINER(container_name, element_name, element_type, melements)\
-	if (container_name == sNodeName) \
+	#define PARSE_CONTAINER(container_name, element_name, element_type, melements, creator)\
+	if (container_name == sNodeName)\
 	{\
-		const int nDepth = oLiteReader.GetDepth();\
+		const int nChildrenDepth = oLiteReader.GetDepth();\
 		element_type* pElement = nullptr;\
-		while (oLiteReader.ReadNextSiblingNode(nDepth))\
+		while (oLiteReader.ReadNextSiblingNode(nChildrenDepth))\
 		{\
 			if (element_name == oLiteReader.GetNameA())\
 			{\
-				pElement = new element_type(oLiteReader);\
+				pElement = creator;\
 				AddElementToMap(pElement, pElement->GetID(), melements);\
 			}\
 		}\
 		continue;\
 	}
 
+	#define PARSE_CONTAINER_WITHOUT_PATH(container_name, element_name, element_type, melements)\
+	PARSE_CONTAINER(container_name, element_name, element_type, melements, new element_type(oLiteReader))
+
+	#define PARSE_CONTAINER_WITH_PATH(container_name, element_name, element_type, melements)\
+	PARSE_CONTAINER(container_name, element_name, element_type, melements, new element_type(oLiteReader, wsRootPath))
+
+	const int nDepth = oLiteReader.GetDepth();
+
 	while (oLiteReader.ReadNextSiblingNode(nDepth))
 	{
 		sNodeName = oLiteReader.GetNameA();
 
-		PARSE_CONTINER("ofd:ColorSpaces",           "ofd:ColorSpace",            CColorSpace,           m_mColorSpaces)
-		PARSE_CONTINER("ofd:DrawParams",            "ofd:DrawParam",             CDrawParam,            m_mDrawParams)
-		PARSE_CONTINER("ofd:Fonts",                 "ofd:Font",                  CFont,                 m_mFonts)
-		PARSE_CONTINER("ofd:CompositeGraphicUnits", "ofd:CCompositeGraphicUnit", CCompositeGraphicUnit, m_mCCompositeGraphicUnits)
+		PARSE_CONTAINER_WITHOUT_PATH("ofd:ColorSpaces",           "ofd:ColorSpace",            CColorSpace,           m_mColorSpaces)
+		PARSE_CONTAINER_WITHOUT_PATH("ofd:DrawParams",            "ofd:DrawParam",             CDrawParam,            m_mDrawParams)
+		PARSE_CONTAINER_WITHOUT_PATH("ofd:CompositeGraphicUnits", "ofd:CCompositeGraphicUnit", CCompositeGraphicUnit, m_mCCompositeGraphicUnits)
 
-		if ("ofd:MultiMedias" == sNodeName)
-		{
-			const int nDepth = oLiteReader.GetDepth();
-			CMultiMedia* pElement = nullptr;
-			while (oLiteReader.ReadNextSiblingNode(nDepth))
-			{
-				if ("ofd:MultiMedia" == oLiteReader.GetNameA())
-				{
-					pElement = new CMultiMedia(oLiteReader, wsRootPath);
-					AddElementToMap(pElement, pElement->GetID(), m_mMultiMedias);
-				}
-			}
-			continue;
-		}
+		PARSE_CONTAINER_WITH_PATH("ofd:Fonts",                    "ofd:Font",                  CFont,                 m_mFonts)
+		PARSE_CONTAINER_WITH_PATH("ofd:MultiMedias",              "ofd:MultiMedia",            CMultiMedia,           m_mMultiMedias)
 	}
 
 	return true;

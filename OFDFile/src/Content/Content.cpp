@@ -11,7 +11,7 @@ CContent::~CContent()
 		delete pLayer;
 }
 
-bool CContent::Read(CXmlReader& oLiteReader, const CRes* pDocumentRes)
+bool CContent::Read(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
 {
 	if (L"ofd:Content" != oLiteReader.GetName())
 		return false;
@@ -24,18 +24,18 @@ bool CContent::Read(CXmlReader& oLiteReader, const CRes* pDocumentRes)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Layer" == wsNodeName)
-			m_arLayers.push_back(new CLayer(oLiteReader, pDocumentRes));
+			m_arLayers.push_back(new CLayer(oLiteReader, pDocumentRes, pPublicRes, pFontManager));
 	}
 
 	return false;
 }
 
-void CContent::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
+void CContent::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const CLayer* pLayer : m_arLayers)
-		pLayer->Draw(pRenderer, pPublicRes);
+		pLayer->Draw(pRenderer);
 }
 }

@@ -67,10 +67,24 @@ void CGraphicUnit::Apply(IRenderer* pRenderer) const
 	if (nullptr == pRenderer)
 		return;
 
-	//TODO:: apply boundary -> clipping -> apply CTM
-	// pRenderer->SetTransform(1., 0., 0., 1., m_oBoundary.m_dX, m_oBoundary.m_dY);
+	pRenderer->ResetTransform();
 
-	//Clipping
+	// Clipping
+	// pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+
+	// pRenderer->BeginCommand(c_nClipType);
+	// pRenderer->BeginCommand(c_nPathType);
+	// pRenderer->PathCommandStart();
+
+	// pRenderer->PathCommandMoveTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
+	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY);
+	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
+	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
+	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
+
+	// pRenderer->EndCommand(c_nPathType);
+	// pRenderer->EndCommand(c_nClipType);
+	// pRenderer->PathCommandEnd();
 
 	pRenderer->SetTransform(m_oCTM.m_dM11, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
 }

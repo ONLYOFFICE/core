@@ -7,7 +7,8 @@ CPageArea::CPageArea()
 
 bool CPageArea::Read(CXmlReader& oLiteReader)
 {
-	if (L"ofd:PageArea" != oLiteReader.GetName() &&
+	if (!oLiteReader.IsEmptyNode() &&
+	    L"ofd:PageArea" != oLiteReader.GetName() &&
 	    L"ofd:Area"     != oLiteReader.GetName())
 		return false;
 

@@ -115,10 +115,10 @@ class CPathObject : public IPageBlock, public CGraphicUnit
 
 	void AddElement(const IPathElement* pElement);
 public:
-	CPathObject(CXmlReader& oLiteReader);
+	CPathObject(CXmlReader& oLiteReader, const CRes* pPublicRes);
 	~CPathObject();
 
-	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

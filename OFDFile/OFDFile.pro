@@ -46,11 +46,13 @@ HEADERS += \
 	src/Res.h \
 	src/Types/Color.h \
 	src/Types/ColorSpace.h \
+	src/Types/CommonData.h \
 	src/Types/CompositeGraphicUnit.h \
 	src/Types/DrawParam.h \
 	src/Types/Font.h \
 	src/Types/MultiMedia.h \
 	src/Types/PageArea.h \
+	src/Types/TemplatePage.h \
 	src/Utils/Types.h \
 	src/Utils/Utils.h \
 	src/Utils/XmlReader.h
@@ -71,10 +73,12 @@ SOURCES += \
 	src/Res.cpp \
 	src/Types/Color.cpp \
 	src/Types/ColorSpace.cpp \
+	src/Types/CommonData.cpp \
 	src/Types/CompositeGraphicUnit.cpp \
 	src/Types/DrawParam.cpp \
 	src/Types/Font.cpp \
 	src/Types/MultiMedia.cpp \
 	src/Types/PageArea.cpp \
+	src/Types/TemplatePage.cpp \
 	src/Utils/Types.cpp \
 	src/Utils/XmlReader.cpp

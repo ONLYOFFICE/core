@@ -8,6 +8,19 @@
 
 namespace OFD
 {
+struct TCGTransform
+{
+	unsigned int m_unCodePosition;
+	unsigned int m_unCodeCount;
+	unsigned int m_unGlyphCount;
+
+	std::vector<unsigned int> m_arGlyphs;
+
+	static TCGTransform Read(CXmlReader& oLiteReader);
+
+	bool Draw(IRenderer* pRenderer, unsigned int& unIndex, double dX, double dY) const;
+};
+
 class CTextCode
 {
 	double m_dX;
@@ -20,12 +33,11 @@ class CTextCode
 public:
 	CTextCode(CXmlReader& oLiteReader);
 
-	void Draw(IRenderer* pRenderer) const;
+	void Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vector<TCGTransform>& arCGTransforms) const;
 };
 
 class CTextObject : public IPageBlock, public CGraphicUnit
 {
-	unsigned int m_unFont;
 	double m_dSize;
 	bool m_bStroke;
 	bool m_bFill;
@@ -38,12 +50,17 @@ class CTextObject : public IPageBlock, public CGraphicUnit
 	CColor* m_pFillColor;
 	CColor* m_pStrokeColor;
 
+	const CFont* m_pFont;
+
 	std::vector<const CTextCode*> m_arTextCodes;
+	std::vector<TCGTransform>     m_arCGTransforms;
+
+	NSFonts::IFontManager* m_pFontManager;
 public:
-	CTextObject(CXmlReader& oLiteReader);
+	CTextObject(CXmlReader& oLiteReader, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager);
 	~CTextObject();
 
-	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

@@ -3,13 +3,13 @@
 
 #include <string>
 
-#include "../../OfficeUtils/src/ZipFolder.h"
-
 #include "Types/ColorSpace.h"
 #include "Types/DrawParam.h"
 #include "Types/Font.h"
 #include "Types/MultiMedia.h"
 #include "Types/CompositeGraphicUnit.h"
+
+#include "../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace OFD
 {

@@ -14,7 +14,7 @@ public:
 	IPageBlock(CXmlReader& oLiteReader)
 		: IOFDElement(oLiteReader){};
 	virtual ~IPageBlock(){};
-	virtual void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const = 0;
+	virtual void Draw(IRenderer* pRenderer) const = 0;
 };
 }
 

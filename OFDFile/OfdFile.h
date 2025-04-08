@@ -26,7 +26,7 @@ public:
 	                            const std::wstring& owner_password = L"", const std::wstring& user_password = L"") override;
 
 	// Close
-	virtual void Close() override;
+	void Close() override;
 
 	// Get IApplicationFonts for wrappers
 	virtual NSFonts::IApplicationFonts* GetFonts() override;

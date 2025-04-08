@@ -18,10 +18,10 @@ class CLayer : public IPageBlock
 	unsigned int m_unID;
 	std::vector<IPageBlock*> m_arPageBlocks;
 public:
-	CLayer(CXmlReader& oLiteReader, const CRes* pDocumentRes);
+	CLayer(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager);
 	~CLayer();
 
-	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const override;
+	void Draw(IRenderer* pRenderer) const override;
 };
 }
 

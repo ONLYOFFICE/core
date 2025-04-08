@@ -1,6 +1,6 @@
 #include "MultiMedia.h"
 
-#include "../../../DesktopEditor/common/Path.h"
+#include "../Utils/Utils.h"
 
 namespace OFD
 {
@@ -30,13 +30,16 @@ CMultiMedia::CMultiMedia(CXmlReader& oXmlReader, const std::wstring& wsRootPath)
 
 	oXmlReader.MoveToElement();
 
+	if (oXmlReader.IsEmptyNode())
+		return;
+
 	const int nDepth = oXmlReader.GetDepth();
 
 	while (oXmlReader.ReadNextSiblingNode(nDepth))
 	{
 		if ("ofd:MediaFile" == oXmlReader.GetNameA())
 		{
-			m_wsFilePath = NSSystemPath::Combine(wsRootPath, oXmlReader.GetText2());
+			m_wsFilePath = CombinePaths(wsRootPath, oXmlReader.GetText2());
 			break;
 		}
 	}

@@ -7,6 +7,8 @@
 #include <sstream>
 #include <cstdlib>
 
+#include "../../../DesktopEditor/common/Path.h"
+
 namespace OFD
 {
 inline std::vector<std::string> Split(const std::string& sValue, char chDelim)
@@ -92,6 +94,39 @@ inline bool StringToDouble(const std::string& sValue, double& dValue)
 		return false;
 
 	return true;
+}
+
+template <typename T>
+inline void AddToContainer(T* pValue, std::vector<T*>& arValues)
+{
+	if (nullptr != pValue)
+		arValues.push_back(pValue);
+}
+
+inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wstring& wsSecondPath)
+{
+	if (wsFirstPath.empty())
+		return wsSecondPath;
+
+	if (wsSecondPath.empty())
+		return wsFirstPath;
+
+	std::wstring::const_reverse_iterator itFound = std::find_if(wsFirstPath.crbegin(), wsFirstPath.crend(), [](wchar_t wChar){ return L'/' == wChar || L'\\' == wChar; });
+
+	if (wsFirstPath.crend() == itFound)
+		return NSSystemPath::Combine(wsFirstPath, wsSecondPath);
+
+	std::wstring wsNewSecondPath{wsSecondPath};
+
+	if (L'/' == wsNewSecondPath[0] || L'\\' == wsNewSecondPath[0])
+		wsNewSecondPath.erase(0, 1);
+
+	const std::wstring& wsFirstDirName = wsFirstPath.substr(itFound.base() - wsFirstPath.cbegin(), wsFirstPath.cend() - itFound.base());
+
+	if (wsFirstDirName == wsNewSecondPath.substr(0, wsFirstDirName.length()))
+		wsNewSecondPath.erase(0, wsFirstDirName.length());
+
+	return NSSystemPath::Combine(wsFirstPath, wsNewSecondPath);
 }
 }
 #endif // UTILS_H

@@ -12,8 +12,8 @@ public:
 	CContent();
 	~CContent();
 
-	bool Read(CXmlReader& oLiteReader, const CRes* pDocumentRes);
-	void Draw(IRenderer* pRenderer, const CRes* pPublicRes) const;
+	bool Read(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager);
+	void Draw(IRenderer* pRenderer) const;
 };
 }
 

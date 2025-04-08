@@ -6,16 +6,16 @@
 
 namespace OFD
 {
-CPageBlock::CPageBlock(CXmlReader& oLiteReader, const CRes* pDocumentRes)
+CPageBlock::CPageBlock(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
 	: IPageBlock(oLiteReader)
 {
 	if ("ofd:PageBlock" != oLiteReader.GetNameA() || oLiteReader.IsEmptyNode())
 		return;
 
-	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pDocumentRes);
+	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pDocumentRes, pPublicRes, pFontManager);
 }
 
-void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks, const CRes* pDocumentRes)
+void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
 {
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
@@ -28,11 +28,11 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 		pPageBlock = nullptr;
 
 		if (L"ofd:TextObject" == wsNodeName)
-			pPageBlock = new CTextObject(oLiteReader);
+			pPageBlock = new CTextObject(oLiteReader, pPublicRes, pFontManager);
 		else if (L"ofd:PathObject" == wsNodeName)
-			pPageBlock = new CPathObject(oLiteReader);
+			pPageBlock = new CPathObject(oLiteReader, pPublicRes);
 		else if (L"ofd:PageBlock" == wsNodeName)
-			pPageBlock = new CPageBlock(oLiteReader, pDocumentRes);
+			pPageBlock = new CPageBlock(oLiteReader, pDocumentRes, pPublicRes, pFontManager);
 		else if (L"ofd:ImageObject" == wsNodeName)
 			pPageBlock = new CImageObject(oLiteReader, pDocumentRes);
 
@@ -41,12 +41,12 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 	}
 }
 
-void CPageBlock::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
+void CPageBlock::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer, pPublicRes);
+		pPageBlock->Draw(pRenderer);
 }
 }

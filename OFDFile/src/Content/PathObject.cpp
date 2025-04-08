@@ -3,7 +3,7 @@
 
 namespace OFD
 {
-CPathObject::CPathObject(CXmlReader& oLiteReader)
+CPathObject::CPathObject(CXmlReader& oLiteReader, const CRes* pPublicRes)
 	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
 	  m_bStroke(true), m_bFill(true), m_eRule(ERule::NonZero),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
@@ -47,14 +47,14 @@ CPathObject::CPathObject(CXmlReader& oLiteReader)
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
-			m_pFillColor = new CColor(oLiteReader);
+			m_pFillColor = new CColor(oLiteReader, pPublicRes);
 		}
 		else if (L"ofd:StrokeColor" == wsNodeName)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
 
-			m_pStrokeColor = new CColor(oLiteReader);
+			m_pStrokeColor = new CColor(oLiteReader, pPublicRes);
 		}
 		else if (L"ofd:AbbreviatedData" == wsNodeName)
 		{
@@ -130,12 +130,12 @@ void CPathObject::AddElement(const IPathElement* pElement)
 		m_arElements.push_back(pElement);
 }
 
-void CPathObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
+void CPathObject::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer || m_arElements.empty())
 		return;
 
-	((CGraphicUnit*)this)->Apply(pRenderer);
+	CGraphicUnit::Apply(pRenderer);
 
 	pRenderer->BeginCommand(c_nPathType);
 	pRenderer->PathCommandStart();
@@ -168,7 +168,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 	if (m_bFill && nullptr != m_pFillColor)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
+		pRenderer->put_BrushColor1(m_pFillColor->ToInt());
 		pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
 	}
 	else
@@ -177,7 +177,7 @@ void CPathObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 	if (m_bStroke && nullptr != m_pStrokeColor)
 	{
 		pRenderer->put_PenSize(m_dLineWidth);
-		pRenderer->put_PenColor(m_pStrokeColor->ToInt(pPublicRes));
+		pRenderer->put_PenColor(m_pStrokeColor->ToInt());
 		pRenderer->put_PenAlpha(m_pStrokeColor->GetAlpha());
 	}
 	else

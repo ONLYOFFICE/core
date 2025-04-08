@@ -1,9 +1,11 @@
 #include "ImageObject.h"
 
+#include "../../../DesktopEditor/graphics/Image.h"
+
 namespace OFD
 {
 CImageObject::CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes)
-	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader)
+	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader), m_pMultiMedia(nullptr)
 {
 	if (nullptr == pDocumentRes || "ofd:ImageObject" != oLiteReader.GetNameA() || 0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;
@@ -24,7 +26,7 @@ CImageObject::CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes)
 	oLiteReader.MoveToElement();
 }
 
-void CImageObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
+void CImageObject::Draw(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer || nullptr == m_pMultiMedia)
 		return;
@@ -36,8 +38,6 @@ void CImageObject::Draw(IRenderer* pRenderer, const CRes* pPublicRes) const
 	if (wsFilePath.empty())
 		return;
 
-	const TBox oBoundry{GetBoundary()};
-
-	pRenderer->DrawImageFromFile(wsFilePath, 0, 0, oBoundry.m_dWidth, oBoundry.m_dHeight);
+	pRenderer->DrawImageFromFile(wsFilePath, 0, 0, 1, 1);
 }
 }

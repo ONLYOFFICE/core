@@ -63,6 +63,7 @@ namespace NSCommon
 	class nullable_uint;
 	class nullable_double;
 	class nullable_sizet;
+	class nullable_astring;
 }
 namespace NSStringUtils
 {
@@ -315,7 +316,6 @@ namespace NSBinPptxRW
 		void WriteDoubleReal(const double& dValue);
 		
 		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
-		void WriteStringA	(std::string& sBuffer);
 		
 		void WriteStringW	(const std::wstring& sBuffer);
         void WriteStringW2	(const std::wstring& sBuffer);
@@ -342,6 +342,10 @@ namespace NSBinPptxRW
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
 		void WriteString	(const std::wstring& val);
 		void WriteStringData(const WCHAR* pData, _UINT32 len);
+
+		void WriteString1	(int type, const std::string& val);
+		void WriteString2	(int type, const NSCommon::nullable_astring& val);
+		void WriteStringA	(std::string& val);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
@@ -439,7 +443,9 @@ namespace NSBinPptxRW
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
 		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		_INT32	_WriteString(const char* sBuffer, _UINT32 lCount);
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		void	_WriteStringWithLength(const char* sBuffer, _UINT32 lCount);
 	};
 
 	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter

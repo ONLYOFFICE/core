@@ -708,9 +708,9 @@ namespace OOX
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "IX", IX)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "Del", Del)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "N", N)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "LocalName", LocalName)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "T", T)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "T", T)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -779,7 +779,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -787,7 +787,7 @@ namespace OOX
 				}break;
 				case 3:
 				{
-					T = pReader->GetString2();
+					T = pReader->GetString2A();
 				}break;
 				case 4:
 				{
@@ -843,7 +843,7 @@ namespace OOX
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "IX", IX)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "Del", Del)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "N", N)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CSection::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -915,7 +915,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -1029,10 +1029,10 @@ namespace OOX
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar(oReader, "N", N)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "U", U)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "E", E)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "F", F)
+				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "U", U)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "E", E)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "F", F)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "V", V)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
@@ -1088,19 +1088,19 @@ namespace OOX
 				{
 				case 0:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 1:
 				{
-					U = pReader->GetString2();
+					U = pReader->GetString2A();
 				}break;
 				case 2:
 				{
-					E = pReader->GetString2();
+					E = pReader->GetString2A();
 				}break;
 				case 3:
 				{
-					F = pReader->GetString2();
+					F = pReader->GetString2A();
 				}break;
 				case 4:
 				{
@@ -1158,7 +1158,7 @@ namespace OOX
 		void CTrigger::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CTrigger::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1199,7 +1199,7 @@ namespace OOX
 				{
 					case 0:
 					{
-						N = pReader->GetString2();
+						N = pReader->GetString2A();
 					}break;
 				}
 			}
@@ -1539,10 +1539,10 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "FromSheet", FromSheet)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "FromCell", FromCell)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "FromCell", FromCell)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "FromPart", FromPart)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToSheet", ToSheet)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToCell", ToCell)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "ToCell", ToCell)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToPart", ToPart)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
@@ -1580,7 +1580,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					FromCell = pReader->GetString2();
+					FromCell = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -1592,7 +1592,7 @@ namespace OOX
 				}break;
 				case 4:
 				{
-					ToCell = pReader->GetString2();
+					ToCell = pReader->GetString2A();
 				}break;
 				case 5:
 				{

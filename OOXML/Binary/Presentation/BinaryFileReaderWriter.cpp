@@ -1058,7 +1058,6 @@ namespace NSBinPptxRW
 			pData += 4;
 		}
 	}
-
 	void CBinaryFileWriter::WriteString1(int type, const std::wstring& val)
 	{
 		BYTE bType = (BYTE)type;
@@ -1066,6 +1065,14 @@ namespace NSBinPptxRW
 
 		std::wstring* s = const_cast<std::wstring*>(&val);
 		_WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
+	}
+	void CBinaryFileWriter::WriteString1(int type, const std::string& val)
+	{
+		BYTE bType = (BYTE)type;
+		WriteBYTE(bType);
+
+		std::string* s = const_cast<std::string*>(&val);
+		_WriteStringWithLength(s->c_str(), (_UINT32)s->length());
 	}
 	void CBinaryFileWriter::WriteString2(int type, const NSCommon::nullable_string& val)
 	{
@@ -1077,7 +1084,11 @@ namespace NSBinPptxRW
 		std::wstring* s = const_cast<std::wstring*>(&val);
         _WriteStringWithLength(s->c_str(), (_UINT32)s->length(), false);
 	}
-
+	void CBinaryFileWriter::WriteString2(int type, const NSCommon::nullable_astring& val)
+	{
+		if (val.is_init())
+			WriteString1(type, *val);
+	}
 	void CBinaryFileWriter::WriteStringData(const WCHAR* pData, _UINT32 len)
 	{
 		_WriteStringWithLength(pData, len, false);
@@ -1281,6 +1292,18 @@ namespace NSBinPptxRW
 		m_pStreamCur += lSizeMem;
 		return lSizeMem;
 	}
+	_INT32 CBinaryFileWriter::_WriteString(const char* sBuffer, _UINT32 lCount)
+	{
+		_UINT32 lSizeMem = lCount * sizeof(char);
+
+		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
+
+		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+		return lSizeMem;
+	}
 	void CBinaryFileWriter::_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte)
 	{
 		if (sizeof(wchar_t) == 4)
@@ -1314,6 +1337,29 @@ namespace NSBinPptxRW
 			//length
 			WriteLONG(lSizeMem / 2);
 		}
+		//skip string
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+	}
+	void CBinaryFileWriter::_WriteStringWithLength(const char* sBuffer, _UINT32 lCount)
+	{
+		CheckBufferSize(UINT32_SIZEOF + lCount);
+
+		//skip size
+		m_lPosition += UINT32_SIZEOF;
+		m_pStreamCur += UINT32_SIZEOF;
+		//write string
+		_INT32 lSizeMem = _WriteString(sBuffer, lCount);
+
+		//back to size
+		m_lPosition -= lSizeMem;
+		m_pStreamCur -= lSizeMem;
+		m_lPosition -= UINT32_SIZEOF;
+		m_pStreamCur -= UINT32_SIZEOF;
+
+		//write size
+		WriteLONG(lSizeMem);
+
 		//skip string
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;

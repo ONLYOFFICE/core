@@ -319,7 +319,10 @@ namespace NSStringUtils
 	{
 		WriteEncodeXmlString(sString.c_str(), (int)sString.length());
 	}
-
+	void CStringBuilder::WriteEncodeXmlString(const std::string& sString)
+	{
+		WriteEncodeXmlString(std::wstring(sString.begin(), sString.end()));
+	}
 	void CStringBuilder::WriteEncodeXmlString(const wchar_t* pString, int nCount)
 	{
 		if (sizeof(wchar_t) == 2)

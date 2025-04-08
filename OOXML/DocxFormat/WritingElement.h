@@ -188,7 +188,11 @@ namespace OOX
 	{\
 	Value = Reader.GetText();\
 }
-
+#define WritingElement_ReadAttributesA_Read_ifChar(Reader, AttrName, Value) \
+	if ( strcmp(AttrName, wsName) == 0 )\
+	{\
+	Value = Reader.GetTextA();\
+}
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 	else if ( AttrName == wsName )\
 	Value = Reader.GetText();
@@ -196,6 +200,10 @@ namespace OOX
 #define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
 	else if ( strcmp(AttrName, wsName) == 0 )\
 	Value = Reader.GetText();
+
+#define WritingElement_ReadAttributesA_Read_else_ifChar(Reader, AttrName, Value) \
+	else if ( strcmp(AttrName, wsName) == 0 )\
+	Value = Reader.GetTextA();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 	if ( AttrName == wsName )\

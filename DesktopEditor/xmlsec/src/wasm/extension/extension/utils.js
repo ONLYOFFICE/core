@@ -188,7 +188,6 @@
 
         if (isUsePrefix && isBase64)
         {
-            // ищем длину
             dstLen = 0;
             var maxLen = Math.max(11, srcLen); // > 4 Gb
             while (index < maxLen)
@@ -203,7 +202,6 @@
 
             if (index == maxLen)
             {
-                // длины нет
                 index = 0;
                 dstLen = srcLen;
             }

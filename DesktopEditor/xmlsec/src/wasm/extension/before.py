@@ -3,3 +3,5 @@ sys.path.append("../../../../../../build_tools/scripts")
 import base
 
 base.cmd_in_dir("./../3rdParty", sys.executable, ["openssl.py"])
+
+base.copy_file("./extension/engine.wasm.js", "./engine.wasm.js")

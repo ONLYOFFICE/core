@@ -1,12 +1,12 @@
 {
 	"name": "engine",
-	"res_folder": "./extension/deploy",
+	"res_folder": "./deploy",
 	"wasm": true,
 	"asm": true,
 	"embed_mem_file": true,
 	"run_before": "before.py",
 	"run_after": "after.py",
-	"base_js_content": "./extension/engine.wasm.js",
+	"base_js_content": "./engine.wasm.js",
 
 	"compiler_flags": [
 		"-O3",

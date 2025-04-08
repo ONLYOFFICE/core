@@ -37,63 +37,62 @@
 
 namespace Aggplus
 {
-class CMatrix_private;
-class GRAPHICS_DECL CMatrix
-{
-public:
-	CMatrix();
-	CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);
-	CMatrix(const CMatrix& other);
-	CMatrix(CMatrix&& other);
-	~CMatrix();
+	class CMatrix_private;
+	class GRAPHICS_DECL CMatrix
+	{
+	public:
+		CMatrix();
+		CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);
+		CMatrix(const CMatrix& other);
+		CMatrix(CMatrix&& other);
+		~CMatrix();
 
-	void Translate(double offsetX, double offsetY, MatrixOrder order = MatrixOrderPrepend);
-	void Scale(double scaleX, double scaleY, MatrixOrder order = MatrixOrderPrepend);
-	void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
-	double Determinant() const;
+		void Translate(double offsetX, double offsetY, MatrixOrder order = MatrixOrderPrepend);
+		void Scale(double scaleX, double scaleY, MatrixOrder order = MatrixOrderPrepend);
+		void Shear(double shearX, double shearY, MatrixOrder order = MatrixOrderPrepend);
+		double Determinant() const;
 
-	void TransformVectors(PointF* pts, int count) const;
-	void TransformPoints(PointF* pts, int count) const;
-	void TransformPoint(double& x, double& y) const;
-	void TransformPoints(PointF* dst, const PointF* src, int count) const;
+		void TransformVectors(PointF* pts, int count) const;
+		void TransformPoints(PointF* pts, int count) const;
+		void TransformPoint(double& x, double& y) const;
+		void TransformPoints(PointF* dst, const PointF* src, int count) const;
 
-	void Rotate(double angle, MatrixOrder order = MatrixOrderPrepend);
-	void RotateAt(double angle, const PointF &center, MatrixOrder order = MatrixOrderPrepend);
-	void RotateAt(double angle, double x, double y, MatrixOrder order = MatrixOrderPrepend);
+		void Rotate(double angle, MatrixOrder order = MatrixOrderPrepend);
+		void RotateAt(double angle, const PointF &center, MatrixOrder order = MatrixOrderPrepend);
+		void RotateAt(double angle, double x, double y, MatrixOrder order = MatrixOrderPrepend);
 
-	void Multiply(const CMatrix* matrix, MatrixOrder order = MatrixOrderPrepend);
+		void Multiply(const CMatrix* matrix, MatrixOrder order = MatrixOrderPrepend);
 
-	double OffsetX() const;
-	double OffsetY() const;
+		double OffsetX() const;
+		double OffsetY() const;
 
-	double sx() const;
-	double sy() const;
-	double shx() const;
-	double shy() const;
-	double tx() const;
-	double ty() const;
-	double rotation();
+		double sx() const;
+		double sy() const;
+		double shx() const;
+		double shy() const;
+		double tx() const;
+		double ty() const;
+		double rotation();
 
-	void SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx = 0, const double& ty = 0);
-	Status GetElements(float* m) const;
-	Status GetElements(double* m) const;
+		void SetElements(const double& sx, const double& shy, const double& shx, const double& sy, const double& tx = 0, const double& ty = 0);
+		Status GetElements(float* m) const;
+		Status GetElements(double* m) const;
 
-	void Reset();
-	bool IsIdentity(const double& eps = 0.00001) const;
-	bool IsIdentity2(const double& eps = 0.00001) const;
+		void Reset();
+		bool IsIdentity(const double& eps = 0.00001) const;
+		bool IsIdentity2(const double& eps = 0.00001) const;
 
-	static bool IsEqual(const CMatrix* m1, const CMatrix* m2, const double& eps = 0.001, bool bIsOnlyMain = false);
+		static bool IsEqual(const CMatrix* m1, const CMatrix* m2, const double& eps = 0.001, bool bIsOnlyMain = false);
 
-	Status Invert();
+		Status Invert();
 
-	double z_Rotation() const;
+		double z_Rotation() const;
 
-	const CMatrix& operator=(const CMatrix& other);
-	CMatrix& operator=(CMatrix&& other);
+		const CMatrix& operator=(const CMatrix& other);
+		CMatrix& operator=(CMatrix&& other);
 
-public:
-	CMatrix_private* m_internal;
-};
+	public:
+		CMatrix_private* m_internal;
+	};
 }
-
 #endif // _BUILD_MATRIX_H_

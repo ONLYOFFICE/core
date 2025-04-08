@@ -34,299 +34,299 @@
 
 namespace Aggplus
 {
-CMatrix::CMatrix(double m11, double m12, double m21, double m22, double dx, double dy)
-{
-	m_internal = new CMatrix_private();
-	m_internal->m_agg_mtx.sx = m11;
-	m_internal->m_agg_mtx.shy = m12;
-	m_internal->m_agg_mtx.shx = m21;
-	m_internal->m_agg_mtx.sy = m22;
-	m_internal->m_agg_mtx.tx = dx;
-	m_internal->m_agg_mtx.ty = dy;
-}
-
-CMatrix::CMatrix()
-{
-	m_internal = new CMatrix_private();
-}
-
-CMatrix::CMatrix(const CMatrix& other)
-{
-	*this = other;
-}
-
-CMatrix::CMatrix(CMatrix&& other)
-{
-	*this = std::move(other);
-}
-
-CMatrix::~CMatrix()
-{
-	RELEASEOBJECT(m_internal);
-}
-
-void CMatrix::Translate(double offsetX, double offsetY, MatrixOrder order)
-{
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_translation(offsetX, offsetY));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_translation(offsetX, offsetY));
-}
-
-void CMatrix::Scale(double scaleX, double scaleY, MatrixOrder order)
-{
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_scaling(scaleX, scaleY));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_scaling(scaleX, scaleY));
-}
-
-void CMatrix::Shear(double shearX, double shearY, MatrixOrder order)
-{
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_skewing(shearX, shearY));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_skewing(shearX, shearY));
-}
-
-double CMatrix::Determinant() const
-{
-	return m_internal->m_agg_mtx.determinant();
-}
-
-void CMatrix::TransformVectors(PointF* pts, int count) const
-{
-	// Store matrix to an array [6] of double
-	double M[6];
-	m_internal->m_agg_mtx.store_to(M);
-
-	for (int i = 0; i < count; ++i)
+	CMatrix::CMatrix(double m11, double m12, double m21, double m22, double dx, double dy)
 	{
-		double x = pts[i].X;
-		double y = pts[i].Y;
+		m_internal = new CMatrix_private();
+		m_internal->m_agg_mtx.sx = m11;
+		m_internal->m_agg_mtx.shy = m12;
+		m_internal->m_agg_mtx.shx = m21;
+		m_internal->m_agg_mtx.sy = m22;
+		m_internal->m_agg_mtx.tx = dx;
+		m_internal->m_agg_mtx.ty = dy;
+	}
+
+	CMatrix::CMatrix()
+	{
+		m_internal = new CMatrix_private();
+	}
+
+	CMatrix::CMatrix(const CMatrix& other)
+	{
+		*this = other;
+	}
+
+	CMatrix::CMatrix(CMatrix&& other)
+	{
+		*this = std::move(other);
+	}
+
+	CMatrix::~CMatrix()
+	{
+		RELEASEOBJECT(m_internal);
+	}
+
+	void CMatrix::Translate(double offsetX, double offsetY, MatrixOrder order)
+	{
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_translation(offsetX, offsetY));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_translation(offsetX, offsetY));
+	}
+
+	void CMatrix::Scale(double scaleX, double scaleY, MatrixOrder order)
+	{
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_scaling(scaleX, scaleY));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_scaling(scaleX, scaleY));
+	}
+
+	void CMatrix::Shear(double shearX, double shearY, MatrixOrder order)
+	{
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_skewing(shearX, shearY));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_skewing(shearX, shearY));
+	}
+
+	double CMatrix::Determinant() const
+	{
+		return m_internal->m_agg_mtx.determinant();
+	}
+
+	void CMatrix::TransformVectors(PointF* pts, int count) const
+	{
+		// Store matrix to an array [6] of double
+		double M[6];
+		m_internal->m_agg_mtx.store_to(M);
+
+		for (int i = 0; i < count; ++i)
+		{
+			double x = pts[i].X;
+			double y = pts[i].Y;
+			m_internal->m_agg_mtx.transform(&x, &y);
+			pts[i].X = static_cast<float>(x-M[4]);
+			pts[i].Y = static_cast<float>(y-M[5]);
+		}
+	}
+
+	void CMatrix::TransformPoints(PointF* pts, int count) const
+	{
+		for (int i = 0; i < count; ++i)
+		{
+			double x = pts[i].X;
+			double y = pts[i].Y;
+			m_internal->m_agg_mtx.transform(&x, &y);
+			pts[i].X = static_cast<float>(x);
+			pts[i].Y = static_cast<float>(y);
+		}
+	}
+
+	void CMatrix::TransformPoint(double& x, double& y) const
+	{
 		m_internal->m_agg_mtx.transform(&x, &y);
-		pts[i].X = static_cast<float>(x-M[4]);
-		pts[i].Y = static_cast<float>(y-M[5]);
 	}
-}
 
-void CMatrix::TransformPoints(PointF* pts, int count) const
-{
-	for (int i = 0; i < count; ++i)
+	void CMatrix::TransformPoints(PointF* dst, const PointF* src, int count) const
 	{
-		double x = pts[i].X;
-		double y = pts[i].Y;
-		m_internal->m_agg_mtx.transform(&x, &y);
-		pts[i].X = static_cast<float>(x);
-		pts[i].Y = static_cast<float>(y);
+		agg::trans_affine& m = m_internal->m_agg_mtx;
+		for(int i = 0; i < count; ++i)
+		{
+			double x = src[i].X * m.sx + src[i].Y * m.shx + m.tx;
+			double y = src[i].Y * m.sy + src[i].X * m.shy + m.ty;
+
+			dst[i].X = static_cast<float>(x);
+			dst[i].Y = static_cast<float>(y);
+		}
 	}
-}
 
-void CMatrix::TransformPoint(double& x, double& y) const
-{
-	m_internal->m_agg_mtx.transform(&x, &y);
-}
-
-void CMatrix::TransformPoints(PointF* dst, const PointF* src, int count) const
-{
-	agg::trans_affine& m = m_internal->m_agg_mtx;
-	for(int i = 0; i < count; ++i)
+	void CMatrix::Rotate(double angle, MatrixOrder order)
 	{
-		double x = src[i].X * m.sx + src[i].Y * m.shx + m.tx;
-		double y = src[i].Y * m.sy + src[i].X * m.shy + m.ty;
-
-		dst[i].X = static_cast<float>(x);
-		dst[i].Y = static_cast<float>(y);
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
 	}
-}
 
-void CMatrix::Rotate(double angle, MatrixOrder order)
-{
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
-}
+	void CMatrix::RotateAt(double angle, const PointF &center, MatrixOrder order)
+	{
+		Translate(-center.X, -center.Y, order);
 
-void CMatrix::RotateAt(double angle, const PointF &center, MatrixOrder order)
-{
-	Translate(-center.X, -center.Y, order);
+		if(order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
 
-	if(order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
+		Translate(center.X, center.Y, order);
+		return;
+	}
 
-	Translate(center.X, center.Y, order);
-	return;
-}
+	void CMatrix::RotateAt(double angle, double x, double y, MatrixOrder order)
+	{
+		Translate(-x, -y, order);
 
-void CMatrix::RotateAt(double angle, double x, double y, MatrixOrder order)
-{
-	Translate(-x, -y, order);
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
+		else
+			m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
 
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
-	else
-		m_internal->m_agg_mtx.multiply(agg::trans_affine_rotation(agg::deg2rad(angle)));
+		Translate(x, y, order);
+	}
 
-	Translate(x, y, order);
-}
+	void CMatrix::Multiply(const CMatrix* matrix, MatrixOrder order)
+	{
+		if (order == MatrixOrderPrepend)
+			m_internal->m_agg_mtx.premultiply(matrix->m_internal->m_agg_mtx);
+		else
+			m_internal->m_agg_mtx.multiply(matrix->m_internal->m_agg_mtx);
+	}
 
-void CMatrix::Multiply(const CMatrix* matrix, MatrixOrder order)
-{
-	if (order == MatrixOrderPrepend)
-		m_internal->m_agg_mtx.premultiply(matrix->m_internal->m_agg_mtx);
-	else
-		m_internal->m_agg_mtx.multiply(matrix->m_internal->m_agg_mtx);
-}
+	double CMatrix::OffsetX() const
+	{
+		return m_internal->m_agg_mtx.tx;
+	}
 
-double CMatrix::OffsetX() const
-{
-	return m_internal->m_agg_mtx.tx;
-}
+	double CMatrix::OffsetY() const
+	{
+		return m_internal->m_agg_mtx.ty;
+	}
 
-double CMatrix::OffsetY() const
-{
-	return m_internal->m_agg_mtx.ty;
-}
+	double CMatrix::sx() const
+	{
+		return m_internal->m_agg_mtx.sx;
+	}
 
-double CMatrix::sx() const
-{
-	return m_internal->m_agg_mtx.sx;
-}
+	double CMatrix::sy() const
+	{
+		return m_internal->m_agg_mtx.sy;
+	}
 
-double CMatrix::sy() const
-{
-	return m_internal->m_agg_mtx.sy;
-}
+	double CMatrix::shx() const
+	{
+		return m_internal->m_agg_mtx.shx;
+	}
 
-double CMatrix::shx() const
-{
-	return m_internal->m_agg_mtx.shx;
-}
+	double CMatrix::shy() const
+	{
+		return m_internal->m_agg_mtx.shy;
+	}
 
-double CMatrix::shy() const
-{
-	return m_internal->m_agg_mtx.shy;
-}
+	double CMatrix::tx() const
+	{
+		return m_internal->m_agg_mtx.tx;
+	}
 
-double CMatrix::tx() const
-{
-	return m_internal->m_agg_mtx.tx;
-}
+	double CMatrix::ty() const
+	{
+		return m_internal->m_agg_mtx.ty;
+	}
 
-double CMatrix::ty() const
-{
-	return m_internal->m_agg_mtx.ty;
-}
+	double CMatrix::rotation()
+	{
+		return m_internal->m_agg_mtx.rotation();
+	}
 
-double CMatrix::rotation()
-{
-	return m_internal->m_agg_mtx.rotation();
-}
+	void CMatrix::SetElements(const double& sx, const double& shy, const double& shx,
+							  const double& sy, const double& tx, const double& ty)
+	{
+		m_internal->m_agg_mtx.sx = sx;
+		m_internal->m_agg_mtx.shy = shy;
+		m_internal->m_agg_mtx.shx = shx;
+		m_internal->m_agg_mtx.sy = sy;
+		m_internal->m_agg_mtx.tx = tx;
+		m_internal->m_agg_mtx.ty = ty;
+	}
 
-void CMatrix::SetElements(const double& sx, const double& shy, const double& shx,
-						  const double& sy, const double& tx, const double& ty)
-{
-	m_internal->m_agg_mtx.sx = sx;
-	m_internal->m_agg_mtx.shy = shy;
-	m_internal->m_agg_mtx.shx = shx;
-	m_internal->m_agg_mtx.sy = sy;
-	m_internal->m_agg_mtx.tx = tx;
-	m_internal->m_agg_mtx.ty = ty;
-}
+	Status CMatrix::GetElements(float* m) const
+	{
+		double M[6];
+		m_internal->m_agg_mtx.store_to(M);
 
-Status CMatrix::GetElements(float* m) const
-{
-	double M[6];
-	m_internal->m_agg_mtx.store_to(M);
+		m[0] = static_cast<float>(M[0]);
+		m[1] = static_cast<float>(M[1]);
+		m[2] = static_cast<float>(M[2]);
+		m[3] = static_cast<float>(M[3]);
+		m[4] = static_cast<float>(M[4]);
+		m[5] = static_cast<float>(M[5]);
 
-	m[0] = static_cast<float>(M[0]);
-	m[1] = static_cast<float>(M[1]);
-	m[2] = static_cast<float>(M[2]);
-	m[3] = static_cast<float>(M[3]);
-	m[4] = static_cast<float>(M[4]);
-	m[5] = static_cast<float>(M[5]);
+		return Ok;
+	}
 
-	return Ok;
-}
+	Status CMatrix::GetElements(double* m) const
+	{
+		m_internal->m_agg_mtx.store_to(m);
+		return Ok;
+	}
 
-Status CMatrix::GetElements(double* m) const
-{
-	m_internal->m_agg_mtx.store_to(m);
-	return Ok;
-}
+	void CMatrix::Reset()
+	{
+		m_internal->m_agg_mtx.reset();
+	}
 
-void CMatrix::Reset()
-{
-	m_internal->m_agg_mtx.reset();
-}
+	bool CMatrix::IsIdentity(const double& eps) const
+	{
+		return m_internal->m_agg_mtx.is_identity(eps);
+	}
 
-bool CMatrix::IsIdentity(const double& eps) const
-{
-	return m_internal->m_agg_mtx.is_identity(eps);
-}
+	bool CMatrix::IsIdentity2(const double& eps) const
+	{
+		agg::trans_affine& m = m_internal->m_agg_mtx;
+		return agg::is_equal_eps(m.sx,  1.0, eps) &&
+			   agg::is_equal_eps(m.shy, 0.0, eps) &&
+			   agg::is_equal_eps(m.shx, 0.0, eps) &&
+			   agg::is_equal_eps(m.sy,  1.0, eps);
+	}
 
-bool CMatrix::IsIdentity2(const double& eps) const
-{
-	agg::trans_affine& m = m_internal->m_agg_mtx;
-	return agg::is_equal_eps(m.sx,  1.0, eps) &&
-		   agg::is_equal_eps(m.shy, 0.0, eps) &&
-		   agg::is_equal_eps(m.shx, 0.0, eps) &&
-		   agg::is_equal_eps(m.sy,  1.0, eps);
-}
+	bool CMatrix::IsEqual(const CMatrix* mm1, const CMatrix* mm2, const double& eps, bool bIsOnlyMain)
+	{
+		agg::trans_affine& m1 = mm1->m_internal->m_agg_mtx;
+		agg::trans_affine& m2 = mm2->m_internal->m_agg_mtx;
 
-bool CMatrix::IsEqual(const CMatrix* mm1, const CMatrix* mm2, const double& eps, bool bIsOnlyMain)
-{
-	agg::trans_affine& m1 = mm1->m_internal->m_agg_mtx;
-	agg::trans_affine& m2 = mm2->m_internal->m_agg_mtx;
+		bool bMain = fabs(m1.sx  - m2.sx)  < eps &&
+					 fabs(m1.sy  - m2.sy)  < eps &&
+					 fabs(m1.shx - m2.shx) < eps &&
+					 fabs(m1.shy - m2.shy) < eps;
 
-	bool bMain = fabs(m1.sx  - m2.sx)  < eps &&
-				 fabs(m1.sy  - m2.sy)  < eps &&
-				 fabs(m1.shx - m2.shx) < eps &&
-				 fabs(m1.shy - m2.shy) < eps;
+		if (!bMain || bIsOnlyMain)
+			return bMain;
 
-	if (!bMain || bIsOnlyMain)
-		return bMain;
+		return fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps;
+	}
 
-	return fabs(m1.tx - m2.tx) < eps && fabs(m1.ty - m2.ty) < eps;
-}
+	Status CMatrix::Invert()
+	{
+		double d = m_internal->m_agg_mtx.determinant();
+		if (0.0001 >= fabs(d))
+			return InvalidParameter;
 
-Status CMatrix::Invert()
-{
-	double d = m_internal->m_agg_mtx.determinant();
-	if (0.0001 >= fabs(d))
-		return InvalidParameter;
+		m_internal->m_agg_mtx.invert();
+		return Ok;
+	}
 
-	m_internal->m_agg_mtx.invert();
-	return Ok;
-}
+	//Temp
+	//Used in X_BrushLinearGradient constructor
+	double CMatrix::z_Rotation() const
+	{
+		return agg::rad2deg(m_internal->m_agg_mtx.rotation());
+	}
 
-//Temp
-//Used in X_BrushLinearGradient constructor
-double CMatrix::z_Rotation() const
-{
-	return agg::rad2deg(m_internal->m_agg_mtx.rotation());
-}
+	const CMatrix& CMatrix::operator=(const CMatrix& other)
+	{
+		if (this == &other)
+			return *this;
 
-const CMatrix& CMatrix::operator=(const CMatrix& other)
-{
-	if (this == &other)
+		m_internal = new CMatrix_private();
+		m_internal->m_agg_mtx = other.m_internal->m_agg_mtx;
 		return *this;
+	}
 
-	m_internal = new CMatrix_private();
-	m_internal->m_agg_mtx = other.m_internal->m_agg_mtx;
-	return *this;
-}
+	CMatrix& CMatrix::operator=(CMatrix&& other)
+	{
+		if (this == &other)
+			return *this;
 
-CMatrix& CMatrix::operator=(CMatrix&& other)
-{
-	if (this == &other)
+		m_internal = other.m_internal;
+		other.m_internal = nullptr;
 		return *this;
-
-	m_internal = other.m_internal;
-	other.m_internal = nullptr;
-	return *this;
-}
+	}
 }

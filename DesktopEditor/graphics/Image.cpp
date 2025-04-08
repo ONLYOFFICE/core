@@ -162,8 +162,7 @@ namespace Aggplus
 		size_t size_of_data = m_dwHeight * m_nStride > 0 ? m_nStride : -m_nStride;
 		m_pImgData = new BYTE[size_of_data];
 
-		for (size_t i = 0; i < size_of_data; i++)
-			m_pImgData[i] = other.m_pImgData[i];
+		memcpy(m_pImgData, other.m_pImgData, size_of_data);
 
 		return *this;
 	}
@@ -197,10 +196,10 @@ namespace Aggplus
 	////////////////////////////////////////////////////////////////////////////////////////
 	CBitmap::CBitmap(LONG width, LONG height, PixelFormat format) : CImage()
 	{
-		if(width <= 0 || height <= 0) 
-		{ 
-			m_Status=InvalidParameter; 
-			return; 
+		if(width <= 0 || height <= 0)
+		{
+			m_Status=InvalidParameter;
+			return;
 		}
 
 		LONG lSize = 4 * width * height;
@@ -219,15 +218,15 @@ namespace Aggplus
 	CBitmap::CBitmap(LONG width, LONG height, LONG stride, PixelFormat format, BYTE* scan0) : CImage()
 	{
 		//Warning! This is not Gdiplus behavior; it returns Ok!
-		if(width <= 0 || height <= 0 || stride == 0) 
-		{ 
-			m_Status = InvalidParameter; 
-			return; 
+		if(width <= 0 || height <= 0 || stride == 0)
+		{
+			m_Status = InvalidParameter;
+			return;
 		}
 
 		m_bExternalBuffer = true;
 
-		if (stride > 0) 
+		if (stride > 0)
 		{
 			m_pImgData = scan0;
 		}
@@ -235,7 +234,7 @@ namespace Aggplus
 		{
 			m_pImgData = scan0 + (height - 1) * (-stride);
 		}
-		
+
 		m_dwWidth	= width;
 		m_dwHeight	= height;
 		m_nStride	= stride;

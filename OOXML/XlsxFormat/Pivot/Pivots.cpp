@@ -3889,6 +3889,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheFields->toXML(writer);
         if(m_oHierarchies.IsInit())
             m_oHierarchies->toXML(writer);
+        if(m_oCalculatedItems.IsInit())
+            m_oCalculatedItems->toXML(writer);
         if(m_oDimensions.IsInit())
             m_oDimensions->toXML(writer);
         if(m_oMeasureGroups.IsInit())
@@ -3917,10 +3919,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
 			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
+             else if (L"calculatedItems" == sName)	m_oCalculatedItems = oReader;
             else if (L"dimensions" == sName)	m_oDimensions = oReader;
             else if (L"maps" == sName)          m_oMaps = oReader;
             else if (L"measureGroups" == sName) m_oMeasureGroups = oReader;
-			else if (L"extLst" == sName)		m_oExtLst = oReader;
+            else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}
 	XLS::BaseObjectPtr CPivotCacheDefinition::toBin()
@@ -3934,6 +3937,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_PCDSOURCE = m_oCacheSource->toBin();
         if(m_oHierarchies.IsInit())
             ptr->m_PCDHIERARCHIES = m_oHierarchies->toBin();
+        if(m_oCalculatedItems.IsInit())
+            ptr->m_PCDCALCITEMS = m_oCalculatedItems->toBin();
         if(m_oDimensions.IsInit())
             ptr->m_DIMS = m_oDimensions->toBin();
         if(m_oMeasureGroups.IsInit())
@@ -4046,6 +4051,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				
             if(ptr->m_PCDHIERARCHIES != nullptr)
                 m_oHierarchies = ptr->m_PCDHIERARCHIES;
+
+            if(ptr->m_PCDCALCITEMS != nullptr)
+                m_oCalculatedItems = ptr->m_PCDCALCITEMS;
 
             if(ptr->m_DIMS != nullptr)
                 m_oDimensions = ptr->m_DIMS;

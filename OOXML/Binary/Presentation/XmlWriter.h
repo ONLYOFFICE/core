@@ -126,6 +126,7 @@ namespace NSBinPptxRW
 		void WriteAttribute(const std::wstring& strAttributeName, const wchar_t* val);
 		void WriteAttribute2(const std::wstring& strAttributeName, const std::wstring& val); // xml
 		void WriteAttribute2(const std::wstring& strAttributeName, const std::string& val);
+		void WriteAttributeUtf8(const std::wstring& strAttributeName, const std::string& val);
 		void WriteAttribute(const std::wstring& strAttributeName, const double& val);
 		void WriteAttribute(const std::wstring& strAttributeName, const int& val);
 		void WriteAttribute(const std::wstring& strAttributeName, const bool& val);
@@ -164,6 +165,7 @@ namespace NSBinPptxRW
 		void WriteAttribute2(const std::wstring& strName, const nullable_string& value); // xml 
 		void WriteAttribute(const std::wstring& strName, const nullable_bool& value);
 		void WriteAttribute2(const std::wstring& strName, const nullable_astring& value);
+		void WriteAttributeUtf8(const std::wstring& strName, const nullable_astring& value);
 
         template <typename T>
 		void WriteAttribute(const std::wstring& strName, const nullable_limit<T>& value)

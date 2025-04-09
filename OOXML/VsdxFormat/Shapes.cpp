@@ -1032,8 +1032,8 @@ namespace OOX
 				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
 				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "U", U)
 				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "E", E)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "F", F)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "V", V)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "F", F)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "V", V)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1062,8 +1062,8 @@ namespace OOX
 			pWriter->WriteString2(0, N);
 			pWriter->WriteString2(1, U);
 			pWriter->WriteString2(2, E);
-			pWriter->WriteStringUtf8(3, F);
-			pWriter->WriteStringUtf8(4, V);
+			pWriter->WriteString2(3, F);
+			pWriter->WriteString2(4, V);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, RefBy);
@@ -1100,11 +1100,11 @@ namespace OOX
 				}break;
 				case 3:
 				{
-					F = pReader->GetStringUtf8();
+					F = pReader->GetString2A();
 				}break;
 				case 4:
 				{
-					V = pReader->GetStringUtf8();
+					V = pReader->GetString2A();
 				}break;
 				}
 			}
@@ -1135,10 +1135,10 @@ namespace OOX
 			pWriter->StartNode(L"Cell");
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"N", N);
-			pWriter->WriteAttribute2(L"V", V);
+			pWriter->WriteAttributeUtf8(L"V", V);
 			pWriter->WriteAttribute2(L"U", U);
 			pWriter->WriteAttribute2(L"E", E);
-			pWriter->WriteAttribute2(L"F", F);
+			pWriter->WriteAttributeUtf8(L"F", F);
 			pWriter->EndAttributes();
 
 			if (RefBy.IsInit())

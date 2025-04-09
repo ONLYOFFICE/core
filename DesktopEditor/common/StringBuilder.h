@@ -111,6 +111,7 @@ namespace NSStringUtils
 		void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1);
 
 		void WriteEncodeXmlString(const std::string& sString);
+		void WriteUtf8EncodeXmlString(const std::string& sString);
 
 		void WriteEncodeXmlStringHHHH(const std::wstring& sString);
 		void WriteEncodeXmlStringHHHH(const wchar_t* pString, int nCount = -1);

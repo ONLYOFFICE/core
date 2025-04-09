@@ -356,8 +356,8 @@ namespace OOX
 			nullable_astring N;
 			nullable_astring U; //todooo type 
 			nullable_astring E; //todooo err 
-			nullable_string F;
-			nullable_string V;
+			nullable_astring F;
+			nullable_astring V;
 
 			nullable<CRefBy> RefBy;
 			

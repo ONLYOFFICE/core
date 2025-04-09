@@ -348,6 +348,7 @@ namespace NSBinPptxRW
 		void WriteStringA	(std::string& val);
 
 		void WriteStringUtf8(int type, const NSCommon::nullable_string& val);
+		void WriteStringUtf8(int type, const NSCommon::nullable_astring& val);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 

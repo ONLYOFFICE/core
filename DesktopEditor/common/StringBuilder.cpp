@@ -323,6 +323,10 @@ namespace NSStringUtils
 	{
 		WriteEncodeXmlString(std::wstring(sString.begin(), sString.end()));
 	}
+	void CStringBuilder::WriteUtf8EncodeXmlString(const std::string& sString)
+    {
+        WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sString.c_str(), sString.size()));
+	}
 	void CStringBuilder::WriteEncodeXmlString(const wchar_t* pString, int nCount)
 	{
 		if (sizeof(wchar_t) == 2)

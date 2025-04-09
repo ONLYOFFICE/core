@@ -91,6 +91,7 @@ namespace BinDocxRW
 
 		OOX::IFileContainer*	m_pCurRels;
 		std::map<int, bool>		m_mapIgnoreComments;
+		std::map<int, bool>		m_mapIgnoreDocumentComments;
 
 		ParamsWriter(NSBinPptxRW::CBinaryFileWriter* pCBufferedStream,
 					 DocWrapper::FontProcessor* pFontProcessor,

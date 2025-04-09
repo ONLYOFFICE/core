@@ -130,7 +130,8 @@ namespace PdfWriter
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
-		CDestination*     CreateDestination(CPage* pPage, bool bInline = false);
+		COutline*         GetOutlines() { return m_pOutlines; }
+		CDestination*     CreateDestination(CObjectBase* pPage, bool bInline = false);
 		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 					      
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);

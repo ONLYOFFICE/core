@@ -40,12 +40,16 @@
 #include "lib/xpdf/TextString.h"
 #include "lib/xpdf/Lexer.h"
 #include "lib/xpdf/Parser.h"
+#include "lib/xpdf/Outline.h"
+#include "lib/xpdf/Link.h"
 
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
 #include "SrcWriter/Info.h"
 #include "SrcWriter/ResourcesDictionary.h"
 #include "SrcWriter/Streams.h"
+#include "SrcWriter/Destination.h"
+#include "SrcWriter/Outline.h"
 
 #define AddToObject(oVal)\
 {\
@@ -929,7 +933,7 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 }
 bool CPdfEditor::IncrementalUpdates()
 {
-	if (m_nMode == Mode::Unknown)
+	if (m_nMode != Mode::Unknown)
 		return true;
 
 	m_nMode = Mode::WriteAppend;
@@ -1157,7 +1161,7 @@ void CPdfEditor::Close()
 	if (m_wsDstFile.empty())
 		 return;
 
-	if (m_nMode == Mode::WriteAppend)
+	if (m_nMode != Mode::WriteAppend)
 	{
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
@@ -1894,7 +1898,106 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	RELEASEARRAYOBJECTS(pRes);
 	return NULL;
 }
-bool CPdfEditor::MergePages(const int* arrPageIndex, unsigned int unLength)
+void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
+{
+	std::string sTitle = NSStringExt::CConverter::GetUtf8FromUTF32(pOutlineItem->getTitle(), pOutlineItem->getTitleLength());
+	PdfWriter::COutline* pOutline = pDoc->CreateOutline(pParent, sTitle.c_str());
+
+	PdfWriter::CDestination* pDest = NULL;
+	LinkAction* pLinkAction = pOutlineItem->getAction();
+	if (pLinkAction && pLinkAction->getKind() == actionGoTo)
+	{
+		GString* str = ((LinkGoTo*)pLinkAction)->getNamedDest();
+		LinkDest* pLinkDest = str ? pdfDoc->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest();
+		if (pLinkDest)
+		{
+			int pg;
+			if (pLinkDest->isPageRef())
+			{
+				Ref pageRef = pLinkDest->getPageRef();
+				pg = pdfDoc->findPage(pageRef.num, pageRef.gen);
+			}
+			else
+				pg = pLinkDest->getPageNum();
+			if (pg == 0)
+				pg = 1;
+
+			Ref* pPageRef = pdfDoc->getCatalog()->getPageRef(pg);
+			PdfWriter::CObjectBase* pPageD = pDoc->GetEditPage(--pg);
+			if (!pPageD && pPageRef->num > 0)
+			{
+				PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+				pBase->SetRef(pPageRef->num, pPageRef->gen);
+				pPageD = new PdfWriter::CProxyObject(pBase, true);
+			}
+			pDest = pDoc->CreateDestination(pPageD, true);
+
+			switch (pLinkDest->getKind())
+			{
+			case destXYZ:
+			{
+				pDest->SetXYZ(pLinkDest->getLeft(), pLinkDest->getTop(), pLinkDest->getZoom());
+				break;
+			}
+			case destFit:
+			{
+				pDest->SetFit();
+				break;
+			}
+			case destFitH:
+			{
+				pDest->SetFitH(pLinkDest->getTop());
+				break;
+			}
+			case destFitV:
+			{
+				pDest->SetFitV(pLinkDest->getLeft());
+				break;
+			}
+			case destFitR:
+			{
+				pDest->SetFitR(pLinkDest->getLeft(), pLinkDest->getBottom(), pLinkDest->getRight(), pLinkDest->getTop());
+				break;
+			}
+			case destFitB:
+			{
+				pDest->SetFitB();
+				break;
+			}
+			case destFitBH:
+			{
+				pDest->SetFitBH(pLinkDest->getTop());
+				break;
+			}
+			case destFitBV:
+			{
+				pDest->SetFitBV(pLinkDest->getLeft());
+				break;
+			}
+			}
+		}
+		if (str)
+			RELEASEOBJECT(pLinkDest);
+	}
+	if (pDest)
+		pOutline->SetDestination(pDest);
+
+	pOutlineItem->open();
+	GList* pList = pOutlineItem->getKids();
+	if (!pList)
+	{
+		pOutlineItem->close();
+		return;
+	}
+	for (int i = 0, num = pList->getLength(); i < num; i++)
+	{
+		OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
+		if (pOutlineItemKid)
+			CreateOutlines(pdfDoc, pDoc, pOutlineItemKid, pOutline);
+	}
+	pOutlineItem->close();
+}
+bool CPdfEditor::MergePages(const std::wstring& wsPath, const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
@@ -1903,6 +2006,39 @@ bool CPdfEditor::MergePages(const int* arrPageIndex, unsigned int unLength)
 	bool bRes = SplitPages(arrPageIndex, unLength, pDocument, nStartRefID);
 	if (!bRes)
 		return false;
+
+	Outline* pOutlineAdd = pDocument->getOutline();
+	GList* pListAdd = NULL;
+	if (pOutlineAdd)
+		pListAdd = pOutlineAdd->getItems();
+	if (!pListAdd)
+		return bRes;
+
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PDFDoc* pDocumentFirst = m_pReader->GetPDFDocument(0);
+	Outline* pOutlineOld = pDocumentFirst->getOutline();
+	GList* pListOld = NULL;
+	if (pOutlineOld)
+		pListOld = pOutlineOld->getItems();
+	if (!pDoc->GetOutlines() && pListOld)
+	{
+		for (int i = 0, num = pListOld->getLength(); i < num; i++)
+		{
+			OutlineItem* pOutlineItem = (OutlineItem*)pListOld->get(i);
+			if (pOutlineItem)
+				CreateOutlines(pDocumentFirst, pDoc, pOutlineItem, NULL);
+		}
+	}
+
+	std::wstring wsFileName = NSFile::GetFileName(wsPath);
+	std::string sFileName = U_TO_UTF8(wsFileName);
+	PdfWriter::COutline* pOutline = pDoc->CreateOutline(NULL, sFileName.c_str());
+	for (int i = 0, num = pListAdd->getLength(); i < num; i++)
+	{
+		OutlineItem* pOutlineItem = (OutlineItem*)pListAdd->get(i);
+		if (pOutlineItem)
+			CreateOutlines(pDocumentFirst, pDoc, pOutlineItem, pOutline);
+	}
 
 	return bRes;
 }

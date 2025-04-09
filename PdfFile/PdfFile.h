@@ -126,8 +126,8 @@ public:
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
 
-	bool MergePages(BYTE* data, DWORD length);
 	bool ValidMetaData();
+	bool MergePages(BYTE* data, DWORD length);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

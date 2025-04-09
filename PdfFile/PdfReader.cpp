@@ -961,13 +961,13 @@ BYTE* CPdfReader::GetStructure()
 	for (int iPDF = 0; iPDF < m_vPDFContext.size(); ++iPDF)
 	{
 		PDFDoc* pDoc = m_vPDFContext[iPDF]->m_pDocument;
-		if (!pDoc->getOutline())
+		Outline* pOutline = pDoc->getOutline();
+		if (!pOutline)
 		{
 			nStartPage += pDoc->getNumPages();
 			continue;
 		}
 
-		Outline* pOutline = pDoc->getOutline();
 		GList* pList = pOutline->getItems();
 		if (!pList)
 		{

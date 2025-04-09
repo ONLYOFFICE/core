@@ -527,7 +527,7 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-	CDestination* CDocument::CreateDestination(CPage* pPage, bool bInline)
+	CDestination* CDocument::CreateDestination(CObjectBase* pPage, bool bInline)
 	{
 		if (pPage)
 			return new CDestination(pPage, m_pXref, bInline);

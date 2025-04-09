@@ -32,13 +32,12 @@
 #include "PdfFile.h"
 #include "PdfWriter.h"
 #include "PdfReader.h"
+#include "PdfEditor.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
-#include "lib/xpdf/PDFDoc.h"
 #include "Resources/BaseFonts.h"
 
-#include "PdfEditor.h"
 #include "OnlineOfficeBinToPdf.h"
 #include "SrcWriter/Document.h"
 
@@ -141,7 +140,7 @@ bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPass
 	if (!m_pInternal->pEditor)
 		return false;
 	if (m_pInternal->pReader->MergePages(wsPath, wsPassword))
-		return m_pInternal->pEditor->MergePages(arrPageIndex, unLength);
+		return m_pInternal->pEditor->MergePages(wsPath, arrPageIndex, unLength);
 	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)

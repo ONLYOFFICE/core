@@ -1079,6 +1079,16 @@ namespace NSBinPptxRW
 		if (val.is_init())
 			WriteString1(type, *val);
 	}
+	void CBinaryFileWriter::WriteStringUtf8(int type, const NSCommon::nullable_string& val)
+	{
+		if (val.is_init())
+		{
+			BYTE bType = (BYTE)type;
+			WriteBYTE(bType);
+
+			_WriteStringUtf8WithLength(val->c_str(), (_UINT32)val->length());
+		}
+	}
 	void CBinaryFileWriter::WriteString(const std::wstring& val)
 	{
 		std::wstring* s = const_cast<std::wstring*>(&val);
@@ -1275,6 +1285,8 @@ namespace NSBinPptxRW
     }
 	_INT32 CBinaryFileWriter::_WriteString(const WCHAR* sBuffer, _UINT32 lCount)
 	{
+		if (lCount < 1) return 0;
+
 		_INT32 lSizeMem = 0;
 		if (sizeof(wchar_t) == 4)
 		{
@@ -1294,11 +1306,28 @@ namespace NSBinPptxRW
 	}
 	_INT32 CBinaryFileWriter::_WriteString(const char* sBuffer, _UINT32 lCount)
 	{
+		if (lCount < 1) return 0;
+
 		_UINT32 lSizeMem = lCount * sizeof(char);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
 
 		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+		return lSizeMem;
+	}
+	_INT32 CBinaryFileWriter::_WriteStringUtf8(const WCHAR* sBuffer, _UINT32 lCount)
+	{
+		if (lCount < 1) return 0;
+
+		LONG lSizeMem = 0;
+
+		_INT32 lSizeMemMax = 4 * lCount + 2;//2 - for null terminator
+		CheckBufferSize(lSizeMemMax);
+		
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sBuffer, lCount, m_pStreamCur, lSizeMem, false);
 
 		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
@@ -1357,6 +1386,36 @@ namespace NSBinPptxRW
 		m_lPosition -= UINT32_SIZEOF;
 		m_pStreamCur -= UINT32_SIZEOF;
 
+		//write size
+		WriteLONG(lSizeMem);
+
+		//skip string
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+	}
+	void CBinaryFileWriter::_WriteStringUtf8WithLength(const WCHAR* sBuffer, _UINT32 lCount)
+	{
+		if (sizeof(wchar_t) == 4)
+		{
+			_INT32 lSizeMemMax = 4 * lCount + 2;//2 - for null terminator
+			CheckBufferSize(UINT32_SIZEOF + lSizeMemMax);
+		}
+		else
+		{
+			_INT32 lSizeMem = 2 * lCount;
+			CheckBufferSize(UINT32_SIZEOF + lSizeMem);
+		}
+		//skip size
+		m_lPosition += UINT32_SIZEOF;
+		m_pStreamCur += UINT32_SIZEOF;
+		//write string
+		_INT32 lSizeMem = lCount > 0 ? _WriteStringUtf8(sBuffer, lCount) : 0;
+		//back to size
+		m_lPosition -= lSizeMem;
+		m_pStreamCur -= lSizeMem;
+		m_lPosition -= UINT32_SIZEOF;
+		m_pStreamCur -= UINT32_SIZEOF;
+		
 		//write size
 		WriteLONG(lSizeMem);
 
@@ -2128,7 +2187,24 @@ namespace NSBinPptxRW
         _INT32 len = GetLong();
 		return GetString(len, bDeleteZero);
 	}
-    std::wstring CBinaryFileReader::GetString3(_INT32 len, bool bDeleteZero)//len in byte for utf16
+	std::wstring CBinaryFileReader::GetStringUtf8(_INT32 len)//len in byte for utf8
+	{
+		if (len < 1)
+			return L"";
+
+		if (m_lPos + len > m_lSize)
+		{
+			throw;
+		}
+
+		std::wstring res = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(m_pDataCur, len);
+
+		m_lPos += len;
+		m_pDataCur += len;
+
+		return res;
+	}
+	std::wstring CBinaryFileReader::GetString3(_INT32 len, bool bDeleteZero)//len in byte for utf16
 	{
         if (len < 1 )
 			return L""; 
@@ -2224,7 +2300,11 @@ namespace NSBinPptxRW
         return pArray;
     }
     */
-
+	std::wstring CBinaryFileReader::GetStringUtf8()
+	{
+		_INT32 len = GetULong();
+		return GetStringUtf8(len);
+	}
 	std::string CBinaryFileReader::GetString2A()
 	{
 		_INT32 len = GetULong();

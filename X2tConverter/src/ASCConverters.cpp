@@ -1450,6 +1450,57 @@ namespace NExtractTools
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
 	}
+	_UINT32 fromVsdtBin(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams)
+	{
+		_UINT32 nRes = 0;
+		if (AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY == nFormatTo)
+		{
+			std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
+			nRes = dir2zip(sFromDir, sTo);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			nRes = doct_bin2pdf(eFromType, sFrom, sTo, params, convertParams);
+		}
+		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
+		}
+		else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatTo) ||
+			AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"vsdx_unpacked");
+
+			if (true == NSDirectory::CreateDirectory(sVsdxDir))
+			{
+				params.m_bMacro =	AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo ||
+									AVS_OFFICESTUDIO_FILE_DRAW_VSSM == nFormatTo ||
+									AVS_OFFICESTUDIO_FILE_DRAW_VSTM == nFormatTo;
+
+				convertParams.m_sTempResultOOXMLDirectory = sVsdxDir;
+				nRes = vsdt_bin2vsdx_dir(sFrom, sTo, params, convertParams);
+				if (SUCCEEDED_X2T(nRes))
+				{
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromVsdxDir(sVsdxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
+				}
+			}
+			else
+			{
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		return nRes;
+	}
 
 	_UINT32 fromDraw(const std::wstring& sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams)
 	{
@@ -2107,6 +2158,11 @@ namespace NExtractTools
 		case TCD_PPTT_BIN2:
 		{
 			result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT_BIN2:
+		{
+			result = fromVsdtBin(sFileFrom, sFileTo, nFormatTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_CROSSPLATFORM2:

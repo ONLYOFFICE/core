@@ -1032,7 +1032,7 @@ namespace OOX
 				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
 				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "U", U)
 				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "E", E)
-				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "F", F)
+				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "F", F)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "V", V)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
@@ -1062,8 +1062,8 @@ namespace OOX
 			pWriter->WriteString2(0, N);
 			pWriter->WriteString2(1, U);
 			pWriter->WriteString2(2, E);
-			pWriter->WriteString2(3, F);
-			pWriter->WriteString2(4, V);
+			pWriter->WriteStringUtf8(3, F);
+			pWriter->WriteStringUtf8(4, V);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, RefBy);
@@ -1100,11 +1100,11 @@ namespace OOX
 				}break;
 				case 3:
 				{
-					F = pReader->GetString2A();
+					F = pReader->GetStringUtf8();
 				}break;
 				case 4:
 				{
-					V = pReader->GetString2();
+					V = pReader->GetStringUtf8();
 				}break;
 				}
 			}

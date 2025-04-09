@@ -347,6 +347,8 @@ namespace NSBinPptxRW
 		void WriteString2	(int type, const NSCommon::nullable_astring& val);
 		void WriteStringA	(std::string& val);
 
+		void WriteStringUtf8(int type, const NSCommon::nullable_string& val);
+
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
 		void WriteBool1(int type, const bool& val);
@@ -444,8 +446,10 @@ namespace NSBinPptxRW
 	private:
 		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
 		_INT32	_WriteString(const char* sBuffer, _UINT32 lCount);
+		_INT32	_WriteStringUtf8(const WCHAR* sBuffer, _UINT32 lCount);
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
 		void	_WriteStringWithLength(const char* sBuffer, _UINT32 lCount);
+		void	_WriteStringUtf8WithLength(const WCHAR* sBuffer, _UINT32 lCount);
 	};
 
 	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter
@@ -591,9 +595,11 @@ namespace NSBinPptxRW
 		std::wstring GetString2(bool bDeleteZero = false);
 		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
+		std::wstring GetStringUtf8(_INT32 len);
 
         bool GetArray(BYTE *pBuffer, _INT32 len);
 
+		std::wstring GetStringUtf8();
 		std::string GetString2A();
 		void SkipRecord();
 

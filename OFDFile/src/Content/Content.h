@@ -2,6 +2,7 @@
 #define CONTENT_H
 
 #include "Layer.h"
+#include "../Types/CommonData.h"
 
 namespace OFD
 {
@@ -12,8 +13,8 @@ public:
 	CContent();
 	~CContent();
 
-	bool Read(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager);
-	void Draw(IRenderer* pRenderer) const;
+	bool Read(CXmlReader& oLiteReader);
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
 };
 }
 

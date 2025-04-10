@@ -34,7 +34,7 @@ public:
 
 	bool Empty() const;
 
-	bool Read(const std::wstring& wsFilePath, NSFonts::IFontManager* pFontManager);
+	bool Read(const std::wstring& wsFilePath);
 
 	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 

@@ -18,6 +18,7 @@ public:
 	int GetInteger(bool bIsAttribute = false);
 	unsigned int GetUInteger(bool bIsAttribute = false);
 	double GetDouble(bool bIsAttribute = false);
+	std::vector<std::string> GetArrayStrings(bool bIsAttribute = false);
 	std::vector<double> GetArrayDoubles(bool bIsAttribute = false);
 };
 }

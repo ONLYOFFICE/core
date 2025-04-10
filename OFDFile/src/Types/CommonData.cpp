@@ -18,7 +18,7 @@ CCommonData::~CCommonData()
 		delete m_pDocumentRes;
 }
 
-bool CCommonData::Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath, NSFonts::IFontManager* pFontManager)
+bool CCommonData::Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath)
 {
 	if ("ofd:CommonData" != oLiteReader.GetNameA())
 		return false;
@@ -49,7 +49,7 @@ bool CCommonData::Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath, 
 		else if ("ofd:MaxUnitID" == sNodeName)
 			m_unMaxUnitID = oLiteReader.GetUInteger();
 		else if ("ofd:TemplatePage" == sNodeName)
-			AddToContainer(new const CTemplatePage(oLiteReader, *this, pFontManager), m_arTemplatePages);
+			AddToContainer(new const CTemplatePage(oLiteReader, wsRootPath), m_arTemplatePages);
 		// else if (L"ofd:DefaultCS" == wsNodeName)
 	}
 

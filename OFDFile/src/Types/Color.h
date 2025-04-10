@@ -13,16 +13,16 @@ class CColor
 	int m_nIndex;
 	BYTE m_chAlpha;
 
-	const CColorSpace* m_pColorSpace;
+	unsigned int m_unColodSpaceID;
 	// Pattern
 	// AxialShd
 	// RadialShd
 	// GouraudShd
 	// LaGouraudhd
 public:
-	CColor(CXmlReader& oXmlReader, const CRes* pPublicRes);
+	CColor(CXmlReader& oXmlReader);
 
-	int ToInt() const;
+	int ToInt(const CRes* pPublicRes) const;
 	BYTE GetAlpha() const;
 };
 }

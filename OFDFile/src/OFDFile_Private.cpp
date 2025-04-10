@@ -62,7 +62,7 @@ bool COFDFile_Private::Read(IFolder* pFolder)
 	if (nullptr == pFolder)
 		return false;
 
-	if (!m_oBase.Read(pFolder, m_pFontManager))
+	if (!m_oBase.Read(pFolder))
 		return false;
 
 	return false;

@@ -21,7 +21,7 @@ public:
 	CCommonData();
 	~CCommonData();
 
-	bool Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath, NSFonts::IFontManager* pFontManager);
+	bool Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath);
 
 	void GetPageSize(double& dWidth, double &dHeight) const;
 

@@ -6,16 +6,16 @@
 
 namespace OFD
 {
-CPageBlock::CPageBlock(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
+CPageBlock::CPageBlock(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader)
 {
 	if ("ofd:PageBlock" != oLiteReader.GetNameA() || oLiteReader.IsEmptyNode())
 		return;
 
-	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pDocumentRes, pPublicRes, pFontManager);
+	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);
 }
 
-void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
+void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlock*>& arPageBlocks)
 {
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
@@ -28,25 +28,25 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 		pPageBlock = nullptr;
 
 		if (L"ofd:TextObject" == wsNodeName)
-			pPageBlock = new CTextObject(oLiteReader, pPublicRes, pFontManager);
+			pPageBlock = new CTextObject(oLiteReader);
 		else if (L"ofd:PathObject" == wsNodeName)
-			pPageBlock = new CPathObject(oLiteReader, pPublicRes);
+			pPageBlock = new CPathObject(oLiteReader);
 		else if (L"ofd:PageBlock" == wsNodeName)
-			pPageBlock = new CPageBlock(oLiteReader, pDocumentRes, pPublicRes, pFontManager);
+			pPageBlock = new CPageBlock(oLiteReader);
 		else if (L"ofd:ImageObject" == wsNodeName)
-			pPageBlock = new CImageObject(oLiteReader, pDocumentRes);
+			pPageBlock = new CImageObject(oLiteReader);
 
 		if (nullptr != pPageBlock)
 			arPageBlocks.push_back(pPageBlock);
 	}
 }
 
-void CPageBlock::Draw(IRenderer* pRenderer) const
+void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer);
+		pPageBlock->Draw(pRenderer, oCommonData);
 }
 }

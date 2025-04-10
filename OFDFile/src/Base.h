@@ -50,7 +50,7 @@ class CDocBody
 	std::wstring m_wsSignature;
 public:
 	CDocBody();
-	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder, NSFonts::IFontManager* pFontManager);
+	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder);
 
 	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 
@@ -65,7 +65,7 @@ public:
 	CBase();
 	~CBase();
 
-	bool Read(IFolder* pFolder, NSFonts::IFontManager* pFontManager);
+	bool Read(IFolder* pFolder);
 	void DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 
 	unsigned int GetPageCount() const;

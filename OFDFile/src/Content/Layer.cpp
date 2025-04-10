@@ -6,13 +6,13 @@
 
 namespace OFD
 {
-CLayer::CLayer(CXmlReader& oLiteReader, const CRes* pDocumentRes, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager)
+CLayer::CLayer(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader), m_eType(EType::Body)
 {
 	if (L"ofd:Layer" != oLiteReader.GetName())
 		return;
 
-	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks, pDocumentRes, pPublicRes, pFontManager);
+	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);
 }
 
 CLayer::~CLayer()
@@ -21,12 +21,12 @@ CLayer::~CLayer()
 		delete pPageBlock;
 }
 
-void CLayer::Draw(IRenderer* pRenderer) const
+void CLayer::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer);
+		pPageBlock->Draw(pRenderer, oCommonData);
 }
 }

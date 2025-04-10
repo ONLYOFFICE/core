@@ -3,9 +3,9 @@
 
 namespace OFD
 {
-CPathObject::CPathObject(CXmlReader& oLiteReader, const CRes* pPublicRes)
+CPathObject::CPathObject(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
-	  m_bStroke(true), m_bFill(true), m_eRule(ERule::NonZero),
+	  m_bStroke(true), m_bFill(false), m_eRule(ERule::NonZero),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr)
 {
 	if (L"ofd:PathObject" != oLiteReader.GetName() || oLiteReader.IsEmptyElement() || !oLiteReader.IsValid())
@@ -47,14 +47,14 @@ CPathObject::CPathObject(CXmlReader& oLiteReader, const CRes* pPublicRes)
 			if (nullptr != m_pFillColor)
 				delete m_pFillColor;
 
-			m_pFillColor = new CColor(oLiteReader, pPublicRes);
+			m_pFillColor = new CColor(oLiteReader);
 		}
 		else if (L"ofd:StrokeColor" == wsNodeName)
 		{
 			if (nullptr != m_pStrokeColor)
 				delete m_pStrokeColor;
 
-			m_pStrokeColor = new CColor(oLiteReader, pPublicRes);
+			m_pStrokeColor = new CColor(oLiteReader);
 		}
 		else if (L"ofd:AbbreviatedData" == wsNodeName)
 		{
@@ -130,7 +130,7 @@ void CPathObject::AddElement(const IPathElement* pElement)
 		m_arElements.push_back(pElement);
 }
 
-void CPathObject::Draw(IRenderer* pRenderer) const
+void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 {
 	if (nullptr == pRenderer || m_arElements.empty())
 		return;
@@ -165,20 +165,39 @@ void CPathObject::Draw(IRenderer* pRenderer) const
 		}
 	}
 
-	if (m_bFill && nullptr != m_pFillColor)
+	if (m_bFill)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
-		pRenderer->put_BrushColor1(m_pFillColor->ToInt());
-		pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
+
+		if (nullptr != m_pFillColor)
+		{
+			pRenderer->put_BrushColor1(m_pFillColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
+		}
+		else
+		{
+			pRenderer->put_BrushColor1(0);
+			pRenderer->put_BrushAlpha1(0xff);
+		}
 	}
 	else
 		pRenderer->put_BrushType(c_BrushTypeNotSet);
 
-	if (m_bStroke && nullptr != m_pStrokeColor)
+
+	if(m_bStroke)
 	{
 		pRenderer->put_PenSize(m_dLineWidth);
-		pRenderer->put_PenColor(m_pStrokeColor->ToInt());
-		pRenderer->put_PenAlpha(m_pStrokeColor->GetAlpha());
+
+		if (nullptr != m_pStrokeColor)
+		{
+			pRenderer->put_PenColor(m_pStrokeColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_PenAlpha(m_pStrokeColor->GetAlpha());
+		}
+		else
+		{
+			pRenderer->put_PenColor(0);
+			pRenderer->put_PenAlpha(0xff);
+		}
 	}
 	else
 		pRenderer->put_PenSize(0.);

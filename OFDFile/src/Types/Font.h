@@ -4,7 +4,6 @@
 #include "../IOFDElement.h"
 
 #include "../../../DesktopEditor/graphics/IRenderer.h"
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace OFD
 {
@@ -13,7 +12,7 @@ class CFont : public IOFDElement
 public:
 	CFont(CXmlReader& oXmlReader, const std::wstring& wsRootPath);
 
-	void Apply(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager, const double& dFontSize) const;
+	void Apply(IRenderer* pRenderer) const;
 private:
 	std::wstring m_wsFontName;
 	std::wstring m_wsFamilyName;

@@ -12,13 +12,13 @@ class CPage
 	CPageArea m_oArea;
 	CContent  m_oContent;
 
-	const CTemplatePage* m_pTemplatePage;
+	std::pair<unsigned int, EZOrder> m_parTemplatePage;
 public:
 	CPage();
 	~CPage();
 
-	static CPage* Read(const std::wstring& wsFilePath, const CCommonData& oCommonData, NSFonts::IFontManager* pFontManager);
-	void Draw(IRenderer* pRenderer) const;
+	static CPage* Read(const std::wstring& wsFilePath);
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
 
 	void GetPageSize(double& dWidth, double& dHeight) const;
 };

@@ -51,7 +51,7 @@ CFont::CFont(CXmlReader& oXmlReader, const std::wstring& wsRootPath)
 	}
 }
 
-void CFont::Apply(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager, const double& dFontSize) const
+void CFont::Apply(IRenderer* pRenderer) const
 {
 	if (nullptr == pRenderer)
 		return;
@@ -66,14 +66,7 @@ void CFont::Apply(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager, con
 	pRenderer->put_FontStyle(nFontStyle);
 	pRenderer->put_FontName(m_wsFontName);
 
-	if (!m_wsFilePath.empty() && nullptr != pFontManager)
-	{
-		double dDpiX = 96, dDpiY = 96;
-
-		pRenderer->get_DpiX(&dDpiX);
-		pRenderer->get_DpiY(&dDpiY);
-
-		pFontManager->LoadFontFromFile(m_wsFilePath, 0, dFontSize, dDpiX, dDpiY);
-	}
+	if (!m_wsFilePath.empty())
+		pRenderer->put_FontPath(m_wsFilePath);
 }
 }

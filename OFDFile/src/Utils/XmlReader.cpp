@@ -45,6 +45,11 @@ double CXmlReader::GetDouble(bool bIsAttribute)
 	return dValue;
 }
 
+std::vector<std::string> CXmlReader::GetArrayStrings(bool bIsAttribute)
+{
+	return Split(GetTextValueA(bIsAttribute), ' ');
+}
+
 std::vector<double> CXmlReader::GetArrayDoubles(bool bIsAttribute)
 {
 	const std::vector<std::string> arValues{Split(GetTextValueA(bIsAttribute), ' ')};

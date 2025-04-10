@@ -4,10 +4,10 @@
 
 namespace OFD
 {
-CImageObject::CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes)
-	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader), m_pMultiMedia(nullptr)
+CImageObject::CImageObject(CXmlReader& oLiteReader)
+	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader), m_unMultiMediaID(0)
 {
-	if (nullptr == pDocumentRes || "ofd:ImageObject" != oLiteReader.GetNameA() || 0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
+	if ("ofd:ImageObject" != oLiteReader.GetNameA() || 0 == oLiteReader.GetAttributesCount() || !oLiteReader.MoveToFirstAttribute())
 		return;
 
 	std::string sAttributeName;
@@ -18,7 +18,7 @@ CImageObject::CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes)
 
 		if ("ResourceID" == sAttributeName)
 		{
-			m_pMultiMedia = pDocumentRes->GetMultiMedia(oLiteReader.GetUInteger(true));
+			m_unMultiMediaID = oLiteReader.GetUInteger(true);
 			break;
 		}
 	} while(oLiteReader.MoveToNextAttribute());
@@ -26,14 +26,19 @@ CImageObject::CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes)
 	oLiteReader.MoveToElement();
 }
 
-void CImageObject::Draw(IRenderer* pRenderer) const
+void CImageObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 {
-	if (nullptr == pRenderer || nullptr == m_pMultiMedia)
+	if (nullptr == pRenderer || nullptr == oCommonData.GetDocumentRes())
+		return;
+
+	const CMultiMedia* pMultiMedia = oCommonData.GetDocumentRes()->GetMultiMedia(m_unMultiMediaID);
+
+	if (nullptr == pMultiMedia)
 		return;
 
 	CGraphicUnit::Apply(pRenderer);
 
-	const std::wstring wsFilePath = m_pMultiMedia->GetFilePath();
+	const std::wstring wsFilePath = pMultiMedia->GetFilePath();
 
 	if (wsFilePath.empty())
 		return;

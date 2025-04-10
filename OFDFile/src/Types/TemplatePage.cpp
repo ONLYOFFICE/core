@@ -1,10 +1,11 @@
 #include "TemplatePage.h"
-#include "CommonData.h"
+
 #include "../Page.h"
+#include "../Utils/Utils.h"
 
 namespace OFD
 {
-CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const CCommonData& oCommonData, NSFonts::IFontManager* pFontManager)
+CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath)
 	: IOFDElement(oXmlReader), m_eZOrder(EZOrder::Background), m_pPage(nullptr)
 {
 	if ("ofd:TemplatePage" != oXmlReader.GetNameA() || 0 == oXmlReader.GetAttributesCount() || !oXmlReader.MoveToFirstAttribute())
@@ -16,7 +17,7 @@ CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const CCommonData& oCommonD
 		sAttributeName = oXmlReader.GetNameA();
 
 		if ("BaseLoc" == sAttributeName)
-			m_pPage = CPage::Read(oXmlReader.GetText2(), oCommonData, pFontManager);
+			m_pPage = CPage::Read(CombinePaths(wsRootPath, oXmlReader.GetText()));
 		else if ("ZOrder" == sAttributeName)
 			m_eZOrder = GetZOrderFromString(oXmlReader.GetTextA());
 	} while (oXmlReader.MoveToNextAttribute());

@@ -4,18 +4,15 @@
 #include "IPageBlock.h"
 #include "GraphicUnit.h"
 
-#include "../Types/MultiMedia.h"
-#include "../Res.h"
-
 namespace OFD
 {
 class CImageObject : public IPageBlock, public CGraphicUnit
 {
-	const CMultiMedia* m_pMultiMedia;
+	unsigned int m_unMultiMediaID;
 public:
-	CImageObject(CXmlReader& oLiteReader, const CRes* pDocumentRes);
+	CImageObject(CXmlReader& oLiteReader);
 
-	void Draw(IRenderer* pRenderer) const override;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const override;
 };
 }
 

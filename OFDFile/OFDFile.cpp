@@ -11,7 +11,7 @@ COFDFile::COFDFile(NSFonts::IApplicationFonts* pFonts)
 
 COFDFile::~COFDFile()
 {
-	Close();
+	COFDFile::Close();
 
 	if (nullptr != m_pInternal)
 		delete m_pInternal;

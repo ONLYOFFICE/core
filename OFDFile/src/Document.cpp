@@ -44,7 +44,7 @@ bool CDocument::Empty() const
 	return m_mPages.empty();
 }
 
-bool CDocument::Read(const std::wstring& wsFilePath, NSFonts::IFontManager* pFontManager)
+bool CDocument::Read(const std::wstring& wsFilePath)
 {
 	if (wsFilePath.empty())
 		return false;
@@ -61,7 +61,7 @@ bool CDocument::Read(const std::wstring& wsFilePath, NSFonts::IFontManager* pFon
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:CommonData" == wsNodeName)
-			m_oCommonData.Read(oLiteReader, NSSystemPath::GetDirectoryName(wsFilePath), pFontManager);
+			m_oCommonData.Read(oLiteReader, NSSystemPath::GetDirectoryName(wsFilePath));
 		else if (L"ofd:Pages" == wsNodeName)
 		{
 			const int nPagesDepth = oLiteReader.GetDepth();
@@ -88,7 +88,7 @@ bool CDocument::Read(const std::wstring& wsFilePath, NSFonts::IFontManager* pFon
 				if (-1 == nID)
 					nID = m_mPages.size() + 1;
 
-				CPage* pPage = CPage::Read(CombinePaths(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc), m_oCommonData, pFontManager);
+				CPage* pPage = CPage::Read(CombinePaths(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc));
 
 				if (nullptr != pPage)
 					m_mPages.insert(std::make_pair(m_mPages.size(), pPage));
@@ -114,7 +114,7 @@ bool CDocument::DrawPage(IRenderer* pRenderer, int nPageIndex) const
 	if (itFound == m_mPages.cend())
 		return false;
 
-	itFound->second->Draw(pRenderer);
+	itFound->second->Draw(pRenderer, m_oCommonData);
 
 	return true;
 }

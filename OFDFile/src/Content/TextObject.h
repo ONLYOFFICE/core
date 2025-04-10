@@ -50,17 +50,15 @@ class CTextObject : public IPageBlock, public CGraphicUnit
 	CColor* m_pFillColor;
 	CColor* m_pStrokeColor;
 
-	const CFont* m_pFont;
+	unsigned int m_unFontID;
 
 	std::vector<const CTextCode*> m_arTextCodes;
 	std::vector<TCGTransform>     m_arCGTransforms;
-
-	NSFonts::IFontManager* m_pFontManager;
 public:
-	CTextObject(CXmlReader& oLiteReader, const CRes* pPublicRes, NSFonts::IFontManager* pFontManager);
+	CTextObject(CXmlReader& oLiteReader);
 	~CTextObject();
 
-	void Draw(IRenderer* pRenderer) const override;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const override;
 };
 }
 

@@ -7,16 +7,13 @@
 namespace OFD
 {
 CPage::CPage()
-	: m_pTemplatePage(nullptr)
+    : m_parTemplatePage{0, EZOrder::Background}
 {}
 
 CPage::~CPage()
-{
-	if (nullptr != m_pTemplatePage)
-		delete m_pTemplatePage;
-}
+{}
 
-CPage* CPage::Read(const std::wstring& wsFilePath, const CCommonData& oCommonData, NSFonts::IFontManager* pFontManager)
+CPage* CPage::Read(const std::wstring& wsFilePath)
 {
 	if (wsFilePath.empty())
 		return nullptr;
@@ -40,14 +37,11 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const CCommonData& oCommonDat
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:Content" == wsNodeName)
-			pPage->m_oContent.Read(oLiteReader, oCommonData.GetDocumentRes(), oCommonData.GetPublicRes(), pFontManager);
+			pPage->m_oContent.Read(oLiteReader);
 		else if (L"ofd:Area" == wsNodeName)
 			pPage->m_oArea.Read(oLiteReader);
 		else if (L"ofd:Template" == wsNodeName && 0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 		{
-			EZOrder eZorder;
-			unsigned int unTemplateID;
-
 			std::string sAttributeName;
 
 			do
@@ -55,31 +49,34 @@ CPage* CPage::Read(const std::wstring& wsFilePath, const CCommonData& oCommonDat
 				sAttributeName = oLiteReader.GetNameA();
 
 				if ("ZOrder" == sAttributeName)
-					eZorder = GetZOrderFromString(oLiteReader.GetTextA());
+					pPage->m_parTemplatePage.second = GetZOrderFromString(oLiteReader.GetTextA());
 				else if ("TemplateID" == sAttributeName)
-					unTemplateID = oLiteReader.GetUInteger(true);
+					pPage->m_parTemplatePage.first = oLiteReader.GetUInteger(true);
 			} while (oLiteReader.MoveToNextAttribute());
 
 			oLiteReader.MoveToElement();
-
-			pPage->m_pTemplatePage = oCommonData.GetTemplatePage(unTemplateID, eZorder);
 		}
 	}
 
 	return pPage;
 }
 
-void CPage::Draw(IRenderer* pRenderer) const
+void CPage::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
 {
 	if (nullptr == pRenderer)
 		return;
 
 	pRenderer->BeginCommand(c_nImageType);
 
-	if (nullptr != m_pTemplatePage && EZOrder::Background == m_pTemplatePage->GetZOrder())
-		m_pTemplatePage->GetPage()->Draw(pRenderer);
+	if (0 != m_parTemplatePage.first)
+	{
+		const CTemplatePage *pTemplatePage = oCommonData.GetTemplatePage(m_parTemplatePage.first, m_parTemplatePage.second);
 
-	m_oContent.Draw(pRenderer);
+		if (nullptr != pTemplatePage && EZOrder::Background == pTemplatePage->GetZOrder() && nullptr != pTemplatePage->GetPage())
+			pTemplatePage->GetPage()->Draw(pRenderer, oCommonData);
+	}
+
+	m_oContent.Draw(pRenderer, oCommonData);
 
 	pRenderer->EndCommand(c_nImageType);
 }

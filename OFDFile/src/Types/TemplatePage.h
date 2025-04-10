@@ -15,14 +15,13 @@ enum class EZOrder
 EZOrder GetZOrderFromString(const std::string& sValue);
 
 class CPage;
-class CCommonData;
 class CTemplatePage : public IOFDElement
 {
 	EZOrder m_eZOrder;
 
 	const CPage* m_pPage;
 public:
-	CTemplatePage(CXmlReader& oXmlReader, const CCommonData& oCommonData, NSFonts::IFontManager* pFontManager);
+	CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootPath);
 	~CTemplatePage();
 
 	EZOrder GetZOrder() const;

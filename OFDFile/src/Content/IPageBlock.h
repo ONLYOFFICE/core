@@ -4,7 +4,7 @@
 #include "../IOFDElement.h"
 
 #include "../../../DesktopEditor/graphics/IRenderer.h"
-#include "../Res.h"
+#include "../Types/CommonData.h"
 
 namespace OFD
 {
@@ -14,7 +14,7 @@ public:
 	IPageBlock(CXmlReader& oLiteReader)
 		: IOFDElement(oLiteReader){};
 	virtual ~IPageBlock(){};
-	virtual void Draw(IRenderer* pRenderer) const = 0;
+	virtual void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const = 0;
 };
 }
 

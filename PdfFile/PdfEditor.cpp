@@ -1627,13 +1627,34 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
 			pPage->Add(chKey, pBase);
+			if (strcmp("Contents", chKey) == 0)
+			{
+				if (pBase->GetType() == PdfWriter::object_type_ARRAY)
+				{
+					PdfWriter::CArrayObject* pArr = (PdfWriter::CArrayObject*)pBase;
+					for (int j = 0; j < pArr->GetCount(); ++j)
+					{
+						pBase = pArr->Get(j);
+						if (pBase->GetType() == PdfWriter::object_type_DICT)
+						{
+							PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pBase;
+							if (pDict->Get("Filter"))
+								pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
+						}
+					}
+				}
+				else if (pBase->GetType() == PdfWriter::object_type_DICT)
+				{
+					PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pBase;
+					if (pDict->Get("Filter"))
+						pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
+				}
+			}
 			oTemp.free();
 		}
 		pPage->Fix();
 		if (m_nMode == Mode::WriteAppend)
-		{
-			// pPage->AddContents(); // TODO pPage->AddContents чтобы можно было дописать изменения, если понадобится
-		}
+			pDoc->FixEditPage(pPage);
 		else
 			m_pWriter->SetNeedAddHelvetica(false); // TODO дописывает шрифт для адекватного редактирования Adobe pdf без текст. Убрать при реализации map шрифтов
 		pageObj.free();

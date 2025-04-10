@@ -366,6 +366,12 @@ namespace PdfWriter
 				m_pContents->Add(pNewContents);
 				Add("Contents", m_pContents);
 			}
+			else if (pContents->GetType() == object_type_DICT)
+			{
+				m_pContents = new CArrayObject();
+				m_pContents->Add(pContents);
+				Add("Contents", m_pContents);
+			}
 		}
 		else
 		{

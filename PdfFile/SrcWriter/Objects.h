@@ -467,7 +467,7 @@ namespace PdfWriter
 		}
 		void         SetFilter(unsigned int unFiler)
 		{
-			m_unFilter = unFiler;
+			m_unFilter |= unFiler;
 		}
 		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 

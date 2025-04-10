@@ -36,6 +36,7 @@
 #include "../../DesktopEditor/common/File.h"
 
 #define STREAM_FILTER_NONE          0x0000
+#define STREAM_FILTER_ALREADY_DECODE 0x0001
 #define STREAM_FILTER_ASCIIHEX      0x0100
 #define STREAM_FILTER_ASCII85       0x0200
 #define STREAM_FILTER_FLATE_DECODE  0x0400

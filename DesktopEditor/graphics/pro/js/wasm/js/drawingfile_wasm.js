@@ -130,7 +130,7 @@ CFile.prototype._SplitPages = function(memoryBuffer)
 	return ptr;
 };
 
-CFile.prototype._MergePages = function(buffer)
+CFile.prototype._MergePages = function(buffer, maxID)
 {
 	if (!buffer)
 		return false;
@@ -139,7 +139,10 @@ CFile.prototype._MergePages = function(buffer)
 	let stream2 = Module["_malloc"](data.length);
 	Module["HEAP8"].set(data, stream2);
 
-	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length);
+	if (!maxID)
+		maxID = 0;
+
+	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID);
 	if (bRes == 1)
 		this.stream.push(stream2);
 	else

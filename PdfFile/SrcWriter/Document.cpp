@@ -1522,6 +1522,18 @@ namespace PdfWriter
 
 		return true;
 	}
+	void CDocument::FixEditPage(CPage* _pPage, int nPageIndex)
+	{
+		CPage* pPage = _pPage ? _pPage : m_mEditPages[nPageIndex];
+		if (!pPage)
+			return;
+
+		pPage->AddContents(m_pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+	}
 	void CDocument::AddEditPage(CPage* pPage, int nPageIndex)
 	{
 		m_mEditPages[nPageIndex] = pPage;

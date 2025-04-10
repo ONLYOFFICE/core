@@ -172,9 +172,9 @@ CFile.prototype["SplitPages"] = function(arrPageIndex)
 	Module["_free"](ptr);
 	return buffer;
 };
-CFile.prototype["MergePages"] = function(arrayBuffer)
+CFile.prototype["MergePages"] = function(arrayBuffer, maxID)
 {
-	return this._MergePages(arrayBuffer);
+	return this._MergePages(arrayBuffer, maxID);
 };
 
 // INFO DOCUMENT
@@ -221,8 +221,8 @@ CFile.prototype.getPagesInfo = function()
 	let reader = ptr.getReader();
 	if (!reader) return [];
 
-	// skip StartID
-	reader.readInt();
+	// change StartID
+	this.StartID = reader.readInt();
 
 	let _pages = [];
 	let nPages = reader.readInt();

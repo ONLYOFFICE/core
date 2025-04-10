@@ -135,12 +135,12 @@ bool CPdfFile::AddPage(int nPageIndex)
 		return false;
 	return m_pInternal->pEditor->AddPage(nPageIndex);
 }
-bool CPdfFile::MergePages(const std::wstring& wsPath, const std::wstring& wsPassword, const int* arrPageIndex, unsigned int unLength)
+bool CPdfFile::MergePages(const std::wstring& wsPath, int nMaxID, const std::wstring& wsPrefixForm)
 {
 	if (!m_pInternal->pEditor)
 		return false;
-	if (m_pInternal->pReader->MergePages(wsPath, wsPassword))
-		return m_pInternal->pEditor->MergePages(wsPath, arrPageIndex, unLength);
+	if (m_pInternal->pReader->MergePages(wsPath, L"", nMaxID))
+		return m_pInternal->pEditor->MergePages(wsPath, wsPrefixForm);
 	return false;
 }
 bool CPdfFile::MovePage(int nPageIndex, int nPos)
@@ -336,11 +336,11 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 	else
 		m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-bool CPdfFile::MergePages(BYTE* data, DWORD length)
+bool CPdfFile::MergePages(BYTE* data, DWORD length, int nMaxID)
 {
 	if (!m_pInternal->pReader)
 		return false;
-	return m_pInternal->pReader->MergePages(data, length) && (m_pInternal->pReader->GetError() == 0);
+	return m_pInternal->pReader->MergePages(data, length, L"", nMaxID) && (m_pInternal->pReader->GetError() == 0);
 }
 int CPdfFile::GetRotate(int nPageIndex)
 {

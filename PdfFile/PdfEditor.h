@@ -94,7 +94,7 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 	BYTE* SplitPages(const int* arrPageIndex, unsigned int unLength);
-	bool MergePages(const std::wstring& wsPath, const int* arrPageIndex, unsigned int unLength);
+	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
 
 private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);

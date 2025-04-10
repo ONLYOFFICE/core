@@ -1002,7 +1002,7 @@ int main(int argc, char* argv[])
 					oFile.WriteFile(pSplitPages + 4, nLength - 4);
 				oFile.CloseFile();
 
-				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4) == 0)
+				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0) == 0)
 					RELEASEARRAYOBJECTS(pSplitPages);
 			}
 		}

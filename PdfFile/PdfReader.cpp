@@ -414,45 +414,37 @@ void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
 
 int CPdfReader::GetStartRefID(PDFDoc* _pDoc)
 {
-	int nStartRefID = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		if (!pPDFContext || !pPDFContext->m_pDocument)
 			continue;
 		PDFDoc* pDoc = pPDFContext->m_pDocument;
 		if (_pDoc == pDoc)
-			return nStartRefID;
-		nStartRefID += pDoc->getXRef()->getNumObjects();
+			return pPDFContext->m_nStartID;
 	}
 	return -1;
 }
 int CPdfReader::FindRefNum(int nObjID, PDFDoc** _pDoc, int* _nStartRefID)
 {
-	int nStartRefID = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		if (!pPDFContext || !pPDFContext->m_pDocument)
 			continue;
 		PDFDoc* pDoc = pPDFContext->m_pDocument;
-
-		int nLastRefID = pDoc->getXRef()->getNumObjects();
-		if (nObjID < nStartRefID + nLastRefID)
+		if (nObjID < pPDFContext->m_nStartID + pDoc->getXRef()->getNumObjects())
 		{
 			if (_pDoc)
 				*_pDoc = pDoc;
 			if (_nStartRefID)
-				*_nStartRefID = nStartRefID;
-			return nObjID - nStartRefID;
+				*_nStartRefID = pPDFContext->m_nStartID;
+			return nObjID - pPDFContext->m_nStartID;
 		}
-		nStartRefID += nLastRefID;
 	}
 	return -1;
 }
 int CPdfReader::GetPageIndex(int nAbsPageIndex, PDFDoc** _pDoc, PdfReader::CPdfFontList** pFontList, int* nStartRefID)
 {
 	int nTotalPages = 0;
-	if (nStartRefID)
-		*nStartRefID = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		if (!pPDFContext || !pPDFContext->m_pDocument)
@@ -466,10 +458,10 @@ int CPdfReader::GetPageIndex(int nAbsPageIndex, PDFDoc** _pDoc, PdfReader::CPdfF
 				*_pDoc = pDoc;
 			if (pFontList)
 				*pFontList = pPDFContext->m_pFontList;
+			if (nStartRefID)
+				*nStartRefID = pPDFContext->m_nStartID;
 			return nAbsPageIndex - nTotalPages + 1;
 		}
-		if (nStartRefID)
-			*nStartRefID += pDoc->getXRef()->getNumObjects();
 		nTotalPages += nPages;
 	}
 	return -1;
@@ -527,14 +519,9 @@ int CPdfReader::GetRotate(int _nPageIndex)
 }
 int CPdfReader::GetMaxRefID()
 {
-	int nSumRefID = 0;
-	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
-	{
-		if (!pPDFContext || !pPDFContext->m_pDocument || !pPDFContext->m_pDocument->getXRef())
-			continue;
-		nSumRefID += pPDFContext->m_pDocument->getXRef()->getNumObjects();
-	}
-	return nSumRefID;
+	if (!m_vPDFContext.empty())
+		return m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
+	return 0;
 }
 int CPdfReader::GetNumPages()
 {
@@ -578,7 +565,7 @@ bool CPdfReader::ValidMetaData()
 	oID.free(); oID2.free();
 	return bRes;
 }
-bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword)
+bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID)
 {
 	if (m_eError)
 		return false;
@@ -591,8 +578,12 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	// будет освобожден в деструкторе PDFDoc
 	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj);
 	CPdfReaderContext* pContext = new CPdfReaderContext();
-	pContext->m_pDocument = new PDFDoc(str, NULL, NULL);
+	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	if (nMaxID != 0)
+		pContext->m_nStartID = nMaxID;
+	else if (!m_vPDFContext.empty())
+		pContext->m_nStartID = m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
@@ -612,7 +603,7 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 
 	return true;
 }
-bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword)
+bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID)
 {
 	if (m_eError)
 			return false;
@@ -624,6 +615,10 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	if (nMaxID != 0)
+		pContext->m_nStartID = nMaxID;
+	if (!m_vPDFContext.empty())
+		pContext->m_nStartID = m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
 
@@ -1137,7 +1132,6 @@ BYTE* CPdfReader::GetWidgets()
 	oRes.SkipLen();
 
 	int nStartPage = 0;
-	int nStartRefID = 0;
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
 		PDFDoc* pDoc = pPDFContext->m_pDocument;
@@ -1146,16 +1140,14 @@ BYTE* CPdfReader::GetWidgets()
 		if (!pDoc->getCatalog()->getForm() || !pDoc->getXRef())
 		{
 			nStartPage += pDoc->getNumPages();
-			nStartRefID += pDoc->getXRef()->getNumObjects();
 			continue;
 		}
 
-		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, nStartPage, nStartRefID);
+		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, nStartPage, pPDFContext->m_nStartID);
 		if (pAnnots)
 			pAnnots->ToWASM(oRes);
 		RELEASEOBJECT(pAnnots);
 		nStartPage += pDoc->getNumPages();
-		nStartRefID += pDoc->getXRef()->getNumObjects();
 	}
 
 	oRes.WriteLen();
@@ -1733,7 +1725,6 @@ BYTE* CPdfReader::GetAnnots(int _nPageIndex)
 	else
 	{
 		int nStartPage = 0;
-		int nStartRefID = 0;
 		for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 		{
 			PDFDoc* pDoc = pPDFContext->m_pDocument;
@@ -1744,11 +1735,10 @@ BYTE* CPdfReader::GetAnnots(int _nPageIndex)
 			oRes.AddInt(nAnnots);
 
 			for (int nPage = 1, nPages = pDoc->getNumPages(); nPage <= nPages; ++nPage)
-				nAnnots += GetPageAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, oRes, nPage, nStartPage, nStartRefID);
+				nAnnots += GetPageAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, oRes, nPage, nStartPage, pPDFContext->m_nStartID);
 
 			oRes.AddInt(nAnnots, nPosAnnots);
 			nStartPage += pDoc->getNumPages();
-			nStartRefID += pDoc->getXRef()->getNumObjects();
 		}
 	}
 

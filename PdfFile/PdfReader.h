@@ -45,9 +45,10 @@ struct CPdfReaderContext
 {
 	PDFDoc* m_pDocument;
 	PdfReader::CPdfFontList* m_pFontList;
+	unsigned int m_nStartID;
 
-	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL) {}
-	CPdfReaderContext(PDFDoc* pDocument, PdfReader::CPdfFontList* pFontList) : m_pDocument(pDocument), m_pFontList(pFontList) {}
+	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL), m_nStartID(0) {}
+	CPdfReaderContext(PDFDoc* pDocument, PdfReader::CPdfFontList* pFontList, unsigned int nStartID) : m_pDocument(pDocument), m_pFontList(pFontList), m_nStartID(nStartID) {}
 	~CPdfReaderContext();
 };
 
@@ -76,8 +77,8 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
-	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"");
-	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"");
+	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0);
+	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();

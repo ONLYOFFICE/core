@@ -1997,13 +1997,13 @@ void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOu
 	}
 	pOutlineItem->close();
 }
-bool CPdfEditor::MergePages(const std::wstring& wsPath, const int* arrPageIndex, unsigned int unLength)
+bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm)
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
-	bool bRes = SplitPages(arrPageIndex, unLength, pDocument, nStartRefID);
+	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
 	if (!bRes)
 		return false;
 

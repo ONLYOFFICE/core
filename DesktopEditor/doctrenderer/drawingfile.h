@@ -289,10 +289,10 @@ public:
 			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength);
 		return NULL;
 	}
-	bool MergePages(BYTE* data, LONG size)
+	bool MergePages(BYTE* data, LONG size, int nMaxID)
 	{
 		if (m_nType == 0)
-			return ((CPdfFile*)m_pFile)->MergePages(data, size);
+			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID);
 		return false;
 	}
 

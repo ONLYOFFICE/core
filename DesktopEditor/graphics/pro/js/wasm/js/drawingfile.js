@@ -212,6 +212,38 @@ CFile.prototype.getInfo = function()
 	ptr.free();
 	return this.pages.length > 0;
 };
+CFile.prototype.getPagesInfo = function()
+{
+	if (!this.nativeFile)
+		return [];
+
+	let ptr = this._getInfo();
+	let reader = ptr.getReader();
+	if (!reader) return [];
+
+	// skip StartID
+	reader.readInt();
+
+	let _pages = [];
+	let nPages = reader.readInt();
+	for (let i = 0; i < nPages; i++)
+	{
+		let rec = {};
+		rec["W"] = reader.readInt();
+		rec["H"] = reader.readInt();
+		rec["Dpi"] = reader.readInt();
+		rec["Rotate"] = reader.readInt();
+		rec["originIndex"] = i;
+		rec.fonts = [];
+		rec.fontsUpdateType = UpdateFontsSource.Undefined;
+		rec.text = null;
+		_pages.push(rec);
+	}
+	// skip json_info
+
+	ptr.free();
+	return _pages;
+};
 
 CFile.prototype["getStructure"] = function()
 {

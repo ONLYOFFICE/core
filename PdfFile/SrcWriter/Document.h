@@ -136,24 +136,9 @@ namespace PdfWriter
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 
+		CAnnotation*      CreateAnnot(BYTE nType);
 		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
-		CAnnotation*      CreateTextAnnot();
-		CAnnotation*      CreateInkAnnot();
-		CAnnotation*      CreateLineAnnot();
-		CAnnotation*      CreateTextMarkupAnnot();
-		CAnnotation*      CreateSquareCircleAnnot();
-		CAnnotation*      CreatePolygonLineAnnot();
-		CAnnotation*      CreatePopupAnnot();
-		CAnnotation*      CreateFreeTextAnnot();
-		CAnnotation*      CreateCaretAnnot();
-		CAnnotation*      CreateStampAnnot();
-		CAnnotation*      CreateWidgetAnnot();
-		CAnnotation*      CreatePushButtonWidget();
-		CAnnotation*      CreateCheckBoxWidget();
-		CAnnotation*      CreateTextWidget();
-		CAnnotation*      CreateChoiceWidget();
-		CAnnotation*      CreateSignatureWidget();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
 		CAction*          CreateAction(BYTE nType);
 					      

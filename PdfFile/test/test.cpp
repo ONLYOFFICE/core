@@ -373,14 +373,14 @@ TEST_F(CPdfFileTest, SplitPdf)
 
 TEST_F(CPdfFileTest, MergePdf)
 {
-	// GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
-	pdfFile->MergePages(wsSplitFile);
+	pdfFile->MergePages(wsSplitFile, 0, L"");
 
 	pdfFile->Close();
 }
@@ -407,7 +407,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

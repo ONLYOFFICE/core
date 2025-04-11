@@ -369,8 +369,11 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		if (obj->dictLookup("Type", &oType)->isName("Annot") && obj->dictLookup("Subtype", &oSubtype)->isName())
 		{
 			PdfWriter::CAnnotation* pAnnot = CreateAnnot(obj, &oSubtype, NULL);
-			pDoc->AddAnnotation(nAddObjToXRef + nStartRefID, pAnnot);
-			pDict = pAnnot;
+			if (pAnnot)
+			{
+				pDoc->AddAnnotation(nAddObjToXRef + nStartRefID, pAnnot);
+				pDict = pAnnot;
+			}
 		}
 		oType.free(); oSubtype.free();
 
@@ -1649,12 +1652,27 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					if (pDict->Get("Filter"))
 						pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
 				}
+
 			}
 			oTemp.free();
 		}
 		pPage->Fix();
 		if (m_nMode == Mode::WriteAppend)
+		{
 			pDoc->FixEditPage(pPage);
+
+			double dCTM[6] = { 1, 0, 0, 1, 0, 0 };
+			GetCTM(xref, &pageObj, dCTM);
+			pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
+			pPage->SetStrokeColor(0, 0, 0);
+			pPage->SetFillColor(0, 0, 0);
+			pPage->SetExtGrState(pDoc->GetExtGState(255, 255));
+			pPage->BeginText();
+			pPage->SetCharSpace(0);
+			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
+			pPage->SetHorizontalScalling(100);
+			pPage->EndText();
+		}
 		else
 			m_pWriter->SetNeedAddHelvetica(false); // TODO дописывает шрифт для адекватного редактирования Adobe pdf без текст. Убрать при реализации map шрифтов
 		pageObj.free();

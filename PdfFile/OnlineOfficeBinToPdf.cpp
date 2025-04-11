@@ -228,7 +228,6 @@ namespace NSOnlineOfficeBinToPdf
 				int nMaxID = oReader.ReadInt();
 				std::wstring wsPrefix = oReader.ReadString();
 				pPdf->MergePages(wsPath, nMaxID, wsPrefix);
-				RELEASEARRAYOBJECTS(pFile);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

@@ -1043,16 +1043,33 @@ namespace OOX
 			if (oReader.IsEmptyNode())
 				return;
 
-			content = oReader.GetText2();
+			int nDepth = oReader.GetDepth();
+			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
+			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 			{
-				std::wstring sName = oReader.GetName();
-
-				if (L"RefBy" == sName)
+				if (eNodeType == XmlUtils::XmlNodeType_Text
+					|| eNodeType == XmlUtils::XmlNodeType_Whitespace
+					|| eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE
+					|| eNodeType == XmlUtils::XmlNodeType_CDATA)
 				{
-					RefBy = oReader;
+					const char* pValue = oReader.GetTextChar();
+
+					if ('\0' != pValue[0])
+					{
+						std::wstring val;
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), val);
+						content += val;
+					}
+				}
+				else if (eNodeType == XmlUtils::XmlNodeType_Element)
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"RefBy" == sName)
+					{
+						RefBy = oReader;
+					}
 				}
 			}
 		}

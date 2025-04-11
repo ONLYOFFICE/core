@@ -1816,65 +1816,9 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 	if (!pAnnot)
 	{
-		if (oInfo.IsText())
-			pAnnot = m_pDocument->CreateTextAnnot();
-		else if (oInfo.IsInk())
-			pAnnot = m_pDocument->CreateInkAnnot();
-		else if (oInfo.IsLine())
-			pAnnot = m_pDocument->CreateLineAnnot();
-		else if (oInfo.IsTextMarkup())
-			pAnnot = m_pDocument->CreateTextMarkupAnnot();
-		else if (oInfo.IsSquareCircle())
-			pAnnot = m_pDocument->CreateSquareCircleAnnot();
-		else if (oInfo.IsPolygonLine())
-			pAnnot = m_pDocument->CreatePolygonLineAnnot();
-		else if (oInfo.IsPopup())
-			pAnnot = m_pDocument->CreatePopupAnnot();
-		else if (oInfo.IsFreeText())
-			pAnnot = m_pDocument->CreateFreeTextAnnot();
-		else if (oInfo.IsCaret())
-			pAnnot = m_pDocument->CreateCaretAnnot();
-		else if (oInfo.IsStamp())
-			pAnnot = m_pDocument->CreateStampAnnot();
-
-		if (oInfo.IsWidget())
-		{
-			switch (nWidgetType)
-			{
-			case 26:
-			{
-				pAnnot = m_pDocument->CreateWidgetAnnot();
-				break;
-			}
-			case 27:
-			{
-				pAnnot = m_pDocument->CreatePushButtonWidget();
-				break;
-			}
-			case 28:
-			case 29:
-			{
-				pAnnot = m_pDocument->CreateCheckBoxWidget();
-				break;
-			}
-			case 30:
-			{
-				pAnnot = m_pDocument->CreateTextWidget();
-				break;
-			}
-			case 31:
-			case 32:
-			{
-				pAnnot = m_pDocument->CreateChoiceWidget();
-				break;
-			}
-			case 33:
-			{
-				pAnnot = m_pDocument->CreateSignatureWidget();
-				break;
-			}
-			}
-		}
+		CAnnotFieldInfo::EAnnotType oType = oInfo.GetType();
+		BYTE nType = (BYTE) oType;
+		pAnnot = m_pDocument->CreateAnnot(nType);
 
 		if (pAnnot)
 		{
@@ -2833,6 +2777,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		if (nFlags & (1 << 9))
+			pParentObj->Add("MaxLen", pParent->nMaxLen);
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

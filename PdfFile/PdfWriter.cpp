@@ -2777,6 +2777,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				}
 			}
 		}
+		if (nFlags & (1 << 9))
+			pParentObj->Add("MaxLen", pParent->nMaxLen);
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

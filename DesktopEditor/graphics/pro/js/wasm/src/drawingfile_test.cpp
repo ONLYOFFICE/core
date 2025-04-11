@@ -351,7 +351,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Parent " << nPathLength;
+			std::cout << "Parent " << nPathLength << ", ";
 		}
 		if (nFlags & (1 << 5))
 		{
@@ -392,7 +392,7 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 		{
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
-			std::cout << "Ff " << nPathLength;
+			std::cout << "Ff " << nPathLength << ", ";
 		}
 		if (nFlags & (1 << 8))
 		{
@@ -409,6 +409,12 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 				ReadAction(pWidgets, i);
 			}
 			std::cout << std::endl;
+		}
+		if (nFlags & (1 << 9))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MaxLen " << nPathLength << ", ";
 		}
 
 		std::cout << std::endl;

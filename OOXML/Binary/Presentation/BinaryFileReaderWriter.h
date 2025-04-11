@@ -101,7 +101,7 @@ namespace NSBinPptxRW
 
 	struct _imageManager2Info
 	{
-		std::wstring sFilepathAdditional;
+		std::vector<std::wstring> sFilepathAdditionals;
 		std::wstring sFilepathImage;
 	};
 
@@ -220,10 +220,10 @@ namespace NSBinPptxRW
 		int IsDisplayedImage(const std::wstring& strInput);
 
 		_imageManager2Info GenerateMedia(const std::wstring& strInput);
-		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_imageManager2Info GenerateImage(const std::wstring& strInput, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		
 		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
-		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int & nAdditionalType, const std::wstring& oleData);
+		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, std::vector<std::pair<std::wstring, int>> & additional, const std::wstring& oleData);
 
 		bool SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 		bool SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
@@ -519,7 +519,7 @@ namespace NSBinPptxRW
 		void AddRels (const std::wstring& strRels);
 		void SaveRels (const std::wstring& strFile);
 
-		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::File>& additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_relsGeneratorInfo WriteImage (const std::wstring& strImage, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		_relsGeneratorInfo WriteMedia (const std::wstring& strMedia, int type = 0);
 	};
 

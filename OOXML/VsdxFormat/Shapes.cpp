@@ -33,9 +33,12 @@
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
 
 #include "../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../Binary/Presentation/XmlWriter.h"
+#include "../Binary/Presentation/imagemanager.h"
 #include "../DocxFormat/Media/OleObject.h"
 #include "../DocxFormat/Media/Image.h"
 
@@ -154,19 +157,15 @@ namespace OOX
 
 				smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
 				OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(pFile.GetPointer());
+
+				CPath image_path;
 				if (pOleObject)
 				{
-					CPath cache = pOleObject->filename_cache();
+					image_path = pOleObject->filename_cache();
 					CPath ole = pOleObject->filename();
 
 					//todooo check correct path inside container
-
-					NSFile::CFileBinary::Copy(cache.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + cache.GetFilename());
 					NSFile::CFileBinary::Copy(ole.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + ole.GetFilename());
-
-					pWriter->StartRecord(1);
-					pWriter->WriteString(cache.GetFilename());
-					pWriter->EndRecord();
 
 					pWriter->StartRecord(2);
 					pWriter->WriteString(ole.GetFilename());
@@ -177,12 +176,43 @@ namespace OOX
 					OOX::Media* pMedia = dynamic_cast<OOX::Media*>(pFile.GetPointer());
 					if (pMedia)
 					{
-						CPath media = pMedia->filename();
-						pMedia->copy_to(out.GetPath());
-						
-						pWriter->StartRecord(1);
-						pWriter->WriteString(media.GetFilename());
-						pWriter->EndRecord();
+						image_path = pMedia->filename();
+					}
+				}
+				if (false == image_path.GetPath().empty())
+				{
+					//todooo check correct path inside container
+					NSFile::CFileBinary::Copy(image_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename());
+
+					pWriter->StartRecord(1);
+					pWriter->WriteString(image_path.GetFilename());
+					pWriter->EndRecord();
+
+					CImageFileFormatChecker checker;
+					if (checker.isImageFile(image_path.GetPath()))
+					{
+						if (checker.eFileType == _CXIMAGE_FORMAT_WMF || checker.eFileType == _CXIMAGE_FORMAT_EMF)
+						{
+							MetaFile::IMetaFile* pMetafile = MetaFile::Create(pWriter->m_pCommon->m_pMediaManager->m_pFontManager->GetApplication());
+
+							if (pMetafile->LoadFromFile(image_path.GetPath().c_str()))
+							{
+								// пробуем сохранить в svg напрямую из метафайлов
+								std::wstring sInternalSvg = pMetafile->ConvertToSvg(ObjectWidth.get_value_or(0), ObjectHeight.get_value_or(0));
+
+								if (!sInternalSvg.empty())
+								{
+									NSFile::CFileBinary::SaveToFile(out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename() + L".svg", sInternalSvg);
+								}
+								else
+								{// не смогли сконвертировать в svg - пробуем в png									
+
+									std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename() + L".png";
+									pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/, 0, 0);
+								}
+							}
+							RELEASEOBJECT(pMetafile);
+						}
 					}
 				}
 			}

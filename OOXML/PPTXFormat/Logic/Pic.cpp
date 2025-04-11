@@ -1123,7 +1123,6 @@ namespace PPTX
 							else
 								break;
 						}
-						blipFill.additionalFiles.emplace_back();
 						smart_ptr<OOX::Media> mediaFile = blipFill.additionalFiles.back().smart_dynamic_cast<OOX::Media>();
 						if (mediaFile.IsInit())
 						{

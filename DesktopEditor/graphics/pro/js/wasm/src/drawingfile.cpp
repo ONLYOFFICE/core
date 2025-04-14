@@ -181,9 +181,9 @@ WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength
 {
 	return pFile->SplitPages(arrPageIndex, nLength);
 }
-WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size, int nMaxID)
+WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size, int nMaxID, const char* sPrefixForm)
 {
-	return pFile->MergePages(data, size, nMaxID) ? 1 : 0;
+	return pFile->MergePages(data, size, nMaxID, sPrefixForm) ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

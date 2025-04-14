@@ -46,6 +46,7 @@ struct CPdfReaderContext
 	PDFDoc* m_pDocument;
 	PdfReader::CPdfFontList* m_pFontList;
 	unsigned int m_nStartID;
+	std::string sPrefixForm;
 
 	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL), m_nStartID(0) {}
 	CPdfReaderContext(PDFDoc* pDocument, PdfReader::CPdfFontList* pFontList, unsigned int nStartID) : m_pDocument(pDocument), m_pFontList(pFontList), m_nStartID(nStartID) {}
@@ -77,8 +78,8 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
-	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0);
-	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0);
+	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
+	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
@@ -102,7 +103,7 @@ public:
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);
 	BYTE* GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64 = false, int nBWidget = -1, const char* sIView = NULL);
-	std::map<std::wstring, std::wstring> GetFonts() { return m_mFonts; }
+	const std::map<std::wstring, std::wstring>& GetFonts() { return m_mFonts; }
 
 private:
 	void Clear();

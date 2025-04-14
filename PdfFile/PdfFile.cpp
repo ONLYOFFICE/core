@@ -336,11 +336,11 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 	else
 		m_pInternal->pReader->GetPageInfo(nPageIndex, pdWidth, pdHeight, pdDpiX, pdDpiY);
 }
-bool CPdfFile::MergePages(BYTE* data, DWORD length, int nMaxID)
+bool CPdfFile::MergePages(BYTE* data, DWORD length, int nMaxID, const std::string& sPrefixForm)
 {
 	if (!m_pInternal->pReader)
 		return false;
-	return m_pInternal->pReader->MergePages(data, length, L"", nMaxID) && (m_pInternal->pReader->GetError() == 0);
+	return m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm) && (m_pInternal->pReader->GetError() == 0);
 }
 int CPdfFile::GetRotate(int nPageIndex)
 {

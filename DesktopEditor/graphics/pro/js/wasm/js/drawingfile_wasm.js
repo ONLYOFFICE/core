@@ -130,7 +130,7 @@ CFile.prototype._SplitPages = function(memoryBuffer)
 	return ptr;
 };
 
-CFile.prototype._MergePages = function(buffer, maxID)
+CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
 {
 	if (!buffer)
 		return false;
@@ -142,11 +142,22 @@ CFile.prototype._MergePages = function(buffer, maxID)
 	if (!maxID)
 		maxID = 0;
 
-	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID);
+	let prefixPtr = 0;
+	if (prefixForm)
+	{
+		let prefixBuf = prefixForm.toUtf8();
+		prefixPtr = Module["_malloc"](prefixBuf.length);
+		Module["HEAP8"].set(prefixBuf, prefixPtr);
+	}
+
+	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID, prefixPtr);
 	if (bRes == 1)
 		this.stream.push(stream2);
 	else
 		Module["_free"](stream2);
+
+	if (prefixPtr)
+		Module["_free"](prefixPtr);
 
 	return bRes == 1;
 };

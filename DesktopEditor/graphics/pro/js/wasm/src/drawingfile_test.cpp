@@ -987,7 +987,7 @@ int main(int argc, char* argv[])
 
 	// SPLIT & MERGE
 	BYTE* pSplitPages = NULL;
-	if (true)
+	if (false)
 	{
 		std::vector<int> arrPages = { 0 };
 		for (int i = 0; i < 3; i++)
@@ -1002,9 +1002,19 @@ int main(int argc, char* argv[])
 					oFile.WriteFile(pSplitPages + 4, nLength - 4);
 				oFile.CloseFile();
 
-				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0) == 0)
+				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge") == 0)
 					RELEASEARRAYOBJECTS(pSplitPages);
 			}
+		}
+	}
+	BYTE* pFileMerge = NULL;
+	if (true)
+	{
+		DWORD nFileMergeLen = 0;
+		if (NSFile::CFileBinary::ReadAllBytes(NSFile::GetProcessDirectory() + L"/test_merge.pdf", &pFileMerge, nFileMergeLen))
+		{
+			if (MergePages(pGrFile, pFileMerge, nFileMergeLen, 0, "merge") == 0)
+				RELEASEARRAYOBJECTS(pFileMerge);
 		}
 	}
 
@@ -2002,6 +2012,7 @@ int main(int argc, char* argv[])
 	Close(pGrFile);
 	RELEASEARRAYOBJECTS(pFileData);
 	RELEASEARRAYOBJECTS(pSplitPages);
+	RELEASEARRAYOBJECTS(pFileMerge);
 	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;

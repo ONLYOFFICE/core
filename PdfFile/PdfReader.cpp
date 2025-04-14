@@ -565,7 +565,7 @@ bool CPdfReader::ValidMetaData()
 	oID.free(); oID2.free();
 	return bRes;
 }
-bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID)
+bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 		return false;
@@ -580,6 +580,7 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	pContext->sPrefixForm = sPrefixForm;
 	if (nMaxID != 0)
 		pContext->m_nStartID = nMaxID;
 	else if (!m_vPDFContext.empty())
@@ -603,7 +604,7 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 
 	return true;
 }
-bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID)
+bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
 			return false;
@@ -615,9 +616,10 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	pContext->sPrefixForm = sPrefixForm;
 	if (nMaxID != 0)
 		pContext->m_nStartID = nMaxID;
-	if (!m_vPDFContext.empty())
+	else if (!m_vPDFContext.empty())
 		pContext->m_nStartID = m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
 	PDFDoc* pDoc = pContext->m_pDocument;
 	m_vPDFContext.push_back(pContext);
@@ -1131,10 +1133,11 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
+	std::map<std::string, std::string>  mForms;
 	int nStartPage = 0;
-	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	for (int iPDF = 0; iPDF < m_vPDFContext.size(); ++iPDF)
 	{
-		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		PDFDoc* pDoc = m_vPDFContext[iPDF]->m_pDocument;
 		if (!pDoc || !pDoc->getCatalog())
 			continue;
 		if (!pDoc->getCatalog()->getForm() || !pDoc->getXRef())
@@ -1143,9 +1146,35 @@ BYTE* CPdfReader::GetWidgets()
 			continue;
 		}
 
-		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, nStartPage, pPDFContext->m_nStartID);
+		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, m_vPDFContext[iPDF]->m_pFontList, nStartPage, m_vPDFContext[iPDF]->m_nStartID);
 		if (pAnnots)
+		{
+			const std::vector<PdfReader::CAnnotWidget*>& arrAnnots = pAnnots->GetAnnots();
+			for (int i = 0; i < arrAnnots.size(); ++i)
+			{
+				const std::string& sFullName = arrAnnots[i]->GetFullName();
+				std::map<std::string, std::string>::iterator it = mForms.find(sFullName);
+				if (it == mForms.end())
+					mForms[sFullName] = arrAnnots[i]->GetType();
+				else if (mForms[sFullName] != arrAnnots[i]->GetType())
+				{
+					if (iPDF == 0)
+					{
+						// error
+						// throw "Same full names for forms of different types within the same file";
+					}
+					else
+					{
+						int nPrefix = 0;
+						std::string sPrefix = m_vPDFContext[iPDF]->sPrefixForm + "_" + std::to_string(nPrefix);
+						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
+							sPrefix = m_vPDFContext[iPDF]->sPrefixForm + "_" + std::to_string(++nPrefix);
+					}
+				}
+			}
+
 			pAnnots->ToWASM(oRes);
+		}
 		RELEASEOBJECT(pAnnots);
 		nStartPage += pDoc->getNumPages();
 	}

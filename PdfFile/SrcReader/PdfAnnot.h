@@ -219,12 +219,19 @@ public:
 
 	void SetFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
 	void SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList);
+	unsigned int GetRefNumParent() { return m_unRefNumParent; }
+	const std::string& GetFullName() { return m_sFullName; }
+	void SetFullName(const std::string& sFullName) { m_sFullName = sFullName; }
+	void AddFullName(const std::string& sPrefixForm) { m_sFullName += sPrefixForm; }
+	bool ChangeFullName(const std::string& sPrefixForm);
+	void ClearActions();
+	virtual std::string GetType() = 0;
+	virtual void ToWASM(NSWasm::CData& oRes) override;
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
 
 	std::string FieldLookupString(AcroFormField* pField, const char* sName, int nByte);
-	virtual void ToWASM(NSWasm::CData& oRes) override;
 
 	BYTE m_nType; // Тип - FT + флаги
 	unsigned int m_unFieldFlag; // Флаг - Ff
@@ -245,6 +252,7 @@ private:
 	std::string m_sDV; // Значение по-умолчанию - DV
 	std::string m_sT; // Частичное имя поля - T
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
+	std::string m_sFullName; // Полное имя поля
 	std::string m_sFontName; // Имя шрифта - из DA
 	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
@@ -255,6 +263,7 @@ class CAnnotWidgetBtn final : public CAnnotWidget
 {
 public:
 	CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
+	virtual std::string GetType() override { return "Btn"; }
 
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
@@ -275,6 +284,7 @@ class CAnnotWidgetTx final : public CAnnotWidget
 {
 public:
 	CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
+	virtual std::string GetType() override { return "Tx"; }
 
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
@@ -287,6 +297,7 @@ class CAnnotWidgetCh final : public CAnnotWidget
 {
 public:
 	CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
+	virtual std::string GetType() override { return "Ch"; }
 
 	void ToWASM(NSWasm::CData& oRes) override;
 private:
@@ -301,6 +312,7 @@ class CAnnotWidgetSig final : public CAnnotWidget
 {
 public:
 	CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
+	virtual std::string GetType() override { return "Sig"; }
 
 	void ToWASM(NSWasm::CData& oRes) override;
 };
@@ -595,6 +607,9 @@ public:
 	~CAnnots();
 
 	void ToWASM(NSWasm::CData& oRes);
+	bool ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm);
+	bool ChangeFullNameParent(int nParent, const std::string& sPrefixForm);
+	const std::vector<CAnnotWidget*>& GetAnnots() { return m_arrAnnots; }
 
 private:
 	struct CAnnotParent final
@@ -605,6 +620,11 @@ private:
 			unRefNum = 0;
 			unRefNumParent = 0;
 		}
+		~CAnnotParent()
+		{
+			ClearActions();
+		}
+		void ClearActions();
 
 		void ToWASM(NSWasm::CData& oRes);
 
@@ -619,13 +639,14 @@ private:
 		std::string sT;
 		std::string sV;
 		std::string sDV;
+		std::string sFullName;
 	};
 
 	void getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID);
 
 	std::vector<int> m_arrCO; // Порядок вычислений - CO
 	std::vector<CAnnotParent*> m_arrParents; // Родительские Fields
-	std::vector<CAnnot*> m_arrAnnots;
+	std::vector<CAnnotWidget*> m_arrAnnots;
 };
 
 //------------------------------------------------------------------------

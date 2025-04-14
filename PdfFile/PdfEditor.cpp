@@ -2782,15 +2782,15 @@ void CPdfEditor::EndMarkedContent()
 }
 bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath)
 {
-	std::map<std::wstring, std::wstring>::iterator it = m_mFonts.find(wsFontName);
+	std::map<std::wstring, std::wstring>::const_iterator it = m_mFonts.find(wsFontName);
 	if (it != m_mFonts.end())
 		wsFontPath = it->second;
 	if (wsFontPath.empty())
 	{
-		std::map<std::wstring, std::wstring> mFonts = m_pReader->GetFonts();
-		it = mFonts.find(wsFontName);
-		if (it != mFonts.end())
-			wsFontPath = it->second;
+		const std::map<std::wstring, std::wstring>& mFonts = m_pReader->GetFonts();
+		std::map<std::wstring, std::wstring>::const_iterator it2 = mFonts.find(wsFontName);
+		if (it2 != mFonts.end())
+			wsFontPath = it2->second;
 	}
 	if (wsFontPath.empty())
 		return false;

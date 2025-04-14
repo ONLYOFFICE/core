@@ -289,10 +289,10 @@ public:
 			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength);
 		return NULL;
 	}
-	bool MergePages(BYTE* data, LONG size, int nMaxID)
+	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm)
 	{
 		if (m_nType == 0)
-			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID);
+			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID, sPrefixForm);
 		return false;
 	}
 

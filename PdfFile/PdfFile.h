@@ -127,7 +127,7 @@ public:
 	virtual BYTE* GetLinks(int nPageIndex);
 
 	bool ValidMetaData();
-	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0);
+	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

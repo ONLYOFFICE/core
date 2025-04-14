@@ -172,9 +172,9 @@ CFile.prototype["SplitPages"] = function(arrPageIndex)
 	Module["_free"](ptr);
 	return buffer;
 };
-CFile.prototype["MergePages"] = function(arrayBuffer, maxID)
+CFile.prototype["MergePages"] = function(arrayBuffer, maxID, prefixForm)
 {
-	return this._MergePages(arrayBuffer, maxID);
+	return this._MergePages(arrayBuffer, maxID, prefixForm);
 };
 
 // INFO DOCUMENT

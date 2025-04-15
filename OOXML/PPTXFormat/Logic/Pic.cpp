@@ -786,7 +786,7 @@ namespace PPTX
 		std::wstring Pic::toXML() const
 		{
 			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"macro", macro);
+			oAttr.Write2(L"macro", macro);
 
 			XmlUtils::CNodeValue oValue;
 			oValue.Write(nvPicPr);
@@ -1010,7 +1010,7 @@ namespace PPTX
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("xmlns:pic"), (std::wstring)_T("http://schemas.openxmlformats.org/drawingml/2006/picture"));
 			}
-			pWriter->WriteAttribute(L"macro", macro);
+			pWriter->WriteAttribute2(L"macro", macro);
 			pWriter->EndAttributes();
 
 			nvPicPr.toXmlWriter(pWriter);

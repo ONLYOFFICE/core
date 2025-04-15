@@ -93,6 +93,12 @@ namespace XmlUtils
 			return;
 		m_strValue += (L" ") + strName + L"=\"" + *value + L"\"";
 	}
+	void CAttribute::Write2(const std::wstring& strName, const nullable_string& value)
+	{
+		if (!value.IsInit())
+			return;
+		m_strValue += (L" ") + strName + L"=\"" + XmlUtils::EncodeXmlString(*value) + L"\"";
+	}
 	void CAttribute::Write(const std::wstring& strName, const nullable_bool& value)
 	{
 		if (!value.IsInit())

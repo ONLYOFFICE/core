@@ -52,6 +52,7 @@ HEADERS += \
 	src/Types/Font.h \
 	src/Types/MultiMedia.h \
 	src/Types/PageArea.h \
+	src/Types/Signature.h \
 	src/Types/TemplatePage.h \
 	src/Utils/Types.h \
 	src/Utils/Utils.h \
@@ -79,6 +80,7 @@ SOURCES += \
 	src/Types/Font.cpp \
 	src/Types/MultiMedia.cpp \
 	src/Types/PageArea.cpp \
+	src/Types/Signature.cpp \
 	src/Types/TemplatePage.cpp \
 	src/Utils/Types.cpp \
 	src/Utils/XmlReader.cpp

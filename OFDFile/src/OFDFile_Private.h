@@ -33,6 +33,7 @@ public:
 	void GetPageSize(int nPageIndex, double& dWidth, double& dHeight) const;
 
 	void DrawPage(IRenderer* pRenderer, int nPageIndex);
+	void DrawPage(IRenderer* pRenderer, int nPageIndex, const double& dX, const double& dY, const double& dWidth, const double& dHeight);
 
 	NSFonts::IApplicationFonts* GetFonts();
 };

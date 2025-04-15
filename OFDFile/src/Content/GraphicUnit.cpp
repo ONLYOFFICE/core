@@ -62,12 +62,17 @@ CGraphicUnit::CGraphicUnit(CXmlReader& oLiteReader)
 	oLiteReader.MoveToElement();
 }
 
-void CGraphicUnit::Apply(IRenderer* pRenderer) const
+void CGraphicUnit::Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const
 {
 	if (nullptr == pRenderer)
 		return;
 
-	pRenderer->ResetTransform();
+	pRenderer->GetTransform(&oOldTransform.m_dM11, &oOldTransform.m_dM12, &oOldTransform.m_dM21, &oOldTransform.m_dM22, &oOldTransform.m_dDx, &oOldTransform.m_dDy);
+
+	Aggplus::CMatrix oTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);
+	const Aggplus::CMatrix oCurrentTransform(m_oCTM.m_dM11, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
+
+	oTransform.Multiply(&oCurrentTransform);
 
 	// Clipping
 	// pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
@@ -86,7 +91,7 @@ void CGraphicUnit::Apply(IRenderer* pRenderer) const
 	// pRenderer->EndCommand(c_nClipType);
 	// pRenderer->PathCommandEnd();
 
-	pRenderer->SetTransform(m_oCTM.m_dM11, m_oCTM.m_dM12, m_oCTM.m_dM21, m_oCTM.m_dM22, m_oBoundary.m_dX + m_oCTM.m_dDx, m_oBoundary.m_dY + m_oCTM.m_dDy);
+	pRenderer->SetTransform(oTransform.sx(), oTransform.shy(), oTransform.shx(), oTransform.sy(), oTransform.tx(), oTransform.ty());
 }
 
 TBox CGraphicUnit::GetBoundary() const

@@ -5,8 +5,6 @@
 #include "PageArea.h"
 #include "TemplatePage.h"
 
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
-
 namespace OFD
 {
 class CCommonData

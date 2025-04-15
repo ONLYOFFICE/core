@@ -63,7 +63,7 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 	if (nullptr == pRenderer || m_wsText.empty())
 		return;
 
-	double dX = m_dX, dDelta = 0;
+	double dX = m_dX, dY = m_dY, dDeltaX = 0, dDeltaY = 0;
 	bool bDrawed = false;
 
 	for (unsigned int unGlyphIndex = 0; unGlyphIndex < m_wsText.length(); ++unGlyphIndex)
@@ -72,7 +72,7 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 		{
 			for (const TCGTransform& oCGTransform : arCGTransforms)
 			{
-				if (oCGTransform.Draw(pRenderer, unIndex, dX, m_dY))
+				if (oCGTransform.Draw(pRenderer, unIndex, dX, dY))
 				{
 					bDrawed = true;
 					break;
@@ -82,20 +82,24 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 
 		if (!bDrawed)
 		{
-			pRenderer->CommandDrawTextCHAR(m_wsText[unGlyphIndex], dX, m_dY, 0, 0);
+			pRenderer->CommandDrawTextCHAR(m_wsText[unGlyphIndex], dX, dY, 0, 0);
 			++unIndex;
 		}
 
 		if (unGlyphIndex < m_arDeltaX.size())
-			dDelta = m_arDeltaX[unGlyphIndex];
+			dDeltaX = m_arDeltaX[unGlyphIndex];
 
-		dX += dDelta;
+		if (unGlyphIndex < m_arDeltaY.size())
+			dDeltaY = m_arDeltaY[unGlyphIndex];
+
+		dX += dDeltaX;
+		dY += dDeltaY;
 	}
 }
 
 CTextObject::CTextObject(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader), CGraphicUnit(oLiteReader),
-	  m_bStroke(false), m_bFill(false), m_dHScale(1.),
+	  m_bStroke(false), m_bFill(true), m_dHScale(1.),
 	  m_unReadDirection(0), m_unCharDirection(0), m_unWeight(400),
 	  m_bItalic(false),
 	  m_pFillColor(nullptr), m_pStrokeColor(nullptr), m_unFontID(0)
@@ -179,7 +183,8 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 	if (nullptr == pRenderer || m_arTextCodes.empty())
 		return;
 
-	CGraphicUnit::Apply(pRenderer);
+	TMatrix oOldTransform;
+	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
 	const CFont* pFont = oCommonData.GetPublicRes()->GetFont(m_unFontID);
 
@@ -210,6 +215,8 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 
 	for (const CTextCode* pTextCode : m_arTextCodes)
 		pTextCode->Draw(pRenderer, unGlyphsIndex, m_arCGTransforms);
+
+	pRenderer->SetTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);
 }
 
 TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)

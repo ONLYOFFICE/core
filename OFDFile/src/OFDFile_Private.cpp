@@ -1,6 +1,7 @@
 #include "OFDFile_Private.h"
 
 #include "../../OfficeUtils/src/OfficeUtils.h"
+#include "Utils/Utils.h"
 
 COFDFile_Private::COFDFile_Private(NSFonts::IApplicationFonts* pFonts)
 	: m_pAppFonts(pFonts), m_pTempFolder(nullptr)
@@ -9,11 +10,11 @@ COFDFile_Private::COFDFile_Private(NSFonts::IApplicationFonts* pFonts)
 		return;
 
 	// Создаем менеджер шрифтов с собственным кэшем
-	m_pFontManager = m_pAppFonts->GenerateFontManager();
-	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-	m_pFontManager->SetOwnerCache(pMeasurerCache);
-	pMeasurerCache->SetCacheSize(16);
+	// m_pFontManager = m_pAppFonts->GenerateFontManager();
+	// NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+	// pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+	// m_pFontManager->SetOwnerCache(pMeasurerCache);
+	// pMeasurerCache->SetCacheSize(16);
 }
 
 COFDFile_Private::~COFDFile_Private()
@@ -23,7 +24,7 @@ COFDFile_Private::~COFDFile_Private()
 	if (nullptr != m_pTempFolder)
 		delete m_pTempFolder;
 
-	RELEASEINTERFACE(m_pFontManager);
+	// RELEASEINTERFACE(m_pFontManager);
 }
 
 void COFDFile_Private::Close()
@@ -108,6 +109,33 @@ void COFDFile_Private::GetPageSize(int nPageIndex, double& dWidth, double& dHeig
 void COFDFile_Private::DrawPage(IRenderer* pRenderer, int nPageIndex)
 {
 	m_oBase.DrawPage(pRenderer, nPageIndex);
+}
+
+void COFDFile_Private::DrawPage(IRenderer* pRenderer, int nPageIndex, const double& dX, const double& dY, const double& dWidth, const double& dHeight)
+{
+	if (nullptr == pRenderer)
+		return;
+
+	double dPageWidth = 0., dPageHeight = 0.;
+
+	GetPageSize(nPageIndex, dPageWidth, dPageHeight);
+
+	if (OFD::IsZeroValue(dPageWidth) || OFD::IsZeroValue(dPageHeight))
+		return;
+
+	double dM11, dM12, dM21, dM22, dDx, dDy;
+	pRenderer->GetTransform(&dM11, &dM12, &dM21, &dM22, &dDx, &dDy);
+
+	Aggplus::CMatrix oTransform(dM11, dM12, dM21, dM22, dDx, dDy);
+
+	oTransform.Scale(dWidth / dPageWidth, dHeight / dPageHeight);
+	oTransform.Translate(dX, dY);
+
+	pRenderer->SetTransform(oTransform.sx(), oTransform.shy(), oTransform.shx(), oTransform.sy(), oTransform.tx(), oTransform.ty());
+
+	m_oBase.DrawPage(pRenderer, nPageIndex);
+
+	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 }
 
 NSFonts::IApplicationFonts* COFDFile_Private::GetFonts()

@@ -2,7 +2,6 @@
 #define TEMPLATEPAGE_H
 
 #include "../IOFDElement.h"
-#include "../../../DesktopEditor/graphics/pro/Fonts.h"
 
 namespace OFD
 {

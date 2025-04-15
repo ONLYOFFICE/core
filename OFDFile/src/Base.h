@@ -2,10 +2,10 @@
 #define BASE_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../OfficeUtils/src/ZipFolder.h"
 
 #include "Document.h"
+#include "Types/Signature.h"
 
 namespace OFD
 {
@@ -47,9 +47,13 @@ class CDocBody
 	CDocument m_oDocument;
 	// std::wstring m_wsPathToDocRoot;
 	// std::wstring m_wsVersions;
-	std::wstring m_wsSignature;
+	std::vector<CSignature*> m_arSignatures;
+
+	void ReadSignatures(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
 public:
 	CDocBody();
+	~CDocBody();
+
 	static CDocBody* Read(CXmlReader& oLiteReader, IFolder* pFolder);
 
 	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;

@@ -60,54 +60,56 @@ CPathObject::CPathObject(CXmlReader& oLiteReader)
 		{
 			std::vector<std::string> arValues{Split(oLiteReader.GetText2A(), ' ')};
 
+			std::vector<std::string>::const_iterator itElement = arValues.cbegin();
+
 			char chElementName;
 
-			while (!arValues.empty())
+			while (arValues.cend() != itElement)
 			{
 				if (arValues.front().length() != 1)
 				{
-					arValues.erase(arValues.begin());
+					++itElement;
 					continue;
 				}
 
-				chElementName = arValues[0][0];
-				arValues.erase(arValues.begin());
+				chElementName = (*itElement)[0];
+				++itElement;
 
 				switch (chElementName)
 				{
 					case 'S':
 					{
-						AddElement(CStartElement::ReadFromArray(arValues));
+						AddElement(CStartElement::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'M':
 					{
-						AddElement(CMoveElement::ReadFromArray(arValues));
+						AddElement(CMoveElement::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'L':
 					{
-						AddElement(CLineElement::ReadFromArray(arValues));
+						AddElement(CLineElement::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'Q':
 					{
-						AddElement(CBezierCurve2Element::ReadFromArray(arValues));
+						AddElement(CBezierCurve2Element::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'B':
 					{
-						AddElement(CBezierCurveElement::ReadFromArray(arValues));
+						AddElement(CBezierCurveElement::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'A':
 					{
-						AddElement(CArcElement::ReadFromArray(arValues));
+						AddElement(CArcElement::ReadFromArray(itElement, arValues.cend()));
 						break;
 					}
 					case 'C':
 					{
-						AddElement(CCloseElement::ReadFromArray(arValues));
+						AddElement(new CCloseElement());
 						break;
 					}
 					default:
@@ -135,7 +137,8 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 	if (nullptr == pRenderer || m_arElements.empty())
 		return;
 
-	CGraphicUnit::Apply(pRenderer);
+	TMatrix oOldTransform;
+	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
 	pRenderer->BeginCommand(c_nPathType);
 	pRenderer->PathCommandStart();
@@ -207,14 +210,16 @@ void CPathObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 
 	pRenderer->PathCommandEnd();
 	pRenderer->EndCommand(c_nPathType);
+
+	pRenderer->SetTransform(oOldTransform.m_dM11, oOldTransform.m_dM12, oOldTransform.m_dM21, oOldTransform.m_dM22, oOldTransform.m_dDx, oOldTransform.m_dDy);
 }
 
 CStartElement::CStartElement()
 {}
 
-IPathElement* CStartElement::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CStartElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 2)
+	if (itEnd - itBegin < 2)
 		return nullptr;
 
 	CStartElement *pElement = new CStartElement();
@@ -222,12 +227,10 @@ IPathElement* CStartElement::ReadFromArray(std::vector<std::string>& arValues)
 	if (nullptr == pElement)
 		return nullptr;
 
-	if (StringToDouble(arValues[0], pElement->m_dX) && StringToDouble(arValues[1], pElement->m_dY))
+	if (StringToDouble(*itBegin++, pElement->m_dX) && StringToDouble(*itBegin++, pElement->m_dY))
 		return pElement;
 
-	if (nullptr != pElement)
-		delete pElement;
-
+	delete pElement;
 	return nullptr;
 }
 
@@ -240,9 +243,9 @@ void CStartElement::Draw(IRenderer* pRenderer) const
 CMoveElement::CMoveElement()
 {}
 
-IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 2)
+	if (itEnd - itBegin < 2)
 		return nullptr;
 
 	CMoveElement *pElement = new CMoveElement();
@@ -250,8 +253,7 @@ IPathElement* CMoveElement::ReadFromArray(std::vector<std::string>& arValues)
 	if (nullptr == pElement)
 		return nullptr;
 
-
-	if (StringToDouble(arValues[0], pElement->m_dX) && StringToDouble(arValues[1], pElement->m_dY))
+	if (StringToDouble(*itBegin++, pElement->m_dX) && StringToDouble(*itBegin++, pElement->m_dY))
 		return pElement;
 
 	delete pElement;
@@ -267,9 +269,9 @@ void CMoveElement::Draw(IRenderer* pRenderer) const
 CLineElement::CLineElement()
 {}
 
-IPathElement* CLineElement::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CLineElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 2)
+	if (itEnd - itBegin < 2)
 		return nullptr;
 
 	CLineElement *pElement = new CLineElement();
@@ -277,7 +279,7 @@ IPathElement* CLineElement::ReadFromArray(std::vector<std::string>& arValues)
 	if (nullptr == pElement)
 		return nullptr;
 
-	if (StringToDouble(arValues[0], pElement->m_dX) && StringToDouble(arValues[1], pElement->m_dY))
+	if (StringToDouble(*itBegin++, pElement->m_dX) && StringToDouble(*itBegin++, pElement->m_dY))
 		return pElement;
 
 	delete pElement;
@@ -293,9 +295,9 @@ void CLineElement::Draw(IRenderer* pRenderer) const
 CBezierCurve2Element::CBezierCurve2Element()
 {}
 
-IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 4)
+	if (itEnd - itBegin < 4)
 		return nullptr;
 
 	CBezierCurve2Element *pElement = new CBezierCurve2Element();
@@ -303,8 +305,8 @@ IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>& arVa
 	if (nullptr == pElement)
 		return nullptr;
 
-	if (StringToDouble(arValues[0], pElement->m_dX1) && StringToDouble(arValues[1], pElement->m_dY1) &&
-	    StringToDouble(arValues[2], pElement->m_dX2) && StringToDouble(arValues[3], pElement->m_dY2))
+	if (StringToDouble(*itBegin++, pElement->m_dX1) && StringToDouble(*itBegin++, pElement->m_dY1) &&
+	    StringToDouble(*itBegin++, pElement->m_dX2) && StringToDouble(*itBegin++, pElement->m_dY2))
 		return pElement;
 
 	delete pElement;
@@ -313,16 +315,20 @@ IPathElement* CBezierCurve2Element::ReadFromArray(std::vector<std::string>& arVa
 
 void CBezierCurve2Element::Draw(IRenderer* pRenderer) const
 {
-	// if (nullptr != pRenderer)
-	// 	pRenderer->PathCommandCurveTo()
+	if (nullptr == pRenderer)
+		return;
+
+	double dX = 0, dY = 0;
+	pRenderer->PathCommandGetCurrentPoint(&dX, &dY);
+	pRenderer->PathCommandCurveTo(dX, dY, m_dX1, m_dY1, m_dX2, m_dY2);
 }
 
 CBezierCurveElement::CBezierCurveElement()
 {}
 
-IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 4)
+	if (itEnd - itBegin < 6)
 		return nullptr;
 
 	CBezierCurveElement *pElement = new CBezierCurveElement();
@@ -330,8 +336,9 @@ IPathElement* CBezierCurveElement::ReadFromArray(std::vector<std::string>& arVal
 	if (nullptr == pElement)
 		return nullptr;
 
-	if (StringToDouble(arValues[0], pElement->m_dX1) && StringToDouble(arValues[1], pElement->m_dY1) &&
-	    StringToDouble(arValues[2], pElement->m_dX2) && StringToDouble(arValues[3], pElement->m_dY2))
+	if (StringToDouble(*itBegin++, pElement->m_dX1) && StringToDouble(*itBegin++, pElement->m_dY1) &&
+	    StringToDouble(*itBegin++, pElement->m_dX2) && StringToDouble(*itBegin++, pElement->m_dY2) &&
+	    StringToDouble(*itBegin++, pElement->m_dX3) && StringToDouble(*itBegin++, pElement->m_dY3))
 		return pElement;
 
 	delete pElement;
@@ -347,9 +354,10 @@ void CBezierCurveElement::Draw(IRenderer* pRenderer) const
 CArcElement::CArcElement()
 {}
 
-IPathElement* CArcElement::ReadFromArray(std::vector<std::string>& arValues)
+IPathElement* CArcElement::ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd)
 {
-	if (arValues.size() < 7)
+
+	if (itEnd - itBegin < 7)
 		return nullptr;
 
 	CArcElement *pElement = new CArcElement();
@@ -357,10 +365,10 @@ IPathElement* CArcElement::ReadFromArray(std::vector<std::string>& arValues)
 	if (nullptr == pElement)
 		return nullptr;
 
-	if (StringToDouble(arValues[0], pElement->m_dRadiusX) && StringToDouble(arValues[1], pElement->m_dRadiusY) &&
-	    StringToDouble(arValues[2], pElement->m_dAngle) && StringToBoolean(arValues[3], pElement->m_bLarge) &&
-	    StringToBoolean(arValues[4], pElement->m_bSweep) && StringToDouble(arValues[5], pElement->m_dX) &&
-	    StringToDouble(arValues[6], pElement->m_dY))
+	if (StringToDouble (*itBegin++, pElement->m_dRadiusX) && StringToDouble (*itBegin++, pElement->m_dRadiusY) &&
+	    StringToDouble (*itBegin++, pElement->m_dAngle)   && StringToBoolean(*itBegin++, pElement->m_bLarge)   &&
+	    StringToBoolean(*itBegin++, pElement->m_bSweep)   && StringToDouble (*itBegin++, pElement->m_dX)       &&
+	    StringToDouble (*itBegin++, pElement->m_dY))
 		return pElement;
 
 	delete pElement;
@@ -375,11 +383,6 @@ void CArcElement::Draw(IRenderer* pRenderer) const
 
 CCloseElement::CCloseElement()
 {}
-
-IPathElement* CCloseElement::ReadFromArray(std::vector<std::string>& arValues)
-{
-	return new CCloseElement();
-}
 
 void CCloseElement::Draw(IRenderer* pRenderer) const
 {

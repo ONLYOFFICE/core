@@ -42,7 +42,7 @@ class CGraphicUnit
 public:
 	CGraphicUnit(CXmlReader& oLiteReader);
 
-	void Apply(IRenderer* pRenderer) const;
+	void Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const;
 
 	TBox GetBoundary() const;
 };

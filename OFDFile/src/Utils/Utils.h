@@ -103,6 +103,16 @@ inline void AddToContainer(T* pValue, std::vector<T*>& arValues)
 		arValues.push_back(pValue);
 }
 
+template <typename T>
+inline void ClearContainer(std::vector<T*>& arValues)
+{
+	for (T* pElement : arValues)
+		if (nullptr != pElement)
+			delete pElement;
+
+	arValues.clear();
+}
+
 inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wstring& wsSecondPath)
 {
 	if (wsFirstPath.empty())
@@ -127,6 +137,11 @@ inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wst
 		wsNewSecondPath.erase(0, wsFirstDirName.length());
 
 	return NSSystemPath::Combine(wsFirstPath, wsNewSecondPath);
+}
+
+inline bool IsZeroValue(const double& dValue)
+{
+	return DBL_EPSILON > std::abs(dValue);
 }
 }
 #endif // UTILS_H

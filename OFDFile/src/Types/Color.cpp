@@ -39,10 +39,12 @@ int CColor::ToInt(const CRes* pPublicRes) const
 
 	const CColorSpace* pColorSpace = pPublicRes->GetColorSpace(m_unColodSpaceID);
 
-	if (nullptr == pColorSpace)
-		return 0;
+	CColorSpace::EType eColoSpaceType{CColorSpace::EType::RGB};
 
-	switch(pColorSpace->GetType())
+	if (nullptr != pColorSpace)
+		eColoSpaceType = pColorSpace->GetType();
+
+	switch(eColoSpaceType)
 	{
 		case CColorSpace::EType::GRAY:
 			return (255 << 24) | (m_oValues[0] << 16) | (m_oValues[0] << 8) | (m_oValues[0] << 0);

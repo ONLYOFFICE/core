@@ -24,7 +24,7 @@ class CStartElement : public IPathElement
 	double m_dY;
 public:
 	CStartElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -34,7 +34,7 @@ class CMoveElement : public IPathElement
 	double m_dY;
 public:
 	CMoveElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -44,7 +44,7 @@ class CLineElement :  public IPathElement
 	double m_dY;
 public:
 	CLineElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -56,7 +56,7 @@ class CBezierCurve2Element : public IPathElement
 	double m_dY2;
 public:
 	CBezierCurve2Element();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -70,7 +70,7 @@ class CBezierCurveElement : public IPathElement
 	double m_dY3;
 public:
 	CBezierCurveElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -85,7 +85,7 @@ class CArcElement : public IPathElement
 	double m_dY;
 public:
 	CArcElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
+	static IPathElement* ReadFromArray(std::vector<std::string>::const_iterator& itBegin, const std::vector<std::string>::const_iterator& itEnd);
 	void Draw(IRenderer* pRenderer) const override;
 };
 
@@ -93,7 +93,6 @@ class CCloseElement : public IPathElement
 {
 public:
 	CCloseElement();
-	static IPathElement* ReadFromArray(std::vector<std::string>& arValues);
 	void Draw(IRenderer* pRenderer) const override;
 };
 

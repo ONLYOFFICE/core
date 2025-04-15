@@ -58,19 +58,19 @@ namespace PPTX
 				effectStyleLst.clear();
 				bgFillStyleLst.clear();
 
-				name = node.GetAttribute(_T("name"));
+				name = node.GetAttribute(L"name");
 
-				XmlUtils::CXmlNode oNode1 = node.ReadNode(_T("a:fillStyleLst"));
-				XmlMacroLoadArray(oNode1, _T("*"), fillStyleLst, Logic::UniFill);
+				XmlUtils::CXmlNode oNode1 = node.ReadNode(L"a:fillStyleLst");
+				XmlMacroLoadArray(oNode1, L"*", fillStyleLst, Logic::UniFill);
 
-				XmlUtils::CXmlNode oNode2 = node.ReadNode(_T("a:lnStyleLst"));
-				XmlMacroLoadArray(oNode2, _T("a:ln"), lnStyleLst, Logic::Ln);
+				XmlUtils::CXmlNode oNode2 = node.ReadNode(L"a:lnStyleLst");
+				XmlMacroLoadArray(oNode2, L"a:ln", lnStyleLst, Logic::Ln);
 
-				XmlUtils::CXmlNode oNode3 = node.ReadNode(_T("a:effectStyleLst"));
-				XmlMacroLoadArray(oNode3, _T("a:effectStyle"), effectStyleLst, Logic::EffectStyle);
+				XmlUtils::CXmlNode oNode3 = node.ReadNode(L"a:effectStyleLst");
+				XmlMacroLoadArray(oNode3, L"a:effectStyle", effectStyleLst, Logic::EffectStyle);
 
-				XmlUtils::CXmlNode oNode4 = node.ReadNode(_T("a:bgFillStyleLst"));
-				XmlMacroLoadArray(oNode4, _T("*"), bgFillStyleLst, Logic::UniFill);
+				XmlUtils::CXmlNode oNode4 = node.ReadNode(L"a:bgFillStyleLst");
+				XmlMacroLoadArray(oNode4, L"*", bgFillStyleLst, Logic::UniFill);
 
 				FillWithDefaults();
 				FillParentPointersForChilds();
@@ -78,38 +78,45 @@ namespace PPTX
 			std::wstring FmtScheme::toXML() const
 			{
 				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), name);
+				oAttr.Write(L"name", name);
 
 				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(_T("a:fillStyleLst"), fillStyleLst);
-				oValue.WriteArray(_T("a:lnStyleLst"), lnStyleLst);
-				oValue.WriteArray(_T("a:effectStyleLst"), effectStyleLst);
-				oValue.WriteArray(_T("a:bgFillStyleLst"), bgFillStyleLst);
+				oValue.WriteArray(L"a:fillStyleLst", fillStyleLst);
+				oValue.WriteArray(L"a:lnStyleLst", lnStyleLst);
+				oValue.WriteArray(L"a:effectStyleLst", effectStyleLst);
+				oValue.WriteArray(L"a:bgFillStyleLst", bgFillStyleLst);
 
-				return XmlUtils::CreateNode(_T("a:fmtScheme"), oAttr, oValue);
+				return XmlUtils::CreateNode(L"a:fmtScheme", oAttr, oValue);
 			}
 			void FmtScheme::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:fmtScheme"));
+				pWriter->StartNode(L"a:fmtScheme");
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute2(_T("name"), name);
+				pWriter->WriteAttribute2(L"name", name);
 				pWriter->EndAttributes();
 
-				pWriter->WriteArray(_T("a:fillStyleLst"), fillStyleLst);
-				pWriter->WriteArray(_T("a:lnStyleLst"), lnStyleLst);
-				//pWriter->WriteArray(_T("a:effectStyleLst"), effectStyleLst);
-				// вот такой поуерпоинт (эффекты пока не читаем - а они нужны. даже если и не используются нигде)
-				pWriter->WriteString(_T("<a:effectStyleLst><a:effectStyle><a:effectLst>\
+				pWriter->WriteArray(L"a:fillStyleLst", fillStyleLst);
+				pWriter->WriteArray(L"a:lnStyleLst", lnStyleLst);
+
+				if (effectStyleLst.empty())
+				{
+					// вот такой поуерпоинт (эффекты пока не читаем - а они нужны. даже если и не используются нигде)
+					pWriter->WriteString(L"<a:effectStyleLst><a:effectStyle><a:effectLst>\
 <a:outerShdw blurRad=\"40000\" dist=\"20000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"38000\"/></a:srgbClr></a:outerShdw>\
 </a:effectLst></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\">\
 <a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle><a:effectStyle><a:effectLst>\
 <a:outerShdw blurRad=\"40000\" dist=\"23000\" dir=\"5400000\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"35000\"/></a:srgbClr>\
-</a:outerShdw></a:effectLst></a:effectStyle></a:effectStyleLst>"));
+</a:outerShdw></a:effectLst></a:effectStyle></a:effectStyleLst>");
+				}
+				else
+				{
+					pWriter->WriteArray(L"a:effectStyleLst", effectStyleLst);
+				}
 
-				pWriter->WriteArray(_T("a:bgFillStyleLst"), bgFillStyleLst);
+				pWriter->WriteArray(L"a:bgFillStyleLst", bgFillStyleLst);
 
-				pWriter->EndNode(_T("a:fmtScheme"));
+				pWriter->EndNode(L"a:fmtScheme");
 			}
 			void FmtScheme::GetLineStyle(int number, Logic::Ln& lnStyle) const
 			{

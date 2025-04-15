@@ -247,6 +247,9 @@ void CPdfReader::Clear()
 
 bool CPdfReader::IsNeedCMap()
 {
+	if (!((GlobalParamsAdaptor*)globalParams)->IsNeedCMap())
+		return false;
+
 	if (m_vPDFContext.empty())
 		return false;
 

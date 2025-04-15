@@ -84,6 +84,7 @@ public:
         m_wsTempFolder = folder;
     }
 
+    bool IsNeedCMap() { return !m_bCMapData; }
     void SetCMapFolder(const std::wstring &wsFolder);
     void SetCMapFile(const std::wstring &wsFile);
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);

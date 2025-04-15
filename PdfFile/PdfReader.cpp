@@ -580,7 +580,7 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
-	pContext->sPrefixForm = sPrefixForm;
+	pContext->m_sPrefixForm = sPrefixForm;
 	if (nMaxID != 0)
 		pContext->m_nStartID = nMaxID;
 	else if (!m_vPDFContext.empty())
@@ -616,7 +616,7 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
-	pContext->sPrefixForm = sPrefixForm;
+	pContext->m_sPrefixForm = sPrefixForm;
 	if (nMaxID != 0)
 		pContext->m_nStartID = nMaxID;
 	else if (!m_vPDFContext.empty())
@@ -1133,7 +1133,7 @@ BYTE* CPdfReader::GetWidgets()
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	std::map<std::string, std::string>  mForms;
+	std::map<std::string, std::string> mForms;
 	int nStartPage = 0;
 	for (int iPDF = 0; iPDF < m_vPDFContext.size(); ++iPDF)
 	{
@@ -1166,9 +1166,9 @@ BYTE* CPdfReader::GetWidgets()
 					else
 					{
 						int nPrefix = 0;
-						std::string sPrefix = m_vPDFContext[iPDF]->sPrefixForm + "_" + std::to_string(nPrefix);
+						std::string sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
 						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
-							sPrefix = m_vPDFContext[iPDF]->sPrefixForm + "_" + std::to_string(++nPrefix);
+							sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
 					}
 				}
 			}
@@ -1193,7 +1193,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFonts);
 
-	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
+	for (std::map<std::wstring, std::wstring>::const_iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
 		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
 		{
@@ -1818,7 +1818,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex - 1, sView, &oAnnotRef, nStartRefID);
+		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef, nStartRefID);
 		if (pAP)
 			pAP->ToWASM(oRes);
 		RELEASEOBJECT(pAP);

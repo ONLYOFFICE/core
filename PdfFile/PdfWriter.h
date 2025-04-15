@@ -210,17 +210,17 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции для дозаписи Pdf
 	//----------------------------------------------------------------------------------------
+	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
-	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
-	void SetNeedAddHelvetica(bool bNeedAddHelvetica) { m_bNeedAddHelvetica = bNeedAddHelvetica; }
+	void SetNeedAddHelvetica(bool bNeedAddHelvetica);
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);

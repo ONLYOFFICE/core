@@ -46,10 +46,9 @@ struct CPdfReaderContext
 	PDFDoc* m_pDocument;
 	PdfReader::CPdfFontList* m_pFontList;
 	unsigned int m_nStartID;
-	std::string sPrefixForm;
+	std::string m_sPrefixForm;
 
 	CPdfReaderContext() : m_pDocument(NULL), m_pFontList(NULL), m_nStartID(0) {}
-	CPdfReaderContext(PDFDoc* pDocument, PdfReader::CPdfFontList* pFontList, unsigned int nStartID) : m_pDocument(pDocument), m_pFontList(pFontList), m_nStartID(nStartID) {}
 	~CPdfReaderContext();
 };
 

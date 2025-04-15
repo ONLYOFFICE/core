@@ -2572,6 +2572,7 @@ void CPdfWriter::SetHeadings(CHeadings* pCommand)
 
 	CreateOutlines(m_pDocument, pCommand->GetHeading(), NULL);
 }
+void CPdfWriter::SetNeedAddHelvetica(bool bNeedAddHelvetica) { m_bNeedAddHelvetica = bNeedAddHelvetica; }
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -2957,14 +2958,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 	return S_OK;
 }
-PdfWriter::CDocument* CPdfWriter::GetDocument()
-{
-	return m_pDocument;
-}
-PdfWriter::CPage* CPdfWriter::GetPage()
-{
-	return m_pPage;
-}
+PdfWriter::CDocument* CPdfWriter::GetDocument() { return m_pDocument; }
+PdfWriter::CPage* CPdfWriter::GetPage() { return m_pPage; }
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())

@@ -1142,7 +1142,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["value"] = readStringFunc.call(reader);
 		if (flags & (1 << 10))
 			rec["maxLen"] = reader.readInt();
-		if (rec["flag"] & (1 << 25))
+		if (flags & (1 << 11))
 			rec["richValue"] = readStringFunc.call(reader);
 		if (isRead)
 		{

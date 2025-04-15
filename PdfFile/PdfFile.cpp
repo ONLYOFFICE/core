@@ -102,7 +102,6 @@ void CPdfFile::RotatePage(int nRotate)
 {
 	if (!m_pInternal->pWriter)
 		return;
-	// Применение поворота страницы для writer
 	m_pInternal->pWriter->PageRotate(nRotate);
 }
 bool CPdfFile::EditPdf(const std::wstring& wsDstFile)

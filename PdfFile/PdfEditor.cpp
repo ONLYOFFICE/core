@@ -1903,12 +1903,12 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 			mFileToPages[nPDFIndex].push_back(arrPageIndex[i] - nTotalPages);
 		else
 		{
-			++nPDFIndex;
-			pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
+			pPDFDocument = m_pReader->GetPDFDocument(++nPDFIndex);
 			if (!pPDFDocument)
 				break;
 			nTotalPages += nPages;
 			nPages = pPDFDocument->getNumPages();
+			--i;
 		}
 	}
 

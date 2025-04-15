@@ -614,7 +614,7 @@ namespace PdfWriter
 		if (pDict->GetStream())
 		{
 			unsigned int unFilter = pDict->GetFilter();
-			if (STREAM_FILTER_NONE != unFilter)
+			if (STREAM_FILTER_NONE != unFilter && STREAM_FILTER_ALREADY_DECODE != unFilter)
 			{
 				CArrayObject* pFilter = new CArrayObject();
 				pDict->Add("Filter", pFilter);

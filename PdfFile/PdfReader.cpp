@@ -1378,18 +1378,60 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 			oMK.free();
 			continue;
 		}
+		Object oAP;
+		pField->fieldLookup("AP", &oAP);
 
 		bool bFirst = true;
 		int nMKPos  = -1;
 		unsigned int nMKLength = 0;
 		std::vector<const char*> arrMKName { "I", "RI", "IX" };
+		std::vector<const char*> arrAPName { "N", "D",  "R" };
 		for (unsigned int j = 0; j < arrMKName.size(); ++j)
 		{
 			if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
 				continue;
 			std::string sMKName(arrMKName[j]);
-			Object oStr;
-			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
+			Object oStr, oXObject, oIm;;
+			if (oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
+			{
+				// Получение единственного XObject из Resources, если возможно
+				Object oResources;
+				if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+					oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
+				{
+					oStr.free(); oResources.free(); oXObject.free(); oIm.free();
+					continue;
+				}
+				oStr.free(); oResources.free();
+			}
+			else if (oAP.isDict() && (oStr.free(), true) && oAP.dictLookup(arrAPName[j], &oStr)->isStream())
+			{
+				// Получение единственного XObject из Resources, если возможно
+				Object oResources;
+				if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+					oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
+				{
+					oStr.free(); oResources.free(); oXObject.free(); oIm.free();
+					continue;
+				}
+				oStr.free(); oResources.free();
+
+				Object oSubtype;
+				Dict *oImDict = oIm.streamGetDict();
+				if (oImDict->is("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName() && !oSubtype.isName("Image"))
+				{
+					if (!oImDict->lookup("Resources", &oResources)->isDict() || (oXObject.free(), false) || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+						oXObject.dictGetLength() != 1 || (oIm.free(), false) || !oXObject.dictGetVal(0, &oIm)->isStream())
+					{
+						oSubtype.free();
+						oResources.free(); oXObject.free(); oIm.free();
+						continue;
+					}
+					oResources.free();
+				}
+				oSubtype.free();
+			}
+			else
 			{
 				oStr.free();
 				continue;
@@ -1409,25 +1451,15 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 				bFirst = false;
 			}
 
-			// Получение единственного XObject из Resources, если возможно
-			Object oResources, oXObject, oIm;
-			if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
-				oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
-			{
-				oStr.free(); oResources.free(); oXObject.free(); oIm.free();
-				continue;
-			}
-			oStr.free(); oResources.free();
-
 			Dict *oImDict = oIm.streamGetDict();
-			Object oType, oSubtype;
-			if (!oImDict->lookup("Type", &oType)->isName("XObject") || !oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
+			Object oSubtype;
+			if (!oImDict->is("XObject") || !oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
 			{
-				oType.free(); oSubtype.free();
+				oSubtype.free();
 				oXObject.free(); oIm.free();
 				continue;
 			}
-			oType.free(); oSubtype.free();
+			oSubtype.free();
 
 			oRes.WriteString(sMKName);
 			Object oStrRef;
@@ -1618,7 +1650,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 
 			oIm.free();
 		}
-		oMK.free();
+		oMK.free(); oAP.free();
 
 		if (nMKPos > 0)
 			oRes.AddInt(nMKLength, nMKPos);

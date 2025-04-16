@@ -636,6 +636,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+const bool GlobalsSubstream::saveContent(BinProcessor& proc)
+{
+    proc.mandatory<INTERFACE_T>();
+    proc.mandatory<WriteAccess>();
+    proc.mandatory<CodePage>();
+    return true;
+}
 void GlobalsSubstream::UpdateXFC()
 {
 	FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());

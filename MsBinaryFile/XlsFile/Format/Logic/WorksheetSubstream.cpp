@@ -778,6 +778,10 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     if(m_CELLTABLE != nullptr)
         proc.mandatory(*m_CELLTABLE);
 
+    for(auto i:m_arNote)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+
     if(m_CONDFMTS != nullptr)
         proc.mandatory(*m_CONDFMTS);
 

@@ -618,6 +618,8 @@ def registerLibrary(license_path):
     docbuilder_bin = os.path.join(builder_path, "docbuilder")
     if ("windows" == platform.system().lower()):
         docbuilder_bin += ".exe"
-    return subprocess.call([docbuilder_bin, "-register", license_path], stderr=subprocess.STDOUT, shell=True)
+        return subprocess.call([docbuilder_bin, "-register", license_path], stderr=subprocess.STDOUT, shell=True)
+    command = docbuilder_bin + " -register \"" +  license_path.replace('\"', '\\\"') + "\""
+    return subprocess.call(command, stderr=subprocess.STDOUT, shell=True)
 
 atexit.register(CDocBuilder.Dispose)

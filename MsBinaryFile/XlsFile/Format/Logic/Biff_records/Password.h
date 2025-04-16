@@ -47,12 +47,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePassword;
 
 //-----------------------------
-	unsigned short	wPassword_num;
-	std::wstring	wPassword;
+    unsigned short	wPassword_num = 0;
+    std::wstring	wPassword = L"";
 
 };
 

@@ -758,6 +758,10 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_PAGESETUP);
     else
         proc.mandatory<PAGESETUP>();
+
+    if(m_PROTECTION != nullptr)
+        proc.mandatory(*m_PROTECTION);
+
     if(m_COLUMNS != nullptr)
         proc.mandatory(*m_COLUMNS);
     else
@@ -766,6 +770,10 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_Dimensions);
     else
         proc.mandatory<Dimensions>();
+
+    for(auto i: m_arWINDOW)
+        if(i != nullptr)
+            proc.mandatory(*i);
 
     if(m_CELLTABLE != nullptr)
         proc.mandatory(*m_CELLTABLE);

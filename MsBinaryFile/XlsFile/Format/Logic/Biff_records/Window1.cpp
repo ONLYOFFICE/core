@@ -105,7 +105,7 @@ void Window1::readFields(CFRecord& record)
 
 void Window1::writeFields(CFRecord& record)
 {
-	unsigned short flags;
+    unsigned short flags = 0;
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{

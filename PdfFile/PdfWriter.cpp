@@ -57,7 +57,9 @@
 #include "../DesktopEditor/raster/Metafile/MetaFileCommon.h"
 
 #include "../UnicodeConverter/UnicodeConverter.h"
+#ifndef BUILDING_WASM_MODULE
 #include "../Common/Network/FileTransporter/include/FileTransporter.h"
+#endif
 
 #if defined(GetTempPath)
 #undef GetTempPath
@@ -140,6 +142,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	m_pRenderer = pRenderer;
+	m_bNeedAddHelvetica = true;
 
 	m_pDocument = new PdfWriter::CDocument();
 
@@ -190,7 +193,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	if (!IsValid())
 		return 1;
 
-	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA())
+	if (!m_pFont && !m_pFont14 && !m_pDocument->IsPDFA() && m_bNeedAddHelvetica)
 	{
 		m_bNeedUpdateTextFont = false;
 		m_pFont14 = m_pDocument->CreateFont14(L"Helvetica", 0, PdfWriter::EStandard14Fonts::standard14fonts_Helvetica);
@@ -200,6 +203,19 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 	m_oCommandManager.Flush();
 
 	if (!m_pDocument->SaveToFile(wsPath))
+		return 1;
+
+	return 0;
+}
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+{
+	// TODO: Переделать на код ошибки
+	if (!IsValid())
+		return 1;
+
+	m_oCommandManager.Flush();
+
+	if (!m_pDocument->SaveToMemory(pData, pLength))
 		return 1;
 
 	return 0;
@@ -1822,6 +1838,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 		if (pAnnot)
 		{
+			m_pDocument->AddObject(pAnnot);
 			m_pDocument->AddAnnotation(nID, pAnnot);
 			pPage->AddAnnotation(pAnnot);
 		}
@@ -1871,6 +1888,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	bool bRender = (nFlags >> 6) & 1;
 	if (nFlags & (1 << 7))
 		pAnnot->SetOUserID(oInfo.GetOUserID());
+	bool bRenderCopy = (nFlags >> 8) & 1;
 
 	if (oInfo.IsMarkup())
 	{
@@ -2163,7 +2181,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			if (bRender)
 			{
-				pMarkupAnnot->RemoveAP();
 				LONG nLen = 0;
 				BYTE* pRender = oInfo.GetRender(nLen);
 				PdfWriter::CAnnotAppearanceObject* pAP = DrawAP(pAnnot, pRender, nLen);
@@ -2177,6 +2194,17 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pArray->Add(dRD3);
 				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
 				pStampAnnot->SetAPStream(pAP);
+			}
+			else if (bRenderCopy)
+			{
+				int nID = oInfo.GetCopyAP();
+				PdfWriter::CAnnotation* pAnnot2 = m_pDocument->GetAnnot(nID);
+				if (pAnnot2->GetAnnotationType() == PdfWriter::EAnnotType::AnnotStamp)
+				{
+					PdfWriter::CStampAnnotation* pStampAnnot2 = (PdfWriter::CStampAnnotation*)pAnnot2;
+					PdfWriter::CDictObject* pAPN = (PdfWriter::CDictObject*)pStampAnnot2->GetAPStream();
+					pStampAnnot->SetAPStream(pAPN, true);
+				}
 			}
 
 			pStampAnnot->SetRotate(nRotate);
@@ -2488,6 +2516,7 @@ void CPdfWriter::SetHeadings(CHeadings* pCommand)
 
 	CreateOutlines(m_pDocument, pCommand->GetHeading(), NULL);
 }
+void CPdfWriter::SetNeedAddHelvetica(bool bNeedAddHelvetica) { m_bNeedAddHelvetica = bNeedAddHelvetica; }
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
@@ -2875,14 +2904,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 
 	return S_OK;
 }
-PdfWriter::CDocument* CPdfWriter::GetDocument()
-{
-	return m_pDocument;
-}
-PdfWriter::CPage* CPdfWriter::GetPage()
-{
-	return m_pPage;
-}
+PdfWriter::CDocument* CPdfWriter::GetDocument() { return m_pDocument; }
+PdfWriter::CPage* CPdfWriter::GetPage() { return m_pPage; }
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())
@@ -3760,7 +3783,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	if (!bIsNeedDownload)
 		return L"";
-
+#ifndef BUILDING_WASM_MODULE
 	std::wstring sTempFile = GetTempFile(wsTempDirectory);
 	NSNetwork::NSFileTransport::CFileDownloader oDownloader(sUrl, false);
 	oDownloader.SetFilePath(sTempFile);
@@ -3770,7 +3793,7 @@ std::wstring CPdfWriter::GetDownloadFile(const std::wstring& sUrl, const std::ws
 
 	if (NSFile::CFileBinary::Exists(sTempFile))
 		NSFile::CFileBinary::Remove(sTempFile);
-
+#endif
 	return L"";
 }
 PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pAnnot, BYTE* pRender, LONG nLenRender)
@@ -3779,7 +3802,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 		return NULL;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
-	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
 	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
@@ -3809,7 +3832,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	PdfWriter::CWidgetAnnotation* pAnnot = (PdfWriter::CWidgetAnnotation*)pA;
 
 	PdfWriter::CPage* pCurPage = m_pPage;
-	PdfWriter::CPage* pFakePage = m_pDocument->CreateFakePage();
+	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
 	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom));

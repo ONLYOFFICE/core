@@ -51,6 +51,8 @@
 		"_IsNeedCMap",
 		"_SetCMapData",
 		"_ScanPage",
+		"_SplitPages",
+		"_MergePages",
 		"_GetImageBase64",
 		"_GetImageBase64Len",
 		"_GetImageBase64Ptr",
@@ -86,7 +88,7 @@
 		"NO_CONSOLE_IO", "USE_EXTERNAL_JPEG2000", "USE_JPIP", "OPJ_STATIC", "FONT_ENGINE_DISABLE_FILESYSTEM",
 		"IMAGE_CHECKER_DISABLE_XML",
 		"USE_OPENSSL_HASH",
-		"DISABLE_FULL_DOCUMENT_CREATION", "DISABLE_FILESYSTEM"
+		"DISABLE_FULL_DOCUMENT_CREATION", "DISABLE_FILESYSTEM", "CRYPTOPP_DISABLE_ASM", "DISABLE_TYPE_MISMATCH"
 	],
 	"compile_files_array": [
 	{
@@ -135,7 +137,7 @@
 	},
 	{
 		"folder": "./wasm/src/",
-		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "pdfwriter.cpp", "HTMLRendererText.cpp"]
+		"files": ["lib/wasm_jmp.cpp", "drawingfile.cpp", "metafile.cpp", "HTMLRendererText.cpp"]
 	},
 	{
 		"folder": "freetype-2.10.4/src/",
@@ -143,7 +145,7 @@
 	},
 	{
 		"folder": "../../",
-		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "BooleanOperations.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp"]
+		"files": ["GraphicsRenderer.cpp", "pro/pro_Graphics.cpp", "pro/pro_Fonts.cpp", "pro/pro_Image.cpp", "Graphics.cpp", "Brush.cpp", "BaseThread.cpp", "GraphicsPath.cpp", "BooleanOperations.cpp", "Image.cpp", "Matrix.cpp", "Clip.cpp", "TemporaryCS.cpp", "AlphaMask.cpp", "GraphicsLayer.cpp", "commands/DocInfo.cpp", "commands/AnnotField.cpp", "commands/FormField.cpp", "MetafileToRenderer.cpp", "MetafileToRendererReader.cpp"]
 	},
 	{
 		"folder": "../../../fontengine/",
@@ -155,11 +157,15 @@
 	},
 	{
 		"folder": "../../../common/",
-		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp"]
+		"files": ["File.cpp", "Directory.cpp", "ByteBuilder.cpp", "Base64.cpp", "StringExt.cpp", "Path.cpp", "SystemUtils.cpp"]
 	},
 	{
 		"folder": "../../../../Common/3dParty/icu/icu/source/common/",
 		"files": ["ucnv.c", "ustr_wcs.cpp", "ucnv_err.c", "ucnv_bld.cpp", "ustrtrns.cpp", "ucnv_cb.c", "udata.cpp", "ucnv_io.cpp", "uhash.c", "udatamem.c", "cmemory.c", "ustring.cpp", "umutex.cpp", "putil.cpp", "ustr_cnv.cpp", "ucnvmbcs.cpp", "ucnvlat1.c", "ucnv_u16.c", "ucnv_u8.c", "ucnv_u32.c", "ucnv_u7.c", "ucln_cmn.cpp", "ucnv2022.cpp", "ucnv_lmb.c", "ucnvhz.c", "ucnvscsu.c", "ucnvisci.c", "ucnvbocu.cpp", "ucnv_ct.c", "ucnv_cnv.c", "stringpiece.cpp", "charstr.cpp", "umapfile.c", "ucmndata.c", "ucnv_ext.cpp", "uobject.cpp", "umath.c", "ubidi_props.c", "uchar.c", "uinvchar.c", "usprep.cpp", "unistr.cpp", "uniset_props.cpp", "loadednormalizer2impl.cpp", "filterednormalizer2.cpp", "utrie2.cpp", "normalizer2.cpp", "normalizer2impl.cpp", "utrie.cpp", "ucase.cpp", "uniset.cpp", "ruleiter.cpp", "parsepos.cpp", "util.cpp", "uprops.cpp", "uvector.cpp", "unames.cpp", "propname.cpp", "utrie2_builder.cpp", "unifunct.cpp", "bmpset.cpp", "unisetspan.cpp", "unifilt.cpp", "patternprops.cpp", "utf_impl.c", "ustrcase.cpp", "cstring.c", "bytestrie.cpp"]
+	},
+	{
+		"folder": "../../../../Common/3dParty/cryptopp/",
+		"files": ["cryptlib.cpp", "cpu.cpp", "integer.cpp", "3way.cpp", "adler32.cpp", "algebra.cpp", "algparam.cpp", "allocate.cpp", "arc4.cpp", "aria.cpp", "aria_simd.cpp", "ariatab.cpp", "asn.cpp", "authenc.cpp", "base32.cpp", "base64.cpp", "basecode.cpp", "bfinit.cpp", "blake2.cpp", "blake2s_simd.cpp", "blake2b_simd.cpp", "blowfish.cpp", "blumshub.cpp", "camellia.cpp", "cast.cpp", "casts.cpp", "cbcmac.cpp", "ccm.cpp", "chacha.cpp", "chacha_simd.cpp", "chacha_avx.cpp", "chachapoly.cpp", "cham.cpp", "cham_simd.cpp", "channels.cpp", "cmac.cpp", "crc.cpp", "crc_simd.cpp", "darn.cpp", "default.cpp", "des.cpp", "dessp.cpp", "dh.cpp", "dh2.cpp", "dll.cpp", "donna_32.cpp", "donna_64.cpp", "donna_sse.cpp", "dsa.cpp", "eax.cpp", "ec2n.cpp", "ecp.cpp", "eccrypto.cpp", "eprecomp.cpp", "elgamal.cpp", "emsa2.cpp", "eprecomp.cpp", "esign.cpp", "files.cpp", "filters.cpp", "fips140.cpp", "gcm.cpp", "gcm_simd.cpp", "gf256.cpp", "gf2_32.cpp", "gf2n.cpp", "gf2n_simd.cpp", "gfpcrypt.cpp", "gost.cpp", "gzip.cpp", "hc128.cpp", "hc256.cpp", "hex.cpp", "hight.cpp", "hmac.cpp", "hrtimer.cpp", "ida.cpp", "idea.cpp", "iterhash.cpp", "kalyna.cpp", "md5.cpp", "randpool.cpp", "osrng.cpp", "rijndael.cpp", "modes.cpp", "misc.cpp", "rdtables.cpp", "sha.cpp", "mqueue.cpp", "queue.cpp"]
 	},
 	{
 		"folder": "../../../../OfficeUtils/src/",
@@ -179,7 +185,23 @@
 	},
 	{
 		"folder": "../../../../PdfFile/",
-		"files": ["SrcReader/Adaptors.cpp", "SrcReader/GfxClip.cpp", "SrcReader/RendererOutputDev.cpp", "SrcReader/JPXStream2.cpp", "SrcReader/PdfAnnot.cpp", "Resources/BaseFonts.cpp", "Resources/CMapMemory/cmap_memory.cpp", "lib/fofi/FofiBase.cc", "lib/fofi/FofiEncodings.cc", "lib/fofi/FofiIdentifier.cc", "lib/fofi/FofiTrueType.cc", "lib/fofi/FofiType1.cc", "lib/fofi/FofiType1C.cc", "lib/goo/FixedPoint.cc", "lib/goo/gfile.cc", "lib/goo/GHash.cc", "lib/goo/GList.cc", "lib/goo/gmem.cc", "lib/goo/gmempp.cc", "lib/goo/GString.cc", "lib/goo/parseargs.c", "lib/goo/Trace.cc", "lib/splash/Splash.cc", "lib/splash/SplashBitmap.cc", "lib/splash/SplashClip.cc", "lib/splash/SplashFont.cc", "lib/splash/SplashFontEngine.cc", "lib/splash/SplashFontFile.cc", "lib/splash/SplashFontFileID.cc", "lib/splash/SplashFTFont.cc", "lib/splash/SplashFTFontEngine.cc", "lib/splash/SplashFTFontFile.cc", "lib/splash/SplashPath.cc", "lib/splash/SplashPattern.cc", "lib/splash/SplashScreen.cc", "lib/splash/SplashState.cc", "lib/splash/SplashXPath.cc", "lib/splash/SplashXPathScanner.cc", "lib/xpdf/AcroForm.cc", "lib/xpdf/Annot.cc", "lib/xpdf/Array.cc", "lib/xpdf/BuiltinFont.cc", "lib/xpdf/BuiltinFontTables.cc", "lib/xpdf/Catalog.cc", "lib/xpdf/CharCodeToUnicode.cc", "lib/xpdf/CMap.cc", "lib/xpdf/Decrypt.cc", "lib/xpdf/Dict.cc", "lib/xpdf/DisplayState.cc", "lib/xpdf/Error.cc", "lib/xpdf/FontEncodingTables.cc", "lib/xpdf/Function.cc", "lib/xpdf/Gfx.cc", "lib/xpdf/GfxFont.cc", "lib/xpdf/GfxState.cc", "lib/xpdf/GlobalParams.cc", "lib/xpdf/ImageOutputDev.cc", "lib/xpdf/JArithmeticDecoder.cc", "lib/xpdf/JBIG2Stream.cc", "lib/xpdf/JPXStream.cc", "lib/xpdf/Lexer.cc", "lib/xpdf/Link.cc", "lib/xpdf/NameToCharCode.cc", "lib/xpdf/Object.cc", "lib/xpdf/OptionalContent.cc", "lib/xpdf/Outline.cc", "lib/xpdf/OutputDev.cc", "lib/xpdf/Page.cc", "lib/xpdf/Parser.cc", "lib/xpdf/PDF417Barcode.cc", "lib/xpdf/PDFCore.cc", "lib/xpdf/PDFDoc.cc", "lib/xpdf/PDFDocEncoding.cc", "lib/xpdf/PreScanOutputDev.cc", "lib/xpdf/PSOutputDev.cc", "lib/xpdf/PSTokenizer.cc", "lib/xpdf/SecurityHandler.cc", "lib/xpdf/ShadingImage.cc", "lib/xpdf/SplashOutputDev.cc", "lib/xpdf/Stream.cc", "lib/xpdf/TextOutputDev.cc", "lib/xpdf/TextString.cc", "lib/xpdf/TileCache.cc", "lib/xpdf/TileCompositor.cc", "lib/xpdf/TileMap.cc", "lib/xpdf/UnicodeMap.cc", "lib/xpdf/UnicodeRemapping.cc", "lib/xpdf/UnicodeTypeTable.cc", "lib/xpdf/UTF8.cc", "lib/xpdf/WebFont.cc", "lib/xpdf/XFAScanner.cc", "lib/xpdf/XRef.cc", "lib/xpdf/Zoox.cc", "PdfFile.cpp", "PdfReader.cpp"]
+		"files": ["PdfFile.cpp", "PdfReader.cpp", "PdfWriter.cpp", "PdfEditor.cpp"]
+	},
+	{
+		"folder": "../../../../PdfFile/SrcReader/",
+		"files": ["Adaptors.cpp", "GfxClip.cpp", "RendererOutputDev.cpp", "JPXStream2.cpp", "PdfAnnot.cpp"]
+	},
+	{
+		"folder": "../../../../PdfFile/SrcWriter/",
+		"files": ["AcroForm.cpp", "Annotation.cpp", "Catalog.cpp", "Destination.cpp", "Document.cpp", "Encrypt.cpp", "EncryptDictionary.cpp", "Field.cpp", "Font.cpp", "Font14.cpp", "FontCidTT.cpp", "FontTT.cpp", "FontTTWriter.cpp", "GState.cpp", "Image.cpp", "Info.cpp", "Metadata.cpp", "Objects.cpp", "Outline.cpp", "Pages.cpp", "Pattern.cpp", "ResourcesDictionary.cpp", "Shading.cpp", "States.cpp", "Streams.cpp", "Utils.cpp"]
+	},
+	{
+		"folder": "../../../../PdfFile/Resources/",
+		"files": ["BaseFonts.cpp", "CMapMemory/cmap_memory.cpp"]
+	},
+	{
+		"folder": "../../../../PdfFile/lib/",
+		"files": ["fofi/FofiBase.cc", "fofi/FofiEncodings.cc", "fofi/FofiIdentifier.cc", "fofi/FofiTrueType.cc", "fofi/FofiType1.cc", "fofi/FofiType1C.cc", "goo/FixedPoint.cc", "goo/gfile.cc", "goo/GHash.cc", "goo/GList.cc", "goo/gmem.cc", "goo/gmempp.cc", "goo/GString.cc", "goo/parseargs.c", "goo/Trace.cc", "splash/Splash.cc", "splash/SplashBitmap.cc", "splash/SplashClip.cc", "splash/SplashFont.cc", "splash/SplashFontEngine.cc", "splash/SplashFontFile.cc", "splash/SplashFontFileID.cc", "splash/SplashFTFont.cc", "splash/SplashFTFontEngine.cc", "splash/SplashFTFontFile.cc", "splash/SplashPath.cc", "splash/SplashPattern.cc", "splash/SplashScreen.cc", "splash/SplashState.cc", "splash/SplashXPath.cc", "splash/SplashXPathScanner.cc", "xpdf/AcroForm.cc", "xpdf/Annot.cc", "xpdf/Array.cc", "xpdf/BuiltinFont.cc", "xpdf/BuiltinFontTables.cc", "xpdf/Catalog.cc", "xpdf/CharCodeToUnicode.cc", "xpdf/CMap.cc", "xpdf/Decrypt.cc", "xpdf/Dict.cc", "xpdf/DisplayState.cc", "xpdf/Error.cc", "xpdf/FontEncodingTables.cc", "xpdf/Function.cc", "xpdf/Gfx.cc", "xpdf/GfxFont.cc", "xpdf/GfxState.cc", "xpdf/GlobalParams.cc", "xpdf/ImageOutputDev.cc", "xpdf/JArithmeticDecoder.cc", "xpdf/JBIG2Stream.cc", "xpdf/JPXStream.cc", "xpdf/Lexer.cc", "xpdf/Link.cc", "xpdf/NameToCharCode.cc", "xpdf/Object.cc", "xpdf/OptionalContent.cc", "xpdf/Outline.cc", "xpdf/OutputDev.cc", "xpdf/Page.cc", "xpdf/Parser.cc", "xpdf/PDF417Barcode.cc", "xpdf/PDFCore.cc", "xpdf/PDFDoc.cc", "xpdf/PDFDocEncoding.cc", "xpdf/PreScanOutputDev.cc", "xpdf/PSOutputDev.cc", "xpdf/PSTokenizer.cc", "xpdf/SecurityHandler.cc", "xpdf/ShadingImage.cc", "xpdf/SplashOutputDev.cc", "xpdf/Stream.cc", "xpdf/TextOutputDev.cc", "xpdf/TextString.cc", "xpdf/TileCache.cc", "xpdf/TileCompositor.cc", "xpdf/TileMap.cc", "xpdf/UnicodeMap.cc", "xpdf/UnicodeRemapping.cc", "xpdf/UnicodeTypeTable.cc", "xpdf/UTF8.cc", "xpdf/WebFont.cc", "xpdf/XFAScanner.cc", "xpdf/XRef.cc", "xpdf/Zoox.cc"]
 	},
 	{
 		"folder": "../../../raster/Jp2/openjpeg/openjpeg-2.4.0/src/lib/openjp2/",

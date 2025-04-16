@@ -338,9 +338,9 @@ namespace PdfWriter
 	class CBinaryObject : public CObjectBase
 	{
 	public:
-		CBinaryObject(const BYTE* pValue, unsigned int unLen);
+		CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy = true);
 		~CBinaryObject();
-		void         Set(const BYTE* pValue, unsigned int unLen);
+		void Set(BYTE* pValue, unsigned int unLen, bool bCopy = true);
 		BYTE*        GetValue() const
 		{
 			return m_pValue;
@@ -467,7 +467,7 @@ namespace PdfWriter
 		}
 		void         SetFilter(unsigned int unFiler)
 		{
-			m_unFilter = unFiler;
+			m_unFilter |= unFiler;
 		}
 		void         SetStream(CXref* pXref, CStream* pStream, bool bThis = true);
 

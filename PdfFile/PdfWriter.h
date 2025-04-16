@@ -67,6 +67,7 @@ public:
 	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true);
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
+	int          SaveToMemory(BYTE** pData, int* pLength);
 	void         SetPassword(const std::wstring& wsPassword);
 	void         SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
@@ -209,16 +210,17 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции для дозаписи Pdf
 	//----------------------------------------------------------------------------------------
+	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
 	void PageRotate(int nRotate);
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
-	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
+	void SetNeedAddHelvetica(bool bNeedAddHelvetica);
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
@@ -269,6 +271,7 @@ private:
 	CPath                        m_oPath;
 	CTransform                   m_oTransform;
 	bool                         m_bNeedUpdateTextFont;
+	bool                         m_bNeedAddHelvetica;
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;

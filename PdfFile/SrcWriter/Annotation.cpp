@@ -1179,9 +1179,26 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsName);
 		Add("Name", sValue.c_str());
 	}
-	void CStampAnnotation::SetAPStream(CDictObject* pStream)
+	void CStampAnnotation::SetAPStream(CDictObject* pStream, bool bCopy)
 	{
+		if (bCopy)
+		{
+			CDictObject* pStreamNew = (CDictObject*)pStream->Copy();
+			CStream* pStr = new CMemoryStream();
+			pStreamNew->SetStream(m_pXref, pStr, true);
+			pStr->WriteStream(pStream->GetStream(), 0, NULL);
+			pStreamNew->SetFilter(STREAM_FILTER_FLATE_DECODE);
+			pStream = pStreamNew;
+
+			CDictObject* pAP = new PdfWriter::CDictObject();
+			Add("AP", pAP);
+			pAP->Add("N", pStreamNew);
+		}
 		m_pAPStream = pStream;
+	}
+	CDictObject* CStampAnnotation::GetAPStream()
+	{
+		return m_pAPStream;
 	}
 	//----------------------------------------------------------------------------------------
 	// CWidgetAnnotation

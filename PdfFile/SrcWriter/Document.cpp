@@ -203,8 +203,6 @@ namespace PdfWriter
 		m_pFieldsResources  = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pDefaultCheckBoxFont = NULL;
-		m_wsDocumentID      = L"";
-		m_wsFilePath        = L"";
 
 		m_vExtGrStates.clear();
 		m_vStrokeAlpha.clear();
@@ -238,6 +236,22 @@ namespace PdfWriter
 
 		return true;
 	}
+	bool CDocument::SaveToMemory(BYTE** pData, int* pLength)
+	{
+		CMemoryStream* pStream = new CMemoryStream();
+		if (!pStream)
+			return false;
+
+		if (m_pJbig2)
+			m_pJbig2->FlushStreams();
+
+		SaveToStream(pStream);
+
+		*pData = pStream->GetBuffer();
+		*pLength = pStream->Size();
+		pStream->ClearWithoutAttack();
+		return true;
+	}
     void CDocument::SaveToStream(CStream* pStream)
 	{
 		m_pCatalog->AddMetadata(m_pXref, m_pInfo);
@@ -266,7 +280,7 @@ namespace PdfWriter
 			PrepareEncryption();
 		}
 
-		m_pXref->WriteToStream(pStream, pEncrypt);
+		m_pXref->WriteToStream(pStream, pEncrypt, true);
 	}
 	bool CDocument::SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer)
 	{
@@ -513,7 +527,7 @@ namespace PdfWriter
 
 		return new COutline(pParent, sTitle, m_pXref);
 	}
-	CDestination* CDocument::CreateDestination(CPage* pPage, bool bInline)
+	CDestination* CDocument::CreateDestination(CObjectBase* pPage, bool bInline)
 	{
 		if (pPage)
 			return new CDestination(pPage, m_pXref, bInline);
@@ -1297,6 +1311,10 @@ namespace PdfWriter
 		m_pCurImage = pImage;
 		m_vImages.push_back({wsImagePath, nAlpha, pImage});
 	}
+	void CDocument::AddObject(CObjectBase* pObj)
+	{
+		m_pXref->Add(pObj);
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];
@@ -1377,6 +1395,17 @@ namespace PdfWriter
 
 		return (!!m_pAcroForm);
 	}
+	void CDocument::SetAcroForm(CDictObject* pObj)
+	{
+		if (!m_pXref || !m_pCatalog)
+			return;
+		m_pCatalog->Add("AcroForm", pObj);
+		m_pAcroForm = pObj;
+	}
+	CResourcesDict* CDocument::CreateResourcesDict(bool bInline, bool bProcSet)
+	{
+		return new CResourcesDict(m_pXref, bInline, bProcSet);
+	}
 	bool CDocument::CreatePageTree(CXref* pXref, CPageTree* pPageTree)
 	{
 		if (!pPageTree || !EditXref(pXref))
@@ -1389,7 +1418,7 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool CDocument::EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
+	bool CDocument::EditPdf(int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField)
 	{
 		if (!pXref || !pCatalog)
 			return false;
@@ -1422,7 +1451,6 @@ namespace PdfWriter
 		}
 
 		m_unFormFields = nFormField;
-		m_wsFilePath = wsPath;
 		return true;
 	}
 	bool CDocument::EditResources(CXref* pXref, CResourcesDict* pResources)
@@ -1461,13 +1489,29 @@ namespace PdfWriter
 			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
 #endif
 
-		m_pCurPage  = pPage;
+		m_pCurPage = pPage;
 		m_mEditPages[nPageIndex] = pPage;
 
 		if (m_pPageTree)
 			m_pPageTree->ReplacePage(nPageIndex, pPage);
 
 		return true;
+	}
+	void CDocument::FixEditPage(CPage* _pPage, int nPageIndex)
+	{
+		CPage* pPage = _pPage ? _pPage : m_mEditPages[nPageIndex];
+		if (!pPage)
+			return;
+
+		pPage->AddContents(m_pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		if (m_unCompressMode & COMP_TEXT)
+			pPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
+	}
+	void CDocument::AddEditPage(CPage* pPage, int nPageIndex)
+	{
+		m_mEditPages[nPageIndex] = pPage;
 	}
 	bool CDocument::EditAnnot(CXref* pXref, CAnnotation* pAnnot, int nID)
 	{
@@ -1478,6 +1522,10 @@ namespace PdfWriter
 		m_mAnnotations[nID] = pAnnot;
 
 		return true;
+	}
+	void CDocument::AddParent(int nID, CDictObject* pParent)
+	{
+		m_mParents[nID] = pParent;
 	}
 	CDictObject* CDocument::CreateParent(int nID)
 	{
@@ -1490,15 +1538,13 @@ namespace PdfWriter
 	{
 		if (!pParent || !EditXref(pXref))
 			return false;
-
 		m_mParents[nID] = pParent;
-
 		return true;
 	}
 	bool CDocument::EditXref(CXref* pXref)
 	{
 		if (!pXref)
-			return false;
+			return true;
 
 		pXref->SetPrev(m_pLastXref);
 		m_pLastXref = pXref;
@@ -1584,10 +1630,6 @@ namespace PdfWriter
 			return ((CNameObject*)pFT)->Get();
 		return "";
 	}
-	CPage* CDocument::CreateFakePage()
-	{
-		return new CPage(this, NULL);
-	}
 	bool CDocument::EditCO(const std::vector<int>& arrCO)
 	{
 		if (arrCO.empty())
@@ -1617,22 +1659,20 @@ namespace PdfWriter
 
 		return true;
 	}
-	CPage* CDocument::AddPage(int nPageIndex)
+	CPage* CDocument::AddPage(int nPageIndex, CPage* _pNewPage)
 	{
 		if (!m_pPageTree)
 			return NULL;
 
-		CPage* pNewPage = new CPage(m_pXref, NULL, this);
+		CPage* pNewPage = _pNewPage ? _pNewPage : new CPage(m_pXref, NULL, this);
 		if (!pNewPage)
 			return NULL;
 		bool bRes = m_pPageTree->InsertPage(nPageIndex, pNewPage);
 		if (!bRes)
 			return NULL;
 
-#ifndef FILTER_FLATE_DECODE_DISABLED
-		if (m_unCompressMode & COMP_TEXT)
+		if (!_pNewPage)
 			pNewPage->SetFilter(STREAM_FILTER_FLATE_DECODE);
-#endif
 		m_pCurPage = pNewPage;
 		return pNewPage;
 	}
@@ -1644,6 +1684,8 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
 		if (pObj)
 		{
+			if (pObj->IsIndirect())
+				return true;
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)
@@ -1665,16 +1707,16 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	bool CDocument::AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
+	bool CDocument::AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo)
 	{
-		if (!pTrailer || m_wsFilePath.empty())
+		if (!pTrailer || wsPath.empty())
 			return false;
 
 		CFileStream* pStream = new CFileStream();
 		if (!pStream)
 			return false;
 
-		if (!pStream->OpenFile(m_wsFilePath, false))
+		if (!pStream->OpenFile(wsPath, false))
 		{
 			RELEASEOBJECT(pStream);
 			return false;
@@ -1763,7 +1805,7 @@ namespace PdfWriter
 		RELEASEOBJECT(pStream);
 		unsigned int nSizeXRef = m_pXref->GetSizeXRef();
 		m_pXref = m_pLastXref;
-		Sign(m_wsFilePath, nSizeXRef, bNeedStreamXRef);
+		Sign(wsPath, nSizeXRef, bNeedStreamXRef);
 		RELEASEOBJECT(m_pEncryptDict);
 
 		return true;

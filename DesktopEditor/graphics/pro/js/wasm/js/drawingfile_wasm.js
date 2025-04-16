@@ -86,8 +86,9 @@ CFile.prototype._openFile = function(buffer, password)
 	{
 		let data = new Uint8Array(buffer);
 		this.stream_size = data.length;
-		this.stream = Module["_malloc"](this.stream_size);
-		Module["HEAP8"].set(data, this.stream);
+		let stream = Module["_malloc"](this.stream_size);
+		Module["HEAP8"].set(data, stream);
+		this.stream.push(stream);
 	}
 
 	let passwordPtr = 0;
@@ -98,7 +99,7 @@ CFile.prototype._openFile = function(buffer, password)
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 
-	this.nativeFile = Module["_Open"](this.stream, this.stream_size, passwordPtr);
+	this.nativeFile = Module["_Open"](this.stream[0], this.stream_size, passwordPtr);
 
 	if (passwordPtr)
 		Module["_free"](passwordPtr);
@@ -112,12 +113,53 @@ CFile.prototype._closeFile = function()
 
 CFile.prototype._getType = function()
 {
-	return Module["_GetType"](this.stream, this.stream_size);
+	return Module["_GetType"](this.stream[0], this.stream_size);
 };
 
 CFile.prototype._getError = function()
 {
 	return Module["_GetErrorCode"](this.nativeFile);
+};
+
+CFile.prototype._SplitPages = function(memoryBuffer)
+{
+	let pointer = Module["_malloc"](memoryBuffer.length * 4);
+	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
+	let ptr = Module["_SplitPages"](this.nativeFile, pointer, memoryBuffer.length);
+	Module["_free"](pointer);
+	return ptr;
+};
+
+CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
+{
+	if (!buffer)
+		return false;
+
+	let data = (undefined !== buffer.byteLength) ? new Uint8Array(buffer) : buffer;
+	let stream2 = Module["_malloc"](data.length);
+	Module["HEAP8"].set(data, stream2);
+
+	if (!maxID)
+		maxID = 0;
+
+	let prefixPtr = 0;
+	if (prefixForm)
+	{
+		let prefixBuf = prefixForm.toUtf8();
+		prefixPtr = Module["_malloc"](prefixBuf.length);
+		Module["HEAP8"].set(prefixBuf, prefixPtr);
+	}
+
+	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID, prefixPtr);
+	if (bRes == 1)
+		this.stream.push(stream2);
+	else
+		Module["_free"](stream2);
+
+	if (prefixPtr)
+		Module["_free"](prefixPtr);
+
+	return bRes == 1;
 };
 
 // FONTS

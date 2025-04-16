@@ -410,7 +410,9 @@ namespace PdfWriter
 
 		void SetRotate(double nRotate);
 		void SetName(const std::wstring& wsName);
-		void SetAPStream(CDictObject* pStream);
+		void SetAPStream(CDictObject* pStream, bool bCopy = false);
+
+		CDictObject* GetAPStream();
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{

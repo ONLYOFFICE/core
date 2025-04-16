@@ -167,18 +167,18 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CBinaryObject
 	//----------------------------------------------------------------------------------------
-	CBinaryObject::CBinaryObject(const BYTE* pValue, unsigned int unLen)
+	CBinaryObject::CBinaryObject(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
 		m_pValue = NULL;
 		m_unLen  = 0;
-		Set(pValue, unLen);
+		Set(pValue, unLen, bCopy);
 	}
 	CBinaryObject::~CBinaryObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CBinaryObject::Set(const BYTE* pValue, unsigned int unLen)
+	void CBinaryObject::Set(BYTE* pValue, unsigned int unLen, bool bCopy)
 	{
         unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
 		if (m_pValue)
@@ -192,9 +192,13 @@ namespace PdfWriter
 			return;
 
 		m_unLen  = unLen;
-		m_pValue = new BYTE[unLen];
-
-		MemCpy(m_pValue, pValue, unLen);
+		if (bCopy)
+		{
+			m_pValue = new BYTE[unLen];
+			MemCpy(m_pValue, pValue, unLen);
+		}
+		else
+			m_pValue = pValue;
 	}
 	//----------------------------------------------------------------------------------------
 	// CProxyObject
@@ -542,7 +546,7 @@ namespace PdfWriter
 		if (m_pStream)
 			delete m_pStream;
 	}
-	CObjectBase*  CDictObject::Get(const std::string& sKey) const
+	CObjectBase* CDictObject::Get(const std::string& sKey) const
 	{
 		std::map<std::string, CObjectBase*>::const_iterator oIter = m_mList.find(sKey);
 		if (m_mList.end() != oIter)
@@ -615,7 +619,7 @@ namespace PdfWriter
 	{
 		Add(sKey, new CBoolObject(bBool));
 	}
-	const char*   CDictObject::GetKey(const CObjectBase* pObject)
+	const char* CDictObject::GetKey(const CObjectBase* pObject)
 	{
 		for (auto const &oIter : m_mList)
 		{
@@ -669,7 +673,7 @@ namespace PdfWriter
 				pXref->Add((CObjectBase*)this);
 			pXref->Add((CObjectBase*)pLength);
 
-			Add("Length", (CObjectBase*)pLength);
+			Add("Length", pLength);
 		}
 
 		m_pStream = pStream;
@@ -923,11 +927,19 @@ namespace PdfWriter
 			pTrailer->Add("Size", unMaxObjId + 1);
 			if (m_pPrev && pPrev->m_unAddr)
 				pTrailer->Add("Prev", pPrev->m_unAddr);
+			int nStreamOffset = pStream->Tell();
+			int nOffsetSize = 1;
+			if (nStreamOffset > 1 << 24)
+				nOffsetSize = 4;
+			else if (nStreamOffset > 1 << 16)
+				nOffsetSize = 3;
+			else if (nStreamOffset > 1 << 8)
+				nOffsetSize = 2;
 			CArrayObject* pW = new CArrayObject();
-			pTrailer->Add("W",  pW);
 			pW->Add(1);
-			pW->Add(4);
+			pW->Add(nOffsetSize);
 			pW->Add(2);
+			pTrailer->Add("W",  pW);
 			CArrayObject* pIndex = new CArrayObject();
 			pTrailer->Add("Index",  pIndex);
 			CNumberObject* pLength = new CNumberObject(0);
@@ -959,7 +971,6 @@ namespace PdfWriter
 
 			// Записываем поток
 			pXref = out;
-			int nStreamOffset = pStream->Tell();
 			pXref->m_unAddr = nStreamOffset;
 			CStream* pTrailerStream = new CMemoryStream();
 			unsigned int unEntries = 0, unEntriesSize = 0;
@@ -986,10 +997,8 @@ namespace PdfWriter
 						pTrailerStream->WriteChar('\000');
 					else if (pEntry->nEntryType == IN_USE_ENTRY)
 						pTrailerStream->WriteChar('\001');
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 24));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 16));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset >> 8));
-					pTrailerStream->WriteChar((unsigned char)(pEntry->unByteOffset));
+					for (int i = nOffsetSize - 1; i >= 0; --i)
+						pTrailerStream->WriteChar((pEntry->unByteOffset >> (8 * i)) & 0xFF);
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo >> 8));
 					pTrailerStream->WriteChar((unsigned char)(pEntry->unGenNo));
 				}
@@ -1001,10 +1010,8 @@ namespace PdfWriter
 			pIndex->Add(unEntries);
 			pIndex->Add(unEntriesSize);
 			pTrailerStream->WriteChar('\001');
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 24));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 16));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset >> 8));
-			pTrailerStream->WriteChar((unsigned char)(nStreamOffset));
+			for (int i = nOffsetSize - 1; i >= 0; --i)
+				pTrailerStream->WriteChar((nStreamOffset >> (8 * i)) & 0xFF);
 			pTrailerStream->WriteChar('\000');
 			pTrailerStream->WriteChar('\000');
 

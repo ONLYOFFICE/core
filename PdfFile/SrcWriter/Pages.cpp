@@ -224,7 +224,7 @@ namespace PdfWriter
 		if (pResources)
 			pResources->Fix();
 	}
-	void CPageTree::AddPage(CDictObject* pPage)
+	void CPageTree::AddPage(CPage* pPage)
 	{
 		m_pPages->Add(pPage);
 		(*m_pCount)++;
@@ -346,16 +346,9 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CDocument* pDocument, CXref* pXref)
+	CPage::CPage(CDocument* pDocument)
 	{
 		Init(pDocument);
-		if (pXref)
-		{
-			AddResource(pXref);
-			m_pContents = new CArrayObject();
-			Add("Contents", m_pContents);
-			AddContents(pXref);
-		}
 	}
 	void CPage::Fix()
 	{
@@ -371,6 +364,12 @@ namespace PdfWriter
 				pNewContents->Get()->SetRef(pContents->GetObjId(), pContents->GetGenNo());
 				m_pContents = new CArrayObject();
 				m_pContents->Add(pNewContents);
+				Add("Contents", m_pContents);
+			}
+			else if (pContents->GetType() == object_type_DICT)
+			{
+				m_pContents = new CArrayObject();
+				m_pContents->Add(pContents);
 				Add("Contents", m_pContents);
 			}
 		}

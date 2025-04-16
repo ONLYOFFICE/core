@@ -118,13 +118,6 @@ namespace PPTX
 		}
 		void TableProperties::fromXML(XmlUtils::CXmlNode& node)
 		{
-			Fill.GetFillFrom(node);
-			Effects.GetEffectListFrom(node);
-
-			XmlUtils::CXmlNode oNode;
-			if (node.GetNode(_T("a:tableStyleId"), oNode))
-				TableStyleId = oNode.GetTextExt();
-
 			XmlMacroReadAttributeBase(node, L"rtl", Rtl);
 			XmlMacroReadAttributeBase(node, L"firstRow", FirstRow);
 			XmlMacroReadAttributeBase(node, L"firstCol", FirstCol);
@@ -133,6 +126,36 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"bandRow", BandRow);
 			XmlMacroReadAttributeBase(node, L"bandCol", BandCol);
 
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if (L"tableStyleId" == strName)
+					{
+						TableStyleId = oNode.GetTextExt();
+					}
+					else if (L"blipFill" == strName ||
+						L"gradFill" == strName ||
+						L"grpFill" == strName ||
+						L"noFill" == strName ||
+						L"pattFill" == strName ||
+						L"solidFill" == strName)
+					{
+						Fill.fromXML(oNode);
+					}
+					else if (L"effectDag" == strName ||
+						L"effectLst" == strName)
+					{
+						Effects.fromXML(oNode);
+					}
+				}
+			}
 			FillParentPointersForChilds();
 		}
 		void TableProperties::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const

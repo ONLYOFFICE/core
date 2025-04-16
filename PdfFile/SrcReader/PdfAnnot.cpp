@@ -1208,12 +1208,12 @@ CAnnotWidgetTx::CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField, int nStart
 	oField.free();
 
 	// 10 - Максимальное количество символов в Tx - MaxLen
-	int nMaxLen = pField->getMaxLen();
-	if (nMaxLen > 0)
+	if (oField.dictLookup("MaxLen", &oObj)->isInt())
 	{
 		m_unFlags |= (1 << 10);
-		m_unMaxLen = nMaxLen;
+		m_unMaxLen = oObj.getInt();
 	}
+	oObj.free();
 
 	// 11 - Расширенный текст RV - RichText
 	if (pField->getFlags() & (1 << 25))
@@ -2699,6 +2699,14 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 	}
 	oAA.free();
 
+	// 9 - MaxLen
+	if (oField.dictLookup("MaxLen", &oObj)->isInt())
+	{
+		pAnnotParent->unMaxLen = oObj.getInt();
+		pAnnotParent->unFlags |= (1 << 9);
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -3723,6 +3731,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 			arrAction[i]->ToWASM(oRes);
 		}
 	}
+	if (unFlags & (1 << 9))
+		oRes.AddInt(unMaxLen);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {

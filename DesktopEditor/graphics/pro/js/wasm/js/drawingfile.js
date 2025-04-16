@@ -1331,6 +1331,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 					readAction(reader, rec["AA"][AAType]);
 				}
 			}
+			if (flags & (1 << 9))
+				rec["maxLen"] = reader.readInt();
 			res["Parents"].push(rec);
 		}
 

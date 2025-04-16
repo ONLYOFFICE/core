@@ -2233,8 +2233,6 @@ namespace PdfWriter
 	void CAction::SetType(const std::wstring& wsType)
 	{
 		m_sType = U_TO_UTF8(wsType);
-		if (wsType != L"A")
-			Add("S", m_sType.c_str());
 	}
 	void CAction::SetNext(CAction* pNext)
 	{

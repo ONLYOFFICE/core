@@ -218,7 +218,7 @@ namespace PPTX
 
 			oAttr.Write(L"useBgFill", useBgFill);
 			oAttr.Write(L"modelId", modelId);
-			oAttr.Write(L"macro", macro);
+			oAttr.Write2(L"macro", macro);
 			oAttr.Write(L"fLocksText", fLocksText);
 
 			XmlUtils::CNodeValue oValue;
@@ -248,7 +248,7 @@ namespace PPTX
 			pWriter->StartAttributes();
 
 			pWriter->WriteAttribute(L"useBgFill", useBgFill);
-			pWriter->WriteAttribute(L"macro", macro);
+			pWriter->WriteAttribute2(L"macro", macro);
 			pWriter->WriteAttribute(L"modelId", modelId);
 			pWriter->WriteAttribute(L"fLocksText", fLocksText);
 			pWriter->EndAttributes();

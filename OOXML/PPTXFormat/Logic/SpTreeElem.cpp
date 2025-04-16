@@ -616,12 +616,14 @@ namespace PPTX
 					if (_type == SPTREE_TYPE_AUDIO)	
 					{
 						OOX::Audio *pAudio = new OOX::Audio(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pAudio));
 					}
 					else if (_type == SPTREE_TYPE_VIDEO)
 					{
 						OOX::Video* pVideo = new OOX::Video(NULL, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
-						p->blipFill.additionalFile = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
+						p->blipFill.additionalFiles.emplace_back();
+						p->blipFill.additionalFiles.back() = smart_ptr<OOX::File>(dynamic_cast<OOX::File*>(pVideo));
 					}
 					
 					p->fromPPTY(pReader);

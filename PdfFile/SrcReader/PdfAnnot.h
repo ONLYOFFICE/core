@@ -630,6 +630,7 @@ private:
 
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
+		unsigned int unMaxLen; // Ограничение на максимальную длину text field
 		unsigned int unFieldFlag; // Флаг Ff
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;

@@ -624,11 +624,91 @@ namespace PdfWriter
 		m_vFillAlpha.push_back(pExtGrState);
 		return pExtGrState;
 	}
-	CAnnotation* CDocument::CreateTextAnnot()
+	CAnnotation* CDocument::CreateAnnot(BYTE m_nType)
 	{
-		CTextAnnotation* pNew = new CTextAnnotation(m_pXref);
-		pNew->SetC({ 1.0, 0.8, 0.0 });
-		return pNew;
+		CAnnotation* pAnnot = NULL;
+		if (m_nType == 0)
+		{
+			pAnnot = new CTextAnnotation(m_pXref);
+			pAnnot->SetC({ 1.0, 0.8, 0.0 });
+		}
+		else if (m_nType == 14)
+			pAnnot = new CInkAnnotation(m_pXref);
+		else if (m_nType == 3)
+			pAnnot = new CLineAnnotation(m_pXref);
+		else if (m_nType >= 8 && m_nType <= 11)
+			pAnnot = new CTextMarkupAnnotation(m_pXref);
+		else if (m_nType == 4 || m_nType == 5)
+			pAnnot = new CSquareCircleAnnotation(m_pXref);
+		else if (m_nType == 6 || m_nType == 7)
+			pAnnot = new CPolygonLineAnnotation(m_pXref);
+		else if (m_nType == 15)
+			pAnnot = new CPopupAnnotation(m_pXref);
+		else if (m_nType == 2)
+			pAnnot = new CFreeTextAnnotation(m_pXref);
+		else if (m_nType == 13)
+			pAnnot = new CCaretAnnotation(m_pXref);
+		else if (m_nType == 12)
+			pAnnot = new CStampAnnotation(m_pXref);
+
+		if (pAnnot)
+			m_pXref->Add(pAnnot);
+
+		if (m_nType >= 26)
+		{
+			if (!CheckAcroForm())
+				return NULL;
+
+			switch (m_nType)
+			{
+			case 26:
+			{
+				pAnnot = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
+				break;
+			}
+			case 27:
+			{
+				pAnnot = new CPushButtonWidget(m_pXref);
+				pAnnot->Add("FT", "Btn");
+				break;
+			}
+			case 28:
+			case 29:
+			{
+				pAnnot = new CCheckBoxWidget(m_pXref);
+				pAnnot->Add("FT", "Btn");
+				break;
+			}
+			case 30:
+			{
+				pAnnot = new CTextWidget(m_pXref);
+				pAnnot->Add("FT", "Tx");
+				break;
+			}
+			case 31:
+			case 32:
+			{
+				pAnnot = new CChoiceWidget(m_pXref);
+				pAnnot->Add("FT", "Ch");
+				break;
+			}
+			case 33:
+			{
+				pAnnot = new CSignatureWidget(m_pXref);
+				pAnnot->Add("FT", "Sig");
+				break;
+			}
+			default: break;
+			}
+
+			if (pAnnot)
+			{
+				m_pXref->Add(pAnnot);
+				CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
+				ppFields->Add(pAnnot);
+			}
+		}
+		return pAnnot;
 	}
 	CAnnotation* CDocument::CreateLinkAnnot(const TRect& oRect, CDestination* pDest)
 	{
@@ -643,111 +723,6 @@ namespace PdfWriter
 		pAnnot->SetRect(oRect);
 		m_pXref->Add(pAnnot);
 		return pAnnot;
-	}
-	CAnnotation* CDocument::CreateInkAnnot()
-	{
-		return new CInkAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateLineAnnot()
-	{
-		return new CLineAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateTextMarkupAnnot()
-	{
-		return new CTextMarkupAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateSquareCircleAnnot()
-	{
-		return new CSquareCircleAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreatePolygonLineAnnot()
-	{
-		return new CPolygonLineAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreatePopupAnnot()
-	{
-		return new CPopupAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateFreeTextAnnot()
-	{
-		return new CFreeTextAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateCaretAnnot()
-	{
-		return new CCaretAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateStampAnnot()
-	{
-		return new CStampAnnotation(m_pXref);
-	}
-	CAnnotation* CDocument::CreateWidgetAnnot()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CWidgetAnnotation* pWidget = new CWidgetAnnotation(m_pXref, EAnnotType::AnnotWidget);
-		m_pXref->Add(pWidget);
-
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreatePushButtonWidget()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CWidgetAnnotation* pWidget = new CPushButtonWidget(m_pXref);
-		m_pXref->Add(pWidget);
-		pWidget->Add("FT", "Btn");
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreateCheckBoxWidget()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CWidgetAnnotation* pWidget = new CCheckBoxWidget(m_pXref);
-		m_pXref->Add(pWidget);
-		pWidget->Add("FT", "Btn");
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreateTextWidget()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CAnnotation* pWidget = new CTextWidget(m_pXref);
-		m_pXref->Add(pWidget);
-		pWidget->Add("FT", "Tx");
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreateChoiceWidget()
-	{
-		if (!CheckAcroForm())
-			return NULL;
-
-		CAnnotation* pWidget = new CChoiceWidget(m_pXref);
-		m_pXref->Add(pWidget);
-		pWidget->Add("FT", "Ch");
-		CArrayObject* ppFields = (CArrayObject*)m_pAcroForm->Get("Fields");
-		ppFields->Add(pWidget);
-
-		return pWidget;
-	}
-	CAnnotation* CDocument::CreateSignatureWidget()
-	{
-		return new CSignatureWidget(m_pXref);
 	}
 	CAction* CDocument::CreateAction(BYTE nType)
 	{

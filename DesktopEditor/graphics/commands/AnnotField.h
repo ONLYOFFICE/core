@@ -569,6 +569,7 @@ public:
 	{
 		int nID;
 		int nFlags;
+		int nMaxLen;
 		int nParentID;
 		int nFieldFlag;
 		std::wstring sName;

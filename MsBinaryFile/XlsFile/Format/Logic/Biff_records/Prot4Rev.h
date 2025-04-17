@@ -49,12 +49,13 @@ public:
 	BaseObjectPtr clone();
 
 	
-	void readFields(CFRecord& record);
+    void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeProt4Rev;
 
 //-----------------------------
-	Boolean<unsigned short> fRevLock;
+    Boolean<unsigned short> fRevLock = false;
 
 };
 

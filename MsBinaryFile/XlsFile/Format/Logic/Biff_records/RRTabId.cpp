@@ -60,5 +60,13 @@ void RRTabId::readFields(CFRecord& record)
 	}
 }
 
+void RRTabId::writeFields(CFRecord& record)
+{
+    for(auto i : sheet_ids)
+    {
+        record << *i;
+    }
+}
+
 } // namespace XLS
 

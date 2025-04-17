@@ -642,6 +642,14 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
     proc.mandatory<INTERFACE_T>();
     proc.mandatory<WriteAccess>();
     proc.mandatory<CodePage>();
+    if(m_RRTabId != nullptr)
+        proc.mandatory(*m_RRTabId);
+    else
+        proc.mandatory<RRTabId>();
+    if(m_PROTECTION != nullptr)
+        proc.mandatory(*m_PROTECTION);
+    else
+        proc.mandatory<PROTECTION>();
     return true;
 }
 void GlobalsSubstream::UpdateXFC()

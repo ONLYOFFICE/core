@@ -47,9 +47,9 @@ public:
 	static const ElementType	type = typeSheetId;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-
-	unsigned short id;
+    unsigned short id = 0;
 };
 
 typedef boost::shared_ptr<SheetId> SheetIdPtr;

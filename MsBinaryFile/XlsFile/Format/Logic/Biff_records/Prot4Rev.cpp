@@ -55,5 +55,11 @@ void Prot4Rev::readFields(CFRecord& record)
 	record >> fRevLock;
 }
 
+void Prot4Rev::writeFields(CFRecord& record)
+{
+    record << fRevLock;
+}
+
+
 } // namespace XLS
 

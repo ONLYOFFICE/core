@@ -109,7 +109,23 @@ void Window1::writeFields(CFRecord& record)
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
-		//stub
+        _UINT16 flags = 0;
+        _INT16 xWn_2b = xWn;
+        _INT16 yWn_2b = yWn;
+        _INT16 dxWn_2b = dxWn;
+        _INT16 dyWn_2b =  dyWn;
+        _UINT16 itabCur_2b = itabCur;
+        _UINT16 itabFirst_2b = itabFirst;
+        _UINT16 wTabRatio_2b = wTabRatio;
+        record << xWn_2b << yWn_2b << dxWn_2b << dyWn_2b;
+        SETBIT(flags, 0, fHidden)
+        SETBIT(flags, 1, fIconic)
+        SETBIT(flags, 2, fVeryHidden)
+        SETBIT(flags, 3, fDspHScroll)
+        SETBIT(flags, 4, fDspVScroll)
+        SETBIT(flags, 5, fBotAdornment)
+        SETBIT(flags, 6, fNoAFDateGroup)
+        record << flags << itabCur_2b << itabFirst_2b << ctabSel << wTabRatio_2b;
 	}
 
 	else

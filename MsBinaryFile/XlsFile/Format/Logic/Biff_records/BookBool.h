@@ -47,16 +47,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBookBool;
 
-	bool fNoSaveSup;
-	bool fHasEnvelope;
-	bool fEnvelopeVisible;
-	bool fEnvelopeInitDone;
-	bool fHideBorderUnselLists;
-
-	std::wstring grUpdateLinks;
+    bool fNoSaveSup = false;
+    bool fHasEnvelope = false;
+    bool fEnvelopeVisible = false;
+    bool fEnvelopeInitDone = false;
+    bool fHideBorderUnselLists = false;
+    std::wstring grUpdateLinks = L"";
 };
 
 } // namespace XLS

@@ -650,6 +650,26 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_PROTECTION);
     else
         proc.mandatory<PROTECTION>();
+    if(m_arWindow1.empty())
+        proc.mandatory<Window1>();
+    else
+        {
+            for(auto i: m_arWindow1)
+                if(i!= nullptr)
+                    proc.mandatory(*i);
+        }
+    proc.mandatory<Backup>();
+    proc.mandatory<HideObj>();
+    if(m_Date1904 != nullptr)
+        proc.mandatory(*m_Date1904);
+    else
+        proc.mandatory<Date1904>();
+    if(m_CalcPrecision != nullptr)
+        proc.mandatory(*m_CalcPrecision);
+    else
+        proc.mandatory<CalcPrecision>();
+    proc.mandatory<RefreshAll>();
+    proc.mandatory<BookBool>();
     return true;
 }
 void GlobalsSubstream::UpdateXFC()

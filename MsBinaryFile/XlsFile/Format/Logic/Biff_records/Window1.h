@@ -55,21 +55,21 @@ public:
 
 	int serialize(std::wostream & stream);
 //-----------------------------
-    _INT32 xWn;
-    _INT32 yWn;
-    _UINT32 dxWn;
-    _UINT32 dyWn;
-	bool fHidden;
-	bool fIconic;
-	bool fVeryHidden;
-	bool fDspHScroll;
-	bool fDspVScroll;
-	bool fBotAdornment;
-    bool fNoAFDateGroup; //fAFDateGroup in BIFF12
-    _UINT32 itabCur;
-    _UINT32 itabFirst;
-	_UINT16 ctabSel;
-    _UINT32 wTabRatio; //itabRatio in BIFF12
+    _INT32 xWn = 0;
+    _INT32 yWn = 0;
+    _UINT32 dxWn = 0;
+    _UINT32 dyWn = 0;
+    bool fHidden = false;
+    bool fIconic = false;
+    bool fVeryHidden = false;
+    bool fDspHScroll = false;
+    bool fDspVScroll = false;
+    bool fBotAdornment = false;
+    bool fNoAFDateGroup = false; //fAFDateGroup in BIFF12
+    _UINT32 itabCur = 0;
+    _UINT32 itabFirst = 0;
+    _UINT16 ctabSel = 0;
+    _UINT32 wTabRatio = 0; //itabRatio in BIFF12
 
 };
 

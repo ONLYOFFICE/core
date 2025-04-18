@@ -61,12 +61,12 @@ namespace XLS
 
 		static const ElementType type = typeXF;
 
-		_UINT16		font_index;
+        _UINT16		font_index = 0;
 		
-		_UINT16		ifmt; //used
-		std::wstring format_code;
+        _UINT16		ifmt = 0; //used
+        std::wstring format_code = L"";
 		
-		_UINT16		ixfParent;
+        _UINT16		ixfParent = 0;
 
 		bool fLocked = false;
 		bool fHidden = false;
@@ -108,9 +108,9 @@ namespace XLS
 		BiffStructurePtrVector ext_props;
 		BiffStructurePtrVector xf_props;
 
-		size_t border_x_id;
-		size_t fill_x_id;
-		size_t font_x_id;
+        size_t border_x_id = 0;
+        size_t fill_x_id = 0;
+        size_t font_x_id = 0;
 		
 		void Update(ExtProp* extProp); // xls ext style
 		void Update(XFProp* xfProps); // xlsx style

@@ -399,7 +399,7 @@ void XF::writeFields(CFRecord& record)
 	global_info = record.getGlobalWorkbookInfo();
 
 
-	if (global_info->Version == 0x0400)
+    /*if (global_info->Version == 0x0400)
 	{
 		//stub
 	}
@@ -410,7 +410,75 @@ void XF::writeFields(CFRecord& record)
 	else if (global_info->Version == 0x0600)
 	{
 		//stub
-	}
+    }*/
+    if (global_info->Version < 0x0800)
+    {
+        FontIndex ifnt;
+        ifnt.setValue(font_index);
+        record <<ifnt  << ifmt;
+        _UINT16 flags = 0, flags5 = 0;
+        _UINT32 flags2 = 0, flags3 = 0, flags4 = 0;
+
+        SETBIT(flags, 0, fLocked)
+        SETBIT(flags, 1, fHidden)
+        SETBIT(flags, 2, fStyle)
+        SETBIT(flags, 3, f123Prefix)
+        SETBITS(flags, 4, 15, ixfParent)
+
+        record << flags;
+
+        SETBITS(flags2, 0, 2, alc)
+        SETBIT(flags2, 3, fWrap)
+        SETBITS(flags2, 4, 6, alcV)
+        SETBIT(flags2, 7, fJustLast)
+
+        SETBITS(flags2, 8, 15, trot)
+        SETBITS(flags2, 16, 19, cIndent)
+        SETBIT(flags2, 20, fShrinkToFit)
+        SETBITS(flags2, 22, 23, iReadOrder)
+
+        if (!fStyle)
+        {
+            SETBIT(flags2, 26, fAtrNum);
+            SETBIT(flags2, 27, fAtrFnt);
+            SETBIT(flags2, 28, fAtrAlc);
+            SETBIT(flags2, 29, fAtrBdr);
+            SETBIT(flags2, 30, fAtrPat);
+            SETBIT(flags2, 31, fAtrProt);
+        }
+
+        record << flags2;
+
+        SETBITS(flags3, 0, 3, border.dgLeft)
+        SETBITS(flags3, 4, 7, border.dgRight)
+        SETBITS(flags3, 8, 11, border.dgTop)
+        SETBITS(flags3, 12, 15, border.dgBottom)
+        SETBITS(flags4, 21, 24, border.dgDiag)
+
+        SETBITS(flags3, 16, 22, border.icvLeft)
+        SETBITS(flags3, 23, 29, border.icvRight)
+        SETBITS(flags4, 0, 6, border.icvTop)
+        SETBITS(flags4, 7, 13, border.icvBottom)
+        SETBITS(flags4, 14, 20, border.icvDiag)
+
+        SETBITS(flags3, 30, 31, border.grbitDiag)
+
+        if (!fStyle)
+        {
+            SETBIT(flags4, 25, fHasXFExt)
+        }
+        SETBITS(flags4, 26, 31, fill.fls)
+
+        SETBITS(flags5, 0, 6, fill.icvFore)
+        SETBITS(flags5, 7, 13, fill.icvBack)
+
+        if (!fStyle)
+        {
+            SETBIT(flags5, 14, fsxButton)
+        }
+        record << flags3 << flags4 << flags5;
+
+    }
 	else
 	{
 		_UINT32 flags = 0;

@@ -13,16 +13,16 @@ scope = context.CreateScope()
 globalObj = context.GetGlobal()
 
 api = globalObj['Api']
-document = api.Call('GetDocument')
-paragraph1 = api.Call('CreateParagraph')
-paragraph1.Call('SetSpacingAfter', 1000, False)
-paragraph1.Call('AddText', 'Hello from Python!')
+document = api.GetDocument()
+paragraph1 = api.CreateParagraph()
+paragraph1.SetSpacingAfter(1000, False)
+paragraph1.AddText('Hello from Python!')
 
-paragraph2 = api.Call('CreateParagraph')
-paragraph2.Call('AddText', 'Goodbye!')
+paragraph2 = api.CreateParagraph()
+paragraph2.AddText('Goodbye!')
 
 content = [paragraph1, paragraph2]
-document.Call('InsertContent', content)
+document.InsertContent(content)
 
 dstPath = os.getcwd() + '/result.docx'
 builder.SaveFile(docbuilder.FileTypes.Document.DOCX, dstPath)

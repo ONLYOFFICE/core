@@ -1385,13 +1385,13 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	if (!xref || !pCatalog)
 		return false;
-	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
-	if (pPageRef.first == 0)
+	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
+	if (!pPageRef || pPageRef->num == 0)
 		return false;
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 	if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
 	{
 		pageObj.free();
@@ -1401,7 +1401,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	pageRefObj.free();
 
 	// Воспроизведение словаря страницы из reader для writer
-	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef.first);
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef->num);
 	if (!pXref)
 	{
 		pageObj.free();
@@ -1414,7 +1414,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		RELEASEOBJECT(pXref);
 		return false;
 	}
-	pXref->Add(pPage, pPageRef.second);
+	pXref->Add(pPage, pPageRef->gen);
 	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
@@ -2153,13 +2153,13 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		return true;
 
 	XRef* xref = pPDFDocument->getXRef();
-	std::pair<int, int> pPageRef = pDoc->GetPageRef(nPageIndex);
-	if (!xref || pPageRef.first == 0)
+	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
+	if (!xref || !pPageRef || pPageRef->num == 0)
 		return false;
 
 	// Получение объекта аннотации
 	Object pageRefObj, pageObj, oAnnots;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 	if (!pageRefObj.fetch(xref, &pageObj)->isDict() || !pageObj.dictLookup("Annots", &oAnnots)->isArray())
 	{
 		pageRefObj.free(); pageObj.free(); oAnnots.free();

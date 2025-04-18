@@ -48,14 +48,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
-
+    void writeFields(CFRecord& record);
 	static const ElementType type = typeFormat;
 
 	int serialize(std::wostream & stream);
 //-----------------------------
 	_UINT16			ifmt_used = 0xFFFF;
 	_UINT16			ifmt = 0xFFFF;
-	std::wstring	stFormat;
+    std::wstring	stFormat = L"";
 };
 
 class Format_BIFF23 : public Format

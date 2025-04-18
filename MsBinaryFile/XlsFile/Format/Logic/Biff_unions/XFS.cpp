@@ -110,6 +110,17 @@ const bool XFS::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool XFS::saveContent(BinProcessor& proc)
+{   for (auto i: m_arCellXFs)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for (auto i: m_arCellStyles)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 void XFS::RegisterFillBorder()
 {
 	int first_xf_ext = 0;

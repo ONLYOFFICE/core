@@ -169,6 +169,12 @@ const bool FORMATTING::saveContent(BinProcessor& proc)
         proc.mandatory(*m_Styles);
     else
         proc.mandatory<STYLES>();
+    if(m_TABLESTYLES != nullptr)
+        proc.mandatory(*m_TABLESTYLES);
+    if(m_Palette != nullptr)
+        proc.mandatory(*m_Palette);
+    if(m_ClrtClient != nullptr)
+        proc.mandatory(*m_ClrtClient);
     return true;
 }
 

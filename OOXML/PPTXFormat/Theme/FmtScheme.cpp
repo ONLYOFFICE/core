@@ -42,7 +42,8 @@ namespace PPTX
 				parentFile		= oSrc.parentFile;
 				parentElement	= oSrc.parentElement;
 
-				name	= oSrc.name;
+				name = oSrc.name;
+				nameNode = oSrc.nameNode;
 
 				fillStyleLst = oSrc.fillStyleLst;
 				lnStyleLst = oSrc.lnStyleLst;
@@ -53,6 +54,8 @@ namespace PPTX
 			}
 			void FmtScheme::fromXML(XmlUtils::CXmlNode& node)
 			{
+				nameNode = node.GetName();
+
 				fillStyleLst.clear();
 				lnStyleLst.clear();
 				effectStyleLst.clear();
@@ -79,6 +82,7 @@ namespace PPTX
 			{
 				XmlUtils::CAttribute oAttr;
 				oAttr.Write(L"name", name);
+				oAttr.m_strValue += xmlns_attr;
 
 				XmlUtils::CNodeValue oValue;
 				oValue.WriteArray(L"a:fillStyleLst", fillStyleLst);
@@ -86,14 +90,15 @@ namespace PPTX
 				oValue.WriteArray(L"a:effectStyleLst", effectStyleLst);
 				oValue.WriteArray(L"a:bgFillStyleLst", bgFillStyleLst);
 
-				return XmlUtils::CreateNode(L"a:fmtScheme", oAttr, oValue);
+				return XmlUtils::CreateNode(nameNode, oAttr, oValue);
 			}
 			void FmtScheme::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(L"a:fmtScheme");
+				pWriter->StartNode(nameNode);
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute2(L"name", name);
+				pWriter->WriteString(xmlns_attr);
 				pWriter->EndAttributes();
 
 				pWriter->WriteArray(L"a:fillStyleLst", fillStyleLst);
@@ -116,7 +121,7 @@ namespace PPTX
 
 				pWriter->WriteArray(L"a:bgFillStyleLst", bgFillStyleLst);
 
-				pWriter->EndNode(L"a:fmtScheme");
+				pWriter->EndNode(nameNode);
 			}
 			void FmtScheme::GetLineStyle(int number, Logic::Ln& lnStyle) const
 			{
@@ -358,23 +363,17 @@ namespace PPTX
 			}
 			void FmtScheme::FillParentPointersForChilds()
 			{
-				size_t count = 0;
+				for (auto elm : fillStyleLst)
+					elm.SetParentPointer(this);
 
-				count = fillStyleLst.size();
-				for (size_t i = 0; i < count; ++i)
-					fillStyleLst[i].SetParentPointer(this);
+				for (auto elm : lnStyleLst)
+					elm.SetParentPointer(this);
 
-				count = lnStyleLst.size();
-				for (size_t i = 0; i < count; ++i)
-					lnStyleLst[i].SetParentPointer(this);
+				for (auto elm : effectStyleLst)
+					elm.SetParentPointer(this);
 
-				count = effectStyleLst.size();
-				for (size_t i = 0; i < count; ++i)
-					effectStyleLst[i].SetParentPointer(this);
-
-				count = bgFillStyleLst.size();
-				for (size_t i = 0; i < count; ++i)
-					bgFillStyleLst[i].SetParentPointer(this);
+				for (auto elm : bgFillStyleLst)
+					elm.SetParentPointer(this);
 			}
 	} // namespace nsTheme
 } // namespace PPTX

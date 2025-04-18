@@ -341,6 +341,12 @@ bool CPdfFile::MergePages(BYTE* data, DWORD length, int nMaxID, const std::strin
 		return false;
 	return m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm) && (m_pInternal->pReader->GetError() == 0);
 }
+bool CPdfFile::UnmergePages()
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->UnmergePages();
+}
 int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

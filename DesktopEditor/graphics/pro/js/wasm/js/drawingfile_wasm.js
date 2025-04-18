@@ -162,6 +162,17 @@ CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
 	return bRes == 1;
 };
 
+CFile.prototype._UndoMergePages = function()
+{
+	let bRes = Module["_UnmergePages"](this.nativeFile);
+	if (bRes == 1)
+	{
+		let str = this.stream.pop();
+		Module["_free"](str);
+	}
+	return bRes == 1;
+};
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

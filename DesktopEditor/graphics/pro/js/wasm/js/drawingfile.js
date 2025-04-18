@@ -176,6 +176,10 @@ CFile.prototype["MergePages"] = function(arrayBuffer, maxID, prefixForm)
 {
 	return this._MergePages(arrayBuffer, maxID, prefixForm);
 };
+CFile.prototype["UndoMergePages"] = function()
+{
+	return this._UndoMergePages();
+};
 
 // INFO DOCUMENT
 CFile.prototype.getInfo = function()

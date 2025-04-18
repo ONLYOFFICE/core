@@ -53,6 +53,7 @@
 		"_ScanPage",
 		"_SplitPages",
 		"_MergePages",
+		"_UnmergePages",
 		"_GetImageBase64",
 		"_GetImageBase64Len",
 		"_GetImageBase64Ptr",

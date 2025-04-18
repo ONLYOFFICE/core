@@ -993,7 +993,7 @@ int main(int argc, char* argv[])
 
 	// SPLIT & MERGE
 	BYTE* pSplitPages = NULL;
-	if (false)
+	if (true)
 	{
 		std::vector<int> arrPages = { 0 };
 		for (int i = 0; i < 3; i++)
@@ -1010,11 +1010,14 @@ int main(int argc, char* argv[])
 
 				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge") == 0)
 					RELEASEARRAYOBJECTS(pSplitPages);
+
+				if (!UnmergePages(pGrFile))
+					std::cout << "error" << std::endl;
 			}
 		}
 	}
 	BYTE* pFileMerge = NULL;
-	if (true)
+	if (false)
 	{
 		DWORD nFileMergeLen = 0;
 		if (NSFile::CFileBinary::ReadAllBytes(NSFile::GetProcessDirectory() + L"/test_merge.pdf", &pFileMerge, nFileMergeLen))

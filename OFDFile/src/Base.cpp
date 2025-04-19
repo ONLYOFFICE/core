@@ -186,7 +186,7 @@ bool CBase::Read(IFolder* pFolder)
 			m_arDocBodies.push_back(pDocBody);
 	}
 
-	return false;
+	return !m_arDocBodies.empty();
 }
 
 void CBase::DrawPage(IRenderer* pRenderer, int nPageIndex) const

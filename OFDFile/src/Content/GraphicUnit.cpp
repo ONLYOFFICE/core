@@ -75,21 +75,27 @@ void CGraphicUnit::Apply(IRenderer* pRenderer, TMatrix& oOldTransform) const
 	oTransform.Multiply(&oCurrentTransform);
 
 	// Clipping
-	// pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+	pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
-	// pRenderer->BeginCommand(c_nClipType);
-	// pRenderer->BeginCommand(c_nPathType);
-	// pRenderer->PathCommandStart();
+	pRenderer->BeginCommand(c_nResetClipType);
+	pRenderer->EndCommand(c_nResetClipType);
 
-	// pRenderer->PathCommandMoveTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
-	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY);
-	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
-	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
-	// pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
+	if (!m_oBoundary.Empty())
+	{
+		pRenderer->BeginCommand(c_nClipType);
+		pRenderer->BeginCommand(c_nPathType);
+		pRenderer->PathCommandStart();
 
-	// pRenderer->EndCommand(c_nPathType);
-	// pRenderer->EndCommand(c_nClipType);
-	// pRenderer->PathCommandEnd();
+		pRenderer->PathCommandMoveTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
+		pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY);
+		pRenderer->PathCommandLineTo(m_oBoundary.m_dX + m_oBoundary.m_dWidth, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
+		pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY + m_oBoundary.m_dHeight);
+		pRenderer->PathCommandLineTo(m_oBoundary.m_dX, m_oBoundary.m_dY);
+
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->EndCommand(c_nClipType);
+		pRenderer->PathCommandEnd();
+	}
 
 	pRenderer->SetTransform(oTransform.sx(), oTransform.shy(), oTransform.shx(), oTransform.sy(), oTransform.tx(), oTransform.ty());
 }

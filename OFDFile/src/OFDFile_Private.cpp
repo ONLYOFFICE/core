@@ -4,17 +4,17 @@
 #include "Utils/Utils.h"
 
 COFDFile_Private::COFDFile_Private(NSFonts::IApplicationFonts* pFonts)
-	: m_pAppFonts(pFonts), m_pTempFolder(nullptr)
+	: m_pAppFonts(pFonts), m_pFontManager(nullptr), m_pTempFolder(nullptr)
 {
 	if (nullptr == pFonts)
 		return;
 
 	// Создаем менеджер шрифтов с собственным кэшем
-	// m_pFontManager = m_pAppFonts->GenerateFontManager();
-	// NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	// pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
-	// m_pFontManager->SetOwnerCache(pMeasurerCache);
-	// pMeasurerCache->SetCacheSize(16);
+	m_pFontManager = pFonts->GenerateFontManager();
+	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
+	pMeasurerCache->SetStreams(pFonts->GetStreams());
+	m_pFontManager->SetOwnerCache(pMeasurerCache);
+	pMeasurerCache->SetCacheSize(16);
 }
 
 COFDFile_Private::~COFDFile_Private()
@@ -24,12 +24,11 @@ COFDFile_Private::~COFDFile_Private()
 	if (nullptr != m_pTempFolder)
 		delete m_pTempFolder;
 
-	// RELEASEINTERFACE(m_pFontManager);
+	RELEASEINTERFACE(m_pFontManager);
 }
 
 void COFDFile_Private::Close()
-{
-}
+{}
 
 void COFDFile_Private::SetTempDir(const std::wstring& wsPath)
 {
@@ -63,10 +62,7 @@ bool COFDFile_Private::Read(IFolder* pFolder)
 	if (nullptr == pFolder)
 		return false;
 
-	if (!m_oBase.Read(pFolder))
-		return false;
-
-	return false;
+	return m_oBase.Read(pFolder);
 }
 
 bool COFDFile_Private::LoadFromFile(const std::wstring& wsFilePath)

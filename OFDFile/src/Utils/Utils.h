@@ -6,6 +6,7 @@
 #include <vector>
 #include <sstream>
 #include <cstdlib>
+#include <cfloat>
 
 #include "../../../DesktopEditor/common/Path.h"
 

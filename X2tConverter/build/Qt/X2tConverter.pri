@@ -32,6 +32,7 @@ DEFINES += UNICODE \
 
 DEFINES += PDFFILE_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
+DEFINES += OFD_USE_DYNAMIC_LIBRARY
 DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 DEFINES += UNICODECONVERTER_USE_DYNAMIC_LIBRARY
@@ -130,7 +131,7 @@ LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 #All dynamic libs
 
-ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, DjVuFile, doctrenderer, DocxRenderer, IWorkFile, HWPFile)
+ADD_DEPENDENCY(graphics, kernel, UnicodeConverter, kernel_network, Fb2File, PdfFile, HtmlFile2, EpubFile, XpsFile, OFDFile, DjVuFile, doctrenderer, DocxRenderer, IWorkFile, HWPFile)
 
 #####################################################
 # внешнее подключение сторонних библиотек

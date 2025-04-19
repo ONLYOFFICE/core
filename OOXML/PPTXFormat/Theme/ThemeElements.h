@@ -30,13 +30,13 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
-#define PPTX_THEME_THEMEELEMENTS_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "ClrScheme.h"
 #include "FontScheme.h"
 #include "FmtScheme.h"
+
+#include "VisioThemeElements.h"
 
 namespace PPTX
 {
@@ -57,11 +57,15 @@ namespace PPTX
 			ClrScheme	clrScheme;
 			FontScheme	fontScheme;
 			FmtScheme	fmtScheme;
+//visio ext
+			nullable<FmtScheme> fmtConnectorScheme;
+			nullable<FillStyles> fillStyles;
+			nullable<LineStyles> lineStyles;
+			nullable<FontStylesGroup> fontStylesGroup;
+			nullable<VariationStyleSchemeLst> variationStyleSchemeLst;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} // namespace nsTheme
 } // namespace PPTX
-
-#endif // PPTX_THEME_THEMEELEMENTS_INCLUDE_H

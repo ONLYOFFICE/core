@@ -79,6 +79,5 @@ namespace BinXlsxRW {
 		
 		bool saveChart          (NSBinPptxRW::CBinaryFileReader* pReader, long lLength, NSCommon::smart_ptr<OOX::File> &file);
 		bool writeChartXlsx     (const std::wstring& sDstFile, NSCommon::smart_ptr<OOX::File> &file);
-		bool hasPivot			(const std::wstring& sSrcPath);
 	};
 }

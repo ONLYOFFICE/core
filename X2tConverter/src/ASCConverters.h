@@ -148,6 +148,15 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(potm2pptx);
 	DECLARE_CONVERT_FUNC(potm2pptx_dir);
 
+	// vsdx
+	DECLARE_CONVERT_FUNC(vsdx2vsdt);
+	DECLARE_CONVERT_FUNC(vsdx2vsdt_bin);
+	DECLARE_CONVERT_FUNC(vsdx_dir2vsdt);
+	DECLARE_CONVERT_FUNC(vsdx_dir2vsdt_bin);
+	DECLARE_CONVERT_FUNC(vsdt_bin2vsdx);
+	DECLARE_CONVERT_FUNC(vsdt_bin2vsdx_dir);
+	DECLARE_CONVERT_FUNC(vsdt2vsdx);
+
 	// doc
 	DECLARE_CONVERT_FUNC(doc2docx);
 	DECLARE_CONVERT_FUNC(doc2docx_dir);
@@ -303,6 +312,7 @@ namespace NExtractTools
 	_UINT32 fromCrossPlatform(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 	_UINT32 fromCanvasPdf(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 
+	_UINT32 fromVsdtBin(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 	_UINT32 fromDraw(const std::wstring& sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
 
 	_UINT32 fromInputParams(InputParams& oInputParams);

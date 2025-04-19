@@ -1130,7 +1130,7 @@ namespace OOX
         }
         namespace  SharedFormulasRef
         {
-            std::unique_ptr<std::vector<XLS::CellRef>> sharedRefsLocations;
+            std::unique_ptr<std::map<_UINT32,XLS::CellRef>> sharedRefsLocations;
 			std::unique_ptr<std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>>> ArrayRefsLocations;
         }
         void CFormula::fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record)
@@ -1157,9 +1157,10 @@ namespace OOX
                         rowRef = static_cast<XLS::PtgExp*>(BinFmla.rgce.sequence.begin()->get())->rowXlsb;
                         ColumnRef = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get())->col;
                         if(!SharedFormulasRef::sharedRefsLocations)
-                            SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::vector<XLS::CellRef>>(new std::vector<XLS::CellRef>);
-                        SharedFormulasRef::sharedRefsLocations->push_back(XLS::CellRef(rowRef, ColumnRef, true, true));
-                        m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size() - 1;
+                            SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::map<_UINT32, XLS::CellRef>>(new std::map<_UINT32, XLS::CellRef>);
+                        m_oSi = (unsigned int)SharedFormulasRef::sharedRefsLocations->size();
+                        SharedFormulasRef::sharedRefsLocations->emplace(m_oSi->GetValue(), XLS::CellRef(rowRef, ColumnRef, true, true));
+
                     }
                 }
                 auto fmlaRecord = reader->getNextRecord(XLSB::rt_ShrFmla);
@@ -1204,12 +1205,12 @@ namespace OOX
                     auto ColumnPart = static_cast<XLS::PtgExtraCol*>(BinFmla.rgcb.getPtgs().back().get());
                     if(!SharedFormulasRef::sharedRefsLocations)
                         return;
-                    for(auto i = 0; i <SharedFormulasRef::sharedRefsLocations->size(); i++)
+                    for(const auto& location : *SharedFormulasRef::sharedRefsLocations)
                     {
-                        if(SharedFormulasRef::sharedRefsLocations->at(i).row == rowPart->rowXlsb &&
-                            SharedFormulasRef::sharedRefsLocations->at(i).column == ColumnPart->col)
+                        if(location.second.row == rowPart->rowXlsb &&
+                            location.second.column == ColumnPart->col)
                         {
-                            m_oSi = i;
+                            m_oSi = location.first;
                             m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared;
                         }
                     }
@@ -1894,7 +1895,7 @@ namespace OOX
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+            setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
 		}
 		void CCell::AfterRead()
 		{
@@ -2691,7 +2692,7 @@ namespace OOX
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CellRef CellReference;
-            XLS::CellRef* SharedFmlaRef;
+            XLS::CellRef* SharedFmlaRef = NULL;
             if((!m_oRow.IsInit() || !m_oCol.IsInit()))
             {
                 if(m_oRef.IsInit())
@@ -2708,7 +2709,7 @@ namespace OOX
             }
             else
             {
-                CellReference.row = m_oRow.get() - 1;
+                CellReference.row = m_oRow.get() -1;
                 CellReference.column = m_oCol.get();
             }
             if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
@@ -2912,6 +2913,8 @@ namespace OOX
                         XLSB::XLWideString str;
                         if(m_oValue.IsInit())
                             str = m_oValue->m_sText;
+                        else
+                            str = L"";
                         *CellRecord << str;
                     }
                     else
@@ -2924,7 +2927,7 @@ namespace OOX
                 case SimpleTypes::Spreadsheet::celltypeInlineStr:
                 case SimpleTypes::Spreadsheet::celltypeStr:
                 {
-                    if(m_oValue.IsInit() || m_oRichText.IsInit())
+                    if(m_oValue.IsInit() || m_oRichText.IsInit() || m_oFormula.IsInit())
                     {
                         if(!m_oFormula.IsInit())
                             CellRecord = writer->getNextRecord(XLSB::rt_CellSt);
@@ -2934,8 +2937,10 @@ namespace OOX
                         XLSB::XLWideString str;
                         if(m_oValue.IsInit())
                             str = m_oValue->m_sText;
-                        else
+                        else if(m_oRichText.IsInit())
                             str = m_oRichText->ToString();
+                        else
+                            str = L"";
                         *CellRecord << str;
                     }
                     else
@@ -2956,15 +2961,19 @@ namespace OOX
                 else if(m_oFormula->m_oT.get() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
                 {
                     if(!SharedFormulasRef::sharedRefsLocations)
-                        SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::vector<XLS::CellRef>>(new std::vector<XLS::CellRef>);
+                        SharedFormulasRef::sharedRefsLocations = std::unique_ptr<std::map<_UINT32, XLS::CellRef>>(new std::map<_UINT32, XLS::CellRef>);
                     if(!m_oFormula->m_sText.empty())
                     {
                         ExtraRecord = writer->getNextRecord(XLSB::rt_ShrFmla);
-                        SharedFormulasRef::sharedRefsLocations->push_back(CellReference);
+                        if(!m_oFormula->m_oSi.IsInit())
+                            m_oFormula->m_oSi = (_UINT32)SharedFormulasRef::sharedRefsLocations->size();
+                        SharedFormulasRef::sharedRefsLocations->emplace(m_oFormula->m_oSi->GetValue(), CellReference);
+                        SharedFmlaRef = &CellReference;
                     }
-                    if(m_oFormula->m_oSi.IsInit() && m_oFormula->m_oSi->GetValue() < SharedFormulasRef::sharedRefsLocations->size())
+                    if(m_oFormula->m_oSi.IsInit() && SharedFormulasRef::sharedRefsLocations->find(m_oFormula->m_oSi->GetValue()) != SharedFormulasRef::sharedRefsLocations->end())
                     {
-                        SharedFmlaRef = &SharedFormulasRef::sharedRefsLocations->at(m_oFormula->m_oSi->GetValue());
+                        if(m_oFormula->m_sText.empty())
+                            SharedFmlaRef = &SharedFormulasRef::sharedRefsLocations->at(m_oFormula->m_oSi->GetValue());
                         XLS::CellParsedFormula BinFmla(false);
 
                         //пишем флаги для формулы
@@ -3507,7 +3516,7 @@ namespace OOX
 				if (parseRefA(m_oRef->c_str(), nRow, nCol))
 				{
 					bRes = true;
-					//nRow--;
+                    //nRow--;
 					nCol--;
 				}
 			}
@@ -4360,7 +4369,7 @@ namespace OOX
         }
         bool CRow::compressCell(CCell* pCell)
         {
-            if(!pCell->m_oValue.IsInit() && !m_arrItems.empty())
+            if(!pCell->m_oValue.IsInit() && !pCell->m_oFormula.IsInit() && !m_arrItems.empty())
             {
                 auto prevCell = m_arrItems.back();
                 if(!prevCell->m_oRepeated.IsInit())
@@ -4587,6 +4596,13 @@ namespace OOX
 			}
 			m_mapStyleMerges2003.clear();
 		}
+        void CSheetData::ClearSharedFmlaRefs()
+        {
+            if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
+            if(SharedFormulasRef::ArrayRefsLocations)
+                SharedFormulasRef::ArrayRefsLocations.reset();
+        }
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
             oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
@@ -4723,8 +4739,7 @@ namespace OOX
                 else
                     delete pRow;
             }
-            if(SharedFormulasRef::sharedRefsLocations)
-                SharedFormulasRef::sharedRefsLocations.reset();
+            ClearSharedFmlaRefs();
         }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{
@@ -4781,10 +4796,7 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-		if(SharedFormulasRef::sharedRefsLocations)
-			SharedFormulasRef::sharedRefsLocations.reset();
-		if(SharedFormulasRef::ArrayRefsLocations)
-			SharedFormulasRef::ArrayRefsLocations.reset();
+        ClearSharedFmlaRefs();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
             writer->storeNextRecord(record);

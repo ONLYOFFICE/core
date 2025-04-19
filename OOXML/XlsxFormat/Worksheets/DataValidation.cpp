@@ -407,9 +407,9 @@ xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">");
                 *record << flags;
             }
             {
-                XLSB::UncheckedRfX ref;
+                XLSB::UncheckedSqRfX ref;
                 if(m_oSqRef.IsInit())
-                    ref = m_oSqRef.get();
+                    ref.strValue = m_oSqRef.get();
                 *record << ref;
             }
             {

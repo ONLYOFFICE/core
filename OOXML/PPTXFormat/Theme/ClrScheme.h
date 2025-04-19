@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_CLRSCHEME_INCLUDE_H_
-#define PPTX_THEME_CLRSCHEME_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/UniColor.h"
@@ -82,5 +80,3 @@ namespace PPTX
 		};
 	} // namespace nsTheme
 } // namespace PPTX
-
-#endif // PPTX_THEME_CLRSCHEME_INCLUDE_H

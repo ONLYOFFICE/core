@@ -30,10 +30,10 @@
  *
  */
 
-#include "Readers.h"
+#include "BinaryReaderD.h"
 
 #include "../BinWriter/BinReaderWriterDefines.h"
-#include "../../Sheets/Writer/BinaryReader.h"
+#include "../../Sheets/Writer/BinaryReaderS.h"
 
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
 
@@ -1570,6 +1570,11 @@ int Binary_pPrReader::Read_SecPr(BYTE type, long length, void* poResult)
 		pSectPr->m_oDocGrid.Init();
 		READ1_DEF(length, res, this->ReadDocGrid, pSectPr->m_oDocGrid.GetPointer());
 	}
+	else if (c_oSerProp_secPrType::bidi == type)
+	{
+		pSectPr->m_oBidi.Init();
+		pSectPr->m_oBidi->m_oVal.FromBool(m_oBufferedStream.GetBool());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -2160,21 +2165,21 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	if ( c_oSerProp_tblPrType::RowBandSize == type )
 	{
 		long nRowBandSize = m_oBufferedStream.GetLong();
-        pWiterTblPr->RowBandSize = L"<w:tblStyleRowBandSize w:val=\"" + std::to_wstring(nRowBandSize) + L"\"/>";
+        pWiterTblPr->Props += L"<w:tblStyleRowBandSize w:val=\"" + std::to_wstring(nRowBandSize) + L"\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::ColBandSize == type )
 	{
 		long nColBandSize = m_oBufferedStream.GetLong();
-        pWiterTblPr->ColBandSize = L"<w:tblStyleColBandSize w:val=\"" + std::to_wstring(nColBandSize) + L"\"/>";
+        pWiterTblPr->Props += L"<w:tblStyleColBandSize w:val=\"" + std::to_wstring(nColBandSize) + L"\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::Jc == type )
 	{
 		BYTE jc = m_oBufferedStream.GetUChar();
 		switch(jc)
 		{
-            case align_Right:   pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"right\" />")); break;
-            case align_Center:  pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"center\" />"));break;
-            case align_Justify: pWiterTblPr->Jc = std::wstring(_T("<w:jc w:val=\"both\" />"));  break;
+            case align_Right:   pWiterTblPr->Props += L"<w:jc w:val=\"right\" />"; break;
+            case align_Center:  pWiterTblPr->Props += L"<w:jc w:val=\"center\" />"; break;
+            case align_Justify: pWiterTblPr->Props += L"<w:jc w:val=\"both\" />";  break;
             case align_Left:    break;
         }
 	}
@@ -2182,17 +2187,17 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	{
 		double dInd = m_oBufferedStream.GetDouble();
 		long nInd = SerializeCommon::Round( g_dKoef_mm_to_twips * dInd);
-        pWiterTblPr->TableInd = L"<w:tblInd w:w=\"" + std::to_wstring(nInd) + L"\" w:type=\"dxa\"/>";
+        pWiterTblPr->Props += L"<w:tblInd w:w=\"" + std::to_wstring(nInd) + L"\" w:type=\"dxa\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::TableIndTwips == type )
 	{
-		pWiterTblPr->TableInd = L"<w:tblInd w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
+		pWiterTblPr->Props += L"<w:tblInd w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::TableW == type )
 	{
 		docW odocW;
 		READ2_DEF(length, res, this->ReadW, &odocW);
-        pWiterTblPr->TableW = odocW.Write(std::wstring(_T("w:tblW")));
+        pWiterTblPr->Props += odocW.Write(std::wstring(_T("w:tblW")));
 	}
 	else if ( c_oSerProp_tblPrType::TableCellMar == type )
 	{
@@ -2200,9 +2205,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		READ1_DEF(length, res, this->ReadCellMargins, &oTempWriter);
 		if (oTempWriter.GetCurSize() > 0)
 		{
-            pWiterTblPr->TableCellMar += L"<w:tblCellMar>";
-            pWiterTblPr->TableCellMar += oTempWriter.GetData();
-            pWiterTblPr->TableCellMar += L"</w:tblCellMar>";
+            pWiterTblPr->Props += L"<w:tblCellMar>" + oTempWriter.GetData() + L"</w:tblCellMar>";
 		}
 	}
 	else if ( c_oSerProp_tblPrType::TableBorders == type )
@@ -2213,7 +2216,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		std::wstring sTableBorders = tblBorders.toXML();
 		if (false == sTableBorders.empty())
 		{
-            pWiterTblPr->TableBorders += sTableBorders;
+            pWiterTblPr->Props += sTableBorders;
 		}
 	}
 	else if ( c_oSerProp_tblPrType::Shd == type )
@@ -2224,30 +2227,26 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		std::wstring sShd = oShd.ToString();
 		if (false == sShd.empty())
 		{
-			pWiterTblPr->Shd = L"<w:shd " + sShd + L"/>";
+			pWiterTblPr->Props += L"<w:shd " + sShd + L"/>";
 		}
 	}
 	else if ( c_oSerProp_tblPrType::tblpPr == type )
 	{
 		NSStringUtils::CStringBuilder oTempWriter;
 		READ2_DEF(length, res, this->Read_tblpPr, &oTempWriter);
-        pWiterTblPr->tblpPr += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"";
-        pWiterTblPr->tblpPr += oTempWriter.GetData();
-        pWiterTblPr->tblpPr += L"/>";
+        pWiterTblPr->Props += L"<w:tblpPr w:vertAnchor=\"page\" w:horzAnchor=\"page\"" + oTempWriter.GetData() + L"/>";
 	}
 	else if ( c_oSerProp_tblPrType::tblpPr2 == type )
 	{
 		NSStringUtils::CStringBuilder oTempWriter;
 		READ2_DEF(length, res, this->Read_tblpPr2, &oTempWriter);
-        pWiterTblPr->tblpPr += L"<w:tblpPr";
-        pWiterTblPr->tblpPr += oTempWriter.GetData();
-        pWiterTblPr->tblpPr += L"/>";
+        pWiterTblPr->Props += L"<w:tblpPr" + oTempWriter.GetData() + L"/>";
 	}
 	else if ( c_oSerProp_tblPrType::Style == type )
 	{
         std::wstring Name(m_oBufferedStream.GetString3(length));
 		Name = XmlUtils::EncodeXmlString(Name);
-        pWiterTblPr->Style = L"<w:tblStyle w:val=\"" + Name + L"\"/>";
+        pWiterTblPr->Props += L"<w:tblStyle w:val=\"" + Name + L"\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::Look == type )
 	{
@@ -2259,7 +2258,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		int nLR = (0 == (nLook & 0x0040)) ? 0 : 1;
 		int nBH = (0 == (nLook & 0x0200)) ? 0 : 1;
 		int nBV = (0 == (nLook & 0x0400)) ? 0 : 1;
-        pWiterTblPr->Look = L"<w:tblLook w:val=\"" + XmlUtils::ToString(nLook, L"%04X")
+        pWiterTblPr->Props += L"<w:tblLook w:val=\"" + XmlUtils::ToString(nLook, L"%04X")
                         +   L"\" w:firstRow=\""     + std::to_wstring(nFR) + L"\" w:lastRow=\""    + std::to_wstring(nLR)
                         +   L"\" w:firstColumn=\""  + std::to_wstring(nFC) + L"\" w:lastColumn=\"" + std::to_wstring(nLC)
                         +   L"\" w:noHBand=\""      + std::to_wstring(nBH) + L"\" w:noVBand=\""    + std::to_wstring(nBV) + L"\"/>";
@@ -2274,7 +2273,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 			case 2: sLayout = _T("fixed");break;
 		}
         if (false == sLayout.empty())
-            pWiterTblPr->Layout = L"<w:tblLayout w:type=\"" + sLayout + L"\"/>";
+            pWiterTblPr->Props += L"<w:tblLayout w:type=\"" + sLayout + L"\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::tblPrChange == type )
 	{
@@ -2287,11 +2286,11 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		double dSpacing = m_oBufferedStream.GetDouble();
 		dSpacing /=2;
 		long nSpacing = SerializeCommon::Round( g_dKoef_mm_to_twips * dSpacing);
-        pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>";
+        pWiterTblPr->Props += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(nSpacing) + L"\" w:type=\"dxa\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::TableCellSpacingTwips == type )
 	{
-		pWiterTblPr->TableCellSpacing = L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
+		pWiterTblPr->Props += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oBufferedStream.GetLong()) + L"\" w:type=\"dxa\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::tblCaption == type )
 	{
@@ -2306,10 +2305,15 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 		BYTE jc = m_oBufferedStream.GetUChar();
 		switch (jc)
 		{
-			case 1: pWiterTblPr->Overlap = std::wstring(_T("<w:tblOverlap w:val=\"never\" />")); break;
-			case 2: pWiterTblPr->Overlap = std::wstring(_T("<w:tblOverlap w:val=\"overlap\" />")); break;
+			case 1: pWiterTblPr->Props += L"<w:tblOverlap w:val=\"never\" />"; break;
+			case 2: pWiterTblPr->Props += L"<w:tblOverlap w:val=\"overlap\" />"; break;
 		}
-
+	}
+	else if (c_oSerProp_tblPrType::bidiVisual == type)
+	{
+		bool val = m_oBufferedStream.GetBool();
+		if (val) 
+			pWiterTblPr->Props += L"<w:bidiVisual/>";
 	}
 	else
 		res = c_oSerConstants::ReadUnknown;

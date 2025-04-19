@@ -65,7 +65,7 @@ namespace PdfWriter
 		CPageTree(CXref* pXref);
 		CPageTree();
 		void Fix();
-		void AddPage(CDictObject* pPage);
+		void AddPage(CPage* pPage);
 		CObjectBase* GetObj(int nPageIndex);
 		CPage* GetPage(int nPageIndex);
 		CObjectBase* RemovePage(int nPageIndex);
@@ -93,7 +93,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CDocument* pDocument, CXref* pXref = NULL);
+		CPage(CDocument* pDocument);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 

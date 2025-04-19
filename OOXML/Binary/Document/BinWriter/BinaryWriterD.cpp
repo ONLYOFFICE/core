@@ -29,7 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#include "BinWriters.h"
+#include "BinaryWriterD.h"
 
 #include "../DocWrapper/FontProcessor.h"
 #include "../../../../Common/Base64.h"
@@ -37,7 +37,7 @@
 
 #include "../../Presentation/FontCutter.h"
 #include "../../../PPTXFormat/Logic/HeadingVariant.h"
-#include "../../Sheets/Reader/BinaryWriter.h"
+#include "../../Sheets/Reader/BinaryWriterS.h"
 #include "BinEquationWriter.h"
 
 #include "../../../../OfficeUtils/src/OfficeUtils.h"
@@ -1559,6 +1559,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 		WriteDocGrid(pSectPr->m_oDocGrid.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (pSectPr->m_oBidi.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::bidi);
+		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oBidi->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 {
@@ -2158,14 +2164,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::Style);
 		m_oBcw.m_oStream.WriteStringW(p_tblPr->m_oTblStyle->ToString2());
 	}
-	//Look
 	if (p_tblPr->m_oTblLook.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Look);
 		m_oBcw.m_oStream.WriteLONG(p_tblPr->m_oTblLook->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	//Layout
 	if (p_tblPr->m_oTblLayout.IsInit() && p_tblPr->m_oTblLayout->m_oType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Layout);
@@ -2212,7 +2216,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)p_tblPr->m_oTblOverlap->m_oVal->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-}
+	if (p_tblPr->m_oBidiVisual.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::bidiVisual);
+		m_oBcw.m_oStream.WriteBOOL(p_tblPr->m_oBidiVisual->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}}
 void Binary_tblPrWriter::WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 {
 	int nCurPos = 0;
@@ -5110,16 +5119,16 @@ void BinaryDocumentTableWriter::WriteMathRunContent(OOX::Logic::CMRun* pMRun)
 				int nBreakType = -1;
 				switch (pBr->m_oType.GetValue())
 				{
-				case SimpleTypes::brtypeColumn:			nBreakType = c_oSerRunType::columnbreak;	break;
-				case SimpleTypes::brtypePage:			nBreakType = c_oSerRunType::pagebreak;		break;
+				case SimpleTypes::brtypeColumn:			nBreakType = c_oSer_OMathContentType::columnbreak;	break;
+				case SimpleTypes::brtypePage:			nBreakType = c_oSer_OMathContentType::pagebreak;	break;
 				case SimpleTypes::brtypeTextWrapping:
 				{
 					switch (pBr->m_oClear.GetValue())
 					{
-					case SimpleTypes::brclearAll:	nBreakType = c_oSerRunType::linebreakClearAll;		break;
-					case SimpleTypes::brclearLeft:	nBreakType = c_oSerRunType::linebreakClearLeft;		break;
-					case SimpleTypes::brclearRight:	nBreakType = c_oSerRunType::linebreakClearRight;	break;
-					default:						nBreakType = c_oSerRunType::linebreak;				break;
+					//case SimpleTypes::brclearAll:		nBreakType = c_oSer_OMathContentType::linebreakClearAll;	break;
+					//case SimpleTypes::brclearLeft:	nBreakType = c_oSer_OMathContentType::linebreakClearLeft;	break;
+					//case SimpleTypes::brclearRight:	nBreakType = c_oSer_OMathContentType::linebreakClearRight;	break;
+					default: nBreakType = c_oSer_OMathContentType::linebreak; break;
 					}
 
 				}break;
@@ -9874,7 +9883,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
-		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreDocumentComments);
 		this->WriteTableEnd(nCurPos);
 	}
 	{

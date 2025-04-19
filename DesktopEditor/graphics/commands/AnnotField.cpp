@@ -214,6 +214,7 @@ int  CAnnotFieldInfo::GetFlag()      const { return m_nFlag; }
 int  CAnnotFieldInfo::GetID()        const { return m_nID; }
 int  CAnnotFieldInfo::GetAnnotFlag() const { return m_nAnnotFlag; }
 int  CAnnotFieldInfo::GetPage()      const { return m_nPage; }
+int CAnnotFieldInfo::GetCopyAP()     const { return m_nCopyAP; }
 void CAnnotFieldInfo::GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
 BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 {
@@ -359,6 +360,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 	}
 	if (nFlags & (1 << 7))
 		m_wsOUserID = pReader->ReadString();
+	if (nFlags & (1 << 8))
+		m_nCopyAP = pReader->ReadInt();
 
 	if (IsMarkup())
 	{
@@ -985,7 +988,7 @@ void CAnnotFieldInfo::CWidgetAnnotPr::CTextWidgetPr::Read(NSOnlineOfficeBinToPdf
 		m_wsV = pReader->ReadString();
 	if (nFlags & (1 << 10))
 		m_nMaxLen = pReader->ReadInt();
-	if (nWidgetFlag & (1 << 25))
+	if (nFlags & (1 << 11))
 		m_wsRV = pReader->ReadString();
 	if (nFlags & (1 << 12))
 		m_wsAPV = pReader->ReadString();
@@ -1104,6 +1107,36 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 			for (int i = 0; i < n; ++i)
 				pParent->arrV.push_back(pReader->ReadString());
 		}
+		if (nFlags & (1 << 6))
+		{
+			int n = pReader->ReadInt();
+			pParent->arrOpt.reserve(n);
+			for (int i = 0; i < n; ++i)
+			{
+				std::wstring s1 = pReader->ReadString();
+				std::wstring s2 = pReader->ReadString();
+				pParent->arrOpt.push_back(std::make_pair(s1, s2));
+			}
+		}
+		if (nFlags & (1 << 7))
+			pParent->nFieldFlag = pReader->ReadInt();
+		if (nFlags & (1 << 8))
+		{
+			// Action
+			int nAction = pReader->ReadInt();
+			for (int i = 0; i < nAction; ++i)
+			{
+				std::wstring wsType = pReader->ReadString();
+				CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pA = ReadAction(pReader);
+				if (pA)
+				{
+					pA->wsType = wsType;
+					pParent->arrAction.push_back(pA);
+				}
+			}
+		}
+		if (nFlags & (1 << 9))
+			pParent->nMaxLen = pReader->ReadInt();
 		m_arrParents.push_back(pParent);
 	}
 

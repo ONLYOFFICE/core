@@ -287,7 +287,8 @@ extern int g_nCurFormatVersion;
 		tblDescription = 18,
 		TableIndTwips = 19,
 		TableCellSpacingTwips = 20,
-		tblOverlap = 21
+		tblOverlap = 21,
+		bidiVisual = 22
 	};}
 	namespace c_oSer_tblpPrType{enum c_oSer_tblpPrType
 	{
@@ -479,7 +480,8 @@ extern int g_nCurFormatVersion;
 		endnotePr = 11,
 		rtlGutter = 12,
 		lnNumType = 13,
-		docGrid = 14
+		docGrid = 14,
+		bidi = 15
 	};}
 	namespace c_oSerProp_secPrSettingsType{enum c_oSerProp_secPrSettingsType
 	{

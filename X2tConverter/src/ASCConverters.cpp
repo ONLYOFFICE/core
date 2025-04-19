@@ -34,6 +34,7 @@
 #include "lib/docx.h"
 #include "lib/xlsx.h"
 #include "lib/pptx.h"
+#include "lib/vsdx.h"
 
 #include "lib/doc.h"
 
@@ -1305,7 +1306,9 @@ namespace NExtractTools
 				nRes = ppt2pptx_dir(sFrom, sPptxDir, params, convertParams);
 			}
 		}
-		else if (AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom)
+		else if (	AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP == nFormatFrom || 
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP == nFormatFrom || 
+					AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG == nFormatFrom)
 		{
 			nRes = odf2oox_dir(sFrom, sPptxDir, params, convertParams);
 		}
@@ -1393,7 +1396,7 @@ namespace NExtractTools
 		return nRes;
 	}
 
-	// visio
+	// draw
 	_UINT32 fromVsdxDir(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams)
 	{
 		_UINT32 nRes = 0;
@@ -1408,6 +1411,18 @@ namespace NExtractTools
 			}
 			else
 				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		}
+		else if (AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			nRes = dir2zipMscrypt(sFrom, sTo, params, convertParams);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_CANVAS_DRAW == nFormatTo)
+		{
+			nRes = vsdx_dir2vsdt_bin(sFrom, sTo, params, convertParams);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY == nFormatTo)
+		{
+			nRes = vsdx_dir2vsdt(sFrom, sTo, params, convertParams);
 		}
 		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
@@ -1435,6 +1450,57 @@ namespace NExtractTools
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;
 	}
+	_UINT32 fromVsdtBin(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams)
+	{
+		_UINT32 nRes = 0;
+		if (AVS_OFFICESTUDIO_FILE_TEAMLAB_VSDY == nFormatTo)
+		{
+			std::wstring sFromDir = NSDirectory::GetFolderPath(sFrom);
+			nRes = dir2zip(sFromDir, sTo);
+		}
+		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			nRes = doct_bin2pdf(eFromType, sFrom, sTo, params, convertParams);
+		}
+		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+		{
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
+		}
+		else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatTo) ||
+			AVS_OFFICESTUDIO_FILE_OTHER_OOXML == nFormatTo)
+		{
+			std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"vsdx_unpacked");
+
+			if (true == NSDirectory::CreateDirectory(sVsdxDir))
+			{
+				params.m_bMacro =	AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTM == nFormatTo ||
+									AVS_OFFICESTUDIO_FILE_DRAW_VSSM == nFormatTo ||
+									AVS_OFFICESTUDIO_FILE_DRAW_VSTM == nFormatTo;
+
+				convertParams.m_sTempResultOOXMLDirectory = sVsdxDir;
+				nRes = vsdt_bin2vsdx_dir(sFrom, sTo, params, convertParams);
+				if (SUCCEEDED_X2T(nRes))
+				{
+					std::wstring sFileToCurrent = *params.m_sFileTo;
+					params.changeFormatFromPost(*params.m_nFormatFrom, params.m_bMacro);
+
+					if (NULL != params.m_nFormatTo)
+						nFormatTo = *params.m_nFormatTo;
+
+					nRes = fromVsdxDir(sVsdxDir, *params.m_sFileTo, nFormatTo, params, convertParams);
+				}
+			}
+			else
+			{
+				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
+		}
+		else
+			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+		return nRes;
+	}
 
 	_UINT32 fromDraw(const std::wstring& sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams)
 	{
@@ -1444,7 +1510,7 @@ namespace NExtractTools
 			nFormatTo = *params.m_nFormatTo;
 
 		_UINT32 nRes = 0;
-		std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"xsdx_unpacked");
+		std::wstring sVsdxDir = combinePath(convertParams.m_sTempDir, L"vsdx_unpacked");
 		NSDirectory::CreateDirectory(sVsdxDir);
 
 		if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatFrom))
@@ -1682,6 +1748,39 @@ namespace NExtractTools
 			oInputParams.m_bMacro = false;
 			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLTX);
 			result = xlst2xlsx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDX2VSDT:
+		{
+			result = vsdx2vsdt(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT2VSDX:
+		{
+			oInputParams.m_bMacro = false;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DRAW_VSDX);
+			result = vsdt2vsdx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT2VSTX:
+		{
+			oInputParams.m_bMacro = false;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DRAW_VSTX);
+			result = vsdt2vsdx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT2VSTM:
+		{
+			oInputParams.m_bMacro = true;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DRAW_VSTM);
+			result = vsdt2vsdx(sFileFrom, sFileTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT2VSDM:
+		{
+			oInputParams.m_bMacro = true;
+			oInputParams.m_nFormatTo = new int(AVS_OFFICESTUDIO_FILE_DRAW_VSDM);
+			result = vsdt2vsdx(sFileFrom, sFileTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_PPTX2PPTT:
@@ -2059,6 +2158,11 @@ namespace NExtractTools
 		case TCD_PPTT_BIN2:
 		{
 			result = fromPpttBin(sFileFrom, sFileTo, nFormatTo, oInputParams, oConvertParams);
+		}
+		break;
+		case TCD_VSDT_BIN2:
+		{
+			result = fromVsdtBin(sFileFrom, sFileTo, nFormatTo, oInputParams, oConvertParams);
 		}
 		break;
 		case TCD_CROSSPLATFORM2:

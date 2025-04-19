@@ -59,11 +59,9 @@ class GlobalParamsAdaptor : public GlobalParams
     BYTE* m_bCMapData;
     DWORD m_nCMapDataLength;
 
-	std::wstring m_sTextFormField;
     bool m_bDrawFormField;
 
 public:
-    NSFonts::IFontManager *m_pFontManager;
     GlobalParamsAdaptor(const char *filename) : GlobalParams(filename)
     {
         m_bCMapData = NULL;
@@ -86,14 +84,13 @@ public:
         m_wsTempFolder = folder;
     }
 
+    bool IsNeedCMap() { return !m_bCMapData; }
     void SetCMapFolder(const std::wstring &wsFolder);
     void SetCMapFile(const std::wstring &wsFile);
     void SetCMapMemory(BYTE* pData, DWORD nSizeData);
     bool GetCMap(const char* sName, char*& pData, unsigned int& nSize);
 
-	void AddTextFormField(const std::wstring& sText);
-	std::string GetTextFormField();
-    void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
+	void setDrawFormField(bool bDrawFormField) { m_bDrawFormField = bDrawFormField; }
     bool getDrawFormField() { return m_bDrawFormField; }
 private:
 

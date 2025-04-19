@@ -94,6 +94,11 @@ CFile.prototype._getError = function()
 	return g_native_drawing_file["GetErrorCode"]();
 };
 
+CFile.prototype._addPDF = function(buffer, password)
+{
+	return g_native_drawing_file["AddPDF"]();
+}
+
 // FONTS
 CFile.prototype._isNeedCMap = function()
 {

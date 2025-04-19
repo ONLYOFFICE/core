@@ -67,102 +67,11 @@ namespace PPTX
 			DWORD GetLine(Ln& line)const;
 			DWORD GetFill(UniFill& fill)const;
 
-			//void FillLevelUp();
-			//void Merge(CxnSp& cxnSp, bool bIsSlidePlaceholder = false);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			//void SetLevelUpElement( CxnSp* p){m_pLevelUp = p;};
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				pWriter->StartRecord(SPTREE_TYPE_CXNSP);
-
-				pWriter->WriteRecord1(0, nvCxnSpPr);
-				pWriter->WriteRecord1(1, spPr);
-				pWriter->WriteRecord2(2, style);
-
-				if (macro.IsInit())
-				{
-					pWriter->StartRecord(SPTREE_TYPE_MACRO);
-					pWriter->WriteString1(0, *macro);
-					pWriter->EndRecord();
-				}
-				pWriter->EndRecord();
-			}
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
-			{
-				WritingElement_ReadAttributes_Start(oReader)
-					WritingElement_ReadAttributes_Read_if(oReader, _T("macro"),macro)
-				WritingElement_ReadAttributes_End(oReader)
-			}
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				std::wstring namespace_ = m_namespace;
-
-                if		(pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-						pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	namespace_ = L"wps";
-                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			namespace_ = L"xdr";
- 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		namespace_ = L"a";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	namespace_ = L"cdr";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			namespace_ = L"dgm";
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		namespace_ = L"dsp";
-
-				pWriter->StartNode(namespace_ + L":cxnSp");
-					pWriter->WriteAttribute(L"macro", macro);
-                pWriter->EndAttributes();
-
-                nvCxnSpPr.toXmlWriter(pWriter);
-                spPr.toXmlWriter(pWriter);
-
-                if (style.is_init())
-                {
-						 if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
-							 pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)	style->m_namespace = L"wps";
-                    else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)			style->m_namespace = L"xdr";
-					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_GRAPHICS)		style->m_namespace = L"a";
-					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_CHART_DRAWING)	style->m_namespace = L"cdr";
-					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DIAGRAM)			style->m_namespace = L"dgm";
-					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)		style->m_namespace = L"dsp";
-
-                    pWriter->Write(style);
-                }
-				pWriter->EndNode(namespace_ + L":cxnSp");
-			}
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
-
-				while (pReader->GetPos() < _end_rec)
-				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
-						case 0:
-						{
-							nvCxnSpPr.fromPPTY(pReader);							
-						}break;
-						case 1:
-						{
-							spPr.fromPPTY(pReader);							
-						}break;
-						case 2:
-						{
-							style = new ShapeStyle(L"p");
-							style->fromPPTY(pReader);							
-						}break;
-						case SPTREE_TYPE_MACRO:
-						{
-							pReader->Skip(5); // type + size
-							macro = pReader->GetString2();
-						}break;
-						default:						
-						{							
-						}break;
-					}
-				}
-
-				pReader->Seek(_end_rec);
-			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
 			std::wstring			m_namespace;
 

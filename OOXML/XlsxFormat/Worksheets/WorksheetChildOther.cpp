@@ -40,7 +40,7 @@
 #include "../../XlsbFormat/Biff12_records/BeginHeaderFooter.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtectionIso.h"
 #include "../../XlsbFormat/Biff12_records/SheetProtection.h"
-#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h"
+#include "../../XlsbFormat/Biff12_records/LegacyDrawingHF.h" 
 #include "../../XlsbFormat/Biff12_records/Margins.h"
 #include "../../XlsbFormat/Biff12_records/PrintOptions.h"
 #include "../../XlsbFormat/Biff12_records/WsProp.h"
@@ -1472,9 +1472,9 @@ namespace OOX
             BYTE flags = 0;
             if(m_oState.IsInit())
             {
-                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
+                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
                     SETBIT(flags, 0, 1)
-                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
                     SETBIT(flags, 1, 1)
             }
             *record << flags;
@@ -2812,32 +2812,47 @@ namespace OOX
                     if(m_oOddHeader.IsInit())
                         dataString = m_oOddHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                 XLSB::XLNullableWideString dataString;
                     if(m_oOddFooter.IsInit())
                         dataString = m_oOddFooter->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oEvenHeader.IsInit())
                         dataString = m_oEvenHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oEvenFooter.IsInit())
                         dataString = m_oEvenFooter->m_sText;
                     else
-                        dataString = L"";
-                     *begin << dataString;
+                        dataString.setSize(0xFFFFFFFF);
+                    *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oFirstHeader.IsInit())
                         dataString = m_oFirstHeader->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
+                }
+                {
+                    XLSB::XLNullableWideString dataString;
                     if(m_oFirstFooter.IsInit())
                         dataString = m_oFirstFooter->m_sText;
                     else
-                        dataString = L"";
+                        dataString.setSize(0xFFFFFFFF);
                     *begin << dataString;
                 }
                 writer->storeNextRecord(begin);
@@ -3615,7 +3630,7 @@ namespace OOX
         void CSheetProtection::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CFRecordPtr record;
-            unsigned char *flagBuf;
+            unsigned char *flagBuf = NULL;
             if(m_oSpinCount.IsInit() || m_oHashValue.IsInit() || m_oSaltValue.IsInit())
             {
                 record = writer->getNextRecord(XLSB::rt_SheetProtectionIso);

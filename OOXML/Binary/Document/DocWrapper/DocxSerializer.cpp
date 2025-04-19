@@ -31,8 +31,8 @@
  */
 #include "DocxSerializer.h"
  
-#include "../BinWriter/BinWriters.h"
-#include "../BinReader/Readers.h"
+#include "../BinWriter/BinaryWriterD.h"
+#include "../BinReader/BinaryReaderD.h"
 
 #include "../../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 #include "../../Presentation/FontPicker.h"
@@ -253,7 +253,6 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, co
 	
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
-
 
 	if (m_bIsNoBase64 || m_bIsNoBase64Save)
 	{

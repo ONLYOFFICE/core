@@ -210,7 +210,28 @@ namespace Spreadsheet
     }
 	XLS::BaseObjectPtr CPivotTableFile::WriteBin() const
 	{
-		return m_oPivotTableDefinition->toBin();
+        if(m_oPivotTableDefinition.IsInit())
+            return m_oPivotTableDefinition->toBin();
+        else if(m_nDataLength && m_pData)
+        {
+            CPivotTableDefinition tableDef;
+            {
+                XmlUtils::CXmlLiteReader reader;
+                {
+                    auto wstringData = prepareData();
+                    reader.FromString(wstringData);
+                }
+                reader.ReadNextNode();
+                tableDef.fromXML(reader);
+            }
+            return tableDef.toBin();
+
+        }
+        else
+        {
+             auto ptr = new XLSB::PivotTableStream();
+             return XLS::BaseObjectPtr{ptr};
+        }
 	}
 
 	void CPivotTableFile::read(const CPath& oRootPath, const CPath& oPath)
@@ -237,7 +258,7 @@ namespace Spreadsheet
 	void CPivotTableFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
 		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-        if ((xlsb) && (xlsb->m_bWriteToXlsb) && m_oPivotTableDefinition.IsInit())
+        if ((xlsb) && (xlsb->m_bWriteToXlsb))
 		{
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
@@ -265,15 +286,21 @@ namespace Spreadsheet
 		oContent.Registration( type().OverrideType(), oDirectory, oPath.GetFilename() );
 		IFileContainer::Write( oPath, oDirectory, oContent );
 	}
-		const OOX::FileType CPivotTableFile::type() const
-		{
-			CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-			if ((xlsb) && (xlsb->m_bWriteToXlsb))
-			{
-				return OOX::SpreadsheetBin::FileTypes::PivotTableBin;
-			}
-				return OOX::Spreadsheet::FileTypes::PivotTable;
-		}
+    const OOX::FileType CPivotTableFile::type() const
+    {
+        CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
+        if ((xlsb) && (xlsb->m_bWriteToXlsb))
+        {
+            return OOX::SpreadsheetBin::FileTypes::PivotTableBin;
+        }
+            return OOX::Spreadsheet::FileTypes::PivotTable;
+    }
+    std::wstring CPivotTableFile::prepareData() const
+    {
+        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.from_bytes(stringData);
+    }
 //------------------------------------
 	void CPivotTableDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -3734,6 +3761,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             auto pivotCacheDefStream = m_oPivotCashDefinition->toBin();
             return pivotCacheDefStream;
         }
+        else if(m_nDataLength && m_pData)
+        {
+            CPivotCacheDefinition cacheDef;
+            {
+                XmlUtils::CXmlLiteReader reader;
+                {
+                    auto wstringData = prepareData();
+                    reader.FromString(wstringData);
+                }
+                reader.ReadNextNode();
+                cacheDef.fromXML(reader);
+            }
+            return cacheDef.toBin();
+
+        }
+        else
+        {
+             auto ptr = new XLSB::PivotCacheDefStream();
+             return XLS::BaseObjectPtr{ptr};
+        }
 	}
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
@@ -3764,8 +3811,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		bIsWritten = true;
 		CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
-        if ((xlsb) && (xlsb->m_bWriteToXlsb) && m_oPivotCashDefinition.IsInit())
-		{
+        if ((xlsb) && (xlsb->m_bWriteToXlsb))
+        {
 			XLS::BaseObjectPtr object = WriteBin();
 			xlsb->WriteBin(oPath, object.get());
 		}
@@ -3801,6 +3848,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return OOX::Spreadsheet::FileTypes::PivotCacheDefinition;
 	}
+    std::wstring CPivotCacheDefinitionFile::prepareData() const
+    {
+        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+        return converter.from_bytes(stringData);
+    }
 //------------------------------------
 	void CPivotCacheDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -3836,6 +3889,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheFields->toXML(writer);
         if(m_oHierarchies.IsInit())
             m_oHierarchies->toXML(writer);
+        if(m_oCalculatedItems.IsInit())
+            m_oCalculatedItems->toXML(writer);
         if(m_oDimensions.IsInit())
             m_oDimensions->toXML(writer);
         if(m_oMeasureGroups.IsInit())
@@ -3864,10 +3919,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
 			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
+             else if (L"calculatedItems" == sName)	m_oCalculatedItems = oReader;
             else if (L"dimensions" == sName)	m_oDimensions = oReader;
             else if (L"maps" == sName)          m_oMaps = oReader;
             else if (L"measureGroups" == sName) m_oMeasureGroups = oReader;
-			else if (L"extLst" == sName)		m_oExtLst = oReader;
+            else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}
 	XLS::BaseObjectPtr CPivotCacheDefinition::toBin()
@@ -3881,6 +3937,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_PCDSOURCE = m_oCacheSource->toBin();
         if(m_oHierarchies.IsInit())
             ptr->m_PCDHIERARCHIES = m_oHierarchies->toBin();
+        if(m_oCalculatedItems.IsInit())
+            ptr->m_PCDCALCITEMS = m_oCalculatedItems->toBin();
         if(m_oDimensions.IsInit())
             ptr->m_DIMS = m_oDimensions->toBin();
         if(m_oMeasureGroups.IsInit())
@@ -3993,6 +4051,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				
             if(ptr->m_PCDHIERARCHIES != nullptr)
                 m_oHierarchies = ptr->m_PCDHIERARCHIES;
+
+            if(ptr->m_PCDCALCITEMS != nullptr)
+                m_oCalculatedItems = ptr->m_PCDCALCITEMS;
 
             if(ptr->m_DIMS != nullptr)
                 m_oDimensions = ptr->m_DIMS;

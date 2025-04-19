@@ -600,6 +600,7 @@ namespace OOX
             nullable<CPivotDimensions>                      m_oDimensions;
             nullable<CPivotMeasureGroups>                   m_oMeasureGroups;
             nullable<CMeasureDimensionMaps>                 m_oMaps;
+            nullable<CCalculatedItems>                      m_oCalculatedItems;
 
 //calculatedItems (Calculated Items) §18.10.1.9
 //calculatedMembers (Calculated Members) §18.10.1.11
@@ -684,6 +685,7 @@ namespace OOX
 			nullable<CPivotCacheDefinition> m_oPivotCashDefinition;
 		private:
 			CPath m_oReadPath;
+            std::wstring prepareData() const;
 
 			BYTE *m_pData;
 			long m_nDataLength;

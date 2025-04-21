@@ -670,6 +670,11 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         proc.mandatory<CalcPrecision>();
     proc.mandatory<RefreshAll>();
     proc.mandatory<BookBool>();
+    if(m_Formating != nullptr)
+        proc.mandatory(*m_Formating);
+    else
+        proc.mandatory<FORMATTING>();
+    proc.mandatory<UsesELFs>();
     return true;
 }
 void GlobalsSubstream::UpdateXFC()

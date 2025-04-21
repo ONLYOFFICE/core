@@ -118,6 +118,13 @@ const bool XFS::saveContent(BinProcessor& proc)
     for (auto i: m_arCellStyles)
         if(i!= nullptr)
             proc.mandatory(*i);
+    if(m_XFCRC != nullptr )
+    {
+        proc.mandatory(*m_XFCRC);
+        for(auto i : m_arXFext)
+            proc.mandatory(*i);
+    }
+
     return true;
 }
 

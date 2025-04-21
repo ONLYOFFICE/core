@@ -618,10 +618,22 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 		}
 		case objString:
 		{
-			TextString* s = new TextString(oTemp.getString());
-			std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			pObj = new PdfWriter::CStringObject(sValue.c_str());
-			delete s;
+			GString* str = oTemp.getString();
+			if (str->isBinary())
+			{
+				int nLength = str->getLength();
+				BYTE* arrId = new BYTE[nLength];
+				for (int nIndex = 0; nIndex < nLength; ++nIndex)
+					arrId[nIndex] = str->getChar(nIndex);
+				pObj = new PdfWriter::CBinaryObject(arrId, nLength, false);
+			}
+			else
+			{
+				TextString* s = new TextString(str);
+				std::string sValue = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				pObj = new PdfWriter::CStringObject(sValue.c_str(), !s->isPDFDocEncoding());
+				delete s;
+			}
 			break;
 		}
 		case objName:

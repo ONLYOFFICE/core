@@ -295,6 +295,12 @@ public:
 			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID, sPrefixForm);
 		return false;
 	}
+	bool UnmergePages()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->UnmergePages();
+		return false;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{

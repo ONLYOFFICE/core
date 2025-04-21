@@ -128,6 +128,7 @@ public:
 
 	bool ValidMetaData();
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
+	bool UnmergePages();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

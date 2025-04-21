@@ -643,6 +643,15 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 
 	return true;
 }
+bool CPdfReader::UnmergePages()
+{
+	if (m_vPDFContext.size() < 1)
+		return false;
+	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
+	delete pPDFContext;
+	m_vPDFContext.pop_back();
+	return true;
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	PDFDoc* pDoc = NULL;

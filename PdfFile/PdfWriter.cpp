@@ -655,6 +655,8 @@ HRESULT CPdfWriter::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, 
 
 	unsigned int unUnicode = lUnicode;
 	unsigned char* pCodes = EncodeString(&unUnicode, 1);
+	if (!pCodes)
+		return DrawTextToRenderer(NULL, 0, dX, dY, NSStringExt::CConverter::GetUnicodeFromUTF32(&unUnicode, 1)) ? S_OK : S_FALSE;
 	return DrawText(pCodes, 2, dX, dY, UnicodePUA(unUnicode) ? NSStringExt::CConverter::GetUtf8FromUTF32(&unUnicode, 1) : "") ? S_OK : S_FALSE;
 }
 HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
@@ -674,7 +676,7 @@ HRESULT CPdfWriter::CommandDrawText(const std::wstring& wsUnicodeText, const dou
 	delete[] pUnicodes;
 
 	if (!pCodes)
-		return S_FALSE;
+		return DrawTextToRenderer(NULL, 0, dX, dY, wsUnicodeText) ? S_OK : S_FALSE;
 
 	// Специальный случай для текста из Djvu, нам не нужно, чтобы он рисовался
 	if (L"" == m_oFont.GetPath() && L"DjvuEmptyFont" == m_oFont.GetName())
@@ -3112,14 +3114,14 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 
 	return true;
 }
-bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY)
+bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY, const std::wstring& wsUnicodeText)
 {
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
 	m_pFontManager->LoadFontByName(m_oFont.GetName(), m_oFont.GetSize(), (int)m_oFont.GetStyle(), 72.0, 72.0);
 	PathCommandEnd();
-	if (simplifier.PathCommandText2(L"", (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
+	if (simplifier.PathCommandText2(wsUnicodeText, (const int*)unGid, unLen, m_pFontManager, dX, dY, 0, 0))
 	{
 		DrawPath(NULL, L"", c_nWindingFillMode);
 		PathCommandEnd();

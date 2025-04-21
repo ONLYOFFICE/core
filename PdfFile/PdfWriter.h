@@ -226,7 +226,7 @@ private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
 	PdfWriter::CImageDict* DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	bool DrawText(unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY, const std::string& sPUA);
-	bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY);
+	bool DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY, const std::wstring& wsUnicodeText = L"");
 	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	int  IsEmbeddedBase14(const std::wstring& wsFontName);
 	bool GetBaseFont14(const std::wstring& wsFontName, int nBase14);

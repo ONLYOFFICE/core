@@ -333,7 +333,7 @@ namespace PdfWriter
 		Add("AP", m_pAppearance);
 		return m_pAppearance->GetNormal();
 	}
-	void CAnnotation::APFromFakePage(CPage* pFakePage)
+	void CAnnotation::APFromFakePage()
 	{
 		if (!m_pAppearance)
 			return;
@@ -1208,6 +1208,7 @@ namespace PdfWriter
 		m_pMK         = NULL;
 		m_pParent     = NULL;
 		m_pAppearance = NULL;
+		m_pResources  = NULL;
 		m_pFont       = NULL;
 		m_dFontSizeAP = 0;
 		m_nParentID   = 0;
@@ -1429,10 +1430,14 @@ namespace PdfWriter
 
 		pAA->Add(pAction->m_sType.c_str(), pAction);
 	}
+	void CWidgetAnnotation::SetDocument(CDocument* pDocument)
+	{
+		m_pDocument = pDocument;
+		m_pResources = m_pDocument->GetFieldsResources();
+	}
 	std::string CWidgetAnnotation::GetDAforAP(CFontDict* pFont)
 	{
-		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
-		const char* sFontName = pFieldsResources->GetFontName(pFont);
+		const char* sFontName = m_pResources->GetFontName(pFont);
 
 		std::string sDA = GetColor(m_arrTC, false);
 		if (sFontName)
@@ -1473,7 +1478,7 @@ namespace PdfWriter
 		CObjectBase* pObj = m_pMK->Get("BC");
 		return pObj && pObj->GetType() == object_type_ARRAY;
 	}
-	void CWidgetAnnotation::APFromFakePage(CPage* pFakePage)
+	void CWidgetAnnotation::APFromFakePage()
 	{
 		if (!m_pAppearance)
 			return;
@@ -1707,12 +1712,18 @@ namespace PdfWriter
 		}
 
 		CAnnotAppearanceObject* pAppearance = NULL;
+		m_pResources = new CResourcesDict(NULL, true, false);
 		if (nAP == 0)
-			pAppearance = m_pAppearance->GetNormal();
+			pAppearance = m_pAppearance->GetNormal(m_pResources);
 		else if (nAP == 1)
-			pAppearance = m_pAppearance->GetRollover();
+			pAppearance = m_pAppearance->GetRollover(m_pResources);
 		else if (nAP == 2)
-			pAppearance = m_pAppearance->GetDown();
+			pAppearance = m_pAppearance->GetDown(m_pResources);
+		else
+		{
+			delete m_pResources;
+			m_pResources = m_pDocument->GetFieldsResources();
+		}
 		if (!pAppearance)
 			return;
 		Add("AP", m_pAppearance);
@@ -1784,6 +1795,7 @@ namespace PdfWriter
 			dDstX += (dW - dDstW) * m_dShiftX;
 			dDstY += (dH - dDstH) * m_dShiftY;
 
+			m_pResources->AddXObjectWithName(pForm->GetName().c_str(), pForm);
 			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 
 			CheckMK();

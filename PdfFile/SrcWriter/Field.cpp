@@ -1866,10 +1866,10 @@ namespace PdfWriter
 	{
 		m_pXref  = pXref;
 
-		m_pYesN = new CAnnotAppearanceObject(pXref, pAnnot);
-		m_pOffN = new CAnnotAppearanceObject(pXref, pAnnot);
-		m_pYesD = new CAnnotAppearanceObject(pXref, pAnnot);
-		m_pOffD = new CAnnotAppearanceObject(pXref, pAnnot);
+		m_pYesN = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pOffN = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pYesD = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pOffD = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
 
 		CDictObject* pDictN = new CDictObject();
 		Add("N", pDictN);

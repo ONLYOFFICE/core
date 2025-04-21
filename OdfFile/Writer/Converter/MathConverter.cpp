@@ -213,7 +213,6 @@ namespace Oox2Odf
 				{
 					convert(oox_math->m_arrItems[i]);
 				}
-				CLOSE_MATH_TAG;
 			}
 			else
 			{
@@ -298,7 +297,6 @@ namespace Oox2Odf
 				{
 					convert(oox_math_para->m_arrItems[i]);
 				}
-				CLOSE_MATH_TAG;
 			}
 			else
 			{

@@ -2692,7 +2692,7 @@ namespace OOX
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CellRef CellReference;
-            XLS::CellRef* SharedFmlaRef;
+            XLS::CellRef* SharedFmlaRef = NULL;
             if((!m_oRow.IsInit() || !m_oCol.IsInit()))
             {
                 if(m_oRef.IsInit())

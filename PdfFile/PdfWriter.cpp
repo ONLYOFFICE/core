@@ -3719,6 +3719,11 @@ unsigned char* CPdfWriter::EncodeString(const unsigned int *pUnicodes, const uns
 			ushCode = m_pFont->EncodeGID(pGIDs[unIndex], &pUnicodes[unIndex], 1);
 		else
 			ushCode = m_pFont->EncodeUnicode(pUnicodes[unIndex]);
+		if (ushCode == 0)
+		{
+			RELEASEARRAYOBJECTS(pCodes);
+			return NULL;
+		}
 
 		pCodes[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
 		pCodes[2 * unIndex + 1] = ushCode & 0xFF;
@@ -3758,6 +3763,12 @@ unsigned char* CPdfWriter::EncodeGID(const unsigned int& unGID, const unsigned i
 		return NULL;
 
 	unsigned short ushCode = m_pFont->EncodeGID(unGID, pUnicodes, unUnicodesCount);
+	if (ushCode == 0)
+	{
+		RELEASEARRAYOBJECTS(pCodes);
+		return NULL;
+	}
+
 	pCodes[0] = (ushCode >> 8) & 0xFF;
 	pCodes[1] = ushCode & 0xFF;
 	return pCodes;

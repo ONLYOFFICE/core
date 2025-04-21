@@ -63,5 +63,14 @@ const bool BUNDLESHEET::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool BUNDLESHEET::saveContent(BinProcessor& proc)
+{
+    if( bundleSheetRecord == nullptr)
+        return false;
+    else
+        proc.mandatory(*bundleSheetRecord);
+    return  true;
+}
+
 } // namespace XLS
 

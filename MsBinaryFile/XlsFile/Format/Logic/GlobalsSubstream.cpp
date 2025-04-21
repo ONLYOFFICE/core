@@ -675,6 +675,12 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
     else
         proc.mandatory<FORMATTING>();
     proc.mandatory<UsesELFs>();
+    if(m_arBUNDLESHEET.empty())
+        proc.mandatory<BUNDLESHEET>();
+    else
+        for(auto i : m_arBUNDLESHEET)
+            if(i != nullptr)
+                proc.mandatory(*i);
     return true;
 }
 void GlobalsSubstream::UpdateXFC()

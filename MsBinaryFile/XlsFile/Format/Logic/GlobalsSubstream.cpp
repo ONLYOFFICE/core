@@ -681,6 +681,12 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         for(auto i : m_arBUNDLESHEET)
             if(i != nullptr)
                 proc.mandatory(*i);
+    if(m_Country != nullptr)
+        proc.mandatory(*m_Country);
+    else
+        proc.mandatory<Country>();
+    if(m_SHAREDSTRINGS != nullptr)
+        proc.mandatory(*m_SHAREDSTRINGS);
     return true;
 }
 void GlobalsSubstream::UpdateXFC()

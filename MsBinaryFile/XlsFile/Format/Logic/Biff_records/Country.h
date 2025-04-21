@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCountry;
 
-	_UINT16 iCountryDef;
-	_UINT16 iCountryWinIni;
+    _UINT16 iCountryDef = 0;
+    _UINT16 iCountryWinIni = 0;
 
 };
 

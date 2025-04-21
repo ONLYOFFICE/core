@@ -47,5 +47,11 @@ void Phs::load(CFRecord& record)
 	record.loadAnyData(data);
 }
 
+void Phs::save(CFRecord& record)
+{
+    record << ifnt;
+    record.storeAnyData(data);
+}
+
 
 } // namespace XLS

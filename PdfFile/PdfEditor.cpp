@@ -59,7 +59,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey, bool bMakeBinary = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -83,7 +83,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::str
 	case objString:
 	{
 		GString* str = obj->getString();
-		if (str->isBinary())
+		if (str->isBinary() || bMakeBinary)
 		{
 			int nLength = str->getLength();
 			BYTE* arrId = new BYTE[nLength];
@@ -1128,7 +1128,7 @@ bool CPdfEditor::IncrementalUpdates()
 					Object oTemp;
 					char* chKey = encrypt.dictGetKey(nIndex);
 					encrypt.dictGetValNF(nIndex, &oTemp);
-					DictToCDictObject(&oTemp, pEncryptDict, chKey);
+					DictToCDictObject(&oTemp, pEncryptDict, chKey, true);
 					oTemp.free();
 				}
 			}
@@ -1139,7 +1139,7 @@ bool CPdfEditor::IncrementalUpdates()
 			encrypt.free();
 
 			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-				DictToCDictObject(&ID1, pEncryptDict, "ID");
+				DictToCDictObject(&ID1, pEncryptDict, "ID", true);
 			ID.free(); ID1.free();
 
 			xref->onEncrypted();

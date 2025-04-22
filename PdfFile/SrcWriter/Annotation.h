@@ -193,7 +193,7 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage();
-		CAnnotAppearanceObject* StartAP();
+		virtual CAnnotAppearanceObject* StartAP();
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		virtual void SetDocument(CDocument* pDocument);
@@ -426,7 +426,6 @@ namespace PdfWriter
 		bool m_bBold;
 		bool m_bItalic;
 
-		CAnnotAppearance* m_pAppearance;
 		CResourcesDict* m_pResources;
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
@@ -467,7 +466,7 @@ namespace PdfWriter
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
 
-		void SetDocument(CDocument* pDocument) override;
+		virtual void SetDocument(CDocument* pDocument) override;
 		std::string GetDAforAP(CFontDict* pFont);
 		std::string GetBGforAP(double dDiff = 0, bool bCAPS = false);
 		std::string GetBCforAP();
@@ -483,7 +482,7 @@ namespace PdfWriter
 		void APFromFakePage();
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		CAnnotAppearanceObject* StartAP();
+		virtual CAnnotAppearanceObject* StartAP() override;
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};

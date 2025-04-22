@@ -331,7 +331,10 @@ namespace PdfWriter
 		if (!m_pAppearance)
 			return NULL;
 		Add("AP", m_pAppearance);
-		return m_pAppearance->GetNormal();
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, false, false);
+		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal(pResources);
+		pNormal->Add("Resources", pResources);
+		return pNormal;
 	}
 	void CAnnotation::APFromFakePage()
 	{
@@ -1508,12 +1511,9 @@ namespace PdfWriter
 	}
 	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
 	{
-		m_pAppearance = new CAnnotAppearance(m_pXref, this);
-		if (!m_pAppearance)
-			return NULL;
-		Add("AP", m_pAppearance);
-		CAnnotAppearanceObject* pNormal  = m_pAppearance->GetNormal();
+		CAnnotAppearanceObject* pNormal = CAnnotation::StartAP();
 		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		pNormal->EndText();
 		return pNormal;
 	}
 	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)

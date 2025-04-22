@@ -3,6 +3,9 @@
 
 #include "../../../DesktopEditor/graphics/pro/Fonts.h"
 #include "../../../DesktopEditor/graphics/IRenderer.h"
+
+#include "../../../OfficeUtils/src/ZipFolder.h"
+
 #include "../Utils/XmlReader.h"
 #include "../Utils/Types.h"
 
@@ -66,7 +69,7 @@ class CSignature
 public:
 	CSignature();
 
-	static CSignature* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
+	static CSignature* Read(const std::wstring& wsFilePath, IFolder* pFolder);
 
 	bool Draw(IRenderer* pRenderer, unsigned int unPageIndex, NSFonts::IApplicationFonts* pFonts) const;
 };

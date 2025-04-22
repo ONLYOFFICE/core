@@ -45,11 +45,10 @@ class CDocBody
 {
 	CDocInfo  m_oDocInfo;
 	CDocument m_oDocument;
-	// std::wstring m_wsPathToDocRoot;
 	// std::wstring m_wsVersions;
 	std::vector<CSignature*> m_arSignatures;
 
-	void ReadSignatures(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
+	void ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder);
 public:
 	CDocBody();
 	~CDocBody();

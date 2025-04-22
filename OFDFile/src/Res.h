@@ -9,7 +9,7 @@
 #include "Types/MultiMedia.h"
 #include "Types/CompositeGraphicUnit.h"
 
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace OFD
 {
@@ -24,7 +24,7 @@ public:
 	CRes();
 	~CRes();
 
-	bool Read(const std::wstring& wsFilePath);
+	bool Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
 
 	const CColorSpace*           GetColorSpace(unsigned int unId) const;
 	const CDrawParam*            GetDrawParam(unsigned int unId) const;

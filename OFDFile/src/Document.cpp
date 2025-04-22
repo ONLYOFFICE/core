@@ -44,15 +44,16 @@ bool CDocument::Empty() const
 	return m_mPages.empty();
 }
 
-bool CDocument::Read(const std::wstring& wsFilePath)
+bool CDocument::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 {
-	if (wsFilePath.empty())
+	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, pFolder->getFullFilePath(L"")))
 		return false;
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsFilePath) || !oLiteReader.ReadNextNode() || L"ofd:Document" != oLiteReader.GetName())
+	if (!oLiteReader.FromFile(pFolder->getFullFilePath(wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Document" != oLiteReader.GetName())
 		return false;
 
+	const std::wstring wsCoreDirectory{pFolder->getFullFilePath(NSSystemPath::GetDirectoryName(wsFilePath))};
 	const int nDepth = oLiteReader.GetDepth();
 	std::wstring wsNodeName;
 
@@ -61,13 +62,14 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 		wsNodeName = oLiteReader.GetName();
 
 		if (L"ofd:CommonData" == wsNodeName)
-			m_oCommonData.Read(oLiteReader, NSSystemPath::GetDirectoryName(wsFilePath));
+			m_oCommonData.Read(oLiteReader, wsCoreDirectory);
 		else if (L"ofd:Pages" == wsNodeName)
 		{
 			const int nPagesDepth = oLiteReader.GetDepth();
 
 			int nID = -1;
 			std::wstring wsBaseLoc;
+
 
 			while (oLiteReader.ReadNextSiblingNode(nPagesDepth))
 			{
@@ -88,7 +90,7 @@ bool CDocument::Read(const std::wstring& wsFilePath)
 				if (-1 == nID)
 					nID = m_mPages.size() + 1;
 
-				CPage* pPage = CPage::Read(CombinePaths(NSSystemPath::GetDirectoryName(wsFilePath), wsBaseLoc));
+				CPage* pPage = CPage::Read(wsBaseLoc, wsCoreDirectory);
 
 				if (nullptr != pPage)
 					m_mPages.insert(std::make_pair(m_mPages.size(), pPage));

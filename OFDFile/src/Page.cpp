@@ -13,12 +13,12 @@ CPage::CPage()
 CPage::~CPage()
 {}
 
-CPage* CPage::Read(const std::wstring& wsFilePath)
+CPage* CPage::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 {
-	if (wsFilePath.empty())
+	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return nullptr;
 
-	std::wstring wsNormalizedPath = wsFilePath;
+	std::wstring wsNormalizedPath = CombinePaths(wsRootPath, wsFilePath);
 
 	if (L"xml" != NSFile::GetFileExtention(wsNormalizedPath))
 		wsNormalizedPath = CombinePaths(wsNormalizedPath, L"Content.xml");

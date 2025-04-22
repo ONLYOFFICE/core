@@ -39,7 +39,11 @@ CMultiMedia::CMultiMedia(CXmlReader& oXmlReader, const std::wstring& wsRootPath)
 	{
 		if ("ofd:MediaFile" == oXmlReader.GetNameA())
 		{
-			m_wsFilePath = CombinePaths(wsRootPath, oXmlReader.GetText2());
+			const std::wstring wsPath{oXmlReader.GetText2()};
+
+			if (CanUseThisPath(wsPath, wsRootPath))
+				m_wsFilePath = CombinePaths(wsRootPath, wsPath);
+
 			break;
 		}
 	}

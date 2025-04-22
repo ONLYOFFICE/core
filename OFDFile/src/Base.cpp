@@ -57,10 +57,13 @@ bool CDocInfo::Read(CXmlReader& oLiteReader)
 	return true;
 }
 
-void CDocBody::ReadSignatures(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+void CDocBody::ReadSignatures(const std::wstring& wsFilePath, IFolder* pFolder)
 {
+	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, pFolder->getFullFilePath(L"")))
+		return;
+
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(CombinePaths(wsRootPath, wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signatures" != oLiteReader.GetName())
+	if (!oLiteReader.FromFile(CombinePaths(pFolder->getFullFilePath(L""), wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signatures" != oLiteReader.GetName())
 		return;
 
 	const int nDepth = oLiteReader.GetDepth();
@@ -81,7 +84,7 @@ void CDocBody::ReadSignatures(const std::wstring& wsFilePath, const std::wstring
 			do
 			{
 				if ("BaseLoc" == oLiteReader.GetNameA())
-					AddToContainer(CSignature::Read(oLiteReader.GetText(), wsRootPath), m_arSignatures);
+					AddToContainer(CSignature::Read(oLiteReader.GetText(), pFolder), m_arSignatures);
 			} while (oLiteReader.MoveToNextAttribute());
 
 			oLiteReader.MoveToElement();
@@ -123,14 +126,9 @@ CDocBody* CDocBody::Read(CXmlReader& oLiteReader, IFolder* pFolder)
 			}
 		}
 		else if ("ofd:DocRoot" == sNodeName)
-		{
-			const std::wstring wsPath = NSSystemPath::ShortenPath(oLiteReader.GetText2());
-
-			if (!wsPath.empty() && L'.' != wsPath.front())
-				pDocBody->m_oDocument.Read(pFolder->getFullFilePath(wsPath));
-		}
+			pDocBody->m_oDocument.Read(oLiteReader.GetText2(), pFolder);
 		else if ("ofd:Signatures" == sNodeName)
-			pDocBody->ReadSignatures(oLiteReader.GetText2(), pFolder->getFullFilePath(L""));
+			pDocBody->ReadSignatures(oLiteReader.GetText2(), pFolder);
 	}
 
 	return pDocBody;

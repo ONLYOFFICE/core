@@ -9,18 +9,18 @@ namespace OFD
 CSignature::CSignature()
 {}
 
-CSignature* CSignature::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
+CSignature* CSignature::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 {
-	if (wsFilePath.empty())
+	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, pFolder->getFullFilePath(L"")))
 		return nullptr;
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(CombinePaths(wsRootPath, wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signature" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
+	if (!oLiteReader.FromFile(CombinePaths(pFolder->getFullFilePath(L""), wsFilePath)) || !oLiteReader.ReadNextNode() || L"ofd:Signature" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return nullptr;
 
 	CSignature *pSignature = new CSignature();
 
-	pSignature->m_wsRootPath = wsRootPath;
+	pSignature->m_wsRootPath = pFolder->getFullFilePath(L"");
 
 	const int nDepth = oLiteReader.GetDepth();
 
@@ -29,7 +29,7 @@ CSignature* CSignature::Read(const std::wstring& wsFilePath, const std::wstring&
 		if ("ofd:SignedInfo" == oLiteReader.GetNameA())
 			pSignature->m_oSignedInfo.Read(oLiteReader);
 		else if ("ofd:SignedValue" == oLiteReader.GetNameA())
-			pSignature->m_wsSignedValue = CombinePaths(wsRootPath, oLiteReader.GetText2());
+			pSignature->m_wsSignedValue = CombinePaths(pSignature->m_wsRootPath, oLiteReader.GetText2());
 	}
 
 	return pSignature;

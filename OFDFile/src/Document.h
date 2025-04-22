@@ -4,7 +4,7 @@
 #include "Page.h"
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
+#include "../../OfficeUtils/src/ZipFolder.h"
 
 namespace OFD
 {
@@ -34,7 +34,7 @@ public:
 
 	bool Empty() const;
 
-	bool Read(const std::wstring& wsFilePath);
+	bool Read(const std::wstring& wsFilePath, IFolder* pFolder);
 
 	bool DrawPage(IRenderer* pRenderer, int nPageIndex) const;
 

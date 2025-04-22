@@ -9,6 +9,9 @@
 #include <cfloat>
 
 #include "../../../DesktopEditor/common/Path.h"
+#include "../../../DesktopEditor/common/ProcessEnv.h"
+
+#include <boost/algorithm/string/predicate.hpp>
 
 namespace OFD
 {
@@ -138,6 +141,29 @@ inline std::wstring CombinePaths(const std::wstring& wsFirstPath, const std::wst
 		wsNewSecondPath.erase(0, wsFirstDirName.length());
 
 	return NSSystemPath::Combine(wsFirstPath, wsNewSecondPath);
+}
+
+inline bool GetStatusUsingExternalLocalFiles()
+{
+	return false;
+
+	if (NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_allowPrivateIP))
+		return NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_allowPrivateIP);
+
+	return true;
+}
+
+inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRootPath)
+{
+	if (GetStatusUsingExternalLocalFiles())
+		return true;
+
+	const std::wstring wsFullPath = NSSystemPath::ShortenPath(NSSystemPath::Combine(wsRootPath, wsPath));
+
+	if (!wsRootPath.empty())
+		return boost::starts_with(wsFullPath, wsRootPath);
+
+	return !boost::starts_with(wsFullPath, L"../");
 }
 
 inline bool IsZeroValue(const double& dValue)

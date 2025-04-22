@@ -36,16 +36,18 @@ inline void AddElementToMap(T* pElement, unsigned int unIndex, std::map<unsigned
 	mElements.insert(std::make_pair(unIndex, pElement));
 }
 
-bool CRes::Read(const std::wstring& wsFilePath)
+bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 {
-	if (wsFilePath.empty())
+	if (wsFilePath.empty() || !CanUseThisPath(wsFilePath, wsRootPath))
 		return false;
+
+	const std::wstring wsFullPath{CombinePaths(wsRootPath, wsFilePath)};
 
 	CXmlReader oLiteReader;
-	if (!oLiteReader.FromFile(wsFilePath) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
+	if (!oLiteReader.FromFile(wsFullPath) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return false;
 
-	std::wstring wsRootPath;
+	std::wstring wsResRootPath;
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 	{
@@ -56,7 +58,7 @@ bool CRes::Read(const std::wstring& wsFilePath)
 
 			if ("BaseLoc" == sNodeName)
 			{
-				wsRootPath = CombinePaths(NSDirectory::GetFolderPath(wsFilePath), oLiteReader.GetText());
+				wsResRootPath = CombinePaths(NSDirectory::GetFolderPath(wsFullPath), oLiteReader.GetText());
 				break;
 			}
 		} while (oLiteReader.MoveToNextAttribute());
@@ -86,7 +88,7 @@ bool CRes::Read(const std::wstring& wsFilePath)
 	PARSE_CONTAINER(container_name, element_name, element_type, melements, new element_type(oLiteReader))
 
 	#define PARSE_CONTAINER_WITH_PATH(container_name, element_name, element_type, melements)\
-	PARSE_CONTAINER(container_name, element_name, element_type, melements, new element_type(oLiteReader, wsRootPath))
+	PARSE_CONTAINER(container_name, element_name, element_type, melements, new element_type(oLiteReader, wsResRootPath))
 
 	const int nDepth = oLiteReader.GetDepth();
 

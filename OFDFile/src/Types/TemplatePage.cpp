@@ -1,7 +1,6 @@
 #include "TemplatePage.h"
 
 #include "../Page.h"
-#include "../Utils/Utils.h"
 
 namespace OFD
 {
@@ -17,7 +16,7 @@ CTemplatePage::CTemplatePage(CXmlReader& oXmlReader, const std::wstring& wsRootP
 		sAttributeName = oXmlReader.GetNameA();
 
 		if ("BaseLoc" == sAttributeName)
-			m_pPage = CPage::Read(CombinePaths(wsRootPath, oXmlReader.GetText()));
+			m_pPage = CPage::Read(oXmlReader.GetText(), wsRootPath);
 		else if ("ZOrder" == sAttributeName)
 			m_eZOrder = GetZOrderFromString(oXmlReader.GetTextA());
 	} while (oXmlReader.MoveToNextAttribute());

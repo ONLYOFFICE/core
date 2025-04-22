@@ -1,8 +1,6 @@
 #include "CommonData.h"
 #include "../Utils/Utils.h"
 
-#include "../../../DesktopEditor/common/Path.h"
-
 namespace OFD
 {
 CCommonData::CCommonData()
@@ -37,14 +35,14 @@ bool CCommonData::Read(CXmlReader& oLiteReader, const std::wstring& wsRootPath)
 			if (nullptr == m_pPublicRes)
 				m_pPublicRes = new CRes();
 
-			m_pPublicRes->Read(CombinePaths(wsRootPath, oLiteReader.GetText2()));
+			m_pPublicRes->Read(oLiteReader.GetText2(), wsRootPath);
 		}
 		else if ("ofd:DocumentRes" == sNodeName)
 		{
 			if(nullptr == m_pDocumentRes)
 				m_pDocumentRes = new CRes();
 
-			m_pDocumentRes->Read(CombinePaths(wsRootPath, oLiteReader.GetText2()));
+			m_pDocumentRes->Read(oLiteReader.GetText2(), wsRootPath);
 		}
 		else if ("ofd:MaxUnitID" == sNodeName)
 			m_unMaxUnitID = oLiteReader.GetUInteger();

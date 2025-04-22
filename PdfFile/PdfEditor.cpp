@@ -59,7 +59,7 @@
 	((PdfWriter::CArrayObject*)pObj)->Add(oVal);\
 }
 
-void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey)
+void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::string& sKey, bool bMakeBinary = false)
 {
 	Object oTemp;
 	switch (obj->getType())
@@ -83,7 +83,7 @@ void DictToCDictObject(Object* obj, PdfWriter::CObjectBase* pObj, const std::str
 	case objString:
 	{
 		GString* str = obj->getString();
-		if (str->isBinary())
+		if (str->isBinary() || bMakeBinary)
 		{
 			int nLength = str->getLength();
 			BYTE* arrId = new BYTE[nLength];
@@ -1128,7 +1128,7 @@ bool CPdfEditor::IncrementalUpdates()
 					Object oTemp;
 					char* chKey = encrypt.dictGetKey(nIndex);
 					encrypt.dictGetValNF(nIndex, &oTemp);
-					DictToCDictObject(&oTemp, pEncryptDict, chKey);
+					DictToCDictObject(&oTemp, pEncryptDict, chKey, true);
 					oTemp.free();
 				}
 			}
@@ -1139,7 +1139,7 @@ bool CPdfEditor::IncrementalUpdates()
 			encrypt.free();
 
 			if (pTrailerDict->dictLookup("ID", &ID) && ID.isArray() && ID.arrayGet(0, &ID1) && ID1.isString())
-				DictToCDictObject(&ID1, pEncryptDict, "ID");
+				DictToCDictObject(&ID1, pEncryptDict, "ID", true);
 			ID.free(); ID1.free();
 
 			xref->onEncrypted();
@@ -2120,7 +2120,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode == Mode::Unknown)
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	// Применение добавления страницы для writer
@@ -2752,12 +2752,11 @@ void CPdfEditor::ClearPage()
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return;
 	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CPage* pPage = pDoc->GetCurPage();
-	std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetObjId() };
+	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 	if (!pageRefObj.fetch(xref, &pageObj)->isDict())
 	{
 		pageObj.free(); pageRefObj.free();

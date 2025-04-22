@@ -807,8 +807,6 @@ namespace PdfWriter
 		pStream->WriteStr(sImgName.c_str());
 		pStream->WriteStr(" Do\012Q");
 
-		GetFieldsResources()->AddXObjectWithName(sFrmName.c_str(), pForm);
-
 		return pForm;
 	}
 	CFont14* CDocument::CreateFont14(const std::wstring& wsFontPath, unsigned int unIndex, EStandard14Fonts eType)

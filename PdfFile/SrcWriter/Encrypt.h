@@ -82,7 +82,7 @@ namespace PdfWriter
         Impl *impl;
 
         bool MakeFileKey3(const std::string &sPassword, unsigned char *pHash, int nHashSize, unsigned char *pHash2 = NULL, int nHashSize2 = 0);
-        bool MakeFileKey2(const std::string &sUserPassword);
+        bool MakeFileKey2(BYTE* sUserPassword, int nLength);
 		
         unsigned int    m_unKeyLen;
 
@@ -96,6 +96,7 @@ namespace PdfWriter
         unsigned int    m_unRevision;               //R
 
         BYTE            m_anEncryptID[ID_LEN];
+        unsigned int    m_unIDLength;
 
 		friend class CEncryptDict;
 		friend class CDocument;

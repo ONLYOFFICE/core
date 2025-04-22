@@ -3810,13 +3810,13 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP();
 
 	pFakePage->SetStream(pAP->GetStream());
-	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());
+	pFakePage->Add("Resources", pAP->Get("Resources"));
 
 	IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pRenderer);
 	NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 	RELEASEOBJECT(pCorrector);
 
-	pAnnot->APFromFakePage(pFakePage);
+	pAnnot->APFromFakePage();
 
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);
@@ -3838,10 +3838,9 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom));
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP();
-	pAP->EndText();
 
 	pFakePage->SetStream(pAP->GetStream());
-	pFakePage->Add("Resources", (PdfWriter::CObjectBase*)m_pDocument->GetFieldsResources());
+	pFakePage->Add("Resources", pAP->Get("Resources"));
 
 	pFakePage->SetStrokeColor(0, 0, 0);
 	pFakePage->SetFillColor(0, 0, 0);
@@ -3854,7 +3853,7 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	pAP->EndDraw();
 	pFakePage->EndMarkedContent();
 
-	pAnnot->APFromFakePage(pFakePage);
+	pAnnot->APFromFakePage();
 
 	m_pPage = pCurPage;
 	m_pDocument->SetCurPage(pCurPage);

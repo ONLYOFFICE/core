@@ -2120,7 +2120,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode == Mode::Unknown)
+	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
 
 	// Применение добавления страницы для writer

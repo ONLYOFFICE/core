@@ -72,7 +72,7 @@ void CTextCode::Draw(IRenderer* pRenderer, unsigned int& unIndex, const std::vec
 		{
 			for (const TCGTransform& oCGTransform : arCGTransforms)
 			{
-				if (oCGTransform.Draw(pRenderer, unIndex, dX, dY))
+				if (oCGTransform.Draw(pRenderer, m_wsText[unGlyphIndex], unIndex, dX, dY))
 				{
 					bDrawed = true;
 					break;
@@ -183,13 +183,15 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 	if (nullptr == pRenderer || m_arTextCodes.empty())
 		return;
 
-	TMatrix oOldTransform;
-	CGraphicUnit::Apply(pRenderer, oOldTransform);
-
 	const CFont* pFont = oCommonData.GetPublicRes()->GetFont(m_unFontID);
 
-	if (nullptr != pFont)
-		pFont->Apply(pRenderer);
+	if (nullptr == pFont)
+		return;
+
+	pFont->Apply(pRenderer);
+
+	TMatrix oOldTransform;
+	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
 	if (m_bFill)
 	{
@@ -260,22 +262,15 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 	return oCGTransform;
 }
 
-bool TCGTransform::Draw(IRenderer* pRenderer, unsigned int& unIndex, double dX, double dY) const
+bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const
 {
 	if (m_unCodePosition != unIndex || 0 == m_unCodeCount || 0 == m_unGlyphCount)
 		return false;
 
-	int nCurrentValue;
-	pRenderer->get_FontStringGID(&nCurrentValue);
-
-	pRenderer->put_FontStringGID(TRUE);
-
 	for (unsigned int unGlyphCount = 0; unGlyphCount < m_unGlyphCount; ++unGlyphCount)
-		pRenderer->CommandDrawTextCHAR(m_arGlyphs[unGlyphCount], dX, dY, 0, 0);
+		pRenderer->CommandDrawTextExCHAR(lUnicode, m_arGlyphs[unGlyphCount], dX, dY, 0, 0);
 
 	unIndex += m_unCodeCount;
-
-	pRenderer->put_FontStringGID(nCurrentValue);
 
 	return true;
 }

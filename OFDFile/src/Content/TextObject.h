@@ -18,7 +18,7 @@ struct TCGTransform
 
 	static TCGTransform Read(CXmlReader& oLiteReader);
 
-	bool Draw(IRenderer* pRenderer, unsigned int& unIndex, double dX, double dY) const;
+	bool Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const;
 };
 
 class CTextCode

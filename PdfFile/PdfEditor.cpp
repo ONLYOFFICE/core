@@ -2752,12 +2752,11 @@ void CPdfEditor::ClearPage()
 	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
 		return;
 	XRef* xref = pPDFDocument->getXRef();
-	PdfWriter::CPage* pPage = pDoc->GetCurPage();
-	std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetObjId() };
+	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef.first, pPageRef.second);
+	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
 	if (!pageRefObj.fetch(xref, &pageObj)->isDict())
 	{
 		pageObj.free(); pageRefObj.free();

@@ -135,6 +135,7 @@ namespace StarMath
 		{
 			pReader->ClearReader();
 			pElement->ParseEQN(pReader);
+			return pElement;
 		}
 		else
 		{
@@ -3030,12 +3031,12 @@ namespace StarMath
 		if(L"sum" == wsToken) return TypeElement::sum;
 		else if(L"prod" == wsToken) return TypeElement::prod;
 		else if(L"coprod" == wsToken) return TypeElement::coprod;
+		else if(L"int" == wsToken) return TypeElement::Int;
 		if(!bEQN)
 		{
 			if(L"lim" == wsToken) return TypeElement::lim;
 			else if(L"liminf" == wsToken) return TypeElement::liminf;
 			else if(L"limsup" == wsToken) return TypeElement::limsup;
-			else if(L"int" == wsToken) return TypeElement::Int;
 			else if(L"iint" == wsToken) return TypeElement::iint;
 			else if(L"iiint" == wsToken) return TypeElement::iiint;
 			else if(L"lint" == wsToken) return TypeElement::lint;
@@ -3053,7 +3054,7 @@ namespace StarMath
 		if(L"bigsqcap" == wsToken) return TypeElement::bigsqcap;
 		else if(L"bigsqcup" == wsToken) return TypeElement::bigsqcup;
 		else if(L"inter" == wsToken) return TypeElement::inter;
-		else if(L"union" == wsToken) return TypeElement::Union;
+		else if(L"union" == wsToken) return TypeElement::UnionOp;
 		else if(L"bigoplus" == wsToken) return TypeElement::bigoplus;
 		else if(L"bigominus" == wsToken) return TypeElement::bigominus;
 		else if(L"bigotimes" == wsToken) return TypeElement::bigotimes;
@@ -3062,6 +3063,11 @@ namespace StarMath
 		else if(L"bigvee" == wsToken) return TypeElement::bigvee;
 		else if(L"bigwedge" == wsToken) return TypeElement::bigwedge;
 		else if(L"biguplus" == wsToken) return TypeElement::biguplus;
+		else if(L"dint" == wsToken) return TypeElement::iint;
+		else if(L"tint" == wsToken) return TypeElement::iiint;
+		else if(L"oint" == wsToken) return TypeElement::lint;
+		else if(L"odint" == wsToken) return TypeElement::llint;
+		else if(L"otint" == wsToken) return TypeElement::lllint;
 		else return TypeElement::undefine;
 	}
 	void CElementOperator::Parse(CStarMathReader* pReader)
@@ -3228,7 +3234,7 @@ namespace StarMath
 	}
 // class methods CStarMathReader
 	CStarMathReader::CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion)
-		: m_enGlobalType(TypeElement::Empty),m_enUnderType(TypeElement::Empty),m_pAttribute(nullptr),m_bMarkForUnar(true),m_enTypeCon(enTypeConversion)
+		: m_enGlobalType(TypeElement::Empty),m_enUnderType(TypeElement::Empty),m_pAttribute(nullptr),m_bMarkForUnar(true),m_enTypeCon(enTypeConversion),m_pBaseAttribute(nullptr)
 	{
 		m_itStart = itStart;
 		m_itEnd = itEnd;
@@ -3940,12 +3946,22 @@ namespace StarMath
 	{
 		m_pSecondArgument = pElement;
 	}
-	TypeElement CElementMatrix::GetMatrix(const std::wstring &wsToken)
+	TypeElement CElementMatrix::GetMatrix(const std::wstring &wsToken, const bool bEQN)
 	{
-		if(L"binom" == wsToken) return TypeElement::binom;
-		else if(L"stack" == wsToken) return TypeElement::stack;
-		else if(L"matrix" == wsToken) return TypeElement::matrix;
-		else return TypeElement::undefine;
+		if(L"matrix" == wsToken) return TypeElement::matrix;
+		if(bEQN)
+		{
+			if(L"pmatrix" == wsToken) return TypeElement::pmatrix;
+			else if(L"dmatrix" == wsToken) return TypeElement::dmatrix;
+			else if(L"bmatrix" == wsToken) return TypeElement::bmatrix;
+			else if(L"pile" == wsToken) return TypeElement::pile;
+		}
+		else
+		{
+			if(L"binom" == wsToken) return TypeElement::binom;
+			else if(L"stack" == wsToken) return TypeElement::stack;
+		}
+		return TypeElement::undefine;
 	}
 	void CElementMatrix::Parse(CStarMathReader *pReader)
 	{
@@ -3963,7 +3979,9 @@ namespace StarMath
 		DimensionCalculation();
 	}
 	void CElementMatrix::ParseEQN(CStarMathReader *pReader)
-	{}
+	{
+		Parse(pReader);
+	}
 	void CElementMatrix::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:m",false);

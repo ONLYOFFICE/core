@@ -182,7 +182,7 @@ enum class TypeElement{
 	dlgrid,
 	//setopetions
 	intersection,
-	Union,
+	UnionOp,
 	setminus,
 	setquotient,
 	subseteq,
@@ -361,6 +361,11 @@ enum class TypeElement{
 	binom,
 	stack,
 	matrix,
+	//EQN matrix
+	pmatrix,
+	dmatrix,
+	bmatrix,
+	pile,
 	//bracket close
 	rwbrace,
 	rbrace,

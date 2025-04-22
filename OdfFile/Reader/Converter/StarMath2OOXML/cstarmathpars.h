@@ -458,7 +458,7 @@ namespace StarMath
 		virtual ~CElementMatrix();
 		void SetFirstArgument(CElement* pElement);
 		void SetSecondArgument(CElement* pElement);
-		static TypeElement GetMatrix(const std::wstring& wsToken);
+		static TypeElement GetMatrix(const std::wstring& wsToken, const bool bEQN = false);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader *pReader) override;

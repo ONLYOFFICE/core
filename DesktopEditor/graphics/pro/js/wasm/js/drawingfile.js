@@ -1332,7 +1332,7 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 				{
 					let AAType = reader.readString();
 					rec["AA"][AAType] = {};
-					readAction(reader, rec["AA"][AAType]);
+					readAction(reader, rec["AA"][AAType], reader.readDouble, reader.readString);
 				}
 			}
 			if (flags & (1 << 9))

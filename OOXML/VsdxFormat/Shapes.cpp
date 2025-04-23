@@ -182,10 +182,30 @@ namespace OOX
 				if (false == image_path.GetPath().empty())
 				{
 					//todooo check correct path inside container
-					NSFile::CFileBinary::Copy(image_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename());
+
+					std::wstring image_name_new = image_path.GetFilename();
+					std::wstring image_ext_new = image_path.GetExtention();
+
+					std::map<std::wstring, NSShapeImageGen::CMediaInfo>::iterator pFind = pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.find(image_path.GetFilename());
+					if (pFind == pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.end())
+					{
+						NSShapeImageGen::CMediaInfo oInfo;
+						oInfo.m_lID = ++pWriter->m_pCommon->m_pMediaManager->m_lNextIDImage;
+						oInfo.m_sExt = image_path.GetExtention();
+						oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
+						image_name_new = oInfo.m_sName;
+
+						pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
+					}
+					else
+					{
+						image_name_new = pFind->second.m_sName;
+					}
+
+					NSFile::CFileBinary::Copy(image_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + image_name_new + image_ext_new);
 
 					pWriter->StartRecord(1);
-					pWriter->WriteString(image_path.GetFilename());
+					pWriter->WriteString(image_name_new + image_ext_new);
 					pWriter->EndRecord();
 
 					CImageFileFormatChecker checker;
@@ -202,12 +222,12 @@ namespace OOX
 
 								if (!sInternalSvg.empty())
 								{
-									NSFile::CFileBinary::SaveToFile(out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename() + L".svg", sInternalSvg);
+									NSFile::CFileBinary::SaveToFile(out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".svg", sInternalSvg);
 								}
 								else
 								{// не смогли сконвертировать в svg - пробуем в png									
 
-									std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_path.GetFilename() + L".png";
+									std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
 									pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/, 0, 0);
 								}
 							}

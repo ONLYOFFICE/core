@@ -1628,7 +1628,7 @@ namespace PdfWriter
 			return ((CNameObject*)pFT)->Get();
 		return "";
 	}
-	bool CDocument::EditCO(const std::vector<int>& arrCO)
+	bool CDocument::EditCO(const std::vector< std::pair<int, int> >& arrCO)
 	{
 		if (arrCO.empty())
 			return true;
@@ -1642,16 +1642,22 @@ namespace PdfWriter
 
 		m_pAcroForm->Add("CO", pArray);
 
-		for (int CO : arrCO)
+		for (std::pair<int, int> CO : arrCO)
 		{
-			CDictObject* pObj = GetParent(CO);
+			CDictObject* pObj = GetParent(CO.first);
 			if (pObj)
 				pArray->Add(pObj);
 			else
 			{
-				CAnnotation* pAnnot = m_mAnnotations[CO];
+				CAnnotation* pAnnot = GetAnnot(CO.first);
 				if (pAnnot)
 					pArray->Add(pAnnot);
+				else if (CO.second >= 0)
+				{
+					PdfWriter::CObjectBase* pBase = new PdfWriter::CObjectBase();
+					pBase->SetRef(CO.first, CO.second);
+					pArray->Add(new PdfWriter::CProxyObject(pBase, true));
+				}
 			}
 		}
 

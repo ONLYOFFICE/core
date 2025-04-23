@@ -596,7 +596,7 @@ HRESULT _ChangePassword(const std::wstring& wsPath, const std::wstring& wsPasswo
 		}
 
 		Object oTemp;
-		xref->fetch(i, pEntry->gen, &oTemp);
+		xref->fetch(i, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen, &oTemp);
 		PdfWriter::CObjectBase* pObj = NULL;
 
 		switch (oTemp.getType())
@@ -2110,7 +2110,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 		{
 			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 			Object oRef;
-			oRef.initRef(nRefID, pEntry->gen);
+			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
 		pPage->SetHidden();
@@ -2446,7 +2446,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		{
 			XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 			Object oRef;
-			oRef.initRef(nRefID, pEntry->gen);
+			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
 		pObj->SetHidden();
@@ -2686,7 +2686,26 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 
-	std::vector<CWidgetsInfo::CParent*> arrParents = pFieldInfo->GetParents();
+	const std::vector< std::pair<int, int> >& arrCO = pFieldInfo->GetCO();
+	for (int i = 0; i < arrCO.size(); ++i)
+	{
+		int nObjNum = arrCO[i].first;
+		if (pDoc->GetParent(nObjNum))
+			continue;
+		if (pDoc->GetAnnot(nObjNum))
+			continue;
+
+		PDFDoc* pPDFDocument = NULL;
+		int nStartRefID = 0;
+		int nRefID = m_pReader->FindRefNum(nObjNum, &pPDFDocument, &nStartRefID);
+		if (nRefID < 0)
+			continue;
+
+		XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
+		pFieldInfo->ChangeCO(i, nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
+	}
+
+	const std::vector<CWidgetsInfo::CParent*>& arrParents = pFieldInfo->GetParents();
 	for (CWidgetsInfo::CParent* pParent : arrParents)
 	{
 		PdfWriter::CDictObject* pDParent = pDoc->GetParent(pParent->nID);
@@ -2701,7 +2720,7 @@ bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 
 		XRefEntry* pEntry = pPDFDocument->getXRef()->getEntry(nRefID);
 		Object oParentRef;
-		oParentRef.initRef(nRefID, pEntry->gen);
+		oParentRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 		GetWidgetParent(pPDFDocument, pDoc, &oParentRef, nStartRefID);
 		// TODO перевыставить детей
 		oParentRef.free();

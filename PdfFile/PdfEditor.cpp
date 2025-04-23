@@ -1386,7 +1386,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		return false;
 
 	PdfWriter::CPage* pEditPage = NULL;
-	pEditPage = bActualPos ? pDoc->GetPage(nPageIndex) : pDoc->GetEditPage(_nPageIndex);
+	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
 	if (pEditPage)
 	{
 		if (bSet)
@@ -1402,13 +1402,21 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	Catalog* pCatalog = pPDFDocument->getCatalog();
 	if (!xref || !pCatalog)
 		return false;
-	Ref* pPageRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
-	if (!pPageRef || pPageRef->num == 0)
+	std::pair<int, int> pPageRef = std::make_pair(0, 0);
+	if (bActualPos)
+		pPageRef = pDoc->GetPageRef(_nPageIndex);
+	else
+	{
+		Ref* pRef = pPDFDocument->getCatalog()->getPageRef(nPageIndex);
+		if (pRef && pRef->num != 0)
+			pPageRef = std::make_pair(pRef->num, pRef->gen);
+	}
+	if (pPageRef.first == 0)
 		return false;
 
 	// Получение объекта страницы
 	Object pageRefObj, pageObj;
-	pageRefObj.initRef(pPageRef->num, pPageRef->gen);
+	pageRefObj.initRef(pPageRef.first, pPageRef.second);
 	if (!pageRefObj.fetch(xref, &pageObj) || !pageObj.isDict())
 	{
 		pageObj.free();
@@ -1418,7 +1426,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	pageRefObj.free();
 
 	// Воспроизведение словаря страницы из reader для writer
-	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef->num);
+	PdfWriter::CXref* pXref = new PdfWriter::CXref(pDoc, pPageRef.first);
 	if (!pXref)
 	{
 		pageObj.free();
@@ -1431,7 +1439,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		RELEASEOBJECT(pXref);
 		return false;
 	}
-	pXref->Add(pPage, pPageRef->gen);
+	pXref->Add(pPage, pPageRef.second);
 	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
@@ -2145,11 +2153,8 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex))
-	{
-		m_nEditPage = nPos;
+	if (EditPage(nPageIndex, true, true))
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
-	}
 	return false;
 }
 bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)

@@ -797,6 +797,13 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
             bufferDetect = NULL;
             return true;
         }
+		else if (isOFDFile(fileName))
+		{
+			if (bufferDetect)
+				delete[] bufferDetect;
+			bufferDetect = NULL;
+			return true;
+		}
 		else if (isMacFormatFile(fileName))
 		{
 			if (bufferDetect)
@@ -1712,6 +1719,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".djvu";
 	case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
 		return L".xps";
+	case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD:
+		return L".ofd";
 	case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SVG:
 		return L".svg";
 	case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR:
@@ -1891,6 +1900,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU;
 	if (L".xps" == ext || L".oxps" == ext)
 		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS;
+	if (L"ofd" == ext)
+		return AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD;
 
 	if (L".jpg" == ext || L".jpeg" == ext || L".jpe" == ext || L".jfif" == ext)
 		return AVS_OFFICESTUDIO_FILE_IMAGE_JPG;
@@ -2027,5 +2038,28 @@ bool COfficeFileFormatChecker::isXpsFile(const std::wstring &fileName)
 			return true;
 		}
 	}
+	return false;
+}
+
+bool COfficeFileFormatChecker::isOFDFile(const std::wstring& fileName)
+{
+	COfficeUtils OfficeUtils(NULL);
+
+	ULONG nBufferSize = 0;
+	BYTE *pBuffer = NULL;
+
+	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"OFD.xml", &pBuffer, nBufferSize);
+	if (hresult == S_OK && pBuffer != NULL)
+	{
+		if (19 <= nBufferSize && NULL != strstr((char *)pBuffer, "ofd:OFD"))
+			nFileType = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD;
+
+		delete[] pBuffer;
+		pBuffer = NULL;
+
+		if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
+			return true;
+	}
+
 	return false;
 }

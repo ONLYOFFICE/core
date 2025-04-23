@@ -109,4 +109,5 @@ public:
 	bool isMobiFormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isFB2FormatFile(unsigned char* pBuffer, int dwBytes);
 	bool isXpsFile(const std::wstring& fileName);
+	bool isOFDFile(const std::wstring& fileName);
 };

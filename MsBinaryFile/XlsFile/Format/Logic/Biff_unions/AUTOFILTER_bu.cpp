@@ -132,6 +132,20 @@ const bool AUTOFILTER::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool AUTOFILTER::saveContent(BinProcessor& proc)
+{
+    if(m_AutoFilterInfo == nullptr)
+        return  false;
+    proc.mandatory(*m_AutoFilterInfo);
+    for(auto i : m_arFilters)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arSORTDATA12)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 int AUTOFILTER::serialize(std::wostream & stream)
 {
 	if (m_AutoFilterInfo == NULL) return 0;

@@ -51,11 +51,12 @@ public:
 	static const ElementType	type = typeAFDOperStr;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	unsigned char	cch;
-	unsigned char	fCompare;	
+    unsigned char	cch = 0;
+    unsigned char	fCompare = false;
 
-	bool m_bAutoFilter;
+    bool m_bAutoFilter = false;
 };
 
 } // namespace XLS

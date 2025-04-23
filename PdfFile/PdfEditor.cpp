@@ -435,7 +435,12 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 			{
 				pODict->getVal(nIndex, &oTemp);
 				nLength = oTemp.getNum();
+
+				pBase = new PdfWriter::CNumberObject(nLength);
+				pDoc->AddObject(pBase);
+				pDict->Add(chKey, pBase);
 				oTemp.free();
+				continue;
 			}
 			pODict->getValNF(nIndex, &oTemp);
 			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);

@@ -771,17 +771,29 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     else
         proc.mandatory<Dimensions>();
 
-    for(auto i: m_arWINDOW)
-        if(i != nullptr)
-            proc.mandatory(*i);
-
     if(m_CELLTABLE != nullptr)
         proc.mandatory(*m_CELLTABLE);
 
     for(auto i:m_arNote)
         if(i!= nullptr)
             proc.mandatory(*i);
-
+    if(m_DCON != nullptr)
+        proc.mandatory(*m_DCON);
+    if(m_arWINDOW.empty())
+    {
+        proc.mandatory<WINDOW>();
+    }
+    else
+    {
+        for(auto i: m_arWINDOW)
+            if(i != nullptr)
+                proc.mandatory(*i);
+    }
+    if(m_DxGCol != nullptr)
+        proc.mandatory(*m_DxGCol);
+    for(auto i : m_arMergeCells)
+        if(i != nullptr)
+            proc.mandatory(*i);
     if(m_CONDFMTS != nullptr)
         proc.mandatory(*m_CONDFMTS);
 

@@ -1067,15 +1067,21 @@ CWidgetsInfo::~CWidgetsInfo()
 	for (int i = 0; i < m_arrParents.size(); ++i)
 		RELEASEOBJECT(m_arrParents[i]);
 }
-const std::vector<int>& CWidgetsInfo::GetCO() { return m_arrCO; }
+const std::vector< std::pair<int, int> >& CWidgetsInfo::GetCO() { return m_arrCO; }
 const std::vector<std::wstring>& CWidgetsInfo::GetButtonImg() { return m_arrButtonImg; }
 const std::vector<CWidgetsInfo::CParent*>& CWidgetsInfo::GetParents() { return m_arrParents; }
+void CWidgetsInfo::ChangeCO(int i, int nNum, int nGen)
+{
+	if (i < 0 || i > m_arrCO.size() - 1)
+		return;
+	m_arrCO[i] = std::make_pair(nNum, nGen);
+}
 bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
 	int n = pReader->ReadInt();
 	m_arrCO.reserve(n);
 	for (int i = 0; i < n; ++i)
-		m_arrCO.push_back(pReader->ReadInt());
+		m_arrCO.push_back(std::make_pair(pReader->ReadInt(), -1));
 
 	n = pReader->ReadInt();
 	m_arrParents.reserve(n);

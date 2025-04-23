@@ -439,6 +439,11 @@ namespace NSJSBase
 	{
 	}
 
+	bool CJSContext::IsEntered();
+	{
+		return true;
+	}
+
 	class CJSLocalScopePrivate
 	{
 	public:

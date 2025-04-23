@@ -857,12 +857,14 @@ namespace NSJSBase
 		v8::Local<v8::Context>			m_context;
 
 		v8::StartupData m_startup_data;
+		bool m_entered;
 
 	public:
 		CJSContextPrivate() : m_isolate(NULL)
 		{
 			m_startup_data.data = NULL;
 			m_startup_data.raw_size = 0;
+			m_entered = false;
 		}
 
 		void InsertToGlobal(const std::string& name, v8::FunctionCallback creator)

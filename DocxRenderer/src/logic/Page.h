@@ -106,7 +106,7 @@ namespace NSDocxRenderer
 		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
 		// return groups of cells
-		std::vector<std::vector<CTable::cell_ptr_t>> BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells);
+		std::vector<std::vector<CTable::text_cell_ptr_t>> BuildTextCellGroups(const std::vector<CTable::text_cell_ptr_t>& arTextCells);
 
 		// returns std::vector of tables builded from shapes and paragraphes
 		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
@@ -116,6 +116,9 @@ namespace NSDocxRenderer
 
 		// return std::vector fotr
 		std::vector<CTable::text_cell_ptr_t> BuildTextCells(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
+
+		// align given groups of text cells
+		void AlignTextCellGroups(const std::vector<std::vector<CTable::text_cell_ptr_t>>& arTextCellGroups);
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<ooxml_item_ptr_t> BuildOutputObjects();

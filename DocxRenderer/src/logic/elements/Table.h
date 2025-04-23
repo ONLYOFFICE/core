@@ -111,7 +111,11 @@ namespace NSDocxRenderer
 		void AddTextLine(const std::shared_ptr<CTextLine>& pTextLine);
 		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 
+		double m_dMinPossibleTop = std::numeric_limits<double>::lowest();
+		double m_dMinPossibleLeft = std::numeric_limits<double>::lowest();
+
 		double m_dMaxPossibleBot = std::numeric_limits<double>::max();
+		double m_dMaxPossibleRight = std::numeric_limits<double>::max();
 	};
 } // namespace NSDocxRenderer
 

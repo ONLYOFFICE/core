@@ -178,7 +178,7 @@ namespace NSDocxRenderer
 			bool exists = false;
 			for (const auto& curr : cells_left)
 			{
-				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH)
+				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH_MM)
 				{
 					exists = true;
 					break;

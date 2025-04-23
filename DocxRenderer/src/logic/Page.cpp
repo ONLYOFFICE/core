@@ -308,8 +308,8 @@ namespace NSDocxRenderer
 			return;
 
 		// big white shape with page width & height skip
-		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET * 2 &&
-		        fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
+		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET_MM * 2 &&
+		        fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET_MM * 2 &&
 		        shape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
 
@@ -408,7 +408,7 @@ namespace NSDocxRenderer
 		m_arParagraphs = BuildParagraphs(text_line_groups);
 
 		// if (m_bIsBuildTables)
-		// m_arTables = BuildTables();
+		m_arTables = BuildTables(text_line_groups);
 
 		// post analyze
 		CalcSelected();
@@ -416,8 +416,8 @@ namespace NSDocxRenderer
 		CalcShapesRotation();
 
 		m_arOutputObjects = BuildOutputObjects();
-		// for (auto& t : m_arTables)
-		// 	m_arOutputObjects.push_back(t);
+		for (auto& t : m_arTables)
+			m_arOutputObjects.push_back(t);
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -600,7 +600,7 @@ namespace NSDocxRenderer
 					auto& p = m_arParagraphs[first_index];
 
 					if (!prev_p)
-						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FOR_FIRST_PARAGRAPH;
+						p->m_dSpaceBefore = p->m_dTop + c_dCORRECTION_FIRST_PARAGRAPH_MM;
 					else
 						p->m_dSpaceBefore = p->m_dTop - prev_p->m_dBot;
 
@@ -1490,7 +1490,8 @@ namespace NSDocxRenderer
 					if (lines_x_groups[i][j])
 						groups_taken.push_back(j);
 				}
-				if (groups_taken.size() != 1)
+				if (groups_taken.size() != 1 ||
+				        text_lines[i]->m_dTop - text_line_groups[groups_taken[0]]->m_dBot > c_dLINE_GROUP_SPLIT_MM)
 				{
 					for (const auto& taken : groups_taken)
 						ar_is_group_open[taken] = false;
@@ -1508,6 +1509,14 @@ namespace NSDocxRenderer
 			for (auto&& group : groups_add_later)
 				text_line_groups.push_back(std::move(group));
 		}
+
+		std::sort(text_line_groups.begin(), text_line_groups.end(),
+		          [] (const text_line_group_ptr_t& g1, const text_line_group_ptr_t& g2) {
+			if (fabs(g1->m_dTop - g2->m_dTop) < 4 * c_dTHE_SAME_STRING_Y_PRECISION_MM)
+				return g1->m_dLeft < g2->m_dLeft;
+			return g1->m_dTop < g2->m_dTop;
+
+		});
 		return text_line_groups;
 	}
 
@@ -1916,16 +1925,16 @@ namespace NSDocxRenderer
 		return ar_paragraphs;
 	}
 
-	std::vector<std::vector<CTable::cell_ptr_t>> CPage::BuildCellGroups(const std::vector<CTable::cell_ptr_t>& arCells)
+	std::vector<std::vector<CTable::text_cell_ptr_t>> CPage::BuildTextCellGroups(const std::vector<CTable::text_cell_ptr_t>& arTextCells)
 	{
-		std::vector<std::vector<CTable::cell_ptr_t>> cell_groups;
-		std::vector<CTable::cell_ptr_t> curr_group = {arCells[0]};
+		std::vector<std::vector<CTable::text_cell_ptr_t>> cell_groups;
+		std::vector<CTable::text_cell_ptr_t> curr_group = {arTextCells[0]};
 
-		double curr_bot = arCells[0]->m_dBot;
-		for (size_t i = 1; i < arCells.size(); ++i)
+		double curr_bot = arTextCells[0]->m_dBot;
+		for (size_t i = 1; i < arTextCells.size(); ++i)
 		{
-			const auto& cell = arCells[i];
-			if (cell->m_dTop - curr_bot < c_dMAX_TABLE_LINE_WIDTH)
+			const auto& cell = arTextCells[i];
+			if (cell->m_dTop - curr_bot < 10)
 				curr_group.push_back(cell);
 			else
 			{
@@ -1942,25 +1951,31 @@ namespace NSDocxRenderer
 	{
 		auto graphical_cells = BuildGraphicalCells();
 		auto text_cells = BuildTextCells(arTextLineGroups);
+		auto text_cell_groups = BuildTextCellGroups(text_cells);
 
-		std::vector<CTable::cell_ptr_t> cells;
-		for (const auto& text_cell : text_cells)
+		AlignTextCellGroups(text_cell_groups);
+
+		std::vector<std::vector<CTable::cell_ptr_t>> cell_groups;
+		for (const auto& text_cell_group : text_cell_groups)
 		{
-			auto cell_new = std::make_shared<CTable::CCell>();
-			cell_new->RecalcWithNewItem(text_cell.get());
-			cells.push_back(std::move(cell_new));
+			std::vector<CTable::cell_ptr_t> cell_group_new;
+			for (auto& text_cell : text_cell_group)
+			{
+				auto cell_new = std::make_shared<CTable::CCell>();
+				cell_new->RecalcWithNewItem(text_cell.get());
+				cell_group_new.push_back(std::move(cell_new));
+			}
+			cell_groups.push_back(std::move(cell_group_new));
 		}
 
-		if (cells.empty())
+		if (cell_groups.empty())
 			return {};
-
-		auto cell_groups = BuildCellGroups(cells);
 
 		auto add_if_no_exists = [] (double val, std::vector<double>& grid) {
 			bool exists = false;
 			for (const auto& curr : grid)
 			{
-				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH)
+				if (fabs(curr - val) < c_dMAX_TABLE_LINE_WIDTH_MM)
 				{
 					exists = true;
 					break;
@@ -1981,94 +1996,89 @@ namespace NSDocxRenderer
 		};
 
 		// building a x and y grids
-		for (const auto& group : cell_groups)
-		{
-			std::vector<double> grid_x;
-			std::vector<double> grid_y;
+		// for (const auto& group : cell_groups)
+		// {
+		// 	std::vector<double> grid_x;
+		// 	std::vector<double> grid_y;
 
-			for (const auto& cell : group)
-			{
-				add_if_no_exists(cell->m_dLeft, grid_x);
-				add_if_no_exists(cell->m_dTop, grid_y);
-			}
-			add_if_no_exists(group.back()->m_dRight, grid_x);
-			add_if_no_exists(group.back()->m_dBot, grid_y);
+		// 	for (const auto& cell : group)
+		// 	{
+		// 		add_if_no_exists(cell->m_dLeft, grid_x);
+		// 		add_if_no_exists(cell->m_dTop, grid_y);
+		// 	}
+		// 	add_if_no_exists(group.back()->m_dRight, grid_x);
+		// 	add_if_no_exists(group.back()->m_dBot, grid_y);
 
-			std::sort(grid_x.begin(), grid_x.end(), std::less<double>{});
-			std::sort(grid_y.begin(), grid_y.end(), std::less<double>{});
+		// 	std::sort(grid_x.begin(), grid_x.end(), std::less<double>{});
+		// 	std::sort(grid_y.begin(), grid_y.end(), std::less<double>{});
 
-			// GridSpan calc
-			for (auto& cell : group)
-			{
-				size_t first = 0;
-				size_t second = grid_x.size();
-				for (size_t i = 0; i < grid_x.size(); ++i)
-				{
-					if (fabs(grid_x[i] - cell->m_dLeft) < c_dMAX_TABLE_LINE_WIDTH)
-						first = i;
-					else if (fabs(grid_x[i] - cell->m_dRight) < c_dMAX_TABLE_LINE_WIDTH)
-						second = i;
-				}
-				cell->m_nGridSpan = second - first;
-			}
+		// 	// GridSpan calc
+		// 	for (auto& cell : group)
+		// 	{
+		// 		size_t first = 0;
+		// 		size_t second = grid_x.size();
+		// 		for (size_t i = 0; i < grid_x.size(); ++i)
+		// 		{
+		// 			if (fabs(grid_x[i] - cell->m_dLeft) < c_dMAX_TABLE_LINE_WIDTH_MM)
+		// 				first = i;
+		// 			else if (fabs(grid_x[i] - cell->m_dRight) < c_dMAX_TABLE_LINE_WIDTH_MM)
+		// 				second = i;
+		// 		}
+		// 		cell->m_nGridSpan = second - first;
+		// 	}
 
-			// merge vert calc
-			for (auto& cell : group)
-			{
-				size_t first = 0;
-				size_t second = grid_y.size();
-				for (size_t i = 0; i < grid_y.size(); ++i)
-				{
-					if (fabs(grid_y[i] - cell->m_dTop) < c_dMAX_TABLE_LINE_WIDTH)
-						first = i;
-					else if (fabs(grid_y[i] - cell->m_dBot) < c_dMAX_TABLE_LINE_WIDTH)
-						second = i;
-				}
-				while (++first < second)
-				{
-					auto cell_new = split_cell_vert(cell, grid_y[first]);
-					cell_new->m_eVMerge = CTable::CCell::eVMerge::vmContinue;
-					cells.push_back(cell_new);
-				}
-			}
-		}
-
-		std::sort(cells.begin(), cells.end(), [] (const CTable::cell_ptr_t& c1, const CTable::cell_ptr_t& c2) {
-			if (fabs(c1->m_dBot - c2->m_dBot) < c_dMAX_TABLE_LINE_WIDTH)
-				return c1->m_dLeft < c2->m_dLeft;
-			return c1->m_dBot < c2->m_dBot;
-		});
+		// 	// merge vert calc
+		// 	for (auto& cell : group)
+		// 	{
+		// 		size_t first = 0;
+		// 		size_t second = grid_y.size();
+		// 		for (size_t i = 0; i < grid_y.size(); ++i)
+		// 		{
+		// 			if (fabs(grid_y[i] - cell->m_dTop) < c_dMAX_TABLE_LINE_WIDTH_MM)
+		// 				first = i;
+		// 			else if (fabs(grid_y[i] - cell->m_dBot) < c_dMAX_TABLE_LINE_WIDTH_MM)
+		// 				second = i;
+		// 		}
+		// 		while (++first < second)
+		// 		{
+		// 			auto cell_new = split_cell_vert(cell, grid_y[first]);
+		// 			cell_new->m_eVMerge = CTable::CCell::eVMerge::vmContinue;
+		// 			cells.push_back(cell_new);
+		// 		}
+		// 	}
+		// }
 
 		// sets paragraphs into cells
-		for (auto& cell : cells)
-			for (auto& paragraph : m_arParagraphs)
-			{
-				if (!paragraph)
-					continue;
-
-				bool top = fabs(cell->m_dTop - paragraph->m_arTextLines.front()->m_dTopWithMaxAscent) < c_dGRAPHICS_ERROR_MM
-				        || paragraph->m_arTextLines.front()->m_dTopWithMaxAscent > cell->m_dTop;
-				bool bot = fabs(cell->m_dBot - paragraph->m_dBot) < c_dGRAPHICS_ERROR_MM
-				        || paragraph->m_dBot < cell->m_dBot;
-				bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM
-				        || paragraph->m_dLeft > cell->m_dLeft;
-				bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM
-				        || paragraph->m_dRight < cell->m_dRight;
-				if (top && bot && left && right)
+		for (auto& cells : cell_groups)
+			for (auto& cell : cells)
+				for (auto& paragraph : m_arParagraphs)
 				{
-					paragraph->m_dLeftBorder = paragraph->m_dLeft - cell->m_dLeft;
-					paragraph->m_dRightBorder = 0;
-					if (!cell->m_arParagraphs.empty())
-						paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_arParagraphs.back()->m_dBot;
-					else if (paragraph->m_dTop - cell->m_dTop > 0)
-						paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_dTop;
-					else
-						paragraph->m_dSpaceBefore = 0;
-					paragraph->m_dSpaceAfter = 0;
-					cell->AddParagraph(paragraph);
-					paragraph = nullptr;
+					if (!paragraph)
+						continue;
+
+					bool top = fabs(cell->m_dTop - paragraph->m_arTextLines.front()->m_dTopWithMaxAscent) < c_dGRAPHICS_ERROR_MM
+					        || paragraph->m_arTextLines.front()->m_dTopWithMaxAscent > cell->m_dTop;
+					bool bot = fabs(cell->m_dBot - paragraph->m_dBot) < c_dGRAPHICS_ERROR_MM
+					        || paragraph->m_dBot < cell->m_dBot;
+					bool left = fabs(cell->m_dLeft - paragraph->m_dLeft) < c_dGRAPHICS_ERROR_MM
+					        || paragraph->m_dLeft > cell->m_dLeft;
+					bool right = fabs(cell->m_dRight - paragraph->m_dRight) < c_dGRAPHICS_ERROR_MM
+					        || paragraph->m_dRight < cell->m_dRight;
+					if (top && bot && left && right)
+					{
+						paragraph->m_dLeftBorder = paragraph->m_dLeft - cell->m_dLeft;
+						paragraph->m_dRightBorder = 0;
+						if (!cell->m_arParagraphs.empty())
+							paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_arParagraphs.back()->m_dBot;
+						else if (paragraph->m_dTop - cell->m_dTop > 0)
+							paragraph->m_dSpaceBefore = paragraph->m_dTop - cell->m_dTop;
+						else
+							paragraph->m_dSpaceBefore = 0;
+						paragraph->m_dSpaceAfter = 0;
+						cell->AddParagraph(paragraph);
+						paragraph = nullptr;
+					}
 				}
-			}
 
 		auto right = MoveNullptr(m_arParagraphs.begin(), m_arParagraphs.end());
 		m_arParagraphs.erase(right, m_arParagraphs.end());
@@ -2079,19 +2089,20 @@ namespace NSDocxRenderer
 
 		std::vector<CTable::row_ptr_t> rows;
 		CTable::row_ptr_t curr_row = nullptr;
-		for (auto& cell : cells)
-		{
-			if (!curr_row)
+		for (auto& cells : cell_groups)
+			for (auto& cell : cells)
 			{
-				curr_row = std::make_shared<CTable::CRow>();
+				if (!curr_row)
+				{
+					curr_row = std::make_shared<CTable::CRow>();
+				}
+				else if (fabs(curr_row->m_dBot - cell->m_dBot) > c_dMAX_TABLE_LINE_WIDTH_MM)
+				{
+					rows.push_back(std::move(curr_row));
+					curr_row = std::make_shared<CTable::CRow>();
+				}
+				curr_row->AddCell(cell);
 			}
-			else if (fabs(curr_row->m_dBot - cell->m_dBot) > c_dMAX_TABLE_LINE_WIDTH)
-			{
-				rows.push_back(std::move(curr_row));
-				curr_row = std::make_shared<CTable::CRow>();
-			}
-			curr_row->AddCell(cell);
-		}
 		if (!curr_row->IsEmpty())
 			rows.push_back(std::move(curr_row));
 
@@ -2103,7 +2114,7 @@ namespace NSDocxRenderer
 			{
 				curr_table = std::make_shared<CTable>();
 			}
-			else if (fabs(curr_table->m_dBot - row->m_dTop) > c_dMAX_TABLE_LINE_WIDTH)
+			else if (fabs(curr_table->m_dBot - row->m_dTop) > c_dMAX_TABLE_LINE_WIDTH_MM)
 			{
 				tables.push_back(std::move(curr_table));
 				curr_table = std::make_shared<CTable>();
@@ -2178,7 +2189,7 @@ namespace NSDocxRenderer
 				if (direction == eLineDirection::ldTop) return crossing->p.y - p.y;
 			};
 
-			while (diff() > c_dMAX_TABLE_LINE_WIDTH)
+			while (diff() > c_dMAX_TABLE_LINE_WIDTH_MM)
 			{
 				auto curr_line = get_line(direction, crossing->lines);
 				if (!curr_line)
@@ -2187,7 +2198,7 @@ namespace NSDocxRenderer
 				out_indexes.insert(curr_line->shape_index);
 				crossing = curr_line->crossing;
 
-				if (fabs(diff()) < c_dMAX_TABLE_LINE_WIDTH)
+				if (fabs(diff()) < c_dMAX_TABLE_LINE_WIDTH_MM)
 					return true;
 			}
 			return false;
@@ -2201,8 +2212,8 @@ namespace NSDocxRenderer
 				if (!crossing)
 					continue;
 
-				if (fabs(crossing->p.x - p.x) < c_dMAX_TABLE_LINE_WIDTH &&
-				        fabs(crossing->p.y - p.y) < c_dMAX_TABLE_LINE_WIDTH)
+				if (fabs(crossing->p.x - p.x) < c_dMAX_TABLE_LINE_WIDTH_MM &&
+				        fabs(crossing->p.y - p.y) < c_dMAX_TABLE_LINE_WIDTH_MM)
 					return crossing.get();
 			}
 			return nullptr;
@@ -2241,13 +2252,13 @@ namespace NSDocxRenderer
 			eLineDirection direction12;
 			eLineDirection direction21;
 
-			if (fabs(p1.y - p2.y) < c_dMAX_TABLE_LINE_WIDTH)
+			if (fabs(p1.y - p2.y) < c_dMAX_TABLE_LINE_WIDTH_MM)
 			{
 				direction12 = p1.x > p2.x ? eLineDirection::ldLeft : eLineDirection::ldRight;
 				direction21 = p1.x < p2.x ? eLineDirection::ldLeft : eLineDirection::ldRight;
 			}
 
-			else if (fabs(p1.x - p2.x) < c_dMAX_TABLE_LINE_WIDTH)
+			else if (fabs(p1.x - p2.x) < c_dMAX_TABLE_LINE_WIDTH_MM)
 			{
 				direction12 = p1.y > p2.y ? eLineDirection::ldTop : eLineDirection::ldBot;
 				direction21 = p1.y < p2.y ? eLineDirection::ldTop : eLineDirection::ldBot;
@@ -2305,7 +2316,7 @@ namespace NSDocxRenderer
 				continue;
 
 			// possible point of crossing in a adobe table
-			if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+			if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH_MM && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH_MM)
 			{
 				Crossing cr;
 				cr.p.x = shape->m_dLeft + shape->m_dWidth / 2;
@@ -2326,13 +2337,13 @@ namespace NSDocxRenderer
 			if (shape->m_eSimpleLineType == eSimpleLineType::sltUnknown)
 			{
 				// possible point of crossing in a adobe table
-				if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+				if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH_MM && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH_MM)
 				{
 					is_done = true;
 				}
 
 				// vertical line
-				else if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight > c_dMAX_TABLE_LINE_WIDTH)
+				else if (shape->m_dWidth < c_dMAX_TABLE_LINE_WIDTH_MM && shape->m_dHeight > c_dMAX_TABLE_LINE_WIDTH_MM)
 				{
 					Point p1(shape->m_dLeft + shape->m_dWidth / 2, shape->m_dTop);
 					Point p2(shape->m_dLeft + shape->m_dWidth / 2, shape->m_dBot);
@@ -2341,7 +2352,7 @@ namespace NSDocxRenderer
 				}
 
 				// horizontal line
-				else if (shape->m_dWidth > c_dMAX_TABLE_LINE_WIDTH && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH)
+				else if (shape->m_dWidth > c_dMAX_TABLE_LINE_WIDTH_MM && shape->m_dHeight < c_dMAX_TABLE_LINE_WIDTH_MM)
 				{
 					Point p1(shape->m_dLeft, shape->m_dTop + shape->m_dHeight / 2);
 					Point p2(shape->m_dRight, shape->m_dTop + shape->m_dHeight / 2);
@@ -2364,8 +2375,8 @@ namespace NSDocxRenderer
 
 						// pure vertical / horizontal lines only
 						// not small lines
-						if (fabs(prev.x - curr.x) > c_dMAX_TABLE_LINE_WIDTH && fabs(prev.y - curr.y) > c_dMAX_TABLE_LINE_WIDTH ||
-						        (fabs(prev.x - curr.x) < c_dMAX_TABLE_LINE_WIDTH && fabs(prev.y - curr.y) < c_dMAX_TABLE_LINE_WIDTH))
+						if (fabs(prev.x - curr.x) > c_dMAX_TABLE_LINE_WIDTH_MM && fabs(prev.y - curr.y) > c_dMAX_TABLE_LINE_WIDTH_MM ||
+						        (fabs(prev.x - curr.x) < c_dMAX_TABLE_LINE_WIDTH_MM && fabs(prev.y - curr.y) < c_dMAX_TABLE_LINE_WIDTH_MM))
 						{
 							prev = curr;
 							continue;
@@ -2392,7 +2403,7 @@ namespace NSDocxRenderer
 
 		// sorting guarantee creating cell once (by taking second cross j > i)
 		std::sort(crossings.begin(), crossings.end(), [] (const std::shared_ptr<Crossing>& c1, const std::shared_ptr<Crossing>& c2) {
-			if (fabs(c1->p.y - c2->p.y) < c_dMAX_TABLE_LINE_WIDTH)
+			if (fabs(c1->p.y - c2->p.y) < c_dMAX_TABLE_LINE_WIDTH_MM)
 				return c1->p.x < c2->p.x;
 			return c1->p.y < c2->p.y;
 		});
@@ -2408,9 +2419,9 @@ namespace NSDocxRenderer
 
 				// first should be top left corner
 				// and second right bot (not the same line ofc)
-				if (fabs(cr_first->p.x - cr_second->p.x) < c_dMAX_TABLE_LINE_WIDTH ||
+				if (fabs(cr_first->p.x - cr_second->p.x) < c_dMAX_TABLE_LINE_WIDTH_MM ||
 				        cr_first->p.x > cr_second->p.x ||
-				        fabs(cr_first->p.y - cr_second->p.y) < c_dMAX_TABLE_LINE_WIDTH ||
+				        fabs(cr_first->p.y - cr_second->p.y) < c_dMAX_TABLE_LINE_WIDTH_MM ||
 				        cr_first->p.y > cr_second->p.y)
 					continue;
 
@@ -2452,8 +2463,6 @@ namespace NSDocxRenderer
 	std::vector<CTable::text_cell_ptr_t> CPage::BuildTextCells(const std::vector<text_line_group_ptr_t>& arTextLineGroups)
 	{
 		std::vector<CTable::text_cell_ptr_t> text_cells;
-
-		// -> <-
 		for (const auto& text_line_group : arTextLineGroups)
 		{
 			auto text_cell_new = std::make_shared<CTextCell>();
@@ -2461,20 +2470,127 @@ namespace NSDocxRenderer
 			text_cells.push_back(std::move(text_cell_new));
 		}
 
-		// calc max gaps between groups vertically
-		for (size_t i = 0; i < text_cells.size(); ++i)
-		{
-			for (size_t j = 0; j < text_cells.size(); ++j)
-			{
-				if (i == j)
-					continue;
+		std::sort(text_cells.begin(), text_cells.end(),
+		        [] (const CTable::text_cell_ptr_t& cell1, const CTable::text_cell_ptr_t& cell2) {
+			if (fabs(cell1->m_dTop - cell2->m_dTop) < c_dMAX_TABLE_LINE_WIDTH_MM)
+				return cell1->m_dLeft < cell2->m_dLeft;
+			return cell1->m_dTop < cell2->m_dTop;
+		});
+		return text_cells;
+	}
 
-				if (!(text_cells[j]->m_dLeft > text_cells[i]->m_dRight &&
-				      text_cells[j]->m_dRight < text_cells[i]->m_dLeft))
-					text_cells[i]->m_dMaxPossibleBot = std::min(text_cells[i]->m_dMaxPossibleBot, text_cells[j]->m_dTop);
+	void CPage::AlignTextCellGroups(const std::vector<std::vector<CTable::text_cell_ptr_t>>& arTextCellGroups)
+	{
+		auto vert_crossing = [] (const CBaseItem* item1, const CBaseItem* item2) {
+			bool left_inside = item1->m_dLeft < item2->m_dRight;
+			bool right_inside = item1->m_dRight > item2->m_dLeft;
+			return left_inside && right_inside;
+		};
+
+		auto hor_crossing = [] (const CBaseItem* item1, const CBaseItem* item2) {
+			bool left_inside = item1->m_dTop < item2->m_dBot;
+			bool right_inside = item1->m_dBot > item2->m_dTop;
+			return left_inside && right_inside;
+		};
+
+		for (const auto& text_cells : arTextCellGroups)
+		{
+			// calc max gaps between groups bot / right
+			for (size_t i = 0; i < text_cells.size(); ++i)
+			{
+				// max bot calc
+				for (size_t j = 0; j < text_cells.size(); ++j)
+					if (text_cells[i]->m_dBot < text_cells[j]->m_dTop && vert_crossing(text_cells[i].get(), text_cells[j].get()))
+						text_cells[i]->m_dMaxPossibleBot = std::min(text_cells[i]->m_dMaxPossibleBot, text_cells[j]->m_dTop);
+
+				// max right calc
+				for (size_t j = 0; j < text_cells.size(); ++j)
+					if (text_cells[i]->m_dRight < text_cells[j]->m_dLeft && hor_crossing(text_cells[i].get(), text_cells[j].get()))
+						text_cells[i]->m_dMaxPossibleRight = std::min(text_cells[i]->m_dMaxPossibleRight, text_cells[j]->m_dLeft);
+			}
+
+			// setting aligned params bot / right
+			for (size_t i = 0; i < text_cells.size(); ++i)
+			{
+				// bot recalc
+				for (size_t j = 0; j < text_cells.size(); ++j)
+				{
+					if (hor_crossing(text_cells[i].get(), text_cells[j].get()) && i != j)
+					{
+						if (text_cells[i]->m_dMaxPossibleBot > text_cells[j]->m_dBot)
+						{
+							text_cells[i]->m_dBot = std::max(text_cells[i]->m_dBot, text_cells[j]->m_dBot);
+							text_cells[i]->m_dHeight = text_cells[i]->m_dBot - text_cells[i]->m_dTop;
+						}
+						else
+							break;
+					}
+				}
+
+				// right recalc
+				for (size_t j = 0; j < text_cells.size(); ++j)
+				{
+					if (vert_crossing(text_cells[i].get(), text_cells[j].get()) && i != j)
+					{
+						if (text_cells[i]->m_dMaxPossibleRight > text_cells[j]->m_dRight)
+						{
+							text_cells[i]->m_dRight = std::max(text_cells[i]->m_dRight, text_cells[j]->m_dRight);
+							text_cells[i]->m_dWidth = text_cells[i]->m_dRight - text_cells[i]->m_dLeft;
+						}
+						else
+							break;
+					}
+				}
+			}
+
+			// calc max gaps between groups top / left
+			for (int i = text_cells.size() - 1; i >= 0; --i)
+			{
+				// max top calc
+				for (int j = text_cells.size() - 1; j >= 0; --j)
+					if (text_cells[i]->m_dTop > text_cells[j]->m_dBot && vert_crossing(text_cells[i].get(), text_cells[j].get()))
+						text_cells[i]->m_dMinPossibleTop = std::max(text_cells[i]->m_dMinPossibleTop, text_cells[j]->m_dBot);
+
+				// max left calc
+				for (int j = text_cells.size() - 1; j >= 0; --j)
+					if (text_cells[i]->m_dLeft > text_cells[j]->m_dRight && hor_crossing(text_cells[i].get(), text_cells[j].get()))
+						text_cells[i]->m_dMinPossibleLeft = std::max(text_cells[i]->m_dMinPossibleLeft, text_cells[j]->m_dRight);
+			}
+
+			// setting aligned params top / left
+			for (int i = text_cells.size() - 1; i >= 0; --i)
+			{
+				// top recalc
+				for (int j = text_cells.size() - 1; j >= 0; --j)
+				{
+					if (hor_crossing(text_cells[i].get(), text_cells[j].get()) && i != j)
+					{
+						if (text_cells[i]->m_dMinPossibleTop < text_cells[j]->m_dTop)
+						{
+							text_cells[i]->m_dTop = std::min(text_cells[i]->m_dTop, text_cells[j]->m_dTop);
+							text_cells[i]->m_dHeight = text_cells[i]->m_dBot - text_cells[i]->m_dTop;
+						}
+						else
+							break;
+					}
+				}
+
+				// left recalc
+				for (int j = text_cells.size() - 1; j >= 0; --j)
+				{
+					if (vert_crossing(text_cells[i].get(), text_cells[j].get()) && i != j)
+					{
+						if (text_cells[i]->m_dMinPossibleLeft > text_cells[j]->m_dLeft)
+						{
+							text_cells[i]->m_dRight = std::min(text_cells[i]->m_dLeft, text_cells[j]->m_dLeft);
+							text_cells[i]->m_dWidth = text_cells[i]->m_dRight - text_cells[i]->m_dLeft;
+						}
+						else
+							break;
+					}
+				}
 			}
 		}
-		return text_cells;
 	}
 
 	CPage::shape_ptr_t CPage::CreateSingleLineShape(text_line_ptr_t& pLine)

@@ -766,6 +766,8 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_COLUMNS);
     else
         proc.mandatory<COLUMNS>();
+    if(m_SORTANDFILTER != nullptr)
+        proc.mandatory(*m_SORTANDFILTER);
     if(m_Dimensions != nullptr)
         proc.mandatory(*m_Dimensions);
     else

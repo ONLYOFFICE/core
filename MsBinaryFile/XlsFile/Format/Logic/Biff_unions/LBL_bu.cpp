@@ -93,6 +93,14 @@ const bool LBL::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+const bool LBL::saveContent(BinProcessor& proc)
+{
+    if(m_Lbl == nullptr)
+        return false;
+    proc.mandatory(*m_Lbl);
+    return true;
+}
+
 int LBL::serialize(std::wostream & stream)
 {
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());

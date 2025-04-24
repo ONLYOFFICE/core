@@ -1060,13 +1060,13 @@ namespace OOX
 				return m_oReadPath;
 			}
 
+			BYTE *m_pData = NULL;
+			DWORD m_nDataLength = 0;
+
 			nullable<CPivotTableDefinition> m_oPivotTableDefinition;
 		private:
-			BYTE *m_pData;
-			long m_nDataLength;
 
 			CPath m_oReadPath;
-            std::wstring prepareData() const;
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 			{
 			}

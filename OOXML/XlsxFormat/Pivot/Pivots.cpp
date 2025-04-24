@@ -217,11 +217,9 @@ namespace Spreadsheet
             CPivotTableDefinition tableDef;
             {
                 XmlUtils::CXmlLiteReader reader;
-                {
-                    auto wstringData = prepareData();
-                    reader.FromString(wstringData);
-                }
-                reader.ReadNextNode();
+				reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
+  
+				reader.ReadNextNode();
                 tableDef.fromXML(reader);
             }
             return tableDef.toBin();
@@ -236,24 +234,29 @@ namespace Spreadsheet
 
 	void CPivotTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
+		RELEASEARRAYOBJECTS(m_pData);
+
 		m_oReadPath = oPath;
         IFileContainer::Read( oRootPath, oPath );
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
         {
             readBin(m_oReadPath);
-            return;
         }
+		else
+		{
+			NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
 
-		XmlUtils::CXmlLiteReader oReader;
+			XmlUtils::CXmlLiteReader oReader;
 
-		if ( !oReader.FromFile( oPath.GetPath() ) )
-			return;
+			if (!oReader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength))
+				return;
 
-		if ( !oReader.ReadNextNode() )
-			return;
+			if (!oReader.ReadNextNode())
+				return;
 
-		m_oPivotTableDefinition = oReader;
+			m_oPivotTableDefinition = oReader;
+		}
 	}
 	void CPivotTableFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
@@ -294,12 +297,6 @@ namespace Spreadsheet
             return OOX::SpreadsheetBin::FileTypes::PivotTableBin;
         }
             return OOX::Spreadsheet::FileTypes::PivotTable;
-    }
-    std::wstring CPivotTableFile::prepareData() const
-    {
-        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        return converter.from_bytes(stringData);
     }
 //------------------------------------
 	void CPivotTableDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -3734,7 +3731,38 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
-    void CPivotCacheDefinitionFile::readBin(const CPath& oPath)
+	CPivotCacheDefinitionFile::CPivotCacheDefinitionFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+
+		m_pData = NULL;
+		m_nDataLength = 0;
+
+		bIsWritten = false;
+	}
+	CPivotCacheDefinitionFile::CPivotCacheDefinitionFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+
+		m_pData = NULL;
+		m_nDataLength = 0;
+
+		bIsWritten = false;
+
+		read(oRootPath, oPath);
+	}
+	CPivotCacheDefinitionFile::~CPivotCacheDefinitionFile()
+	{
+		m_nDataLength = 0;
+		RELEASEARRAYOBJECTS(m_pData)
+	}
+	void CPivotCacheDefinitionFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	void CPivotCacheDefinitionFile::readBin(const CPath& oPath)
     {
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
@@ -3755,7 +3783,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
     }
 	XLS::BaseObjectPtr CPivotCacheDefinitionFile::WriteBin() const
 	{
-
         if(m_oPivotCashDefinition.IsInit())
         {
             auto pivotCacheDefStream = m_oPivotCashDefinition->toBin();
@@ -3766,15 +3793,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             CPivotCacheDefinition cacheDef;
             {
                 XmlUtils::CXmlLiteReader reader;
-                {
-                    auto wstringData = prepareData();
-                    reader.FromString(wstringData);
-                }
+				reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
+
                 reader.ReadNextNode();
                 cacheDef.fromXML(reader);
             }
             return cacheDef.toBin();
-
         }
         else
         {
@@ -3784,6 +3808,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	}
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
+		RELEASEARRAYOBJECTS(m_pData);
+
 		m_oReadPath = oPath;
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
@@ -3792,9 +3818,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         }
 		else
 		{
+			NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
+
 			XmlUtils::CXmlLiteReader oReader;
 
-			if (!oReader.FromFile(oPath.GetPath()))
+			if (!oReader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength))
 				return;
 
 			if (!oReader.ReadNextNode())
@@ -3848,12 +3876,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return OOX::Spreadsheet::FileTypes::PivotCacheDefinition;
 	}
-    std::wstring CPivotCacheDefinitionFile::prepareData() const
-    {
-        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        return converter.from_bytes(stringData);
-    }
 	void CPivotCacheDefinitionFile::setData(BYTE* pData, long length, const std::wstring& srIdRecords)
 	{
 		//if (srIdRecords.length() > 0)
@@ -7097,8 +7119,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		{
             CPivotCacheRecords records;
             XmlUtils::CXmlLiteReader reader;
-			auto wstringData = prepareData();
-            reader.FromString(wstringData);
+            reader.FromStringA((char*)m_pData, m_nDataLength);
 			reader.ReadNextNode();
             records.fromXML(reader);
             pivotCacheRecordsStream->m_PIVOTCACHERECORDS = records.toBin();
@@ -7107,14 +7128,16 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	}
     void CPivotCacheRecordsFile::WriteBin(XLS::StreamCacheWriterPtr& writer) const
     {
-        if(m_oPivotCacheRecords.IsInit())
-            m_oPivotCacheRecords->toBin(writer);
-        else
+		if (m_oPivotCacheRecords.IsInit())
+		{
+			m_oPivotCacheRecords->toBin(writer);
+		}
+        else if (m_pData && m_nDataLength > 0)
         {
             CPivotCacheRecords records;
             XmlUtils::CXmlLiteReader reader;
-            auto wstringData = prepareData();
-            reader.FromString(wstringData);
+
+			reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
             reader.ReadNextNode();
             records.ReadAttributes(reader);
             {
@@ -7127,6 +7150,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             }
             if ( reader.IsEmptyNode() )
                 return;
+
             int nCurDepth = reader.GetDepth();
             while( reader.ReadNextSiblingNode( nCurDepth ) )
             {
@@ -7146,7 +7170,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 auto record = writer->getNextRecord(XLSB::rt_EndPivotCacheRecords);
                 writer->storeNextRecord(record);
             }
-
         }
     }
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
@@ -7222,14 +7245,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			return OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin;
 		}
 		return OOX::Spreadsheet::FileTypes::PivotCacheRecords;
-	}
-	std::wstring CPivotCacheRecordsFile::prepareData() const
-	{
-
-	std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-
-    return converter.from_bytes(stringData);
 	}
 //------------------------------------
 	void CPivotCacheRecords::toXML(NSStringUtils::CStringBuilder& writer) const

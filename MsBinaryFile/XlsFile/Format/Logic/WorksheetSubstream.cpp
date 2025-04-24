@@ -798,7 +798,17 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
     if(m_CONDFMTS != nullptr)
         proc.mandatory(*m_CONDFMTS);
-
+    for(auto i : m_arHLINK)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_DVAL != nullptr)
+        proc.mandatory(*m_DVAL);
+    if(m_CodeName != nullptr)
+        proc.mandatory(*m_CodeName);
+    for(auto i : m_arRECORD12)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    proc.mandatory<EOF_T>();
     return true;
 }
 

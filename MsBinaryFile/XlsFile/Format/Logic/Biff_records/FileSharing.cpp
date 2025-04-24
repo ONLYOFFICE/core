@@ -95,6 +95,14 @@ void FileSharing::writeFields(CFRecord& record)
         }
         record << wResPassNum << stUserName;
     }
+    else
+    {
+        record << fReadOnlyRec << wResPassNum;
+        if(wResPassNum == 0)
+            record.reserveNunBytes(2);
+        record << stUNUsername;
+
+    }
 }
 } // namespace XLS
 

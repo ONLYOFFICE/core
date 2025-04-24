@@ -639,8 +639,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 {
+    if(m_WriteProtect != nullptr)
+        proc.mandatory(*m_WriteProtect);
+    if(m_Template != nullptr)
+        proc.mandatory(*m_Template);
     proc.mandatory<INTERFACE_T>();
     proc.mandatory<WriteAccess>();
+    if(m_FileSharing != nullptr)
+        proc.mandatory(*m_FileSharing);
     proc.mandatory<CodePage>();
     if(m_RRTabId != nullptr)
         proc.mandatory(*m_RRTabId);

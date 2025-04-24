@@ -59,5 +59,13 @@ const bool RECORD12::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool RECORD12::saveContent(BinProcessor& proc)
+{
+    if(m_HeaderFooter == nullptr)
+        return false;
+    proc.mandatory(*m_HeaderFooter);
+    return true;
+}
+
 } // namespace XLS
 

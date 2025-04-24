@@ -7,6 +7,7 @@
 #include <sstream>
 #include <cstdlib>
 #include <cfloat>
+#include <cctype>
 
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../DesktopEditor/common/ProcessEnv.h"
@@ -46,7 +47,7 @@ inline bool StringToBoolean(const std::string& sValue, bool& bValue)
 	std::string sTrimmed = sValue.substr(unStart, unEnd - unStart + 1);
 
 	std::transform(sTrimmed.begin(), sTrimmed.end(), sTrimmed.begin(),
-	               [](unsigned char c){ return std::tolower(c); });
+				   [](unsigned char c){ return std::tolower(c); });
 
 	bValue = "true" == sTrimmed;
 	return true;

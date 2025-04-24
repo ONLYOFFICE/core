@@ -439,7 +439,7 @@ namespace NSJSBase
 	{
 	}
 
-	bool CJSContext::IsEntered();
+	bool CJSContext::IsEntered()
 	{
 		return true;
 	}

@@ -3856,21 +3856,21 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
     }
 	void CPivotCacheDefinitionFile::setData(BYTE* pData, long length, const std::wstring& srIdRecords)
 	{
-		if (srIdRecords.length() > 0)
-		{
-			XmlUtils::CXmlLiteReader oReader;
+		//if (srIdRecords.length() > 0)
+		//{
+		//	XmlUtils::CXmlLiteReader oReader;
 
-			if (!oReader.FromStringA((char*)pData, length))
-				return;
+		//	if (!oReader.FromStringA((char*)pData, length))
+		//		return;
 
-			if (!oReader.ReadNextNode())
-				return;
+		//	if (!oReader.ReadNextNode())
+		//		return;
 
-			m_oPivotCashDefinition = oReader;
+		//	m_oPivotCashDefinition = oReader;
 
-			m_oPivotCashDefinition->m_oRid = srIdRecords;
-		}
-		else
+		//	m_oPivotCashDefinition->m_oRid = srIdRecords;
+		//}
+		//else
 		{
 			m_nDataLength = length;
 			m_pData = new BYTE[m_nDataLength];

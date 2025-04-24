@@ -776,6 +776,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     if(m_CELLTABLE != nullptr)
         proc.mandatory(*m_CELLTABLE);
 
+    for(auto i : m_arHFPicture)
+        if( i!= nullptr)
+            proc.mandatory(*i);
     for(auto i:m_arNote)
         if(i!= nullptr)
             proc.mandatory(*i);
@@ -796,6 +799,8 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     for(auto i : m_arMergeCells)
         if(i != nullptr)
             proc.mandatory(*i);
+    if(m_LRng != nullptr)
+        proc.mandatory(*m_LRng);
     if(m_CONDFMTS != nullptr)
         proc.mandatory(*m_CONDFMTS);
     for(auto i : m_arHLINK)

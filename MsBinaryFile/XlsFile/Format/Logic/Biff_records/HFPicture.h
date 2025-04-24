@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeHFPicture;
 
-	bool fIsDrawing;
-	bool fIsDrawingGroup;
-	bool fContinue;
+    bool fIsDrawing = false;
+    bool fIsDrawingGroup = true;
+    bool fContinue = false;
 
 	CFRecordPtr recordDrawingGroup;
 };

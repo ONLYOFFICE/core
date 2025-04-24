@@ -3854,6 +3854,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
         return converter.from_bytes(stringData);
     }
+	void CPivotCacheDefinitionFile::setData(BYTE* pData, long length, const std::wstring& srIdRecords)
+	{
+		if (srIdRecords.length() > 0)
+		{
+			XmlUtils::CXmlLiteReader oReader;
+
+			if (!oReader.FromStringA((char*)pData, length))
+				return;
+
+			if (!oReader.ReadNextNode())
+				return;
+
+			m_oPivotCashDefinition = oReader;
+
+			m_oPivotCashDefinition->m_oRid = srIdRecords;
+		}
+		else
+		{
+			m_nDataLength = length;
+			m_pData = new BYTE[m_nDataLength];
+			memcpy(m_pData, pData, length);
+		}
+	}
 //------------------------------------
 	void CPivotCacheDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
 	{

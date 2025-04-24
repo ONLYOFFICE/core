@@ -642,28 +642,7 @@ namespace OOX
 				CPath oRootPath;
 				read(oRootPath, oPath);
 			}
-           void setData(BYTE* pData, long length, const std::wstring& srIdRecords)
-            {
-                if(srIdRecords.length() > 0)
-                {
-                    const std::string srIdRecordsA( srIdRecords.begin(), srIdRecords.end() );
-                    std::string rIdAttr = " r:id=\""+ srIdRecordsA +"\"";
-                    m_nDataLength = length + (long)rIdAttr.length();
-
-					m_pData = new BYTE[m_nDataLength];
-
-					long nTreshold = 220;
-                    memcpy(m_pData, pData, nTreshold);
-                    memcpy(m_pData + nTreshold, rIdAttr.c_str(), rIdAttr.length());
-                    memcpy(m_pData + nTreshold + rIdAttr.length(), pData + nTreshold, length - nTreshold);
-                }
-                else
-                {
-                    m_nDataLength = length;
-                    m_pData = new BYTE[m_nDataLength];
-                    memcpy(m_pData, pData, length);
-                }
-            }
+			void setData(BYTE* pData, long length, const std::wstring& srIdRecords);
             void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oRootPath, const CPath& oPath);

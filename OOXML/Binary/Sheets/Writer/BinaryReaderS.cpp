@@ -3577,8 +3577,8 @@ int BinaryWorkbookTableReader::ReadPivotCaches(BYTE type, long length, void* poR
                     pFileRecords->OOX::File::m_pMainDocument = m_pXlsb;
 				srIdRecords = pDefinitionFile->Add(pFileRecords).ToString();
 			}
-			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, L"");
-			
+			pDefinitionFile->setData(oPivotCachesTemp.pDefinitionData, oPivotCachesTemp.nDefinitionLength, srIdRecords);
+
 			NSCommon::smart_ptr<OOX::File> pFile(pDefinitionFile);
 			OOX::RId rIdDefinition = m_oWorkbook.Add(pFile);
             if(!m_pXlsb)

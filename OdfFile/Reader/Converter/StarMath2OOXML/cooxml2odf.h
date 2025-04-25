@@ -84,6 +84,7 @@ namespace StarMath
 		void ConversionFunc(OOX::Logic::CFunc* pFunc);
 		StStyleMenClose ConversionFuncPr(OOX::Logic::CFuncPr* pFuncPr);
 		void ConversionBox(OOX::Logic::CBox* pBox);
+		void ConversionBorderBox(OOX::Logic::CBorderBox* pBorderBox);
 		void ConversionTextVector(std::vector<COneElement*>& arLine, std::vector<COneElement*>& arNewLine);
 		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements);
 		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);

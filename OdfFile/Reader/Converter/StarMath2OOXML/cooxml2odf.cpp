@@ -80,6 +80,11 @@ namespace StarMath
 			ConversionBox(dynamic_cast<OOX::Logic::CBox*>(pNode));
 			break;
 		}
+		case OOX::EElementType::et_m_borderBox:
+		{
+			ConversionBorderBox(dynamic_cast<OOX::Logic::CBorderBox*>(pNode));
+			break;
+		}
 		case OOX::EElementType::et_m_m:
 		{
 			ConversionMatrix(dynamic_cast<OOX::Logic::CMatrix*>(pNode));
@@ -787,6 +792,12 @@ namespace StarMath
 		if(pBox == nullptr)
 			return;
 		NodeDefinition(pBox->m_oElement.GetPointer());
+	}
+	void COOXml2Odf::ConversionBorderBox(OOX::Logic::CBorderBox * pBorderBox)
+	{
+		if(pBorderBox == nullptr)
+			return;
+		NodeDefinition(pBorderBox->m_oElement.GetPointer());
 	}
 	StValuePr* COOXml2Odf::ConversionRunProperties(OOX::Logic::CRunProperty *pRPr)
 	{

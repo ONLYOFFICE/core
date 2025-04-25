@@ -932,14 +932,15 @@ namespace PdfWriter
 	{
 		CAnnotAppearance* pAP = new CAnnotAppearance(m_pXref, this);
 		Add("AP", pAP);
-		CAnnotAppearanceObject* pN = pAP->GetNormal();
+		CResourcesDict* pResources = new CResourcesDict(m_pXref, true, false);
+		CAnnotAppearanceObject* pN = pAP->GetNormal(pResources);
 		CStream* pStream = pN->GetStream();
 
 		pN->AddBBox(GetRect().fLeft, GetRect().fBottom, GetRect().fRight, GetRect().fTop);
 		pN->AddMatrix(1, 0, 0, 1, -GetRect().fLeft, -GetRect().fBottom);
 
 		CExtGrState* pExtGrState = m_pDocument->GetExtGState(dCA, dCA, m_nSubtype == AnnotHighLight ? blendmode_Multiply : blendmode_Unknown);
-		const char* sExtGrStateName =  m_pDocument->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+		const char* sExtGrStateName =  pResources->GetExtGrStateName(pExtGrState);
 		if (sExtGrStateName)
 		{
 			pStream->WriteEscapeName(sExtGrStateName);
@@ -1512,6 +1513,7 @@ namespace PdfWriter
 	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
 	{
 		CAnnotAppearanceObject* pNormal = CAnnotation::StartAP();
+		m_pResources = dynamic_cast<CResourcesDict*>(pNormal->Get("Resources"));
 		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
 		pNormal->EndText();
 		return pNormal;

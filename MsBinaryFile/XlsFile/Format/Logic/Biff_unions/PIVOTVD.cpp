@@ -83,6 +83,19 @@ const bool PIVOTVD::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool PIVOTVD::saveContent(BinProcessor& proc)
+{
+    if(m_Sxvd == nullptr)
+        return false;
+    proc.mandatory(*m_Sxvd);
+    for(auto i : m_arSXVI)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_SXVDEx != nullptr)
+        proc.mandatory(*m_SXVDEx);
+    return true;
+}
+
 int PIVOTVD::serialize(std::wostream & strm)
 {
 	Sxvd*	vd		= dynamic_cast<Sxvd*>(m_Sxvd.get());

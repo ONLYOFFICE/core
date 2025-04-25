@@ -782,6 +782,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     for(auto i:m_arNote)
         if(i!= nullptr)
             proc.mandatory(*i);
+    for(auto i : m_arPIVOTVIEW)
+        if(i != nullptr)
+            proc.mandatory(*i);
     if(m_DCON != nullptr)
         proc.mandatory(*m_DCON);
     if(m_arWINDOW.empty())

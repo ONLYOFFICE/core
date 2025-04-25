@@ -95,9 +95,9 @@ public:
 	const bool getWideRecommendation() const;
 
 protected:
-	std::wstring 	str_;
+    std::wstring 	str_= L"";
 
-	size_t struct_size;
+    size_t struct_size  = 0;
 	_CP_OPT(size_t) cch_;
 };
 

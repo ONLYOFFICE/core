@@ -654,6 +654,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         proc.mandatory<RRTabId>();
     if(m_CodeName != nullptr)
         proc.mandatory(*m_CodeName);
+    if(m_FNGROUPS != nullptr)
+        proc.mandatory(*m_FNGROUPS);
     for(auto i : m_arLBL)
         if(i != nullptr)
             proc.mandatory(*i);

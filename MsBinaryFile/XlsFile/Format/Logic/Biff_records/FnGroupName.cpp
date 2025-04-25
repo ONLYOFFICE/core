@@ -56,5 +56,10 @@ void FnGroupName::readFields(CFRecord& record)
 	record >> rgch;
 }
 
+void FnGroupName::writeFields(CFRecord& record)
+{
+    record << rgch;
+}
+
 } // namespace XLS
 

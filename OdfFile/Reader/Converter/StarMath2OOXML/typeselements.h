@@ -357,6 +357,8 @@ enum class TypeElement{
 	lsub,
 	csup,
 	csub,
+	//index EQN
+	underover,
 	//
 	binom,
 	stack,

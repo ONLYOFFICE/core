@@ -262,17 +262,25 @@ namespace StarMath
 			arrEquation.push_back(pAddElement);
 		}
 	}
-	void CParserStarMathString::ReadingElementsWithPriorities(CStarMathReader *pReader, CElement *&pLeftElement)
+	void CParserStarMathString::ReadingElementsWithPriorities(CStarMathReader *pReader, CElement *&pLeftElement,const bool bEQN)
 	{
-		CElement* pNextElement = ParseElement(pReader);
+		CElement* pNextElement;
+		if(bEQN)
+			pNextElement = ParseElementEQN(pReader);
+		else
+			pNextElement = ParseElement(pReader);
 		if(pLeftElement != nullptr)
 			AddLeftArgument(pLeftElement,pNextElement,pReader);
 		pLeftElement = pNextElement;
 		pReader->ReadingTheNextToken();
 	}
-	void CParserStarMathString::ReadingElementsWithAttributes(CStarMathReader *pReader, CElement*& pSavingElement)
+	void CParserStarMathString::ReadingElementsWithAttributes(CStarMathReader *pReader, CElement*& pSavingElement, const bool bEQN)
 	{
-		CElement* pElement = CParserStarMathString::ParseElement(pReader);
+		CElement* pElement;
+		if(bEQN)
+			pElement = CParserStarMathString::ParseElementEQN(pReader);
+		else
+			pElement = CParserStarMathString::ParseElement(pReader);
 		if(pElement->GetAttribute() != pReader->GetBaseAttribute())
 		{
 			pReader->ReadingTheNextToken();
@@ -280,7 +288,10 @@ namespace StarMath
 			{
 				CElement* pIndex = new CElementIndex(pReader->GetLocalType(),pReader->GetTypeConversion());
 				pReader->ClearReader();
-				pIndex->Parse(pReader);
+				if(bEQN)
+					pIndex->ParseEQN(pReader);
+				else
+					pIndex->Parse(pReader);
 				AddLeftArgument(pElement,pIndex,pReader);
 				pSavingElement = pIndex;
 			}
@@ -1024,6 +1035,9 @@ namespace StarMath
 	void CElementBinOperator::ParseEQN(CStarMathReader *pReader)
 	{
 		CElement* pTempElement = CParserStarMathString::ParseElementEQN(pReader);
+		pReader->ReadingTheNextToken(true);
+		if(pReader->GetGlobalType() == TypeElement::Index)
+			CParserStarMathString::ReadingElementsWithPriorities(pReader,pTempElement,true);
 		m_pRightArgument = pTempElement;
 	}
 	void CElementBinOperator::ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite)
@@ -2468,7 +2482,7 @@ namespace StarMath
 	}
 //class methods CIndex
 	CElementIndex::CElementIndex(const TypeElement& enType,const TypeConversion &enTypeConversion)
-		: CElement(TypeElement::Index,enTypeConversion),m_pValueIndex(nullptr),m_pUpperIndex(nullptr),m_pLowerIndex(nullptr),m_pLsubIndex(nullptr),m_pLsupIndex(nullptr),m_pCsubIndex(nullptr),m_pCsupIndex(nullptr),m_pLeftArg(nullptr),m_enTypeIndex(enType)
+		: CElement(TypeElement::Index,enTypeConversion),m_pValueIndex(nullptr),m_pUpperIndex(nullptr),m_pLowerIndex(nullptr),m_pLsubIndex(nullptr),m_pLsupIndex(nullptr),m_pCsubIndex(nullptr),m_pCsupIndex(nullptr),m_pLeftArg(nullptr),m_enTypeIndex(enType),m_bEQN(false)
 	{
 	}
 	CElementIndex::~CElementIndex()
@@ -2499,19 +2513,23 @@ namespace StarMath
 	{
 		return m_pLeftArg;
 	}
-	TypeElement CElementIndex::GetIndex(const std::wstring &wsCheckToken)
+	TypeElement CElementIndex::GetIndex(const std::wstring &wsCheckToken, const bool bEQN)
 	{
 		if(L"^" == wsCheckToken) return TypeElement::upper;
-		else if(L"rsup" == wsCheckToken) return TypeElement::upper;
-		else if(L"rsub" == wsCheckToken) return TypeElement::lower;
 		else if(L"_" == wsCheckToken) return TypeElement::lower;
 		else if(L"lsup" == wsCheckToken) return TypeElement::lsup;
 		else if(L"lsub" == wsCheckToken) return TypeElement::lsub;
-		else if(L"csup" == wsCheckToken) return TypeElement::csup;
-		else if(L"csub" == wsCheckToken) return TypeElement::csub;
-		else if(L"nroot" == wsCheckToken) return TypeElement::nroot;
-		else if(L"sqrt" == wsCheckToken) return TypeElement::sqrt;
-		else return TypeElement::undefine;
+		if(!bEQN)
+		{
+			if(L"rsup" == wsCheckToken) return TypeElement::upper;
+			else if(L"rsub" == wsCheckToken) return TypeElement::lower;
+			else if(L"csup" == wsCheckToken) return TypeElement::csup;
+			else if(L"csub" == wsCheckToken) return TypeElement::csub;
+			else if(L"nroot" == wsCheckToken) return TypeElement::nroot;
+			else if(L"sqrt" == wsCheckToken) return TypeElement::sqrt;
+		}
+		else if(L"underover" == wsCheckToken) return TypeElement::underover;
+		return TypeElement::undefine;
 	}
 	bool CElementIndex::GetUpperIndex(const TypeElement &enType)
 	{
@@ -2601,7 +2619,17 @@ namespace StarMath
 		}
 	}
 	void CElementIndex::ParseEQN(CStarMathReader *pReader)
-	{}
+	{
+		m_bEQN = true;
+		if(m_enTypeIndex != TypeElement::underover)
+			Parse(pReader);
+		else
+		{
+			m_pValueIndex = CParserStarMathString::ParseElementEQN(pReader);
+			pReader->ReadingTheNextToken(true);
+			if()
+		}
+	}
 	void CElementIndex::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
 		if(TypeElement::sqrt == m_enTypeIndex || TypeElement::nroot == m_enTypeIndex)
@@ -3393,6 +3421,12 @@ namespace StarMath
 		if(m_enUnderType != TypeElement::undefine)
 		{
 			m_enGlobalType = TypeElement::Operation;
+			return;
+		}
+		m_enUnderType = CElementIndex::GetIndex(m_wsLowerCaseToken,true);
+		if(m_enUnderType != TypeElement::undefine)
+		{
+			m_enGlobalType = TypeElement::Index;
 			return;
 		}
 		if(m_enUnderType == TypeElement::undefine && !m_wsLowerCaseToken.empty())

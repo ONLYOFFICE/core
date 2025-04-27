@@ -201,7 +201,7 @@ namespace StarMath
 		void SetLeftArg(CElement* pElement);
 		CElement* GetValueIndex();
 		CElement* GetLeftArg();
-		static TypeElement GetIndex(const std::wstring& wsCheckToken);
+		static TypeElement GetIndex(const std::wstring& wsCheckToken,const bool bEQN = false);
 		static bool GetUpperIndex(const TypeElement& enType);
 		static bool GetLowerIndex(const TypeElement& enType);
 		const TypeElement& GetType();
@@ -222,6 +222,7 @@ namespace StarMath
 		CElement* m_pCsupIndex;
 		CElement* m_pLeftArg;
 		TypeElement m_enTypeIndex;
+		bool m_bEQN;
 	};
 
 	class  CElementString: public CElement
@@ -508,9 +509,9 @@ namespace StarMath
 		//adding an element to the array, checking that it is not empty and adding the left element, if there is one.
 		static void AddingAnElementToAnArray(std::vector<CElement*>& arrEquation,CElement* pAddElement,CStarMathReader* pReader);
 		//Receives the left element as input, reads the next one, if the next element has a higher priority and contains the left element, the element received at the input is passed to it. The entire structure is saved and returned.
-		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement);
+		static void ReadingElementsWithPriorities(CStarMathReader* pReader,CElement*& pLeftElement, const bool bEQN = false);
 		//method for parsing indexes with attributes. If there is an attribute present when indexes are read, then all subsequent indexes are applied to the index with the attribute.
-		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement);
+		static void ReadingElementsWithAttributes(CStarMathReader* pReader,CElement*& pSavingElement,const bool bEQN = false);
 		static void ParsElementAddingToArray(CStarMathReader* pReader, std::vector<CElement*>& arElements);
 		void SetAlignment(const unsigned int& iAlignment);
 		const unsigned int& GetAlignment();

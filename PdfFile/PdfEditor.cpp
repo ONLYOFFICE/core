@@ -1909,13 +1909,13 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 	return true;
 }
-BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
 	if (m_nMode != Mode::Unknown)
-		return NULL;
+		return false;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
-		return NULL;
+		return false;
 
 	int nTotalPages = 0;
 	int nPDFIndex = 0;
@@ -1941,26 +1941,9 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	{
 		pPDFDocument = m_pReader->GetPDFDocument(it.first);
 		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument)))
-			return NULL;
+			return false;
 	}
-
-	BYTE* pRes = NULL;
-	int nLength = 0;
-	if (m_pWriter->SaveToMemory(&pRes, &nLength) == 0)
-	{
-		NSWasm::CData oRes;
-		oRes.SkipLen();
-
-		oRes.Write(pRes, nLength);
-		RELEASEARRAYOBJECTS(pRes);
-
-		oRes.WriteLen();
-		BYTE* bRes = oRes.GetBuffer();
-		oRes.ClearWithoutAttack();
-		return bRes;
-	}
-	RELEASEARRAYOBJECTS(pRes);
-	return NULL;
+	return true;
 }
 void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
 {

@@ -93,7 +93,7 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
-	BYTE* SplitPages(const int* arrPageIndex, unsigned int unLength);
+	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
 
 private:

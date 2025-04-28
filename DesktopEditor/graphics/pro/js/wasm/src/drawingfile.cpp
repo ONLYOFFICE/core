@@ -177,9 +177,9 @@ WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
 	return pFile->ScanPage(nPageIndex, mode);
 }
-WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength)
+WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength, BYTE* data, LONG size)
 {
-	return pFile->SplitPages(arrPageIndex, nLength);
+	return pFile->SplitPages(arrPageIndex, nLength, data, size);
 }
 WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size, int nMaxID, const char* sPrefixForm)
 {

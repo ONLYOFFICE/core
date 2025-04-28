@@ -207,7 +207,7 @@ int CPdfWriter::SaveToFile(const std::wstring& wsPath)
 
 	return 0;
 }
-int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
+int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength, bool bEmbedLength)
 {
 	// TODO: Переделать на код ошибки
 	if (!IsValid())
@@ -215,7 +215,7 @@ int CPdfWriter::SaveToMemory(BYTE** pData, int* pLength)
 
 	m_oCommandManager.Flush();
 
-	if (!m_pDocument->SaveToMemory(pData, pLength))
+	if (!m_pDocument->SaveToMemory(pData, pLength, bEmbedLength))
 		return 1;
 
 	return 0;

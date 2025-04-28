@@ -2653,7 +2653,7 @@ void BinaryWorkbookTableWriter::WritePivotCache(OOX::Spreadsheet::CWorkbook& wor
         m_oBcw.m_oStream.WriteULONG(CPivotCache.m_oCacheId->GetValue());
         m_oBcw.WriteItemWithLengthEnd(nCurPos);
     }
-    if(CPivotCache.m_oRid.IsInit())
+    if (CPivotCache.m_oRid.IsInit())
     {
         smart_ptr<OOX::File> pFile = workbook.Find(OOX::RId(CPivotCache.m_oRid->GetValue()));
         if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::PivotCacheDefinition == pFile->type())
@@ -4773,36 +4773,43 @@ void BinaryWorksheetTableWriter::WriteWorksheet(OOX::Spreadsheet::CSheet* pSheet
             }
         }
     }
-    pFile = oWorksheet.Find(OOX::Spreadsheet::FileTypes::PivotTable);
-    OOX::Spreadsheet::CPivotTableFile *pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(pFile.GetPointer());
-    if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTableDefinition.IsInit()))
-    {
-        BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
-        nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
-        if(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId.IsInit())
-        {
-            auto cachePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cacheId);
-            m_oBcw.m_oStream.WriteULONG(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId->GetValue());
-            m_oBcw.WriteItemWithLengthEnd(cachePos);
-        }
-		if (pPivotTableFile->m_pData && pPivotTableFile->m_nDataLength > 0)
+	std::vector<smart_ptr<OOX::File>>& container = oWorksheet.GetContainer();
+	for (size_t k = 0; k < container.size(); ++k)
+	{
+		if (OOX::Spreadsheet::FileTypes::PivotTable == container[k]->type())
 		{
-			auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
-			m_oBcw.m_oStream.WriteBYTEArray(pPivotTableFile->m_pData, pPivotTableFile->m_nDataLength);
-			m_oBcw.WriteItemWithLengthEnd(tablePos);
+			OOX::Spreadsheet::CPivotTableFile* pPivotTableFile = dynamic_cast<OOX::Spreadsheet::CPivotTableFile*>(container[k].GetPointer());
+
+			if ((pPivotTableFile) && (pPivotTableFile->m_oPivotTableDefinition.IsInit()))
+			{
+				BinaryTableWriter oBinaryTableWriter(m_oBcw.m_oStream);
+				nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::PivotTable);
+				if (pPivotTableFile->m_oPivotTableDefinition->m_oCacheId.IsInit())
+				{
+					auto cachePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::cacheId);
+					m_oBcw.m_oStream.WriteULONG(pPivotTableFile->m_oPivotTableDefinition->m_oCacheId->GetValue());
+					m_oBcw.WriteItemWithLengthEnd(cachePos);
+				}
+				if (pPivotTableFile->m_pData && pPivotTableFile->m_nDataLength > 0)
+				{
+					auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
+					m_oBcw.m_oStream.WriteBYTEArray(pPivotTableFile->m_pData, pPivotTableFile->m_nDataLength);
+					m_oBcw.WriteItemWithLengthEnd(tablePos);
+				}
+				else
+				{
+					NSStringUtils::CStringBuilder writer;
+					pPivotTableFile->m_oPivotTableDefinition->toXML(writer);
+					auto wstringData = writer.GetData();
+					auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
+					m_oBcw.m_oStream.WriteStringUtf8(wstringData);
+					m_oBcw.WriteItemWithLengthEnd(tablePos);
+				}
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
 		}
-		else
-		{
-			NSStringUtils::CStringBuilder writer;
-			pPivotTableFile->m_oPivotTableDefinition->toXML(writer);
-			auto wstringData = writer.GetData();
-			auto tablePos = m_oBcw.WriteItemStart(c_oSer_PivotTypes::table);
-			m_oBcw.m_oStream.WriteStringUtf8(wstringData);
-			m_oBcw.WriteItemWithLengthEnd(tablePos);
-		}
-        m_oBcw.WriteItemWithLengthEnd(nCurPos);
-    }
-}
+	}
+ }
 void BinaryWorksheetTableWriter::WriteWorksheetProp(OOX::Spreadsheet::CSheet& oSheet)
 {
 	//Name

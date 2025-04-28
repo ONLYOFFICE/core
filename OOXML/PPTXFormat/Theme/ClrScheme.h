@@ -34,6 +34,8 @@
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/UniColor.h"
 
+#include "VisioThemeElements.h"
+
 namespace PPTX
 {
 	namespace nsTheme
@@ -57,6 +59,10 @@ namespace PPTX
 
 			std::wstring							name;
 			std::map<std::wstring, Logic::UniColor> Scheme;
+
+//visio ext
+			nullable<Bkgnd> bkgnd;
+			nullable<VariationClrSchemeLst> variationClrSchemeLst;
 
 			ClrScheme& operator=(const ClrScheme& oSrc);
 

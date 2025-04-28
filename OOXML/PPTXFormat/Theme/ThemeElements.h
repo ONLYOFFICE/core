@@ -36,8 +36,6 @@
 #include "FontScheme.h"
 #include "FmtScheme.h"
 
-#include "VisioThemeElements.h"
-
 namespace PPTX
 {
 	namespace nsTheme

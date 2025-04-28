@@ -57,6 +57,7 @@ namespace PPTX
 			nullable_uint startSize;
 			nullable_uint end;
 			nullable_uint endSize;	
+			nullable_uint pattern;
 		};
 		class Sketch : public WrapperWritingElement
 		{
@@ -284,6 +285,56 @@ namespace PPTX
 			std::vector<VariationStyleScheme> m_arrItems; //min 4
 		protected:
 			virtual void FillParentPointersForChilds();
+		};
+		class VariationClrScheme : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(VariationClrScheme)
+			VariationClrScheme& operator=(const VariationClrScheme& oSrc);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			Logic::UniColor varColor[7];
+		};
+		class VariationClrSchemeLst : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(VariationClrSchemeLst)
+			VariationClrSchemeLst& operator=(const VariationClrSchemeLst& oSrc);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			std::vector<VariationClrScheme> m_arrItems;
+		protected:
+			virtual void FillParentPointersForChilds();
+		};
+		class Bkgnd : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(Bkgnd)
+			Bkgnd& operator=(const Bkgnd& oSrc);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			Logic::UniColor color;
 		};
 	} // namespace nsTheme
 } // namespace PPTX

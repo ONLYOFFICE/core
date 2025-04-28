@@ -1003,6 +1003,7 @@ namespace PPTX
 			startSize = oSrc.startSize;
 			end = oSrc.end;
 			endSize = oSrc.endSize;
+			pattern = oSrc.pattern;
 
 			return *this;
 		}
@@ -1013,6 +1014,7 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"startSize", startSize);
 			XmlMacroReadAttributeBase(node, L"end", end);
 			XmlMacroReadAttributeBase(node, L"endSize", endSize);
+			XmlMacroReadAttributeBase(node, L"pattern", pattern);			
 		}
 		std::wstring LineEx::toXML() const
 		{
@@ -1022,6 +1024,7 @@ namespace PPTX
 			oAttr.Write(L"startSize", startSize);
 			oAttr.Write(L"end", end);
 			oAttr.Write(L"endSize", endSize);
+			oAttr.Write(L"pattern", pattern);
 
 			XmlUtils::CNodeValue oValue;
 
@@ -1035,6 +1038,7 @@ namespace PPTX
 			pWriter->WriteUInt2(2, startSize);
 			pWriter->WriteUInt2(3, end);
 			pWriter->WriteUInt2(4, endSize);
+			pWriter->WriteUInt2(5, pattern);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		}
 		void LineEx::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -1045,6 +1049,7 @@ namespace PPTX
 				pWriter->WriteAttribute2(L"startSize", startSize);
 				pWriter->WriteAttribute2(L"end", end);
 				pWriter->WriteAttribute2(L"endSize", endSize);
+				pWriter->WriteAttribute2(L"pattern", pattern);
 				pWriter->EndAttributes();
 			pWriter->EndNode(L"vt:lineEx");
 		}
@@ -1080,6 +1085,10 @@ namespace PPTX
 				case 4:
 				{
 					endSize = pReader->GetULong();
+				}break;
+				case 5:
+				{
+					pattern = pReader->GetULong();
 				}break;
 				default:
 					break;
@@ -1174,6 +1183,230 @@ namespace PPTX
 		{
 			lineEx.SetParentPointer(this);
 			if (sketch.IsInit()) sketch->SetParentPointer(this);
+		}
+//-----------------------------------------------------------------------------------------
+		VariationClrScheme& VariationClrScheme::operator=(const VariationClrScheme& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
+
+			for (size_t i = 0; i < 7; ++i)
+			{
+				varColor[i] = oSrc.varColor[i];
+			}
+			return *this;
+		}
+		void VariationClrScheme::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				for (size_t i = 0; i < oNodes.size(); ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if (0 == strName.find(L"varColor"))
+					{
+						int ind = XmlUtils::GetInteger(strName.substr(8)) - 1;
+						if (ind >= 0 && ind < 7)
+							varColor[ind].GetColorFrom(oNode);
+					}
+				}
+			}
+		}
+		std::wstring VariationClrScheme::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+
+			XmlUtils::CNodeValue oValue;
+
+			for (size_t i = 0; i < 7; ++i)
+			{
+				std::wstring name = L"vt:varColor" + std::to_wstring(i + 1);
+				oValue.Write(name, varColor[i]);
+			}
+
+			return XmlUtils::CreateNode(L"vt:variationClrScheme", oAttr, oValue);
+		}
+		void VariationClrScheme::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			for (size_t i = 0; i < 7; ++i)
+			{
+				pWriter->WriteRecord1(i, varColor[i]);
+			}
+		}
+		void VariationClrScheme::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"vt:variationClrScheme");
+			pWriter->EndAttributes();
+
+			for (size_t i = 0; i < 7; ++i)
+			{
+				if (varColor[i].is_init())
+				{
+					std::wstring name = L"vt:varColor" + std::to_wstring(i + 1);
+					pWriter->WriteString(L"<" + name  + L">");
+					varColor[i].toXmlWriter(pWriter);
+					pWriter->WriteString(L"</" + name + L">");
+				}
+			}
+
+			pWriter->EndNode(L"vt:variationClrScheme");
+		}
+		void VariationClrScheme::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				
+				if (_at >= 0 && _at < 7)
+				{
+					varColor[_at].fromPPTY(pReader);
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+//-----------------------------------------------------------------------------------------
+		VariationClrSchemeLst& VariationClrSchemeLst::operator=(const VariationClrSchemeLst& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
+
+			m_arrItems.clear();
+			for (auto elm : oSrc.m_arrItems)
+				m_arrItems.push_back(elm);
+
+			return *this;
+		}
+		void VariationClrSchemeLst::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				for (size_t i = 0; i < oNodes.size(); ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					if (L"variationClrScheme" == strName)
+					{
+						m_arrItems.emplace_back();
+						m_arrItems.back().fromXML(oNode);
+					}
+				}
+			}
+			FillParentPointersForChilds();
+		}
+		std::wstring VariationClrSchemeLst::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			XmlUtils::CNodeValue oValue;
+			oValue.WriteArray(m_arrItems);
+
+			return XmlUtils::CreateNode(L"vt:variationClrSchemeLst", oAttr, oValue);
+		}
+		void VariationClrSchemeLst::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			for (auto elm : m_arrItems)
+				pWriter->WriteRecord1(0, elm);
+		}
+		void VariationClrSchemeLst::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"vt:variationClrSchemeLst");
+			pWriter->WriteAttribute(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			pWriter->EndAttributes();
+
+			pWriter->WriteArray2(m_arrItems);
+
+			pWriter->EndNode(L"vt:variationClrSchemeLst");
+		}
+		void VariationClrSchemeLst::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					m_arrItems.emplace_back();
+					m_arrItems.back().fromPPTY(pReader);
+				}break;
+				default:
+					break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void VariationClrSchemeLst::FillParentPointersForChilds()
+		{
+			for (auto elm : m_arrItems)
+				elm.SetParentPointer(this);
+		}
+//-----------------------------------------------------------------------------------------
+		Bkgnd& Bkgnd::operator=(const Bkgnd& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
+
+			color = oSrc.color;
+
+			return *this;
+		}
+		void Bkgnd::fromXML(XmlUtils::CXmlNode& node)
+		{
+			color.GetColorFrom(node);
+		}
+		std::wstring Bkgnd::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+
+			return XmlUtils::CreateNode(L"vt:bkgnd", oAttr, color.toXML());
+		}
+		void Bkgnd::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord1(0, color);
+		}
+		void Bkgnd::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"vt:bkgnd");
+			pWriter->WriteAttribute(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			pWriter->EndAttributes();
+
+			if (color.is_init())
+			{
+				color.toXmlWriter(pWriter);
+			}
+			pWriter->EndNode(L"vt:bkgnd");
+		}
+		void Bkgnd::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					color.fromPPTY(pReader);
+				}break;
+				default:
+					break;
+				}
+			}
+			pReader->Seek(_end_rec);
 		}
 	} // namespace nsTheme
 } // namespace PPTX

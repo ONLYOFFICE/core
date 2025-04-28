@@ -443,8 +443,18 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	int nLen = 0;
 	if (m_pInternal->pEditor->SplitPages(arrPageIndex, unLength))
 	{
-		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen, true) != 0)
+		if (pChanges)
+		{
+			CConvertFromBinParams* pParams = new CConvertFromBinParams();
+			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
+		}
+
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
+		{
 			RELEASEMEM(pRes);
+		}
+		else
+			pRes = m_pInternal->pReader->StreamToCData(pRes, nLen);
 	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);

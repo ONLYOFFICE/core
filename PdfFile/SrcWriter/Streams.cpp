@@ -826,18 +826,6 @@ namespace PdfWriter
 			m_nBufferSize = unSize;
 		}
 	}
-	void CMemoryStream::SkipLength()
-	{
-		Shrink(5);
-		Seek(4, EWhenceMode::SeekSet);
-	}
-	void CMemoryStream::WriteLength()
-	{
-		unsigned int nLength = m_unSize - 4;
-		Seek(0, EWhenceMode::SeekSet);
-		std::memcpy(m_pCur, &nLength, sizeof(unsigned int));
-		Seek(0, EWhenceMode::SeekEnd);
-	}
 	//----------------------------------------------------------------------------------------
 	// CFileStream
 	//----------------------------------------------------------------------------------------

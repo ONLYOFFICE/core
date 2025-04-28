@@ -121,12 +121,24 @@ CFile.prototype._getError = function()
 	return Module["_GetErrorCode"](this.nativeFile);
 };
 
-CFile.prototype._SplitPages = function(memoryBuffer)
+CFile.prototype._SplitPages = function(memoryBuffer, arrayBufferChanges)
 {
+	let changesPtr = 0;
+	let changesLen = 0;
+	if (arrayBufferChanges)
+	{
+		let changes = new Uint8Array(arrayBufferChanges);
+		changesLen = changes.length;
+		changesPtr = Module["_malloc"](changesLen);
+		Module["HEAP8"].set(changes, changesPtr);
+	}
+
 	let pointer = Module["_malloc"](memoryBuffer.length * 4);
 	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
-	let ptr = Module["_SplitPages"](this.nativeFile, pointer, memoryBuffer.length);
+	let ptr = Module["_SplitPages"](this.nativeFile, pointer, memoryBuffer.length, changesPtr, changesLen);
 	Module["_free"](pointer);
+	if (changesPtr)
+		Module["_free"](changesPtr);
 	return ptr;
 };
 

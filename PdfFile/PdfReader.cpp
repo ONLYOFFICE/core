@@ -1670,6 +1670,19 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
+BYTE* CPdfReader::StreamToCData(BYTE* pSteam, int nLength)
+{
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	oRes.Write(pSteam, nLength);
+
+	oRes.WriteLen();
+
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
 int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex, int nStartPage, int nStartRefID)
 {
 	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);

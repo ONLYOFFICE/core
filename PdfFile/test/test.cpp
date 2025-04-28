@@ -352,10 +352,10 @@ TEST_F(CPdfFileTest, VerifySign)
 
 TEST_F(CPdfFileTest, SplitPdf)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	LoadFromFile();
-	std::vector<int> arrPages = { 0 };
+	std::vector<int> arrPages = { 0, 1, 2 };
 	BYTE* pFile = pdfFile->SplitPages(arrPages.data(), arrPages.size());
 	ASSERT_TRUE(pFile != NULL);
 
@@ -364,7 +364,7 @@ TEST_F(CPdfFileTest, SplitPdf)
 	if (oFile.CreateFileW(wsSplitFile))
 	{
 		int nLength = pFile[0] | pFile[1] << 8 | pFile[2] << 16 | pFile[3] << 24;
-		oFile.WriteFile(pFile + 4, nLength);
+		oFile.WriteFile(pFile + 4, nLength - 4);
 	}
 	oFile.CloseFile();
 
@@ -407,7 +407,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

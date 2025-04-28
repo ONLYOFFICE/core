@@ -161,8 +161,6 @@ namespace PdfWriter
 		}
 		BYTE* GetBuffer();
 		void ClearWithoutAttack();
-		void SkipLength();
-		void WriteLength();
 
 	private:
 

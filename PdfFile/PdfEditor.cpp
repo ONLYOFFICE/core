@@ -1373,7 +1373,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 }
 bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	PDFDoc* pPDFDocument = NULL;
@@ -1387,6 +1387,8 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 
 	PdfWriter::CPage* pEditPage = NULL;
 	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
+	if (m_nMode == Mode::WriteNew && !pEditPage)
+		return false;
 	if (pEditPage)
 	{
 		if (bSet)
@@ -2116,7 +2118,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	// Применение добавления страницы для writer

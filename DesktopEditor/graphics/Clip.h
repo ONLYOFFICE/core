@@ -54,98 +54,31 @@
 namespace Aggplus
 {
 
-class CClipMask
-{
-	typedef agg::renderer_base<agg::pixfmt_gray8> ren_base;
-    typedef agg::renderer_scanline_aa_solid<ren_base> renderer;
-
-	friend class CGraphicsPath;
-public:
-	BYTE*					m_pMask;
-	LONG					m_lWidth;
-	LONG					m_lHeight;
-
-	agg::rendering_buffer	m_alpha_rbuf;
-
-	agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> m_rasterizer;
-
-	agg::pixfmt_gray8		m_pixf;
-	ren_base				m_base_renderer;
-	renderer				m_renderer;
-
-	agg::scanline_p8		m_sl;
-
-	bool					m_bIsClip;
-
-public:
-	CClipMask();
-	~CClipMask();
-
-	void Destroy();
-	void Reset();
-	
-public:
-	void Create(LONG width, LONG height);
-	void ResetClip();
-
-	void GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix);
-
-	agg::rendering_buffer GetRenderingBuffer();
-	BYTE* GetMask();
-	bool IsClip();
-};
-
-class CClip
-{
-	typedef agg::renderer_base<agg::pixfmt_gray8> ren_base;
-    typedef agg::renderer_scanline_aa_solid<ren_base> renderer;
-
-	friend class CGraphicsPath;
-public:
-	BYTE*					m_pMask;
-	LONG					m_lWidth;
-	LONG					m_lHeight;
-
-	agg::rendering_buffer	m_alpha_rbuf;
-
-	agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> m_rasterizer;
-
-	agg::pixfmt_gray8		m_pixf;
-	ren_base				m_base_renderer;
-	renderer				m_renderer;
-
-	agg::scanline_p8		m_sl;
-
-	bool					m_bIsClip;
-
-public:
-	CClip();
-	~CClip();
-
-	void Destroy();
-	void Reset();
-	
-public:
-	void Create(LONG width, LONG height);
-	void ResetClip();
-
-	void GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix);
-
-	agg::rendering_buffer GetRenderingBuffer();
-	BYTE* GetMask();
-	bool IsClip();
-};
-
+/**
+ * @class CClipMulti
+ * @brief Class	providing boolean logic
+ *   for a raster graphics clip.
+ *
+ * Boolean algebra for rasterizer scanlines, which are
+ * received from CGraphicsPath.
+ */
 class CClipMulti
 {
 public:
 	typedef agg::scanline_p8 scanline_type;
-	typedef agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl> clip_rasterizer;
+	typedef agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl>* clip_rasterizer_ptr;
+	typedef agg::scanline_storage_aa8 scanline_storage;
 
-	clip_rasterizer m_rasterizer;
+	clip_rasterizer_ptr m_rasterizer;
 	
-	agg::scanline_storage_aa8 m_storage1;
-	agg::scanline_storage_aa8 m_storage2;
+	/**
+	 * @brief Interfaces for implementation graphics renderer scanlines.
+	 *
+	 * Scan lines can be stored in rasterizer as in case clip1
+	 * or in storage otherwise(clip2).
+	 */
+	scanline_storage m_storage1;
+	scanline_storage m_storage2;
 
 	long m_lCurStorage;
 	
@@ -159,16 +92,16 @@ public:
 	CClipMulti();
 	~CClipMulti();
 
-	clip_rasterizer* GetRasterizer();
+	clip_rasterizer_ptr GetRasterizer() const;
 
 	void Create(LONG width, LONG height);
 	void GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix);
 	void GenerateClip2(bool bEvenOdd);
 	
-	void Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer* pRasterizer);
+	void Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer_ptr pRasterizer);
 
-	bool IsClip();
-	bool IsClip2();
+	bool IsClip()	const;
+	bool IsClip2()	const;
 
 	void Reset();
 };

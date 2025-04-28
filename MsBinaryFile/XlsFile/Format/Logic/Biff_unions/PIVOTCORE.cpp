@@ -131,6 +131,8 @@ const bool PIVOTCORE::saveContent(BinProcessor& proc)
     for(auto i : m_arPIVOTLI)
         if(i!= nullptr)
             proc.mandatory(*i);
+    if(m_PIVOTEX != nullptr)
+        proc.mandatory(*m_PIVOTEX);
     return true;
 }
 

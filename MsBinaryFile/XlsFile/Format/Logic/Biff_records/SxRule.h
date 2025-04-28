@@ -47,30 +47,31 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSxRule;
 	
-	unsigned char	iDim;
-	unsigned char	isxvd;
+    unsigned char	iDim = 0;
+    unsigned char	isxvd = 0;
 
-	bool			sxaxisRw;
-	bool			sxaxisCol;
-	bool			sxaxisPage;
-	bool			sxaxisData;
-	unsigned char	sxrType;
-	bool			fPart;
-	bool			fDataOnly;
-	bool			fLabelOnly;
-	bool			fGrandRw;
-	bool			fGrandCol;
-	bool			fGrandRwSav;
-	bool			fCacheBased;
-	bool			fGrandColSav;
-	unsigned short	csxFilt;
-	unsigned char	irwFirst;
-	unsigned char	irwLast;
-	unsigned char	icolFirst;
-	unsigned char	icolLast;
+    bool			sxaxisRw = false;
+    bool			sxaxisCol = false;
+    bool			sxaxisPage = false;
+    bool			sxaxisData = false;
+    unsigned char	sxrType = 0;
+    bool			fPart = false;
+    bool			fDataOnly = false;
+    bool			fLabelOnly = false;
+    bool			fGrandRw = false;
+    bool			fGrandCol = false;
+    bool			fGrandRwSav = false;
+    bool			fCacheBased = false;
+    bool			fGrandColSav = false;
+    unsigned short	csxFilt = 0;
+    unsigned char	irwFirst = 0;
+    unsigned char	irwLast = 0;
+    unsigned char	icolFirst = 0;
+    unsigned char	icolLast = 0;
 };
 
 } // namespace XLS

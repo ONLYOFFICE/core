@@ -49,32 +49,33 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXEx;
 
-	unsigned short	csxformat;
-	unsigned short	cchErrorString;
-	unsigned short	cchNullString;
-	unsigned short	cchTag;
-	unsigned short	csxselect;
+    unsigned short	csxformat = 0;
+    unsigned short	cchErrorString = 0xFFFF;
+    unsigned short	cchNullString = 0xFFFF;
+    unsigned short	cchTag = 0xFFFF;
+    unsigned short	csxselect = 0;
 
-	DRw				crwPage;
-	ColU			ccolPage;
+    DRw				crwPage = 0;
+    ColU			ccolPage = 0;
 
-	bool			fAcrossPageLay;
-	unsigned char	cWrapPage;
-	bool			fEnableWizard;
-	bool			fEnableDrilldown;
-	bool			fEnableFieldDialog;
-	bool			fPreserveFormatting;
-	bool			fMergeLabels;
-	bool			fDisplayErrorString;
-	bool			fDisplayNullString;
-	bool			fSubtotalHiddenPageItems;
+    bool			fAcrossPageLay = false;
+    unsigned char	cWrapPage = 0;
+    bool			fEnableWizard = false;
+    bool			fEnableDrilldown = false;
+    bool			fEnableFieldDialog = false;
+    bool			fPreserveFormatting = false;
+    bool			fMergeLabels = false;
+    bool			fDisplayErrorString = false;
+    bool			fDisplayNullString = false;
+    bool			fSubtotalHiddenPageItems = false;
 
-	unsigned short	cchPageFieldStyle;
-	unsigned short	cchTableStyle;
-	unsigned short	cchVacateStyle;
+    unsigned short	cchPageFieldStyle = 0;
+    unsigned short	cchTableStyle = 0;
+    unsigned short	cchVacateStyle = 0;
 
 	XLUnicodeStringNoCch	stError;
 	XLUnicodeStringNoCch	stDisplayNull;

@@ -46,6 +46,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	static const ElementType	type = typePIVOTSELECT;
 

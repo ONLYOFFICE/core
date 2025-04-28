@@ -68,5 +68,23 @@ void SxSelect::readFields(CFRecord& record)
 	fExtendable			= GETBIT(flags, 9);
 }
 
+void SxSelect::writeFields(CFRecord& record)
+{
+    record.reserveNunBytes(2);
+    record << pnn;
+    record.reserveNunBytes(1);
+    record << sxaxisAct << iDimAct << iLiStart << iLiAct << iLiMin << iLiMax;
+    record << rwClick << colClick << rwClickPrev << colClickPrev;
+
+    unsigned short flags = 0;
+    SETBITS(flags, 0, 4, cClick)
+    SETBIT(flags, 5, fLabelOnly)
+    SETBIT(flags, 6, fDataOnly)
+    SETBIT(flags, 7, fToggleDataHeader)
+    SETBIT(flags, 8, fSelectionClick)
+    SETBIT(flags, 9, fExtendable)
+    record << flags;
+}
+
 } // namespace XLS
 

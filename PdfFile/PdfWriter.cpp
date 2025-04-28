@@ -2870,6 +2870,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nI]);
 			}
 		}
+
+		if (!pPBWidget->Get("AP"))
+			DrawButtonWidget(pAppFonts, pPBWidget, 0, NULL);
 	}
 
 	std::map<int, PdfWriter::CDictObject*> mParents = m_pDocument->GetParents();

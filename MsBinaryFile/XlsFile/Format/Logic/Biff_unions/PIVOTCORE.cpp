@@ -120,6 +120,17 @@ const bool PIVOTCORE::saveContent(BinProcessor& proc)
     for(auto i : m_arPIVOTVD)
         if(i!= nullptr)
             proc.mandatory(*i);
+    for(auto i : m_arPIVOTIVD)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    if(m_PIVOTPI != nullptr)
+        proc.mandatory(*m_PIVOTPI);
+    for(auto i : m_arSXDI)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arPIVOTLI)
+        if(i!= nullptr)
+            proc.mandatory(*i);
     return true;
 }
 

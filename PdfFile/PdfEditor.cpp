@@ -1548,10 +1548,8 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID)
 {
-	if (m_nMode == Mode::WriteNew)
-		return false;
 	if (m_nMode == Mode::Unknown)
-		m_nMode = Mode::WriteNew;
+		return false;
 	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -1913,8 +1911,10 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
-	if (m_nMode != Mode::Unknown)
+	if (m_nMode == Mode::WriteNew)
 		return false;
+	if (m_nMode == Mode::Unknown)
+		m_nMode = Mode::WriteNew;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;
@@ -2675,7 +2675,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 }
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;

@@ -355,11 +355,39 @@ TEST_F(CPdfFileTest, SplitPdf)
 	//GTEST_SKIP();
 
 	LoadFromFile();
-	std::vector<int> arrPages = { 0, 1, 2 };
-	BYTE* pFile = pdfFile->SplitPages(arrPages.data(), arrPages.size());
+
+	int nBufferLen = NULL;
+	BYTE* pBuffer = NULL;
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
+	{
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			FAIL();
+		}
+
+		DWORD dwReaded;
+		EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+
+		nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+		pBuffer = new BYTE[nBufferLen];
+		if (!pBuffer)
+		{
+			RELEASEARRAYOBJECTS(pFileContent);
+			FAIL();
+		}
+
+		EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
+	}
+	oFile.CloseFile();
+
+	std::vector<int> arrPages = { 1 };
+	BYTE* pFile = pdfFile->SplitPages(arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 	ASSERT_TRUE(pFile != NULL);
 
-	NSFile::CFileBinary oFile;
 	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
 	if (oFile.CreateFileW(wsSplitFile))
 	{
@@ -369,6 +397,7 @@ TEST_F(CPdfFileTest, SplitPdf)
 	oFile.CloseFile();
 
 	RELEASEARRAYOBJECTS(pFile);
+	RELEASEARRAYOBJECTS(pBuffer);
 }
 
 TEST_F(CPdfFileTest, MergePdf)

@@ -993,12 +993,12 @@ int main(int argc, char* argv[])
 
 	// SPLIT & MERGE
 	BYTE* pSplitPages = NULL;
-	if (true)
+	if (false)
 	{
 		std::vector<int> arrPages = { 0 };
 		for (int i = 0; i < 3; i++)
 		{
-			pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size());
+			pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), NULL, 0);
 			if (pSplitPages)
 			{
 				int nLength = READ_INT(pSplitPages);

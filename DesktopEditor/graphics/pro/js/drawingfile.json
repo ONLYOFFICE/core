@@ -186,7 +186,7 @@
 	},
 	{
 		"folder": "../../../../PdfFile/",
-		"files": ["PdfFile.cpp", "PdfReader.cpp", "PdfWriter.cpp", "PdfEditor.cpp"]
+		"files": ["PdfFile.cpp", "PdfReader.cpp", "PdfWriter.cpp", "PdfEditor.cpp", "OnlineOfficeBinToPdf.cpp"]
 	},
 	{
 		"folder": "../../../../PdfFile/SrcReader/",

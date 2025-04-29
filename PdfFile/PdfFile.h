@@ -135,7 +135,7 @@ public:
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
 	BYTE* GetAnnots    (int nPageIndex = -1);
-	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength);
+	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);

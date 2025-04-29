@@ -145,9 +145,9 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
-CFile.prototype["SplitPages"] = function(arrPageIndex)
+CFile.prototype["SplitPages"] = function(arrPageIndex, arrayBufferChanges)
 {
-	let ptr = this._SplitPages(arrPageIndex);
+	let ptr = this._SplitPages(arrPageIndex, arrayBufferChanges);
 
 	if (!ptr)
 		return null;

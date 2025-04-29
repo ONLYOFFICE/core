@@ -429,7 +429,7 @@ BYTE* CPdfFile::GetAnnots(int nPageIndex)
 		return NULL;
 	return m_pInternal->pReader->GetAnnots(nPageIndex);
 }
-BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
+BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE* pChanges, DWORD nLength)
 {
 	if (!m_pInternal->pReader)
 		return NULL;
@@ -439,7 +439,23 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
 
-	BYTE* pRes = m_pInternal->pEditor->SplitPages(arrPageIndex, unLength);
+	BYTE* pRes = NULL;
+	int nLen = 0;
+	if (m_pInternal->pEditor->SplitPages(arrPageIndex, unLength))
+	{
+		if (pChanges)
+		{
+			CConvertFromBinParams* pParams = new CConvertFromBinParams();
+			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
+		}
+
+		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
+		{
+			RELEASEMEM(pRes);
+		}
+		else
+			pRes = m_pInternal->pReader->StreamToCData(pRes, nLen);
+	}
 
 	RELEASEOBJECT(m_pInternal->pWriter);
 	RELEASEOBJECT(m_pInternal->pEditor);

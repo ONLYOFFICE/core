@@ -1373,7 +1373,7 @@ void CPdfEditor::GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageT
 }
 bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	PDFDoc* pPDFDocument = NULL;
@@ -1387,6 +1387,8 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 
 	PdfWriter::CPage* pEditPage = NULL;
 	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
+	if (m_nMode == Mode::WriteNew && !pEditPage)
+		return false;
 	if (pEditPage)
 	{
 		if (bSet)
@@ -1546,10 +1548,8 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID)
 {
-	if (m_nMode == Mode::WriteNew)
-		return false;
 	if (m_nMode == Mode::Unknown)
-		m_nMode = Mode::WriteNew;
+		return false;
 	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -1569,7 +1569,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
 		pDoc->AddPage(pDoc->GetPagesCount(), pPage);
-		pDoc->AddEditPage(pPage, nPagesBefore + i);
+		pDoc->AddEditPage(pPage, nPagesBefore + (arrPageIndex ? arrPageIndex[i] : i));
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;
@@ -1909,13 +1909,15 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 	return true;
 }
-BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
+bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
-	if (m_nMode != Mode::Unknown)
-		return NULL;
+	if (m_nMode == Mode::WriteNew)
+		return false;
+	if (m_nMode == Mode::Unknown)
+		m_nMode = Mode::WriteNew;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
-		return NULL;
+		return false;
 
 	int nTotalPages = 0;
 	int nPDFIndex = 0;
@@ -1941,26 +1943,9 @@ BYTE* CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	{
 		pPDFDocument = m_pReader->GetPDFDocument(it.first);
 		if (!SplitPages(it.second.data(), it.second.size(), pPDFDocument, m_pReader->GetStartRefID(pPDFDocument)))
-			return NULL;
+			return false;
 	}
-
-	BYTE* pRes = NULL;
-	int nLength = 0;
-	if (m_pWriter->SaveToMemory(&pRes, &nLength) == 0)
-	{
-		NSWasm::CData oRes;
-		oRes.SkipLen();
-
-		oRes.Write(pRes, nLength);
-		RELEASEARRAYOBJECTS(pRes);
-
-		oRes.WriteLen();
-		BYTE* bRes = oRes.GetBuffer();
-		oRes.ClearWithoutAttack();
-		return bRes;
-	}
-	RELEASEARRAYOBJECTS(pRes);
-	return NULL;
+	return true;
 }
 void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
 {
@@ -2133,7 +2118,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 }
 bool CPdfEditor::AddPage(int nPageIndex)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	// Применение добавления страницы для writer
@@ -2462,6 +2447,8 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		pObj->SetHidden();
 		return true;
 	}
+	if (m_nMode == Mode::WriteNew)
+		return true;
 
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
@@ -2690,7 +2677,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 }
 bool CPdfEditor::EditWidgets(IAdvancedCommand* pCommand)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	CWidgetsInfo* pFieldInfo = (CWidgetsInfo*)pCommand;

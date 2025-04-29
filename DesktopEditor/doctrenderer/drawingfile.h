@@ -283,10 +283,10 @@ public:
 			return NULL;
 		return m_pFile->ConvertToPixels(nPageIndex, nRasterW, nRasterH, true, m_pFontManager, nBackgroundColor, (nBackgroundColor == 0xFFFFFF) ? false : true);
 	}
-	BYTE* SplitPages(int* arrPageIndex, int nLength)
+	BYTE* SplitPages(int* arrPageIndex, int nLength, BYTE* data, LONG size)
 	{
 		if (m_nType == 0)
-			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength);
+			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength, data, size);
 		return NULL;
 	}
 	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm)

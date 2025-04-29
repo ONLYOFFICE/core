@@ -249,6 +249,7 @@ namespace PdfWriter
 
 		*pData = pStream->GetBuffer();
 		*pLength = pStream->Size();
+
 		pStream->ClearWithoutAttack();
 		return true;
 	}

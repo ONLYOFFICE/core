@@ -2447,6 +2447,8 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		pObj->SetHidden();
 		return true;
 	}
+	if (m_nMode == Mode::WriteNew)
+		return true;
 
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);

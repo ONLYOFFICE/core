@@ -58,7 +58,7 @@ TEST(SMCustomShapeTest,Sqrt)
 	StarMathCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35.1\" fmla=\"sqrt 2 \" /><a:gd name=\"gd35\" fmla=\"*/ 1 gd35.1 2 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35.1\" fmla=\"sqrt 2 \" /><a:gd name=\"gd35\" fmla=\"*/ 0 gd35.1 2 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,DoubleBracket)
@@ -159,5 +159,75 @@ TEST(SMCustomShapeTest,Atan)
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
 	std::wstring wsXmlString = L"<a:gd name=\"gd35.1\" fmla=\"+/ 0 25 5 \" /><a:gd name=\"gd35\" fmla=\"at2 1 gd35.1 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,PlusSecondMinusEmpty)
+{
+	std::wstring wsString =L"+1-";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 0 1 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,SinWithoutBracket)
+{
+	std::wstring wsString =L"sin";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"sqrt 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,SinEmpty)
+{
+	std::wstring wsString =L"sin()";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"sin 1 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,MaxEmpty)
+{
+	std::wstring wsString =L"max()";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"max 0 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,IfEmpty)
+{
+	std::wstring wsString =L"if()";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"?: 0 0 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,AbsEmpty)
+{
+	std::wstring wsString =L"abs()";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"abs 0 \" />";
+	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
+}
+TEST(SMCustomShapeTest,PlusFirstMinusEmpty)
+{
+	std::wstring wsString =L"1+-";
+	StarMathCustomShape::SMCustomShapePars oPars;
+	StarMathCustomShape::SMCustomShapeConversion oConvers;
+	oPars.StartParsSMCustomShape(wsString);
+	oConvers.StartConversion(oPars.GetVector(),L"gd35");
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 1 0 0 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }

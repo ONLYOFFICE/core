@@ -207,6 +207,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_presentations.push_back(L"dpt");
 	list.m_presentations.push_back(L"fodp");
 	list.m_presentations.push_back(L"key");
+	list.m_presentations.push_back(L"odg");
 	list.m_presentations.push_back(L"odp");
 	list.m_presentations.push_back(L"otp");
 	list.m_presentations.push_back(L"pot");

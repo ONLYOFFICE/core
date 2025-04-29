@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "../../../../DesktopEditor/common/StringBuilder.h"
 
 namespace NSDocxRenderer
@@ -70,6 +72,60 @@ namespace NSDocxRenderer
 	public:
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const = 0;
+	};
+
+	// using template to avoid downcasting
+	template <typename T>
+	class CBaseItemGroup : public CBaseItem
+	{
+	public:
+		std::vector<std::shared_ptr<T>> m_arItems;
+
+		CBaseItemGroup()
+		{
+			static_assert(std::is_base_of<CBaseItem, T>::value, "T should has base of CBaseItem!");
+		}
+		CBaseItemGroup(const CBaseItemGroup<T>& other) : CBaseItemGroup()
+		{
+			for (const auto value : other.m_arItems)
+				m_arItems.push_back(value);
+		}
+		CBaseItemGroup(CBaseItemGroup<T>&& other) : CBaseItemGroup()
+		{
+			m_arItems = std::move(other);
+		}
+		virtual ~CBaseItemGroup() {}
+
+		CBaseItemGroup<T>& operator=(const CBaseItemGroup<T>& other)
+		{
+			if (this == &other)
+				return *this;
+
+			m_arItems.clear();
+			for (const auto value : other.m_arItems)
+				m_arItems.push_back(value);
+
+			return *this;
+		}
+		CBaseItemGroup<T>& operator=(CBaseItemGroup<T>&& other)
+		{
+			if (this == &other)
+				return *this;
+
+			m_arItems = std::move(other);
+			return *this;
+		}
+
+		void AddItem(const std::shared_ptr<T>& pItem)
+		{
+			CBaseItem::RecalcWithNewItem(pItem.get());
+			m_arItems.push_back(pItem);
+		}
+		void AddItem(std::shared_ptr<T>&& pItem)
+		{
+			CBaseItem::RecalcWithNewItem(pItem.get());
+			m_arItems.push_back(std::move(pItem));
+		}
 	};
 
 	enum class eBaseItemCmpType

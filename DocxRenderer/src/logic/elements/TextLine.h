@@ -57,11 +57,4 @@ namespace NSDocxRenderer
 		size_t GetLength() const;
 		void GetNextSym(size_t& nContPos, size_t& nSymPos) const noexcept;
 	};
-
-	class CTextLineGroup : public CBaseItem
-	{
-	public:
-		void AddTextLine(const std::shared_ptr<CTextLine>& pTextLine);
-		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
-	};
 }

@@ -87,11 +87,18 @@ namespace NSDocxRenderer
 		using shape_ptr_t = std::shared_ptr<CShape>;
 		using cont_ptr_t = std::shared_ptr<CContText>;
 		using text_line_ptr_t = std::shared_ptr<CTextLine>;
-		using text_line_group_ptr_t = std::shared_ptr<CTextLineGroup>;
 		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
 		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 		using table_ptr_t = std::shared_ptr<CTable>;
+
+		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
+		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
+		using cell_ptr_t = std::shared_ptr<CTable::CCell>;
+
+		using text_line_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextLine>>;
+		using text_cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextCell>>;
+		using cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTable::CCell>>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
@@ -100,25 +107,19 @@ namespace NSDocxRenderer
 		std::vector<text_line_ptr_t> BuildTextLines(const std::vector<cont_ptr_t>& arConts);
 
 		// build text line groups
-		std::vector<std::shared_ptr<CTextLineGroup>> BuildTextLineGroups();
+		std::vector<text_line_group_ptr_t> BuildTextLineGroups();
 
 		// returns std::vector of paragraphs builded from m_arTextLines
 		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
-		// return groups of cells
-		std::vector<std::vector<CTable::text_cell_ptr_t>> BuildTextCellGroups(const std::vector<CTable::text_cell_ptr_t>& arTextCells);
+		// return groups of text cells
+		std::vector<text_cell_group_ptr_t> BuildTextCellGroups(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
 		// returns std::vector of tables builded from shapes and paragraphes
 		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
 		// return std::vector of graphical cells (from shapes)
-		std::vector<CTable::graphical_cell_ptr_t> BuildGraphicalCells();
-
-		// return std::vector fotr
-		std::vector<CTable::text_cell_ptr_t> BuildTextCells(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
-
-		// align given groups of text cells
-		void AlignTextCellGroups(const std::vector<std::vector<CTable::text_cell_ptr_t>>& arTextCellGroups);
+		std::vector<graphical_cell_ptr_t> BuildGraphicalCells();
 
 		// returns std::vector of base items builded from m_arParagraphs
 		std::vector<ooxml_item_ptr_t> BuildOutputObjects();

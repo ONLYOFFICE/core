@@ -24,9 +24,6 @@ namespace NSDocxRenderer
 		using row_ptr_t = std::shared_ptr<CRow>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 
-		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
-		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
-
 	public:
 		class CCell : public CBaseItem, public IOoxmlItem
 		{

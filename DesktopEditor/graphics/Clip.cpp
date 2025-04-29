@@ -46,6 +46,12 @@ namespace Aggplus
 			delete m_rasterizer;
 	}
 
+	/**
+	 * @brief CClipMulti::GetRasterizer
+	 *
+	 * @return Ponter to new rasterizer if there was no
+	 *   clip yet, otherwise - nullptr
+	 */
 	CClipMulti::clip_rasterizer_ptr CClipMulti::GetRasterizer() const
 	{
 		if (!m_bIsClip)
@@ -66,6 +72,13 @@ namespace Aggplus
 		m_bIsClip2 = false;
 	}
 
+	/**
+	 * @brief CClipMulti::GenerateClip
+	 * @param pPath - vector graphics path for clip
+	 * @param pMatrix - transform matrix
+	 *
+	 * Create new rasterizer from path with transform maatrix and start clip.
+	 */
 	void CClipMulti::GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix)
 	{
 		if (pPath == nullptr)
@@ -84,6 +97,12 @@ namespace Aggplus
 		GenerateClip2(pPath->m_internal->m_bEvenOdd);
 	}
 
+	/**
+	 * @brief CClipMulti::GenerateClip2
+	 * @param bEvenOdd - fill mode
+	 *
+	 * Set fill mode and start clip 1.
+	 */
 	void CClipMulti::GenerateClip2(bool bEvenOdd)
 	{
 		m_rasterizer->filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
@@ -92,6 +111,16 @@ namespace Aggplus
 		m_bIsClip2 = false;
 	}
 	
+	/**
+	 * @brief CClipMulti::Combine
+	 * @param bEvenOdd - fill mode
+	 * @param op - boolean operation
+	 * @param pRasterizer - another rasterizer for clip
+	 *
+	 * Performs the boolean operation. If there is no clip - create it.
+	 * If the first paart of the clip, execute it in storage. Perform
+	 * the second clip with storage.
+	 */
 	void CClipMulti::Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer_ptr pRasterizer)
 	{
 		if (!pRasterizer)

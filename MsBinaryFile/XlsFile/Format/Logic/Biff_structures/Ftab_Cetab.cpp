@@ -531,8 +531,8 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
     params_fixed.insert(ParamsFixed(0x01E0, 2, L"IFERROR"));
     params_fixed.insert(ParamsFixed(0x01E1, -1, L"COUNTIFS"));
     params_fixed.insert(ParamsFixed(0x01E2, 3, L"SUMIFS"));
-    params_fixed.insert(ParamsFixed(0x01E3, 2, L"AVERAGEIF"));
-    params_fixed.insert(ParamsFixed(0x01E4, 3, L"AVERAGEIFS"));
+    params_fixed.insert(ParamsFixed(0x01E3, -1, L"AVERAGEIF"));
+    params_fixed.insert(ParamsFixed(0x01E4, -1, L"AVERAGEIFS"));
 
 // Cetab values
 	params_fixed.insert(ParamsFixed(0x8000, -1, L"BEEP"));

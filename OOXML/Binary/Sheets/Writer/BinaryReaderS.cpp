@@ -6768,31 +6768,7 @@ int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poR
 		m_oBufferedStream.Seek(m_oBufferedStream.GetULong());
         if(m_pCurStreamWriterBin)
         {
-            auto type = XLSB::rt_BeginSheetData;
-            while(type!= XLSB::rt_EndSheetData)
-            {
-                type = (XLSB::CF_RECORD_TYPE)m_oBufferedStream.XlsbReadRecordType();
-                if(type == XLSB::rt_BeginSheetData)
-                {
-                    m_oBufferedStream.XlsbSkipRecord();
-                    continue;
-                }
-                else if(type == XLSB::rt_EndSheetData)
-                {
-                    m_oBufferedStream.XlsbSkipRecord();
-                    break;
-                }
-                auto record = m_pCurStreamWriterBin->getNextRecord(type);
-                auto size = m_oBufferedStream.XlsbReadRecordLength();
-                if(size)
-                {
-                    std::vector<BYTE> tempBuf(size);
-                    m_oBufferedStream.GetArray(tempBuf.data(), size);
-                    record->appendRawDataToStatic(tempBuf.data(), size);
-                }
-                m_pCurStreamWriterBin->storeNextRecord(record);
-            }
-
+            res =  ReadSheetDataToBin(XLSB::rt_BeginSheetData, 0, poResult);
         }
         else
         {
@@ -6810,6 +6786,58 @@ int BinaryWorksheetsTableReader::ReadSheetData(BYTE type, long length, void* poR
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
+}
+int BinaryWorksheetsTableReader::ReadSheetDataToBin(BYTE type, long length, void* poResult)
+{
+    int res = c_oSerConstants::ReadOk;
+    if(type != XLSB::rt_BeginSheetData)
+    {
+        res = c_oSerConstants::ReadUnknown;
+        return res;
+    }
+    auto rowNum = 0;
+    while(type!= XLSB::rt_EndSheetData)
+    {
+        type = (XLSB::CF_RECORD_TYPE)m_oBufferedStream.XlsbReadRecordType();
+        if(type == XLSB::rt_BeginSheetData)
+        {
+            m_oBufferedStream.XlsbSkipRecord();
+            continue;
+        }
+        else if(type >= XLSB::rt_CellBlank && type <= XLSB::rt_FmlaError)
+        {
+            OOX::Spreadsheet::CCell tempCell;
+            tempCell.fromXLSB(m_oBufferedStream, type, rowNum);
+            tempCell.toBin(m_pCurStreamWriterBin);
+            continue;
+        }
+        else if(type == XLSB::rt_EndSheetData)
+        {
+            m_oBufferedStream.XlsbSkipRecord();
+            break;
+        }
+        else if(type == XLSB::rt_RowHdr)
+        {
+            OOX::Spreadsheet::CRow tempRow;
+            tempRow.fromXLSB(m_oBufferedStream, type);
+            if(tempRow.m_oR.IsInit())
+                rowNum = tempRow.m_oR->GetValue();
+            tempRow.WriteAttributes(m_pCurStreamWriterBin);
+            continue;
+        }
+        auto record = m_pCurStreamWriterBin->getNextRecord(type);
+        auto size = m_oBufferedStream.XlsbReadRecordLength();
+        if(size)
+        {
+            std::vector<BYTE> tempBuf(size);
+            m_oBufferedStream.GetArray(tempBuf.data(), size);
+            record->appendRawDataToStatic(tempBuf.data(), size);
+        }
+        m_pCurStreamWriterBin->storeNextRecord(record);
+    }
+    OOX::Spreadsheet::CSheetData oSheetData;
+    oSheetData.ClearSharedFmlaRefs();
+    return res;
 }
 int BinaryWorksheetsTableReader::ReadRow(BYTE type, long length, void* poResult)
 {

@@ -3291,10 +3291,22 @@ namespace PdfWriter
 
 		// Задний фон
 		m_pStream->WriteStr("q\012");
-		m_pStream->WriteStr(pAnnot->GetBGforAP(!bN && nBorderType != EBorderType::Beveled ? -0.250977 : 0).c_str());
-		m_pStream->WriteStr("\012");
-		StreamWriteRect(m_pStream, 0, 0, dW, dH);
-		m_pStream->WriteStr("f\012");
+		std::string sBG;
+		if (!bN && nBorderType != EBorderType::Beveled)
+		{
+			sBG = pAnnot->GetBGforAP(-0.250977);
+			if (sBG.empty())
+				sBG = "0.749023 g";
+		}
+		else
+			sBG = pAnnot->GetBGforAP();
+		if (!sBG.empty())
+		{
+			m_pStream->WriteStr(sBG.c_str());
+			m_pStream->WriteStr("\012");
+			StreamWriteRect(m_pStream, 0, 0, dW, dH);
+			m_pStream->WriteStr("f\012");
+		}
 
 		// Граница
 		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)

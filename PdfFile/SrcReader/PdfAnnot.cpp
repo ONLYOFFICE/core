@@ -1075,7 +1075,10 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nSta
 	oField.free();
 
 	if (pField->fieldLookup("AS", &oObj)->isName())
+	{
 		m_sV = oObj.getName();
+		m_unFlags |= (1 << 9);
+	}
 	oObj.free();
 
 	Object oMK;

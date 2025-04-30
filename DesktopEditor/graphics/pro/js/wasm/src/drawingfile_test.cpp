@@ -929,6 +929,37 @@ void ReadInteractiveFormsFonts(CDrawingFile* pGrFile, int nType)
 		free(pFonts);
 }
 
+bool GetFromBase64(const std::wstring& sPath, BYTE** pBuffer, int* nBufferLen)
+{
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(sPath))
+	{
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			return false;
+		}
+
+		DWORD dwReaded;
+		if (!oFile.ReadFile(pFileContent, dwFileSize, dwReaded))
+			return false;
+
+		*nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+		*pBuffer = new BYTE[*nBufferLen];
+		if (!(*pBuffer))
+		{
+			RELEASEARRAYOBJECTS(pFileContent);
+			return false;
+		}
+
+		if (!NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, *pBuffer, nBufferLen))
+			return false;
+	}
+	oFile.CloseFile();
+	return true;
+}
 #include "../../../../../fontengine/ApplicationFontsWorker.h"
 #include "../../../../../common/Directory.h"
 
@@ -1017,14 +1048,87 @@ int main(int argc, char* argv[])
 		}
 	}
 	BYTE* pFileMerge = NULL;
-	if (false)
+	if (true)
 	{
-		DWORD nFileMergeLen = 0;
-		if (NSFile::CFileBinary::ReadAllBytes(NSFile::GetProcessDirectory() + L"/test_merge.pdf", &pFileMerge, nFileMergeLen))
+		int nBufferLen = NULL;
+		BYTE* pBuffer = NULL;
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/base64.txt", &pBuffer, &nBufferLen))
 		{
-			if (MergePages(pGrFile, pFileMerge, nFileMergeLen, 0, "merge") == 0)
+			std::vector<int> arrPages = { 1 };
+			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
+			int nLength = READ_INT(pSplitPages);
+
+			NSFile::CFileBinary oFile;
+			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split1.pdf"))
+				oFile.WriteFile(pSplitPages + 4, nLength - 4);
+			oFile.CloseFile();
+
+			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
+		}
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/base64.txt", &pBuffer, &nBufferLen))
+		{
+			std::vector<int> arrPages = { 2 };
+			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
+			int nLength = READ_INT(pSplitPages);
+
+			NSFile::CFileBinary oFile;
+			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
+				oFile.WriteFile(pSplitPages + 4, nLength - 4);
+			oFile.CloseFile();
+
+			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
+		}
+
+		/*
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
+		{
+			NSFile::CFileBinary oFile;
+			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
+				oFile.WriteFile(pBuffer, nBufferLen);
+			oFile.CloseFile();
+
+			MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge2");
+		}
+
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split1.txt", &pBuffer, &nBufferLen))
+		{
+			std::vector<int> arrPages = { 1 };
+			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
+			int nLength = READ_INT(pSplitPages);
+			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge");
+		}
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
+		{
+			std::vector<int> arrPages = { 2 };
+			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
+			int nLength = READ_INT(pSplitPages);
+			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge");
+		}
+
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/merge1.txt", &pBuffer, &nBufferLen))
+		{
+			if (MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge1") == 0)
 				RELEASEARRAYOBJECTS(pFileMerge);
 		}
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split.txt", &pBuffer, &nBufferLen))
+		{
+			std::vector<int> arrPages = { 1 };
+			if (SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen) == 0)
+				RELEASEARRAYOBJECTS(pFileMerge);
+		}
+
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/merge2.txt", &pBuffer, &nBufferLen))
+		{
+			if (MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge2") == 0)
+				RELEASEARRAYOBJECTS(pFileMerge);
+		}
+		*/
 	}
 
 	// INFO

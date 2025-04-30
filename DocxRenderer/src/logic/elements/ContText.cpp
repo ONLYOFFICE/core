@@ -763,8 +763,8 @@ namespace NSDocxRenderer
 		        fabs(pFirstCont->m_dLeft - pSecondCont->m_dRight) < c_dTHE_STRING_X_PRECISION_MM * 3;
 
 		//Размеры шрифта должны бать разными
-		bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.7 > pSecondCont->m_pFontStyle->dFontSize;
-		bool bIf6 = pFirstCont->m_pFontStyle->dFontSize <  pSecondCont->m_pFontStyle->dFontSize * 0.7;
+        bool bIf5 = pFirstCont->m_pFontStyle->dFontSize * 0.8 > pSecondCont->m_pFontStyle->dFontSize;
+        bool bIf6 = pFirstCont->m_pFontStyle->dFontSize <  pSecondCont->m_pFontStyle->dFontSize * 0.8;
 
 		if (bIf3 || bIf4)
 		{
@@ -954,9 +954,6 @@ namespace NSDocxRenderer
 			}
 		}
 
-		if (m_pCurrCont)
-			m_arConts.push_back(std::move(m_pCurrCont));
-
 		auto pCont = std::make_shared<CContText>(pFontManager);
 		const auto& oParams = pFontManager->GetFontSelectParams();
 		const auto& oMetrics = pFontManager->GetFontMetrics();
@@ -1020,6 +1017,10 @@ namespace NSDocxRenderer
 		{
 			m_arDiacs.push_back(std::move(pCont));
 		}
+        else
+        {
+            m_arConts.push_back(pCont);
+        }
 
 		m_pCurrCont = pCont;
 		m_oPrevFont = oFont;

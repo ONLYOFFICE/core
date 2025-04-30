@@ -1048,7 +1048,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	BYTE* pFileMerge = NULL;
-	if (true)
+	if (false)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
@@ -1080,55 +1080,6 @@ int main(int argc, char* argv[])
 
 			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
 		}
-
-		/*
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
-		{
-			NSFile::CFileBinary oFile;
-			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
-				oFile.WriteFile(pBuffer, nBufferLen);
-			oFile.CloseFile();
-
-			MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge2");
-		}
-
-
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split1.txt", &pBuffer, &nBufferLen))
-		{
-			std::vector<int> arrPages = { 1 };
-			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
-			int nLength = READ_INT(pSplitPages);
-			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge");
-		}
-
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
-		{
-			std::vector<int> arrPages = { 2 };
-			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
-			int nLength = READ_INT(pSplitPages);
-			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge");
-		}
-
-
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/merge1.txt", &pBuffer, &nBufferLen))
-		{
-			if (MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge1") == 0)
-				RELEASEARRAYOBJECTS(pFileMerge);
-		}
-
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split.txt", &pBuffer, &nBufferLen))
-		{
-			std::vector<int> arrPages = { 1 };
-			if (SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen) == 0)
-				RELEASEARRAYOBJECTS(pFileMerge);
-		}
-
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/merge2.txt", &pBuffer, &nBufferLen))
-		{
-			if (MergePages(pGrFile, pBuffer, nBufferLen, 0, "merge2") == 0)
-				RELEASEARRAYOBJECTS(pFileMerge);
-		}
-		*/
 	}
 
 	// INFO

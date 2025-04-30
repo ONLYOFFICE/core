@@ -950,6 +950,8 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 		m_nError = 1;
 		return;
 	}
+
+	m_nOriginIndex = m_pReader->GetNumPages();
 }
 bool CPdfEditor::IncrementalUpdates()
 {
@@ -1932,7 +1934,11 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 		{
 			pPDFDocument = m_pReader->GetPDFDocument(++nPDFIndex);
 			if (!pPDFDocument)
-				break;
+			{
+				m_mObjManager.m_arrSplitAddPages.push_back(arrPageIndex[i]);
+				--nPDFIndex;
+				continue;
+			}
 			nTotalPages += nPages;
 			nPages = pPDFDocument->getNumPages();
 			--i;
@@ -2050,6 +2056,7 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPr
 {
 	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
 		return false;
+	m_nOriginIndex = m_pReader->GetNumPages();
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
 	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
@@ -2120,6 +2127,13 @@ bool CPdfEditor::AddPage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
+	if (m_nMode == Mode::WriteNew)
+	{
+		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
+		if (it == m_mObjManager.m_arrSplitAddPages.end())
+			return false;
+		m_mObjManager.m_arrSplitAddPages.erase(it);
+	}
 
 	// Применение добавления страницы для writer
 	if (!m_pWriter->AddPage(nPageIndex))

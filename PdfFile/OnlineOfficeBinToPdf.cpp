@@ -187,7 +187,10 @@ namespace NSOnlineOfficeBinToPdf
 			case AddCommandType::EditPage:
 			{
 				if (!pPdf->EditPage(nPageNum))
-					return false;
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
 
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
 				oReader.Skip(nLen - 9);
@@ -195,7 +198,11 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case AddCommandType::AddPage:
 			{
-				pPdf->AddPage(nPageNum);
+				if (!pPdf->AddPage(nPageNum))
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
 
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
 				oReader.Skip(nLen - 9);

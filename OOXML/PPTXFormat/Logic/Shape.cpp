@@ -111,14 +111,15 @@ namespace PPTX
 					{
 						if (oReader.MoveToFirstAttribute())
 						{
-							std::wstring wsNameA = oReader.GetName();
-							while (wsNameA.empty())
+							std::string sNameA = XmlUtils::GetNameNoNS(oReader.GetNameChar());
+							while (false == sNameA.empty())
 							{
-								if (L"id" == wsNameA) oTextBoxId = oReader.GetText();
+								if ("id" == sNameA) oTextBoxId = oReader.GetText();
 								if (!oReader.MoveToNextAttribute())
 									break;
-								wsNameA = oReader.GetName();
+								sNameA = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 							}
+							oReader.MoveToElement();
 						}
 					}
 

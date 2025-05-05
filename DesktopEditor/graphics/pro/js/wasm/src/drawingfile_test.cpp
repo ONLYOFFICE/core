@@ -1024,38 +1024,15 @@ int main(int argc, char* argv[])
 
 	// SPLIT & MERGE
 	BYTE* pSplitPages = NULL;
-	if (false)
-	{
-		std::vector<int> arrPages = { 0 };
-		for (int i = 0; i < 3; i++)
-		{
-			pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), NULL, 0);
-			if (pSplitPages)
-			{
-				int nLength = READ_INT(pSplitPages);
-
-				NSFile::CFileBinary oFile;
-				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/test" + std::to_wstring(i) + L".pdf"))
-					oFile.WriteFile(pSplitPages + 4, nLength - 4);
-				oFile.CloseFile();
-
-				if (MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge") == 0)
-					RELEASEARRAYOBJECTS(pSplitPages);
-
-				if (!UnmergePages(pGrFile))
-					std::cout << "error" << std::endl;
-			}
-		}
-	}
 	BYTE* pFileMerge = NULL;
-	if (false)
+	if (true)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/base64.txt", &pBuffer, &nBufferLen))
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split1.txt", &pBuffer, &nBufferLen))
 		{
-			std::vector<int> arrPages = { 1 };
+			std::vector<int> arrPages = { 0 };
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
@@ -1066,10 +1043,11 @@ int main(int argc, char* argv[])
 
 			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
 		}
+		RELEASEARRAYOBJECTS(pBuffer);
 
-		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/base64.txt", &pBuffer, &nBufferLen))
+		if (GetFromBase64(NSFile::GetProcessDirectory() + L"/split2.txt", &pBuffer, &nBufferLen))
 		{
-			std::vector<int> arrPages = { 2 };
+			std::vector<int> arrPages = { 0 };
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
@@ -1078,8 +1056,9 @@ int main(int argc, char* argv[])
 				oFile.WriteFile(pSplitPages + 4, nLength - 4);
 			oFile.CloseFile();
 
-			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
+			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge2");
 		}
+		RELEASEARRAYOBJECTS(pBuffer);
 	}
 
 	// INFO

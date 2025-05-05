@@ -1555,7 +1555,6 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	int nPagesBefore = m_pReader->GetNumPages() - pPDFDocument->getNumPages();
 
 	if (unLength == 0)
 		unLength = pPDFDocument->getNumPages();
@@ -1571,7 +1570,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
 		pDoc->AddPage(pDoc->GetPagesCount(), pPage);
-		pDoc->AddEditPage(pPage, nPagesBefore + (arrPageIndex ? arrPageIndex[i] : i));
+		pDoc->AddEditPage(pPage, arrPageIndex ? arrPageIndex[i] : i);
 
 		// Получение объекта страницы
 		Object pageRefObj, pageObj;

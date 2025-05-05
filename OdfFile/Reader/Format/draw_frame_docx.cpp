@@ -1196,6 +1196,8 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	{
 		if (href[0] == L'#') href = href.substr(1);
 	}
+	bool bSvg = href.rfind(L".svg") == href.length() - 4;
+	bool bPdf = href.rfind(L".pdf") == href.length() - 4;
 
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) 
@@ -1212,7 +1214,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (href[0] == L'#') href = href.substr(1);
 
 	if (drawing->type == oox::typeUnknown)
-		drawing->type = type;
+		drawing->type = bPdf ? oox::typePDF : type;
 
 	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1244,16 +1246,19 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		drawing->action.typeRels= oox::typeHyperlink;
 	}
 /////////
-	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
-	drawing->fill.type = 2;
-	drawing->fill.bitmap->isInternal = false;
-	drawing->fill.bitmap->bStretch = true;
-
+	
+	if (!drawing->fill.bitmap)
+	{
+		drawing->fill.bitmap = oox::oox_bitmap_fill::create();
+		drawing->fill.type = 2;
+		drawing->fill.bitmap->isInternal = false;
+		drawing->fill.bitmap->bStretch = true;
+	}
 	std::wstring href_out;
-	if (drawing->type == oox::typePDF)
+	if (drawing->type == oox::typePDF && bPdf)
 	{
 		drawing->objectProgId = L"Acrobat.Document.DC";
-		drawing->objectId = Context.get_mediaitems()->add_or_find(href, type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+		drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
 
 		std::wstring image_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(Context.root()->get_folder() + FILE_SEPARATOR_STR, L"img");
 		
@@ -1264,7 +1269,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}	
 
-	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
 
 	const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
 									common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");

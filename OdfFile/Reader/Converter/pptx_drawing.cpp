@@ -512,7 +512,7 @@ void _pptx_drawing::serialize(std::wostream & strm)
 	{
 		pptx_serialize_table(strm, *this);
 	}
-	else if (type == typeMsObject || type == typeOleObject)
+	else if (type == typeMsObject || type == typeOleObject || type == typePDF)
 	{
 		pptx_serialize_object(strm, *this);
 	}

@@ -9,9 +9,3 @@ SOURCES += $$PWD/md4c/src/md4c.c \
            $$PWD/md4c/src/md4c-html.c \
            $$PWD/md4c/src/entity.c \
            $$PWD/md2html.cpp
-
-CORE_ROOT_DIR = $$PWD/../../../
-PWD_ROOT_DIR = $$PWD
-include($$CORE_ROOT_DIR/Common/base.pri)
-
-ADD_DEPENDENCY(kernel, UnicodeConverter)

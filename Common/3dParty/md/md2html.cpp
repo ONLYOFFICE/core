@@ -3,6 +3,8 @@
 #include "md4c/src/md4c-html.h"
 #include "../../../DesktopEditor/common/File.h"
 
+namespace Md
+{
 void ToHtml(const MD_CHAR* pValue, MD_SIZE uSize, void* pData)
 {
 	if (NULL != pData)
@@ -95,5 +97,6 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 		NSFile::CFileBinary::Remove(wsPathToHtmlFile);
 
 	return bResult;
+}
 }
 

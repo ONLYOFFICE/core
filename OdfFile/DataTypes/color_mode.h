@@ -30,41 +30,43 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
-#define PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
+#include <iosfwd>
+#include <string>
+#include "odfattributes.h"
 
-namespace PPTX
+namespace cpdoccore { namespace odf_types { 
+
+class color_mode
 {
-	namespace Logic
-	{
-		class LumEffect : public WrapperWritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(LumEffect)
-			PPTX_LOGIC_BASE2(LumEffect)
+public:
+    enum type
+    {
+        standard,
+        greyscale,
+        mono,
+        watermark,
+        separating
+    };
 
-			LumEffect& operator=(const LumEffect& oSrc);
-			virtual OOX::EElementType getType() const;
+    color_mode() {}
+    color_mode(type _Type) : type_(_Type)
+    {}
 
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
+    type get_type() const
+    {
+        return type_;
+    };
+    
+    static color_mode parse(const std::wstring & Str);
 
-			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+private:
+    type type_;
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+};
 
-			nullable_int	bright;
-			nullable_int	contrast;
+std::wostream & operator << (std::wostream & _Wostream, const color_mode& _Val);
+} 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::color_mode);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace Logic
-} // namespace PPTX
-
-#endif // PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
+}

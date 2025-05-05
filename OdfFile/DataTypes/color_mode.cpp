@@ -29,42 +29,57 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-#ifndef PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
-#define PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
 
-#include "./../../WrapperWritingElement.h"
+#include "color_mode.h"
 
-namespace PPTX
+#include <boost/algorithm/string.hpp>
+#include <ostream>
+
+namespace cpdoccore { namespace odf_types { 
+
+std::wostream & operator << (std::wostream & _Wostream, const color_mode& _Val)
 {
-	namespace Logic
-	{
-		class LumEffect : public WrapperWritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(LumEffect)
-			PPTX_LOGIC_BASE2(LumEffect)
+    switch(_Val.get_type())
+    {
+    case color_mode::greyscale:
+        _Wostream << L"greyscale";
+        break;
+    case color_mode::mono:
+        _Wostream << L"mono";
+        break;
+    case color_mode::standard:
+        _Wostream << L"standard";
+        break;
+    case color_mode::watermark:
+        _Wostream << L"watermark";
+        break;
+    case color_mode::separating:
+        _Wostream << L"separating";
+        break;
+    default:
+        break;
+    }
+    return _Wostream;    
+}
+color_mode color_mode::parse(const std::wstring & Str)
+{
+    std::wstring tmp = Str;
+    boost::algorithm::to_lower(tmp);
 
-			LumEffect& operator=(const LumEffect& oSrc);
-			virtual OOX::EElementType getType() const;
+    if (tmp == L"greyscale")
+        return color_mode(greyscale);
+    else if (tmp == L"mono")
+        return color_mode(mono);
+    else if (tmp == L"standard")
+        return color_mode(standard);
+    else if (tmp == L"watermark")
+        return color_mode(watermark);
+    else if (tmp == L"separating")
+        return color_mode(separating);
+    else
+    {
+        return color_mode(standard);
+    }
+}
 
-			void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-
-			virtual std::wstring toXML() const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-
-			nullable_int	bright;
-			nullable_int	contrast;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace Logic
-} // namespace PPTX
-
-#endif // PPTX_LOGIC_LUMEFFECT_INCLUDE_H_
+} }

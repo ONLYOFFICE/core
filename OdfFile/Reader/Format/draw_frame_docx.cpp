@@ -1298,6 +1298,10 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		{
 			drawing->fill.bitmap->contrast = properties->common_draw_fill_attlist_.draw_contrast_->get_value();
 		}
+		if (properties->common_draw_fill_attlist_.draw_color_mode_)
+		{
+			drawing->fill.bitmap->color_mode = properties->common_draw_fill_attlist_.draw_color_mode_->get_type();
+		}
 	}
 }
 

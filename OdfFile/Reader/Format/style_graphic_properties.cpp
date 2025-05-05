@@ -150,7 +150,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 
 	if (common_draw_fill_attlist_.draw_color_mode_)
 	{
-		properties.push_back(_property(L"color-mode", *common_draw_fill_attlist_.draw_color_mode_));
+		properties.push_back(_property(L"color-mode", (int)common_draw_fill_attlist_.draw_color_mode_->get_type()));
 	}
 	if (common_draw_fill_attlist_.draw_luminance_)
 	{

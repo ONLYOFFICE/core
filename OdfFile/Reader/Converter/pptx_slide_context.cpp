@@ -720,11 +720,11 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	drawing.fill.bitmap		= oox_bitmap_fill::create();
 	drawing.fill.type		= 2;
 	
-	_CP_OPT(std::wstring) sTextContent, sColorMode;
+	_CP_OPT(std::wstring) sTextContent;
 	_CP_OPT(double) dLuminance, dContrast;
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
-	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"color-mode", drawing.fill.bitmap->color_mode);
 	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
 	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
@@ -737,9 +737,6 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
 	process_crop(obj, drawing, fileName);
 	
-	if ((sColorMode) && (*sColorMode == L"greyscale"))
-		drawing.fill.bitmap->luminance	= true;
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;

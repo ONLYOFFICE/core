@@ -2474,7 +2474,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 	if (!oAnnots)
 	{
 		PdfWriter::CPage* pPage = pDoc->GetCurPage();
-		std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetObjId() };
+		std::pair<int, int> pPageRef = { pPage->GetObjId(), pPage->GetGenNo() };
 		if (pPageRef.first == 0)
 			return false;
 

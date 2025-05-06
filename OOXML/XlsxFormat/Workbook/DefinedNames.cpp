@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -264,7 +264,8 @@ namespace OOX
 			std::vector<XLS::BaseObjectPtr> objectVector;
 
 			for(auto i:m_arrItems)
-				objectVector.push_back(i->toBin());
+				if(i->m_oName.IsInit() || i->m_oRef.IsInit())
+					objectVector.push_back(i->toBin());
 			
 			auto functionsVector = AddFutureFunctions(m_arrItems.size());
 			if(!functionsVector.empty())
@@ -284,9 +285,11 @@ namespace OOX
 			for(auto &definedName : obj)
 			{
 				CDefinedName *pDefinedName = new CDefinedName(m_pMainDocument);
-				m_arrItems.push_back( pDefinedName);
-
 				pDefinedName->fromBin(definedName);
+                if(pDefinedName->m_oName.IsInit() || pDefinedName->m_oRef.IsInit())
+                    m_arrItems.push_back( pDefinedName);
+                else
+                    delete pDefinedName;
 			}
 		}
 		EElementType CDefinedNames::getType () const

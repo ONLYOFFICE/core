@@ -833,11 +833,11 @@ namespace PdfWriter
 		{
 			sDA.append(" /");
 			sDA.append(sFontName);
-		}
 
-		sDA.append(" ");
-		sDA.append(std::to_string(dFontSize));
-		sDA.append(" Tf");
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
 
 		Add("DA", new CStringObject(sDA.c_str()));
 	}
@@ -1236,11 +1236,11 @@ namespace PdfWriter
 		{
 			sDA.append(" /");
 			sDA.append(sFontName);
-		}
 
-		sDA.append(" ");
-		sDA.append(std::to_string(dFontSize));
-		sDA.append(" Tf");
+			sDA.append(" ");
+			sDA.append(std::to_string(dFontSize));
+			sDA.append(" Tf");
+		}
 
 		CDictObject* pOwner = GetObjOwnValue("DA");
 		if (pOwner)
@@ -1448,11 +1448,11 @@ namespace PdfWriter
 		{
 			sDA.append(" /");
 			sDA.append(sFontName);
-		}
 
-		sDA.append(" ");
-		sDA.append(std::to_string(m_dFontSizeAP));
-		sDA.append(" Tf\012");
+			sDA.append(" ");
+			sDA.append(std::to_string(m_dFontSizeAP));
+			sDA.append(" Tf\012");
+		}
 
 		return sDA;
 	}
@@ -2010,6 +2010,14 @@ namespace PdfWriter
 		if (nFlags & (1 << 15))
 			m_nSubtype = WidgetRadiobutton;
 		CWidgetAnnotation::SetFlag(nFlags);
+	}
+	std::string CCheckBoxWidget::GetTC(bool bCAPS)
+	{
+		std::string sDA = GetColor(m_arrTC, bCAPS);
+		if (sDA.empty())
+			sDA = bCAPS ? "0 G" : "0 g";
+		sDA += "\012";
+		return sDA;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWidget

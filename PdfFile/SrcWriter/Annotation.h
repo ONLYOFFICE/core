@@ -548,6 +548,7 @@ namespace PdfWriter
 		virtual void SetFlag (const int& nFlag);
 		void SetAP();
 		void SwitchAP(const std::string& sV, int nI = -1);
+		std::string GetTC(bool bCAPS);
 
 		std::string Yes();
 		void Off();

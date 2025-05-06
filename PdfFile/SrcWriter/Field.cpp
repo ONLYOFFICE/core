@@ -3264,12 +3264,13 @@ namespace PdfWriter
 		double dShift = dBorder / 2.0;
 		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
 			dShift *= 2.0;
-		m_pStream->WriteStr("0 g\012q\012");
+		m_pStream->WriteStr("q\012");
 		m_pStream->WriteStr("1 0 0 1 ");
 		m_pStream->WriteReal(dCX);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dCY);
 		m_pStream->WriteStr(" cm\012");
+		m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dShift);
 		m_pStream->WriteStr("f\012Q\012");
 	}
@@ -3375,12 +3376,13 @@ namespace PdfWriter
 		{
 		case ECheckBoxStyle::Check:
 		{
-			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("q\012");
 			m_pStream->WriteStr("1 0 0 1 ");
 			m_pStream->WriteReal((bW ? dDiff : 0) + dShift);
 			m_pStream->WriteChar(' ');
 			m_pStream->WriteReal((bW ? 0 : dDiff) + dShift);
 			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 
 			double dScale = (std::min(dW, dH) - dShift * 2.0) / 20.0;
 			StreamWriteXYMove(m_pStream, 5.2381 * dScale, 11.2 * dScale);
@@ -3400,7 +3402,8 @@ namespace PdfWriter
 				dCross *= 2;
 			m_pStream->WriteStr("q\012");
 			StreamWriteRect(m_pStream, dCross, dCross, dW - dCross, dH - dCross);
-			m_pStream->WriteStr("W\012n\0120 G\0121 w\012");
+			m_pStream->WriteStr("W\012n\0121 w\012");
+			m_pStream->WriteStr(pAnnot->GetTC(true).c_str());
 
 			double x1 = dShift + 1 + (bW ? dDiff : 0);
 			double y1 = dShift + 1 + (bW ? 0 : dDiff);
@@ -3417,12 +3420,13 @@ namespace PdfWriter
 		case ECheckBoxStyle::Diamond:
 		{
 			double dSq = dC - dShift * 2.0 - 1;
-			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("q\012");
 			m_pStream->WriteStr("1 0 0 1 ");
 			m_pStream->WriteReal(dCX);
 			m_pStream->WriteChar(' ');
 			m_pStream->WriteReal(dCY);
 			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 			StreamWriteXYMove(m_pStream, -dSq, 0);
 			StreamWriteXYLine(m_pStream, 0, dSq);
 			StreamWriteXYLine(m_pStream, dSq, 0);
@@ -3434,12 +3438,13 @@ namespace PdfWriter
 		{
 			double dR = dC - dShift * 2.0 - 1;
 
-			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("q\012");
 			m_pStream->WriteStr("1 0 0 1 ");
 			m_pStream->WriteReal(dCX);
 			m_pStream->WriteChar(' ');
 			m_pStream->WriteReal(dCY);
 			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 			StreamWriteCircle(m_pStream, 0, 0, dR);
 			m_pStream->WriteStr("f\012Q\012");
 			break;
@@ -3450,7 +3455,8 @@ namespace PdfWriter
 			double dRInner = dROuter / 2.5;
 			int nPoints = 5;
 
-			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 			for (int i = 0; i < nPoints * 2; ++i)
 			{
 				double dR = i % 2 == 0 ? dROuter : dRInner;
@@ -3469,7 +3475,8 @@ namespace PdfWriter
 		{
 			double dSq = std::min(dW, dH) * 2.0 / 3.0 - dShift * 2.0 - 1;
 
-			m_pStream->WriteStr("0 g\012q\012");
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
 			StreamWriteRect(m_pStream, dCX - dSq / 2.0, dCY - dSq / 2.0, dSq, dSq);
 			m_pStream->WriteStr("f\012Q\012");
 			break;

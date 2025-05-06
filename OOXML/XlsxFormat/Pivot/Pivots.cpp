@@ -523,101 +523,58 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oApplyBorderFormats.IsInit())
 			ptr->ibitAtrBdr = m_oApplyBorderFormats.get();
-		else
-			ptr->ibitAtrBdr = false;
 		if (m_oApplyFontFormats.IsInit())
 			ptr->ibitAtrFnt = m_oApplyFontFormats.get();
-		else
-			ptr->ibitAtrFnt = false;
 		if (m_oApplyNumberFormats.IsInit())
 			ptr->ibitAtrNum = m_oApplyNumberFormats.get();
-		else
-			ptr->ibitAtrNum = false;
 		if (m_oApplyPatternFormats.IsInit())
 			ptr->ibitAtrPat = m_oApplyPatternFormats.get();
-		else
-			ptr->ibitAtrPat = false;
 		if (m_oApplyWidthHeightFormats.IsInit())
 			ptr->ibitAtrProt = m_oApplyWidthHeightFormats.get();
-		else
-			ptr->ibitAtrProt = false;
 		if (m_oApplyAlignmentFormats.IsInit())
 			ptr->ibitAtrAlc = m_oApplyAlignmentFormats.get();
-		else
-			ptr->ibitAtrAlc = false;
 
 		if (m_oAsteriskTotals.IsInit())
 		 	ptr->fHideTotAnnotation = m_oAsteriskTotals.get();
-		else
-			ptr->fHideTotAnnotation = false;
 		if (m_oVisualTotals.IsInit())
 			ptr->fNotVisualTotals = m_oVisualTotals.get();
-		else
-			ptr->fNotVisualTotals = false;
 		if (m_oAutoFormatId.IsInit())
 			ptr->itblAutoFmt = m_oAutoFormatId->GetValue();
-		else
-			ptr->itblAutoFmt = 0;
 		if (m_oCacheId.IsInit())
 			ptr->idCache = m_oCacheId->GetValue();
 		if (m_oChartFormat.IsInit())
 			ptr->dwCrtFmtId = m_oChartFormat->GetValue();
-		else
-			ptr->dwCrtFmtId = 0;
 		if (m_oColGrandTotals.IsInit())
 			ptr->fColGrand = m_oColGrandTotals.get();
 
 		if (m_oColHeaderCaption.IsInit()) ptr->irstColHdrName = m_oColHeaderCaption.get();
-		else
-			ptr->fUseColHdrName = false;
 		if (m_oCompact.IsInit()) 
 			ptr->fDefaultCompact = m_oCompact.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oCompactData.IsInit()) 
 			ptr->fCompactData = m_oCompactData.get();
-		else
-			ptr->fCompactData = false;
 		if (m_oCreatedVersion.IsInit())
 		 	ptr->bVerSxMacro = m_oCreatedVersion->GetValue();
-		else
-			ptr->bVerSxMacro = false;
 		if (m_oCustomListSort.IsInit()) 
 			ptr->fDontUseCustomLists = !m_oCustomListSort.get();
-		else
-			ptr->fDontUseCustomLists = false;
 		if (m_oDataCaption.IsInit()) 
 			ptr->irstData = m_oDataCaption.get();
 		else
 			ptr->irstData = 0xFFFFFFFF;
 		if (m_oDataOnRows.IsInit()) 
-			ptr->fDefaultCompact = m_oDataOnRows.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oDataPosition.IsInit()) 
 			ptr->ipos4Data = m_oDataPosition->GetValue();
-		else	
-			ptr->ipos4Data = -1;
+
 		if (m_oDisableFieldList.IsInit()) 
 			ptr->fDisableFList = m_oDisableFieldList.get();
-		else 
-			ptr->fDisableFList = false;
+
 		if (m_oEditData.IsInit()) 
 			ptr->fEnableDataEd = m_oEditData.get();
-		else
-			ptr->fEnableDataEd = false;
 		if (m_oEnableDrill.IsInit()) 
 			ptr->fEnableDrilldown = m_oEnableDrill.get();
-		else
-			ptr->fEnableDrilldown = false;
 		if (m_oEnableFieldProperties.IsInit()) 
 			ptr->fEnableFieldDialog = m_oEnableFieldProperties.get();
-		else
-			ptr->fEnableFieldDialog = false;
 		if (m_oEnableWizard.IsInit()) 
 			ptr->fEnableWizard = m_oEnableWizard.get();
-		else
-			ptr->fEnableWizard = false;
 		if (m_oErrorCaption.IsInit()) 
 			ptr->irstErrorString = m_oErrorCaption.get();
 		else
@@ -627,46 +584,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		if (m_oFieldListSortAscending.IsInit()) 
 			ptr->fNonDefaultSortInFlist = m_oFieldListSortAscending.get();
-		else 
-			ptr->fNonDefaultSortInFlist = false;
 		if (m_oFieldPrintTitles.IsInit()) 
 			ptr->fPrintTitles = m_oFieldPrintTitles.get();
-		else 
-			ptr->fPrintTitles = false;
 		if (m_oGrandTotalCaption.IsInit()) 
 			ptr->irstGrand = m_oGrandTotalCaption.get();
-		else
-			ptr->fDisplayGrand = false;
 		if (m_oGridDropZones.IsInit()) 
 			ptr->fNewDropZones = !m_oGridDropZones.get();
-		else
-			ptr->fNewDropZones = false;
 		if (m_oImmersive.IsInit()) 
 			ptr->fTurnOffImmersive = m_oImmersive.get();
-		else 
-			ptr->fTurnOffImmersive = false;
 		if (m_oIndent.IsInit()) 
 			ptr->cIndentInc = m_oIndent->GetValue();
-		else
-			ptr->cIndentInc = false;
 		if (m_oItemPrintTitles.IsInit()) 
 			ptr->fRepeatItemsOnEachPrintedPage = m_oItemPrintTitles.get();
-		else
-			ptr->fRepeatItemsOnEachPrintedPage = false;
 		if (m_oMdxSubqueries.IsInit()) 
 			ptr->fDefaultCompact = m_oMdxSubqueries.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oMergeItem.IsInit()) 
 			ptr->fMergeLabels = m_oMergeItem.get();
-		else 
-			ptr->fMergeLabels = false;
 		if (m_oMinRefreshableVersion.IsInit()) 
 			ptr->bVerSxUpdateableMin = m_oMinRefreshableVersion->GetValue();
 		if (m_oMissingCaption.IsInit()) 
 			ptr->irstNullString = m_oMissingCaption.get();
-		else
-			ptr->fEmptyDisplayNullString = true;
 		if (m_oMultipleFieldFilters.IsInit()) 
 			ptr->fSingleFilterPerField = !m_oMultipleFieldFilters.get();
 		if (m_oName.IsInit()) ptr->irstName = m_oName.get();
@@ -676,74 +613,44 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fDefaultOutline = m_oOutline.get();
 		if (m_oOutlineData.IsInit()) 
 			ptr->fOutlineData = m_oOutlineData.get();
-		else
-			ptr->fOutlineData = false;
 		if (m_oPageOverThenDown.IsInit())
 			ptr->fAcrossPageLay = m_oPageOverThenDown.get();
-		else 
-			ptr->fAcrossPageLay = false;
 		if (m_oPageStyle.IsInit()) 
 			ptr->irstPageFieldStyle = m_oPageStyle.get();
-		else
-			ptr->fDisplayPageFieldStyle = false;
 		if (m_oPageWrap.IsInit()) 
 			ptr->cWrapPage = m_oPageWrap->GetValue();
 		else
 			ptr->cWrapPage = 0;
 		if (m_oPivotTableStyle.IsInit()) 
 			ptr->irstTableStyle = m_oPivotTableStyle.get();
-		else
-			ptr->fDisplayTableStyle = false;
 		if (m_oPreserveFormatting.IsInit()) 
 			ptr->fPreserveFormatting = m_oPreserveFormatting.get();
 		if (m_oPrintDrill.IsInit()) 
 			ptr->fPrintDrillIndicators = m_oPrintDrill.get();
-		else 
-			ptr->fPrintDrillIndicators = false;
 		if (m_oPublished.IsInit()) 
 			ptr->fPublished = m_oPublished.get();
-		else 
-			ptr->fPublished = false;
 		if (m_oRowGrandTotals.IsInit()) 
 			ptr->fRwGrand = m_oRowGrandTotals.get();
 		if (m_oRowHeaderCaption.IsInit()) 
 			ptr->irstRwHdrName = m_oRowHeaderCaption.get();
-		else
-			ptr->fUseRwHdrName = false;
 		if (m_oShowCalcMbrs.IsInit()) 
 			ptr->fNotViewCalculatedMembers = !m_oShowCalcMbrs.get();
-		else 
-			ptr->fNotViewCalculatedMembers = false;
 		if (m_oShowDataDropDown.IsInit()) 
 			ptr->fHideDDData = !m_oShowDataDropDown.get();
-		else 
-			ptr->fHideDDData = false;
 		if (m_oShowDataTips.IsInit()) 
 			ptr->fNoPivotTips = !m_oShowDataTips.get();
-		else 
-			ptr->fNoPivotTips = false;
 		if (m_oShowDrill.IsInit()) 
 			ptr->fHideDrillIndicators = !m_oShowDrill.get();
-		else 
-			ptr->fHideDrillIndicators = false;
 		if (m_oShowDropZones.IsInit()) 
 			ptr->fNoStencil = !m_oShowDropZones.get();
-		else 
-			ptr->fNoStencil = false;
 		if (m_oShowEmptyCol.IsInit()) 
 			ptr->fIncludeEmptyCol = m_oShowEmptyCol.get();
-		else 
-			ptr->fIncludeEmptyCol = false;
 		if (m_oShowEmptyRow.IsInit()) 
 			ptr->fIncludeEmptyRw = m_oShowEmptyRow.get();
-		else 
-			ptr->fIncludeEmptyRw = false;
 		if (m_oShowError.IsInit()) 
 			ptr->fDisplayErrorString = m_oShowError.get();
 		if (m_oShowHeaders.IsInit())
 			ptr->fNoHeaders = !m_oShowHeaders.get();
-		else 
-			ptr->fNoHeaders = false;
 		if (m_oShowItems.IsInit()) 
 			ptr->fDisplayImmediateItems = m_oShowItems.get();
 		if (m_oShowMemberPropertyTips.IsInit()) 
@@ -754,22 +661,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fPageMultipleItemLabel = m_oShowMultipleLabel.get();
 		if (m_oSubtotalHiddenItems.IsInit()) 
 			ptr->fSubtotalHiddenPageItems = m_oSubtotalHiddenItems.get();
-		else 
-			ptr->fSubtotalHiddenPageItems = false;
 		if (m_oTag.IsInit()) 
 			ptr->irstTag = m_oTag.get();
-		else
-			ptr->fDisplayTag = false;
 		if (m_oUpdatedVersion.IsInit()) 
 			ptr->bVerSxLastUpdated = m_oUpdatedVersion->GetValue();
 		if (m_oUseAutoFormatting.IsInit()) 
 			ptr->fAutoFormat = m_oUseAutoFormatting.get();
 		if (m_oVacatedStyle.IsInit()) 
 			ptr->irstVacateStyle = m_oVacatedStyle.get();
-		else
-			ptr->fDisplayVacateStyle = false;
 		ptr->sxaxis4Data = 2;
-		ptr->fReenterOnLoadOnce = false;
 
 		return objectPtr;
 	}

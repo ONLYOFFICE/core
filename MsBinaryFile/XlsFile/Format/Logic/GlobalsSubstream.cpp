@@ -639,6 +639,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 {
+    auto globalInfoPtr = proc.getGlobalWorkbookInfo();
     if(m_WriteProtect != nullptr)
         proc.mandatory(*m_WriteProtect);
     if(m_Template != nullptr)
@@ -687,6 +688,11 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_Formating);
     else
         proc.mandatory<FORMATTING>();
+    if(globalInfoPtr && !globalInfoPtr->arPIVOTCACHEDEFINITION.empty())
+    {
+        for(auto i : globalInfoPtr->arPIVOTCACHEDEFINITION)
+            proc.mandatory(*i);
+    }
     proc.mandatory<UsesELFs>();
     if(m_arBUNDLESHEET.empty())
         proc.mandatory<BUNDLESHEET>();

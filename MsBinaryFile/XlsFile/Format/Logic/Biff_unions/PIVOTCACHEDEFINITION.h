@@ -46,6 +46,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 	
 	int serialize_definitions(std::wostream & stream);
 	int serialize_records(std::wostream & stream);

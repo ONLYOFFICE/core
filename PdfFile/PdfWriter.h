@@ -78,9 +78,9 @@ public:
 	//----------------------------------------------------------------------------------------
 	HRESULT NewPage();
 	HRESULT get_Height(double* dHeight);
-	HRESULT put_Height(const double& dHeight);
+	HRESULT put_Height(const double& dHeight, bool bMM2PT = true);
 	HRESULT get_Width(double* dWidth);
-	HRESULT put_Width(const double& dWidth);
+	HRESULT put_Width(const double& dWidth, bool bMM2PT = true);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы с Pen
 	//----------------------------------------------------------------------------------------

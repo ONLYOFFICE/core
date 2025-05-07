@@ -278,13 +278,13 @@ HRESULT CPdfWriter::get_Height(double* dHeight)
 	*dHeight = m_dPageHeight;
 	return S_OK;
 }
-HRESULT CPdfWriter::put_Height(const double& dHeight)
+HRESULT CPdfWriter::put_Height(const double& dHeight, bool bMM2PT)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
 	m_dPageHeight = dHeight;
-	m_pPage->SetHeight(MM_2_PT(dHeight));
+	m_pPage->SetHeight(bMM2PT ? MM_2_PT(dHeight) : dHeight);
 	return S_OK;
 }
 HRESULT CPdfWriter::get_Width(double* dWidth)
@@ -292,13 +292,13 @@ HRESULT CPdfWriter::get_Width(double* dWidth)
 	*dWidth = m_dPageWidth;
 	return S_OK;
 }
-HRESULT CPdfWriter::put_Width(const double& dWidth)
+HRESULT CPdfWriter::put_Width(const double& dWidth, bool bMM2PT)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
 	m_dPageWidth = dWidth;
-	m_pPage->SetWidth(MM_2_PT(dWidth));
+	m_pPage->SetWidth(bMM2PT ? MM_2_PT(dWidth) : dWidth);
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------

@@ -105,6 +105,8 @@ const bool PIVOTCACHEDEFINITION::saveContent(BinProcessor& proc)
         return false;
     proc.mandatory(*m_SXStreamID);
     proc.mandatory(*m_SXVS);
+    if(m_SXSRC != nullptr)
+        proc.mandatory(*m_SXSRC);
     return true;
 }
 

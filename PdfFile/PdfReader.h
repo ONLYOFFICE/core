@@ -91,6 +91,7 @@ public:
 	PDFDoc* GetLastPDFDocument();
 	PDFDoc* GetPDFDocument(int PDFIndex);
 	int GetStartRefID(PDFDoc* pDoc);
+	int GetNumPagesBefore(PDFDoc* pDoc);
 	int FindRefNum(int nObjID, PDFDoc** pDoc = NULL, int* nStartRefID = NULL);
 	int GetPageIndex(int nPageIndex, PDFDoc** pDoc = NULL, PdfReader::CPdfFontList** pFontList = NULL, int* nStartRefID = NULL);
 

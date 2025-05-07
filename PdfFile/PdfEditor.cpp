@@ -2135,6 +2135,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 		m_mObjManager.m_arrSplitAddPages.erase(it);
 	}
 
+	m_nEditPage = -1;
 	// Применение добавления страницы для writer
 	if (!m_pWriter->AddPage(nPageIndex))
 		return false;

@@ -583,7 +583,11 @@ HRESULT CPdfFile::put_Height(const double& dHeight)
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
 	if (m_pInternal->pEditor)
-		return S_OK;
+	{
+		if (m_pInternal->pEditor->IsEditPage())
+			return S_OK;
+		return m_pInternal->pWriter->put_Height(dHeight, false);
+	}
 	return m_pInternal->pWriter->put_Height(dHeight);
 }
 HRESULT CPdfFile::get_Width(double* dWidth)
@@ -597,7 +601,11 @@ HRESULT CPdfFile::put_Width(const double& dWidth)
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
 	if (m_pInternal->pEditor)
-		return S_OK;
+	{
+		if (m_pInternal->pEditor->IsEditPage())
+			return S_OK;
+		return m_pInternal->pWriter->put_Width(dWidth, false);
+	}
 	return m_pInternal->pWriter->put_Width(dWidth);
 }
 HRESULT CPdfFile::get_DpiX(double* dDpiX)

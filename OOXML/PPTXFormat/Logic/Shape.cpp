@@ -292,6 +292,12 @@ namespace PPTX
 			if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX ||
 				pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX_GLOSSARY)
 			{
+				if (oTextBoxLinkedTxbx.is_init())
+				{
+					oTextBoxLinkedTxbx->m_namespace = L"wps";
+					oTextBoxLinkedTxbx->toXmlWriter(pWriter);
+				}
+
 				bool bIsWritedBodyPr = false;
 				if (strTextBoxShape.is_init())
 				{
@@ -457,6 +463,16 @@ namespace PPTX
 					pReader->Skip(5); // type + size
 					macro = pReader->GetString2();
 				}break;
+				case 10:
+				{
+					pReader->Skip(5); // type + size
+					oTextBoxId = pReader->GetULong();
+				}break;
+				case 11:
+				{
+					oTextBoxLinkedTxbx = new LinkedTxbx();
+					oTextBoxLinkedTxbx->fromPPTY(pReader);
+				}break;
 				default:
 				{
 					pReader->SkipRecord();
@@ -506,7 +522,7 @@ namespace PPTX
 						pWriter->StartRecord(5);
 						oTextBoxBodyPr->toPPTY(pWriter);
 						pWriter->EndRecord();
-					}
+					}					
 				}
 				else if (strTextBoxShape.is_init())//после конвертации старого шейпа (vml)
 				{
@@ -525,7 +541,6 @@ namespace PPTX
 						pWriter->EndRecord();
 					}
 				}
-
 				else if (txBody.is_init())
 				{
 					std::wstring strContent = txBody->GetDocxTxBoxContent(pWriter, style);
@@ -545,6 +560,13 @@ namespace PPTX
 			{
 				pWriter->WriteRecord2(3, txBody);
 			}
+			if (oTextBoxId.is_init())
+			{
+				pWriter->StartRecord(10);
+				pWriter->WriteUInt1(0, *oTextBoxId);
+				pWriter->EndRecord();
+			}
+			pWriter->WriteRecord2(11, oTextBoxLinkedTxbx);
 
 			pWriter->WriteRecord2(6, txXfrm);
 			pWriter->WriteRecord2(7, signatureLine);

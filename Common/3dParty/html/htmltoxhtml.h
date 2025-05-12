@@ -69,10 +69,10 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
 	if (bNeedConvert)
 	{ // Определение кодировки
-		std::string sEncoding = NSStringFinder::FindPropety(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
+		std::string sEncoding = NSStringFinder::FindProperty(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
 
 		if (sEncoding.empty())
-			sEncoding = NSStringFinder::FindPropety(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
+			sEncoding = NSStringFinder::FindProperty(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
 
 		if (!sEncoding.empty() && !NSStringFinder::Equals("utf-8", sEncoding))
 		{
@@ -211,7 +211,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	NSStringFinder::TFoundedData<char> oData;
 	
 	// Content-Type
-	oData =  NSStringFinder::FindPropety(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
+	oData =  NSStringFinder::FindProperty(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentType{oData.m_sValue};
 
 	if (sContentType.empty())
@@ -227,18 +227,18 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	unCharsetBegin = oData.m_unEndPosition;
 
 	// name
-//	std::string sName = NSStringFinder::FindPropety(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
+//	std::string sName = NSStringFinder::FindProperty(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
 //	unContentPosition = std::max(unContentPosition, unLastPosition);
 
 	// Content-Location
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
 	std::string sContentLocation{oData.m_sValue};
 
 	if (!oData.Empty())
 		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
 
 	// Content-ID
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
 	std::string sContentID{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -252,7 +252,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 		sContentLocation = "cid:" + sContentID;
 
 	// Content-Transfer-Encoding
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentEncoding{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -266,7 +266,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 
 	if (std::string::npos != unCharsetEnd && unCharsetBegin < unCharsetEnd)
 	{
-		sCharset = NSStringFinder::FindPropety(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
+		sCharset = NSStringFinder::FindProperty(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
 		NSStringFinder::CutInside<std::string>(sCharset, "\"");
 	}
 
@@ -338,7 +338,7 @@ static std::string mhtTohtml(const std::string& sFileContent)
 	NSStringUtils::CStringBuilderA oRes;
 
 	// Поиск boundary
-	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindPropety(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
+	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindProperty(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
 
 	size_t nFound{oData.m_unEndPosition};
 	std::string sBoundary{oData.m_sValue};

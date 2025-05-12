@@ -1873,7 +1873,7 @@ public:
 		file.CloseFile();
 		std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
-		const std::string sContentType = NSStringFinder::FindPropety(xml_string, "content-type", ":", ";");
+		const std::string sContentType = NSStringFinder::FindProperty(xml_string, "content-type", ":", ";");
 		bool bRes = false;
 
 		if(NSStringFinder::Equals(sContentType, "multipart/related"))

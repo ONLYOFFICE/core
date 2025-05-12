@@ -323,6 +323,11 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
                        StringBuf.clear();
                     }
                 }
+                else if(elementType == DateElemTypes::letter)
+                {
+                    //невалидная дата
+                    bError = true;
+                }
                 //анализируем собранный элемент
                 PrevType = CurrentElementType;
             }
@@ -372,7 +377,7 @@ bool DateReader::parseLocalDate(const std::wstring &date, tm &result, bool &Hasd
         result.tm_mon--;
         result.tm_year = normalizeYear(result.tm_year);
     }
-    if(!Hasdate && !Hastime)
+    if((!Hasdate && !Hastime) || bError)
         return false;
 
     return true;

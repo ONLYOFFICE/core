@@ -42,6 +42,11 @@
 
 namespace Aggplus
 {
+	/**
+	 * @class CGraphicsPath
+	 *
+	 * A container class that implements the logic of graphic paths.
+	 */
 	class CGraphicsPath_private;
 	class GRAPHICS_DECL CGraphicsPath : public NSFonts::ISimpleGraphicsPath
 	{
@@ -57,6 +62,9 @@ namespace Aggplus
 		Status Reset();
 		void SetRuler(bool bEvenOdd);
 
+		/**
+		 * @brief Methods implementing basic path commands.
+		 */
 		Status StartFigure();
 		Status CloseFigure();
 		bool Is_poly_closed() const;
@@ -64,7 +72,10 @@ namespace Aggplus
 		Status LineTo(double x, double y);
 		Status CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
 
-		// методы, которые просто будем сводить к трем основным
+		/**
+		 * @brief Methods implementing additional commands for
+		 *  more convenient creation of path.
+		 */
 		Status AddLine(double x1, double y1, double x2, double y2);
 		Status AddLines(double* pPoints, int nCount);
 		Status AddBezier(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4);
@@ -76,6 +87,9 @@ namespace Aggplus
 		Status AddPath(const CGraphicsPath& oPath);
 		Status AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle);
 
+		/**
+		 * @brief Getter methods.
+		 */
 		ULONG GetPointCount() const;
 		Status GetPathPoints(PointF* points, int count) const;
 		Status GetLastPoint(double& x, double& y);
@@ -83,27 +97,41 @@ namespace Aggplus
 		void GetBounds(double& left, double& top, double& width, double& height) const;
 		void GetBoundsAccurate(double& left, double& top, double& width, double& height) const;
 
+		/**
+		 * @brief Methods implementing baasic path commands using
+		 *	a transformation matrix to points.
+		 */
 		Status Transform(const CMatrix* matrix);
 		virtual bool _MoveTo(double x, double y);
 		virtual bool _LineTo(double x, double y);
 		virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
 		virtual bool _Close();
 
+		/**
+		 * @brief Methods for adding paths for text in Font manager.
+		 */
 		Status AddString(const std::wstring& strText, NSFonts::IFontManager* pFont, double x, double y);
 		Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y);
 		Status AddStringC(const LONG& lText, NSFonts::IFontManager* pFont, double x, double y);
 		void z_Stroke(const double& size);
 		void Widen(const double& size, const Aggplus::LineJoin& join, const CMatrix* matrix, float flatness);
 
-		int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
+		/**
+		 * @brief Methods implementing commands for creating arcs
+		 *	(simple versions of Bezier curves).
+		 */
+		int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection);
 		double AngToEllPrm(double fAngle, double fXRad, double fYRad);
-		int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection);
-		int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double* pfXCur, double* pfYCur, INT bClockDirection = FALSE);
+		int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection);
+		int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double* pfXCur, double* pfYCur, bool bClockDirection = false);
 		int Ellipse(double fX, double fY, double fXRad, double fYRad);
 		Status AddArc2(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
 		bool IsPointInPath(const double& x, const double& y);
 
-		// Methods for Path Clip
+		/**
+		 * @brief Methods that are used when performing Boolean operations
+		 *  on paths.
+		 */
 		unsigned GetCloseCount() const noexcept;
 		unsigned GetMoveCount()	 const noexcept;
 		bool	 IsClockwise()	 const noexcept;

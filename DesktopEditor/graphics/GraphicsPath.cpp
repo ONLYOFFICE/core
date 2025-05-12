@@ -57,7 +57,6 @@ namespace Aggplus
 			*this = paths[0];
 		else
 		{
-			StartFigure();
 			for (const auto& p : paths)
 			{
 				unsigned length = p.GetPointCount();
@@ -76,6 +75,7 @@ namespace Aggplus
 						j += 2;
 					}
 				}
+				//AddPath(p);
 				if (p.Is_poly_closed()) CloseFigure();
 			}
 		}
@@ -139,11 +139,13 @@ namespace Aggplus
 		m_internal->m_agg_ps.move_to(x, y);
 		return Ok;
 	}
+
 	Status CGraphicsPath::LineTo(double x, double y)
 	{
 		m_internal->m_agg_ps.line_to(x, y);
 		return Ok;
 	}
+
 	Status CGraphicsPath::CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
 		m_internal->m_agg_ps.curve4(x1, y1, x2, y2, x3, y3);
@@ -152,17 +154,17 @@ namespace Aggplus
 
 	Status CGraphicsPath::AddLine(double x1, double y1, double x2, double y2)
 	{
-		 if (Is_poly_closed())
-		 {
-			 m_internal->m_agg_ps.move_to(x1, y1);
-		 }
-		 else
-		 {
-			 m_internal->m_agg_ps.line_to(x1, y1);
-		 }
+		if (Is_poly_closed())
+		{
+			m_internal->m_agg_ps.move_to(x1, y1);
+		}
+		else
+		{
+			m_internal->m_agg_ps.line_to(x1, y1);
+		}
 
-		 m_internal->m_agg_ps.line_to(x2, y2);
-		 return Ok;
+		m_internal->m_agg_ps.line_to(x2, y2);
+		return Ok;
 	}
 
 	Status CGraphicsPath::AddLines(double* pPoints, int nCount)
@@ -171,21 +173,11 @@ namespace Aggplus
 		{
 			return InvalidParameter;
 		}
-		int nRet = 0;
 
 		if (!m_internal->m_bIsMoveTo)
 		{
 			MoveTo(pPoints[0], pPoints[1]);
 		}
-
-		/*if (Is_poly_closed()) 
-		{
-			m_agg_ps.move_to((double)pPoints[0], (double)pPoints[1]);
-		}
-		else
-		{
-			m_agg_ps.line_to((double)pPoints[0], (double)pPoints[1]);
-		}*/
 
 		int n = (nCount / 2) - 1;
 
@@ -194,6 +186,7 @@ namespace Aggplus
 			const double* points = &pPoints[i * 2];
 			m_internal->m_agg_ps.line_to(points[0], points[1]);
 		}
+
 		return Ok;
 	}
 	
@@ -207,6 +200,7 @@ namespace Aggplus
 		m_internal->m_agg_ps.curve4(x2, y2, x3, y3, x4, y4);
 		return Ok;
 	}
+
 	Status CGraphicsPath::AddBeziers(double* pPoints, int nCount)
 	{
 		if (8 > nCount)
@@ -256,22 +250,24 @@ namespace Aggplus
 		m_internal->m_agg_ps.join_path(arc, 0);
 		return Ok;
 	}
+
 	Status CGraphicsPath::AddRectangle(double x, double y, double width, double height)
 	{
 		m_internal->m_agg_ps.move_to(x, y);
 		m_internal->m_agg_ps.line_to(x + width, y);
 		m_internal->m_agg_ps.line_to(x + width, y + height);
 		m_internal->m_agg_ps.line_to(x, y + height);
+		m_internal->m_agg_ps.line_to(x, y);
 		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
+
 	Status CGraphicsPath::AddPolygon(double* pPoints, int nCount)
 	{
 		if (2 > nCount)
 		{
 			return InvalidParameter;
 		}
-		int nRet = 0;
 
 		if (Is_poly_closed())
 		{
@@ -293,6 +289,7 @@ namespace Aggplus
 		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
+
 	Status CGraphicsPath::AddPath(const CGraphicsPath& oPath)
 	{
 		typedef agg::conv_curve<agg::path_storage> conv_crv_type;
@@ -303,6 +300,7 @@ namespace Aggplus
 		m_internal->m_agg_ps.join_path(p3, 0);
 		return Ok;
 	}
+
 	Status CGraphicsPath::AddArc(double x, double y, double width, double height, double startAngle, double sweepAngle)
 	{
 		if(sweepAngle >= 360.0)
@@ -470,6 +468,7 @@ namespace Aggplus
 		}
 		return (Ok == MoveTo(x, y));
 	}
+
 	bool CGraphicsPath::_LineTo(double x, double y)
 	{
 		if (NULL != m_internal->m_pTransform)
@@ -478,6 +477,7 @@ namespace Aggplus
 		}
 		return (Ok == LineTo(x, y));
 	}
+
 	bool CGraphicsPath::_CurveTo(double x1, double y1, double x2, double y2, double x3, double y3)
 	{
 		if (NULL != m_internal->m_pTransform)
@@ -488,6 +488,7 @@ namespace Aggplus
 		}
 		return (Ok == CurveTo(x1, y1, x2, y2, x3, y3));
 	}
+
 	bool CGraphicsPath::_Close()
 	{
 		return (Ok == CloseFigure());
@@ -502,6 +503,7 @@ namespace Aggplus
 		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
+
 	Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, NSFonts::IFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)
@@ -580,40 +582,40 @@ namespace Aggplus
 		m_internal->m_agg_ps = psNew;
 	}
 
-	int CGraphicsPath::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
+	int CGraphicsPath::EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection)
 	{
 		int nRet = 0;
 		
-		while ( fAngle1 < 0 )
+		while (fAngle1 < 0)
 			fAngle1 += 360;
 
-		while ( fAngle1 > 360 )
+		while (fAngle1 > 360)
 			fAngle1 -= 360;
 
-		while ( fAngle2 < 0 )
+		while (fAngle2 < 0)
 			fAngle2 += 360;
 
-		while ( fAngle2 >= 360 )
+		while (fAngle2 >= 360)
 			fAngle2 -= 360;
 
-		if ( !bClockDirection )
+		if (!bClockDirection)
 		{
-			if ( fAngle1 <= fAngle2 )
-				nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, FALSE );
+			if (fAngle1 <= fAngle2)
+				nRet = EllipseArc2(fX, fY, fXRad, fYRad, fAngle1, fAngle2, false);
 			else
 			{
-				nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 360, FALSE );
-				nRet += EllipseArc2( fX, fY, fXRad, fYRad, 0, fAngle2, FALSE );
+				nRet += EllipseArc2(fX, fY, fXRad, fYRad, fAngle1, 360, false);
+				nRet += EllipseArc2(fX, fY, fXRad, fYRad, 0, fAngle2, false);
 			}
 		}
 		else
 		{
-			if ( fAngle1 >= fAngle2 )
-				nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, TRUE );
+			if (fAngle1 >= fAngle2)
+				nRet = EllipseArc2(fX, fY, fXRad, fYRad, fAngle1, fAngle2, true);
 			else
 			{
-				nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 0, TRUE );
-				nRet += EllipseArc2( fX, fY, fXRad, fYRad, 360, fAngle2, TRUE );
+				nRet += EllipseArc2(fX, fY, fXRad, fYRad, fAngle1, 0, true);
+				nRet += EllipseArc2(fX, fY, fXRad, fYRad, 360, fAngle2, true);
 			}
 		}
 		return nRet;
@@ -624,10 +626,10 @@ namespace Aggplus
 		// Функция для перевода реального угла в параметрическое задание эллписа
 		// т.е. x= a cos(t) y = b sin(t) - параметрическое задание эллписа.
 		// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
-		return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
+		return atan2(sin(fAngle) / fYRad,  cos(fAngle) / fXRad);
 	}
 
-	int CGraphicsPath::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, INT bClockDirection)
+	int CGraphicsPath::EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection)
 	{
 		// переведем углы в радианы
 		int nRet = 0;
@@ -638,79 +640,75 @@ namespace Aggplus
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-		nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
-		nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
+		nSecondPointQuard = std::min(4, std::max(1, (int)nSecondPointQuard));
+		nFirstPointQuard  = std::min(4, std::max(1, (int)nFirstPointQuard));
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
-		fStartX = fX + fXRad * cos( AngToEllPrm( dAngle1, fXRad, fYRad ) );
-		fStartY = fY + fYRad * sin( AngToEllPrm( dAngle1, fXRad, fYRad ) );
+		fStartX = fX + fXRad * cos(AngToEllPrm(dAngle1, fXRad, fYRad));
+		fStartY = fY + fYRad * sin(AngToEllPrm(dAngle1, fXRad, fYRad));
 
 		LineTo(fStartX, fStartY);
 
 		// Дальше рисуем по четверям
-
-		double fCurX = fStartX, fCurY = fStartY;
 		double dStartAngle = dAngle1;
 		double dEndAngle = 0;
 
-		if ( !bClockDirection )
+		if (!bClockDirection)
 		{
-			for( unsigned int nIndex = nFirstPointQuard; nIndex <= nSecondPointQuard; nIndex++ ) 
+			for(unsigned int nIndex = nFirstPointQuard; nIndex <= nSecondPointQuard; nIndex++)
 			{
-				if ( nIndex == nSecondPointQuard )
+				if (nIndex == nSecondPointQuard)
 					dEndAngle = dAngle2;
 				else
-					dEndAngle = (90 * (nIndex ) ) * 3.141592f / 180;
-				if ( !( nIndex == nFirstPointQuard ) )
-					dStartAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
+					dEndAngle = (90 * nIndex) * 3.141592f / 180;
+				if (!( nIndex == nFirstPointQuard))
+					dStartAngle = (90 * (nIndex - 1)) * 3.141592f / 180;
 
-				EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+				EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm(dStartAngle, fXRad, fYRad), AngToEllPrm(dEndAngle, fXRad, fYRad), &fEndX, &fEndY, false);
 			}
 		}
 		else
 		{
-			for( unsigned int nIndex = nFirstPointQuard; nIndex >= nSecondPointQuard; nIndex-- ) 
+			for(unsigned int nIndex = nFirstPointQuard; nIndex >= nSecondPointQuard; nIndex--)
 			{
-				if ( nIndex == nFirstPointQuard )
+				if (nIndex == nFirstPointQuard)
 					dStartAngle = dAngle1;
 				else
-					dStartAngle = (90 * (nIndex ) ) * 3.141592f / 180;
-				if ( !( nIndex == nSecondPointQuard ) )
-					dEndAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
+					dStartAngle = (90 * nIndex) * 3.141592f / 180;
+				if (!( nIndex == nSecondPointQuard))
+					dEndAngle = (90 * (nIndex - 1)) * 3.141592f / 180;
 				else
 					dEndAngle = dAngle2;
 
-				EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+				EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm(dStartAngle, fXRad, fYRad), AngToEllPrm(dEndAngle, fXRad, fYRad), &fEndX, &fEndY, false);
 			}
 		}
 
 		return nRet;
 	}
 
-	int CGraphicsPath::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, INT bClockDirection)
+	int CGraphicsPath::EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, bool bClockDirection)
 	{
 		// Рассчитаем начальную, конечную и контрольные точки
 		double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
 		double fCX1 = 0.0, fCX2 = 0.0, fCY1 = 0.0, fCY2 = 0.0;
 
-		double fAlpha = sin( dAngle2 - dAngle1 ) * ( sqrt( 4.0 + 3.0 * tan( (dAngle2 - dAngle1) / 2.0 ) * tan( (dAngle2 - dAngle1) / 2.0 ) ) - 1.0 ) / 3.0;
+		double fAlpha = sin(dAngle2 - dAngle1) * (sqrt( 4.0 + 3.0 * tan((dAngle2 - dAngle1) / 2.0) * tan((dAngle2 - dAngle1) / 2.0 )) - 1.0 ) / 3.0;
 
-		double fKoef = 1;
+		fX1 = fX + fXRad * cos(dAngle1);
+		fY1 = fY + fYRad * sin(dAngle1);
 
-		fX1 = fX + fXRad * cos( dAngle1 );
-		fY1 = fY + fYRad * sin( dAngle1 );
+		fX2 = fX + fXRad * cos(dAngle2);
+		fY2 = fY + fYRad * sin(dAngle2);
 
-		fX2 = fX + fXRad * cos( dAngle2 );
-		fY2 = fY + fYRad * sin( dAngle2 );
+		fCX1 = fX1 - fAlpha * fXRad * sin (dAngle1);
+		fCY1 = fY1 + fAlpha * fYRad * cos (dAngle1);
 
-		fCX1 = fX1 - fAlpha * fXRad * sin ( dAngle1 );
-		fCY1 = fY1 + fAlpha * fYRad * cos ( dAngle1 );
+		fCX2 = fX2 + fAlpha * fXRad * sin (dAngle2);
+		fCY2 = fY2 - fAlpha * fYRad * cos (dAngle2);
 
-		fCX2 = fX2 + fAlpha * fXRad * sin ( dAngle2 );
-		fCY2 = fY2 - fAlpha * fYRad * cos ( dAngle2 );
-
-		if ( !bClockDirection )
+		if (!bClockDirection)
 		{
 			CurveTo(fCX1, fCY1, fCX2, fCY2, fX2, fY2);
 
@@ -1043,8 +1041,6 @@ namespace Aggplus
 			return false;
 		}
 
-		int nRet = 0;
-
 		if (!m_internal->m_bIsMoveTo)
 		{
 			_MoveTo(pData[0], pData[1]);
@@ -1373,8 +1369,6 @@ namespace Aggplus
 		_LineTo(fStartX, fStartY);
 
 		// Дальше рисуем по четверям
-
-		double fCurX = fStartX, fCurY = fStartY;
 		double dStartAngle = dAngle1;
 		double dEndAngle = 0;
 
@@ -1419,8 +1413,6 @@ namespace Aggplus
 		double fCX1 = 0.0, fCX2 = 0.0, fCY1 = 0.0, fCY2 = 0.0;
 
 		double fAlpha = sin( dAngle2 - dAngle1 ) * ( sqrt( 4.0 + 3.0 * tan( (dAngle2 - dAngle1) / 2.0 ) * tan( (dAngle2 - dAngle1) / 2.0 ) ) - 1.0 ) / 3.0;
-
-		double fKoef = 1;
 
 		fX1 = fX + fXRad * cos( dAngle1 );
 		fY1 = fY + fYRad * sin( dAngle1 );

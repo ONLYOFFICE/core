@@ -319,6 +319,7 @@ namespace NSCSS
 				}
 				//BORDER TOP
 				CASE(L"border-top"):
+				CASE(L"mso-border-top-alt"):
 				{
 					m_oBorder.SetTopSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -340,6 +341,7 @@ namespace NSCSS
 				}
 				//BORDER RIGHT
 				CASE(L"border-right"):
+				CASE(L"mso-border-right-alt"):
 				{
 					m_oBorder.SetRightSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -361,6 +363,7 @@ namespace NSCSS
 				}
 				//BORDER bottom
 				CASE(L"border-bottom"):
+				CASE(L"mso-border-bottom-alt"):
 				{
 					m_oBorder.SetBottomSide(pPropertie.second, unLevel, bHardMode);
 					break;
@@ -382,6 +385,7 @@ namespace NSCSS
 				}
 				//BORDER LEFT
 				CASE(L"border-left"):
+				CASE(L"mso-border-left-alt"):
 				{
 					m_oBorder.SetLeftSide(pPropertie.second, unLevel, bHardMode);
 					break;

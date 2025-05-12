@@ -2348,6 +2348,8 @@ private:
 			CloseR(pXml);
 		}
 
+		GetSubClass(pXml, arSelectors);
+
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
 
@@ -2421,7 +2423,10 @@ private:
 			}
 
 			if (sText.empty())
+			{
+				arSelectors.pop_back();
 				return true;
+			}
 		}
 		else
 			ReplaceSpaces(sText);
@@ -2456,6 +2461,7 @@ private:
 			CloseR(pXml);
 		}
 
+		arSelectors.pop_back();
 		return true;
 	}
 

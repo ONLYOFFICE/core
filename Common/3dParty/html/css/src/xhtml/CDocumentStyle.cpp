@@ -470,9 +470,6 @@ namespace NSCSS
 
 		int nSpace{0};
 
-		if (NULL != pPadding && !pPadding->Empty() && !pPadding->Zero())
-			nSpace = pPadding->ToInt(NSCSS::Point);
-
 		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
 	}
 

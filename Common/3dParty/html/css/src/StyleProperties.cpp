@@ -1328,7 +1328,6 @@ namespace NSCSS
 
 	// DISPLAY
 	CDisplay::CDisplay()
-	    : m_oDisplay(L"inline", 0)
 	{}
 
 	void CDisplay::Equation(CDisplay &oFirstDisplay, CDisplay &oSecondDisplay)

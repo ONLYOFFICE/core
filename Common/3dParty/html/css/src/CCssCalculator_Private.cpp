@@ -482,6 +482,14 @@ namespace NSCSS
 		std::vector<std::wstring> arPrevNodes;
 		bool bInTable = false;
 
+		for (size_t i = 0; i < unStart; ++i)
+		{
+			if (!bInTable)
+				bInTable = IsTableElement(arSelectors[i].m_wsName);
+			else
+				break;
+		}
+
 		for (size_t i = unStart; i < arSelectors.size(); ++i)
 		{
 			if (0 != i)

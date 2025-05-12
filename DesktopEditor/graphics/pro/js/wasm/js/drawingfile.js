@@ -378,61 +378,6 @@ CFile.prototype["isNeedCMap"] = function()
 	return this._isNeedCMap();
 };
 
-/**
- * Корректирует координаты прямоугольника для системы с осью Y, направленной вниз
- * @param {number[]} points - Массив координат [x1, y1, x2, y2, x3, y3, x4, y4]
- * @param {number} angleDegrees - Угол поворота прямоугольника (любой, в градусах)
- * @returns {number[]} - Новый массив координат с правильным порядком точек
- */
-function adjustRectForInvertedY(invertedPoints, angleDegrees)
-{
-	const normalizedAngle = Math.round(angleDegrees / 90) * 90;
-	const angle = ((normalizedAngle % 360) + 360) % 360; // Нормализуем в диапазон [0, 360)
-
-	switch (angle)
-	{
-		case 0:
-			// Меняем местами точки 1↔2 и 3↔4 (для 0° и 360°)
-			return [
-				invertedPoints[2], invertedPoints[3], // Точка 2 → на место 1
-				invertedPoints[0], invertedPoints[1], // Точка 1 → на место 2
-				invertedPoints[6], invertedPoints[7], // Точка 4 → на место 3
-				invertedPoints[4], invertedPoints[5]  // Точка 3 → на место 4
-			];
-		case 90:
-			// Меняем местами точки 1↔4 и 2↔3
-			return [
-				invertedPoints[6], invertedPoints[7], // Точка 4 → на место 1
-				invertedPoints[4], invertedPoints[5], // Точка 3 → на место 2
-				invertedPoints[2], invertedPoints[3], // Точка 2 → на место 3
-				invertedPoints[0], invertedPoints[1]  // Точка 1 → на место 4
-			];
-		case 180:
-			// Меняем местами точки 1↔3 и 2↔4
-			return [
-				invertedPoints[4], invertedPoints[5], // Точка 3 → на место 1
-				invertedPoints[6], invertedPoints[7], // Точка 4 → на место 2
-				invertedPoints[0], invertedPoints[1], // Точка 1 → на место 3
-				invertedPoints[2], invertedPoints[3]  // Точка 2 → на место 4
-			];
-		case 270:
-			// Меняем местами точки 2↔4 и 1↔3
-			return [
-				invertedPoints[4], invertedPoints[5], // Точка 3 → на место 1
-				invertedPoints[0], invertedPoints[1], // Точка 1 → на место 2
-				invertedPoints[6], invertedPoints[7], // Точка 4 → на место 3
-				invertedPoints[2], invertedPoints[3]  // Точка 2 → на место 4
-			];
-		default:
-			// Сюда не попадём, так как угол нормализован
-			return [
-				invertedPoints[0], invertedPoints[1],
-				invertedPoints[2], invertedPoints[3],
-				invertedPoints[4], invertedPoints[5],
-				invertedPoints[6], invertedPoints[7]
-			];
-	}
-}
 // WIDGETS & ANNOTATIONS
 function readAction(reader, rec, readDoubleFunc, readStringFunc)
 {
@@ -1043,7 +988,6 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		rec["InRect"] = [];
 		for (let i = 0; i < 8; ++i)
 			rec["InRect"].push(readDouble2Func.call(reader));
-		rec["InRect"] = adjustRectForInvertedY(rec["InRect"], rec["Rotate"]);
 	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)

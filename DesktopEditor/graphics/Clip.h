@@ -66,10 +66,9 @@ class CClipMulti
 {
 public:
 	typedef agg::scanline_p8 scanline_type;
-	typedef agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl>* clip_rasterizer_ptr;
-	typedef agg::scanline_storage_aa8 scanline_storage;
+	typedef agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl>  clip_rasterizer;
 
-	clip_rasterizer_ptr m_rasterizer;
+	clip_rasterizer m_rasterizer;
 	
 	/**
 	 * @brief Interfaces for implementation graphics renderer scanlines.
@@ -77,8 +76,8 @@ public:
 	 * Scan lines can be stored in rasterizer as in case clip1
 	 * or in storage otherwise(clip2).
 	 */
-	scanline_storage m_storage1;
-	scanline_storage m_storage2;
+	agg::scanline_storage_aa8 m_storage1;
+	agg::scanline_storage_aa8 m_storage2;
 
 	long m_lCurStorage;
 	
@@ -92,13 +91,13 @@ public:
 	CClipMulti();
 	~CClipMulti();
 
-	clip_rasterizer_ptr GetRasterizer() const;
+	clip_rasterizer* GetRasterizer();
 
 	void Create(LONG width, LONG height);
 	void GenerateClip(CGraphicsPath* pPath, CMatrix* pMatrix);
 	void GenerateClip2(bool bEvenOdd);
 	
-	void Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer_ptr pRasterizer);
+	void Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer* pRasterizer);
 
 	bool IsClip()	const;
 	bool IsClip2()	const;

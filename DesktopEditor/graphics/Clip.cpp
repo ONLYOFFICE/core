@@ -35,15 +35,12 @@ namespace Aggplus
 {
 	CClipMulti::CClipMulti()
 	{
-		m_rasterizer = new agg::rasterizer_scanline_aa<agg::rasterizer_sl_clip_dbl>;
 		m_bIsClip = false;
 		m_bIsClip2 = false;
 	}
 
 	CClipMulti::~CClipMulti()
 	{
-		if (m_rasterizer != nullptr)
-			delete m_rasterizer;
 	}
 
 	/**
@@ -52,12 +49,12 @@ namespace Aggplus
 	 * @return Ponter to new rasterizer if there was no
 	 *   clip yet, otherwise - nullptr
 	 */
-	CClipMulti::clip_rasterizer_ptr CClipMulti::GetRasterizer() const
+	CClipMulti::clip_rasterizer* CClipMulti::GetRasterizer()
 	{
 		if (!m_bIsClip)
 		{
-			m_rasterizer->reset();
-			return m_rasterizer;
+			m_rasterizer.reset();
+			return &m_rasterizer;
 		}
 
 		return nullptr;
@@ -67,7 +64,7 @@ namespace Aggplus
 	{
 		m_lWidth = width;
 		m_lHeight = height;
-		m_rasterizer->clip_box(0, 0, width, height);
+		m_rasterizer.clip_box(0, 0, width, height);
 		m_bIsClip = false;
 		m_bIsClip2 = false;
 	}
@@ -84,7 +81,7 @@ namespace Aggplus
 		if (pPath == nullptr)
 			return;
 
-		m_rasterizer->reset();
+		m_rasterizer.reset();
 
 		typedef agg::conv_transform<agg::path_storage> trans_type;
 		trans_type trans(pPath->m_internal->m_agg_ps, pMatrix->m_internal->m_agg_mtx);
@@ -92,7 +89,7 @@ namespace Aggplus
 		typedef agg::conv_curve<trans_type> conv_crv_type;
 		conv_crv_type c_c_path(trans);
 
-		m_rasterizer->add_path(c_c_path);
+		m_rasterizer.add_path(c_c_path);
 
 		GenerateClip2(pPath->m_internal->m_bEvenOdd);
 	}
@@ -105,7 +102,7 @@ namespace Aggplus
 	 */
 	void CClipMulti::GenerateClip2(bool bEvenOdd)
 	{
-		m_rasterizer->filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
+		m_rasterizer.filling_rule(bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 		m_bIsClip = true;
 		m_bIsClip2 = false;
@@ -121,7 +118,7 @@ namespace Aggplus
 	 * If the first paart of the clip, execute it in storage. Perform
 	 * the second clip with storage.
 	 */
-	void CClipMulti::Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer_ptr pRasterizer)
+	void CClipMulti::Combine(bool bEvenOdd, agg::sbool_op_e op, clip_rasterizer* pRasterizer)
 	{
 		if (!pRasterizer)
 			return;
@@ -172,7 +169,7 @@ namespace Aggplus
 
 	void CClipMulti::Reset()
 	{
-		m_rasterizer->reset();
+		m_rasterizer.reset();
 		m_bIsClip = false;
 		m_bIsClip2 = false;
 	}

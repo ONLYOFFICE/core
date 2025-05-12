@@ -1470,10 +1470,12 @@ private:
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 	std::map<std::wstring, UINT>         m_mBookmarks; // Закладки
 	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
+
+	NSFonts::IApplicationFonts*          m_pFonts;     // Необходимо для оптимизации работы со шрифтами
 public:
 
 	CHtmlFile2_Private() 
-		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1)
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_pFonts(NULL)
 	{
 		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
 		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
@@ -1493,6 +1495,9 @@ public:
 		m_oNoteXml         .Clear();
 		m_oNumberXml       .Clear();
 		m_oWebSettings     .Clear();
+
+		if (NULL != m_pFonts)
+			RELEASEINTERFACE(m_pFonts);
 	}
 
 	// Проверяет наличие тэга html
@@ -4565,14 +4570,13 @@ private:
 		if (wsSvg.empty())
 			return false;
 
-		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-		pFonts->Initialize();
+		if (NULL == m_pFonts)
+			m_pFonts = NSFonts::NSApplication::Create();
 
-		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
+		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(m_pFonts);
 		if (!pSvgReader->LoadFromString(wsSvg))
 		{
 			RELEASEINTERFACE(pSvgReader);
-			RELEASEINTERFACE(pFonts);
 			return false;
 		}
 
@@ -4652,7 +4656,6 @@ private:
 			free(pBgraData);
 
 		RELEASEINTERFACE(pSvgReader);
-		RELEASEINTERFACE(pFonts);
 
 		return true;
 	}

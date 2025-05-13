@@ -57,6 +57,7 @@ namespace OOX
 			
 			smart_ptr<CApp> m_pApp;
 			smart_ptr<CCore> m_pCore;
+			smart_ptr<CContentTypes> m_pContentTypes;
 
 			std::map<unsigned int, smart_ptr<OOX::File>> mapMastersByID;
 			std::map<unsigned int, smart_ptr<OOX::File>> mapPagesByID;

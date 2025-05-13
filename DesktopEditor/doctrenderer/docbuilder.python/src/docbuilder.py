@@ -479,7 +479,7 @@ class CDocBuilder:
         # using self._lib instead of global _lib because it might be already garbage collected during this function call
         self._lib.CDocBuilder_Destroy(self._internal)
 
-    def OpenFile(self, path, params):
+    def OpenFile(self, path, params=""):
         return _lib.CDocBuilder_OpenFile(self._internal, ctypes.c_wchar_p(path), ctypes.c_wchar_p(params))
 
     def CreateFile(self, type):

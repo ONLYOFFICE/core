@@ -1069,6 +1069,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 }
 void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
 //--------------------------------------------------------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1114,8 +1122,8 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool runState	= Context.get_run_state();
-	bool paraState	= Context.get_paragraph_state();
+	runState	= Context.get_run_state();
+	paraState	= Context.get_paragraph_state();
 
 	Context.reset_context_state();
 	Context.set_run_state		(runState);	
@@ -1133,6 +1141,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 			if (!paraState)
 			{
 				Context.start_paragraph();
+				Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 			}
 			Context.add_new_run(L"");
 
@@ -1151,7 +1160,6 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	//Context.set_paragraph_state(paraState);		
 	Context.back_context_state();
 
 	Context.get_drawing_context().stop_shape();
@@ -1440,11 +1448,14 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
-	if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
-    {
-        Context.add_delayed_element(this);
-        return;
-    }
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
 
 	if (object_index >= 0) //только в документах нельзя объект объединять с шейпами в группы (
 	{
@@ -1542,31 +1553,40 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
     std::wostream & strm = Context.output_stream();
 
-	bool runState	= Context.get_run_state();	
-	bool pState		= Context.get_paragraph_state();
+	runState	= Context.get_run_state();	
+	paraState = Context.get_paragraph_state();
 
-	if (!Context.get_drawing_context().in_group() && !pState)
+	if (!Context.get_drawing_context().in_group() && !paraState)
 	{
 		Context.start_paragraph();
-		Context.set_paragraph_keep(true);
-		pState	= Context.get_paragraph_state();
+		Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>";
+		paraState = Context.get_paragraph_state();
 	}
 
 	Context.set_paragraph_state(false);
 
 	if (!Context.get_drawing_context().in_group())
-		Context.add_new_run(_T(""));
+		Context.add_new_run(L"");
 	
 	drawing.serialize(strm/*, Context.get_drawing_state_content()*/);
  	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
 
-	Context.set_paragraph_state(pState);
+	Context.set_paragraph_state(paraState);
 //--------------------------------------------------
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
+
 	bool bImage = false;
 	if (content_.empty() == false)
 	{
@@ -1608,8 +1628,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     }
 
 //-----------------------------------------------------------------------------------------------------
-	bool runState	= Context.get_run_state();
-	bool paraState	= Context.get_paragraph_state();
+	runState	= Context.get_run_state();
+	paraState = Context.get_paragraph_state();
 
 	Context.reset_context_state();
 
@@ -1618,6 +1638,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 		if (!paraState)//0115GS3-KeyboardShortcuts.odt
 		{
 			Context.start_paragraph();
+			Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 		}
 		Context.add_new_run(L"");
 	}
@@ -1867,6 +1888,15 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
+
 	if (!control_id_) return;
 
 	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
@@ -1955,8 +1985,8 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool pState		= Context.get_paragraph_state();
-	bool runState	= Context.get_run_state();
+	paraState = Context.get_paragraph_state();
+	runState = Context.get_run_state();
 	bool keepState	= Context.get_paragraph_keep();
 
 	//Context.set_run_state		(false);	
@@ -1964,16 +1994,17 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 	bool new_run = false;
 	
-	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
+	if ((paraState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
 	{
 	}
 	else
 	{
 		if (!Context.get_drawing_context().in_group() && !runState)
 		{
-			if (!pState)
+			if (!paraState)
 			{
 				Context.start_paragraph();
+				Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 			}
 			Context.add_new_run(L"");
 
@@ -1986,13 +2017,13 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	if (new_run)
 	{
 		Context.finish_run();
-		if (!pState)
+		if (!paraState)
 		{
 			Context.finish_paragraph();
 		}
 	}
 
-	Context.set_paragraph_state(pState);	
+	Context.set_paragraph_state(paraState);
 
 	Context.get_drawing_context().stop_shape();
 }

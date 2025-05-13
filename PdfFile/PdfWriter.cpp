@@ -44,6 +44,7 @@
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
 #include "SrcWriter/Outline.h"
+#include "SrcWriter/Utils.h"
 
 #include "Resources/BaseFonts.h"
 #include "../DesktopEditor/graphics/Image.h"
@@ -283,7 +284,7 @@ HRESULT CPdfWriter::put_Height(const double& dHeight, bool bMM2PT)
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
-	m_dPageHeight = dHeight;
+	m_dPageHeight = bMM2PT ? dHeight : PT_2_MM(dHeight);
 	m_pPage->SetHeight(bMM2PT ? MM_2_PT(dHeight) : dHeight);
 	return S_OK;
 }
@@ -297,7 +298,7 @@ HRESULT CPdfWriter::put_Width(const double& dWidth, bool bMM2PT)
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
-	m_dPageWidth = dWidth;
+	m_dPageWidth = bMM2PT ? dWidth : PT_2_MM(dWidth);
 	m_pPage->SetWidth(bMM2PT ? MM_2_PT(dWidth) : dWidth);
 	return S_OK;
 }
@@ -1275,6 +1276,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
+		wsValue = PdfWriter::NormalizeWhitespace(wsValue);
 
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
@@ -1456,6 +1458,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
 		if (!wsPlaceHolder.empty())
 		{
 			unsigned int unMaxLen = pPr->GetMaxCharacters();
@@ -1530,9 +1533,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
 
-		if (!pPr->GetPlaceHolder().empty())
+		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
+		if (!wsPlaceHolder.empty())
 		{
-			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
+			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
 
 			if (!pPr->IsEditComboBox())
 			{

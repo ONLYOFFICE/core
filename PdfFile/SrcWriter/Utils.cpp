@@ -32,6 +32,7 @@
 #include "Utils.h"
 #include <vector>
 #include <ctime>
+#include <cwctype>
 
 namespace PdfWriter
 {
@@ -268,6 +269,51 @@ namespace PdfWriter
 		*pTemp = 0;
 
 		std::string sRes(sTemp);
+		return sRes;
+	}
+	std::wstring NormalizeWhitespace(const std::wstring& s)
+	{
+		std::wstring sRes;
+		sRes.reserve(s.size());
+
+		for (wchar_t c : s)
+		{
+			switch(c)
+			{
+			/*
+			case 0x0009:   // Character tabulation
+			case 0x000A:   // Line feed
+			case 0x000B:   // Line tabulation
+			case 0x000C:   // Form feed
+			case 0x000D:   // Carriage return
+			*/
+			case 0x00A0:   // No-break space
+			case 0x1680:   // Ogham space mark
+			case 0x2000:   // En quad
+			case 0x2001:   // Em quad
+			case 0x2002:   // En space
+			case 0x2003:   // Em space
+			case 0x2004:   // Three-per-em space
+			case 0x2005:   // Four-per-em space
+			case 0x2006:   // Six-per-em space
+			case 0x2007:   // Figure space
+			case 0x2008:   // Punctuation space
+			case 0x2009:   // Thin space
+			case 0x200A:   // Hair space
+			case 0x2028:   // Line separator
+			case 0x2029:   // Paragraph separator
+			case 0x202F:   // Narrow no-break space
+			case 0x205F:   // Medium mathematical space
+			case 0x2060:   // Word joiner
+			case 0x3000:   // Ideographic space
+			case 0xFEFF:   // Zero width no-break space
+				sRes += L' ';
+				break;
+			default:
+				sRes += c;
+			}
+		}
+
 		return sRes;
 	}
 }

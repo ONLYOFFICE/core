@@ -44,6 +44,7 @@
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
 #include "SrcWriter/Outline.h"
+#include "SrcWriter/Utils.h"
 
 #include "Resources/BaseFonts.h"
 #include "../DesktopEditor/graphics/Image.h"
@@ -1275,6 +1276,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
+		wsValue = PdfWriter::NormalizeWhitespace(wsValue);
 
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
@@ -1456,6 +1458,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
 		if (!wsPlaceHolder.empty())
 		{
 			unsigned int unMaxLen = pPr->GetMaxCharacters();
@@ -1530,9 +1533,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
 
-		if (!pPr->GetPlaceHolder().empty())
+		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
+		if (!wsPlaceHolder.empty())
 		{
-			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
+			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
 
 			if (!pPr->IsEditComboBox())
 			{

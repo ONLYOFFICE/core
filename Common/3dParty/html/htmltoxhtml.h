@@ -443,6 +443,12 @@ static void substitute_xml_entities_into_attributes(std::string& text)
 	replace_all(text, "\"", "&quot;");
 }
 
+// Удаляем символы, которые ломают работу XmlUtils::CXmlLiteReader
+static void remove_control_character(std::string& sText)
+{
+	sText.erase(std::remove_if(sText.begin(), sText.end(), [](char chValue){ return chValue < 0x09; }));
+}
+
 static std::string handle_unknown_tag(GumboStringPiece* text)
 {
 	if (text->data == NULL)
@@ -474,6 +480,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 		oBuilder.WriteString("<!DOCTYPE ");
 		oBuilder.WriteString(node->v.document.name);
 		std::string pi(node->v.document.public_identifier);
+		remove_control_character(pi);
 		if ((node->v.document.public_identifier != NULL) && !pi.empty())
 		{
 			oBuilder.WriteString(" PUBLIC \"");
@@ -494,6 +501,10 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 		GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
 		std::string sVal(at->value);
 		std::string sName(at->name);
+
+		remove_control_character(sVal);
+		remove_control_character(sName);
+
 		atts.WriteString(" ");
 
 		bool bCheck = false;
@@ -558,6 +569,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 			std::string val(child->v.text.text);
 			if(!no_entity_substitution)
 				substitute_xml_entities_into_text(val);
+			remove_control_character(val);
 
 			// Избавление от FF
 			size_t found = val.find_first_of("\014");
@@ -596,6 +608,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	}
 
 	std::string tagname            = get_tag_name(node);
+	remove_control_character(tagname);
 
 	if (NodeIsUnprocessed(tagname))
 		return;

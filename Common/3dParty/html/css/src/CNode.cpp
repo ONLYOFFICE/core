@@ -1,28 +1,40 @@
 #include "CNode.h"
+
+#ifdef CSS_CALCULATOR_WITH_XHTML
 #include "CCompiledStyle.h"
+#endif
 
 namespace NSCSS
 {
 	CNode::CNode()
+	#ifdef CSS_CALCULATOR_WITH_XHTML
 		: m_pCompiledStyle(new CCompiledStyle())
+    #endif
 	{}
 
 	CNode::CNode(const CNode& oNode)
 		: m_wsName(oNode.m_wsName), m_wsClass(oNode.m_wsClass), m_wsId(oNode.m_wsId),
 	      m_wsStyle(oNode.m_wsStyle), m_mAttributes(oNode.m_mAttributes)
 	{
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		m_pCompiledStyle = new CCompiledStyle();
 		*m_pCompiledStyle = *oNode.m_pCompiledStyle;
+		#endif
 	}
 
 	CNode::CNode(const std::wstring& wsName, const std::wstring& wsClass, const std::wstring& wsId)
-		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId), m_pCompiledStyle(new CCompiledStyle())
+		: m_wsName(wsName), m_wsClass(wsClass), m_wsId(wsId)
+	    #ifdef CSS_CALCULATOR_WITH_XHTML
+	    , m_pCompiledStyle(new CCompiledStyle())
+		#endif
 	{}
 
 	CNode::~CNode()
 	{
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		if (nullptr != m_pCompiledStyle)
 			delete m_pCompiledStyle;
+		#endif
 	}
 
 	bool CNode::Empty() const
@@ -30,6 +42,7 @@ namespace NSCSS
 		return m_wsName.empty() && m_wsClass.empty() && m_wsId.empty() && m_wsStyle.empty();
 	}
 
+	#ifdef CSS_CALCULATOR_WITH_XHTML
 	void CNode::SetCompiledStyle(CCompiledStyle* pCompiledStyle)
 	{
 		if (nullptr != m_pCompiledStyle)
@@ -38,6 +51,7 @@ namespace NSCSS
 		m_pCompiledStyle = new CCompiledStyle();
 		*m_pCompiledStyle = *pCompiledStyle;
 	}
+	#endif
 
 	void CNode::Clear()
 	{

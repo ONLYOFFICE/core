@@ -7,7 +7,9 @@
 
 namespace NSCSS
 {
+	#ifdef CSS_CALCULATOR_WITH_XHTML
 	class CCompiledStyle;
+	#endif
 	class CNode
 	{
 	public:
@@ -17,7 +19,9 @@ namespace NSCSS
 		std::wstring m_wsStyle; // Стиль тэга
 		std::map<std::wstring, std::wstring> m_mAttributes; // Остальные аттрибуты тэга
 
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		CCompiledStyle *m_pCompiledStyle;
+		#endif
 	public:
 		CNode();
 		CNode(const CNode& oNode);
@@ -26,7 +30,9 @@ namespace NSCSS
 
 		bool Empty() const;
 
+		#ifdef CSS_CALCULATOR_WITH_XHTML
 		void SetCompiledStyle(CCompiledStyle* pCompiledStyle);
+		#endif
 
 		void Clear();
 

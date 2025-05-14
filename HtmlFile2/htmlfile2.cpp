@@ -260,7 +260,7 @@ struct CTextSettings
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle)
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -1376,8 +1376,20 @@ void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2
 
 void ReplaceSpaces(std::wstring& wsValue)
 {
-	boost::wregex oRegex(L"\\s+");
-	wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+	// boost::wregex oRegex(L"\\s+");
+	// wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+
+	std::wstring::const_iterator itBegin = std::find_if(wsValue.cbegin(), wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	std::wstring::const_iterator itEnd;
+
+	while (wsValue.cend() != itBegin)
+	{
+		itEnd = std::find_if(itBegin, wsValue.cend(), [](wchar_t wchValue){ return !std::iswspace(wchValue) || 0xa0 == wchValue; });
+
+		wsValue.replace(itBegin, itEnd, L" ");
+
+		itBegin = std::find_if(itBegin + 1, wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	}
 }
 
 std::wstring EncodeXmlString(const std::wstring& s)
@@ -1843,7 +1855,7 @@ public:
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
 
-		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+		const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
 
 		#ifdef SAVE_NORMALIZED_HTML
 		#if 1 == SAVE_NORMALIZED_HTML
@@ -2339,7 +2351,7 @@ private:
 
 		std::wstring sText = m_oLightReader.GetText();
 
-		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar);}))
+		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 			return false;
 
 		if(oTS.bBdo)

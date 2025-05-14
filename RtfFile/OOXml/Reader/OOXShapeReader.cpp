@@ -1262,11 +1262,11 @@ bool OOXShapeReader::ParseShape( ReaderParameter oParam, RtfShapePtr& pOutput)
 	if ((oox_sp_style) && (oox_sp_style->fontRef.idx.IsInit()))
 	{
 		std::wstring font_name;
-		if (oox_sp_style->fontRef.idx->GetBYTECode() == 0)
+		if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 0)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.majorFont.latin.typeface;
 		}
-		else if (oox_sp_style->fontRef.idx->GetBYTECode() == 1)
+		else if (oParam.oDocx->m_pTheme && oox_sp_style->fontRef.idx->GetBYTECode() == 1)
 		{
 			font_name = oParam.oDocx->m_pTheme->themeElements.fontScheme.minorFont.latin.typeface;
 		}

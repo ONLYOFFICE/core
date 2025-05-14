@@ -1472,12 +1472,12 @@ namespace NExtractTools
 		}
 		else if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
-			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
 			nRes = doct_bin2pdf(eFromType, sFrom, sTo, params, convertParams);
 		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
 		{
-			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::PPTT;
+			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
 			nRes = doct_bin2image(eFromType, sFrom, sTo, params, convertParams);
 		}
 		else if (0 != (AVS_OFFICESTUDIO_FILE_DRAW & nFormatTo) ||

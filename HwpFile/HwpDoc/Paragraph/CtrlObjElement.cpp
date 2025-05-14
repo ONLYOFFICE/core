@@ -182,6 +182,9 @@ void CCtrlObjElement::InitMatrix()
 
 void CCtrlObjElement::SetMatrix(CXMLNode& oNode, std::vector<double>& arMatrix, int nOffset)
 {
+	if (nOffset + 5 > arMatrix.size() - 1)
+		return;
+
 	arMatrix[0 + nOffset] = oNode.GetAttributeDouble(L"e1");
 	arMatrix[1 + nOffset] = oNode.GetAttributeDouble(L"e2");
 	arMatrix[2 + nOffset] = oNode.GetAttributeDouble(L"e3");

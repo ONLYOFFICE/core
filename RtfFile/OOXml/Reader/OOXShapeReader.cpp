@@ -2338,6 +2338,12 @@ bool OOXShapeGroupReader::Parse( ReaderParameter oParam , RtfShapePtr& pOutput)
 				pOutput->m_nGroupRight	= (pOutput->m_nGroupLeft != PROP_DEF  ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtX.get();
 				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF  ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->chExtY.get();
 			}
+			else if (m_ooxGroup->grpSpPr.xfrm->extX.IsInit() && m_ooxGroup->grpSpPr.xfrm->extY.IsInit())
+			{
+				pOutput->m_nGroupRight = (pOutput->m_nGroupLeft != PROP_DEF ? pOutput->m_nGroupLeft : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extX.get();
+				pOutput->m_nGroupBottom = (pOutput->m_nGroupTop != PROP_DEF ? pOutput->m_nGroupTop : 0) + (int)m_ooxGroup->grpSpPr.xfrm->extY.get();
+			}
+
 			if (pOutput->m_bInGroup)
 			{
 				if (m_ooxGroup->grpSpPr.xfrm->offX.IsInit() && m_ooxGroup->grpSpPr.xfrm->offY.IsInit())

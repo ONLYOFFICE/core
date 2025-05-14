@@ -1707,8 +1707,16 @@ namespace PdfWriter
 		if (m_pPageTree)
 		{
 			CObjectBase* pObj = m_pPageTree->RemovePage(nPageIndex);
-			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
-				return m_pPageTree->InsertPage(nPos, (CPage*)pObj);
+			if (pObj)
+			{
+				if (pObj->GetType() == object_type_UNKNOWN)
+				{
+					CObjectBase* pObjTemp = pObj->Copy();
+					delete pObj;
+					pObj = pObjTemp;
+				}
+				return m_pPageTree->InsertPage(nPos, pObj);
+			}
 		}
 		return false;
 	}

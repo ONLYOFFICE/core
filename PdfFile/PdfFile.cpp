@@ -450,6 +450,7 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
 		}
+		m_pInternal->pEditor->AfterSplitPages();
 
 		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
 		{

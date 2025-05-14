@@ -35,6 +35,7 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/graphics/pro/Image.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
 #include "../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../Binary/Presentation/XmlWriter.h"
@@ -235,6 +236,16 @@ namespace OOX
 								}
 							}
 							RELEASEOBJECT(pMetafile);
+						}
+						else if (checker.eFileType == _CXIMAGE_FORMAT_BMP)
+						{
+							std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
+
+							CBgraFrame oFrame;
+							if (true == oFrame.OpenFile(image_path.GetPath().c_str()))
+							{
+								oFrame.SaveFile(strSaveItem, 4); // png
+							}
 						}
 					}
 				}

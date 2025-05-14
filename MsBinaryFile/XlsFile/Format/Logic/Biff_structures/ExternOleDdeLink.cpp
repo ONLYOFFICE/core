@@ -50,6 +50,11 @@ void ExternOleDdeLink::load(CFRecord& record)
 	}
 }
 
+void ExternOleDdeLink::save(CFRecord& record)
+{
+    record << lStgName << linkName;
+}
+
 
 } // namespace XLS
 

@@ -64,5 +64,13 @@ void CRN::readFields(CFRecord& record)
 	}
 }
 
+void CRN::writeFields(CFRecord& record)
+{
+    record << colLast << colFirst << row;
+    for(auto i : crnOper)
+        if(i != nullptr)
+            i->save(record);
+}
+
 } // namespace XLS
 

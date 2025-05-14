@@ -704,6 +704,9 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_Country);
     else
         proc.mandatory<Country>();
+    for(auto i: m_arSUPBOOK)
+        if(i != nullptr)
+            proc.mandatory(*i);
     if(m_SHAREDSTRINGS != nullptr)
         proc.mandatory(*m_SHAREDSTRINGS);
     if(m_ExtSST != nullptr)

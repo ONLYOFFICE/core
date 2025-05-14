@@ -125,7 +125,7 @@ private:
 
 struct BErr
 {
-	unsigned char err;
+    unsigned char err = 0;
     BErr() {}
 	BErr(const std::wstring  str)
 	{

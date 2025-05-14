@@ -61,5 +61,12 @@ void XCT::readFields(CFRecord& record)
 	}
 }
 
+void XCT::writeFields(CFRecord& record)
+{
+    record << ccrn;
+    if(itab_exist)
+        record >> itab;
+}
+
 } // namespace XLS
 

@@ -1438,25 +1438,50 @@ namespace NExtractTools
 		}
 		else if ((0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo)) || AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
 		{
-			std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
-			if (sToRender.empty())
+			if (params.needConvertToOrigin(AVS_OFFICESTUDIO_FILE_DRAW_VSDX))
 			{
-				sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
-				nRes = dir2zip(sFrom, sToRender);
-			}
-			NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
-			if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
-			{
-				convertParams.m_sInternalMediaDirectory = sFrom;
-				nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
-			}
-			else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
-			{
-				convertParams.m_sInternalMediaDirectory = sFrom;
-				nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
+				std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
+				if (sToRender.empty())
+				{
+					sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
+					nRes = dir2zip(sFrom, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			}
 			else
-				nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			{
+				std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
+				if (sToRender.empty())
+				{
+					sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
+					nRes = dir2zip(sFrom, sToRender);
+				}
+				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
+				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
+				{
+					convertParams.m_sInternalMediaDirectory = sFrom;
+					nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
+				}
+				else
+					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
+			}
 		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;

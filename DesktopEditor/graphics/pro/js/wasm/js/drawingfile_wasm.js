@@ -75,7 +75,7 @@ CWasmPointer.prototype.getReader = function()
 	if (!noCopyArray)
 		return null;
 	
-	return new CBinaryReader(noCopyArray, 0, len);
+	return new CBinaryReader(noCopyArray, 0, noCopyArray.length);
 };
 
 var g_module_pointer = new CWasmPointer();

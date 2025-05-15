@@ -1555,6 +1555,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 	PDFDoc* pPDFDocument = _pDoc;
 	XRef* xref = pPDFDocument->getXRef();
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 	int nPagesBefore = m_pReader->GetNumPagesBefore(pPDFDocument);
 
 	if (unLength == 0)
@@ -1570,7 +1571,10 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		pDoc->AddPage(pDoc->GetPagesCount(), pPage);
+		if (m_nMode == Mode::WriteAppend)
+			pDoc->AddPage(pDoc->GetPagesCount(), pPage);
+		else
+			pPageTree->ReplacePage(nPagesBefore + (arrPageIndex ? arrPageIndex[i] : i), pPage);
 		pDoc->AddEditPage(pPage, nPagesBefore + (arrPageIndex ? arrPageIndex[i] : i));
 
 		// Получение объекта страницы
@@ -1920,12 +1924,18 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+	if (!pPageTree)
+		return false;
+
+	int nPages = m_pReader->GetNumPages();
+	pPageTree->CreateFakePages(nPages);
 
 	int nTotalPages = 0;
 	int nPDFIndex = 0;
 	std::map<int, std::vector<int>> mFileToPages;
 	PDFDoc* pPDFDocument = m_pReader->GetPDFDocument(nPDFIndex);
-	int nPages = pPDFDocument->getNumPages();
+	nPages = pPDFDocument->getNumPages();
 	for (unsigned int i = 0; i < unLength; ++i)
 	{
 		if (arrPageIndex[i] < nTotalPages + nPages)
@@ -1952,6 +1962,16 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 			return false;
 	}
 	return true;
+}
+void CPdfEditor::AfterSplitPages()
+{
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (!pDoc)
+		return;
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+	if (!pPageTree)
+		return;
+	pPageTree->ClearFakePages();
 }
 void CreateOutlines(PDFDoc* pdfDoc, PdfWriter::CDocument* pDoc, OutlineItem* pOutlineItem, PdfWriter::COutline* pParent)
 {
@@ -2100,7 +2120,7 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPr
 }
 bool CPdfEditor::DeletePage(int nPageIndex)
 {
-	if (m_nMode != Mode::WriteAppend && !IncrementalUpdates())
+	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
 
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
@@ -2131,7 +2151,12 @@ bool CPdfEditor::AddPage(int nPageIndex)
 	{
 		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
 		if (it == m_mObjManager.m_arrSplitAddPages.end())
+		{
+			PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+			PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+			pPageTree->CreateFakePages(1, nPageIndex);
 			return false;
+		}
 		m_mObjManager.m_arrSplitAddPages.erase(it);
 	}
 
@@ -2153,7 +2178,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, true))
+	if (EditPage(nPageIndex, true, true) || m_nMode == Mode::WriteNew)
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;
 }

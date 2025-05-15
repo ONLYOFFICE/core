@@ -96,6 +96,7 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
+	void AfterSplitPages();
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
 
 private:

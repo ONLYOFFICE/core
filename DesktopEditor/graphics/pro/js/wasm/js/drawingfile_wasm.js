@@ -39,7 +39,7 @@ CWasmPointer.prototype.free = function()
 	Module["_free"](this.ptr);
 	this.ptr = 0;
 };
-CWasmPointer.prototype.getReader = function()
+CWasmPointer.prototype.getMemory = function(isCopy)
 {
 	if (!this.ptr)
 		return null;
@@ -59,8 +59,23 @@ CWasmPointer.prototype.getReader = function()
 	}
 
 	len -= 4;
-	let buffer = new Uint8Array(Module["HEAP8"].buffer, this.ptr + 4, len);
-	return new CBinaryReader(buffer, 0, len);
+	
+	let noCopyArray = new Uint8Array(Module["HEAP8"].buffer, this.ptr + 4, len);
+	if (!isCopy)
+		return noCopyArray;
+
+	let copyArray = new Uint8Array(len);
+	copyArray.set(noCopyArray);
+
+	return copyArray;
+};
+CWasmPointer.prototype.getReader = function()
+{
+	let noCopyArray = this.getMemory(false);
+	if (!noCopyArray)
+		return null;
+	
+	return new CBinaryReader(noCopyArray, 0, len);
 };
 
 var g_module_pointer = new CWasmPointer();
@@ -139,7 +154,9 @@ CFile.prototype._SplitPages = function(memoryBuffer, arrayBufferChanges)
 	Module["_free"](pointer);
 	if (changesPtr)
 		Module["_free"](changesPtr);
-	return ptr;
+
+	g_module_pointer.ptr = ptr;
+	return g_module_pointer;
 };
 
 CFile.prototype._MergePages = function(buffer, maxID, prefixForm)

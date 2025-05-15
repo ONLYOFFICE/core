@@ -148,29 +148,9 @@ CFile.prototype["isNeedPassword"] = function()
 CFile.prototype["SplitPages"] = function(arrPageIndex, arrayBufferChanges)
 {
 	let ptr = this._SplitPages(arrPageIndex, arrayBufferChanges);
-
-	if (!ptr)
-		return null;
-
-	let lenArr = new Int32Array(Module["HEAP8"].buffer, ptr, 1);
-	if (!lenArr)
-	{
-		Module["_free"](ptr);
-		return null;
-	}
-
-	let len = lenArr[0];
-	if (len <= 4)
-	{
-		Module["_free"](ptr);
-		return null;
-	}
-	len -= 4;
-
-	let buffer = new Uint8Array(len);
-	buffer.set(new Uint8Array(Module["HEAP8"].buffer, ptr + 4, len));
-	Module["_free"](ptr);
-	return buffer;
+	let res = ptr.getMemory(true);
+	ptr.free();
+	return res;
 };
 CFile.prototype["MergePages"] = function(arrayBuffer, maxID, prefixForm)
 {

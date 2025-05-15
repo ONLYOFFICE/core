@@ -218,9 +218,8 @@ namespace OOX
 
 							if (pMetafile->LoadFromFile(image_path.GetPath().c_str()))
 							{
-								// пробуем сохранить в svg напрямую из метафайлов
-								double w = ObjectWidth.get_value_or(0);
-								double h = ObjectHeight.get_value_or(0);
+								double w = ExtentX.IsInit() ? *ExtentX : ObjectWidth.get_value_or(0);
+								double h = ExtentY.IsInit() ? *ExtentY : ObjectHeight.get_value_or(0);
 
 								std::wstring sInternalSvg = pMetafile->ConvertToSvg(w > 1 ? w : 0, h > 1 ? h : 0);
 

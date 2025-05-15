@@ -202,6 +202,7 @@ namespace PdfWriter
 		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
 		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
+		CPageTree*        GetPageTree() { return m_pPageTree; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();

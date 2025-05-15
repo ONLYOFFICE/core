@@ -527,7 +527,7 @@ TEST(OOXml2OdfTest,TextMrPr)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mn>1</mn></mstyle><mrow><mstyle mathvariant=\"bold-italic\"><mo stretchy=\"false\">+</mo><mn>3</mn></mstyle></mrow><annotation encoding=\"StarMath 5.0\">bold ital 1 bold ital + 3 </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mn>1</mn></mstyle><mrow><mstyle mathvariant=\"bold-italic\"><mo stretchy=\"false\">+</mo><mstyle mathvariant=\"bold-italic\"><mn>3</mn></mstyle></mstyle></mrow><annotation encoding=\"StarMath 5.0\">bold ital 1 bold ital + bold ital 3 </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,ColorByName)
@@ -593,7 +593,7 @@ TEST(OOXml2OdfTest,EmptyMatrix)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mtable><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr><mtr><mtd></mtd><mtd></mtd><mtd></mtd></mtr></mtable></mstyle><annotation encoding=\"StarMath 5.0\">bold ital matrix{# # ## # # ## # # } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mstyle mathvariant=\"bold-italic\"><mtable><mtr><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd></mtr><mtr><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd></mtr><mtr><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd><mtd><mspace width=\"2em\" /></mtd></mtr></mtable></mstyle><annotation encoding=\"StarMath 5.0\">bold ital matrix{~ # ~ # ~ ## ~ # ~ # ~ ## ~ # ~ # ~ } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,EmptyNary)

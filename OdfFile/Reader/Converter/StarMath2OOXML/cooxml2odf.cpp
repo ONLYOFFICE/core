@@ -1130,8 +1130,17 @@ namespace StarMath
 		{
 			if(pMr->m_arrItems[i]->getType() == OOX::EElementType::et_m_e)
 			{
+				OOX::Logic::CElement* pElement = dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]);
 				m_pXmlWrite->WriteNodeBegin(L"mtd",false);
-				ConversionElement(dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]));
+				if(!pElement->m_arrItems.empty())
+					ConversionElement(pElement);
+				else
+				{
+					m_pXmlWrite->WriteNodeBegin(L"mspace",true);
+					m_pXmlWrite->WriteAttribute(L"width",L"2em");
+					m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+					m_wsAnnotationStarMath += L"~ ";
+				}
 				if(i+1 < pMr->m_arrItems.size())
 					m_wsAnnotationStarMath += L"# ";
 				m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
@@ -1707,10 +1716,13 @@ namespace StarMath
 	{
 		return m_enType;
 	}
-	void COneElement::SetAttribute(StValuePr *stAttribute)
+	void COneElement::SetBaseAttribute(StValuePr *stAttribute)
 	{
 		if(m_stAttribute == nullptr)
+		{
 			m_stAttribute = stAttribute;
+			stAttribute->AddRef();
+		}
 	}
 	StValuePr* COneElement::GetAttribute()
 	{
@@ -1900,6 +1912,10 @@ namespace StarMath
 	}
 	void CNumberOrLetter::Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd, COneElement *&pElement)
 	{}
+	void CNumberOrLetter::SetAttribute(StValuePr *pAttribute)
+	{
+		SetBaseAttribute(pAttribute);
+	}
 	const std::wstring& CNumberOrLetter::GetString()
 	{
 		return m_wsElement;
@@ -1933,27 +1949,32 @@ namespace StarMath
 			{
 				COneElement::ConversionAttribute(GetAttribute(),stStyle,pXmlWrite,wsAnnotation);
 				pXmlWrite->WriteNodeBegin(L"mtext",false);
-				pXmlWrite->WriteString(m_wsAnnotation);
+				pXmlWrite->WriteString(m_wsSymbolBinOp);
 				pXmlWrite->WriteNodeEnd(L"mtext",false,false);
-				wsAnnotation += L"\u0026quot;" + m_wsAnnotation + L"\u0026quot;";
+				wsAnnotation += L"\u0026quot;" + m_wsSymbolBinOp + L"\u0026quot;";
 				COOXml2Odf::StyleClosing(stStyle,pXmlWrite);
 				return;
 			}
 		}
 		pXmlWrite->WriteNodeBegin(L"mrow",false);
-		if(GetAttribute() != nullptr && m_enTypeBinOp != TypeElement::undefine)
+		if(m_pLeftArg != nullptr)
+			m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
+		else if(GetAttribute() != nullptr && m_enTypeBinOp != TypeElement::undefine)
 			COneElement::ConversionAttribute(GetAttribute(),stStyle,pXmlWrite,wsAnnotation);
-		else
-		{
-			if(m_pLeftArg != nullptr)
-				m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
-		}
 		COOXml2Odf::RecordingMoNode(m_wsSymbolBinOp,pXmlWrite);
 		wsAnnotation += m_wsAnnotation + L" ";
 		if(m_pRightArg != nullptr)
 			m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
 		COOXml2Odf::StyleClosing(stStyle,pXmlWrite);
 		pXmlWrite->WriteNodeEnd(L"mrow",false,false);
+	}
+	void CBinOperator::SetAttribute(StValuePr *pAttribute)
+	{
+		SetBaseAttribute(pAttribute);
+		if(m_pLeftArg != nullptr)
+			m_pLeftArg->SetAttribute(pAttribute);
+		if(m_pRightArg != nullptr)
+			m_pRightArg->SetAttribute(pAttribute);
 	}
 	void CBinOperator::SetLeftArg(COneElement *pElement)
 	{
@@ -2134,7 +2155,7 @@ namespace StarMath
 				if(GetAttribute() != nullptr)
 				{
 					GetAttribute()->AddRef();
-					m_pLeftArg->SetAttribute(GetAttribute());
+					m_pLeftArg->SetBaseAttribute(GetAttribute());
 				}
 				m_pLeftArg->Conversion(pXmlWrite,wsAnnotation);
 			}
@@ -2148,12 +2169,20 @@ namespace StarMath
 				if(GetAttribute() != nullptr)
 				{
 					GetAttribute()->AddRef();
-					m_pRightArg->SetAttribute(GetAttribute());
+					m_pRightArg->SetBaseAttribute(GetAttribute());
 				}
 				m_pRightArg->Conversion(pXmlWrite,wsAnnotation);
 			}
 			pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 		}
+	}
+	void CRelationsAndOperationsOnSets::SetAttribute(StValuePr *pAttribute)
+	{
+		SetBaseAttribute(pAttribute);
+		if(m_pLeftArg != nullptr)
+			m_pLeftArg->SetAttribute(pAttribute);
+		if(m_pRightArg != nullptr)
+			m_pRightArg->SetAttribute(pAttribute);
 	}
 	void CRelationsAndOperationsOnSets::SetLeftArg(COneElement *pElement)
 	{
@@ -2285,6 +2314,8 @@ namespace StarMath
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
 		wsAnnotation += L"` ";
 	}
+	void CSpace::SetAttribute(StValuePr *pAttribute)
+	{}
 //class CSpecialChar
 	CSpecialChar::~CSpecialChar()
 	{}
@@ -2307,6 +2338,10 @@ namespace StarMath
 		else if(!m_wsSymbol.empty())
 			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsSymbol);
 		COOXml2Odf::StyleClosing(stStyle,pXmlWrite);
+	}
+	void CSpecialChar::SetAttribute(StValuePr *pAttribute)
+	{
+		SetBaseAttribute(pAttribute);
 	}
 	std::wstring CSpecialChar::DefinitionSpecialChar(const std::wstring &wsSymbol)
 	{

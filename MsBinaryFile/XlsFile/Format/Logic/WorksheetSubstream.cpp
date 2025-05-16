@@ -797,6 +797,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
             if(i != nullptr)
                 proc.mandatory(*i);
     }
+    for(auto i : m_arCUSTOMVIEW)
+        if(i != nullptr)
+            proc.mandatory(*i);
     if(m_DxGCol != nullptr)
         proc.mandatory(*m_DxGCol);
     for(auto i : m_arMergeCells)

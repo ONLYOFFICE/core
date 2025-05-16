@@ -429,11 +429,17 @@ namespace HWP
 
 	int CCtrlCommon::GetHorzOffset() const
 	{
+		if (INT_MAX == m_nHorzOffset || INT_MIN == m_nHorzOffset)
+			return 0;
+
 		return m_nHorzOffset;
 	}
 
 	int CCtrlCommon::GetVertOffset() const
 	{
+		if (INT_MAX == m_nVertOffset || INT_MIN == m_nVertOffset)
+			return 0;
+
 		return m_nVertOffset;
 	}
 

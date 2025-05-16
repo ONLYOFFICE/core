@@ -199,4 +199,19 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool WorkbookStreamObject::saveContent(BinProcessor& proc)
+{
+    if(m_GlobalsSubstream == nullptr || m_arWorksheetSubstream.empty())
+        return false;
+    proc.mandatory(*m_GlobalsSubstream);
+    for(auto i : m_arWorksheetSubstream)
+        if(i == nullptr)
+        {
+            Log::warning("Worksheet substream is corrupted");
+        }
+        else
+            proc.mandatory(*i);
+    return true;
+}
+
 } // namespace XLS

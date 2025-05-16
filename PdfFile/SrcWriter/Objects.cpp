@@ -321,10 +321,7 @@ namespace PdfWriter
 		for (int nIndex = 0, nCount = m_arrList.size(); nIndex < nCount; nIndex++)
 		{
 			CObjectBase* pObjectItem = m_arrList.at(nIndex);
-			if (object_type_PROXY == pObjectItem->GetType())
-				pObjectItem = ((CProxyObject*)pObjectItem)->Get();
-
-			if (pObjectItem == pTarget)
+			if (pObjectItem == pTarget || (object_type_PROXY == pObjectItem->GetType() && ((CProxyObject*)pObjectItem)->Get() == pTarget))
 			{
 				if (bReplace)
 				{

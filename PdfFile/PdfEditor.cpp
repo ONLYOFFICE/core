@@ -2635,8 +2635,10 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 											pObj = pKids->Get(i);
 											if (pObj == pAnnot)
 											{
-												pKids->Remove(i);
-												pOpt->Remove(i);
+												pObj = pKids->Remove(i);
+												delete pObj;
+												pObj = pOpt->Remove(i);
+												delete pObj;
 												--i;
 											}
 											else

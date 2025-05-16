@@ -68,7 +68,7 @@ public:
         m_nCMapDataLength = 0;
         m_bDrawFormField = false;
     }
-    ~GlobalParamsAdaptor()
+    virtual ~GlobalParamsAdaptor()
     {
         RELEASEARRAYOBJECTS(m_bCMapData);
     }

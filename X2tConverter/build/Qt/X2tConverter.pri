@@ -99,6 +99,8 @@ HEADERS += \
 	\
 	../../src/lib/iwork.h \
 	\
+	../../src/lib/vsdx.h \
+	\
 	../../src/lib/hwp.h
 
 #vbaformat

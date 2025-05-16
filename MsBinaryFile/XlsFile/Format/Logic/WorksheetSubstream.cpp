@@ -816,6 +816,8 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_DVAL);
     if(m_CodeName != nullptr)
         proc.mandatory(*m_CodeName);
+    if(m_SheetExt != nullptr)
+        proc.mandatory(*m_SheetExt);
     for(auto i : m_arRECORD12)
         if(i != nullptr)
             proc.mandatory(*i);

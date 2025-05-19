@@ -26,9 +26,9 @@ namespace HWP
 
 		TColor(int nColor)
 		{
-			m_uchRed   = (nColor >> 0 ) & 0xFF;
-			m_uchGreen = (nColor >> 8 ) & 0xFF;
-			m_uchBlue  = (nColor >> 16) & 0xFF;
+			m_uchRed   = (nColor >> 16 ) & 0xFF;
+			m_uchGreen = (nColor >> 8  ) & 0xFF;
+			m_uchBlue  = (nColor >> 0  ) & 0xFF;
 		}
 
 		TColor(unsigned char uchRed, unsigned char uchGreen, unsigned char chBlue)

@@ -640,6 +640,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 {
     auto globalInfoPtr = proc.getGlobalWorkbookInfo();
+    {
+        BOF bof;
+        bof.dt= 0x0005;
+        proc.mandatory(bof);
+    }
     if(m_WriteProtect != nullptr)
         proc.mandatory(*m_WriteProtect);
     if(m_Template != nullptr)

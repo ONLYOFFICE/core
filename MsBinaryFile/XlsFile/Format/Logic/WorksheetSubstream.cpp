@@ -757,8 +757,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
     if(m_PAGESETUP != nullptr)
         proc.mandatory(*m_PAGESETUP);
     else
-        proc.mandatory<PAGESETUP>();
-
+        proc.mandatory<PAGESETUP>(); 
+    if(m_BACKGROUND != nullptr)
+        proc.mandatory(*m_BACKGROUND);
     if(m_PROTECTION != nullptr)
         proc.mandatory(*m_PROTECTION);
 

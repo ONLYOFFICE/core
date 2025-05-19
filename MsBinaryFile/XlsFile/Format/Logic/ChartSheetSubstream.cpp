@@ -405,6 +405,32 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
+{
+    {
+        BOF bof;
+        bof.dt= 0x0020;
+        proc.mandatory(bof);
+    }
+    if(m_WriteProtect != nullptr)
+        proc.mandatory(*m_WriteProtect);
+    if(m_SheetExt != nullptr)
+        proc.mandatory(*m_SheetExt);
+    for(auto i : m_arHFPicture)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PAGESETUP != nullptr)
+        proc.mandatory(*m_PAGESETUP);
+    if(m_PrintSize != nullptr)
+        proc.mandatory(*m_PrintSize);
+    for(auto i : m_arRECORD12)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_BACKGROUND != nullptr)
+        proc.mandatory(*m_BACKGROUND);
+    return true;
+}
+
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;

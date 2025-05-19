@@ -98,11 +98,11 @@ class CConverter2OOXML
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& sExternStyles = CRunnerStyle());
 	void WriteTextBorderStyle(short shBorderFillId, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	void OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
-	void CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth = 0, int nHeight = 0);
+	void CloseDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 
 	void WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
-	void WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth = 0, int nHeight = 0);
 	void WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteShapeProperty(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder);
 

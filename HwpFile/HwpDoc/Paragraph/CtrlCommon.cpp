@@ -142,15 +142,15 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon()
-		: m_nVertOffset(0), m_nHorzOffset(0)
+	    : m_nVertOffset(0), m_nHorzOffset(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID)
-		: CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP)
+		: CCtrl(sCtrlID), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{}
 
 	CCtrlCommon::CCtrlCommon(const CCtrlCommon& oCtrlCommon)
-		: CCtrl(oCtrlCommon.GetID())
+		: CCtrl(oCtrlCommon.GetID()), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{
 		m_nObjAttr = oCtrlCommon.m_nObjAttr;
 		m_bTreatAsChar = oCtrlCommon.m_bTreatAsChar;
@@ -203,7 +203,7 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-		: CCtrl(sCtrlID)
+		: CCtrl(sCtrlID), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{
 		oBuffer.SavePosition();
 
@@ -240,7 +240,7 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	    : CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP)
+	    : CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{
 		m_nObjInstanceID = std::abs(oNode.GetAttributeInt(L"id"));
 
@@ -314,6 +314,13 @@ namespace HWP
 				m_arOutMargin[1] = oChild.GetAttributeInt(L"right");
 				m_arOutMargin[2] = oChild.GetAttributeInt(L"top");
 				m_arOutMargin[3] = oChild.GetAttributeInt(L"bottom");
+			}
+			else if (L"hp:inMargin" == oChild.GetName())
+			{
+				m_arInMargin[0] = oChild.GetAttributeInt(L"left");
+				m_arInMargin[1] = oChild.GetAttributeInt(L"right");
+				m_arInMargin[2] = oChild.GetAttributeInt(L"top");
+				m_arInMargin[3] = oChild.GetAttributeInt(L"bottom");
 			}
 			else if (L"hp:caption" == oChild.GetName())
 			{
@@ -397,24 +404,44 @@ namespace HWP
 		return m_arParas[unIndex];
 	}
 
-	short CCtrlCommon::GetLeftMargin() const
+	short CCtrlCommon::GetLeftOutMargin() const
 	{
 		return m_arOutMargin[0];
 	}
 
-	short CCtrlCommon::GetTopMargin() const
+	short CCtrlCommon::GetTopOutMargin() const
 	{
 		return m_arOutMargin[2];
 	}
 
-	short CCtrlCommon::GetRightMargin() const
+	short CCtrlCommon::GetRightOutMargin() const
 	{
 		return m_arOutMargin[1];
 	}
 
-	short CCtrlCommon::GetBottomMargin() const
+	short CCtrlCommon::GetBottomOutMargin() const
 	{
 		return m_arOutMargin[3];
+	}
+
+	short CCtrlCommon::GetLeftInMargin() const
+	{
+		return m_arInMargin[0];
+	}
+
+	short CCtrlCommon::GetTopInMargin() const
+	{
+		return m_arInMargin[2];
+	}
+
+	short CCtrlCommon::GetRightInMargin() const
+	{
+		return m_arInMargin[1];
+	}
+
+	short CCtrlCommon::GetBottomInMargin() const
+	{
+		return m_arInMargin[3];
 	}
 
 	bool CCtrlCommon::GetTreatAsChar() const

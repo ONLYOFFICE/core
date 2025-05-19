@@ -148,6 +148,9 @@ public:
 	int GetBorderColor() const;
 	int GetBorderThick() const;
 
+	int GetImageRectWidth() const;
+	int GetIMageRectHeight() const;
+
 	static int ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

@@ -1178,7 +1178,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
-	OpenDrawingNode(pCtrlPic, oBuilder);
+	OpenDrawingNode(pCtrlPic, oBuilder, pCtrlPic->GetImageRectWidth(), pCtrlPic->GetIMageRectHeight());
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -1429,7 +1429,7 @@ void CConverter2OOXML::WriteTextBorderStyle(short shBorderFillId, NSStringUtils:
 	WriteBorder(pBorderFill->GetLeftBorder(), L"bdr", oBuilder);
 }
 
-void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth, int nHeight)
 {
 	if (nullptr == pCtrlShape)
 		return;
@@ -1438,10 +1438,10 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 
 	if (pCtrlShape->GetTreatAsChar())
 	{
-		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
-		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
-		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
-		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
+		oBuilder.WriteString(L"<wp:inline distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin() / 10)) +
+		                             L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin() / 10)) +
+		                             L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin() / 10)) +
+		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
 		                     L"\">");
 
 		WriteShapeExtent(pCtrlShape, oBuilder);
@@ -1450,21 +1450,21 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUt
 	{
 		oBuilder.WriteString(L"<wp:anchor behindDoc=\"" + std::wstring((ETextWrap::BEHIND_TEXT == pCtrlShape->GetTextWrap() ? L"1" : L"0")) +
 		                     L"\" relativeHeight=\"" + std::to_wstring(pCtrlShape->GetZOrder()) +
-		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopMargin() / 10)) +
-		                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomMargin() / 10)) +
-		                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftMargin() / 10)) +
-		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightMargin() / 10)) +
+		                     L"\" distT=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetTopOutMargin() / 10)) +
+		                     L"\" distB=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetBottomOutMargin() / 10)) +
+		                     L"\" distL=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetLeftOutMargin() / 10)) +
+		                     L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 		WriteShapePosition(pCtrlShape, oBuilder);
-		WriteShapeExtent(pCtrlShape, oBuilder);
+		WriteShapeExtent(pCtrlShape, oBuilder, nWidth, nHeight);
 		WriteShapeWrapMode(pCtrlShape, oBuilder);
 	}
 
 	WriteShapeProperty(pCtrlShape, oBuilder);
 }
 
-void CConverter2OOXML::CloseDrawingNode(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::CloseDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
 {
 	if (nullptr == pCtrlShape)
 		return;
@@ -1527,12 +1527,44 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
 }
 
-void CConverter2OOXML::WriteShapeExtent(const CCtrlCommon* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder)
+void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth, int nHeight)
 {
 	if (nullptr == pCtrlShape)
 		return;
 
-	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHeight())) + L"\"/>");
+	double dScaleX = 1., dScaleY = 1.;
+
+	const int nOrgWidth{pCtrlShape->GetOrgWidth()}, nOrgHeight{pCtrlShape->GetOrgHeight()};
+	const int nCurWidth{pCtrlShape->GetCurWidth()}, nCurHeight{pCtrlShape->GetCurHeight()};
+
+	if (0 != nCurWidth && 0 != nOrgWidth)
+		dScaleX = (double)nCurWidth / (double)nOrgWidth;
+
+	if (0 != nCurHeight && 0 != nOrgHeight)
+		dScaleY = (double)nCurHeight / (double)nOrgHeight;
+
+	if (0 != pCtrlShape->GetWidth())
+		dScaleX *= (double)pCtrlShape->GetWidth() / (double)nCurWidth;
+
+	if (0 != pCtrlShape->GetHeight())
+		dScaleY *= (double)pCtrlShape->GetHeight() / (double)nCurHeight;
+
+	int nFinalWidth {pCtrlShape->GetWidth() };
+	int nFinalHeight{pCtrlShape->GetHeight()};
+
+	if (0 != nWidth)
+		dScaleX *= (double)nWidth / (double)nFinalWidth;
+
+	if (0 != nHeight)
+		dScaleY *= (double)nHeight / (double)nFinalHeight;
+
+	nFinalWidth = ceil((double)nFinalWidth * dScaleX);
+	nFinalHeight = ceil((double)nFinalHeight * dScaleY);
+
+	nFinalWidth  -= (pCtrlShape->GetLeftInMargin() + pCtrlShape->GetRightInMargin());
+	nFinalHeight -= (pCtrlShape->GetTopInMargin() + pCtrlShape->GetBottomInMargin());
+
+	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalWidth)) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalHeight)) + L"\"/>");
 	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
 }
 

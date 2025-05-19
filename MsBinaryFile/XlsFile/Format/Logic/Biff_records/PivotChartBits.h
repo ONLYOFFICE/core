@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typePivotChartBits;
 
-	unsigned short	rt;
-	bool			fGXHide;
+    unsigned short	rt = 0x0859;
+    bool			fGXHide = false;
 };
 
 } // namespace XLS

@@ -45,5 +45,10 @@ void SBaseRef::readFields(CFRecord& record)
 	record >> ref;
 }
 
+void SBaseRef::writeFields(CFRecord& record)
+{
+    record << ref;
+}
+
 } // namespace XLS
 

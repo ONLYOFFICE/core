@@ -428,6 +428,19 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
     if(m_BACKGROUND != nullptr)
         proc.mandatory(*m_BACKGROUND);
+    for(auto i : m_arFbi)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PROTECTION != nullptr)
+        proc.mandatory(*m_PROTECTION);
+    if(m_Palette != nullptr)
+        proc.mandatory(*m_Palette);
+    if(m_SXViewLink != nullptr)
+        proc.mandatory(*m_SXViewLink);
+    if(m_PivotChartBits != nullptr)
+        proc.mandatory(*m_PivotChartBits);
+    if(m_SBaseRef != nullptr)
+        proc.mandatory(*m_SBaseRef);
     return true;
 }
 

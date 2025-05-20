@@ -1341,9 +1341,20 @@ namespace PdfWriter
 	{
 		if (!m_bOpenTypeCFF)
 		{
-			// Если шрифт не является OpenType CFF, завершаем.
+			// Если шрифт не является OpenType CFF, завершаем
 			return;
 		}
+
+		int nOS2Index = SeekTable("OS/2");
+		if (-1 != nOS2Index && m_pTables[nOS2Index].nLen > 0)
+		{
+			unsigned int unOffset = m_pTables[nOS2Index].nOffset;
+			int nFSType = GetS16BE(unOffset + 8, &m_bSuccess);
+			if (nFSType == 0x2 || nFSType == 0x0200 || nFSType == 0x0202)
+				return;
+		}
+		else
+			return;
 
 		// Получаем данные таблицы CFF
 		int nCFFIndex = SeekTable("CFF ");
@@ -1356,12 +1367,10 @@ namespace PdfWriter
 
 		// Проверяем, что данные CFF корректны
 		if (nCFFLength < 4 || pCFFData[0] != 1 || pCFFData[1] != 0)
-		{
 			return;
-		}
 
 		// ------
-		// Header
+		// CFF Header
 		// ------
 
 		pOutputStream->WriteUChar(pCFFData[0]); // major version - 1
@@ -1371,7 +1380,7 @@ namespace PdfWriter
 		pCFFData += 4;
 
 		// ------
-		// Name Index
+		// Write Name Index
 		// ------
 
 		BYTE nSizeOfOffset = GetMostCompressedOffsetSize(m_sName.size() + 1);
@@ -1385,7 +1394,12 @@ namespace PdfWriter
 		// Массив имён шрифтов
 		pOutputStream->WriteStr(m_sName.c_str());
 
+		// ------
+		// Read Name Index
+		// ------
+
 		int nCount = (pCFFData[0] << 8) | pCFFData[1];
+		int nFontsCount = nCount;
 		pCFFData += 2;
 		BYTE nOffSize = *pCFFData++;
 		pCFFData += nCount * nOffSize;
@@ -1396,13 +1410,12 @@ namespace PdfWriter
 		pCFFData += nOffsetEnd - 1;
 
 		// ------
-		// Top DICT Index
+		// Read Top DICT Index
 		// ------
 
 		nCount = (pCFFData[0] << 8) | pCFFData[1];
 		pCFFData += 2;
 		nOffSize = *pCFFData++;
-		BYTE* pCFFDataEnd = pCFFData;
 
 		int nOffsetBegin1 = 0;
 		for (int i = 0; i < nOffSize; ++i)
@@ -1417,17 +1430,62 @@ namespace PdfWriter
 		for (int i = 0; i < nOffSize; ++i)
 			nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
 		pCFFData += nOffSize;
-		pCFFDataEnd = pCFFData + nOffsetEnd - 1;
+		BYTE* pCFFDataEnd = pCFFData + nOffsetEnd - 1;
 		pCFFData += nOffsetBegin1 - 1;
 
 		std::map<unsigned short, std::vector<cTopDICTOperand>> TopDICT;
 		ReadTopDICT(pCFFData, pCFFData + nOffsetBegin2 - 1, TopDICT);
 		pCFFData = pCFFDataEnd;
 
-		// TODO Получить Strings count из String Index
-		// TODO Получить PrivateDictStart из Private DICT
-		int nStringsCount = 0;
+		// ------
+		// Read String Index
+		// ------
+
+		nCount = (pCFFData[0] << 8) | pCFFData[1];
+		int nStringsCount = nCount; // Strings count
+		pCFFData += 2;
+		nOffSize = *pCFFData++;
+		pCFFData += nCount * nOffSize;
+		nOffsetEnd = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		BYTE* pCFFDataStringIndex = pCFFData;
+		int nCFFDataStringIndex = nOffsetEnd - 1;
+		pCFFData += nOffsetEnd - 1;
+
+		// ------
+		// Skip Global Subrs
+		// ------
+
+		nCount = (pCFFData[0] << 8) | pCFFData[1];
+		pCFFData += 2;
+		nOffSize = *pCFFData++;
+		pCFFData += nCount * nOffSize;
+		nOffsetEnd = 0;
+		for (int i = 0; i < nOffSize; ++i)
+			nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
+		pCFFData += nOffSize;
+		pCFFData += nOffsetEnd - 1;
+
+		// ------
+		// Skip Char Strings
+		// ------
+
+		// ------
+		// Read Private Dicts
+		// ------
+
+		// PrivateDictStart
+		unsigned short scPrivate = 18;
 		int nPrivateDictStart = 0;
+		std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator it = TopDICT.find(scPrivate);
+		if (it != TopDICT.end())
+			nPrivateDictStart = it->second.back().nIntegerValue;
+
+		// ------
+		// Write Top DICT Index
+		// ------
 
 		// Подготовка Top DICT segment
 		CStream* pTopDictSegment = new CMemoryStream();
@@ -1435,11 +1493,10 @@ namespace PdfWriter
 		unsigned short scCharset = 15;
 		unsigned short scEncoding = 16;
 		unsigned short scCharstrings = 17;
-		unsigned short scPrivate = 18;
 		unsigned short scFDArray = 0xC24;
 		unsigned short scFDSelect = 0xC25;
 		unsigned short scEmbeddedPostscript = 0xC15;
-		std::map<unsigned short, std::vector<cTopDICTOperand>>::iterator it = TopDICT.find(scROS);
+		it = TopDICT.find(scROS);
 		bool bIsCID = it != TopDICT.end();
 		if (bIsCID)
 			WriteTopDICT(it->first, it->second, pTopDictSegment);
@@ -1450,8 +1507,8 @@ namespace PdfWriter
 				WriteTopDICT(it->first, it->second, pTopDictSegment);
 		}
 
-		int nOS2Index = SeekTable("OS/2");
 		std::string sOptionalEmbeddedPostscript;
+		int nStdStrings = 391;
 		if (TopDICT.find(scEmbeddedPostscript) == TopDICT.end() && nOS2Index > 0)
 		{
 			TrueTypeTable* pOS2Table = &m_pTables[nOS2Index];
@@ -1460,7 +1517,7 @@ namespace PdfWriter
 			unsigned short usType = (pOS2Data[0] << 8) | pOS2Data[1];
 			pOS2Data += 2;
 			sOptionalEmbeddedPostscript = "/FSType " + std::to_string(usType) + " def";
-			WriteIntegerOperand(nStringsCount + 391, pTopDictSegment); // TODO
+			WriteIntegerOperand(nStringsCount + nStdStrings, pTopDictSegment);
 			WriteDictOperator(scEmbeddedPostscript, pTopDictSegment);
 		}
 
@@ -1472,7 +1529,7 @@ namespace PdfWriter
 		WritePad5Bytes(pTopDictSegment);
 		WriteDictOperator(scCharstrings, pTopDictSegment);
 		int nPrivatePlaceHolderPos = 0;
-		if (nPrivateDictStart != 0) // TODO
+		if (nPrivateDictStart != 0)
 		{
 			nPrivatePlaceHolderPos = pTopDictSegment->Tell();
 			WritePad5Bytes(pTopDictSegment);
@@ -1519,67 +1576,21 @@ namespace PdfWriter
 		nFDSelectPlaceHolderPos    += nTopDictOffset;
 
 		// ------
-		// String Index
+		// Write String Index
 		// ------
 
-		nStringsCount = nCount = (pCFFData[0] << 8) | pCFFData[1];
-		pCFFData += 2;
-		nOffSize = *pCFFData++;
 		if (sOptionalEmbeddedPostscript.empty()) // Копирование
 		{
-			pCFFData += nCount * nOffSize;
-			nOffsetEnd = 0;
-			for (int i = 0; i < nOffSize; ++i)
-				nOffsetEnd = (nOffsetEnd << 8) | pCFFData[i];
-			pCFFData += nOffSize;
-			pOutputStream->Write(pCFFData, nOffsetEnd - 1);
-			pCFFData += nOffsetEnd - 1;
+			pOutputStream->Write(pCFFDataStringIndex, nCFFDataStringIndex);
 		}
 		else
 		{
 			int nStringsCount1 = nStringsCount + 1;
 			pOutputStream->WriteUChar((nStringsCount1 >> 8) & 0xff); // count (MSB)
 			pOutputStream->WriteUChar(nStringsCount1 & 0xff); // count (LSB)
+
+			// TODO
 		}
-
-		// Записываем данные CFF в поток
-		// pOutputStream->Write(pCFFData, nCFFLength);
-
-		/*
-		// 4. String Index (пусто)
-		cffData.push_back(0); // count (MSB)
-		cffData.push_back(0); // count (LSB)
-
-		// 5. Global Subroutines Index (пусто)
-		cffData.push_back(0); // count (MSB)
-		cffData.push_back(0); // count (LSB)
-
-		// 6. CharStrings Index
-		std::vector<BYTE> charStrings;
-		charStrings.push_back(0); // count (MSB)
-		charStrings.push_back(static_cast<unsigned char>(unCodesCount)); // count (LSB)
-		charStrings.push_back(1); // offset size
-
-		// Добавляем CharStrings (описание глифов)
-		size_t charStringOffset = 1 + unCodesCount + 1; // первый оффсет
-		for (unsigned int i = 0; i < unCodesCount; ++i)
-		{
-			charStrings.push_back(static_cast<unsigned char>(charStringOffset));
-			charStringOffset += 3; // заглушка для размера (определите реальный размер данных глифа)
-		}
-		charStrings.push_back(static_cast<unsigned char>(charStringOffset)); // последний оффсет
-
-		// Заглушка: заполняем данные глифов фиктивными операторами "endchar"
-		for (unsigned int i = 0; i < unCodesCount; ++i)
-		{
-			charStrings.push_back(14); // оператор endchar
-		}
-
-		cffData.insert(cffData.end(), charStrings.begin(), charStrings.end());
-
-		// Записываем данные в поток
-		pOutputStream->Write(reinterpret_cast<const BYTE*>(cffData.data()), cffData.size());
-		*/
 	}
 	int          CFontFileTrueType::GetAscent()
 	{
@@ -1676,9 +1687,7 @@ namespace PdfWriter
 			m_pTables[nIndex].nOffset = (int)GetU32BE(nPos + 8, &m_bSuccess);
 			m_pTables[nIndex].nLen = (int)GetU32BE(nPos + 12, &m_bSuccess);
 			if (m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen < m_pTables[nIndex].nOffset || m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen > m_nLen)
-			{
 				m_bSuccess = false;
-			}
 			nPos += 16;
 		}
 		if (!m_bSuccess)

@@ -80,6 +80,11 @@ namespace StarMath
 			ConversionBox(dynamic_cast<OOX::Logic::CBox*>(pNode));
 			break;
 		}
+		case OOX::EElementType::et_m_borderBox:
+		{
+			ConversionBorderBox(dynamic_cast<OOX::Logic::CBorderBox*>(pNode));
+			break;
+		}
 		case OOX::EElementType::et_m_m:
 		{
 			ConversionMatrix(dynamic_cast<OOX::Logic::CMatrix*>(pNode));
@@ -798,6 +803,12 @@ namespace StarMath
 			return;
 		NodeDefinition(pBox->m_oElement.GetPointer());
 	}
+	void COOXml2Odf::ConversionBorderBox(OOX::Logic::CBorderBox *pBorderBox)
+	{
+		if(pBorderBox == nullptr)
+			return;
+		NodeDefinition(pBorderBox->m_oElement.GetPointer());
+	}
 	StValuePr* COOXml2Odf::ConversionRunProperties(OOX::Logic::CRunProperty *pRPr)
 	{
 		StValuePr* stTempPr = new StValuePr;
@@ -1146,8 +1157,17 @@ namespace StarMath
 		{
 			if(pMr->m_arrItems[i]->getType() == OOX::EElementType::et_m_e)
 			{
+				OOX::Logic::CElement* pElement = dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]);
 				m_pXmlWrite->WriteNodeBegin(L"mtd",false);
-				ConversionElement(dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]));
+				if(!pElement->m_arrItems.empty())
+					ConversionElement(pElement);
+				else
+				{
+					m_pXmlWrite->WriteNodeBegin(L"mspace",true);
+					m_pXmlWrite->WriteAttribute(L"width",L"2em");
+					m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+					m_wsAnnotationStarMath += L"~ ";
+				}
 				if(i+1 < pMr->m_arrItems.size())
 					m_wsAnnotationStarMath += L"# ";
 				m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);

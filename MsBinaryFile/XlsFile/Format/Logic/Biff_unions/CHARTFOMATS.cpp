@@ -311,6 +311,9 @@ const bool CHARTFORMATS::saveContent(BinProcessor& proc)
         proc.mandatory(*m_AxesUsed);
     else
         proc.mandatory<AxesUsed>();
+    for(auto i : m_arAXISPARENT)
+        if(i != nullptr)
+            proc.mandatory(*i);
     proc.mandatory<End>();
     return true;
 }

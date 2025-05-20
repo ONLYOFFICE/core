@@ -51,7 +51,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
-    void writeFields(CFRecord& record)
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePlotGrowth;
 

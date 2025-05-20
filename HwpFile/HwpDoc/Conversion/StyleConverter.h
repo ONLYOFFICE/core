@@ -65,6 +65,15 @@ struct TLineSpacing
 	TLineSpacing& operator-=(const TLineSpacing& oLineSpacing);
 };
 
+struct TInd
+{
+	CProperty<int> m_nFirstLine;
+	CProperty<int> m_nLeft;
+	CProperty<int> m_nRight;
+
+	TInd& operator-=(const TInd& oInd);
+};
+
 #define CREATE_METHODS_FOR_PROPERTY(type, name)\
 	void Set##name(type oValue);\
 	bool name##IsSet() const;\
@@ -89,13 +98,16 @@ public:
 	CREATE_METHODS_FOR_PROPERTY(EJs, Js);
 	CREATE_METHODS_FOR_PROPERTY(ETextAlignment, TextAlignment);
 	CREATE_METHODS_FOR_PROPERTY(ELineRule, SpacingLineRule);
+	CREATE_METHODS_FOR_PROPERTY(int, FirstLine);
+	CREATE_METHODS_FOR_PROPERTY(int, LeftInd);
+	CREATE_METHODS_FOR_PROPERTY(int, RightInd);
 	CREATE_METHODS_FOR_PROPERTY(int, Spacing);
 	CREATE_METHODS_FOR_PROPERTY(int, SpacingBefore);
 	CREATE_METHODS_FOR_PROPERTY(int, SpacingAfter);
 private:
 	CProperty<bool> m_bKeepNext;
-	CProperty<int>  m_nInd;
-	CProperty<EJs>  m_eJs;
+	TInd m_oInd;
+	CProperty<EJs> m_eJs;
 	CProperty<ETextAlignment> m_eTextAlignment;
 	TLineSpacing    m_oSpacing;
 };

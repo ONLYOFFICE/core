@@ -168,10 +168,9 @@ CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaSha
 	if (oParaShape.KeepWithNext())
 		oParagraphsStyle.SetKeepNext(true);
 
-	const int nIndent = oParaShape.GetIndent();
-
-	if (0 != nIndent)
-		oParagraphsStyle.SetInd(oParaShape.GetIndent());
+	oParagraphsStyle.SetFirstLine(oParaShape.GetIndent());
+	oParagraphsStyle.SetLeftInd(oParaShape.GetLeftIndent());
+	oParagraphsStyle.SetRightInd(oParaShape.GetRightIndent());
 
 	switch(oParaShape.GetHorizantalAlign())
 	{
@@ -208,12 +207,13 @@ CParagraphsStyle CStyleConverter::GenerateParagraphStyle(const CHWPRecordParaSha
 		}
 		case 0x02:
 		case 0x03:
-		default:
 		{
 			oParagraphsStyle.SetSpacingLineRule(ELineRule::AtLeast);
 			oParagraphsStyle.SetSpacing(static_cast<int>((double)oParaShape.GetLineSpacing() / 10.)); //TODO:: проверить, как найдется пример
 			break;
 		}
+		default:
+			break;
 	}
 
 	if (0 != oParaShape.GetMarginPrev())
@@ -295,8 +295,39 @@ void CStyleConverter::WriteParagraphProperties(const CParagraphsStyle& oParagrap
 	if (oParagraphsStyle.KeepNextIsSet() && oParagraphsStyle.KeepNext())
 		oBuilder.WriteString(L"<w:keepNext w:val=\"true\"/>");
 
-	if (oParagraphsStyle.IndIsSet() && 0 != oParagraphsStyle.GetInd())
-		oBuilder.WriteString(L"<w:ind w:firstLine=\"" + std::to_wstring(static_cast<int>(std::ceil(oParagraphsStyle.GetInd() / 10.))) + L"\"/>");
+	if ((oParagraphsStyle.FirstLineIsSet() && 0 != oParagraphsStyle.GetFirstLine()) ||
+	    (oParagraphsStyle.LeftIndIsSet() && 0 != oParagraphsStyle.GetLeftInd()) ||
+	    (oParagraphsStyle.RightIndIsSet() && 0 != oParagraphsStyle.GetRightInd()))
+	{
+		oBuilder.WriteString(L"<w:ind");
+
+		const int nLeftInd {(oParagraphsStyle.LeftIndIsSet())  ? oParagraphsStyle.GetLeftInd()  : 0};
+
+		if (oParagraphsStyle.FirstLineIsSet() && 0 != oParagraphsStyle.GetFirstLine())
+		{
+			if (oParagraphsStyle.GetFirstLine() > 0)
+			{
+				oBuilder.WriteString(L" w:firstLine=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetFirstLine() / 10.))) + L"\"");
+
+				if (0 != nLeftInd)
+					oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(nLeftInd / 10.))) + L"\"");
+			}
+			else
+			{
+				const int nHanging{static_cast<int>(std::round(-oParagraphsStyle.GetFirstLine() / 10.))};
+
+				oBuilder.WriteString(L" w:hanging=\"" + std::to_wstring(nHanging) + L"\"");
+				oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(nLeftInd / 10.)) + nHanging) + L"\"");
+			}
+		}
+		else if (0 != nLeftInd)
+			oBuilder.WriteString(L" w:left=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetLeftInd() / 10.))) + L"\"");
+
+		if (oParagraphsStyle.RightIndIsSet() && 0 != oParagraphsStyle.GetRightInd())
+			oBuilder.WriteString(L" w:right=\"" + std::to_wstring(static_cast<int>(std::round(oParagraphsStyle.GetRightInd() / 10.))) + L"\"");
+
+		oBuilder.WriteString(L"/>");
+	}
 
 	if (oParagraphsStyle.JsIsSet())
 	{
@@ -527,7 +558,7 @@ CParagraphsStyle& CParagraphsStyle::operator-=(const CParagraphsStyle& oParagrap
 		return *this;
 
 	m_bKeepNext      -= oParagraphStyle.m_bKeepNext;
-	m_nInd           -= oParagraphStyle.m_nInd;
+	m_oInd           -= oParagraphStyle.m_oInd;
 	m_eJs            -= oParagraphStyle.m_eJs;
 	m_eTextAlignment -= oParagraphStyle.m_eTextAlignment;
 	m_oSpacing       -= oParagraphStyle.m_oSpacing;
@@ -538,9 +569,12 @@ CParagraphsStyle& CParagraphsStyle::operator-=(const CParagraphsStyle& oParagrap
 void CParagraphsStyle::Clear()
 {
 	m_bKeepNext.UnSet();
-	m_nInd.UnSet();
 	m_eJs.UnSet();
 	m_eTextAlignment.UnSet();
+
+	m_oInd.m_nFirstLine.UnSet();
+	m_oInd.m_nLeft.UnSet();
+	m_oInd.m_nRight.UnSet();
 
 	m_oSpacing.m_eLineRule.UnSet();
 	m_oSpacing.m_nLine.UnSet();
@@ -550,7 +584,8 @@ void CParagraphsStyle::Clear()
 
 bool CParagraphsStyle::Empty() const
 {
-	return !m_bKeepNext.IsSet() && !m_nInd.IsSet() && !m_eJs.IsSet() && !m_eTextAlignment.IsSet() &&
+	return !m_bKeepNext.IsSet() && !m_oInd.m_nFirstLine.IsSet() && !m_oInd.m_nLeft.IsSet() &&
+	       !m_oInd.m_nRight.IsSet() && !m_eJs.IsSet() && !m_eTextAlignment.IsSet() &&
 	       !m_oSpacing.m_eLineRule.IsSet() && !m_oSpacing.m_nLine.IsSet() &&
 	       !m_oSpacing.m_nAfter.IsSet() && !m_oSpacing.m_nBefore.IsSet();
 }
@@ -584,7 +619,9 @@ bool CParagraphsStyle::Empty() const
 	}
 
 CREATE_BODY_METHODS_FOR_PROPERTY_BOOL(CParagraphsStyle, KeepNext, m_bKeepNext)
-CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, int, Ind, m_nInd)
+CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, int, FirstLine, m_oInd.m_nFirstLine)
+CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, int, LeftInd, m_oInd.m_nLeft)
+CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, int, RightInd, m_oInd.m_nRight)
 CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, EJs, Js, m_eJs)
 CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, ETextAlignment, TextAlignment, m_eTextAlignment)
 CREATE_BODY_METHODS_FOR_PROPERTY(CParagraphsStyle, ELineRule, SpacingLineRule, m_oSpacing.m_eLineRule)
@@ -714,7 +751,7 @@ bool TU::operator!=(const TU& oU) const
 
 EHighlightColors NormalizeHighlightColor(const TColor& oCurrentColor)
 {
-	EHighlightColors eSelectedColor;
+	EHighlightColors eSelectedColor{EHighlightColors::Yellow};
 	double dMinDistance = 999.;
 	double dDistance;
 
@@ -742,4 +779,12 @@ TLineSpacing& TLineSpacing::operator-=(const TLineSpacing& oLineSpacing)
 	return *this;
 }
 
+TInd& TInd::operator-=(const TInd& oInd)
+{
+	m_nFirstLine -= oInd.m_nFirstLine;
+	m_nLeft -= oInd.m_nLeft;
+	m_nRight -= oInd.m_nRight;
+
+	return *this;
+}
 }

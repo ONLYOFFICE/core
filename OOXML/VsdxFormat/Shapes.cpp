@@ -236,7 +236,7 @@ namespace OOX
 							}
 							RELEASEOBJECT(pMetafile);
 						}
-						else if (checker.eFileType == _CXIMAGE_FORMAT_BMP)
+						else if (checker.eFileType != _CXIMAGE_FORMAT_JPG && checker.eFileType != _CXIMAGE_FORMAT_SVG && checker.eFileType != _CXIMAGE_FORMAT_PNG)
 						{
 							std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
 

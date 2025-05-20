@@ -4,7 +4,7 @@
 namespace StarMath
 {
 //class OOXml2Odf
-	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_uiBaseSize(0)
+	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_uiBaseSize(0),m_bStretchyAcc(false)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 	}
@@ -78,11 +78,6 @@ namespace StarMath
 		case OOX::EElementType::et_m_box:
 		{
 			ConversionBox(dynamic_cast<OOX::Logic::CBox*>(pNode));
-			break;
-		}
-		case OOX::EElementType::et_m_borderBox:
-		{
-			ConversionBorderBox(dynamic_cast<OOX::Logic::CBorderBox*>(pNode));
 			break;
 		}
 		case OOX::EElementType::et_m_m:
@@ -732,7 +727,7 @@ namespace StarMath
 	}
 	void COOXml2Odf::ConversionAcc(OOX::Logic::CAcc *pAcc)
 	{
-		std::wstring wsSymbol = pAcc->m_oAccPr->m_oChr.IsInit() ? pAcc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"",wsSign;
+		std::wstring wsSymbol = pAcc->m_oAccPr->m_oChr.IsInit() ? pAcc->m_oAccPr->m_oChr.get().m_val->GetValue() : L"\u005E",wsSign;
 		wsSign = TranslationDiacritSign(wsSymbol);
 		if(wsSign.empty())
 		{
@@ -746,13 +741,23 @@ namespace StarMath
 		}
 		else
 		{
+			std::wstring wsStretchy;
 			m_wsAnnotationStarMath += wsSign + L" ";
+			if(m_bStretchyAcc)
+			{
+				m_wsAnnotationStarMath += L"{ ";
+				wsStretchy = L"true";
+			}
+			else
+				wsStretchy = L"false";
 			m_pXmlWrite->WriteNodeBegin(L"mover",true);
 			m_pXmlWrite->WriteAttribute(L"accent",L"true");
 			m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 			ConversionElement(pAcc->m_oElement.GetPointer());
+			if(wsStretchy == L"true")
+				m_wsAnnotationStarMath += L"} ";
 			m_pXmlWrite->WriteNodeBegin(L"mo",true);
-			m_pXmlWrite->WriteAttribute(L"stretchy",L"false");
+			m_pXmlWrite->WriteAttribute(L"stretchy",wsStretchy);
 			m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 			m_pXmlWrite->WriteString(wsSymbol);
 			m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
@@ -792,12 +797,6 @@ namespace StarMath
 		if(pBox == nullptr)
 			return;
 		NodeDefinition(pBox->m_oElement.GetPointer());
-	}
-	void COOXml2Odf::ConversionBorderBox(OOX::Logic::CBorderBox * pBorderBox)
-	{
-		if(pBorderBox == nullptr)
-			return;
-		NodeDefinition(pBorderBox->m_oElement.GetPointer());
 	}
 	StValuePr* COOXml2Odf::ConversionRunProperties(OOX::Logic::CRunProperty *pRPr)
 	{
@@ -1081,7 +1080,12 @@ namespace StarMath
 	}
 	std::wstring COOXml2Odf::TranslationDiacritSign(const std::wstring &wsSymbol)
 	{
-		if( L"\u0308" == wsSymbol) return L"ddot"; 
+		if( L"\u0308" == wsSymbol) return L"ddot";
+		else if(L"\u005E" == wsSymbol)
+		{
+			m_bStretchyAcc = true;
+			return L"widehat";
+		}
 		else if(L"\u0307" == wsSymbol) return L"dot";
 		else if(L"\u0301" == wsSymbol) return L"acute";
 		else if(L"\u0300" == wsSymbol) return L"grave";
@@ -1091,11 +1095,23 @@ namespace StarMath
 		else if(L"\u20DB" == wsSymbol) return L"dddot";
 		else if(L"\u20D1" == wsSymbol) return L"harpoon";
 		else if(L"\u20D7" == wsSymbol) return L"vec";
-		else if(L"\u0342" == wsSymbol) return L"tilde";
+		else if(L"\u007E" == wsSymbol)
+		{
+			m_bStretchyAcc = true;
+			return L"widetilde";
+		}
 		else if(L"\u0302" == wsSymbol) return L"hat";
 		else if(L"\u030C" == wsSymbol) return L"check";
-		else if(L"\u0305" == wsSymbol) return L"overline";
-		else if(L"\u0332" == wsSymbol) return L"underline";
+		else if(L"\u0305" == wsSymbol)
+		{
+			m_bStretchyAcc = true;
+			return L"overline";
+		}
+		else if(L"\u0332" == wsSymbol)
+		{
+			m_bStretchyAcc = true;
+			return L"underline";
+		}
 		else return L"";
 	}
 	void COOXml2Odf::ConversionMatrix(OOX::Logic::CMatrix* pMatrix)
@@ -1130,17 +1146,8 @@ namespace StarMath
 		{
 			if(pMr->m_arrItems[i]->getType() == OOX::EElementType::et_m_e)
 			{
-				OOX::Logic::CElement* pElement = dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]);
 				m_pXmlWrite->WriteNodeBegin(L"mtd",false);
-				if(!pElement->m_arrItems.empty())
-					ConversionElement(pElement);
-				else
-				{
-					m_pXmlWrite->WriteNodeBegin(L"mspace",true);
-					m_pXmlWrite->WriteAttribute(L"width",L"2em");
-					m_pXmlWrite->WriteNodeEnd(L"w",true,true);
-					m_wsAnnotationStarMath += L"~ ";
-				}
+				ConversionElement(dynamic_cast<OOX::Logic::CElement*>(pMr->m_arrItems[i]));
 				if(i+1 < pMr->m_arrItems.size())
 					m_wsAnnotationStarMath += L"# ";
 				m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
@@ -1264,12 +1271,12 @@ namespace StarMath
 			{
 			case SimpleTypes::ETopBot::tbBot:
 			{
-				wsNode = L"munder";
+				wsNode = L"mover";
 				break;
 			}
 			case SimpleTypes::ETopBot::tbTop:
 			{
-				wsNode = L"mover";
+				wsNode = L"munder";
 				break;
 			}
 			}
@@ -1292,13 +1299,16 @@ namespace StarMath
 		}
 		else
 		{
+			StStyleMenClose stStyle;
 			m_pXmlWrite->WriteNodeBegin(wsNode,false);
-			ConversionElement(pGroup->m_oElement.GetPointer());
+			stStyle = ConversionCtrlPr(pGroup->m_oGroupChrPr.GetPointer()->m_oCtrlPr.GetPointer());
 			m_pXmlWrite->WriteNodeBegin(L"mtext",false);
 			m_pXmlWrite->WriteString(stGroupPr.m_wsChr);
 			m_pXmlWrite->WriteNodeEnd(L"mtext",false,false);
-			m_wsAnnotationStarMath += wsNode == L"mover"? L"csup ":L"csub ";
+			StyleClosing(stStyle,m_pXmlWrite);
 			m_wsAnnotationStarMath += L"\u0026quot;" + stGroupPr.m_wsChr + L"\u0026quot; ";
+			m_wsAnnotationStarMath += wsNode == L"mover"? L"csup ":L"csub ";
+			ConversionElement(pGroup->m_oElement.GetPointer());
 			m_pXmlWrite->WriteNodeEnd(wsNode,false,false);
 		}
 	}
@@ -1889,15 +1899,6 @@ namespace StarMath
 			break;
 		}
 		case StarMath::TypeElement::letter:
-		{
-			pXmlWrite->WriteNodeBegin(L"mi",true);
-			pXmlWrite->WriteAttribute(L"mathvariant",L"italic");
-			pXmlWrite->WriteNodeEnd(L"w",true,false);
-            pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsElement));
-			pXmlWrite->WriteNodeEnd(L"mi",false,false);
-			wsAnnotation += m_wsElement + L" ";
-			break;
-		}
 		case StarMath::TypeElement::letter_u32:
 		{
 			COOXml2Odf::MTextRecording(pXmlWrite,wsAnnotation,m_wsElement);
@@ -2326,7 +2327,14 @@ namespace StarMath
 		StStyleMenClose stStyle;
 		if(GetAttribute() != nullptr)
 			COneElement::ConversionAttribute(GetAttribute(),stStyle,pXmlWrite,wsAnnotation);
-		if(!m_wsAnnotation.empty())
+		if(!m_wsAnnotation.empty() && m_wsAnnotation == L"space")
+		{
+			pXmlWrite->WriteNodeBegin(L"mspace",true);
+			pXmlWrite->WriteAttribute(L"width",L"2em");
+			pXmlWrite->WriteNodeEnd(L"w",true,true);
+			wsAnnotation += L"~ ";
+		}
+		else if(!m_wsAnnotation.empty())
 		{
 			pXmlWrite->WriteNodeBegin(L"mi",true);
 			pXmlWrite->WriteAttribute(L"mathvariant",L"normal");
@@ -2346,6 +2354,7 @@ namespace StarMath
 	std::wstring CSpecialChar::DefinitionSpecialChar(const std::wstring &wsSymbol)
 	{
 		if(L"\u2205" == wsSymbol) return L"emptyset";
+		else if(L"\u0026" == wsSymbol) return L"space";
 		else if(L"\u2135" == wsSymbol) return L"aleph";
 		else if(L"\u2115" == wsSymbol) return L"setN";
 		else if(L"\u2124" == wsSymbol) return L"setZ";

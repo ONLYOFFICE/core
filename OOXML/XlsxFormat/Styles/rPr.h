@@ -148,6 +148,7 @@ namespace OOX
 			void fromBin(XLS::BaseObjectPtr& obj);
 			void fromBin(XLS::BaseObject* obj);
 			XLS::BaseObjectPtr toBin();
+            void toBin(XLS::StreamCacheWriterPtr& writer);
             XLS::BaseObjectPtr toBin14();
 			XLSB::Color toColor();
 			XLSB::Color GetDefaultColor();

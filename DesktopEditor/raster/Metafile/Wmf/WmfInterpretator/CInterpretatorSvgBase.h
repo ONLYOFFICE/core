@@ -161,6 +161,8 @@ namespace MetaFile
 	std::wstring CalculateColor(unsigned int unColor);
 	std::wstring CalculateColor(unsigned int unColor, BYTE uchAlpha);
 	std::wstring CalculateColor(BYTE uchRed, BYTE uchGreen, BYTE uchBlue, BYTE uchAlpha);
+	void NormalizeRect(TRectD& oRect);
+	TRectD TranslateRect(const TRectL &oRect);
 }
 
 #endif // CINTERPRETATORSVGBASE_H

@@ -976,7 +976,6 @@ namespace StarMath
 		}
 		else
 		{
-			pReader->SetMarkForUnar(true);
 			CElement* pTempElement = CParserStarMathString::ParseElement(pReader);
 			pReader->ReadingTheNextToken();
 			while((IsBinOperatorLowPrior() && (pReader->GetGlobalType() == TypeElement::BinOperator || pReader->GetLocalType() == TypeElement::intersection || pReader->GetLocalType() == TypeElement::setminus || pReader->GetLocalType() == TypeElement::setquotient)) || pReader->GetGlobalType() == TypeElement::BracketWithIndex || (pReader->GetGlobalType() == TypeElement::Index && (pReader->GetLocalType() != TypeElement::nroot  && pReader->GetLocalType() != TypeElement::sqrt)))
@@ -1132,11 +1131,16 @@ namespace StarMath
 	void CElementBinOperator::UnaryCheck(CStarMathReader *pReader, CElement *pLastElement)
 	{
 		pReader->ReadingTheNextToken();
-		if(!CParserStarMathString::CheckNewline(pLastElement) && MixedOperators(pReader->GetLocalType()))
-			if(pReader->GetAttribute() != nullptr)
+		if(MixedOperators(pReader->GetLocalType()))
+		{
+			if(CParserStarMathString::CheckNewline(pLastElement))
 				pReader->SetMarkForUnar(true);
-			else pReader->SetMarkForUnar(false);
-		else pReader->SetMarkForUnar(true);
+			else if(pReader->GetAttribute() != nullptr)
+				pReader->SetMarkForUnar(true);
+			else 
+				pReader->SetMarkForUnar(false);
+		}
+		else pReader->SetMarkForUnar(false);
 	}
 	bool CElementBinOperator::IsBinOperatorLowPrior()
 	{
@@ -3236,12 +3240,6 @@ namespace StarMath
 			m_enGlobalType = TypeElement::Operation;
 			return;
 		}
-		m_enUnderType = CElementString::GetWord(m_wsLowerCaseToken);
-		if(m_enUnderType != TypeElement::undefine)
-		{
-			m_enGlobalType = TypeElement::String;
-			return;
-		}
 		if(m_enUnderType == TypeElement::undefine && !m_wsLowerCaseToken.empty())
 		{
 			m_enGlobalType = TypeElement::String;
@@ -3328,10 +3326,8 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart)||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||(L'-' == *m_itStart  && L'+' != m_wsElement.back() && L'<' != m_wsElement.back()) || (L'+' == *m_itStart  && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back()) || (CheckIsalhpaForGetElement(*m_itStart,m_wsElement.back())) || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
-			{
+			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart) ||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart || L'(' == m_wsElement.back() || L')' == m_wsElement.back()  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||( L'+' == m_wsElement.back() && L'-' != *m_itStart ) || (L'-' == *m_itStart && L'+' != m_wsElement.back()) || (L'-' == m_wsElement.back() && L'+' != *m_itStart && L'>' != *m_itStart) || (L'+' == *m_itStart && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back())|| (iswdigit(m_wsElement.back()) && !iswdigit(*m_itStart))  || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
 				return m_wsElement;
-			}
 			else if((( CheckTokenForGetElement(*m_itStart) || L'=' == *m_itStart) && m_wsElement.empty()) || (!m_wsElement.empty() && ((L'#' == m_wsElement.back() && L'#' == *m_itStart)  || (L'-' == *m_itStart  && L'+' == m_wsElement.back()) || ((L'+' == *m_itStart || L'>' == *m_itStart) && L'-' == m_wsElement.back()) || (m_wsElement.back() == L'<' && (L'=' == *m_itStart || L'<' == *m_itStart || L'>' == *m_itStart || L'-' == *m_itStart)) ||(L'?' == m_wsElement.back() && L'>' == *m_itStart) || (m_wsElement.back() == L'>' && (L'>' == *m_itStart || L'=' == *m_itStart ))  ) ) )
 			{
 				m_wsElement.push_back(*m_itStart);

@@ -4,6 +4,12 @@
 #include "../OfficeUtils/src/OfficeUtils.h"
 #include "../DesktopEditor/common/Directory.h"
 
+// For decrypt
+#include "../../Common/3dParty/cryptopp/modes.h"
+#include "../../Common/3dParty/cryptopp/aes.h"
+#include "../../Common/3dParty/cryptopp/filters.h"
+// ----------
+
 #define DEFAULT_BUFFER_SIZE 8096
 
 namespace HWP
@@ -67,7 +73,7 @@ bool CHWPFile::Open()
 	if (!m_oFileHeader.Distributable() && !GetBodyText(m_nVersion))
 		return false;
 
-	if (!m_oFileHeader.Distributable() && !GetViewText(m_nVersion))
+	if (m_oFileHeader.Distributable() && !GetViewText(m_nVersion))
 		return false;
 
 	return true;
@@ -115,35 +121,7 @@ bool CHWPFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	return m_oOleFile.GetComponent(sEntryName, oBuffer);
 }
-
-//TODO:: написанно, что данные методы используются только для отображения в LibbreOffice
-// проверить и если нужны будут, то реализовать
-VECTOR<CDirectoryEntry*> CHWPFile::GetBinData()
-{
-	return VECTOR<CDirectoryEntry*>();
-}
-
-void CHWPFile::SetBinData(const std::vector<CDirectoryEntry*>& arBinData)
-{
-
-}
-
-VECTOR<CHWPPargraph*> CHWPFile::GetParas()
-{
-	return VECTOR<CHWPPargraph*>();
-}
-
-void CHWPFile::AddParas(const std::vector<CHWPPargraph*>& arParas)
-{
-
-}
 //------------
-
-void CHWPFile::SaveChildEntries(const HWP_STRING& sBasePath, const HWP_STRING& sStorageName, ECompressed eCompressed)
-{
-	// TODO:: перенести
-}
-
 CDirectoryEntry* CHWPFile::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
 {
 	for (CDirectoryEntry* pEntry : m_oOleFile.GetChildEntries(&oBaseEntry))
@@ -303,6 +281,24 @@ bool CHWPFile::Unzip(CHWPStream& oInput, CHWPStream& oBuffer)
 	return DEFLATE_OK == nRes || DEFLATE_STREAM_END == nRes;
 }
 
+// Так как на всех ОС необходимо одинаковое поведение,
+// то используем свой рандомайзер
+
+class CRandomizer
+{
+	uint32_t m_unSeed;
+public:
+	CRandomizer(uint32_t unSeed)
+		: m_unSeed(unSeed)
+	{}
+
+	int rand()
+	{
+		m_unSeed = m_unSeed * 214013L + 2531011L;
+		return (m_unSeed >> 16) & 0x7fff;
+	}
+};
+
 bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 {
 	int nHeader;
@@ -320,8 +316,43 @@ bool CHWPFile::Decrypt(CHWPStream& oInput, CHWPStream& oBuffer)
 	if (256 != nSize)
 		return false;
 
-	//TODO:: реализовать
-	return false;
+	CHWPStream oDocData(256);
+	oDocData.Copy(oInput, 256);
+	oInput.Skip(256);
+
+	int nSeed;
+	oDocData.ReadInt(nSeed);
+	oDocData.Skip(-4);
+
+	CRandomizer oRandomizer(nSeed);
+
+	unsigned char chKey;
+
+	for (unsigned int unIndex = 0, unCount = 0; unIndex < 256; ++unIndex)
+	{
+		if (0 == unCount)
+		{
+			chKey   =  oRandomizer.rand() & 0xFF;
+			unCount = (oRandomizer.rand() & 0xF) + 1;
+		}
+		if (unIndex >= 4)
+			*(oDocData.GetCurPtr() + unIndex) = oDocData[unIndex] ^ chKey;
+
+		--unCount;
+	}
+
+	int nHashOffset = (nSeed & 0x0f) + 4;
+
+	oBuffer.Expand(oInput.SizeToEnd());
+
+	using namespace CryptoPP;
+
+	ECB_Mode<AES>::Decryption oDecryptor;
+	oDecryptor.SetKey((byte*)(oDocData.GetCurPtr() + nHashOffset), 16);
+
+	ArraySource((byte*)oInput.GetCurPtr(), oInput.SizeToEnd(), true, new StreamTransformationFilter(oDecryptor, new ArraySink( (byte*)oBuffer.GetCurPtr(), oBuffer.GetSize()), StreamTransformationFilter::NO_PADDING));
+
+	return true;
 }
 
 bool CHWPFile::GetBodyText(int nVersion)

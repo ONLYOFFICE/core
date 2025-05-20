@@ -17,17 +17,7 @@ bool CXMLNode::GetAttributeBool(const std::wstring& wsName)
 
 int CXMLNode::GetAttributeColor(const std::wstring& wsName, const int& _default)
 {
-	std::wstring sColor = XmlUtils::CXmlNode::GetAttribute(wsName);
-
-	if (L"none" != sColor)
-	{
-		if (L'#' == sColor.front())
-			sColor.erase(0, 1);
-
-		return std::stoi(sColor, 0, 16);
-	}
-
-	return _default;
+	return ConvertHexToInt(XmlUtils::CXmlNode::GetAttributeA(wsName), _default);
 }
 
 CXMLNode CXMLNode::GetChild(const std::wstring& wsName)
@@ -94,5 +84,37 @@ int ConvertWidthToHWP(const std::wstring& wsValue)
 		return 15;
 
 	return 0;
+}
+
+int ConvertHexToInt(const std::string& wsValue, const int& _default)
+{
+	if (wsValue.empty() || "none" == wsValue)
+		return _default;
+
+	std::string::const_iterator itStart = wsValue.cbegin();
+
+	if ('#' == *itStart)
+		++itStart;
+
+	if (wsValue.cend() - itStart < 6)
+		return _default;
+
+	itStart = wsValue.cend() - 6;
+
+	int nResult = 0;
+
+	while (itStart != wsValue.cend())
+	{
+		if ('0' <= *itStart && *itStart <= '9')
+			nResult = (nResult << 4) | (*itStart++ - '0');
+		else if ('A' <= *itStart && *itStart <= 'F')
+			nResult = (nResult << 4) | (*itStart++ - 'A' + 10);
+		else if ('a' <= *itStart && *itStart <= 'f')
+			nResult = (nResult << 4) | (*itStart++ - 'a' + 10);
+		else
+			return _default;
+	}
+
+	return nResult;
 }
 }

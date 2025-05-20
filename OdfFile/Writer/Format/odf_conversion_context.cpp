@@ -383,7 +383,7 @@ void odf_conversion_context::end_drawing_context()
 	drawing_context_.pop_back();
 }
 
-bool odf_conversion_context::start_math()
+bool odf_conversion_context::start_math(int base_font_size, const std::wstring& base_font_color)
 {
 	if (false == math_context_.isEmpty()) return false;
 
@@ -401,6 +401,8 @@ bool odf_conversion_context::start_math()
 	math_context_.set_styles_context(odf_conversion_context::styles_context());
 	math_context_.start_math(get_current_object_element());
 
+	math_context_.font_size = base_font_size;
+	math_context_.font_color = base_font_color;
 	return true;
 }
 void odf_conversion_context::end_math()
@@ -409,7 +411,7 @@ void odf_conversion_context::end_math()
 	
 	end_object();
 
-	calculate_font_metrix(math_context_.font, math_context_.size, false, false, true); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
+	calculate_font_metrix(math_context_.font_name, math_context_.font_size, false, false, true); // смотреть по формуле - перевычислять только если есть изменения это шрифт и кегль	
 
 	double h = math_context_.lvl_max - math_context_.lvl_min;
 	if (math_context_.lvl_min < 0) h += 1;
@@ -418,7 +420,7 @@ void odf_conversion_context::end_math()
 	_CP_OPT(double)height = convert_symbol_width(1.76 * h, true);
 
 	if (false == math_context_.in_text_box_)
-		drawing_context()->set_size(width, height); // раскомиттить по завершению
+		drawing_context()->set_size(width, height); 
 	
 	drawing_context()->end_object(!math_context_.in_text_box_);
 

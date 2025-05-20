@@ -35,6 +35,7 @@ std::wstring CFootnoteConverter::CreateNote(const CCtrlNote* pNote, CConverter2O
 	pXMLBuilder->WriteString(L"<w:" + wsPrefix + L"note w:id=\"" + wsIndex + L"\">");
 
 	TConversionState oState;
+	oState.m_bIsNote = true;
 
 	for (const CHWPPargraph* pParagraph : pNote->GetParagraphs())
 		oConverter.WriteParagraph(pParagraph, *pXMLBuilder, oState);

@@ -34,6 +34,7 @@
 
 #include <string>
 #include <cfloat>
+#include <cmath>
 #include "../../../common/StringExt.h"
 
 #ifndef BYTE
@@ -558,6 +559,8 @@ namespace MetaFile
 		unsigned char GetGreen() const;
 		unsigned char GetBlue()  const;
 		unsigned char GetAlpha() const;
+
+		TRGBA& operator=(const TRGBA& oRGBA);
 	};
 
 	struct TXForm

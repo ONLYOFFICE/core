@@ -1,7 +1,7 @@
 #include "CtrlCommon.h"
 #include "../Common/Common.h"
 
-#include "CellParagraph.h"
+#include "CapParagraph.h"
 
 namespace HWP
 {
@@ -337,8 +337,8 @@ namespace HWP
 
 				for (CXMLNode& oSubList : oChild.GetChilds(L"hp:subList"))
 				{
-					for (CXMLNode& oParagraph : oSubList.GetChilds(L"p"))
-						m_arParas.push_back(new CCellParagraph(oParagraph, nVersion));
+					for (CXMLNode& oParagraph : oSubList.GetChilds(L"hp:p"))
+						m_arCaption.push_back(new CCapParagraph(oParagraph, nVersion));
 				}
 			}
 		}
@@ -495,6 +495,16 @@ namespace HWP
 	int CCtrlCommon::GetZOrder() const
 	{
 		return m_nZOrder;
+	}
+
+	bool CCtrlCommon::HaveCaption() const
+	{
+		return !m_arCaption.empty();
+	}
+
+	std::vector<const CCapParagraph*> CCtrlCommon::GetCaptionParas() const
+	{
+		RETURN_VECTOR_CONST_PTR(CCapParagraph, m_arCaption);
 	}
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

@@ -62,12 +62,7 @@ EColorFillPattern GetColorFillPattern(int nPattern)
 void TBorder::ReadFromNode(CXMLNode& oNode)
 {
 	m_eStyle = GetLineStyle2(oNode.GetAttribute(L"type"));
-
-	HWP_STRING sColor = std::regex_replace(oNode.GetAttribute(L"color"), std::wregex(L"^#([0-9A-Fa-f]+)$"), L"$1");
-
-	if (L"none" != sColor)
-		m_nColor = std::stoi(sColor, 0, 16);
-
+	m_nColor = oNode.GetAttributeColor(L"color");
 	m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oNode.GetAttribute(L"width"));
 }
 
@@ -199,7 +194,7 @@ void CFill::ReadGradation(CXMLNode& oNode)
 	m_arColors.resize(arChilds.size());
 
 	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
-		m_arColors[unIndex] = std::stoi(std::regex_replace(arChilds[unIndex].GetText(), std::wregex(L"\\D"), L""), 0, 16);
+		m_arColors[unIndex] = ConvertHexToInt(arChilds[unIndex].GetTextA());
 }
 
 void CFill::ReadImgBrush(CXMLNode& oNode)

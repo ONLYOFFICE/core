@@ -1151,6 +1151,11 @@ void docx_conversion_context::start_office_text()
 void docx_conversion_context::end_office_text()
 {
 	finish_paragraph();
+
+	if (!delayed_converting_)//иначе возможно зацикливание
+	{
+		docx_convert_delayed();
+	}
 }
 
 namespace 
@@ -2192,7 +2197,7 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				{
 					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
 					
-					if (list_style_stack_.empty() && list_styles.outline_style())
+					if (list_style_stack_.empty() && list_styles.outline_style() && !get_table_context().in_table())
 					{
 						output_stream() << L"<w:numPr>";
 							output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
@@ -2291,8 +2296,8 @@ void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
 
-	if(delayed_converting_)return; //зацикливание иначе
-	if(get_drawing_context().get_current_level() > 0 )
+	if (delayed_converting_) return; //зацикливание иначе
+	if (get_drawing_context().get_current_level() > 0 )
 		return; //вложенный frame
 
 	delayed_converting_ = true;

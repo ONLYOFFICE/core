@@ -9,6 +9,15 @@ namespace NSDocxRenderer
 {
 	UINT CShape::m_gRelativeHeight = c_iStandartRelativeHeight;
 
+	unsigned int ClampUIntSign(const double& value)
+	{
+		if (value < 0)
+			return 0;
+		if (value > 0x7FFFFFFF)
+			return 0x7FFFFFFF;
+		return (unsigned int)value;
+	}
+
 	CShape::CShape()
 	{
 		m_nRelativeHeight = m_gRelativeHeight;
@@ -881,10 +890,10 @@ namespace NSDocxRenderer
 				{
 					double to_percentage = 100.0 * 1000.0 / m_oPen.Size;
 					oWriter.WriteString(L"<a:ds d=\"");
-					oWriter.AddUInt(dash_pattern[i] * to_percentage);
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[i] * to_percentage));
 					oWriter.WriteString(L"\" ");
 					oWriter.WriteString(L"sp=\"");
-					oWriter.AddUInt(dash_pattern[i + 1] * to_percentage);
+					oWriter.AddUInt(ClampUIntSign(dash_pattern[i + 1] * to_percentage));
 					oWriter.WriteString(L"\" />");
 				}
 				oWriter.WriteString(L"</a:custDash>");

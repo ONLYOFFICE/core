@@ -43,12 +43,6 @@ EState GetState(int nValue)
 CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CHWPRecord(nTagNum, nLevel, nSize)
 {
-	if (EHanType::HWP == oDocInfo.GetHanType())
-	{
-		if (oDocInfo.GetParentHWP()->GetBinData().empty())
-			oDocInfo.GetParentHWP()->SetBinData(oDocInfo.GetParentHWP()->GetOleFile()->GetChildEntries(L"BinData"));
-	}
-
 	oBuffer.SavePosition();
 
 	short shTypeBits;

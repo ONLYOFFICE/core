@@ -693,6 +693,10 @@ odf_text_context* ods_conversion_context::text_context()
 		return NULL;
 	}
 }
+bool ods_conversion_context::is_child_text_context()
+{
+	return  (false == text_context_.empty());
+}
 void ods_conversion_context::add_text(const std::wstring &text)
 {
 	office_element_ptr paragr_elm;

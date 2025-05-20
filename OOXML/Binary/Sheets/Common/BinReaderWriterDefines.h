@@ -238,7 +238,8 @@ namespace BinXlsxRW
 		ExternalLinksAutoRefresh = 26,
 		TimelineCaches = 27,
 		TimelineCache = 28,
-		Metadata = 29
+		Metadata = 29,
+		XmlMap = 30
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -365,7 +366,19 @@ namespace BinXlsxRW
 	};}
 	namespace c_oSerWorkbookViewTypes{enum c_oSerWorkbookViewTypes
 	{
-		ActiveTab = 0
+		ActiveTab = 0,
+		AutoFilterDateGrouping = 1,
+		FirstSheet = 2,
+		Minimized = 3,
+		ShowHorizontalScroll = 4,
+		ShowSheetTabs = 5,
+		ShowVerticalScroll = 6,
+		TabRatio = 7,
+		Visibility = 8,
+		WindowHeight = 9,
+		WindowWidth = 10,
+		XWindow = 11,
+		YWindow = 12
 	};}
 	namespace c_oSerDefinedNameTypes{enum c_oSerDefinedNameTypes
 	{
@@ -444,7 +457,7 @@ namespace BinXlsxRW
 		TimelinesList = 48,
 		Timelines = 49,
 		Timeline = 50,
-
+		TableSingleCells = 51
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -1101,7 +1114,12 @@ namespace BinXlsxRW
 		QueryTableFieldId = 11,
 		TotalsRowCellStyle = 12,
 		TotalsRowDxfId = 13,
-		UniqueName = 14
+		UniqueName = 14,
+		XmlColumnPr = 15,
+		MapId = 16,
+		Xpath = 17,
+		Denormalized = 18,
+		XmlDataType = 19
 	};}
 	namespace c_oSer_SortState{enum c_oSer_SortState
 	{

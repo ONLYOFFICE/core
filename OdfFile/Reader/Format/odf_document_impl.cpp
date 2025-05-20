@@ -637,7 +637,7 @@ void odf_document::Impl::parse_settings(office_element *element)
 						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
 						{
 							settings_config_item* info = dynamic_cast<settings_config_item*>(info_elm->get());
-							if (info)
+							if (info && !info->content_.empty())
 							{
 								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
 							}

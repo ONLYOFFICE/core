@@ -11,29 +11,22 @@ int CHWPRecordParaRangeTag::Parse(CHWPPargraph& oPara, int nTagNum, int nLevel, 
 {
 	oBuffer.SavePosition();
 
-	TRangeTag *pRangeTag = nullptr;
-
 	while (nSize - oBuffer.GetDistanceToLastPos() >= 12)
 	{
-		pRangeTag = new TRangeTag();
+		TRangeTag oRangeTag;
 
-		if (nullptr == pRangeTag)
-		{
-			oBuffer.Skip(12);
-			continue;
-		}
+		oBuffer.ReadInt(oRangeTag.m_nStartPos);
+		oBuffer.ReadInt(oRangeTag.m_nEndPos);
 
-		oBuffer.ReadInt(pRangeTag->m_nStartPos);
-		oBuffer.ReadInt(pRangeTag->m_nEndPos);
-		oBuffer.ReadInt(pRangeTag->m_nTag);
+		for (unsigned short ushIndex = 0; ushIndex < 3; ++ushIndex)
+			oBuffer.ReadByte(oRangeTag.m_arData[ushIndex]);
 
-		oPara.AddRangeTag(pRangeTag);
+		oBuffer.ReadByte(oRangeTag.m_chType);
+
+		oPara.AddRangeTag(oRangeTag);
 	}
-
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	return nSize;
 }
-
-
 }

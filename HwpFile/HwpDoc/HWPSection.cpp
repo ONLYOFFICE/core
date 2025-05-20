@@ -529,8 +529,6 @@ int CHWPSection::ParseCtrlRecurse(CCtrl* pCurrCtrl, int nRunLevel, CHWPStream& o
 						ParseRecurse(pNewPara, nLevel, oBuffer, 0, nVersion);
 					}
 					else if (ECtrlObjectType::Shape == pCtrl->GetCtrlType())
-					// else if (nullptr != dynamic_cast<CCtrlShapeRect*>(pCtrl) ||
-					//          nullptr != dynamic_cast<CCtrlGeneralShape*>(pCtrl))
 					{
 						CCtrlCommon* pCtrlCommon = (CCtrlCommon*)pCtrl;
 						oBuffer.Skip(-6);
@@ -573,7 +571,6 @@ int CHWPSection::ParseCtrlRecurse(CCtrl* pCurrCtrl, int nRunLevel, CHWPStream& o
 				case HWPTAG_SHAPE_COMPONENT_TEXTART:
 				case HWPTAG_SHAPE_COMPONENT_UNKNOWN:
 				{
-					// if (nullptr != dynamic_cast<CCtrlGeneralShape*>(pCtrl))
 					if (ECtrlObjectType::Shape == pCtrl->GetCtrlType())
 						ParseCtrlRecurse((CCtrlGeneralShape*)pCtrl, nLevel, oBuffer, 0, nVersion);
 					else
@@ -856,6 +853,8 @@ int CHWPSection::ParseCtrlRecurse(CCtrl* pCurrCtrl, int nRunLevel, CHWPStream& o
 		}
 	}
 
+	oBuffer.RemoveLastSavedPos();
+
 	return 0;
 }
 
@@ -895,6 +894,7 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer* pContainer, int nRunLevel
 	while (oBuffer.CanRead())
 	{
 		oBuffer.ReadInt(nHeader);
+		oBuffer.Skip(-4);
 		nTagNum = nHeader & 0x3FF; // 10 bits (0 - 9 bit)
 		nLevel = (nHeader & 0xFFC00) >> 10; // 10 bits (10-19 bit)
 		nSize = (nHeader & 0xFFF00000) >> 20; // 12 bits (20-31 bit)
@@ -979,7 +979,6 @@ int CHWPSection::ParseContainerRecurse(CCtrlContainer* pContainer, int nRunLevel
 				{
 					CCtrlGeneralShape* pCtrl = pContainer->GetLastShape();
 					int nSubParaCount = CHWPRecordListHeader::GetCount(nTagNum, nLevel, nSize, oBuffer, 0, nVersion);
-					oBuffer.Skip(6);
 
 					if (EShapeType::Rect == pCtrl->GetShapeType() || EShapeType::Polygon == pCtrl->GetShapeType())
 					{

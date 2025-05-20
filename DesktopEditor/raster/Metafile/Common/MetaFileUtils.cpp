@@ -147,6 +147,10 @@ namespace MetaFile
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
 
+#ifdef METAFILE_DISABLE_FILESYSTEM
+			return false;
+#endif
+
 			std::wstring wsTempFileName = GetTempFilename();
 			if (wsTempFileName.empty())
 				return false;
@@ -233,7 +237,9 @@ namespace MetaFile
 					}
 					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
 					{
-						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						// int nByte = *pBuffer;
+						++pBuffer;
+						--lBufLen;
 					}
 				}
 			}
@@ -267,7 +273,9 @@ namespace MetaFile
 					}
 					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
 					{
-						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						// int nByte = *pBuffer;
+						++pBuffer;
+						--lBufLen;
 					}
 				}
 			}
@@ -486,7 +494,12 @@ namespace MetaFile
 			}
 
 			if (lBufLen < (nWidth + nAdd) * abs(nHeight))
+			{
+				if (pUncompressedBuffer)
+					delete[] pUncompressedBuffer;
+
 				return false;
+			}
 
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
@@ -639,7 +652,7 @@ namespace MetaFile
 			*pulWidth    = ulWidth;
 			*pulHeight   = ulHeight;
 
-			return false;
+			return true;
 		}
 		else if (BI_BITCOUNT_5 == ushBitCount)
 		{
@@ -984,29 +997,6 @@ namespace MetaFile
 				}
 			}
 		}
-	}
-
-	std::wstring ascii_to_unicode(const char *src)
-	{
-		size_t nSize = mbstowcs(0, src, 0);
-		wchar_t* pBuffer = new wchar_t[nSize];
-		nSize = mbstowcs(pBuffer, src, nSize);
-		std::wstring sRes;
-		if (nSize != (size_t)-1)
-			sRes = std::wstring(pBuffer, nSize);
-		delete[] pBuffer;
-		return sRes;
-	}
-	std::string unicode_to_ascii(const wchar_t *src)
-	{
-		size_t nSize = wcstombs(0, src, 0);
-		char* pBuffer = new char[nSize];
-		nSize = wcstombs(pBuffer, src, nSize);
-		std::string sRes;
-		if (nSize != (size_t)-1)
-			sRes = std::string(pBuffer, nSize);
-		delete[] pBuffer;
-		return sRes;
 	}
 
 	std::wstring GetTempFilename(const std::wstring& sFolder)

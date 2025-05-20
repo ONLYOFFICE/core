@@ -87,15 +87,13 @@ namespace STR
 };
 
 namespace XMLSTUFF
-{;
-
+{
 const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix);
 const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix = L"");
 unsigned short sheetsnames2ixti(std::wstring name);
 unsigned int definenames2index(std::wstring name);
 bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex);
 bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn);
-unsigned int getColumnsCount(_UINT32 listIndex);
 unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti);
 unsigned int AddDefinedName(const std::wstring& name);
 }

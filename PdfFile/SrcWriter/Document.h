@@ -92,6 +92,7 @@ namespace PdfWriter
 	class CFieldBase;
 	class CStreamData;
 	class CXObject;
+	class CObjectBase;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -105,6 +106,7 @@ namespace PdfWriter
 		bool              CreateNew();
 		void              Close();
 		bool              SaveToFile(const std::wstring& wsPath);
+		bool              SaveToMemory(BYTE** pData, int* pLength);
 		bool              SaveNewWithPassword(CXref* pXref, CXref* _pXref, const std::wstring& wsPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword, CDictObject* pTrailer);
 			              
         void              SetPasswords(const std::wstring & wsOwnerPassword, const std::wstring & wsUserPassword);
@@ -119,15 +121,17 @@ namespace PdfWriter
 
 		void              SetPDFAConformanceMode(bool isPDFA);
 		bool              IsPDFA() const;
-			              
+
 		CPage*            AddPage();
 		CPage*            GetPage    (const unsigned int& unPage);
 		CPage*            GetEditPage(const unsigned int& unPage);
+		int               FindPage   (CPage* pPage);
 		unsigned int      GetPagesCount() const;
 		void              AddPageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		void              AddPageLabel(unsigned int unPageIndex, EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 		COutline*         CreateOutline(COutline* pParent, const char* sTitle);
-		CDestination*     CreateDestination(CPage* pPage, bool bInline = false);
+		COutline*         GetOutlines() { return m_pOutlines; }
+		CDestination*     CreateDestination(CObjectBase* pPage, bool bInline = false);
 		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
 					      
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
@@ -135,24 +139,9 @@ namespace PdfWriter
 		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 
+		CAnnotation*      CreateAnnot(BYTE nType);
 		CAnnotation*      CreateLinkAnnot(const TRect& oRect, CDestination* pDest);
 		CAnnotation*      CreateUriLinkAnnot(const TRect& oRect, const char* sUrl);
-		CAnnotation*      CreateTextAnnot();
-		CAnnotation*      CreateInkAnnot();
-		CAnnotation*      CreateLineAnnot();
-		CAnnotation*      CreateTextMarkupAnnot();
-		CAnnotation*      CreateSquareCircleAnnot();
-		CAnnotation*      CreatePolygonLineAnnot();
-		CAnnotation*      CreatePopupAnnot();
-		CAnnotation*      CreateFreeTextAnnot();
-		CAnnotation*      CreateCaretAnnot();
-		CAnnotation*      CreateStampAnnot();
-		CAnnotation*      CreateWidgetAnnot();
-		CAnnotation*      CreatePushButtonWidget();
-		CAnnotation*      CreateCheckBoxWidget();
-		CAnnotation*      CreateTextWidget();
-		CAnnotation*      CreateChoiceWidget();
-		CAnnotation*      CreateSignatureWidget();
 		void              AddAnnotation(const int& nID, CAnnotation* pAnnot);
 		CAction*          CreateAction(BYTE nType);
 					      
@@ -188,29 +177,39 @@ namespace PdfWriter
 		void              SetCurImage(CImageDict* pImage) { m_pCurImage = pImage; }
 					  
 		bool              CreatePageTree(CXref* pXref, CPageTree* pPageTree);
-		bool              EditPdf(const std::wstring& wsPath, int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
+		bool              EditPdf(int nPosLastXRef, int nSizeXRef, CXref* pXref, CCatalog* pCatalog, CEncryptDict* pEncrypt, int nFormField);
 		bool              EditResources(CXref* pXref, CResourcesDict* pResources);
 		std::pair<int, int> GetPageRef(int nPageIndex);
 		bool              EditPage(CXref* pXref, CPage* pPage, int nPageIndex);
-		CPage*            AddPage(int nPageIndex);
+		void              FixEditPage(CPage* pPage, int nPageIndex = 0);
+		void              AddEditPage(CPage* pPage, int nPageIndex);
+		CPage*            AddPage(int nPageIndex, CPage* _pNewPage = NULL);
 		bool              DeletePage(int nPageIndex);
-		bool              AddToFile(CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
+		bool              AddToFile(const std::wstring& wsPath, CXref* pXref, CDictObject* pTrailer, CXref* pInfoXref, CInfoDict* pInfo);
+		void              AddObject(CObjectBase* pObj);
+		bool              MovePage(int nPageIndex, int nPos);
 		void              Sign(const TRect& oRect, CImageDict* pImage, ICertificate* pCert);
-		std::wstring      GetEditPdfPath() { return m_wsFilePath; }
 		bool              EditAnnot (CXref* pXref, CAnnotation* pAnnot,  int nID);
+		void              AddParent(int nID, CDictObject* pParent);
+		CDictObject*      CreateParent(int nID);
 		bool              EditParent(CXref* pXref, CDictObject* pParent, int nID);
 		bool              DeleteAnnot(int nObjNum, int nObjGen);
 		CAnnotation*      GetAnnot(int nID);
 		CDictObject*      GetParent(int nID);
 		CPage*            GetCurPage() { return m_pCurPage; }
 		void              SetCurPage(CPage* pPage) { m_pCurPage = pPage; }
-		CPage*            CreateFakePage();
-		bool              EditCO(const std::vector<int>& arrCO);
+		bool              EditCO(const std::vector< std::pair<int, int> >& arrCO);
+		std::string       SetParentKids(int nParentID);
 		const std::map<int, CAnnotation*>& GetAnnots() { return m_mAnnotations; }
+		const std::map<int, CDictObject*>& GetParents() { return m_mParents; }
+		CPageTree*        GetPageTree() { return m_pPageTree; }
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
 		bool              EditXref(CXref* pXref);
+		void              SetAcroForm(CDictObject* pObj);
+		CDictObject*      GetAcroForm() { return m_pAcroForm; }
+		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
 	private:		  
 					  
 		char*             GetTTFontTag();
@@ -304,7 +303,6 @@ namespace PdfWriter
 		FT_Library                         m_pFreeTypeLibrary;
 		bool                               m_bPDFAConformance;
 		std::wstring                       m_wsDocumentID;
-		std::wstring                       m_wsFilePath;
 		CDictObject*                       m_pAcroForm;
 		CResourcesDict*                    m_pFieldsResources;
 		std::vector<CRadioGroupField*>     m_vRadioGroups;

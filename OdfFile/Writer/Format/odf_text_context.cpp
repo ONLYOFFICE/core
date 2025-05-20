@@ -428,7 +428,13 @@ void odf_text_context::start_span(bool styled)
 
 	current_level_.push_back(state);
 }
+bool odf_text_context::in_span()
+{
+	if (false == current_level_.empty() && dynamic_cast<text_span*>(current_level_.back().elm.get()))
+		return true;
 
+	return false;
+}
 void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;
@@ -773,7 +779,7 @@ bool odf_text_context::set_type_break(int type, int clear)//todooo clear ???
 		end_element();
 		
 		need_break_		= fo_break(fo_break::Page);
-		need_restart	= true;
+		need_restart	= clear != 0; // brclearAll = 0,
 	}
 	else //brtypeTextWrapping
 	{

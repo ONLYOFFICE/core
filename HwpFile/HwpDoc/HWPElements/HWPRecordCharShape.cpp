@@ -48,46 +48,63 @@ ELang GetLang(int nValue)
 
 EUnderline GetUnderline(int nValue)
 {
-	switch(static_cast<EUnderline>(nValue))
+	SWITCH(EUnderline, nValue)
 	{
-		case EUnderline::NONE:
-		case EUnderline::BOTTOM:
-		case EUnderline::CENTER:
-		case EUnderline::TOP:
-			return static_cast<EUnderline>(nValue);
-		default:
-			return EUnderline::NONE;
+		DEFAULT(EUnderline::NONE);
+		CASE(EUnderline::BOTTOM);
+		CASE(EUnderline::CENTER);
+		CASE(EUnderline::TOP);
 	}
+}
+
+EUnderline GetUnderline(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(BOTTOM, sValue, EUnderline);
+	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EUnderline);
+	ELSE_IF_STRING_IN_ENUM(TOP, sValue, EUnderline);
+	ELSE_STRING_IN_ENUM(NONE, EUnderline);
 }
 
 EOutline GetOutline(int nValue)
 {
-	switch(static_cast<EOutline>(nValue))
+	SWITCH(EOutline, nValue)
 	{
-		case EOutline::NONE:
-		case EOutline::SOLID:
-		case EOutline::DOTTED:
-		case EOutline::BOLD:
-		case EOutline::DASHED:
-		case EOutline::DASH_DOT:
-		case EOutline::DASH_2DOT:
-			return static_cast<EOutline>(nValue);
-		default:
-			return EOutline::NONE;
+		DEFAULT(EOutline::NONE);
+		CASE(EOutline::SOLID);
+		CASE(EOutline::DOTTED);
+		CASE(EOutline::BOLD);
+		CASE(EOutline::DASHED);
+		CASE(EOutline::DASH_DOT);
+		CASE(EOutline::DASH_2DOT);
 	}
+}
+
+EOutline GetOutline(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(SOLID, sValue, EOutline);
+	ELSE_IF_STRING_IN_ENUM(DOTTED, sValue, EOutline);
+	ELSE_IF_STRING_IN_ENUM(BOLD, sValue, EOutline);
+	ELSE_IF_STRING_IN_ENUM(DASHED, sValue, EOutline);
+	ELSE_IF_STRING_IN_ENUM(DASH_DOT, sValue, EOutline);
+	ELSE_IF_STRING_IN_ENUM(DASH_2DOT, sValue, EOutline);
+	ELSE_STRING_IN_ENUM(NONE, EOutline);
 }
 
 EShadow GetShadow(int nValue)
 {
-	switch(static_cast<EShadow>(nValue))
+	SWITCH(EShadow, nValue)
 	{
-		case EShadow::NONE:
-		case EShadow::DISCRETE:
-		case EShadow::CONTINUOUS:
-			return static_cast<EShadow>(nValue);
-		default:
-			return EShadow::NONE;
+		DEFAULT(EShadow::NONE);
+		CASE(EShadow::DISCRETE);
+		CASE(EShadow::CONTINUOUS);
 	}
+}
+
+EShadow GetShadow(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(DISCRETE, sValue, EShadow);
+	ELSE_IF_STRING_IN_ENUM(CONTINUOUS, sValue, EShadow);
+	ELSE_STRING_IN_ENUM(NONE, EShadow);
 }
 
 void CHWPRecordCharShape::ReadContainerData(CXMLNode& oNode, short arValues[], int nDefaultValue)
@@ -231,7 +248,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 			ReadContainerData(oChild, m_arCharOffset);
 		else if (L"hh:underline" == oChild.GetName())
 		{
-			m_eUnderline = GetUnderline(oChild.GetAttributeInt(L"type"));
+			m_eUnderline = GetUnderline(oChild.GetAttribute(L"type"));
 			m_eUnderLineShape = GetLineStyle1(oChild.GetAttribute(L"shape"));
 			m_nUnderlineColor = oChild.GetAttributeColor(L"color");
 		}
@@ -245,7 +262,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode,
 		}
 		else if (L"hh:outline" == oChild.GetName())
 		{
-			m_eOutline = GetOutline(oChild.GetAttributeInt(L"type"));
+			m_eOutline = GetOutline(oChild.GetAttribute(L"type"));
 		}
 		else if (L"hh:shadow" == oChild.GetName())
 		{
@@ -354,5 +371,10 @@ short CHWPRecordCharShape::GetSpacing(ELang eLang) const
 int CHWPRecordCharShape::GetTextColor() const
 {
 	return m_nTextColor;
+}
+
+short CHWPRecordCharShape::GetBorderFillID() const
+{
+	return m_shBorderFillIDRef;
 }
 }

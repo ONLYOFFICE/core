@@ -38,6 +38,11 @@ EShapeType CCtrlShapePolygon::GetShapeType() const
 	return EShapeType::Polygon;
 }
 
+std::vector<TPoint> CCtrlShapePolygon::GetPoints() const
+{
+	return m_arPoints;
+}
+
 int CCtrlShapePolygon::ParseElement(CCtrlShapePolygon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

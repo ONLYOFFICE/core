@@ -2592,6 +2592,8 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		
 		if (bPicture && false == pPPTShape->m_oSignatureLine.IsInit())
 		{
+			bStroked = false;
+
 			pPicture = new PPTX::Logic::Pic();
 			elem->InitElem(pPicture);
 
@@ -5931,7 +5933,59 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const std::wstr
 					oXmlWriter.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">\
 		<a:graphicData uri=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\">");
 				}
-				oElem.toXmlWriter(&oXmlWriter); 
+
+				if (m_pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX)
+				{
+					PPTX::Logic::Xfrm *pXfrm = NULL;
+					if (oElem.getType() == OOX::et_pic)
+					{
+						PPTX::Logic::Pic& s = oElem.as<PPTX::Logic::Pic>();
+						if (s.spPr.xfrm.IsInit() == false)
+						{
+							s.spPr.xfrm.Init(); pXfrm = s.spPr.xfrm.GetPointer();
+						}
+					}
+					else if (oElem.getType() == OOX::et_graphicFrame)
+					{
+						PPTX::Logic::GraphicFrame& s = oElem.as<PPTX::Logic::GraphicFrame>();
+						if (s.xfrm.IsInit() == false)
+						{
+							s.xfrm.Init(); pXfrm = s.xfrm.GetPointer();
+						}
+					}
+					else if (oElem.getType() == OOX::et_p_ShapeTree)
+					{
+						PPTX::Logic::SpTree& s = oElem.as<PPTX::Logic::SpTree>();
+						if (s.grpSpPr.xfrm.IsInit() == false)
+						{
+							s.grpSpPr.xfrm.Init(); pXfrm = s.grpSpPr.xfrm.GetPointer();
+						}
+					}
+					else if (oElem.getType() == OOX::et_a_Shape)
+					{
+						PPTX::Logic::Shape& s = oElem.as<PPTX::Logic::Shape>();
+						if (s.spPr.xfrm.IsInit() == false)
+						{
+							s.spPr.xfrm.Init(); pXfrm = s.spPr.xfrm.GetPointer();
+						}
+					}
+					else if (oElem.getType() == OOX::et_cxnSp)
+					{
+						PPTX::Logic::CxnSp& s = oElem.as<PPTX::Logic::CxnSp>();
+						if (s.spPr.xfrm.IsInit() == false)
+						{
+							s.spPr.xfrm.Init(); pXfrm = s.spPr.xfrm.GetPointer();
+						}
+					}
+					if (pXfrm)
+					{
+						pXfrm->extX = 0;
+						pXfrm->extY = 0;
+						pXfrm->offX = 0;
+						pXfrm->offY = 0;
+					}
+				}
+				oElem.toXmlWriter(&oXmlWriter);
 				
 				if (bAddGraphicData)
 					oXmlWriter.WriteString(L"</a:graphicData></a:graphic>");

@@ -192,6 +192,7 @@
     <ClInclude Include="..\..\src\lib\pptx.h" />
     <ClInclude Include="..\..\src\lib\rtf.h" />
     <ClInclude Include="..\..\src\lib\txt.h" />
+    <ClInclude Include="..\..\src\lib\vsdx.h" />
     <ClInclude Include="..\..\src\lib\xls.h" />
     <ClInclude Include="..\..\src\lib\xlsx.h" />
   </ItemGroup>

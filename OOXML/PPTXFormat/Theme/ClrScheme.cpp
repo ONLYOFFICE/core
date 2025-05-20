@@ -40,36 +40,91 @@ namespace PPTX
 		{
 			name = node.GetAttribute(_T("name"));
 
-			Logic::UniColor lColor;
 			Scheme.clear();
 
-			XmlUtils::CXmlNode node1;
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				for (size_t i = 0; i < oNodes.size(); ++i)
+				{
+					Logic::UniColor lColor;
 
-			node1 = node.ReadNode(_T("a:dk1"));
-			lColor.GetColorFrom( node1);        Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("dk1"), lColor));
-			node1 = node.ReadNode(_T("a:lt1"));
-			lColor.GetColorFrom( node1 );       Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("lt1"), lColor));
-			node1 = node.ReadNode(_T("a:dk2"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("dk2"), lColor));
-			node1 = node.ReadNode(_T("a:lt2"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("lt2"), lColor));
-			node1 = node.ReadNode(_T("a:accent1"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent1"), lColor));
-			node1 = node.ReadNode(_T("a:accent2"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent2"), lColor));
-			node1 = node.ReadNode(_T("a:accent3"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent3"), lColor));
-			node1 = node.ReadNode(_T("a:accent4"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent4"), lColor));
-			node1 = node.ReadNode(_T("a:accent5"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent5"), lColor));
-			node1 = node.ReadNode(_T("a:accent6"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("accent6"), lColor));
-			node1 = node.ReadNode(_T("a:hlink"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("hlink"), lColor));
-			node1 = node.ReadNode(_T("a:folHlink"));
-			lColor.GetColorFrom(node1);         Scheme.insert(std::pair<std::wstring,Logic::UniColor>(_T("folHlink"), lColor));
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					if (L"dk1" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"dk1", lColor));
+					}
+					else if (L"lt1" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"lt1", lColor));
+					}
+					else if (L"dk2" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"dk2", lColor));
+					}
+					else if (L"lt2" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"lt2", lColor));
+					}
+					else if (L"accent1" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent1", lColor));
+					}
+					else if (L"accent2" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent2", lColor));
+					}
+					else if (L"accent3" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent3", lColor));
+					}
+					else if (L"accent4" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent4", lColor));
+					}
+					else if (L"accent5" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent5", lColor));
+					}
+					else if (L"accent6" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"accent6", lColor));
+					}
+					else if (L"hlink" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"hlink", lColor));
+					}
+					else if (L"folHlink" == strName)
+					{
+						lColor.GetColorFrom(oNode); Scheme.insert(std::pair<std::wstring, Logic::UniColor>(L"folHlink", lColor));
+					}
+					else if (L"extLst" == strName)
+					{
+						std::vector<XmlUtils::CXmlNode> nodesExtLst;
+						if (oNode.GetNodes(L"*", nodesExtLst))
+						{
+							for (auto nodeExt : nodesExtLst)
+							{
+								std::wstring uri;
+								XmlMacroReadAttributeBase(nodeExt, L"uri", uri);
+
+								uri = XmlUtils::GetUpper(uri);
+
+								if (uri == L"{093E89EA-6996-430E-BFF9-83A9FAAAAB73}")
+								{
+									bkgnd = nodeExt.ReadNodeNoNS(L"bkgnd");
+								}
+								else if (uri == L"{DDD2D869-C2EF-471E-B8FA-914AFA308C9F}")
+								{
+									variationClrSchemeLst = nodeExt.ReadNodeNoNS(L"variationClrSchemeLst");
+								}
+							}
+						}
+					}
+				}
+			}
 			FillWithDefaults();
 			FillParentPointersForChilds();
 		}
@@ -79,9 +134,26 @@ namespace PPTX
 
 			for (std::map<std::wstring, Logic::UniColor>::const_iterator pPair = Scheme.begin(); pPair != Scheme.end(); ++pPair)
 			{
-				oValue.Write2(_T("a:") + pPair->first, pPair->second.toXML());
+				oValue.Write2(L"a:" + pPair->first, pPair->second.toXML());
 			}
+			if (variationClrSchemeLst.IsInit() || bkgnd.IsInit())
+			{
+				oValue.m_strValue += L"<a:extLst>";
 
+				if (bkgnd.IsInit())
+				{
+					oValue.m_strValue += L"<a:ext uri=\"{093E89EA-6996-430E-BFF9-83A9FAAAAB73}\">";
+					oValue.Write(*bkgnd);
+					oValue.m_strValue += L"</a:ext>";
+				}
+				if (variationClrSchemeLst.IsInit())
+				{
+					oValue.m_strValue += L"<a:ext uri=\"{DDD2D869-C2EF-471E-B8FA-914AFA308C9F}\">";
+					oValue.Write(*variationClrSchemeLst);
+					oValue.m_strValue += L"</a:ext>";
+				}
+				oValue.m_strValue += L"</a:extLst>";
+			}
 			XmlUtils::CAttribute oAttr;
 			oAttr.Write(_T("name"), name);
 
@@ -110,20 +182,31 @@ namespace PPTX
 					pWriter->EndNode(_T("a:") + arr[i]);
 				}
 			}
-
-			/*
-			POSITION pos = Scheme.GetStartPosition();
-			while (NULL != pos)
+			if (bkgnd.IsInit() || variationClrSchemeLst.IsInit())
 			{
-				const std::map<std::wstring, Logic::UniColor>::iterator pPair = Scheme.GetNext(pos);
-				pWriter->StartNode(_T("a:") + pPair->m_key);
+				pWriter->StartNode(L"a:extLst");
 				pWriter->EndAttributes();
-				pPair->second.toXmlWriter(pWriter);
-				pWriter->EndNode(_T("a:") + pPair->m_key);
-			}
-			*/
 
-			pWriter->EndNode(_T("a:clrScheme"));
+				if (bkgnd.IsInit())
+				{
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{2703A3B3-D2E1-43D9-8057-6E9D74E0F44A}");
+					pWriter->EndAttributes();
+					bkgnd->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
+				if (variationClrSchemeLst.IsInit())
+				{
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{DDD2D869-C2EF-471E-B8FA-914AFA308C9F}");
+					pWriter->EndAttributes();
+					variationClrSchemeLst->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
+				pWriter->EndNode(L"a:extLst");
+			}
+
+			pWriter->EndNode(L"a:clrScheme");
 		}
 		DWORD ClrScheme::GetRGBAFromScheme(const std::wstring& str)const
 		{
@@ -172,6 +255,8 @@ namespace PPTX
 			{
 				pWriter->WriteRecord1(SchemeClr_GetBYTECode(pPair->first), pPair->second);
 			}
+			pWriter->WriteRecord2(20, bkgnd);
+			pWriter->WriteRecord2(21, variationClrSchemeLst);
 		}
 		void ClrScheme::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -192,8 +277,17 @@ namespace PPTX
 			while (pReader->GetPos() < _e)
 			{
 				BYTE _rec = pReader->GetUChar();
-
-				if (pReader->GetPos() + 4 < _e)
+				if (_rec == 20)
+				{
+					bkgnd.Init();
+					bkgnd->fromPPTY(pReader);
+				}
+				else if (_rec == 21)
+				{
+					variationClrSchemeLst.Init();
+					variationClrSchemeLst->fromPPTY(pReader);
+				}
+				else if (pReader->GetPos() + 4 < _e)
 				{
 					Logic::UniColor color;
 					color.fromPPTY(pReader);
@@ -218,6 +312,8 @@ namespace PPTX
 			{
 				Scheme.insert(std::pair<std::wstring,Logic::UniColor>(pPair->first, pPair->second));
 			}
+			bkgnd = oSrc.bkgnd;
+			variationClrSchemeLst = oSrc.variationClrSchemeLst;
 
 			return *this;
 		}
@@ -306,6 +402,8 @@ namespace PPTX
 			{
 				pPair->second.SetParentPointer(this);
 			}
+			if (bkgnd.IsInit()) bkgnd->SetParentPointer(this);
+			if (variationClrSchemeLst.IsInit()) variationClrSchemeLst->SetParentPointer(this);
 		}
 	} // namespace nsTheme
 } // namespace PPTX

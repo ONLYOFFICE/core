@@ -210,16 +210,19 @@ odf_notes_context* odt_conversion_context::notes_context()
 
 odf_text_context* odt_conversion_context::text_context()	
 {
-	if (text_context_.size() > 0)
-	{
-		return text_context_.back().get();
-	}
-	else
+	if (text_context_.empty())
 	{
 		return main_text_context_;
 	}
+	else
+	{
+		return text_context_.back().get();
+	}
 } 
-
+bool odt_conversion_context::is_child_text_context()
+{
+	return  (false == text_context_.empty());
+}
 void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
@@ -260,12 +263,12 @@ void odt_conversion_context::start_drawing_context()
 	drawing_context()->set_footer_state(is_footer_);
 	drawing_context()->set_header_state(is_header_);
 }
-bool odt_conversion_context::start_math()
+bool odt_conversion_context::start_math(int base_font_size, const std::wstring& base_font_color)
 {
 	if (false == math_context()->isEmpty()) return false;
 
 	start_drawing_context();
-	return odf_conversion_context::start_math();
+	return odf_conversion_context::start_math(base_font_size, base_font_color);
 }
 void odt_conversion_context::end_math()
 {

@@ -68,17 +68,17 @@ namespace PPTX
 		void TextSpacing::ReadAttributes(XmlUtils::CXmlLiteReader& oReader, nullable_int & val)
 		{
 			WritingElement_ReadAttributes_Start	( oReader )
-				WritingElement_ReadAttributes_ReadSingle ( oReader, _T("val"), val)
+				WritingElement_ReadAttributes_ReadSingle ( oReader, L"val", val)
 			WritingElement_ReadAttributes_End	( oReader )
 		}
 		void TextSpacing::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_name = node.GetName();
 
-			XmlUtils::CXmlNode node1 = node.ReadNode(_T("a:spcPct"));
+			XmlUtils::CXmlNode node1 = node.ReadNode(L"a:spcPct");
 			XmlMacroReadAttributeBase(node1, L"val", spcPct);
 
-			XmlUtils::CXmlNode node2 = node.ReadNode(_T("a:spcPts"));
+			XmlUtils::CXmlNode node2 = node.ReadNode(L"a:spcPts");
 			XmlMacroReadAttributeBase(node2, L"val", spcPts);
 
 			Normalize();

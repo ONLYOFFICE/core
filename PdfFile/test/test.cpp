@@ -90,13 +90,13 @@ public:
 		RELEASEOBJECT(oWorker);
 	}
 
-	void LoadFromFile()
+	void LoadFromFile(const std::wstring& _wsSrcFile = L"")
 	{
-		bool bResult = pdfFile->LoadFromFile(wsSrcFile);
+		bool bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile);
 		if (!bResult)
 		{
 			std::wstring wsPassword = L"123456";
-			bResult = pdfFile->LoadFromFile(wsSrcFile, L"", wsPassword, wsPassword);
+			bResult = pdfFile->LoadFromFile(_wsSrcFile.empty() ? wsSrcFile : _wsSrcFile, L"", wsPassword, wsPassword);
 		}
 
 		ASSERT_TRUE(bResult);
@@ -350,6 +350,70 @@ TEST_F(CPdfFileTest, VerifySign)
 	RELEASEOBJECT(pCertificate);
 }
 
+TEST_F(CPdfFileTest, SplitPdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	int nBufferLen = NULL;
+	BYTE* pBuffer = NULL;
+	NSFile::CFileBinary oFile;
+	if (oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"))
+	{
+		DWORD dwFileSize = oFile.GetFileSize();
+		BYTE* pFileContent = new BYTE[dwFileSize];
+		if (!pFileContent)
+		{
+			oFile.CloseFile();
+			FAIL();
+		}
+
+		DWORD dwReaded;
+		EXPECT_TRUE(oFile.ReadFile(pFileContent, dwFileSize, dwReaded));
+
+		nBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
+		pBuffer = new BYTE[nBufferLen];
+		if (!pBuffer)
+		{
+			RELEASEARRAYOBJECTS(pFileContent);
+			FAIL();
+		}
+
+		EXPECT_TRUE(NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &nBufferLen));
+	}
+	oFile.CloseFile();
+
+	std::vector<int> arrPages = { 1 };
+	BYTE* pFile = pdfFile->SplitPages(arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
+	ASSERT_TRUE(pFile != NULL);
+
+	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
+	if (oFile.CreateFileW(wsSplitFile))
+	{
+		int nLength = pFile[0] | pFile[1] << 8 | pFile[2] << 16 | pFile[3] << 24;
+		oFile.WriteFile(pFile + 4, nLength - 4);
+	}
+	oFile.CloseFile();
+
+	RELEASEARRAYOBJECTS(pFile);
+	RELEASEARRAYOBJECTS(pBuffer);
+}
+
+TEST_F(CPdfFileTest, MergePdf)
+{
+	GTEST_SKIP();
+
+	LoadFromFile();
+
+	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
+
+	std::wstring wsSplitFile = NSFile::GetProcessDirectory() + L"/test_split.pdf";
+	pdfFile->MergePages(wsSplitFile, 0, L"");
+
+	pdfFile->Close();
+}
+
 TEST_F(CPdfFileTest, EditPdf)
 {
 	GTEST_SKIP();
@@ -424,7 +488,7 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 
 	// чтение бинарника
 	NSFile::CFileBinary oFile;
-	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes0.json"));
+	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/changes.bin"));
 
 	DWORD dwFileSize = oFile.GetFileSize();
 	BYTE* pFileContent = new BYTE[dwFileSize];
@@ -440,7 +504,7 @@ TEST_F(CPdfFileTest, EditPdfFromBin)
 
 	CConvertFromBinParams* pParams = new CConvertFromBinParams();
 	pParams->m_sMediaDirectory = NSFile::GetProcessDirectory();
-	pdfFile->AddToPdfFromBinary(pFileContent, dwReaded, pParams);
+	pdfFile->AddToPdfFromBinary(pFileContent + 4, dwReaded - 4, pParams);
 
 	RELEASEOBJECT(pParams);
 	RELEASEARRAYOBJECTS(pFileContent);

@@ -589,7 +589,7 @@ namespace SimpleTypes
 				this->m_eValue = underlineDouble;
 			else if(L"doubleAccounting" == sValue)
 				this->m_eValue = underlineDoubleAccounting;
-			else if(L"none" == sValue)
+            else if(L"none" == sValue || L"0" == sValue)
 				this->m_eValue = underlineNone;
 			else if(L"single" == sValue)
 				this->m_eValue = underlineSingle;
@@ -3412,6 +3412,26 @@ namespace SimpleTypes
 			case typeNotView: return L"notView"; break;
 			case typeView: return L"view"; break;
 			case typeEdit: return L"edit"; break;
+			}
+			return L"edit";
+		}
+		EXmlDataType CXmlDataType::FromString(const std::wstring& sValue)
+		{
+			if (L"date" == sValue)
+				this->m_eValue = typeDate;
+			else if (L"float" == sValue)
+				this->m_eValue = typeFloat;
+			else
+				this->m_eValue = typeString;
+			return this->m_eValue;
+		}
+		std::wstring CXmlDataType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeString: return L"string"; break;
+			case typeDate: return L"date"; break;
+			case typeFloat: return L"float"; break;
 			}
 			return L"edit";
 		}

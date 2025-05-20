@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -113,7 +113,7 @@ namespace PPTX
 			cNvCxnSpPr.toXmlWriter(pWriter);
 
 			if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_GRAPHICS &&
-				pWriter->m_lDocType != XMLWRITER_DOC_TYPE_CHART_DRAWING)
+                pWriter->m_lDocType != XMLWRITER_DOC_TYPE_CHART_DRAWING && pWriter->m_lDocType != XMLWRITER_DOC_TYPE_XLSX)
 			{
 				nvPr.toXmlWriter2(namespace_, pWriter);
 			}

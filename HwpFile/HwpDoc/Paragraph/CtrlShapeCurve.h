@@ -9,8 +9,8 @@ namespace HWP
 class CCtrlShapeCurve : public CCtrlGeneralShape
 {
 	int m_nPoints;
-	std::vector<TPoint> m_arPoints;
-	std::vector<HWP_BYTE> m_arSegmentType;
+	VECTOR<TPoint> m_arPoints;
+	VECTOR<HWP_BYTE> m_arSegmentType;
 public:
 	CCtrlShapeCurve();
 	CCtrlShapeCurve(const HWP_STRING& sCtrlID);
@@ -19,6 +19,9 @@ public:
 	CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	EShapeType GetShapeType() const override;
+
+	VECTOR<TPoint> GetPoints() const;
+	VECTOR<HWP_BYTE> GetSegmentsType() const;
 
 	static int ParseElement(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeCurve& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

@@ -157,7 +157,8 @@ namespace OOX
                     run.ich = ptr->str.value().size();
 					ptr->str = ptr->str.value() + crunPtr->toBin(ind);
 					run.ifnt = ind;
-					ptr->rgsStrRun.push_back(run);
+                    if(run.ich != 0 || run.ifnt != 0)
+                        ptr->rgsStrRun.push_back(run);
 					continue;
 				}
 				auto phonPtr = static_cast<CPhonetic*>(m_arrItems[i]);

@@ -28,6 +28,7 @@ public:
 	~CHWPStream();
 
 	void Clear();
+	void Copy(CHWPStream& oStream, unsigned long ulSize);
 
 	void SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer = true);
 

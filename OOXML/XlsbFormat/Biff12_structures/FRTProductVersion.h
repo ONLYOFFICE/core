@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -52,8 +52,8 @@ namespace XLSB
         void load(XLS::CFRecord& record) override;
 		void save(XLS::CFRecord& record) override;
 
-        _UINT16     version;
-        _UINT16     product;
+        _UINT16     version = 0;
+        _UINT16     product = 0;
     };
 
 typedef boost::shared_ptr<FRTProductVersion> FRTProductVersionPtr;

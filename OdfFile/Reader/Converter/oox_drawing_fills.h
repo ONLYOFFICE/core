@@ -69,12 +69,12 @@ namespace oox {
 
 		double			cropRect[4];//0-left, 1 -top, 2- right, 3 - bottom
 		
-		_CP_OPT(int)	dpi;
-		_CP_OPT(bool)	rotate;
+		_CP_OPT(int) dpi;
+		_CP_OPT(bool) rotate;
 
-		bool			bGrayscale;
 		_CP_OPT(double)	luminance;
 		_CP_OPT(double)	contrast;
+		_CP_OPT(int) color_mode;
 	};
 /////////////////////////////////////////////////////////
 	class oox_hatch_fill;
@@ -135,6 +135,7 @@ namespace oox {
 		{
 			type = -1;
 			opacity = boost::none;
+			image_opacity = boost::none;
 
 			gradient.reset();
 			hatch.reset();

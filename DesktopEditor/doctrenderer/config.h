@@ -191,7 +191,7 @@ namespace NSDoctRenderer
 			m_strSdkPath = oNode.ReadNodeText(L"sdkjs");
 			if (!m_strSdkPath.empty())
 			{
-				if (!NSDirectory::Exists(m_strSdkPath))
+				if (0 == m_strSdkPath.find(L"./") || !NSDirectory::Exists(m_strSdkPath))
 					m_strSdkPath = sConfigDir + m_strSdkPath;
 			}
 

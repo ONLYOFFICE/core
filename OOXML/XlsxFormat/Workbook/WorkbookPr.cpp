@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -428,13 +428,13 @@ namespace OOX
 			if (!oReader.IsEmptyNode())
 				oReader.ReadTillEnd();
 		}
-		XLS::BaseObjectPtr CFileSharing::toBin()
+        std::vector<XLS::BaseObjectPtr> CFileSharing::toBin()
 		{
-			XLS::BaseObjectPtr objectPtr;
+            std::vector<XLS::BaseObjectPtr> objectVector;
 			if(m_oSpinCount.IsInit() || m_oAlgorithmName.IsInit() || m_oHashValue.IsInit())
 			{
 				auto ptr(new XLSB::FileSharingIso);
-				objectPtr = XLS::BaseObjectPtr{ptr};
+                XLS::BaseObjectPtr objectPtr = XLS::BaseObjectPtr{ptr};
 
 				if (m_oReadOnlyRecommended.IsInit())
 					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
@@ -472,12 +472,18 @@ namespace OOX
                         bytes1, len1);
                 }
 				ptr->ipdPasswordData.rgbSalt.cbLength = len1;
+                auto ptr1(new XLSB::FileSharing);
+                ptr1->wResPass = L"";
+                ptr1->fReadOnlyRec = ptr->fReadOnlyRec;
+                ptr1->stUserName =  ptr->stUserName;
+                objectVector.push_back(objectPtr);
+                objectVector.push_back(XLS::BaseObjectPtr{ptr1});
 
 			}
 			else
 			{
 				auto ptr(new XLSB::FileSharing);
-				objectPtr = XLS::BaseObjectPtr{ptr};
+                XLS::BaseObjectPtr objectPtr = XLS::BaseObjectPtr{ptr};
 				if (m_oReadOnlyRecommended.IsInit())
 					ptr->fReadOnlyRec = m_oReadOnlyRecommended.get();
                 else
@@ -490,8 +496,9 @@ namespace OOX
                     ptr->wResPass = m_oPassword.get();
                 else
                     ptr->wResPass = L"";
+                objectVector.push_back(objectPtr);
 			}
-			return objectPtr;
+            return objectVector;
 		}
 		void CFileSharing::fromBin(XLS::BaseObjectPtr& obj)
 		{

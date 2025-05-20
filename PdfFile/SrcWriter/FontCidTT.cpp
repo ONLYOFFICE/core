@@ -365,9 +365,12 @@ namespace PdfWriter
 		}
 
 		memset((void *)pGlyphs, 0x00, m_nGlyphsCount * sizeof(unsigned char));
-		for (auto oIt : m_mGlyphs)
+		if (m_nGlyphsCount >= m_mGlyphs.size())
 		{
-			pGlyphs[oIt.first] = 1;
+			for (auto oIt : m_mGlyphs)
+			{
+				pGlyphs[oIt.first] = 1;
+			}
 		}
 
 		*ppCodeToGid  = pCodeToGID;
@@ -512,6 +515,7 @@ namespace PdfWriter
 					for (unsigned int i = 0; i < unCount; i++)
 						vUnicodes.push_back(pUnicodes[i]);
 					m_vUnicodes[ushCurCode] = vUnicodes;
+					m_mGlyphs[unGID] = true;
 				}
 				return ushCurCode;
 			}
@@ -558,7 +562,7 @@ namespace PdfWriter
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
-				EncodeGID(nSubGID, NULL, 0); // TODO необходимо верно указать Unicode для случая записи подсимволов
+				EncodeGID(nSubGID, NULL, 0);
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}
@@ -566,6 +570,8 @@ namespace PdfWriter
 		{
 			m_vWidths.push_back(0);
 			m_vGlypWidths.push_back(0);
+			m_vCodeToGid.back() = 0;
+			return 0;
 		}
 
 		return ushCode;

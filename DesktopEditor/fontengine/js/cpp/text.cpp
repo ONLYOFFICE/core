@@ -1,5 +1,5 @@
 /*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -592,6 +592,13 @@ WASM_EXPORT unsigned char* ASC_HB_ShapeText(FT_Face pFace, hb_font_t* pFont, cha
 			g_userfeatures[nTag].end = HB_FEATURE_GLOBAL_END;
 		}
 		g_userfeatures_init = true;
+	}
+
+	// Turn on ligatures on arabic script
+	if (nScript == HB_SCRIPT_ARABIC ||
+		nScript == HB_SCRIPT_SYRIAC)
+	{
+		nFeatures |= 1;
 	}
 
 	// font

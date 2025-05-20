@@ -287,6 +287,34 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+const bool CHARTFORMATS::saveContent(BinProcessor& proc)
+{
+    if(m_ChartRect == nullptr)
+        return false;
+    proc.mandatory(*m_ChartRect);
+    proc.mandatory<Begin>();
+    if(m_Scl != nullptr)
+        proc.mandatory(*m_Scl);
+    else
+        proc.mandatory<Scl>();
+    if(m_PlotGrowth != nullptr)
+        proc.mandatory(*m_PlotGrowth);
+    else
+        proc.mandatory<PlotGrowth>();
+
+    if(m_ShtProps != nullptr)
+        proc.mandatory(*m_ShtProps);
+    else
+        proc.mandatory<ShtProps>();
+    if(m_AxesUsed != nullptr)
+        proc.mandatory(*m_AxesUsed);
+    else
+        proc.mandatory<AxesUsed>();
+    proc.mandatory<End>();
+    return true;
+}
+
 BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id, unsigned short ex)
 {
 	for (size_t i = 0 ; i < m_arATTACHEDLABEL.size(); i++)

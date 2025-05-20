@@ -442,6 +442,8 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
     if(m_SBaseRef != nullptr)
         proc.mandatory(*m_SBaseRef);
     proc.mandatory<Units>();
+    if(m_CHARTFORMATS != nullptr)
+        proc.mandatory(*m_CHARTFORMATS);
     if(m_SERIESDATA != nullptr)
         proc.mandatory(*m_SERIESDATA);
     for(auto i : m_arWINDOW)

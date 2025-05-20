@@ -51,12 +51,13 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
+    virtual void save(XLS::CFRecord& record);
 	virtual void load(IBinaryReader* reader);
 
-	short			Integral;
-	unsigned short	Fractional;
+    short			Integral = 0;
+    unsigned short	Fractional = 0;
 
-	double			dVal;
+    double			dVal = 0;
 };
 
 } // namespace OSHARED

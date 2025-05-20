@@ -1178,7 +1178,9 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 
 	oBuilder.WriteString(L"<w:r><w:rPr><w:noProof/></w:rPr>");
 
-	OpenDrawingNode(pCtrlPic, oBuilder, pCtrlPic->GetImageRectWidth(), pCtrlPic->GetIMageRectHeight());
+	int nWidth{pCtrlPic->GetImageRectWidth()}, nHeight{pCtrlPic->GetIMageRectHeight()};
+
+	OpenDrawingNode(pCtrlPic, oBuilder, &nWidth, &nHeight);
 
 	oBuilder.WriteString(L"<a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">");
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
@@ -1186,7 +1188,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Shape " + std::to_wstring(m_ushShapeCount) + L"\"/>");
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>");
-	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetFinalWidth())) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlPic->GetFinalHeight())) + L"\"/></a:xfrm>");
+	oBuilder.WriteString(L"<pic:spPr bwMode=\"auto\"><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"" + std::to_wstring(nWidth) + L"\" cy=\"" + std::to_wstring(nHeight) + L"\"/></a:xfrm>");
 	oBuilder.WriteString(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom><a:noFill/>");
 	WriteBorderSettings(pCtrlPic, oBuilder);
 	oBuilder.WriteString(L"</pic:spPr></pic:pic></a:graphicData></a:graphic>");
@@ -1429,7 +1431,7 @@ void CConverter2OOXML::WriteTextBorderStyle(short shBorderFillId, NSStringUtils:
 	WriteBorder(pBorderFill->GetLeftBorder(), L"bdr", oBuilder);
 }
 
-void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth, int nHeight)
+void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int* pWidth, int* pHeight)
 {
 	if (nullptr == pCtrlShape)
 		return;
@@ -1457,7 +1459,7 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 		                     L"\" simplePos=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\">");
 
 		WriteShapePosition(pCtrlShape, oBuilder);
-		WriteShapeExtent(pCtrlShape, oBuilder, nWidth, nHeight);
+		WriteShapeExtent(pCtrlShape, oBuilder, pWidth, pHeight);
 		WriteShapeWrapMode(pCtrlShape, oBuilder);
 	}
 
@@ -1527,7 +1529,7 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
 }
 
-void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int nWidth, int nHeight)
+void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStringUtils::CStringBuilder& oBuilder, int* pWidth, int* pHeight)
 {
 	if (nullptr == pCtrlShape)
 		return;
@@ -1552,17 +1554,23 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	int nFinalWidth {pCtrlShape->GetWidth() };
 	int nFinalHeight{pCtrlShape->GetHeight()};
 
-	if (0 != nWidth)
-		dScaleX *= (double)nWidth / (double)nFinalWidth;
+	if (nullptr != pWidth && 0 != *pWidth)
+		dScaleX *= (double)*pWidth / (double)nFinalWidth;
 
-	if (0 != nHeight)
-		dScaleY *= (double)nHeight / (double)nFinalHeight;
+	if (nullptr != pHeight && 0 != *pHeight)
+		dScaleY *= (double)*pHeight / (double)nFinalHeight;
 
 	nFinalWidth = ceil((double)nFinalWidth * dScaleX);
 	nFinalHeight = ceil((double)nFinalHeight * dScaleY);
 
 	nFinalWidth  -= (pCtrlShape->GetLeftInMargin() + pCtrlShape->GetRightInMargin());
 	nFinalHeight -= (pCtrlShape->GetTopInMargin() + pCtrlShape->GetBottomInMargin());
+
+	if (nullptr != pWidth)
+		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);
+
+	if (nullptr != pHeight)
+		*pHeight = Transform::HWPUINT2OOXML(nFinalHeight);
 
 	oBuilder.WriteString(L"<wp:extent cx=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalWidth)) + L"\" cy=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nFinalHeight)) + L"\"/>");
 	oBuilder.WriteString(L"<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>");
@@ -1887,10 +1895,13 @@ void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int
 
 void CConverter2OOXML::WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (nullptr == pCtrlPic)
+	if (nullptr == pCtrlPic || nullptr == m_pContext)
 		return;
 
-	WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
+	if (EHanType::HWP == m_pContext->GetType())
+		WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
+	else if (EHanType::HWPX == m_pContext->GetType())
+		WriteLineSettings(pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(), pCtrlPic->GetLineThick(), 1, oBuilder);
 }
 
 void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

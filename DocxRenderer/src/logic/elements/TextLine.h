@@ -39,6 +39,7 @@ namespace NSDocxRenderer
 		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 		virtual void RecalcWithNewItem(const CContText* pCont);
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 

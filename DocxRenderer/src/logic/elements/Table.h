@@ -49,6 +49,7 @@ namespace NSDocxRenderer
 			virtual void Clear();
 			virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+			virtual void ToBin(NSWasm::CData& oWriter) const override final;
 
 			CCell& operator=(const CCell& other);
 
@@ -73,6 +74,7 @@ namespace NSDocxRenderer
 			virtual void Clear();
 			virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 			virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+			virtual void ToBin(NSWasm::CData& oWriter) const override final;
 
 			void AddCell(const cell_ptr_t& pCell);
 			bool IsEmpty() const;
@@ -86,6 +88,7 @@ namespace NSDocxRenderer
 		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 
 		void AddRow(const row_ptr_t& pRow);
 		void CalcGridCols();

@@ -72,6 +72,7 @@ namespace NSDocxRenderer
 		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter)const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 
 		void SetVector(CVectorGraphics&& oVector);
 		void CalcNoRotVector();

@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "../../../../DesktopEditor/common/StringBuilder.h"
+#include "../../../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
 namespace NSDocxRenderer
 {
@@ -73,6 +74,10 @@ namespace NSDocxRenderer
 	public:
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const = 0;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const = 0;
+		virtual void ToBin(NSWasm::CData& oWriter) const = 0;
+
+		static const BYTE kBin_g_nodeAttributeStart = 250;
+		static const BYTE kBin_g_nodeAttributeEnd = 251;
 	};
 
 	// using template to avoid downcasting

@@ -70,6 +70,10 @@ namespace NSDocxRenderer
 	{
 
 	}
+	void CTable::CCell::ToBin(NSWasm::CData& oWriter) const
+	{
+
+	}
 	CTable::CCell& CTable::CCell::operator=(const CCell& other)
 	{
 		CBaseItem::operator=(other);
@@ -113,6 +117,10 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:tr>");
 	}
 	void CTable::CRow::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
+	{
+
+	}
+	void CTable::CRow::ToBin(NSWasm::CData& oWriter) const
 	{
 
 	}
@@ -163,6 +171,10 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</w:tbl>");
 	}
 	void CTable::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
+	{
+
+	}
+	void CTable::ToBin(NSWasm::CData& oWriter) const
 	{
 
 	}

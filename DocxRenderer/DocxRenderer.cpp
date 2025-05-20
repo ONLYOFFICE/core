@@ -145,6 +145,20 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
+std::vector<NSWasm::CData> CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage)
+{
+	m_pInternal->m_oDocument.Clear();
+	m_pInternal->m_oDocument.Init(false);
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bUseDefaultFont = true;
+	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
+	m_pInternal->m_bIsSupportShapeCommands = true;
+
+	DrawPage(pFile, nPage);
+
+	auto bin_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetShapesBin();
+	m_pInternal->m_oDocument.Clear();
+	return bin_shapes;
+}
 
 void CDocxRenderer::SetExternalImageStorage(NSDocxRenderer::IImageStorage* pStorage)
 {

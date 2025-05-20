@@ -170,6 +170,27 @@ namespace NSDocxRenderer
 				line->ToXmlPptx(oWriter);
 		oWriter.WriteString(L"</a:p>");
 	}
+	void CParagraph::ToBin(NSWasm::CData& oWriter) const
+	{
+		// WriteRecord WriteTextParagraphPr
+		[this, &oWriter] () {
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+		}();
+
+		oWriter.StartRecord(2);
+		unsigned int count = 0;
+		for (const auto& text_line : m_arTextLines)
+			count += text_line->m_arConts.size();
+
+		oWriter.AddInt(count);
+		for (const auto& text_line : m_arTextLines)
+			text_line->ToBin(oWriter);
+
+		oWriter.EndRecord();
+	}
 
 	void CParagraph::RemoveHighlightColor()
 	{

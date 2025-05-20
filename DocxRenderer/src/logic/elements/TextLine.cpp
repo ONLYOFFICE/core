@@ -302,15 +302,24 @@ namespace NSDocxRenderer
 	void CTextLine::ToXml(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		for (const auto& cont : m_arConts)
-			if(cont)
+			if (cont)
 				cont->ToXml(oWriter);
 	}
 
 	void CTextLine::ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const
 	{
 		for (const auto& cont : m_arConts)
-			if(cont)
+			if (cont)
 				cont->ToXmlPptx(oWriter);
+	}
+	void CTextLine::ToBin(NSWasm::CData& oWriter) const
+	{
+		for (const auto& cont : m_arConts)
+		{
+			oWriter.StartRecord(0);
+			cont->ToBin(oWriter);
+			oWriter.EndRecord();
+		}
 	}
 
 	size_t CTextLine::GetLength() const

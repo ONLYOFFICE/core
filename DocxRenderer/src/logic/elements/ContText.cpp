@@ -490,6 +490,68 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\" />");
 		oWriter.WriteString(L"</a:r>");
 	}
+	void CContText::ToBin(NSWasm::CData& oWriter) const
+	{
+		LONG lCalculatedSpacing = 0;
+		if (!m_oText.empty())
+		{
+			double dSpacing = (m_dWidth - m_oSelectedSizes.dWidth) / (m_oText.length());
+			dSpacing *= c_dMMToPt * 100;
+			lCalculatedSpacing = static_cast<LONG>(dSpacing);
+		}
+		lCalculatedSpacing -= 15;
+
+		const BYTE kPARRUN_TYPE_RUN = 1;
+		oWriter.StartRecord(kPARRUN_TYPE_RUN);
+
+		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+		oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(m_oText.ToStdWString());
+		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+		// WriteRecord WriteRunProperties
+		[&oWriter, this, lCalculatedSpacing] () {
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+
+			oWriter.WriteBYTE(1); oWriter.WriteBool(m_pFontStyle->bBold);
+			oWriter.WriteBYTE(7); oWriter.WriteBool(m_pFontStyle->bItalic);
+
+			BYTE strike = 1;
+			if (m_bIsDoubleStrikeout) strike = 0;
+			else if (m_bIsStrikeoutPresent) strike = 2;
+			oWriter.WriteBYTE(16); oWriter.WriteBYTE(strike);
+
+			oWriter.WriteBYTE(15); oWriter.AddInt(lCalculatedSpacing);
+			oWriter.WriteBYTE(18); oWriter.WriteBYTE(m_bIsUnderlinePresent ? 13 : 12);
+			oWriter.WriteBYTE(17); oWriter.AddInt(static_cast<unsigned int>(m_pFontStyle->dFontSize));
+
+			oWriter.WriteBYTE(2);
+			if (m_eVertAlignType == eVertAlignType::vatSubscript)
+				oWriter.AddInt(-25000);
+			else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
+				oWriter.AddInt(30000);
+
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			// WriteTextFontTypeface
+			auto WriteTextFontTypeface = [this, &oWriter] (const std::wstring& wsTypeface) {
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(wsTypeface);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			};
+
+			// WriteRecord WriteTextFontTypeface
+			oWriter.StartRecord(3); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
+			oWriter.StartRecord(4); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
+			oWriter.StartRecord(5); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
+			oWriter.EndRecord();
+		}();
+
+		// write outline
+		// write colors
+
+		oWriter.EndRecord();
+	}
 
 	bool CContText::IsEqual(const CContText *pCont) const noexcept
 	{

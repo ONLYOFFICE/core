@@ -1047,4 +1047,156 @@ namespace NSDocxRenderer
 		}
 		oWriter.WriteString(L"</p:sp>");
 	}
+	void CShape::ToBin(NSWasm::CData& oWriter) const
+	{
+		auto& vector = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector : m_oVector;
+		auto& data = vector.GetData();
+
+		oWriter.StartRecord(1);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+		auto write_spPr = [this, &oWriter, &vector, &data] () {
+			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
+
+			double height = bot - top;
+			double width = right - left;
+
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			// WriteRecord WriteXfrm
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.AddInt(static_cast<unsigned int>(left * c_dMMToEMU));
+			oWriter.WriteBYTE(1); oWriter.AddInt(static_cast<unsigned int>(top * c_dMMToEMU));
+			oWriter.WriteBYTE(2); oWriter.AddInt(static_cast<unsigned int>(width * c_dMMToEMU));
+			oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(height * c_dMMToEMU));
+
+			if (fabs(m_dRotation) > c_dMIN_ROTATION)
+			{
+				double degree = m_dRotation;
+				if (m_dRotation < 0) degree = 360.0 - m_dRotation;
+				oWriter.WriteBYTE(10); oWriter.AddInt(10, degree * c_dDegreeToAngle);
+			}
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+			// end of WriteRecord WriteXfrm
+
+			// WriteRecord WriteGeometry
+			oWriter.StartRecord(1);
+			if (vector.IsEmpty())
+			{
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"string"); // default rect for text
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+			}
+			else
+			{
+				oWriter.StartRecord(2);
+
+				// WritePathLst
+				oWriter.StartRecord(4);
+				oWriter.AddInt(static_cast<unsigned int>(data.size()));
+				for (const auto& command : data)
+				{
+					// todo
+				}
+
+				oWriter.EndRecord();
+				// end of WritePathLst
+
+				// WriteRecord WriteTextRect
+				oWriter.StartRecord(5);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"l");
+				oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(L"t");
+				oWriter.WriteBYTE(2); oWriter.WriteStringUtf16(L"r");
+				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(L"b");
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+				// end of WriteRecord WriteTextRect
+			}
+			oWriter.EndRecord();
+			// end of WriteRecord WriteGeometry
+		};
+
+		if (m_eType == eShapeType::stVectorTexture)
+		{
+			// WriteRecord WriteUniNvPr
+			[this, &oWriter] () {
+				oWriter.StartRecord(0);
+
+				// cNvPr
+				oWriter.StartRecord(0);
+
+				oWriter.EndRecord();
+
+				oWriter.EndRecord();
+			}();
+
+			oWriter.StartRecord(1); write_spPr(); oWriter.EndRecord();
+			return;
+		}
+
+		// WriteRecord WriteSpPr
+		oWriter.StartRecord(1); write_spPr(); oWriter.EndRecord();
+
+		if (m_eType == eShapeType::stTextBox && !m_arOutputObjects.empty())
+		{
+			// WriteRecord WriteTxBody
+			oWriter.StartRecord(3);
+
+			// WriteRecord WriteBodyPr
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(1); oWriter.WriteBYTE(1);      // anchor
+			oWriter.WriteBYTE(2); oWriter.WriteBool(false);  // anchorCtr
+			oWriter.WriteBYTE(3); oWriter.AddInt(0);         // bIns
+			oWriter.WriteBYTE(4); oWriter.WriteBool(true);   // compatLnSpc
+			oWriter.WriteBYTE(5); oWriter.WriteBool(false);  // forceAA
+			oWriter.WriteBYTE(6); oWriter.WriteBool(false);  // fromWordArt
+			oWriter.WriteBYTE(7); oWriter.WriteBYTE(1);      // horzOverflow
+			oWriter.WriteBYTE(8); oWriter.AddInt(0);         // lIns
+			oWriter.WriteBYTE(9); oWriter.AddInt(1);         // numCol
+			oWriter.WriteBYTE(10); oWriter.AddInt(0);        // rIns
+			oWriter.WriteBYTE(11); oWriter.AddInt(0);        // rot
+			oWriter.WriteBYTE(12); oWriter.WriteBool(false); // rtlCol
+			oWriter.WriteBYTE(13); oWriter.AddInt(0);        // spcCol
+			oWriter.WriteBYTE(14); oWriter.WriteBool(false); // spcFirstLastPara
+			oWriter.WriteBYTE(15); oWriter.AddInt(0);        // tIns
+			// 16 is upright param
+			oWriter.WriteBYTE(17); oWriter.WriteBYTE(1);     // vert
+			oWriter.WriteBYTE(18); oWriter.WriteBYTE(1);     // vertOverflow
+			oWriter.WriteBYTE(19); oWriter.WriteBYTE(1);     // vert
+
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			// todo WritePrstTxWarp
+			oWriter.EndRecord();
+			// end of WriteRecord WriteBodyPr
+
+			// WriteRecordArray WriteParagraph
+			oWriter.StartRecord(2);
+			unsigned int len = static_cast<unsigned int>(m_arOutputObjects.size());
+			oWriter.AddInt(len);
+			for (const auto& o : m_arOutputObjects)
+			{
+				oWriter.StartRecord(0);
+				o->ToBin(oWriter);
+				oWriter.EndRecord();
+			}
+
+			oWriter.EndRecord();
+			// end of WriteRecordArray WriteParagraph
+
+			oWriter.EndRecord();
+			// end of WriteRecord WriteTxBody
+		}
+		oWriter.EndRecord();
+	}
 }; // namespace NSDocxRenderer

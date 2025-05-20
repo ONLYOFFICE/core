@@ -81,6 +81,7 @@ namespace NSDocxRenderer
 
 		std::vector<std::wstring> GetXmlShapes();
 		std::vector<std::wstring> GetXmlShapesPptx();
+		std::vector<NSWasm::CData> GetShapesBin();
 		void AddCompleteXml(const std::wstring oXml);
 
 	private:

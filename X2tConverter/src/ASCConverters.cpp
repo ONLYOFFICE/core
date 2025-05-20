@@ -1462,25 +1462,15 @@ namespace NExtractTools
 			}
 			else
 			{
-				std::wstring sToRender = convertParams.m_sTempParamOOXMLFile;
-				if (sToRender.empty())
+				std::wstring sVsdtDir = combinePath(convertParams.m_sTempDir, L"vsdt_unpacked");
+				NSDirectory::CreateDirectory(sVsdtDir);
+				std::wstring sTFile = combinePath(sVsdtDir, L"Editor.bin");
+
+				nRes = vsdx_dir2vsdt_bin(sFrom, sTFile, params, convertParams);
+				if (SUCCEEDED_X2T(nRes))
 				{
-					sToRender = combinePath(convertParams.m_sTempDir, L"toRender.vsdx");
-					nRes = dir2zip(sFrom, sToRender);
+					nRes = fromVsdtBin(sTFile, sTo, nFormatTo, params, convertParams);
 				}
-				NSDoctRenderer::DoctRendererFormat::FormatFile eFromType = NSDoctRenderer::DoctRendererFormat::FormatFile::VSDT;
-				if (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF == nFormatTo)
-				{
-					convertParams.m_sInternalMediaDirectory = sFrom;
-					nRes = doct_bin2pdf(eFromType, sToRender, sTo, params, convertParams);
-				}
-				else if (0 != (AVS_OFFICESTUDIO_FILE_IMAGE & nFormatTo))
-				{
-					convertParams.m_sInternalMediaDirectory = sFrom;
-					nRes = doct_bin2image(eFromType, sToRender, sTo, params, convertParams);
-				}
-				else
-					nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 			}
 		}
 		else

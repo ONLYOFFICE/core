@@ -441,6 +441,18 @@ const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
         proc.mandatory(*m_PivotChartBits);
     if(m_SBaseRef != nullptr)
         proc.mandatory(*m_SBaseRef);
+    proc.mandatory<Units>();
+    if(m_SERIESDATA != nullptr)
+        proc.mandatory(*m_SERIESDATA);
+    for(auto i : m_arWINDOW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arCUSTOMVIEW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_CodeName != nullptr)
+        proc.mandatory(*m_CodeName);
+    proc.mandatory<EOF_T>();
     return true;
 }
 

@@ -102,6 +102,11 @@ void Label::readFields(CFRecord& record)
 	global_info_->arAddedSharedStrings.push_back(st.value());
 }
 
+void Label::writeFields(CFRecord& record)
+{
+    record << cell << st;
+}
+
 int Label::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

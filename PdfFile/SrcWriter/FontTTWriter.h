@@ -36,8 +36,22 @@
 
 namespace PdfWriter
 {
-	struct TrueTypeTable;
-	struct TrueTypeCmap;
+	struct TrueTypeTable
+	{
+		unsigned int unTag;
+		unsigned int unChecksum;
+		int          nOffset;
+		int          nOrigOffset;
+		int          nLen;
+	};
+	struct TrueTypeCmap
+	{
+		int nPlatform;
+		int nEncoding;
+		int nOffset;
+		int nLen;
+		int nFormat;
+	};
 	//----------------------------------------------------------------------------------------
 	// CFontFileBase
 	//----------------------------------------------------------------------------------------

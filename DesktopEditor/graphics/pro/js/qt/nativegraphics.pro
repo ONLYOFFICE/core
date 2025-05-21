@@ -715,6 +715,7 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/Font.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Font14.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/FontCidTT.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/FontCFFWriter.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/FontTT.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/FontTTWriter.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/GState.cpp \

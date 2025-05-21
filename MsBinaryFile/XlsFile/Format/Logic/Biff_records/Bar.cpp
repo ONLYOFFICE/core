@@ -63,6 +63,17 @@ void Bar::readFields(CFRecord& record)
 	fHasShadow	= GETBIT(flags, 3);
 }
 
+void Bar::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fTranspose)
+    SETBIT(flags, 1, fStacked)
+    SETBIT(flags, 2, f100)
+    SETBIT(flags, 3, fHasShadow)
+
+    record << pcOverlap << pcGap << flags;
+}
+
 int	Bar::serialize(std::wostream & _stream)
 {
 	Chart3d *chart3D = dynamic_cast<Chart3d *>(m_chart3D.get());

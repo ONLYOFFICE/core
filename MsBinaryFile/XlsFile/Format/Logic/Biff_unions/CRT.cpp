@@ -305,6 +305,27 @@ const bool CRT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool CRT::saveContent(BinProcessor& proc)
+{
+    if(m_ChartFormat == nullptr)
+        return false;
+    proc.mandatory(*m_ChartFormat);
+    proc.mandatory<Begin>();
+    if(m_ChartType != nullptr)
+    {
+        proc.mandatory(*m_ChartType);
+        if("BopPop" == m_ChartType->getClassName())
+        {
+            BopPop *bp = dynamic_cast<BopPop*>(m_ChartType.get());
+            if(bp->m_Custom != nullptr)
+                proc.mandatory(*(bp->m_Custom));
+        }
+    }
+
+    proc.mandatory<End>();
+    return true;
+}
+
 std::wstring CRT::getOoxChartType()
 {
 	switch(m_ChartType->get_type())

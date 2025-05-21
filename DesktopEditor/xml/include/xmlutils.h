@@ -85,6 +85,7 @@ namespace XmlUtils
 		bool FromString	(const wchar_t* sXml);
 		bool FromString	(const std::wstring& sXml);
 		bool FromStringA(const std::string& sXml);
+        bool FromStringA(const char* sXml, int size);
 
 		bool MoveToStart();
 

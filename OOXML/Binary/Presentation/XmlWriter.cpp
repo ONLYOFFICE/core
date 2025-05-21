@@ -199,6 +199,24 @@ void CXmlWriter::WriteAttribute2(const std::wstring& strAttributeName, const std
 	m_oWriter.WriteEncodeXmlString(val);
 	m_oWriter.WriteString(g_bstr_node_quote);
 }
+void CXmlWriter::WriteAttribute2(const std::wstring& strAttributeName, const std::string& val)
+{
+	m_oWriter.WriteString(g_bstr_node_space);
+	m_oWriter.WriteString(strAttributeName);
+	m_oWriter.WriteString(g_bstr_node_equal);
+	m_oWriter.WriteString(g_bstr_node_quote);
+	m_oWriter.WriteEncodeXmlString(val);
+	m_oWriter.WriteString(g_bstr_node_quote);
+}
+void CXmlWriter::WriteAttributeUtf8(const std::wstring& strAttributeName, const std::string& val)
+{
+	m_oWriter.WriteString(g_bstr_node_space);
+	m_oWriter.WriteString(strAttributeName);
+	m_oWriter.WriteString(g_bstr_node_equal);
+	m_oWriter.WriteString(g_bstr_node_quote);
+	m_oWriter.WriteUtf8EncodeXmlString(val);
+	m_oWriter.WriteString(g_bstr_node_quote);
+}
 void CXmlWriter::WriteAttribute(const std::wstring& strAttributeName, const double& val)
 {
 	m_oWriter.WriteString(g_bstr_node_space);
@@ -427,6 +445,16 @@ void CXmlWriter::WriteAttribute2(const std::wstring& strName, const nullable_str
 {
 	if (value.IsInit())
 		WriteAttribute2(strName, *value);
+}
+void CXmlWriter::WriteAttribute2(const std::wstring& strName, const nullable_astring& value)
+{
+	if (value.IsInit())
+		WriteAttribute2(strName, *value);
+}
+void CXmlWriter::WriteAttributeUtf8(const std::wstring& strName, const nullable_astring& value)
+{
+	if (value.IsInit())
+		WriteAttributeUtf8(strName, *value);
 }
 void CXmlWriter::WriteAttribute(const std::wstring& strName, const nullable_bool& value)
 {

@@ -445,8 +445,8 @@ namespace PPTX
 						}	
 						if (false == strImagePath.empty())
 						{
-							smart_ptr<OOX::File> additionalFile;
-							NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, L"", L"");
+							std::vector<smart_ptr<OOX::File>> additionalFiles;
+							NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFiles, L"", L"");
 
 							if (oRelsGeneratorInfo.nImageRId > 0)
 							{

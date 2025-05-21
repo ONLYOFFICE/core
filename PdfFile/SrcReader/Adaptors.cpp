@@ -34,10 +34,6 @@
 #include "../lib/xpdf/TextString.h"
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
-void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
-{
-    m_pFontManager = pFontManager;
-}
 void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 {
     m_wsCMapFolder = wsFolder;
@@ -184,14 +180,6 @@ bool GlobalParamsAdaptor::GetCMap(const char* sName, char*& pData, unsigned int&
     }
 
     return false;
-}
-void GlobalParamsAdaptor::AddTextFormField(const std::wstring& sText)
-{
-	m_sTextFormField += sText;
-}
-std::string GlobalParamsAdaptor::GetTextFormField()
-{
-	return U_TO_UTF8(m_sTextFormField);
 }
 
 bool operator==(const Ref &a, const Ref &b)

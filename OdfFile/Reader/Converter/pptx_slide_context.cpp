@@ -209,6 +209,7 @@ void pptx_slide_context::Impl::process_drawings()
 			case typeShape:			process_shape(objects_[i], drawing);	break;
 			case typeTable:			process_table(objects_[i], drawing);	break;
 			case typeMedia:			process_media(objects_[i], drawing);	break;
+			case typePDF:
 			case typeMsObject:	
 			case typeOleObject:		process_object(objects_[i], drawing);	break;
 		}
@@ -625,13 +626,32 @@ void pptx_slide_context::set_image(const std::wstring & path)
 			return; //object without image
 	}
 
+	bool bSvg = path.rfind(L".svg") == path.length() - 4;
+	bool bPdf = path.rfind(L".pdf") == path.length() - 4;
+
+	if (bSvg)
+	{
+		impl_->object_description_.xlink_href_ = path; // приоритетная картинка
+	}
+	else if (bPdf)
+	{
+		if (impl_->object_description_.type_ == typeImage)
+		{
+			impl_->object_description_.fill_.type = 2;
+			impl_->object_description_.fill_.bitmap = oox::oox_bitmap_fill::create();
+			impl_->object_description_.fill_.bitmap->xlink_href_ = impl_->object_description_.xlink_href_;
+			impl_->object_description_.fill_.bitmap->bStretch = true;
+
+		}
+		impl_->object_description_.type_ = typePDF;
+		impl_->object_description_.descriptor_ = L"Acrobat.Document.DC";
+		impl_->object_description_.xlink_href_ = path; 
+		impl_->use_image_replacement_ = true;
+	}
+
 	if (impl_->object_description_.type_ == typeUnknown)
 	{
 		impl_->object_description_.type_		= typeImage;	
-		impl_->object_description_.xlink_href_	= path; 
-	}
-	else if (impl_->object_description_.type_ == typeImage && impl_->object_description_.xlink_href_.rfind(L".svg") != std::wstring::npos)
-	{
 		impl_->object_description_.xlink_href_	= path; 
 	}
 	else if (impl_->use_image_replacement_)
@@ -700,11 +720,11 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	drawing.fill.bitmap		= oox_bitmap_fill::create();
 	drawing.fill.type		= 2;
 	
-	_CP_OPT(std::wstring) sTextContent, sColorMode;
+	_CP_OPT(std::wstring) sTextContent;
 	_CP_OPT(double) dLuminance, dContrast;
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
-	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"color-mode", drawing.fill.bitmap->color_mode);
 	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
 	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
@@ -717,9 +737,6 @@ void pptx_slide_context::Impl::process_image(drawing_object_description& obj, _p
 	std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + obj.xlink_href_;			
 	process_crop(obj, drawing, fileName);
 	
-	if ((sColorMode) && (*sColorMode == L"greyscale"))
-		drawing.fill.bitmap->luminance	= true;
-
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;

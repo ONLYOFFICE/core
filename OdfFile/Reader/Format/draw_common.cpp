@@ -566,8 +566,6 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				}
 			}
 		}
-		if ((props.draw_color_mode_) && (*props.draw_color_mode_ == L"greyscale"))
-			fill.bitmap->bGrayscale = true;
 	}
 	if (props.draw_fill_gradient_name_)
 	{

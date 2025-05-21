@@ -30,6 +30,9 @@ namespace NSDrawingFileEmbed
 	FUNCTION_WRAPPER_V8_2(_ScanPage, ScanPage)
 	FUNCTION_WRAPPER_V8_1(_GetImageBase64, GetImageBase64)
 	FUNCTION_WRAPPER_V8_1(_FreeWasmData, FreeWasmData)
+	FUNCTION_WRAPPER_V8_2(_SplitPages, SplitPages)
+	FUNCTION_WRAPPER_V8_3(_MergePages, MergePages)
+	FUNCTION_WRAPPER_V8_0(_UnmergePages, UnmergePages)
 
 	v8::Handle<v8::ObjectTemplate> CreateTemplate(v8::Isolate* isolate)
 	{
@@ -59,6 +62,9 @@ namespace NSDrawingFileEmbed
 		NSV8Objects::Template_Set(result, "ScanPage",	_ScanPage);
 		NSV8Objects::Template_Set(result, "GetImageBase64",	_GetImageBase64);
 		NSV8Objects::Template_Set(result, "FreeWasmData",	_FreeWasmData);
+		NSV8Objects::Template_Set(result, "SplitPages",	_SplitPages);
+		NSV8Objects::Template_Set(result, "MergePages",	_MergePages);
+		NSV8Objects::Template_Set(result, "UnmergePages",	_UnmergePages);
 
 		return handle_scope.Escape(result);
 	}

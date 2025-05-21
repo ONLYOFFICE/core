@@ -72,6 +72,9 @@ namespace PdfWriter
         SET_BINARY_PARAM("UE", SetUE);
         SET_BINARY_PARAM("Perms", SetPerms);
         SET_BINARY_PARAM("ID", SetID);
+        pObj = Get("ID");
+        if (pObj && pObj->GetType() == object_type_BINARY)
+            m_pEncrypt->m_unIDLength = ((CBinaryObject*)pObj)->GetLength();
         Remove("ID");
 
         SET_NUMBER_PARAM("P", SetPermission);

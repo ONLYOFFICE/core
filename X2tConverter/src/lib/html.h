@@ -35,6 +35,7 @@
 #include "../../../EpubFile/CEpubFile.h"
 #include "../../../Fb2File/Fb2File.h"
 #include "../../../HtmlFile2/htmlfile2.h"
+#include "../../../Common/3dParty/md/md2html.h"
 #include "common.h"
 
 namespace NExtractTools
@@ -251,5 +252,10 @@ namespace NExtractTools
 			nRes = AVS_FILEUTILS_ERROR_CONVERT;
 
 		return nRes;
+	}
+	// md -> html
+	_UINT32 md2html(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
+	{
+		return Md::ConvertMdFileToHtml(sFrom, sTo) ? S_OK : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 }

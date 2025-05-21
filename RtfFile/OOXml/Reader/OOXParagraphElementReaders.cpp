@@ -969,21 +969,18 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 		}break;
 		case OOX::et_mc_alternateContent:
 		{
+			bool res = false;
 			OOX::Logic::CAlternateContent *ooxAlt = dynamic_cast<OOX::Logic::CAlternateContent* >(ooxItem);
-			if (!ooxAlt->m_arrChoiceItems.empty())
+
+			for (size_t i = 0; res == false && i < ooxAlt->m_arrFallbackItems.size(); i++)
 			{
-				for (size_t i = 0; i < ooxAlt->m_arrChoiceItems.size(); i++)
-				{
-					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
-				}
-			}
-			else
+				res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
+			}			
+			for (size_t i = 0; res == false && i < ooxAlt->m_arrChoiceItems.size(); i++)
 			{
-				for (size_t i = 0; i < ooxAlt->m_arrFallbackItems.size(); i++)
-				{
-					Parse(oParam , oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrFallbackItems[i]);
-				}					
+				res = Parse(oParam, oOutputParagraph, poStyle, oNewProperty, ooxAlt->m_arrChoiceItems[i]);
 			}
+
 		}break;
 		case OOX::et_w_sym:
 		{

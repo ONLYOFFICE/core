@@ -154,23 +154,17 @@ namespace OOX
 
 			if (Rel.IsInit() && Rel->Rid.IsInit())
 			{
-				CPath out = pWriter->m_strMainFolder + FILE_SEPARATOR_STR + L"media";
+				CPath out = pWriter->m_pCommon->m_pMediaManager->m_strDstMedia;
 
 				smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
 				OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(pFile.GetPointer());
 
 				CPath image_path;
+				CPath ole_path;
 				if (pOleObject)
 				{
 					image_path = pOleObject->filename_cache();
-					CPath ole = pOleObject->filename();
-
-					//todooo check correct path inside container
-					NSFile::CFileBinary::Copy(ole.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + ole.GetFilename());
-
-					pWriter->StartRecord(2);
-					pWriter->WriteString(ole.GetFilename());
-					pWriter->EndRecord();
+					ole_path = pOleObject->filename();
 				}
 				else
 				{
@@ -180,11 +174,11 @@ namespace OOX
 						image_path = pMedia->filename();
 					}
 				}
+				std::wstring image_name_new;
 				if (false == image_path.GetPath().empty())
 				{
 					//todooo check correct path inside container
-
-					std::wstring image_name_new = image_path.GetFilename();
+					image_name_new = image_path.GetFilename();
 					std::wstring image_ext_new = image_path.GetExtention();
 
 					std::map<std::wstring, NSShapeImageGen::CMediaInfo>::iterator pFind = pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.find(image_path.GetFilename());
@@ -193,8 +187,7 @@ namespace OOX
 						NSShapeImageGen::CMediaInfo oInfo;
 						oInfo.m_lID = ++pWriter->m_pCommon->m_pMediaManager->m_lNextIDImage;
 						oInfo.m_sExt = image_path.GetExtention();
-						oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
-						image_name_new = oInfo.m_sName;
+						image_name_new = oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
 
 						pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
 					}
@@ -248,11 +241,29 @@ namespace OOX
 						}
 					}
 				}
+				if (false == ole_path.GetPath().empty())
+				{
+					if (image_name_new.empty())
+					{
+						NSShapeImageGen::CMediaInfo oInfo;
+						oInfo.m_lID = ++pWriter->m_pCommon->m_pMediaManager->m_lNextIDImage;
+						image_name_new = oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
+
+						pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
+					}
+					std::wstring ole_name_new = image_name_new + ole_path.GetExtention();
+					//todooo check correct path inside container
+					NSFile::CFileBinary::Copy(ole_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + ole_name_new);
+
+					pWriter->StartRecord(2);
+					pWriter->WriteString(ole_name_new);
+					pWriter->EndRecord();
+				}
 			}
 		}
 		void CForeignData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			std::wstring media_filename, ole_filename;
+			std::wstring image_filename, ole_filename;
 
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
@@ -311,7 +322,7 @@ namespace OOX
 				case 1:
 				{
 					pReader->Skip(4);
-					media_filename = pReader->GetString2();
+					image_filename = pReader->GetString2();
 				}break;
 				case 2:
 				{
@@ -328,14 +339,20 @@ namespace OOX
 
 			if (ole_filename.empty() == false)
 			{
+				int idOle = pReader->m_nCountEmbedded++; //todoooo -> countEmbeddedObjects
+				int idImage = pReader->m_nCountImage++; 
+
+				std::wstring ole_filename_dst = L"oleObject" + std::to_wstring(idOle) + CPath(ole_filename).GetExtention();
+				std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + CPath(image_filename).GetExtention();
+
 				std::wstring srcMedia = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
 
-				NSFile::CFileBinary::Copy(srcMedia + ole_filename, pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename);
-				NSFile::CFileBinary::Copy(srcMedia + media_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+				NSFile::CFileBinary::Copy(srcMedia + ole_filename, pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename_dst);
+				NSFile::CFileBinary::Copy(srcMedia + image_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				OleObject* pOle = new OleObject(NULL, false, false);
-				pOle->set_filename(pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename, false);
-				pOle->set_filename_cache(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+				pOle->set_filename(pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename_dst, false);
+				pOle->set_filename_cache(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				COfficeFileFormatChecker checker;
 				if (checker.isOOXFormatFile(pOle->filename().GetPath()))
@@ -348,10 +365,10 @@ namespace OOX
 				Rel.Init(); Rel->Rid.Init();
 				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
 
-				if (media_filename.empty() == false)
+				if (image_filename_dst.empty() == false)
 				{
 					Image* pImage = new Image(NULL, false);
-					pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename, false);
+					pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
 
 					smart_ptr<OOX::File> oFileCache(pImage);
 					pOle->Add(oFileCache);
@@ -360,11 +377,14 @@ namespace OOX
 			else
 			{
 				std::wstring srcMedia = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
+				int idImage = pReader->m_nCountImage++;
+				std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + CPath(image_filename).GetExtention();
 
-				NSFile::CFileBinary::Copy(srcMedia + media_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+
+				NSFile::CFileBinary::Copy(srcMedia + image_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				Image* pImage = new Image(NULL, false);
-				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename, false);
+				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
 
 				smart_ptr<OOX::File> oFile(pImage);
 				Rel.Init(); Rel->Rid.Init();

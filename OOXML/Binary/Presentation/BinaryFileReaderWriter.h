@@ -548,6 +548,7 @@ namespace NSBinPptxRW
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
+		_INT32							m_nCountImage = 1;
 		_INT32							m_nCountEmbedded = 1;
 		_INT32							m_nCountCharts = 1;
 		_INT32							m_nCountDiagram = 1;

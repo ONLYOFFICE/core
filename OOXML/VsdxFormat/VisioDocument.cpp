@@ -1731,7 +1731,7 @@ namespace Draw
 			if (pJsaProject->IsExist() && !pJsaProject->IsExternal())
 			{
 				std::wstring pathJsa = pJsaProject->filename().GetPath();
-				if (std::wstring::npos != pathJsa.find(pWriter->m_strMainFolder))
+				//if (std::wstring::npos != pathJsa.find(pWriter->m_strMainFolder)) //out path
 				{
 					BYTE* pData = NULL;
 					DWORD nBytesCount;

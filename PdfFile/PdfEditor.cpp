@@ -1607,6 +1607,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 		}
 		pageRefObj.free();
 
+		bool bResources = false, bMediaBox = false, bCropBox = false, bRotate = false;
 		// Копирование страницы со всеми ресурсами из reader для writer
 		for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 		{
@@ -1614,6 +1615,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			char* chKey = pageObj.dictGetKey(nIndex);
 			if (strcmp("Resources", chKey) == 0)
 			{
+				bResources = true;
 				Ref oResourcesRef = { -1, -1 };
 				if (pageObj.dictGetValNF(nIndex, &oTemp)->isRef())
 					oResourcesRef = oTemp.getRef();
@@ -1657,6 +1659,21 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 				oTemp.free();
 				continue;
 			}
+			else if (strcmp("MediaBox", chKey) == 0)
+			{
+				bMediaBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("CropBox", chKey) == 0)
+			{
+				bCropBox = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
+			else if (strcmp("Rotate", chKey) == 0)
+			{
+				bRotate = true;
+				pageObj.dictGetValNF(nIndex, &oTemp);
+			}
 			else
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
@@ -1686,6 +1703,40 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 
 			}
 			oTemp.free();
+		}
+		if (!bResources || !bMediaBox || !bCropBox || !bRotate)
+		{
+			Page* pOPage = pCatalog->getPage((arrPageIndex ? arrPageIndex[i] : i) + 1);
+			if (!bMediaBox)
+			{
+				PDFRectangle* pRect = pOPage->getMediaBox();
+				pPage->Add("MediaBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+
+			if (!bCropBox && pOPage->isCropped())
+			{
+				PDFRectangle* pRect = pOPage->getCropBox();
+				pPage->Add("CropBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+			}
+
+			if (!bRotate)
+				pPage->Add("Rotate", pOPage->getRotate());
+
+			if (!bResources)
+			{
+				Dict* pResources = pOPage->getResourceDict();
+				PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(true, false);
+				pPage->Add("Resources", pDict);
+				for (int nIndex = 0; nIndex < pResources->getLength(); ++nIndex)
+				{
+					Object oRes;
+					char* chKey2 = pResources->getKey(nIndex);
+					pResources->getValNF(nIndex, &oRes);
+					PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oRes, pDoc, xref, &m_mObjManager, nStartRefID);
+					pDict->Add(chKey2, pBase);
+					oRes.free();
+				}
+			}
 		}
 		pPage->Fix();
 		if (m_nMode == Mode::WriteAppend)

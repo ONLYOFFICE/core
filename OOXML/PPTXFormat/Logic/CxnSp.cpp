@@ -247,6 +247,7 @@ namespace PPTX
 				}break;
 				default:
 				{
+					pReader->SkipRecord();
 				}break;
 				}
 			}

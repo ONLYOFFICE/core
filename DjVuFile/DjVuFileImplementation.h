@@ -79,7 +79,11 @@ public:
     BYTE*        GetPageGlyphs(int nPageIndex);
     BYTE*        GetPageLinks (int nPageIndex);
 
+	unsigned char* ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip = false);
+
 private:
+
+	unsigned char* ConvertToPixels(GP<DjVuImage>& pPage, int nRasterW, int nRasterH, bool bIsFlip = false);
 
 	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
     void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);

@@ -181,6 +181,7 @@ namespace PPTX
 		}
 		std::wstring Blip::GetFullPicName(OOX::IFileContainer* pRels)const
 		{
+			std::wstring result;
 			for (size_t i = 0; i < ExtLst.size(); ++i)
 			{
 				if (ExtLst[i].link_svg.IsInit())
@@ -189,13 +190,21 @@ namespace PPTX
 					{
 						smart_ptr<OOX::Image> p = pRels->Get<OOX::Image>(*ExtLst[i].link_svg);
 						if (p.is_init())
-							return p->filename().m_strFilename;
+						{
+							result = p->filename().m_strFilename;
+							break;
+						}
 					}
 
 					if (parentFileIs<FileContainer>())
-						return parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+					{
+						result = parentFileAs<FileContainer>().GetImagePathNameFromRId(*ExtLst[i].link_svg);
+						break;
+					}
 				}
 			}
+			if (false == result.empty()) return result;
+			
 			if (embed.IsInit())
 			{
 				if (pRels != NULL)

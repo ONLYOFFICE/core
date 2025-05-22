@@ -133,6 +133,7 @@ extern "C" {
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES", AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP", AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP);
                 jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX", AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX);
+                jjniHashMap.put(env, "AVS_OFFICESTUDIO_FILE_DOCUMENT_MD", AVS_OFFICESTUDIO_FILE_DOCUMENT_MD);
 
                 jobject res = jjniHashMap.toJniObject(env);
                 jjniHashMap.destroy(env);

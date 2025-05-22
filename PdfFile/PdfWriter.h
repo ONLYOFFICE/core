@@ -64,7 +64,7 @@ namespace Aggplus
 class CPdfWriter
 {
 public:
-	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true);
+	CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA = false, IRenderer* pRenderer = NULL, bool bCreate = true, const std::wstring& wsTempDirectory = L"");
 	~CPdfWriter();
 	int          SaveToFile(const std::wstring& wsPath);
 	int          SaveToMemory(BYTE** pData, int* pLength);
@@ -72,14 +72,15 @@ public:
 	void         SetDocumentID(const std::wstring& wsDocumentID);
 	void         SetDocumentInfo(const std::wstring& wsTitle, const std::wstring& wsCreator, const std::wstring& wsSubject, const std::wstring& wsKeywords);
 	std::wstring GetTempFile(const std::wstring& wsDirectory);
+	void SetTempDirectory(const std::wstring& wsTempDirectory);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со страницей
 	//----------------------------------------------------------------------------------------
 	HRESULT NewPage();
 	HRESULT get_Height(double* dHeight);
-	HRESULT put_Height(const double& dHeight);
+	HRESULT put_Height(const double& dHeight, bool bMM2PT = true);
 	HRESULT get_Width(double* dWidth);
-	HRESULT put_Width(const double& dWidth);
+	HRESULT put_Width(const double& dWidth, bool bMM2PT = true);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы с Pen
 	//----------------------------------------------------------------------------------------
@@ -264,6 +265,7 @@ private:
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 
+	std::wstring                 m_wsTempDirectory;
 	CCommandManager              m_oCommandManager;
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;

@@ -42,6 +42,19 @@ CNativePointer.prototype.free = function()
 		g_native_drawing_file["FreeWasmData"](this.ptr);
 	this.ptr = null;
 };
+CNativePointer.prototype.getMemory = function(isCopy)
+{
+	if (!this.ptr)
+		return null;
+
+	if (!isCopy)
+		return this.ptr;
+
+	let copyArray = new Uint8Array(this.ptr.length);
+	copyArray.set(this.ptr);
+
+	return copyArray;
+};
 CNativePointer.prototype.getReader = function()
 {
 	if (!this.ptr)
@@ -94,10 +107,33 @@ CFile.prototype._getError = function()
 	return g_native_drawing_file["GetErrorCode"]();
 };
 
-CFile.prototype._addPDF = function(buffer, password)
+CFile.prototype._SplitPages = function(pages, changes)
 {
-	return g_native_drawing_file["AddPDF"]();
-}
+	let dataChanges = null;
+	if (changes) 
+		dataChanges = (undefined !== changes.byteLength) ? new Uint8Array(changes) : changes;
+	g_module_pointer.ptr = g_native_drawing_file["SplitPages"](pages, dataChanges);
+	return g_module_pointer;
+};
+
+CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
+{
+	if (!buffer)
+		return false;
+
+	if (!maxID)
+		maxID = 0;
+	if (!prefixForm)
+		prefixForm = "";
+
+	let data = (undefined !== buffer.byteLength) ? new Uint8Array(buffer) : buffer;
+	return g_native_drawing_file["MergePages"](data, maxID, prefixForm);
+};
+
+CFile.prototype._UndoMergePages = function()
+{
+	return g_native_drawing_file["UnmergePages"]();
+};
 
 // FONTS
 CFile.prototype._isNeedCMap = function()

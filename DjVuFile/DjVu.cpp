@@ -121,3 +121,15 @@ BYTE* CDjVuFile::GetLinks (int nPageIndex)
         return m_pImplementation->GetPageLinks(nPageIndex);
     return NULL;
 }
+
+unsigned char* CDjVuFile::ConvertToPixels(
+	int nPageIndex,
+	int nRasterW, int nRasterH, bool bIsFlip,
+	NSFonts::IFontManager* pFonts,
+	int nBackgroundColor, bool bIsDarkMode,
+	int nBackgroundOpacity)
+{
+	if (m_pImplementation)
+		return m_pImplementation->ConvertToPixels(nPageIndex, nRasterW, nRasterH, !bIsFlip);
+	return NULL;
+}

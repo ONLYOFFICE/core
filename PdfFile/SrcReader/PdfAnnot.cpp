@@ -1075,7 +1075,10 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nSta
 	oField.free();
 
 	if (pField->fieldLookup("AS", &oObj)->isName())
+	{
 		m_sV = oObj.getName();
+		m_unFlags |= (1 << 9);
+	}
 	oObj.free();
 
 	Object oMK;
@@ -2400,16 +2403,16 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 	m[5] = m[5] * sy + ty;
 
 	m_dX1 = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
-	m_dY1 = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+	m_dY1 = m_dHeight - (bbox[0] * m[1] + bbox[1] * m[3] + m[5]);
 
 	m_dX2 = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
-	m_dY2 = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+	m_dY2 = m_dHeight - (bbox[0] * m[1] + bbox[3] * m[3] + m[5]);
 
 	m_dX3 = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
-	m_dY3 = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+	m_dY3 = m_dHeight - (bbox[2] * m[1] + bbox[3] * m[3] + m[5]);
 
 	m_dX4 = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
-	m_dY4 = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+	m_dY4 = m_dHeight - (bbox[2] * m[1] + bbox[1] * m[3] + m[5]);
 
 	oAnnot.free();
 }

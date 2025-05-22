@@ -352,7 +352,7 @@ TEST_F(CPdfFileTest, VerifySign)
 
 TEST_F(CPdfFileTest, SplitPdf)
 {
-	//GTEST_SKIP();
+	GTEST_SKIP();
 
 	LoadFromFile();
 
@@ -436,7 +436,7 @@ TEST_F(CPdfFileTest, EditPdf)
 
 TEST_F(CPdfFileTest, EditPdfFromBase64)
 {
-	GTEST_SKIP();
+	//GTEST_SKIP();
 
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NSFonts::NSApplicationFontStream::CreateDefaultGlobalMemoryStorage());
 

@@ -206,33 +206,33 @@ namespace OOX
 		void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 	public:
-		nullable<SimpleTypes::COnOff>		m_oCustomStyle;
-		nullable<SimpleTypes::COnOff>		m_oDefault;
-		nullable_string						m_sStyleId;
-		nullable<SimpleTypes::CStyleType>	m_oType;
+		nullable<SimpleTypes::COnOff> m_oCustomStyle;
+		nullable<SimpleTypes::COnOff> m_oDefault;
+		nullable_string m_sStyleId;
+		nullable<SimpleTypes::CStyleType> m_oType;
 
-		nullable<ComplexTypes::Word::String>							m_oAliases;
-        nullable<ComplexTypes::Word::COnOff2>	m_oAutoRedefine;
-		nullable<ComplexTypes::Word::String>							m_oBasedOn;
-        nullable<ComplexTypes::Word::COnOff2>	m_oHidden;
-		nullable<ComplexTypes::Word::String>							m_oLink;
-        nullable<ComplexTypes::Word::COnOff2>	m_oLocked;
-		nullable<ComplexTypes::Word::String>							m_oName;
-		nullable<ComplexTypes::Word::String>							m_oNext;
-        nullable<ComplexTypes::Word::COnOff2>	m_oPersonal;
-        nullable<ComplexTypes::Word::COnOff2>	m_oPersonalCompose;
-        nullable<ComplexTypes::Word::COnOff2>	m_oPersonalReply;
-		nullable<OOX::Logic::CParagraphProperty>						m_oParPr;
-        nullable<ComplexTypes::Word::COnOff2>	m_oQFormat;
-		nullable<OOX::Logic::CRunProperty>								m_oRunPr;
-		nullable<ComplexTypes::Word::CLongHexNumber>					m_oRsid;
-        nullable<ComplexTypes::Word::COnOff2>	m_oSemiHidden;
-		nullable<OOX::Logic::CTableProperty>							m_oTblPr;		
-		std::vector<OOX::Logic::CTableStyleProperties*>					m_arrTblStylePr;
-		nullable<OOX::Logic::CTableCellProperties>						m_oTcPr;
-		nullable<OOX::Logic::CTableRowProperties>						m_oTrPr;
-		nullable<ComplexTypes::Word::CDecimalNumber>					m_oUiPriority;
-        nullable<ComplexTypes::Word::COnOff2>	m_oUnhideWhenUsed;
+		nullable<ComplexTypes::Word::String> m_oAliases;
+		nullable<ComplexTypes::Word::COnOff2> m_oAutoRedefine;
+		nullable<ComplexTypes::Word::String> m_oBasedOn;
+		nullable<ComplexTypes::Word::COnOff2> m_oHidden;
+		nullable<ComplexTypes::Word::String> m_oLink;
+		nullable<ComplexTypes::Word::COnOff2> m_oLocked;
+		nullable<ComplexTypes::Word::String> m_oName;
+		nullable<ComplexTypes::Word::String> m_oNext;
+		nullable<ComplexTypes::Word::COnOff2> m_oPersonal;
+		nullable<ComplexTypes::Word::COnOff2> m_oPersonalCompose;
+		nullable<ComplexTypes::Word::COnOff2> m_oPersonalReply;
+		nullable<OOX::Logic::CParagraphProperty> m_oParPr;
+		nullable<ComplexTypes::Word::COnOff2> m_oQFormat;
+		nullable<OOX::Logic::CRunProperty> m_oRunPr;
+		nullable<ComplexTypes::Word::CLongHexNumber> m_oRsid;
+		nullable<ComplexTypes::Word::COnOff2> m_oSemiHidden;
+		nullable<OOX::Logic::CTableProperty> m_oTblPr;
+		std::vector<OOX::Logic::CTableStyleProperties*> m_arrTblStylePr;
+		nullable<OOX::Logic::CTableCellProperties> m_oTcPr;
+		nullable<OOX::Logic::CTableRowProperties> m_oTrPr;
+		nullable<ComplexTypes::Word::CDecimalNumber> m_oUiPriority;
+		nullable<ComplexTypes::Word::COnOff2> m_oUnhideWhenUsed;
 	};
 
 	//--------------------------------------------------------------------------------

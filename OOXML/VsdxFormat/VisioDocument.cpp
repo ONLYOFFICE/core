@@ -29,6 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "Vsdx.h"
 #include "VisioDocument.h"
 #include "VisioPages.h"
 #include "VisioConnections.h"
@@ -1676,6 +1677,7 @@ namespace Draw
 			pWindows->toPPTY(pWriter);
 			pWriter->EndRecord();
 		}
+		bool bThemes = false;
 		std::vector<smart_ptr<OOX::File>>& container = ((OOX::IFileContainer*)(this))->GetContainer();
 		for (size_t k = 0; k < container.size(); ++k)
 		{
@@ -1686,7 +1688,33 @@ namespace Draw
 				pWriter->StartRecord(15);
 				pTheme->toPPTY(pWriter);
 				pWriter->EndRecord();
+				
+				bThemes = true;
 			}
+		}
+		if (false == bThemes)
+		{//некорректный контейнер ???
+			OOX::Draw::CVsdx *vsdx = dynamic_cast<OOX::Draw::CVsdx*>(((OOX::File*)this)->m_pMainDocument);
+
+			if (vsdx && vsdx->m_pContentTypes.IsInit())
+			{
+				typedef std::multimap<std::wstring, smart_ptr<ContentTypes::COverride>> _mapContentTypes;
+				std::pair<_mapContentTypes::iterator, _mapContentTypes::iterator> oFind;
+
+				oFind = vsdx->m_pContentTypes->m_mapOverridesByType.equal_range(L"application/vnd.openxmlformats-officedocument.theme+xml");
+
+				for (_mapContentTypes::iterator it = oFind.first; it != oFind.second; ++it)
+				{
+					if (it->second.IsInit())
+					{
+						PPTX::Theme oTheme(vsdx, vsdx->m_sDocumentPath + FILE_SEPARATOR_STR + it->second->filename());
+
+						pWriter->StartRecord(15);
+						oTheme.toPPTY(pWriter);
+						pWriter->EndRecord();
+					}
+				}
+			}	
 		}
 		pFile = this->Find(OOX::FileTypes::VbaProject);
 		OOX::VbaProject *pVbaProject = dynamic_cast<OOX::VbaProject*>(pFile.GetPointer());
@@ -1703,7 +1731,7 @@ namespace Draw
 			if (pJsaProject->IsExist() && !pJsaProject->IsExternal())
 			{
 				std::wstring pathJsa = pJsaProject->filename().GetPath();
-				if (std::wstring::npos != pathJsa.find(pWriter->m_strMainFolder))
+				//if (std::wstring::npos != pathJsa.find(pWriter->m_strMainFolder)) //out path
 				{
 					BYTE* pData = NULL;
 					DWORD nBytesCount;

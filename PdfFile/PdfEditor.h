@@ -56,6 +56,8 @@ public:
 	int FindObj(PdfWriter::CObjectBase* pObj);
 	void DeleteObjTree(Object* obj, XRef* xref, int nStartRefID);
 
+	std::vector<int> m_arrSplitAddPages;
+
 private:
 	std::map<int, CObjectInfo> m_mUniqueRef; // map уникальных объектов
 };
@@ -94,6 +96,7 @@ public:
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
+	void AfterSplitPages();
 	bool MergePages(const std::wstring& wsPath, const std::wstring& wsPrefixForm);
 
 private:
@@ -114,6 +117,7 @@ private:
 	// 1 - Split. pReader и pWriter работают с разными файлами
 	Mode m_nMode;
 	int m_nEditPage;
+	int m_nOriginIndex;
 };
 
 #endif // _PDF_EDITOR_H

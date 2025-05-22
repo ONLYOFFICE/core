@@ -166,6 +166,7 @@ SOURCES += \
 	../../DataTypes/messagetype.cpp \
 	../../DataTypes/stylecellprotect.cpp \
         ../../DataTypes/sparklines.cpp \
+        ../../DataTypes/color_mode.cpp \
         \
 	../../Reader/Format/abstract_xml.cpp \
 	../../Reader/Format/anim_elements.cpp \

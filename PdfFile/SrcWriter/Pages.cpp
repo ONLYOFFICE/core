@@ -224,9 +224,9 @@ namespace PdfWriter
 		if (pResources)
 			pResources->Fix();
 	}
-	void CPageTree::AddPage(CPage* pPage)
+	void CPageTree::AddPage(CObjectBase* pObj)
 	{
-		m_pPages->Add(pPage);
+		m_pPages->Add(pObj);
 		(*m_pCount)++;
 	}
 	CObjectBase* CPageTree::GetObj(int nPageIndex)
@@ -247,12 +247,13 @@ namespace PdfWriter
 		int nI = 0;
 		return GetFromPageTree(nPageIndex, nI, true);
 	}
-	bool CPageTree::InsertPage(int nPageIndex, CPage* pPage)
+	bool CPageTree::InsertPage(int nPageIndex, CObjectBase* pPage)
 	{
 		if (nPageIndex >= m_pCount->Get())
 		{
 			AddPage(pPage);
-			pPage->Add("Parent", this);
+			if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+				((CPage*)pPage)->Add("Parent", this);
 			return true;
 		}
 		int nI = 0;
@@ -287,7 +288,7 @@ namespace PdfWriter
 		}
 		return false;
 	}
-	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CPage* pPage)
+	CObjectBase* CPageTree::GetFromPageTree(int nPageIndex, int& nI, bool bRemove, bool bInsert, CObjectBase* pPage)
 	{
 		for (int i = 0, count = m_pPages->GetCount(); i < count; ++i)
 		{
@@ -303,14 +304,16 @@ namespace PdfWriter
 					if (bRemove && bInsert)
 					{
 						m_pPages->Insert(pObj, pPage, true);
-						pPage->Add("Parent", this);
+						if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+							((CPage*)pPage)->Add("Parent", this);
 					}
 					else if (bRemove)
 						pRes = m_pPages->Remove(i);
 					else if (bInsert)
 					{
 						m_pPages->Insert(pObj, pPage);
-						pPage->Add("Parent", this);
+						if (pPage->GetType() == object_type_DICT && ((CDictObject*)pPage)->GetDictType() == dict_type_PAGE)
+							((CPage*)pPage)->Add("Parent", this);
 					}
 				}
 				nI++;
@@ -342,6 +345,31 @@ namespace PdfWriter
 				return true;
 		}
 		return false;
+	}
+	void CPageTree::CreateFakePages(int nPages, int nPageIndex)
+	{
+		for (int i = 0; i < nPages; ++i)
+		{
+			CObjectBase* pTarget = GetObj(nPageIndex);
+			if (pTarget)
+				m_pPages->Insert(pTarget, new CObjectBase());
+			else
+				m_pPages->Add(new CObjectBase());
+			(*m_pCount)++;
+		}
+	}
+	void CPageTree::ClearFakePages()
+	{
+		for (int i = 0; i < GetCount(); ++i)
+		{
+			CObjectBase* pObj = GetObj(i);
+			if (pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE)
+				continue;
+			pObj = m_pPages->Remove(i);
+			delete pObj;
+			(*m_pCount)--;
+			--i;
+		}
 	}
 	//----------------------------------------------------------------------------------------
 	// CPage
@@ -1518,10 +1546,6 @@ namespace PdfWriter
 		m_pContents = new CArrayObject();
 		Add("Contents", m_pContents);
 		AddContents(pXref);
-	}
-	CDictObject* CPage::GetContent() const
-	{
-		return (CDictObject*)m_pContents->Remove(0);
 	}
     int CPage::GetRotate()
     {

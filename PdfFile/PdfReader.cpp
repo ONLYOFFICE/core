@@ -427,6 +427,20 @@ int CPdfReader::GetStartRefID(PDFDoc* _pDoc)
 	}
 	return -1;
 }
+int CPdfReader::GetNumPagesBefore(PDFDoc* _pDoc)
+{
+	int nPagesBefore = 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (_pDoc == pDoc)
+			return nPagesBefore;
+		nPagesBefore += pDoc->getNumPages();
+	}
+	return -1;
+}
 int CPdfReader::FindRefNum(int nObjID, PDFDoc** _pDoc, int* _nStartRefID)
 {
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)

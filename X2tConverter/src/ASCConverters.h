@@ -210,6 +210,9 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(fb2docx);
 	DECLARE_CONVERT_FUNC(doct_bin2fb);
 
+	//md
+	DECLARE_CONVERT_FUNC(md2html);
+
 	// ppt
 	DECLARE_CONVERT_FUNC(ppt2pptx);
 	DECLARE_CONVERT_FUNC(ppt2pptx_dir);

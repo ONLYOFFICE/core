@@ -44,7 +44,9 @@
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Field.h"
 #include "SrcWriter/Outline.h"
+#include "SrcWriter/Utils.h"
 
+#include "Resources/BaseFonts.h"
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/graphics/structures.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
@@ -134,7 +136,7 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 // CPdfRenderer
 //
 //----------------------------------------------------------------------------------------
-CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate) : m_oCommandManager(this)
+CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRenderer* pRenderer, bool bCreate, const std::wstring& wsTempDirectory) : m_oCommandManager(this)
 {
 	// Создаем менеджер шрифтов с собственным кэшем
 	m_pFontManager = pAppFonts->GenerateFontManager();
@@ -143,6 +145,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	m_pRenderer = pRenderer;
 	m_bNeedAddHelvetica = true;
+	m_wsTempDirectory = wsTempDirectory;
 
 	m_pDocument = new PdfWriter::CDocument();
 
@@ -242,6 +245,10 @@ std::wstring CPdfWriter::GetTempFile(const std::wstring& wsDirectory)
 {
 	return NSFile::CFileBinary::CreateTempFileWithUniqueName(wsDirectory, L"PDF");
 }
+void CPdfWriter::SetTempDirectory(const std::wstring& wsTempDirectory)
+{
+	m_wsTempDirectory = wsTempDirectory;
+}
 //----------------------------------------------------------------------------------------
 // Функции для работы со страницей
 //----------------------------------------------------------------------------------------
@@ -272,13 +279,13 @@ HRESULT CPdfWriter::get_Height(double* dHeight)
 	*dHeight = m_dPageHeight;
 	return S_OK;
 }
-HRESULT CPdfWriter::put_Height(const double& dHeight)
+HRESULT CPdfWriter::put_Height(const double& dHeight, bool bMM2PT)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
-	m_dPageHeight = dHeight;
-	m_pPage->SetHeight(MM_2_PT(dHeight));
+	m_dPageHeight = bMM2PT ? dHeight : PT_2_MM(dHeight);
+	m_pPage->SetHeight(bMM2PT ? MM_2_PT(dHeight) : dHeight);
 	return S_OK;
 }
 HRESULT CPdfWriter::get_Width(double* dWidth)
@@ -286,13 +293,13 @@ HRESULT CPdfWriter::get_Width(double* dWidth)
 	*dWidth = m_dPageWidth;
 	return S_OK;
 }
-HRESULT CPdfWriter::put_Width(const double& dWidth)
+HRESULT CPdfWriter::put_Width(const double& dWidth, bool bMM2PT)
 {
 	if (!IsValid() || !m_pPage)
 		return S_FALSE;
 
-	m_dPageWidth = dWidth;
-	m_pPage->SetWidth(MM_2_PT(dWidth));
+	m_dPageWidth = bMM2PT ? dWidth : PT_2_MM(dWidth);
+	m_pPage->SetWidth(bMM2PT ? MM_2_PT(dWidth) : dWidth);
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -1269,6 +1276,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 	{
 		const CFormFieldInfo::CTextFormPr* pPr = oInfo.GetTextFormPr();
 		std::wstring wsValue = pPr->GetTextValue();
+		wsValue = PdfWriter::NormalizeWhitespace(wsValue);
 
 		unsigned int unLen = 0;
 		unsigned int* pUnicodes = NULL;
@@ -1450,6 +1458,7 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
 		if (!wsPlaceHolder.empty())
 		{
 			unsigned int unMaxLen = pPr->GetMaxCharacters();
@@ -1524,9 +1533,11 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), oInfo.IsPlaceHolder() ? oPlaceHolderColor : oNormalColor);
 
-		if (!pPr->GetPlaceHolder().empty())
+		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();
+		wsPlaceHolder = PdfWriter::NormalizeWhitespace(wsPlaceHolder);
+		if (!wsPlaceHolder.empty())
 		{
-			pField->SetPlaceHolderText(pPr->GetPlaceHolder(), oNormalColor, oPlaceHolderColor);
+			pField->SetPlaceHolderText(wsPlaceHolder, oNormalColor, oPlaceHolderColor);
 
 			if (!pPr->IsEditComboBox())
 			{
@@ -2357,6 +2368,34 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				pButtonWidget->SetStyle(pPrB->GetStyle());
 
+				if (!pButtonWidget->Get("DA"))
+				{
+					PdfWriter::CFontDict* pFont = pFontTT;
+					if (!wsFontName.empty())
+					{
+						put_FontName(wsFontName);
+						put_FontStyle(nStyle);
+						put_FontSize(dFontSize);
+
+						if (m_bNeedUpdateTextFont)
+							UpdateFont();
+						if (m_pFont)
+							pFont = m_pDocument->CreateTrueTypeFont(m_pFont);
+					}
+					else
+					{
+						put_FontName(L"Embedded: ZapfDingbats");
+						put_FontStyle(0);
+						put_FontSize(dFontSize);
+
+						if (m_bNeedUpdateTextFont)
+							UpdateFont();
+						if (m_pFont14)
+							pFont = m_pFont14;
+					}
+					pButtonWidget->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
+				}
+
 				// ВНЕШНИЙ ВИД
 				if (!pButtonWidget->Get("AP"))
 					pButtonWidget->SetAP();
@@ -3181,7 +3220,38 @@ bool CPdfWriter::GetBaseFont14(const std::wstring& wsFontName, int nBase14)
 	std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex         = m_oFont.GetFaceIndex();
 	if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
-		return false;
+	{
+		std::wstring sSub = wsFontName.substr(10);
+		const BYTE* pData14 = NULL;
+		unsigned int nSize14 = 0;
+		PdfReader::GetBaseFont(sSub, pData14, nSize14);
+		NSFonts::IFontsMemoryStorage* pMemoryStorage = NSFonts::NSApplicationFontStream::GetGlobalMemoryStorage();
+		if (pMemoryStorage)
+		{
+			if (!pMemoryStorage->Get(sSub))
+				pMemoryStorage->Add(sSub, (BYTE*)pData14, nSize14);
+			AddFont(wsFontName, false, false, sSub, 0);
+		}
+		else
+		{
+			std::wstring wsTempFileName = m_wsTempDirectory + L"/" + sSub + L".base";
+			if (NSFile::CFileBinary::Exists(wsTempFileName))
+				wsFontPath = wsTempFileName;
+			else
+			{
+				NSFile::CFileBinary oFile;
+				if (oFile.CreateFileW(wsTempFileName))
+				{
+					oFile.WriteFile((BYTE*)pData14, nSize14);
+					wsFontPath = wsTempFileName;
+				}
+				oFile.CloseFile();
+			}
+			AddFont(wsFontName, false, false, wsFontPath, 0);
+		}
+		if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
+			return false;
+	}
 	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
 		return false;
 	PdfWriter::EStandard14Fonts nType = (PdfWriter::EStandard14Fonts)nBase14;

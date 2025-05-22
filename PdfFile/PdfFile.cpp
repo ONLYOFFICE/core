@@ -110,7 +110,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 		return false;
 
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
 	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
@@ -151,7 +151,7 @@ bool CPdfFile::MovePage(int nPageIndex, int nPos)
 HRESULT CPdfFile::ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, false, m_pInternal->wsTempFolder);
 	return _ChangePassword(wsPath, wsPassword, m_pInternal->pReader, m_pInternal->pWriter);
 }
 
@@ -313,6 +313,8 @@ void CPdfFile::SetTempDirectory(const std::wstring& wsPath)
 	m_pInternal->wsTempFolder = wsPath;
 	if (m_pInternal->pReader)
 		m_pInternal->pReader->SetTempDirectory(wsPath);
+	if (m_pInternal->pWriter)
+		m_pInternal->pWriter->SetTempDirectory(wsPath);
 }
 int CPdfFile::GetPagesCount()
 {
@@ -443,11 +445,12 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	int nLen = 0;
 	if (m_pInternal->pEditor->SplitPages(arrPageIndex, unLength))
 	{
-		if (pChanges)
+		if (pChanges && nLength > 3)
 		{
 			CConvertFromBinParams* pParams = new CConvertFromBinParams();
 			AddToPdfFromBinary(pChanges + 4, nLength - 4, pParams);
 		}
+		m_pInternal->pEditor->AfterSplitPages();
 
 		if (m_pInternal->pWriter->SaveToMemory(&pRes, &nLen) != 0)
 		{
@@ -491,7 +494,7 @@ BYTE* CPdfFile::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, in
 void CPdfFile::CreatePdf(bool isPDFA)
 {
 	RELEASEOBJECT(m_pInternal->pWriter);
-	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this);
+	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, isPDFA, this, true, m_pInternal->wsTempFolder);
 }
 int CPdfFile::SaveToFile(const std::wstring& wsPath)
 {
@@ -581,7 +584,11 @@ HRESULT CPdfFile::put_Height(const double& dHeight)
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
 	if (m_pInternal->pEditor)
-		return S_OK;
+	{
+		if (m_pInternal->pEditor->IsEditPage())
+			return S_OK;
+		return m_pInternal->pWriter->put_Height(dHeight, false);
+	}
 	return m_pInternal->pWriter->put_Height(dHeight);
 }
 HRESULT CPdfFile::get_Width(double* dWidth)
@@ -595,7 +602,11 @@ HRESULT CPdfFile::put_Width(const double& dWidth)
 	if (!m_pInternal->pWriter)
 		return S_FALSE;
 	if (m_pInternal->pEditor)
-		return S_OK;
+	{
+		if (m_pInternal->pEditor->IsEditPage())
+			return S_OK;
+		return m_pInternal->pWriter->put_Width(dWidth, false);
+	}
 	return m_pInternal->pWriter->put_Width(dWidth);
 }
 HRESULT CPdfFile::get_DpiX(double* dDpiX)

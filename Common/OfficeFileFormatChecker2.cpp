@@ -937,6 +937,8 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 	}
 	else if (0 == sExt.compare(L".mht") || 0 == sExt.compare(L".mhtml"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
+	else if (0 == sExt.compare(L".md"))
+		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MD;
 	else if (0 == sExt.compare(L".csv") || 0 == sExt.compare(L".xls") || 0 == sExt.compare(L".xlsx") || 0 == sExt.compare(L".xlsb"))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	else if (0 == sExt.compare(L".html") || 0 == sExt.compare(L".htm"))
@@ -945,7 +947,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
 	else if (0 == sExt.compare(L".doct")) // случай архива с html viewer
 		nFileType = AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY;
-	else if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml") || 0 == sExt.compare(L".rtf")	|| 0 == sExt.compare(L".doc") || 0 == sExt.compare(L".docx") || 0 == sExt.compare(L".md"))
+	else if (0 == sExt.compare(L".txt") || 0 == sExt.compare(L".xml") || 0 == sExt.compare(L".rtf")	|| 0 == sExt.compare(L".doc") || 0 == sExt.compare(L".docx"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 	else if (0 == sExt.compare(L".pages"))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
@@ -1665,6 +1667,14 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".fodt";
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT:
 		return L".ott";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES:
+		return L".pages";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP:
+		return L".hwp";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX:
+		return L".hwpx";
+	case AVS_OFFICESTUDIO_FILE_DOCUMENT_MD:
+		return L".md";
 
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:
 		return L".pptx";
@@ -1688,6 +1698,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".otp";
 	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG:
 		return L".odg";
+	case AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY:
+		return L".key";
 
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:
 		return L".xlsx";
@@ -1709,6 +1721,8 @@ std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 		return L".fods";
 	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS:
 		return L".ots";
+	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS:
+		return L".numbers";
 
 	case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:
 	case AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF:
@@ -1838,6 +1852,14 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT_FLAT;
 	if (L".ott" == ext)
 		return AVS_OFFICESTUDIO_FILE_DOCUMENT_OTT;
+	if (L".pages" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_PAGES;
+	if (L".hwp" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_HWP;
+	if (L".hwpx" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_HWPX;
+	if (L".md" == ext)
+		return AVS_OFFICESTUDIO_FILE_DOCUMENT_MD;
 
 	if (L".pptx" == ext)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
@@ -1861,6 +1883,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_OTP;
 	if (L".odg" == ext)
 		return AVS_OFFICESTUDIO_FILE_PRESENTATION_ODG;
+	if (L".key" == ext)
+		return AVS_OFFICESTUDIO_FILE_PRESENTATION_KEY;
 
 	if (L".xlsx" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
@@ -1888,6 +1912,8 @@ int COfficeFileFormatChecker::GetFormatByExtension(const std::wstring &sExt)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_OTS;
 	if (L".ods" == ext)
 		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+	if (L".numbers" == ext)
+		return AVS_OFFICESTUDIO_FILE_SPREADSHEET_NUMBERS;
 
 	if (L".ooxml" == ext)
 		return AVS_OFFICESTUDIO_FILE_OTHER_OOXML;

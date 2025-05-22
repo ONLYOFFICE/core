@@ -406,19 +406,275 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// Reader
 	//----------------------------------------------------------------------------------------
-	bool ReadOpenTypeHeader()
+	struct COpenTypeReader
 	{
-	}
-	bool ReadOpenTypeFile(unsigned short ushFaceIndex)
-	{
-		unsigned short mFaceIndex = ushFaceIndex;
+		enum class EOpenTypeInputType
+		{
+			EOpenTypeTrueType,
+			EOpenTypeCFF
+		};
+		struct TableEntry
+		{
+			unsigned long CheckSum;
+			unsigned long Offset;
+			unsigned long Length;
+		};
 
-		unsigned long mHeaderOffset = 0;
-		unsigned long mTableOffset  = 0;
+		typedef std::map<unsigned int, TableEntry> UIntToTableEntryMap;
+
+		unsigned short mFaceIndex;
+		unsigned short mTablesCount;
+		unsigned long mHeaderOffset;
+		unsigned long mTableOffset;
+
+		UIntToTableEntryMap mTables;
+
+		CMemoryStream* mPrimitivesReader;
+		EOpenTypeInputType mFontType;
+
+	public:
+		COpenTypeReader();
+
+		bool ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex);
+		bool ReadOpenTypeHeader();
+		bool ReadOpenTypeSFNT();
+		bool ReadOpenTypeSFNTFromDfont();
+		unsigned long GetTag(const char* inTagName);
+	};
+	COpenTypeReader::COpenTypeReader()
+	{
+		mFaceIndex    = 0;
+		mHeaderOffset = 0;
+		mTableOffset  = 0;
+
+		mPrimitivesReader = NULL;
+		mFontType = EOpenTypeInputType::EOpenTypeCFF;
+	}
+	bool COpenTypeReader::ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex)
+	{
+		mFaceIndex = ushFaceIndex;
+
+		mPrimitivesReader = new CMemoryStream(nDataLength);
+		mPrimitivesReader->Read(pData, &nDataLength);
+
+		mHeaderOffset = mPrimitivesReader->Tell();
+		mTableOffset  = mPrimitivesReader->Tell();
 
 		bool status = ReadOpenTypeHeader();
 		if (!status)
 			return false;
+
+		return status;
+	}
+	bool COpenTypeReader::ReadOpenTypeHeader()
+	{
+		bool status;
+		TableEntry tableEntry;
+		unsigned int tableTag;
+
+		status = ReadOpenTypeSFNT();
+		if (!status)
+			return false;
+
+		mPrimitivesReader->Seek(mHeaderOffset, SeekSet);
+		unsigned int sfntVersion = mPrimitivesReader->ReadUInt();
+		mTablesCount = mPrimitivesReader->ReadUShort();
+		// skip the next 6
+		mPrimitivesReader->Seek(6, SeekCur);
+
+		for (unsigned short i = 0; i < mTablesCount; ++i)
+		{
+			tableTag = mPrimitivesReader->ReadUInt();
+			tableEntry.CheckSum = mPrimitivesReader->ReadUInt();
+			tableEntry.Offset = mPrimitivesReader->ReadUInt();
+			tableEntry.Length = mPrimitivesReader->ReadUInt();
+			tableEntry.Offset += mTableOffset;
+			mTables.insert(UIntToTableEntryMap::value_type(tableTag, tableEntry));
+		}
+		status = !mPrimitivesReader->IsEof();
+
+		return status;
+	}
+	bool COpenTypeReader::ReadOpenTypeSFNT()
+	{
+		mPrimitivesReader->Seek(mHeaderOffset, EWhenceMode::SeekSet);
+		unsigned int sfntVersion = mPrimitivesReader->ReadUInt();
+
+		if (mPrimitivesReader->IsEof())
+			return false;
+
+		if (0x74746366 /* ttcf */ == sfntVersion)
+		{
+			// mgubi: a TrueType composite font, just get to the right face table
+			// for the format see http://www.microsoft.com/typography/otspec/otff.htm
+			unsigned int ttcVersion = mPrimitivesReader->ReadUInt();
+			unsigned int numFonts   = mPrimitivesReader->ReadUInt();
+
+			if (mFaceIndex >= numFonts)
+				return false;
+
+			unsigned int offsetTable;
+			for (int i = 0; i <= mFaceIndex; ++i)
+				offsetTable = mPrimitivesReader->ReadUInt();
+
+			mHeaderOffset = mHeaderOffset + offsetTable;
+
+			return ReadOpenTypeSFNT();
+		}
+		else if ((0x10000 == sfntVersion) || (0x74727565 /* true */ == sfntVersion))
+		{
+			mFontType = EOpenTypeInputType::EOpenTypeTrueType;
+			return true;
+		}
+		else if (0x4F54544F /* OTTO */ == sfntVersion)
+		{
+			mFontType = EOpenTypeInputType::EOpenTypeCFF;
+			return true;
+		}
+		else if (ReadOpenTypeSFNTFromDfont())
+			return true;
+		return false;
+	}
+	bool COpenTypeReader::ReadOpenTypeSFNTFromDfont()
+	{
+		bool status = true;
+		// mac resource fork header parsing
+		// see: https://developer.apple.com/legacy/mac/library/documentation/mac/pdf/MoreMacintoshToolbox.pdf
+
+		unsigned int rdata_pos, map_pos, rdata_len, map_offset;
+		// verify that the header is composed as expected
+		BYTE head[16], head2[16];
+
+		mPrimitivesReader->Seek(mHeaderOffset, SeekSet);
+
+		for (unsigned short i = 0; i < 16; i++)
+			head[i] = mPrimitivesReader->ReadUChar();
+
+		if (mPrimitivesReader->IsEof())
+			return false;
+
+		rdata_pos = ( head[0] << 24 )  | ( head[1] << 16 )  | ( head[2] <<  8 )  | head[3] ;
+		map_pos   = ( head[4] << 24 )  | ( head[5] << 16 )  | ( head[6] <<  8 )  | head[7] ;
+		rdata_len = ( head[8] << 24 )  | ( head[9] << 16 )  | ( head[10] << 8 )  | head[11];
+
+		mPrimitivesReader->Seek(map_pos, SeekSet);
+
+		for (unsigned short i = 0; i < 16; i++)
+			head2[i] = mPrimitivesReader->ReadUChar();
+		if (mPrimitivesReader->IsEof())
+			return false;
+
+		/* If we have reached this point then it is probably a mac resource */
+		/* file.  Now, does it contain any interesting resources?           */
+
+		mPrimitivesReader->Seek(4   /* skip handle to next resource map */
+							   + 2  /* skip file resource number */
+							   + 2  /* skip attributes */
+							   , SeekCur);
+
+		unsigned short type_list = mPrimitivesReader->ReadUShort();
+		if (mPrimitivesReader->IsEof())
+			return false;
+
+		map_offset = map_pos + type_list;
+
+		mPrimitivesReader->Seek(map_offset, SeekSet);
+
+		// read the resource type list
+
+		unsigned short cnt = mPrimitivesReader->ReadUShort();
+		if (mPrimitivesReader->IsEof())
+			return false;
+
+		bool foundSfnt = false;
+
+		for (int i = 0; i < cnt + 1 && !mPrimitivesReader->IsEof() && !foundSfnt; ++i)
+		{
+			unsigned short subcnt, rpos;
+			int tag = mPrimitivesReader->ReadUInt();
+			if (mPrimitivesReader->IsEof())
+				break;
+			subcnt = mPrimitivesReader->ReadUShort();
+			if (mPrimitivesReader->IsEof())
+				break;
+			rpos = mPrimitivesReader->ReadUShort();
+			if (mPrimitivesReader->IsEof())
+				break;
+
+			if ( (unsigned long)tag == GetTag("sfnt") )
+			{
+				mPrimitivesReader->Seek(map_offset + rpos, SeekSet);
+
+				// read the reference list for the 'sfnt' resources
+				// the map is used to order the references by reference id
+
+				std::map<unsigned short, unsigned long> resOffsetsMap;
+
+				for (int j = 0; j < subcnt + 1 && !mPrimitivesReader->IsEof(); ++j )
+				{
+					unsigned short res_id, res_name;
+					unsigned int temp, mbz, res_offset;
+					res_id = mPrimitivesReader->ReadUShort();
+					if (mPrimitivesReader->IsEof())
+						break;
+					res_name = mPrimitivesReader->ReadUShort();
+					if (mPrimitivesReader->IsEof())
+						break;
+					temp = mPrimitivesReader->ReadUInt();
+					if (mPrimitivesReader->IsEof())
+						break;
+					mbz = mPrimitivesReader->ReadUInt();
+					if (mPrimitivesReader->IsEof())
+						break;
+					res_offset = temp & 0xFFFFFFL;
+					resOffsetsMap.insert(std::pair<unsigned short, unsigned long>(res_id,rdata_pos + res_offset));
+				}
+				if (mPrimitivesReader->IsEof())
+					break;
+
+				int face_index = mFaceIndex, cur_face = 0;
+				unsigned long fontOffset = 0;
+
+				for (std::map<unsigned short, unsigned long>::iterator it = resOffsetsMap.begin(); it != resOffsetsMap.end(); ++it, ++cur_face)
+				{
+					if (cur_face == face_index)
+					{
+						fontOffset = it->second;
+						break;
+					}
+				}
+
+				if (cur_face != face_index)
+				{
+					status = false;
+					break;
+				}
+
+
+				mHeaderOffset = fontOffset + 4; // skip the size of the resource
+				mTableOffset = mHeaderOffset;
+
+				// try to open the resource as a TrueType font specification
+				foundSfnt = true;
+			}
+		}
+
+		if (status && foundSfnt)
+			return ReadOpenTypeSFNT();
+		return false;
+	}
+	unsigned long COpenTypeReader::GetTag(const char* inTagName)
+	{
+		BYTE buffer[4];
+		unsigned short i = 0;
+
+		for(; i < strlen(inTagName); ++i)
+			buffer[i] = (BYTE)inTagName[i];
+		for(; i < 4; ++i)
+			buffer[i] = 0x20;
+
+		return	((unsigned long)buffer[0] << 24) + ((unsigned long)buffer[1] << 16) +
+				((unsigned long)buffer[2] << 8) + buffer[3];
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType

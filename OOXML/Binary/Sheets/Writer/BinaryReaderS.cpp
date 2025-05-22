@@ -2035,6 +2035,10 @@ int BinaryStyleTableReader::ReadAligment(BYTE type, long length, void* poResult)
 		pAligment->m_oWrapText.Init();
 		pAligment->m_oWrapText->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
 	}
+	else if (c_oSerAligmentTypes::ReadingOrder == type)
+	{
+		pAligment->m_oReadingOrder = m_oBufferedStream.GetLong();
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

@@ -1496,54 +1496,53 @@ void BinaryStyleTableWriter::WriteProtection(const OOX::Spreadsheet::CProtection
 void BinaryStyleTableWriter::WriteAligment(const OOX::Spreadsheet::CAligment& aligment)
 {
 	int nCurPos = 0;
-	//Horizontal
 	if(false != aligment.m_oHorizontal.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::Horizontal);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(aligment.m_oHorizontal->GetValue());
 	}
-	//Indent
 	if(false != aligment.m_oIndent.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::Indent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(*aligment.m_oIndent);
 	}
-	//RelativeIndent
 	if(false != aligment.m_oRelativeIndent.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::RelativeIndent);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(*aligment.m_oRelativeIndent);
 	}
-	//ShrinkToFit
 	if(false != aligment.m_oShrinkToFit.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::ShrinkToFit);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(aligment.m_oShrinkToFit->ToBool());
 	}
-	//TextRotation
 	if(false != aligment.m_oTextRotation.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::TextRotation);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 		m_oBcw.m_oStream.WriteLONG(*aligment.m_oTextRotation);
 	}
-	//Vertical
 	if(false != aligment.m_oVertical.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::Vertical);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBYTE(aligment.m_oVertical->GetValue());
 	}
-	//WrapText
 	if(false != aligment.m_oWrapText.IsInit())
 	{
 		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::WrapText);
 		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 		m_oBcw.m_oStream.WriteBOOL(aligment.m_oWrapText->ToBool());
+	}
+	if (false != aligment.m_oReadingOrder.IsInit())
+	{
+		m_oBcw.m_oStream.WriteBYTE(c_oSerAligmentTypes::ReadingOrder);
+		m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+		m_oBcw.m_oStream.WriteLONG(*aligment.m_oReadingOrder);
 	}
 }
 void BinaryStyleTableWriter::WriteFills(const OOX::Spreadsheet::CFills& fills, OOX::Spreadsheet::CIndexedColors* pIndexedColors, PPTX::Theme* pTheme)

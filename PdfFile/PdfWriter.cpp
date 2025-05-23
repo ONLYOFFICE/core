@@ -1455,6 +1455,8 @@ HRESULT CPdfWriter::AddFormField(NSFonts::IApplicationFonts* pAppFonts, CFormFie
 
 		if (pField->GetFont() && pField->GetFont() != m_pFont && pField->GetFont()->GetFontType() == PdfWriter::fontCIDType2)
 			pFontTT = m_pDocument->CreateTrueTypeFont((PdfWriter::CFontCidTrueType*)pField->GetFont());
+		else
+			pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
 		pField->SetDefaultAppearance(pFontTT, m_oFont.GetSize(), PdfWriter::TRgb(oColor.r, oColor.g, oColor.b));
 
 		std::wstring wsPlaceHolder = pPr->GetPlaceHolder();

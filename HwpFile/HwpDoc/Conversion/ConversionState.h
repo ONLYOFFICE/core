@@ -15,6 +15,7 @@ struct TConversionState
 	bool m_bOpenedP;
 	bool m_bOpenedR;
 	bool m_bIsNote;
+	bool m_bInTable;
 
 	bool m_bInTextBox; // TODO:: используется, чтобы в wps:txbx не появилась новая фигура (посмотреть этот момент нужно подробнее)
 
@@ -39,7 +40,7 @@ struct TConversionState
 	std::map<unsigned int, const CCtrlField*> m_mOpenField;
 
 	TConversionState()
-	    : m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0),
+	    : m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTable(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0),
 	      m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_eBreakType(EBreakType::None)
 	{}
 };

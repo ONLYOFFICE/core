@@ -3,7 +3,7 @@
 namespace HWP
 {
 CCtrlCharacter::CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar)
-	: CCtrl(sCtrlID), m_eCtrlChar(eCtrlChar)
+	: CCtrl(sCtrlID), m_eCtrlChar(eCtrlChar), m_nCharShapeID(0)
 {}
 
 CCtrlCharacter::CCtrlCharacter(const HWP_STRING& sCtrlID, ECtrlCharType eCtrlChar, int nCharShapeID)
@@ -19,7 +19,6 @@ int CCtrlCharacter::GetCharShapeId() const
 {
 	return m_nCharShapeID;
 }
-
 
 ECtrlCharType CCtrlCharacter::GetType() const
 {

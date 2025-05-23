@@ -57,6 +57,9 @@ public:
 
 	TMatrix GetFinalMatrix() const;
 
+	bool HorzFlip() const;
+	bool VertFlip() const;
+
 	static int ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };
 }

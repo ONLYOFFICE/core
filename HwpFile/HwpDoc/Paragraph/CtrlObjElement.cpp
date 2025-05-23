@@ -158,6 +158,16 @@ TMatrix CCtrlObjElement::GetFinalMatrix() const
 	return oMatrix;
 }
 
+bool CCtrlObjElement::HorzFlip() const
+{
+	return m_bHorzFlip;
+}
+
+bool CCtrlObjElement::VertFlip() const
+{
+	return m_bVerFlip;
+}
+
 int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();

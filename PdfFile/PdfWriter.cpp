@@ -2514,7 +2514,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 				LONG nLen = 0;
 				BYTE* pRender = pPr->GetRender(nLen);
-				DrawWidgetAP(pAnnot, pRender, nLen, nR);
+				DrawWidgetAP(pAnnot, pRender, nLen, nR, pChoiceWidget->GetWidgetType() == PdfWriter::WidgetCombobox);
 
 				PdfWriter::CFontDict* pFont = NULL;
 				if (m_pFont14)
@@ -3941,7 +3941,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 
 	return pAP;
 }
-void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender, int nRotate)
+void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nLenRender, int nRotate, bool bDiff)
 {
 	if (!pA || !pRender)
 		return;
@@ -3952,15 +3952,17 @@ void CPdfWriter::DrawWidgetAP(PdfWriter::CAnnotation* pA, BYTE* pRender, LONG nL
 	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
-	if (nRotate == 0 || nRotate == 180)
-		m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom));
-	else if (nRotate == 90 || nRotate == 270)
+	double dY = pAnnot->GetRect().fBottom;
+	if (nRotate == 90 || nRotate == 270)
 	{
 		double dW = pAnnot->GetWidth();
 		double dH = pAnnot->GetHeight();
 		double dDiff = dW / 2.0 - dH / 2.0;
-		m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(pAnnot->GetRect().fBottom - dDiff));
+		if (!bDiff)
+			dDiff *= 2.0;
+		dY -= dDiff;
 	}
+	m_oTransform.Set(1, 0, 0, 1, PT_2_MM(-pAnnot->GetPageX() - pAnnot->GetRect().fLeft), PT_2_MM(dY));
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP(nRotate);
 

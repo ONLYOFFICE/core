@@ -420,8 +420,8 @@ namespace PdfWriter
 
 		void DrawLine();
 
-		void DrawCheckBoxCircle(bool bSet, bool bN);
-		void DrawCheckBoxSquare(bool bSet, bool bN);
+		void DrawCheckBoxCircle(int nRotate, bool bSet, bool bN);
+		void DrawCheckBoxSquare(int nRotate, bool bSet, bool bN);
 
 		CStream* GetStream() const { return m_pStream; }
 		CFontDict* GetFont() { return m_pFont; }

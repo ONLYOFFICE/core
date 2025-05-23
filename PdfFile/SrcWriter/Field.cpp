@@ -3163,7 +3163,7 @@ namespace PdfWriter
 		CLineAnnotation* pAnnot = (CLineAnnotation*)m_pAnnot;
 		DrawLineArrow(m_pStream, dBorderSize, pAnnot->dL[0], pAnnot->dL[1], pAnnot->dL[2], pAnnot->dL[3], pAnnot->m_nLE1, pAnnot->m_nLE2, dLL, dLLE, dLLO);
 	}
-	void CAnnotAppearanceObject::DrawCheckBoxCircle(bool bSet, bool bN)
+	void CAnnotAppearanceObject::DrawCheckBoxCircle(int nRotate, bool bSet, bool bN)
 	{
 		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
 		if (!pAnnot)
@@ -3178,6 +3178,8 @@ namespace PdfWriter
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
 		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
 		double dCX = dW / 2.0, dCY = dH / 2.0;
 		double dR = std::min(dW, dH) / 2.0;
 
@@ -3274,7 +3276,7 @@ namespace PdfWriter
 		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dShift);
 		m_pStream->WriteStr("f\012Q\012");
 	}
-	void CAnnotAppearanceObject::DrawCheckBoxSquare(bool bSet, bool bN)
+	void CAnnotAppearanceObject::DrawCheckBoxSquare(int nRotate, bool bSet, bool bN)
 	{
 		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
 		if (!pAnnot)
@@ -3289,6 +3291,8 @@ namespace PdfWriter
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
 		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
 
 		// Задний фон
 		m_pStream->WriteStr("q\012");

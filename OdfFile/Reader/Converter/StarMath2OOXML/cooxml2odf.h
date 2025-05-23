@@ -43,6 +43,24 @@ namespace StarMath
 				delete this;
 		}
 	};
+	struct TFormulaSize
+	{
+		TFormulaSize():m_iHeight(0),m_iWidth(0) {};
+		TFormulaSize(const float& iHeight,const float& iWidth):m_iHeight(iHeight),m_iWidth(iWidth) {};
+		float m_iHeight;
+		float m_iWidth;
+		void Zeroing()
+		{
+			m_iHeight = 0;
+			m_iWidth = 0;
+		}
+		TFormulaSize& operator=(const TFormulaSize& stOther)
+		{
+			this->m_iHeight = stOther.m_iHeight;
+			this->m_iWidth = stOther.m_iWidth;
+			return *this;
+		}
+	};
 	struct StStyleMenClose
 	{
 		StStyleMenClose():m_iStyle(0),m_bMenClose(false),m_bUnderlineClose(false)
@@ -96,7 +114,7 @@ namespace StarMath
 		void ConversionBar(OOX::Logic::CBar* pBar);
 		StValuePr ConversionBarPr(OOX::Logic::CBarPr* pBarPr, StStyleMenClose &stStyle);
 		void ConversionSPre(OOX::Logic::CSPre* pSPre);
-		static void EmptyBlock(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation);
+		static void EmptyBlock(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,TFormulaSize& stSize);
 		void ConversionLimLow(OOX::Logic::CLimLow* pLimLow);
 		void ConversionLimUpp(OOX::Logic::CLimUpp* pLimUpp);
 		void ConversionLim(OOX::Logic::CLim* pLim);
@@ -118,7 +136,9 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter* pXmlWrite);
-		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText);
+		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText,TFormulaSize& stSize);
+		static void ComparisonSizeByHeight(TFormulaSize& stLeft,const TFormulaSize& stRight);
+		static void ComparisonSizeByWidth(TFormulaSize& stLeft,const TFormulaSize& stRight);
 		std::wstring TransformationUTF32(const std::wstring& wsText);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
@@ -126,6 +146,7 @@ namespace StarMath
 		void CreateAttribute(StValuePr*& pAttribute);
 		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
 		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
+		TFormulaSize GetFormulaSize();
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
@@ -137,6 +158,8 @@ namespace StarMath
 		std::stack<StValuePr*> m_stAttribute;
 		std::wstring m_wsBaseColor;
 		unsigned int m_uiBaseSize;
+		TFormulaSize m_stSize;
+		bool m_bHeight;
 		bool m_bStretchyAcc;
 	};
 	class COneElement
@@ -146,7 +169,7 @@ namespace StarMath
 		COneElement(std::wstring& wsOneElement);
 		virtual ~COneElement();
 		virtual void Parse(std::wstring::iterator& itStart,std::wstring::iterator& itEnd,COneElement*& pElement) = 0;
-		virtual void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) = 0;
+		virtual void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) = 0;
 		virtual void SetAttribute(StValuePr* pAttribute) = 0;
 		static COneElement* CreateElement(std::wstring& wsOneElement);
 		void SetType(const TypeElement& enType);
@@ -170,7 +193,7 @@ namespace StarMath
 		}
 		CNumberOrLetter(const std::wstring& wsElement,const TypeElement& enType);
 		virtual ~CNumberOrLetter();
-		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) override;
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
 		void SetAttribute(StValuePr* pAttribute) override;
 		const std::wstring& GetString();
@@ -198,7 +221,7 @@ namespace StarMath
 		}
 		virtual ~CBinOperator();
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd, COneElement *&pElement) override;
-		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) override;
 		void SetAttribute(StValuePr* pAttribute) override;
 		bool CheckLeftArg();
 		void SetLeftArg(COneElement* pElement);
@@ -226,7 +249,7 @@ namespace StarMath
 		}
 		virtual ~CRelationsAndOperationsOnSets();
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
-		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) override;
 		void SetAttribute(StValuePr* pAttribute) override;
 		void SetLeftArg(COneElement* pElement);
 		void SetRightArg(COneElement* pElement);
@@ -248,7 +271,7 @@ namespace StarMath
 		}
 		virtual ~CSpace();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
-		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) override;
 		void SetAttribute(StValuePr* pAttribute) override;
 	};
 	class CSpecialChar: public COneElement
@@ -260,7 +283,7 @@ namespace StarMath
 		}
 		virtual ~CSpecialChar();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
-		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation,TFormulaSize& stSize) override;
 		void SetAttribute(StValuePr* pAttribute) override;
 		static std::wstring DefinitionSpecialChar(const std::wstring& wsSymbol);
 	private:

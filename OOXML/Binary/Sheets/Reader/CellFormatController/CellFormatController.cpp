@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,8 +31,6 @@
  */
 
 #include "CellFormatController.h"
-#include "DateReader.h"
-#include "DigitReader.h"
 
 #include "../../../../XlsxFormat/Styles/NumFmts.h"
 #include "../../../../XlsxFormat/Styles/Xfs.h"
@@ -98,7 +96,7 @@ std::vector<std::map<std::wstring, std::wstring>> FormulaController::mapReplacem
 //---------------------------------------------------------------------------------------------------------------------
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid):
-    m_pStyles{styles}, lcid_{lcid}
+    m_pStyles{styles}, lcid_{lcid}, dateReader_{lcid_}
 {
 	// Добавим стили для wrap-а
 	m_pStyles->m_oCellXfs.Init();
@@ -152,11 +150,10 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		
 		return result;
 	}
-	DigitReader digits = {};
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
 	
-	if(digits.ReadScientific(value, digitValue, digitFormat))
+    if(digitReader_.ReadScientific(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
@@ -186,7 +183,7 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		}
 		return result;
 	}
-	else if(digits.ReadDigit(value, digitValue, digitFormat))
+    else if(digitReader_.ReadDigit(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
@@ -218,12 +215,11 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		return result;
 	}
 
-    DateReader dateReader = {lcid_};
     double digitalDate  = 0;
     bool hasDate = false;
     bool hasTime = false;
    
-	auto validDate = dateReader.GetDigitalDate(value, digitalDate, hasDate, hasTime);
+    auto validDate = dateReader_.GetDigitalDate(value, digitalDate, hasDate, hasTime);
 	if (validDate)
 	{
 		if(!pCell_->m_oValue.IsInit())

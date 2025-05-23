@@ -423,20 +423,26 @@ public:
 		std::vector<std::wstring> arShapes;
 		if (0 == mode)
 			arShapes = oRenderer.ScanPage(m_pFile, nPageIndex);
-		else
+		else if (1 == mode)
 			arShapes = oRenderer.ScanPagePptx(m_pFile, nPageIndex);
 
 		int nLen = (int)arShapes.size();
 
 		NSWasm::CData oRes;
-		oRes.SkipLen();
-		oRes.AddInt(nLen);
 
-		for (int i = 0; i < nLen; ++i)
-			oRes.WriteString(arShapes[i]);
-
-		oRes.WriteLen();
-
+		// mode 2 is binary format
+		if (mode != 2)
+		{
+			oRes.SkipLen();
+			oRes.AddInt(nLen);
+			for (int i = 0; i < nLen; ++i)
+				oRes.WriteString(arShapes[i]);
+			oRes.WriteLen();
+		}
+		else
+		{
+			oRes = oRenderer.ScanPageBin(m_pFile, nPageIndex);
+		}
 		BYTE* res = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();
 		return res;

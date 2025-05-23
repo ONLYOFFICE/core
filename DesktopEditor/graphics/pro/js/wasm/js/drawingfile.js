@@ -1570,6 +1570,11 @@ CFile.prototype["scanPage"] = function(page, mode)
 
 	if (!reader) return [];
 
+	if (mode == 2) {
+		ptr.free();
+		return reader.data;
+	}
+
 	let shapesCount = reader.readInt();
 	let shapes = new Array(shapesCount);
 

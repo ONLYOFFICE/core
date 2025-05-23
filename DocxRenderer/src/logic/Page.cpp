@@ -460,23 +460,24 @@ namespace NSDocxRenderer
 
 		return xml_shapes;
 	}
-	std::vector<NSWasm::CData> CPage::GetShapesBin()
+	NSWasm::CData CPage::GetShapesBin()
 	{
 		ReorderShapesForPptx();
 
-		std::vector<NSWasm::CData> bin_shapes;
+		NSWasm::CData writer;
+		writer.SkipLen();
+		writer.AddInt(static_cast<unsigned int>(m_arShapes.size()));
 		for (const auto& shape : m_arShapes)
 		{
 			if (!shape) continue;
-			NSWasm::CData writer;
 			shape->ToBin(writer);
-			bin_shapes.push_back(std::move(writer));
 		}
 
 		// if (!m_arCompleteObjectsXml.empty())
 		// 	xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
 
-		return bin_shapes;
+		writer.WriteLen();
+		return writer;
 	}
 	void CPage::AddCompleteXml(const std::wstring oXml)
 	{

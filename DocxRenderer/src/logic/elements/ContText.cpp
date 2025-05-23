@@ -492,7 +492,7 @@ namespace NSDocxRenderer
 	}
 	void CContText::ToBin(NSWasm::CData& oWriter) const
 	{
-		LONG lCalculatedSpacing = 0;
+		int lCalculatedSpacing = 0;
 		if (!m_oText.empty())
 		{
 			double dSpacing = (m_dWidth - m_oSelectedSizes.dWidth) / (m_oText.length());
@@ -520,16 +520,19 @@ namespace NSDocxRenderer
 			if (m_bIsDoubleStrikeout) strike = 0;
 			else if (m_bIsStrikeoutPresent) strike = 2;
 			oWriter.WriteBYTE(16); oWriter.WriteBYTE(strike);
-
-			oWriter.WriteBYTE(15); oWriter.AddInt(lCalculatedSpacing);
+			oWriter.WriteBYTE(15); oWriter.AddSInt(lCalculatedSpacing);
 			oWriter.WriteBYTE(18); oWriter.WriteBYTE(m_bIsUnderlinePresent ? 13 : 12);
-			oWriter.WriteBYTE(17); oWriter.AddInt(static_cast<unsigned int>(m_pFontStyle->dFontSize));
+			unsigned int font_size = static_cast<unsigned int>(m_pFontStyle->dFontSize) * 100;
+			const unsigned int min_font_size = 100;
+			oWriter.WriteBYTE(17); oWriter.AddInt(std::max(font_size, std::max(font_size, min_font_size)));
 
 			oWriter.WriteBYTE(2);
 			if (m_eVertAlignType == eVertAlignType::vatSubscript)
-				oWriter.AddInt(-25000);
+				oWriter.AddSInt(-25000);
 			else if (m_eVertAlignType == eVertAlignType::vatSuperscript)
-				oWriter.AddInt(30000);
+				oWriter.AddSInt(30000);
+			else
+				oWriter.AddInt(0);
 
 			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 

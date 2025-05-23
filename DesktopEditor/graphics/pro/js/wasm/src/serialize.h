@@ -152,6 +152,13 @@ namespace NSWasm
 			m_pDataCur += 4;
 			m_lSizeCur += 4;
 		}
+		void AddSInt(int value)
+		{
+			AddSize(4);
+			memcpy(m_pDataCur, &value, sizeof(int));
+			m_pDataCur += 4;
+			m_lSizeCur += 4;
+		}
 		void AddInt(unsigned int value, size_t pos)
 		{
 			if (pos < m_lSizeCur)
@@ -234,15 +241,16 @@ namespace NSWasm
 		}
 		void WriteStringUtf16(const std::wstring& sStr)
 		{
-			unsigned int size = NSFile::CUtf8Converter::GetUtf16SizeFromUnicode(sStr.c_str(), (LONG)sStr.length(), false);
+			unsigned int size = static_cast<unsigned int>(sStr.size());
 			int output = 0;
+			size_t max_addition_size = 4 * size + 3 + 2;
 
-			AddSize(size + 4);
+			AddSize(max_addition_size);
 			memcpy(m_pDataCur, &size, sizeof(unsigned int));
-			m_pDataCur += 4;
-			m_lSizeCur += 4;
+			m_pDataCur += sizeof(unsigned int); // + 4
+			m_lSizeCur += sizeof(unsigned int);
 
-			NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sStr.c_str(), (LONG)sStr.length(), m_pDataCur, output, false);
+			NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sStr.c_str(), (LONG)size, m_pDataCur, output, false);
 
 			m_pDataCur += static_cast<unsigned int>(output);
 			m_lSizeCur += static_cast<unsigned int>(output);

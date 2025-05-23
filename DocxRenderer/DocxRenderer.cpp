@@ -145,7 +145,7 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.Clear();
 	return xml_shapes;
 }
-std::vector<NSWasm::CData> CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage)
+NSWasm::CData CDocxRenderer::ScanPageBin(IOfficeDrawingFile* pFile, size_t nPage)
 {
 	m_pInternal->m_oDocument.Clear();
 	m_pInternal->m_oDocument.Init(false);

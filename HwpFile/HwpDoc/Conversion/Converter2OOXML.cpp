@@ -489,7 +489,7 @@ void CConverter2OOXML::WriteCaption(const CCtrlCommon* pCtrlCommon, NSStringUtil
 
 void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (oState.m_bOpenedP)
+	if (oState.m_bOpenedP || oState.m_bLastEmptyNode)
 		return;
 
 	oBuilder.WriteString(L"<w:p>");
@@ -500,6 +500,8 @@ void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyl
 
 	oBuilder.WriteString(L"</w:pPr>");
 	oBuilder.WriteString(L"</w:p>");
+
+	oState.m_bLastEmptyNode = true;
 }
 
 void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -580,6 +582,16 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 					oState.m_arCtrlsHeadFoot.push_back((const CCtrlHeadFoot*)pCtrl);
 				break;
 			}
+			case ECtrlObjectType::PageNumPos:
+			{
+				oState.m_pPageNum = dynamic_cast<const CCtrlPageNumPos*>(pCtrl);
+				break;
+			}
+			case HWP::ECtrlObjectType::NewNumber:
+			{
+				oState.m_pNewNumber = dynamic_cast<const CCtrlNewNumber*>(pCtrl);
+				break;
+			}
 			default:
 				break;
 		}
@@ -610,6 +622,9 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		oBuilder.WriteEncodeXmlString(wsStyleId);
 		oBuilder.WriteString(L"\"/>");
 	}
+
+	if (oState.m_bInTable)
+		oBuilder.WriteString(L"<w:wordWrap w:val=\"1\"/>");
 
 	if (m_oStyleConverter.GetLastParaShapeId() != shParaShapeID)
 		m_oStyleConverter.WriteDifferenceParagraphStyles(m_oStyleConverter.GetLastParaShapeId(), shParaShapeID, *m_pContext, oBuilder);
@@ -642,9 +657,6 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		case EHeadingType::NONE:
 			break;
 	}
-
-	if (oState.m_bInTable)
-		oBuilder.WriteString(L"<w:wordWrap w:val=\"1\"/>");
 }
 
 void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -1146,20 +1158,33 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 			oState.m_arCtrlsHeadFoot.clear();
 		}
 
+		#define WRITE_ID(id)\
+		if (!id.empty() && id.length() > 6)\
+		{\
+			const std::wstring wsType = id.substr(0, 6);\
+			AddContentType(id, L"application/vnd.openxmlformats-officedocument.wordprocessingml." + wsType + L"+xml");\
+			m_oDocXml.WriteString(L"<w:" + wsType + L"Reference w:type=\"default\" r:id=\"" + AddRelationship(wsType, id) + L"\"/>");\
+		}
+
+		if (nullptr != oState.m_pPageNum)
+		{
+			const std::wstring wsID = m_oFootnoteConverter.CreatePageNum(oState.m_pPageNum, *this);
+
+			WRITE_ID(wsID);
+
+			oState.m_pPageNum = nullptr;
+		}
+
 		for (const CCtrlHeadFoot* pCtrlHeadFoot : arCtrlsHeadFoot)
 		{
 			const std::wstring wsID = m_oFootnoteConverter.CreateHeadOrFoot((const CCtrlHeadFoot*)pCtrlHeadFoot, *this);
 
-			if (!wsID.empty() && wsID.length() > 6)
-			{
-				const std::wstring wsType = wsID.substr(0, 6);
-
-				AddContentType(wsID, L"application/vnd.openxmlformats-officedocument.wordprocessingml." + wsType + L"+xml");
-
-				m_oDocXml.WriteString(L"<w:" + wsType + L"Reference w:type=\"default\" r:id=\"" + AddRelationship(wsType, wsID) + L"\"/>");
-			}
+			WRITE_ID(wsID);
 		}
 	}
+
+	if (nullptr != oState.m_pNewNumber && ENumType::PAGE == oState.m_pNewNumber->GetNumType())
+		m_oDocXml.WriteString(L"<w:pgNumType w:start=\"" + std::to_wstring(oState.m_pNewNumber->GetNum()) + L"\"/>");
 
 	const CPage *pPage = (nullptr != oState.m_pSectionDef) ? oState.m_pSectionDef->GetPage() : nullptr;
 
@@ -1488,7 +1513,7 @@ void CConverter2OOXML::OpenDrawingNode(const CCtrlObjElement* pCtrlShape, NSStri
 		                             L"\" distR=\"" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetRightOutMargin() / 10)) +
 		                     L"\">");
 
-		WriteShapeExtent(pCtrlShape, oBuilder);
+		WriteShapeExtent(pCtrlShape, oBuilder, pWidth, pHeight);
 	}
 	else
 	{
@@ -1659,6 +1684,7 @@ void CConverter2OOXML::OpenParagraph(short shParaShapeID, short shParaStyleID, N
 
 	oBuilder.WriteString(L"<w:p>");
 	oState.m_bOpenedP = true;
+	oState.m_bLastEmptyNode = false;
 	WriteParagraphProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
 }
 

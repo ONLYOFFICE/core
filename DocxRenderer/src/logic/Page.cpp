@@ -513,7 +513,7 @@ namespace NSDocxRenderer
 			            cont->CalculateSpace() * c_dSPACE_WIDTH_COEF;
 
 			if (curr_line && fabs(curr_line->m_dBot - cont->m_dBot) <= c_dTHE_SAME_STRING_Y_PRECISION_MM &&
-			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 2 * space_width)
+			        fabs(curr_line->m_dRight - cont->m_dLeft) <= 3 * space_width)
 			{
 				curr_line->AddCont(cont);
 				continue;

@@ -1102,12 +1102,57 @@ namespace NSDocxRenderer
 
 				// WritePathLst
 				oWriter.StartRecord(4);
+				oWriter.AddInt(1);
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.StartRecord(0);
 				oWriter.AddInt(static_cast<unsigned int>(data.size()));
+
+				auto write_coords = [&oWriter] (const CVectorGraphics::CPathCommand& command) {
+					BYTE byte_count = 0;
+					oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+					for (const auto& point : command.points)
+					{
+						oWriter.WriteBYTE(byte_count++);
+						oWriter.WriteStringUtf16(std::to_wstring(point.x * c_dMMToEMU));
+						oWriter.WriteBYTE(byte_count++);
+						oWriter.WriteStringUtf16(std::to_wstring(point.y * c_dMMToEMU));
+					}
+					oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				};
+
 				for (const auto& command : data)
 				{
-					// todo
+					oWriter.StartRecord(0);
+					switch (command.type)
+					{
+					case CVectorGraphics::ePathCommandType::pctMove:
+						oWriter.StartRecord(1);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctLine:
+						oWriter.StartRecord(2);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctCurve:
+						oWriter.StartRecord(4);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctClose:
+						oWriter.StartRecord(3);
+						oWriter.EndRecord();
+						break;
+					default:
+						break;
+					}
+					oWriter.EndRecord();
 				}
-
+				oWriter.EndRecord();
+				oWriter.EndRecord();
 				oWriter.EndRecord();
 				// end of WritePathLst
 

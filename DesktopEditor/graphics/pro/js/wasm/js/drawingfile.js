@@ -1566,14 +1566,14 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);
-	let reader = ptr.getReader();
-
-	if (!reader) return [];
-
 	if (mode == 2) {
+		data = ptr.getMemory(true);
 		ptr.free();
-		return reader.data;
+		return data;
 	}
+
+	let reader = ptr.getReader();
+	if (!reader) return [];
 
 	let shapesCount = reader.readInt();
 	let shapes = new Array(shapesCount);

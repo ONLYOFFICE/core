@@ -547,56 +547,58 @@ namespace NSDocxRenderer
 			oWriter.StartRecord(3); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
 			oWriter.StartRecord(4); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
 			oWriter.StartRecord(5); WriteTextFontTypeface(m_pFontStyle->wsFontName); oWriter.EndRecord();
+
+			// WriteUniColor
+			auto WriteUniColor = [&oWriter] (long color, long alpha) {
+				BYTE b = reinterpret_cast<BYTE*>(&color)[0];
+				BYTE g = reinterpret_cast<BYTE*>(&color)[1];
+				BYTE r = reinterpret_cast<BYTE*>(&color)[2];
+
+				oWriter.StartRecord(1); // COLOR_TYPE_SRGB
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteBYTE(r);
+				oWriter.WriteBYTE(1); oWriter.WriteBYTE(g);
+				oWriter.WriteBYTE(2); oWriter.WriteBYTE(b);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				// WriteMods (alpha)
+				oWriter.StartRecord(0);
+				oWriter.AddInt(1);
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
+				oWriter.WriteBYTE(1); oWriter.AddInt(alpha * 100000 / 255);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+			};
+
+			auto WriteUniFill = [&oWriter, this, &WriteUniColor] () {
+				oWriter.StartRecord(3); // FILL_TYPE_SOLID
+				oWriter.StartRecord(0);
+				WriteUniColor(m_pFontStyle->oBrush.Color1, m_pFontStyle->oBrush.Alpha1);
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+			};
+
+			// WriteRecord WriteUniFill
+			oWriter.StartRecord(1);
+			WriteUniFill();
+			oWriter.EndRecord();
+
+			// WriteRecord WriteHighlightColor
+			if (m_bIsHighlightPresent)
+			{
+				oWriter.StartRecord(12);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.StartRecord(0);
+				WriteUniColor(ConvertColorBGRToRGB(m_lHighlightColor), 255);
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+			}
 			oWriter.EndRecord();
 		}();
-
-		// WriteUniColor
-		auto WriteUniColor = [&oWriter] (long color, long alpha) {
-			BYTE r = reinterpret_cast<BYTE*>(&color)[0];
-			BYTE g = reinterpret_cast<BYTE*>(&color)[1];
-			BYTE b = reinterpret_cast<BYTE*>(&color)[2];
-
-			oWriter.StartRecord(1); // COLOR_TYPE_SRGB
-			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(r);
-			oWriter.WriteBYTE(g);
-			oWriter.WriteBYTE(b);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-			// WriteMods (alpha)
-			oWriter.StartRecord(0);
-			oWriter.AddInt(1);
-			oWriter.StartRecord(1);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
-			oWriter.WriteBYTE(1); oWriter.AddInt(alpha);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-			oWriter.EndRecord();
-			oWriter.EndRecord();
-			oWriter.EndRecord();
-		};
-
-		auto WriteUniFill = [&oWriter, this, &WriteUniColor] () {
-			oWriter.StartRecord(3); // FILL_TYPE_SOLID
-			oWriter.StartRecord(0);
-			WriteUniColor(ConvertColorBGRToRGB(m_pFontStyle->oBrush.Color1), m_pFontStyle->oBrush.Alpha1);
-			oWriter.EndRecord();
-			oWriter.EndRecord();
-		};
-
-		// WriteRecord WriteUniFill
-		oWriter.StartRecord(1);
-		WriteUniFill();
-		oWriter.EndRecord();
-
-		// WriteRecord WriteHighlightColor
-		if (m_bIsHighlightPresent)
-		{
-			oWriter.StartRecord(12);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-			WriteUniColor(ConvertColorBGRToRGB(m_lHighlightColor), 255);
-			oWriter.EndRecord();
-		}
 		oWriter.EndRecord();
 	}
 

@@ -120,6 +120,11 @@ namespace NSDocxRenderer
 		{
 			return  eHorizontalCrossingType::hctCurrentOutsideNext;
 		}
+		else if (fabs(m_dLeft - pBaseItem->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM &&
+		         fabs(m_dRight - pBaseItem->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM)
+		{
+			return  eHorizontalCrossingType::hctLeftAndRightBordersMatch;
+		}
 		else if (m_dLeft < pBaseItem->m_dLeft && m_dRight < pBaseItem->m_dRight &&
 		         (m_dRight >= pBaseItem->m_dLeft || fabs(m_dRight - pBaseItem->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM))
 		{
@@ -134,11 +139,6 @@ namespace NSDocxRenderer
 		         m_dTop == pBaseItem->m_dTop && m_dBot == pBaseItem->m_dBot)
 		{
 			return  eHorizontalCrossingType::hctDublicate;
-		}
-		else if (fabs(m_dLeft - pBaseItem->m_dLeft) < c_dTHE_SAME_STRING_X_PRECISION_MM &&
-		         fabs(m_dRight - pBaseItem->m_dRight) < c_dTHE_SAME_STRING_X_PRECISION_MM)
-		{
-			return  eHorizontalCrossingType::hctLeftAndRightBordersMatch;
 		}
 		else if (fabs(m_dLeft - pBaseItem->m_dLeft) < c_dTHE_SAME_STRING_Y_PRECISION_MM)
 		{

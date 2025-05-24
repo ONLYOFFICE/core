@@ -1166,9 +1166,51 @@ namespace NSDocxRenderer
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.EndRecord();
 				// end of WriteRecord WriteTextRect
+
+				oWriter.EndRecord();
 			}
 			oWriter.EndRecord();
 			// end of WriteRecord WriteGeometry
+
+			// WriteUniColor
+			auto WriteUniColor = [&oWriter] (long color, long alpha) {
+				BYTE b = reinterpret_cast<BYTE*>(&color)[0];
+				BYTE g = reinterpret_cast<BYTE*>(&color)[1];
+				BYTE r = reinterpret_cast<BYTE*>(&color)[2];
+
+				oWriter.StartRecord(1); // COLOR_TYPE_SRGB
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteBYTE(r);
+				oWriter.WriteBYTE(1); oWriter.WriteBYTE(g);
+				oWriter.WriteBYTE(2); oWriter.WriteBYTE(b);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				// WriteMods (alpha)
+				oWriter.StartRecord(0);
+				oWriter.AddInt(1);
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
+				oWriter.WriteBYTE(1); oWriter.AddInt(alpha * 100000 / 255);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+			};
+
+			auto WriteUniFill = [&oWriter, this, &WriteUniColor] () {
+				oWriter.StartRecord(3); // FILL_TYPE_SOLID
+				oWriter.StartRecord(0);
+				WriteUniColor(ConvertColorBGRToRGB(m_oBrush.Color1), m_oBrush.Alpha1);
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+			};
+
+			// WriteRecord WriteUniFill
+			oWriter.StartRecord(2);
+			WriteUniFill();
+			oWriter.EndRecord();
+
+			// TODO writeln
 		};
 
 		if (m_eType == eShapeType::stVectorTexture)

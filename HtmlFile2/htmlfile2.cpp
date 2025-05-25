@@ -3697,18 +3697,22 @@ private:
 
 		for (const std::pair<std::wstring, std::wstring>& oArgument : sSelectors.back().m_mAttributes)
 		{
-			if (pStyle->m_oBorder.Empty() && L"border" == oArgument.first)
+			if (L"border" == oArgument.first)
 			{
 				const int nWidth = NSStringFinder::ToInt(oArgument.second);
 
 				if (0 < nWidth)
 				{
+					oTable.SetRules(L"all");
+
+					if (!pStyle->m_oBorder.Empty())
+						continue;
+
 					pStyle->m_oBorder.SetStyle(L"outset",  0, true);
 					pStyle->m_oBorder.SetWidth(nWidth,     0, true);
 					pStyle->m_oBorder.SetColor(L"auto",    0, true);
-					oTable.SetRules(L"all");
 				}
-				else
+				else if (pStyle->m_oBorder.Empty())
 				{
 					pStyle->m_oBorder.SetNone(0, true);
 					oTable.SetRules(L"none");

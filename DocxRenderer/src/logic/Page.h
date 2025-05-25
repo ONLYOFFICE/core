@@ -190,7 +190,7 @@ namespace NSDocxRenderer
 		static shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
 		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
 
-		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg);
+		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg, CVectorGraphics& imageVector);
 		void DrawGradient(shape_ptr_t pShape);
 
 		void FillLuminosityShapes();

@@ -250,7 +250,7 @@ namespace NSDocxRenderer
 		shape->m_dRotation = rotation;
 
 		if (info)
-			DrawImage(shape, info);
+			DrawImage(shape, info, image_vector);
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
 
@@ -2108,17 +2108,16 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"<w:pgMar w:top=\"0\" w:right=\"0\" w:bottom=\"0\" w:left=\"0\" w:header=\"0\" w:footer=\"0\" w:gutter=\"0\"/></w:sectPr>");
 	}
 
-	void CPage::DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImgInfo)
+	void CPage::DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImgInfo, CVectorGraphics& imageVector)
 	{
 		pShape->m_pImageInfo = oImgInfo;
 		pShape->m_eType = CShape::eShapeType::stVectorTexture;
-		auto image_vector = pShape->m_oVector;
-		image_vector.RotateAt(-pShape->m_dRotation, pShape->m_oVector.GetCenter());
+		imageVector.RotateAt(-pShape->m_dRotation, pShape->m_oVector.GetCenter());
 
-		pShape->m_dImageBot = image_vector.GetBottom();
-		pShape->m_dImageTop = image_vector.GetTop();
-		pShape->m_dImageLeft = image_vector.GetLeft();
-		pShape->m_dImageRight = image_vector.GetRight();
+		pShape->m_dImageBot = imageVector.GetBottom();
+		pShape->m_dImageTop = imageVector.GetTop();
+		pShape->m_dImageLeft = imageVector.GetLeft();
+		pShape->m_dImageRight = imageVector.GetRight();
 	}
 
 	void CPage::DrawGradient(shape_ptr_t pShape)
@@ -2178,7 +2177,7 @@ namespace NSDocxRenderer
 		auto info = m_oManagers.pImageManager->WriteImage(&img, pShape->m_dTop, pShape->m_dBaselinePos, pShape->m_dWidth, pShape->m_dHeight);
 		pShape->m_dRotation = 0;
 
-		DrawImage(pShape, info);
+		DrawImage(pShape, info, pShape->m_oVector);
 
 		RELEASEINTERFACE(g_renderer)
 	}

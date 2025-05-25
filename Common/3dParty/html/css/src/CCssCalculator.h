@@ -2,10 +2,8 @@
 #define CCSSCALCULATOR_H
 
 #include "CssCalculator_global.h"
-#include "CCompiledStyle.h"
-#include "ConstValues.h"
-#include <iostream>
-#include <map>
+#include "StyleProperties.h"
+#include "CNode.h"
 #include <vector>
 
 namespace NSCSS

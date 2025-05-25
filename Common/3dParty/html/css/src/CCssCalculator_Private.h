@@ -102,8 +102,7 @@ namespace NSCSS
 		~CCssCalculator_Private();
 
 		#ifdef CSS_CALCULATOR_WITH_XHTML
-		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors);
-		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors);
+		bool CalculateCompiledStyle(std::vector<CNode>& arSelectors);
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
@@ -111,7 +110,7 @@ namespace NSCSS
 		void ClearPageData();
 		#endif
 
-		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors);
+		std::vector<std::wstring> CalculateAllNodes(const std::vector<CNode>& arSelectors, unsigned int unStart = 0);
 		std::vector<const CElement*> FindElements(std::vector<std::wstring>& arNodes, std::vector<std::wstring>& arNextNodes);
 
 		void AddStyles(const std::string& sStyle);

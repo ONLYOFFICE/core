@@ -123,8 +123,8 @@ void COleConverter::CreateChart(CHWPStream& oOleStream)
 	NSStringUtils::CStringBuilder oRelsData;
 	oRelsData.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 	oRelsData.WriteString(L"<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-	oRelsData.WriteString(L"<Relationship Id=\"rId1\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartStyle\" Target=\"style1.xml\"/>");
-	oRelsData.WriteString(L"<Relationship Id=\"rId2\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle\" Target=\"colors1.xml\"/>");
+	oRelsData.WriteString(L"<Relationship Id=\"rId1\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartStyle\" Target=\"style" + std::to_wstring(m_unCountCharts) + L".xml\"/>");
+	oRelsData.WriteString(L"<Relationship Id=\"rId2\" Type=\"http://schemas.microsoft.com/office/2011/relationships/chartColorStyle\" Target=\"colors" + std::to_wstring(m_unCountCharts) + L".xml\"/>");
 	oRelsData.WriteString(L"</Relationships>");
 
 	NSFile::CFileBinary oRelsFile;

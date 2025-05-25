@@ -4,8 +4,6 @@
 #include "../HWPStream.h"
 #include "CapParagraph.h"
 #include "Ctrl.h"
-#include <vector>
-#include <list>
 
 namespace HWP
 {
@@ -14,8 +12,7 @@ enum class EVRelTo
 {
 	PAPER,
 	PAGE,
-	PARA,
-	null
+	PARA
 };
 
 enum class EHRelTo
@@ -23,8 +20,7 @@ enum class EHRelTo
 	PAPER,
 	PAGE,
 	COLUMN,
-	PARA,
-	null
+	PARA
 };
 
 enum class EWidthRelTo
@@ -33,16 +29,14 @@ enum class EWidthRelTo
 	PAGE,
 	COLUMN,
 	PARA,
-	ABSOLUTE,
-	null
+	ABSOLUTE
 };
 
 enum class EHeightRelTo
 {
 	PAPER,
 	PAGE,
-	ABSOLUTE,
-	null
+	ABSOLUTE
 };
 
 enum class EVertAlign
@@ -54,20 +48,8 @@ enum class EVertAlign
 	OUTSIDE
 };
 
-inline EVertAlign GetVertAlign(int nValue)
-{
-	switch(static_cast<EVertAlign>(nValue))
-	{
-		case EVertAlign::CENTER:
-		case EVertAlign::BOTTOM:
-		case EVertAlign::INSIDE:
-		case EVertAlign::OUTSIDE:
-			return static_cast<EVertAlign>(nValue);
-		case EVertAlign::TOP:
-		default:
-			return EVertAlign::TOP;
-	}
-}
+EVertAlign GetVertAlign(int nValue);
+EVertAlign GetVertAlign(const HWP_STRING& sValue);
 
 enum class EHorzAlign
 {
@@ -131,6 +113,7 @@ public:
 	CCtrlCommon(const HWP_STRING& sCtrlID);
 	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 	virtual ~CCtrlCommon();
 
 	ECtrlObjectType GetCtrlType() const override;
@@ -149,6 +132,8 @@ public:
 	short GetRightMargin() const;
 	short GetBottomMargin() const;
 
+	bool GetTreatAsChar() const;
+	bool GetFlowWithText() const;
 	int GetHorzOffset() const;
 	int GetVertOffset() const;
 	EVRelTo GetVertRelTo() const;
@@ -163,6 +148,9 @@ public:
 	ETextWrap GetTextWrap() const;
 	HWP_BYTE GetTextFlow() const;
 	int GetZOrder() const;
+
+	bool HaveCaption() const;
+	VECTOR<const CCapParagraph*> GetCaptionParas() const;
 
 	static int ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCaption(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

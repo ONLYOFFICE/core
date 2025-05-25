@@ -619,10 +619,7 @@ INCLUDEPATH += \
 	$$PDF_ROOT_DIR/lib/splash \
 	$$PDF_ROOT_DIR/lib
 
-HEADERS += \
-	$$PDF_ROOT_DIR/lib/aconf.h \
-	$$$files($$PDF_ROOT_DIR/lib/*.h)
-
+HEADERS += $$files($$PDF_ROOT_DIR/lib/*.h, true)
 SOURCES += $$files($$PDF_ROOT_DIR/lib/*.c, true)
 SOURCES += $$files($$PDF_ROOT_DIR/lib/*.cc, true)
 
@@ -644,9 +641,7 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
 	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.cpp \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
-	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp \
-	$$PDF_ROOT_DIR/PdfReader.cpp \
-	$$PDF_ROOT_DIR/PdfFile.cpp
+	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp
 
 HEADERS +=\
 	$$PDF_ROOT_DIR/Resources/Fontd050000l.h \
@@ -670,9 +665,87 @@ HEADERS +=\
 	$$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.h \
 	$$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
-	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h \
+	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h
+
+DEFINES += CRYPTOPP_DISABLE_ASM
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
+# PdfWriter
+HEADERS += \
+	$$PDF_ROOT_DIR/SrcWriter/AcroForm.h \
+	$$PDF_ROOT_DIR/SrcWriter/Annotation.h \
+	$$PDF_ROOT_DIR/SrcWriter/Catalog.h \
+	$$PDF_ROOT_DIR/SrcWriter/Consts.h \
+	$$PDF_ROOT_DIR/SrcWriter/Destination.h \
+	$$PDF_ROOT_DIR/SrcWriter/Document.h \
+	$$PDF_ROOT_DIR/SrcWriter/Encodings.h \
+	$$PDF_ROOT_DIR/SrcWriter/Encrypt.h \
+	$$PDF_ROOT_DIR/SrcWriter/EncryptDictionary.h \
+	$$PDF_ROOT_DIR/SrcWriter/Field.h \
+	$$PDF_ROOT_DIR/SrcWriter/Font.h \
+	$$PDF_ROOT_DIR/SrcWriter/Font14.h \
+	$$PDF_ROOT_DIR/SrcWriter/FontCidTT.h \
+	$$PDF_ROOT_DIR/SrcWriter/FontTT.h \
+	$$PDF_ROOT_DIR/SrcWriter/FontTTWriter.h \
+	$$PDF_ROOT_DIR/SrcWriter/GState.h \
+	$$PDF_ROOT_DIR/SrcWriter/Image.h \
+	$$PDF_ROOT_DIR/SrcWriter/Info.h \
+	$$PDF_ROOT_DIR/SrcWriter/Objects.h \
+	$$PDF_ROOT_DIR/SrcWriter/Outline.h \
+	$$PDF_ROOT_DIR/SrcWriter/Pages.h \
+	$$PDF_ROOT_DIR/SrcWriter/Pattern.h \
+	$$PDF_ROOT_DIR/SrcWriter/ResourcesDictionary.h \
+	$$PDF_ROOT_DIR/SrcWriter/Shading.h \
+	$$PDF_ROOT_DIR/SrcWriter/Streams.h \
+	$$PDF_ROOT_DIR/SrcWriter/Types.h \
+	$$PDF_ROOT_DIR/SrcWriter/Utils.h \
+	$$PDF_ROOT_DIR/SrcWriter/Metadata.h \
+	$$PDF_ROOT_DIR/SrcWriter/ICCProfile.h \
+	$$PDF_ROOT_DIR/SrcWriter/States.h
+
+SOURCES += \
+	$$PDF_ROOT_DIR/SrcWriter/AcroForm.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Annotation.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Catalog.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Destination.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Document.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Encrypt.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/EncryptDictionary.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Field.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Font.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Font14.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/FontCidTT.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/FontTT.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/FontTTWriter.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/GState.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Image.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Info.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Objects.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Outline.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Pages.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Pattern.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/ResourcesDictionary.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Shading.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Streams.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Utils.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/Metadata.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/States.cpp
+
+# PdfFile
+
+HEADERS += \
+	$$PDF_ROOT_DIR/PdfFile.h \
+	$$PDF_ROOT_DIR/PdfWriter.h \
 	$$PDF_ROOT_DIR/PdfReader.h \
-	$$PDF_ROOT_DIR/PdfFile.h
+	$$PDF_ROOT_DIR/PdfEditor.h \
+	$$PDF_ROOT_DIR/OnlineOfficeBinToPdf.h
+
+SOURCES += \
+	$$PDF_ROOT_DIR/PdfFile.cpp \
+	$$PDF_ROOT_DIR/PdfWriter.cpp \
+	$$PDF_ROOT_DIR/PdfReader.cpp \
+	$$PDF_ROOT_DIR/PdfEditor.cpp \
+	$$PDF_ROOT_DIR/OnlineOfficeBinToPdf.cpp
 
 # DocxRenderer
 DOCX_RENDERER_ROOT_DIR = $$CORE_ROOT_DIR/DocxRenderer
@@ -682,6 +755,7 @@ HEADERS += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/DropCap.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.h \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Table.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/ExternalImageStorage.h \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontStyleManager.h \
@@ -706,6 +780,7 @@ SOURCES += \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/ContText.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Paragraph.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Shape.cpp \
+	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/Table.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/elements/TextLine.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontManager.cpp \
 	$$DOCX_RENDERER_ROOT_DIR/src/logic/managers/FontStyleManager.cpp \
@@ -727,7 +802,6 @@ HEADERS += \
 	../wasm/src/Text.h
 
 SOURCES += \
-	../wasm/src/pdfwriter.cpp \
 	../wasm/src/HTMLRendererText.cpp \
 	../wasm/src/drawingfile.cpp \
 	../wasm/src/drawingfile_test.cpp

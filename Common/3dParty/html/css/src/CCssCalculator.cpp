@@ -58,6 +58,26 @@ namespace NSCSS
 		return m_pInternal->GetDpi();
 	}
 
+	void CCssCalculator::ClearPageData()
+	{
+		m_pInternal->ClearPageData();
+	}
+
+	void CCssCalculator::ClearEmbeddedStyles()
+	{
+		m_pInternal->ClearEmbeddedStyles();
+	}
+
+	void CCssCalculator::ClearAllowedStyleFiles()
+	{
+		m_pInternal->ClearAllowedStyleFiles();
+	}
+
+	void CCssCalculator::ClearStylesFromFile(const std::wstring& wsFilePath)
+	{
+		m_pInternal->ClearStylesFromFile(wsFilePath);
+	}
+
 	void CCssCalculator::Clear()
 	{
 		m_pInternal->Clear();

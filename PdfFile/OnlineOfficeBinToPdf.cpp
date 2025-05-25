@@ -146,10 +146,12 @@ namespace NSOnlineOfficeBinToPdf
 
 	enum class AddCommandType
 	{
-		EditPage   = 0, // ранее Annotation
+		EditPage   = 0,
 		AddPage    = 1,
 		RemovePage = 2,
 		WidgetInfo = 3,
+		MovePage   = 4,
+		MergePages = 5,
 		Undefined  = 255
 	};
 
@@ -174,7 +176,7 @@ namespace NSOnlineOfficeBinToPdf
 			int nLen = oReader.ReadInt();
 			AddCommandType CommandType = (AddCommandType)oReader.ReadByte();
 			int nPageNum = 0;
-			if (CommandType != AddCommandType::WidgetInfo)
+			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages)
 				nPageNum = oReader.ReadInt();
 
 			if (nPageNum < 0)
@@ -184,7 +186,11 @@ namespace NSOnlineOfficeBinToPdf
 			{
 			case AddCommandType::EditPage:
 			{
-				pPdf->EditPage(nPageNum);
+				if (!pPdf->EditPage(nPageNum))
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
 
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
 				oReader.Skip(nLen - 9);
@@ -192,15 +198,44 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case AddCommandType::AddPage:
 			{
-				pPdf->AddPage(nPageNum);
+				if (!pPdf->AddPage(nPageNum))
+				{
+					oReader.Skip(nLen - 9);
+					break;
+				}
 
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 9) , &oCorrector);
 				oReader.Skip(nLen - 9);
 				break;
 			}
+			case AddCommandType::MovePage:
+			{
+				int nPos = oReader.ReadInt();
+				pPdf->MovePage(nPageNum, nPos);
+				break;
+			}
 			case AddCommandType::RemovePage:
 			{
 				pPdf->DeletePage(nPageNum);
+				break;
+			}
+			case AddCommandType::MergePages:
+			{
+				std::wstring wsPath = NSFile::CFileBinary::CreateTempFileWithUniqueName(pPdf->GetTempDirectory(), L"PDF");
+				int nLength = oReader.ReadInt();
+				BYTE* pFile = oReader.GetCurrentBuffer();
+				oReader.Skip(nLength);
+				if (!wsPath.empty())
+				{
+					NSFile::CFileBinary oFile;
+					if (oFile.CreateFileW(wsPath))
+						oFile.WriteFile(pFile, nLength);
+					oFile.CloseFile();
+				}
+
+				int nMaxID = oReader.ReadInt();
+				std::wstring wsPrefix = oReader.ReadString();
+				pPdf->MergePages(wsPath, nMaxID, wsPrefix);
 				break;
 			}
 			case AddCommandType::WidgetInfo:

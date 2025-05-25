@@ -374,7 +374,7 @@ namespace NSJSBase
 
 	JSSmart<CJSContext> CJSContext::GetCurrent()
 	{
-		CJSContext* ret = new CJSContext();
+		CJSContext* ret = new CJSContext(false);
 		ret->m_internal->context = NSJSBase::CJSContextPrivate::GetCurrentContext();
 		return ret;
 	}
@@ -437,6 +437,11 @@ namespace NSJSBase
 
 	void CJSContext::Exit()
 	{
+	}
+
+	bool CJSContext::IsEntered()
+	{
+		return true;
 	}
 
 	class CJSLocalScopePrivate

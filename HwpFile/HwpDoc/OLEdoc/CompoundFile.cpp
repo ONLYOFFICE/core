@@ -155,6 +155,8 @@ bool CCompoundFile::Open()
 	{
 		m_oFile.SeekFile(4096);
 		m_nSectorSize = 4096;
+		oBuffer.Clear();
+		oBuffer.Expand(m_nSectorSize);
 	}
 
 	// collect MSAT SecID
@@ -588,7 +590,7 @@ void CCompoundFile::ParseMSATSector(CHWPStream& oBuffer)
 {
 	int nSector;
 
-	while (oBuffer.CanRead(4))
+	while (4 < oBuffer.SizeToEnd())
 	{
 		oBuffer.ReadInt(nSector);
 

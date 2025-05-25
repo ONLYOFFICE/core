@@ -21,16 +21,24 @@ class CCtrlObjElement : public CCtrlCommon
 	int m_nXCenter;
 	int m_nYCenter;
 	short m_shMatCnt;
-	double m_arMatrix[6];
+	VECTOR<double> m_arMatrix;
 	VECTOR<double> m_arMatrixSeq;
+
+	void InitMatrix();
+
+	void SetMatrix(CXMLNode& oNode, VECTOR<double>& arMatrix, int nOffset);
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;
+
+	int GetFinalWidth() const;
+	int GetFinalHeight() const;
 
 	static int ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

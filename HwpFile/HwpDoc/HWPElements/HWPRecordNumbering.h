@@ -4,6 +4,7 @@
 #include "../HWPDocInfo.h"
 #include "../HWPStream.h"
 #include "HWPRecord.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -35,11 +36,13 @@ class CHWPRecordNumbering : public CHWPRecord
 	int m_arExtLevelStart[3];
 public:
 	CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 
 	short GetStart() const;
 	HWP_STRING GetNumFormat(unsigned short ushIndex) const;
 	HWP_BYTE GetAlign(unsigned short ushIndex) const;
 	int GetStartNumber(unsigned short ushIndex) const;
+	int GetCharShape(unsigned short ushIndex) const;
 };
 }
 

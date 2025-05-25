@@ -12,12 +12,18 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
+LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
+
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)
 
-DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY
+DEFINES += HWPFILE_USE_DYNAMIC_LIBRARY \
+           CRYPTOPP_DISABLE_ASM 
+
 
 SOURCES += \
     HWPFile.cpp \
+    HwpDoc/Common/XMLReader.cpp \
+    HwpDoc/Common/WriterContext.cpp \
     HwpDoc/Conversion/Converter2OOXML.cpp \
     HwpDoc/Conversion/FootnoteConverter.cpp \
     HwpDoc/Conversion/NumberingConverter.cpp \
@@ -41,9 +47,10 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordParaText.cpp \
     HwpDoc/HWPElements/HWPRecordStyle.cpp \
     HwpDoc/HWPElements/HwpRecordTabDef.cpp \
-    HwpDoc/HWPFile_Private.cpp \
+    HwpDoc/HWPFile.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
+    HwpDoc/HWPXFile.cpp \
     HwpDoc/HwpFileHeader.cpp \
     HwpDoc/OLEdoc/CompoundFile.cpp \
     HwpDoc/OLEdoc/DirectoryEntry.cpp \
@@ -59,6 +66,7 @@ SOURCES += \
     HwpDoc/Paragraph/CtrlContainer.cpp \
     HwpDoc/Paragraph/CtrlEmpty.cpp \
     HwpDoc/Paragraph/CtrlEqEdit.cpp \
+    HwpDoc/Paragraph/CtrlField.cpp \
     HwpDoc/Paragraph/CtrlForm.cpp \
     HwpDoc/Paragraph/CtrlGeneralShape.cpp \
     HwpDoc/Paragraph/CtrlHeadFoot.cpp \
@@ -89,7 +97,9 @@ SOURCES += \
 
 HEADERS += \
     HWPFile.h \
-    HwpDoc/Common.h \
+    HwpDoc/Common/Common.h \
+    HwpDoc/Common/XMLNode.h \
+    HwpDoc/Common/WriterContext.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/FootnoteConverter.h \
     HwpDoc/Conversion/NumberingConverter.h \
@@ -119,9 +129,10 @@ HEADERS += \
     HwpDoc/HWPElements/HWPType.h \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
-    HwpDoc/HWPFile_Private.h \
+    HwpDoc/HWPFile.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
+    HwpDoc/HWPXFile.h \
     HwpDoc/HanType.h \
     HwpDoc/HwpFileHeader.h \
     HwpDoc/OLEdoc/CompoundFile.h \
@@ -141,6 +152,7 @@ HEADERS += \
     HwpDoc/Paragraph/CtrlContainer.h \
     HwpDoc/Paragraph/CtrlEmpty.h \
     HwpDoc/Paragraph/CtrlEqEdit.h \
+    HwpDoc/Paragraph/CtrlField.h \
     HwpDoc/Paragraph/CtrlForm.h \
     HwpDoc/Paragraph/CtrlGeneralShape.h \
     HwpDoc/Paragraph/CtrlHeadFoot.h \

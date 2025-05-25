@@ -55,6 +55,7 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:fit-to-contour",				draw_fit_to_contour_);
 	CP_APPLY_ATTR(L"style:shrink-to-fit",				style_shrink_to_fit_);
 	CP_APPLY_ATTR(L"draw:fit-to-size",					draw_fit_to_size_str_);
+	CP_APPLY_ATTR(L"draw:ole-draw-aspect",				draw_ole_draw_aspect_);
 
 	CP_APPLY_ATTR(L"draw:stroke",						draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",					draw_stroke_dash_); 
@@ -149,7 +150,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 
 	if (common_draw_fill_attlist_.draw_color_mode_)
 	{
-		properties.push_back(_property(L"color-mode", *common_draw_fill_attlist_.draw_color_mode_));
+		properties.push_back(_property(L"color-mode", (int)common_draw_fill_attlist_.draw_color_mode_->get_type()));
 	}
 	if (common_draw_fill_attlist_.draw_luminance_)
 	{
@@ -205,6 +206,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties * Oth
 	_CP_APPLY_PROP3(draw_fit_to_size_);
 	_CP_APPLY_PROP3(draw_fit_to_contour_);
 	_CP_APPLY_PROP3(style_shrink_to_fit_);
+	_CP_APPLY_PROP3(draw_ole_draw_aspect_);
 	
 	_CP_APPLY_PROP3(svg_stroke_color_); 
 	_CP_APPLY_PROP3(svg_stroke_width_);	

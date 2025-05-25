@@ -153,7 +153,13 @@ namespace MetaFile
 
 		const std::wstring wsText{ConvertToUnicode(pString, (long)shStringLength, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET)};
 
-		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
+		TPointD oScale(1, 1);
+
+		if (NULL != m_pParser)
+		{
+			oScale.X = m_pParser->IsWindowFlippedX() ? -1 : 1;
+			oScale.Y = m_pParser->IsWindowFlippedY() ? -1 : 1;
+		}
 
 		std::vector<double> arDx(0);
 
@@ -346,12 +352,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_RECTANGLE(short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
-
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
 		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
 		                               {L"y",      ConvertToWString(oNewRect.Top)},
@@ -369,12 +370,7 @@ namespace MetaFile
 
 	void CWmfInterpretatorSvg::HANDLE_META_ROUNDRECT(short shH, short shW, short shB, short shR, short shT, short shL)
 	{
-		TRectD oNewRect;
-
-		oNewRect.Left   = shL;
-		oNewRect.Top    = shT;
-		oNewRect.Right  = shR;
-		oNewRect.Bottom = shB;
+		TRectD oNewRect = TranslateRect({shL, shT, shR, shB});
 
 		NodeAttributes arAttributes = {{L"x",      ConvertToWString(oNewRect.Left)},
 		                               {L"y",      ConvertToWString(oNewRect.Top)},

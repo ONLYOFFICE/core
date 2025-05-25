@@ -4,9 +4,10 @@
 
 int main()
 {
-	CHWPFile oFile(L"YOUR_PATH");
+	CHWPFile oFile;
 
-	if (oFile.Open())
+	// if (oFile.OpenHWPX(L"YOUR_PATH"))
+	if (oFile.OpenHWP(L"YOUR_PATH"))
 	{
 		std::cout << "Successful" << std::endl;
 	}
@@ -21,5 +22,6 @@ int main()
 	NSDirectory::DeleteDirectory(wsTempDir);
 	NSDirectory::CreateDirectory(wsTempDir);
 	oFile.SetTempDirectory(wsTempDir);
-	oFile.ConvertToOOXML(L"YOUR_PATH.docx");
+	oFile.ConvertToOOXML(L"result.docx");
+	oFile.Close();
 }

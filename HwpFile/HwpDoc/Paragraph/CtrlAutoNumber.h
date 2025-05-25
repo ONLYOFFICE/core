@@ -4,7 +4,8 @@
 #include "Ctrl.h"
 #include "../HWPStream.h"
 #include "../HWPElements/HwpRecordTypes.h"
-#include "../Common.h"
+#include "../Common/Common.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -17,26 +18,11 @@ enum class ENumType
 	FIGURE,
 	TABLE,
 	EQUATION,
-	TOTAL_PAGE,
-	null
+	TOTAL_PAGE
 };
 
-inline ENumType GetNumType(int nValue)
-{
-	switch(static_cast<ENumType>(nValue))
-	{
-		case ENumType::PAGE:
-		case ENumType::FOOTNOTE:
-		case ENumType::ENDNOTE:
-		case ENumType::FIGURE:
-		case ENumType::TABLE:
-		case ENumType::EQUATION:
-		case ENumType::TOTAL_PAGE:
-			return static_cast<ENumType>(nValue);
-		default:
-			return ENumType::null;
-	}
-}
+ENumType GetNumType(int nValue);
+ENumType GetNumType(const HWP_STRING& sValue);
 
 class CCtrlAutoNumber : public CCtrl
 {
@@ -46,6 +32,7 @@ class CCtrlAutoNumber : public CCtrl
 public:
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID);
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
 

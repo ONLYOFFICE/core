@@ -14,6 +14,8 @@ public:
 	CCtrlContainer(const HWP_STRING& sCtrlID);
 	CCtrlContainer(const CCtrlGeneralShape& oShape);
 	CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlContainer(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+
 	~CCtrlContainer();
 
 	EShapeType GetShapeType() const override;

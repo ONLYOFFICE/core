@@ -4,6 +4,7 @@
 #include "../HWPDocInfo.h"
 #include "HwpRecordTypes.h"
 #include "../HWPStream.h"
+#include "../Common/XMLNode.h"
 #include <vector>
 
 namespace HWP
@@ -13,6 +14,8 @@ struct TBorder
 	ELineStyle2 m_eStyle;
 	HWP_BYTE m_chWidth;
 	int m_nColor;
+
+	void ReadFromNode(CXMLNode& oNode);
 };
 
 enum class EImageFillType
@@ -82,9 +85,14 @@ class CFill : public IRef
 	HWP_BYTE m_chStepCenter;
 
 	HWP_BYTE m_chAlpha;
+
+	void ReadWinBrush(CXMLNode& oNode);
+	void ReadGradation(CXMLNode& oNode);
+	void ReadImgBrush(CXMLNode& oNode);
 public:
 	CFill();
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
+	CFill(CXMLNode& oNode);
 
 	int GetSize() const;
 	bool NoneFill() const;
@@ -98,7 +106,6 @@ public:
 
 class CHWPRecordBorderFill : public CHWPRecord
 {
-	CHWPDocInfo *m_pParent;
 	static constexpr const float LINE_THICK[] = { 0.1f, 0.12f, 0.15f, 0.2f, 0.25f, 0.3f, 0.4f, 0.5f, 0.6f, 0.7f, 1.0f, 1.5f, 2.0f, 3.0f, 4.0f, 5.0f };
 
 	bool m_bThreeD;
@@ -116,10 +123,12 @@ class CHWPRecordBorderFill : public CHWPRecord
 	TBorder m_oTop;
 	TBorder m_oBottom;
 	TBorder m_oDiagonal;
-	CFill   m_oFill;
+	CFill   *m_pFill;
 public:
 	CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize);
 	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+	~CHWPRecordBorderFill();
 
 	TBorder GetLeftBorder() const;
 	TBorder GetRightBorder() const;

@@ -6,8 +6,6 @@
 #include <vector>
 #include <algorithm>
 #include <iostream>
-#include <fstream>
-#include <iterator>
 
 #include "../Common/3dParty/html/htmltoxhtml.h"
 #include "../Common/3dParty/html/css/src/CCssCalculator.h"
@@ -62,6 +60,8 @@ const static double HTML_FONTS[7] = {7.5, 10, 12, 13.5, 18, 24, 36};
 #define UNKNOWN_TAG GumboTag::GUMBO_TAG_UNKNOWN
 
 #define HtmlTag GumboTag
+
+#define MAX_STRING_BLOCK_SIZE (size_t)10485760
 
 const std::map<std::wstring, HtmlTag> m_HTML_TAGS
 {
@@ -215,6 +215,27 @@ static inline HtmlTag GetHtmlTag(const std::wstring& wsStrTag)
 	}
 
 	return oFound->second;
+}
+
+static inline void WriteToStringBuilder(NSStringUtils::CStringBuilder& oSrcStringBuilder, NSStringUtils::CStringBuilder& oDstStringBuilder)
+{
+	if (oSrcStringBuilder.GetCurSize() < MAX_STRING_BLOCK_SIZE)
+	{
+		oDstStringBuilder.Write(oSrcStringBuilder);
+		return;
+	}
+
+	size_t ulSize = oSrcStringBuilder.GetCurSize();
+	size_t ulCurrentBlockSize = 0, ulPosition = 0;
+
+	while (ulSize > 0)
+	{
+		ulCurrentBlockSize = std::min(ulSize, MAX_STRING_BLOCK_SIZE);
+		oDstStringBuilder.WriteString(oSrcStringBuilder.GetSubData(ulPosition, ulCurrentBlockSize));
+
+		ulSize -= ulCurrentBlockSize;
+		ulPosition += ulCurrentBlockSize;
+	}
 }
 
 // Ячейка таблицы
@@ -591,7 +612,7 @@ public:
 		: m_unColspan(oCell.m_unColspan), m_unRowSpan(oCell.m_unRowSpan), m_bIsMerged(oCell.m_bIsMerged), 
 		  m_bIsEmpty(oCell.m_bIsEmpty), m_oStyles(oCell.m_oStyles)
 	{
-		m_oData.SetText(oCell.m_oData.GetData());
+		WriteToStringBuilder(oCell.m_oData, m_oData);
 	}
 
 	bool Empty()
@@ -771,6 +792,7 @@ public:
 				
 				if (1 != pCell->GetColspan())
 				{
+					++itFoundEmpty;
 					UINT unColspan = pCell->GetColspan() - 1;
 	
 					while (m_arCells.end() != itFoundEmpty && (*itFoundEmpty)->Empty() && unColspan > 0)
@@ -803,12 +825,13 @@ public:
 		{
 			delete m_arCells[nPosition];
 			--m_oStyles.m_unMaxIndex;
-			m_arCells[nPosition++] = pCell;
+			m_arCells[nPosition] = pCell;
 
 			if (1 != pCell->GetColspan())
 			{
+				++nPosition;
 				UINT unDeleteCount =  pCell->GetColspan() - 1;
-				while (m_arCells[nPosition]->Empty() && nPosition < m_arCells.size() && unDeleteCount > 0)
+				while (nPosition < m_arCells.size() && m_arCells[nPosition]->Empty() && !m_arCells[nPosition]->Merged() && unDeleteCount > 0)
 				{
 					delete m_arCells[nPosition];
 					--m_oStyles.m_unMaxIndex;
@@ -1082,7 +1105,7 @@ public:
 
 	void AddCaption(NSStringUtils::CStringBuilder& oCaption)
 	{
-		m_oCaption += oCaption.GetData();
+		WriteToStringBuilder(oCaption, m_oCaption);
 	}
 
 	void SetPadding(const NSCSS::NSProperties::CIndent& oPadding)
@@ -1173,7 +1196,7 @@ public:
 					if (NULL == pCell)
 						continue;
 
-					pCell->SetColspan(unMaxIndex , MAXCOLUMNSINTABLE);
+					pCell->SetColspan(unMaxIndex, MAXCOLUMNSINTABLE);
 					continue;
 				}
 
@@ -1185,9 +1208,9 @@ public:
 				if (NULL == pCell)
 					continue;
 
-				if (1 < pCell->GetColspan() && unIndex + pCell->GetColspan() > m_arMinColspan[unIndex])
+				if (1 < pCell->GetColspan() && pCell->GetColspan() > m_arMinColspan[unIndex])
 				{
-					pCell->SetColspan(m_arMinColspan[unIndex] - unIndex, MAXCOLUMNSINTABLE);
+					pCell->SetColspan(m_arMinColspan[unIndex], MAXCOLUMNSINTABLE);
 					continue;
 				}
 
@@ -1220,42 +1243,40 @@ public:
 		RecalculateMaxColumns();
 	}
 
-	std::wstring ConvertToOOXML()
+	bool ConvertToOOXML(NSStringUtils::CStringBuilder& oStringBuilder)
 	{
 		if (m_arRows.empty())
-			return std::wstring();
+			return false;
 
-		NSStringUtils::CStringBuilder oTable;
-
-		oTable.WriteNodeBegin(L"w:tbl");
-		oTable.WriteNodeBegin(L"w:tblPr");
+		oStringBuilder.WriteNodeBegin(L"w:tbl");
+		oStringBuilder.WriteNodeBegin(L"w:tblPr");
 
 		if (!m_oStyles.m_oWidth.Empty() && !m_oStyles.m_oWidth.Zero())
 		{
 			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oWidth.GetUnitMeasure())
-				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+				oStringBuilder += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
 			else
-				oTable += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:tblW w:w=\"" + std::to_wstring(m_oStyles.m_oWidth.ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
 		else
-			oTable += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
+			oStringBuilder += L"<w:tblW w:w=\"0\" w:type=\"auto\"/>";
 
 		if (!m_oStyles.m_oMargin.GetLeft().Empty() && !m_oStyles.m_oMargin.GetLeft().Zero())
 		{
 			if (NSCSS::UnitMeasure::Percent == m_oStyles.m_oMargin.GetLeft().GetUnitMeasure())
-				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
+				oStringBuilder += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Percent, 5000)) + L"\" w:type=\"pct\"/>";
 			else
-				oTable += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:tblInd w:w=\"" + std::to_wstring(m_oStyles.m_oMargin.GetLeft().ToInt(NSCSS::UnitMeasure::Twips)) + L"\" w:type=\"dxa\"/>";
 		}
 
 		if (!m_oStyles.m_wsAlign.empty())
-			oTable += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
+			oStringBuilder += L"<w:jc w:val=\"" + m_oStyles.m_wsAlign + L"\"/>";
 
 		if (0 < m_oStyles.m_nCellSpacing && m_oStyles.m_oBorder.GetCollapse() != NSCSS::NSProperties::BorderCollapse::Collapse)
-			oTable += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
+			oStringBuilder += L"<w:tblCellSpacing w:w=\"" + std::to_wstring(m_oStyles.m_nCellSpacing) + L"\" w:type=\"dxa\"/>";
 
 		if (!m_oStyles.m_oBorder.Empty() && !m_oStyles.m_oBorder.Zero())
-			oTable += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder, NULL, true, (TTableStyles::ETableRules::Groups == m_oStyles.m_enRules && !m_arColgroups.empty()) ? TTableStyles::ETableRules::Cols : m_oStyles.m_enRules) + L"</w:tblBorders>";
+			oStringBuilder += L"<w:tblBorders>" + CreateBorders(m_oStyles.m_oBorder, NULL, true, (TTableStyles::ETableRules::Groups == m_oStyles.m_enRules && !m_arColgroups.empty()) ? TTableStyles::ETableRules::Cols : m_oStyles.m_enRules) + L"</w:tblBorders>";
 
 		if (!m_oStyles.m_oPadding.Empty() && !m_oStyles.m_oPadding.Zero())
 		{
@@ -1264,42 +1285,42 @@ public:
 			const int nBottomPadding = std::max(0, m_oStyles.m_oPadding.GetBottom().ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_HEIGHT));
 			const int nRightPadding  = std::max(0, m_oStyles.m_oPadding.GetRight() .ToInt(NSCSS::UnitMeasure::Twips, DEFAULT_PAGE_WIDTH ));
 
-			oTable.WriteNodeBegin(L"w:tblCellMar");
+			oStringBuilder.WriteNodeBegin(L"w:tblCellMar");
 
 			if (0 != nTopPadding)
-				oTable += L"<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:top w:w=\""    + std::to_wstring(nTopPadding)    + L"\" w:type=\"dxa\"/>";
 
 			if (0 != nLeftPadding)
-				oTable += L"<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:left w:w=\""   + std::to_wstring(nLeftPadding)   + L"\" w:type=\"dxa\"/>";
 
 			if (0 != nBottomPadding)
-				oTable += L"<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:bottom w:w=\"" + std::to_wstring(nBottomPadding) + L"\" w:type=\"dxa\"/>";
 
 			if (0 != nRightPadding)
-				oTable += L"<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>";
+				oStringBuilder += L"<w:right w:w=\""  + std::to_wstring(nRightPadding)  + L"\" w:type=\"dxa\"/>";
 
-			oTable.WriteNodeEnd(L"w:tblCellMar");
+			oStringBuilder.WriteNodeEnd(L"w:tblCellMar");
 		}
 		else
-			oTable += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
+			oStringBuilder += L"<w:tblCellMar><w:top w:w=\"15\" w:type=\"dxa\"/><w:left w:w=\"15\" w:type=\"dxa\"/><w:bottom w:w=\"15\" w:type=\"dxa\"/><w:right w:w=\"15\" w:type=\"dxa\"/></w:tblCellMar>";
 
-		oTable += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
-		oTable.WriteNodeEnd(L"w:tblPr");
+		oStringBuilder += L"<w:tblLook w:val=\"04A0\" w:noVBand=\"1\" w:noHBand=\"0\" w:lastColumn=\"0\" w:firstColumn=\"1\" w:lastRow=\"0\" w:firstRow=\"1\"/>";
+		oStringBuilder.WriteNodeEnd(L"w:tblPr");
 
 		if (HaveCaption())
 		{
-			oTable.WriteNodeBegin(L"w:tr");
-			oTable.WriteNodeBegin(L"w:tc");
-			oTable.WriteNodeBegin(L"w:tcPr");
-			oTable += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
-			oTable += L"<w:gridSpan w:val=\"" + std::to_wstring(m_unMaxColumns) + L"\"/>";
-			oTable += L"<w:tcBorders><w:top w:val=\"nil\"/><w:left w:val=\"nil\"/><w:bottom w:val=\"nil\"/><w:right w:val=\"nil\"/></w:tcBorders>";
-			oTable += L"<w:vAlign w:val=\"center\"/>";
-			oTable += L"<w:hideMark/>";
-			oTable.WriteNodeEnd(L"w:tcPr");
-			oTable.WriteString(m_oCaption.GetData());
-			oTable.WriteNodeEnd(L"w:tc");
-			oTable.WriteNodeEnd(L"w:tr");
+			oStringBuilder.WriteNodeBegin(L"w:tr");
+			oStringBuilder.WriteNodeBegin(L"w:tc");
+			oStringBuilder.WriteNodeBegin(L"w:tcPr");
+			oStringBuilder += L"<w:tcW w:w=\"0\" w:type=\"auto\"/>";
+			oStringBuilder += L"<w:gridSpan w:val=\"" + std::to_wstring(m_unMaxColumns) + L"\"/>";
+			oStringBuilder += L"<w:tcBorders><w:top w:val=\"nil\"/><w:left w:val=\"nil\"/><w:bottom w:val=\"nil\"/><w:right w:val=\"nil\"/></w:tcBorders>";
+			oStringBuilder += L"<w:vAlign w:val=\"center\"/>";
+			oStringBuilder += L"<w:hideMark/>";
+			oStringBuilder.WriteNodeEnd(L"w:tcPr");
+			WriteToStringBuilder(m_oCaption, oStringBuilder);
+			oStringBuilder.WriteNodeEnd(L"w:tc");
+			oStringBuilder.WriteNodeEnd(L"w:tr");
 		}
 
 		#define CONVERT_ROWS(rows, mode) \
@@ -1314,7 +1335,7 @@ public:
 				else if (0 != unRowIndex) \
 					nInstruction |= MID_ELEMENT << 4; \
 				nInstruction |= mode; \
-				oTable += rows[unRowIndex]->ConvertToOOXML(*this, nInstruction); \
+				oStringBuilder += rows[unRowIndex]->ConvertToOOXML(*this, nInstruction); \
 			} \
 		}
 
@@ -1324,9 +1345,9 @@ public:
 		CONVERT_ROWS(m_arRows,    PARSE_MODE_BODY)
 		CONVERT_ROWS(m_arFoother, PARSE_MODE_FOOTHER)
 
-		oTable.WriteNodeEnd(L"w:tbl");
+		oStringBuilder.WriteNodeEnd(L"w:tbl");
 
-		return oTable.GetData();
+		return true;
 	}
 private:
 	std::vector<std::vector<CTableRow*>> m_arHeaders;
@@ -1740,6 +1761,15 @@ public:
 		{
 			oRelsWriter.WriteStringUTF8(m_oDocXmlRels.GetData());
 			oRelsWriter.CloseFile();
+		}
+
+		for (const std::pair<std::wstring, std::wstring>& oFootnote : m_mFootnotes)
+		{
+			m_oNoteXml.WriteString(L"<w:footnote w:id=\"");
+			m_oNoteXml.WriteString(oFootnote.second);
+			m_oNoteXml.WriteString(L"\"><w:p><w:pPr><w:pStyle w:val=\"footnote-p\"/></w:pPr><w:r><w:rPr><w:rStyle w:val=\"footnote\"/></w:rPr></w:r><w:r><w:t xml:space=\"preserve\">");
+			m_oNoteXml.WriteEncodeXmlString(oFootnote.first);
+			m_oNoteXml.WriteString(L"</w:t></w:r></w:p></w:footnote>");
 		}
 
 		m_oNoteXmlRels.WriteString(L"</Relationships>");
@@ -2376,7 +2406,7 @@ private:
 
 		std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
 
-		pXml->WriteString(oPPr.GetData());
+		WriteToStringBuilder(oPPr, *pXml);
 
 		NSStringUtils::CStringBuilder oRPr;
 		std::wstring sRStyle;
@@ -2385,7 +2415,7 @@ private:
 		{
 			sRStyle = wrRPr(&oRPr, arSelectors, oTS);
 
-			pXml->WriteString(oRPr.GetData());
+			WriteToStringBuilder(oRPr, *pXml);
 
 			if (oTS.bQ)
 				pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
@@ -2430,12 +2460,12 @@ private:
 				{
 					CloseP(pXml, arSelectors);
 					OpenP(pXml);
-					pXml->WriteString(oPPr.GetData());
+					WriteToStringBuilder(oPPr, *pXml);
 					sText.erase(0, nAfter + 1);
 					nAfter = 0;
 				}
 				OpenR(pXml);
-				pXml->WriteString(oRPr.GetData());
+				WriteToStringBuilder(oRPr, *pXml);
 				nAfter = sText.find_first_of(L"\n\r\t", nAfter);
 			}
 
@@ -2989,12 +3019,12 @@ private:
 			}
 		} while (m_oLightReader.ReadNextSiblingNode2(nDeath));
 
-		pXml->WriteString(oSummary.GetData());
+		WriteToStringBuilder(oSummary, *pXml);
 
 		if (bOpened)
 		{
 			m_oState = oBodyState;
-			pXml->WriteString(oBody.GetData());
+			WriteToStringBuilder(oBody, *pXml);
 		}
 
 		return true;
@@ -3300,7 +3330,7 @@ private:
 				CloseP(&oXmlData, sSelectors);
 
 				if (bResult)
-					oXml->WriteString(oXmlData.GetData());
+					WriteToStringBuilder(oXmlData, *oXml);
 				else
 					m_oState = oCurentState;
 			}
@@ -3667,13 +3697,17 @@ private:
 
 			OpenR(oXml);
 			oXml->WriteString(L"<w:ruby><w:rubyPr><w:rubyAlign w:val=\"" + std::wstring((bConsistsChineseCharacters) ? L"distributeSpace" : L"center") + L"\"/><w:hps w:val=\"" + std::to_wstring(nFontSize) + L"\"/><w:hpsRaise w:val=\"" + std::to_wstring(nFontSize - 2) + L"\"/><w:hpsBaseText w:val=\"" + std::to_wstring(nFontSize) + L"\"/></w:rubyPr>");
-			oXml->WriteString(L"<w:rt>" + oRT.GetData() + L"</w:rt>");
-			oXml->WriteString(L"<w:rubyBase>" + oBase.GetData() + L"</w:rubyBase>");
+			oXml->WriteString(L"<w:rt>");
+			WriteToStringBuilder(oRT, *oXml);
+			oXml->WriteString(L"</w:rt>");
+			oXml->WriteString(L"<w:rubyBase>");
+			WriteToStringBuilder(oBase, *oXml);
+			oXml->WriteString(L"</w:rubyBase>");
 			oXml->WriteString(L"</w:ruby>");
 			CloseR(oXml);
 		}
 		else
-			oXml->WriteString(oBase.GetData());
+			WriteToStringBuilder(oBase, *oXml);
 
 		CloseP(oXml, sSelectors);
 
@@ -3801,7 +3835,7 @@ private:
 
 		oTable.Shorten();
 		oTable.CompleteTable();
-		oXml->WriteString(oTable.ConvertToOOXML());
+		oTable.ConvertToOOXML(*oXml);
 		WriteEmptyParagraph(oXml, true);
 
 		return true;
@@ -4786,8 +4820,13 @@ HRESULT CHtmlFile2::OpenBatchHtml(const std::vector<std::wstring>& sSrc, const s
 			m_internal->m_oLightReader.Clear();
 			m_internal->m_sBase.clear();
 		}
-		//Если очищать, то каждый раз при использовании внешнего css файла он заново парсится
-		// m_internal->m_oStylesCalculator.Clear();
+
+		// Очищаем разрешенные файлы стилей
+		// Это необходимо, чтобы мы не могли взять стили из не подключенного файла, но при этом, чтобы данные оставались,
+		// т.к. ко многим файлам может быть подключен один и тот же файл (проблема возникает когда он большой)
+		// и подключать (в нашем случае заново парсить) его будет долго
+		m_internal->m_oStylesCalculator.ClearAllowedStyleFiles();
+		m_internal->m_oStylesCalculator.ClearEmbeddedStyles();
 	}
 
 	m_internal->write();

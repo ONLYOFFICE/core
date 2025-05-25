@@ -442,14 +442,14 @@ namespace SVG
 
 		if (!Equals(0., dFontHeight) && dFontHeight < MIN_FONT_SIZE)
 		{
-			dXScale *= dFontHeight / MIN_FONT_SIZE;
-			dYScale *= dFontHeight / MIN_FONT_SIZE;
+			dXScale *= MIN_FONT_SIZE / dFontHeight;
+			dYScale *= MIN_FONT_SIZE / dFontHeight;
 			dFontHeight = MIN_FONT_SIZE;
 		}
 		else if (!Equals(0., dFontHeight) && dFontHeight > MAX_FONT_SIZE)
 		{
-			dXScale *= MAX_FONT_SIZE / dFontHeight;
-			dYScale *= MAX_FONT_SIZE / dFontHeight;
+			dXScale *= dFontHeight / MAX_FONT_SIZE;
+			dYScale *= dFontHeight / MAX_FONT_SIZE;
 			dFontHeight = MAX_FONT_SIZE;
 		}
 

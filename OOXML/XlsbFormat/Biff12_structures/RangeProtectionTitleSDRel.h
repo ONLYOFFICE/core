@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2021
  *
  * This program is a free software product. You can redistribute it and/or
@@ -54,7 +54,7 @@ namespace XLSB
 		void save(XLS::CFRecord& record) override;
 
         XLWideString             rgchTitle;
-        _UINT32                  dwsdRel;
+        _UINT32                  dwsdRel = 0;
         XLS::SecurityDescriptor  sd;
     };
 

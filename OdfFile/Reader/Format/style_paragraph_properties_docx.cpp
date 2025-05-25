@@ -405,6 +405,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 		{
 			// TODO auto indent
 
+#if 0
 			if (Context.get_list_style_level() > 0)
 			{
 				int lvl = Context.get_list_style_stack().size() - 1;
@@ -421,26 +422,24 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 					}
 				}
 			}
-			std::wstring w_left, w_right, w_hanging, w_firstLine;
+#endif
+			std::wstring w_left, w_right, w_hanging;
 
-            w_left = docx_process_margin(curr_margin_left_, 20.0);
+            w_left = docx_process_margin(fo_margin_left_, 20.0);
             w_right = docx_process_margin(fo_margin_right_, 20.0);
-            w_firstLine = docx_process_margin(fo_text_indent_, 20.0);
+			w_hanging = docx_process_margin(fo_text_indent_, -20.0);
 
 			if (w_left.empty()) w_left = L"0";
 			if (w_right.empty()) w_right = L"0";
-			if (w_firstLine.empty()) w_hanging = L"0";
+			if (w_hanging.empty()) w_hanging = L"0";
 	                
 		   CP_XML_NODE(L"w:ind")
 		   {
-				CP_XML_ATTR(L"w:left", w_left);
-				CP_XML_ATTR(L"w:right", w_right);
+				CP_XML_ATTR(L"w:start", w_left);
+				CP_XML_ATTR(L"w:end", w_right);
 		        
 				if (Context.get_drop_cap_context().state() != 1 )//состояние сразу после добавления буквицы - не нужны ни отступы, ни висячие
 				{
-					if (!w_firstLine.empty())
-						CP_XML_ATTR(L"w:firstLine", w_firstLine);
-
 					if (!w_hanging.empty())
 						CP_XML_ATTR(L"w:hanging", w_hanging);
 				}
@@ -518,7 +517,9 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context, bool c
 
 	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оО
 		
-	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + margin_left ;
+	double tab_pos_offset = (!Context.get_paragraph_state() || Context.is_table_content()) ? margin_left : 0;
+
+	double tab_pos = 20.0 * style_position_.get_value_unit(length::pt) + tab_pos_offset;
 	double min_tab_pos = 20.0 * def_tab.get_value_unit(length::pt) ;
 
 	if (tab_pos < min_tab_pos)

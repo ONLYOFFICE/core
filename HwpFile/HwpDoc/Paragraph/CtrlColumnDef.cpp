@@ -40,6 +40,39 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
+CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrl(sCtrlID)
+{
+	m_eColLineStyle = ELineStyle2::SOLID;
+	m_shColCount = oNode.GetAttributeInt(L"colCount");
+	m_bSameSz = oNode.GetAttributeBool(L"sameSz");
+
+	if (!m_bSameSz)
+	{
+		m_arColSzWidths.resize(m_shColCount);
+		m_arColSzGaps.resize(m_shColCount);
+	}
+
+	unsigned int unColSzIndex = 0;
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:colLine" == oChild.GetName())
+		{
+			m_eColLineStyle = GetLineStyle2(oChild.GetAttribute(L"type"));
+			m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oChild.GetAttribute(L"width"));
+			m_nColLineColor = oChild.GetAttributeColor(L"color");
+		}
+		else if (L"hp:colSz" == oChild.GetName())
+		{
+			m_arColSzWidths[unColSzIndex] = oChild.GetAttributeInt(L"width");
+			m_arColSzGaps[unColSzIndex++] = oChild.GetAttributeInt(L"gap");
+		}
+	}
+
+	m_bFullFilled = true;
+}
+
 ECtrlObjectType CCtrlColumnDef::GetCtrlType() const
 {
 	return ECtrlObjectType::ColumnDef;

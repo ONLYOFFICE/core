@@ -58,4 +58,7 @@ private:
     std::wstring createFractionFormat(const std::wstring &value, const std::wstring &postfix);
 
     bool checkCommonFractionFormat(const double &numerator, const std::wstring &postfix, double &dvalue, std::wstring &format);
+
+    bool scientificFound_ = false;
+    _UINT16 nonscientificCellsCounter_ = 0;
 };

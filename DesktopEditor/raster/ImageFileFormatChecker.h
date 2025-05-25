@@ -71,17 +71,17 @@ public:
 	__ENUM_CXIMAGE_FORMATS eFileType;
 	
 	CImageFileFormatChecker();
-	CImageFileFormatChecker(std::wstring sFileName);
+	CImageFileFormatChecker(const std::wstring& sFileName);
 	CImageFileFormatChecker(BYTE* pBuffer, DWORD dwBytes);
 
-	bool isImageFileInZip(std::wstring& fileName);
+	bool isImageFileInZip(const std::wstring& fileName);
 	
-	bool isImageFile(std::wstring& fileName);
-	bool isPngFile(std::wstring& fileName);
-	bool isSvmFile(std::wstring& fileName);
+	bool isImageFile(const std::wstring& fileName);
+	bool isPngFile(const std::wstring& fileName);
+	bool isSvmFile(const std::wstring& fileName);
 
-	bool isRawFile(std::wstring& fileName);
-	bool isSvgFile(std::wstring& fileName);
+	bool isRawFile(const std::wstring& fileName);
+	bool isSvgFile(const std::wstring& fileName);
 
 	bool isImageFile(BYTE* pBuffer,DWORD dwBytes);
 	bool isBmpFile(BYTE* pBuffer,DWORD dwBytes);

@@ -20,10 +20,25 @@ CHWPStream::CHWPStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBu
 
 CHWPStream::~CHWPStream()
 {
+	Clear();
+}
+
+void CHWPStream::Clear()
+{
 	if (nullptr != m_pBegin && !m_bExternalBuffer)
 		free(m_pBegin);
 
 	m_pBegin = nullptr;
+	m_pCur = nullptr;
+	m_pEnd = nullptr;
+
+	while (!m_arSavedPositions.empty())
+		m_arSavedPositions.pop();
+}
+
+void CHWPStream::Copy(CHWPStream& oStream, unsigned long ulSize)
+{
+	memcpy(m_pCur, oStream.GetCurPtr(), (std::min)(SizeToEnd(), (unsigned long)(std::min)(ulSize, oStream.SizeToEnd())));
 }
 
 void CHWPStream::SetStream(HWP_BYTE* pBuffer, unsigned long ulSize, bool bExternalBuffer)
@@ -193,7 +208,7 @@ void Trim(HWP_STRING& sValue)
 
 	HWP_STRING::const_reverse_iterator itEnd = std::find_if(sValue.crbegin(), sValue.crend(), [](wchar_t wChar){ return !iswcntrl(wChar); });
 
-	if (itEnd != sValue.crend())
+	if (itEnd != sValue.crbegin())
 		sValue.erase(itEnd.base());
 }
 

@@ -111,6 +111,14 @@ namespace NExtractTools
 		TCD_POTM2PPTM,
 		TCD_PPSM2PPTM,
 
+		TCD_VSDX2VSDT,
+		TCD_VSDX2VSDT_BIN,
+		TCD_VSDT2VSDX,
+		TCD_VSDT2VSDM,
+		TCD_VSDT2VSTX,
+		TCD_VSDT2VSTM,
+		TCD_VSDT_BIN2VSDX,
+
 		TCD_ZIPDIR,
 		TCD_UNZIPDIR,
 
@@ -221,6 +229,7 @@ namespace NExtractTools
         TCD_DOCT_BIN2,
         TCD_XLST_BIN2,
         TCD_PPTT_BIN2,
+		TCD_VSDT_BIN2,
         TCD_DOCUMENT2,
         TCD_SPREADSHEET2,
         TCD_PRESENTATION2,
@@ -996,6 +1005,8 @@ namespace NExtractTools
 					eRes = TCD_XLST_BIN2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
 					eRes = TCD_PPTT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_DRAW == nFormatFrom)
+					eRes = TCD_VSDT_BIN2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
 					eRes = TCD_CROSSPLATFORM2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)

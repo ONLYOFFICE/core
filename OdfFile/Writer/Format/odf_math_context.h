@@ -106,9 +106,11 @@ namespace cpdoccore {
 			odf_text_context* text_context();
 
 			void start_math(office_element_ptr& root);
+			void end_math();
 
-			bool start_element(office_element_ptr& elm); // office_math_element TODO
+			void add_content(const std::wstring& content);
 
+			bool start_element(office_element_ptr& elm); 
 			void end_element();
 
 			std::vector<std::vector<std::wstring>> brackets;
@@ -124,15 +126,14 @@ namespace cpdoccore {
 			double lvl_down_counter = 0;
 			double lvl_max = 0;
 			double lvl_min = 0;
-			std::wstring font;
-			double size = 0;
+
+			std::wstring font_name;
+			double font_size = 0;
+			std::wstring font_color;
+
 			std::set<wchar_t> mo;
 			std::map<std::wstring, std::wstring> diak_symbols;
 
-			void end_math();
-
-			std::wofstream debug_stream;
-			std::string debug_fileName = "debugLog.txt";
 			bool isEmpty();
 			std::vector<bool> tagFlag;
 

@@ -30,11 +30,11 @@ CHWPDocInfo::CHWPDocInfo(EHanType eHanType)
 	: m_eHanType(eHanType), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
-// CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
-// 	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile)
-// {}
+CHWPDocInfo::CHWPDocInfo(CHWPXFile* pHWPXFile)
+	: m_eHanType(EHanType::HWPX), m_pParentHWPX(pHWPXFile), m_eCompatibleDoc(ECompatDoc::UNKNOWN)
+{}
 
-CHWPDocInfo::CHWPDocInfo(CHWPFile_Private* pHWPFile)
+CHWPDocInfo::CHWPDocInfo(CHWPFile* pHWPFile)
 	: m_eHanType(EHanType::HWP), m_pParentHWP(pHWPFile), m_eCompatibleDoc(ECompatDoc::HWP)
 {}
 
@@ -58,7 +58,7 @@ CHWPDocInfo::~CHWPDocInfo()
 	REMOVE_LIST_DATA(m_arStyles);
 	REMOVE_LIST_DATA(m_arTabDefs);
 
-	for (std::pair<HWP_STRING, CHWPRecord*> oBinData : m_mBinDatas)
+	for (const std::pair<HWP_STRING, CHWPRecord*>& oBinData : m_mBinDatas)
 	{
 		if (nullptr != oBinData.second)
 			delete oBinData.second;
@@ -182,8 +182,87 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 	return true;
 }
 
+bool CHWPDocInfo::Parse(CXMLNode& oNode, int nVersion)
+{
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hh:beginNum" == oChild.GetName())
+			m_arRecords.push_back(new CHWPRecordDocumentProperties(*this, oChild, nVersion));
+		else if (L"hh:refList" == oChild.GetName())
+			ReadRefList(oChild, nVersion);
+	}
+
+	return true;
+}
+
+bool CHWPDocInfo::ReadRefList(CXMLNode& oNode, int nVersion)
+{
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hh:fontfaces" == oChild.GetName())
+		{
+			for (CXMLNode& oFontFaceNode : oChild.GetChilds(L"hh:fontface"))
+				for (CXMLNode& oFontNode : oFontFaceNode.GetChilds(L"hh:font"))
+					m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oFontNode, nVersion));
+		}
+		else if (L"hh:borderFills" == oChild.GetName())
+		{
+			for (CXMLNode& oBorderFillNode : oChild.GetChilds(L"hh:borderFill"))
+				m_arBorderFills.push_back(new CHWPRecordBorderFill(*this, oBorderFillNode, nVersion));
+		}
+		else if (L"hh:charProperties" == oChild.GetName())
+		{
+			for (CXMLNode& oCharPrNode : oChild.GetChilds(L"hh:charPr"))
+				m_arCharShapes.push_back(new CHWPRecordCharShape(*this, oCharPrNode, nVersion));
+		}
+		else if (L"hh:tabProperties" == oChild.GetName())
+		{
+			for (CXMLNode& oTabPrNode : oChild.GetChilds(L"hh:tabPr"))
+				m_arTabDefs.push_back(new CHwpRecordTabDef(*this, oTabPrNode, nVersion));
+		}
+		else if (L"hh:numberings" == oChild.GetName())
+		{
+			for (CXMLNode& oNumberingNode : oChild.GetChilds(L"hh:numbering"))
+				m_arNumberings.push_back(new CHWPRecordNumbering(*this, oNumberingNode, nVersion));
+		}
+		else if (L"hh:bullets" == oChild.GetName())
+		{
+			for (CXMLNode& oBulletNode : oChild.GetChilds())
+				m_arBullets.push_back(new CHWPRecordBullet(*this, oBulletNode, nVersion));
+		}
+		else if (L"hh:paraProperties" == oChild.GetName())
+		{
+			for (CXMLNode& oParaPrNode : oChild.GetChilds(L"hh:paraPr"))
+				m_arParaShapes.push_back(new CHWPRecordParaShape(*this, oParaPrNode, nVersion));
+		}
+		else if (L"hh:styles" == oChild.GetName())
+		{
+			for (CXMLNode& oStyleNode : oChild.GetChilds(L"hh:style"))
+				m_arStyles.push_back(new CHWPRecordStyle(*this, oStyleNode, nVersion));
+		}
+	}
+
+	return true;
+}
+
+bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
+{
+	CHWPRecordBinData *pRecordBinData = nullptr;
+
+	for (CXMLNode& oChild : oNode.GetChilds(L"opf:manifest"))
+	{
+		for (CXMLNode& oGrandChild : oChild.GetChilds(L"opf:item"))
+		{
+			pRecordBinData = new CHWPRecordBinData(oGrandChild, nVersion);
+			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
+		}
+	}
+
+	return true;
+}
+
 #define GET_RECORD(array_records, index) \
-	if (array_records.size() <= index) \
+	if (array_records.size() <= index || index < 0) \
 		return nullptr; \
 	return array_records[index]
 
@@ -209,7 +288,7 @@ const CHWPRecord* CHWPDocInfo::GetCharShape(int nIndex) const
 
 const CHWPRecord* CHWPDocInfo::GetNumbering(int nIndex) const
 {
-	GET_RECORD(m_arNumberings, nIndex - 1);
+	GET_RECORD(m_arNumberings, nIndex);
 }
 
 const CHWPRecord* CHWPDocInfo::GetBullet(int nIndex) const
@@ -232,17 +311,40 @@ const CHWPRecord* CHWPDocInfo::GetTabDef(int nIndex) const
 	GET_RECORD(m_arTabDefs, nIndex);
 }
 
-CHWPFile_Private* CHWPDocInfo::GetParentHWP()
+CHWPFile* CHWPDocInfo::GetParentHWP()
 {
 	return m_pParentHWP;
 }
 
 const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 {
-	if (m_mBinDatas.end() == m_mBinDatas.find(sID))
-		return nullptr;
+	switch (m_eHanType)
+	{
+		case EHanType::HWP:
+		{
+			short shID = std::stoi(sID) - 1;
 
-	return m_mBinDatas.at(sID);
+			if (shID >= m_mBinDatas.size())
+				return nullptr;
+
+			std::map<HWP_STRING, CHWPRecord*>::const_iterator itElement = m_mBinDatas.cbegin();
+
+			for (unsigned short ushIndex = 0; ushIndex < shID; ++ushIndex)
+				++itElement;
+
+			return itElement->second;
+		}
+		case EHanType::HWPX:
+		{
+			if (m_mBinDatas.end() == m_mBinDatas.find(sID))
+				return nullptr;
+
+			return m_mBinDatas.at(sID);
+			break;
+		}
+		default:
+			return nullptr;
+	}
 }
 
 EHanType CHWPDocInfo::GetHanType() const

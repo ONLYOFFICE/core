@@ -316,7 +316,7 @@ namespace NSCSS
 
 		std::wstring wsTextAlign{oStyle.m_oText.GetAlign().ToWString()};
 
-		if (wsTextAlign.empty() && bInTable)
+		if (wsTextAlign.empty())
 			wsTextAlign = oStyle.m_oDisplay.GetHAlign().ToWString();
 
 		oXmlElement.AddPropertiesInP(PProperties::P_Jc, wsTextAlign);

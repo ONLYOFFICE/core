@@ -367,11 +367,22 @@ namespace PPTX
 						uFillTx = oNode;
 					else if (L"highlight" == strName)
 						highlight = oNode;
+					else if (L"blipFill" == strName ||
+						L"gradFill" == strName ||
+						L"grpFill" == strName ||
+						L"noFill" == strName ||
+						L"pattFill" == strName ||
+						L"solidFill" == strName)
+					{
+						Fill.fromXML(oNode);
+					}
+					else if (L"effectDag" == strName ||
+						L"effectLst" == strName)
+					{
+						EffectList.fromXML(oNode);
+					}
 				}
 			}
-
-			Fill.GetFillFrom(node);
-			EffectList.GetEffectListFrom(node);
 
 			Normalize();
 

@@ -112,8 +112,6 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"cmpd", cmpd);
 			XmlMacroReadAttributeBase(node, L"w", w);
 
-			Fill.GetFillFrom(node);
-			
 			std::vector<XmlUtils::CXmlNode> oNodes;
 			if (node.GetNodes(L"*", oNodes))
 			{
@@ -138,6 +136,20 @@ namespace PPTX
 					else if (L"prstDash" == strName)
 					{
 						prstDash = oNode;
+					}
+					else if (L"blipFill" == strName ||
+						L"gradFill" == strName ||
+						L"grpFill" == strName ||
+						L"noFill" == strName ||
+						L"pattFill" == strName ||
+						L"solidFill" == strName)
+					{
+						Fill.fromXML(oNode);
+					}
+					else if (L"effectDag" == strName ||
+						L"effectLst" == strName)
+					{
+						Effects.fromXML(oNode);
 					}
 				}
 			}

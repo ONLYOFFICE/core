@@ -2,6 +2,7 @@
 #define CTRLSHAPEARC_H
 
 #include "CtrlShapeEllipse.h"
+#include "Point.h"
 
 namespace HWP
 {
@@ -19,8 +20,13 @@ public:
 	CCtrlShapeArc(const HWP_STRING& sCtrlID);
 	CCtrlShapeArc(const CCtrlGeneralShape& oShape);
 	CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	EShapeType GetShapeType() const override;
+
+	TPoint GetCenterPoint() const;
+	TPoint GetFirstPoint()  const;
+	TPoint GetSecondPoint() const;
 
 	static int ParseElement(CCtrlShapeArc& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlShapeArc& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

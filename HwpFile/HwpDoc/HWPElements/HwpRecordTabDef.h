@@ -4,6 +4,7 @@
 #include "HWPRecord.h"
 #include "../HWPDocInfo.h"
 #include "HwpRecordTypes.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -19,6 +20,10 @@ struct TTab
 	} m_eType;
 	ELineStyle2 m_eLeader;
 
+
+	TTab();
+	TTab(CXMLNode& oNode);
+
 	void SetType(int nValue);
 };
 
@@ -32,6 +37,7 @@ class CHwpRecordTabDef : public CHWPRecord
 public:
 	CHwpRecordTabDef(int nTagNum, int nLevel, int nSize);
 	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 };
 }
 

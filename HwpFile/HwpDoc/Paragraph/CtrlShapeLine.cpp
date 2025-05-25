@@ -17,6 +17,26 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	m_shAttr = (short)oNode.GetAttributeBool(L"isReverseHV");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hc:startPt" == oChild.GetName())
+		{
+			m_nStartX = oChild.GetAttributeInt(L"x");
+			m_nStartY = oChild.GetAttributeInt(L"y");
+		}
+		else if (L"hc:endPt" == oChild.GetName())
+		{
+			m_nEndX = oChild.GetAttributeInt(L"x");
+			m_nEndY = oChild.GetAttributeInt(L"y");
+		}
+	}
+}
+
 EShapeType CCtrlShapeLine::GetShapeType() const
 {
 	return EShapeType::Line;

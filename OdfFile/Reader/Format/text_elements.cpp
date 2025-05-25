@@ -253,12 +253,15 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 	return index;
 }
 
-void static process_list_bullet_style(oox::docx_conversion_context& Context, office_element_ptr_array& content)
+void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
-	if (content.size() <= 0)
+	if (Context.get_list_style_level() == 0)
 		return;
 
-	span* first_span = dynamic_cast<span*>(content[0].get());
+	if (content_.size() <= 0)
+		return;
+
+	span* first_span = dynamic_cast<span*>(content_[0].get());
 	if (!first_span)
 		return;
 
@@ -270,21 +273,19 @@ void static process_list_bullet_style(oox::docx_conversion_context& Context, off
 	if (!span_style_content)
 		return;
 
-	std::wstringstream ss;
 	style_text_properties* text_props = span_style_content->get_style_text_properties();
 
 	if (text_props)
 	{
-		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
-		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
-
-		if (font_weight && font_weight->get_type() == odf_types::font_weight::WBold)
-			ss << "<w:b/>";
-		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
-			ss << "<w:i/>";
+		if (!attrs_.text_style_name_.empty())
+		{
+			style_instance* paragraph_style = Context.root()->odf_context().styleContainer().style_by_name(attrs_.text_style_name_, style_family::Paragraph, false);
+			if (paragraph_style && paragraph_style->content())
+			{
+				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
+			}
+		}
 	}
-	
-	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
 }
 
 void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)
@@ -383,7 +384,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 	}
 	Context.start_paragraph_style(styleName);
 	
-	process_list_bullet_style(Context, content_);
+	process_list_bullet_style(Context);
 
     int textStyle = Context.process_paragraph_attr(&attrs_);
 
@@ -517,6 +518,15 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.process_headers_footers_) 
 		return;
+
+	std::wstring currentMasterPageName = Context.get_master_page_name();
+	style_master_page* masterPage = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(currentMasterPageName);
+
+	if (masterPage && masterPage->attlist_.style_next_style_name_)
+	{
+		Context.set_next_master_page_name(*masterPage->attlist_.style_next_style_name_);
+		Context.next_dump_page_properties(true);
+	}
 	
 	if (0 == Context.get_page_break_after() && 0 == Context.get_page_break_before())
 	{

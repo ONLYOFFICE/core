@@ -5,6 +5,7 @@
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 #include "../../../../OOXML/Base/Unit.h"
 #include "../../../../OOXML/Common/SimpleTypes_OMath.h"
+#include "../../../../DesktopEditor/common/StringUTF32.h"
 #include "typeselements.h"
 #include "fontType.h"
 #include <vector>
@@ -17,10 +18,8 @@ namespace StarMath
 {
 	struct StValuePr
 	{
-		StValuePr():m_wsTypeName(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsChr(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false)
-		{
-			AddRef();
-		}
+		StValuePr():m_wsTypeName(L""),m_wsChr(L""),m_wsBegBracket(L""),m_wsEndBracket(L""),m_wsColor(L""),m_bSupHide(false),m_bSubHide(false),m_enStyle(SimpleTypes::EStyle::stylePlain),m_iSize(0),m_enPos(SimpleTypes::ETopBot::tbBot),m_enVert(SimpleTypes::ETopBot::tbBot),m_enFont(StarMath::TypeFont::empty),m_iCount(0),m_bStrike(false),m_enUnderLine(SimpleTypes::EUnderline::underlineNone),m_bBaseAttribute(false)
+		{}
 		std::wstring m_wsTypeName,m_wsChr;
 		std::wstring m_wsBegBracket,m_wsEndBracket;
 		std::wstring m_wsColor;
@@ -31,6 +30,8 @@ namespace StarMath
 		StarMath::TypeFont m_enFont;
 		int m_iCount;
 		bool m_bStrike;
+		SimpleTypes::EUnderline m_enUnderLine;
+		bool m_bBaseAttribute;
 		void AddRef()
 		{
 			m_iCount++;
@@ -44,10 +45,11 @@ namespace StarMath
 	};
 	struct StStyleMenClose
 	{
-		StStyleMenClose():m_iStyle(0),m_bMenClose(false)
+		StStyleMenClose():m_iStyle(0),m_bMenClose(false),m_bUnderlineClose(false)
 		{}
 		unsigned int m_iStyle;
 		bool m_bMenClose;
+		bool m_bUnderlineClose;
 	};
 	class COneElement;
 	class COOXml2Odf
@@ -80,6 +82,7 @@ namespace StarMath
 		void ConversionFunc(OOX::Logic::CFunc* pFunc);
 		StStyleMenClose ConversionFuncPr(OOX::Logic::CFuncPr* pFuncPr);
 		void ConversionBox(OOX::Logic::CBox* pBox);
+		void ConversionBorderBox(OOX::Logic::CBorderBox* pBorderBox);
 		void ConversionTextVector(std::vector<COneElement*>& arLine, std::vector<COneElement*>& arNewLine);
 		void ConversionVectorWritingElement(std::vector<OOX::WritingElement*> arWrElements);
 		void ConversionMatrix(OOX::Logic::CMatrix *pMatrix);
@@ -115,18 +118,26 @@ namespace StarMath
 		static bool IsDigit(const std::wstring& wsDigit);
 		static bool IsAlpha(const std::wstring& wsAlpha);
 		static void StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter* pXmlWrite);
+		static void MTextRecording(XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation,const std::wstring& wsText);
+		std::wstring TransformationUTF32(const std::wstring& wsText);
 		bool ComparingAttributes(StValuePr* pRight, StValuePr* pLeft);
 		void AttributeCheck(StValuePr*& pParent, StValuePr*& pChild);
+		void AttributeCheck(StValuePr*& pChild);
+		void CreateAttribute(StValuePr*& pAttribute);
 		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
 		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
 		void EndOdf();
 		std::wstring GetOdf();
 		std::wstring GetAnnotation();
 		std::wstring GetSemantic();
+		void SetBaseAttribute(std::wstring wsBaseColor = L"", unsigned int uiBaseSize = 0);
 	private:
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 		std::wstring m_wsAnnotationStarMath,m_wsSemantic;
 		std::stack<StValuePr*> m_stAttribute;
+		std::wstring m_wsBaseColor;
+		unsigned int m_uiBaseSize;
+		bool m_bStretchyAcc;
 	};
 	class COneElement
 	{
@@ -136,10 +147,11 @@ namespace StarMath
 		virtual ~COneElement();
 		virtual void Parse(std::wstring::iterator& itStart,std::wstring::iterator& itEnd,COneElement*& pElement) = 0;
 		virtual void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) = 0;
+		virtual void SetAttribute(StValuePr* pAttribute) = 0;
 		static COneElement* CreateElement(std::wstring& wsOneElement);
 		void SetType(const TypeElement& enType);
 		TypeElement GetType();
-		void SetAttribute(StValuePr* stAttribute);
+		void SetBaseAttribute(StValuePr* stAttribute);
 		StValuePr* GetAttribute();
 		static void ConversionAttribute(StValuePr* pAttribute, StStyleMenClose & stStyle , XmlUtils::CXmlWriter* pXmlWrite, std::wstring& wsAnnotation, const bool &bDelimiter = false);
 		bool CheckStyle();
@@ -160,6 +172,7 @@ namespace StarMath
 		virtual ~CNumberOrLetter();
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
+		void SetAttribute(StValuePr* pAttribute) override;
 		const std::wstring& GetString();
 		void AddingStrings(const std::wstring& wsString);
 	private:
@@ -186,6 +199,7 @@ namespace StarMath
 		virtual ~CBinOperator();
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd, COneElement *&pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void SetAttribute(StValuePr* pAttribute) override;
 		bool CheckLeftArg();
 		void SetLeftArg(COneElement* pElement);
 		bool CheckRightArg();
@@ -213,6 +227,7 @@ namespace StarMath
 		virtual ~CRelationsAndOperationsOnSets();
 		void Parse(std::wstring::iterator &itStart, std::wstring::iterator &itEnd,COneElement*& pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void SetAttribute(StValuePr* pAttribute) override;
 		void SetLeftArg(COneElement* pElement);
 		void SetRightArg(COneElement* pElement);
 		bool CheckRightArg();
@@ -234,6 +249,7 @@ namespace StarMath
 		virtual ~CSpace();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void SetAttribute(StValuePr* pAttribute) override;
 	};
 	class CSpecialChar: public COneElement
 	{
@@ -241,12 +257,11 @@ namespace StarMath
 		CSpecialChar(const std::wstring& wsSymbol,const std::wstring& wsAnnotation):m_wsSymbol(wsSymbol),m_wsAnnotation(wsAnnotation)
 		{
 			SetType(TypeElement::SpecialSymbol);
-			if(m_wsSymbol == L"\u0026")
-				m_wsSymbol = L"\u0026amp;";
 		}
 		virtual ~CSpecialChar();
 		void Parse(std::wstring::iterator&itStart,std::wstring::iterator&itEnd,COneElement*& pElement) override;
 		void Conversion(XmlUtils::CXmlWriter* pXmlWrite,std::wstring& wsAnnotation) override;
+		void SetAttribute(StValuePr* pAttribute) override;
 		static std::wstring DefinitionSpecialChar(const std::wstring& wsSymbol);
 	private:
 		std::wstring m_wsSymbol,m_wsAnnotation;

@@ -9,6 +9,7 @@
 #include "CtrlShapeCurve.h"
 #include "CtrlShapeEllipse.h"
 #include "CtrlShapePolygon.h"
+#include "CtrlShapeConnectLine.h"
 
 namespace HWP
 {
@@ -23,6 +24,36 @@ CCtrlContainer::CCtrlContainer(const CCtrlGeneralShape& oShape)
 CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
+
+CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:container" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlContainer(L"noc$", oChild, nVersion));
+		else if (L"hp:line" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oChild, nVersion));
+		else if (L"hp:rect" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oChild, nVersion));
+		else if (L"hp:ellipse" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oChild, nVersion));
+		else if (L"hp:arc" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oChild, nVersion));
+		else if (L"hp:polygon" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oChild, nVersion));
+		else if (L"hp:curve" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oChild, nVersion));
+		else if (L"hp:connectLine" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oChild, nVersion));
+		else if (L"hp:pic" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oChild, nVersion));
+		else if (L"hp:ole" == oChild.GetName())
+			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oChild, nVersion));
+	}
+
+	m_shNElement = m_arShapes.size();
+}
 
 CCtrlContainer::~CCtrlContainer()
 {

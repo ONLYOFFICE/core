@@ -17,6 +17,27 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
+CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID)
+{
+	m_sVersion = oNode.GetAttribute(L"version");
+	m_nBaseline = oNode.GetAttributeInt(L"baseLine");
+	m_nColor = oNode.GetAttributeColor(L"textColor");
+	m_nCharSize = oNode.GetAttributeInt(L"baseUnit");
+
+	HWP_STRING sType = oNode.GetAttribute(L"lineMode");
+
+	if (L"LINE" == sType)
+		m_nAttr = 1;
+	else if (L"CHAR" == sType)
+		m_nAttr = 0;
+
+	m_sFont = oNode.GetAttribute(L"font");
+	m_sEqn = oNode.GetChild(L"hp:script").GetText();
+
+	m_bFullFilled = true;
+}
+
 EShapeType CCtrlEqEdit::GetShapeType() const
 {
 	return EShapeType::EqEdit;

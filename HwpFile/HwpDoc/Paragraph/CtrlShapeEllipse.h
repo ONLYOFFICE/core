@@ -12,17 +12,8 @@ enum class EArcType
 	CHORD
 };
 
-inline EArcType GetArcType(int nValue)
-{
-	switch(static_cast<EArcType>(nValue))
-	{
-		case EArcType::NORMAL:
-		default:
-			return EArcType::NORMAL;
-		case EArcType::PIE: return EArcType::PIE;
-		case EArcType::CHORD: return EArcType::CHORD;
-	}
-}
+EArcType GetArcType(int nValue);
+EArcType GetArcType(const HWP_STRING& sValue);
 
 class CCtrlShapeEllipse : public CCtrlGeneralShape
 {
@@ -35,12 +26,12 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nAxixY1;
 	int m_nAxixX2;
 	int m_nAxixY2;
-	int m_nSrartX1;
-	int m_nSrartY1;
+	int m_nStartX1;
+	int m_nStartY1;
 	int m_nEndX1;
 	int m_nEndY1;
-	int m_nSrartX2;
-	int m_nSrartY2;
+	int m_nStartX2;
+	int m_nStartY2;
 	int m_nEndX2;
 	int m_nEndY2;
 public:
@@ -48,6 +39,7 @@ public:
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID);
 	CCtrlShapeEllipse(const CCtrlGeneralShape& oShape);
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

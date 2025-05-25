@@ -356,6 +356,8 @@ public:
 
 		virtual void Check(const int& nCode, const unsigned int& nIndex)
 		{
+			if (nCode > m_nMaxSymbols)
+				return;
 			if (nCode > m_nMax)
 				m_nMax = nCode;
 			if (nCode < m_nMin)
@@ -794,6 +796,8 @@ public:
 				std::wstring sNameCorrect = pPair->second.m_sName;
 				NSStringUtils::string_replace(sNameCorrect, L"\\", L"\\\\");
 				NSStringUtils::string_replace(sNameCorrect, L"\"", L"\\\"");
+				NSStringUtils::string_replace(sNameCorrect, L"\n", L"");
+				NSStringUtils::string_replace(sNameCorrect, L"\r", L"");
 				oWriterJS += sNameCorrect;
 
 				oWriterJS.AddSize(120);

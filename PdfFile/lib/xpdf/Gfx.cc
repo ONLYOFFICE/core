@@ -4289,15 +4289,32 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
 	obj2.free();
       }
     }
-    if (!obj1.isNull()) {
-      colorSpace = GfxColorSpace::parse(&obj1
-					);
+
+    GBool haveRGBA = gFalse;
+    if (str->getKind() == strJPX && (csMode == streamCSDeviceRGB || csMode == streamCSDeviceCMYK)) {
+      // Case of transparent JPX image, they may contain RGBA data when SMaskInData=1
+      Object smaskInData;
+      dict->lookup("SMaskInData", &smaskInData);
+      haveRGBA = smaskInData.isInt() && smaskInData.getInt();
+      smaskInData.free();
+    }
+
+    if (!obj1.isNull() && !haveRGBA) {
+      colorSpace = GfxColorSpace::parse(&obj1);
     } else if (csMode == streamCSDeviceGray) {
       colorSpace = GfxColorSpace::create(csDeviceGray);
     } else if (csMode == streamCSDeviceRGB) {
-      colorSpace = GfxColorSpace::create(csDeviceRGB);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceRGB);
+      }
     } else if (csMode == streamCSDeviceCMYK) {
-      colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      if (haveRGBA) {
+        colorSpace = GfxColorSpace::create(csDeviceRGBA);
+      } else {
+        colorSpace = GfxColorSpace::create(csDeviceCMYK);
+      }
     } else {
       colorSpace = NULL;
     }
@@ -5020,6 +5037,20 @@ void Gfx::opEndIgnoreUndef(Object args[], int numArgs) {
 // marked content operators
 //------------------------------------------------------------------------
 
+void Gfx::SkipBDC()
+{
+  Object obj;
+  getContentObj(&obj);
+  while (!obj.isEOF()) {
+    if (obj.isCmd("BMC") || obj.isCmd("BDC"))
+      SkipBDC();
+    else if (obj.isCmd("EMC"))
+      break;
+    obj.free();
+    getContentObj(&obj);
+  }
+  obj.free();
+}
 void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
   GfxMarkedContent *mc;
   Object obj;
@@ -5057,16 +5088,13 @@ void Gfx::opBeginMarkedContent(Object args[], int numArgs) {
         oIDF.getString()->cmp(oIDF2.getString()) == 0 && oMetaOForm.dictLookup("ID", &oID)->isString() && xref->getTrailerDict()->dictLookup("ID", &oTID)->isArray() &&
         oTID.arrayGet(1, &oID2)->isString() && oID2.getString()->cmp(oID.getString()) == 0 && args[1].dictLookup("MCID", &oMCID)->isInt() &&
         oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray() && oMetadata.arrayGet(oMCID.getInt(), &oMetadataCur)->isString()) {
-      oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMCID.free(); oMetadata.free(); obj.free();
+      oID.free(); oTID.free(); oID2.free(); oIDF.free(); oIDF2.free(); oMetadata.free(); obj.free();
       Object oImRef, oArrImage;
       if (!oMetaOForm.dictLookup("Image", &oArrImage)->isArray() || !oArrImage.arrayGetNF(oMCID.getInt(), &oImRef)->isRef())
         oImRef.free();
+      oMCID.free();
       if (out->beginMCOShapes(state, oMetadataCur.getString(), &oImRef)) {
-        getContentObj(&obj);
-        while (!obj.isEOF() && !obj.isCmd("EMC")) {
-          obj.free();
-          getContentObj(&obj);
-        }
+        SkipBDC();
         out->endMarkedContent(state);
         oImRef.free(); oArrImage.free();
         oMetaOForm.free(); oMetadataCur.free(); obj.free();

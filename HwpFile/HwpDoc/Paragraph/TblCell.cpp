@@ -1,4 +1,5 @@
 #include "TblCell.h"
+#include "CtrlCharacter.h"
 
 namespace HWP
 {
@@ -22,6 +23,54 @@ CTblCell::CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	oBuffer.ReadShort(m_shBorderFill);
 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
+}
+
+CTblCell::CTblCell(CXMLNode& oNode, int nVersion)
+{
+	m_shBorderFill = oNode.GetAttributeInt(L"borderFillIDRef");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:cellAddr" == oChild.GetName())
+		{
+			m_shColAddr = oChild.GetAttributeInt(L"colAddr");
+			m_shRowAddr = oChild.GetAttributeInt(L"rowAddr");
+		}
+		else if (L"hp:cellSpan" == oChild.GetName())
+		{
+			m_shColSpan = oChild.GetAttributeInt(L"colSpan");
+			m_shRowSpan = oChild.GetAttributeInt(L"rowSpan");
+		}
+		else if (L"hp:cellSz" == oChild.GetName())
+		{
+			m_nWidth = oChild.GetAttributeInt(L"width");
+			m_nHeight = oChild.GetAttributeInt(L"height");
+		}
+		else if (L"hp:cellMargin" == oChild.GetName())
+		{
+			m_arMargin[0] = oChild.GetAttributeInt(L"left");
+			m_arMargin[1] = oChild.GetAttributeInt(L"rifht");
+			m_arMargin[2] = oChild.GetAttributeInt(L"top");
+			m_arMargin[3] = oChild.GetAttributeInt(L"bottom");
+		}
+		else if (L"hp:subList" == oChild.GetName())
+		{
+			m_eVertAlign = ::HWP::GetVertAlign(oChild.GetAttributeInt(L"vertAlign"));
+
+			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
+			{
+				CCellParagraph *pCellParagraphs = new CCellParagraph(oGrandChild, nVersion);
+
+				if (nullptr == pCellParagraphs)
+					continue;
+
+				if (ECtrlObjectType::Character != pCellParagraphs->GetCtrls().back()->GetCtrlType())
+					pCellParagraphs->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+
+				m_arParas.push_back(pCellParagraphs);
+			}
+		}
+	}
 }
 
 void CTblCell::SetVertAlign(EVertAlign eVertAlign)

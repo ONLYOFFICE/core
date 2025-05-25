@@ -65,13 +65,16 @@ namespace PdfWriter
 		CPageTree(CXref* pXref);
 		CPageTree();
 		void Fix();
-		void AddPage(CDictObject* pPage);
+		void AddPage(CObjectBase* pPage);
 		CObjectBase* GetObj(int nPageIndex);
 		CPage* GetPage(int nPageIndex);
 		CObjectBase* RemovePage(int nPageIndex);
-		bool InsertPage(int nPageIndex, CPage* pPage);
+		bool InsertPage(int nPageIndex, CObjectBase* pPage);
 		bool ReplacePage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
+		bool Find(CPage* pPage, int& nI);
+		void CreateFakePages(int nPages, int nPageIndex = 0);
+		void ClearFakePages();
 		unsigned int GetCount()
 		{
 			return m_pCount ? m_pCount->Get() : 0;
@@ -81,7 +84,7 @@ namespace PdfWriter
 			return dict_type_PAGES;
 		}
 	private:
-		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CPage* pPage = NULL);
+		CObjectBase* GetFromPageTree(int nPageIndex, int& nI, bool bRemove = false, bool bInsert = false, CObjectBase* pPage = NULL);
 
 		CNumberObject* m_pCount;
 		CArrayObject*  m_pPages;
@@ -92,7 +95,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CDocument* pDocument, CXref* pXref = NULL);
+		CPage(CDocument* pDocument);
 		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
@@ -176,7 +179,6 @@ namespace PdfWriter
         void      SetRotate(int nRotate);
         int       GetRotate();
 		void      ClearContent(CXref* pXref);
-		CDictObject* GetContent() const;
 		CResourcesDict* GetResourcesItem();
 
 	private:

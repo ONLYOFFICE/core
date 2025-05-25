@@ -50,6 +50,9 @@ namespace NSDocxRenderer
 		bool IsShadingPresent(const CTextLine* pLine) const noexcept;
 		bool IsCanBeDeleted() const;
 
+		double GetLeftNoEnum() const noexcept;
+
 		size_t GetLength() const;
+		void GetNextSym(size_t& nContPos, size_t& nSymPos) const noexcept;
 	};
 }

@@ -51,6 +51,10 @@ public:
 
 	JSSmart<CJSValue> FreeWasmData(JSSmart<CJSValue> typedArray);
 
+	JSSmart<CJSValue> SplitPages(JSSmart<CJSValue> arrPageIndexes, JSSmart<CJSValue> data);
+	JSSmart<CJSValue> MergePages(JSSmart<CJSValue> data, JSSmart<CJSValue> nMaxID, JSSmart<CJSValue> sPrefixForm);
+	JSSmart<CJSValue> UnmergePages();
+
 	DECLARE_EMBED_METHODS
 };
 

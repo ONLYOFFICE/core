@@ -4,6 +4,7 @@
 #include "LineSeg.h"
 #include "RangeTag.h"
 #include "Ctrl.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -21,18 +22,21 @@ class CHWPPargraph : public IRef
 	HWP_BYTE m_chBreakType;    // HWPTAG_PARA_HEADER
 
 	CLineSeg *m_pLineSegs; // HWPTAG_PARA_LINE_SEG
-	VECTOR<TRangeTag*> m_arRangeTags;  // HWPTAG_PARA_RANGE_TAG
+	VECTOR<TRangeTag> m_arRangeTags;  // HWPTAG_PARA_RANGE_TAG
 
 	VECTOR<CCtrl*> m_arP; //HWPTAG_PARA_TEXT
+
+	bool ParseHWPParagraph(CXMLNode& oNode, int nCharShapeID, int nVersion);
 public:
 	CHWPPargraph();
+	CHWPPargraph(CXMLNode& oNode, int nVersion);
 	virtual ~CHWPPargraph();
 
 	virtual EParagraphType GetType() const;
 
 	void SetLineSeg(CLineSeg* pLineSeg);
 
-	void AddRangeTag(TRangeTag* pRangeTag);
+	void AddRangeTag(const TRangeTag& oRangeTag);
 
 	void AddCtrl(CCtrl* pCtrl);
 	void AddCtrls(const LIST<CCtrl*>& arCtrls);
@@ -48,6 +52,8 @@ public:
 	HWP_BYTE GetBreakType() const;
 
 	const CLineSeg* GetLineSeg() const;
+
+	VECTOR<TRangeTag> GetRangeTags() const;
 
 	static CHWPPargraph* Parse(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int Parse(CHWPPargraph& oPara, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

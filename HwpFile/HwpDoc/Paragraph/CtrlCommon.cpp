@@ -1,89 +1,144 @@
 #include "CtrlCommon.h"
+#include "../Common/Common.h"
+
+#include "CapParagraph.h"
 
 namespace HWP
 {
+	EVertAlign GetVertAlign(int nValue)
+	{
+		SWITCH(EVertAlign, nValue)
+		{
+			DEFAULT(EVertAlign::TOP);
+			CASE(EVertAlign::CENTER);
+			CASE(EVertAlign::BOTTOM);
+			CASE(EVertAlign::INSIDE);
+			CASE(EVertAlign::OUTSIDE);
+		}
+	}
+
+	EVertAlign GetVertAlign(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(CENTER, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EVertAlign);
+		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EVertAlign);
+		ELSE_STRING_IN_ENUM(TOP, EVertAlign);
+	}
+
 	EVRelTo GetVRelTo(int nValue)
 	{
-		switch(static_cast<EVRelTo>(nValue))
+		SWITCH(EVRelTo, nValue)
 		{
-			case EVRelTo::PAPER:
-			case EVRelTo::PAGE:
-			case EVRelTo::PARA:
-				return static_cast<EVRelTo>(nValue);
-			default:
-				return EVRelTo::null;
+			CASE(EVRelTo::PARA);
+			CASE(EVRelTo::PAGE);
+			DEFAULT(EVRelTo::PAPER);
 		}
+	}
+
+	EVRelTo GetVRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PARA, sValue, EVRelTo);
+		ELSE_IF_STRING_IN_ENUM(PAGE, sValue, EVRelTo);
+		ELSE_IF_STRING_IN_ENUM(PAPER, sValue, EVRelTo);
+		ELSE_STRING_IN_ENUM(PARA, EVRelTo);
 	}
 
 	EHRelTo GetHRelTo(int nValue)
 	{
-		switch(static_cast<EHRelTo>(nValue))
+		SWITCH(EHRelTo, nValue)
 		{
-			case EHRelTo::PAPER:
-			case EHRelTo::PAGE:
-			case EHRelTo::COLUMN:
-			case EHRelTo::PARA:
-				return static_cast<EHRelTo>(nValue);
-			default:
-				return EHRelTo::null;
+			CASE(EHRelTo::PAGE);
+			CASE(EHRelTo::PARA);
+			CASE(EHRelTo::COLUMN);
+			DEFAULT(EHRelTo::PAPER);
 		}
+	}
+
+	EHRelTo GetHRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EHRelTo);
+		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EHRelTo);
+		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EHRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EHRelTo);
 	}
 
 	EWidthRelTo GetWidthRelTo(int nValue)
 	{
-		switch(static_cast<EWidthRelTo>(nValue))
+		SWITCH(EWidthRelTo, nValue)
 		{
-			case EWidthRelTo::PAPER:
-			case EWidthRelTo::PAGE:
-			case EWidthRelTo::COLUMN:
-			case EWidthRelTo::PARA:
-			case EWidthRelTo::ABSOLUTE:
-				return static_cast<EWidthRelTo>(nValue);
-			default:
-				return EWidthRelTo::null;
+			CASE(EWidthRelTo::PAGE);
+			CASE(EWidthRelTo::PARA);
+			CASE(EWidthRelTo::COLUMN);
+			CASE(EWidthRelTo::ABSOLUTE);
+			DEFAULT(EWidthRelTo::PAPER);
 		}
+	}
+
+	EWidthRelTo GetWidthRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EWidthRelTo);
+		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EWidthRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EWidthRelTo);
 	}
 
 	EHeightRelTo GetHeightRelTo(int nValue)
 	{
-		switch(static_cast<EHeightRelTo>(nValue))
+		SWITCH(EHeightRelTo, nValue)
 		{
-			case EHeightRelTo::PAPER:
-			case EHeightRelTo::PAGE:
-			case EHeightRelTo::ABSOLUTE:
-				return static_cast<EHeightRelTo>(nValue);
-			default:
-				return EHeightRelTo::null;
+			CASE(EHeightRelTo::PAGE);
+			CASE(EHeightRelTo::ABSOLUTE);
+			DEFAULT(EHeightRelTo::PAPER);
 		}
+	}
+
+	EHeightRelTo GetHeightRelTo(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(PAGE, sValue, EHeightRelTo);
+		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EHeightRelTo);
+		ELSE_STRING_IN_ENUM(PAPER, EHeightRelTo);
 	}
 
 	EHorzAlign GetHorzAlign(int nValue)
 	{
-		switch(static_cast<EHorzAlign>(nValue))
+		SWITCH(EHorzAlign, nValue)
 		{
-			case EHorzAlign::CENTER:
-			case EHorzAlign::RIGHT:
-			case EHorzAlign::INSIDE:
-			case EHorzAlign::OUTSIDE:
-				return static_cast<EHorzAlign>(nValue);
-			case EHorzAlign::LEFT:
-			default:
-				return EHorzAlign::LEFT;
+			CASE(EHorzAlign::CENTER);
+			CASE(EHorzAlign::RIGHT);
+			CASE(EHorzAlign::INSIDE);
+			CASE(EHorzAlign::OUTSIDE);
+			DEFAULT(EHorzAlign::LEFT);
 		}
+	}
+
+	EHorzAlign GetHorzAlign(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(CENTER, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(RIGHT, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EHorzAlign);
+		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EHorzAlign);
+		ELSE_STRING_IN_ENUM(LEFT, EHorzAlign);
 	}
 
 	ETextWrap GetTextWrap(int nValue)
 	{
-		switch(static_cast<ETextWrap>(nValue))
+		SWITCH(ETextWrap, nValue)
 		{
-			case ETextWrap::TOP_AND_BOTTOM:
-			case ETextWrap::BEHIND_TEXT:
-			case ETextWrap::IN_FRONT_OF_TEXT:
-				return static_cast<ETextWrap>(nValue);
-			case ETextWrap::SQUARE:
-			default:
-				return ETextWrap::SQUARE;
+			CASE(ETextWrap::TOP_AND_BOTTOM);
+			CASE(ETextWrap::BEHIND_TEXT);
+			CASE(ETextWrap::IN_FRONT_OF_TEXT);
+			DEFAULT(ETextWrap::SQUARE);
 		}
+	}
+
+	ETextWrap GetTextWrap(const HWP_STRING& sValue)
+	{
+		IF_STRING_IN_ENUM(TOP_AND_BOTTOM, sValue, ETextWrap);
+		ELSE_IF_STRING_IN_ENUM(BEHIND_TEXT, sValue, ETextWrap);
+		ELSE_IF_STRING_IN_ENUM(IN_FRONT_OF_TEXT, sValue, ETextWrap);
+		ELSE_STRING_IN_ENUM(SQUARE, ETextWrap);
 	}
 
 	CCtrlCommon::CCtrlCommon()
@@ -184,6 +239,111 @@ namespace HWP
 			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
 	}
 
+	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	    : CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP)
+	{
+		m_nObjInstanceID = std::abs(oNode.GetAttributeInt(L"id"));
+
+		HWP_STRING sType = oNode.GetAttribute(L"textFlow");
+
+		if (L"BOTH_SIDES" == sType)
+			m_chTextFlow = 0;
+		else if (L"LEFT_ONLY" == sType)
+			m_chTextFlow = 1;
+		else if (L"RIGHT_ONLY" == sType)
+			m_chTextFlow = 2;
+		else if (L"LARGEST_ONLY" == sType)
+			m_chTextFlow = 3;
+
+		sType = oNode.GetAttribute(L"textWrap");
+
+		if (L"SQUARE" == sType)
+			m_eTextWrap = ETextWrap::SQUARE;
+		else if (L"TOP_AND_BOTTOM" == sType)
+			m_eTextWrap = ETextWrap::TOP_AND_BOTTOM;
+		else if (L"BEHIND_TEXT" == sType)
+			m_eTextWrap = ETextWrap::BEHIND_TEXT;
+		else if (L"IN_FRONT_OF_TEXT" == sType)
+			m_eTextWrap = ETextWrap::IN_FRONT_OF_TEXT;
+
+		m_nZOrder = oNode.GetAttributeInt(L"zOrder");
+
+		sType = oNode.GetAttribute(L"numberingType");
+
+		if (L"NONE" == sType)
+			m_chNumeringType = 0;
+		else if (L"PICTURE" == sType)
+			m_chNumeringType = 1;
+		else if (L"TABLE" == sType)
+			m_chNumeringType = 2;
+		else if (L"EQUATION" == sType)
+			m_chNumeringType = 3;
+
+		for (CXMLNode& oChild : oNode.GetChilds())
+		{
+			if (L"hp:sz" == oChild.GetName())
+			{
+				m_nWidth = oChild.GetAttributeInt(L"width");
+				m_eWidthRelTo = ::HWP::GetWidthRelTo(oChild.GetAttribute(L"widthRelTo"));
+				m_nHeight = oChild.GetAttributeInt(L"height");
+				m_eHeightRelTo = ::HWP::GetHeightRelTo(oChild.GetAttribute(L"heightRelTo"));
+			}
+			else if (L"hp:pos" == oChild.GetName())
+			{
+				m_bTreatAsChar = oChild.GetAttributeBool(L"treatAsChar");
+
+				if (m_bTreatAsChar)
+					m_bAffectLSpacing = oChild.GetAttributeBool(L"affectLSpacing");
+				else
+					m_bAllowOverlap = oChild.GetAttributeBool(L"allowOverlap");
+
+				m_eVertRelTo = GetVRelTo(oChild.GetAttribute(L"vertRelTo"));
+				m_eHorzRelTo = GetHRelTo(oChild.GetAttribute(L"horzRelTo"));
+
+				if (EVRelTo::PARA == m_eVertRelTo)
+					m_bFlowWithText = oChild.GetAttributeBool(L"flowWithText");
+
+				m_eVertAlign = GetVertAlign(oChild.GetAttribute(L"vertAlign"));
+				m_eHorzAlign = GetHorzAlign(oChild.GetAttribute(L"horzAlign"));
+				m_nVertOffset = oChild.GetAttributeInt(L"vertOffset");
+				m_nHorzOffset = oChild.GetAttributeInt(L"horzOffset");
+			}
+			else if (L"hp:outMargin" == oChild.GetName())
+			{
+				m_arOutMargin[0] = oChild.GetAttributeInt(L"left");
+				m_arOutMargin[1] = oChild.GetAttributeInt(L"right");
+				m_arOutMargin[2] = oChild.GetAttributeInt(L"top");
+				m_arOutMargin[3] = oChild.GetAttributeInt(L"bottom");
+			}
+			else if (L"hp:caption" == oChild.GetName())
+			{
+				HWP_STRING sType = oChild.GetAttribute(L"side");
+
+				if (L"LEFT" == sType)
+					m_nCaptionAttr = 0b00;
+				else if (L"RIGHT" == sType)
+					m_nCaptionAttr = 0b01;
+				else if (L"TOP" == sType)
+					m_nCaptionAttr = 0b10;
+				else if (L"BOTTOM" == sType)
+					m_nCaptionAttr = 0b11;
+
+				if (oChild.GetAttributeBool(L"fullSz"))
+					m_nCaptionAttr |= 0b100;
+
+				m_nCaptionWidth = oChild.GetAttributeInt(L"width");
+				m_nCaptionSpacing = oChild.GetAttributeInt(L"gap");
+				m_nCaptionMaxW = oChild.GetAttributeInt(L"lastWidth");
+
+				for (CXMLNode& oSubList : oChild.GetChilds(L"hp:subList"))
+				{
+					for (CXMLNode& oParagraph : oSubList.GetChilds(L"hp:p"))
+						m_arCaption.push_back(new CCapParagraph(oParagraph, nVersion));
+				}
+			}
+		}
+	}
+
 	CCtrlCommon::~CCtrlCommon()
 	{
 		for (CHWPPargraph* pParagraph : m_arParas)
@@ -226,7 +386,7 @@ namespace HWP
 
 	unsigned int CCtrlCommon::GetCountParagraphs() const
 	{
-		return m_arParas.size();
+		return (unsigned int)m_arParas.size();
 	}
 
 	const CHWPPargraph* CCtrlCommon::GetParagraphs(unsigned int unIndex) const
@@ -255,6 +415,16 @@ namespace HWP
 	short CCtrlCommon::GetBottomMargin() const
 	{
 		return m_arOutMargin[3];
+	}
+
+	bool CCtrlCommon::GetTreatAsChar() const
+	{
+		return m_bTreatAsChar;
+	}
+
+	bool CCtrlCommon::GetFlowWithText() const
+	{
+		return m_bFlowWithText;
 	}
 
 	int CCtrlCommon::GetHorzOffset() const
@@ -325,6 +495,16 @@ namespace HWP
 	int CCtrlCommon::GetZOrder() const
 	{
 		return m_nZOrder;
+	}
+
+	bool CCtrlCommon::HaveCaption() const
+	{
+		return !m_arCaption.empty();
+	}
+
+	std::vector<const CCapParagraph*> CCtrlCommon::GetCaptionParas() const
+	{
+		RETURN_VECTOR_CONST_PTR(CCapParagraph, m_arCaption);
 	}
 
 	int CCtrlCommon::ParseCtrl(CCtrlCommon& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

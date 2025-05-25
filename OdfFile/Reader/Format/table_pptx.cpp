@@ -85,7 +85,7 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
     {
 		int height = 0;
        
-		const style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,false);
+		const style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( styleName , style_family::TableRow,true);
 	
 		if ((inst) && (inst->content()) && (inst->content()->get_style_table_row_properties()))
 		{
@@ -244,7 +244,7 @@ void table_table::pptx_convert(oox::pptx_conversion_context & Context)
 			_Wostream << L"	firstCol=\"1\"";		
 	_Wostream << ">";
 	
-	style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table,false);
+	style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table,true);
 
     if ((inst) && (inst->content()))
 	{
@@ -352,7 +352,8 @@ void table_table_column::pptx_convert(oox::pptx_conversion_context & Context)
         {
             const std::wstring colStyleName = attlist_.table_style_name_.get();
           
-			style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name( colStyleName , style_family::TableColumn,false );
+			style_instance * inst = Context.root()->odf_context().styleContainer().style_by_name(colStyleName, style_family::TableColumn, true);
+
 			if ((inst) && (inst->content()))
             {
 				//column properies
@@ -395,20 +396,20 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 				style_name = Context.get_table_context().get_default_cell_style();
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, true);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 
 				style_name = Context.get_table_context().get_default_cell_style_col(Context.get_table_context().current_column());
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, true);
 					if (style_inst)style_instances.push_back(style_inst);
 				}
 				style_name = Context.get_table_context().get_template_row_style_name();
 				if (!style_name.empty() && !Context.get_table_context().template_is_first_column() && !Context.get_table_context().template_is_last_column())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, true);
 					if (style_inst)style_instances.push_back(style_inst);
 				}
 
@@ -417,7 +418,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 					style_name = Context.get_table_context().get_default_cell_style_row();
 					if (!style_name.empty())
 					{
-						style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+						style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, true);
 						if (style_inst) style_instances.push_back(style_inst);
 					}
 				}
@@ -425,7 +426,7 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 				style_name = attlist_.table_style_name_.get_value_or(L"");
 				if (!style_name.empty())
 				{
-					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, false);
+					style_inst = Context.root()->odf_context().styleContainer().style_by_name(style_name, style_family::TableCell, true);
 					if (style_inst) style_instances.push_back(style_inst);
 				}
 

@@ -93,6 +93,7 @@ public:
 	graphic_format_properties*		get_graphic_properties()const;
   
 	style_text_properties*			get_style_text_properties()	const;
+    style_text_properties*          get_style_text_properties(bool create);
     style_paragraph_properties*		get_style_paragraph_properties()const;
     style_table_properties*			get_style_table_properties()const;
     style_section_properties*		get_style_section_properties()const;

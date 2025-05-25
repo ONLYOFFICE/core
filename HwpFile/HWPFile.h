@@ -10,21 +10,26 @@
 #define HWP_FILE_DECL_EXPORT Q_DECL_EXPORT
 #endif
 
-namespace HWP { class CHWPFile_Private; }
+namespace HWP { class CWriterContext; }
 class HWP_FILE_DECL_EXPORT CHWPFile
 {
-	HWP::CHWPFile_Private *m_pInternal;
+	HWP::CWriterContext *m_pInternal;
+	std::wstring m_wsFileName;
 	std::wstring m_wsTempDirectory;
 public:
-	CHWPFile(const std::wstring& wsFileName);
+	CHWPFile();
 	~CHWPFile();
 
 	void SetTempDirectory(const std::wstring& wsTempDirectory);
 
-	bool Open();
+	bool OpenHWP(const std::wstring& wsFilePath);
+	bool OpenHWPX(const std::wstring& wsFilePath);
 	void Close();
 	bool ConvertToOOXML(const std::wstring& wsFilePath);
 	bool ConvertToOOXML_Dir(const std::wstring& wsDirectoryPath);
+
+	static bool IsHWPFormat(const std::wstring& wsFilePath);
+	static bool IsHWPXFormat(const std::wstring& wsFilePath);
 };
 
 #endif // HWPFILE_H

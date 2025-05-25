@@ -474,6 +474,13 @@ namespace PdfReader
 	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
+		if (m_sStates.empty())
+		{ // Несбалансированный q/Q - сломанный файл
+			updateAll(pGState);
+			UpdateAllClip(pGState);
+			return;
+		}
+
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{
@@ -1812,12 +1819,13 @@ namespace PdfReader
 			return true;
 		case 6:
 		case 7:
-			int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
+			// int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading*)pShading)->getNPatches();
 
 			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 			if (GRenderer)
 				GRenderer->SetSoftMask(NULL);
+
 			m_pRenderer->BeginCommand(c_nLayerType);
 
 			for (int i = 0; i < nPatches; i++) {
@@ -2168,7 +2176,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2179,7 +2187,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2190,7 +2198,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2244,7 +2252,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
-		if (m_sStates.back().pTextClip && 4 <= pGState->getRender())
+		if (!m_sStates.empty() && m_sStates.back().pTextClip && 4 <= pGState->getRender())
 		{
 			AddTextClip(pGState, &m_sStates.back());
 			updateFont(pGState);
@@ -2307,10 +2315,6 @@ namespace PdfReader
 		if (3 == nRendererMode) // Невидимый текст
 			return;
 
-		double* pCTM  = pGState->getCTM();
-		double* pTm   = pGState->getTextMat();
-		GfxFont* pFont = pGState->getFont();
-
 		unsigned int unGidsCount = seString->getLength();
 		unsigned int* pGids = new unsigned int[unGidsCount];
 		if (!pGids)
@@ -2319,7 +2323,7 @@ namespace PdfReader
 		std::wstring  wsUnicodeText;
 		for (int nIndex = 0; nIndex < seString->getLength(); nIndex++)
 		{
-			char nChar = seString->getChar(nIndex);
+			int nChar = seString->getChar(nIndex);
 
 			if (NULL != oEntry.pCodeToUnicode)
 			{
@@ -2416,9 +2420,6 @@ namespace PdfReader
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-
-		// Здесь мы посылаем координаты текста в пунктах
-		double dPageHeight = pGState->getPageHeight();
 
 		std::wstring wsUnicodeText;
 
@@ -2584,9 +2585,13 @@ namespace PdfReader
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
 			// tmpchange
-			if (!m_sStates.back().pTextClip)
-				m_sStates.back().pTextClip = new GfxTextClip();
-			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+			if (!m_sStates.empty())
+			{
+				if (!m_sStates.back().pTextClip)
+					m_sStates.back().pTextClip = new GfxTextClip();
+				m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+
+			}
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
@@ -2890,9 +2895,10 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		StreamKind nSK = pStream->getKind();
 		int nComponentsCount = pColorMap->getNumPixelComps();
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (pMaskColors || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
+		if (pMaskColors || unAlpha != 255 || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -2906,7 +2912,6 @@ namespace PdfReader
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
 			pImageStream->reset();
 
-			BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 			int nComps = pImageStream->getComps();
 			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
 			GfxRenderingIntent intent = pGState->getRenderingIntent();
@@ -2940,6 +2945,13 @@ namespace PdfReader
 					{
 						pLineDst[0] = pLineDst[1] = pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
 					}
+					else if (3 == nColorMapType)
+					{
+						pLineDst[2] = colToByte(clip01(pColorMapLookup[0][pLine[0]]));
+						pLineDst[1] = colToByte(clip01(pColorMapLookup[1][pLine[1]]));
+						pLineDst[0] = colToByte(clip01(pColorMapLookup[2][pLine[2]]));
+						pLineDst[3] = colToByte(clip01(pColorMapLookup[3][pLine[3]]));
+					}
 					else
 					{
 						GfxRGB oRGB;
@@ -2951,7 +2963,7 @@ namespace PdfReader
 
 					if (pMaskColors && CheckMask(nComponentsCount, pMaskColors, pLine))
 						pLineDst[3] = 0;
-					else
+					else if (3 != nColorMapType)
 						pLineDst[3] = unAlpha;
 
 					pLine += nComps;

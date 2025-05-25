@@ -63,6 +63,8 @@
 
 #include "../common/ProcessEnv.h"
 
+#include "docbuilder_addon.h"
+
 #ifdef CreateFile
 #undef CreateFile
 #endif
@@ -422,6 +424,7 @@ public:
 	int m_nFileType;
 	std::string m_sUtf8ArgumentJSON;
 	std::string m_sGlobalVariable;
+	std::string m_sJSCodeStart;
 
 	CJSContextData m_oContextData;
 
@@ -434,14 +437,17 @@ public:
 
 	static void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError);
 
-	bool ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue = NULL);
+	bool ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue = NULL, const bool& isEnterContext = true);
 
 	std::string GetGlobalVariable();
 	std::wstring GetJSVariable(std::wstring sParam);
 
 	bool OpenFile(const std::wstring& sBasePath, const std::wstring& path, const NSDoctRenderer::DoctRendererEditorType& editorType, NSDoctRenderer::CDoctRendererConfig* config, CV8Params* pParams = NULL);
-	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"");
+	bool SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams = L"", const bool& isEnterContext = true);
 	bool InitVariables();
+
+	bool NewSimpleJSInstance();
+	bool IsSimpleJSInstance();
 };
 
 namespace NSDoctRenderer
@@ -455,7 +461,8 @@ namespace NSDoctRenderer
 		std::wstring m_sTmpFolder;
 		std::wstring m_sFileDir;
 		int m_nFileType;
-		bool m_bJavascriptBeforeEditor;
+
+		std::wstring m_sCommandsBeforeContextCreated;
 
 		std::wstring m_sX2tPath;
 
@@ -474,11 +481,13 @@ namespace NSDoctRenderer
 
 		NSDoctRenderer::CDocBuilder* m_pParent;
 
+		bool m_bIsOpenedFromSimpleJS;
+
 		static std::wstring m_sExternalDirectory;
 	public:
 		CDocBuilder_Private() : CDoctRendererConfig(), m_sTmpFolder(NSFile::CFileBinary::GetTempPath()), m_nFileType(-1),
 			m_pWorker(NULL), m_pAdditionalData(NULL), m_bIsInit(false), m_bIsServerSafeVersion(false),
-			m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_bJavascriptBeforeEditor(false)
+			  m_sGlobalVariable(""), m_bIsGlobalVariableUse(false), m_pParent(NULL), m_sCommandsBeforeContextCreated(L""), m_bIsOpenedFromSimpleJS(false)
 		{
 		}
 
@@ -637,10 +646,14 @@ namespace NSDoctRenderer
 			{
 				NSDirectory::CreateDirectory(m_sFileDir + L"/media");
 				NSDirectory::CreateDirectory(m_sFileDir + L"/changes");
-			}
 
-			if (m_bJavascriptBeforeEditor)
-				CheckWorkerAfterOpen();
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
+				return bRet;
+			}
 
 			return bRet;
 #else
@@ -931,8 +944,11 @@ namespace NSDoctRenderer
 
 			if (0 == nReturnCode)
 			{
-				if (m_bJavascriptBeforeEditor)
-					CheckWorkerAfterOpen();
+				if (m_pWorker && m_pWorker->IsSimpleJSInstance() && !m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+				}
 				return 0;
 			}
 
@@ -981,9 +997,15 @@ namespace NSDoctRenderer
 			return _path;
 		}
 
-		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL)
+		int SaveFile(const int& type, const std::wstring& path, const wchar_t* params = NULL, const bool& isEnterContext = true)
 		{
 			Init();
+
+			CDocBuilderAddon oSaveAddon(m_sX2tPath);
+
+			int nPreSaveError = oSaveAddon.GetX2tPreSaveError(m_pParent, m_nFileType);
+			if (0 != nPreSaveError)
+				return nPreSaveError;
 
 			if (-1 == m_nFileType)
 			{
@@ -1023,7 +1045,7 @@ namespace NSDoctRenderer
 					}
 				}
 
-				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams);
+				this->m_pWorker->SaveFileWithChanges(type, m_sFileDir + L"/Editor2.bin", sJsonParams, isEnterContext);
 				sFileBin = L"/Editor2.bin";
 			}
 
@@ -1067,6 +1089,8 @@ namespace NSDoctRenderer
 			std::string sOptions = NSProcessEnv::Save();
 			if (!sOptions.empty())
 				oBuilder.WriteString(UTF8_TO_U(sOptions));
+
+			oBuilder.WriteString(oSaveAddon.GetX2tSaveAddon(m_pParent, m_nFileType));
 
 			oBuilder.WriteString(L"</TaskQueueDataConvert>");
 
@@ -1220,34 +1244,29 @@ namespace NSDoctRenderer
 		{
 			if (NULL == m_pWorker)
 			{
-				m_pWorker = new CV8RealTimeWorker(m_pParent, GetEditorType(), this);
+				NSDoctRenderer::DoctRendererEditorType editorType = GetEditorType();
+				m_pWorker = new CV8RealTimeWorker(m_pParent, editorType, this);
 				m_pWorker->m_sUtf8ArgumentJSON = m_oParams.m_sArgumentJSON;
 				m_pWorker->m_sGlobalVariable = m_sGlobalVariable;
+				m_pWorker->m_sJSCodeStart = U_TO_UTF8(m_sCommandsBeforeContextCreated);
 
-				return CheckWorkerAfterOpen();
+				m_pWorker->m_nFileType = m_nFileType;
+
+				if (-1 != m_nFileType)
+					m_sCommandsBeforeContextCreated = L"";
+				else
+				{
+					m_pWorker->NewSimpleJSInstance();
+					return true;
+				}
+
+				CV8Params oParams;
+				oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
+				oParams.DocumentDirectory = m_sFileDir;
+
+				return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, editorType, this, &oParams);
 			}
 			return true;
-		}
-
-		bool CheckWorkerAfterOpen()
-		{
-			if (!m_pWorker)
-				return false;
-
-			m_pWorker->m_nFileType = m_nFileType;
-			if (-1 == m_nFileType)
-			{
-				m_bJavascriptBeforeEditor = true;
-				return false;
-			}
-
-			m_bJavascriptBeforeEditor = false;
-
-			CV8Params oParams;
-			oParams.IsServerSaveVersion = m_bIsServerSafeVersion;
-			oParams.DocumentDirectory = m_sFileDir;
-
-			return m_pWorker->OpenFile(m_sX2tPath, m_sFileDir, GetEditorType(), this, &oParams);
 		}
 
 		int SaveFile(const std::wstring& ext, const std::wstring& path, const wchar_t* params = NULL)
@@ -1256,26 +1275,44 @@ namespace NSDoctRenderer
 			return SaveFile(nType, path, params);
 		}
 
-		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL)
+		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL, const bool& forceExecute = false, const bool& isEnterContext = true)
 		{
 			if (command.length() < 7 && !retValue) // minimum command (!!!)
 				return true;
 
+			if (m_nFileType == -1 && !forceExecute)
+			{
+				m_sCommandsBeforeContextCreated += command;
+				return true;
+			}
+
 			Init();
 
-			bool bRes = CheckWorker();
+			if (CheckWorker())
+			{
+				bool bIsOpenedFromSimpleJSOld = m_bIsOpenedFromSimpleJS;
+				bool bResult = m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
+				if (!bResult && !bIsOpenedFromSimpleJSOld && m_bIsOpenedFromSimpleJS)
+				{
+					RELEASEOBJECT(m_pWorker);
+					CheckWorker();
+					return m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
+				}
+				else
+				{
+					return bResult;
+				}
+			}
 
-			if (!bRes && m_pWorker && m_bJavascriptBeforeEditor)
-				m_pWorker->InitVariables();
-
-			return m_pWorker->ExecuteCommand(command, retValue);
+			return false;
 		}
 
 		CDocBuilderContext GetContext(bool enterContext)
 		{
 			CDocBuilderContext ctx;
 
-			CheckWorker();
+			if (!CheckWorker())
+				return ctx;
 
 			ctx.m_internal->m_context = m_pWorker->m_context;
 			ctx.m_internal->m_context_data = &m_pWorker->m_oContextData;

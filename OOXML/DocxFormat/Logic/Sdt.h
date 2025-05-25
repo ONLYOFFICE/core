@@ -583,6 +583,8 @@ namespace OOX
 			nullable<CTextFormPr> m_oTextFormPr; //Not from specification
 			nullable<CSdtPicture> m_oPicture; //Not from specification
 			nullable<CComplexFormPr> m_oComplexFormPr; // Not from specification
+			nullable<ComplexTypes::Word::CBorder> m_oBorder; // Not from specification
+			nullable<ComplexTypes::Word::CShading> m_oShd; // Not from specification
 		};
 
 		//--------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 #define PAGEBORDERFILL_H
 
 #include "../HWPStream.h"
+#include "../Common/XMLNode.h"
 
 namespace HWP
 {
@@ -18,6 +19,7 @@ class CPageBorderFill
 	short m_shBorderFill;
 public:
 	CPageBorderFill();
+	CPageBorderFill(CXMLNode& oNode, int nVersion);
 
 	static CPageBorderFill* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

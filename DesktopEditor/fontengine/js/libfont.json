@@ -100,6 +100,7 @@
 		"FT_CONFIG_OPTION_SYSTEM_ZLIB",
 		"GRAPHICS_NO_USE_DYNAMIC_LIBRARY",
 		"HYPHEN_ENGINE_DISABLE_FILESYSTEM",
+		"METAFILE_DISABLE_FILESYSTEM",
 
 		"HAVE_UNISTD_H", "HAVE_FCNTL_H", "_ARM_ALIGN_",
 		"METAFILE_SUPPORT_WMF_EMF",
@@ -259,10 +260,13 @@
 		"folder": "../../../OfficeUtils/js",
 		"files": ["../src/ZipBuffer.cpp", "wasm/src/base.cpp", "../src/zlib_addon.c"]
 	},
-
 	{
 		"folder": "../../",
-		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp"]
+		"files": ["graphics/Image.cpp", "raster/BgraFrame.cpp", "raster/ImageFileFormatChecker.cpp", "graphics/Matrix.cpp"]
+	},
+	{
+		"folder": "../../agg-2.4/src/",
+		"files": ["agg_trans_affine.cpp"]
 	},
 	{
 		"folder": "../../raster/",

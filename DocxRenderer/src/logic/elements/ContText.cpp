@@ -6,18 +6,6 @@
 
 namespace NSDocxRenderer
 {
-	bool IsTextOnlySpaces(const NSStringUtils::CStringUTF32& oText)
-	{
-		bool only_spaces = true;
-		for (size_t j = 0; j < oText.length(); ++j)
-			if (!CContText::IsUnicodeSpace(oText.at(j)))
-			{
-				only_spaces = false;
-				break;
-			}
-		return only_spaces;
-	}
-
 	CSelectedSizes::CSelectedSizes(const CSelectedSizes& oSelectedSizes)
 	{
 		*this = oSelectedSizes;
@@ -108,8 +96,13 @@ namespace NSDocxRenderer
 			double dBoxWidth;
 			double dBoxHeight;
 
-			m_pManager->SetStringGid(0);
-			m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			if (m_oText.ToStdWString() == L" ")
+				dBoxWidth = m_pManager->GetSpaceWidthMM();
+			else
+			{
+				m_pManager->SetStringGid(0);
+				m_pManager->MeasureString(m_oText.ToStdWString(), 0, 0, dBoxX, dBoxY, dBoxWidth, dBoxHeight, CFontManager::mtPosition);
+			}
 
 			m_oSelectedSizes.dWidth = dBoxWidth;
 			m_oSelectedSizes.dHeight = dBoxHeight;
@@ -544,7 +537,19 @@ namespace NSDocxRenderer
 
 	bool CContText::IsOnlySpaces() const
 	{
-		return IsTextOnlySpaces(m_oText);
+		bool only_spaces = true;
+		for (size_t j = 0; j < m_oText.length(); ++j)
+			if (!CContText::IsUnicodeSpace(m_oText.at(j)))
+			{
+				only_spaces = false;
+				break;
+			}
+		return only_spaces;
+	}
+	bool CContText::IsDiacritical() const noexcept
+	{
+		const auto& text = GetText();
+		return text.length() == 1 && CContText::IsUnicodeDiacriticalMark(text.at(0));
 	}
 
 	void CContText::AddTextBack(const NSStringUtils::CStringUTF32& oText, const std::vector<double>& arSymWidths)
@@ -831,7 +836,14 @@ namespace NSDocxRenderer
 
 		return is_bullet || is_another;
 	}
-
+	bool CContText::IsUnicodeEnumEnd(uint32_t cSym)
+	{
+		return cSym == 0x29 || cSym == 0x2e;
+	}
+	bool CContText::IsUnicodeNumber(uint32_t cSym)
+	{
+		return cSym >= 0x30 && cSym <= 0x39;
+	}
 	bool CContText::IsUnicodeSpace(uint32_t cSym)
 	{
 		return (0x20 == cSym || 0xA0 == cSym || 0x2003 == cSym);

@@ -6,16 +6,16 @@ namespace NSDoctRenderer
 {
 	namespace
 	{
-		void AppendScript(NSStringUtils::CStringBuilderA* builder, const std::wstring& path)
+		bool AppendScript(NSStringUtils::CStringBuilderA* builder, const std::wstring& path, const std::string& header = "", const std::string& footer = "")
 		{
 			NSFile::CFileBinary oFile;
 
 			if (!oFile.OpenFile(path))
-				return;
+				return false;
 
 			int size = (int)oFile.GetFileSize();
 			if (size < 3)
-				return;
+				return false;
 
 			BYTE* pData = new BYTE[size];
 			DWORD dwReadSize = 0;
@@ -26,9 +26,18 @@ namespace NSDoctRenderer
 			if (pData[0] == 0xEF && pData[1] == 0xBB && pData[2] == 0xBF)
 				nOffset = 3;
 
+			if (!header.empty())
+				builder->WriteString(header);
+
 			builder->WriteString((char*)(pData + nOffset), size - nOffset);
+
+			if (!footer.empty())
+				builder->WriteString(footer);
+
 			builder->WriteString("\n\n");
 			RELEASEARRAYOBJECTS(pData);
+
+			return true;
 		}
 
 		bool RunScript(JSSmart<NSJSBase::CJSContext>& context, JSSmart<NSJSBase::CJSTryCatch>& try_catch, const std::wstring& path)
@@ -114,6 +123,7 @@ namespace NSDoctRenderer
 				AppendScript(builder, sFontsPath);
 				AppendScript(builder, config->m_strSdkPath + L"/word/sdk-all.js");
 				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/engine/drawingfile_native.js");
+				AppendScript(builder, config->m_strSdkPath + L"/pdf/src/annotations/stamps.json", "window[\"native_pdf_stamps\"]=", ";");
 				sCachePath = config->m_strSdkPath + L"/pdf/sdk-all";
 				break;
 			}

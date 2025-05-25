@@ -1,7 +1,8 @@
 #ifndef HWPRECORDFACENAME_H
 #define HWPRECORDFACENAME_H
 
-#include "HwpDoc/HWPDocInfo.h"
+#include "../Common/XMLNode.h"
+#include "../HWPDocInfo.h"
 #include "../HWPStream.h"
 #include "HWPRecord.h"
 
@@ -40,6 +41,7 @@ class CHWPRecordFaceName : public CHWPRecord
 	short m_shXHeight;
 public:
 	CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
+	CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
 
 	HWP_STRING GetFaceName() const;
 };

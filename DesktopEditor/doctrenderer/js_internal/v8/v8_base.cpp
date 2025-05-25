@@ -255,6 +255,8 @@ namespace NSJSBase
 		m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
 		if (!m_internal->m_context.IsEmpty())
 			m_internal->m_context->Enter();
+
+		m_internal->m_entered = true;
 	}
 
 	void CJSContext::Exit()
@@ -271,6 +273,13 @@ namespace NSJSBase
 		else
 			m_internal->m_context = m_internal->m_isolate->GetCurrentContext();
 		m_internal->m_isolate->Exit();
+
+		m_internal->m_entered = false;
+	}
+
+	bool CJSContext::IsEntered()
+	{
+		return m_internal->m_entered;
 	}
 
 	CJSValue* CJSContext::createUndefined()

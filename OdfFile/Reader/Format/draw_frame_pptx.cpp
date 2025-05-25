@@ -101,14 +101,23 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		const _CP_OPT(length) svg_heightVal = common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_;
 
 		double width_pt = 0, height_pt = 0;
-		if (svg_widthVal && svg_heightVal)
 		{
-			const double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
-			const double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
+			double width_pt = svg_widthVal.get_value_or(length(0)).get_value_unit(length::pt);
+			double height_pt = svg_heightVal.get_value_or(length(0)).get_value_unit(length::pt);
 
 			double x_pt = common_draw_attlists_.position_.svg_x_.get_value_or(length(0)).get_value_unit(length::pt);
 			double y_pt = common_draw_attlists_.position_.svg_y_.get_value_or(length(0)).get_value_unit(length::pt);
 
+			if (width_pt <= 0)
+			{
+				width_pt = 1; 
+				Context.get_slide_context().set_property(_property(L"auto-grow-width", true));
+			}
+			if (height_pt <= 0)
+			{
+				height_pt = 1;
+				Context.get_slide_context().set_property(_property(L"auto-grow-height", true));
+			}
 			if (x_pt < 0) x_pt = 0;
 			if (y_pt < 0) y_pt = 0;
 
@@ -163,12 +172,13 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 		oox::_oox_fill fill;
 		
-		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances);
+		graphic_format_properties_ptr properties = calc_graphic_properties_content(instances, is_object_);
 		if (properties)
 		{
 			properties->apply_to(Context.get_slide_context().get_properties());
 
 			Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
+
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
@@ -180,6 +190,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right", Compute_BorderWidth(properties, sideRight)));
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom)));
 
+			if (properties->style_mirror_)
+			{
+				bool flipV = properties->style_mirror_->find(L"vertical") != std::wstring::npos;
+				bool flipH = properties->style_mirror_->find(L"horizontal") != std::wstring::npos;
+
+				Context.get_slide_context().set_property(odf_reader::_property(L"flipV", flipV));
+				Context.get_slide_context().set_property(odf_reader::_property(L"flipH", flipH));
+			}
+
 			if (properties->style_columns_)
 				properties->style_columns_->pptx_convert(Context);
 		}
@@ -188,13 +207,15 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (common_presentation_attlist_.presentation_class_)
 		{
-			std::wstring type = common_presentation_attlist_.presentation_class_->get_type_ms();
-			
+			std::wstring placeholder_type = common_presentation_attlist_.presentation_class_->get_type_ms();
+			if (Context.get_slide_context().processing_notes() && placeholder_type == L"pic")
+				placeholder_type = L"sldImg";
+
 			if (!Context.process_masters_ && !Context.get_slide_context().processing_notes() &&
 				common_presentation_attlist_.presentation_class_->get_type() == odf_types::presentation_class::outline)
 				Context.get_slide_context().set_is_placeHolder(true);
 			else 
-				Context.get_slide_context().set_placeHolder_type(type);
+				Context.get_slide_context().set_placeHolder_type(placeholder_type);
 
 			if (idx_in_owner >= 0)
 				Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
@@ -222,7 +243,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_hidden(true);
 		}
 
-		if (!textStyleName.empty())
+		if (false == textStyleName.empty())
 		{
 			odf_reader::style_instance* textStyleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
@@ -247,7 +268,12 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (office_event_listeners_) office_event_listeners_->pptx_convert(Context);
 
-		Context.get_text_context().start_base_style(baseStyleName, odf_types::style_family::Presentation);
+		if (false == textStyleName.empty())
+			Context.get_text_context().start_base_style(textStyleName, odf_types::style_family::Paragraph);
+		else if (false == baseStyleName.empty())
+			Context.get_text_context().start_base_style(baseStyleName, odf_types::style_family::Presentation);
+		else
+			Context.get_text_context().start_base_style(grStyleName, odf_types::style_family::Graphic);
 
 		oox_drawing_ = oox_drawing_ptr(new oox::_pptx_drawing());
 	}
@@ -392,7 +418,7 @@ void draw_text_box::pptx_convert(oox::pptx_conversion_context & Context)
 }
 void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	if (draw_frame_ptr)
+	if (draw_frame_ptr) 
 	{
 		draw_frame *frame = dynamic_cast<draw_frame *>(draw_frame_ptr.get());
 		if (frame)

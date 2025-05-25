@@ -435,9 +435,25 @@ static void substitute_xml_entities_into_text(std::string& text)
 	replace_all(text, ">", "&gt;");
 }
 
+// After running through Gumbo, the values of type "&#1;" are replaced with the corresponding code '0x01'
+// Since the attribute value does not use control characters (value <= 0x1F),
+// then just delete them, otherwise XmlUtils::CXmlLiteReader crashes on them.
+// bug#73486
+static void remove_control_symbols(std::string& text)
+{
+	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](char chValue){ return chValue <= 0x1F; });
+
+	while (itFound != text.end())
+	{
+		itFound = text.erase(itFound);
+		itFound = std::find_if(itFound, text.end(), [](char chValue){ return chValue <= 0x1F; });
+	}
+}
+
 // Заменяет сущности " в text
 static void substitute_xml_entities_into_attributes(std::string& text)
 {
+	remove_control_symbols(text);
 	substitute_xml_entities_into_text(text);
 	replace_all(text, "\"", "&quot;");
 }
@@ -564,7 +580,6 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 		if (child->type == GUMBO_NODE_TEXT)
 		{
 			std::string val(child->v.text.text);
-
 			remove_control_character(val);
 			substitute_xml_entities_into_text(val);
 

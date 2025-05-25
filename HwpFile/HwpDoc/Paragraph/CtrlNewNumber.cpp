@@ -20,6 +20,17 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
+CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrl(sCtrlID)
+{
+	m_shNum = oNode.GetAttributeInt(L"num");
+	m_eNumType = GetNumType(oNode.GetAttributeInt(L"numType"));
+	//TODO:: проверить данный момент
+	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"autoNumFormat"));
+
+	m_bFullFilled = true;
+}
+
 ECtrlObjectType CCtrlNewNumber::GetCtrlType() const
 {
 	return ECtrlObjectType::NewNumber;

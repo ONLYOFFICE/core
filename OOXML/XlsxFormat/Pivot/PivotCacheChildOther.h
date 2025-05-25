@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
@@ -37,6 +37,7 @@
 #include "../FileTypes_Spreadsheet.h"
 
 #include "../../Common/ComplexTypes.h"
+#include "PivotTable.h"
 
 namespace OOX
 {
@@ -175,6 +176,57 @@ public:
     WritingElement_XlsbConstructors(CMeasureDimensionMaps)
     CMeasureDimensionMaps(){}
     virtual ~CMeasureDimensionMaps() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable_int		 m_oCount;
+};
+
+class CCalculatedItem : public WritingElement
+{
+public:
+    WritingElement_AdditionMethods(CCalculatedItem)
+    WritingElement_XlsbConstructors(CCalculatedItem)
+    CCalculatedItem(){}
+    virtual ~CCalculatedItem() {}
+
+    virtual void fromXML(XmlUtils::CXmlNode& node)
+    {
+    }
+    virtual std::wstring toXML() const
+    {
+        return _T("");
+    }
+    virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
+    virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+    void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+    void fromBin(XLS::BaseObjectPtr& obj);
+    XLS::BaseObjectPtr toBin();
+
+    nullable<CPivotArea>          m_oPivotArea;
+    nullable_uint       m_oField;
+    nullable_string		m_oFormula;
+    nullable<OOX::Drawing::COfficeArtExtensionList>	m_oExtLst;
+};
+
+class CCalculatedItems: public WritingElementWithChilds<CCalculatedItem>
+{
+public:
+    WritingElement_AdditionMethods(CCalculatedItems)
+    WritingElement_XlsbConstructors(CCalculatedItems)
+    CCalculatedItems(){}
+    virtual ~CCalculatedItems() {}
 
     virtual void fromXML(XmlUtils::CXmlNode& node)
     {

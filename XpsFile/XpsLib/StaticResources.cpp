@@ -180,9 +180,11 @@ namespace XPS
 
 		IFolder::CBuffer* buffer = NULL;
 		m_wsRoot->readFileWithChunks(wsPath, buffer);
+		if (!buffer)
+			return false;
 		int nBase64BufferLen = NSBase64::Base64EncodeGetRequiredLength(buffer->Size);
 		BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen + 64];
-		if (true == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
+		if (TRUE == NSBase64::Base64Encode(buffer->Buffer, buffer->Size, pbBase64Buffer, &nBase64BufferLen))
 		{
 			pRenderer->put_BrushType(c_BrushTypeTexture);
 			pRenderer->put_BrushTexturePath(L"data:," + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen));

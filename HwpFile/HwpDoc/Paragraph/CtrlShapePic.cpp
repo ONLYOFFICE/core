@@ -25,6 +25,12 @@ CPicColor::CPicColor(CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = nSize;
 }
 
+CPicColor::CPicColor(CXMLNode& oNode)
+{
+	//TODO:: проверить
+	m_nType = 0;
+}
+
 CPicEffect::CPicEffect(EPicEffectType eType)
 	: m_eType(eType)
 {}
@@ -59,6 +65,35 @@ CShadow::CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
+CShadow::CShadow(CXMLNode& oNode, int nVersion)
+	: CPicEffect(EPicEffectType::SHADOW), m_pColor(nullptr)
+{
+	m_nStyle = oNode.GetAttributeInt(L"style");
+	m_nTransparency = oNode.GetAttributeInt(L"alpha");
+	m_nBlur = oNode.GetAttributeInt(L"radius");
+	m_nDirection = oNode.GetAttributeInt(L"direction");
+	m_nDistance = oNode.GetAttributeInt(L"distance");
+	m_nRotation = (int)oNode.GetAttributeBool(L"rotationStyle");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:skew" == oChild.GetName())
+		{
+			m_fAngleX = oChild.GetAttributeDouble(L"x");
+			m_fAngleY = oChild.GetAttributeDouble(L"y");
+		}
+		else if (L"hp:scale" == oChild.GetName())
+		{
+			m_fMagnifyX = oChild.GetAttributeDouble(L"x");
+			m_fMagnifyY = oChild.GetAttributeDouble(L"y");
+		}
+		else if (L"hp:effectsColor" == oChild.GetName())
+		{
+			m_pColor = new CPicColor(oChild);
+		}
+	}
+}
+
 CShadow::~CShadow()
 {
 	if (nullptr != m_pColor)
@@ -77,6 +112,16 @@ CNeon::CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
+CNeon::CNeon(CXMLNode& oNode, int nVersion)
+	: CPicEffect(EPicEffectType::GLOW), m_pColor(nullptr)
+{
+	m_fTransparency = oNode.GetAttributeDouble(L"alpha");
+	m_fRadius = oNode.GetAttributeDouble(L"radius");
+
+	CXMLNode oChild{oNode.GetChild(L"hp:effectsColor")};
+	m_pColor = new CPicColor(oChild);
+}
+
 CNeon::~CNeon()
 {
 	if (nullptr != m_pColor)
@@ -89,6 +134,12 @@ CSoftEdge::CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	oBuffer.ReadFloat(m_fRadius);
 
 	m_nSize = 4;
+}
+
+CSoftEdge::CSoftEdge(CXMLNode& oNode, int nVersion)
+	: CPicEffect(EPicEffectType::SOFT_EDGE)
+{
+	m_fRadius = oNode.GetAttributeDouble(L"radius");
 }
 
 CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
@@ -114,6 +165,40 @@ CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
+CReflect::CReflect(CXMLNode& oNode, int nVersion)
+	: CPicEffect(EPicEffectType::REFLECT)
+{
+	m_fRadius = oNode.GetAttributeDouble(L"radius");
+	m_fDirection = oNode.GetAttributeInt(L"direction");
+	m_fDistance = oNode.GetAttributeInt(L"distance");
+	m_nRotateStyle = (int)oNode.GetAttributeBool(L"rotationStyle");
+	m_fOffsetDirection = oNode.GetAttributeInt(L"fadeDirection");
+
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:skew" == oChild.GetName())
+		{
+			m_fAngleX = oChild.GetAttributeDouble(L"x");
+			m_fAngleY = oChild.GetAttributeDouble(L"y");
+		}
+		else if (L"hp:scale" == oChild.GetName())
+		{
+			m_fMagnifyX = oChild.GetAttributeDouble(L"x");
+			m_fMagnifyY = oChild.GetAttributeDouble(L"y");
+		}
+		else if (L"hp:alpha" == oChild.GetName())
+		{
+			m_fStartTrans = oChild.GetAttributeDouble(L"start");
+			m_fEndTrans = oChild.GetAttributeDouble(L"end");
+		}
+		else if (L"hp:pos" == oChild.GetName())
+		{
+			m_fStartPos = oChild.GetAttributeDouble(L"start");
+			m_fEndPos = oChild.GetAttributeDouble(L"end");
+		}
+	}
+}
+
 CCtrlShapePic::CCtrlShapePic()
 	: CCtrlGeneralShape()
 {}
@@ -129,6 +214,71 @@ CCtrlShapePic::CCtrlShapePic(const CCtrlGeneralShape& oShape)
 CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
+
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+{
+	for (CXMLNode& oChild : oNode.GetChilds())
+	{
+		if (L"hp:imgRect" == oChild.GetName())
+		{
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			{
+				for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
+				{
+					if ((L"hc:pt" + std::to_wstring(unIndex)) == oGrandChild.GetName())
+					{
+						m_arBorderPoints[unIndex].m_nX = oChild.GetAttributeInt(L"x");
+						m_arBorderPoints[unIndex].m_nY = oChild.GetAttributeInt(L"y");
+						break;
+					}
+				}
+			}
+		}
+		else if (L"hp:imgClip" == oChild.GetName())
+		{
+			m_nCropLeft = oChild.GetAttributeInt(L"left");
+			m_nCropRight = oChild.GetAttributeInt(L"right");
+			m_nCropTop = oChild.GetAttributeInt(L"top");
+			m_nCropBottom = oChild.GetAttributeInt(L"bottom");
+		}
+		else if (L"hp:effects" == oChild.GetName())
+		{
+			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			{
+				if (L"hp:shadow" == oGrandChild.GetName())
+					m_arPicEffect.push_back(new CShadow(oGrandChild, nVersion));
+				else if (L"hp:glow" == oGrandChild.GetName())
+					m_arPicEffect.push_back(new CNeon(oGrandChild, nVersion));
+				else if (L"hp:softEdge" == oGrandChild.GetName())
+					m_arPicEffect.push_back(new CSoftEdge(oGrandChild, nVersion));
+				else if (L"hp:reflection" == oGrandChild.GetName())
+					m_arPicEffect.push_back(new CReflect(oGrandChild, nVersion));
+			}
+		}
+		else if (L"hc:img" == oChild.GetName())
+		{
+			m_chBright = (HWP_BYTE)oChild.GetAttributeInt(L"bright");
+			m_chContrast = (HWP_BYTE)oChild.GetAttributeInt(L"contrast");
+
+			HWP_STRING sType = oChild.GetAttribute(L"effect");
+
+			if (L"REAL_PIC" == sType)
+				m_chEffect = 0;
+			else if (L"GRAY_SCALE" == sType)
+				m_chEffect = 1;
+			else if (L"BLACK_WHITE" == sType)
+				m_chEffect = 2;
+
+			m_sBinDataID = oChild.GetAttribute(L"binaryItemIDRef");
+		}
+		else if (L"hp:imgDim" == oChild.GetName())
+		{
+			m_nIniPicWidth = oChild.GetAttributeInt(L"dimwidth");
+			m_nIniPicHeight = oChild.GetAttributeInt(L"dimheight");
+		}
+	}
+}
 
 CCtrlShapePic::~CCtrlShapePic()
 {

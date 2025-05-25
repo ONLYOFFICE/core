@@ -140,7 +140,8 @@ namespace ComplexTypes
 			virtual void FromXML(XmlUtils::CXmlNode& oNode);
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
-
+			
+			std::wstring ToString(bool noAlpha) const;
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
@@ -245,6 +246,8 @@ namespace ComplexTypes
 			virtual void FromXML(XmlUtils::CXmlNode& oNode);
 			virtual void FromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring ToString() const;
+			
+			std::wstring ToString(bool noAlpha) const;
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);

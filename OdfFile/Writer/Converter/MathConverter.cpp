@@ -198,6 +198,8 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
+
+		bool bOldConvert = !bStart;
 		
 		if (bStart)
 		{
@@ -209,10 +211,7 @@ namespace Oox2Odf
 
 			if (annotation_text.empty())
 			{
-				for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
-				{
-					convert(oox_math->m_arrItems[i]);
-				}
+				bOldConvert = true;
 			}
 			else
 			{
@@ -224,9 +223,18 @@ namespace Oox2Odf
 				odf_context()->math_context()->symbol_counter = size.m_iWidth;
 				odf_context()->math_context()->lvl_max = size.m_iHeight;
 				odf_context()->math_context()->lvl_min = 0;
+				
+				odf_context()->end_math();
 			}
 
-			odf_context()->end_math();
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
+			{
+				convert(oox_math->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 
@@ -284,7 +292,7 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
-
+		bool bOldConvert = false;
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
@@ -295,10 +303,7 @@ namespace Oox2Odf
 
 			if (annotation_text.empty())
 			{
-				for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
-				{
-					convert(oox_math_para->m_arrItems[i]);
-				}
+				bOldConvert = true;
 			}
 			else
 			{
@@ -310,9 +315,17 @@ namespace Oox2Odf
 				odf_context()->math_context()->symbol_counter = size.m_iWidth;
 				odf_context()->math_context()->lvl_max = size.m_iHeight;
 				odf_context()->math_context()->lvl_min = 0;
+			
+				odf_context()->end_math();
 			}
-
-			odf_context()->end_math();
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
+			{
+				convert(oox_math_para->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 

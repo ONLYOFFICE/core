@@ -1,5 +1,6 @@
 #include "StyleConverter.h"
 #include "../Common/WriterContext.h"
+#include "Transform.h"
 #include <cmath>
 
 namespace HWP
@@ -284,6 +285,9 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 		}
 	}
 
+	if (0xFFFFFFFF != oCharShape.GetShadeColor())
+		oRunnerStyle.SetShadeColor(oCharShape.GetShadeColor());
+
 	return oRunnerStyle;
 }
 
@@ -491,6 +495,9 @@ void CStyleConverter::WriteRunnerProperties(const CRunnerStyle& oRunnerStyle, NS
 
 		oBuilder.WriteString(L"\"/>");
 	}
+
+	if (oRunnerStyle.ShadeColorIsSet())
+		oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:fill=\"" + Transform::IntColorToHEX(oRunnerStyle.GetShadeColor()) + L"\"/>");
 
 	if (oRunnerStyle.VerticalAlignIsSet())
 	{
@@ -701,6 +708,7 @@ CRunnerStyle& CRunnerStyle::operator-=(const CRunnerStyle& oRunnerStyle)
 	m_bItalic        -= oRunnerStyle.m_bItalic;
 	m_nSz            -= oRunnerStyle.m_nSz;
 	m_oColor         -= oRunnerStyle.m_oColor;
+	m_nShadeColor    -= oRunnerStyle.m_nShadeColor;
 	m_oU             -= oRunnerStyle.m_oU;
 	m_eStrike        -= oRunnerStyle.m_eStrike;
 	m_nSpacing       -= oRunnerStyle.m_nSpacing;
@@ -718,6 +726,7 @@ void CRunnerStyle::Clear()
 	m_bItalic.UnSet();
 	m_nSz.UnSet();
 	m_oColor.UnSet();
+	m_nShadeColor.UnSet();
 	m_oU.UnSet();
 	m_eStrike.UnSet();
 	m_nSpacing.UnSet();
@@ -728,8 +737,8 @@ void CRunnerStyle::Clear()
 bool CRunnerStyle::Empty() const
 {
 	return !m_oRFonts.m_wsAscii.IsSet() && !m_oRFonts.m_wsEastAsia.IsSet() && !m_bBold.IsSet() && !m_bItalic.IsSet() &&
-	       !m_nSz.IsSet() && !m_oColor.IsSet() && !m_oU.IsSet() && !m_eStrike.IsSet() && !m_nSpacing.IsSet() &&
-	       !m_oHighlight.IsSet() && !m_eVerticalAlign.IsSet();
+	       !m_nSz.IsSet() && !m_oColor.IsSet() && !m_nShadeColor.IsSet() && !m_oU.IsSet() && !m_eStrike.IsSet() &&
+	       !m_nSpacing.IsSet() && !m_oHighlight.IsSet() && !m_eVerticalAlign.IsSet();
 }
 
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, std::wstring, Ascii, m_oRFonts.m_wsAscii);
@@ -738,6 +747,7 @@ CREATE_BODY_METHODS_FOR_PROPERTY_BOOL(CRunnerStyle, Bold, m_bBold);
 CREATE_BODY_METHODS_FOR_PROPERTY_BOOL(CRunnerStyle, Italic, m_bItalic);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, Sz, m_nSz);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, TColor, Color, m_oColor);
+CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, ShadeColor, m_nShadeColor)
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, TU, U, m_oU);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, EStrikeType, Strike, m_eStrike);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, Spacing, m_nSpacing);

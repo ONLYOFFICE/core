@@ -31,7 +31,7 @@ namespace Transform
 		return oSStream.str();
 	}
 
-	short LineWidth2Pt(short shHWPThick)
+	inline short LineWidth2Pt(short shHWPThick)
 	{
 		//TODO:: проверить
 		// return (short)std::ceil((double)shHWPThick * 4 * 25.4 / 72.);

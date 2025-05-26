@@ -189,6 +189,7 @@ public:
 	CREATE_METHODS_FOR_PROPERTY_BOOL(Italic);
 	CREATE_METHODS_FOR_PROPERTY(int, Sz);
 	CREATE_METHODS_FOR_PROPERTY(TColor, Color);
+	CREATE_METHODS_FOR_PROPERTY(int, ShadeColor);
 	CREATE_METHODS_FOR_PROPERTY(TU, U);
 	CREATE_METHODS_FOR_PROPERTY(EStrikeType, Strike);
 	CREATE_METHODS_FOR_PROPERTY(int, Spacing);
@@ -200,6 +201,7 @@ private:
 	CProperty<bool> m_bItalic;
 	CProperty<int> m_nSz;
 	CProperty<TColor> m_oColor;
+	CProperty<int> m_nShadeColor;
 	CProperty<TU> m_oU;
 	CProperty<EStrikeType> m_eStrike;
 	CProperty<int> m_nSpacing;

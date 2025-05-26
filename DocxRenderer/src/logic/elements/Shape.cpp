@@ -1109,15 +1109,15 @@ namespace NSDocxRenderer
 				oWriter.StartRecord(0);
 				oWriter.AddInt(static_cast<unsigned int>(data.size()));
 
-				auto write_coords = [&oWriter] (const CVectorGraphics::CPathCommand& command) {
+				auto write_coords = [&oWriter, &left, &top] (const CVectorGraphics::CPathCommand& command) {
 					BYTE byte_count = 0;
 					oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 					for (const auto& point : command.points)
 					{
 						oWriter.WriteBYTE(byte_count++);
-						oWriter.WriteStringUtf16(std::to_wstring(point.x * c_dMMToEMU));
+						oWriter.WriteStringUtf16(std::to_wstring((point.x - left) * c_dMMToEMU));
 						oWriter.WriteBYTE(byte_count++);
-						oWriter.WriteStringUtf16(std::to_wstring(point.y * c_dMMToEMU));
+						oWriter.WriteStringUtf16(std::to_wstring((point.y - top) * c_dMMToEMU));
 					}
 					oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				};

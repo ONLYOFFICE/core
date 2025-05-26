@@ -1101,7 +1101,6 @@ namespace NSDocxRenderer
 
 		//Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&
-		        h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
 		        h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
 		        h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 

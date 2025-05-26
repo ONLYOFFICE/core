@@ -1052,19 +1052,48 @@ namespace NSDocxRenderer
 		auto& vector = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector : m_oVector;
 		auto& data = vector.GetData();
 
-		oWriter.StartRecord(1);
-		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
-		auto write_spPr = [this, &oWriter, &vector, &data] () {
-			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
-			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
-			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
+		double height = bot - top;
+		double width = right - left;
 
-			double height = bot - top;
-			double width = right - left;
+		// WriteUniColor
+		auto WriteUniColor = [&oWriter] (long color, long alpha) {
+			BYTE b = reinterpret_cast<BYTE*>(&color)[0];
+			BYTE g = reinterpret_cast<BYTE*>(&color)[1];
+			BYTE r = reinterpret_cast<BYTE*>(&color)[2];
 
+			oWriter.StartRecord(1); // COLOR_TYPE_SRGB
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.WriteBYTE(r);
+			oWriter.WriteBYTE(1); oWriter.WriteBYTE(g);
+			oWriter.WriteBYTE(2); oWriter.WriteBYTE(b);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			// WriteMods (alpha)
+			oWriter.StartRecord(0);
+			oWriter.AddInt(1);
+			oWriter.StartRecord(1);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
+			oWriter.WriteBYTE(1); oWriter.AddInt(alpha * 100000 / 255);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+		};
+
+		auto WriteUniFill = [&oWriter, &WriteUniColor] (long color, long alpha) {
+			oWriter.StartRecord(3); // FILL_TYPE_SOLID
+			oWriter.StartRecord(0);
+			WriteUniColor(color, alpha);
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+		};
+
+		auto write_spPr = [this, &oWriter, &vector, &data, &WriteUniFill, &top, &left, &height, &width] () {
 			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 
@@ -1172,64 +1201,133 @@ namespace NSDocxRenderer
 			oWriter.EndRecord();
 			// end of WriteRecord WriteGeometry
 
-			// WriteUniColor
-			auto WriteUniColor = [&oWriter] (long color, long alpha) {
-				BYTE b = reinterpret_cast<BYTE*>(&color)[0];
-				BYTE g = reinterpret_cast<BYTE*>(&color)[1];
-				BYTE r = reinterpret_cast<BYTE*>(&color)[2];
-
-				oWriter.StartRecord(1); // COLOR_TYPE_SRGB
-				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.WriteBYTE(r);
-				oWriter.WriteBYTE(1); oWriter.WriteBYTE(g);
-				oWriter.WriteBYTE(2); oWriter.WriteBYTE(b);
-				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-				// WriteMods (alpha)
-				oWriter.StartRecord(0);
-				oWriter.AddInt(1);
-				oWriter.StartRecord(1);
-				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
-				oWriter.WriteBYTE(1); oWriter.AddInt(alpha * 100000 / 255);
-				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-				oWriter.EndRecord();
-				oWriter.EndRecord();
-				oWriter.EndRecord();
-			};
-
-			auto WriteUniFill = [&oWriter, this, &WriteUniColor] () {
-				oWriter.StartRecord(3); // FILL_TYPE_SOLID
-				oWriter.StartRecord(0);
-				WriteUniColor(ConvertColorBGRToRGB(m_oBrush.Color1), m_oBrush.Alpha1);
-				oWriter.EndRecord();
-				oWriter.EndRecord();
-			};
-
 			// WriteRecord WriteUniFill
-			oWriter.StartRecord(2);
-			WriteUniFill();
+			if (m_eType != CShape::eShapeType::stVectorTexture)
+			{
+				oWriter.StartRecord(2);
+				WriteUniFill(m_oBrush.Color1, m_oBrush.Alpha1);
+				oWriter.EndRecord();
+			}
+
+			// WriteRecord WriteLn
+			oWriter.StartRecord(3);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(m_oPen.Size * c_dMMToEMU)); // ln w
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			oWriter.StartRecord(0);
+			WriteUniFill(m_oPen.Color, m_oPen.Alpha);
 			oWriter.EndRecord();
 
-			// TODO writeln
+			oWriter.EndRecord();
 		};
 
 		if (m_eType == eShapeType::stVectorTexture)
 		{
+			oWriter.StartRecord(2);
+
 			// WriteRecord WriteUniNvPr
-			[this, &oWriter] () {
-				oWriter.StartRecord(0);
+			oWriter.StartRecord(0);
 
-				// cNvPr
-				oWriter.StartRecord(0);
+			// WriteRecord Write_cNvPr
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.AddInt(m_pImageInfo->m_nId);
+			std::wstring name = L"Picture " + std::to_wstring(m_pImageInfo->m_nId);
+			oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(name);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
 
+			// WriteRecord WritePicCNvPr
+			oWriter.StartRecord(1);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(3); oWriter.WriteBool(true); // noChangeAspect
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			oWriter.EndRecord();
+			// end of WriteRecord WriteUniNvPr
+
+			// WriteRecord WriteUniFill (blip)
+			oWriter.StartRecord(1);
+			oWriter.StartRecord(1); // FILL_TYPE_BLIP
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			// WriteBlip
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.StartRecord(2);
+			oWriter.AddInt(0); // effects
+			oWriter.EndRecord();
+
+			oWriter.StartRecord(3);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(m_pImageInfo->m_strFileName);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			oWriter.EndRecord();
+			// end of WriteBlip
+
+			oWriter.StartRecord(1);
+			if (m_oBrush.Image != NULL)
+			{
+				oWriter.StartRecord(2);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.AddInt(100);
+				oWriter.WriteBYTE(1); oWriter.AddInt(100);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+			}
+			else
+			{
+				oWriter.StartRecord(3);
 				oWriter.EndRecord();
 
-				oWriter.EndRecord();
-			}();
+				oWriter.StartRecord(1);
 
-			oWriter.StartRecord(1); write_spPr(); oWriter.EndRecord();
+				// coeff
+				double offset_left = (right - m_dImageLeft) / width - 1;
+				double offset_right = (m_dImageRight - left) / width - 1;
+				double offset_top = (bot - m_dImageTop) / height - 1;
+				double offset_bot = (m_dImageBot - top) / height - 1;
+
+				// percentage
+				offset_left *= 100;
+				offset_right *= 100;
+				offset_top *= 100;
+				offset_bot *= 100;
+
+				std::wstring l = std::to_wstring(static_cast<int>(-offset_left * 1000));
+				std::wstring t = std::to_wstring(static_cast<int>(-offset_right * 1000));
+				std::wstring r = std::to_wstring(static_cast<int>(-offset_top * 1000));
+				std::wstring b = std::to_wstring(static_cast<int>(-offset_bot * 1000));
+
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(l);
+				oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(t);
+				oWriter.WriteBYTE(2); oWriter.WriteStringUtf16(r);
+				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(b);
+
+				oWriter.EndRecord();
+			}
+			oWriter.EndRecord();
+
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+			// end of WriteRecord WriteUniFill (blip)
+
+			// WriteRecord WriteSpPr
+			oWriter.StartRecord(2); write_spPr(); oWriter.EndRecord();
+
+			oWriter.EndRecord();
 			return;
 		}
+
+		oWriter.StartRecord(1);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 
 		// WriteRecord WriteSpPr
 		oWriter.StartRecord(1); write_spPr(); oWriter.EndRecord();

@@ -218,10 +218,12 @@ namespace Oox2Odf
 			{
 				std::wstring content = starMathConverter.GetOdf();
 				odf_context()->math_context()->add_content(content);
+
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
 			
-				odf_context()->math_context()->symbol_counter = 30; // starMathConverter. ???
-				odf_context()->math_context()->lvl_max = 20; // starMathConverter. ???
-				odf_context()->math_context()->lvl_min = 0; // starMathConverter. ???
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
 			}
 
 			odf_context()->end_math();
@@ -301,11 +303,13 @@ namespace Oox2Odf
 			else
 			{
 				std::wstring content = starMathConverter.GetOdf();
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
+
 				odf_context()->math_context()->add_content(content);
 
-				odf_context()->math_context()->symbol_counter = 30; // starMathConverter. ? ? ? ?
-				odf_context()->math_context()->lvl_max = 20; // starMathConverter. ? ? ? ?
-				odf_context()->math_context()->lvl_min = 0; // starMathConverter. ? ? ? ?
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
 			}
 
 			odf_context()->end_math();

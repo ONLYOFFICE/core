@@ -869,7 +869,7 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 
 void CConverter2OOXML::WriteBorder(const TBorder& oBorder, const HWP_STRING& sBorderName, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (0x00 == oBorder.m_chWidth || sBorderName.empty())
+	if (sBorderName.empty())
 		return;
 
 	HWP_STRING sType;

@@ -1051,8 +1051,8 @@ void CBooleanOperations::TracePaths()
 			}
 			else if (s.IsCurve)
 				Result.CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y,
-								s.HO.X + s.P.X, s.HO.Y + s.P.Y,
-								s.P.X, s.P.Y);
+							   s.HO.X + s.P.X, s.HO.Y + s.P.Y,
+							   s.P.X, s.P.Y);
 			else
 				Result.LineTo(s.P.X, s.P.Y);
 
@@ -1665,12 +1665,14 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
 		Curve line(segment, Segment(point));
 
-		int count = 0;
-		for (const auto& r : roots)
-			if (line.GetTimeOf(curve.GetPoint(r)) != -1)
-				count++;
+		return roots.size() % 2;
 
-		return count;
+		// int count = 0;
+		// for (const auto& r : roots)
+		// 	if (line.GetTimeOf(curve.GetPoint(r)) != -1)
+		// 		count++;
+
+		// return count;
 	}
 	return 0;
 }

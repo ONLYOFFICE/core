@@ -855,8 +855,16 @@ void CConverter2OOXML::WriteCellProperties(short shBorderFillID, NSStringUtils::
 	if (nullptr == pBorderFill)
 		return;
 
-	if (nullptr != pBorderFill->GetFill() && pBorderFill->GetFill()->ColorFill())
-		oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pBorderFill->GetFill()->GetFaceColor()) + L"\"/>");
+	if(nullptr != pBorderFill->GetFill())
+	{
+		const CFill* pFill{pBorderFill->GetFill()};
+
+		if (pFill->ColorFill())
+			oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pFill->GetFaceColor()) + L"\"/>");
+		// In OOXML, there is no gradient support for cell fills, so we fill in the first color of the gradient.
+		else if (pFill->GradFill() && 0 != pFill->GetGradColorNum())
+			oBuilder.WriteString(L"<w:shd w:val=\"clear\" w:color=\"auto\" w:fill=\"" + Transform::IntColorToHEX(pFill->GetGradColors().front()) + L"\"/>");
+	}
 
 	oBuilder.WriteString(L"<w:tcBorders>");
 

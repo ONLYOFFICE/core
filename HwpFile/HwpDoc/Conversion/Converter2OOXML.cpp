@@ -671,6 +671,7 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 	oBuilder.WriteString(L"<w:tbl>");
 
 	oState.m_bInTable = true;
+	oState.m_bLastEmptyNode = false;
 
 	WriteTableProperties(pTable, shParaShapeID, shParaStyleID, oBuilder, oState);
 

@@ -1025,7 +1025,7 @@ int main(int argc, char* argv[])
 	// SPLIT & MERGE
 	BYTE* pSplitPages = NULL;
 	BYTE* pFileMerge = NULL;
-	if (true)
+	if (false)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;

@@ -598,6 +598,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 	}
 
 	CloseParagraph(oBuilder, oState);
+	oState.m_bLastEmptyNode = false;
 }
 
 void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)

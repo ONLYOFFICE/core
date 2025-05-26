@@ -241,7 +241,7 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 	if (oCharShape.StrikeOut())
 		oRunnerStyle.SetStrike(EStrikeType::Single);
 
-	const int nHeight = static_cast<int>(((double)(std::abs)(oCharShape.GetHeight()) * ((double)oCharShape.GetRelSize(ELang::LATIN) / 100.) / 100.) * 2.);
+	const int nHeight = static_cast<int>(((double)(std::abs)(oCharShape.GetHeight()) * ((double)oCharShape.GetRelSize(ELang::HANGUL) / 100.) / 100.) * 2.);
 	oRunnerStyle.SetSz(nHeight);
 
 	oRunnerStyle.SetColor(oCharShape.GetTextColor());

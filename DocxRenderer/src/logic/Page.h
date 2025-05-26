@@ -193,6 +193,7 @@ namespace NSDocxRenderer
 		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg, CVectorGraphics& imageVector);
 		void DrawGradient(shape_ptr_t pShape);
 
+		agg::rgba8 GetFillColor();
 		void FillLuminosityShapes();
 
 		CManagers m_oManagers;

@@ -263,6 +263,7 @@ namespace NSDocxRenderer
 			fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET * 2 &&
 			shape->m_oBrush.Color1 == c_iWhiteColor)
 			return;
+
 		if (!skip_shape)
 		{
 			shape->m_nOrder = ++m_nShapeOrder;
@@ -2182,23 +2183,51 @@ namespace NSDocxRenderer
 		RELEASEINTERFACE(g_renderer)
 	}
 
+	agg::rgba8 CPage::GetFillColor()
+	{
+		bool is_one = true;
+		agg::rgba8 color = m_arOneColorGradientShape[0]->m_oBrush.m_oGradientInfo.getFillColor();
+		for (const auto& s : m_arOneColorGradientShape)
+			if (s->m_oBrush.m_oGradientInfo.getFillColor() != color)
+				is_one = false;
+
+		if (is_one)
+			return color;
+		else
+			return agg::rgba8();
+	}
+
 	void CPage::FillLuminosityShapes()
 	{
-		for (auto itt = m_arOneColorGradientShape.begin(); itt != m_arOneColorGradientShape.end();)
+		if (GetFillColor() == agg::rgba8::no_color())
 		{
-			for (auto it = m_arLuminosityShapes.begin(); it != m_arLuminosityShapes.end();)
+			for (auto itt = m_arOneColorGradientShape.begin(); itt != m_arOneColorGradientShape.end();)
 			{
-				if ((*it)->m_oVector.GetRight() > (*itt)->m_oVector.GetLeft() && (*it)->m_oVector.GetBottom() > (*itt)->m_oVector.GetTop() &&
-					(*it)->m_oVector.GetLeft() < (*itt)->m_oVector.GetRight() && (*it)->m_oVector.GetTop() < (*itt)->m_oVector.GetBottom())
+				for (auto it = m_arLuminosityShapes.begin(); it != m_arLuminosityShapes.end();)
 				{
-					(*it)->m_oBrush.m_oGradientInfo.setFillColor((*itt)->m_oBrush.m_oGradientInfo.getFillColor());
-					DrawGradient((*it));
-					it = m_arLuminosityShapes.erase(it);
+					if ((*it)->m_oVector.GetRight() > (*itt)->m_oVector.GetLeft() && (*it)->m_oVector.GetBottom() > (*itt)->m_oVector.GetTop() &&
+						(*it)->m_oVector.GetLeft() < (*itt)->m_oVector.GetRight() && (*it)->m_oVector.GetTop() < (*itt)->m_oVector.GetBottom())
+					{
+						(*it)->m_oBrush.m_oGradientInfo.setFillColor((*itt)->m_oBrush.m_oGradientInfo.getFillColor());
+						DrawGradient((*it));
+						it = m_arLuminosityShapes.erase(it);
+					}
+					else
+						++it;
 				}
-				else
-					++it;
+				itt = m_arOneColorGradientShape.erase(itt);
 			}
-			itt = m_arOneColorGradientShape.erase(itt);
+		}
+		else
+		{
+			auto fill_color = GetFillColor();
+			for (auto& s : m_arLuminosityShapes)
+			{
+				s->m_oBrush.m_oGradientInfo.setFillColor(fill_color);
+				DrawGradient(s);
+			}
+
+			m_arLuminosityShapes.clear();
 		}
 	}
 }

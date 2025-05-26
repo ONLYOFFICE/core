@@ -550,9 +550,9 @@ namespace NSDocxRenderer
 
 			// WriteUniColor
 			auto WriteUniColor = [&oWriter] (long color, long alpha) {
-				BYTE b = reinterpret_cast<BYTE*>(&color)[0];
+				BYTE r = reinterpret_cast<BYTE*>(&color)[0];
 				BYTE g = reinterpret_cast<BYTE*>(&color)[1];
-				BYTE r = reinterpret_cast<BYTE*>(&color)[2];
+				BYTE b = reinterpret_cast<BYTE*>(&color)[2];
 
 				oWriter.StartRecord(1); // COLOR_TYPE_SRGB
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
@@ -593,7 +593,7 @@ namespace NSDocxRenderer
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.StartRecord(0);
-				WriteUniColor(ConvertColorBGRToRGB(m_lHighlightColor), 255);
+				WriteUniColor(m_lHighlightColor, 255);
 				oWriter.EndRecord();
 				oWriter.EndRecord();
 			}

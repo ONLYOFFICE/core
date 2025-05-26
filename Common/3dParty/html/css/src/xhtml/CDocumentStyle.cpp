@@ -22,10 +22,10 @@ namespace NSCSS
 		: m_oStyle(oStyle), m_bIsPStyle(bIsPStyle)
 	{}
 
-	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond) 
+	bool CheckArrays(const std::vector<std::wstring>& arInitial, const std::set<std::wstring>& arFirst, const std::set<std::wstring>& arSecond)
 	{
 		std::unordered_set<std::wstring> arInitialSet(arInitial.begin(), arInitial.end());
-	
+
 		std::vector<std::wstring> arCommonElements1;
 		std::vector<std::wstring> arCommonElements2;
 
@@ -470,9 +470,6 @@ namespace NSCSS
 
 		int nSpace{0};
 
-		if (NULL != pPadding && !pPadding->Empty() && !pPadding->Zero())
-			nSpace = pPadding->ToInt(NSCSS::Point);
-
 		return  L"w:val=\"" + wsStyle + L"\" w:sz=\"" + std::to_wstring(nWidth) + + L"\" w:space=\"" + std::to_wstring(nSpace) + L"\" w:color=\"" + wsColor + L"\"";
 	}
 
@@ -559,7 +556,7 @@ namespace NSCSS
 
 		if (oXmlElement.Empty())
 			return false;
-		
+
 		m_sStyle += oXmlElement.GetPStyle(true);
 		return true;
 	}

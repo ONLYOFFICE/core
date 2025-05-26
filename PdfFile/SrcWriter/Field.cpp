@@ -2567,7 +2567,7 @@ namespace PdfWriter
 		if (pFont)
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 	}
-	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
+	void CAnnotAppearanceObject::DrawPictureInline(const double& dWidth, const double& dHeight, const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
 	{
 		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
 		if (!m_pStream || !pAnnot || !sImageName)
@@ -2577,10 +2577,6 @@ namespace PdfWriter
 
 		if (bRespectBorder)
 		{
-			TRect oRect = pAnnot->GetRect();
-			double dWidth  = fabs(oRect.fRight - oRect.fLeft);
-			double dHeight = fabs(oRect.fBottom - oRect.fTop);
-
 			double dBorderSize = pAnnot->GetBorderWidth();
 			EBorderType nType = pAnnot->GetBorderType();
 			if (nType == EBorderType::Beveled || nType == EBorderType::Inset)

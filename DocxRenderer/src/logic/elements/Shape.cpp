@@ -1109,7 +1109,7 @@ namespace NSDocxRenderer
 			{
 				double degree = m_dRotation;
 				if (m_dRotation < 0) degree = 360.0 - m_dRotation;
-				oWriter.WriteBYTE(10); oWriter.AddInt(10, degree * c_dDegreeToAngle);
+				oWriter.WriteBYTE(10); oWriter.AddInt(degree * c_dDegreeToAngle);
 			}
 			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 			oWriter.EndRecord();

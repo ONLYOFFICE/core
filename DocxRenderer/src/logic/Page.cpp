@@ -247,10 +247,11 @@ namespace NSDocxRenderer
 
 			m_bIsGradient = false;
 		}
-		shape->m_dRotation = rotation;
-
-		if (info)
+		else if (info)
+		{
+			shape->m_dRotation = rotation;
 			DrawImage(shape, info, image_vector);
+		}
 		else
 			shape->m_eType = CShape::eShapeType::stVectorGraphics;
 
@@ -2228,6 +2229,7 @@ namespace NSDocxRenderer
 			}
 
 			m_arLuminosityShapes.clear();
+			m_arOneColorGradientShape.clear();
 		}
 	}
 }

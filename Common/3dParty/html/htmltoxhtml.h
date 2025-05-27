@@ -436,17 +436,17 @@ static void substitute_xml_entities_into_text(std::string& text)
 }
 
 // After running through Gumbo, the values of type "&#1;" are replaced with the corresponding code '0x01'
-// Since the attribute value does not use control characters (value <= 0x1F),
+// Since the attribute value does not use control characters (value <= 0x09),
 // then just delete them, otherwise XmlUtils::CXmlLiteReader crashes on them.
 // bug#73486
 static void remove_control_symbols(std::string& text)
 {
-	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](char chValue){ return chValue <= 0x1F; });
+	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
 
 	while (itFound != text.end())
 	{
 		itFound = text.erase(itFound);
-		itFound = std::find_if(itFound, text.end(), [](char chValue){ return chValue <= 0x1F; });
+		itFound = std::find_if(itFound, text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
 	}
 }
 
@@ -456,12 +456,6 @@ static void substitute_xml_entities_into_attributes(std::string& text)
 	remove_control_symbols(text);
 	substitute_xml_entities_into_text(text);
 	replace_all(text, "\"", "&quot;");
-}
-
-// Удаляем символы, которые ломают работу XmlUtils::CXmlLiteReader
-static void remove_control_character(std::string& sText)
-{
-	sText.erase(std::remove_if(sText.begin(), sText.end(), [](char chValue){ return (unsigned char)chValue < 0x09; }));
 }
 
 static std::string handle_unknown_tag(GumboStringPiece* text)
@@ -495,7 +489,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 		oBuilder.WriteString("<!DOCTYPE ");
 		oBuilder.WriteString(node->v.document.name);
 		std::string pi(node->v.document.public_identifier);
-		remove_control_character(pi);
+		remove_control_symbols(pi);
 		if ((node->v.document.public_identifier != NULL) && !pi.empty())
 		{
 			oBuilder.WriteString(" PUBLIC \"");
@@ -517,8 +511,8 @@ static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringB
 		std::string sVal(at->value);
 		std::string sName(at->name);
 
-		remove_control_character(sVal);
-		remove_control_character(sName);
+		remove_control_symbols(sVal);
+		remove_control_symbols(sName);
 
 		atts.WriteString(" ");
 
@@ -580,7 +574,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 		if (child->type == GUMBO_NODE_TEXT)
 		{
 			std::string val(child->v.text.text);
-			remove_control_character(val);
+			remove_control_symbols(val);
 			substitute_xml_entities_into_text(val);
 
 			// Избавление от FF
@@ -620,7 +614,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	}
 
 	std::string tagname            = get_tag_name(node);
-	remove_control_character(tagname);
+	remove_control_symbols(tagname);
 
 	if (NodeIsUnprocessed(tagname))
 		return;

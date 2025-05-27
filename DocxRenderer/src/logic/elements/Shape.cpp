@@ -1202,7 +1202,7 @@ namespace NSDocxRenderer
 			// end of WriteRecord WriteGeometry
 
 			// WriteRecord WriteUniFill
-			if (m_eType != CShape::eShapeType::stVectorTexture)
+			if (!m_bIsNoFill && m_eType != CShape::eShapeType::stVectorTexture)
 			{
 				oWriter.StartRecord(2);
 				WriteUniFill(m_oBrush.Color1, m_oBrush.Alpha1);
@@ -1271,21 +1271,8 @@ namespace NSDocxRenderer
 			oWriter.EndRecord();
 			// end of WriteBlip
 
-			oWriter.StartRecord(1);
-			if (m_oBrush.Image != NULL)
+			if (m_oBrush.Image == NULL)
 			{
-				oWriter.StartRecord(2);
-				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.AddInt(100);
-				oWriter.WriteBYTE(1); oWriter.AddInt(100);
-				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
-				oWriter.EndRecord();
-			}
-			else
-			{
-				oWriter.StartRecord(3);
-				oWriter.EndRecord();
-
 				oWriter.StartRecord(1);
 
 				// coeff
@@ -1311,8 +1298,19 @@ namespace NSDocxRenderer
 				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(b);
 
 				oWriter.EndRecord();
+
+				oWriter.StartRecord(3);
+				oWriter.EndRecord();
 			}
-			oWriter.EndRecord();
+			else // tile
+			{
+				oWriter.StartRecord(2);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.AddInt(100);
+				oWriter.WriteBYTE(1); oWriter.AddInt(100);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+			}
 
 			oWriter.EndRecord();
 			oWriter.EndRecord();

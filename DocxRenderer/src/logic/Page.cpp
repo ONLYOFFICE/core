@@ -416,8 +416,8 @@ namespace NSDocxRenderer
 		CalcShapesRotation();
 
 		m_arOutputObjects = BuildOutputObjects();
-		for (auto& t : m_arTables)
-			m_arOutputObjects.push_back(t);
+		// for (auto& t : m_arTables)
+		// 	m_arOutputObjects.push_back(t);
 	}
 
 	void CPage::Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage)
@@ -1102,6 +1102,7 @@ namespace NSDocxRenderer
 		//Условие пересечения по горизонтали
 		bool bIf3 = h_type != eHorizontalCrossingType::hctUnknown &&
 		        h_type != eHorizontalCrossingType::hctNoCrossingCurrentLeftOfNext &&
+		        h_type != eHorizontalCrossingType::hctCurrentLeftOfNext &&
 		        h_type != eHorizontalCrossingType::hctNoCrossingCurrentRightOfNext;
 
 		//Цвета должны быть разными

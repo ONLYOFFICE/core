@@ -1209,17 +1209,20 @@ namespace NSDocxRenderer
 				oWriter.EndRecord();
 			}
 
-			// WriteRecord WriteLn
-			oWriter.StartRecord(3);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(m_oPen.Size * c_dMMToEMU)); // ln w
-			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			if (!m_bIsNoStroke)
+			{
+				// WriteRecord WriteLn
+				oWriter.StartRecord(3);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(m_oPen.Size * c_dMMToEMU)); // ln w
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 
-			oWriter.StartRecord(0);
-			WriteUniFill(m_oPen.Color, m_oPen.Alpha);
-			oWriter.EndRecord();
+				oWriter.StartRecord(0);
+				WriteUniFill(m_oPen.Color, m_oPen.Alpha);
+				oWriter.EndRecord();
 
-			oWriter.EndRecord();
+				oWriter.EndRecord();
+			}
 		};
 
 		if (m_eType == eShapeType::stVectorTexture)
@@ -1262,10 +1265,8 @@ namespace NSDocxRenderer
 			oWriter.AddInt(0); // effects
 			oWriter.EndRecord();
 
-			oWriter.StartRecord(10);
 			std::wstring rId = L"rId" + std::to_wstring(c_iStartingIdForImages + m_pImageInfo->m_nId);
-			oWriter.WriteStringUtf16(rId);
-			oWriter.EndRecord();
+			oWriter.WriteBYTE(10); oWriter.WriteStringUtf16(rId); // embed
 
 			oWriter.EndRecord();
 			// end of WriteBlip

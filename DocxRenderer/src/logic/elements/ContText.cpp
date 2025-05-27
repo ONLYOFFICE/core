@@ -643,7 +643,8 @@ namespace NSDocxRenderer
 		        eVType == eVerticalCrossingType::vctDublicate &&
 		        (eHType == eHorizontalCrossingType::hctDublicate ||
 		         eHType == eHorizontalCrossingType::hctCurrentLeftOfNext ||
-		         eHType == eHorizontalCrossingType::hctCurrentRightOfNext);
+		         eHType == eHorizontalCrossingType::hctCurrentRightOfNext ||
+		         eHType == eHorizontalCrossingType::hctLeftAndRightBordersMatch);
 	}
 
 	bool CContText::IsOnlySpaces() const

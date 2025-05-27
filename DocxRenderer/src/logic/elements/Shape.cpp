@@ -1262,10 +1262,9 @@ namespace NSDocxRenderer
 			oWriter.AddInt(0); // effects
 			oWriter.EndRecord();
 
-			oWriter.StartRecord(3);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(m_pImageInfo->m_strFileName);
-			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.StartRecord(10);
+			std::wstring rId = L"rId" + std::to_wstring(c_iStartingIdForImages + m_pImageInfo->m_nId);
+			oWriter.WriteStringUtf16(rId);
 			oWriter.EndRecord();
 
 			oWriter.EndRecord();

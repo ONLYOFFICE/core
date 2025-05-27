@@ -523,8 +523,10 @@ CharCodeToUnicode *GfxFont::readToUnicodeCMap(Dict *fontDict, int nBits,
 
   if (!fontDict->lookup("ToUnicode", &obj1)->isStream()) {
     obj1.free();
-    if (!fontDict->lookup("Encoding", &obj1)->isStream())
+    if (!fontDict->lookup("Encoding", &obj1)->isStream()) {
+      obj1.free();
       return NULL;
+    }
   }
   buf = new GString();
   obj1.streamReset();

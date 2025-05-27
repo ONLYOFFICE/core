@@ -1468,6 +1468,16 @@ namespace PdfWriter
 			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BC")), true);
 		return "";
 	}
+	int CWidgetAnnotation::GetR()
+	{
+		if (m_pMK)
+		{
+			CObjectBase* pObj = m_pMK->Get("R");
+			if (pObj && pObj->GetType() == object_type_NUMBER)
+				return ((CNumberObject*)pObj)->Get();
+		}
+		return 0;
+	}
 	bool CWidgetAnnotation::HaveBG()
 	{
 		if (!m_pMK)
@@ -1752,6 +1762,29 @@ namespace PdfWriter
 
 		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
 		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
+		int nRotate = GetR();
+		if (nRotate == 0)
+		{
+			pAppearance->AddBBox(0, 0, dWidth, dHeight);
+			pAppearance->AddMatrix(1, 0, 0, 1, 0, 0);
+		}
+		if (nRotate == 90)
+		{
+			pAppearance->AddBBox(0, 0, dHeight, dWidth);
+			pAppearance->AddMatrix(0, 1, -1, 0, dWidth, 0);
+		}
+		else if (nRotate == 180)
+		{
+			pAppearance->AddBBox(0, 0, dWidth, dHeight);
+			pAppearance->AddMatrix(-1, 0, 0, -1, dWidth, dHeight);
+		}
+		else if (nRotate == 270)
+		{
+			pAppearance->AddBBox(0, 0, dHeight, dWidth);
+			pAppearance->AddMatrix(0, -1, 1, 0, 0, dHeight);
+		}
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dWidth, dHeight);
 
 		pAppearance->StartDraw(dWidth, dHeight);
 
@@ -1818,7 +1851,7 @@ namespace PdfWriter
 			dDstY += (dH - dDstH) * m_dShiftY;
 
 			m_pResources->AddXObjectWithName(pForm->GetName().c_str(), pForm);
-			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+			pAppearance->DrawPictureInline(dWidth, dHeight, pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 
 			CheckMK();
 			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");

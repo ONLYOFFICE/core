@@ -475,6 +475,7 @@ namespace PdfWriter
 		int  GetParentID()     { return m_nParentID; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
+		int GetR();
 		bool HaveBG();
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }

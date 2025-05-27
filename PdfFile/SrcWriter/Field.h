@@ -395,7 +395,7 @@ namespace PdfWriter
 
 		void StartDraw(const double& dWidth, const double& dHeight);
 		void StartText(CFontDict* pFont, const double& dFontSize);
-		void DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
+		void DrawPictureInline(const double& dWidth, const double& dHeight,const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder);
 		void EndText();
 		void EndDraw();
 

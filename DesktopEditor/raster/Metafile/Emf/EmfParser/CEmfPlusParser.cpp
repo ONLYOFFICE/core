@@ -1659,7 +1659,7 @@ namespace MetaFile
 			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect, nW, nH);
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);
+			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH, BLEND_MODE_DEFAULT);
 
 			RELEASEINTERFACE(pGrRenderer);
 			RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1738,7 +1738,7 @@ namespace MetaFile
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect, nW, nH);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-		                             (NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH);
+		                             (NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH, BLEND_MODE_DEFAULT);
 
 		if (!bExternalBuffer)
 			RELEASEARRAYOBJECTS(pBytes);

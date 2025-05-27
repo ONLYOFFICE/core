@@ -348,6 +348,12 @@ typedef unsigned char BYTE;
 #define HS_OUTLINEDDIAMOND  51
 #define HS_SOLIDDIAMOND     52
 
+//Blend mode's
+#define BLEND_MODE_SRC_OVER      3
+#define BLEND_MODE_XOR           11
+#define BLEND_MODE_DRAW_ON_BLACK 28
+#define BLEND_MODE_DEFAULT       BLEND_MODE_SRC_OVER
+
 namespace MetaFile
 {
 	#define DEFAULT_FONT_SIZE 14

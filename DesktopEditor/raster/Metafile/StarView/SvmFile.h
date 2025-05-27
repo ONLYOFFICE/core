@@ -304,7 +304,8 @@ class CSvmFile : virtual public IMetaFileBase
 		BYTE* pBitsBuffer = m_oStream.GetCurPtr();
 		m_oStream.Skip(ulBitsSize);
 
-		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+		unsigned int unColorUsed;
+		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 
 		return true;
 	}
@@ -321,7 +322,7 @@ class CSvmFile : virtual public IMetaFileBase
 			for (int nIndex = 3, nSize = 4 * unImageW * unImageH; nIndex < nSize; nIndex += 4)
 				pImageBuffer[nIndex] = 255;
 
-			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH, BLEND_MODE_DEFAULT);
 		}
 	}
 	void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage)
@@ -338,7 +339,7 @@ class CSvmFile : virtual public IMetaFileBase
 				TranslatePoint(nX, nY, dX, dY);
 				TranslatePoint(nX + nW, nY + nH, dX1, dY1);
 
-				m_pOutput->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight);
+				m_pOutput->DrawBitmap(dX, dY, fabs(dX1 - dX), fabs(dY1 - dY), pBgra, unWidth, unHeight, BLEND_MODE_DEFAULT);
 			}
 
 			if (pBgra)

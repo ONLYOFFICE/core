@@ -1601,15 +1601,8 @@ namespace MetaFile
 
 			pGrRenderer->SetFontManager(GetFontManager());
 
-			double dScale = ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer()->GetWidth() * 96. / 25.4 / dParentWidth;
-
-			const double dMaxWidth  = std::max(MAX_PICTURE_SIZE, dParentWidth);
-			const double dMaxHeight = std::max(MAX_PICTURE_SIZE, dParentHeight); 
-
-			dScale *= std::min(dMaxWidth / dFileWidth, dMaxHeight / dFileHeight);
-
-			const int nWidth  = dFileWidth  * dScale;
-			const int nHeight = dFileHeight * dScale;
+			const int nWidth  = static_cast<int>(dFileWidth);
+			const int nHeight = static_cast<int>(dFileHeight);
 
 			BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
@@ -1649,10 +1642,10 @@ namespace MetaFile
 
 			TRectL oClipRect;
 
-			oClipRect.Left   = std::floor((oSrcRect.dX - oFileBounds.Left) * dScale);
-			oClipRect.Top    = std::floor((oSrcRect.dY - oFileBounds.Top) * dScale);
-			oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth - oFileBounds.Left)  * dScale);
-			oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight - oFileBounds.Top) * dScale);
+			oClipRect.Left   = std::floor(oSrcRect.dX - oFileBounds.Left);
+			oClipRect.Top    = std::floor(oSrcRect.dY - oFileBounds.Top);
+			oClipRect.Right  = std::floor(oSrcRect.dX + oSrcRect.dWidth - oFileBounds.Left);
+			oClipRect.Bottom = std::floor(oSrcRect.dY + oSrcRect.dHeight - oFileBounds.Top);
 
 			unsigned int nW = (unsigned int)nWidth;
 			unsigned int nH = (unsigned int)nHeight;

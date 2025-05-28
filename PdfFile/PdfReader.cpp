@@ -361,6 +361,12 @@ bool CPdfReader::IsNeedCMap()
 void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 {
 	((GlobalParamsAdaptor*)globalParams)->SetCMapMemory(pData, nSizeData);
+
+	if (m_vPDFContext.empty())
+		return;
+	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
 {
@@ -616,8 +622,11 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 		return false;
 	}
 
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
+	if (!IsNeedCMap())
+	{
+		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
+		m_mFonts.insert(mFonts.begin(), mFonts.end());
+	}
 
 	return true;
 }
@@ -652,8 +661,11 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 		return false;
 	}
 
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
+	if (!IsNeedCMap())
+	{
+		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
+		m_mFonts.insert(mFonts.begin(), mFonts.end());
+	}
 
 	return true;
 }
@@ -1504,16 +1516,97 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 			Object oWidth, oHeight;
 			int nWidth  = 0;
 			int nHeight = 0;
-			if (oImDict->lookup("Width", &oWidth)->isInt() && oImDict->lookup("Height", &oHeight)->isInt())
+			if (oImDict->lookup("Width", &oWidth)->isNull())
 			{
-				nWidth  = oWidth.getInt();
-				nHeight = oHeight.getInt();
+				oWidth.free();
+				oImDict->lookup("W", &oWidth);
 			}
+			if (oWidth.isNum())
+				nWidth = oWidth.getNum();
+			if (oImDict->lookup("Height", &oHeight)->isNull())
+			{
+				oHeight.free();
+				oImDict->lookup("H", &oHeight);
+			}
+			if (oHeight.isNum())
+				nHeight = oHeight.getNum();
 			oRes.AddInt(nWidth);
 			oRes.AddInt(nHeight);
 			oWidth.free(); oHeight.free();
 
-			if (bBase64)
+			// Mask
+			int nMaskWidth  = 0;
+			int nMaskHeight = 0;
+			bool bHaveSoftMask = false;
+			GfxImageColorMap* pMaskColorMap = NULL;
+
+			Object oMaskObj, oSMaskObj;
+			oImDict->lookup("Mask", &oMaskObj);
+			oImDict->lookup("SMask", &oSMaskObj);
+			if (oSMaskObj.isStream())
+			{
+				Dict* oMaskDict = oSMaskObj.streamGetDict();
+
+				if (oMaskDict->lookup("Width", &oWidth)->isNull())
+				{
+					oWidth.free();
+					oMaskDict->lookup("W", &oWidth);
+				}
+				if (oWidth.isNum())
+					nMaskWidth = oWidth.getNum();
+				if (oMaskDict->lookup("Height", &oHeight)->isNull())
+				{
+					oHeight.free();
+					oMaskDict->lookup("H", &oHeight);
+				}
+				if (oHeight.isNum())
+					nMaskHeight = oHeight.getNum();
+				oWidth.free(); oHeight.free();
+
+				Object oBits;
+				if (oMaskDict->lookup("BitsPerComponent", &oBits)->isNull())
+				{
+					oBits.free();
+					oMaskDict->lookup("BPC", &oBits);
+				}
+				int nMaskBits = oBits.isInt() ? oBits.getInt() : 8;
+				oBits.free();
+
+				GfxColorSpace* maskColorSpace = NULL;
+				Object oColorSpace;
+				if (oMaskDict->lookup("ColorSpace", &oColorSpace)->isNull())
+				{
+					oColorSpace.free();
+					oMaskDict->lookup("CS", &oColorSpace);
+				}
+				if (oColorSpace.isName("DeviceGray"))
+					maskColorSpace = GfxColorSpace::create(csDeviceGray);
+				oColorSpace.free();
+
+				Object oDecode;
+				if (oMaskDict->lookup("Decode", &oDecode)->isNull())
+				{
+					oDecode.free();
+					oMaskDict->lookup("D", &oDecode);
+				}
+
+				pMaskColorMap = new GfxImageColorMap(nMaskBits, &oDecode, maskColorSpace);
+				oDecode.free();
+
+				// TODO Matte
+
+				bHaveSoftMask = true;
+			}
+			else if (oMaskObj.isArray())
+			{
+
+			}
+			else if (oMaskObj.isStream())
+			{
+
+			}
+
+			if (bBase64 && !bHaveSoftMask)
 			{
 				int nLength = 0;
 				Object oLength;
@@ -1663,15 +1756,65 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 					pLineDst += 4;
 				}
 			}
+			delete pImageStream;
 			delete pColorMap;
+			oIm.free();
+
+			if (bHaveSoftMask && nWidth == nMaskWidth && nHeight == nMaskHeight)
+			{
+				ImageStream* pSMaskStream = new ImageStream(oSMaskObj.getStream(), nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
+				pSMaskStream->reset();
+
+				BYTE unAlpha = 0;
+				for (int nY = 0; nY < nMaskHeight; ++nY)
+				{
+					int nIndex = 4 * nY * nMaskWidth;
+					for (int nX = 0; nX < nMaskWidth; ++nX)
+					{
+						pSMaskStream->getPixel(&unAlpha);
+						GfxGray oGray;
+						pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+						pBgraData[nIndex + 3] = colToByte(oGray);
+						nIndex += 4;
+					}
+				}
+				delete pSMaskStream;
+			}
+			RELEASEOBJECT(pMaskColorMap);
+			oMaskObj.free(); oSMaskObj.free();
 
 			nMKLength++;
-			unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-			unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-			oRes.AddInt(npSubMatrix1);
-			oRes.AddInt(npSubMatrix >> 32);
+			if (bBase64)
+			{
+				CBgraFrame oFrame;
+				oFrame.put_Data(pBgraData);
+				oFrame.put_Width(nWidth);
+				oFrame.put_Height(nHeight);
+				oFrame.put_Stride(4 * nWidth);
+				oFrame.put_IsRGBA(true);
 
-			oIm.free();
+				BYTE* pPNG = NULL;
+				int nPNGSize = 0;
+				oFrame.Encode(pPNG, nPNGSize, 4);
+				oFrame.ClearNoAttack();
+				RELEASEARRAYOBJECTS(pBgraData);
+
+				char* cData64 = NULL;
+				int nData64Dst = 0;
+				NSFile::CBase64Converter::Encode(pPNG, nPNGSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+				oRes.WriteString((BYTE*)cData64, nData64Dst);
+
+				RELEASEARRAYOBJECTS(pPNG);
+				RELEASEARRAYOBJECTS(cData64);
+			}
+			else
+			{
+				unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+			}
 		}
 		oMK.free(); oAP.free();
 

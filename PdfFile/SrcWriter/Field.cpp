@@ -1757,7 +1757,7 @@ namespace PdfWriter
 		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CDateTimeField
 	//----------------------------------------------------------------------------------------
 	CDateTimeField::CDateTimeField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
@@ -1768,11 +1768,25 @@ namespace PdfWriter
 	{
 		SetFormat(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsFormat));
 	}
+	std::string CorrectFormat(const std::string& s)
+	{
+		std::string sRes = s;
+		NSStringUtils::string_replaceA(sRes, "am/pm", "tt");
+		NSStringUtils::string_replaceA(sRes, "AM/PM", "tt");
+		NSStringUtils::string_replaceA(sRes, "M", "m");
+		NSStringUtils::string_replaceA(sRes, "Y", "y");
+		NSStringUtils::string_replaceA(sRes, "D", "d");
+		NSStringUtils::string_replaceA(sRes, ":mm", ":MM");
+		NSStringUtils::string_replaceA(sRes, "m\xeb\xb6\x84", "M\xeb\xb6\x84");
+		NSStringUtils::string_replaceA(sRes, "m\xe5\x88\x86", "M\xe5\x88\x86");
+		return sRes;
+	}
 	void CDateTimeField::SetFormat(const std::string& sFormat)
 	{
-		std::string script = "AFDate_FormatEx(\"" + sFormat + "\");";
+		std::string sCorrectFormat = CorrectFormat(sFormat);
+		std::string script = "AFDate_FormatEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("F", script);
-		script = "AFDate_KeystrokeEx(\"" + sFormat + "\");";
+		script = "AFDate_KeystrokeEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("K", script);
 	}
 	//----------------------------------------------------------------------------------------

@@ -5,6 +5,8 @@
 #include <stack>
 #include "../../../../../common/File.h"
 
+#define CLEAR_STACK(stack) while (!(stack).empty()) (stack).pop()
+
 namespace NSWasm
 {
 	class CData
@@ -239,21 +241,33 @@ namespace NSWasm
 			WriteString(pDataUtf8, (unsigned int)lDataUtf8);
 			RELEASEARRAYOBJECTS(pDataUtf8);
 		}
-		void WriteStringUtf16(const std::wstring& sStr)
+		void WriteStringUtf16(const std::wstring& sStr, const bool& isBytes = false)
 		{
-			unsigned int size = static_cast<unsigned int>(sStr.size());
-			int output = 0;
-			size_t max_addition_size = 4 * size + 3 + 2;
+			unsigned int size = static_cast<unsigned int>(sStr.length());
 
-			AddSize(max_addition_size);
-			memcpy(m_pDataCur, &size, sizeof(unsigned int));
-			m_pDataCur += sizeof(unsigned int); // + 4
-			m_lSizeCur += sizeof(unsigned int);
+			int len = 0;
+			size_t posLen = m_lSizeCur;
 
-			NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sStr.c_str(), (LONG)size, m_pDataCur, output, false);
+			// len reserve
+			AddInt(0);
 
-			m_pDataCur += static_cast<unsigned int>(output);
-			m_lSizeCur += static_cast<unsigned int>(output);
+			if (sizeof(wchar_t) == 4)
+			{
+				AddSize(4 * size + 2/*'\0'*/);
+				NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes(sStr.c_str(), (LONG)size, m_pDataCur, len, false);
+			}
+			else
+			{
+				size_t bufferLen = 2 * size;
+				AddSize(bufferLen);
+				len = (int)(bufferLen);
+				memcpy(m_pDataCur, sStr.c_str(), bufferLen);
+			}
+
+			if (!isBytes)
+				len /= 2;
+
+			AddInt((unsigned int)len, posLen);
 		}
 		void Write(BYTE* value, unsigned int len)
 		{
@@ -287,8 +301,7 @@ namespace NSWasm
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
 
-			while (!m_lStack.empty())
-				m_lStack.pop();
+			CLEAR_STACK(m_lStack);
 		}
 		void ClearWithoutAttack()
 		{
@@ -298,16 +311,14 @@ namespace NSWasm
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
 
-			while (!m_lStack.empty())
-				m_lStack.pop();
+			CLEAR_STACK(m_lStack);
 		}
 		void ClearNoAttack()
 		{
 			m_pDataCur = m_pData;
 			m_lSizeCur = 0;
 
-			while (!m_lStack.empty())
-				m_lStack.pop();
+			CLEAR_STACK(m_lStack);
 		}
 		unsigned int GetSize()
 		{

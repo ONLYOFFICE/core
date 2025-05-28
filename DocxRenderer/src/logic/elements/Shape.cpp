@@ -1121,7 +1121,7 @@ namespace NSDocxRenderer
 			{
 				oWriter.StartRecord(1);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"string"); // default rect for text
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"rect"); // default rect for text
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.EndRecord();
 			}

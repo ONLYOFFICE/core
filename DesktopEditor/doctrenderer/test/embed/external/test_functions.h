@@ -7,7 +7,6 @@
  * The function tests the work of two CJSContexts in one thread.
  * Current working context is managed with Enter() and Exit() functions, or with CJSContextScope.
  */
-// TODO: write more comprehensive comments for V8
 void testMultipleContexts();
 
 /**
@@ -18,8 +17,8 @@ void testEmbedExternal();
 /**
  * NOTE: V8 ONLY!
  * The function tests internal embedding functionality by using CZipEmbed class.
+ * It also shows how embedding works for two CJSContext in the same thread (similar to testMultipleContexts()).
  */
-// TODO: rewrite with only one context
 void testEmbedInternal();
 
 /**

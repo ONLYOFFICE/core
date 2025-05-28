@@ -16,52 +16,77 @@ void testMultipleContexts()
 
 	// while creating CJSContext without any arguments will create initialized CJSContext
 	JSSmart<CJSContext> context2 = new CJSContext;
-	// we don't need it
+	// we don't need it:
 	// oContext2->Initialize();
 
-	// work with first context
+	// entering the first context
 	context1->Enter();
 	{
+		// entering the first context the second time in scope creation  - it's allowed and the scopes stack correctly
 		CJSContextScope scope(context1);
+		// allocate new local variables inside a custom local scope instead of
+		//  the one that is provided by CJSContextScope by default
 		CJSLocalScope local_scope;
-		JSSmart<CJSValue> oResLocal = context1->runScript("function f() { return 'Local scope test'; }; f();");
-		std::cout << oResLocal->toStringA() << std::endl;
+		JSSmart<CJSValue> res_local = context1->runScript("(function() { return 'Local scope test'; })();");
+		std::cout << res_local->toStringA() << std::endl;
+		// the first context is going to be exited at the end of the scope
 	}
-	JSSmart<CJSObject> oGlobal1 = context1->GetGlobal();
-	JSSmart<CJSValue> oVar2 = context1->createString("Hel");
-	oGlobal1->set("v1", oVar2.GetPointer());
+	// at this moment we are still inside the first context, since we have entered it twices
+	JSSmart<CJSObject> global1 = context1->GetGlobal();
+	JSSmart<CJSValue> var = context1->createString("Hel");
+	global1->set("v1", var);
+	// here `res` is set to be "Hello"
 	context1->runScript("var res = v1 + 'lo'");
-
+	// exit from the first context
 	context1->Exit();
 
-	// Work with second context with CJSContextScope usage
+	// now we are going to work with the second context
 	{
+		// enter the second context via context scope
 		CJSContextScope scope(context2);
 
-		JSSmart<CJSObject> oGlobal2 = context2->GetGlobal();
-		JSSmart<CJSValue> oVar4 = context2->createString("Wor");
-		oGlobal2->set("v1", oVar4.GetPointer());
+		JSSmart<CJSObject> global2 = context2->GetGlobal();
+		JSSmart<CJSValue> var = context2->createString("Wor");
+		global2->set("v1", var);
+		// `res` is "World!"
 		context2->runScript("var res = v1 + 'ld!'");
+		// the second context is going to be exited at the end of the scope
 	}
 
-	// Print result from first context
+	// enter the first context
 	context1->Enter();
+	// print `res` variable from the first context
+	JSSmart<CJSValue> res1 = context1->runScript("(function() { return res; })();");
+	std::string str_res1 = res1->toStringA();
+	std::cout << str_res1 << ", ";
+	// make new variable `v2` in first context
+	// important to note, that accessing previous `global1` object is undefined behaviour and can lead to crashes!
+	// that is because when we exited from the first context, every local handle inside CJSValue and CJSObject was invalidated
+	global1 = context1->GetGlobal();
+	global1->set("v2", CJSContext::createInt(42));
 
-	JSSmart<CJSValue> oRes1 = context1->runScript("function f() { return res; }; f();");
-	std::string strRes1 = oRes1->toStringA();
-	std::cout << strRes1 << std::endl;
-
-	// Print second variable
+	// enter from the second context (notice, we haven't exited the first context before)
 	context2->Enter();
+	// print `res` variable from the second context
+	JSSmart<CJSValue> res2 = context1->runScript("(function() { return res; })();");
+	std::string str_res2 = res2->toStringA();
+	std::cout << str_res2 << std::endl;
 
-	JSSmart<CJSValue> oRes2 = context1->runScript("function f() { return res; }; f();");
-	std::string strRes2 = oRes2->toStringA();
-	std::cout << strRes2 << std::endl;
-
+	// exit from the second context
 	context2->Exit();
+
+	// at this moment we are still in the first context
+	// we can validate that accessing `v2` variable, which exists only in the first context
+	global1 = context1->GetGlobal();
+	std::cout << global1->get("v2")->toInt32() << std::endl;
+	// exit from the first context
 	context1->Exit();
 
-//	oContext1->Dispose();
+	// manual disposing is not necessary, since it's going to be called in CJSContext's destructor anyway
+	// so we don't need to explicitly write:
+	// oContext1->Dispose();
+
+	// but still nothing wrong will happen if we do:
 	context2->Dispose();
 }
 
@@ -73,65 +98,71 @@ void testEmbedExternal()
 	CJSContextScope scope(context);
 	CJSContext::Embed<CTestEmbed>();
 
-	JSSmart<CJSValue> res1 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSum(10, 5); FreeEmbedObject(value); return ret; })();");
+	JSSmart<CJSValue> res1 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSum(10, 5); return ret; })();");
 	std::cout << "FunctionSum(10, 5) = " << res1->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res2 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSquare(4); FreeEmbedObject(value); return ret; })();");
+	JSSmart<CJSValue> res2 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSquare(4); return ret; })();");
 	std::cout << "FunctionSquare(4) = " << res2->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res3 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionDel(30, 3); FreeEmbedObject(value); return ret; })();");
+	JSSmart<CJSValue> res3 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionDel(30, 3); return ret; })();");
 	std::cout << "FunctionDel(30, 3) = " << res3->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res4 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionGet(); FreeEmbedObject(value); return ret; })();");
+	JSSmart<CJSValue> res4 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionGet(); return ret; })();");
 	std::cout << "FunctionGet() = " << res4->toInt32() << std::endl;
 }
 
 void testEmbedInternal()
 {
-	// CZipEmbed example
-	JSSmart<CJSContext> oContext1 = new CJSContext();
-	JSSmart<CJSContext> oContext2 = new CJSContext();
+	// create both contexts
+	JSSmart<CJSContext> context1 = new CJSContext();
+	JSSmart<CJSContext> context2 = new CJSContext();
 
-	// Work with first context
-	oContext1->Enter();
+	// work with the first context
+	context1->Enter();
+	// create embedding info for internally embedded objects (CZipEmbed is the one of them)
 	CreateDefaults();
-	JSSmart<CJSValue> oRes1 = oContext1->runScript(
+	context1->runScript(
 		"var oZip = CreateEmbedObject('CZipEmbed');\n"
 		"var files = oZip.open('" CURR_DIR "');\n"
-		"oZip.close();");
-	oContext1->Exit();
+		"oZip.close();"
+	);
+	context1->Exit();
 
-	// Work with second context
+	// work with the second context via context scope
 	{
-		CJSContextScope scope(oContext2);
-//		CreateDefaults();
-		JSSmart<CJSValue> oRes2 = oContext2->runScript(
+		CJSContextScope scope(context2);
+		// function CJSContext::Embed() is context-independent, so we don't actually need to call it in another context
+		// CreateDefaults();
+		context2->runScript(
 			"var oZip = CreateEmbedObject('CZipEmbed');\n"
-			"var files = oZip.open('" CURR_DIR "/../embed');\n"
-			"oZip.close();");
+			"var files = oZip.open('" CURR_DIR "/../../../embed');\n"
+			"oZip.close();"
+		);
 	}
 
-	// Print first result
-	oContext1->Enter();
-	JSSmart<CJSObject> oGlobal1 = oContext1->GetGlobal();
-	JSSmart<CJSArray> oFiles1 = oGlobal1->get("files")->toArray();
+	// print the files from the first context
+	context1->Enter();
+	JSSmart<CJSObject> global1 = context1->GetGlobal();
+	JSSmart<CJSArray> file_list1 = global1->get("files")->toArray();
 	std::cout << "\nRESULT FROM CONTEXT 1:\n";
-	for (int i = 0; i < oFiles1->getCount(); i++)
+	for (int i = 0; i < file_list1->getCount(); i++)
 	{
-		std::cout << oFiles1->get(i)->toStringA() << std::endl;
+		std::cout << file_list1->get(i)->toStringA() << std::endl;
 	}
 
-	// Print second result
-	oContext2->Enter();
-	JSSmart<CJSObject> oGlobal2 = oContext2->GetGlobal();
-	JSSmart<CJSArray> oFiles2 = oGlobal2->get("files")->toArray();
+	// print the files from the second result (note, we haven't exited the first context before)
+	context2->Enter();
+	JSSmart<CJSObject> global2 = context2->GetGlobal();
+	JSSmart<CJSArray> file_list2 = global2->get("files")->toArray();
 	std::cout << "\nRESULT FROM CONTEXT 2:\n";
-	for (int i = 0; i < oFiles2->getCount(); i++)
+	for (int i = 0; i < file_list2->getCount(); i++)
 	{
-		std::cout << oFiles2->get(i)->toStringA() << std::endl;
+		std::cout << file_list2->get(i)->toStringA() << std::endl;
 	}
-	oContext2->Exit();
-	oContext1->Exit();
+
+	// exit the contexts in reverse order
+	context2->Exit();
+	context1->Exit();
 }
 
 void testHashEmbed()

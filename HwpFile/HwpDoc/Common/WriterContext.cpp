@@ -250,7 +250,7 @@ const CHWPRecordNumbering* CWriterContext::GetNumbering(short shId)
 	if (nullptr == pDocInfo)
 		return nullptr;
 
-	return (CHWPRecordNumbering*)pDocInfo->GetNumbering(shId);
+	return (CHWPRecordNumbering*)pDocInfo->GetNumbering(shId - 1);
 }
 
 const CHWPRecordBullet* CWriterContext::GetBullet(short shId)

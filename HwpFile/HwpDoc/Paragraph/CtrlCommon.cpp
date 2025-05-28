@@ -142,15 +142,15 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon()
-	    : m_nVertOffset(0), m_nHorzOffset(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
+	    : m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID)
-		: CCtrl(sCtrlID), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
+		: CCtrl(sCtrlID), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{}
 
 	CCtrlCommon::CCtrlCommon(const CCtrlCommon& oCtrlCommon)
-		: CCtrl(oCtrlCommon.GetID()), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
+		: CCtrl(oCtrlCommon.GetID()), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{
 		m_nObjAttr = oCtrlCommon.m_nObjAttr;
 		m_bTreatAsChar = oCtrlCommon.m_bTreatAsChar;
@@ -203,7 +203,7 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
-		: CCtrl(sCtrlID), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
+		: CCtrl(sCtrlID), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{
 		oBuffer.SavePosition();
 
@@ -240,7 +240,7 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	    : CCtrl(sCtrlID), m_eTextVerAlign(EVertAlign::TOP), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
+	    : CCtrl(sCtrlID), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},  m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{
 		m_nObjInstanceID = std::abs(oNode.GetAttributeInt(L"id"));
 

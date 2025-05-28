@@ -355,9 +355,13 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaS
 			WriteVideo((const CCtrlShapeVideo*)pShape, shParaShapeID, shParaStyleID, oBuilder, oState);
 			break;
 		}
+		case EShapeType::Container:
+		{
+			WriteContainer((const CCtrlContainer*)pShape, shParaShapeID, shParaStyleID, oBuilder, oState);
+			break;
+		}
 		case EShapeType::GeneralShape:
 		case EShapeType::ConnectLine:
-		case EShapeType::Container:
 		case EShapeType::TextArt:
 			break;
 	}
@@ -587,7 +591,7 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 				oState.m_pPageNum = dynamic_cast<const CCtrlPageNumPos*>(pCtrl);
 				break;
 			}
-			case HWP::ECtrlObjectType::NewNumber:
+			case ECtrlObjectType::NewNumber:
 			{
 				oState.m_pNewNumber = dynamic_cast<const CCtrlNewNumber*>(pCtrl);
 				break;
@@ -640,7 +644,7 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		case EHeadingType::NUMBER:
 		case EHeadingType::BULLET:
 		{
-			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(m_pContext->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType());
+			const int nNumId = m_oNumberingConverter.CreateNumbering(dynamic_cast<const CHWPRecordNumbering*>(m_pContext->GetNumbering(pParaShape->GetHeadingIdRef())), pParaShape->GetHeadingType(), *this);
 
 			if (0 == nNumId)
 				break;
@@ -1152,6 +1156,13 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 	AddContentType(L"charts/colors" + std::to_wstring(unChartIndex) + L".xml", L"application/vnd.ms-office.chartcolorstyle+xml");
 }
 
+void CConverter2OOXML::WriteContainer(const CCtrlContainer* pContainer, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
+{
+	return;
+	for (const CCtrlGeneralShape* pGeneralShape : pContainer->GetShapes())
+		WriteShape(pGeneralShape, shParaShapeID, shParaStyleID, oBuilder, oState);
+}
+
 void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 {
 	m_oDocXml.WriteString(L"<w:sectPr>");
@@ -1631,8 +1642,24 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	int nFinalWidth {pCtrlShape->GetWidth() };
 	int nFinalHeight{pCtrlShape->GetHeight()};
 
+	if (0 == nFinalWidth)
+	{
+		if (nullptr != pWidth && 0 != *pWidth)
+			nFinalWidth = *pWidth;
+		else
+			nFinalWidth = nCurWidth;
+	}
+
 	if (nullptr != pWidth && 0 != *pWidth)
 		dScaleX *= (double)*pWidth / (double)nFinalWidth;
+
+	if (0 == nFinalHeight)
+	{
+		if (nullptr != pHeight && 0 != *pHeight)
+			nFinalHeight = *pHeight;
+		else
+			nFinalHeight = nCurHeight;
+	}
 
 	if (nullptr != pHeight && 0 != *pHeight)
 		dScaleY *= (double)*pHeight / (double)nFinalHeight;

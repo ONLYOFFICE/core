@@ -47,6 +47,8 @@ enum class ECellCreator
 
 class CConverter2OOXML
 {
+	friend class CNumberingConverter;
+
 	CWriterContext * m_pContext;
 	HWP_STRING m_sTempDirectory;
 
@@ -87,6 +89,8 @@ class CConverter2OOXML
 	void WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteOleShape(const CCtrlShapeOle* pOleShape, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
+
+	void WriteContainer(const CCtrlContainer* pContainer, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
 	void WriteSectionSettings(TConversionState& oState);
 	void WritePicture(const CCtrlShapePic* pCtrlPic, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);

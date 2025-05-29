@@ -160,6 +160,12 @@
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp">
       <Filter>math</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.cpp">
+      <Filter>custom shape</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.cpp">
+      <Filter>custom shape</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Reader\Converter\conversionelement.h" />
@@ -329,10 +335,19 @@
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\typeselements.h">
       <Filter>math</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.h">
+      <Filter>custom shape</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.h">
+      <Filter>custom shape</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="math">
       <UniqueIdentifier>{36f1d987-256f-4be8-93b9-74cd74341f45}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="custom shape">
+      <UniqueIdentifier>{228a58d9-7803-48a0-bd29-e8e1816022a4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

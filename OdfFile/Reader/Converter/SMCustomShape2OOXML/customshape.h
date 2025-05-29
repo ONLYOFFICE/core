@@ -30,14 +30,7 @@
  *
  */
 #pragma once
-namespace StarMath
+namespace OdfCustomShape
 {
-enum class TypeConversion
-{
-	undefine,
-	pptx,
-	docx,
-	xlsx,
-};
+	std::wstring convert_formula(const std::wstring& odf_formula, const std::wstring& name);
 }
-

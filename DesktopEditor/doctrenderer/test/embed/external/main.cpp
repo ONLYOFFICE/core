@@ -5,10 +5,10 @@ int main()
 	// TODO: test
 
 	// testMultipleContexts();
-	// testEmbedExternal();
+	testEmbedExternal();
 	// testEmbedInternal();
 	// testHashEmbed();
-	testEmbedMixed();
+	// testEmbedMixed();
 
 	return 0;
 }

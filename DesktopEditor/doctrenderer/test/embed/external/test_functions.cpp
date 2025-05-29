@@ -98,16 +98,16 @@ void testEmbedExternal()
 	CJSContextScope scope(context);
 	CJSContext::Embed<CTestEmbed>();
 
-	JSSmart<CJSValue> res1 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSum(10, 5); return ret; })();");
+	JSSmart<CJSValue> res1 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSum(10, 5); FreeEmbedObject(value); return ret; })();");
 	std::cout << "FunctionSum(10, 5) = " << res1->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res2 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSquare(4); return ret; })();");
+	JSSmart<CJSValue> res2 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionSquare(4); FreeEmbedObject(value); return ret; })();");
 	std::cout << "FunctionSquare(4) = " << res2->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res3 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionDel(30, 3); return ret; })();");
+	JSSmart<CJSValue> res3 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionDel(30, 3); FreeEmbedObject(value); return ret; })();");
 	std::cout << "FunctionDel(30, 3) = " << res3->toInt32() << std::endl;
 
-	JSSmart<CJSValue> res4 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionGet(); return ret; })();");
+	JSSmart<CJSValue> res4 = context->runScript("(function() { let value = CreateEmbedObject('CTestEmbed'); let ret = value.FunctionGet(); FreeEmbedObject(value); return ret; })();");
 	std::cout << "FunctionGet() = " << res4->toInt32() << std::endl;
 }
 

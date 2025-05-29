@@ -883,6 +883,7 @@ namespace NSJSBase
 
 	// embed
 	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+	void FreeNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 	class CJSEmbedObjectAdapterV8Template : public CJSEmbedObjectAdapterBase
 	{

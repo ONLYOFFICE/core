@@ -214,8 +214,9 @@ namespace NSJSBase
 			m_internal->m_contextPersistent.Reset(isolate, v8::Context::New(isolate));
 			// create temporary local handle to context
 			m_internal->m_context = v8::Local<v8::Context>::New(isolate, m_internal->m_contextPersistent);
-			// insert CreateEmbedObject() function to global object of this context
+			// insert embed functions to global object of this context
 			m_internal->InsertToGlobal("CreateEmbedObject", CreateEmbedNativeObject);
+			m_internal->InsertToGlobal("FreeEmbedObject", FreeNativeObject);
 			// clear temporary local handle
 			m_internal->m_context.Clear();
 		}
@@ -688,5 +689,23 @@ namespace NSJSBase
 
 		NSJSBase::CJSEmbedObjectPrivate::CreateWeaker(obj);
 		args.GetReturnValue().Set(obj);
+	}
+
+	void FreeNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
+	{
+		v8::Isolate* isolate = args.GetIsolate();
+		v8::HandleScope scope(isolate);
+
+		if (args.Length() != 1)
+		{
+			args.GetReturnValue().Set(v8::Undefined(isolate));
+			return;
+		}
+
+		v8::Local<v8::Object> obj = args[0].As<v8::Object>();
+		v8::Local<v8::External> field = v8::Local<v8::External>::Cast(obj->GetInternalField(0));
+		CJSEmbedObject* native = static_cast<CJSEmbedObject*>(field->Value());
+		delete native;
+		// weak persistent handle will be cleared and removed in CJSEmbedObjectPrivate destructor
 	}
 }

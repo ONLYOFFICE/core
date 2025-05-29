@@ -220,6 +220,34 @@ namespace NSJSBase
 			m_internal->m_context.Clear();
 		}
 	}
+
+	class WeakHandleVisitor : public v8::PersistentHandleVisitor
+	{
+	private:
+		WeakHandleVisitor() = default;
+
+	public:
+		void VisitPersistentHandle(v8::Persistent<v8::Value>* value, uint16_t class_id) override
+		{
+			if (class_id == CJSEmbedObjectPrivate::kWeakHandleId)
+			{
+				v8::Isolate* isolate = v8::Isolate::GetCurrent();
+				v8::HandleScope scope(isolate);
+				v8::Local<v8::Object> handle = value->Get(isolate).As<v8::Object>();
+				v8::Local<v8::External> field = v8::Local<v8::External>::Cast(handle->GetInternalField(0));
+				CJSEmbedObject* native = static_cast<CJSEmbedObject*>(field->Value());
+				delete native;
+			}
+		}
+
+	public:
+		static WeakHandleVisitor* getInstance()
+		{
+			static WeakHandleVisitor visitor;
+			return &visitor;
+		}
+	};
+
 	void CJSContext::Dispose()
 	{
 #ifdef V8_INSPECTOR
@@ -228,7 +256,13 @@ namespace NSJSBase
 #endif
 
 		m_internal->m_contextPersistent.Reset();
-		m_internal->m_isolate->Dispose();
+		// destroy native object in the weak handles before isolate disposal
+		v8::Isolate* isolate = m_internal->m_isolate;
+		{
+			v8::Isolate::Scope scope(isolate);
+			isolate->VisitHandlesWithClassIds(WeakHandleVisitor::getInstance());
+		}
+		isolate->Dispose();
 		m_internal->m_isolate = NULL;
 	}
 

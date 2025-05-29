@@ -186,6 +186,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_documents.push_back(L"fodt");
 	list.m_documents.push_back(L"htm");
 	list.m_documents.push_back(L"html");
+	list.m_documents.push_back(L"md");
 
 	list.m_documents.push_back(L"hwp");
 	list.m_documents.push_back(L"hwpx");
@@ -207,6 +208,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 	list.m_presentations.push_back(L"dpt");
 	list.m_presentations.push_back(L"fodp");
 	list.m_presentations.push_back(L"key");
+	list.m_presentations.push_back(L"odg");
 	list.m_presentations.push_back(L"odp");
 	list.m_presentations.push_back(L"otp");
 	list.m_presentations.push_back(L"pot");
@@ -239,6 +241,7 @@ CFormatsList CFormatsList::GetDefaultExts()
 
 	list.m_crossplatform.push_back(L"djvu");
 	list.m_crossplatform.push_back(L"xps");
+	list.m_crossplatform.push_back(L"ofd");
 
 	list.m_draw.push_back(L"vsdx");
 

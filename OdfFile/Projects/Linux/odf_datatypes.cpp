@@ -154,3 +154,4 @@
 #include "../../DataTypes/tabledatatype.cpp"
 #include "../../DataTypes/tableoperator.cpp"
 #include "../../DataTypes/referenceformat.cpp"
+#include "../../DataTypes/color_mode.cpp"

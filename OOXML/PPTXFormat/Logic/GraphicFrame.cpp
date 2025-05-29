@@ -502,7 +502,7 @@ namespace PPTX
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DSP_DRAWING)										namespace_ = L"dsp";
 
 				pWriter->StartNode(namespace_ + L":graphicFrame");
-				pWriter->WriteAttribute(L"macro", macro);
+				pWriter->WriteAttribute2(L"macro", macro);
 				pWriter->EndAttributes();
 
 				toXmlWriter2(pWriter);
@@ -795,10 +795,7 @@ namespace PPTX
 			
 			sXml += L"<" + m_namespace + L":graphicFrame";
 
-			sXml += L" macro=\"" + (macro.IsInit() ? *macro : L"") + L"\">";
-
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(L"macro", macro);
+			sXml += L" macro=\"" + (macro.IsInit() ? XmlUtils::EncodeXmlString(*macro) : L"") + L"\">";
 
 			sXml += toXML2();
 

@@ -125,7 +125,7 @@ WASM_EXPORT BYTE* GetGlyphs(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetGlyphs(nPageIndex);
 }
-WASM_EXPORT BYTE* GetLinks  (CDrawingFile* pFile, int nPageIndex)
+WASM_EXPORT BYTE* GetLinks(CDrawingFile* pFile, int nPageIndex)
 {
 	return pFile->GetLinks(nPageIndex);
 }
@@ -176,6 +176,18 @@ WASM_EXPORT void SetCMapData(CDrawingFile* pFile, BYTE* data, int size)
 WASM_EXPORT BYTE* ScanPage(CDrawingFile* pFile, int nPageIndex, int mode)
 {
 	return pFile->ScanPage(nPageIndex, mode);
+}
+WASM_EXPORT BYTE* SplitPages(CDrawingFile* pFile, int* arrPageIndex, int nLength, BYTE* data, LONG size)
+{
+	return pFile->SplitPages(arrPageIndex, nLength, data, size);
+}
+WASM_EXPORT int MergePages(CDrawingFile* pFile, BYTE* data, LONG size, int nMaxID, const char* sPrefixForm)
+{
+	return pFile->MergePages(data, size, nMaxID, sPrefixForm) ? 1 : 0;
+}
+WASM_EXPORT int UnmergePages(CDrawingFile* pFile)
+{
+	return pFile->UnmergePages() ? 1 : 0;
 }
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)

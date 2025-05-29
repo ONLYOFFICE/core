@@ -111,6 +111,10 @@ namespace XmlUtils
 	{
 		return m_pInternal->FromStringA(sXml);
 	}
+    bool CXmlLiteReader::FromStringA(const char* sXml, int size)
+    {
+        return m_pInternal->FromStringA(sXml, size);
+    }
     bool CXmlLiteReader::MoveToStart()
     {
         return m_pInternal->MoveToStart();

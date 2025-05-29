@@ -50,8 +50,6 @@ namespace PPTX
 		}
 		void EffectLst::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
-			ReadAttributes( oReader );
-
 			if ( oReader.IsEmptyNode() )
 				return;
 
@@ -197,7 +195,19 @@ namespace PPTX
 
 			pReader->Seek(_end_rec);
 		}	
+		EffectLst& EffectLst::operator=(const EffectLst& oSrc)
+		{
+			blur = oSrc.blur;
+			fillOverlay = oSrc.fillOverlay;
+			glow = oSrc.glow;
+			innerShdw = oSrc.innerShdw;
+			outerShdw = oSrc.outerShdw;
+			prstShdw = oSrc.prstShdw;
+			reflection = oSrc.reflection;
+			softEdge = oSrc.softEdge;
 
+			return *this;
+		}
 		void EffectLst::Merge(EffectLst& effectLst) const
 		{
 			if (blur.IsInit())

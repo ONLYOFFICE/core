@@ -82,7 +82,7 @@ CV8RealTimeWorker::~CV8RealTimeWorker()
 	m_context->Dispose();
 }
 
-bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContext)
+bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContextSrc)
 {
 	LOGGER_SPEED_START();
 
@@ -91,6 +91,10 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
+
+	bool isEnterContext = isEnterContextSrc;
+	if (!isEnterContext && !m_context->IsEntered())
+		isEnterContext = true;
 
 	if (isEnterContext)
 		m_context->Enter();

@@ -175,7 +175,6 @@ namespace OOX
 			DWORD m_nDataLength = 0;
 		private:
 			CPath m_oReadPath;
-			std::wstring prepareData() const;
 		};
 	} //Spreadsheet
 } // namespace OOX

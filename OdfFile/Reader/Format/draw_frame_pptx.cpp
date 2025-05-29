@@ -243,7 +243,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_hidden(true);
 		}
 
-		if (!textStyleName.empty())
+		if (false == textStyleName.empty())
 		{
 			odf_reader::style_instance* textStyleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
@@ -268,7 +268,12 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 		if (office_event_listeners_) office_event_listeners_->pptx_convert(Context);
 
-		Context.get_text_context().start_base_style(baseStyleName, odf_types::style_family::Presentation);
+		if (false == textStyleName.empty())
+			Context.get_text_context().start_base_style(textStyleName, odf_types::style_family::Paragraph);
+		else if (false == baseStyleName.empty())
+			Context.get_text_context().start_base_style(baseStyleName, odf_types::style_family::Presentation);
+		else
+			Context.get_text_context().start_base_style(grStyleName, odf_types::style_family::Graphic);
 
 		oox_drawing_ = oox_drawing_ptr(new oox::_pptx_drawing());
 	}

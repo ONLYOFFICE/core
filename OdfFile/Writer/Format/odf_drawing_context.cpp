@@ -1457,7 +1457,7 @@ void odf_drawing_context::set_grayscale()
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = color_mode(color_mode::greyscale);
 }
 void odf_drawing_context::set_white_balance(double red, double green, double blue)
 {

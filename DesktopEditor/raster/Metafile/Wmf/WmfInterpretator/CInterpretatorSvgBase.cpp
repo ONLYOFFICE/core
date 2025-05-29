@@ -451,7 +451,7 @@ namespace MetaFile
 			m_pXmlWriter->WriteNodeEnd(L"g");
 	}
 
-	void CInterpretatorSvgBase::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CInterpretatorSvgBase::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
 		if (NULL == pBuffer || Equals(0., dW) || Equals(0., dH) || 0 == unWidth || 0 == unHeight)
 			return;

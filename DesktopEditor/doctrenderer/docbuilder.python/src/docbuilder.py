@@ -383,6 +383,20 @@ class CDocBuilderValue:
     def __setitem__(self, key, value):
         self.Set(key, value)
 
+    def __getattr__(self, name):
+        def method(*args):
+            return self.Call(name, *args)
+        return method
+
+    def __len__(self):
+        return self.GetLength()
+
+    def __iter__(self):
+        if not self.IsArray():
+            raise TypeError("Object is not iterable")
+        for i in range(self.GetLength()):
+            yield self.Get(i)
+
     @staticmethod
     def CreateUndefined():
         return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_CreateUndefined()))
@@ -423,6 +437,36 @@ class CDocBuilderValue:
                 return CDocBuilderValue(OBJECT_HANDLE(_lib.CDocBuilderValue_Call6(self._internal, ctypes.c_wchar_p(name), values[0]._internal, values[1]._internal, values[2]._internal, values[3]._internal, values[4]._internal, values[5]._internal)))
         else:
             raise TypeError("Call() expects at most 6 arguments")
+            
+    def append(self, value):
+        if not self.IsArray():
+            raise TypeError("Object is not an array")
+        length = self.GetLength()
+        self.Set(length, value)
+        return self
+
+    def extend(self, iterable):
+        if not self.IsArray():
+            raise TypeError("Object is not an array")
+        length = self.GetLength()
+        for i, value in enumerate(iterable, start=length):
+            self.Set(i, value)
+        return self
+
+    def insert(self, i, x):
+        if not self.IsArray():
+            raise TypeError("Object is not an array")
+        length = self.GetLength()
+        if i < 0:
+            if abs(i) > length:
+                raise IndexError("list index out of range")
+            i = max(0, length + i)
+        if i >= length:
+            raise IndexError("list index out of range")
+        for idx in range(length, i, -1):
+            self.Set(idx, self.Get(idx - 1))
+        self.Set(i, x)
+
 
 class CDocBuilder:
     _initialized = False
@@ -435,7 +479,7 @@ class CDocBuilder:
         # using self._lib instead of global _lib because it might be already garbage collected during this function call
         self._lib.CDocBuilder_Destroy(self._internal)
 
-    def OpenFile(self, path, params):
+    def OpenFile(self, path, params=""):
         return _lib.CDocBuilder_OpenFile(self._internal, ctypes.c_wchar_p(path), ctypes.c_wchar_p(params))
 
     def CreateFile(self, type):

@@ -1197,6 +1197,8 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
 
+	bool run_state = odt_context->text_context()->in_span();
+
 	odt_context->start_field(true);
 	{	
 		if (oox_fld->m_sInstr.IsInit())	
@@ -1210,6 +1212,11 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 		}
 	}
 	odt_context->end_field();
+
+	if (!run_state)
+	{
+		odt_context->end_run();
+	}
 }
 void DocxConverter::convert(OOX::Logic::CInstrText *oox_instrText)
 {

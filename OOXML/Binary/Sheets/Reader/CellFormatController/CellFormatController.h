@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -35,6 +35,8 @@
 #include "../../../../Base/Base.h"
 #include "../../../../XlsxFormat/Worksheets/Worksheet.h"
 #include "../../../../XlsxFormat/Styles/Styles.h"
+#include "DateReader.h"
+#include "DigitReader.h"
 
 
 /// @brief класс определяющий и корректирующий тип данных, помещаемых в ячейки таблицы
@@ -72,4 +74,7 @@ private:
 
     /// @brief идентификатор локали
     _INT32 lcid_;
+
+    DigitReader digitReader_;
+    DateReader dateReader_;
 };

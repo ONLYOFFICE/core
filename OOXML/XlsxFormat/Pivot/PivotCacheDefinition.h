@@ -600,6 +600,7 @@ namespace OOX
             nullable<CPivotDimensions>                      m_oDimensions;
             nullable<CPivotMeasureGroups>                   m_oMeasureGroups;
             nullable<CMeasureDimensionMaps>                 m_oMaps;
+            nullable<CCalculatedItems>                      m_oCalculatedItems;
 
 //calculatedItems (Calculated Items) §18.10.1.9
 //calculatedMembers (Calculated Members) §18.10.1.11
@@ -610,59 +611,11 @@ namespace OOX
 		class CPivotCacheDefinitionFile : public OOX::FileGlobalEnumerated, public OOX::IFileContainer
 		{
 		public:
-			CPivotCacheDefinitionFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-
-				m_pData = NULL;
-				m_nDataLength = 0;
-
-				bIsWritten = false;
-			}
-			CPivotCacheDefinitionFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
-			{
-				m_bSpreadsheets = true;
-
-				m_pData = NULL;
-				m_nDataLength = 0;
-
-                bIsWritten = false;
-
-				read( oRootPath, oPath );
-			}
-			virtual ~CPivotCacheDefinitionFile()
-			{
-				m_nDataLength = 0;
-				RELEASEARRAYOBJECTS(m_pData)
-			}
-			virtual void read(const CPath& oPath)
-			{
-				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
-				CPath oRootPath;
-				read(oRootPath, oPath);
-			}
-           void setData(BYTE* pData, long length, const std::wstring& srIdRecords)
-            {
-                if(srIdRecords.length() > 0)
-                {
-                    const std::string srIdRecordsA( srIdRecords.begin(), srIdRecords.end() );
-                    std::string rIdAttr = " r:id=\""+ srIdRecordsA +"\"";
-                    m_nDataLength = length + (long)rIdAttr.length();
-
-					m_pData = new BYTE[m_nDataLength];
-
-					long nTreshold = 220;
-                    memcpy(m_pData, pData, nTreshold);
-                    memcpy(m_pData + nTreshold, rIdAttr.c_str(), rIdAttr.length());
-                    memcpy(m_pData + nTreshold + rIdAttr.length(), pData + nTreshold, length - nTreshold);
-                }
-                else
-                {
-                    m_nDataLength = length;
-                    m_pData = new BYTE[m_nDataLength];
-                    memcpy(m_pData, pData, length);
-                }
-            }
+			CPivotCacheDefinitionFile(OOX::Document* pMain);
+			CPivotCacheDefinitionFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath);
+			virtual ~CPivotCacheDefinitionFile();
+			virtual void read(const CPath& oPath);
+			void setData(BYTE* pData, long length, const std::wstring& srIdRecords);
             void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
 			virtual void read(const CPath& oRootPath, const CPath& oPath);
@@ -680,14 +633,12 @@ namespace OOX
 			{
 				return m_oReadPath;
 			}
+			BYTE* m_pData = NULL;
+			DWORD m_nDataLength = 0;
 
 			nullable<CPivotCacheDefinition> m_oPivotCashDefinition;
 		private:
 			CPath m_oReadPath;
-            std::wstring prepareData() const;
-
-			BYTE *m_pData;
-			long m_nDataLength;
 
 			mutable bool bIsWritten;
 		};

@@ -756,6 +756,9 @@ void _oox_drawing::serialize_shape(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
     {
+		if (connector_prst.empty()) 
+			connector = false;
+
 		if ((sub_type == 6 || sub_type == 8 || sub_type == 14) && !connector)
 		{
 			CP_XML_NODE(L"a:custGeom")

@@ -71,13 +71,23 @@ void office_math::add_child_element(const office_element_ptr & child_element)
 
 void office_math::serialize(std::wostream & _Wostream)
 {
-	CP_XML_WRITER(_Wostream)
+	if (false == content_.empty())
 	{
-		CP_XML_NODE_SIMPLE_NONS()
-		{			
-			CP_XML_ATTR(L"xmlns", L"http://www.w3.org/1998/Math/MathML");
-			
-			semantics_->serialize(CP_XML_STREAM());
+		_Wostream << content_;
+	}
+	else
+	{
+		CP_XML_WRITER(_Wostream)
+		{
+			CP_XML_NODE_SIMPLE_NONS()
+			{
+				CP_XML_ATTR(L"xmlns", L"http://www.w3.org/1998/Math/MathML");
+
+				if (semantics_)
+				{
+					semantics_->serialize(CP_XML_STREAM());
+				}
+			}
 		}
 	}
 }

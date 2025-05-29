@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_EFFECTPROPERTIES_INCLUDE_H_
-#define PPTX_LOGIC_EFFECTPROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "EffectLst.h"
@@ -47,39 +45,10 @@ namespace PPTX
 			WritingElement_AdditionMethods(EffectProperties)
 			PPTX_LOGIC_BASE2(EffectProperties)
 
-			EffectProperties& operator=(const EffectProperties& oSrc)
-			{
-				parentFile		= oSrc.parentFile;
-				parentElement	= oSrc.parentElement;
+			EffectProperties& operator=(const EffectProperties& oSrc);
 
-				return *this;
-			}
-
-			virtual OOX::EElementType getType () const
-			{
-				if (List.IsInit())
-					return List->getType();
-				return OOX::et_Unknown;
-			}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader)
-			{
-				std::wstring strName = XmlUtils::GetNameNoNS(oReader.GetName());
-					
-				if (strName == _T("effectLst"))
-				{
-					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
-					*pEffectLst = oReader;
-					List.reset(pEffectLst);
-				}
-				else if(strName == _T("effectDag"))
-				{
-					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
-					*pEffectDag = oReader;
-					List.reset(pEffectDag);
-				}
-				else 
-					List.reset();
-			}
+			virtual OOX::EElementType getType() const;
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			
 			virtual bool is_init() const {return (List.IsInit());};
 
@@ -87,72 +56,15 @@ namespace PPTX
 			template<class T> T& as() {return static_cast<T&>(*List);}
 			template<class T> const T& as() const {return static_cast<const T&>(*List);}
 
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				std::wstring strName = XmlUtils::GetNameNoNS(node.GetName());
+			virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				if (strName == _T("effectLst"))
-				{
-					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
-					*pEffectLst = node;
-					List.reset(pEffectLst);
-				}
-				else if(strName == _T("effectDag"))
-				{
-					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
-					*pEffectDag = node;
-					List.reset(pEffectDag);
-				}
-				else List.reset();
-			}
+			virtual std::wstring toXML() const;
 
-			virtual void GetEffectListFrom(XmlUtils::CXmlNode& element)
-			{
-				XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("effectLst"));
-				if (oNode.IsValid())
-				{
-					Logic::EffectLst* pEffectLst = new Logic::EffectLst();
-					*pEffectLst = oNode;
-					List.reset(pEffectLst);
-					return;
-				}
-				oNode = element.ReadNodeNoNS(_T("effectDag"));
-				if (oNode.IsValid())
-				{
-					Logic::EffectDag* pEffectDag = new Logic::EffectDag();
-					*pEffectDag = oNode;
-					List.reset(pEffectDag);
-				}
-				else List.reset();
-			}
-
-			virtual std::wstring toXML() const
-			{
-				if (!List.IsInit())
-					return _T("");
-				return List->toXML();
-			}
-
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-			{
-				if (List.is_init())
-					List->toPPTY(pWriter);
-			}
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				if (List.is_init())
-					List->toXmlWriter(pWriter);
-			}
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 
-			void Merge(EffectProperties& effectProperties) const
-			{
-				if (List.IsInit() && List.is<EffectLst>())
-				{
-					effectProperties.List.reset(new EffectLst());
-					List.as<EffectLst>().Merge(effectProperties.List.as<EffectLst>());
-				}
-			}
+			void Merge(EffectProperties& effectProperties) const;
 
 			nullable<WrapperWritingElement> List;
 		protected:
@@ -166,5 +78,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_EFFECTPROPERTIES_INCLUDE_H

@@ -134,6 +134,7 @@ GString::GString() {
   s = NULL;
   resize(length = 0);
   s[0] = '\0';
+  bBinary = false;
 }
 
 GString::GString(const char *sA) {
@@ -142,13 +143,15 @@ GString::GString(const char *sA) {
   s = NULL;
   resize(length = n);
   memcpy(s, sA, n + 1);
+  bBinary = false;
 }
 
-GString::GString(const char *sA, int lengthA) {
+GString::GString(const char *sA, int lengthA, bool _bBinary) {
   s = NULL;
   resize(length = lengthA);
   memcpy(s, sA, length * sizeof(char));
   s[length] = '\0';
+  bBinary = _bBinary;
 }
 
 GString::GString(GString *str, int idx, int lengthA) {
@@ -156,12 +159,14 @@ GString::GString(GString *str, int idx, int lengthA) {
   resize(length = lengthA);
   memcpy(s, str->getCString() + idx, length);
   s[length] = '\0';
+  bBinary = str->bBinary;
 }
 
 GString::GString(GString *str) {
   s = NULL;
   resize(length = str->getLength());
   memcpy(s, str->getCString(), length + 1);
+  bBinary = str->bBinary;
 }
 
 GString::GString(GString *str1, GString *str2) {
@@ -175,6 +180,7 @@ GString::GString(GString *str1, GString *str2) {
   resize(length = n1 + n2);
   memcpy(s, str1->getCString(), n1);
   memcpy(s + n1, str2->getCString(), n2 + 1);
+  bBinary = false;
 }
 
 GString *GString::fromInt(int x) {

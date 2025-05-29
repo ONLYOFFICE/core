@@ -33,9 +33,13 @@
 
 #include "../../DesktopEditor/common/SystemUtils.h"
 #include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/graphics/pro/Image.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
 
 #include "../Binary/Presentation/BinaryFileReaderWriter.h"
 #include "../Binary/Presentation/XmlWriter.h"
+#include "../Binary/Presentation/imagemanager.h"
 #include "../DocxFormat/Media/OleObject.h"
 #include "../DocxFormat/Media/Image.h"
 
@@ -150,46 +154,116 @@ namespace OOX
 
 			if (Rel.IsInit() && Rel->Rid.IsInit())
 			{
-				CPath out = pWriter->m_strMainFolder + FILE_SEPARATOR_STR + L"media";
+				CPath out = pWriter->m_pCommon->m_pMediaManager->m_strDstMedia;
 
 				smart_ptr<OOX::File> pFile = pWriter->GetRels()->Find(Rel->Rid->GetValue());
 				OOX::OleObject* pOleObject = dynamic_cast<OOX::OleObject*>(pFile.GetPointer());
+
+				CPath image_path;
+				CPath ole_path;
 				if (pOleObject)
 				{
-					CPath cache = pOleObject->filename_cache();
-					CPath ole = pOleObject->filename();
-
-					//todooo check correct path inside container
-
-					NSFile::CFileBinary::Copy(cache.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + cache.GetFilename());
-					NSFile::CFileBinary::Copy(ole.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + ole.GetFilename());
-
-					pWriter->StartRecord(1);
-					pWriter->WriteString(cache.GetFilename());
-					pWriter->EndRecord();
-
-					pWriter->StartRecord(2);
-					pWriter->WriteString(ole.GetFilename());
-					pWriter->EndRecord();
+					image_path = pOleObject->filename_cache();
+					ole_path = pOleObject->filename();
 				}
 				else
 				{
 					OOX::Media* pMedia = dynamic_cast<OOX::Media*>(pFile.GetPointer());
 					if (pMedia)
 					{
-						CPath media = pMedia->filename();
-						pMedia->copy_to(out.GetPath());
-						
-						pWriter->StartRecord(1);
-						pWriter->WriteString(media.GetFilename());
-						pWriter->EndRecord();
+						image_path = pMedia->filename();
 					}
+				}
+				std::wstring image_name_new;
+				if (false == image_path.GetPath().empty())
+				{
+					//todooo check correct path inside container
+					image_name_new = image_path.GetFilename();
+					std::wstring image_ext_new = image_path.GetExtention();
+
+					std::map<std::wstring, NSShapeImageGen::CMediaInfo>::iterator pFind = pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.find(image_path.GetFilename());
+					if (pFind == pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.end())
+					{
+						NSShapeImageGen::CMediaInfo oInfo;
+						oInfo.m_lID = ++pWriter->m_pCommon->m_pMediaManager->m_lNextIDImage;
+						oInfo.m_sExt = image_path.GetExtention();
+						image_name_new = oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
+
+						pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
+					}
+					else
+					{
+						image_name_new = pFind->second.m_sName;
+					}
+
+					NSFile::CFileBinary::Copy(image_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + image_name_new + image_ext_new);
+
+					pWriter->StartRecord(1);
+					pWriter->WriteString(image_name_new + image_ext_new);
+					pWriter->EndRecord();
+
+					CImageFileFormatChecker checker;
+					if (checker.isImageFile(image_path.GetPath()))
+					{
+						if (checker.eFileType == _CXIMAGE_FORMAT_WMF || checker.eFileType == _CXIMAGE_FORMAT_EMF)
+						{
+							MetaFile::IMetaFile* pMetafile = MetaFile::Create(pWriter->m_pCommon->m_pMediaManager->m_pFontManager->GetApplication());
+
+							if (pMetafile->LoadFromFile(image_path.GetPath().c_str()))
+							{
+								double w = ExtentX.IsInit() ? *ExtentX : ObjectWidth.get_value_or(0);
+								double h = ExtentY.IsInit() ? *ExtentY : ObjectHeight.get_value_or(0);
+
+								std::wstring sInternalSvg = pMetafile->ConvertToSvg(w > 1 ? w : 0, h > 1 ? h : 0);
+
+								if (!sInternalSvg.empty())
+								{
+									NSFile::CFileBinary::SaveToFile(out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".svg", sInternalSvg);
+								}
+								else
+								{// не смогли сконвертировать в svg - пробуем в png									
+
+									std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
+									pMetafile->ConvertToRaster(strSaveItem.c_str(), 4 /*CXIMAGE_FORMAT_PNG*/, 0, 0);
+								}
+							}
+							RELEASEOBJECT(pMetafile);
+						}
+						else if (checker.eFileType != _CXIMAGE_FORMAT_JPG && checker.eFileType != _CXIMAGE_FORMAT_SVG && checker.eFileType != _CXIMAGE_FORMAT_PNG)
+						{
+							std::wstring strSaveItem = out.GetPath() + FILE_SEPARATOR_STR + image_name_new + L".png";
+
+							CBgraFrame oFrame;
+							if (true == oFrame.OpenFile(image_path.GetPath().c_str()))
+							{
+								oFrame.SaveFile(strSaveItem, 4); // png
+							}
+						}
+					}
+				}
+				if (false == ole_path.GetPath().empty())
+				{
+					if (image_name_new.empty())
+					{
+						NSShapeImageGen::CMediaInfo oInfo;
+						oInfo.m_lID = ++pWriter->m_pCommon->m_pMediaManager->m_lNextIDImage;
+						image_name_new = oInfo.m_sName = L"image" + std::to_wstring(oInfo.m_lID);
+
+						pWriter->m_pCommon->m_pMediaManager->m_mapMediaFiles.insert(std::make_pair(image_path.GetFilename(), oInfo));
+					}
+					std::wstring ole_name_new = image_name_new + ole_path.GetExtention();
+					//todooo check correct path inside container
+					NSFile::CFileBinary::Copy(ole_path.GetPath(), out.GetPath() + FILE_SEPARATOR_STR + ole_name_new);
+
+					pWriter->StartRecord(2);
+					pWriter->WriteString(ole_name_new);
+					pWriter->EndRecord();
 				}
 			}
 		}
 		void CForeignData::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
-			std::wstring media_filename, ole_filename;
+			std::wstring image_filename, ole_filename;
 
 			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 			pReader->Skip(1); // start attributes
@@ -248,7 +322,7 @@ namespace OOX
 				case 1:
 				{
 					pReader->Skip(4);
-					media_filename = pReader->GetString2();
+					image_filename = pReader->GetString2();
 				}break;
 				case 2:
 				{
@@ -265,14 +339,20 @@ namespace OOX
 
 			if (ole_filename.empty() == false)
 			{
+				int idOle = pReader->m_nCountEmbedded++; //todoooo -> countEmbeddedObjects
+				int idImage = pReader->m_nCountImage++; 
+
+				std::wstring ole_filename_dst = L"oleObject" + std::to_wstring(idOle) + CPath(ole_filename).GetExtention();
+				std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + CPath(image_filename).GetExtention();
+
 				std::wstring srcMedia = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
 
-				NSFile::CFileBinary::Copy(srcMedia + ole_filename, pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename);
-				NSFile::CFileBinary::Copy(srcMedia + media_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+				NSFile::CFileBinary::Copy(srcMedia + ole_filename, pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename_dst);
+				NSFile::CFileBinary::Copy(srcMedia + image_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				OleObject* pOle = new OleObject(NULL, false, false);
-				pOle->set_filename(pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename, false);
-				pOle->set_filename_cache(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+				pOle->set_filename(pReader->m_pRels->m_pManager->GetDstEmbed() + FILE_SEPARATOR_STR + ole_filename_dst, false);
+				pOle->set_filename_cache(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				COfficeFileFormatChecker checker;
 				if (checker.isOOXFormatFile(pOle->filename().GetPath()))
@@ -285,10 +365,10 @@ namespace OOX
 				Rel.Init(); Rel->Rid.Init();
 				Rel->Rid->SetValue(pReader->GetRels()->Add(oFile).get());
 
-				if (media_filename.empty() == false)
+				if (image_filename_dst.empty() == false)
 				{
 					Image* pImage = new Image(NULL, false);
-					pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename, false);
+					pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
 
 					smart_ptr<OOX::File> oFileCache(pImage);
 					pOle->Add(oFileCache);
@@ -297,11 +377,14 @@ namespace OOX
 			else
 			{
 				std::wstring srcMedia = pReader->m_strFolder + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR;
+				int idImage = pReader->m_nCountImage++;
+				std::wstring image_filename_dst = L"image" + std::to_wstring(idImage) + CPath(image_filename).GetExtention();
 
-				NSFile::CFileBinary::Copy(srcMedia + media_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename);
+
+				NSFile::CFileBinary::Copy(srcMedia + image_filename, pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst);
 
 				Image* pImage = new Image(NULL, false);
-				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + media_filename, false);
+				pImage->set_filename(pReader->m_pRels->m_pManager->GetDstMedia() + FILE_SEPARATOR_STR + image_filename_dst, false);
 
 				smart_ptr<OOX::File> oFile(pImage);
 				Rel.Init(); Rel->Rid.Init();
@@ -708,9 +791,9 @@ namespace OOX
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "IX", IX)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "Del", Del)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "N", N)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "LocalName", LocalName)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "T", T)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "T", T)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CRow::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -779,7 +862,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -787,7 +870,7 @@ namespace OOX
 				}break;
 				case 3:
 				{
-					T = pReader->GetString2();
+					T = pReader->GetString2A();
 				}break;
 				case 4:
 				{
@@ -843,7 +926,7 @@ namespace OOX
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "IX", IX)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "Del", Del)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "N", N)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CSection::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -915,7 +998,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -1029,27 +1112,47 @@ namespace OOX
 		void CCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar(oReader, "N", N)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "U", U)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "E", E)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "F", F)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "V", V)
+				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "U", U)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "E", E)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "F", F)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "V", V)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
+			
 			if (oReader.IsEmptyNode())
 				return;
 
-			int nParentDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nParentDepth))
-			{
-				std::wstring sName = oReader.GetName();
+			int nDepth = oReader.GetDepth();
+			XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
 
-				if (L"RefBy" == sName)
+			while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
+			{
+				if (eNodeType == XmlUtils::XmlNodeType_Text
+					|| eNodeType == XmlUtils::XmlNodeType_Whitespace
+					|| eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE
+					|| eNodeType == XmlUtils::XmlNodeType_CDATA)
 				{
-					RefBy = oReader;
+					const char* pValue = oReader.GetTextChar();
+
+					if ('\0' != pValue[0])
+					{
+						std::wstring val;
+						NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), val);
+						content += val;
+					}
+				}
+				else if (eNodeType == XmlUtils::XmlNodeType_Element)
+				{
+					std::wstring sName = oReader.GetName();
+
+					if (L"RefBy" == sName)
+					{
+						RefBy = oReader;
+					}
 				}
 			}
 		}
@@ -1064,6 +1167,13 @@ namespace OOX
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, RefBy);
+			
+			if (false == content.empty())
+			{
+				pWriter->StartRecord(1);
+				pWriter->WriteString(content);
+				pWriter->EndRecord();
+			}
 		}
 		void CCell::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -1078,23 +1188,23 @@ namespace OOX
 				{
 				case 0:
 				{
-					N = pReader->GetString2();
+					N = pReader->GetString2A();
 				}break;
 				case 1:
 				{
-					U = pReader->GetString2();
+					U = pReader->GetString2A();
 				}break;
 				case 2:
 				{
-					E = pReader->GetString2();
+					E = pReader->GetString2A();
 				}break;
 				case 3:
 				{
-					F = pReader->GetString2();
+					F = pReader->GetString2A();
 				}break;
 				case 4:
 				{
-					V = pReader->GetString2();
+					V = pReader->GetString2A();
 				}break;
 				}
 			}
@@ -1107,6 +1217,10 @@ namespace OOX
 				{
 					RefBy.Init();
 					RefBy->fromPPTY(pReader);
+				}break;
+				case 1:
+				{
+					content = pReader->GetString2();
 				}break;
 				default:
 				{
@@ -1121,14 +1235,19 @@ namespace OOX
 			pWriter->StartNode(L"Cell");
 			pWriter->StartAttributes();
 			pWriter->WriteAttribute2(L"N", N);
-			pWriter->WriteAttribute2(L"V", V);
+			pWriter->WriteAttributeUtf8(L"V", V);
 			pWriter->WriteAttribute2(L"U", U);
 			pWriter->WriteAttribute2(L"E", E);
-			pWriter->WriteAttribute2(L"F", F);
+			pWriter->WriteAttributeUtf8(L"F", F);
 			pWriter->EndAttributes();
 
 			if (RefBy.IsInit())
 				RefBy->toXmlWriter(pWriter);
+
+			if (false == content.empty())
+			{
+				pWriter->WriteStringXML(content);
+			}
 
 			pWriter->WriteNodeEnd(L"Cell");
 		}
@@ -1139,7 +1258,7 @@ namespace OOX
 		void CTrigger::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
-				WritingElement_ReadAttributes_Read_ifChar(oReader, "N", N)
+				WritingElement_ReadAttributesA_Read_ifChar(oReader, "N", N)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
 		void CTrigger::fromXML(XmlUtils::CXmlLiteReader& oReader)
@@ -1180,7 +1299,7 @@ namespace OOX
 				{
 					case 0:
 					{
-						N = pReader->GetString2();
+						N = pReader->GetString2A();
 					}break;
 				}
 			}
@@ -1520,10 +1639,10 @@ namespace OOX
 		{
 			WritingElement_ReadAttributes_StartChar_No_NS(oReader)
 				WritingElement_ReadAttributes_Read_ifChar(oReader, "FromSheet", FromSheet)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "FromCell", FromCell)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "FromCell", FromCell)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "FromPart", FromPart)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToSheet", ToSheet)
-				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToCell", ToCell)
+				WritingElement_ReadAttributesA_Read_else_ifChar(oReader, "ToCell", ToCell)
 				WritingElement_ReadAttributes_Read_else_ifChar(oReader, "ToPart", ToPart)
 			WritingElement_ReadAttributes_EndChar_No_NS(oReader)
 		}
@@ -1561,7 +1680,7 @@ namespace OOX
 				}break;
 				case 1:
 				{
-					FromCell = pReader->GetString2();
+					FromCell = pReader->GetString2A();
 				}break;
 				case 2:
 				{
@@ -1573,7 +1692,7 @@ namespace OOX
 				}break;
 				case 4:
 				{
-					ToCell = pReader->GetString2();
+					ToCell = pReader->GetString2A();
 				}break;
 				case 5:
 				{

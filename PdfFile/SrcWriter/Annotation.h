@@ -41,12 +41,12 @@
 namespace PdfWriter
 {
 	class CDestination;
-	enum ELineIntentType
+	enum class ELineIntentType
 	{
 		LineDimension = 0,
 		LineArrow
 	};
-	enum ELineEndType
+	enum class ELineEndType
 	{
 		Square = 0,
 		Circle,
@@ -59,18 +59,27 @@ namespace PdfWriter
 		RClosedArrow,
 		Slash
 	};
-	enum ECaptionPositioning
+	enum class ECaptionPositioning
 	{
 		Inline = 0,
 		Top
 	};
-	enum EBorderType
+	enum class EBorderType
 	{
 		Solid = 0,
 		Beveled,
 		Dashed,
 		Inset,
 		Underline
+	};
+	enum class ECheckBoxStyle
+	{
+		Check = 0,
+		Cross,
+		Diamond,
+		Circle,
+		Star,
+		Square
 	};
 
 	class CAction : public CDictObject
@@ -183,16 +192,17 @@ namespace PdfWriter
 		void SetOUserID(const std::wstring& wsOUserID);
 		void SetC(const std::vector<double>& arrC);
 
-		void APFromFakePage(CPage* pFakePage);
-		CAnnotAppearanceObject* StartAP();
+		void APFromFakePage();
+		virtual CAnnotAppearanceObject* StartAP(int nRotate);
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
-		void SetDocument(CDocument* pDocument);
+		virtual void SetDocument(CDocument* pDocument);
 		CDocument* GetDocument();
 		bool HaveBorder()       { return m_oBorder.bHave; }
 		EBorderType GetBorderType() { return m_oBorder.nType; }
 		double GetBorderWidth() { return m_oBorder.dWidth; }
 		std::string GetBorderDash();
+		std::string GetColorName(const std::string& sName, bool bCAPS);
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
 		double GetPageX() { return m_dPageX; }
@@ -284,10 +294,10 @@ namespace PdfWriter
 	};
 	class CLineAnnotation : public CMarkupAnnotation
 	{
-	private:
+	public:
 		ELineEndType m_nLE1, m_nLE2;
 		double dL[4];
-	public:
+
 		CLineAnnotation(CXref* pXref);
 		EAnnotType GetAnnotationType() const override
 		{
@@ -400,7 +410,9 @@ namespace PdfWriter
 
 		void SetRotate(double nRotate);
 		void SetName(const std::wstring& wsName);
-		void SetAPStream(CDictObject* pStream);
+		void SetAPStream(CDictObject* pStream, bool bCopy = false);
+
+		CDictObject* GetAPStream();
 	};
 	class CWidgetAnnotation : public CAnnotation
 	{
@@ -414,10 +426,11 @@ namespace PdfWriter
 		bool m_bBold;
 		bool m_bItalic;
 
-		CAnnotAppearance* m_pAppearance;
+		CResourcesDict* m_pResources;
 		double m_dFontSizeAP;
 		std::vector<double> m_arrTC;
 		BYTE m_nQ;
+		int m_nParentID;
 
 		void CheckMK();
 
@@ -443,29 +456,33 @@ namespace PdfWriter
 		void SetR(const int& nR);
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
+		void SetParentID(int nParentID);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
+		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
 
+		virtual void SetDocument(CDocument* pDocument) override;
 		std::string GetDAforAP(CFontDict* pFont);
-		std::string GetBGforAP(double dDiff = 0);
+		std::string GetBGforAP(double dDiff = 0, bool bCAPS = false);
 		std::string GetBCforAP();
 		CFontCidTrueType* GetFont() { return m_pFont; }
 		double GetFontSize()   { return m_dFontSize; }
+		int  GetParentID()     { return m_nParentID; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
+		int GetR();
 		bool HaveBG();
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
-		void APFromFakePage(CPage* pFakePage);
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		CAnnotAppearanceObject* StartAP();
+		virtual CAnnotAppearanceObject* StartAP(int nRotate) override;
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};
@@ -515,16 +532,26 @@ namespace PdfWriter
 	{
 	private:
 		std::string m_sAP_N_Yes;
+		ECheckBoxStyle m_nStyle;
+		CCheckBoxAnnotAppearance* m_pAP;
 
 	public:
-		CCheckBoxWidget(CXref* pXref);
+		CCheckBoxWidget(CXref* pXref, EWidgetType nSubtype = WidgetCheckbox);
 
 		void SetV(const std::wstring& wsV);
-		std::wstring SetStyle(BYTE nStyle);
+		void SetStyle(BYTE nStyle);
+		ECheckBoxStyle GetStyle() { return m_nStyle; }
 		void SetAP_N_Yes(const std::wstring& wsAP_N_Yes);
+		std::string GetAP_N_Yes() { return m_sAP_N_Yes; }
+		bool NeedAP_N_Yes();
+		void RenameAP_N_Yes(const std::wstring& wsAP_N_Yes);
 		virtual void SetFlag (const int& nFlag);
+		void SetAP(int nRotate);
+		void SwitchAP(const std::string& sV, int nI = -1);
+		std::string GetTC(bool bCAPS);
 
-		void SwitchAP(const std::string& sV);
+		std::string Yes();
+		void Off();
 	};
 	class CTextWidget : public CWidgetAnnotation
 	{

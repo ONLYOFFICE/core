@@ -40,6 +40,7 @@
 
 #include "../../XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h"
 #include "../../XlsbFormat/Biff12_records/ActiveX.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -221,6 +222,26 @@ namespace OOX
 				ptr->strRelID.value = L"";
 			return objectPtr;
 		}
+        void CControl::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_ActiveX);
+            _UINT32 shapeid = 1;
+            if (m_oShapeId.IsInit())
+                shapeid = m_oShapeId->GetValue();
+            XLSB::RelID strRelID;
+            XLSB::XLWideString strName;
+            if (m_oName.IsInit())
+                strName = m_oName.get();
+            else
+                strName = L"";
+
+            if (!m_oRid.IsInit())
+                strRelID = m_oRid->GetValue();
+            else
+                strRelID.value = L"";
+            *record << shapeid << strRelID << strName;
+            writer->storeNextRecord(record);
+        }
 		void CControl::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
@@ -366,7 +387,19 @@ namespace OOX
 
 			return objectPtr;
 		}
-
+        void CControls::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+ /*           {
+                auto begin = writer->getNextRecord(XLSB::rt_BeginActiveXControls);
+                writer->storeNextRecord(begin);
+            }
+            for(auto i:m_mapControls)
+                i.second->toBin(writer);
+            {
+                auto end = writer->getNextRecord(XLSB::rt_EndActiveXControls);
+                writer->storeNextRecord(end);
+            }*/
+        }
 		CListItem::CListItem() {}
 		CListItem::~CListItem() {}
 		void CListItem::fromXML(XmlUtils::CXmlNode& node)

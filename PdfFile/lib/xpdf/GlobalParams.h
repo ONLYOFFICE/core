@@ -239,7 +239,7 @@ public:
   // file.
   GlobalParams(const char *cfgFileName);
 
-  ~GlobalParams();
+  virtual ~GlobalParams();
 
   void setBaseDir(const char *dir);
   void setupBaseFonts(const char *dir);

@@ -105,7 +105,7 @@ graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<
     return result;
 }
 
-graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance, bool noParents)
+graphic_format_properties_ptr calc_graphic_properties_content(const style_instance * styleInstance, bool noParentStandard)
 {
 	if (!styleInstance) return graphic_format_properties_ptr();
 	
@@ -118,12 +118,12 @@ graphic_format_properties_ptr calc_graphic_properties_content(const style_instan
                 graphicProps.insert(graphicProps.begin(), graphicProp);
 			}
 		
-        styleInstance = noParents ? NULL : styleInstance->parent();
+        styleInstance = (noParentStandard && L"standard" == XmlUtils::GetLower(styleInstance->parent_name())) ? NULL : styleInstance->parent();
 	}
     return calc_graphic_properties_content(graphicProps);
 }
 
-graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances, bool noParents)
+graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances, bool noParentStandard)
 {
 	if (styleInstances.empty()) return graphic_format_properties_ptr();
 
@@ -131,7 +131,7 @@ graphic_format_properties_ptr calc_graphic_properties_content(const std::vector<
 	
 	for (size_t i = 0; i < styleInstances.size(); i++)
 	{
-		graphic_format_properties_ptr f = calc_graphic_properties_content(styleInstances[i], noParents);
+		graphic_format_properties_ptr f = calc_graphic_properties_content(styleInstances[i], noParentStandard);
 		result->apply_from(f.get());
     }
     return result;

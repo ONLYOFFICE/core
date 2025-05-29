@@ -9454,7 +9454,7 @@ xmlns:c16r2=\"http://schemas.microsoft.com/office/drawing/2015/06/chart\"");
 			m_chartObject.toXML(L"c:chartObject", writer);
 			m_data.toXML(L"c:data", writer);
 			m_formatting.toXML(L"c:formatting", writer);
-			m_selection.toXML(sNodeName, writer);
+            m_selection.toXML(L"c:selection", writer);
 			m_userInterface.toXML(L"c:userInterface", writer);
 
 			writer.WriteString(L"</");

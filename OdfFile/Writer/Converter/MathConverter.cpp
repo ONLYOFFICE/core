@@ -198,12 +198,9 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
-		
-		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
-		{
-			convert(oox_math->m_arrItems[i]);
-		}
 
+		bool bOldConvert = !bStart;
+		
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
@@ -212,22 +209,32 @@ namespace Oox2Odf
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 
-			if (false == annotation_text.empty())
+			if (annotation_text.empty())
 			{
-				CREATE_MATH_TAG(L"annotation");
-				typedef odf_writer::math_annotation* T;
-				T tmp = dynamic_cast<T>(elm.get());
-				if (tmp)
-				{
-					tmp->encoding_ = L"StarMath 5.0";
-				}
-				elm->add_text(annotation_text);
+				bOldConvert = true;
+			}
+			else
+			{
+				std::wstring content = starMathConverter.GetOdf();
+				odf_context()->math_context()->add_content(content);
 
-				OPEN_MATH_TAG(elm);
-				CLOSE_MATH_TAG;
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
+			
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
+				
+				odf_context()->end_math();
 			}
 
-			odf_context()->end_math();
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
+			{
+				convert(oox_math->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 
@@ -285,11 +292,7 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
-
-		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
-		{
-			convert(oox_math_para->m_arrItems[i]);
-		}
+		bool bOldConvert = false;
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
@@ -298,21 +301,31 @@ namespace Oox2Odf
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 
-			if (false == annotation_text.empty())
+			if (annotation_text.empty())
 			{
-				CREATE_MATH_TAG(L"annotation");
-				typedef odf_writer::math_annotation* T;
-				T tmp = dynamic_cast<T>(elm.get());
-				if (tmp)
-				{
-					tmp->encoding_ = L"StarMath 5.0";
-				}
-				elm->add_text(annotation_text);
-
-				OPEN_MATH_TAG(elm);
-				CLOSE_MATH_TAG;
+				bOldConvert = true;
 			}
-			odf_context()->end_math();
+			else
+			{
+				std::wstring content = starMathConverter.GetOdf();
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
+
+				odf_context()->math_context()->add_content(content);
+
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
+			
+				odf_context()->end_math();
+			}
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
+			{
+				convert(oox_math_para->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 
@@ -1252,46 +1265,72 @@ namespace Oox2Odf
 	{
 		if (!oox_mrun) return;	
 
-		convert(oox_mrun->m_oAnnotationRef.GetPointer());
-		convert(oox_mrun->m_oARPr.GetPointer());
-		convert(oox_mrun->m_oBr.GetPointer());
-		convert(oox_mrun->m_oCommentReference.GetPointer());
-		convert(oox_mrun->m_oContentPart.GetPointer());
-		convert(oox_mrun->m_oContinuationSeparator.GetPointer());
-		convert(oox_mrun->m_oCr.GetPointer());
-		convert(oox_mrun->m_oDayLong.GetPointer());
-		convert(oox_mrun->m_oDayShort.GetPointer());
 		convert(oox_mrun->m_oDel.GetPointer());
-		convert(oox_mrun->m_oDelInstrText.GetPointer());
-		convert(oox_mrun->m_oDelText.GetPointer());
-		convert(oox_mrun->m_oDrawing.GetPointer());
-		convert(oox_mrun->m_oEndnoteRef.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oEndnoteReference.GetPointer());
-		convert(oox_mrun->m_oFldChar.GetPointer());
-		convert(oox_mrun->m_oFootnoteRef.GetPointer());
-		convert(oox_mrun->m_oFootnoteReference.GetPointer());
 		convert(oox_mrun->m_oIns.GetPointer());
-		convert(oox_mrun->m_oInstrText.GetPointer());
-		convert(oox_mrun->m_oLastRenderedPageBreak.GetPointer());
-		convert(oox_mrun->m_oMonthLong.GetPointer());
-		convert(oox_mrun->m_oMonthShort.GetPointer());
-		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		convert(oox_mrun->m_oARPr.GetPointer());
 		bool clrFlag = convert(oox_mrun->m_oRPr.GetPointer());
-		convert(oox_mrun->m_oMText.GetPointer());
-		convert(oox_mrun->m_oNoBreakHyphen.GetPointer());
-		convert(oox_mrun->m_oObject.GetPointer());
-		convert(oox_mrun->m_oPgNum.GetPointer());
-		convert(oox_mrun->m_oPtab.GetPointer());
-		convert(oox_mrun->m_oRuby.GetPointer());
-		convert(oox_mrun->m_oSeparator.GetPointer());
-		convert(oox_mrun->m_oSoftHyphen.GetPointer());
-		convert(oox_mrun->m_oSym.GetPointer());
-		convert(oox_mrun->m_oTab.GetPointer());
-		convert(oox_mrun->m_oText.GetPointer());
-		convert(oox_mrun->m_oYearLong.GetPointer());
-		convert(oox_mrun->m_oYearShort.GetPointer());
-		
+		//convert(oox_mrun->m_oMRPr.GetPointer());
+
+		for (size_t i = 0; i < oox_mrun->m_arrItems.size(); ++i)
+		{
+			switch (oox_mrun->m_arrItems[i]->getType())
+			{
+			case OOX::et_w_fldChar:
+			{
+				OOX::Logic::CFldChar* pFldChar = dynamic_cast<OOX::Logic::CFldChar*>(oox_mrun->m_arrItems[i]);
+				convert(pFldChar);
+			}break;
+			case OOX::et_w_instrText:
+			{
+				OOX::Logic::CInstrText* pInstrText = dynamic_cast<OOX::Logic::CInstrText*>(oox_mrun->m_arrItems[i]);
+				convert(pInstrText);
+			}break;
+			case OOX::et_w_delText:
+			{
+				OOX::Logic::CDelText* pDelText = dynamic_cast<OOX::Logic::CDelText*>(oox_mrun->m_arrItems[i]);
+				convert(pDelText);
+			}break;
+			case OOX::et_w_lastRenderedPageBreak: // не информативное .. может быть неверно записано
+			{
+			}break;
+			case OOX::et_w_t:
+			{
+				OOX::Logic::CText* pText = dynamic_cast<OOX::Logic::CText*>(oox_mrun->m_arrItems[i]);
+				convert(pText);
+			}break;
+			case OOX::et_m_t:
+			{
+				OOX::Logic::CMText* pMText = dynamic_cast<OOX::Logic::CMText*>(oox_mrun->m_arrItems[i]);
+				convert(pMText);
+			}break;
+			case OOX::et_w_sym:
+			{
+				OOX::Logic::CSym* pSym = dynamic_cast<OOX::Logic::CSym*>(oox_mrun->m_arrItems[i]);
+				convert(pSym);
+			}break;
+			case OOX::et_w_tab:
+			{
+				OOX::Logic::CTab* pTab = dynamic_cast<OOX::Logic::CTab*>(oox_mrun->m_arrItems[i]);
+			}break;
+
+			case OOX::et_w_separator:
+			case OOX::et_w_continuationSeparator:
+			{
+			}break;
+			//contentPart
+			//cr
+			//dayLong, dayShort, monthLong, monthShort, yearLong, yearShort
+			//noBreakHyphen
+			//pgNum
+			//ruby
+			//softHyphen
+			//delInstrText
+			default:
+				convert(oox_mrun->m_arrItems[i]);
+			}
+		}
+
 		if (clrFlag)
 		{
 			CLOSE_MATH_TAG;	

@@ -19,6 +19,10 @@ core_linux {
 	QMAKE_CXXFLAGS += -Wno-narrowing
 }
 
+core_linux_clang {
+    QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
+}
+
 core_mac {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 }

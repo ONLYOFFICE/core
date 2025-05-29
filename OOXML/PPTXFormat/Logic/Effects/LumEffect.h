@@ -58,7 +58,6 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
 			nullable_int	bright;
 			nullable_int	contrast;
 

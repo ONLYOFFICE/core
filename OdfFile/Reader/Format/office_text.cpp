@@ -55,6 +55,11 @@ const wchar_t * office_text::name	= L"text";
 office_text::office_text()
 {}
 
+const cpdoccore::odf_reader::office_element_ptr_array& office_text::get_content()
+{
+	return content_;
+}
+
 void office_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     CP_APPLY_ATTR(L"text:global", text_global_, false);

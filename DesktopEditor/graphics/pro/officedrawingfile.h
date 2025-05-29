@@ -40,6 +40,7 @@ enum OfficeDrawingFileType
     odftPDF = 0,
     odftXPS = 1,
     odftDJVU = 2,
+    odftOFD = 3,
     odftUndefined = 255
 };
 

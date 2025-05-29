@@ -443,7 +443,7 @@ void pptx_text_context::Impl::write_rPr(std::wostream & strm)
 
 	odf_reader::text_format_properties text_properties_;
 	
-	ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_);
+	ApplyTextProperties(span_style_name_, paragraph_style_name_, text_properties_, true);
 
 	get_styles_context().start();
 
@@ -587,7 +587,8 @@ void pptx_text_context::Impl::dump_run()
 
 	dump_field();
 	
-	if (process_layouts_) return; 
+	//if (process_layouts_) 
+	//	return; 
 	
 	const std::wstring content = XmlUtils::EncodeXmlString(text_.str());
 	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...

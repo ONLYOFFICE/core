@@ -31,18 +31,12 @@
     <Filter Include="Sheets\Reader\CellFormat">
       <UniqueIdentifier>{3bf431c7-ab39-40bb-a5ce-dbc6008ae5e5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Draw">
+      <UniqueIdentifier>{63d19e50-d1a5-4bc3-802f-062b7213a8a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp">
-      <Filter>Document</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.cpp">
-      <Filter>Document</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.cpp">
-      <Filter>Document</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinWriters.cpp">
+    <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinaryWriterD.cpp">
       <Filter>Document\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Document\BinReader\CustomXmlWriter.cpp">
@@ -54,10 +48,10 @@
     <ClCompile Include="..\..\..\Binary\Document\BinReader\ReaderClasses.cpp">
       <Filter>Document\Reader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Document\BinReader\Readers.cpp">
+    <ClCompile Include="..\..\..\Binary\Document\BinReader\BinaryReaderD.cpp">
       <Filter>Document\Reader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.cpp">
+    <ClCompile Include="..\..\..\Binary\Sheets\Reader\BinaryWriterS.cpp">
       <Filter>Sheets\Writer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CommonWriter.cpp">
@@ -111,11 +105,8 @@
     <ClCompile Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.cpp">
       <Filter>Document\Reader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReader.cpp">
+    <ClCompile Include="..\..\..\Binary\Sheets\Writer\BinaryReaderS.cpp">
       <Filter>Sheets\Reader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp">
-      <Filter>Document</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.cpp">
       <Filter>Document\Writer</Filter>
@@ -162,24 +153,26 @@
     <ClCompile Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.cpp">
       <Filter>Sheets\Reader\CellFormat</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\ChartSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\VsdxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.cpp" />
+    <ClCompile Include="..\..\..\Binary\Draw\BinaryReaderV.cpp">
+      <Filter>Draw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Binary\Draw\BinaryWriterV.cpp">
+      <Filter>Draw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h">
-      <Filter>Document</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.h">
-      <Filter>Document</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.h">
-      <Filter>Document</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinEquationWriter.h">
       <Filter>Document\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinReaderWriterDefines.h">
       <Filter>Document\Writer</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinWriters.h">
+    <ClInclude Include="..\..\..\Binary\Document\BinWriter\BinaryWriterD.h">
       <Filter>Document\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Document\BinReader\ChartWriter.h">
@@ -218,7 +211,7 @@
     <ClInclude Include="..\..\..\Binary\Document\BinReader\ReaderClasses.h">
       <Filter>Document\Reader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Document\BinReader\readers.h">
+    <ClInclude Include="..\..\..\Binary\Document\BinReader\BinaryReaderD.h">
       <Filter>Document\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Document\BinReader\SettingWriter.h">
@@ -230,7 +223,7 @@
     <ClInclude Include="..\..\..\Binary\Document\BinReader\webSettingsWriter.h">
       <Filter>Document\Reader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriter.h">
+    <ClInclude Include="..\..\..\Binary\Sheets\Reader\BinaryWriterS.h">
       <Filter>Sheets\Writer</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CommonWriter.h">
@@ -242,7 +235,7 @@
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryCommonReader.h">
       <Filter>Sheets\Reader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReader.h">
+    <ClInclude Include="..\..\..\Binary\Sheets\Writer\BinaryReaderS.h">
       <Filter>Sheets\Reader</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Writer\CSVWriter.h">
@@ -310,6 +303,19 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Binary\Sheets\Reader\CellFormatController\LocalInfo.h">
       <Filter>Sheets\Reader\CellFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\DocxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\FontProcessor.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\VsdxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\Document\DocWrapper\XlsxSerializer.h" />
+    <ClInclude Include="..\..\..\Binary\Draw\BinaryWriterV.h">
+      <Filter>Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Draw\BinReaderWriterDefines.h">
+      <Filter>Draw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Binary\Draw\BinaryReaderV.h">
+      <Filter>Draw</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

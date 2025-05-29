@@ -75,31 +75,22 @@ global_info->sTheme = \
 	else
 	{
 		nThemeDataSize = record.getDataSize() - record.getRdPtr();
-		pThemeData = boost::shared_array<char>(new char[nThemeDataSize]);
+		pThemeData = boost::shared_array<BYTE>(new BYTE[nThemeDataSize]);
 
 		memcpy(pThemeData.get(), record.getCurData<char>(), nThemeDataSize);
 		record.skipNunBytes(nThemeDataSize);
 
-		std::wstring tempThemePath = global_info->tempDirectory + FILE_SEPARATOR_STR + L"theme.temp";
-		
-		NSFile::CFileBinary file;	
-		if (!file.CreateFileW(tempThemePath)) return;
-
-		file.WriteFile((BYTE*)pThemeData.get(), nThemeDataSize);
-		file.CloseFile();
-
-		COfficeUtils OfficeUtils(NULL);
-		
 		ULONG nBufferSize = 0;
-		BYTE *pBuffer = NULL;
+		BYTE *pBuffer = NULL;		
 
-		HRESULT hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
+		COfficeUtils OfficeUtils(NULL);		
+		HRESULT hresult = OfficeUtils.LoadFileFromArchive(pThemeData.get(), nThemeDataSize, L"theme1.xml", &pBuffer, nBufferSize);// todooo - parsing ThemeManager
 
 		if (hresult != S_OK || pBuffer == NULL)
-			hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme1.xml", &pBuffer, nBufferSize);
+			hresult = OfficeUtils.LoadFileFromArchive(pThemeData.get(), nThemeDataSize, L"theme/theme1.xml", &pBuffer, nBufferSize);
 		
 		if (hresult != S_OK || pBuffer == NULL)
-			hresult = OfficeUtils.LoadFileFromArchive(tempThemePath, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
+			hresult = OfficeUtils.LoadFileFromArchive(pThemeData.get(), nThemeDataSize, L"theme/theme/theme1.xml", &pBuffer, nBufferSize);
 
 		if (hresult == S_OK && pBuffer != NULL)
 		{

@@ -420,7 +420,7 @@ void odf_conversion_context::end_math()
 	_CP_OPT(double)height = convert_symbol_width(1.76 * h, true);
 
 	if (false == math_context_.in_text_box_)
-		drawing_context()->set_size(width, height); // раскомиттить по завершению
+		drawing_context()->set_size(width, height); 
 	
 	drawing_context()->end_object(!math_context_.in_text_box_);
 

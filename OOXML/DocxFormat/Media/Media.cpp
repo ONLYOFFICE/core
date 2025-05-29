@@ -95,9 +95,6 @@ namespace OOX
 
 		if (!CSystemUtility::IsFileExist(newFilePath / newFilename))
 		{
-			std::wstring ext = filename.GetExtention();
-			if (false == ext.empty()) content.AddDefault(ext.substr(1));
-			
 			if (false == m_Data.empty())
 			{
 				NSFile::CFileBinary file;
@@ -112,6 +109,8 @@ namespace OOX
 				copy_to(newFilePath);
 			}
 		}
+		std::wstring ext = filename.GetExtention();
+		if (false == ext.empty()) content.AddDefault(ext.substr(1));
 	}
 	void Media::set_filename(const std::wstring & file_path, bool bExternal)
 	{

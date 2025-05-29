@@ -1151,6 +1151,11 @@ void docx_conversion_context::start_office_text()
 void docx_conversion_context::end_office_text()
 {
 	finish_paragraph();
+
+	if (!delayed_converting_)//иначе возможно зацикливание
+	{
+		docx_convert_delayed();
+	}
 }
 
 namespace 
@@ -2291,8 +2296,8 @@ void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
 
-	if(delayed_converting_)return; //зацикливание иначе
-	if(get_drawing_context().get_current_level() > 0 )
+	if (delayed_converting_) return; //зацикливание иначе
+	if (get_drawing_context().get_current_level() > 0 )
 		return; //вложенный frame
 
 	delayed_converting_ = true;
@@ -2430,7 +2435,7 @@ bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPa
 {
 	if (current_master_page_name_ == MasterPageName) return false;
 
-    current_master_page_name_ = MasterPageName;
+    current_master_page_name_ = MasterPageName; 
 	return true;
 }
 

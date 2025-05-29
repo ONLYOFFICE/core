@@ -645,6 +645,9 @@ namespace MetaFile
 				//TODO::реализовать при встрече
 			}
 
+			if (BrushDataTransform & unBrushDataFlags)
+				m_oStream.Skip(24);
+
 			if (BrushDataPresetColors & unBrushDataFlags)
 			{
 				unsigned int unPositionCount;
@@ -1598,15 +1601,8 @@ namespace MetaFile
 
 			pGrRenderer->SetFontManager(GetFontManager());
 
-			double dScale = ((CEmfInterpretatorRender*)m_pInterpretator)->GetRenderer()->GetWidth() * 96. / 25.4 / dParentWidth;
-
-			const double dMaxWidth  = std::max(MAX_PICTURE_SIZE, dParentWidth);
-			const double dMaxHeight = std::max(MAX_PICTURE_SIZE, dParentHeight); 
-
-			dScale *= std::min(dMaxWidth / dFileWidth, dMaxHeight / dFileHeight);
-
-			const int nWidth  = dFileWidth  * dScale;
-			const int nHeight = dFileHeight * dScale;
+			const int nWidth  = static_cast<int>(dFileWidth);
+			const int nHeight = static_cast<int>(dFileHeight);
 
 			BYTE* pBgraData = new(std::nothrow) BYTE[nWidth * nHeight * 4];
 
@@ -1646,17 +1642,17 @@ namespace MetaFile
 
 			TRectL oClipRect;
 
-			oClipRect.Left   = std::floor((oSrcRect.dX - oFileBounds.Left) * dScale);
-			oClipRect.Top    = std::floor((oSrcRect.dY - oFileBounds.Top) * dScale);
-			oClipRect.Right  = std::floor((oSrcRect.dX + oSrcRect.dWidth - oFileBounds.Left)  * dScale);
-			oClipRect.Bottom = std::floor((oSrcRect.dY + oSrcRect.dHeight - oFileBounds.Top) * dScale);
+			oClipRect.Left   = std::floor(oSrcRect.dX - oFileBounds.Left);
+			oClipRect.Top    = std::floor(oSrcRect.dY - oFileBounds.Top);
+			oClipRect.Right  = std::floor(oSrcRect.dX + oSrcRect.dWidth - oFileBounds.Left);
+			oClipRect.Bottom = std::floor(oSrcRect.dY + oSrcRect.dHeight - oFileBounds.Top);
 
 			unsigned int nW = (unsigned int)nWidth;
 			unsigned int nH = (unsigned int)nHeight;
 			BYTE* pNewBuffer = GetClipedImage(pPixels, nWidth, nHeight, oClipRect, nW, nH);
 
 			m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X - m_pDC->GetPixelWidth(), arPoints[2].Y - arPoints[0].Y - m_pDC->GetPixelHeight(),
-			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH);
+			                             (NULL != pNewBuffer) ? pNewBuffer : pPixels, nW, nH, BLEND_MODE_DEFAULT);
 
 			RELEASEINTERFACE(pGrRenderer);
 			RELEASEARRAYOBJECTS(pNewBuffer);
@@ -1735,7 +1731,7 @@ namespace MetaFile
 		BYTE* pNewBuffer = GetClipedImage(pBytes, unWidth, unHeight, oClipRect, nW, nH);
 
 		m_pInterpretator->DrawBitmap(arPoints[0].X, arPoints[0].Y, arPoints[1].X - arPoints[0].X, arPoints[2].Y - arPoints[0].Y,
-		                             (NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH);
+		                             (NULL != pNewBuffer) ? pNewBuffer : pBytes, nW, nH, BLEND_MODE_DEFAULT);
 
 		if (!bExternalBuffer)
 			RELEASEARRAYOBJECTS(pBytes);

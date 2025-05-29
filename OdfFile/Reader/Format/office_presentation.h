@@ -75,7 +75,6 @@ public:
  	office_element_ptr			sequences_;
 
 };
-
 CP_REGISTER_OFFICE_ELEMENT2(office_presentation);
 
 }

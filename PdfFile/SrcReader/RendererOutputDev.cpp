@@ -474,6 +474,13 @@ namespace PdfReader
 	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
+		if (m_sStates.empty())
+		{ // Несбалансированный q/Q - сломанный файл
+			updateAll(pGState);
+			UpdateAllClip(pGState);
+			return;
+		}
+
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{
@@ -1812,12 +1819,13 @@ namespace PdfReader
 			return true;
 		case 6:
 		case 7:
-			int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
+			// int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading*)pShading)->getNPatches();
 
 			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 			if (GRenderer)
 				GRenderer->SetSoftMask(NULL);
+
 			m_pRenderer->BeginCommand(c_nLayerType);
 
 			for (int i = 0; i < nPatches; i++) {
@@ -2168,7 +2176,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2179,7 +2187,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2190,7 +2198,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2244,7 +2252,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
-		if (m_sStates.back().pTextClip && 4 <= pGState->getRender())
+		if (!m_sStates.empty() && m_sStates.back().pTextClip && 4 <= pGState->getRender())
 		{
 			AddTextClip(pGState, &m_sStates.back());
 			updateFont(pGState);
@@ -2307,10 +2315,6 @@ namespace PdfReader
 		if (3 == nRendererMode) // Невидимый текст
 			return;
 
-		double* pCTM  = pGState->getCTM();
-		double* pTm   = pGState->getTextMat();
-		GfxFont* pFont = pGState->getFont();
-
 		unsigned int unGidsCount = seString->getLength();
 		unsigned int* pGids = new unsigned int[unGidsCount];
 		if (!pGids)
@@ -2319,7 +2323,7 @@ namespace PdfReader
 		std::wstring  wsUnicodeText;
 		for (int nIndex = 0; nIndex < seString->getLength(); nIndex++)
 		{
-			char nChar = seString->getChar(nIndex);
+			int nChar = seString->getChar(nIndex);
 
 			if (NULL != oEntry.pCodeToUnicode)
 			{
@@ -2416,9 +2420,6 @@ namespace PdfReader
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
-
-		// Здесь мы посылаем координаты текста в пунктах
-		double dPageHeight = pGState->getPageHeight();
 
 		std::wstring wsUnicodeText;
 
@@ -2584,9 +2585,13 @@ namespace PdfReader
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
 			// tmpchange
-			if (!m_sStates.back().pTextClip)
-				m_sStates.back().pTextClip = new GfxTextClip();
-			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+			if (!m_sStates.empty())
+			{
+				if (!m_sStates.back().pTextClip)
+					m_sStates.back().pTextClip = new GfxTextClip();
+				m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+
+			}
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);

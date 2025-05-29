@@ -247,18 +247,11 @@ void  CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRenderer, int nPag
 		long lRendererType = c_nUnknownRenderer;
 		pRenderer->get_Type(&lRendererType);
 
-#ifndef BUILDING_WASM_MODULE
-		if (c_nPDFWriter == lRendererType)
-		{
-			XmlUtils::CXmlNode oText = ParseText(pPage);
-			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
-		}
-		else
-#endif
-		{
-			XmlUtils::CXmlNode oText = ParseText(pPage);
-			CreateFrame(pRenderer, pPage, nPageIndex, oText);
-		}
+		XmlUtils::CXmlNode text;
+		if (c_nPDFWriter == lRendererType || c_nHtmlRendrererText == lRendererType)
+			text = ParseText(pPage);
+
+		CreateFrame(pRenderer, pPage, nPageIndex, text);
 	}
 	catch (...)
 	{
@@ -463,8 +456,13 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 	}
 
 	int nDpi = pPage->get_dpi();
-
 	double dPixToMM = 25.4;
+
+	if (c_nHtmlRendrererText == lRendererType && text.IsValid())
+	{
+		TextToRenderer(pRenderer, text, dPixToMM / nDpi);
+		return;
+	}
 
 	double dRendDpiX = 0;
 	double dRendDpiY = 0;
@@ -491,150 +489,22 @@ void CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& p
 	LONG lImageWidth	= (LONG)(dRendDpiX * dRendWidth / dPixToMM);
 	LONG lImageHeight	= (LONG)(dRendDpiY * dRendHeight / dPixToMM);
 
-	BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
+	BYTE* pBufferDst = this->ConvertToPixels(pPage, lImageWidth, lImageHeight, false);
+
 	if (!pBufferDst)
 		return;
 
-	bool bIsInit = false;
-
 	Aggplus::CImage oImage;
 	oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
-	if (pPage->is_legal_photo() || pPage->is_legal_compound())
-	{
-		bIsInit = true;
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
-
-		BYTE* pBuffer = pBufferDst;
-		for (int j = lImageHeight - 1; j >= 0; --j)
-		{
-			GPixel* pLine = pImage->operator [](j);
-
-			for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
-			{
-				pBuffer[0] = pLine->b;
-				pBuffer[1] = pLine->g;
-				pBuffer[2] = pLine->r;
-				pBuffer[3] = 255;
-			}
-		}
-	}
-	else if (pPage->is_legal_bilevel())
-	{
-		bIsInit = true;
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
-		int nPaletteEntries = pBitmap->get_grays();
-
-		unsigned int* palette = new unsigned int[nPaletteEntries];
-
-		// Create palette for the bitmap
-		int color = 0xff0000;
-		int decrement = color / (nPaletteEntries - 1);
-		for (int i = 0; i < nPaletteEntries; ++i)
-		{
-			BYTE level = (BYTE)(color >> 16);
-			palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
-			color -= decrement;
-		}
-
-		unsigned int* pBuffer = (unsigned int*)pBufferDst;
-		for (int j = lImageHeight - 1; j >= 0; --j)
-		{
-			BYTE* pLine = pBitmap->operator [](j);
-
-			for (int i = 0; i < lImageWidth; ++i, ++pBuffer, ++pLine)
-			{
-				if (*pLine < nPaletteEntries)
-				{
-					*pBuffer = palette[*pLine];
-				}
-				else
-				{
-					*pBuffer = palette[0];
-				}
-			}
-		}
-
-		RELEASEARRAYOBJECTS(palette);
-	}
-	else
-	{
-		// белый фрейм??
-		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
-		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
-		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
-
-		if (NULL != pImage)
-		{
-			bIsInit = true;
-			BYTE* pBuffer = pBufferDst;
-			for (int j = lImageHeight - 1; j >= 0; --j)
-			{
-				GPixel* pLine = pImage->operator [](j);
-
-				for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
-				{
-					pBuffer[0] = pLine->b;
-					pBuffer[1] = pLine->g;
-					pBuffer[2] = pLine->r;
-					pBuffer[3] = 255;
-				}
-			}
-		}
-		else
-		{
-			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
-
-			if (NULL != pBitmap)
-			{
-				bIsInit = true;
-				int nPaletteEntries = pBitmap->get_grays();
-
-				unsigned int* palette = new unsigned int[nPaletteEntries];
-
-				// Create palette for the bitmap
-				int color = 0xff0000;
-				int decrement = color / (nPaletteEntries - 1);
-				for (int i = 0; i < nPaletteEntries; ++i)
-				{
-					BYTE level = (BYTE)(color >> 16);
-					palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
-					color -= decrement;
-				}
-
-				unsigned int* pBuffer = (unsigned int*)pBufferDst;
-				for (int j = lImageHeight - 1; j >= 0; --j)
-				{
-					BYTE* pLine = pBitmap->operator [](j);
-
-					for (int i = 0; i < lImageWidth; ++i, ++pBuffer, ++pLine)
-					{
-						if (*pLine < nPaletteEntries)
-						{
-							*pBuffer = palette[*pLine];
-						}
-						else
-						{
-							*pBuffer = palette[0];
-						}
-					}
-				}
-
-				RELEASEARRAYOBJECTS(palette);
-			}
-		}
-	}
 
 	pRenderer->BeginCommand(c_nPageType);
 
-	if (c_nGrRenderer != lRendererType && c_nHtmlRendrerer != lRendererType && c_nHtmlRendrerer2 != lRendererType)
+	if (text.IsValid())
 	{
 		TextToRenderer(pRenderer, text, dPixToMM / nDpi);
 	}
 
-	if (bIsInit)
-		pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
+	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);
 }
 void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPageIndex, XmlUtils::CXmlNode& oText)
@@ -847,6 +717,104 @@ void CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>
 	}
 
 	pRenderer->EndCommand(c_nPageType);
+}
+
+unsigned char* CDjVuFileImplementation::ConvertToPixels(int nPageIndex, int nRasterW, int nRasterH, bool bIsFlip)
+{
+	try
+	{
+		GP<DjVuImage> pPage = m_pDoc->get_page(nPageIndex);
+		//pPage->wait_for_complete_decode();
+		pPage->set_rotate(0);
+		return ConvertToPixels(pPage, nRasterW, nRasterH, bIsFlip);
+	}
+	catch (...)
+	{
+	}
+	return NULL;
+}
+
+unsigned char* CDjVuFileImplementation::ConvertToPixels(GP<DjVuImage>& pPage, int nImageW, int nImageH, bool bFlip)
+{
+	BYTE* pBufferDst = NULL;
+
+	auto processPixmap = [&](GP<GPixmap> pImage, bool bFlip = false)
+	{
+		pBufferDst = new BYTE[4 * nImageW * nImageH];
+
+		unsigned int* pBuffer = (unsigned int*)pBufferDst;
+		for (int j = 0; j < nImageH; ++j)
+		{
+			int nRow = bFlip ? j : (nImageH - 1 - j);
+			GPixel* pLine = pImage->operator[](nRow);
+			for (int i = 0; i < nImageW; ++i)
+			{
+				*pBuffer++ = 0xFF000000 | pLine->r << 16 | pLine->g << 8 | pLine->b;
+				++pLine;
+			}
+		}
+	};
+
+	auto processBitmap = [&](GP<GBitmap> pBitmap, bool bFlip = false)
+	{
+		pBufferDst = new BYTE[4 * nImageW * nImageH];
+
+		int nPaletteEntries = pBitmap->get_grays();
+		unsigned int* palette = new unsigned int[nPaletteEntries];
+		int color = 0xFF0000;
+		int decrement = color / (nPaletteEntries - 1);
+		for (int i = 0; i < nPaletteEntries; ++i)
+		{
+			BYTE level = (BYTE)(color >> 16);
+			palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
+			color -= decrement;
+		}
+
+		unsigned int* pBuffer = (unsigned int*)pBufferDst;
+		for (int j = 0; j < nImageH; ++j)
+		{
+			int nRow = bFlip ? j : (nImageH - 1 - j);
+			BYTE* pLine = pBitmap->operator[](nRow);
+			for (int i = 0; i < nImageW; ++i)
+			{
+				*pBuffer++ = palette[*pLine < nPaletteEntries ? *pLine : 0];
+				++pLine;
+			}
+		}
+
+		RELEASEARRAYOBJECTS(palette);
+	};
+
+	GRect oRectAll(0, 0, nImageW, nImageH);
+
+	if (pPage->is_legal_photo() || pPage->is_legal_compound())
+	{
+		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
+		processPixmap(pImage, bFlip);
+	}
+	else if (pPage->is_legal_bilevel())
+	{
+		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
+		processBitmap(pBitmap, bFlip);
+	}
+	else
+	{
+		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
+		if (pImage)
+		{
+			processPixmap(pImage, bFlip);
+		}
+		else
+		{
+			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
+			if (pBitmap)
+			{
+				processBitmap(pBitmap, bFlip);
+			}
+		}
+	}
+
+	return pBufferDst;
 }
 
 XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)

@@ -31,6 +31,7 @@
  */
 #include "common_format.cpp"
 #include "xlsx_format_logic.cpp"
+#include "vsdx_format_logic.cpp"
 
 #include "../../../DocxFormat/Logic/AlternateContent.cpp"
 #include "../../../DocxFormat/Logic/Annotations.cpp"

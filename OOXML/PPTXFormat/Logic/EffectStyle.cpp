@@ -35,14 +35,51 @@ namespace PPTX
 {
 	namespace Logic
 	{
+		EffectStyle& EffectStyle::operator=(const EffectStyle& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
 
+			Effects = oSrc.Effects;
+			scene3d = oSrc.scene3d;
+			sp3d = oSrc.sp3d;
+			return *this;
+		}
 		void EffectStyle::fromXML(XmlUtils::CXmlNode& node)
 		{
-			EffectList.GetEffectListFrom(node);
-			scene3d = node.ReadNode(_T("a:scene3d"));
-			sp3d	= node.ReadNode(_T("a:sp3d"));
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				size_t nCount = oNodes.size();
+				for (size_t i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
 
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+					 if (L"scene3d" == strName)
+						scene3d = oNode;
+					else if (L"sp3d" == strName)
+						sp3d = oNode;
+					else if (L"effectDag" == strName ||
+							L"effectLst" == strName)
+					{
+						Effects.fromXML(oNode);
+					}
+				}
+			}
 			FillParentPointersForChilds();
+		}
+		void EffectStyle::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"a:effectStyle");
+			pWriter->EndAttributes();
+
+			Effects.toXmlWriter(pWriter);
+			pWriter->Write(scene3d);
+			pWriter->Write(sp3d);
+
+			pWriter->EndNode(L"a:effectStyle");
 		}
 		void EffectStyle::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -58,15 +95,49 @@ namespace PPTX
 				else if (strName == L"a:sp3d")
 					sp3d = oReader;
 				else
-					EffectList.fromXML(oReader);
+					Effects.fromXML(oReader);
 			}
 			FillParentPointersForChilds();
 		}
+		void EffectStyle::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord1(0, Effects);
+			pWriter->WriteRecord2(1, scene3d);
+			pWriter->WriteRecord2(2, sp3d);
+		}
+		void EffectStyle::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
 
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					Effects.fromPPTY(pReader);					
+				}break;
+				case 1:
+				{
+					scene3d = new Logic::Scene3d();
+					scene3d->fromPPTY(pReader);					
+				}break;
+				case 2:
+				{
+					sp3d = new Logic::Sp3d();
+					sp3d->fromPPTY(pReader);					
+				}break;
+				default:
+					break;
+				}
+			}
 
+			pReader->Seek(_end_rec);
+		}
 		void EffectStyle::FillParentPointersForChilds()
 		{
-			EffectList.SetParentPointer(this);
+			Effects.SetParentPointer(this);
 			if(scene3d.IsInit())
 				scene3d->SetParentPointer(this);
 			if(sp3d.IsInit())

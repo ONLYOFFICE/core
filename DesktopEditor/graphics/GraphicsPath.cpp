@@ -863,20 +863,22 @@ namespace Aggplus
 
 	double CGraphicsPath::GetArea(unsigned idx, bool isCurve) const noexcept
 	{
-		float area;
+		double area;
 		if (isCurve)
 		{
 			std::vector<PointD> points = GetPoints(idx, 4);
-			area = 3 * ((points[3].Y - points[0].Y)	* (points[1].X + points[2].X)
-						- (points[3].X - points[0].X) * (points[1].Y * points[2].Y)
-						+ points[1].Y * (points[0].X - points[2].X)
-						- points[1].X * (points[0].Y - points[2].Y)
-						+ points[3].Y * (points[2].X + points[0].X / 3)
-						- points[3].X * (points[2].Y - points[0].Y / 3)) / 20;
+			area = (points[3].Y - points[0].Y) * (points[1].X + points[2].X)
+					- (points[3].X - points[0].X) * (points[1].Y + points[2].Y)
+					+ points[1].Y * (points[0].X - points[2].X)
+					- points[1].X * (points[0].Y - points[2].Y)
+					+ points[3].Y * (points[2].X + points[0].X / 3.0)
+					- points[3].X * (points[2].Y + points[0].Y / 3.0);
 		}
-
-		std::vector<PointD> points = GetPoints(idx, 2);
-		area = (points[1].Y * points[0].X - points[1].X * points[0].Y) / 20;
+		else
+		{
+			std::vector<PointD> points = GetPoints(idx, 2);
+			area = 4.0 * (points[1].Y * points[0].X - points[1].X * points[0].Y) / 3.0;
+		}
 
 		return area;
 	}

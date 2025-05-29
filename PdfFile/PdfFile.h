@@ -90,16 +90,15 @@ public:
 	virtual void Close();
 
 	// --- EDIT ---
-#ifndef BUILDING_WASM_MODULE
 	// Переходит в режим редактирования. Pdf уже должен быть открыт на чтение - LoadFromFile/LoadFromMemory
 	bool EditPdf(const std::wstring& wsDstFile = L"");
 	// Манипуляции со страницами возможны в режиме редактирования
-	bool EditPage   (int nPageIndex);
-	bool DeletePage (int nPageIndex);
-	bool AddPage    (int nPageIndex);
-	bool MovePage   (int nPageIndex, int nPos);
+	bool EditPage  (int nPageIndex);
+	bool DeletePage(int nPageIndex);
+	bool AddPage   (int nPageIndex);
+	bool MovePage  (int nPageIndex, int nPos);
+	bool MergePages(const std::wstring& wsPath, int nMaxID = 0, const std::wstring& wsPrefixForm = L"");
 	HRESULT ChangePassword(const std::wstring& wsPath, const std::wstring& wsPassword = L"");
-#endif
 
 	// --- READER ---
 
@@ -126,13 +125,17 @@ public:
 	virtual std::wstring GetInfo();
 	virtual BYTE* GetStructure();
 	virtual BYTE* GetLinks(int nPageIndex);
+
 	bool ValidMetaData();
+	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
+	bool UnmergePages();
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();
 	BYTE* GetAnnotEmbeddedFonts();
 	BYTE* GetAnnotStandardFonts();
 	BYTE* GetAnnots    (int nPageIndex = -1);
+	BYTE* SplitPages   (const int* arrPageIndex, unsigned int unLength, BYTE* pChanges = NULL, DWORD nLength = 0);
 	BYTE* VerifySign   (const std::wstring& sFile, ICertificate* pCertificate, int nWidget = -1);
 	BYTE* GetAPWidget  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget  = -1, const char* sView  = NULL, const char* sBView = NULL);
 	BYTE* GetAPAnnots  (int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot   = -1, const char* sView  = NULL);

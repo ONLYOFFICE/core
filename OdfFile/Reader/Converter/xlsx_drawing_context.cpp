@@ -652,10 +652,10 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 		drawing.fill.bitmap = oox_bitmap_fill::create();
 		drawing.fill.type	= 2;
 	}
-	_CP_OPT(std::wstring)	sTextContent, sColorMode;
+	_CP_OPT(std::wstring)	sTextContent;
 	
 	GetProperty(obj.additional_, L"text-content", sTextContent);
-	GetProperty(obj.additional_, L"color-mode", sColorMode);
+	GetProperty(obj.additional_, L"color-mode", drawing.fill.bitmap->color_mode);
 	GetProperty(obj.additional_, L"luminance", drawing.fill.bitmap->luminance);
 	GetProperty(obj.additional_, L"contrast", drawing.fill.bitmap->contrast);
 
@@ -668,9 +668,6 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	
 	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems()->applicationFonts());
 	drawing.fill.bitmap->bStretch	= true;
-
-	if ((sColorMode) && (*sColorMode == L"greyscale"))
-		drawing.fill.bitmap->bGrayscale	= true;
 
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;

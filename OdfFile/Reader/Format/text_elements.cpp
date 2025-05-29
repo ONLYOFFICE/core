@@ -255,6 +255,9 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
+	if (Context.get_list_style_level() == 0)
+		return;
+
 	if (content_.size() <= 0)
 		return;
 
@@ -354,7 +357,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
         }
 		else next_masterPageName = boost::none;
     } 
-	if (next_section_ || next_end_section_) // remove in text::section  - GreekSynopsis.odt
+	if (!Context.process_headers_footers_ && (next_section_ || next_end_section_)) // remove in text::section  - GreekSynopsis.odt
 	{
 		Context.get_section_context().get_last().is_dump_ = true;
 		is_empty = false;

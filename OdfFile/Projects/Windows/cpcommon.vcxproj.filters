@@ -130,6 +130,7 @@
     <ClCompile Include="..\..\DataTypes\tabledatatype.cpp" />
     <ClCompile Include="..\..\DataTypes\tableoperator.cpp" />
     <ClCompile Include="..\..\DataTypes\referenceformat.cpp" />
+    <ClCompile Include="..\..\DataTypes\color_mode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Common\CPColorUtils.h" />
@@ -274,6 +275,7 @@
     <ClInclude Include="..\..\DataTypes\writingmode.h" />
     <ClInclude Include="..\..\DataTypes\xlink.h" />
     <ClInclude Include="..\..\DataTypes\referenceformat.h" />
+    <ClInclude Include="..\..\DataTypes\color_mode.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Common\CPColorUtils.cpp" />

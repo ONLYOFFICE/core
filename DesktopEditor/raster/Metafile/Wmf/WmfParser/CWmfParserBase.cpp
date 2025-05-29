@@ -666,14 +666,14 @@ namespace MetaFile
 		}
 	}
 
-	bool CWmfParserBase::ReadImage(unsigned short ushColorUsage, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
+	bool CWmfParserBase::ReadImage(unsigned short ushColorUsage, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight, unsigned int& unColorUsed)
 	{
 		unsigned int unRemainBytes = GetRecordRemainingBytesCount();
 		if (unRemainBytes <= 0)
 			return false;
 
 		BYTE* pBuffer = m_oStream.GetCurPtr();
-		MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight);
+		MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 		return true;
 	}
 
@@ -682,11 +682,16 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			BYTE* pBgra = NULL;
-			unsigned int unWidth, unHeight;
+			unsigned int unWidth, unHeight, unColorUsed;
 
-			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight))
+			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight, unColorUsed))
 			{
 				ProcessRasterOperation(unRasterOperation, &pBgra, unWidth, unHeight);
+
+				unsigned int unBlendMode{BLEND_MODE_DEFAULT};
+
+				if (2 == unColorUsed && 0x00660046 == unRasterOperation)
+					unBlendMode = BLEND_MODE_DRAW_ON_BLACK;
 
 				double dX, dY, dX1, dY1;
 				TranslatePoint(oDestRect.Left, oDestRect.Top, dX, dY);
@@ -703,14 +708,14 @@ namespace MetaFile
 
 					if (NULL != pNewBuffer)
 					{
-						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top), unBlendMode);
 						delete[] pNewBuffer;
 					}
 					else
-						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight, unBlendMode);
 				}
 				else
-					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
+					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight, unBlendMode);
 			}
 
 			if (pBgra)
@@ -1220,7 +1225,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->HANDLE_META_SETPIXEL(oColor, shY, shX);
-			m_pInterpretator->DrawBitmap(shX, shY, 1, 1, pBgraBuffer, 1, 1);
+			m_pInterpretator->DrawBitmap(shX, shY, 1, 1, pBgraBuffer, 1, 1, BLEND_MODE_DEFAULT);
 		}
 	}
 
@@ -1310,8 +1315,8 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_META_DIBCREATEPATTERNBRUSH(ushStyle, ushColorUsage, *pBrush, m_oStream);
 
 			BYTE* pBgra = NULL;
-			unsigned int unWidth = 0, unHeight = 0;
-			if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
+			unsigned int unWidth = 0, unHeight = 0, unColorUsed = 0;
+			if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight, unColorUsed))
 			{
 				pBrush->SetDibPattern(pBgra, unWidth, unHeight);
 			}

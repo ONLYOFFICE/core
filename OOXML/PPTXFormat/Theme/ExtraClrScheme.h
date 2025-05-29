@@ -48,7 +48,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(ExtraClrScheme)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -56,8 +55,7 @@ namespace PPTX
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 
-		public:
-			ClrScheme				clrScheme;
+			ClrScheme clrScheme;
 			nullable<Logic::ClrMap> clrMap;
 
 		protected:

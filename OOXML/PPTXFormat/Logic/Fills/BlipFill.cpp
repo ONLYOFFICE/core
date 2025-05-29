@@ -57,7 +57,7 @@ namespace PPTX
 			dpi				= oSrc.dpi;
 			rotWithShape	= oSrc.rotWithShape;
 
-			additionalFile	= oSrc.additionalFile;
+			additionalFiles	= oSrc.additionalFiles;
 			oleData			= oSrc.oleData;
 
 			m_namespace = oSrc.m_namespace;
@@ -410,7 +410,7 @@ namespace PPTX
 										}
 									}
 								// -------------------
-									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFile, oleData, strOrigBase64);
+									NSBinPptxRW::_relsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strImagePath, additionalFiles, oleData, strOrigBase64);
 								// -------------------
 									if (!strTempFile.empty())
 									{

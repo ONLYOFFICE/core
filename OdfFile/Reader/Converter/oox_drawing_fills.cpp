@@ -37,7 +37,7 @@
 namespace cpdoccore {
 namespace oox {
 
-	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true), bGrayscale(false)
+	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true)
 	{
 		memset(cropRect, 0, sizeof(double)*4);
 	}
@@ -190,11 +190,37 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 						CP_XML_ATTR2(ns_att + L"amt", (int)(*val.image_opacity * 1000));
 					}
 				}
-				if (val.bitmap->bGrayscale)
+				bool bSetLum = false;
+				if (val.bitmap->color_mode)
 				{
-					CP_XML_NODE(ns + L":grayscl");
+					switch (*val.bitmap->color_mode)
+					{
+						case 1: //greyscale
+						{
+							CP_XML_NODE(ns + L":grayscl");
+						}break;
+						case 2: //mono
+						{
+							CP_XML_NODE(ns + L":biLevel")
+							{
+								CP_XML_ATTR2(ns_att + L"thresh", 50000);
+							}
+						}break;
+						case 3: //watermark
+						{
+							bSetLum = true;
+							CP_XML_NODE(ns + L":lum")
+							{
+								CP_XML_ATTR2(L"bright", 70000);
+								CP_XML_ATTR2(L"contrast", -70000);
+							}
+						}break;
+						//case 4: //separating
+						//{
+						//}break;
+					}
 				}
-				if (val.bitmap->luminance || val.bitmap->contrast)
+				if ((val.bitmap->luminance || val.bitmap->contrast) && !bSetLum)
 				{
 					CP_XML_NODE(ns + L":lum")
 					{

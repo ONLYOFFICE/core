@@ -529,9 +529,6 @@ namespace NSShapeImageGen
 
 					if (!sInternalSvg.empty())
 					{
-						// тут размер не проверяем. сохраняем как есть
-						oInfo.m_eType = itSVG;
-
 						NSFile::CFileBinary::SaveToFile(strSaveItemWE + L".svg", sInternalSvg);
 						m_mapMediaFiles.insert(std::make_pair(sMapKey, oInfo));
 

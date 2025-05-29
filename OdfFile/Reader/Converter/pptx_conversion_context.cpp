@@ -152,7 +152,7 @@ namespace cpdoccore {
 		odf_reader::presentation_masters_instance& masters = root()->odf_context().styleContainer().presentation_masters();
 
 		process_masters_ = true;
-		get_text_context().set_process_layouts(true);
+		//get_text_context().set_process_layouts(true);
 
 		//берем только актуальные
 		odf_reader::office_element_ptr master_notes_;

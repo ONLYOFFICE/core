@@ -213,7 +213,7 @@ namespace MetaFile
 		void End() override;
 		//Следующие методы ничего не делают
 
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override {};
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override {};
 
 		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx,
 						int iGraphicsMode = 1, double dXScale = 1, double dYScale = 1) override {};

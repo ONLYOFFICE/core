@@ -51,7 +51,8 @@
 #include "../../DataTypes/length.h"
 #include "../../DataTypes/borderstyle.h"
 
-#include "../../Reader/Converter/oox_drawing.h"
+#include "../Converter/oox_drawing.h"
+#include "../Converter/SMCustomShape2OOXML/customshape.h"
 
 namespace cpdoccore { 
 
@@ -895,6 +896,8 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 	std::vector<std::pair<std::wstring, std::wstring>> equations;
 	if (false == draw_equations_.empty() && !draw_type_oox_index_)
 	{
+		std::wstring oox_formulas;
+
 		for (size_t i = 0; i < draw_equations_.size(); i++)
 		{
 			draw_equation* eq = dynamic_cast<draw_equation*>(draw_equations_[i].get());
@@ -904,30 +907,14 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
 
 				XmlUtils::replace_all(name, L"f", L"gd");
-				
-				XmlUtils::replace_all(value, L"(bottom-top)", L"h");
-				XmlUtils::replace_all(value, L"(right-left)", L"w");
-
-				std::wstring value_conv;
-				if (convert_equation(value, value_conv))
-				{
-					equations.push_back(std::make_pair(name, value_conv.empty() ? value : value_conv));
-				}
-				else
-				{// 
-					if (!draw_type_oox_index_) 
-						set_shape = false;
-					equations.clear();
-					break;
-				}
+		
+				oox_formulas += OdfCustomShape::convert_formula(value, name);
 			}
 		}
 
-		if (false == equations.empty())
+		if (false == oox_formulas.empty())
 		{
-			std::wstringstream output1_;
-			::svg_path::oox_serialize(output1_, equations);
-			props.push_back(odf_reader::_property(L"custom_equations", output1_.str()));
+			props.push_back(odf_reader::_property(L"custom_equations", oox_formulas));
 		}
 	}
 

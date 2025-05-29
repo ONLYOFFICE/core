@@ -82,7 +82,7 @@ CV8RealTimeWorker::~CV8RealTimeWorker()
 	m_context->Dispose();
 }
 
-bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue)
+bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContextSrc)
 {
 	LOGGER_SPEED_START();
 
@@ -92,14 +92,24 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
 
-	CJSContextScope scope(m_context);
+	bool isEnterContext = isEnterContextSrc;
+	if (!isEnterContext && !m_context->IsEntered())
+		isEnterContext = true;
+
+	if (isEnterContext)
+		m_context->Enter();
+
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	LOGGER_SPEED_LAP("compile_command");
 
 	JSSmart<CJSValue> retNativeVal = m_context->runScript(commandA, try_catch);
 	if(try_catch->Check())
+	{
+		if (isEnterContext)
+			m_context->Exit();
 		return false;
+	}
 
 	if (retValue)
 	{
@@ -109,6 +119,9 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 	}
 
 	LOGGER_SPEED_LAP("run_command");
+
+	if (isEnterContext)
+		m_context->Exit();
 
 	return true;
 }
@@ -344,7 +357,17 @@ bool CV8RealTimeWorker::OpenFile(const std::wstring& sBasePath, const std::wstri
 	return !bIsBreak;
 }
 
-bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams)
+bool CV8RealTimeWorker::NewSimpleJSInstance()
+{
+	return InitVariables();
+}
+
+bool CV8RealTimeWorker::IsSimpleJSInstance()
+{
+	return (-1 == m_nFileType);
+}
+
+bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path, const std::wstring& sJsonParams, const bool& isEnterContext)
 {
 	NSDoctRenderer::DoctRendererFormat::FormatFile _formatDst = NSDoctRenderer::DoctRendererFormat::DOCT;
 	if (type & AVS_OFFICESTUDIO_FILE_PRESENTATION)
@@ -370,7 +393,9 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		}
 	}
 
-	CJSContextScope scope(m_context);
+	if (isEnterContext)
+		m_context->Enter();
+
 	JSSmart<CJSTryCatch> try_catch = m_context->GetExceptions();
 
 	NSNativeControl::CNativeControl* pNative = NULL;
@@ -399,7 +424,7 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 		bIsSilentMode = true;
 
 	if (bIsSilentMode)
-		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);");
+		this->ExecuteCommand(L"Api.asc_SetSilentMode(false);", NULL, isEnterContext);
 
 	std::wstring strError;
 	bool bIsError = Doct_renderer_SaveFile_ForBuilder(_formatDst,
@@ -411,7 +436,10 @@ bool CV8RealTimeWorker::SaveFileWithChanges(int type, const std::wstring& _path,
 													  sJsonParams);
 
 	if (bIsSilentMode)
-		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);");
+		this->ExecuteCommand(L"Api.asc_SetSilentMode(true);", NULL, isEnterContext);
+
+	if (isEnterContext)
+		m_context->Exit();
 
 	return bIsError;
 }
@@ -1239,8 +1267,29 @@ namespace NSDoctRenderer
 		nCount = nIndex;
 	}
 
+	int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
+	{
+		if (m_pInternal->m_nFileType != -1 && m_pInternal->m_bIsOpenedFromSimpleJS)
+		{
+			m_pInternal->m_bIsOpenedFromSimpleJS = false;
+			return true;
+		}
+
+		m_pInternal->m_nFileType = -1;
+		if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
+			NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
+
+		return m_pInternal->OpenFile(path, params);
+	}
+
 	bool CDocBuilder::CreateFile(const int& type)
 	{
+		if (m_pInternal->m_nFileType != -1 && m_pInternal->m_bIsOpenedFromSimpleJS)
+		{
+			m_pInternal->m_bIsOpenedFromSimpleJS = false;
+			return true;
+		}
+
 		m_pInternal->m_nFileType = -1;
 		if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
 			NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
@@ -1399,7 +1448,7 @@ namespace NSDoctRenderer
 				if (!sJsCommands.empty())
 				{
 					std::wstring sUnicodeCommand = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length());
-					bIsNoError = this->ExecuteCommand(sUnicodeCommand.c_str());
+					bIsNoError = this->m_pInternal->ExecuteCommand(sUnicodeCommand.c_str(), NULL, bIsBuilderJSCloseFile);
 					sJsCommands = "";
 					if (!bIsNoError)
 						return false;
@@ -1421,6 +1470,10 @@ namespace NSDoctRenderer
 					if (0 == _builder_params[nCheckParam].find(L"jsValue(") && _builder_params[nCheckParam].length() > 9)
 					{
 						std::wstring sParam = _builder_params[nCheckParam].substr(8, _builder_params[nCheckParam].length() - 9);
+
+						if (NULL == m_pInternal->m_pWorker)
+							m_pInternal->CheckWorker();
+
 						_builder_params[nCheckParam] = m_pInternal->m_pWorker->GetJSVariable(sParam);
 					}
 				}
@@ -1486,7 +1539,7 @@ namespace NSDoctRenderer
 		{
 			// Такого быть не должно!!! Так как результат никуда не сохранится. пустое действие.
 			std::wstring sUnicodeCommand = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sJsCommands.c_str(), (LONG)sJsCommands.length());
-			bool bIsNoError = this->ExecuteCommand(sUnicodeCommand.c_str());
+			bool bIsNoError = this->m_pInternal->ExecuteCommand(sUnicodeCommand.c_str(), NULL, true);
 			sJsCommands = "";
 			if (!bIsNoError)
 				return false;
@@ -1545,6 +1598,15 @@ namespace NSDoctRenderer
 		std::wstring sW(param);
 		std::string sA = U_TO_UTF8(sW);
 		return this->SetProperty(sA.c_str(), value);
+	}
+
+	int CDocBuilder::GetPropertyInt(const wchar_t* param)
+	{
+		std::wstring sParam = std::wstring(param);
+		std::string sParamA = U_TO_UTF8(sParam);
+		if ("--save-use-only-names" == sParamA)
+			return m_pInternal->m_bIsServerSafeVersion ? 1 : 0;
+		return -1;
 	}
 
 	void CDocBuilder::Initialize(const wchar_t* directory)

@@ -29,15 +29,18 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
-namespace StarMath
-{
-enum class TypeConversion
-{
-	undefine,
-	pptx,
-	docx,
-	xlsx,
-};
-}
+#include "smcustomshapepars.h"
 
+namespace OdfCustomShape
+{
+	std::wstring convert_formula(const std::wstring& odf_formula, const std::wstring& name)
+	{
+		SMCustomShapePars oPars;
+		SMCustomShapeConversion oConvers;
+		
+		oPars.StartParsSMCustomShape(odf_formula);
+		oConvers.StartConversion(oPars.GetVector(), name);
+
+		return oConvers.GetStringXml();
+	}
+}

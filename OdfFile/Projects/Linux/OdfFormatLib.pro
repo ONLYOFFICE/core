@@ -20,6 +20,7 @@ include(../../../Common/base.pri)
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 include($$PWD/../../Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+include($$PWD/../../Reader/Converter/SMCustomShape2OOXML/SMCustomShape2OOXML.pri)
 
 DEFINES +=  UNICODE \
             _UNICODE \

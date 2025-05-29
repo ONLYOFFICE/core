@@ -120,6 +120,10 @@ namespace PPTX
 								{
 									variationClrSchemeLst = nodeExt.ReadNodeNoNS(L"variationClrSchemeLst");
 								}
+								else if (uri == L"{2703A3B3-D2E1-43D9-8057-6E9D74E0F44A}")
+								{
+									schemeID = nodeExt.ReadNodeNoNS(L"schemeID");
+								}
 							}
 						}
 					}
@@ -140,6 +144,14 @@ namespace PPTX
 			{
 				oValue.m_strValue += L"<a:extLst>";
 
+				if (schemeID.IsInit())
+				{
+					schemeID->bSchemas = true;
+
+					oValue.m_strValue += L"<a:ext uri=\"{2703A3B3-D2E1-43D9-8057-6E9D74E0F44A}\">";
+					oValue.Write(*schemeID);
+					oValue.m_strValue += L"</a:ext>";
+				}
 				if (bkgnd.IsInit())
 				{
 					oValue.m_strValue += L"<a:ext uri=\"{093E89EA-6996-430E-BFF9-83A9FAAAAB73}\">";
@@ -182,15 +194,25 @@ namespace PPTX
 					pWriter->EndNode(_T("a:") + arr[i]);
 				}
 			}
-			if (bkgnd.IsInit() || variationClrSchemeLst.IsInit())
+			if (bkgnd.IsInit() || variationClrSchemeLst.IsInit() || schemeID.IsInit())
 			{
 				pWriter->StartNode(L"a:extLst");
 				pWriter->EndAttributes();
 
+				if (schemeID.IsInit())
+				{
+					schemeID->bSchemas = true;
+
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{2703A3B3-D2E1-43D9-8057-6E9D74E0F44A}");
+					pWriter->EndAttributes();
+					schemeID->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
 				if (bkgnd.IsInit())
 				{
 					pWriter->StartNode(L"a:ext");
-					pWriter->WriteAttribute(L"uri", L"{2703A3B3-D2E1-43D9-8057-6E9D74E0F44A}");
+					pWriter->WriteAttribute(L"uri", L"{093E89EA-6996-430E-BFF9-83A9FAAAAB73}");
 					pWriter->EndAttributes();
 					bkgnd->toXmlWriter(pWriter);
 					pWriter->EndNode(L"a:ext");
@@ -257,6 +279,7 @@ namespace PPTX
 			}
 			pWriter->WriteRecord2(20, bkgnd);
 			pWriter->WriteRecord2(21, variationClrSchemeLst);
+			pWriter->WriteRecord2(22, schemeID);
 		}
 		void ClrScheme::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -287,6 +310,11 @@ namespace PPTX
 					variationClrSchemeLst.Init();
 					variationClrSchemeLst->fromPPTY(pReader);
 				}
+				else if (_rec == 22)
+				{
+					schemeID.Init();
+					schemeID->fromPPTY(pReader);
+				}
 				else if (pReader->GetPos() + 4 < _e)
 				{
 					Logic::UniColor color;
@@ -314,6 +342,7 @@ namespace PPTX
 			}
 			bkgnd = oSrc.bkgnd;
 			variationClrSchemeLst = oSrc.variationClrSchemeLst;
+			schemeID = oSrc.schemeID;
 
 			return *this;
 		}
@@ -404,6 +433,7 @@ namespace PPTX
 			}
 			if (bkgnd.IsInit()) bkgnd->SetParentPointer(this);
 			if (variationClrSchemeLst.IsInit()) variationClrSchemeLst->SetParentPointer(this);
+			if (schemeID.IsInit()) schemeID->SetParentPointer(this);
 		}
 	} // namespace nsTheme
 } // namespace PPTX

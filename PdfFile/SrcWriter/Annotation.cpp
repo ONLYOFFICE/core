@@ -1857,6 +1857,11 @@ namespace PdfWriter
 			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
 		}
+		else if (m_pMK)
+		{
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+			m_pMK->Remove(sAP);
+		}
 
 		if (pCodes)
 		{

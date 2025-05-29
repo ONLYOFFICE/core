@@ -1,5 +1,6 @@
 #include "CtrlCommon.h"
 #include "../Common/Common.h"
+#include <climits>
 
 #include "CapParagraph.h"
 

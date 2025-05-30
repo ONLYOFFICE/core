@@ -534,7 +534,7 @@ namespace StarMath
 		}
 		m_wsAnnotationStarMath += L"_ {";
 		ConversionVectorWritingElement(pSub->m_arrItems);
-		stFrac.m_iHeight += m_stSize.m_iHeight;
+		stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 		stFrac.m_iWidth += m_stSize.m_iWidth;
 		ComparisonSizeByHeight(stStart,stFrac);
 		m_stSize = stStart;
@@ -572,7 +572,7 @@ namespace StarMath
 		}
 		m_wsAnnotationStarMath+= L"^ {";
 		ConversionVectorWritingElement(pSup->m_arrItems);
-		stFrac.m_iHeight += m_stSize.m_iHeight;
+		stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 		stFrac.m_iWidth += m_stSize.m_iWidth;
 		ComparisonSizeByHeight(stStart,stFrac);
 		m_stSize = stStart;
@@ -813,7 +813,7 @@ namespace StarMath
 			m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
 		}
 		m_pXmlWrite->WriteNodeEnd(L"mover",false,false);
-		m_stSize.m_iHeight += 1;
+		m_stSize.m_iHeight += 0.5;
 	}
 	void COOXml2Odf::ConversionFunc(OOX::Logic::CFunc *pFunc)
 	{
@@ -1342,7 +1342,7 @@ namespace StarMath
 			m_wsAnnotationStarMath.clear();
 			m_wsAnnotationStarMath += L"{ ";
 			ConversionDeg(pRad->m_oDeg.GetPointer());
-			stFrac.m_iHeight += m_stSize.m_iHeight;
+			stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 			stFrac.m_iWidth += m_stSize.m_iWidth;
 			ComparisonSizeByHeight(stStart,stFrac);
 			m_stSize = stStart;

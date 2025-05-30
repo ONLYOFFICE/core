@@ -250,6 +250,8 @@ namespace NSJSBase
 		{
 			CGlobalContext::GetInstance().UnregisterContextForId(*i);
 		}
+		// remove any exceptions pending to not prevent any JSValue deallocations
+		m_internal->context.exception = nil;
 		m_internal->context = nil;
 	}
 

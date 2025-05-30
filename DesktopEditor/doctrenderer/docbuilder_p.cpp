@@ -1241,13 +1241,13 @@ namespace NSDoctRenderer
 
 		while (true)
 		{
-			while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+			while (_currentPos < _commandsLen && !((_commandsPtr[_currentPos] == '\"' || _commandsPtr[_currentPos] == '\'') && _commandsPtr[_currentPos - 1] != '\\'))
 				++_currentPos;
 
 			++_currentPos;
 			size_t _start = _currentPos;
 
-			while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+			while (_currentPos < _commandsLen && !((_commandsPtr[_currentPos] == '\"' || _commandsPtr[_currentPos] == '\'') && _commandsPtr[_currentPos - 1] != '\\'))
 				++_currentPos;
 
 			if (_currentPos > _start)

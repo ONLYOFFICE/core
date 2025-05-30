@@ -2917,10 +2917,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		if (pPBWidget->m_nI >= 0)
 			DrawButtonWidget(pAppFonts, pPBWidget, 0, arrForm[pPBWidget->m_nI]);
 		if (pPBWidget->m_nRI >= 0)
-		{
-			if (arrForm[pPBWidget->m_nRI])
-				DrawButtonWidget(pAppFonts, pPBWidget, 1, arrForm[pPBWidget->m_nRI]);
-		}
+			DrawButtonWidget(pAppFonts, pPBWidget, 1, arrForm[pPBWidget->m_nRI]);
 		else if (pPBWidget->m_nI >= 0)
 		{
 			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
@@ -2932,10 +2929,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			}
 		}
 		if (pPBWidget->m_nIX >= 0)
-		{
-			if (arrForm[pPBWidget->m_nIX])
-				DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nIX]);
-		}
+			DrawButtonWidget(pAppFonts, pPBWidget, 2, arrForm[pPBWidget->m_nIX]);
 		else if (pPBWidget->m_nI >= 0)
 		{
 			PdfWriter::CDictObject* pObj = dynamic_cast<PdfWriter::CDictObject*>(pPBWidget->Get("AP"));
@@ -4333,6 +4327,8 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
 		pButtonWidget->SetBorder(0, 1, {});
+	if (!pForm)
+		nTP = 0;
 
 	if (!wsValue.empty() && nTP != 1)
 	{

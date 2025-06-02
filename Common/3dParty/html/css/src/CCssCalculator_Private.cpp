@@ -184,7 +184,7 @@ namespace NSCSS
 	}
 	#endif
 
-	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector)
+	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector) const
 	{
 		if (wsSelector.empty())
 			return nullptr;
@@ -470,7 +470,7 @@ namespace NSCSS
 		}
 	}
 
-	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData)
+	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData) const
 	{
 		std::map<std::wstring, CElement*>::const_iterator itFound = mStyleData.find(wsSelector);
 
@@ -763,6 +763,11 @@ namespace NSCSS
 	unsigned short int CCssCalculator_Private::GetDpi() const
 	{
 		return m_nDpi;
+	}
+
+	bool CCssCalculator_Private::HaveStylesById(const std::wstring& wsId) const
+	{
+		return nullptr != m_oStyleStorage.FindElement(L'#' + wsId);
 	}
 
 	void CCssCalculator_Private::ClearEmbeddedStyles()

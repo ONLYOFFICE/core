@@ -2288,6 +2288,9 @@ private:
 			{
 				oNode.m_wsId = EncodeXmlString(m_oLightReader.GetText());
 				WriteBookmark(oXml, oNode.m_wsId);
+
+				if (!m_oStylesCalculator.HaveStylesById(oNode.m_wsId))
+					oNode.m_wsId.clear();
 			}
 			else if(sName == L"style")
 				oNode.m_wsStyle += m_oLightReader.GetText();

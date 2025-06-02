@@ -62,6 +62,7 @@ public:
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
 	void Close();
+	void CleanUp();
 
 	void SetParams(COfficeDrawingPageParams* pParams);
 	std::wstring GetTempDirectory();

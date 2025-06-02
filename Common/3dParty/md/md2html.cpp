@@ -88,7 +88,9 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 
 	bool bResult = true;
 
-	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile, MD_DIALECT_GITHUB, 0))
+	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile,
+					 MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM,
+					 0))
 		bResult = false;
 
 	oFile.WriteStringUTF8(L"</body></html>");

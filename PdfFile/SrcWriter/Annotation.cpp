@@ -1712,6 +1712,23 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
+		if (!pForm && !pCodes)
+		{
+			CObjectBase* pAP = Get("AP");
+			if (pAP && pAP->GetType() == object_type_DICT)
+			{
+				CDictObject* pDAP = (CDictObject*)pAP;
+				std::string sAP = nAP == 0 ? "N" : (nAP == 1 ? "R" : "D");
+				pDAP->Remove(sAP);
+			}
+			if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			return;
+		}
+
 		if (!m_pAppearance)
 		{
 			m_pAppearance = new CAnnotAppearance(m_pXref, this);

@@ -195,7 +195,7 @@ JSSmart<CJSValue> CDrawingFileEmbed::MergePages(JSSmart<CJSValue> data, JSSmart<
 		int maxID = nMaxID->toInt32();
 		std::string prefix = sPrefixForm->toStringA();
 		CJSDataBuffer buffer = dataPtr->getData();
-		result = m_pFile->MergePages(buffer.Data, (LONG)buffer.Len, maxID, prefix);
+		result = m_pFile->MergePages(buffer.Data, (LONG)buffer.Len, maxID, prefix, true);
 		if (buffer.IsExternalize)
 			buffer.Free();
 	}

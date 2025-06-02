@@ -91,6 +91,8 @@ public:
 	int GetMarginNext() const;
 
 	int GetIndent() const;
+	int GetLeftIndent() const;
+	int GetRightIndent() const;
 
 	bool KeepWithNext() const;
 };

@@ -4,23 +4,35 @@ namespace HWP
 {
 ENumPos GetNumPos(int nValue)
 {
-	switch(static_cast<ENumPos>(nValue))
+	SWITCH(ENumPos, nValue)
 	{
-		case ENumPos::LEFT_TOP:
-		case ENumPos::CENTER_TOP:
-		case ENumPos::RIGHT_TOP:
-		case ENumPos::LEFT_BOTTOM:
-		case ENumPos::BOTTOM_CENTER:
-		case ENumPos::RIGHT_BOTTOM:
-		case ENumPos::OUTER_TOP:
-		case ENumPos::OUTER_BOTTOM:
-		case ENumPos::INNER_TOP:
-		case ENumPos::INNER_BOTTOM:
-			return static_cast<ENumPos>(nValue);
-		case ENumPos::NONE:
-		default:
-			return ENumPos::NONE;
+		DEFAULT(ENumPos::NONE);
+		CASE(ENumPos::TOP_LEFT);
+		CASE(ENumPos::TOP_CENTER);
+		CASE(ENumPos::TOP_RIGHT);
+		CASE(ENumPos::BOTTOM_LEFT);
+		CASE(ENumPos::BOTTOM_CENTER);
+		CASE(ENumPos::BOTTOM_RIGHT);
+		CASE(ENumPos::TOP_OUTER);
+		CASE(ENumPos::BOTTOM_OUTER);
+		CASE(ENumPos::TOP_INNER);
+		CASE(ENumPos::BOTTOM_INNER);
 	}
+}
+
+ENumPos GetNumPos(const HWP_STRING& sValue)
+{
+	IF_STRING_IN_ENUM(TOP_LEFT, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(TOP_CENTER, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(TOP_RIGHT, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM_LEFT, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM_CENTER, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM_RIGHT, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(TOP_OUTER, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM_OUTER, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(TOP_INNER, sValue, ENumPos);
+	ELSE_IF_STRING_IN_ENUM(BOTTOM_INNER, sValue, ENumPos);
+	ELSE_STRING_IN_ENUM(NONE, ENumPos);
 }
 
 CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID)
@@ -45,8 +57,31 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	m_ePos = GetNumPos(oNode.GetAttributeInt(L"pos"));
+	m_ePos = GetNumPos(oNode.GetAttribute(L"pos"));
 	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"formatType"));
+
+	m_sPostfix = oNode.GetAttribute(L"sideChar");
+	m_sPrefix  = m_sPostfix;
+}
+
+ENumPos CCtrlPageNumPos::GetPos() const
+{
+	return m_ePos;
+}
+
+HWP_STRING CCtrlPageNumPos::GetPrefix() const
+{
+	return m_sPrefix;
+}
+
+HWP_STRING CCtrlPageNumPos::GetPostfix() const
+{
+	return m_sPostfix;
+}
+
+ENumberShape2 CCtrlPageNumPos::GetFormatType() const
+{
+	return m_eNumShape;
 }
 
 ECtrlObjectType CCtrlPageNumPos::GetCtrlType() const

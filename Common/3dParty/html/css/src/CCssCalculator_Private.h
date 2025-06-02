@@ -37,7 +37,7 @@ namespace NSCSS
 		void ClearPageData();
 		#endif
 
-		const CElement* FindElement(const std::wstring& wsSelector);
+		const CElement* FindElement(const std::wstring& wsSelector) const;
 	private:
 		typedef struct
 		{
@@ -77,7 +77,7 @@ namespace NSCSS
 
 		void GetOutputData(KatanaOutput* oOutput, std::map<std::wstring, CElement*>& mStyleData);
 
-		const CElement* FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData);
+		const CElement* FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData) const;
 	};
 
 	class CCssCalculator_Private
@@ -121,6 +121,8 @@ namespace NSCSS
 
 		std::wstring GetEncoding() const;
 		unsigned short int GetDpi() const;
+
+		bool HaveStylesById(const std::wstring& wsId) const;
 
 		void ClearEmbeddedStyles();
 		void ClearAllowedStyleFiles();

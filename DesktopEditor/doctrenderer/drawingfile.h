@@ -289,10 +289,20 @@ public:
 			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength, data, size);
 		return NULL;
 	}
-	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm)
+	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm, bool bCopy = false)
 	{
 		if (m_nType == 0)
+		{
+			// Память из CDrawingFileEmbed освобождается сразу после вызова функции, поэтому копируем
+			if (bCopy)
+			{
+				BYTE* pCopy = (BYTE*)malloc(size);
+				memcpy(pCopy, data, size);
+				data = pCopy;
+			}
+			// Захватывает полученную память, будет освобождена либо в деструкторе MemStream, либо free в случае неудачи
 			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID, sPrefixForm);
+		}
 		return false;
 	}
 	bool UnmergePages()

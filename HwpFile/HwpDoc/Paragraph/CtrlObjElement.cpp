@@ -3,14 +3,24 @@
 namespace HWP
 {
 CCtrlObjElement::CCtrlObjElement()
-{
-	InitMatrix();
-}
+{}
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID)
 	: CCtrlCommon(sCtrlID)
+{}
+
+TMatrix ReadMatrix(CHWPStream& oBuffer)
 {
-	InitMatrix();
+	TMatrix oMatrix;
+
+	oBuffer.ReadDouble(oMatrix.m_dM11);
+	oBuffer.ReadDouble(oMatrix.m_dM12);
+	oBuffer.ReadDouble(oMatrix.m_dDX);
+	oBuffer.ReadDouble(oMatrix.m_dM21);
+	oBuffer.ReadDouble(oMatrix.m_dM22);
+	oBuffer.ReadDouble(oMatrix.m_dDY);
+
+	return oMatrix;
 }
 
 CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
@@ -20,8 +30,8 @@ CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
 	m_nYGrpOffset = oObjElement.m_nYGrpOffset;
 	m_shNGrp = oObjElement.m_shNGrp;
 	m_shVer = oObjElement.m_shVer;
-	m_nIniWidth = oObjElement.m_nIniWidth;
-	m_nIniHeight = oObjElement.m_nIniHeight;
+	m_nOrgWidth = oObjElement.m_nOrgWidth;
+	m_nOrgHeight = oObjElement.m_nOrgHeight;
 	m_nCurWidth = oObjElement.m_nCurWidth;
 	m_nCurHeight = oObjElement.m_nCurHeight;
 	m_bHorzFlip = oObjElement.m_bHorzFlip;
@@ -30,32 +40,30 @@ CCtrlObjElement::CCtrlObjElement(const CCtrlObjElement& oObjElement)
 	m_nXCenter = oObjElement.m_nXCenter;
 	m_nYCenter = oObjElement.m_nYCenter;
 	m_shMatCnt = oObjElement.m_shMatCnt;
-
-	m_arMatrix.resize(6);
-	for (unsigned int unIndex = 0; unIndex < 6; ++unIndex)
-		m_arMatrix[unIndex] = oObjElement.m_arMatrix[unIndex];
-
-	m_arMatrixSeq.resize(oObjElement.m_arMatrixSeq.size());
-	for (unsigned int unIndex = 0; unIndex < oObjElement.m_arMatrixSeq.size(); ++unIndex)
-		m_arMatrixSeq[unIndex] = oObjElement.m_arMatrixSeq[unIndex];
+	m_arMatrixs = oObjElement.m_arMatrixs;
 }
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
+{}
+
+TMatrix ReadMatrix(CXMLNode& oNode)
 {
-	InitMatrix();
+	return TMatrix
+	{
+		oNode.GetAttributeDouble(L"e1", 1.),
+		oNode.GetAttributeDouble(L"e2"),
+		oNode.GetAttributeDouble(L"e4"),
+		oNode.GetAttributeDouble(L"e5", 1.),
+		oNode.GetAttributeDouble(L"e3"),
+		oNode.GetAttributeDouble(L"e6"),
+	};
 }
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
 	: CCtrlCommon(sCtrlID, oNode, nVersion)
 {
-	InitMatrix();
-
 	m_shNGrp = oNode.GetAttributeInt(L"groupLevel");
-
-	m_arMatrixSeq.resize((m_shNGrp + 1) * 6 * 2);
-
-	short shScaMatCnt = 0, shRotMatCnt = 0;
 
 	for (CXMLNode& oChild : oNode.GetChilds())
 	{
@@ -66,8 +74,8 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int
 		}
 		else if (L"hp:orgSz" == oChild.GetName())
 		{
-			m_nIniWidth  = oChild.GetAttributeInt(L"width");
-			m_nIniHeight = oChild.GetAttributeInt(L"height");
+			m_nOrgWidth  = oChild.GetAttributeInt(L"width");
+			m_nOrgHeight = oChild.GetAttributeInt(L"height");
 		}
 		else if (L"hp:curSz" == oChild.GetName())
 		{
@@ -89,18 +97,13 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int
 		{
 			for (CXMLNode& oGrandChild : oChild.GetChilds())
 			{
+				// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
 				if (L"hc:transMatrix" == oGrandChild.GetName())
-					SetMatrix(oGrandChild, m_arMatrix, 0);
+					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
 				else if (L"hc:scaMatrix" == oGrandChild.GetName())
-				{
-					SetMatrix(oGrandChild, m_arMatrixSeq, shScaMatCnt * 12);
-					++shScaMatCnt;
-				}
+					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
 				else if (L"hc:rotMatrix" == oGrandChild.GetName())
-				{
-					SetMatrix(oGrandChild, m_arMatrixSeq, shRotMatCnt * 12 + 6);
-					++shRotMatCnt;
-				}
+					m_arMatrixs.push_back(ReadMatrix(oGrandChild));
 			}
 		}
 	}
@@ -114,6 +117,16 @@ int CCtrlObjElement::GetCurWidth() const
 int CCtrlObjElement::GetCurHeight() const
 {
 	return m_nCurHeight;
+}
+
+int CCtrlObjElement::GetOrgWidth() const
+{
+	return m_nOrgWidth;
+}
+
+int CCtrlObjElement::GetOrgHeight() const
+{
+	return m_nOrgHeight;
 }
 
 int CCtrlObjElement::GetFinalWidth() const
@@ -132,6 +145,29 @@ int CCtrlObjElement::GetFinalHeight() const
 	return CCtrlCommon::GetHeight();
 }
 
+TMatrix CCtrlObjElement::GetFinalMatrix() const
+{
+	if (m_arMatrixs.empty())
+		return TMatrix();
+
+	TMatrix oMatrix{m_arMatrixs.front()};
+
+	for (unsigned int unIndex = 1; unIndex < m_arMatrixs.size(); ++ unIndex)
+		oMatrix.Multiply(m_arMatrixs[unIndex]);
+
+	return oMatrix;
+}
+
+bool CCtrlObjElement::HorzFlip() const
+{
+	return m_bHorzFlip;
+}
+
+bool CCtrlObjElement::VertFlip() const
+{
+	return m_bVerFlip;
+}
+
 int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 {
 	oBuffer.SavePosition();
@@ -142,8 +178,8 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 	oBuffer.ReadInt(oObj.m_nYGrpOffset);
 	oBuffer.ReadShort(oObj.m_shNGrp);
 	oBuffer.ReadShort(oObj.m_shVer);
-	oBuffer.ReadInt(oObj.m_nIniWidth);
-	oBuffer.ReadInt(oObj.m_nIniHeight);
+	oBuffer.ReadInt(oObj.m_nOrgWidth);
+	oBuffer.ReadInt(oObj.m_nOrgHeight);
 	oBuffer.ReadInt(oObj.m_nCurWidth);
 	oBuffer.ReadInt(oObj.m_nCurHeight);
 	oObj.m_bHorzFlip = CHECK_FLAG(oBuffer[0], 0x01);
@@ -154,39 +190,55 @@ int CCtrlObjElement::ParseCtrl(CCtrlObjElement& oObj, int nSize, CHWPStream& oBu
 	oBuffer.ReadInt(oObj.m_nYCenter);
 	oBuffer.ReadShort(oObj.m_shMatCnt);
 
-	for (int nIndex = 0; nIndex < 6; ++nIndex)
-		oBuffer.ReadDouble(oObj.m_arMatrix[nIndex]);
+	oObj.m_arMatrixs.push_back(ReadMatrix(oBuffer));
 
-	int nMatrixSize = ((int)oObj.m_shMatCnt) * 6 * 2;
-	if (nMatrixSize > 0)
-	{
-		oObj.m_arMatrixSeq.resize(nMatrixSize);
-
-		for (int nIndex = 0; nIndex < nMatrixSize; ++nIndex)
-			oBuffer.ReadDouble(oObj.m_arMatrixSeq[nIndex]);
-	}
+	for (unsigned int unIndex = 0; unIndex < ((int)oObj.m_shMatCnt) * 2; ++ unIndex)
+		oObj.m_arMatrixs.push_back(ReadMatrix(oBuffer));
 
 	return oBuffer.GetDistanceToLastPos(true);
 }
 
-void CCtrlObjElement::InitMatrix()
+TMatrix::TMatrix()
+	: m_dM11(1.), m_dM12(0.), m_dM21(0.), m_dM22(1.), m_dDX(0.), m_dDY(0.)
+{}
+
+TMatrix::TMatrix(double dM11, double dM12, double dM21, double dM22, double dDX, double dDY)
+    : m_dM11(dM11), m_dM12(dM12), m_dM21(dM21), m_dM22(dM22), m_dDX(dDX), m_dDY(dDY)
+{}
+
+void TMatrix::Multiply(const TMatrix& oMatrix)
 {
-	m_arMatrix.resize(6);
-	m_arMatrix[0] = 1.;
-	m_arMatrix[1] = 0.;
-	m_arMatrix[2] = 0.;
-	m_arMatrix[3] = 1.;
-	m_arMatrix[4] = 0.;
-	m_arMatrix[5] = 0.;
+	const double dM11 = m_dM11 * oMatrix.m_dM11 + m_dM12 * oMatrix.m_dM21;
+	const double dM12 = m_dM11 * oMatrix.m_dM12 + m_dM12 * oMatrix.m_dM22;
+	const double dM21 = m_dM21 * oMatrix.m_dM11 + m_dM22 * oMatrix.m_dM21;
+	const double dM22 = m_dM21 * oMatrix.m_dM12 + m_dM22 * oMatrix.m_dM22;
+
+	const double dDx = m_dDX * oMatrix.m_dM11 + m_dDY * oMatrix.m_dM21 + oMatrix.m_dDX;
+	const double dDy = m_dDX * oMatrix.m_dM12 + m_dDY * oMatrix.m_dM22 + oMatrix.m_dDY;
+
+	m_dM11 = dM11;
+	m_dM12 = dM12;
+	m_dM21 = dM21;
+	m_dM22 = dM22;
+	m_dDX  = dDx;
+	m_dDY  = dDy;
 }
 
-void CCtrlObjElement::SetMatrix(CXMLNode& oNode, std::vector<double>& arMatrix, int nOffset)
+void TMatrix::ApplyToPoint(double& dX, double& dY)
 {
-	arMatrix[0 + nOffset] = oNode.GetAttributeDouble(L"e1");
-	arMatrix[1 + nOffset] = oNode.GetAttributeDouble(L"e2");
-	arMatrix[2 + nOffset] = oNode.GetAttributeDouble(L"e3");
-	arMatrix[3 + nOffset] = oNode.GetAttributeDouble(L"e4");
-	arMatrix[4 + nOffset] = oNode.GetAttributeDouble(L"e5");
-	arMatrix[5 + nOffset] = oNode.GetAttributeDouble(L"e6");
+	const double _dX = dX;
+	const double _dY = dY;
+
+	dX = _dX * m_dM11 + _dY * m_dM21 + m_dDX;
+	dY = _dX * m_dM12 + _dY * m_dM22 + m_dDY;
+}
+
+void TMatrix::ApplyToSize(double& dW, double& dH)
+{
+	const double _dW = dW;
+	const double _dH = dH;
+
+	dW = _dW * m_dM11 + _dH * m_dM21;
+	dH = _dW * m_dM12 + _dH * m_dM22;
 }
 }

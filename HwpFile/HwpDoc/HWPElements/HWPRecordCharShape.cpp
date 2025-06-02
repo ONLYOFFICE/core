@@ -373,6 +373,11 @@ int CHWPRecordCharShape::GetTextColor() const
 	return m_nTextColor;
 }
 
+int CHWPRecordCharShape::GetShadeColor() const
+{
+	return m_nShadeColor;
+}
+
 short CHWPRecordCharShape::GetBorderFillID() const
 {
 	return m_shBorderFillIDRef;

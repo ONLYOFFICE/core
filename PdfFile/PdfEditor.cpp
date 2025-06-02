@@ -1062,6 +1062,8 @@ bool CPdfEditor::IncrementalUpdates()
 					pDR->Fix();
 					continue;
 				}
+				else if (strcmp("Fields", chKey) == 0)
+					oAcroForm.dictGetVal(nIndex, &oTemp2);
 				else
 					oAcroForm.dictGetValNF(nIndex, &oTemp2);
 				DictToCDictObject(&oTemp2, pAcroForm, chKey);

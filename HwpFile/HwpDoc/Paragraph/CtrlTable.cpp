@@ -103,6 +103,26 @@ short CCtrlTable::GetBorderFillID() const
 	return m_shBorderFillID;
 }
 
+short CCtrlTable::GetInLSpace() const
+{
+	return m_shInLSpace;
+}
+
+short CCtrlTable::GetInTSpace() const
+{
+	return m_shInTSpace;
+}
+
+short CCtrlTable::GetInRSpace() const
+{
+	return m_shInRSpace;
+}
+
+short CCtrlTable::GetInBSpace() const
+{
+	return m_shInBSpace;
+}
+
 void CCtrlTable::AddCell(CTblCell* pCell)
 {
 	m_arCells.push_back(pCell);

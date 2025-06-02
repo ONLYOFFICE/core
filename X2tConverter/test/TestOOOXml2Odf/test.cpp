@@ -112,7 +112,7 @@ TEST(OOXml2OdfTest,FractionWideslash)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mfrac bevelled=\"true\" /><mn>1</mn><mn>2</mn></mfrac>";
+	StCorrect.m_wsSemantic = L"<mfrac bevelled=\"true\"><mn>1</mn><mn>2</mn></mfrac>";
 	StCorrect.m_wsAnnotation = L"{ 1 } wideslash { 2 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -128,7 +128,7 @@ TEST(OOXml2OdfTest,FractionSlash)
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
 	StCorrect.m_wsSemantic = L"<mrow><mn>1</mn><mo stretchy=\"false\">/</mo><mn>2</mn></mrow>";
-	StCorrect.m_wsAnnotation = L"1 / 2 ";
+	StCorrect.m_wsAnnotation = L"{ 1 } / { 2 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
 TEST(OOXml2OdfTest,Delimiter)
@@ -549,7 +549,7 @@ TEST(OOXml2OdfTest,EmptyNumerator)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mn>2</mn></mfrac><annotation encoding=\"StarMath 5.0\">{ } over { 2 } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mi mathvariant=\"normal\">\u2751</mi><mn>2</mn></mfrac><annotation encoding=\"StarMath 5.0\">{\u0026lt;\u003F\u0026gt;} over { 2 } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,IdentityMatrixDiagonally)

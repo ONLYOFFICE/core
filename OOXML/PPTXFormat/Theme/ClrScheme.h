@@ -63,6 +63,7 @@ namespace PPTX
 //visio ext
 			nullable<Bkgnd> bkgnd;
 			nullable<VariationClrSchemeLst> variationClrSchemeLst;
+			nullable<SchemeID> schemeID;
 
 			ClrScheme& operator=(const ClrScheme& oSrc);
 

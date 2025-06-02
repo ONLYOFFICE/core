@@ -55,7 +55,7 @@ CTblCell::CTblCell(CXMLNode& oNode, int nVersion)
 		}
 		else if (L"hp:subList" == oChild.GetName())
 		{
-			m_eVertAlign = ::HWP::GetVertAlign(oChild.GetAttributeInt(L"vertAlign"));
+			m_eVertAlign = ::HWP::GetVertAlign(oChild.GetAttribute(L"vertAlign"));
 
 			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
 			{

@@ -81,6 +81,8 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 	oFile.WriteStringUTF8(L"<html><body>");
 
 	oFile.WriteStringUTF8(L"<head>");
+	//oFile.WriteStringUTF8(L"<meta charset=\"UTF-8\">");
+	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
 	WriteBaseHtmlStyles(oFile);
 	oFile.WriteStringUTF8(L"</head>");
 

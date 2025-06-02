@@ -40,7 +40,7 @@ var UpdateFontsSource = {
 function CFile()
 {
 	this.nativeFile = 0;
-	this.stream = [];
+	this.stream = -1;
 	this.stream_size = 0;
 	this.type = -1;
 	this.pages = [];
@@ -128,17 +128,17 @@ CFile.prototype["close"] = function()
 	this.pages = [];
 	this.info = null;
 	this.StartID = null;
-	for (let i = 0; i < this.stream.length; i++)
-		this._free(this.stream[i]);
-	this.stream = [];
+	if (this.stream > 0)
+		this._free(this.stream);
+	this.stream = -1;
 	self.drawingFile = null;
 };
 
 CFile.prototype["getFileBinary"] = function()
 {
-	if (this.stream.length == 0)
+	if (0 >= this.stream)
 		return "";
-	return new Uint8Array(Module["HEAP8"].buffer, this.stream[0], this.stream_size);
+	return new Uint8Array(Module["HEAP8"].buffer, this.stream, this.stream_size);
 };
 
 CFile.prototype["isNeedPassword"] = function()

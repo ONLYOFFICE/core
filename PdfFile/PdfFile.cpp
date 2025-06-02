@@ -109,6 +109,8 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	if (wsDstFile.empty() || !m_pInternal->pReader)
 		return false;
 
+	m_pInternal->pReader->CleanUp();
+
 	RELEASEOBJECT(m_pInternal->pWriter);
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
 

@@ -244,6 +244,11 @@ void CPdfReader::Clear()
 		delete pPDFContext;
 	m_vPDFContext.clear();
 }
+void CPdfReader::CleanUp()
+{
+	while(UnmergePages());
+	m_eError = errNone;
+}
 
 bool CPdfReader::IsNeedCMap()
 {
@@ -682,7 +687,7 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 }
 bool CPdfReader::UnmergePages()
 {
-	if (m_vPDFContext.size() < 1)
+	if (m_vPDFContext.size() <= 1)
 		return false;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
 	delete pPDFContext;

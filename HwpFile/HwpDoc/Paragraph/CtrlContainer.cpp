@@ -57,7 +57,7 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 
 CCtrlContainer::~CCtrlContainer()
 {
-	for (CCtrlGeneralShape* pElement : m_arShapes)
+	for (const CCtrlGeneralShape* pElement : m_arShapes)
 	{
 		if (nullptr != pElement)
 			delete pElement;
@@ -79,7 +79,7 @@ bool CCtrlContainer::Empty() const
 	return m_arShapes.empty();
 }
 
-std::vector<CCtrlGeneralShape*> CCtrlContainer::GetShapes() const
+VECTOR<CCtrlGeneralShape*> CCtrlContainer::GetShapes() const
 {
 	return m_arShapes;
 }

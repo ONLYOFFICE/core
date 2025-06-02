@@ -250,7 +250,7 @@ const CHWPRecordNumbering* CWriterContext::GetNumbering(short shId)
 	if (nullptr == pDocInfo)
 		return nullptr;
 
-	return (CHWPRecordNumbering*)pDocInfo->GetNumbering(shId);
+	return (CHWPRecordNumbering*)pDocInfo->GetNumbering(shId - 1);
 }
 
 const CHWPRecordBullet* CWriterContext::GetBullet(short shId)
@@ -299,7 +299,8 @@ bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP
 	if (nullptr == pBinData)
 		return false;
 
-	if (EType::LINK == pBinData->GetType())
+	if (EType::LINK == pBinData->GetType() ||
+	    EType::EMBEDDING == pBinData->GetType())
 	{
 		switch (m_eType)
 		{
@@ -309,30 +310,28 @@ bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP
 				return m_pHWPXFile->GetChildStream(pBinData->GetPath(), oBuffer);
 			}
 			default:
-				return false;
+				break;
 		}
 	}
-	else
-	{
-		std::wostringstream oStringStream;
 
-		switch (m_eType)
+	std::wostringstream oStringStream;
+
+	switch (m_eType)
+	{
+		case EHanType::HWP:
 		{
-			case EHanType::HWP:
-			{
-				oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
-				sFileName = oStringStream.str();
-				return m_pHWPFile->GetChildStream(oStringStream.str(), pBinData->GetCompressed(), oBuffer);
-			}
-			case EHanType::HWPX:
-			{
-				oStringStream << sId << L"." << pBinData->GetFormat();
-				sFileName = oStringStream.str();
-				return m_pHWPXFile->GetChildStream(L"BinData/" + oStringStream.str(), oBuffer);
-			}
-			default:
-				return false;
+			oStringStream << L"BIN" << std::setw(4) << std::setfill(L'0') << std::hex << pBinData->GetBinDataID() << L"." << pBinData->GetFormat();
+			sFileName = oStringStream.str();
+			return m_pHWPFile->GetChildStream(oStringStream.str(), pBinData->GetCompressed(), oBuffer);
 		}
+		case EHanType::HWPX:
+		{
+			oStringStream << sId << L"." << pBinData->GetFormat();
+			sFileName = oStringStream.str();
+			return m_pHWPXFile->GetChildStream(L"BinData/" + oStringStream.str(), oBuffer);
+		}
+		default:
+			break;
 	}
 
 	return false;

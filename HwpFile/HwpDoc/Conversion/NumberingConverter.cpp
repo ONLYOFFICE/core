@@ -1,6 +1,8 @@
 #include "NumberingConverter.h"
 #include "../../../DesktopEditor/common/File.h"
 
+#include "Converter2OOXML.h"
+
 namespace HWP
 {
 CNumberingConverter::CNumberingConverter()
@@ -22,7 +24,7 @@ std::wstring HeadingTypeToWSTR(EHeadingType eHeadingType)
 	}
 }
 
-int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType)
+int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType, CConverter2OOXML& oConverter)
 {
 	if (nullptr == pNumbering || eHeadingType == EHeadingType::NONE || EHeadingType::OUTLINE == eHeadingType)
 		return 0;
@@ -73,6 +75,14 @@ int CNumberingConverter::CreateNumbering(const CHWPRecordNumbering* pNumbering, 
 				case 0x2: m_oNumberXml.WriteString(L"right"); break;
 			}
 			m_oNumberXml.WriteString(L"\"/>");
+
+			int nCharShape = pNumbering->GetCharShape(shIndex);
+
+			if (INT_MAX == nCharShape)
+				nCharShape = 0;
+
+			TConversionState oState;
+			oConverter.WriteRunnerStyle(nCharShape, m_oNumberXml, oState);
 
 			m_oNumberXml.WriteString(L"</w:lvl>");
 		}

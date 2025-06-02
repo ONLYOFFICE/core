@@ -404,6 +404,12 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 	m_eError = errNone;
 	m_nFileLength = length;
 
+	// Все LoadFromMemory копируют память в свои классы
+	// Кроме того MemStream использует malloc/free память
+	BYTE* pCopy = (BYTE*)malloc(length);
+	memcpy(pCopy, data, length);
+	data = pCopy;
+
 	return MergePages(data, length, wsOwnerPassword);
 }
 void CPdfReader::Close()
@@ -591,7 +597,10 @@ bool CPdfReader::ValidMetaData()
 bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
+	{
+		free(pData);
 		return false;
+	}
 
 	GString* owner_pswd = NSStrings::CreateString(wsPassword);
 	GString* user_pswd  = NSStrings::CreateString(wsPassword);
@@ -599,7 +608,8 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	Object obj;
 	obj.initNull();
 	// будет освобожден в деструкторе PDFDoc
-	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj);
+	// Время его жизни > copy и makeSubStream из MemStream
+	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj, gTrue);
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
@@ -617,6 +627,7 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
 	{
+		// pData освобождается
 		delete pContext;
 		m_vPDFContext.pop_back();
 		return false;

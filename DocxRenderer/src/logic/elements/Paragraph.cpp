@@ -135,14 +135,28 @@ namespace NSDocxRenderer
 			break;
 		}
 
-		oWriter.WriteString(L"\"");
+		oWriter.WriteString(L"\" ");
 
 		if (m_bIsNeedFirstLineIndent)
 		{
-			oWriter.WriteString(L" indent=\"");
+			oWriter.WriteString(L" indent=\" ");
 			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
 		}
+
+		if (m_dLeftBorder > 0)
+		{
+			oWriter.WriteString(L" marL=\" ");
+			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
+			oWriter.WriteString(L"\"");
+		}
+		if (m_dRightBorder > 0)
+		{
+			oWriter.WriteString(L" marR=\"");
+			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
+			oWriter.WriteString(L"\"");
+		}
+
 		oWriter.WriteString(L">");
 
 		oWriter.WriteString(L"<a:spcBef>");
@@ -150,7 +164,6 @@ namespace NSDocxRenderer
 		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
 		oWriter.WriteString(L"\"/>");
 		oWriter.WriteString(L"</a:spcBef>");
-
 
 		oWriter.WriteString(L"<a:spcAft>");
 		oWriter.WriteString(L"<a:spcPts val=\"");
@@ -195,6 +208,21 @@ namespace NSDocxRenderer
 				break;
 			}
 
+			// marL
+			if (m_dLeftBorder > 0)
+			{
+				oWriter.WriteBYTE(8);
+				oWriter.AddSInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
+			}
+
+			// marR
+			if (m_dRightBorder > 0)
+			{
+				oWriter.WriteBYTE(9);
+				oWriter.AddSInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
+			}
+
+			// indent
 			if (m_bIsNeedFirstLineIndent)
 			{
 				oWriter.WriteBYTE(5);

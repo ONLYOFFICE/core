@@ -208,6 +208,8 @@ HRESULT CDocxRenderer::IsSupportAdvancedCommand(const IAdvancedCommand::Advanced
 
 	return S_FALSE;
 }
+
+// TODO Bin Shapes
 HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 {
 	if (NULL == command)

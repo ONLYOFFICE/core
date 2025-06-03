@@ -510,7 +510,6 @@ namespace NSDocxRenderer
 					continue;
 
 				writer.Write(buff, buff_len);
-
 				delete[] buff;
 			}
 		}
@@ -522,7 +521,7 @@ namespace NSDocxRenderer
 		size_t size = writer.GetSize();
 		size_t test_size = test_writer.GetSize();
 
-		assert(size != test_size);
+		assert(size == test_size);
 
 		auto buffer = writer.GetBuffer();
 		auto test_buffer = writer.GetBuffer();
@@ -535,6 +534,10 @@ namespace NSDocxRenderer
 	void CPage::AddCompleteXml(const std::wstring& oXml)
 	{
 		m_arCompleteObjectsXml.push_back(oXml);
+	}
+	void CPage::AddCompleteBinBase64(const std::string& oBase64)
+	{
+		m_arCompleteObjectsBinBase64.push_back(oBase64);
 	}
 	void CPage::ReorderShapesForPptx()
 	{

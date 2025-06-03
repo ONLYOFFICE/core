@@ -108,7 +108,7 @@ namespace NSStringFinder
 
 			wsEndingValue.pop_back();
 
-			wsRegexValue += L"\\s*(.[^" + wsEndingValue + L"]*)\\s*[" + wsEndingValue + L"]?";
+			wsRegexValue += L"\\s*[" + wsEndingValue + L"]?(.[^" + wsEndingValue + L"]*)\\s*[" + wsEndingValue + L"]?";
 		}
 		else
 			wsRegexValue += L"\\s*(.*)[\\n|\\r]?";

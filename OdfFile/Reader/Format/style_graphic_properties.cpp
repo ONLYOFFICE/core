@@ -216,7 +216,7 @@ void graphic_format_properties::apply_from(const graphic_format_properties * Oth
     _CP_APPLY_PROP3(fo_min_height_);
     _CP_APPLY_PROP3(fo_max_width_);
     _CP_APPLY_PROP3(fo_max_height_);
-	_CP_APPLY_PROP3(fo_wrap_option_);
+	//_CP_APPLY_PROP3(fo_wrap_option_);
 
     _CP_APPLY_PROP3(style_print_content_);
     _CP_APPLY_PROP3(style_protect_);

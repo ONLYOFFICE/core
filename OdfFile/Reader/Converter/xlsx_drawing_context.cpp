@@ -666,8 +666,19 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 	}
 	std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  obj.xlink_href_;			
 	
-	drawing.fill.bitmap->bCrop		= odf_reader::parse_clipping(obj.clipping_string_, fileName, drawing.fill.bitmap->cropRect, impl_->get_mediaitems()->applicationFonts());
-	drawing.fill.bitmap->bStretch	= true;
+	_image_file_::GetResolution(fileName.c_str(), drawing.fill.bitmap->width, drawing.fill.bitmap->height, impl_->get_mediaitems()->applicationFonts());
+
+	if (drawing.fill.bitmap->width && drawing.fill.bitmap->height)
+	{
+		drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(obj.clipping_string_, *drawing.fill.bitmap->width, *drawing.fill.bitmap->height, drawing.fill.bitmap->cropRect);
+		
+		if (drawing.fill.bitmap->sx_pt && drawing.fill.bitmap->sy_pt)
+		{
+			drawing.fill.bitmap->sx = (*drawing.fill.bitmap->sx_pt * 100. / *drawing.fill.bitmap->width) * 4 / 3;
+			drawing.fill.bitmap->sy = (*drawing.fill.bitmap->sy_pt * 100. / *drawing.fill.bitmap->height) * 4 / 3;
+		}
+	}
+	drawing.fill.bitmap->bStretch = true;
 
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;

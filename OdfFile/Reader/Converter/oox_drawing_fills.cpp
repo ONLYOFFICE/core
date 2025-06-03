@@ -163,10 +163,9 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(std::wstring(val.bitmap->name_space + L":blipFill"))
+		CP_XML_NODE(val.bitmap->name_space + L":blipFill")
 		{
-			//if (val.bitmap->rotate)	CP_XML_ATTR(ns + L":rotWithShape",*(val.bitmap->rotate));
-			//else CP_XML_ATTR(ns + L":rotWithShape",1);
+			CP_XML_ATTR2(ns_att + L"rotWithShape", false);
 
 			if (val.bitmap->dpi)	
 			{
@@ -241,10 +240,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 			}
 			if (val.bitmap->bTile)
 			{
+				if (!val.bitmap->bCrop)
+				{
+					CP_XML_NODE(ns + L":srcRect");
+				}
 				CP_XML_NODE(ns + L":tile")
 				{
-					//tx="0" ty="0" sx="100000" sy="100000"
-					CP_XML_ATTR2(ns_att + L"flip", "none");
+					CP_XML_ATTR2(ns_att + L"tx", 0);
+					CP_XML_ATTR2(ns_att + L"ty", 0);
+					CP_XML_ATTR2(ns_att + L"sx", (int)(val.bitmap->sx.get_value_or(100) * 1000));
+					CP_XML_ATTR2(ns_att + L"sy", (int)(val.bitmap->sy.get_value_or(100) * 1000));
 					CP_XML_ATTR2(ns_att + L"algn", L"ctr");
 				}
 			}

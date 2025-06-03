@@ -49,6 +49,7 @@
 #include "odfcontext.h"
 
 /////////////////////////////////////////////////////////////////////////////////
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/graphics/pro/Image.h"
 #include "../../../OOXML/Base/Unit.h"
@@ -56,28 +57,39 @@
 namespace _image_file_
 {
     bool GetResolution(const wchar_t* fileName, _CP_OPT(int)& Width, _CP_OPT(int)&Height, NSFonts::IApplicationFonts* appFonts)
-	{
-		CBgraFrame image;
-        MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
+	{ /// todooo fast detect resolutions
+		CImageFileFormatChecker image_checker;
 
-        bool bRet = false;
-        if ( appFonts && meta_file->LoadFromFile(fileName))
+		bool bRet = false;
+		if (image_checker.isImageFile(fileName))
 		{
-			double dX = 0, dY = 0, dW = 0, dH = 0;
-            meta_file->GetBounds(&dX, &dY, &dW, &dH);
-			
-			Width  = dW;
-			Height = dH;
-		}
-		else if ( image.OpenFile(fileName, 0 ))
-		{
-			Width  = image.get_Width();
-			Height = image.get_Height();
+			if (image_checker.eFileType == _CXIMAGE_FORMAT_WMF || image_checker.eFileType == _CXIMAGE_FORMAT_EMF
+				|| image_checker.eFileType == _CXIMAGE_FORMAT_SVM)
+			{
+				MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
 
-            bRet = true;
-		}
+				if (appFonts && meta_file->LoadFromFile(fileName))
+				{
+					double dX = 0, dY = 0, dW = 0, dH = 0;
+					meta_file->GetBounds(&dX, &dY, &dW, &dH);
 
-        RELEASEOBJECT(meta_file);
+					Width = dW;
+					Height = dH;
+				}
+				RELEASEOBJECT(meta_file);
+			}
+			else
+			{
+				CBgraFrame image;
+				if (image.OpenFile(fileName, 0))
+				{
+					Width = image.get_Width();
+					Height = image.get_Height();
+
+					bRet = true;
+				}
+			}
+		}
         return bRet;
 	}
 

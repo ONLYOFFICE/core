@@ -130,6 +130,7 @@ public:
 	oox_chart_context	& current_chart();
 	math_context		& get_math_context()	{ return math_context_; }
 	pptx_text_context	& get_text_context()	{ return pptx_text_context_; }
+	forms_context		& get_forms_context()	{ return forms_context_; }
 
 	pptx_table_context	& get_table_context()	{ return pptx_table_context_; }
 
@@ -166,7 +167,8 @@ private:
 	pptx_table_context		pptx_table_context_;
 	pptx_comments_context	pptx_comments_context_;
 	math_context			math_context_;
-	
+	forms_context			forms_context_;
+
 	std::vector<oox_chart_context_ptr> charts_;
 	
 	std::vector<pptx_xml_slide_ptr>			slides_;

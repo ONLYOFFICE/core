@@ -181,6 +181,7 @@ private:
 	void process_table	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_object	(drawing_object_description& obj, _pptx_drawing & drawing);
 	void process_media	(drawing_object_description& obj, _pptx_drawing & drawing);
+	void process_control(drawing_object_description& obj, _pptx_drawing& drawing);
 	
 	size_t				rId_;
 	mediaitems_ptr		mediaitems_;
@@ -209,6 +210,7 @@ void pptx_slide_context::Impl::process_drawings()
 			case typeShape:			process_shape(objects_[i], drawing);	break;
 			case typeTable:			process_table(objects_[i], drawing);	break;
 			case typeMedia:			process_media(objects_[i], drawing);	break;
+			case typeControl:		process_control(objects_[i], drawing);	break;
 			case typePDF:
 			case typeMsObject:	
 			case typeOleObject:		process_object(objects_[i], drawing);	break;
@@ -687,7 +689,7 @@ bool pptx_slide_context::start_frame()
 
 void pptx_slide_context::set_chart(const std::wstring & path)
 {
-	impl_->object_description_.type_		= typeChart;
+	impl_->object_description_.type_ = typeChart;
 	impl_->object_description_.xlink_href_	= path; 
 }
 
@@ -701,7 +703,18 @@ void pptx_slide_context::end_frame()
 		default_set();
 	}
 }
+void pptx_slide_context::start_control(const std::wstring& ctrlPropId, int type)
+{
+	impl_->object_description_.type_ = typeControl;
+	impl_->object_description_.shape_type_ = type; // object type for vml 
 
+	impl_->object_description_.xlink_href_ = ctrlPropId;
+}
+void pptx_slide_context::end_control()
+{
+	impl_->objects_.push_back(impl_->object_description_);
+	default_set();
+}
 
 void pptx_slide_context::end_shape()
 {
@@ -792,7 +805,25 @@ void pptx_slide_context::Impl::process_table(drawing_object_description & obj, _
 	add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
 
 }
+void pptx_slide_context::Impl::process_control(drawing_object_description& obj, _pptx_drawing& drawing)
+{
+	std::wstring ref;
+	bool isMediaInternal = true;
+	if (drawing.fill.bitmap)
+	{
+		drawing.fill.bitmap->rId = get_mediaitems()->add_or_find(drawing.fill.bitmap->xlink_href_, typeImage, isMediaInternal, ref, oox::document_place);
 
+		add_additional_rels(isMediaInternal, drawing.fill.bitmap->rId, ref, typeImage);
+
+		std::wstring fileName = odfPacket_ + FILE_SEPARATOR_STR + drawing.fill.bitmap->xlink_href_;
+		process_crop(obj, drawing, fileName);
+	}
+
+	std::wstring rId = get_mediaitems()->add_or_find(L"", obj.type_, isMediaInternal, ref, oox::document_place);
+
+	add_drawing(drawing, isMediaInternal, rId, ref, drawing.type);
+
+}
 void pptx_slide_context::Impl::process_shape(drawing_object_description & obj, _pptx_drawing & drawing)
 {
 	int PlaceHolderIndex = 1;

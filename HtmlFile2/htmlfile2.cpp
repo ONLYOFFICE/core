@@ -2403,6 +2403,7 @@ private:
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
 
+		//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
@@ -2619,7 +2620,6 @@ private:
 
 		CTextSettings oTSR(oTS);
 		oTSR.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", UINT_MAX, true);
-		oTSR.oAdditionalStyle.m_oFont.SetSize(20, UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
 	}

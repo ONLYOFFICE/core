@@ -1726,7 +1726,9 @@ namespace PdfWriter
 				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 				m_pMK->Remove(sAP);
 			}
-			return;
+			if (nAP != 0)
+				return;
+
 		}
 
 		if (!m_pAppearance)

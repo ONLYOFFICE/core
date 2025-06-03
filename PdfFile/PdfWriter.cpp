@@ -4327,7 +4327,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 
 	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
 		pButtonWidget->SetBorder(0, 1, {});
-	if (!pForm)
+	if (nTP != 1 && !pForm)
 		nTP = 0;
 
 	if (nTP != 1)

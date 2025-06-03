@@ -3,6 +3,7 @@
 #include <memory>
 #include <map>
 #include <set>
+// #include <assert.h>
 
 #include "../../../DesktopEditor/graphics/pro/Graphics.h"
 
@@ -473,13 +474,65 @@ namespace NSDocxRenderer
 			shape->ToBin(writer);
 		}
 
-		// if (!m_arCompleteObjectsXml.empty())
-		// 	xml_shapes.insert(xml_shapes.end(), m_arCompleteObjectsXml.begin(), m_arCompleteObjectsXml.end());
+		/*
+		// testing m_arCompleteObjectsBinBase64
+		NSWasm::CData test_writer;
+		test_writer.SkipLen();
+		test_writer.AddInt(static_cast<unsigned int>(m_arShapes.size()));
+		for (const auto& shape : m_arShapes)
+		{
+			if (!shape) continue;
+			shape->ToBin(test_writer);
+
+			int size = test_writer.GetSize();
+			BYTE* data = test_writer.GetBuffer();
+
+			int size_base64 = NSBase64::Base64EncodeGetRequiredLength(size);
+			char* data_base64 = new char[size_base64];
+
+			NSBase64::Base64Encode(data, size, (BYTE*)data_base64, &size_base64, NSBase64::B64_BASE64_FLAG_NOCRLF);
+			m_arCompleteObjectsBinBase64.push_back(std::string(data_base64, size_base64));
+
+			delete[] data_base64;
+		}
+		*/
+
+		/* comment it if testing */
+		if (!m_arCompleteObjectsBinBase64.empty())
+		{
+			for (const auto& elem : m_arCompleteObjectsBinBase64)
+			{
+				int buff_len = NSBase64::Base64DecodeGetRequiredLength(elem.size());
+				BYTE* buff = new BYTE[buff_len];
+				bool is_ok = NSBase64::Base64Decode(elem.c_str(), elem.size(), buff, &buff_len);
+
+				if (!is_ok)
+					continue;
+
+				writer.Write(buff, buff_len);
+
+				delete[] buff;
+			}
+		}
 
 		writer.WriteLen();
+
+		/*
+		test_writer.WriteLen();
+		size_t size = writer.GetSize();
+		size_t test_size = test_writer.GetSize();
+
+		assert(size != test_size);
+
+		auto buffer = writer.GetBuffer();
+		auto test_buffer = writer.GetBuffer();
+		for (size_t i = 0; i < size; ++i)
+			assert(buffer[i] == test_buffer[i]);
+		*/
+
 		return writer;
 	}
-	void CPage::AddCompleteXml(const std::wstring oXml)
+	void CPage::AddCompleteXml(const std::wstring& oXml)
 	{
 		m_arCompleteObjectsXml.push_back(oXml);
 	}
@@ -1814,7 +1867,8 @@ namespace NSDocxRenderer
 				}
 
 				// первая строка может быть с отступом
-				if (is_first_line)
+				double first_line_indent = line_top->m_dLeft - line_bot->m_dLeft;
+				if (is_first_line && first_line_indent < c_dMAX_FIRST_LINE_INDENT)
 				{
 					// если больше трех линий - проверим третью
 					if (index < ar_positions.size() - 2)
@@ -1877,7 +1931,7 @@ namespace NSDocxRenderer
 
 				double diff = 0;
 
-				if (position.right)
+				if (position.right && !position.left)
 					diff = line_with_first_left - curr_min_left;
 				else if (position.left || ar_indents[index])
 					diff = curr_max_right - line_with_first_right;

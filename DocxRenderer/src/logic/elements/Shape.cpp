@@ -1274,29 +1274,31 @@ namespace NSDocxRenderer
 			if (m_oBrush.Image == NULL)
 			{
 				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 
 				// coeff
-				double offset_left = (right - m_dImageLeft) / width - 1;
-				double offset_right = (m_dImageRight - left) / width - 1;
-				double offset_top = (bot - m_dImageTop) / height - 1;
-				double offset_bot = (m_dImageBot - top) / height - 1;
+				double src_offset_left = 1 - (width / (right - m_dImageLeft));
+				double src_offset_right = 1 - (width / (m_dImageRight - left));
+				double src_offset_top = 1 - (height / (bot - m_dImageTop));
+				double src_offset_bot = 1 - (height / (m_dImageBot - top));
 
 				// percentage
-				offset_left *= 100;
-				offset_right *= 100;
-				offset_top *= 100;
-				offset_bot *= 100;
+				src_offset_left *= 100;
+				src_offset_right *= 100;
+				src_offset_top *= 100;
+				src_offset_bot *= 100;
 
-				std::wstring l = std::to_wstring(static_cast<int>(-offset_left * 1000));
-				std::wstring t = std::to_wstring(static_cast<int>(-offset_right * 1000));
-				std::wstring r = std::to_wstring(static_cast<int>(-offset_top * 1000));
-				std::wstring b = std::to_wstring(static_cast<int>(-offset_bot * 1000));
+				std::wstring l = std::to_wstring(static_cast<int>(src_offset_left * 1000));
+				std::wstring t = std::to_wstring(static_cast<int>(src_offset_top * 1000));
+				std::wstring r = std::to_wstring(static_cast<int>(src_offset_right * 1000));
+				std::wstring b = std::to_wstring(static_cast<int>(src_offset_bot * 1000));
 
 				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(l);
 				oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(t);
 				oWriter.WriteBYTE(2); oWriter.WriteStringUtf16(r);
 				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(b);
 
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.EndRecord();
 
 				oWriter.StartRecord(3);

@@ -264,6 +264,9 @@ namespace NSWasm
 				memcpy(m_pDataCur, sStr.c_str(), bufferLen);
 			}
 
+			m_pDataCur += static_cast<unsigned int>(len);
+			m_lSizeCur += static_cast<unsigned int>(len);
+
 			if (!isBytes)
 				len /= 2;
 

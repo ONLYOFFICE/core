@@ -82,7 +82,9 @@ namespace NSDocxRenderer
 		std::vector<std::wstring> GetXmlShapes();
 		std::vector<std::wstring> GetXmlShapesPptx();
 		NSWasm::CData GetShapesBin();
-		void AddCompleteXml(const std::wstring oXml);
+
+		void AddCompleteXml(const std::wstring& oXml);
+		void AddCompleteBinBase64(const std::string& oBase64);
 
 	private:
 		using shape_ptr_t = std::shared_ptr<CShape>;
@@ -214,6 +216,7 @@ namespace NSDocxRenderer
 		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
 
 		std::vector<std::wstring> m_arCompleteObjectsXml;
+		std::vector<std::string>  m_arCompleteObjectsBinBase64;
 
 		size_t m_nShapeOrder = 0;
 	};

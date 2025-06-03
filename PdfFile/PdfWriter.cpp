@@ -4330,7 +4330,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (!pForm)
 		nTP = 0;
 
-	if (!wsValue.empty() && nTP != 1)
+	if (nTP != 1)
 	{
 		PdfWriter::CFontCidTrueType* pFont = pButtonWidget->GetFont();
 		if (!pFont)
@@ -4357,7 +4357,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 			dShiftBorder = 0;
 
 		bool bFont = GetFontData(pAppFonts, wsValue, pFont, isBold, isItalic, pUnicodes, unLen, pCodes, ppFonts);
-		if (!bFont)
+		if (!wsValue.empty() && !bFont)
 		{
 			RELEASEARRAYOBJECTS(pUnicodes);
 			RELEASEARRAYOBJECTS(pCodes);

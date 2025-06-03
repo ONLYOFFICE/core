@@ -1025,7 +1025,7 @@ int main(int argc, char* argv[])
 	RELEASEARRAYOBJECTS(pFileData);
 
 	// SPLIT & MERGE
-	if (true)
+	if (false)
 	{
 		int nBufferLen = NULL;
 		BYTE* pBuffer = NULL;
@@ -2067,7 +2067,6 @@ int main(int argc, char* argv[])
 	}
 
 	Close(pGrFile);
-	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;
 }

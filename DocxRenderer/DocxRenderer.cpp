@@ -209,7 +209,6 @@ HRESULT CDocxRenderer::IsSupportAdvancedCommand(const IAdvancedCommand::Advanced
 	return S_FALSE;
 }
 
-// TODO Bin Shapes
 HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 {
 	if (NULL == command)
@@ -221,14 +220,33 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 	{
 		CShapeStart* pShape = (CShapeStart*)command;
 		std::string& sUtf8Shape = pShape->GetShapeXML();
+		UINT nImageId = 0xFFFFFFFF;
+
 		Aggplus::CImage* pImage = pShape->GetShapeImage();
 		if (pImage)
 		{
 			std::shared_ptr<NSDocxRenderer::CImageInfo> pInfo = m_pInternal->m_oDocument.m_oImageManager.GenerateImageID(pImage);
-			std::string sNewId = "r:embed=\"rId" + std::to_string(pInfo->m_nId + c_iStartingIdForImages) + "\"";
-			NSStringUtils::string_replaceA(sUtf8Shape, "r:embed=\"\"", sNewId);
+			nImageId = pInfo->m_nId;
 		}
-		m_pInternal->m_oDocument.m_oCurrentPage.AddCompleteXml(UTF8_TO_U(sUtf8Shape));
+
+		if (!sUtf8Shape.empty() && '<' == sUtf8Shape.at(0))
+		{
+			if (0xFFFFFFFF != nImageId)
+			{
+				std::string sNewId = "r:embed=\"rId" + std::to_string(nImageId + c_iStartingIdForImages) + "\"";
+				NSStringUtils::string_replaceA(sUtf8Shape, "r:embed=\"\"", sNewId);
+			}
+			m_pInternal->m_oDocument.m_oCurrentPage.AddCompleteXml(UTF8_TO_U(sUtf8Shape));
+		}
+		else
+		{
+			if (0xFFFFFFFF != nImageId)
+			{
+				// TODO:
+			}
+			m_pInternal->m_oDocument.m_oCurrentPage.AddCompleteBinBase64(sUtf8Shape);
+		}
+
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

@@ -420,29 +420,31 @@ public:
 		oRenderer.SetExternalImageStorage(m_pImageStorage);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 
-		std::vector<std::wstring> arShapes;
-		if (0 == mode)
-			arShapes = oRenderer.ScanPage(m_pFile, nPageIndex);
-		else if (1 == mode)
-			arShapes = oRenderer.ScanPagePptx(m_pFile, nPageIndex);
-
-		int nLen = (int)arShapes.size();
-
 		NSWasm::CData oRes;
+		switch (mode)
+		{
+			case 0:
+			case 1:
+			{
+				std::vector<std::wstring> arShapes = (0 == mode) ? oRenderer.ScanPage(m_pFile, nPageIndex) : oRenderer.ScanPagePptx(m_pFile, nPageIndex);
+				int nLen = (int)arShapes.size();
 
-		// mode 2 is binary format
-		if (mode != 2)
-		{
-			oRes.SkipLen();
-			oRes.AddInt(nLen);
-			for (int i = 0; i < nLen; ++i)
-				oRes.WriteString(arShapes[i]);
-			oRes.WriteLen();
+				oRes.SkipLen();
+				oRes.AddInt(nLen);
+
+				for (int i = 0; i < nLen; ++i)
+					oRes.WriteString(arShapes[i]);
+
+				oRes.WriteLen();
+			}
+			case 2:
+			{
+				oRes = oRenderer.ScanPageBin(m_pFile, nPageIndex);
+			}
+			default:
+				return NULL;
 		}
-		else
-		{
-			oRes = oRenderer.ScanPageBin(m_pFile, nPageIndex);
-		}
+
 		BYTE* res = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();
 		return res;

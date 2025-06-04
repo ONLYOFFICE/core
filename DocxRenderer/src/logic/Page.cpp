@@ -474,60 +474,23 @@ namespace NSDocxRenderer
 			shape->ToBin(writer);
 		}
 
-		/*
-		// testing m_arCompleteObjectsBinBase64
-		NSWasm::CData test_writer;
-		test_writer.SkipLen();
-		test_writer.AddInt(static_cast<unsigned int>(m_arShapes.size()));
-		for (const auto& shape : m_arShapes)
-		{
-			if (!shape) continue;
-			shape->ToBin(test_writer);
-
-			int size = test_writer.GetSize();
-			BYTE* data = test_writer.GetBuffer();
-
-			int size_base64 = NSBase64::Base64EncodeGetRequiredLength(size);
-			char* data_base64 = new char[size_base64];
-
-			NSBase64::Base64Encode(data, size, (BYTE*)data_base64, &size_base64, NSBase64::B64_BASE64_FLAG_NOCRLF);
-			m_arCompleteObjectsBinBase64.push_back(std::string(data_base64, size_base64));
-
-			delete[] data_base64;
-		}
-		*/
-
-		/* comment it if testing */
 		if (!m_arCompleteObjectsBinBase64.empty())
 		{
 			for (const auto& elem : m_arCompleteObjectsBinBase64)
 			{
 				int buff_len = NSBase64::Base64DecodeGetRequiredLength(elem.size());
 				BYTE* buff = new BYTE[buff_len];
-				bool is_ok = NSBase64::Base64Decode(elem.c_str(), elem.size(), buff, &buff_len);
 
-				if (!is_ok)
-					continue;
+				if (NSBase64::Base64Decode(elem.c_str(), (int)elem.length(), buff, &buff_len))
+				{
+					writer.Write(buff, buff_len);
+				}
 
-				writer.Write(buff, buff_len);
 				delete[] buff;
 			}
 		}
 
 		writer.WriteLen();
-
-		/*
-		test_writer.WriteLen();
-		size_t size = writer.GetSize();
-		size_t test_size = test_writer.GetSize();
-
-		assert(size == test_size);
-
-		auto buffer = writer.GetBuffer();
-		auto test_buffer = writer.GetBuffer();
-		for (size_t i = 0; i < size; ++i)
-			assert(buffer[i] == test_buffer[i]);
-		*/
 
 		return writer;
 	}

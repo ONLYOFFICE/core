@@ -259,7 +259,7 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 					{
 						unsigned int* p_curr_len = (reinterpret_cast<unsigned int*>(buff + 1)); // skip first "type" byte
 						memcpy(buff + buff_len, rId_record.GetBuffer(), rId_record.GetSize());
-						*p_curr_len = *p_curr_len + static_cast<unsigned int>(rId_new.size());
+						*p_curr_len = *p_curr_len + static_cast<unsigned int>(rId_record.GetSize());
 					}
 				}
 

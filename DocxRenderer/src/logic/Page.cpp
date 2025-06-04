@@ -311,7 +311,7 @@ namespace NSDocxRenderer
 		// big white shape with page width & height skip
 		if (fabs(shape->m_dHeight - m_dHeight) <= c_dSHAPE_X_OFFSET_MM * 2 &&
 		        fabs(shape->m_dWidth - m_dWidth) <= c_dSHAPE_X_OFFSET_MM * 2 &&
-		        shape->m_oBrush.Color1 == c_iWhiteColor)
+		        shape->m_oBrush.Color1 == c_iWhiteColor && !info)
 			return;
 
 		shape->m_nOrder = ++m_nShapeOrder;

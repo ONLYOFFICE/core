@@ -257,9 +257,13 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 					// in pictures record is 2
 					if (buff[0] == 2)
 					{
-						unsigned int* p_curr_len = (reinterpret_cast<unsigned int*>(buff + 1)); // skip first "type" byte
 						memcpy(buff + buff_len, rId_record.GetBuffer(), rId_record.GetSize());
-						*p_curr_len = *p_curr_len + static_cast<unsigned int>(rId_record.GetSize());
+
+						unsigned int curr_len = 0;
+						memcpy(&curr_len, buff + 1, sizeof(unsigned int)); // first byte is "type" byte
+
+						curr_len += rId_record.GetSize();
+						memcpy(buff + 1, &curr_len, sizeof(unsigned int));
 					}
 				}
 

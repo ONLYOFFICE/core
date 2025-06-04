@@ -242,9 +242,14 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 		{
 			if (0xFFFFFFFF != nImageId)
 			{
-				std::string rId_new = "rId" + std::to_string(nImageId + c_iStartingIdForImages);
+				std::wstring rId_new = L"rId" + std::to_wstring(nImageId + c_iStartingIdForImages);
+				NSWasm::CData rId_record;
+				rId_record.StartRecord(100);
+				rId_record.WriteStringUtf16(rId_new);
+				rId_record.EndRecord();
+
 				int buff_len = NSBase64::Base64DecodeGetRequiredLength(sUtf8Shape.size());
-				int buff_len_new = buff_len + rId_new.size();
+				int buff_len_new = buff_len + rId_record.GetSize();
 				BYTE* buff = new BYTE[buff_len_new];
 
 				if (NSBase64::Base64Decode(sUtf8Shape.c_str(), (int)sUtf8Shape.size(), buff, &buff_len))
@@ -253,10 +258,11 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 					if (buff[0] == 2)
 					{
 						unsigned int* p_curr_len = (reinterpret_cast<unsigned int*>(buff + 1)); // skip first "type" byte
-						memcpy(buff + buff_len, rId_new.c_str(), rId_new.size());
+						memcpy(buff + buff_len, rId_record.GetBuffer(), rId_record.GetSize());
 						*p_curr_len = *p_curr_len + static_cast<unsigned int>(rId_new.size());
 					}
 				}
+
 				int size_base64 = NSBase64::Base64EncodeGetRequiredLength(buff_len_new);
 				char* data_base64 = new char[size_base64];
 				NSBase64::Base64Encode(buff, buff_len_new, (BYTE*)data_base64, &size_base64, NSBase64::B64_BASE64_FLAG_NOCRLF);

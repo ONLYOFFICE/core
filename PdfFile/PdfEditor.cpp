@@ -847,9 +847,10 @@ bool CObjectsManager::DecRefCount(int nID)
 {
 	if (m_mUniqueRef.find(nID) != m_mUniqueRef.end())
 	{
-		if (m_mUniqueRef[nID].pObj->IsHidden())
-			return false;
-		m_mUniqueRef[nID].pObj->SetHidden();
+		if (m_pDoc)
+			m_pDoc->FreeHidden(m_mUniqueRef[nID].pObj);
+		else
+			m_mUniqueRef[nID].pObj->SetHidden();
 		return true;
 	}
 	return false;
@@ -924,6 +925,7 @@ void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
 	}
 	}
 }
+void CObjectsManager::SetDoc(PdfWriter::CDocument* pDoc) { m_pDoc = pDoc; }
 
 CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
 {
@@ -1987,6 +1989,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 	if (!pPageTree)
 		return false;
 
+	m_mObjManager.SetDoc(pDoc);
 	int nPages = m_pReader->GetNumPages();
 	pPageTree->CreateFakePages(nPages);
 
@@ -2138,6 +2141,7 @@ bool CPdfEditor::MergePages(const std::wstring& wsPath, const std::wstring& wsPr
 	m_nOriginIndex = m_pReader->GetNumPages();
 	PDFDoc* pDocument = m_pReader->GetLastPDFDocument();
 	int nStartRefID = m_pReader->GetStartRefID(pDocument);
+	m_mObjManager.SetDoc(m_pWriter->GetDocument());
 	bool bRes = SplitPages(NULL, 0, pDocument, nStartRefID);
 	if (!bRes)
 		return false;
@@ -2197,7 +2201,7 @@ bool CPdfEditor::DeletePage(int nPageIndex)
 			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
-		pPage->SetHidden();
+		pDoc->FreeHidden(pPage);
 	}
 
 	return pDoc->DeletePage(nPageIndex);
@@ -2530,6 +2534,10 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 }
 bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 {
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	if (!pDoc)
+		return false;
+
 	PdfWriter::CObjectBase* pObj = m_mObjManager.GetObj(nID);
 	if (pObj)
 	{
@@ -2543,7 +2551,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 			oRef.initRef(nRefID, pEntry->type == xrefEntryCompressed ? 0 : pEntry->gen);
 			m_mObjManager.DeleteObjTree(&oRef, pPDFDocument->getXRef(), nStartRefID);
 		}
-		pObj->SetHidden();
+		pDoc->FreeHidden(pObj);
 		return true;
 	}
 	if (m_nMode == Mode::WriteNew)
@@ -2551,8 +2559,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (nPageIndex < 0 || !pPDFDocument || !pDoc)
+	if (nPageIndex < 0 || !pPDFDocument)
 		return false;
 
 	XRef* xref = pPDFDocument->getXRef();

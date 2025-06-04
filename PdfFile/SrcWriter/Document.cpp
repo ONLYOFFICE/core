@@ -1314,6 +1314,18 @@ namespace PdfWriter
 	{
 		m_pXref->Add(pObj);
 	}
+	void CDocument::FreeHidden(CObjectBase* pObj)
+	{
+		pObj->SetHidden();
+		if (!pObj->IsIndirect())
+			return;
+		TXrefEntry* pEntry = m_pXref->GetEntryByObjectId(pObj->GetObjId());
+		if (pEntry)
+		{
+			pEntry->nEntryType = 'f'; // FREE_ENTRY
+			pEntry->unGenNo = MAX_GENERATION_NUM;
+		}
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];

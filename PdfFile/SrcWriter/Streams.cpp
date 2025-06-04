@@ -80,22 +80,22 @@ namespace PdfWriter
 			return 0;
 
 		unsigned int unBytesRead = 1;
-		int nChar0, nChar1, nChar2, nChar3;
-		Read((BYTE*)&nChar0, &unBytesRead);
-		Read((BYTE*)&nChar1, &unBytesRead);
-		Read((BYTE*)&nChar2, &unBytesRead);
-		Read((BYTE*)&nChar3, &unBytesRead);
+		BYTE nChar0, nChar1, nChar2, nChar3;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
+		Read(&nChar2, &unBytesRead);
+		Read(&nChar3, &unBytesRead);
 
-		return (unsigned int)((nChar0 << 24) | (nChar1 << 16) | (nChar2 << 8) | nChar3);
+		return (unsigned int)(((unsigned int)nChar0 << 24) | ((unsigned int)nChar1 << 16) | ((unsigned int)nChar2 << 8) | nChar3);
 	}
 	unsigned char  CStream::ReadUChar()
 	{
 		if (!CheckSize(1))
 			return 0;
 
-		int nChar;
+		BYTE nChar;
 		unsigned int unBytesRead = 1;
-		Read((BYTE*)&nChar, &unBytesRead);
+		Read(&nChar, &unBytesRead);
 
 		return nChar;	
 	}
@@ -109,13 +109,44 @@ namespace PdfWriter
 			return 0;
 
 		unsigned int unBytesRead = 1;
-		int nChar0, nChar1;
-		Read((BYTE*)&nChar0, &unBytesRead);
-		Read((BYTE*)&nChar1, &unBytesRead);
+		BYTE nChar0, nChar1;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
 
-		return (unsigned short)((nChar0 << 8) | nChar1);
+		return (unsigned short)(((unsigned short)nChar0 << 8) | nChar1);
 	}
-    void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
+	double         CStream::ReadFixed()
+	{
+		if (!CheckSize(4))
+			return 0;
+
+		unsigned short integer  = ReadUShort();
+		unsigned short fraction = ReadUShort();
+
+		return (double)integer + ((double)fraction) / (1 << 16);
+	}
+	long long      CStream::ReadLongDateTime()
+	{
+		if (!CheckSize(8))
+			return 0;
+
+		unsigned int unBytesRead = 1;
+		BYTE nChar0, nChar1, nChar2, nChar3, nChar4, nChar5, nChar6, nChar7;
+		Read(&nChar0, &unBytesRead);
+		Read(&nChar1, &unBytesRead);
+		Read(&nChar2, &unBytesRead);
+		Read(&nChar3, &unBytesRead);
+		Read(&nChar4, &unBytesRead);
+		Read(&nChar5, &unBytesRead);
+		Read(&nChar6, &unBytesRead);
+		Read(&nChar7, &unBytesRead);
+
+		return (long long)(((long long)nChar0 << 56) | ((long long)nChar1 << 48) |
+						   ((long long)nChar2 << 40) | ((long long)nChar3 << 32) |
+						   ((long long)nChar4 << 24) | ((long long)nChar5 << 16) |
+						   ((long long)nChar6 << 8)  | nChar7);
+	}
+	void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
 	{
 		Write(pBuffer, unSize);
 		if (bCalcCheckSum)

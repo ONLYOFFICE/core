@@ -174,9 +174,9 @@ SOURCES += \
     SrcWriter/Font.cpp \
     SrcWriter/Font14.cpp \
     SrcWriter/FontCidTT.cpp \
-    SrcWriter/FontCFFWriter.cpp \
     SrcWriter/FontTT.cpp \
     SrcWriter/FontTTWriter.cpp \
+    SrcWriter/FontOTWriter.cpp \
     SrcWriter/GState.cpp \
     SrcWriter/Image.cpp \
     SrcWriter/Info.cpp \

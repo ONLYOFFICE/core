@@ -419,27 +419,96 @@ namespace PdfWriter
 			unsigned long Offset;
 			unsigned long Length;
 		};
-
 		typedef std::map<unsigned int, TableEntry> UIntToTableEntryMap;
+		struct HeadTable
+		{
+			double TableVersionNumber;
+			double FontRevision;
+			unsigned long CheckSumAdjustment;
+			unsigned long MagicNumber;
+			unsigned short Flags;
+			unsigned short UnitsPerEm;
+			long long Created;
+			long long Modified;
+			short XMin;
+			short YMin;
+			short XMax;
+			short YMax;
+			unsigned short MacStyle;
+			unsigned short LowerRectPPEM;
+			short FontDirectionHint;
+			short IndexToLocFormat;
+			short GlyphDataFormat;
+		};
+		struct MaxpTable
+		{
+			double TableVersionNumber;
+			unsigned short NumGlyphs;
+			unsigned short MaxPoints;
+			unsigned short MaxCountours;
+			unsigned short MaxCompositePoints;
+			unsigned short MaxCompositeContours;
+			unsigned short MaxZones;
+			unsigned short MaxTwilightPoints;
+			unsigned short MaxStorage;
+			unsigned short MaxFunctionDefs;
+			unsigned short MaxInstructionDefs;
+			unsigned short MaxStackElements;
+			unsigned short MaxSizeOfInstructions;
+			unsigned short MaxComponentElements;
+			unsigned short MaxCompontentDepth;
+		};
+		struct HHeaTable
+		{
+			double TableVersionNumber;
+			short Ascender;
+			short Descender;
+			short LineGap;
+			unsigned short AdvanceWidthMax;
+			short MinLeftSideBearing;
+			short MinRightSideBearing;
+			short XMaxExtent;
+			short CaretSlopeRise;
+			short CaretSlopeRun;
+			short CaretOffset;
+			short MetricDataFormat;
+			unsigned short NumberOfHMetrics;
+		};
+		struct HMtxTableEntry
+		{
+			unsigned short AdvanceWidth;
+			short LeftSideBearing;
+		};
+		typedef HMtxTableEntry* HMtxTable;
 
-		unsigned short mFaceIndex;
-		unsigned short mTablesCount;
 		unsigned long mHeaderOffset;
 		unsigned long mTableOffset;
 
-		UIntToTableEntryMap mTables;
+		unsigned short mFaceIndex;
+
+		HeadTable mHead;
+		MaxpTable mMaxp;
+		HHeaTable mHHea;
+		HMtxTable mHMtx;
 
 		CMemoryStream* mPrimitivesReader;
 		EOpenTypeInputType mFontType;
+		unsigned short mTablesCount;
+		UIntToTableEntryMap mTables;
 
 	public:
 		COpenTypeReader();
+		~COpenTypeReader();
 
 		bool ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex);
 		bool ReadOpenTypeHeader();
 		bool ReadOpenTypeSFNT();
 		bool ReadOpenTypeSFNTFromDfont();
 		unsigned long GetTag(const char* inTagName);
+		bool ReadHead();
+		bool ReadMaxP();
+		bool ReadHHea();
+		bool ReadHMtx();
 	};
 	COpenTypeReader::COpenTypeReader()
 	{
@@ -450,12 +519,18 @@ namespace PdfWriter
 		mPrimitivesReader = NULL;
 		mFontType = EOpenTypeInputType::EOpenTypeCFF;
 	}
+	COpenTypeReader::~COpenTypeReader()
+	{
+		RELEASEOBJECT(mPrimitivesReader);
+		RELEASEARRAYOBJECTS(mHMtx);
+	}
 	bool COpenTypeReader::ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex)
 	{
 		mFaceIndex = ushFaceIndex;
 
 		mPrimitivesReader = new CMemoryStream(nDataLength);
-		mPrimitivesReader->Read(pData, &nDataLength);
+		mPrimitivesReader->Write(pData, nDataLength);
+		mPrimitivesReader->Seek(0, SeekSet);
 
 		mHeaderOffset = mPrimitivesReader->Tell();
 		mTableOffset  = mPrimitivesReader->Tell();
@@ -463,6 +538,24 @@ namespace PdfWriter
 		bool status = ReadOpenTypeHeader();
 		if (!status)
 			return false;
+
+		status = ReadHead();
+		if (!status)
+			return false;
+
+		status = ReadMaxP();
+		if (!status)
+			return false;
+
+		status = ReadHHea();
+		if (!status)
+			return false;
+
+		status = ReadHMtx();
+		if (!status)
+			return false;
+
+		// TODO
 
 		return status;
 	}
@@ -676,6 +769,114 @@ namespace PdfWriter
 		return	((unsigned long)buffer[0] << 24) + ((unsigned long)buffer[1] << 16) +
 				((unsigned long)buffer[2] << 8) + buffer[3];
 	}
+	bool COpenTypeReader::ReadHead()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("head"));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+		mHead.TableVersionNumber = mPrimitivesReader->ReadFixed();
+		mHead.FontRevision       = mPrimitivesReader->ReadFixed();
+		mHead.CheckSumAdjustment = mPrimitivesReader->ReadUInt();
+		mHead.MagicNumber        = mPrimitivesReader->ReadUInt();
+		mHead.Flags              = mPrimitivesReader->ReadUShort();
+		mHead.UnitsPerEm         = mPrimitivesReader->ReadUShort();
+		mHead.Created            = mPrimitivesReader->ReadLongDateTime();
+		mHead.Modified           = mPrimitivesReader->ReadLongDateTime();
+		mHead.XMin               = mPrimitivesReader->ReadUShort();
+		mHead.YMin               = mPrimitivesReader->ReadUShort();
+		mHead.XMax               = mPrimitivesReader->ReadUShort();
+		mHead.YMax               = mPrimitivesReader->ReadUShort();
+		mHead.MacStyle           = mPrimitivesReader->ReadUShort();
+		mHead.LowerRectPPEM      = mPrimitivesReader->ReadUShort();
+		mHead.FontDirectionHint  = mPrimitivesReader->ReadUShort();
+		mHead.IndexToLocFormat   = mPrimitivesReader->ReadUShort();
+		mHead.GlyphDataFormat    = mPrimitivesReader->ReadUShort();
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadMaxP()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("maxp"));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		memset(&mMaxp, 0, sizeof(MaxpTable)); // set all with 0's in case the table's too short, so we'll have nice lookin values
+
+		mMaxp.TableVersionNumber = mPrimitivesReader->ReadFixed();
+		mMaxp.NumGlyphs = mPrimitivesReader->ReadUShort();
+
+		if (1.0 == mMaxp.TableVersionNumber)
+		{
+			mMaxp.MaxPoints             = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxCountours          = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxCompositePoints    = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxCompositeContours  = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxZones              = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxTwilightPoints     = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxStorage            = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxFunctionDefs       = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxInstructionDefs    = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxStackElements      = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxSizeOfInstructions = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxComponentElements  = mPrimitivesReader->ReadUShort();
+			mMaxp.MaxCompontentDepth    = mPrimitivesReader->ReadUShort();
+		}
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadHHea()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("hhea"));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		mHHea.TableVersionNumber  = mPrimitivesReader->ReadFixed();
+		mHHea.Ascender            = mPrimitivesReader->ReadUShort();
+		mHHea.Descender           = mPrimitivesReader->ReadUShort();
+		mHHea.LineGap             = mPrimitivesReader->ReadUShort();
+		mHHea.AdvanceWidthMax     = mPrimitivesReader->ReadUShort();
+		mHHea.MinLeftSideBearing  = mPrimitivesReader->ReadUShort();
+		mHHea.MinRightSideBearing = mPrimitivesReader->ReadUShort();
+		mHHea.XMaxExtent          = mPrimitivesReader->ReadUShort();
+		mHHea.CaretSlopeRise      = mPrimitivesReader->ReadUShort();
+		mHHea.CaretSlopeRun       = mPrimitivesReader->ReadUShort();
+		mHHea.CaretOffset         = mPrimitivesReader->ReadUShort();
+		mPrimitivesReader->Seek(8, SeekCur);
+		mHHea.MetricDataFormat    = mPrimitivesReader->ReadUShort();
+		mHHea.NumberOfHMetrics    = mPrimitivesReader->ReadUShort();
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadHMtx()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("hmtx"));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		mHMtx = new HMtxTableEntry[mMaxp.NumGlyphs];
+
+		unsigned int i = 0;
+		for(; i < mHHea.NumberOfHMetrics; ++i)
+		{
+			mHMtx[i].AdvanceWidth    = mPrimitivesReader->ReadUShort();
+			mHMtx[i].LeftSideBearing = mPrimitivesReader->ReadUShort();
+		}
+
+		for(; i < mMaxp.NumGlyphs; ++i)
+		{
+			mHMtx[i].AdvanceWidth = mHMtx[mHHea.NumberOfHMetrics - 1].AdvanceWidth;
+			mHMtx[i].LeftSideBearing = mPrimitivesReader->ReadUShort();
+		}
+
+		return !mPrimitivesReader->IsEof();
+	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType
 	//----------------------------------------------------------------------------------------
@@ -686,6 +887,11 @@ namespace PdfWriter
 			// Если шрифт не является OpenType CFF, завершаем
 			return;
 		}
+
+		COpenTypeReader mOpenTypeFile;
+		bool status = mOpenTypeFile.ReadOpenTypeFile(m_sFile, m_nLen, m_unFontIndex);
+		if (!status)
+			return;
 
 		int nOS2Index = SeekTable("OS/2");
 		if (-1 != nOS2Index && m_pTables[nOS2Index].nLen > 0)

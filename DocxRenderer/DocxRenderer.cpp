@@ -249,8 +249,7 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 				rId_record.EndRecord();
 
 				int buff_len = NSBase64::Base64DecodeGetRequiredLength(sUtf8Shape.size());
-				int buff_len_new = buff_len + rId_record.GetSize();
-				BYTE* buff = new BYTE[buff_len_new];
+				BYTE* buff = new BYTE[buff_len + rId_record.GetSize()];
 
 				if (NSBase64::Base64Decode(sUtf8Shape.c_str(), (int)sUtf8Shape.size(), buff, &buff_len))
 				{
@@ -266,7 +265,7 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 						memcpy(buff + 1, &curr_len, sizeof(unsigned int));
 					}
 				}
-
+				int buff_len_new = buff_len + rId_record.GetSize();
 				int size_base64 = NSBase64::Base64EncodeGetRequiredLength(buff_len_new);
 				char* data_base64 = new char[size_base64];
 				NSBase64::Base64Encode(buff, buff_len_new, (BYTE*)data_base64, &size_base64, NSBase64::B64_BASE64_FLAG_NOCRLF);

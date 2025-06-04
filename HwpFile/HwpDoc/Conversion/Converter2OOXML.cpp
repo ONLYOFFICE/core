@@ -1773,6 +1773,13 @@ void CConverter2OOXML::WriteText(const CParaText* pParaText, const std::vector<T
 			}
 			else if (unTextPosition + nParaTextPosition == oRangeTag.m_nEndPos)
 			{
+				if (nullptr == pHighlightColor)
+				{
+					WriteText(wsText.substr(unStartText, unTextPosition - unStartText), shParaShapeID, shParaStyleID, pParaText->GetCharShapeID(), oBuilder, oState);
+					unStartText = unTextPosition;
+					continue;
+				}
+
 				CRunnerStyle oRunnerStyle;
 				oRunnerStyle.SetHighlight(NormalizeHighlightColor(*pHighlightColor));
 

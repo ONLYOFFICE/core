@@ -210,6 +210,7 @@ namespace PdfWriter
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }
 		CResourcesDict*   CreateResourcesDict(bool bInline, bool bProcSet);
+		void              FreeHidden(CObjectBase* pObj);
 	private:		  
 					  
 		char*             GetTTFontTag();

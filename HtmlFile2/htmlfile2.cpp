@@ -281,7 +281,7 @@ struct CTextSettings
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle)
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -1397,8 +1397,20 @@ void replace_all(std::wstring& s, const std::wstring& s1, const std::wstring& s2
 
 void ReplaceSpaces(std::wstring& wsValue)
 {
-	boost::wregex oRegex(L"\\s+");
-	wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+	// boost::wregex oRegex(L"\\s+");
+	// wsValue = boost::regex_replace(wsValue, oRegex, L" ");
+
+	std::wstring::const_iterator itBegin = std::find_if(wsValue.cbegin(), wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	std::wstring::const_iterator itEnd;
+
+	while (wsValue.cend() != itBegin)
+	{
+		itEnd = std::find_if(itBegin, wsValue.cend(), [](wchar_t wchValue){ return !std::iswspace(wchValue) || 0xa0 == wchValue; });
+
+		wsValue.replace(itBegin, itEnd, L" ");
+
+		itBegin = std::find_if(itBegin + 1, wsValue.cend(), [](wchar_t wchValue){ return std::iswspace(wchValue) && 0xa0 != wchValue; });
+	}
 }
 
 std::wstring EncodeXmlString(const std::wstring& s)
@@ -1491,10 +1503,12 @@ private:
 	std::map<std::wstring, std::wstring> m_mFootnotes; // Сноски
 	std::map<std::wstring, UINT>         m_mBookmarks; // Закладки
 	std::map<std::wstring, UINT>         m_mDivs;      // Div элементы
+
+	NSFonts::IApplicationFonts*          m_pFonts;     // Необходимо для оптимизации работы со шрифтами
 public:
 
 	CHtmlFile2_Private() 
-		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1)
+		: m_nFootnoteId(1), m_nHyperlinkId(1), m_nNumberingId(1), m_nId(1), m_pFonts(NULL)
 	{
 		m_oPageData.SetSize  (std::to_wstring(DEFAULT_PAGE_WIDTH) + L"tw " + std::to_wstring(DEFAULT_PAGE_HEIGHT) + L"tw", 0, true);
 		m_oPageData.SetMargin(L"1440tw 1440tw 1440tw 1440tw", 0, true);
@@ -1514,6 +1528,9 @@ public:
 		m_oNoteXml         .Clear();
 		m_oNumberXml       .Clear();
 		m_oWebSettings     .Clear();
+
+		if (NULL != m_pFonts)
+			RELEASEINTERFACE(m_pFonts);
 	}
 
 	// Проверяет наличие тэга html
@@ -1868,7 +1885,7 @@ public:
 				sFileContent.replace(nFind, nFindEnd - nFind, "1.0");
 		}
 
-		std::wstring sRes = htmlToXhtml(sFileContent, bNeedConvert);
+		const std::wstring sRes{htmlToXhtml(sFileContent, bNeedConvert)};
 
 		#ifdef SAVE_NORMALIZED_HTML
 		#if 1 == SAVE_NORMALIZED_HTML
@@ -1903,7 +1920,7 @@ public:
 		file.CloseFile();
 		std::string xml_string = XmlUtils::GetUtf8FromFileContent(buffer, dwReadBytes);
 
-		const std::string sContentType = NSStringFinder::FindPropety(xml_string, "content-type", ":", ";");
+		const std::string sContentType = NSStringFinder::FindProperty(xml_string, "content-type", ":", ";");
 		bool bRes = false;
 
 		if(NSStringFinder::Equals(sContentType, "multipart/related"))
@@ -2210,8 +2227,8 @@ private:
 		if (m_mDivs.empty())
 			pXml->WriteString(L"<w:divs>");
 
-		NSCSS::CCompiledStyle oStyle;
-		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
+		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		const bool bInTable = ElementInTable(sSelectors);
 
@@ -2220,17 +2237,17 @@ private:
 		INT nMarTop    = (!bInTable) ? 100 : 0;
 		INT nMarBottom = (!bInTable) ? 100 : 0;
 
-		if (!oStyle.m_oMargin.GetLeft().Empty() && !oStyle.m_oMargin.GetLeft().Zero())
-			nMarLeft  = oStyle.m_oMargin.GetLeft().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
+		if (!pStyle->m_oMargin.GetLeft().Empty() && !pStyle->m_oMargin.GetLeft().Zero())
+			nMarLeft  = pStyle->m_oMargin.GetLeft().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
 
-		if (!oStyle.m_oMargin.GetRight().Empty() && !oStyle.m_oMargin.GetRight().Zero())
-			nMarRight = oStyle.m_oMargin.GetRight().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
+		if (!pStyle->m_oMargin.GetRight().Empty() && !pStyle->m_oMargin.GetRight().Zero())
+			nMarRight = pStyle->m_oMargin.GetRight().ToInt(NSCSS::Twips, m_oPageData.GetWidth().ToInt(NSCSS::Twips));
 
-		if (!oStyle.m_oMargin.GetTop().Empty() && !oStyle.m_oMargin.GetTop().Zero())
-			nMarTop = oStyle.m_oMargin.GetTop().ToInt(NSCSS::Twips, m_oPageData.GetHeight().ToInt(NSCSS::Twips));
+		if (!pStyle->m_oMargin.GetTop().Empty() && !pStyle->m_oMargin.GetTop().Zero())
+			nMarTop = pStyle->m_oMargin.GetTop().ToInt(NSCSS::Twips, m_oPageData.GetHeight().ToInt(NSCSS::Twips));
 
-		if (!oStyle.m_oMargin.GetBottom().Empty() && !oStyle.m_oMargin.GetBottom().Zero())
-			nMarBottom = oStyle.m_oMargin.GetBottom().ToInt(NSCSS::Twips, m_oPageData.GetHeight().ToInt(NSCSS::Twips));
+		if (!pStyle->m_oMargin.GetBottom().Empty() && !pStyle->m_oMargin.GetBottom().Zero())
+			nMarBottom = pStyle->m_oMargin.GetBottom().ToInt(NSCSS::Twips, m_oPageData.GetHeight().ToInt(NSCSS::Twips));
 
 		if (L"blockquote" == wsKeyWord)
 		{
@@ -2271,6 +2288,9 @@ private:
 			{
 				oNode.m_wsId = EncodeXmlString(m_oLightReader.GetText());
 				WriteBookmark(oXml, oNode.m_wsId);
+
+				if (!m_oStylesCalculator.HaveStylesById(oNode.m_wsId))
+					oNode.m_wsId.clear();
 			}
 			else if(sName == L"style")
 				oNode.m_wsStyle += m_oLightReader.GetText();
@@ -2357,14 +2377,14 @@ private:
 		readStream(&m_oDocXml, sSelectors, oTS);
 	}
 
-	bool ReadText(NSStringUtils::CStringBuilder* pXml, const std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
+	bool ReadText(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
 	{
 		if (NULL == pXml)
 			return false;
 
 		std::wstring sText = m_oLightReader.GetText();
 
-		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar);}))
+		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 			return false;
 
 		if(oTS.bBdo)
@@ -2378,9 +2398,12 @@ private:
 			CloseR(pXml);
 		}
 
+		GetSubClass(pXml, arSelectors);
+
 		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
 			WriteSpace(pXml);
 
+		//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
@@ -2451,7 +2474,10 @@ private:
 			}
 
 			if (sText.empty())
+			{
+				arSelectors.pop_back();
 				return true;
+			}
 		}
 		else
 			ReplaceSpaces(sText);
@@ -2486,6 +2512,7 @@ private:
 			CloseR(pXml);
 		}
 
+		arSelectors.pop_back();
 		return true;
 	}
 
@@ -2550,8 +2577,8 @@ private:
 		if (m_oState.m_bInP)
 		{
 			OpenR(pXml);
-			NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(arSelectors);
-			if(oStyle.m_oText.GetAlign() == L"both")
+			m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
+			if(arSelectors.back().m_pCompiledStyle->m_oText.GetAlign() == L"both")
 				pXml->WriteString(L"<w:tab/>");
 			pXml->WriteString(L"<w:br/>");
 			CloseR(pXml);
@@ -2593,7 +2620,6 @@ private:
 
 		CTextSettings oTSR(oTS);
 		oTSR.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", UINT_MAX, true);
-		oTSR.oAdditionalStyle.m_oFont.SetSize(20, UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
 	}
@@ -3355,24 +3381,23 @@ private:
 		return bResult;
 	}
 
-	void CalculateCellStyles(TTableCellStyle* pCellStyle, const std::vector<NSCSS::CNode>& arSelectors)
+	void CalculateCellStyles(TTableCellStyle* pCellStyle, std::vector<NSCSS::CNode>& arSelectors)
 	{
 		if (NULL == pCellStyle)
 			return;
 
-		NSCSS::CCompiledStyle oStyle;
-		m_oStylesCalculator.GetCompiledStyle(oStyle, arSelectors);
+		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
 
-		pCellStyle->m_wsVAlign     = oStyle.m_oDisplay.GetVAlign().ToWString();
-		pCellStyle->m_wsHAlign     = oStyle.m_oDisplay.GetHAlign().ToWString();
-		pCellStyle->m_oBackground  = oStyle.m_oBackground.GetColor();
-		pCellStyle->m_oHeight      = oStyle.m_oDisplay.GetHeight();
-		pCellStyle->m_oWidth       = oStyle.m_oDisplay.GetWidth();
-		pCellStyle->m_oPadding     = oStyle.m_oPadding;
-		pCellStyle->m_oBorder      = oStyle.m_oBorder;
+		pCellStyle->m_wsVAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetVAlign().ToWString();
+		pCellStyle->m_wsHAlign     = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHAlign().ToWString();
+		pCellStyle->m_oBackground  = arSelectors.back().m_pCompiledStyle->m_oBackground.GetColor();
+		pCellStyle->m_oHeight      = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetHeight();
+		pCellStyle->m_oWidth       = arSelectors.back().m_pCompiledStyle->m_oDisplay.GetWidth();
+		pCellStyle->m_oPadding     = arSelectors.back().m_pCompiledStyle->m_oPadding;
+		pCellStyle->m_oBorder      = arSelectors.back().m_pCompiledStyle->m_oBorder;
 
 		if (pCellStyle->m_wsHAlign.empty())
-			pCellStyle->m_wsHAlign = oStyle.m_oText.GetAlign().ToWString();
+			pCellStyle->m_wsHAlign = arSelectors.back().m_pCompiledStyle->m_oText.GetAlign().ToWString();
 	}
 
 	void ParseTableCaption(CTable& oTable, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
@@ -3494,7 +3519,7 @@ private:
 
 				GetSubClass(pCell->GetData(), sSelectors);
 
-				const std::vector<NSCSS::CNode> arNewSelectors{(std::vector<NSCSS::CNode>::const_iterator)std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& oNode){ return L"table" == oNode.m_wsName; }), sSelectors.cend()};
+				std::vector<NSCSS::CNode> arNewSelectors{(std::vector<NSCSS::CNode>::const_iterator)std::find_if(sSelectors.begin(), sSelectors.end(), [](const NSCSS::CNode& oNode){ return L"table" == oNode.m_wsName; }), sSelectors.cend()};
 
 				CalculateCellStyles(pCell->GetStyles(), arNewSelectors);
 
@@ -3613,17 +3638,18 @@ private:
 
 			CTextSettings oNewSettings{oTS};
 
-			NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
-			const std::wstring wsHighlight{oStyle.m_oBackground.GetColor().EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
-			                                                                              {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
-			                                                                              {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
-			                                                                              {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
-			                                                                              {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
-			                                                                              {{211, 211, 211}, L"lightGray"}})};
+			const std::wstring wsHighlight{sSelectors.back().m_pCompiledStyle->m_oBackground.GetColor()
+				        .EquateToColor({{{0,   0,   0},   L"black"},    {{0,   0,   255}, L"blue"},      {{0,   255, 255}, L"cyan"},
+			                            {{0,   255, 0},   L"green"},    {{255, 0,   255}, L"magenta"},   {{255, 0,   0},   L"red"},
+			                             {{255, 255, 0},   L"yellow"},   {{255, 255, 255}, L"white"},     {{0,   0,   139}, L"darkBlue"},
+			                             {{0,   139, 139}, L"darkCyan"}, {{0,   100, 0},   L"darkGreen"}, {{139, 0,   139}, L"darkMagenta"},
+			                             {{139, 0,   0},   L"darkRed"},  {{128, 128, 0},   L"darkYellow"},{{169, 169, 169}, L"darkGray"},
+			                             {{211, 211, 211}, L"lightGray"}})};
 
 			if (L"none" != wsHighlight)
-				oNewSettings.oAdditionalStyle.m_oText.SetHighlight(oStyle.m_oBackground.GetColor().ToWString(), NEXT_LEVEL);
+				oNewSettings.oAdditionalStyle.m_oText.SetHighlight(sSelectors.back().m_pCompiledStyle->m_oBackground.GetColor().ToWString(), NEXT_LEVEL);
 				// oNewSettings.AddRStyle(L"<w:shd w:val=\"" + wsHighlight + L"\"/>");
 
 			if (L"rt" == sSelectors.back().m_wsName)
@@ -3652,12 +3678,13 @@ private:
 
 		if (0 != oRT.GetSize())
 		{
-			NSCSS::CCompiledStyle oStyle{m_oStylesCalculator.GetCompiledStyle(sSelectors)};
+			m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
+			NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 			int nFontSize = 24;
 
-			if (!oStyle.m_oFont.GetSize().Empty() && !oStyle.m_oFont.GetSize().Zero())
-				nFontSize = oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2;
+			if (!pStyle->m_oFont.GetSize().Empty() && !pStyle->m_oFont.GetSize().Zero())
+				nFontSize = pStyle->m_oFont.GetSize().ToInt(NSCSS::Point) * 2;
 
 			bool bConsistsChineseCharacters = false;
 
@@ -3699,45 +3726,49 @@ private:
 		CTextSettings oTextSettings{oTS};
 		oTextSettings.sPStyle.clear();
 
-		NSCSS::CCompiledStyle oStyle;
-		m_oStylesCalculator.GetCompiledStyle(oStyle, sSelectors);
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
+		NSCSS::CCompiledStyle *pStyle = sSelectors.back().m_pCompiledStyle;
 
 		//Table styles
 		std::wstring wsFrame;
 
 		for (const std::pair<std::wstring, std::wstring>& oArgument : sSelectors.back().m_mAttributes)
 		{
-			if (oStyle.m_oBorder.Empty() && L"border" == oArgument.first)
+			if (L"border" == oArgument.first)
 			{
 				const int nWidth = NSStringFinder::ToInt(oArgument.second);
 
 				if (0 < nWidth)
 				{
-					oStyle.m_oBorder.SetStyle(L"outset",  0, true);
-					oStyle.m_oBorder.SetWidth(nWidth,     0, true);
-					oStyle.m_oBorder.SetColor(L"auto",    0, true);
 					oTable.SetRules(L"all");
+
+					if (!pStyle->m_oBorder.Empty())
+						continue;
+
+					pStyle->m_oBorder.SetStyle(L"outset",  0, true);
+					pStyle->m_oBorder.SetWidth(nWidth,     0, true);
+					pStyle->m_oBorder.SetColor(L"auto",    0, true);
 				}
-				else
+				else if (pStyle->m_oBorder.Empty())
 				{
-					oStyle.m_oBorder.SetNone(0, true);
+					pStyle->m_oBorder.SetNone(0, true);
 					oTable.SetRules(L"none");
 				}
 			}
 			else if (L"cellpadding" == oArgument.first)
-				oStyle.m_oPadding.SetValues(oArgument.second + L"px", 0, true);
+				pStyle->m_oPadding.SetValues(oArgument.second + L"px", 0, true);
 			else if (L"rules" == oArgument.first)
 				oTable.SetRules(oArgument.second);
 			else if (L"frame" == oArgument.first)
 				wsFrame = oArgument.second;
 		}
 
-		if (!wsFrame.empty() && oStyle.m_oBorder.Empty())
+		if (!wsFrame.empty() && pStyle->m_oBorder.Empty())
 		{
 			#define SetDefaultBorderSide(side) \
-				oStyle.m_oBorder.SetStyle##side(L"solid", 0, true); \
-				oStyle.m_oBorder.SetWidth##side(1,        0, true); \
-				oStyle.m_oBorder.SetColor##side(L"black", 0, true);
+				pStyle->m_oBorder.SetStyle##side(L"solid", 0, true); \
+				pStyle->m_oBorder.SetWidth##side(1,        0, true); \
+				pStyle->m_oBorder.SetColor##side(L"black", 0, true);
 
 			if (NSStringFinder::Equals(L"border", wsFrame))
 			{
@@ -3771,18 +3802,18 @@ private:
 			}
 		}
 
-		if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
+		if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Collapse)
 			oTable.SetCellSpacing(0);
 		else if (sSelectors.back().m_mAttributes.end() != sSelectors.back().m_mAttributes.find(L"cellspacing"))
 			oTable.SetCellSpacing(NSStringFinder::ToInt(sSelectors.back().m_mAttributes[L"cellspacing"]));
-		else if (oStyle.m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
+		else if (pStyle->m_oBorder.GetCollapse() == NSCSS::NSProperties::BorderCollapse::Separate)
 			oTable.SetCellSpacing(15);
 
-		oTable.SetWidth(oStyle.m_oDisplay.GetWidth());
-		oTable.SetBorder(oStyle.m_oBorder);
-		oTable.SetPadding(oStyle.m_oPadding);
-		oTable.SetMargin(oStyle.m_oMargin);
-		oTable.SetAlign(oStyle.m_oDisplay.GetHAlign().ToWString());
+		oTable.SetWidth(pStyle->m_oDisplay.GetWidth());
+		oTable.SetBorder(pStyle->m_oBorder);
+		oTable.SetPadding(pStyle->m_oPadding);
+		oTable.SetMargin(pStyle->m_oMargin);
+		oTable.SetAlign(pStyle->m_oDisplay.GetHAlign().ToWString());
 		//------
 
 		int nDeath = m_oLightReader.GetDepth();
@@ -4327,19 +4358,16 @@ private:
 		return true;
 	}
 
-	std::wstring wrP(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	std::wstring wrP(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		OpenP(oXml);
 
 		if (m_oState.m_bWasPStyle)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
-		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
-		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
-
-		std::wstring sPStyle = GetStyle(oStyle, true);
+		std::wstring sPStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, true);
 
 		if (sPStyle.empty() && !ElementInTable(sSelectors))
 			sPStyle = L"normal-web";
@@ -4347,7 +4375,7 @@ private:
 		if (sPStyle.empty() && oTS.sPStyle.empty())
 			return L"";
 
-		m_oXmlStyle.WriteLitePStyle(oStyleSetting);
+		m_oXmlStyle.WriteLitePStyle(oTS.oAdditionalStyle);
 		const std::wstring sPSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
 
@@ -4367,19 +4395,16 @@ private:
 		return sPStyle;
 	}
 
-	std::wstring wrRPr(NSStringUtils::CStringBuilder* oXml, const std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
+	std::wstring wrRPr(NSStringUtils::CStringBuilder* oXml, std::vector<NSCSS::CNode>& sSelectors, const CTextSettings& oTS)
 	{
 		if (!m_oState.m_bInP)
 			return L"";
 
-		NSCSS::CCompiledStyle oStyleSetting{oTS.oAdditionalStyle};
-		NSCSS::CCompiledStyle oStyle = m_oStylesCalculator.GetCompiledStyle(sSelectors);
+		m_oStylesCalculator.CalculateCompiledStyle(sSelectors);
 
-		NSCSS::CCompiledStyle::StyleEquation(oStyle, oStyleSetting);
+		std::wstring sRStyle = GetStyle(*sSelectors.back().m_pCompiledStyle, false);
 
-		std::wstring sRStyle = GetStyle(oStyle, false);
-
-		m_oXmlStyle.WriteLiteRStyle(oStyleSetting);
+		m_oXmlStyle.WriteLiteRStyle(oTS.oAdditionalStyle);
 		const std::wstring sRSettings = m_oXmlStyle.GetStyle();
 		m_oXmlStyle.Clear();
 
@@ -4389,7 +4414,7 @@ private:
 
 		if (0 != nCalculatedFontChange)
 		{
-			int nFontSizeLevel{static_cast<int>((oStyle.m_oFont.Empty()) ? 3 : GetFontSizeLevel(oStyle.m_oFont.GetSize().ToInt(NSCSS::Point) * 2))};
+			int nFontSizeLevel{static_cast<int>((sSelectors.back().m_pCompiledStyle->m_oFont.Empty()) ? 3 : GetFontSizeLevel(sSelectors.back().m_pCompiledStyle->m_oFont.GetSize().ToInt(NSCSS::Point) * 2))};
 
 			nFontSizeLevel += nCalculatedFontChange;
 
@@ -4598,14 +4623,13 @@ private:
 		if (wsSvg.empty())
 			return false;
 
-		NSFonts::IApplicationFonts* pFonts = NSFonts::NSApplication::Create();
-		pFonts->Initialize();
+		if (NULL == m_pFonts)
+			m_pFonts = NSFonts::NSApplication::Create();
 
-		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(pFonts);
+		MetaFile::IMetaFile* pSvgReader = MetaFile::Create(m_pFonts);
 		if (!pSvgReader->LoadFromString(wsSvg))
 		{
 			RELEASEINTERFACE(pSvgReader);
-			RELEASEINTERFACE(pFonts);
 			return false;
 		}
 
@@ -4685,7 +4709,6 @@ private:
 			free(pBgraData);
 
 		RELEASEINTERFACE(pSvgReader);
-		RELEASEINTERFACE(pFonts);
 
 		return true;
 	}

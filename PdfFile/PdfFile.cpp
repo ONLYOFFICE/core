@@ -109,6 +109,8 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	if (wsDstFile.empty() || !m_pInternal->pReader)
 		return false;
 
+	m_pInternal->pReader->CleanUp();
+
 	RELEASEOBJECT(m_pInternal->pWriter);
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
 
@@ -340,7 +342,10 @@ void CPdfFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, do
 bool CPdfFile::MergePages(BYTE* data, DWORD length, int nMaxID, const std::string& sPrefixForm)
 {
 	if (!m_pInternal->pReader)
+	{
+		free(data);
 		return false;
+	}
 	return m_pInternal->pReader->MergePages(data, length, L"", nMaxID, sPrefixForm) && (m_pInternal->pReader->GetError() == 0);
 }
 bool CPdfFile::UnmergePages()

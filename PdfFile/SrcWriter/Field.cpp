@@ -1757,7 +1757,7 @@ namespace PdfWriter
 		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CDateTimeField
 	//----------------------------------------------------------------------------------------
 	CDateTimeField::CDateTimeField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
@@ -1768,11 +1768,25 @@ namespace PdfWriter
 	{
 		SetFormat(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsFormat));
 	}
+	std::string CorrectFormat(const std::string& s)
+	{
+		std::string sRes = s;
+		NSStringUtils::string_replaceA(sRes, "am/pm", "tt");
+		NSStringUtils::string_replaceA(sRes, "AM/PM", "tt");
+		NSStringUtils::string_replaceA(sRes, "M", "m");
+		NSStringUtils::string_replaceA(sRes, "Y", "y");
+		NSStringUtils::string_replaceA(sRes, "D", "d");
+		NSStringUtils::string_replaceA(sRes, ":mm", ":MM");
+		NSStringUtils::string_replaceA(sRes, "m\xeb\xb6\x84", "M\xeb\xb6\x84");
+		NSStringUtils::string_replaceA(sRes, "m\xe5\x88\x86", "M\xe5\x88\x86");
+		return sRes;
+	}
 	void CDateTimeField::SetFormat(const std::string& sFormat)
 	{
-		std::string script = "AFDate_FormatEx(\"" + sFormat + "\");";
+		std::string sCorrectFormat = CorrectFormat(sFormat);
+		std::string script = "AFDate_FormatEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("F", script);
-		script = "AFDate_KeystrokeEx(\"" + sFormat + "\");";
+		script = "AFDate_KeystrokeEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("K", script);
 	}
 	//----------------------------------------------------------------------------------------
@@ -2567,7 +2581,7 @@ namespace PdfWriter
 		if (pFont)
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 	}
-	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
+	void CAnnotAppearanceObject::DrawPictureInline(const double& dWidth, const double& dHeight, const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
 	{
 		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
 		if (!m_pStream || !pAnnot || !sImageName)
@@ -2577,10 +2591,6 @@ namespace PdfWriter
 
 		if (bRespectBorder)
 		{
-			TRect oRect = pAnnot->GetRect();
-			double dWidth  = fabs(oRect.fRight - oRect.fLeft);
-			double dHeight = fabs(oRect.fBottom - oRect.fTop);
-
 			double dBorderSize = pAnnot->GetBorderWidth();
 			EBorderType nType = pAnnot->GetBorderType();
 			if (nType == EBorderType::Beveled || nType == EBorderType::Inset)
@@ -3163,7 +3173,7 @@ namespace PdfWriter
 		CLineAnnotation* pAnnot = (CLineAnnotation*)m_pAnnot;
 		DrawLineArrow(m_pStream, dBorderSize, pAnnot->dL[0], pAnnot->dL[1], pAnnot->dL[2], pAnnot->dL[3], pAnnot->m_nLE1, pAnnot->m_nLE2, dLL, dLLE, dLLO);
 	}
-	void CAnnotAppearanceObject::DrawCheckBoxCircle(bool bSet, bool bN)
+	void CAnnotAppearanceObject::DrawCheckBoxCircle(int nRotate, bool bSet, bool bN)
 	{
 		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
 		if (!pAnnot)
@@ -3178,6 +3188,8 @@ namespace PdfWriter
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
 		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
 		double dCX = dW / 2.0, dCY = dH / 2.0;
 		double dR = std::min(dW, dH) / 2.0;
 
@@ -3274,7 +3286,7 @@ namespace PdfWriter
 		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dShift);
 		m_pStream->WriteStr("f\012Q\012");
 	}
-	void CAnnotAppearanceObject::DrawCheckBoxSquare(bool bSet, bool bN)
+	void CAnnotAppearanceObject::DrawCheckBoxSquare(int nRotate, bool bSet, bool bN)
 	{
 		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
 		if (!pAnnot)
@@ -3289,6 +3301,8 @@ namespace PdfWriter
 		}
 		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
 		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
 
 		// Задний фон
 		m_pStream->WriteStr("q\012");

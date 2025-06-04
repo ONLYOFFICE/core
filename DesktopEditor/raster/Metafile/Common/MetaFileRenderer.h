@@ -236,7 +236,7 @@ namespace MetaFile
 			m_bUpdatedClip = false;
 		}
 		
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 		{
 			if (!pBuffer || 0 == unWidth || 0 == unHeight)
 				return;
@@ -284,7 +284,11 @@ namespace MetaFile
 				m_pRenderer->SetTransform(dKx * dM11, dKx * dM12, dKy * dM21, dKy * dM22, dShiftKoefX * dM11 + dShiftKoefY * dM21 + dMx, dShiftKoefX * dM12 + dShiftKoefY * dM22 + dMy);
 			}
 
+			m_pRenderer->BeginCommand(c_nLayerType);
+			m_pRenderer->put_BlendMode(unBlendMode);
 			m_pRenderer->DrawImage(&oImage, dImageX, dImageY, dImageW, dImageH);
+			m_pRenderer->EndCommand(c_nLayerType);
+			m_pRenderer->put_BlendMode(BLEND_MODE_DEFAULT);
 		}
 		void DrawDriverString(const std::wstring& wsString, const std::vector<TPointD>& arPoints)
 		{

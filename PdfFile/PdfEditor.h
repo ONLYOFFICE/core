@@ -49,16 +49,20 @@ struct CObjectInfo
 class CObjectsManager
 {
 public:
+	CObjectsManager() : m_pDoc(NULL) {}
+
 	void AddObj(int nID, PdfWriter::CObjectBase* pObj);
 	PdfWriter::CObjectBase* GetObj(int nID);
 	bool IncRefCount(int nID);
 	bool DecRefCount(int nID);
 	int FindObj(PdfWriter::CObjectBase* pObj);
 	void DeleteObjTree(Object* obj, XRef* xref, int nStartRefID);
+	void SetDoc(PdfWriter::CDocument* pDoc);
 
 	std::vector<int> m_arrSplitAddPages;
 
 private:
+	PdfWriter::CDocument* m_pDoc;
 	std::map<int, CObjectInfo> m_mUniqueRef; // map уникальных объектов
 };
 

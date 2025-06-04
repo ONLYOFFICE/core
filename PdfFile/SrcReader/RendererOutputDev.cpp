@@ -705,8 +705,15 @@ namespace PdfReader
 		if (oFontObject.isDict())
 		{
 			Dict* pFontDict = oFontObject.getDict();
-			Object oFontDescriptor;
-			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+			Object oFontDescriptor, oDescendantFonts;
+			pFontDict->lookup("FontDescriptor", &oFontDescriptor);
+			if (!oFontDescriptor.isDict() && pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray())
+			{
+				oFontDescriptor.free(); oFontObject.free();
+				if (oDescendantFonts.arrayGet(0, &oFontObject)->isDict())
+					oFontObject.dictLookup("FontDescriptor", &oFontDescriptor);
+			}
+			if (oFontDescriptor.isDict())
 			{
 				Object oDictItem;
 				oFontDescriptor.dictLookup("FontName", &oDictItem);
@@ -777,14 +784,14 @@ namespace PdfReader
 
 				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 				oDictItem.free();
-
 			}
 			else
 				oFontSelect.wsName = new std::wstring(wsFontBaseName);
-			oFontDescriptor.free();
+			oFontDescriptor.free(); oDescendantFonts.free();
 		}
 		else
 			oFontSelect.wsName = new std::wstring(wsFontBaseName);
+		oFontObject.free();
 
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;

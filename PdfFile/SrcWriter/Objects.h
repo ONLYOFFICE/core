@@ -508,16 +508,16 @@ namespace PdfWriter
 		CXref(CDocument* pDocument, unsigned int unRemoveId, unsigned int unRemoveGen);
 		~CXref();
 
-		TXrefEntry* GetEntry(unsigned int unIndex) const;
-		TXrefEntry* GetEntryByObjectId(unsigned int unObjectId) const;
-		CXref*      GetXrefByObjectId(unsigned int unObjectId);
-		void        Add(CObjectBase* pObject, unsigned int unObjectGen = 0);
-		void        WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
-		void        SetPrev(CXref* pPrev)
+		TXrefEntry*  GetEntry(unsigned int unIndex) const;
+		TXrefEntry*  GetEntryByObjectId(unsigned int unObjectId) const;
+		CXref*       GetXrefByObjectId(unsigned int unObjectId);
+		void         Add(CObjectBase* pObject, unsigned int unObjectGen = 0);
+		void         WriteToStream(CStream* pStream, CEncrypt* pEncrypt, bool bStream = false);
+		void         SetPrev(CXref* pPrev)
 		{
-			m_pPrev = pPrev;
+			m_pPrev  = pPrev;
 		}
-		void        SetPrevAddr(unsigned int unAddr)
+		void         SetPrevAddr(unsigned int unAddr)
 		{
 			m_unAddr = unAddr;
 		}
@@ -529,15 +529,15 @@ namespace PdfWriter
 		{
 			return m_unStartOffset + m_arrEntries.size();
 		}
-		int         GetCount() const
+		int          GetCount() const
 		{
 			return m_arrEntries.size();
 		}
-		CDictObject*GetTrailer() const
+		CDictObject* GetTrailer() const
 		{
 			return m_pTrailer;
 		}
-		bool        IsPDFA() const;
+		bool         IsPDFA() const;
 
 	private:
 

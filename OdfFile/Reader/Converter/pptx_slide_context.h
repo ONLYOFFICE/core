@@ -102,6 +102,9 @@ public:
 		void set_media_param(std::wstring name, std::wstring value);
 	void end_frame();
 
+	void start_control(const std::wstring& ctrlPropId, int type);
+	void end_control();
+
 	void start_action	(std::wstring action);
 		void set_link	(std::wstring link, _rels_type typeRels = typeHyperlink); 
 	void end_action		();

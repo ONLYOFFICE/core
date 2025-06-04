@@ -707,6 +707,9 @@ namespace NExtractTools
 				password = params.getSavePassword();
 				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 					return false;
+
+				RELEASEOBJECT(params.m_sPassword);
+				params.m_sPassword = new std::wstring(params.getSavePassword());
 			}
 			else
 				return false;

@@ -127,6 +127,7 @@ public:
 	virtual BYTE* GetLinks(int nPageIndex);
 
 	bool ValidMetaData();
+	// Захватывает полученную память malloc data
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
 	int GetRotate(int nPageIndex);

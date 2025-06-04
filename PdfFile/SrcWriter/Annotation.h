@@ -193,7 +193,7 @@ namespace PdfWriter
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage();
-		virtual CAnnotAppearanceObject* StartAP();
+		virtual CAnnotAppearanceObject* StartAP(int nRotate);
 		TRect& GetRect() { return m_oRect; }
 		void SetXref(CXref* pXref) { m_pXref = pXref; }
 		virtual void SetDocument(CDocument* pDocument);
@@ -475,14 +475,14 @@ namespace PdfWriter
 		int  GetParentID()     { return m_nParentID; }
 		bool GetFontIsBold()   { return m_bBold; }
 		bool GetFontIsItalic() { return m_bItalic; }
+		int GetR();
 		bool HaveBG();
 		bool HaveBC();
 		BYTE GetQ() { return m_nQ; }
 
-		void APFromFakePage();
 		void SetEmptyAP();
 		void SetAP(const std::wstring& wsValue, unsigned short* pCodes, unsigned int unCount, double dX, double dY, CFontCidTrueType** ppFonts, double* pShifts);
-		virtual CAnnotAppearanceObject* StartAP() override;
+		virtual CAnnotAppearanceObject* StartAP(int nRotate) override;
 		void AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts = NULL, const double* pShifts = NULL);
 		void EndAP();
 	};
@@ -546,7 +546,7 @@ namespace PdfWriter
 		bool NeedAP_N_Yes();
 		void RenameAP_N_Yes(const std::wstring& wsAP_N_Yes);
 		virtual void SetFlag (const int& nFlag);
-		void SetAP();
+		void SetAP(int nRotate);
 		void SwitchAP(const std::string& sV, int nI = -1);
 		std::string GetTC(bool bCAPS);
 

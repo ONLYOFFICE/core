@@ -883,7 +883,7 @@ namespace PdfWriter
 				if (pEntry->nEntryType == FREE_ENTRY)
 				{
 					if (pNextFreeObj)
-						pNextFreeObj->unByteOffset = pXref->m_unStartOffset;
+						pNextFreeObj->unByteOffset = pXref->m_unStartOffset + unIndex;
 					pNextFreeObj = pEntry;
 				}
 				else

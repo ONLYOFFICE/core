@@ -56,7 +56,7 @@ public:
 	FrtHeader	frtHeader;
 
 	_UINT32		nThemeDataSize;
-	boost::shared_array<char> pThemeData;
+	boost::shared_array<BYTE> pThemeData;
 };
 
 } // namespace XLS

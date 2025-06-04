@@ -325,7 +325,7 @@ namespace PdfWriter
 		}
 		return sRes;
 	}
-	CAnnotAppearanceObject* CAnnotation::StartAP()
+	CAnnotAppearanceObject* CAnnotation::StartAP(int nRotate)
 	{
 		m_pAppearance = new CAnnotAppearance(m_pXref, this);
 		if (!m_pAppearance)
@@ -1468,6 +1468,16 @@ namespace PdfWriter
 			return GetColor(dynamic_cast<CArrayObject*>(m_pMK->Get("BC")), true);
 		return "";
 	}
+	int CWidgetAnnotation::GetR()
+	{
+		if (m_pMK)
+		{
+			CObjectBase* pObj = m_pMK->Get("R");
+			if (pObj && pObj->GetType() == object_type_NUMBER)
+				return ((CNumberObject*)pObj)->Get();
+		}
+		return 0;
+	}
 	bool CWidgetAnnotation::HaveBG()
 	{
 		if (!m_pMK)
@@ -1481,13 +1491,6 @@ namespace PdfWriter
 			return false;
 		CObjectBase* pObj = m_pMK->Get("BC");
 		return pObj && pObj->GetType() == object_type_ARRAY;
-	}
-	void CWidgetAnnotation::APFromFakePage()
-	{
-		if (!m_pAppearance)
-			return;
-		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
-		pNormal->AddBBox(0, 0, GetWidth(), GetHeight());
 	}
 	void CWidgetAnnotation::SetEmptyAP()
 	{
@@ -1510,12 +1513,39 @@ namespace PdfWriter
 		CAnnotAppearanceObject* pNormal = m_pAppearance->GetNormal();
 		pNormal->DrawSimpleText(wsValue, pCodes, unCount, m_pFont, m_dFontSize, dX, dY, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop), ppFonts, pShifts);
 	}
-	CAnnotAppearanceObject* CWidgetAnnotation::StartAP()
+	CAnnotAppearanceObject* CWidgetAnnotation::StartAP(int nRotate)
 	{
-		CAnnotAppearanceObject* pNormal = CAnnotation::StartAP();
+		CAnnotAppearanceObject* pNormal = CAnnotation::StartAP(nRotate);
 		m_pResources = dynamic_cast<CResourcesDict*>(pNormal->Get("Resources"));
-		pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, fabs(m_oRect.fRight - m_oRect.fLeft), fabs(m_oRect.fBottom - m_oRect.fTop));
+		double dW = fabs(m_oRect.fRight - m_oRect.fLeft);
+		double dH = fabs(m_oRect.fBottom - m_oRect.fTop);
+		if (nRotate == 0 || nRotate == 180)
+			pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, dW, dH);
+		else
+			pNormal->StartDrawText(m_pFont, m_dFontSize, 0, 0, 0, NULL, dH, dW);
 		pNormal->EndText();
+
+		if (nRotate == 0)
+		{
+			pNormal->AddBBox(0, 0, dW, dH);
+			pNormal->AddMatrix(1, 0, 0, 1, 0, 0);
+		}
+		if (nRotate == 90)
+		{
+			pNormal->AddBBox(0, 0, dH, dW);
+			pNormal->AddMatrix(0, 1, -1, 0, dW, 0);
+		}
+		else if (nRotate == 180)
+		{
+			pNormal->AddBBox(0, 0, dW, dH);
+			pNormal->AddMatrix(-1, 0, 0, -1, dW, dH);
+		}
+		else if (nRotate == 270)
+		{
+			pNormal->AddBBox(0, 0, dH, dW);
+			pNormal->AddMatrix(0, -1, 1, 0, 0, dH);
+		}
+
 		return pNormal;
 	}
 	void CWidgetAnnotation::AddLineToAP(const double& dX, const double& dY, unsigned short* pCodes, const unsigned int& unCodesCount, CFontCidTrueType** ppFonts, const double* pShifts)
@@ -1682,6 +1712,25 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
+		if (!pForm && !pCodes)
+		{
+			CObjectBase* pAP = Get("AP");
+			if (pAP && pAP->GetType() == object_type_DICT)
+			{
+				CDictObject* pDAP = (CDictObject*)pAP;
+				std::string sAP = nAP == 0 ? "N" : (nAP == 1 ? "R" : "D");
+				pDAP->Remove(sAP);
+			}
+			if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			if (nAP != 0)
+				return;
+
+		}
+
 		if (!m_pAppearance)
 		{
 			m_pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -1732,6 +1781,29 @@ namespace PdfWriter
 
 		double dHeight = fabs(m_oRect.fTop - m_oRect.fBottom);
 		double dWidth  = fabs(m_oRect.fRight - m_oRect.fLeft);
+		int nRotate = GetR();
+		if (nRotate == 0)
+		{
+			pAppearance->AddBBox(0, 0, dWidth, dHeight);
+			pAppearance->AddMatrix(1, 0, 0, 1, 0, 0);
+		}
+		if (nRotate == 90)
+		{
+			pAppearance->AddBBox(0, 0, dHeight, dWidth);
+			pAppearance->AddMatrix(0, 1, -1, 0, dWidth, 0);
+		}
+		else if (nRotate == 180)
+		{
+			pAppearance->AddBBox(0, 0, dWidth, dHeight);
+			pAppearance->AddMatrix(-1, 0, 0, -1, dWidth, dHeight);
+		}
+		else if (nRotate == 270)
+		{
+			pAppearance->AddBBox(0, 0, dHeight, dWidth);
+			pAppearance->AddMatrix(0, -1, 1, 0, 0, dHeight);
+		}
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dWidth, dHeight);
 
 		pAppearance->StartDraw(dWidth, dHeight);
 
@@ -1798,11 +1870,16 @@ namespace PdfWriter
 			dDstY += (dH - dDstH) * m_dShiftY;
 
 			m_pResources->AddXObjectWithName(pForm->GetName().c_str(), pForm);
-			pAppearance->DrawPictureInline(pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
+			pAppearance->DrawPictureInline(dWidth, dHeight, pForm->GetName().c_str(), dDstX, dDstY, dDstW / dOriginW, dDstH / dOriginH, m_bRespectBorders);
 
 			CheckMK();
 			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
+		}
+		else if (m_pMK)
+		{
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+			m_pMK->Remove(sAP);
 		}
 
 		if (pCodes)
@@ -1916,7 +1993,7 @@ namespace PdfWriter
 	{
 		return m_sAP_N_Yes.empty();
 	}
-	void CCheckBoxWidget::SetAP()
+	void CCheckBoxWidget::SetAP(int nRotate)
 	{
 		if (!m_pAP)
 		{
@@ -1926,17 +2003,52 @@ namespace PdfWriter
 
 		if (m_nStyle == ECheckBoxStyle::Circle && m_nSubtype == WidgetRadiobutton)
 		{
-			m_pAP->GetYesN()->DrawCheckBoxCircle(true, true);
-			m_pAP->GetOffN()->DrawCheckBoxCircle(false, true);
-			m_pAP->GetYesD()->DrawCheckBoxCircle(true, false);
-			m_pAP->GetOffD()->DrawCheckBoxCircle(false, false);
+			m_pAP->GetYesN()->DrawCheckBoxCircle(nRotate, true,  true);
+			m_pAP->GetOffN()->DrawCheckBoxCircle(nRotate, false, true);
+			m_pAP->GetYesD()->DrawCheckBoxCircle(nRotate, true,  false);
+			m_pAP->GetOffD()->DrawCheckBoxCircle(nRotate, false, false);
 		}
 		else
 		{
-			m_pAP->GetYesN()->DrawCheckBoxSquare(true, true);
-			m_pAP->GetOffN()->DrawCheckBoxSquare(false, true);
-			m_pAP->GetYesD()->DrawCheckBoxSquare(true, false);
-			m_pAP->GetOffD()->DrawCheckBoxSquare(false, false);
+			m_pAP->GetYesN()->DrawCheckBoxSquare(nRotate, true,  true);
+			m_pAP->GetOffN()->DrawCheckBoxSquare(nRotate, false, true);
+			m_pAP->GetYesD()->DrawCheckBoxSquare(nRotate, true,  false);
+			m_pAP->GetOffD()->DrawCheckBoxSquare(nRotate, false, false);
+		}
+
+		if (nRotate != 0)
+		{
+			double dW = fabs(m_oRect.fRight  - m_oRect.fLeft);
+			double dH = fabs(m_oRect.fBottom - m_oRect.fTop);
+
+			if (nRotate == 90 || nRotate == 270)
+			{
+				m_pAP->GetYesN()->AddBBox(0, 0, dH, dW);
+				m_pAP->GetOffN()->AddBBox(0, 0, dH, dW);
+				m_pAP->GetYesD()->AddBBox(0, 0, dH, dW);
+				m_pAP->GetOffD()->AddBBox(0, 0, dH, dW);
+			}
+			if (nRotate == 90)
+			{
+				m_pAP->GetYesN()->AddMatrix(0, 1, -1, 0, dW, 0);
+				m_pAP->GetOffN()->AddMatrix(0, 1, -1, 0, dW, 0);
+				m_pAP->GetYesD()->AddMatrix(0, 1, -1, 0, dW, 0);
+				m_pAP->GetOffD()->AddMatrix(0, 1, -1, 0, dW, 0);
+			}
+			if (nRotate == 180)
+			{
+				m_pAP->GetYesN()->AddMatrix(-1, 0, 0, -1, dW, dH);
+				m_pAP->GetOffN()->AddMatrix(-1, 0, 0, -1, dW, dH);
+				m_pAP->GetYesD()->AddMatrix(-1, 0, 0, -1, dW, dH);
+				m_pAP->GetOffD()->AddMatrix(-1, 0, 0, -1, dW, dH);
+			}
+			if (nRotate == 270)
+			{
+				m_pAP->GetYesN()->AddMatrix(0, -1, 1, 0, 0, dH);
+				m_pAP->GetOffN()->AddMatrix(0, -1, 1, 0, 0, dH);
+				m_pAP->GetYesD()->AddMatrix(0, -1, 1, 0, 0, dH);
+				m_pAP->GetOffD()->AddMatrix(0, -1, 1, 0, 0, dH);
+			}
 		}
 	}
 	std::string CCheckBoxWidget::Yes()

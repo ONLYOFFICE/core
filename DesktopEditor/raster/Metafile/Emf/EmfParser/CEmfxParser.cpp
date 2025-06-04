@@ -324,8 +324,9 @@ namespace MetaFile
 
 		unsigned int ulBitsSizeSkip = 0 == ulBitsSize ? 0 : ((int)(((double)ulBitsSize - 0.5) / 4) + 1) * 4;
 		m_oStream.Skip(ulBitsSizeSkip);
+		unsigned int unColorUsed;
 
-		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 
 		return true;
 	}
@@ -1261,7 +1262,7 @@ namespace MetaFile
 		pBgraBuffer[2] = oColor.r;
 		pBgraBuffer[3] = 0xff;
 
-		DrawImage(oPoint.X, oPoint.Y, 1, 1, pBgraBuffer, 1, 1);
+		DrawImage(oPoint.X, oPoint.Y, 1, 1, pBgraBuffer, 1, 1, BLEND_MODE_DEFAULT);
 	}
 	void CEmfxParser::Read_EMR_SMALLTEXTOUT()
 	{

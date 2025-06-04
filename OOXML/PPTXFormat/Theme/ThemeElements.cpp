@@ -71,15 +71,15 @@ namespace PPTX
 								}
 								else if (uri == L"{D75FF423-9257-4291-A4FE-1B2448832E17}")
 								{
-									//themeScheme - schemeID
+									themeScheme = nodeExt.ReadNodeNoNS(L"themeScheme");
 								}
 								else if (uri == L"{27CD58D4-7086-4B73-B2AB-7AEBE2148A8C}")
 								{
-									//fmtSchemeEx - schemeID
+									fmtSchemeEx = nodeExt.ReadNodeNoNS(L"fmtSchemeEx");
 								}
 								else if (uri == L"{C6430689-8E98-42EC-ADBF-087148533A3F}")
 								{
-									//fmtConnectorSchemeEx - schemeID
+									fmtConnectorSchemeEx = nodeExt.ReadNodeNoNS(L"fmtConnectorSchemeEx"); //- schemeID
 								}
 								else if (uri == L"{56243398-1771-4C39-BF73-A5702A9C147F}")
 								{
@@ -122,6 +122,27 @@ namespace PPTX
 					oValue.Write(*fmtConnectorScheme);
 					oValue.m_strValue += L"</a:ext>";
 				}
+				if (themeScheme.IsInit())
+				{
+					themeScheme->node_name = L"vt:themeScheme";
+					oValue.m_strValue += L"<a:ext uri=\"{D75FF423-9257-4291-A4FE-1B2448832E17}\">";
+					oValue.Write(*themeScheme);
+					oValue.m_strValue += L"</a:ext>";
+				}
+				if (fmtSchemeEx.IsInit())
+				{
+					fmtSchemeEx->node_name = L"vt:fmtSchemeEx";
+					oValue.m_strValue += L"<a:ext uri=\"{27CD58D4-7086-4B73-B2AB-7AEBE2148A8C}\">";
+					oValue.Write(*fmtSchemeEx);
+					oValue.m_strValue += L"</a:ext>";
+				}
+				if (fmtConnectorSchemeEx.IsInit())
+				{
+					fmtConnectorSchemeEx->node_name = L"vt:fmtConnectorSchemeEx";
+					oValue.m_strValue += L"<a:ext uri=\"{C6430689-8E98-42EC-ADBF-087148533A3F}\">";
+					oValue.Write(*fmtConnectorSchemeEx);
+					oValue.m_strValue += L"</a:ext>";
+				}
 				if (fillStyles.IsInit())
 				{
 					oValue.m_strValue += L"<a:ext uri=\"{56243398-1771-4C39-BF73-A5702A9C147F}\">";
@@ -160,6 +181,9 @@ namespace PPTX
 			pWriter->WriteRecord2(5, lineStyles);
 			pWriter->WriteRecord2(6, fontStylesGroup);
 			pWriter->WriteRecord2(7, variationStyleSchemeLst);
+			pWriter->WriteRecord2(8, themeScheme);
+			pWriter->WriteRecord2(9, fmtSchemeEx);
+			pWriter->WriteRecord2(10, fmtConnectorSchemeEx);
 		}
 		void ThemeElements::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -170,7 +194,8 @@ namespace PPTX
 			fontScheme.toXmlWriter(pWriter);
 			fmtScheme.toXmlWriter(pWriter);
 
-			if (fmtConnectorScheme.IsInit() || fillStyles.IsInit() || lineStyles.IsInit() || fontStylesGroup.IsInit() || variationStyleSchemeLst.IsInit())
+			if (fmtConnectorScheme.IsInit() || fillStyles.IsInit() || lineStyles.IsInit() || fontStylesGroup.IsInit() || variationStyleSchemeLst.IsInit() ||
+				themeScheme.IsInit() || fmtSchemeEx.IsInit() || fmtConnectorSchemeEx.IsInit())
 			{
 				pWriter->StartNode(L"a:extLst");
 				pWriter->EndAttributes();
@@ -181,6 +206,33 @@ namespace PPTX
 					pWriter->WriteAttribute(L"uri", L"{1342405F-259F-4C95-8CDF-A9DCE2D418A2}");
 					pWriter->EndAttributes();
 					fmtConnectorScheme->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
+				if (themeScheme.IsInit())
+				{
+					themeScheme->node_name = L"vt:themeScheme";
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{D75FF423-9257-4291-A4FE-1B2448832E17}");
+					pWriter->EndAttributes();
+					themeScheme->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
+				if (fmtSchemeEx.IsInit())
+				{
+					fmtSchemeEx->node_name = L"vt:fmtSchemeEx";
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{27CD58D4-7086-4B73-B2AB-7AEBE2148A8C}");
+					pWriter->EndAttributes();
+					fmtSchemeEx->toXmlWriter(pWriter);
+					pWriter->EndNode(L"a:ext");
+				}
+				if (fmtConnectorSchemeEx.IsInit())
+				{
+					fmtConnectorSchemeEx->node_name = L"vt:fmtConnectorSchemeEx";
+					pWriter->StartNode(L"a:ext");
+					pWriter->WriteAttribute(L"uri", L"{C6430689-8E98-42EC-ADBF-087148533A3F}");
+					pWriter->EndAttributes();
+					fmtConnectorSchemeEx->toXmlWriter(pWriter);
 					pWriter->EndNode(L"a:ext");
 				}
 				if (fillStyles.IsInit())
@@ -266,6 +318,21 @@ namespace PPTX
 						variationStyleSchemeLst.Init();
 						variationStyleSchemeLst->fromPPTY(pReader);
 					}break;
+					case 8:
+					{
+						themeScheme.Init();
+						themeScheme->fromPPTY(pReader);
+					}break;
+					case 9:
+					{
+						fmtSchemeEx.Init();
+						fmtSchemeEx->fromPPTY(pReader);
+					}break;
+					case 10:
+					{
+						fmtConnectorSchemeEx.Init();
+						fmtConnectorSchemeEx->fromPPTY(pReader);
+					}break;
 					default:
 						break;
 				}
@@ -284,6 +351,9 @@ namespace PPTX
 			if (lineStyles.IsInit()) lineStyles->SetParentPointer(this);
 			if (fontStylesGroup.IsInit()) fontStylesGroup->SetParentPointer(this);
 			if (variationStyleSchemeLst.IsInit()) variationStyleSchemeLst->SetParentPointer(this);
+			if (themeScheme.IsInit()) themeScheme->SetParentPointer(this);
+			if (fmtSchemeEx.IsInit()) fmtSchemeEx->SetParentPointer(this);
+			if (fmtConnectorSchemeEx.IsInit()) fmtConnectorSchemeEx->SetParentPointer(this);
 		}
 	} // namespace nsTheme
 } // namespace PPTX

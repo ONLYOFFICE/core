@@ -40,8 +40,13 @@
 #include "../../Binary/Document/BinReader/FileWriter.h"
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
 #include "../../Binary/Document/DocWrapper/XlsxSerializer.h"
+#include "../../Binary/Document/DocWrapper/VsdxSerializer.h"
+
 #include "../../Binary/Sheets/Reader/BinaryWriterS.h"
 #include "../../Binary/Sheets/Writer/BinaryReaderS.h"
+#include "../../Binary/Draw/BinaryWriterV.h"
+#include "../../Binary/Draw/BinaryReaderV.h"
+
 #include "../../Binary/MathEquation/MathEquation.h"
 
 #include "SpTree.h"
@@ -401,11 +406,11 @@ namespace PPTX
 
 					oDrawingConverter.SetFontPicker(pWriter->m_pCommon->m_pFontPicker);
 
-					int type = 0;
+					BYTE embedded_type = 0;
 					if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX ||
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCM)
 					{
-						type = 1;
+						embedded_type = 1;
 						BinDocxRW::CDocxSerializer* old_serializer = pWriter->m_pMainDocument;
 
 						BinDocxRW::CDocxSerializer oDocxSerializer;
@@ -421,7 +426,7 @@ namespace PPTX
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSM || 
 						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSB)
 					{
-						type = 2;					
+						embedded_type = 2;
 
 						BinXlsxRW::BinaryFileWriter xlsxBinaryWriter(oFontProcessor);
 						OOX::Spreadsheet::CXlsx *pXlsxEmbedded = NULL;
@@ -464,7 +469,26 @@ namespace PPTX
 					}
 					//else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX)
 					//{ todooo
+					// embedded_type = 3;
 					//}
+					else if (office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DRAW_VSDX ||
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DRAW_VSDM ||
+						office_checker.nFileType == AVS_OFFICESTUDIO_FILE_DRAW_VSTX)
+					{
+						embedded_type =  5;
+
+						BinVsdxRW::BinaryFileWriter oBinaryFileWriter(oFontProcessor);
+
+						NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
+						oBufferedStream.m_strMainFolder = oDrawingConverter.m_pImageManager->GetDstFolder();
+
+						OOX::Draw::CVsdx* pVsdx = new OOX::Draw::CVsdx(oox_unpacked);
+
+						oBinaryFileWriter.WriteMainTableStart(oBufferedStream);
+						oBinaryFileWriter.WriteContent(pVsdx, &oDrawingConverter);
+						oBinaryFileWriter.WriteMainTableEnd();
+						RELEASEOBJECT(pVsdx);
+					}
 					else
 					{//unknown ms package
 						oDrawingConverter.m_pBinaryWriter->WriteString1(2, ole_file->filename().GetFilename());
@@ -475,7 +499,7 @@ namespace PPTX
 					oDrawingConverter.m_pBinaryWriter->m_pCommon->m_pMediaManager = old_manager;
 //---------------------------------------------------------------------------------------------------------------------					
 					pWriter->StartRecord(1);
-					pWriter->WriteBYTE(type);
+					pWriter->WriteBYTE(embedded_type);
 					pWriter->EndRecord();
 
 					pWriter->StartRecord(2);
@@ -487,13 +511,14 @@ namespace PPTX
 			}
 			else if ( std::wstring::npos != sProgID.find(L"Equation"))
 			{
+				BYTE embedded_type = 4;
 
                 pWriter->StartRecord(1);
-					pWriter->WriteBYTE(4);
+					pWriter->WriteBYTE(embedded_type);
 				pWriter->EndRecord();
 
-				MathEquation::CEquationReader		oReader		(ole_file->filename().GetPath().c_str());
-                MathEquation::BinaryEquationWriter	oBinEqWriter(pWriter);
+				MathEquation::CEquationReader oReader (ole_file->filename().GetPath().c_str());
+                MathEquation::BinaryEquationWriter oBinEqWriter(pWriter);
 				
 				oReader.SetOutputDev(&oBinEqWriter);
 				
@@ -613,8 +638,12 @@ namespace PPTX
 							}
 							else if (embedded_type == 5)
 							{
-								ReadOoxmlZip(pReader, sDstEmbedded, pReader->GetData() + pReader->GetPos(), _embed_data_size);
+								ReadVsdxBin(pReader, sDstEmbedded, pReader->GetData() + pReader->GetPos(), _embed_data_size);
 							}
+							else if (embedded_type == 6) //???
+							{
+								ReadOoxmlZip(pReader, sDstEmbedded, pReader->GetData() + pReader->GetPos(), _embed_data_size);
+							}						
 						}
 						pReader->Seek(_end_embed_data);
 					}break;
@@ -1771,6 +1800,12 @@ namespace PPTX
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTX: sTrueFilename = L"Microsoft_PowerPoint" + std::to_wstring(id) + L".potx"; break;
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_POTM: sTrueFilename = L"Microsoft_PowerPoint" + std::to_wstring(id) + L".potm"; break;
 				case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSM: sTrueFilename = L"Microsoft_PowerPoint" + std::to_wstring(id) + L".ppsm"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDX: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vsdx"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSDM: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vsdm"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSX: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vssx"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTX: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vstx"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSSM: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vssm"; break;
+				case AVS_OFFICESTUDIO_FILE_DRAW_VSTM: sTrueFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + L".vstm"; break;
 				}
 			}
 			if (false == sTrueFilename.empty())
@@ -1902,6 +1937,50 @@ namespace PPTX
 			pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"xlsm" : L"xlsx");
 		
 			m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sXlsxFilename, false);
+
+			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
+			return true;
+		}
+		bool COLEObject::ReadVsdxBin(NSBinPptxRW::CBinaryFileReader* pReader, const std::wstring& sDstEmbedded, BYTE* pData, long length)
+		{
+			m_OleObjectFile = new OOX::OleObject(NULL, true, pReader->m_nDocumentType == XMLWRITER_DOC_TYPE_DOCX);
+			int id = pReader->m_nCountEmbedded++; //todoooo -> countEmbeddedObjects
+
+			std::wstring sDstEmbeddedTemp = sDstEmbedded + FILE_SEPARATOR_STR + L"Temp";
+			NSDirectory::CreateDirectory(sDstEmbeddedTemp);
+
+			NSBinPptxRW::CDrawingConverter oDrawingConverter;
+
+			oDrawingConverter.m_pReader->Init(pData, 0, length);
+
+			std::wstring sXmlOptions, sMediaPath, sEmbedPath;
+			BinVsdxRW::CVsdxSerializer::CreateVsdxFolders(sDstEmbeddedTemp, sMediaPath, sEmbedPath);
+
+			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"visio");
+			oDrawingConverter.SetSrcPath(pReader->m_strFolder + FILE_SEPARATOR_STR, XMLWRITER_DOC_TYPE_VSDX);
+
+			oDrawingConverter.SetMediaDstPath(sMediaPath);
+			oDrawingConverter.SetEmbedDstPath(sEmbedPath);
+
+			OOX::Draw::CVsdx oVsdx;
+			boost::unordered_map<std::wstring, size_t>	old_enum_map = oVsdx.m_mapEnumeratedGlobal;
+
+			BinVsdxRW::BinaryFileReader oEmbeddedReader;
+			BinVsdxRW::SaveParams oSaveParams(true);
+			oEmbeddedReader.ReadContent(oVsdx, *oDrawingConverter.m_pReader, pReader->m_strFolder, sDstEmbeddedTemp, oSaveParams);
+
+			OOX::CContentTypes oContentTypes;
+			oVsdx.Write(sDstEmbeddedTemp, oContentTypes);
+
+			COfficeUtils oOfficeUtils(NULL);
+			std::wstring sVsdxFilename = L"Microsoft_Visio_Drawing" + std::to_wstring(id) + (oSaveParams.bMacroEnabled ? L".vsdm" : L".vsdx");
+			oOfficeUtils.CompressFileOrDirectory(sDstEmbeddedTemp, sDstEmbedded + FILE_SEPARATOR_STR + sVsdxFilename, true);
+
+			oVsdx.m_mapEnumeratedGlobal = old_enum_map;
+
+			pReader->m_pRels->m_pManager->m_pContentTypes->AddDefault(oSaveParams.bMacroEnabled ? L"vsdm" : L"vsdx");
+
+			m_OleObjectFile->set_filename(sDstEmbedded + FILE_SEPARATOR_STR + sVsdxFilename, false);
 
 			NSDirectory::DeleteDirectory(sDstEmbeddedTemp);
 			return true;

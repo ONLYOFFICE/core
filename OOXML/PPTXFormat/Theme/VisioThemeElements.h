@@ -37,7 +37,45 @@
 namespace PPTX
 {
 	namespace nsTheme
-	{		
+	{
+		class SchemeID : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(SchemeID)
+			SchemeID& operator=(const SchemeID& oSrc);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			nullable_uint schemeEnum;
+			nullable_string schemeGUID;
+
+			bool bSchemas = false;
+		};
+		class Scheme : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(Scheme)
+			Scheme& operator=(const Scheme& oSrc);
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			std::wstring node_name;
+			nullable<SchemeID> schemeID;
+		protected:
+			virtual void FillParentPointersForChilds();
+		};
 		class LineEx : public WrapperWritingElement
 		{
 		public:

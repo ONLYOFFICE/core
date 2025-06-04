@@ -31,7 +31,7 @@ namespace NSStringFinder
 	};
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
-	StringType FindPropetyTemplate(const StringType& sString, const StringType& sProperty, const StringType& sDelimiter, const StringType& sEnding, const size_t& unStarting, size_t& unEndPosition)
+	StringType FindPropertyTemplate(const StringType& sString, const StringType& sProperty, const StringType& sDelimiter, const StringType& sEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
 		if (sString.length() < unStarting)
 			return StringType();
@@ -60,30 +60,30 @@ namespace NSStringFinder
 		return sValue;
 	}
 
-	std::string FindPropety(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting, size_t& unEndPosition)
+	std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
-		return FindPropetyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
+		return FindPropertyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
 	}
 
-	std::wstring FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting, size_t& unEndPosition)
+	std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting, size_t& unEndPosition)
 	{
-		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
+		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
 	}
 
-	std::string FindPropety(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting = 0)
+	std::string FindProperty(const std::string& sString, const std::string& sProperty, const std::string& sDelimiter, const std::string& sEnding, const size_t& unStarting = 0)
 	{
 		size_t unEndPosition = 0;
-		return FindPropetyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
+		return FindPropertyTemplate<char>(sString, sProperty, sDelimiter, sEnding, unStarting, unEndPosition);
 	}
 
-	std::wstring FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting = 0)
+	std::wstring FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::wstring& wsDelimiter, const std::wstring& wsEnding, const size_t& unStarting = 0)
 	{
 		size_t unEndPosition = 0;
-		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
+		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, wsDelimiter, wsEnding, unStarting, unEndPosition);
 	}
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>
-	TFoundedData<CharType> FindPropetyTemplate(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting)
+	TFoundedData<CharType> FindPropertyTemplate(const StringType& sString, const StringType& sProperty, const std::vector<StringType>& arDelimiters, const std::vector<StringType>& arEndings, const size_t& unStarting)
 	{
 		if (sString.length() < unStarting)
 			return TFoundedData<CharType>();
@@ -108,7 +108,7 @@ namespace NSStringFinder
 
 			wsEndingValue.pop_back();
 
-			wsRegexValue += L"\\s*(.[^" + wsEndingValue + L"]*)\\s*[" + wsEndingValue + L"]?";
+			wsRegexValue += L"\\s*[" + wsEndingValue + L"]?(.[^" + wsEndingValue + L"]*)\\s*[" + wsEndingValue + L"]?";
 		}
 		else
 			wsRegexValue += L"\\s*(.*)[\\n|\\r]?";
@@ -130,14 +130,14 @@ namespace NSStringFinder
 		return oData;
 	}
 
-	TFoundedData<char> FindPropety(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
+	TFoundedData<char> FindProperty(const std::string& sString, const std::string& sProperty, const std::vector<std::string>& arDelimiters, const std::vector<std::string>& arEndings, const size_t& unStarting = 0)
 	{
-		return FindPropetyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting);
+		return FindPropertyTemplate<char>(sString, sProperty, arDelimiters, arEndings, unStarting);
 	}
 
-	TFoundedData<wchar_t> FindPropety(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
+	TFoundedData<wchar_t> FindProperty(const std::wstring& wsString, const std::wstring& wsProperty, const std::vector<std::wstring>& arDelimiters, const std::vector<std::wstring>& arEndings, const size_t& unStarting = 0)
 	{
-		return FindPropetyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting);
+		return FindPropertyTemplate<wchar_t>(wsString, wsProperty, arDelimiters, arEndings, unStarting);
 	}
 
 	template<class CharType, class StringType = std::basic_string<CharType, std::char_traits<CharType>, std::allocator<CharType>>>

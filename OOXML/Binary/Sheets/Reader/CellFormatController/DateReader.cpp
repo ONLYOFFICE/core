@@ -40,6 +40,10 @@
 #include <cwctype>
 #include <regex>
 
+const auto NonDatecellLimit = 1000;
+const auto MaxDateLength = 32;
+const auto MinDateLength = 5;
+
 DateReader::DateReader(_INT32 lcid):lcid_{lcid}
 {}
 
@@ -47,10 +51,21 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
 {
 
     tm time = {};
+    if(date.size() > MaxDateLength || date.size() < MinDateLength)
+    {
+        cellCounter_++;
+        return false;
+    }
+    ///если не было найдено ни одной даты в n ячейках - перестаем их искать
+    if(!dateFound_ && cellCounter_ > NonDatecellLimit)
+        return false;
     if(!parseIsoDate(date,time))
     {
         if(!parseLocalDate(date, time, Hasdate, Hastime ))
+        {
+            cellCounter_++;
             return false;
+        }
     }
     else
     {
@@ -68,6 +83,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
           result = getNonUnixDate(time);
         Hasdate = true;
         Hastime = false;
+        dateFound_ = true;
         return true;
     }
     //время без даты
@@ -76,6 +92,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
         result = getStandartTime(time);
         Hasdate = false;
         Hastime = true;
+        dateFound_ = true;
         return true;
     }
     else //дата и время
@@ -88,6 +105,7 @@ bool DateReader::GetDigitalDate(const std::wstring &date, double &result, bool &
         result += getStandartTime(time);
         Hasdate = true;
         Hastime = true;
+        dateFound_ = true;
         return true;
     }
     }

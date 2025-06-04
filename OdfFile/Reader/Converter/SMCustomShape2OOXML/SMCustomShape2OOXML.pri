@@ -7,9 +7,11 @@ include($$CORE_ROOT_DIR/Common/3dParty/boost/boost.pri)
 ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 HEADERS += \
-	$$PWD/smcustomshapepars.h
+	$$PWD/smcustomshapepars.h \
+        $$PWD/customshape.h
 
 SOURCES += \
-	$$PWD/smcustomshapepars.cpp
+	$$PWD/smcustomshapepars.cpp \
+	$$PWD/customshape.cpp
 
 

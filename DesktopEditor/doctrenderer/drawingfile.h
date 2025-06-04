@@ -436,10 +436,12 @@ public:
 					oRes.WriteString(arShapes[i]);
 
 				oRes.WriteLen();
+				break;
 			}
 			case 2:
 			{
 				oRes = oRenderer.ScanPageBin(m_pFile, nPageIndex);
+				break;
 			}
 			default:
 				return NULL;

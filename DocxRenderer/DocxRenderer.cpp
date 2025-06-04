@@ -229,7 +229,10 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 			nImageId = pInfo->m_nId;
 		}
 
-		if (!sUtf8Shape.empty() && '<' == sUtf8Shape.at(0))
+		if (sUtf8Shape.empty())
+			return S_OK;
+
+		if ('<' == sUtf8Shape.at(0))
 		{
 			if (0xFFFFFFFF != nImageId)
 			{

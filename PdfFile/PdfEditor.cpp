@@ -1185,7 +1185,13 @@ void CPdfEditor::Close()
 	if (m_wsDstFile.empty())
 		 return;
 
-	if (m_nMode != Mode::WriteAppend)
+	if (m_nMode == Mode::Unknown)
+	{
+		if (m_wsDstFile != m_wsSrcFile && NSSystemPath::NormalizePath(m_wsDstFile) != NSSystemPath::NormalizePath(m_wsSrcFile))
+			NSFile::CFileBinary::Copy(m_wsSrcFile, m_wsDstFile);
+		return;
+	}
+	if (m_nMode == Mode::WriteNew)
 	{
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;

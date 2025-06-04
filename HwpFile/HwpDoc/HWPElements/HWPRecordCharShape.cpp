@@ -184,7 +184,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.ReadColor(m_nTextColor);
 	oBuffer.ReadColor(m_nUnderlineColor);
 	oBuffer.ReadColor(m_nShadeColor);
-	oBuffer.ReadColor(m_nShadeColor);
+	oBuffer.ReadColor(m_nShadowColor);
 
 	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadShort(m_shBorderFillIDRef);

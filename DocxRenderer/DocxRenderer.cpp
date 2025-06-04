@@ -242,11 +242,32 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 		{
 			if (0xFFFFFFFF != nImageId)
 			{
-				// TODO:
+				std::string rId_new = "rId" + std::to_string(nImageId + c_iStartingIdForImages);
+				int buff_len = NSBase64::Base64DecodeGetRequiredLength(sUtf8Shape.size());
+				int buff_len_new = buff_len + rId_new.size();
+				BYTE* buff = new BYTE[buff_len_new];
+
+				if (NSBase64::Base64Decode(sUtf8Shape.c_str(), (int)sUtf8Shape.size(), buff, &buff_len))
+				{
+					// in pictures record is 2
+					if (buff[0] == 2)
+					{
+						unsigned int* p_curr_len = (reinterpret_cast<unsigned int*>(buff + 1)); // skip first "type" byte
+						memcpy(buff + buff_len, rId_new.c_str(), rId_new.size());
+						*p_curr_len = *p_curr_len + static_cast<unsigned int>(rId_new.size());
+					}
+				}
+				int size_base64 = NSBase64::Base64EncodeGetRequiredLength(buff_len_new);
+				char* data_base64 = new char[size_base64];
+				NSBase64::Base64Encode(buff, buff_len_new, (BYTE*)data_base64, &size_base64, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+				sUtf8Shape = std::string(data_base64, size_base64);
+
+				delete[] buff;
+				delete[] data_base64;
 			}
 			m_pInternal->m_oDocument.m_oCurrentPage.AddCompleteBinBase64(sUtf8Shape);
 		}
-
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

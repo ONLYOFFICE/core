@@ -72,6 +72,7 @@ namespace oox {
 		_CP_OPT(double)	sx_pt;
 		_CP_OPT(double)	sy_pt;
 
+		std::wstring clipping;
 		double cropRect[4]; //0-left, 1 -top, 2- right, 3 - bottom
 		
 		_CP_OPT(int) width;

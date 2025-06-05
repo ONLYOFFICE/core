@@ -1297,9 +1297,9 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
+				drawing->fill.bitmap->clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 
-				drawing->fill.bitmap->bCrop = odf_reader::parse_clipping(strRectClip, *drawing->fill.bitmap->width, *drawing->fill.bitmap->height, drawing->fill.bitmap->cropRect);
+				drawing->fill.bitmap->bCrop = odf_reader::parse_clipping(drawing->fill.bitmap->clipping, *drawing->fill.bitmap->width, *drawing->fill.bitmap->height, drawing->fill.bitmap->cropRect);
 			}
 
 			if (drawing->fill.bitmap->sx_pt && drawing->fill.bitmap->sy_pt)
@@ -1308,6 +1308,11 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 				drawing->fill.bitmap->sy = (*drawing->fill.bitmap->sy_pt * 100. / *drawing->fill.bitmap->height) * 4 / 3;
 			}
 		}
+		if (!drawing->fill.bitmap->bTile && drawing->fill.bitmap->sx && drawing->fill.bitmap->sy)
+		{
+			drawing->fill.bitmap->bStretch = true;
+		}
+
 		if (properties->common_draw_fill_attlist_.draw_luminance_)
 		{
 			drawing->fill.bitmap->luminance = properties->common_draw_fill_attlist_.draw_luminance_->get_value();

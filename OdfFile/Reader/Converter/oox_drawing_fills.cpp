@@ -259,7 +259,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 				{
 					if (!val.bitmap->bCrop)
 					{
-						CP_XML_NODE(ns + L":fillRect");
+						CP_XML_NODE(ns + L":fillRect")
+						{
+							if (val.bitmap->sx && val.bitmap->sy)
+							{ //todooo focus
+								CP_XML_ATTR2(ns_att + L"l", (int)((100 - *val.bitmap->sx) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"t", (int)((100 - *val.bitmap->sy) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"r", (int)((100 - *val.bitmap->sx) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"b", (int)((100 - *val.bitmap->sy) / 2 * 1000));
+							}
+						}
 					}
 				}
 			}	

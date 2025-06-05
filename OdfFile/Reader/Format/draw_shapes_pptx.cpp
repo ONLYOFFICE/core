@@ -144,7 +144,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		if (properties->fo_clip_)
 		{
 			std::wstring strRectClip = properties->fo_clip_.get();
-			Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+			fill.bitmap->clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 		}
 	}
  	for (size_t i = 0; i < additional_.size(); i++)

@@ -197,7 +197,6 @@ void xlsx_drawing_context::clear()
 	impl_->object_description_.anchor_rel_			= anchor_none;
 	impl_->object_description_.anchor_x_			= 0;
 	impl_->object_description_.anchor_y_			= 0;
-	impl_->object_description_.clipping_string_		= L"";
  	impl_->object_description_.svg_rect_			= boost::none;
  
 	impl_->object_description_.additional_.clear();
@@ -495,15 +494,10 @@ std::vector<odf_reader::_property> & xlsx_drawing_context::get_properties()
 {
 	return impl_->object_description_.additional_;
 }
-void xlsx_drawing_context::set_clipping(const std::wstring & str)
-{
-	impl_->object_description_.clipping_string_= str;
-}
 void xlsx_drawing_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
 }
-
 std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href)
 {
 	++hlinks_size_;
@@ -670,7 +664,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 
 	if (drawing.fill.bitmap->width && drawing.fill.bitmap->height)
 	{
-		drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(obj.clipping_string_, *drawing.fill.bitmap->width, *drawing.fill.bitmap->height, drawing.fill.bitmap->cropRect);
+		drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(drawing.fill.bitmap->clipping, *drawing.fill.bitmap->width, *drawing.fill.bitmap->height, drawing.fill.bitmap->cropRect);
 		
 		if (drawing.fill.bitmap->sx_pt && drawing.fill.bitmap->sy_pt)
 		{
@@ -678,8 +672,10 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 			drawing.fill.bitmap->sy = (*drawing.fill.bitmap->sy_pt * 100. / *drawing.fill.bitmap->height) * 4 / 3;
 		}
 	}
-	drawing.fill.bitmap->bStretch = true;
-
+	if (!drawing.fill.bitmap->bTile && drawing.fill.bitmap->sx && drawing.fill.bitmap->sy)
+	{
+		drawing.fill.bitmap->bStretch = true;
+	}
 	std::wstring ref;/// это ссылка на выходной внешний объект
 	bool isMediaInternal = false;
 
@@ -694,7 +690,8 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 		
 		xlsx_drawings_->add(drawing, isMediaInternal, rId, ref, typeShape);//объект
 
-	}else
+	}
+	else
 	{
 		xlsx_drawings_->add(drawing, isMediaInternal, drawing.fill.bitmap->rId , ref, typeImage);//объект
 		

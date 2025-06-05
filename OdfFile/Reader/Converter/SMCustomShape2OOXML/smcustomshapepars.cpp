@@ -143,6 +143,12 @@ namespace OdfCustomShape
 	{
 		if(!pReader->GetElement().empty())
 			pReader->ClearElement();
+		if(m_wsNumber == L"width" || m_wsNumber == L"top")
+			m_wsNumber = L"w";
+		else if(m_wsNumber == L"height" || m_wsNumber == L"bottom")
+			m_wsNumber = L"h";
+		else if(m_wsNumber == L"right" || m_wsNumber == L"left")
+			m_wsNumber = L"0";
 	}
 	bool CElementNumber::CheckNumber(const std::wstring& wsNumber)
 	{
@@ -606,17 +612,22 @@ namespace OdfCustomShape
 		// 	return TypeElement::atan2;
 		else if(wsFunction == L"atan")
 			return TypeElement::atan;
+		else if(wsFunction == L"logheight")
+			return TypeElement::logheight;
+		else if(wsFunction == L"logwight")
+			return TypeElement::logwidth;
 		else
 			return TypeElement::empty;
 	}
 	void CElementFunction::Parse(CSMReader* pReader)
 	{
 		pReader->ClearElement();
-		m_pValue = SMCustomShapePars::ParseElement(pReader);
+		if(m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth)
+			m_pValue = SMCustomShapePars::ParseElement(pReader);
 	}
 	void CElementFunction::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
-		if(m_pValue == nullptr)
+		if(m_pValue == nullptr && m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth)
 		{
 			if(!wsName.empty())
 				SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsName,L"sqrt 0 ");
@@ -727,9 +738,34 @@ namespace OdfCustomShape
 			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
 			break;
 		}
+		case TypeElement::logheight:
+		case TypeElement::logwidth:
+		{
+			std::wstring wsFormula = L"*/ 1 ";
+			CalculatingTheLogicalHeightOrWidth(pXmlWriter,wsFormula);
+			wsFormula += L"100 ";
+			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
+			break;
+		}
 		default:
 			break;
 		}
+	}
+	void CElementFunction::CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula)
+	{
+		std::wstring wsLogFormula,wsNewName;
+		if(m_enTypeFunction == TypeElement::logheight)
+			wsLogFormula = L"*/ h 25 96 ";
+		else
+			wsLogFormula = L"*/ h 25 96 ";
+		CalculatingNumberName(wsFormula,wsNewName);
+		SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsNewName,wsLogFormula);
+	}
+	void CElementFunction::CalculatingNumberName(std::wstring& wsFormula, std::wstring &wsNewName)
+	{
+		wsNewName = GetNameFormula() + L"." + std::to_wstring(m_uiNumberFormula);
+		m_uiNumberFormula++;
+		wsFormula += wsNewName + L" ";
 	}
 	void CElementFunction::ConversionElement(XmlUtils::CXmlWriter* pXmlWriter, CElement *pElement, std::wstring &wsFormula)
 	{
@@ -742,10 +778,9 @@ namespace OdfCustomShape
 		}
 		else
 		{
-			std::wstring wsNewNameFormula = GetNameFormula() + L"." + std::to_wstring(m_uiNumberFormula);
-			m_uiNumberFormula++;
-			pElement->ConversionOOXml(pXmlWriter,wsNewNameFormula);
-			wsFormula += pElement->GetNameFormula() + L" ";
+			std::wstring wsNewName;
+			CalculatingNumberName(wsFormula,wsNewName);
+			pElement->ConversionOOXml(pXmlWriter,wsNewName);
 		}
 	}
 	void CElementFunction::ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula)

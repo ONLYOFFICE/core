@@ -18,7 +18,7 @@ TEST(SMCustomShapeTest,Plus)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+/ left gd2 1 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+/ 0 gd2 1 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Minus)
@@ -28,7 +28,7 @@ TEST(SMCustomShapeTest,Minus)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 0 bottom gd2 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 0 h gd2 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Multi)

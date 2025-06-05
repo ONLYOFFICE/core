@@ -321,26 +321,12 @@ const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 	switch (m_eHanType)
 	{
 		case EHanType::HWP:
-		{
-			short shID = std::stoi(sID) - 1;
-
-			if (shID >= m_mBinDatas.size())
-				return nullptr;
-
-			std::map<HWP_STRING, CHWPRecord*>::const_iterator itElement = m_mBinDatas.cbegin();
-
-			for (unsigned short ushIndex = 0; ushIndex < shID; ++ushIndex)
-				++itElement;
-
-			return itElement->second;
-		}
 		case EHanType::HWPX:
 		{
-			if (m_mBinDatas.end() == m_mBinDatas.find(sID))
-				return nullptr;
+			std::map<HWP_STRING, CHWPRecord*>::const_iterator itFound = m_mBinDatas.find(sID);
 
-			return m_mBinDatas.at(sID);
-			break;
+			if (m_mBinDatas.cend() != itFound)
+				return itFound->second;
 		}
 		default:
 			return nullptr;

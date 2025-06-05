@@ -415,7 +415,7 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 			if (wsHref.empty())
 				break;
 
-			const HWP_STRING wsID = AddRelationship(L"hyperlink", wsHref);
+			const HWP_STRING wsID = AddRelationship(L"hyperlink", wsHref, &oState);
 
 			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 			oBuilder.WriteString(L"<w:hyperlink r:id=\"" + wsID + L"\">");
@@ -832,6 +832,7 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 		{
 			NSStringUtils::CStringBuilder oCellBuilder;
 			TConversionState oCellState;
+			oCellState.m_pRelationships = oState.m_pRelationships;
 
 			WriteParagraph(pParagraph, oCellBuilder, oCellState);
 
@@ -1057,7 +1058,7 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 		oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(pFill->GetFaceColor()) + L"\"/></a:solidFill>");
 	else if (pFill->ImageFill())
 	{
-		const HWP_STRING sPictureId = SavePicture(pFill->GetBinItemID());
+		const HWP_STRING sPictureId = SavePicture(pFill->GetBinItemID(), oState);
 
 		if (!sPictureId.empty())
 			oBuilder.WriteString(L"<a:blipFill><a:blip r:embed=\"" + sPictureId + L"\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>");
@@ -1136,7 +1137,7 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 
 	const std::wstring wsWidth  = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetWidth()));
 	const std::wstring wsHeight = std::to_wstring(Transform::HWPUINT2OOXML(pOleShape->GetHeight()));
-	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml");
+	const std::wstring wsRelID  = AddRelationship(L"chart", L"charts/chart" + std::to_wstring(unChartIndex) + L".xml", &oState);
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
@@ -1183,7 +1184,7 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 		{\
 			const std::wstring wsType = id.substr(0, 6);\
 			AddContentType(id, L"application/vnd.openxmlformats-officedocument.wordprocessingml." + wsType + L"+xml");\
-			m_oDocXml.WriteString(L"<w:" + wsType + L"Reference w:type=\"default\" r:id=\"" + AddRelationship(wsType, id) + L"\"/>");\
+			m_oDocXml.WriteString(L"<w:" + wsType + L"Reference w:type=\"default\" r:id=\"" + AddRelationship(wsType, id, &oState) + L"\"/>");\
 		}
 
 		if (nullptr != oState.m_pPageNum)
@@ -1244,7 +1245,7 @@ void CConverter2OOXML::WritePicture(const CCtrlShapePic* pCtrlPic, short shParaS
 	if (nullptr == pCtrlPic)
 		return;
 
-	HWP_STRING sPictureID = SavePicture(pCtrlPic->GetBinDataID());
+	HWP_STRING sPictureID = SavePicture(pCtrlPic->GetBinDataID(), oState);
 
 	if (sPictureID.empty())
 		return;
@@ -1288,7 +1289,7 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shPar
 	if (nullptr == pCtrlVideo || 1 != pCtrlVideo->GetVideoType())
 		return;
 
-	HWP_STRING sPictureID = SavePicture(pCtrlVideo->GetThumnailBinID());
+	HWP_STRING sPictureID = SavePicture(pCtrlVideo->GetThumnailBinID(), oState);
 
 	if (sPictureID.empty())
 		return;
@@ -1307,7 +1308,7 @@ void CConverter2OOXML::WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shPar
 	oBuilder.WriteString(L"<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">");
 	oBuilder.WriteString(L"<pic:nvPicPr><pic:cNvPr id=\"" + std::to_wstring(m_ushShapeCount) + L"\" name=\"Video " + std::to_wstring(m_ushShapeCount) + L"\" descr=\"" + pCtrlVideo->GetDesc() + L"\">");
-	oBuilder.WriteString(L"<a:hlinkClick r:id=\"" + AddRelationship(L"hyperlink", pCtrlVideo->GetWebUrl()) + L"\"/></pic:cNvPr>");
+	oBuilder.WriteString(L"<a:hlinkClick r:id=\"" + AddRelationship(L"hyperlink", pCtrlVideo->GetWebUrl(), &oState) + L"\"/></pic:cNvPr>");
 	oBuilder.WriteString(L"<pic:cNvPicPr/></pic:nvPicPr>");
 	oBuilder.WriteString(L"<pic:blipFill><a:blip r:embed=\"" + sPictureID + L"\"><a:extLst>");
 	oBuilder.WriteString(L"<a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext>");
@@ -1430,7 +1431,7 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 	return true;
 }
 
-HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
+HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId, TConversionState& oState)
 {
 	if (nullptr == m_pContext)
 		return HWP_STRING();
@@ -1463,7 +1464,7 @@ HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId)
 	}
 
 	AddContentType(L"media/" + sFileName, L"image/" + NSFile::GetFileExtention(sFileName));
-	return AddRelationship(L"image", L"media/" + sFileName);
+	return AddRelationship(L"image", L"media/" + sFileName, &oState);
 }
 
 void CConverter2OOXML::WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& sExternStyles)
@@ -2111,14 +2112,21 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 		oBuilder.WriteString(L"</w:fldSimple>");
 }
 
-HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget)
+HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget, TConversionState* pState)
 {
 	if (wsType.empty() || wsTarget.empty())
 		return HWP_STRING();
 
-	VECTOR<TRelationship>::const_iterator itFound = std::find_if(m_arRelationships.cbegin(), m_arRelationships.cend(), [wsTarget](const TRelationship& oRelationship){ return wsTarget == oRelationship.m_wsTarget; });
+	VECTOR<TRelationship> *pRelationships = nullptr;
 
-	if (m_arRelationships.cend() != itFound)
+	if (nullptr != pState && nullptr != pState->m_pRelationships)
+		pRelationships = pState->m_pRelationships;
+	else
+		pRelationships = &m_arRelationships;
+
+	VECTOR<TRelationship>::const_iterator itFound = std::find_if(pRelationships->cbegin(), pRelationships->cend(), [wsTarget](const TRelationship& oRelationship){ return wsTarget == oRelationship.m_wsTarget; });
+
+	if (pRelationships->cend() != itFound)
 		return itFound->m_wsID;
 
 	if (L"hyperlink" == wsType)
@@ -2126,12 +2134,12 @@ HWP_STRING CConverter2OOXML::AddRelationship(const HWP_STRING& wsType, const HWP
 		NSStringUtils::CStringBuilder oBuilder;
 		oBuilder.WriteEncodeXmlString(wsTarget);
 
-		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, oBuilder.GetData()});
+		pRelationships->push_back({L"rId" + std::to_wstring(pRelationships->size() + 1), wsType, oBuilder.GetData()});
 	}
 	else
-		m_arRelationships.push_back({L"rId" + std::to_wstring(m_arRelationships.size() + 1), wsType, wsTarget});
+		pRelationships->push_back({L"rId" + std::to_wstring(pRelationships->size() + 1), wsType, wsTarget});
 
-	return m_arRelationships.back().m_wsID;
+	return pRelationships->back().m_wsID;
 }
 
 void CConverter2OOXML::AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType)

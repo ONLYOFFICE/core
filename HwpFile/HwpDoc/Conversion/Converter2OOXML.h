@@ -22,15 +22,9 @@
 
 #include "../Common/WriterContext.h"
 
-
 namespace HWP
 {
-struct TRelationship
-{
-	HWP_STRING m_wsID;
-	HWP_STRING m_wsType;
-	HWP_STRING m_wsTarget;
-};
+
 
 struct TContentType
 {
@@ -96,7 +90,7 @@ class CConverter2OOXML
 	void WritePicture(const CCtrlShapePic* pCtrlPic, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteVideo(const CCtrlShapeVideo* pCtrlVideo, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	bool SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName);
-	HWP_STRING SavePicture(const HWP_STRING& sBinItemId);
+	HWP_STRING SavePicture(const HWP_STRING& sBinItemId, TConversionState& oState);
 
 	void WriteParaShapeProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteRunnerStyle(short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& sExternStyles = CRunnerStyle());
@@ -132,7 +126,7 @@ class CConverter2OOXML
 
 	void WriteEmptyParagraph(short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 
-	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget);
+	HWP_STRING AddRelationship(const HWP_STRING& wsType, const HWP_STRING& wsTarget, TConversionState* pState = nullptr);
 	void AddContentType(const HWP_STRING& wsName, const HWP_STRING& wsType);
 	void AddDefaultContentType(const HWP_STRING& wsName);
 public:

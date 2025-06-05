@@ -141,7 +141,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		properties->apply_to(Context.get_slide_context().get_properties());
 		Compute_GraphicFill(properties->common_draw_fill_attlist_, properties->style_background_image_, Context.root(), fill);
 
-		if (properties->fo_clip_)
+		if (properties->fo_clip_ && fill.bitmap)
 		{
 			std::wstring strRectClip = properties->fo_clip_.get();
 			fill.bitmap->clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";

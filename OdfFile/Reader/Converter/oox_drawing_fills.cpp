@@ -37,7 +37,7 @@
 namespace cpdoccore {
 namespace oox {
 
-	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true)
+	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(true), bCrop(false), bTile(false), isInternal(true)
 	{
 		memset(cropRect, 0, sizeof(double)*4);
 	}

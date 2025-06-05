@@ -1158,7 +1158,6 @@ void CConverter2OOXML::WriteOleShape(const CCtrlShapeOle* pOleShape, short shPar
 
 void CConverter2OOXML::WriteContainer(const CCtrlContainer* pContainer, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	return;
 	for (const CCtrlGeneralShape* pGeneralShape : pContainer->GetShapes())
 		WriteShape(pGeneralShape, shParaShapeID, shParaStyleID, oBuilder, oState);
 }
@@ -1613,7 +1612,22 @@ void CConverter2OOXML::WriteShapePosition(const CCtrlCommon* pCtrlShape, NSStrin
 		return;
 
 	oBuilder.WriteString(L"<wp:simplePos x=\"0\" y=\"0\"/>");
-	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"" + GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset></wp:positionH>");
+
+	oBuilder.WriteString(L"<wp:positionH relativeFrom=\"");
+
+	if (0 == pCtrlShape->GetHorzOffset())
+	{
+		oBuilder.WriteString(L"margin\">");
+		oBuilder.WriteString(L"<wp:align>left</wp:align>");
+	}
+	else
+	{
+		oBuilder.WriteString(GetHRelativeFrom(pCtrlShape->GetHorzRelTo()) + L"\">");
+		oBuilder.WriteString(L"<wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetHorzOffset())) + L"</wp:posOffset>");
+	}
+
+	oBuilder.WriteString(L"</wp:positionH>");
+
 	oBuilder.WriteString(L"<wp:positionV relativeFrom=\"" + GetVRelativeFrom(pCtrlShape->GetVertRelTo()) + L"\"><wp:posOffset>" + std::to_wstring(Transform::HWPUINT2OOXML(pCtrlShape->GetVertOffset())) + L"</wp:posOffset></wp:positionV>");
 }
 
@@ -1663,6 +1677,9 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 
 	if (nullptr != pHeight && 0 != *pHeight)
 		dScaleY *= (double)*pHeight / (double)nFinalHeight;
+
+	TMatrix oFinalMatrix{pCtrlShape->GetFinalMatrix()};
+	oFinalMatrix.ApplyToSize(dScaleX, dScaleY);
 
 	nFinalWidth = ceil((double)nFinalWidth * dScaleX);
 	nFinalHeight = ceil((double)nFinalHeight * dScaleY);

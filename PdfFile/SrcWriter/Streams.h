@@ -163,6 +163,7 @@ namespace PdfWriter
 			return StreamMemory;
 		}
 		BYTE* GetBuffer();
+		BYTE* GetCurBuffer();
 		void ClearWithoutAttack();
 
 	private:

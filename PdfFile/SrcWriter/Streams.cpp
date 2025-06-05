@@ -858,6 +858,10 @@ namespace PdfWriter
 	{
 		return m_pBuffer;
 	}
+	BYTE* CMemoryStream::GetCurBuffer()
+	{
+		return m_pCur;
+	}
 	void CMemoryStream::ClearWithoutAttack()
 	{
 		m_nBufferSize = 0;

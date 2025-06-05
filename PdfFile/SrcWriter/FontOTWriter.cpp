@@ -37,6 +37,87 @@
 
 namespace PdfWriter
 {
+#define N_STD_STRINGS 391
+	static const char* scStandardStrings[N_STD_STRINGS] = {
+		".notdef","space","exclam","quotedbl","numbersign","dollar","percent","ampersand","quoteright","parenleft",
+		"parenright","asterisk","plus","comma","hyphen","period","slash","zero","one","two",
+		"three","four","five","six","seven","eight","nine","colon","semicolon","less",
+		"equal","greater","question","at","A","B","C","D","E","F",
+		"G","H","I","J","K","L","M","N","O","P",
+		"Q","R","S","T","U","V","W","X","Y","Z",
+		"bracketleft","backslash","bracketright","asciicircum","underscore","quoteleft","a","b","c","d",
+		"e","f","g","h","i","j","k","l","m","n",
+		"o","p","q","r","s","t","u","v","w","x",
+		"y","z","braceleft","bar","braceright","asciitilde","exclamdown","cent","sterling","fraction",
+		"yen","florin","section","currency","quotesingle","quotedblleft","guillemotleft","guilsinglleft","guilsinglright","fi",
+		"fl","endash","dagger","daggerdbl","periodcentered","paragraph","bullet","quotesinglbase","quotedblbase","quotedblright",
+		"guillemotright","ellipsis","perthousand","questiondown","grave","acute","circumflex","tilde","macron","breve",
+		"dotaccent","dieresis","ring","cedilla","hungarumlaut","ogonek","caron","emdash","AE","ordfeminine",
+		"Lslash","Oslash","OE","ordmasculine","ae","dotlessi","lslash","oslash","oe","germandbls",
+		"onesuperior","logicalnot","mu","trademark","Eth","onehalf","plusminus","Thorn","onequarter","divide",
+		"brokenbar","degree","thorn","threequarters","twosuperior","registered","minus","eth","multiply","threesuperior",
+		"copyright","Aacute","Acircumflex","Adieresis","Agrave","Aring","Atilde","Ccedilla","Eacute","Ecircumflex",
+		"Edieresis","Egrave","Iacute","Icircumflex","Idieresis","Igrave","Ntilde","Oacute","Ocircumflex","Odieresis",
+		"Ograve","Otilde","Scaron","Uacute","Ucircumflex","Udieresis","Ugrave","Yacute","Ydieresis","Zcaron",
+		"aacute","acircumflex","adieresis","agrave","aring","atilde","ccedilla","eacute","ecircumflex","edieresis",
+		"egrave","iacute","icircumflex","idieresis","igrave","ntilde","oacute","ocircumflex","odieresis","ograve",
+		"otilde","scaron","uacute","ucircumflex","udieresis","ugrave","yacute","ydieresis","zcaron","exclamsmall",
+		"Hungarumlautsmall","dollaroldstyle","dollarsuperior","ampersandsmall","Acutesmall","parenleftsuperior","parenrightsuperior","twodotenleader","onedotenleader","zerooldstyle",
+		"oneoldstyle","twooldstyle","threeoldstyle","fouroldstyle","fiveoldstyle","sixoldstyle","sevenoldstyle","eightoldstyle","nineoldstyle","commasuperior",
+		"threequartersemdash","periodsuperior","questionsmall","asuperior","bsuperior","centsuperior","dsuperior","esuperior","isuperior","lsuperior",
+		"msuperior","nsuperior","osuperior","rsuperior","ssuperior","tsuperior","ff","ffi","ffl","parenleftinferior",
+		"parenrightinferior","Circumflexsmall","hyphensuperior","Gravesmall","Asmall","Bsmall","Csmall","Dsmall","Esmall","Fsmall",
+		"Gsmall","Hsmall","Ismall","Jsmall","Ksmall","Lsmall","Msmall","Nsmall","Osmall","Psmall",
+		"Qsmall","Rsmall","Ssmall","Tsmall","Usmall","Vsmall","Wsmall","Xsmall","Ysmall","Zsmall",
+		"colonmonetary","onefitted","rupiah","Tildesmall","exclamdownsmall","centoldstyle","Lslashsmall","Scaronsmall","Zcaronsmall","Dieresissmall",
+		"Brevesmall","Caronsmall","Dotaccentsmall","Macronsmall","figuredash","hypheninferior","Ogoneksmall","Ringsmall","Cedillasmall","questiondownsmall",
+		"oneeighth","threeeighths","fiveeighths","seveneighths","onethird","twothirds","zerosuperior","foursuperior","fivesuperior","sixsuperior",
+		"sevensuperior","eightsuperior","ninesuperior","zeroinferior","oneinferior","twoinferior","threeinferior","fourinferior","fiveinferior","sixinferior",
+		"seveninferior","eightinferior","nineinferior","centinferior","dollarinferior","periodinferior","commainferior","Agravesmall","Aacutesmall","Acircumflexsmall",
+		"Atildesmall","Adieresissmall","Aringsmall","AEsmall","Ccedillasmall","Egravesmall","Eacutesmall","Ecircumflexsmall","Edieresissmall","Igravesmall",
+		"Iacutesmall","Icircumflexsmall","Idieresissmall","Ethsmall","Ntildesmall","Ogravesmall","Oacutesmall","Ocircumflexsmall","Otildesmall","Odieresissmall",
+		"OEsmall","Oslashsmall","Ugravesmall","Uacutesmall","Ucircumflexsmall","Udieresissmall","Yacutesmall","Thornsmall","Ydieresissmall","001.000",
+		"001.001","001.002","001.003","Black","Bold","Book","Light","Medium","Regular","Roman",
+		"Semibold"
+};
+#define CHARSET_ISOADOBE_SIZE 228
+	static const unsigned short scCharsetIsoadobeSids[CHARSET_ISOADOBE_SIZE] =
+	{
+		1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,
+		41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,
+		78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,
+		111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,
+		138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,
+		165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,182,183,184,185,186,187,188,189,190,191,
+		192,193,194,195,196,197,198,199,200,201,202,203,204,205,206,207,208,209,210,211,212,213,214,215,216,217,218,
+		219,220,221,222,223,224,225,226,227,228
+	};
+#define CHARSET_EXPERT_SIZE 165
+	static const unsigned short scCharsetExpertSids[CHARSET_EXPERT_SIZE] =
+	{
+		1,229,230,231,232,233,234,235,236,237,238,13,14,15,99,239,240,241,242,243,244,245,246,247,248,27,28,
+		249,250,251,252,253,254,255,256,257,258,259,260,261,262,263,264,265,266,109,110,267,268,269,270,271,272,
+		273,274,275,276,277,278,279,280,281,282,283,284,285,286,287,288,289,290,291,292,293,294,295,296,297,298,
+		299,300,301,302,303,304,305,306,307,308,309,310,311,312,313,314,315,316,317,318,158,155,163,319,320,321,
+		322,323,324,325,326,150,164,169,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,
+		345,346,347,348,349,350,351,352,353,354,355,356,357,358,359,360,361,362,363,364,365,366,367,368,369,
+		370,371,372,373,374,375,376,377,378
+	};
+#define CHARSET_EXPERT_SUBSET_SIZE 86
+	static const unsigned short scCharsetExpertSubsetSids[CHARSET_EXPERT_SUBSET_SIZE] =
+	{
+		1,231,232,235,236,237,238,13,14,15,99,239,240,241,242,243,244,245,246,247,248,27,28,
+		249,250,251,253,254,255,256,257,258,259,260,261,262,263,264,265,266,109,110,267,268,
+		269,270,272,300,301,302,305,314,315,158,155,163,320,321,322,323,324,325,326,150,164,
+		169,327,328,329,330,331,332,333,334,335,336,337,338,339,340,341,342,343,344,345,346
+	};
+	static const unsigned short* scDefaultCharsets[3] =
+	{
+		scCharsetIsoadobeSids,
+		scCharsetExpertSids,
+		scCharsetExpertSubsetSids
+	};
+
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
 		if (inOffset < 256)
@@ -514,6 +595,16 @@ namespace PdfWriter
 			FontDictInfo* mFDArray;
 			FontDictInfo** mFDSelect; // size is like glyphsize. each cell references the relevant FontDict
 		};
+		struct StringLess
+		{
+			bool operator() (const char* left, const char* right) const
+			{
+				return strcmp(left ,right) < 0;
+			}
+		};
+		typedef std::map<const char*, unsigned short, StringLess> CharPToUShortMap;
+		typedef std::map<long long, CharStrings*> LongFilePositionTypeToCharStringsMap;
+		typedef std::map<long long, CharSetInfo*> LongFilePositionTypeToCharSetInfoMap;
 
 		long long mCFFOffset;
 
@@ -521,11 +612,21 @@ namespace PdfWriter
 		unsigned short mFontsCount;
 		std::list<std::string> mName;
 		TopDictInfo* mTopDictIndex; // count is same as fonts count
+		char** mStrings;
+		unsigned short mStringsCount;
+		long long mStringIndexPosition;
+		long long mGlobalSubrsPosition;
+		PrivateDictInfo* mPrivateDicts;
+
+		CharStrings mGlobalSubrs;
+		CharStrings* mCharStrings; // count is same as fonts count
+		LongFilePositionTypeToCharStringsMap mLocalSubrs; // count is NOT the same as fonts count [some may be shared, plus there might be more because of CID usage]
 
 		CMemoryStream* mPrimitivesReader; // внешний, освобождать не надо
 		StringToUShort mNameToIndex;
 		long long mNameIndexPosition;
 		long long mTopDictIndexPosition;
+		CharPToUShortMap mStringToSID;
 	public:
 		CCFFReader();
 		~CCFFReader();
@@ -547,6 +648,28 @@ namespace PdfWriter
 		bool ReadNameIndex();
 		bool ReadTopDictIndex();
 		bool ReadDict(unsigned long inReadAmount, UShortToDictOperandListMap& outDict);
+		bool ReadStringIndex();
+		bool ReadGlobalSubrs();
+		bool ReadSubrsFromIndex(unsigned short& outSubrsCount, CharStringsIndex* outSubrsIndex);
+		bool ReadCharStrings();
+		static const unsigned short scCharStringsKey = 17;
+		long long GetCharStringsPosition(unsigned short inFontIndex);
+		long GetSingleIntegerValue(unsigned short inFontIndex, unsigned short inKey, long inDefault);
+		long GetSingleIntegerValueFromDict(const UShortToDictOperandListMap& inDict, unsigned short inKey, long inDefault);
+		static const unsigned short scCharstringType = 0x0C06;
+		long GetCharStringType(unsigned short inFontIndex);
+		bool ReadPrivateDicts();
+		static const unsigned short scPrivate = 18;
+		bool ReadPrivateDict(const UShortToDictOperandListMap& inReferencingDict, PrivateDictInfo* outPrivateDict);
+		bool ReadLocalSubrs();
+		static const unsigned short scSubrs = 19;
+		bool ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType);
+		static const unsigned short scROS = 0xC1E;
+		bool ReadCharsets();
+		void SetupSIDToGlyphMapWithStandard(const unsigned short* inStandardCharSet, unsigned short inStandardCharSetLength, UShortToCharStringMap& ioCharMap, const CharStrings& inCharStrings);
+		bool ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
+		static const unsigned short scCharset = 15;
+		long long GetCharsetPosition(unsigned short inFontIndex);
 	};
 	CCFFReader::CCFFReader()
 	{
@@ -559,6 +682,7 @@ namespace PdfWriter
 	void CCFFReader::FreeData()
 	{
 		// TODO
+		RELEASEOBJECT(mPrimitivesReader);
 	}
 	void CCFFReader::Reset()
 	{
@@ -594,13 +718,15 @@ namespace PdfWriter
 		}
 		else if (28 == byte0)
 		{
-			short buffer = 0;
-			status = Read2ByteSigned(buffer);
-			outValue = buffer;
+			outValue = mPrimitivesReader->ReadUShort();
+			if (mPrimitivesReader->IsEof())
+				return false;
 		}
-		else if(29 == byte0)
+		else if (29 == byte0)
 		{
-			status = Read4ByteSigned(outValue);
+			outValue = mPrimitivesReader->ReadUInt();
+			if (mPrimitivesReader->IsEof())
+				return false;
 		}
 		else
 			status = false;
@@ -726,8 +852,10 @@ namespace PdfWriter
 	{
 		FreeData();
 
-		mPrimitivesReader = inCFFFile;
-		mCFFOffset = mPrimitivesReader->Tell();
+		mCFFOffset = inCFFFile->Tell();
+		mPrimitivesReader = new CMemoryStream(inCFFFile->Size() - inCFFFile->Tell());
+		mPrimitivesReader->Write(inCFFFile->GetCurBuffer(), inCFFFile->Size() - inCFFFile->Tell());
+		mPrimitivesReader->Seek(0, SeekSet);
 
 		bool status = ReadHeader();
 		if (!status)
@@ -741,6 +869,30 @@ namespace PdfWriter
 			return false;
 
 		status = ReadTopDictIndex();
+		if (!status)
+			return false;
+
+		status = ReadStringIndex();
+		if (!status)
+			return false;
+
+		status = ReadGlobalSubrs();
+		if (!status)
+			return false;
+
+		status = ReadCharStrings();
+		if (!status)
+			return false;
+
+		status = ReadPrivateDicts();
+		if (!status)
+			return false;
+
+		status = ReadLocalSubrs();
+		if (!status)
+			return false;
+
+		status = ReadCharsets();
 		if (!status)
 			return false;
 
@@ -859,6 +1011,270 @@ namespace PdfWriter
 		}
 
 		return status;
+	}
+	bool CCFFReader::ReadStringIndex()
+	{
+		mStringIndexPosition = mPrimitivesReader->Tell();
+
+		unsigned long* offsets;
+		bool status = ReadIndexHeader(&offsets,mStringsCount);
+		if (!status)
+			return false;
+
+		if (0 == mStringsCount)
+		{
+			mStrings = NULL;
+			return true;
+		}
+
+		if (offsets[0] != 1)
+			mPrimitivesReader->Seek(offsets[0] - 1, SeekCur);
+
+		mStrings = new char*[mStringsCount];
+
+		unsigned long i;
+		for (i = 0; i < mStringsCount && status; ++i)
+		{
+			unsigned int nLength = offsets[i + 1] - offsets[i];
+			mStrings[i] = new char[nLength + 1];
+			mPrimitivesReader->Read((BYTE*)mStrings[i], &nLength);
+			if (mPrimitivesReader->IsEof())
+			{
+				status = false;
+				break;
+			}
+			mStrings[i][nLength] = 0;
+		}
+
+		// failure case, null all the rest of the strings for later delete to not perofrm errors
+		if (!status)
+		{
+			for(; i < mStringsCount; ++i)
+				mStrings[i] = NULL;
+		}
+
+		// now create the string to SID map
+		for( i = 0; i < N_STD_STRINGS; ++i)
+			mStringToSID.insert(CharPToUShortMap::value_type(scStandardStrings[i], i));
+		for (; i < N_STD_STRINGS + mStringsCount; ++i)
+			mStringToSID.insert(CharPToUShortMap::value_type(mStrings[i - N_STD_STRINGS], i));
+
+		delete[] offsets;
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadGlobalSubrs()
+	{
+		mGlobalSubrsPosition = mPrimitivesReader->Tell();
+		mGlobalSubrs.mCharStringsType = 2; // always 2
+		return ReadSubrsFromIndex(mGlobalSubrs.mCharStringsCount, &(mGlobalSubrs.mCharStringsIndex));
+	}
+	bool CCFFReader::ReadSubrsFromIndex(unsigned short& outSubrsCount, CharStringsIndex* outSubrsIndex)
+	{
+		unsigned long* offsets;
+		bool status = ReadIndexHeader(&offsets, outSubrsCount);
+		if (!status)
+			return false;
+
+		if(0 == outSubrsCount)
+		{
+			*outSubrsIndex = NULL;
+			return true;
+		}
+
+		// just taking a snapshot of positions here
+		*outSubrsIndex = new CharString[outSubrsCount];
+
+		long long dataStartPosition = mPrimitivesReader->Tell();
+
+		for (unsigned short i = 0; i < outSubrsCount; ++i)
+		{
+			(*outSubrsIndex)[i].mStartPosition = dataStartPosition + offsets[i] - 1;
+			(*outSubrsIndex)[i].mEndPosition = dataStartPosition + offsets[i+1] - 1;
+			(*outSubrsIndex)[i].mIndex = i;
+		}
+
+		// for good faith put the pointer at the end now (if someone wants to take a snapshot)
+		mPrimitivesReader->Seek(offsets[outSubrsCount] - 1, SeekCur);
+
+		delete[] offsets;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadCharStrings()
+	{
+		// scan all charstrings of all included fonts
+		mCharStrings = new CharStrings[mFontsCount];
+		bool status = true;
+
+		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		{
+			long long  charStringsPosition = GetCharStringsPosition(i);
+			mCharStrings[i].mCharStringsType = (BYTE)GetCharStringType(i);
+			if (0 == charStringsPosition)
+			{
+				mCharStrings[i].mCharStringsCount = 0;
+				mCharStrings[i].mCharStringsIndex = NULL;
+			}
+			else
+			{
+				mPrimitivesReader->Seek(charStringsPosition, SeekSet);
+				status = ReadSubrsFromIndex(mCharStrings[i].mCharStringsCount, &(mCharStrings[i].mCharStringsIndex));
+			}
+		}
+
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	long long CCFFReader::GetCharStringsPosition(unsigned short inFontIndex)
+	{
+		return GetSingleIntegerValue(inFontIndex, scCharStringsKey, 0);
+	}
+	long CCFFReader::GetSingleIntegerValue(unsigned short inFontIndex, unsigned short inKey, long inDefault)
+	{
+		return GetSingleIntegerValueFromDict(mTopDictIndex[inFontIndex].mTopDict, inKey, inDefault);
+	}
+	long CCFFReader::GetSingleIntegerValueFromDict(const UShortToDictOperandListMap& inDict, unsigned short inKey, long inDefault)
+	{
+		UShortToDictOperandListMap::const_iterator it = inDict.find(inKey);
+		if (it != inDict.end())
+			return it->second.front().IntegerValue;
+		return inDefault;
+	}
+	long CCFFReader::GetCharStringType(unsigned short inFontIndex)
+	{
+		return GetSingleIntegerValue(inFontIndex, scCharstringType, 2);
+	}
+	bool CCFFReader::ReadPrivateDicts()
+	{
+		mPrivateDicts = new PrivateDictInfo[mFontsCount];
+		bool status = true;
+
+		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+			status = ReadPrivateDict(mTopDictIndex[i].mTopDict, mPrivateDicts + i);
+
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadPrivateDict(const UShortToDictOperandListMap& inReferencingDict, PrivateDictInfo* outPrivateDict)
+	{
+		bool status = true;
+		UShortToDictOperandListMap::const_iterator it = inReferencingDict.find(scPrivate);
+
+		outPrivateDict->mLocalSubrs = NULL;
+		if (it == inReferencingDict.end())
+		{
+			outPrivateDict->mPrivateDictStart = 0;
+			outPrivateDict->mPrivateDictEnd   = 0;
+		}
+		else
+		{
+			outPrivateDict->mPrivateDictStart = (long long)it->second.back().IntegerValue;
+			outPrivateDict->mPrivateDictEnd = (long long)(it->second.back().IntegerValue + it->second.front().IntegerValue);
+
+			mPrimitivesReader->Seek(it->second.back().IntegerValue, SeekSet);
+			status = ReadDict(it->second.front().IntegerValue, outPrivateDict->mPrivateDict);
+		}
+		return status;
+	}
+	bool CCFFReader::ReadLocalSubrs()
+	{
+		// scan all subrs of all included fonts
+		bool status = true;
+
+		for (unsigned short i=0; i < mFontsCount && status; ++i)
+			status = ReadLocalSubrsForPrivateDict(mPrivateDicts + i, (BYTE)GetCharStringType(i));
+
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType)
+	{
+		bool status = true;
+		long long subrsPosition = GetSingleIntegerValueFromDict(inPrivateDict->mPrivateDict, scSubrs, 0);
+
+		if (0 == subrsPosition)
+		{
+			inPrivateDict->mLocalSubrs = NULL;
+		}
+		else
+		{
+			LongFilePositionTypeToCharStringsMap::iterator	it = mLocalSubrs.find(inPrivateDict->mPrivateDictStart + subrsPosition);
+			if (it == mLocalSubrs.end())
+			{
+				CharStrings* charStrings = new CharStrings();
+				charStrings->mCharStringsType = inCharStringType;
+				mPrimitivesReader->Seek(inPrivateDict->mPrivateDictStart + subrsPosition, SeekSet);
+				status = ReadSubrsFromIndex(charStrings->mCharStringsCount, &(charStrings->mCharStringsIndex));
+				if (status)
+					it = mLocalSubrs.insert(LongFilePositionTypeToCharStringsMap::value_type(inPrivateDict->mPrivateDictStart + subrsPosition,charStrings)).first;
+			}
+			inPrivateDict->mLocalSubrs = it->second;
+		}
+		return status;
+	}
+	bool CCFFReader::ReadCharsets()
+	{
+		// read all charsets
+		bool status = true;
+		LongFilePositionTypeToCharSetInfoMap offsetToIndex;
+		LongFilePositionTypeToCharSetInfoMap::iterator it;
+
+		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		{
+			long long charsetPosition = GetCharsetPosition(i);
+			it = offsetToIndex.find(charsetPosition);
+			if (it == offsetToIndex.end())
+			{
+				CharSetInfo* charSet = new CharSetInfo();
+				bool isCID = mTopDictIndex[i].mTopDict.find(scROS) != mTopDictIndex[i].mTopDict.end();
+				if (charsetPosition <= 2)
+				{
+					charSet->mType = (ECharSetType)charsetPosition;
+					charSet->mSIDs = NULL;
+					if (!isCID) // collect SID->Glyph map only if not CID, in which case SIDs are CIDs...and what i'm using the map for is irrelevant
+						SetupSIDToGlyphMapWithStandard(scDefaultCharsets[charsetPosition], scDefaultCharsetsSizes[charsetPosition], charSet->mSIDToGlyphMap, mCharStrings[i]);
+				}
+				else
+				{
+					BYTE charsetFormat;
+					charSet->mType = eCharSetCustom;
+					mPrimitivesReader->Seek(charsetPosition, SeekSet);
+					charsetFormat = mPrimitivesReader->ReadUChar();
+
+					if (0 == charsetFormat)
+						status = ReadFormat0Charset(isCID, charSet->mSIDToGlyphMap, &charSet->mSIDs, mCharStrings[i]);
+					else if (1 == charsetFormat)
+						status = ReadFormat1Charset(isCID, charSet->mSIDToGlyphMap, &charSet->mSIDs, mCharStrings[i]);
+					else // 2 charset format
+						status = ReadFormat2Charset(isCID, charSet->mSIDToGlyphMap, &charSet->mSIDs, mCharStrings[i]);
+				}
+				mCharSets.push_back(charSet);
+				it = offsetToIndex.insert(LongFilePositionTypeToCharSetInfoMap::value_type(charsetPosition,charSet)).first;
+			}
+			mTopDictIndex[i].mCharSet = it->second;
+		}
+
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	void CCFFReader::SetupSIDToGlyphMapWithStandard(const unsigned short* inStandardCharSet, unsigned short inStandardCharSetLength, UShortToCharStringMap& ioCharMap, const CharStrings& inCharStrings)
+	{
+		ioCharMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
+		for (unsigned short i = 1; i < inCharStrings.mCharStringsCount && i < inStandardCharSetLength;++i)
+			ioCharMap.insert(UShortToCharStringMap::value_type(inStandardCharSet[i], inCharStrings.mCharStringsIndex + i));
+	}
+	bool CCFFReader::ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
+	{
+
+	}
+	long long CCFFReader::GetCharsetPosition(unsigned short inFontIndex)
+	{
+		return (long long)GetSingleIntegerValue(inFontIndex, scCharset, 0);
 	}
 	//----------------------------------------------------------------------------------------
 	// COpenTypeReader

@@ -467,11 +467,14 @@ namespace NSDocxRenderer
 
 		NSWasm::CData writer;
 		writer.SkipLen();
-		writer.AddInt(static_cast<unsigned int>(m_arShapes.size()));
+		writer.AddInt(0);
+		int countShapes = 0;
 		for (const auto& shape : m_arShapes)
 		{
-			if (!shape) continue;
+			if (!shape)
+				continue;
 			shape->ToBin(writer);
+			++countShapes;
 		}
 
 		if (!m_arCompleteObjectsBinBase64.empty())
@@ -484,12 +487,14 @@ namespace NSDocxRenderer
 				if (NSBase64::Base64Decode(elem.c_str(), (int)elem.length(), buff, &buff_len))
 				{
 					writer.Write(buff, buff_len);
+					++countShapes;
 				}
 
 				delete[] buff;
 			}
 		}
 
+		writer.AddInt(countShapes, 4);
 		writer.WriteLen();
 
 		return writer;

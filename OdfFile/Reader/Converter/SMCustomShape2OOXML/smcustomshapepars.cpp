@@ -614,7 +614,7 @@ namespace OdfCustomShape
 			return TypeElement::atan;
 		else if(wsFunction == L"logheight")
 			return TypeElement::logheight;
-		else if(wsFunction == L"logwight")
+		else if(wsFunction == L"logwidth")
 			return TypeElement::logwidth;
 		else
 			return TypeElement::empty;
@@ -757,7 +757,7 @@ namespace OdfCustomShape
 		if(m_enTypeFunction == TypeElement::logheight)
 			wsLogFormula = L"*/ h 25 96 ";
 		else
-			wsLogFormula = L"*/ h 25 96 ";
+			wsLogFormula = L"*/ w 25 96 ";
 		CalculatingNumberName(wsFormula,wsNewName);
 		SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsNewName,wsLogFormula);
 	}

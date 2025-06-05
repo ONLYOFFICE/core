@@ -10,7 +10,7 @@ CORE_ROOT_DIR = $$PWD/../..
 PWD_ROOT_DIR = $$PWD
 include($$CORE_ROOT_DIR/Common/base.pri)
 
-ADD_DEPENDENCY(UnicodeConverter, kernel, kernel_network, graphics, PdfFile, DjVuFile, XpsFile, DocxRenderer)
+ADD_DEPENDENCY(UnicodeConverter, kernel, kernel_network, graphics, PdfFile, DjVuFile, XpsFile, DocxRenderer, TextCommandRenderer)
 
 core_linux:include($$PWD/../../Common/3dParty/icu/icu.pri)
 core_windows:LIBS += -lgdi32 -ladvapi32 -luser32 -lshell32

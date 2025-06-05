@@ -11,7 +11,7 @@ namespace NSDocxRenderer
 
 	void CParagraph::Clear()
 	{
-		m_arLines.clear();
+		m_arTextLines.clear();
 	}
 
 	void CParagraph::ToXml(NSStringUtils::CStringBuilder& oWriter) const
@@ -20,7 +20,7 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"<w:pPr>");
 
 		// styles
-		if(!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
+		if (!m_wsStyleId.empty()) oWriter.WriteString(L"<w:pStyle w:val=\"" + m_wsStyleId + L"\"/>");
 
 		oWriter.WriteString(L"<w:spacing");
 
@@ -105,7 +105,7 @@ namespace NSDocxRenderer
 		}
 
 		oWriter.WriteString(L"</w:pPr>");
-		for(const auto& line : m_arLines)
+		for(const auto& line : m_arTextLines)
 			if(line)
 				line->ToXml(oWriter);
 		oWriter.WriteString(L"</w:p>");
@@ -135,14 +135,28 @@ namespace NSDocxRenderer
 			break;
 		}
 
-		oWriter.WriteString(L"\"");
+		oWriter.WriteString(L"\" ");
 
 		if (m_bIsNeedFirstLineIndent)
 		{
-			oWriter.WriteString(L" indent=\"");
+			oWriter.WriteString(L" indent=\" ");
 			oWriter.AddInt(static_cast<int>(m_dFirstLine * c_dMMToEMU));
 			oWriter.WriteString(L"\"");
 		}
+
+		if (m_dLeftBorder > 0)
+		{
+			oWriter.WriteString(L" marL=\" ");
+			oWriter.AddInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
+			oWriter.WriteString(L"\"");
+		}
+		if (m_dRightBorder > 0)
+		{
+			oWriter.WriteString(L" marR=\"");
+			oWriter.AddInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
+			oWriter.WriteString(L"\"");
+		}
+
 		oWriter.WriteString(L">");
 
 		oWriter.WriteString(L"<a:spcBef>");
@@ -151,10 +165,9 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"\"/>");
 		oWriter.WriteString(L"</a:spcBef>");
 
-
 		oWriter.WriteString(L"<a:spcAft>");
 		oWriter.WriteString(L"<a:spcPts val=\"");
-		oWriter.AddInt(static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100));
+		oWriter.AddInt(static_cast<int>(m_dSpaceAfter * c_dMMToPt * 100));
 		oWriter.WriteString(L"\"/>");
 		oWriter.WriteString(L"</a:spcAft>");
 
@@ -165,10 +178,103 @@ namespace NSDocxRenderer
 		oWriter.WriteString(L"</a:lnSpc>");
 
 		oWriter.WriteString(L"</a:pPr>");
-		for(const auto& line : m_arLines)
+		for(const auto& line : m_arTextLines)
 			if(line)
 				line->ToXmlPptx(oWriter);
 		oWriter.WriteString(L"</a:p>");
+	}
+	void CParagraph::ToBin(NSWasm::CData& oWriter) const
+	{
+		// WriteRecord WriteTextParagraphPr
+		[this, &oWriter] () {
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0);
+			switch (m_eTextAlignmentType)
+			{
+			case tatByCenter:
+				oWriter.WriteBYTE(0);
+				break;
+			case tatByRight:
+				oWriter.WriteBYTE(5);
+				break;
+			case tatByWidth:
+				oWriter.WriteBYTE(2);
+				break;
+			case tatByLeft:  // fallthrough
+			case tatUnknown: // fallthrough
+			default:
+				oWriter.WriteBYTE(4);
+				break;
+			}
+
+			// marL
+			if (m_dLeftBorder > 0)
+			{
+				oWriter.WriteBYTE(8);
+				oWriter.AddSInt(static_cast<int>(m_dLeftBorder * c_dMMToEMU));
+			}
+
+			// marR
+			if (m_dRightBorder > 0)
+			{
+				oWriter.WriteBYTE(9);
+				oWriter.AddSInt(static_cast<int>(m_dRightBorder * c_dMMToEMU));
+			}
+
+			// indent
+			if (m_bIsNeedFirstLineIndent)
+			{
+				oWriter.WriteBYTE(5);
+				oWriter.AddSInt(static_cast<int>(m_dFirstLine * c_dMMToEMU));
+			}
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			const int max_value = 158400;
+
+			// line spacing
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			int height_value = static_cast<int>(m_dLineHeight * c_dMMToPt * 100);
+			if (fabs(height_value) > max_value)
+				height_value > 0 ? height_value = max_value : height_value = -max_value;
+			oWriter.WriteBYTE(1); oWriter.AddSInt(static_cast<int>(height_value));
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			// space after
+			oWriter.StartRecord(1);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			int after_value = static_cast<int>(m_dSpaceAfter * c_dMMToPt * 100);
+			if (fabs(after_value) > max_value)
+				after_value > 0 ? after_value = max_value : after_value = -max_value;
+			oWriter.WriteBYTE(1); oWriter.AddSInt(static_cast<int>(after_value));
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			// space before
+			oWriter.StartRecord(2);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			int before_value = static_cast<int>(m_dSpaceBefore * c_dMMToPt * 100);
+			if (fabs(before_value) > max_value)
+				before_value > 0 ? before_value = max_value : before_value = -max_value;
+			oWriter.WriteBYTE(1); oWriter.AddSInt(static_cast<int>(before_value));
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			oWriter.EndRecord();
+		}();
+
+		oWriter.StartRecord(2);
+		unsigned int count = 0;
+		for (const auto& text_line : m_arTextLines)
+			count += text_line->m_arConts.size();
+
+		oWriter.AddInt(count);
+		for (const auto& text_line : m_arTextLines)
+			text_line->ToBin(oWriter);
+
+		oWriter.EndRecord();
 	}
 
 	void CParagraph::RemoveHighlightColor()
@@ -176,9 +282,9 @@ namespace NSDocxRenderer
 		if (!m_bIsShadingPresent)
 			return;
 
-		for(size_t i = 0; i < m_arLines.size(); ++i)
+		for(size_t i = 0; i < m_arTextLines.size(); ++i)
 		{
-			auto& pLine = m_arLines[i];
+			auto& pLine = m_arTextLines[i];
 			if (pLine || pLine->m_pDominantShape)
 			{
 				for (size_t j = 0; j < pLine->m_arConts.size(); ++j)
@@ -194,9 +300,9 @@ namespace NSDocxRenderer
 
 	void CParagraph::MergeLines()
 	{
-		for(size_t i = 0; i < m_arLines.size() - 1; ++i)
+		for(size_t i = 0; i < m_arTextLines.size() - 1; ++i)
 		{
-			auto pLine = m_arLines[i];
+			auto pLine = m_arTextLines[i];
 			auto pLastCont = pLine->m_arConts.back();
 			size_t iNumConts = pLine->m_arConts.size() - 1;
 
@@ -206,7 +312,7 @@ namespace NSDocxRenderer
 			auto text = pLastCont->GetText();
 			auto last_sym = text[text.length() - 1];
 
-			if (last_sym != c_SPACE_SYM && m_arLines.size() != 1)
+			if (last_sym != c_SPACE_SYM && m_arTextLines.size() != 1)
 				pLastCont->AddSymBack(c_SPACE_SYM, 0);
 		}
 	}

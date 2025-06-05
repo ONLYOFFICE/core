@@ -108,6 +108,7 @@ namespace PdfWriter
 		unsigned short ReadUShort();
 		double         ReadFixed();
 		long long      ReadLongDateTime();
+		unsigned int   ReadOffset(BYTE nOffset);
 
 		void Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum);
 		void WriteChar (char nChar);

@@ -33,6 +33,7 @@
 
 #include <map>
 #include <vector>
+#include <list>
 
 namespace PdfWriter
 {
@@ -404,7 +405,463 @@ namespace PdfWriter
 		pOutputStream->Write(pBuffer, 5, false);
 	}
 	//----------------------------------------------------------------------------------------
-	// Reader
+	// CCFFReader
+	//----------------------------------------------------------------------------------------
+	struct CCFFReader
+	{
+		struct CFFHeader
+		{
+			BYTE major;
+			BYTE minor;
+			BYTE hdrSize;
+			BYTE offSize;
+		};
+		typedef std::map<std::string,unsigned short> StringToUShort;
+		struct DictOperand
+		{
+			bool IsInteger;
+			long IntegerValue;
+			double RealValue;
+			long RealValueFractalEnd; // this fellow is here for writing, due to double being terribly inexact.
+		};
+		typedef std::list<DictOperand> DictOperandList;
+		typedef std::map<unsigned short, DictOperandList> UShortToDictOperandListMap;
+		enum ECharSetType
+		{
+			eCharSetISOAdobe = 0,
+			eCharSetExpert,
+			eCharSetExpertSubset,
+			eCharSetCustom
+		};
+		struct IndexElement
+		{
+			IndexElement() { mStartPosition = 0; mEndPosition = 0; mIndex = 0; }
+
+			long long mStartPosition;
+			long long mEndPosition;
+			unsigned short mIndex;
+		};
+		typedef IndexElement CharString;
+		typedef std::map<unsigned short, CharString*> UShortToCharStringMap;
+		struct CharSetInfo
+		{
+			CharSetInfo() {mSIDs = NULL;}
+
+			ECharSetType mType;
+			UShortToCharStringMap mSIDToGlyphMap;
+			unsigned short* mSIDs; // count is like glyphs count
+		};
+		enum EEncodingType
+		{
+			eEncodingStandard = 0,
+			eEncodingExpert,
+			eEncodingCustom
+		};
+		typedef std::list<BYTE> ByteList;
+		typedef std::map<unsigned short, ByteList> UShortToByteList;
+		struct EncodingsInfo
+		{
+			EncodingsInfo() {mEncoding = NULL;}
+
+			long long mEncodingStart;
+			long long mEncodingEnd;
+
+			EEncodingType mType;
+			BYTE mEncodingsCount;
+			BYTE* mEncoding;
+			UShortToByteList mSupplements;
+
+		};
+		typedef CharString* CharStringsIndex;
+		struct CharStrings
+		{
+			CharStrings(){mCharStringsIndex = NULL; mCharStringsType = 0; mCharStringsCount = 0;}
+
+			BYTE mCharStringsType;
+			unsigned short mCharStringsCount;
+			CharStringsIndex mCharStringsIndex;
+		};
+		struct PrivateDictInfo
+		{
+			PrivateDictInfo() {mPrivateDictStart=0;mPrivateDictEnd=0;mLocalSubrs=NULL;}
+
+			long long mPrivateDictStart;
+			long long mPrivateDictEnd;
+			UShortToDictOperandListMap mPrivateDict;
+			CharStrings* mLocalSubrs;
+
+		};
+		struct FontDictInfo
+		{
+			long long mFontDictStart;
+			long long mFontDictEnd;
+			UShortToDictOperandListMap mFontDict;
+			PrivateDictInfo mPrivateDict;
+		};
+		struct TopDictInfo
+		{
+			TopDictInfo()
+			{
+				mFDArray = NULL;
+				mFDSelect = NULL;
+				mCharSet = NULL;
+				mEncoding = NULL;
+			}
+
+			UShortToDictOperandListMap mTopDict;
+			CharSetInfo* mCharSet;
+			EncodingsInfo* mEncoding;
+			FontDictInfo* mFDArray;
+			FontDictInfo** mFDSelect; // size is like glyphsize. each cell references the relevant FontDict
+		};
+
+		long long mCFFOffset;
+
+		CFFHeader mHeader;
+		unsigned short mFontsCount;
+		std::list<std::string> mName;
+		TopDictInfo* mTopDictIndex; // count is same as fonts count
+
+		CMemoryStream* mPrimitivesReader; // внешний, освобождать не надо
+		StringToUShort mNameToIndex;
+		long long mNameIndexPosition;
+		long long mTopDictIndexPosition;
+	public:
+		CCFFReader();
+		~CCFFReader();
+
+		// parses the whole CFF file, with all contained fonts
+		bool ReadCFFFile(CMemoryStream* inCFFFile);
+
+		void FreeData();
+		void Reset();
+
+		bool ReadIntegerOperand(BYTE inFirstByte, long& outValue);
+		bool ReadRealOperand(double& outValue, long& outRealValueFractalEnd);
+		bool IsDictOperator(BYTE inCandidate);
+		bool ReadDictOperator(BYTE inFirstByte, unsigned short& outOperator);
+		bool ReadDictOperand(BYTE inFirstByte, DictOperand& outOperand);
+
+		bool ReadHeader();
+		bool ReadIndexHeader(unsigned long** outOffsets,unsigned short& outItemsCount);
+		bool ReadNameIndex();
+		bool ReadTopDictIndex();
+		bool ReadDict(unsigned long inReadAmount, UShortToDictOperandListMap& outDict);
+	};
+	CCFFReader::CCFFReader()
+	{
+
+	}
+	CCFFReader::~CCFFReader()
+	{
+		FreeData();
+	}
+	void CCFFReader::FreeData()
+	{
+		// TODO
+	}
+	void CCFFReader::Reset()
+	{
+		FreeData();
+	}
+
+	bool CCFFReader::ReadIntegerOperand(BYTE inFirstByte, long& outValue)
+	{
+		BYTE byte0, byte1;
+		bool status = true;
+
+		byte0 = inFirstByte;
+
+		if (byte0 >= 32 && byte0 <= 246)
+		{
+			outValue = (long)byte0 - 139;
+		}
+		else if (byte0 >= 247 && byte0 <= 250)
+		{
+			byte1 = mPrimitivesReader->ReadUChar();
+			if (mPrimitivesReader->IsEof())
+				return false;
+
+			outValue = (byte0 - 247) * 256 + byte1 + 108;
+		}
+		else if (byte0 >= 251 && byte0 <= 254)
+		{
+			byte1 = mPrimitivesReader->ReadUChar();
+			if (mPrimitivesReader->IsEof())
+				return false;
+
+			outValue = -(long)((long)byte0 - 251) * 256 - byte1 - 108;
+		}
+		else if (28 == byte0)
+		{
+			short buffer = 0;
+			status = Read2ByteSigned(buffer);
+			outValue = buffer;
+		}
+		else if(29 == byte0)
+		{
+			status = Read4ByteSigned(outValue);
+		}
+		else
+			status = false;
+
+		return status;
+	}
+	bool CCFFReader::ReadRealOperand(double& outValue, long& outRealValueFractalEnd)
+	{
+		double integerPart = 0;
+		double fractionPart = 0;
+		double powerPart = 0;
+		double result;
+		bool hasNegative = false;
+		bool hasFraction = false;
+		bool hasPositivePower = false;
+		bool hasNegativePower = false;
+		bool notDone = true;
+		double fractionDecimal = 1;
+		outRealValueFractalEnd = 0;
+		BYTE buffer;
+		BYTE nibble[2];
+		bool status = true;
+
+		do
+		{
+			buffer = mPrimitivesReader->ReadUChar();
+			if (mPrimitivesReader->IsEof())
+				return false;
+
+			nibble[0] = (buffer >> 4) & 0xf;
+			nibble[1] = buffer & 0xf;
+
+			for (int i = 0; i < 2; ++i)
+			{
+				switch (nibble[i])
+				{
+				case 0xa:
+					hasFraction = true;
+					break;
+				case 0xb:
+					hasPositivePower = true;
+					break;
+				case 0xc:
+					hasNegativePower = true;
+					break;
+				case 0xd:
+					// reserved
+					break;
+				case 0xe:
+					hasNegative = true;
+					break;
+				case 0xf:
+					notDone = false;
+					break;
+				default: // numbers
+					if (hasPositivePower || hasNegativePower)
+					{
+						powerPart = powerPart * 10 + nibble[i];
+					}
+					else if(hasFraction)
+					{
+						fractionPart = fractionPart * 10 + nibble[i];
+						fractionDecimal *= 10;
+						++outRealValueFractalEnd;
+					}
+					else
+						integerPart = integerPart * 10 + nibble[i];
+
+				}
+			}
+		} while(notDone);
+
+		if (status)
+		{
+			result = integerPart + fractionPart/fractionDecimal;
+			if(hasNegativePower || hasPositivePower)
+				result = result * pow(10,hasNegativePower ? -powerPart : powerPart);
+			if(hasNegative)
+				result = -1*result;
+			outValue = result;
+		}
+		return status;
+	}
+	bool CCFFReader::IsDictOperator(BYTE inCandidate)
+	{
+		return (inCandidate <= 27 || 31 == inCandidate);
+	}
+	bool CCFFReader::ReadDictOperator(BYTE inFirstByte, unsigned short& outOperator)
+	{
+		if (12 == inFirstByte)
+		{
+			BYTE buffer = mPrimitivesReader->ReadUChar();
+			if (!mPrimitivesReader->IsEof())
+			{
+				outOperator = ((unsigned short)inFirstByte << 8) | buffer;
+				return true;
+			}
+			return false;
+		}
+		outOperator = inFirstByte;
+		return true;
+	}
+	bool CCFFReader::ReadDictOperand(BYTE inFirstByte, DictOperand& outOperand)
+	{
+		if (30 == inFirstByte) // real
+		{
+			outOperand.IsInteger = false;
+			return ReadRealOperand(outOperand.RealValue, outOperand.RealValueFractalEnd);
+		}
+		else if (28 == inFirstByte ||
+				 29 == inFirstByte ||
+				(32 <= inFirstByte  && inFirstByte <= 246) ||
+				(247 <= inFirstByte && inFirstByte <= 250) ||
+				(251 <= inFirstByte && inFirstByte <= 254))
+		{
+			outOperand.IsInteger = true;
+			return ReadIntegerOperand(inFirstByte, outOperand.IntegerValue);
+		}
+		return false; // not an operand
+	}
+
+	bool CCFFReader::ReadCFFFile(CMemoryStream* inCFFFile)
+	{
+		FreeData();
+
+		mPrimitivesReader = inCFFFile;
+		mCFFOffset = mPrimitivesReader->Tell();
+
+		bool status = ReadHeader();
+		if (!status)
+			return false;
+
+		if (mHeader.hdrSize > 4)
+			mPrimitivesReader->Seek(mHeader.hdrSize - 4, SeekCur);
+
+		status = ReadNameIndex();
+		if (!status)
+			return false;
+
+		status = ReadTopDictIndex();
+		if (!status)
+			return false;
+
+		// TODO
+		return false;
+	}
+	bool CCFFReader::ReadHeader()
+	{
+		mHeader.major = mPrimitivesReader->ReadUChar();
+		mHeader.minor = mPrimitivesReader->ReadUChar();
+		mHeader.hdrSize = mPrimitivesReader->ReadUChar();
+		mHeader.offSize = mPrimitivesReader->ReadUChar();
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadIndexHeader(unsigned long** outOffsets, unsigned short& outItemsCount)
+	{
+		outItemsCount = mPrimitivesReader->ReadUShort();
+		if (!mPrimitivesReader->IsEof())
+			return false;
+
+		if (0 == outItemsCount)
+		{
+			*outOffsets = NULL;
+			return true;
+		}
+
+		BYTE offSizeForIndex = mPrimitivesReader->ReadUChar();
+		*outOffsets = new unsigned long[outItemsCount + 1];
+
+		for (unsigned short i = 0; i <= outItemsCount && !mPrimitivesReader->IsEof(); ++i)
+			(*outOffsets)[i] = mPrimitivesReader->ReadOffset(offSizeForIndex);
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadNameIndex()
+	{
+		mNameIndexPosition = mPrimitivesReader->Tell();
+
+		unsigned long* offsets = NULL;
+		bool status = ReadIndexHeader(&offsets, mFontsCount);
+		if (!status || !offsets)
+			return false;
+
+		if (offsets[0] != 1)
+			mPrimitivesReader->Seek(offsets[0] - 1, SeekCur);
+
+		BYTE* buffer;
+		for (unsigned short i = 0; i < mFontsCount; ++i)
+		{
+			unsigned int nLength = offsets[i + 1] - offsets[i];
+			buffer = new BYTE[nLength];
+			mPrimitivesReader->Read(buffer, &nLength);
+			std::string aName((char*)buffer, nLength);
+			mName.push_back(aName);
+			if (buffer[0] != 0) // put in map only valid names
+				mNameToIndex.insert(StringToUShort::value_type(aName, i));
+			delete[] buffer;
+		}
+
+		delete[] offsets;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadTopDictIndex()
+	{
+		mTopDictIndexPosition = mPrimitivesReader->Tell();
+
+		unsigned long* offsets;
+		unsigned short dictionariesCount;
+		bool status = ReadIndexHeader(&offsets, dictionariesCount);
+		if (!status || !offsets)
+			return false;
+
+		if (offsets[0] != 1)
+			mPrimitivesReader->Seek(offsets[0] - 1, SeekCur);
+
+		mTopDictIndex = new TopDictInfo[dictionariesCount];
+
+		for (unsigned short i = 0; i < dictionariesCount && status == true; ++i)
+			status = ReadDict(offsets[i+1] - offsets[i], mTopDictIndex[i].mTopDict);
+
+		delete[] offsets;
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadDict(unsigned long inReadAmount, UShortToDictOperandListMap& outDict)
+	{
+		long long dictStartPosition = mPrimitivesReader->Tell();
+		DictOperandList operands;
+		bool status = true;
+		unsigned short anOperator;
+		DictOperand anOperand;
+		BYTE aBuffer;
+
+		while (status && (mPrimitivesReader->Tell() - dictStartPosition < (long long)inReadAmount))
+		{
+			aBuffer = mPrimitivesReader->ReadUChar();
+			if (!mPrimitivesReader->IsEof())
+				return false;
+			if (IsDictOperator(aBuffer))
+			{ // operator
+				status = ReadDictOperator(aBuffer, anOperator);
+				if (!status)
+					break;
+				outDict.insert(UShortToDictOperandListMap::value_type(anOperator, operands));
+				operands.clear();
+			}
+			else // operand
+			{
+				status = ReadDictOperand(aBuffer, anOperand);
+				if (!status)
+					break;
+				operands.push_back(anOperand);
+			}
+		}
+
+		return status;
+	}
+	//----------------------------------------------------------------------------------------
+	// COpenTypeReader
 	//----------------------------------------------------------------------------------------
 	struct COpenTypeReader
 	{
@@ -480,6 +937,74 @@ namespace PdfWriter
 			short LeftSideBearing;
 		};
 		typedef HMtxTableEntry* HMtxTable;
+		struct OS2Table
+		{
+			unsigned short Version;
+			short AvgCharWidth;
+			unsigned short WeightClass;
+			unsigned short WidthClass;
+			unsigned short fsType;
+			short SubscriptXSize;
+			short SubscriptYSize;
+			short SubscriptXOffset;
+			short SubscriptYOffset;
+			short SuperscriptXSize;
+			short SuperscriptYSize;
+			short SuperscriptXOffset;
+			short SuperscriptYOffset;
+			short StrikeoutSize;
+			short StrikeoutPosition;
+			short FamilyClass;
+			BYTE Panose[10];
+			unsigned long UnicodeRange1;
+			unsigned long UnicodeRange2;
+			unsigned long UnicodeRange3;
+			unsigned long UnicodeRange4;
+			char AchVendID[4];
+			unsigned short FSSelection;
+			unsigned short FirstCharIndex;
+			unsigned short LastCharIndex;
+			short TypoAscender;
+			short TypoDescender;
+			short TypoLineGap;
+			unsigned short WinAscent;
+			unsigned short WinDescent;
+			unsigned long CodePageRange1;
+			unsigned long CodePageRange2;
+			short XHeight;
+			short CapHeight;
+			unsigned short DefaultChar;
+			unsigned short BreakChar;
+			unsigned short MaxContext;
+		};
+		struct NameTableEntry
+		{
+			unsigned short PlatformID;
+			unsigned short EncodingID;
+			unsigned short LanguageID;
+			unsigned short NameID;
+			unsigned short Length;
+			unsigned short Offset;
+			BYTE* String;
+		};
+		struct NameTable
+		{
+			unsigned short mNameEntriesCount;
+			NameTableEntry* mNameEntries;
+		};
+		typedef unsigned long* LocaTable;
+		// this time it's gonna be just what's intersting for my subsetting purposes - which is the dependencies ('n some other stuff)
+		struct GlyphEntry
+		{
+			short NumberOfContours;
+			short XMin;
+			short YMin;
+			short XMax;
+			short YMax;
+			std::list<unsigned int> mComponentGlyphs; // will be empty for simple glyphs, and with component glyph indexes for components
+		};
+		typedef GlyphEntry** GlyfTable;
+		typedef std::map<unsigned short, GlyphEntry*> UShortToGlyphEntryMap;
 
 		unsigned long mHeaderOffset;
 		unsigned long mTableOffset;
@@ -490,43 +1015,107 @@ namespace PdfWriter
 		MaxpTable mMaxp;
 		HHeaTable mHHea;
 		HMtxTable mHMtx;
+		OS2Table mOS2;
+		NameTable mName;
+		LocaTable mLoca;
+		GlyfTable mGlyf;
+
+		// OS2 (surprise may not always exist. in dfonts for instance)
+		bool mOS2Exists;
+
+		// not read, but can tell if they are there
+		bool mCVTExists;
+		bool mFPGMExists;
+		bool mPREPExists;
+
+		CCFFReader mCFF;
 
 		CMemoryStream* mPrimitivesReader;
 		EOpenTypeInputType mFontType;
 		unsigned short mTablesCount;
 		UIntToTableEntryMap mTables;
+		UShortToGlyphEntryMap mActualGlyphs;
 
 	public:
 		COpenTypeReader();
 		~COpenTypeReader();
 
+		void FreeTables();
+		unsigned short GetGlyphsCount();
+		TableEntry* GetTableEntry(const char* inTagName);
+		EOpenTypeInputType GetOpenTypeFontType();
+
 		bool ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex);
 		bool ReadOpenTypeHeader();
 		bool ReadOpenTypeSFNT();
 		bool ReadOpenTypeSFNTFromDfont();
-		unsigned long GetTag(const char* inTagName);
 		bool ReadHead();
 		bool ReadMaxP();
 		bool ReadHHea();
 		bool ReadHMtx();
+		bool ReadOS2();
+		bool ReadName();
+		bool ReadLoca();
+		bool ReadGlyfForDependencies();
+		bool ReadCFF();
+		unsigned long GetTag(const char* inTagName);
 	};
 	COpenTypeReader::COpenTypeReader()
 	{
-		mFaceIndex    = 0;
 		mHeaderOffset = 0;
-		mTableOffset  = 0;
+		mTableOffset = 0;
+		mHMtx = NULL;
+		mName.mNameEntries = NULL;
+		mLoca = NULL;
+		mGlyf = NULL;
 
 		mPrimitivesReader = NULL;
+		mFaceIndex = 0;
 		mFontType = EOpenTypeInputType::EOpenTypeCFF;
+		mOS2Exists = false;
 	}
 	COpenTypeReader::~COpenTypeReader()
 	{
+		FreeTables();
+	}
+	void COpenTypeReader::FreeTables()
+	{
 		RELEASEOBJECT(mPrimitivesReader);
 		RELEASEARRAYOBJECTS(mHMtx);
+		if (mName.mNameEntries)
+		{
+			for (int i = 0; i < mName.mNameEntriesCount; ++i)
+				RELEASEARRAYOBJECTS(mName.mNameEntries[i].String);
+		}
+		RELEASEARRAYOBJECTS(mName.mNameEntries);
+		RELEASEARRAYOBJECTS(mLoca);
+		RELEASEARRAYOBJECTS(mGlyf);
+		UShortToGlyphEntryMap::iterator it = mActualGlyphs.begin();
+		for(; it != mActualGlyphs.end(); ++it)
+			RELEASEOBJECT(it->second);
+		mActualGlyphs.clear();
+	}
+	unsigned short COpenTypeReader::GetGlyphsCount()
+	{
+		return mMaxp.NumGlyphs;
+	}
+	COpenTypeReader::TableEntry* COpenTypeReader::GetTableEntry(const char* inTagName)
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag(inTagName));
+		if (it == mTables.end())
+			return NULL;
+		else
+			return &(it->second);
+	}
+	COpenTypeReader::EOpenTypeInputType COpenTypeReader::GetOpenTypeFontType()
+	{
+		return mFontType;
 	}
 	bool COpenTypeReader::ReadOpenTypeFile(BYTE* pData, unsigned int nDataLength, unsigned short ushFaceIndex)
 	{
 		mFaceIndex = ushFaceIndex;
+
+		FreeTables();
 
 		mPrimitivesReader = new CMemoryStream(nDataLength);
 		mPrimitivesReader->Write(pData, nDataLength);
@@ -555,7 +1144,45 @@ namespace PdfWriter
 		if (!status)
 			return false;
 
-		// TODO
+		status = ReadOS2(); // Note that OS/2 is supposedly required, but some dfonts don't contain it...and it's fine
+		if (!status)
+			return false;
+
+		status = ReadName();
+		if (!status)
+			return false;
+
+		if (EOpenTypeInputType::EOpenTypeTrueType == mFontType)
+		{
+			// true type specifics
+			status = ReadLoca();
+			if (!status)
+				return false;
+
+			status = ReadGlyfForDependencies();
+			if (!status)
+				return false;
+			mCVTExists  = mTables.find(GetTag("cvt ")) != mTables.end();
+			mFPGMExists = mTables.find(GetTag("fpgm")) != mTables.end();
+			mPREPExists = mTables.find(GetTag("prep")) != mTables.end();
+
+			// zero cff items
+			mCFF.Reset();
+		}
+		else
+		{
+			// CFF specifics
+			status = ReadCFF();
+			if (!status)
+				return false;
+
+			// zero true type items
+			mCVTExists = false;
+			mFPGMExists = false;
+			mPREPExists = false;
+			mGlyf = NULL;
+			mLoca = NULL;
+		}
 
 		return status;
 	}
@@ -876,6 +1503,199 @@ namespace PdfWriter
 		}
 
 		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadOS2()
+	{
+		memset(&mOS2, 0, sizeof(OS2Table));
+
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("OS/2"));
+		if (it == mTables.end())
+		{
+			mOS2Exists = false;
+			return true;
+		}
+
+		mOS2Exists = true;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		mOS2.Version      = mPrimitivesReader->ReadUShort();
+		mOS2.AvgCharWidth = mPrimitivesReader->ReadUShort();
+		mOS2.WeightClass  = mPrimitivesReader->ReadUShort();
+		mOS2.WidthClass   = mPrimitivesReader->ReadUShort();
+		mOS2.fsType       = mPrimitivesReader->ReadUShort();
+
+		mOS2.SubscriptXSize     = mPrimitivesReader->ReadUShort();
+		mOS2.SubscriptYSize     = mPrimitivesReader->ReadUShort();
+		mOS2.SubscriptXOffset   = mPrimitivesReader->ReadUShort();
+		mOS2.SubscriptYOffset   = mPrimitivesReader->ReadUShort();
+		mOS2.SuperscriptXSize   = mPrimitivesReader->ReadUShort();
+		mOS2.SuperscriptYSize   = mPrimitivesReader->ReadUShort();
+		mOS2.SuperscriptXOffset = mPrimitivesReader->ReadUShort();
+		mOS2.SuperscriptYOffset = mPrimitivesReader->ReadUShort();
+		mOS2.StrikeoutSize      = mPrimitivesReader->ReadUShort();
+		mOS2.StrikeoutPosition  = mPrimitivesReader->ReadUShort();
+		mOS2.FamilyClass        = mPrimitivesReader->ReadUShort();
+		for (int i = 0; i < 10; ++i)
+			mOS2.Panose[i] = mPrimitivesReader->ReadUChar();
+		mOS2.UnicodeRange1 = mPrimitivesReader->ReadUInt();
+		mOS2.UnicodeRange2 = mPrimitivesReader->ReadUInt();
+		mOS2.UnicodeRange3 = mPrimitivesReader->ReadUInt();
+		mOS2.UnicodeRange4 = mPrimitivesReader->ReadUInt();
+		for (int i = 0; i < 4; ++i)
+			mOS2.AchVendID[i] = mPrimitivesReader->ReadUChar();
+		mOS2.FSSelection      = mPrimitivesReader->ReadUShort();
+		mOS2.FirstCharIndex   = mPrimitivesReader->ReadUShort();
+		mOS2.LastCharIndex    = mPrimitivesReader->ReadUShort();
+		mOS2.TypoAscender     = mPrimitivesReader->ReadUShort();
+		mOS2.TypoDescender    = mPrimitivesReader->ReadUShort();
+		mOS2.TypoLineGap      = mPrimitivesReader->ReadUShort();
+		mOS2.WinAscent        = mPrimitivesReader->ReadUShort();
+		mOS2.WinDescent       = mPrimitivesReader->ReadUShort();
+
+		// version 1 OS/2 table may end here [see that there's enough to continue]
+		if (it->second.Length >= (mPrimitivesReader->Tell() - it->second.Offset) + 18)
+		{
+			mOS2.CodePageRange1 = mPrimitivesReader->ReadUInt();
+			mOS2.CodePageRange2 = mPrimitivesReader->ReadUInt();
+			mOS2.XHeight        = mPrimitivesReader->ReadUShort();
+			mOS2.CapHeight      = mPrimitivesReader->ReadUShort();
+			mOS2.DefaultChar    = mPrimitivesReader->ReadUShort();
+			mOS2.BreakChar      = mPrimitivesReader->ReadUShort();
+			mOS2.MaxContext     = mPrimitivesReader->ReadUShort();
+		}
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadName()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("name"));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset + 2, SeekSet);
+		mName.mNameEntriesCount = mPrimitivesReader->ReadUShort();
+		mName.mNameEntries = new NameTableEntry[mName.mNameEntriesCount];
+
+		unsigned short stringOffset = mPrimitivesReader->ReadUShort();
+
+		for (int i = 0; i < mName.mNameEntriesCount; ++i)
+		{
+			mName.mNameEntries[i].PlatformID = mPrimitivesReader->ReadUShort();
+			mName.mNameEntries[i].EncodingID = mPrimitivesReader->ReadUShort();
+			mName.mNameEntries[i].LanguageID = mPrimitivesReader->ReadUShort();
+			mName.mNameEntries[i].NameID = mPrimitivesReader->ReadUShort();
+			mName.mNameEntries[i].Length = mPrimitivesReader->ReadUShort();
+			mName.mNameEntries[i].Offset = mPrimitivesReader->ReadUShort();
+		}
+
+		for (int i = 0; i < mName.mNameEntriesCount; ++i)
+		{
+			mName.mNameEntries[i].String = new BYTE[mName.mNameEntries[i].Length];
+			mPrimitivesReader->Seek(it->second.Offset + stringOffset + mName.mNameEntries[i].Offset, SeekSet);
+			unsigned int nLength = mName.mNameEntries[i].Length;
+			mPrimitivesReader->Read(mName.mNameEntries[i].String, &nLength);
+			mName.mNameEntries[i].Length = nLength;
+		}
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadLoca()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("loca"));
+		if (it == mTables.end())
+			return false;
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		mLoca = new unsigned long[mMaxp.NumGlyphs + 1];
+
+		if (0 == mHead.IndexToLocFormat)
+		{
+			unsigned short buffer;
+			for (int i = 0; i < mMaxp.NumGlyphs + 1; ++i)
+			{
+				buffer = mPrimitivesReader->ReadUShort();
+				mLoca[i] = buffer << 1;
+			}
+		}
+		else
+		{
+			for (int i = 0; i < mMaxp.NumGlyphs + 1; ++i)
+				mLoca[i] = mPrimitivesReader->ReadUInt();
+		}
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadGlyfForDependencies()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("glyf"));
+		if (it == mTables.end())
+			return false;
+
+		// it->second.Offset, is the offset to the beginning of the table
+		mGlyf = new GlyphEntry*[mMaxp.NumGlyphs];
+
+		for (int i = 0; i < mMaxp.NumGlyphs; ++i)
+		{
+			if (mLoca[i + 1] == mLoca[i])
+				mGlyf[i] = NULL;
+			else
+			{
+				mGlyf[i] = new GlyphEntry;
+
+				mPrimitivesReader->Seek(it->second.Offset + mLoca[i], SeekSet);
+				mGlyf[i]->NumberOfContours = mPrimitivesReader->ReadUShort();
+				mGlyf[i]->XMin = mPrimitivesReader->ReadUShort();
+				mGlyf[i]->YMin = mPrimitivesReader->ReadUShort();
+				mGlyf[i]->XMax = mPrimitivesReader->ReadUShort();
+				mGlyf[i]->YMax = mPrimitivesReader->ReadUShort();
+
+				// Now look for dependencies
+				if (mGlyf[i]->NumberOfContours < 0)
+				{
+					bool hasMoreComponents;
+					unsigned short flags;
+					unsigned short glyphIndex;
+
+					do
+					{
+						flags = mPrimitivesReader->ReadUShort();
+						glyphIndex = mPrimitivesReader->ReadUShort();
+
+						if (glyphIndex >= mMaxp.NumGlyphs)
+							return false;
+
+						mGlyf[i]->mComponentGlyphs.push_back(glyphIndex);
+						if ((flags & 1) != 0)
+							mPrimitivesReader->Seek(4, SeekCur); // skip 2 shorts, ARG_1_AND_2_ARE_WORDS
+						else
+							mPrimitivesReader->Seek(2, SeekCur); // skip 1 short, nah - they are bytes
+
+						if ((flags & 8) != 0)
+							mPrimitivesReader->Seek(2, SeekCur); // WE_HAVE_SCALE
+						else if ((flags & 64) != 0)
+							mPrimitivesReader->Seek(4, SeekCur); // WE_HAVE_AN_X_AND_Y_SCALE
+						else if ((flags & 128) != 0)
+							mPrimitivesReader->Seek(8, SeekCur); // WE_HAVE_A_TWO_BY_TWO
+
+						hasMoreComponents = ((flags & 32) != 0);
+					} while(hasMoreComponents);
+
+				}
+
+				mActualGlyphs.insert(UShortToGlyphEntryMap::value_type(i, mGlyf[i]));
+			}
+		}
+
+		return !mPrimitivesReader->IsEof();
+	}
+	bool COpenTypeReader::ReadCFF()
+	{
+		UIntToTableEntryMap::iterator it = mTables.find(GetTag("CFF "));
+		if (it == mTables.end())
+			return false;
+
+		mPrimitivesReader->Seek(it->second.Offset, SeekSet);
+
+		return mCFF.ReadCFFFile(mPrimitivesReader);
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType

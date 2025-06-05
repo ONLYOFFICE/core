@@ -146,6 +146,42 @@ namespace PdfWriter
 						   ((long long)nChar4 << 24) | ((long long)nChar5 << 16) |
 						   ((long long)nChar6 << 8)  | nChar7);
 	}
+	unsigned int   CStream::ReadOffset(BYTE nOffset)
+	{
+		unsigned int nRes = 0;
+		switch (nOffset)
+		{
+		case 1:
+		{
+			nRes = ReadUChar();
+			break;
+		}
+		case 2:
+		{
+			nRes = ReadUShort();
+			break;
+		}
+		case 3:
+		{
+			if (!CheckSize(3))
+				return 0;
+			unsigned int unBytesRead = 1;
+			BYTE nChar0, nChar1, nChar2;
+			Read(&nChar0, &unBytesRead);
+			Read(&nChar1, &unBytesRead);
+			Read(&nChar2, &unBytesRead);
+			nRes = (unsigned int)(((unsigned int)nChar0 << 16) | ((unsigned int)nChar1 << 8)  | nChar2);
+			break;
+		}
+		case 4:
+		{
+			nRes = ReadUInt();
+			break;
+		}
+		default: break;
+		}
+		return nRes;
+	}
 	void CStream::Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum)
 	{
 		Write(pBuffer, unSize);

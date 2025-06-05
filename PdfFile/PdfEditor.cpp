@@ -1454,12 +1454,14 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		return false;
 	}
 	pXref->Add(pPage, pPageRef.second);
+	bool bResources = false, bMediaBox = false, bCropBox = false, bRotate = false;
 	for (int nIndex = 0; nIndex < pageObj.dictGetLength(); ++nIndex)
 	{
 		Object oTemp;
 		char* chKey = pageObj.dictGetKey(nIndex);
 		if (strcmp("Resources", chKey) == 0)
 		{
+			bResources = true;
 			if (pageObj.dictGetVal(nIndex, &oTemp)->isDict())
 			{
 				PdfWriter::CResourcesDict* pDict = new PdfWriter::CResourcesDict(NULL, true, false);
@@ -1525,10 +1527,60 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		{
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		}
+		else if (strcmp("MediaBox", chKey) == 0)
+		{
+			bMediaBox = true;
+			pageObj.dictGetValNF(nIndex, &oTemp);
+		}
+		else if (strcmp("CropBox", chKey) == 0)
+		{
+			bCropBox = true;
+			pageObj.dictGetValNF(nIndex, &oTemp);
+		}
+		else if (strcmp("Rotate", chKey) == 0)
+		{
+			bRotate = true;
+			pageObj.dictGetValNF(nIndex, &oTemp);
+		}
 		else
 			pageObj.dictGetValNF(nIndex, &oTemp);
 		DictToCDictObject(&oTemp, pPage, chKey);
 		oTemp.free();
+	}
+	if (!bResources || !bMediaBox || !bCropBox || !bRotate)
+	{
+		Page* pOPage = pCatalog->getPage(nPageIndex);
+		if (!bMediaBox)
+		{
+			PDFRectangle* pRect = pOPage->getMediaBox();
+			pPage->Add("MediaBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+		}
+
+		if (!bCropBox && pOPage->isCropped())
+		{
+			PDFRectangle* pRect = pOPage->getCropBox();
+			pPage->Add("CropBox", PdfWriter::CArrayObject::CreateBox(pRect->x1, pRect->y1, pRect->x2, pRect->y2));
+		}
+
+		if (!bRotate)
+			pPage->Add("Rotate", pOPage->getRotate());
+
+		if (!bResources)
+		{
+			Dict* pResources = pOPage->getResourceDict();
+			PdfWriter::CResourcesDict* pDict = pDoc->CreateResourcesDict(true, false);
+			pPage->Add("Resources", pDict);
+			for (int nIndex = 0; nIndex < pResources->getLength(); ++nIndex)
+			{
+				Object oRes;
+				char* chKey2 = pResources->getKey(nIndex);
+				if (strcmp("Font", chKey2) == 0 || strcmp("ExtGState", chKey2) == 0 || strcmp("XObject", chKey2) == 0 || strcmp("Shading", chKey2) == 0 || strcmp("Pattern", chKey2) == 0)
+					pResources->getVal(nIndex, &oRes);
+				else
+					pResources->getValNF(nIndex, &oRes);
+				DictToCDictObject(&oRes, pDict, chKey2);
+			}
+		}
 	}
 	pPage->Fix();
 	double dCTM[6] = { 1, 0, 0, 1, 0, 0 };

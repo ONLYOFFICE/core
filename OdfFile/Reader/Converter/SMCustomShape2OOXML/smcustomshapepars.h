@@ -194,7 +194,7 @@ namespace OdfCustomShape
 		void ConversionElement(XmlUtils::CXmlWriter* pXmlWriter,CElement* pElement, std::wstring& wsFormula);
 		static TypeElement TypeCheckingByFunction(const std::wstring& wsFunction);
 		void ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter *pXmlWriter, std::wstring &wsFormula);
-		void CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula);
+		void CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter);
 		void CalculatingNumberName(std::wstring& wsFormula,std::wstring& wsNewName);
 	private:
 		TypeElement m_enTypeFunction;

@@ -726,14 +726,17 @@ namespace OdfCustomShape
 		case TypeElement::tan:
 		{
 			std::wstring wsFormula;
+
 			if(m_enTypeFunction == TypeElement::sin)
-				wsFormula = L"sin 1 ";
+				wsFormula = L"sin";
 			else if(m_enTypeFunction == TypeElement::cos)
-				wsFormula = L"cos 1 ";
+				wsFormula = L"cos";
 			else if(m_enTypeFunction == TypeElement::tan)
-				wsFormula = L"tan 1 ";
+				wsFormula = L"tan";
 			else
-				wsFormula = L"at2 1 ";
+				wsFormula = L"at2";
+
+			wsFormula += L" 1 ";
 			ConvertBracketsForTrigonometry(pXmlWriter,wsFormula);
 			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
 			break;
@@ -741,25 +744,16 @@ namespace OdfCustomShape
 		case TypeElement::logheight:
 		case TypeElement::logwidth:
 		{
-			std::wstring wsFormula = L"*/ 1 ";
-			CalculatingTheLogicalHeightOrWidth(pXmlWriter,wsFormula);
-			wsFormula += L"100 ";
-			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),wsFormula);
+			CalculatingTheLogicalHeightOrWidth(pXmlWriter);
 			break;
 		}
 		default:
 			break;
 		}
 	}
-	void CElementFunction::CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter, std::wstring& wsFormula)
+	void CElementFunction::CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter)
 	{
-		std::wstring wsLogFormula,wsNewName;
-		if(m_enTypeFunction == TypeElement::logheight)
-			wsLogFormula = L"*/ h 25 96 ";
-		else
-			wsLogFormula = L"*/ w 25 96 ";
-		CalculatingNumberName(wsFormula,wsNewName);
-		SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsNewName,wsLogFormula);
+		SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),L"*/ " + std::wstring((m_enTypeFunction == TypeElement::logheight) ? L"h":L"w") + L" 25 48 ");
 	}
 	void CElementFunction::CalculatingNumberName(std::wstring& wsFormula, std::wstring &wsNewName)
 	{

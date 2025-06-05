@@ -1134,6 +1134,8 @@ namespace NSDocxRenderer
 				oWriter.AddInt(1);
 				oWriter.StartRecord(1);
 				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(2); oWriter.AddInt(height * c_dMMToEMU); // pathH
+				oWriter.WriteBYTE(4); oWriter.AddInt(width * c_dMMToEMU); // pathW
 				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				oWriter.StartRecord(0);
 				oWriter.AddInt(static_cast<unsigned int>(data.size()));

@@ -1145,10 +1145,12 @@ namespace NSDocxRenderer
 					oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
 					for (const auto& point : command.points)
 					{
+						int x_coord = static_cast<int>((point.x - left) * c_dMMToEMU);
+						int y_coord = static_cast<int>((point.y - top) * c_dMMToEMU);
 						oWriter.WriteBYTE(byte_count++);
-						oWriter.WriteStringUtf16(std::to_wstring((point.x - left) * c_dMMToEMU));
+						oWriter.WriteStringUtf16(std::to_wstring(x_coord));
 						oWriter.WriteBYTE(byte_count++);
-						oWriter.WriteStringUtf16(std::to_wstring((point.y - top) * c_dMMToEMU));
+						oWriter.WriteStringUtf16(std::to_wstring(y_coord));
 					}
 					oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 				};

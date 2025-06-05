@@ -256,18 +256,15 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 
 				if (NSBase64::Base64Decode(sUtf8Shape.c_str(), (int)sUtf8Shape.size(), buff, &buff_len))
 				{
-					// in pictures record is 2
-					if (buff[0] == 2)
-					{
-						memcpy(buff + buff_len, rId_record.GetBuffer(), rId_record.GetSize());
+					memcpy(buff + buff_len, rId_record.GetBuffer(), rId_record.GetSize());
 
-						unsigned int curr_len = 0;
-						memcpy(&curr_len, buff + 1, sizeof(unsigned int)); // first byte is "type" byte
+					unsigned int curr_len = 0;
+					memcpy(&curr_len, buff + 1, sizeof(unsigned int)); // first byte is "type" byte
 
-						curr_len += rId_record.GetSize();
-						memcpy(buff + 1, &curr_len, sizeof(unsigned int));
-					}
+					curr_len += rId_record.GetSize();
+					memcpy(buff + 1, &curr_len, sizeof(unsigned int));
 				}
+
 				int buff_len_new = buff_len + rId_record.GetSize();
 				int size_base64 = NSBase64::Base64EncodeGetRequiredLength(buff_len_new);
 				char* data_base64 = new char[size_base64];

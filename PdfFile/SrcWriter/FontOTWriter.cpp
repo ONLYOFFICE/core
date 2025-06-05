@@ -117,6 +117,12 @@ namespace PdfWriter
 		scCharsetExpertSids,
 		scCharsetExpertSubsetSids
 	};
+	static const unsigned short scDefaultCharsetsSizes[3] =
+	{
+		CHARSET_ISOADOBE_SIZE,
+		CHARSET_EXPERT_SIZE,
+		CHARSET_EXPERT_SUBSET_SIZE
+	};
 
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
@@ -532,6 +538,7 @@ namespace PdfWriter
 			UShortToCharStringMap mSIDToGlyphMap;
 			unsigned short* mSIDs; // count is like glyphs count
 		};
+		typedef std::vector<CharSetInfo*> CharSetInfoVector;
 		enum EEncodingType
 		{
 			eEncodingStandard = 0,
@@ -595,6 +602,7 @@ namespace PdfWriter
 			FontDictInfo* mFDArray;
 			FontDictInfo** mFDSelect; // size is like glyphsize. each cell references the relevant FontDict
 		};
+		typedef std::vector<EncodingsInfo*> EncodingsInfoVector;
 		struct StringLess
 		{
 			bool operator() (const char* left, const char* right) const
@@ -605,6 +613,7 @@ namespace PdfWriter
 		typedef std::map<const char*, unsigned short, StringLess> CharPToUShortMap;
 		typedef std::map<long long, CharStrings*> LongFilePositionTypeToCharStringsMap;
 		typedef std::map<long long, CharSetInfo*> LongFilePositionTypeToCharSetInfoMap;
+		typedef std::map<long long, EncodingsInfo*> LongFilePositionTypeToEncodingsInfoMap;
 
 		long long mCFFOffset;
 
@@ -621,6 +630,8 @@ namespace PdfWriter
 		CharStrings mGlobalSubrs;
 		CharStrings* mCharStrings; // count is same as fonts count
 		LongFilePositionTypeToCharStringsMap mLocalSubrs; // count is NOT the same as fonts count [some may be shared, plus there might be more because of CID usage]
+		CharSetInfoVector mCharSets;// count is NOT the same as fonts count [some charsets may be shared]. consult the top dict charset pointer for the right charset
+		EncodingsInfoVector mEncodings; // count is NOT the same as fonts count [some encodinds may be shared].
 
 		CMemoryStream* mPrimitivesReader; // внешний, освобождать не надо
 		StringToUShort mNameToIndex;
@@ -666,14 +677,31 @@ namespace PdfWriter
 		bool ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType);
 		static const unsigned short scROS = 0xC1E;
 		bool ReadCharsets();
+		bool ReadEncodings();
+		void ReadEncoding(EncodingsInfo* inEncoding, long long inEncodingPosition);
 		void SetupSIDToGlyphMapWithStandard(const unsigned short* inStandardCharSet, unsigned short inStandardCharSetLength, UShortToCharStringMap& ioCharMap, const CharStrings& inCharStrings);
 		bool ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
+		bool ReadFormat1Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
+		bool ReadFormat2Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
 		static const unsigned short scCharset = 15;
 		long long GetCharsetPosition(unsigned short inFontIndex);
+		static const unsigned short scEncoding = 16;
+		long long GetEncodingPosition(unsigned short inFontIndex);
+		bool ReadCIDInformation();
+		bool ReadFDArray(unsigned short inFontIndex);
+		static const unsigned short scFDArray = 0xC24;
+		long long GetFDArrayPosition(unsigned short inFontIndex);
+		bool ReadFDSelect(unsigned short inFontIndex);
+		static const unsigned short scFDSelect = 0xC25;
+		long long GetFDSelectPosition(unsigned short inFontIndex);
 	};
 	CCFFReader::CCFFReader()
 	{
-
+		mTopDictIndex = NULL;
+		mStrings = NULL;
+		mGlobalSubrs.mCharStringsIndex = NULL;
+		mCharStrings = NULL;
+		mPrivateDicts = NULL;
 	}
 	CCFFReader::~CCFFReader()
 	{
@@ -681,7 +709,57 @@ namespace PdfWriter
 	}
 	void CCFFReader::FreeData()
 	{
-		// TODO
+		mName.clear();
+		mNameToIndex.clear();
+		if (mTopDictIndex != NULL)
+		{
+			for (unsigned short i = 0; i < mFontsCount; ++i)
+			{
+				delete[] mTopDictIndex[i].mFDArray;
+				delete[] mTopDictIndex[i].mFDSelect;
+			}
+			RELEASEARRAYOBJECTS(mTopDictIndex);
+		}
+		if (mStrings != NULL)
+		{
+			for (unsigned short i = 0; i < mStringsCount; ++i)
+				delete[] mStrings[i];
+			RELEASEARRAYOBJECTS(mStrings);
+		}
+		mStringToSID.clear();
+		RELEASEARRAYOBJECTS(mGlobalSubrs.mCharStringsIndex);
+		if (mCharStrings != NULL)
+		{
+			for (unsigned short i = 0; i < mFontsCount; ++i)
+				delete[] mCharStrings[i].mCharStringsIndex;
+			RELEASEARRAYOBJECTS(mCharStrings);
+		}
+		RELEASEARRAYOBJECTS(mPrivateDicts);
+
+		LongFilePositionTypeToCharStringsMap::iterator itLocalSubrs = mLocalSubrs.begin();
+		for(; itLocalSubrs != mLocalSubrs.end(); ++itLocalSubrs)
+		{
+			delete[] itLocalSubrs->second->mCharStringsIndex;
+			delete itLocalSubrs->second;
+		}
+
+		CharSetInfoVector::iterator itCharSets = mCharSets.begin();
+		for(; itCharSets != mCharSets.end(); ++itCharSets)
+		{
+			delete[] (*itCharSets)->mSIDs;
+			(*itCharSets)->mSIDToGlyphMap.clear();
+			delete (*itCharSets);
+		}
+		mCharSets.clear();
+
+		EncodingsInfoVector::iterator itEncodings = mEncodings.begin();
+		for(; itEncodings != mEncodings.end(); ++itEncodings)
+		{
+			delete[] (*itEncodings)->mEncoding;
+			delete (*itEncodings);
+		}
+		mEncodings.clear();
+
 		RELEASEOBJECT(mPrimitivesReader);
 	}
 	void CCFFReader::Reset()
@@ -896,8 +974,15 @@ namespace PdfWriter
 		if (!status)
 			return false;
 
-		// TODO
-		return false;
+		status = ReadEncodings();
+		if (!status)
+			return false;
+
+		status = ReadCIDInformation();
+		if (!status)
+			return false;
+
+		return true;
 	}
 	bool CCFFReader::ReadHeader()
 	{
@@ -911,7 +996,7 @@ namespace PdfWriter
 	bool CCFFReader::ReadIndexHeader(unsigned long** outOffsets, unsigned short& outItemsCount)
 	{
 		outItemsCount = mPrimitivesReader->ReadUShort();
-		if (!mPrimitivesReader->IsEof())
+		if (mPrimitivesReader->IsEof())
 			return false;
 
 		if (0 == outItemsCount)
@@ -991,7 +1076,7 @@ namespace PdfWriter
 		while (status && (mPrimitivesReader->Tell() - dictStartPosition < (long long)inReadAmount))
 		{
 			aBuffer = mPrimitivesReader->ReadUChar();
-			if (!mPrimitivesReader->IsEof())
+			if (mPrimitivesReader->IsEof())
 				return false;
 			if (IsDictOperator(aBuffer))
 			{ // operator
@@ -1054,7 +1139,7 @@ namespace PdfWriter
 		}
 
 		// now create the string to SID map
-		for( i = 0; i < N_STD_STRINGS; ++i)
+		for ( i = 0; i < N_STD_STRINGS; ++i)
 			mStringToSID.insert(CharPToUShortMap::value_type(scStandardStrings[i], i));
 		for (; i < N_STD_STRINGS + mStringsCount; ++i)
 			mStringToSID.insert(CharPToUShortMap::value_type(mStrings[i - N_STD_STRINGS], i));
@@ -1077,7 +1162,7 @@ namespace PdfWriter
 		if (!status)
 			return false;
 
-		if(0 == outSubrsCount)
+		if (0 == outSubrsCount)
 		{
 			*outSubrsIndex = NULL;
 			return true;
@@ -1262,6 +1347,108 @@ namespace PdfWriter
 			return status;
 		return !mPrimitivesReader->IsEof();
 	}
+	bool CCFFReader::ReadEncodings()
+	{
+		// read all encodings positions
+		bool status = true;
+		LongFilePositionTypeToEncodingsInfoMap offsetToEncoding;
+		LongFilePositionTypeToEncodingsInfoMap::iterator it;
+
+		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		{
+			long long encodingPosition = GetEncodingPosition(i);
+			it = offsetToEncoding.find(encodingPosition);
+			if (it == offsetToEncoding.end())
+			{
+				EncodingsInfo* encoding = new EncodingsInfo();
+				ReadEncoding(encoding,encodingPosition);
+				mEncodings.push_back(encoding);
+				it = offsetToEncoding.insert(LongFilePositionTypeToEncodingsInfoMap::value_type(encodingPosition,encoding)).first;
+			}
+			mTopDictIndex[i].mEncoding = it->second;
+		}
+
+		if (!status)
+			return status;
+		else
+			return !mPrimitivesReader->IsEof();
+	}
+	void CCFFReader::ReadEncoding(EncodingsInfo* inEncoding, long long inEncodingPosition)
+	{
+		if (inEncodingPosition <= 1)
+		{
+			inEncoding->mEncodingStart = inEncoding->mEncodingEnd = inEncodingPosition;
+			inEncoding->mType = (EEncodingType)inEncodingPosition;
+			return;
+		}
+		inEncoding->mType = eEncodingCustom;
+		inEncoding->mEncodingStart = inEncodingPosition;
+		mPrimitivesReader->Seek(inEncodingPosition, SeekSet);
+		BYTE encodingFormat = mPrimitivesReader->ReadUChar();
+
+		if (0 == (encodingFormat & 0x1))
+		{
+			inEncoding->mEncodingsCount = mPrimitivesReader->ReadUChar();
+			if (inEncoding->mEncodingsCount > 0)
+			{
+				inEncoding->mEncoding = new BYTE[inEncoding->mEncodingsCount];
+				for (BYTE i = 0; i < inEncoding->mEncodingsCount; ++i)
+					inEncoding->mEncoding[i] = mPrimitivesReader->ReadUChar();
+			}
+		}
+		else // format = 1
+		{
+			BYTE rangesCount = mPrimitivesReader->ReadUChar();
+			if (rangesCount > 0)
+			{
+				BYTE firstCode;
+				BYTE left;
+
+				inEncoding->mEncodingsCount = 0;
+				// get the encoding count (yap, reading twice here)
+				for (BYTE i = 0; i < rangesCount; ++i)
+				{
+					firstCode = mPrimitivesReader->ReadUChar();
+					left = mPrimitivesReader->ReadUChar();
+					inEncoding->mEncodingsCount += left;
+				}
+				inEncoding->mEncoding = new BYTE[inEncoding->mEncodingsCount];
+				mPrimitivesReader->Seek(inEncodingPosition + 2, SeekSet); // reset encoding to beginning of range reading
+
+				// now read the encoding array
+				BYTE encodingIndex = 0;
+				for (BYTE i = 0; i < rangesCount; ++i)
+				{
+					firstCode = mPrimitivesReader->ReadUChar();
+					left = mPrimitivesReader->ReadUChar();
+					for (BYTE j = 0;j < left; ++j)
+						inEncoding->mEncoding[encodingIndex + j] = firstCode + j;
+					encodingIndex += left;
+				}
+			}
+		}
+		if ((encodingFormat & 0x80) !=  0) // supplaments exist, need to add to encoding end
+		{
+			mPrimitivesReader->Seek(inEncoding->mEncodingEnd, SeekSet); // set position to end of encoding, and start of supplamental, so that can read their count
+			BYTE supplamentalsCount = mPrimitivesReader->ReadUChar();
+			if (supplamentalsCount > 0)
+			{
+				BYTE encoding;
+				unsigned short SID;
+				for (BYTE i = 0; i < supplamentalsCount; ++i)
+				{
+					encoding = mPrimitivesReader->ReadUChar();
+					SID = mPrimitivesReader->ReadUShort();
+
+					UShortToByteList::iterator it = inEncoding->mSupplements.find(SID);
+					if (it == inEncoding->mSupplements.end())
+						it = inEncoding->mSupplements.insert(UShortToByteList::value_type(SID, ByteList())).first;
+					it->second.push_back(encoding);
+				}
+			}
+		}
+		inEncoding->mEncodingEnd = mPrimitivesReader->Tell();
+	}
 	void CCFFReader::SetupSIDToGlyphMapWithStandard(const unsigned short* inStandardCharSet, unsigned short inStandardCharSetLength, UShortToCharStringMap& ioCharMap, const CharStrings& inCharStrings)
 	{
 		ioCharMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
@@ -1270,11 +1457,231 @@ namespace PdfWriter
 	}
 	bool CCFFReader::ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
 	{
+		// for CIDs don't bother filling up the SID->glyph map. it ain't SIDs
+		if (!inIsCID)
+			ioGlyphMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
+		*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
+		(*inSIDArray)[0] = 0;
 
+		if (inIsCID)
+		{
+			for (unsigned short i = 1; i < inCharStrings.mCharStringsCount; ++i)
+				(*inSIDArray)[i] = mPrimitivesReader->ReadUShort();
+		}
+		else
+		{
+			for (unsigned short i = 1; i < inCharStrings.mCharStringsCount; ++i)
+			{
+				unsigned short sid = mPrimitivesReader->ReadUShort();
+				(*inSIDArray)[i] = sid;
+
+				ioGlyphMap.insert(UShortToCharStringMap::value_type(sid, inCharStrings.mCharStringsIndex + i));
+			}
+		}
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadFormat1Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
+	{
+		if(!inIsCID)
+			ioGlyphMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
+		*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
+		(*inSIDArray)[0] = 0;
+		unsigned long glyphIndex = 1;
+		unsigned short sid;
+		BYTE left;
+
+		if (inIsCID)
+		{
+			while (glyphIndex < inCharStrings.mCharStringsCount)
+			{
+				sid = mPrimitivesReader->ReadUShort();
+				left = mPrimitivesReader->ReadUChar();
+				for (BYTE i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i, ++glyphIndex)
+					(*inSIDArray)[glyphIndex] = sid + i;
+			}
+		}
+		else
+		{
+			while (glyphIndex < inCharStrings.mCharStringsCount)
+			{
+				sid = mPrimitivesReader->ReadUShort();
+				left = mPrimitivesReader->ReadUChar();
+				for (BYTE i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i, ++glyphIndex)
+				{
+					ioGlyphMap.insert(UShortToCharStringMap::value_type(sid + i, inCharStrings.mCharStringsIndex + glyphIndex));
+					(*inSIDArray)[glyphIndex] = sid + i;
+				}
+			}
+		}
+		return !mPrimitivesReader->IsEof();
+	}
+	bool CCFFReader::ReadFormat2Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
+	{
+		if(!inIsCID)
+			ioGlyphMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
+		*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
+		(*inSIDArray)[0] = 0;
+		unsigned short glyphIndex = 1;
+		unsigned short sid;
+		unsigned short left;
+
+		if (inIsCID)
+		{
+			while (glyphIndex < inCharStrings.mCharStringsCount)
+			{
+				sid = mPrimitivesReader->ReadUShort();
+				left = mPrimitivesReader->ReadUShort();
+				for (unsigned short i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i, ++glyphIndex)
+					(*inSIDArray)[glyphIndex] = sid + i;
+			}
+		}
+		else
+		{
+			while (glyphIndex < inCharStrings.mCharStringsCount)
+			{
+				sid = mPrimitivesReader->ReadUShort();
+				left = mPrimitivesReader->ReadUShort();
+				for (unsigned short i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i ,++glyphIndex)
+				{
+					ioGlyphMap.insert(UShortToCharStringMap::value_type(sid + i, inCharStrings.mCharStringsIndex + glyphIndex));
+					(*inSIDArray)[glyphIndex] = sid + i;
+				}
+			}
+		}
+		return !mPrimitivesReader->IsEof();
 	}
 	long long CCFFReader::GetCharsetPosition(unsigned short inFontIndex)
 	{
 		return (long long)GetSingleIntegerValue(inFontIndex, scCharset, 0);
+	}
+	long long CCFFReader::GetEncodingPosition(unsigned short inFontIndex)
+	{
+		return (long long)GetSingleIntegerValue(inFontIndex, scEncoding, 0);
+	}
+	bool CCFFReader::ReadCIDInformation()
+	{
+		bool status = true;
+
+		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		{
+			// CID font will be identified by the existance of the ROS entry
+			if (mTopDictIndex[i].mTopDict.find(scROS) != mTopDictIndex[i].mTopDict.end())
+			{
+				status = ReadFDArray(i);
+				if (!status)
+					break;
+
+				status = ReadFDSelect(i);
+				if (!status)
+					break;
+			}
+		}
+
+		return status;
+	}
+	bool CCFFReader::ReadFDArray(unsigned short inFontIndex)
+	{
+		long long fdArrayLocation = GetFDArrayPosition(inFontIndex);
+
+		// supposed to get here only for CIDs. and they must have an FDArray...so if it doesn't - fail
+		if (0 == fdArrayLocation)
+			return false;
+
+		mPrimitivesReader->Seek(fdArrayLocation, SeekSet);
+
+		unsigned long* offsets;
+		unsigned short dictionariesCount;
+		unsigned short i;
+		bool status = ReadIndexHeader(&offsets, dictionariesCount);
+		if (!status)
+			return false;
+
+		if (offsets[0] != 1)
+			mPrimitivesReader->Seek(offsets[0] - 1, SeekCur);
+
+		mTopDictIndex[inFontIndex].mFDArray = new FontDictInfo[dictionariesCount];
+
+		for (i = 0; i < dictionariesCount && status; ++i)
+		{
+			mTopDictIndex[inFontIndex].mFDArray[i].mFontDictStart = mPrimitivesReader->Tell();
+			status = ReadDict(offsets[i + 1] - offsets[i], mTopDictIndex[inFontIndex].mFDArray[i].mFontDict);
+			if (!status)
+				break;
+			mTopDictIndex[inFontIndex].mFDArray[i].mFontDictEnd = mPrimitivesReader->Tell();
+		}
+
+		// another loop for reading the privates [should be one per font dict]. make sure to get their font subrs reference right
+		for (i = 0; i < dictionariesCount && status; ++i)
+		{
+			status = ReadPrivateDict(mTopDictIndex[inFontIndex].mFDArray[i].mFontDict, &(mTopDictIndex[inFontIndex].mFDArray[i].mPrivateDict));
+			if (status)
+				status = ReadLocalSubrsForPrivateDict(&(mTopDictIndex[inFontIndex].mFDArray[i].mPrivateDict), (BYTE)GetCharStringType(inFontIndex));
+		}
+
+		delete[] offsets;
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	long long CCFFReader::GetFDArrayPosition(unsigned short inFontIndex)
+	{
+		return GetSingleIntegerValue(inFontIndex, scFDArray, 0);
+	}
+	bool CCFFReader::ReadFDSelect(unsigned short inFontIndex)
+	{
+		long long fdSelectLocation = GetFDSelectPosition(inFontIndex);
+		unsigned short glyphCount = mCharStrings[inFontIndex].mCharStringsCount;
+		bool status = true;
+
+		// supposed to get here only for CIDs. and they must have an FDSelect...so if it doesn't - fail
+		if (0 == fdSelectLocation)
+			return false;
+
+		mTopDictIndex[inFontIndex].mFDSelect = new FontDictInfo*[glyphCount];
+		mPrimitivesReader->Seek(fdSelectLocation, SeekSet);
+
+		BYTE format = mPrimitivesReader->ReadUChar();
+		if (0 == format)
+		{
+			BYTE fdIndex;
+
+			for (unsigned short i = 0; i < glyphCount && !mPrimitivesReader->IsEof(); ++i)
+			{
+				fdIndex = mPrimitivesReader->ReadUChar();
+				if (!mPrimitivesReader->IsEof())
+					mTopDictIndex[inFontIndex].mFDSelect[i] = mTopDictIndex[inFontIndex].mFDArray + fdIndex;
+			}
+		}
+		else // format 3
+		{
+			unsigned short rangesCount;
+			unsigned short firstGlyphIndex;
+			unsigned short nextRangeGlyphIndex;
+			BYTE fdIndex;
+
+			rangesCount = mPrimitivesReader->ReadUShort();
+			if (!mPrimitivesReader->IsEof())
+			{
+				firstGlyphIndex = mPrimitivesReader->ReadUShort();
+				for (unsigned short i = 0; i < rangesCount && !mPrimitivesReader->IsEof(); ++i)
+				{
+					fdIndex = mPrimitivesReader->ReadUChar();
+					nextRangeGlyphIndex = mPrimitivesReader->ReadUShort();
+					if (!mPrimitivesReader->IsEof())
+						for (unsigned short j = firstGlyphIndex; j < nextRangeGlyphIndex; ++j)
+							mTopDictIndex[inFontIndex].mFDSelect[j] = mTopDictIndex[inFontIndex].mFDArray + fdIndex;
+					firstGlyphIndex = nextRangeGlyphIndex;
+				}
+			}
+		}
+
+		if (!status)
+			return status;
+		return !mPrimitivesReader->IsEof();
+	}
+	long long CCFFReader::GetFDSelectPosition(unsigned short inFontIndex)
+	{
+		return GetSingleIntegerValue(inFontIndex, scFDSelect, 0);
 	}
 	//----------------------------------------------------------------------------------------
 	// COpenTypeReader

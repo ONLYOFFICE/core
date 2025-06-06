@@ -149,7 +149,7 @@ namespace PdfWriter
 	unsigned int   CStream::ReadOffset(BYTE nOffset)
 	{
 		unsigned int nRes = 0;
-		if (nOffset < 1 || nOffset > 4)
+		if (nOffset < 1 || nOffset > 4 || !CheckSize(nOffset))
 			return nRes;
 		for (BYTE i = 0; i < nOffset; ++i)
 		{

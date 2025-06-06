@@ -174,7 +174,7 @@ namespace PdfWriter
 
 		*pOffsets = new unsigned int[ushCount + 1];
 
-		for (unsigned short i = 0; i <= ushCount; ++i)
+		for (unsigned int i = 0; i <= ushCount; ++i)
 		{
 			unsigned int unOffset = 0;
 			for (int i = 0; i < nOffSize; ++i)
@@ -248,6 +248,8 @@ namespace PdfWriter
 				unsigned short nOperator = 0;
 				if (nOp == 12)
 					nOperator = (nOp << 8) | *pCFFData++;
+				else
+					nOperator = nOp;
 				TopDICT.mTopDict[nOperator] = arrOperand;
 				arrOperand.clear();
 			}
@@ -713,7 +715,7 @@ namespace PdfWriter
 		mNameToIndex.clear();
 		if (mTopDictIndex != NULL)
 		{
-			for (unsigned short i = 0; i < mFontsCount; ++i)
+			for (unsigned int i = 0; i < mFontsCount; ++i)
 			{
 				delete[] mTopDictIndex[i].mFDArray;
 				delete[] mTopDictIndex[i].mFDSelect;
@@ -730,7 +732,7 @@ namespace PdfWriter
 		RELEASEARRAYOBJECTS(mGlobalSubrs.mCharStringsIndex);
 		if (mCharStrings != NULL)
 		{
-			for (unsigned short i = 0; i < mFontsCount; ++i)
+			for (unsigned int i = 0; i < mFontsCount; ++i)
 				delete[] mCharStrings[i].mCharStringsIndex;
 			RELEASEARRAYOBJECTS(mCharStrings);
 		}
@@ -864,7 +866,7 @@ namespace PdfWriter
 					{
 						powerPart = powerPart * 10 + nibble[i];
 					}
-					else if(hasFraction)
+					else if (hasFraction)
 					{
 						fractionPart = fractionPart * 10 + nibble[i];
 						fractionDecimal *= 10;
@@ -879,11 +881,11 @@ namespace PdfWriter
 
 		if (status)
 		{
-			result = integerPart + fractionPart/fractionDecimal;
-			if(hasNegativePower || hasPositivePower)
-				result = result * pow(10,hasNegativePower ? -powerPart : powerPart);
-			if(hasNegative)
-				result = -1*result;
+			result = integerPart + fractionPart / fractionDecimal;
+			if (hasNegativePower || hasPositivePower)
+				result = result * pow(10, hasNegativePower ? -powerPart : powerPart);
+			if (hasNegative)
+				result = -result;
 			outValue = result;
 		}
 		return status;
@@ -1007,7 +1009,7 @@ namespace PdfWriter
 		BYTE offSizeForIndex = mPrimitivesReader->ReadUChar();
 		*outOffsets = new unsigned long[outItemsCount + 1];
 
-		for (unsigned short i = 0; i <= outItemsCount && !mPrimitivesReader->IsEof(); ++i)
+		for (unsigned int i = 0; i <= outItemsCount && !mPrimitivesReader->IsEof(); ++i)
 			(*outOffsets)[i] = mPrimitivesReader->ReadOffset(offSizeForIndex);
 
 		return !mPrimitivesReader->IsEof();
@@ -1025,7 +1027,7 @@ namespace PdfWriter
 			mPrimitivesReader->Seek(offsets[0] - 1, SeekCur);
 
 		BYTE* buffer;
-		for (unsigned short i = 0; i < mFontsCount; ++i)
+		for (unsigned int i = 0; i < mFontsCount; ++i)
 		{
 			unsigned int nLength = offsets[i + 1] - offsets[i];
 			buffer = new BYTE[nLength];
@@ -1055,7 +1057,7 @@ namespace PdfWriter
 
 		mTopDictIndex = new TopDictInfo[dictionariesCount];
 
-		for (unsigned short i = 0; i < dictionariesCount && status == true; ++i)
+		for (unsigned int i = 0; i < dictionariesCount && status; ++i)
 			status = ReadDict(offsets[i + 1] - offsets[i], mTopDictIndex[i].mTopDict);
 
 		delete[] offsets;
@@ -1138,7 +1140,7 @@ namespace PdfWriter
 		}
 
 		// now create the string to SID map
-		for ( i = 0; i < N_STD_STRINGS; ++i)
+		for (i = 0; i < N_STD_STRINGS; ++i)
 			mStringToSID.insert(CharPToUShortMap::value_type(scStandardStrings[i], i));
 		for (; i < N_STD_STRINGS + mStringsCount; ++i)
 			mStringToSID.insert(CharPToUShortMap::value_type(mStrings[i - N_STD_STRINGS], i));
@@ -1172,10 +1174,10 @@ namespace PdfWriter
 
 		long long dataStartPosition = mPrimitivesReader->Tell();
 
-		for (unsigned short i = 0; i < outSubrsCount; ++i)
+		for (unsigned int i = 0; i < outSubrsCount; ++i)
 		{
 			(*outSubrsIndex)[i].mStartPosition = dataStartPosition + offsets[i] - 1;
-			(*outSubrsIndex)[i].mEndPosition = dataStartPosition + offsets[i+1] - 1;
+			(*outSubrsIndex)[i].mEndPosition = dataStartPosition + offsets[i + 1] - 1;
 			(*outSubrsIndex)[i].mIndex = i;
 		}
 
@@ -1191,9 +1193,9 @@ namespace PdfWriter
 		mCharStrings = new CharStrings[mFontsCount];
 		bool status = true;
 
-		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 		{
-			long long  charStringsPosition = GetCharStringsPosition(i);
+			long long charStringsPosition = GetCharStringsPosition(i);
 			mCharStrings[i].mCharStringsType = (BYTE)GetCharStringType(i);
 			if (0 == charStringsPosition)
 			{
@@ -1235,7 +1237,7 @@ namespace PdfWriter
 		mPrivateDicts = new PrivateDictInfo[mFontsCount];
 		bool status = true;
 
-		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 			status = ReadPrivateDict(mTopDictIndex[i].mTopDict, mPrivateDicts + i);
 
 		if (!status)
@@ -1268,7 +1270,7 @@ namespace PdfWriter
 		// scan all subrs of all included fonts
 		bool status = true;
 
-		for (unsigned short i=0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 			status = ReadLocalSubrsForPrivateDict(mPrivateDicts + i, (BYTE)GetCharStringType(i));
 
 		if (!status)
@@ -1307,7 +1309,7 @@ namespace PdfWriter
 		LongFilePositionTypeToCharSetInfoMap offsetToIndex;
 		LongFilePositionTypeToCharSetInfoMap::iterator it;
 
-		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 		{
 			long long charsetPosition = GetCharsetPosition(i);
 			it = offsetToIndex.find(charsetPosition);
@@ -1353,7 +1355,7 @@ namespace PdfWriter
 		LongFilePositionTypeToEncodingsInfoMap offsetToEncoding;
 		LongFilePositionTypeToEncodingsInfoMap::iterator it;
 
-		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 		{
 			long long encodingPosition = GetEncodingPosition(i);
 			it = offsetToEncoding.find(encodingPosition);
@@ -1369,8 +1371,7 @@ namespace PdfWriter
 
 		if (!status)
 			return status;
-		else
-			return !mPrimitivesReader->IsEof();
+		return !mPrimitivesReader->IsEof();
 	}
 	void CCFFReader::ReadEncoding(EncodingsInfo* inEncoding, long long inEncodingPosition)
 	{
@@ -1451,7 +1452,7 @@ namespace PdfWriter
 	void CCFFReader::SetupSIDToGlyphMapWithStandard(const unsigned short* inStandardCharSet, unsigned short inStandardCharSetLength, UShortToCharStringMap& ioCharMap, const CharStrings& inCharStrings)
 	{
 		ioCharMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
-		for (unsigned short i = 1; i < inCharStrings.mCharStringsCount && i < inStandardCharSetLength;++i)
+		for (unsigned int i = 1; i < inCharStrings.mCharStringsCount && i < inStandardCharSetLength;++i)
 			ioCharMap.insert(UShortToCharStringMap::value_type(inStandardCharSet[i], inCharStrings.mCharStringsIndex + i));
 	}
 	bool CCFFReader::ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
@@ -1464,12 +1465,12 @@ namespace PdfWriter
 
 		if (inIsCID)
 		{
-			for (unsigned short i = 1; i < inCharStrings.mCharStringsCount; ++i)
+			for (unsigned int i = 1; i < inCharStrings.mCharStringsCount; ++i)
 				(*inSIDArray)[i] = mPrimitivesReader->ReadUShort();
 		}
 		else
 		{
-			for (unsigned short i = 1; i < inCharStrings.mCharStringsCount; ++i)
+			for (unsigned int i = 1; i < inCharStrings.mCharStringsCount; ++i)
 			{
 				unsigned short sid = mPrimitivesReader->ReadUShort();
 				(*inSIDArray)[i] = sid;
@@ -1516,7 +1517,7 @@ namespace PdfWriter
 	}
 	bool CCFFReader::ReadFormat2Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
 	{
-		if(!inIsCID)
+		if (!inIsCID)
 			ioGlyphMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
 		*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
 		(*inSIDArray)[0] = 0;
@@ -1530,7 +1531,7 @@ namespace PdfWriter
 			{
 				sid = mPrimitivesReader->ReadUShort();
 				left = mPrimitivesReader->ReadUShort();
-				for (unsigned short i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i, ++glyphIndex)
+				for (unsigned int i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i, ++glyphIndex)
 					(*inSIDArray)[glyphIndex] = sid + i;
 			}
 		}
@@ -1540,7 +1541,7 @@ namespace PdfWriter
 			{
 				sid = mPrimitivesReader->ReadUShort();
 				left = mPrimitivesReader->ReadUShort();
-				for (unsigned short i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i ,++glyphIndex)
+				for (unsigned int i = 0; i <= left && glyphIndex < inCharStrings.mCharStringsCount; ++i ,++glyphIndex)
 				{
 					ioGlyphMap.insert(UShortToCharStringMap::value_type(sid + i, inCharStrings.mCharStringsIndex + glyphIndex));
 					(*inSIDArray)[glyphIndex] = sid + i;
@@ -1561,7 +1562,7 @@ namespace PdfWriter
 	{
 		bool status = true;
 
-		for (unsigned short i = 0; i < mFontsCount && status; ++i)
+		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 		{
 			// CID font will be identified by the existance of the ROS entry
 			if (mTopDictIndex[i].mTopDict.find(scROS) != mTopDictIndex[i].mTopDict.end())
@@ -1644,7 +1645,7 @@ namespace PdfWriter
 		{
 			BYTE fdIndex;
 
-			for (unsigned short i = 0; i < glyphCount && !mPrimitivesReader->IsEof(); ++i)
+			for (unsigned int i = 0; i < glyphCount && !mPrimitivesReader->IsEof(); ++i)
 			{
 				fdIndex = mPrimitivesReader->ReadUChar();
 				if (!mPrimitivesReader->IsEof())
@@ -1662,12 +1663,12 @@ namespace PdfWriter
 			if (!mPrimitivesReader->IsEof())
 			{
 				firstGlyphIndex = mPrimitivesReader->ReadUShort();
-				for (unsigned short i = 0; i < rangesCount && !mPrimitivesReader->IsEof(); ++i)
+				for (unsigned int i = 0; i < rangesCount && !mPrimitivesReader->IsEof(); ++i)
 				{
 					fdIndex = mPrimitivesReader->ReadUChar();
 					nextRangeGlyphIndex = mPrimitivesReader->ReadUShort();
 					if (!mPrimitivesReader->IsEof())
-						for (unsigned short j = firstGlyphIndex; j < nextRangeGlyphIndex; ++j)
+						for (unsigned int j = firstGlyphIndex; j < nextRangeGlyphIndex; ++j)
 							mTopDictIndex[inFontIndex].mFDSelect[j] = mTopDictIndex[inFontIndex].mFDArray + fdIndex;
 					firstGlyphIndex = nextRangeGlyphIndex;
 				}
@@ -2023,7 +2024,7 @@ namespace PdfWriter
 		// skip the next 6
 		mPrimitivesReader->Seek(6, SeekCur);
 
-		for (unsigned short i = 0; i < mTablesCount; ++i)
+		for (unsigned int i = 0; i < mTablesCount; ++i)
 		{
 			tableTag = mPrimitivesReader->ReadUInt();
 			tableEntry.CheckSum = mPrimitivesReader->ReadUInt();
@@ -2600,7 +2601,7 @@ namespace PdfWriter
 		pCFFData = ReadIndexHeader(pCFFData, &pOffsets, ushDictCount);
 
 		CTopDictInfo* pTopDICT = new CTopDictInfo[ushDictCount];
-		for (unsigned short i = 0; i < ushDictCount; ++i)
+		for (unsigned int i = 0; i < ushDictCount; ++i)
 			ReadTopDICT(pCFFData + pOffsets[i] - 1, pCFFData + pOffsets[i + 1] - 1, pTopDICT[i]);
 		pCFFData += pOffsets[ushDictCount] - 1;
 		RELEASEARRAYOBJECTS(pOffsets);
@@ -2613,7 +2614,7 @@ namespace PdfWriter
 		pCFFData = ReadIndexHeader(pCFFData, &pOffsets, ushStringCount);
 
 		BYTE** pStrings = new BYTE*[ushStringCount];
-		for (unsigned short i = 0; i < ushStringCount; ++i)
+		for (unsigned int i = 0; i < ushStringCount; ++i)
 		{
 			unsigned int unLength = pOffsets[i + 1] - pOffsets[i];
 			pStrings[i] = new BYTE[unLength + 1];
@@ -2739,14 +2740,14 @@ namespace PdfWriter
 			pOutputStream->WriteUChar(nStringsCount1 & 0xff); // count (LSB)
 
 			unsigned int unTotalSize = 0;
-			for (unsigned short i = 0; i < ushStringCount; ++i)
+			for (unsigned int i = 0; i < ushStringCount; ++i)
 				unTotalSize += strlen((char *)pStrings[i]);
 			unTotalSize += sOptionalEmbeddedPostscript.size();
 			nSizeOfOffset = GetMostCompressedOffsetSize(unTotalSize + 1);
 			pOutputStream->WriteUChar(nSizeOfOffset); // offset size
 
 			unsigned int unCurOffset = 1;
-			for (unsigned short i = 0; i < ushStringCount; ++i)
+			for (unsigned int i = 0; i < ushStringCount; ++i)
 			{
 				WriteOffset(unCurOffset, nSizeOfOffset, pOutputStream);; // offset
 				unCurOffset += strlen((char *)pStrings[i]);
@@ -2755,7 +2756,7 @@ namespace PdfWriter
 			unCurOffset += sOptionalEmbeddedPostscript.size();
 			WriteOffset(unCurOffset, nSizeOfOffset, pOutputStream);; // offset
 
-			for (unsigned short i = 0; i < ushStringCount; ++i)
+			for (unsigned int i = 0; i < ushStringCount; ++i)
 				pOutputStream->Write(pStrings[i], strlen((char *)pStrings[i]));
 			pOutputStream->WriteStr(sOptionalEmbeddedPostscript.c_str());
 		}
@@ -2834,7 +2835,7 @@ namespace PdfWriter
 		// ------
 
 		RELEASEARRAYOBJECTS(pTopDICT);
-		for (unsigned short i = 0; i < ushStringCount; ++i)
+		for (unsigned int i = 0; i < ushStringCount; ++i)
 			RELEASEARRAYOBJECTS(pStrings[i]);
 		RELEASEARRAYOBJECTS(pStrings);
 	}

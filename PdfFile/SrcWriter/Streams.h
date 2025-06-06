@@ -150,6 +150,7 @@ namespace PdfWriter
 
 		CMemoryStream();
 		CMemoryStream(unsigned int unBufferSize);
+		CMemoryStream(BYTE* pBuffer, unsigned int unSize, bool bFree = false);
 		~CMemoryStream();
 		bool         IsEof();
 		void         Write(const BYTE* pBuffer, unsigned int unSize);
@@ -171,6 +172,7 @@ namespace PdfWriter
 		void Shrink(unsigned int unSize);
 
 	private:
+		bool         m_bFree;
 
 		BYTE*        m_pBuffer;
 		int          m_nBufferSize;

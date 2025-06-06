@@ -149,36 +149,14 @@ namespace PdfWriter
 	unsigned int   CStream::ReadOffset(BYTE nOffset)
 	{
 		unsigned int nRes = 0;
-		switch (nOffset)
+		if (nOffset < 1 || nOffset > 4)
+			return nRes;
+		for (BYTE i = 0; i < nOffset; ++i)
 		{
-		case 1:
-		{
-			nRes = ReadUChar();
-			break;
-		}
-		case 2:
-		{
-			nRes = ReadUShort();
-			break;
-		}
-		case 3:
-		{
-			if (!CheckSize(3))
-				return 0;
+			BYTE nChar;
 			unsigned int unBytesRead = 1;
-			BYTE nChar0, nChar1, nChar2;
-			Read(&nChar0, &unBytesRead);
-			Read(&nChar1, &unBytesRead);
-			Read(&nChar2, &unBytesRead);
-			nRes = (unsigned int)(((unsigned int)nChar0 << 16) | ((unsigned int)nChar1 << 8)  | nChar2);
-			break;
-		}
-		case 4:
-		{
-			nRes = ReadUInt();
-			break;
-		}
-		default: break;
+			Read(&nChar, &unBytesRead);
+			nRes = (nRes << 8) | nChar;
 		}
 		return nRes;
 	}
@@ -777,6 +755,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CMemoryStream::CMemoryStream()
 	{
+		m_bFree       = true;
 		m_unSize      = 0;
 		m_nBufferSize = 0;
 		m_pBuffer     = NULL;
@@ -784,6 +763,7 @@ namespace PdfWriter
 	}
 	CMemoryStream::CMemoryStream(unsigned int unBufferSize)
 	{
+		m_bFree       = true;
 		m_unSize      = 0;
 		m_nBufferSize = 0;
 		m_pBuffer     = NULL;
@@ -791,9 +771,26 @@ namespace PdfWriter
 
 		Shrink(unBufferSize);
 	}
+	CMemoryStream::CMemoryStream(BYTE* pBuffer, unsigned int unSize, bool bFree)
+	{
+		m_bFree       = bFree;
+		m_unSize      = unSize;
+		m_nBufferSize = unSize;
+		m_pBuffer     = pBuffer;
+		m_pCur        = pBuffer;
+	}
 	CMemoryStream::~CMemoryStream()
 	{
-		Close();
+		if (m_pBuffer && m_bFree)
+		{
+			free(m_pBuffer);
+			//delete[] m_pBuffer;
+		}
+
+		m_nBufferSize = 0;
+		m_pBuffer     = NULL;
+		m_pCur        = NULL;
+		m_unSize      = 0;
 	}
 	bool         CMemoryStream::IsEof()
 	{
@@ -839,7 +836,7 @@ namespace PdfWriter
 	}
 	void         CMemoryStream::Close()
 	{
-		if (m_pBuffer)
+		if (m_pBuffer && m_bFree)
 		{
 			free(m_pBuffer);
 			//delete[] m_pBuffer;

@@ -931,8 +931,7 @@ namespace PdfWriter
 		FreeData();
 
 		mCFFOffset = inCFFFile->Tell();
-		mPrimitivesReader = new CMemoryStream(inCFFFile->Size() - inCFFFile->Tell());
-		mPrimitivesReader->Write(inCFFFile->GetCurBuffer(), inCFFFile->Size() - inCFFFile->Tell());
+		mPrimitivesReader = new CMemoryStream(inCFFFile->GetCurBuffer(), inCFFFile->Size() - inCFFFile->Tell());
 		mPrimitivesReader->Seek(0, SeekSet);
 
 		bool status = ReadHeader();
@@ -1057,7 +1056,7 @@ namespace PdfWriter
 		mTopDictIndex = new TopDictInfo[dictionariesCount];
 
 		for (unsigned short i = 0; i < dictionariesCount && status == true; ++i)
-			status = ReadDict(offsets[i+1] - offsets[i], mTopDictIndex[i].mTopDict);
+			status = ReadDict(offsets[i + 1] - offsets[i], mTopDictIndex[i].mTopDict);
 
 		delete[] offsets;
 		if (!status)
@@ -1940,8 +1939,7 @@ namespace PdfWriter
 
 		FreeTables();
 
-		mPrimitivesReader = new CMemoryStream(nDataLength);
-		mPrimitivesReader->Write(pData, nDataLength);
+		mPrimitivesReader = new CMemoryStream(pData, nDataLength);
 		mPrimitivesReader->Seek(0, SeekSet);
 
 		mHeaderOffset = mPrimitivesReader->Tell();

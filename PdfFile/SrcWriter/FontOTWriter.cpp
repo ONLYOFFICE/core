@@ -124,6 +124,8 @@ namespace PdfWriter
 		CHARSET_EXPERT_SUBSET_SIZE
 	};
 
+	static const unsigned short scROS = 0xC1E;
+
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
 		if (inOffset < 256)
@@ -493,6 +495,14 @@ namespace PdfWriter
 		BYTE pBuffer[5] = { '0', '0', '0', '0', '0' };
 		pOutputStream->Write(pBuffer, 5, false);
 	}
+
+	namespace FSType
+	{
+	bool CanEmbed(unsigned short mFSTypeValue)
+	{
+		return (mFSTypeValue != 0x2) && (mFSTypeValue != 0x0200) && (mFSTypeValue != 0x0202);
+	}
+	}
 	//----------------------------------------------------------------------------------------
 	// CCFFReader
 	//----------------------------------------------------------------------------------------
@@ -677,7 +687,6 @@ namespace PdfWriter
 		bool ReadLocalSubrs();
 		static const unsigned short scSubrs = 19;
 		bool ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType);
-		static const unsigned short scROS = 0xC1E;
 		bool ReadCharsets();
 		bool ReadEncodings();
 		void ReadEncoding(EncodingsInfo* inEncoding, long long inEncodingPosition);
@@ -2520,6 +2529,56 @@ namespace PdfWriter
 		return mCFF.ReadCFFFile(mPrimitivesReader);
 	}
 	//----------------------------------------------------------------------------------------
+	// CCFFWriter
+	//----------------------------------------------------------------------------------------
+	struct CCFFWriter
+	{
+	public:
+		CCFFWriter();
+		~CCFFWriter();
+
+		bool CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount);
+	};
+	bool CCFFWriter::CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount)
+	{
+		bool outNotEmbedded = true;
+
+		COpenTypeReader mOpenTypeInput;
+		bool status = mOpenTypeInput.ReadOpenTypeFile(pFile, nLen, unFontIndex);
+		if (!status)
+			return false;
+
+		if (mOpenTypeInput.GetOpenTypeFontType() != COpenTypeReader::EOpenTypeInputType::EOpenTypeCFF)
+			return false;
+
+		// see if font may be embedded
+		if (mOpenTypeInput.mOS2Exists && !FSType::CanEmbed(mOpenTypeInput.mOS2.fsType))
+		{
+			outNotEmbedded = true;
+			return true;
+		}
+		else
+			outNotEmbedded = false;
+
+		std::vector<unsigned int> subsetGlyphIDs;
+		for (unsigned long i = 0; i < unCodesCount; ++i)
+			subsetGlyphIDs.push_back(pCodeToGID[i]);
+		// Убедиться, что есть 0 глиф
+
+		// Добавить зависимые глифы
+		// Они есть в m_vCodeToGid из pCodeToGID. В pUseGlyfs они тоже есть из m_mGlyphs, но только в m_mGlyphs, они имеют false
+
+		unsigned short mSubsetFontGlyphsCount = subsetGlyphIDs.size(); // == unCodesCount
+
+		bool mIsCID = mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.find(scROS) != mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.end();
+
+		CStream* mPrimitivesWriter = pOutputStream;
+
+		status = WriteCFFHeader();
+		if (!status)
+			return false;
+	}
+	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType
 	//----------------------------------------------------------------------------------------
 	void CFontFileTrueType::WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount, unsigned char* pUseGlyfs, long lGlyfsCount)
@@ -2530,8 +2589,8 @@ namespace PdfWriter
 			return;
 		}
 
-		COpenTypeReader mOpenTypeFile;
-		bool status = mOpenTypeFile.ReadOpenTypeFile(m_sFile, m_nLen, m_unFontIndex);
+		CCFFWriter pWriter;
+		bool status = pWriter.CreateCFFSubset(m_sFile, m_nLen, m_unFontIndex, pOutputStream, pCodeToGID, unCodesCount);
 		if (!status)
 			return;
 

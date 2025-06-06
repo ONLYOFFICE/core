@@ -1297,9 +1297,9 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				drawing->fill.bitmap->clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
+				drawing->fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 
-				drawing->fill.bitmap->bCrop = odf_reader::parse_clipping(drawing->fill.bitmap->clipping, *drawing->fill.bitmap->width, *drawing->fill.bitmap->height, drawing->fill.bitmap->cropRect);
+				drawing->fill.bitmap->bCrop = odf_reader::parse_clipping(drawing->fill.clipping, *drawing->fill.bitmap->width, *drawing->fill.bitmap->height, drawing->fill.bitmap->cropRect);
 			}
 
 			if (drawing->fill.bitmap->sx_pt && drawing->fill.bitmap->sy_pt)

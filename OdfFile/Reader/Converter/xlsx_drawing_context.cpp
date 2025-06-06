@@ -664,7 +664,7 @@ void xlsx_drawing_context::process_image(drawing_object_description & obj, _xlsx
 
 	if (drawing.fill.bitmap->width && drawing.fill.bitmap->height)
 	{
-		drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(drawing.fill.bitmap->clipping, *drawing.fill.bitmap->width, *drawing.fill.bitmap->height, drawing.fill.bitmap->cropRect);
+		drawing.fill.bitmap->bCrop = odf_reader::parse_clipping(drawing.fill.clipping, *drawing.fill.bitmap->width, *drawing.fill.bitmap->height, drawing.fill.bitmap->cropRect);
 		
 		if (drawing.fill.bitmap->sx_pt && drawing.fill.bitmap->sy_pt)
 		{

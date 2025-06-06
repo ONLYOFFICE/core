@@ -933,7 +933,7 @@ void pptx_slide_context::Impl::process_crop(_oox_fill & fill, const std::wstring
 
 	if (fill.bitmap->width && fill.bitmap->height)
 	{
-		fill.bitmap->bCrop = odf_reader::parse_clipping(fill.bitmap->clipping, *fill.bitmap->width, *fill.bitmap->height, fill.bitmap->cropRect);
+		fill.bitmap->bCrop = odf_reader::parse_clipping(fill.clipping, *fill.bitmap->width, *fill.bitmap->height, fill.bitmap->cropRect);
 		
 		if (fill.bitmap->sx_pt && fill.bitmap->sy_pt)
 		{

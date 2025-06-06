@@ -143,11 +143,11 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon()
-	    : m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
+	    : m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA), m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}
 	{}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID)
-		: CCtrl(sCtrlID), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
+		: CCtrl(sCtrlID), m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA), m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{}
 
 	CCtrlCommon::CCtrlCommon(const CCtrlCommon& oCtrlCommon)
@@ -241,7 +241,7 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	    : CCtrl(sCtrlID), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},  m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
+	    : CCtrl(sCtrlID), m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA), m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},  m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{
 		m_nObjInstanceID = std::abs(oNode.GetAttributeInt(L"id"));
 

@@ -147,7 +147,7 @@ int CCtrlObjElement::GetFinalHeight() const
 
 TMatrix CCtrlObjElement::GetFinalMatrix() const
 {
-	if (m_arMatrixs.empty())
+	if (m_arMatrixs.empty() || 0 == m_shNGrp)
 		return TMatrix();
 
 	TMatrix oMatrix{m_arMatrixs.front()};

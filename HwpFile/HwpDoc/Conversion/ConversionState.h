@@ -34,6 +34,8 @@ struct TConversionState
 	const CCtrlPageNumPos* m_pPageNum;
 	const CCtrlNewNumber*  m_pNewNumber;
 
+	VECTOR<TRelationship>* m_pRelationships;
+
 	enum class EBreakType
 	{
 		Page,
@@ -46,7 +48,7 @@ struct TConversionState
 
 	TConversionState()
 	    : m_bOpenedP(false), m_bOpenedR(false), m_bIsNote(false), m_bInTable(false), m_bLastEmptyNode(false), m_bInTextBox(false), m_ushLastCharShapeId(-1), m_ushSecdIndex(0), m_unParaIndex(0),
-	      m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_pPageNum(nullptr), m_pNewNumber(nullptr), m_eBreakType(EBreakType::None)
+	      m_pSectionDef(nullptr), m_pColumnDef(nullptr), m_pPageNum(nullptr), m_pNewNumber(nullptr), m_pRelationships(nullptr), m_eBreakType(EBreakType::None)
 	{}
 };
 }

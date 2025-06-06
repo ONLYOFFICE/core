@@ -1085,7 +1085,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                     }
 					else if ((xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)  && str_val) 
                     {    
-						CP_XML_NODE(L"v")	{ CP_XML_CONTENT(str_val.get()); }
+						CP_XML_NODE(L"v")	{ CP_XML_CONTENT(XmlUtils::EncodeXmlString(str_val.get())); }
 					}
                     else if (!number_val.empty())
                     {

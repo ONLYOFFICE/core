@@ -1,4 +1,15 @@
 #include "Embed.h"
+#include <iostream>
+
+CTestEmbed::CTestEmbed()
+{
+	std::cout << "debug: CTestEmbed constructed" << std::endl;
+}
+
+CTestEmbed::~CTestEmbed()
+{
+	std::cout << "debug: CTestEmbed destroyed" << std::endl;
+}
 
 #ifdef ENABLE_SUM_DEL
 JSSmart<CJSValue> CTestEmbed::FunctionSum(JSSmart<CJSValue> param1, JSSmart<CJSValue> param2)

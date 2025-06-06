@@ -4321,9 +4321,9 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (nAP == 0)
 		wsValue = pButtonWidget->GetCA();
 	else if (nAP == 1)
-		wsValue = pButtonWidget->GetRC().empty() ? pButtonWidget->GetCA() : pButtonWidget->GetRC();
+		wsValue = pButtonWidget->GetRC();
 	else
-		wsValue = pButtonWidget->GetAC().empty() ? pButtonWidget->GetCA() : pButtonWidget->GetAC();
+		wsValue = pButtonWidget->GetAC();
 
 	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
 		pButtonWidget->SetBorder(0, 1, {});

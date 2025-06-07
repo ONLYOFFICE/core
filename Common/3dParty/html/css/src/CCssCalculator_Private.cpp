@@ -692,6 +692,16 @@ namespace NSCSS
 			FindPrevAndKindElements(pFoundName, arNextNodes, arFindedElements, wsName, arClasses);
 		}
 
+		const CElement* pFoundAll = m_oStyleStorage.FindElement(L"*");
+
+		if (nullptr != pFoundAll)
+		{
+			if (!pFoundAll->Empty())
+				arFindedElements.push_back(pFoundAll);
+
+			FindPrevAndKindElements(pFoundAll, arNextNodes, arFindedElements, wsName, arClasses);
+		}
+
 		if (arFindedElements.size() > 1)
 		{
 			std::sort(arFindedElements.rbegin(), arFindedElements.rend(),

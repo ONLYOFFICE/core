@@ -444,6 +444,11 @@ namespace NSCSS
 					m_oDisplay.SetVAlign(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
+				CASE(L"white-space"):
+				{
+					m_oDisplay.SetWhiteSpace(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
 				//TRANSFORM
 				CASE(L"transform"):
 				{

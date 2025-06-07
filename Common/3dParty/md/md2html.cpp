@@ -29,7 +29,7 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"<style>");
 
 	// Main styles
-	oFile.WriteStringUTF8(L"* { font-family: Arial; color:black; }");
+	oFile.WriteStringUTF8(L"* { font-family: Arial; color:black; white-space:pre; }");
 	oFile.WriteStringUTF8(L"p { margin: 0 0 10px; display: block; }");
 	oFile.WriteStringUTF8(L"a { color: #0553c1; text-decoration: underline; } a:visited { color: #954f72; text-decoration: underline; }");
 	oFile.WriteStringUTF8(L"ul { margin-top: 0; margin-bottom: 10px; }");

@@ -2384,7 +2384,30 @@ private:
 
 		std::wstring sText = m_oLightReader.GetText();
 
-		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+		if (sText.empty())
+			return false;
+
+		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
+
+		bool bPre = oTS.bPre;
+
+		if (!bPre && nullptr != arSelectors.back().m_pCompiledStyle)
+		{
+			NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
+
+			// TODO::поведение должно быть немного разное (реализовать)
+			switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
+			{
+				case NSCSS::NSProperties::EWhiteSpace::Pre:
+				case NSCSS::NSProperties::EWhiteSpace::Pre_Wrap:
+				case NSCSS::NSProperties::EWhiteSpace::Pre_Line:
+					bPre = true;
+				default:
+					break;
+			}
+		}
+
+		if (!bPre && sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 			return false;
 
 		if(oTS.bBdo)
@@ -2392,23 +2415,14 @@ private:
 
 		const bool bInT = m_oState.m_bInT;
 
-		if (oTS.bPre)
-		{
-			CloseT(pXml);
-			CloseR(pXml);
-		}
-
 		GetSubClass(pXml, arSelectors);
-
-		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
-			WriteSpace(pXml);
 
 		//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
 
-		std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
+		const std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
 
 		WriteToStringBuilder(oPPr, *pXml);
 
@@ -2428,89 +2442,79 @@ private:
 		if (oTS.bQ)
 			pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-		if(oTS.bPre)
+		if (!bPre && oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !iswpunct(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
+			WriteSpace(pXml);
+
+		if(bPre)
 		{
-			if (L'\n' == sText.front() || L'\r' == sText.front())
-				sText.erase(0, 1);
+			size_t unBegin = 0, unEnd = sText.find_first_of(L"\n\r\t");
 
-			size_t nAfter = sText.find_first_of(L"\n\r\t");
-			while(nAfter != std::wstring::npos)
+			while (std::wstring::npos != unBegin)
 			{
-				if (L'\t' == sText[0])
+				if (OpenR(pXml))
 				{
-					pXml->WriteString(L"<w:tab/>");
-					sText.erase(0, 1);
-
-					if (0 == nAfter)
-					{
-						nAfter = sText.find_first_of(L"\n\r\t");
-						continue;
-					}
-
-					nAfter--;
+					pXml->WriteString(L"<w:test/>");
+					WriteToStringBuilder(oRPr, *pXml);
 				}
 
 				OpenT(pXml);
-				pXml->WriteEncodeXmlString(sText.c_str(), nAfter);
-				CloseT(pXml);
-				CloseR(pXml);
-
-				if (L'\t' == sText[nAfter])
+				if (unEnd == std::wstring::npos)
 				{
-					sText.erase(0, nAfter);
-					nAfter = 1;
+					pXml->WriteEncodeXmlString(sText.c_str() + unBegin, sText.length() - unBegin);
+					break;
 				}
-				else
-				{
-					CloseP(pXml, arSelectors);
-					OpenP(pXml);
-					WriteToStringBuilder(oPPr, *pXml);
-					sText.erase(0, nAfter + 1);
-					nAfter = 0;
-				}
-				OpenR(pXml);
-				WriteToStringBuilder(oRPr, *pXml);
-				nAfter = sText.find_first_of(L"\n\r\t", nAfter);
-			}
 
-			if (sText.empty())
-			{
-				arSelectors.pop_back();
-				return true;
+				if (unBegin != unEnd)
+				{
+					pXml->WriteEncodeXmlString(sText.c_str() + unBegin, unEnd - unBegin);
+					CloseT(pXml);
+				}
+
+				if (L'\n' == sText[unEnd])
+				{
+					pXml->WriteString(L"<w:br/>");
+				}
+				else if (L'\t' == sText[unEnd])
+				{
+					pXml->WriteString(L"<w:tab/>");
+				}
+
+				unBegin = unEnd + 1;
+				unEnd = sText.find_first_of(L"\n\r\t", unBegin);
 			}
 		}
 		else
+		{
 			ReplaceSpaces(sText);
 
-		if (!sText.empty() && L'\t' == sText[0])
-		{
-			pXml->WriteString(L"<w:tab/>");
-			sText.erase(0, 1);
-		}
+			if (!sText.empty() && L'\t' == sText[0])
+			{
+				pXml->WriteString(L"<w:tab/>");
+				sText.erase(0, 1);
+			}
 
-		if (!oTS.bPre && !sText.empty() && std::iswspace(sText.front()) && m_oState.m_bWasSpace)
-			sText.erase(0, 1);
+			if (!sText.empty() && std::iswspace(sText.front()) && m_oState.m_bWasSpace)
+				sText.erase(0, 1);
 
-		if (!sText.empty())
-		{
 			OpenT(pXml);
 
-			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT && !oTS.bPre)
+			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT && !bPre)
 				pXml->WriteEncodeXmlString(L" ");
 
-			m_oState.m_bWasSpace = std::iswspace(sText.back());
-
-			pXml->WriteEncodeXmlString(sText);
+			if (!sText.empty())
+			{
+				m_oState.m_bWasSpace = std::iswspace(sText.back());
+				pXml->WriteEncodeXmlString(sText);
+			}
 		}
 
 		if (oTS.bQ)
 			pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
+		CloseT(pXml);
+
 		if (!oTS.bMergeText)
-		{
-			CloseT(pXml);
 			CloseR(pXml);
-		}
 
 		arSelectors.pop_back();
 		return true;
@@ -2760,7 +2764,10 @@ private:
 		if (NULL == pXml || arSelectors.empty() || arSelectors.back().m_wsClass == L"MsoFootnoteReference")
 			return false;
 
-		return readStream(pXml, arSelectors, oTS);
+		CTextSettings oTSR(oTS);
+		oTSR.bAddSpaces = false;
+
+		return readStream(pXml, arSelectors, oTSR);
 	}
 
 	bool ReadNobr(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
@@ -4098,6 +4105,8 @@ private:
 		{
 			if (m_oState.m_bInHyperlink)
 			{
+				CloseT(oXml);
+				CloseR(oXml);
 				oXml->WriteString(L"</w:hyperlink>");
 				m_oState.m_bInHyperlink = false;
 			}

@@ -57,8 +57,8 @@ namespace Draw
 	void CPublishedPage::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CPublishedPage::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -106,8 +106,8 @@ namespace Draw
 	void CRefreshableData::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRefreshableData::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -243,8 +243,8 @@ namespace Draw
 	void CHeaderFooter::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CHeaderFooter::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -512,8 +512,8 @@ namespace Draw
 	void CEventItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CEventItem::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -876,8 +876,8 @@ namespace Draw
 	void CColorEntry::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CColorEntry::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -995,8 +995,8 @@ namespace Draw
 	void CFaceName::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CFaceName::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

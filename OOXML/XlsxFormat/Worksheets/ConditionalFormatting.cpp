@@ -570,8 +570,8 @@ void CConditionalFormatIconSet::fromXML(XmlUtils::CXmlLiteReader& oReader)
 {
 	ReadAttributes(oReader);
 
-	if (oReader.IsEmptyNode())
-		return;
+    if (!oReader.IsEmptyNode())
+        oReader.ReadTillEnd();
 }
 void CConditionalFormatIconSet::fromBin(XLS::BaseObjectPtr& obj)
 {

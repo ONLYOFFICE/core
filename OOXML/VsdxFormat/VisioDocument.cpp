@@ -1148,51 +1148,51 @@ namespace Draw
 			const char* sName = XmlUtils::GetNameNoNS(oReader.GetNameChar());
 			if (strcmp("GlueSettings", sName) == 0)
 			{
-				GlueSettings = oReader.GetText();
+				GlueSettings = oReader.GetText2();
 			}
 			else if (strcmp("SnapSettings", sName) == 0)
 			{
-				SnapSettings = oReader.GetText();
+				SnapSettings = oReader.GetText2();
 			}
 			else if (strcmp("SnapExtensions", sName) == 0)
 			{
-				SnapExtensions = oReader.GetText();
+				SnapExtensions = oReader.GetText2();
 			}
 			else if (strcmp("SnapAngles", sName) == 0)
 			{
-				SnapAngles = oReader.GetText();
+				SnapAngles = oReader;
 			}
 			else if (strcmp("DynamicGridEnabled", sName) == 0)
 			{
-				DynamicGridEnabled = oReader.GetText();
+				DynamicGridEnabled = oReader.GetText2();
 			}
 			else if (strcmp("ProtectStyles", sName) == 0)
 			{
-				ProtectStyles = oReader.GetText();
+				ProtectStyles = oReader.GetText2();
 			}
 			else if (strcmp("ProtectShapes", sName) == 0)
 			{
-				ProtectShapes = oReader.GetText();
+				ProtectShapes = oReader.GetText2();
 			}
 			else if (strcmp("ProtectBkgnds", sName) == 0)
 			{
-				ProtectBkgnds = oReader.GetText();
+				ProtectBkgnds = oReader.GetText2();
 			}
 			else if (strcmp("ProtectMasters", sName) == 0)
 			{
-				ProtectMasters = oReader.GetText();
+				ProtectMasters = oReader.GetText2();
 			}
 			else if (strcmp("CustomMenusFile", sName) == 0)
 			{
-				CustomMenusFile = oReader.GetText();
+				CustomMenusFile = oReader.GetText2();
 			}
 			else if (strcmp("CustomToolbarsFile", sName) == 0)
 			{
-				CustomToolbarsFile = oReader.GetText();
+				CustomToolbarsFile = oReader.GetText2();
 			}
 			else if (strcmp("AttachedToolbars", sName) == 0)
 			{
-				AttachedToolbars = oReader.GetText();
+				AttachedToolbars = oReader.GetText2();
 			}
 		}
 	}
@@ -1207,7 +1207,6 @@ namespace Draw
 			pWriter->WriteInt2(5, GlueSettings);
 			pWriter->WriteInt2(6, SnapSettings);
 			pWriter->WriteInt2(7, SnapExtensions);
-			pWriter->WriteInt2(8, SnapAngles);
 			pWriter->WriteBool2(9, DynamicGridEnabled);
 			pWriter->WriteBool2(10, ProtectStyles);
 			pWriter->WriteBool2(11, ProtectShapes);
@@ -1217,6 +1216,8 @@ namespace Draw
 			pWriter->WriteString2(15, CustomToolbarsFile);
 			pWriter->WriteString2(16, AttachedToolbars);
 		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		
+		pWriter->WriteRecord2(0, SnapAngles);
 	}
 	void CDocumentSettings::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -1261,10 +1262,6 @@ namespace Draw
 			{
 				SnapExtensions = pReader->GetLong();
 			}break;
-			case 8:
-			{
-				SnapAngles = pReader->GetLong();
-			}break;
 			case 9:
 			{
 				DynamicGridEnabled = pReader->GetBool();
@@ -1299,6 +1296,23 @@ namespace Draw
 			}break;
 			}
 		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _rec = pReader->GetUChar();
+
+			switch (_rec)
+			{
+			case 0:
+			{
+				SnapAngles.Init();
+				SnapAngles->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
 		pReader->Seek(_end_rec);
 	}
 	void CDocumentSettings::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -1311,7 +1325,23 @@ namespace Draw
 			pWriter->WriteAttribute2(L"DefaultFillStyle", DefaultFillStyle);
 			pWriter->WriteAttribute2(L"DefaultGuideStyle", DefaultGuideStyle);
 		pWriter->EndAttributes();
-	//todooo
+
+		pWriter->WriteNodeValue(L"GlueSettings", GlueSettings);
+		pWriter->WriteNodeValue(L"SnapSettings", SnapSettings);
+		pWriter->WriteNodeValue(L"SnapExtensions", SnapExtensions);
+
+		if (SnapAngles.IsInit())
+			SnapAngles->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeValue(L"DynamicGridEnabled", DynamicGridEnabled);
+		pWriter->WriteNodeValue(L"ProtectStyles", ProtectStyles);
+		pWriter->WriteNodeValue(L"ProtectShapes", ProtectShapes);
+		pWriter->WriteNodeValue(L"ProtectMasters", ProtectMasters);
+		pWriter->WriteNodeValue(L"ProtectBkgnds", ProtectBkgnds);
+		pWriter->WriteNodeValue(L"CustomMenusFile", CustomMenusFile);
+		pWriter->WriteNodeValue(L"CustomToolbarsFile", CustomToolbarsFile);
+		pWriter->WriteNodeValue(L"AttachedToolbars", AttachedToolbars);
+
 		pWriter->WriteNodeEnd(L"DocumentSettings");
 	}
 //-----------------------------------------------------------------------------------------------------------------------------

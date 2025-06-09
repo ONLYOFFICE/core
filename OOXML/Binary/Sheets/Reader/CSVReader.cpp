@@ -363,7 +363,9 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 
 			if (nIndex + nDelimiterSize == nSize)
 			{
-				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+                pRow->storeXmlCache();
+                pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+                delete pRow;
 				pRow = NULL;
 			}
 
@@ -411,8 +413,10 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			}
 			else
 				nStartCell = nIndex + 1;
-
-			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+            pRow->storeXmlCache();
+            pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+            delete pRow;
+            pRow = NULL;
 
 			pRow = new OOX::Spreadsheet::CRow();
 			pRow->m_oR.Init();
@@ -466,7 +470,10 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 		{
 			bMsLimitCell = true;
 		}
-		pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+        pRow->storeXmlCache();
+        pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+        delete pRow;
+        pRow = NULL;
 	}
 	else
 	{

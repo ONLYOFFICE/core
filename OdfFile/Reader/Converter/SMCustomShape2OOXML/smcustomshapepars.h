@@ -66,6 +66,7 @@ namespace OdfCustomShape
 		atan2,
 		logwidth,
 		logheight,
+		pi,
 		empty,
 		comma,
 	};
@@ -195,7 +196,7 @@ namespace OdfCustomShape
 		static TypeElement TypeCheckingByFunction(const std::wstring& wsFunction);
 		void ConvertBracketsForTrigonometry(XmlUtils::CXmlWriter *pXmlWriter, std::wstring &wsFormula);
 		void CalculatingTheLogicalHeightOrWidth(XmlUtils::CXmlWriter* pXmlWriter);
-		void CalculatingNumberName(std::wstring& wsFormula,std::wstring& wsNewName);
+		static void CalculatingNumberName(std::wstring& wsNewName, std::wstring& wsOldNameFormula, unsigned int& uiNumberFormula);
 	private:
 		TypeElement m_enTypeFunction;
 		CElement* m_pValue;

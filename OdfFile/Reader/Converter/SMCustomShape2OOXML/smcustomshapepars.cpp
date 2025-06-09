@@ -101,7 +101,7 @@ namespace OdfCustomShape
 	{
 		if(CElementNumber::CheckNumber(wsElement))
 			return new CElementNumber(wsElement);
-		else if(CElementArithmeticOperations::CheckArithmeticOperators(wsElement))
+		else if(CElementArithmeticOperations::CheckArithmeticOperators(wsElement) || wsElement == L"--")
 			return new CElementArithmeticOperations(wsElement);
 		else if(wsElement == L"(")
 			return new CElementBracket();
@@ -180,7 +180,7 @@ namespace OdfCustomShape
 	{}
 	CElementArithmeticOperations::CElementArithmeticOperations(const std::wstring& wsSign):m_enTypeSign(TypeElement::empty),m_pSecondSign(nullptr),m_pFirstValue(nullptr),m_pSecondValue(nullptr),m_uiNumberFormula(1)
 	{
-		m_enTypeSign = CElementArithmeticOperations::SetTypeSign(wsSign);
+		m_enTypeSign = wsSign ==L"--" ? TypeElement::plus:CElementArithmeticOperations::SetTypeSign(wsSign);
 		SetBaseType(TypeElement::ArithmeticOperation);
 	}
 	CElementArithmeticOperations::~CElementArithmeticOperations()
@@ -197,7 +197,7 @@ namespace OdfCustomShape
 		if(pElement == nullptr)
 			return;
 		pReader->ReadingNextElement();
-		if(pElement->GetBaseType() != TypeElement::ArithmeticOperation && pElement->GetBaseType() != TypeElement::comma && !ComparingPriorities(pReader->GetElement()))//утечка данных, если тип ариф знаки
+		if(pElement->GetBaseType() != TypeElement::ArithmeticOperation && pElement->GetBaseType() != TypeElement::comma && !ComparingPriorities(pReader->GetElement()))
 		{
 			m_pSecondValue = pElement;
 			pElement = nullptr;
@@ -411,15 +411,30 @@ namespace OdfCustomShape
 	}
 	std::wstring CElementArithmeticOperations::ConversionValueSign(XmlUtils::CXmlWriter *pXmlWriter, CElement* pElement)
 	{
-		if(pElement->GetBaseType() != TypeElement::NumberOrName)
+		if(pElement->GetBaseType() == TypeElement::NumberOrName)
+			return L"";
+		else if(pElement->GetBaseType()== TypeElement::Bracket)
 		{
-			std::wstring wsTempName = GetNameFormula() + L"." + std::to_wstring(m_uiNumberFormula);
-			m_uiNumberFormula++;
+			CElementBracket* pTempBracket = dynamic_cast<CElementBracket*>(pElement);
+			std::vector<CElement*> arTemp = pTempBracket->GetVector();
+			if(!arTemp.empty() && arTemp.size() == 1 && arTemp[0]->GetBaseType() == TypeElement::NumberOrName )
+				return L"";
+			else
+			{
+				std::wstring wsTempName,wsOldName = GetNameFormula();
+				CElementFunction::CalculatingNumberName(wsTempName,wsOldName,m_uiNumberFormula);
+				pElement->ConversionOOXml(pXmlWriter,wsTempName);
+				return pElement->GetNameFormula();
+			}
+		}
+		else
+		{
+			std::wstring wsTempName,wsOldName = GetNameFormula();
+			CElementFunction::CalculatingNumberName(wsTempName,wsOldName,m_uiNumberFormula);
 			pElement->ConversionOOXml(pXmlWriter,wsTempName);
 			return pElement->GetNameFormula();
 		}
-		else
-			return L"";
+		return L"";
 	}
 	void CElementArithmeticOperations::RecordingTheValuesSign(XmlUtils::CXmlWriter *pXmlWriter, const std::wstring &wsNameFirst, const std::wstring &wsNameSecond)
 	{
@@ -460,9 +475,20 @@ namespace OdfCustomShape
 				else
 					continue;
 			}
-			else if(!wsOneElement.empty() && (L'+' == *itStart || L'-' == *itStart || L'*' == *itStart || L'/' == *itStart || L',' == *itStart || L'(' == *itStart || L')' == *itStart))
+			else if(!wsOneElement.empty() && wsOneElement.back() == L'-')
+			{
+				if(L'-' == *itStart)
+				{
+					wsOneElement.push_back(*itStart);
+					itStart++;
+					return wsOneElement;
+				}
+				else
+					return wsOneElement;
+			}
+			else if(!wsOneElement.empty() && (L'+' == *itStart || L'*' == *itStart || L'/' == *itStart || L',' == *itStart || L'(' == *itStart || L')' == *itStart || L'-' == *itStart))
 				return wsOneElement;
-			else if(wsOneElement.empty() && (L'+' == *itStart || L'-' == *itStart || L'*' == *itStart || L'/' == *itStart || L',' == *itStart || L'(' == *itStart || L')' == *itStart))
+			else if(wsOneElement.empty() && (L'+' == *itStart || L'*' == *itStart || L'/' == *itStart || L',' == *itStart || L'(' == *itStart || L')' == *itStart))
 			{
 				wsOneElement.push_back(*itStart);
 				itStart++;
@@ -608,26 +634,26 @@ namespace OdfCustomShape
 			return TypeElement::min;
 		else if(wsFunction == L"max")
 			return TypeElement::max;
-		// else if(wsFunction == L"atan2")
-		// 	return TypeElement::atan2;
 		else if(wsFunction == L"atan")
 			return TypeElement::atan;
 		else if(wsFunction == L"logheight")
 			return TypeElement::logheight;
 		else if(wsFunction == L"logwidth")
 			return TypeElement::logwidth;
+		else if(wsFunction == L"pi")
+			return TypeElement::pi;
 		else
 			return TypeElement::empty;
 	}
 	void CElementFunction::Parse(CSMReader* pReader)
 	{
 		pReader->ClearElement();
-		if(m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth)
+		if(m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth && m_enTypeFunction != TypeElement::pi)
 			m_pValue = SMCustomShapePars::ParseElement(pReader);
 	}
 	void CElementFunction::ConversionOOXml(XmlUtils::CXmlWriter* pXmlWriter, const std::wstring &wsName)
 	{
-		if(m_pValue == nullptr && m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth)
+		if(m_pValue == nullptr && m_enTypeFunction != TypeElement::logheight && m_enTypeFunction != TypeElement::logwidth && m_enTypeFunction != TypeElement::pi)
 		{
 			if(!wsName.empty())
 				SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,wsName,L"sqrt 0 ");
@@ -747,6 +773,10 @@ namespace OdfCustomShape
 			CalculatingTheLogicalHeightOrWidth(pXmlWriter);
 			break;
 		}
+		case TypeElement::pi:
+		{
+			SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),L"+/ 0 314 100");
+		}
 		default:
 			break;
 		}
@@ -755,11 +785,10 @@ namespace OdfCustomShape
 	{
 		SMCustomShapeConversion::WritingFormulaXml(pXmlWriter,GetNameFormula(),L"*/ " + std::wstring((m_enTypeFunction == TypeElement::logheight) ? L"h":L"w") + L" 25 48 ");
 	}
-	void CElementFunction::CalculatingNumberName(std::wstring& wsFormula, std::wstring &wsNewName)
+	void CElementFunction::CalculatingNumberName(std::wstring &wsNewName, std::wstring& wsOldNameFormula, unsigned int &uiNumberFormula)
 	{
-		wsNewName = GetNameFormula() + L"." + std::to_wstring(m_uiNumberFormula);
-		m_uiNumberFormula++;
-		wsFormula += wsNewName + L" ";
+		wsNewName = wsOldNameFormula + L"." + std::to_wstring(uiNumberFormula);
+		uiNumberFormula++;
 	}
 	void CElementFunction::ConversionElement(XmlUtils::CXmlWriter* pXmlWriter, CElement *pElement, std::wstring &wsFormula)
 	{
@@ -772,8 +801,9 @@ namespace OdfCustomShape
 		}
 		else
 		{
-			std::wstring wsNewName;
-			CalculatingNumberName(wsFormula,wsNewName);
+			std::wstring wsNewName,wsOldName = GetNameFormula();
+			CElementFunction::CalculatingNumberName(wsNewName,wsOldName,m_uiNumberFormula);
+			wsFormula += wsNewName + L" ";
 			pElement->ConversionOOXml(pXmlWriter,wsNewName);
 		}
 	}

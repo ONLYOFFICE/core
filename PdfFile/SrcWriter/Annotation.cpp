@@ -240,12 +240,13 @@ namespace PdfWriter
 	{
 		Add("F", nAnnotFlag);
 	}
-	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX)
+	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX, double dY)
 	{
 		Add("P", pPage);
-		m_dPageWidth  = dW;
+		m_dPageW  = dW;
 		m_dPageH = dH;
 		m_dPageX = dX;
+		m_dPageY = dY;
 	}
 	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
@@ -366,9 +367,9 @@ namespace PdfWriter
 		pAnnot->SetAnnotFlag(28);
 
 		TRect oRect = m_oRect;
-		oRect.fLeft = m_dPageWidth - 100 - (oRect.fRight - oRect.fLeft);
+		oRect.fLeft = m_dPageW - 100 - (oRect.fRight - oRect.fLeft);
 		oRect.fBottom -= 100;
-		oRect.fRight = m_dPageWidth;
+		oRect.fRight = m_dPageW;
 		pAnnot->SetRect(oRect);
 
 		return pAnnot;

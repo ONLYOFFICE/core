@@ -2208,10 +2208,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pAP->Add("BBox", pArray);
-				pArray->Add(dRD1);
-				pArray->Add(MM_2_PT(m_dPageHeight) - dRD4);
-				pArray->Add(dRD3);
-				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
+				pArray->Add(dRD1 + dPageX);
+				pArray->Add(dPageH - dRD4);
+				pArray->Add(dRD3 + dPageX);
+				pArray->Add(dPageH - dRD2);
 				pStampAnnot->SetAPStream(pAP);
 			}
 			else if (bRenderCopy)

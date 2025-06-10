@@ -491,6 +491,21 @@ namespace NSCSS
 		if (arSelectors.empty())
 			return false;
 
+		if (L"#text" == arSelectors.back().m_wsName)
+		{
+			if (arSelectors.size() > 1)
+				*arSelectors.back().m_pCompiledStyle += *(arSelectors.end() - 2)->m_pCompiledStyle;
+
+			if(arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(),
+			                                       [](const CNode& oNode){ return IsTableElement(oNode.m_wsName); }))
+			{
+				arSelectors.back().m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors.back().m_pCompiledStyle->m_oBorder.Clear();
+			}
+
+			return true;
+		}
+
 		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
 		if (oItem != m_mUsedStyles.end())

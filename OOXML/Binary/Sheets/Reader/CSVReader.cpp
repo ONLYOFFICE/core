@@ -54,7 +54,7 @@ class CSVReader::Impl
 {
 public:
 	Impl() {}
-    _UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter, _INT32 lcid);
+    _UINT32 Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& wcDelimiter, _INT32 lcid, bool readToCache);
 private:
 	int AddCell(std::wstring &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap);
 
@@ -209,7 +209,7 @@ int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT
 
 	return result;
 }
-_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid)
+_UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid, bool readToCache)
 {
 	NSFile::CFileBinary oFile;
 	if (false == oFile.OpenFile(sFileName)) return AVS_FILEUTILS_ERROR_CONVERT;
@@ -219,7 +219,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	// Создадим стили
 	oXlsx.CreateStyles();
 
-    cellFormatController_ = std::make_shared<CellFormatController>(oXlsx.m_pStyles, lcid);
+	cellFormatController_ = std::make_shared<CellFormatController>(oXlsx.m_pStyles, lcid);
 
 	smart_ptr<OOX::Spreadsheet::CWorksheet> pWorksheet(new OOX::Spreadsheet::CWorksheet(NULL));
 	pWorksheet->m_oSheetData.Init();
@@ -290,26 +290,26 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	WCHAR wcDelimiterLeading = L'\0';
 	WCHAR wcDelimiterTrailing = L'\0';
 	int nDelimiterSize = 0;
-    if(sFileDataW.size() > 7 && sFileDataW.substr(0, 4) == L"sep=")
-    {
-        wcDelimiterLeading = sFileDataW[4];
-        nDelimiterSize = 1;
-        if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF &&( sFileDataW[5] != L'\r' || sFileDataW[5] != L'\n'))
-        {
-            wcDelimiterTrailing = sFileDataW[5];
-            nDelimiterSize = 2;
-        }
-        auto newPos = 4 + nDelimiterSize;
-        if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
-        {
-            newPos++;
-            if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
-                newPos++;
-        }
-        sFileDataW.erase(0, newPos);
-        nSize = sFileDataW.length();
-    }
-    else if (sDelimiter.length() > 0)
+	if(sFileDataW.size() > 7 && sFileDataW.substr(0, 4) == L"sep=")
+	{
+		wcDelimiterLeading = sFileDataW[4];
+		nDelimiterSize = 1;
+		if (2 == sizeof(wchar_t) && 0xD800 <= wcDelimiterLeading && wcDelimiterLeading <= 0xDBFF &&( sFileDataW[5] != L'\r' || sFileDataW[5] != L'\n'))
+		{
+			wcDelimiterTrailing = sFileDataW[5];
+			nDelimiterSize = 2;
+		}
+		auto newPos = 4 + nDelimiterSize;
+		if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
+		{
+			newPos++;
+			if(sFileDataW[newPos] == L'\r' || sFileDataW[newPos] == L'\n')
+				newPos++;
+		}
+		sFileDataW.erase(0, newPos);
+		nSize = sFileDataW.length();
+	}
+	else if (sDelimiter.length() > 0)
 	{
 		wcDelimiterLeading = sDelimiter[0];
 		nDelimiterSize = 1;
@@ -357,16 +357,23 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			{
 				bMsLimitCell = true;
 			}
-			
+
 			oDeleteChars = std::stack<INT>();
 			bIsWrap = false;
 
 			if (nIndex + nDelimiterSize == nSize)
-			{
-                pRow->storeXmlCache();
-                pWorksheet->m_oSheetData->AddRowToCache(*pRow);
-                delete pRow;
-				pRow = NULL;
+			{	if(readToCache)
+				{
+					pRow->storeXmlCache();
+					pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+					delete pRow;
+					pRow = NULL;
+				}
+				else
+				{
+					pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
+					pRow = NULL;
+				}
 			}
 
 			if (nIndex + nDelimiterSize > 500000)
@@ -413,10 +420,15 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 			}
 			else
 				nStartCell = nIndex + 1;
-            pRow->storeXmlCache();
-            pWorksheet->m_oSheetData->AddRowToCache(*pRow);
-            delete pRow;
-            pRow = NULL;
+			if(readToCache)
+			{
+				pRow->storeXmlCache();
+				pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+				delete pRow;
+				pRow = NULL;
+			}
+			else
+				pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 
 			pRow = new OOX::Spreadsheet::CRow();
 			pRow->m_oR.Init();
@@ -470,10 +482,15 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 		{
 			bMsLimitCell = true;
 		}
-        pRow->storeXmlCache();
-        pWorksheet->m_oSheetData->AddRowToCache(*pRow);
-        delete pRow;
-        pRow = NULL;
+		if(readToCache)
+		{
+			pRow->storeXmlCache();
+			pWorksheet->m_oSheetData->AddRowToCache(*pRow);
+			delete pRow;
+			pRow = NULL;
+		}
+		else
+			pWorksheet->m_oSheetData->m_arrItems.push_back(pRow);
 	}
 	else
 	{
@@ -508,5 +525,5 @@ CSVReader::~CSVReader()
 }
 _UINT32 CSVReader::Read(const std::wstring &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, _UINT32 nCodePage, const std::wstring& sDelimiter, _INT32 lcid)
 {
-    return impl_->Read(sFileName, oXlsx, nCodePage, sDelimiter, lcid);
+    return impl_->Read(sFileName, oXlsx, nCodePage, sDelimiter, lcid, readToxmlCache_);
 }

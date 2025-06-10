@@ -221,8 +221,8 @@ namespace Spreadsheet
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CXmlColumnPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -2004,8 +2004,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CXmlPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

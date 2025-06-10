@@ -103,8 +103,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMdxKPI::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -172,8 +172,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMdxMemeberProp::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -328,8 +328,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMetadataStringIndex::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -774,8 +774,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMetadataString::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -808,8 +808,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMetadataRecord::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1083,8 +1083,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CMetadataType::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1617,8 +1617,8 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CDynamicArrayProperties::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -1670,8 +1670,8 @@ xmlns:xda=\"http://schemas.microsoft.com/office/spreadsheetml/2017/dynamicarray\
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CRichValueBlock::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -110,6 +110,46 @@ namespace OOX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const;
 		};
+		class CSnapAngle : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CSnapAngle)
+
+				CSnapAngle() {}
+			virtual ~CSnapAngle() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		public:
+			nullable_double content;
+		};
+		class CSnapAngles : public WritingElementWithChilds<CSnapAngle>
+		{
+		public:
+			WritingElement_AdditionMethods(CSnapAngles)
+				CSnapAngles() {}
+			virtual ~CSnapAngles() {}
+
+			virtual std::wstring toXML() const { return L""; }
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		};
 		class CDocumentSettings : public WritingElement
 		{
 		public:
@@ -138,7 +178,7 @@ namespace OOX
 			nullable_int GlueSettings;
 			nullable_int SnapSettings;
 			nullable_int SnapExtensions;
-			nullable_int SnapAngles;
+			nullable<CSnapAngles> SnapAngles;
 			nullable_bool DynamicGridEnabled;
 			nullable_bool ProtectStyles;
 			nullable_bool ProtectShapes;
@@ -395,46 +435,6 @@ namespace OOX
 			//nullable<CHeaderFooterFont> HeaderFooterFont;
 			nullable_string HeaderFooterColor;
 
-		};
-		class CSnapAngle : public WritingElement
-		{
-		public:
-			WritingElement_AdditionMethods(CSnapAngle)
-
-			CSnapAngle() {}
-			virtual ~CSnapAngle() {}
-
-			virtual std::wstring toXML() const { return L""; }
-
-			virtual void fromXML(XmlUtils::CXmlNode& node) {}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual EElementType getType() const;
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-		public:
-			nullable_double content;
-		};
-		class CSnapAngles : public WritingElementWithChilds<CSnapAngle>	
-		{
-		public:
-			WritingElement_AdditionMethods(CSnapAngles)
-			CSnapAngles() {}
-			virtual ~CSnapAngles() {}
-
-			virtual std::wstring toXML() const { return L""; }
-			virtual void fromXML(XmlUtils::CXmlNode& node) {}
-			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
-
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-			virtual EElementType getType() const;
-
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 		};
 		class CWindow : public WritingElement
 		{

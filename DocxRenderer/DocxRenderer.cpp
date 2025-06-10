@@ -37,12 +37,19 @@
 #include "../DesktopEditor/graphics/commands/DocInfo.h"
 #include <algorithm>
 
+enum class ShapeSerializeType
+{
+	sstBinary,
+	sstXml
+};
+
 class CDocxRenderer_Private
 {
 public:
 	NSDocxRenderer::CDocument m_oDocument;
 	std::wstring m_sTempDirectory;
 	bool m_bIsSupportShapeCommands = false;
+	ShapeSerializeType m_eShapeSerializeType = ShapeSerializeType::sstBinary;
 
 public:
 	CDocxRenderer_Private(NSFonts::IApplicationFonts* pFonts, IRenderer* pRenderer) : m_oDocument(pRenderer, pFonts)
@@ -139,7 +146,9 @@ std::vector<std::wstring> CDocxRenderer::ScanPagePptx(IOfficeDrawingFile* pFile,
 	m_pInternal->m_oDocument.m_oCurrentPage.m_bWriteStyleRaw = true;
 	m_pInternal->m_bIsSupportShapeCommands = true;
 
+	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstXml;
 	DrawPage(pFile, nPage);
+	m_pInternal->m_eShapeSerializeType = ShapeSerializeType::sstBinary;
 
 	auto xml_shapes = m_pInternal->m_oDocument.m_oCurrentPage.GetXmlShapesPptx();
 	m_pInternal->m_oDocument.Clear();
@@ -230,10 +239,13 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 		}
 
 		if (sUtf8Shape.empty())
-			return S_OK;
+			return S_FALSE;
 
 		if ('<' == sUtf8Shape.at(0))
 		{
+			if (m_pInternal->m_eShapeSerializeType == ShapeSerializeType::sstBinary)
+				return S_FALSE;
+
 			if (0xFFFFFFFF != nImageId)
 			{
 				std::string sNewId = "r:embed=\"rId" + std::to_string(nImageId + c_iStartingIdForImages) + "\"";
@@ -243,6 +255,9 @@ HRESULT CDocxRenderer::AdvancedCommand(IAdvancedCommand* command)
 		}
 		else
 		{
+			if (m_pInternal->m_eShapeSerializeType == ShapeSerializeType::sstXml)
+				return S_FALSE;
+
 			if (0xFFFFFFFF != nImageId)
 			{
 				std::wstring rId_new = L"rId" + std::to_wstring(nImageId + c_iStartingIdForImages);

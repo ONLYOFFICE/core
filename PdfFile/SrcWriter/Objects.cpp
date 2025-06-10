@@ -144,12 +144,17 @@ namespace PdfWriter
 		m_unLen  = 0;
 		Set(sValue, isUTF16, isDictValue);
 	}
+	CStringObject::CStringObject()
+	{
+		m_pValue = NULL;
+		m_unLen  = 0;
+	}
 	CStringObject::~CStringObject()
 	{
 		if (m_pValue)
 			delete[] m_pValue;
 	}
-	void CStringObject::Set(const char* sValue, bool isUTF16, bool isDictValue)
+	void CStringObject::Set(const char* sValue, bool isUTF16, bool isDictValue, int nMax)
 	{
 		if (m_pValue)
 		{
@@ -157,7 +162,7 @@ namespace PdfWriter
 			m_unLen = 0;
 		}
 
-		unsigned int unLen = StrLen(sValue, LIMIT_MAX_STRING_LEN);
+		unsigned int unLen = StrLen(sValue, nMax);
 		m_pValue = new BYTE[unLen + 1];
 		StrCpy((char*)m_pValue, (char*)sValue, (char*)(m_pValue + unLen));
 		m_unLen = unLen;

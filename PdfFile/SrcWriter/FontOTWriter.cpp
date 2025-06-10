@@ -124,7 +124,23 @@ namespace PdfWriter
 		CHARSET_EXPERT_SUBSET_SIZE
 	};
 
+	static const unsigned short scCharset = 15;
+	static const unsigned short scEncoding = 16;
+	static const unsigned short scCharStrings = 17;
+	static const unsigned short scPrivate = 18;
+	static const unsigned short scFDArray = 0xC24;
+	static const unsigned short scFDSelect = 0xC25;
 	static const unsigned short scROS = 0xC1E;
+
+	struct DictOperand
+	{
+		bool IsInteger;
+		long IntegerValue;
+		double RealValue;
+		long RealValueFractalEnd; // this fellow is here for writing, due to double being terribly inexact.
+	};
+	typedef std::list<DictOperand> DictOperandList;
+	typedef std::map<unsigned short, DictOperandList> UShortToDictOperandListMap;
 
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
@@ -506,6 +522,299 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CCFFReader
 	//----------------------------------------------------------------------------------------
+	struct CPrimitiveWriter
+	{
+		BYTE mCurrentOffsize;
+		CStream* mStream;
+	public:
+		CPrimitiveWriter(CStream* pStream);
+		~CPrimitiveWriter();
+
+		void SetOffSize(BYTE inOffSize);
+		bool WriteByte(BYTE inValue);
+		bool WriteCard8(BYTE inValue);
+		bool WriteCard16(unsigned short inValue);
+		bool WriteOffSize(BYTE inValue);
+		bool WriteOffset(unsigned long inValue);
+		bool Write3ByteUnsigned(unsigned long inValue);
+		bool Write4ByteUnsigned(unsigned long inValue);
+		bool Write(const BYTE* inBuffer, unsigned long inBufferSize);
+		bool WriteDictOperand(const DictOperand& inOperand);
+		bool WriteDictItems(unsigned short inOperator, const DictOperandList& inOperands);
+		bool WriteIntegerOperand(long inValue);
+		bool WriteRealOperand(double inValue, long inFractalLength);
+		bool Write5ByteDictInteger(long inValue);
+		bool WriteIntegerOfReal(double inIntegerValue, BYTE& ioBuffer, bool& ioUsedFirst);
+		bool SetOrWriteNibble(BYTE inValue, BYTE& ioBuffer, bool& ioUsedFirst);
+		bool WriteDictOperator(unsigned short inOperator);
+		bool Pad5Bytes();
+	};
+	CPrimitiveWriter::CPrimitiveWriter(CStream* pStream)
+	{
+		mCurrentOffsize = 1;
+		mStream = pStream;
+	}
+	CPrimitiveWriter::~CPrimitiveWriter()
+	{
+		mCurrentOffsize = 1;
+		mStream = NULL;
+	}
+	void CPrimitiveWriter::SetOffSize(BYTE inOffSize)
+	{
+		mCurrentOffsize = inOffSize;
+	}
+	bool CPrimitiveWriter::WriteByte(BYTE inValue)
+	{
+		mStream->WriteUChar(inValue);
+		return true;
+	}
+	bool CPrimitiveWriter::WriteCard8(BYTE inValue)
+	{
+		return WriteByte(inValue);
+	}
+	bool CPrimitiveWriter::WriteCard16(unsigned short inValue)
+	{
+		mStream->WriteUChar((inValue >> 8) & 0xff);
+		mStream->WriteUChar(inValue & 0xff);
+		return true;
+	}
+	bool CPrimitiveWriter::WriteOffSize(BYTE inValue)
+	{
+		return WriteCard8(inValue);
+	}
+	bool CPrimitiveWriter::WriteOffset(unsigned long inValue)
+	{
+		switch (mCurrentOffsize)
+		{
+		case 1:
+			WriteCard8((BYTE)inValue);
+			break;
+		case 2:
+			WriteCard16((unsigned short)inValue);
+			break;
+		case 3:
+			Write3ByteUnsigned(inValue);
+			break;
+		case 4:
+			Write4ByteUnsigned(inValue);
+			break;
+		}
+		return true;
+	}
+	bool CPrimitiveWriter::Write3ByteUnsigned(unsigned long inValue)
+	{
+		mStream->WriteUChar((inValue >> 16) & 0xff);
+		mStream->WriteUChar((inValue >> 8) & 0xff);
+		mStream->WriteUChar(inValue & 0xff);
+		return true;
+	}
+	bool CPrimitiveWriter::Write4ByteUnsigned(unsigned long inValue)
+	{
+		mStream->WriteUChar((inValue >> 24) & 0xff);
+		mStream->WriteUChar((inValue >> 16) & 0xff);
+		mStream->WriteUChar((inValue >> 8) & 0xff);
+		mStream->WriteUChar(inValue & 0xff);
+		return true;
+	}
+	bool CPrimitiveWriter::Write(const BYTE* inBuffer, unsigned long inBufferSize)
+	{
+		mStream->Write(inBuffer, inBufferSize);
+		return true;
+	}
+	bool CPrimitiveWriter::WriteDictOperand(const DictOperand& inOperand)
+	{
+		if (inOperand.IsInteger)
+			return WriteIntegerOperand(inOperand.IntegerValue);
+		else
+			return WriteRealOperand(inOperand.RealValue, inOperand.RealValueFractalEnd);
+	}
+	bool CPrimitiveWriter::WriteDictItems(unsigned short inOperator, const DictOperandList& inOperands)
+	{
+		bool status = true;
+		DictOperandList::const_iterator it = inOperands.begin();
+
+		for (; it != inOperands.end() && status; ++it)
+			status = WriteDictOperand(*it);
+		if (status)
+			status = WriteDictOperator(inOperator);
+
+		return status;
+	}
+	bool CPrimitiveWriter::WriteIntegerOperand(long inValue)
+	{
+		if (-107 <= inValue && inValue <= 107)
+			return WriteByte((BYTE)(inValue + 139));
+		else if (108 <= inValue && inValue <= 1131)
+		{
+			inValue -= 108;
+			WriteByte(((inValue >> 8) & 0xff) + 247);
+			WriteByte(inValue & 0xff);
+		}
+		else if (-1131 <= inValue && inValue <= -108)
+		{
+			inValue = -(inValue + 108);
+			WriteByte(((inValue >> 8) & 0xff) + 251);
+			WriteByte(inValue & 0xff);
+		}
+		else if (-32768 <= inValue && inValue<= 32767)
+		{
+			WriteByte(28);
+			WriteByte((inValue >> 8) & 0xff);
+			WriteByte(inValue & 0xff);
+		}
+		else //  -2^31 <= inValue <= 2^31 - 1
+			return Write5ByteDictInteger(inValue);
+		return true;
+	}
+	bool CPrimitiveWriter::WriteRealOperand(double inValue, long inFractalLength)
+	{
+		// first, calculate the proper formatting
+
+		bool minusSign = inValue < 0;
+		bool minusExponent = false;
+		bool plusExponent = false;
+		unsigned short exponentSize = 0;
+
+		if (minusSign)
+			inValue = -inValue;
+
+		double integerValue = floor(inValue);
+		double fractalValue = inValue - integerValue;
+
+		if (0 == fractalValue)
+		{
+			if (long(integerValue) % 1000 == 0 && integerValue >= 1000) // bother only if larger than 1000
+			{
+				plusExponent = true;
+				while (long(integerValue) % 10 == 0)
+				{
+					++exponentSize;
+					integerValue = integerValue / 10;
+				}
+			}
+		}
+		else if (0 == integerValue)
+		{
+			if (fractalValue <= 0.001) // bother only if < 0.001
+			{
+				minusExponent = true;
+				while (fractalValue < 0.1)
+				{
+					++exponentSize;
+					fractalValue = fractalValue * 10;
+				}
+			}
+		}
+
+		// now let's get to work
+		if (!WriteByte(30))
+			return false;
+
+		// first, take care of minus sign
+		BYTE buffer = minusSign ? 0xe0 : 0;
+		bool usedFirst = minusSign;
+
+		// Integer part
+		if (integerValue != 0)
+		{
+			if (!WriteIntegerOfReal(integerValue, buffer, usedFirst))
+				return false;
+		}
+		else
+		{
+			if (!SetOrWriteNibble(0, buffer, usedFirst))
+				return false;
+		}
+
+		// Fractal part (if there was an integer or not)
+		if (fractalValue != 0 && inFractalLength > 0)
+		{
+			if (!SetOrWriteNibble(0xa,buffer,usedFirst))
+				return false;
+
+			while (fractalValue != 0 && inFractalLength > 0)
+			{
+				if (!SetOrWriteNibble((BYTE)floor(fractalValue * 10), buffer, usedFirst))
+					return false;
+				fractalValue = fractalValue * 10 - floor(fractalValue * 10);
+				--inFractalLength;
+			}
+		}
+
+		// now, if there's any exponent, write it
+		if (minusExponent)
+		{
+			if(!SetOrWriteNibble(0xc, buffer, usedFirst))
+				return false;
+			if (!WriteIntegerOfReal(exponentSize, buffer, usedFirst))
+				return false;
+		}
+		if (plusExponent)
+		{
+			if (!SetOrWriteNibble(0xb, buffer, usedFirst))
+				return false;
+			if (!WriteIntegerOfReal(exponentSize, buffer, usedFirst))
+				return false;
+		}
+
+		// final f or ff
+		if (usedFirst)
+			return SetOrWriteNibble(0xf, buffer, usedFirst);
+		else
+			return WriteByte(0xff);
+	}
+	bool CPrimitiveWriter::Write5ByteDictInteger(long inValue)
+	{
+		WriteByte(29);
+		WriteByte((inValue >> 24) & 0xff);
+		WriteByte((inValue >> 16)& 0xff);
+		WriteByte((inValue >> 8) & 0xff);
+		WriteByte(inValue & 0xff);
+		return true;
+	}
+	bool CPrimitiveWriter::WriteIntegerOfReal(double inIntegerValue, BYTE& ioBuffer, bool& ioUsedFirst)
+	{
+		if (0 == inIntegerValue)
+			return true;
+
+		bool status = WriteIntegerOfReal(floor(inIntegerValue / 10), ioBuffer, ioUsedFirst);
+		if (!status)
+			return false;
+
+		return SetOrWriteNibble((BYTE)(long(inIntegerValue) % 10), ioBuffer, ioUsedFirst);
+	}
+	bool CPrimitiveWriter::SetOrWriteNibble(BYTE inValue, BYTE& ioBuffer, bool& ioUsedFirst)
+	{
+		bool status = true;
+		if (ioUsedFirst)
+		{
+			ioBuffer |= inValue;
+			status = WriteByte(ioBuffer);
+			ioBuffer = 0;
+			ioUsedFirst = false;
+		}
+		else
+		{
+			ioBuffer = (inValue << 4) & 0xf0;
+			ioUsedFirst = true;
+		}
+		return status;
+	}
+	bool CPrimitiveWriter::WriteDictOperator(unsigned short inOperator)
+	{
+		if (((inOperator >> 8)  & 0xff) == 12)
+			return WriteCard16(inOperator);
+		else
+			return WriteCard8((BYTE)(inOperator & 0xff));
+	}
+	bool CPrimitiveWriter::Pad5Bytes()
+	{
+		BYTE BytesPad5[5] = {'0','0','0','0','0'};
+		return Write(BytesPad5, 5);
+	}
+	//----------------------------------------------------------------------------------------
+	// CCFFReader
+	//----------------------------------------------------------------------------------------
 	struct CCFFReader
 	{
 		struct CFFHeader
@@ -516,15 +825,6 @@ namespace PdfWriter
 			BYTE offSize;
 		};
 		typedef std::map<std::string,unsigned short> StringToUShort;
-		struct DictOperand
-		{
-			bool IsInteger;
-			long IntegerValue;
-			double RealValue;
-			long RealValueFractalEnd; // this fellow is here for writing, due to double being terribly inexact.
-		};
-		typedef std::list<DictOperand> DictOperandList;
-		typedef std::map<unsigned short, DictOperandList> UShortToDictOperandListMap;
 		enum ECharSetType
 		{
 			eCharSetISOAdobe = 0,
@@ -675,14 +975,13 @@ namespace PdfWriter
 		bool ReadGlobalSubrs();
 		bool ReadSubrsFromIndex(unsigned short& outSubrsCount, CharStringsIndex* outSubrsIndex);
 		bool ReadCharStrings();
-		static const unsigned short scCharStringsKey = 17;
+
 		long long GetCharStringsPosition(unsigned short inFontIndex);
 		long GetSingleIntegerValue(unsigned short inFontIndex, unsigned short inKey, long inDefault);
 		long GetSingleIntegerValueFromDict(const UShortToDictOperandListMap& inDict, unsigned short inKey, long inDefault);
 		static const unsigned short scCharstringType = 0x0C06;
 		long GetCharStringType(unsigned short inFontIndex);
 		bool ReadPrivateDicts();
-		static const unsigned short scPrivate = 18;
 		bool ReadPrivateDict(const UShortToDictOperandListMap& inReferencingDict, PrivateDictInfo* outPrivateDict);
 		bool ReadLocalSubrs();
 		static const unsigned short scSubrs = 19;
@@ -694,16 +993,12 @@ namespace PdfWriter
 		bool ReadFormat0Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
 		bool ReadFormat1Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
 		bool ReadFormat2Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings);
-		static const unsigned short scCharset = 15;
 		long long GetCharsetPosition(unsigned short inFontIndex);
-		static const unsigned short scEncoding = 16;
 		long long GetEncodingPosition(unsigned short inFontIndex);
 		bool ReadCIDInformation();
 		bool ReadFDArray(unsigned short inFontIndex);
-		static const unsigned short scFDArray = 0xC24;
 		long long GetFDArrayPosition(unsigned short inFontIndex);
 		bool ReadFDSelect(unsigned short inFontIndex);
-		static const unsigned short scFDSelect = 0xC25;
 		long long GetFDSelectPosition(unsigned short inFontIndex);
 	};
 	CCFFReader::CCFFReader()
@@ -1224,7 +1519,7 @@ namespace PdfWriter
 	}
 	long long CCFFReader::GetCharStringsPosition(unsigned short inFontIndex)
 	{
-		return GetSingleIntegerValue(inFontIndex, scCharStringsKey, 0);
+		return GetSingleIntegerValue(inFontIndex, scCharStrings, 0);
 	}
 	long CCFFReader::GetSingleIntegerValue(unsigned short inFontIndex, unsigned short inKey, long inDefault)
 	{
@@ -2533,17 +2828,46 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	struct CCFFWriter
 	{
+		BYTE* mFile;
+		COpenTypeReader mOpenTypeInput;
+		CPrimitiveWriter* mPrimitivesWriter;
+		CStream* mFontFileStream;
+		bool mIsCID;
+		std::string mOptionalEmbeddedPostscript;
+		unsigned short mSubsetFontGlyphsCount;
+
+		long long mCharsetPlaceHolderPosition;
+		long long mEncodingPlaceHolderPosition;
+		long long mCharstringsPlaceHolderPosition;
+		long long mPrivatePlaceHolderPosition;
+		long long mFDArrayPlaceHolderPosition;
+		long long mFDSelectPlaceHolderPosition;
+
 	public:
 		CCFFWriter();
 		~CCFFWriter();
 
-		bool CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount);
+		bool CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, const std::string& inSubsetFontName, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount);
+		bool WriteCFFHeader();
+		bool WriteName(const std::string& inSubsetFontName);
+		BYTE GetMostCompressedOffsetSize(unsigned long inOffset);
+		bool WriteTopIndex();
+		static const unsigned short scEmbeddedPostscript = 0xC15;
+		bool WriteTopDictSegment(CMemoryStream* ioTopDictSegment);
 	};
-	bool CCFFWriter::CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount)
+	CCFFWriter::CCFFWriter()
 	{
+		mPrimitivesWriter = NULL;
+	}
+	CCFFWriter::~CCFFWriter()
+	{
+		RELEASEOBJECT(mPrimitivesWriter);
+	}
+	bool CCFFWriter::CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, const std::string& inSubsetFontName, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount)
+	{
+		mFile = pFile;
 		bool outNotEmbedded = true;
 
-		COpenTypeReader mOpenTypeInput;
 		bool status = mOpenTypeInput.ReadOpenTypeFile(pFile, nLen, unFontIndex);
 		if (!status)
 			return false;
@@ -2568,15 +2892,199 @@ namespace PdfWriter
 		// Добавить зависимые глифы
 		// Они есть в m_vCodeToGid из pCodeToGID. В pUseGlyfs они тоже есть из m_mGlyphs, но только в m_mGlyphs, они имеют false
 
-		unsigned short mSubsetFontGlyphsCount = subsetGlyphIDs.size(); // == unCodesCount
+		mSubsetFontGlyphsCount = subsetGlyphIDs.size(); // == unCodesCount
 
-		bool mIsCID = mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.find(scROS) != mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.end();
+		mIsCID = mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.find(scROS) != mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict.end();
 
-		CStream* mPrimitivesWriter = pOutputStream;
+		mFontFileStream = pOutputStream;
+		mPrimitivesWriter = new CPrimitiveWriter(pOutputStream);
 
 		status = WriteCFFHeader();
 		if (!status)
 			return false;
+
+		status = WriteName(inSubsetFontName);
+		if (!status)
+			return false;
+
+		status = WriteTopIndex();
+		if (!status)
+			return false;
+
+		// TODO
+
+		return true;
+	}
+	bool CCFFWriter::WriteCFFHeader()
+	{
+		// i'm just gonna copy the header of the original CFF
+		// content.
+		// One thing i never got - OffSize does not seem to be important.
+		// all offeet references to (0) are dictionary items (like in Top Dict),
+		// and reading them follows the Integer operand rules. so why signify their size.
+		// it's probably even not true, cause i guess font writers write integers using the most
+		// compressed method, so if the number is small they'll use less bytes, and if large more.
+		// so i don't get it. hope it won't screw up my implementation. in any case, for the sake of a single pass.
+		// i'll probably just set it to something.
+
+		mPrimitivesWriter->Write(mFile + mOpenTypeInput.mCFF.mCFFOffset, mOpenTypeInput.mCFF.mHeader.hdrSize);
+		return true;
+	}
+	bool CCFFWriter::WriteName(const std::string& inSubsetFontName)
+	{
+		// get the first name from the name table, and write it here
+
+		std::string fontName = inSubsetFontName.size() == 0 ? mOpenTypeInput.mCFF.mName.front() : inSubsetFontName;
+
+		BYTE sizeOfOffset = GetMostCompressedOffsetSize((unsigned long)fontName.size() + 1);
+
+		mPrimitivesWriter->WriteCard16(1);
+		mPrimitivesWriter->WriteOffSize(sizeOfOffset);
+		mPrimitivesWriter->SetOffSize(sizeOfOffset);
+		mPrimitivesWriter->WriteOffset(1);
+		mPrimitivesWriter->WriteOffset((unsigned long)fontName.size() + 1);
+		mPrimitivesWriter->Write((const BYTE*)fontName.c_str(), fontName.size());
+
+		return true;
+	}
+	BYTE CCFFWriter::GetMostCompressedOffsetSize(unsigned long inOffset)
+	{
+		if (inOffset < 256)
+			return 1;
+		if (inOffset < 65536)
+			return 2;
+		if (inOffset < 1 << 24)
+			return 3;
+		return 4;
+	}
+	bool CCFFWriter::WriteTopIndex()
+	{
+		/*
+			what do i have to do:
+			- write the top dictionary to a separate segment
+				- make sure to write the ROS variable first, if one exists.
+				- make sure to avoid writing any of the offset variables.
+				- leave placeholders for any of the offset variables. make them maximum size. note
+					to leave items for fdarray and fdselect only if required being a CID
+				- be aware of the placeholders locations relative to the beginning of the segment
+			- calculate the size of the segment
+			- write the appropriate index header
+			- write the segment
+			- adjust the placeholders offset relative to the beginning of the file.
+		*/
+
+		bool status = true;
+		CMemoryStream* topDictSegment = new CMemoryStream();
+
+		status = WriteTopDictSegment(topDictSegment);
+		if (!status)
+		{
+			RELEASEOBJECT(topDictSegment);
+			return status;
+		}
+
+		// write index section
+		BYTE sizeOfOffset = GetMostCompressedOffsetSize((unsigned long)topDictSegment->Tell() + 1);
+
+		mPrimitivesWriter->WriteCard16(1);
+		mPrimitivesWriter->WriteOffSize(sizeOfOffset);
+		mPrimitivesWriter->SetOffSize(sizeOfOffset);
+		mPrimitivesWriter->WriteOffset(1);
+		mPrimitivesWriter->WriteOffset((unsigned long)topDictSegment->Tell() + 1);
+
+		topDictSegment->Seek(0, SeekSet);
+
+		long long topDictDataOffset = mFontFileStream->Tell();
+
+		// Write data
+		mFontFileStream->WriteStream(topDictSegment, 0, NULL);
+
+		// Adjust position locators for important placeholders
+		mCharsetPlaceHolderPosition     += topDictDataOffset;
+		mEncodingPlaceHolderPosition    += topDictDataOffset;
+		mCharstringsPlaceHolderPosition += topDictDataOffset;
+		mPrivatePlaceHolderPosition     += topDictDataOffset;
+		mFDArrayPlaceHolderPosition     += topDictDataOffset;
+		mFDSelectPlaceHolderPosition    += topDictDataOffset;
+
+		return status;
+	}
+	bool CCFFWriter::WriteTopDictSegment(CMemoryStream* ioTopDictSegment)
+	{
+		CPrimitiveWriter dictPrimitiveWriter(ioTopDictSegment);
+		UShortToDictOperandListMap::iterator itROS;
+		UShortToDictOperandListMap::iterator it;
+
+		UShortToDictOperandListMap& originalTopDictRef = mOpenTypeInput.mCFF.mTopDictIndex[0].mTopDict;
+
+		itROS = originalTopDictRef.find(scROS);
+
+		// make sure to write ROS first, if one exists
+		if (mIsCID)
+			dictPrimitiveWriter.WriteDictItems(itROS->first, itROS->second);
+
+		// write all keys, excluding those that we want to write on our own
+		for (it = originalTopDictRef.begin(); it != originalTopDictRef.end(); ++it)
+		{
+			if (it->first != scROS &&
+				it->first != scCharset &&
+				it->first != scEncoding &&
+				it->first != scCharStrings &&
+				it->first != scPrivate &&
+				it->first != scFDArray &&
+				it->first != scFDSelect)
+				dictPrimitiveWriter.WriteDictItems(it->first, it->second);
+		}
+		// check if it had an embedded postscript (which would normally be the FSType implementation).
+		// if not...create one to implement the FSType
+		if (originalTopDictRef.find(scEmbeddedPostscript) == originalTopDictRef.end() && mOpenTypeInput.mOS2Exists)
+		{
+			// no need for sophistication here...you can consider this as the only string to be added.
+			// so can be sure that its index would be the current count
+			mOptionalEmbeddedPostscript = "/FSType " + std::to_string(mOpenTypeInput.mOS2.fsType) + " def";
+			dictPrimitiveWriter.WriteIntegerOperand(mOpenTypeInput.mCFF.mStringsCount + N_STD_STRINGS);
+			dictPrimitiveWriter.WriteDictOperator(scEmbeddedPostscript);
+		}
+		else
+			mOptionalEmbeddedPostscript = "";
+
+		// now leave placeholders, record their positions
+		mCharsetPlaceHolderPosition = ioTopDictSegment->Tell();
+		dictPrimitiveWriter.Pad5Bytes();
+		dictPrimitiveWriter.WriteDictOperator(scCharset);
+		mCharstringsPlaceHolderPosition = ioTopDictSegment->Tell();
+		dictPrimitiveWriter.Pad5Bytes();
+		dictPrimitiveWriter.WriteDictOperator(scCharStrings);
+		if (mOpenTypeInput.mCFF.mPrivateDicts[0].mPrivateDictStart != 0)
+		{
+			mPrivatePlaceHolderPosition = ioTopDictSegment->Tell();
+			dictPrimitiveWriter.Pad5Bytes(); // for private it's two places - size and position
+			dictPrimitiveWriter.Pad5Bytes();
+			dictPrimitiveWriter.WriteDictOperator(scPrivate);
+		}
+		else
+		{
+			mPrivatePlaceHolderPosition = 0;
+		}
+		if (mIsCID)
+		{
+			mEncodingPlaceHolderPosition = 0;
+			mFDArrayPlaceHolderPosition = ioTopDictSegment->Tell();
+			dictPrimitiveWriter.Pad5Bytes();
+			dictPrimitiveWriter.WriteDictOperator(scFDArray);
+			mFDSelectPlaceHolderPosition = ioTopDictSegment->Tell();
+			dictPrimitiveWriter.Pad5Bytes();
+			dictPrimitiveWriter.WriteDictOperator(scFDSelect);
+		}
+		else
+		{
+			mEncodingPlaceHolderPosition = ioTopDictSegment->Tell();
+			dictPrimitiveWriter.Pad5Bytes();
+			dictPrimitiveWriter.WriteDictOperator(scEncoding);
+			mFDArrayPlaceHolderPosition = 0;
+			mFDSelectPlaceHolderPosition = 0;
+		}
+		return true;
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType
@@ -2590,7 +3098,7 @@ namespace PdfWriter
 		}
 
 		CCFFWriter pWriter;
-		bool status = pWriter.CreateCFFSubset(m_sFile, m_nLen, m_unFontIndex, pOutputStream, pCodeToGID, unCodesCount);
+		bool status = pWriter.CreateCFFSubset(m_sFile, m_nLen, m_unFontIndex, m_sName, pOutputStream, pCodeToGID, unCodesCount);
 		if (!status)
 			return;
 

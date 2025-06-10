@@ -1980,7 +1980,9 @@ namespace PdfWriter
 			CArrayObject* pArrayImage = new CArrayObject();
 			pMetaOForm->Add("Image", pArrayImage);
 		}
-		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+		CStringObject* pXML = new CStringObject();
+		pXML->Set(sXML.c_str(), false, false, -1);
+		pArrayMeta->Add(pXML);
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);

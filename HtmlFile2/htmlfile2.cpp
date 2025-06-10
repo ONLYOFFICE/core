@@ -264,6 +264,7 @@ struct CTextSettings
 	bool bAddSpaces; // Добавлять пробелы перед текстом?
 	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
+	bool bNumberingLi; // Является ли список нумерованным
 
 	std::wstring sPStyle;
 
@@ -277,11 +278,12 @@ struct CTextSettings
 	NSCSS::CCompiledStyle oAdditionalStyle;
 
 	CTextSettings()
-		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), eTextMode(Normal)
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), eTextMode(Normal)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText),
+	    nLi(oTS.nLi),bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -3932,6 +3934,8 @@ private:
 
 			CTextSettings oTSLiP(oTS);
 
+			oTSLiP.bNumberingLi = !bType;
+
 			std::wstring wsValue;
 			const std::wstring wsParentName{(!sSelectors.empty()) ? sSelectors.back().m_wsName : L""};
 
@@ -3954,26 +3958,10 @@ private:
 					oTSLiP.oAdditionalStyle.m_oText.SetColor(L"#808080", NEXT_LEVEL);
 				else if (L"selected" == wsArgumentName)
 					oTSLiP.oAdditionalStyle.m_oText.SetDecoration(L"underline", NEXT_LEVEL);
-					// oTSLiP.AddRStyle(L"<w:u w:val=\"single\"/>");
 			}
 			m_oLightReader.MoveToElement();
 
-			if (std::wstring::npos != oTS.sPStyle.find(L"<w:numPr>"))
-			{
-				wrP(oXml, sSelectors, oTS);
-				CloseP(oXml, sSelectors);
-				oTSLiP.sPStyle.clear();
-			}
-
 			oTSLiP.nLi++;
-
-			const std::wstring wsOldPStyle{oTSLiP.sPStyle};
-
-			oTSLiP.sPStyle += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
-			                  (bType ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>";
-
-			wrP(oXml, sSelectors, oTSLiP);
-			oTSLiP.sPStyle = wsOldPStyle;
 
 			if (!wsValue.empty())
 			{
@@ -4381,7 +4369,7 @@ private:
 		if (sPStyle.empty() && !ElementInTable(sSelectors))
 			sPStyle = L"normal-web";
 
-		if (sPStyle.empty() && oTS.sPStyle.empty())
+		if (sPStyle.empty() && oTS.sPStyle.empty() && 0 > oTS.nLi)
 			return L"";
 
 		m_oXmlStyle.WriteLitePStyle(oTS.oAdditionalStyle);
@@ -4396,6 +4384,10 @@ private:
 			oXml->WriteString(sPStyle);
 			oXml->WriteString(L"\"/>");
 		}
+
+		if (oTS.nLi >= 0)
+			oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
+							  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
 
 		oXml->WriteString(oTS.sPStyle + sPSettings);
 		oXml->WriteNodeEnd(L"w:pPr");

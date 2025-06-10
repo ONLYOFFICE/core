@@ -121,6 +121,7 @@ public:
 
 	short GetRelSize(ELang eLang) const;
 	HWP_STRING GetFontName(ELang eLang) const;
+	short GetRatio(ELang eLang) const;
 	short GetSpacing(ELang eLang) const;
 	int GetTextColor() const;
 	int GetShadeColor() const;

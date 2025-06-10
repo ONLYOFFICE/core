@@ -23,7 +23,6 @@
 #include "Transform.h"
 
 #define PARA_SPACING_SCALE 0.85
-#define SPACING_SCALE_MS_WORD 1.21
 
 namespace HWP
 {

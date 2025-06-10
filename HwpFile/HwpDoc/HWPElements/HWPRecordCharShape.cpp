@@ -360,6 +360,14 @@ HWP_STRING CHWPRecordCharShape::GetFontName(ELang eLang) const
 	return m_arFontNames[(int)eLang];
 }
 
+short CHWPRecordCharShape::GetRatio(ELang eLang) const
+{
+	if (ELang::MAX == eLang)
+		return 0;
+
+	return m_arRatios[(int)eLang];
+}
+
 short CHWPRecordCharShape::GetSpacing(ELang eLang) const
 {
 	if (ELang::MAX == eLang)

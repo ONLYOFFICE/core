@@ -64,6 +64,25 @@ public slots:
 	}
 };
 
+class CustomAlphaLineEdit : public QLineEdit
+{
+	Q_OBJECT
+public:
+	CustomAlphaLineEdit(QWidget *parent = nullptr) : QLineEdit(parent)
+	{
+		connect(this, &QLineEdit::editingFinished, this, &CustomAlphaLineEdit::onEditingFinished);
+	}
+	~CustomAlphaLineEdit() {}
+public slots:
+	void onEditingFinished()
+	{
+		if (this->text() == "")
+			this->setText(this->placeholderText());
+		if (this->text().toUInt() > 255)
+			this->setText("255");
+	}
+};
+
 class CustomLabel : public QLabel
 {
 	Q_OBJECT
@@ -198,7 +217,8 @@ typedef enum
 	CoonsPatch,
 	CoonsPatchParametric,
 	TensorCoonsPatch,
-	TensorCoonsPatchParametric
+	TensorCoonsPatchParametric,
+	Luminosity
 } GradientType;
 
 typedef enum
@@ -246,6 +266,7 @@ public:
 	void initializeColors(bool triangle);
 	std::vector<agg::rgba8> qColor2rgba(bool triangle);
 	std::vector<std::vector<agg::rgba8>> qColor2rgbaMatrix();
+	std::vector<std::vector<agg::rgba8>> setAlphas();
 
 	void setPoints(QImage *image);
 	NSStructures::Point scaleCoord(NSStructures::Point p);
@@ -278,6 +299,8 @@ private slots:
 
 	void on_actionTensor_Coons_Patch_Parametric_triggered();
 
+	void on_actionactionLuminocity_Gradient_triggered();
+
 private:
 	QImage	img;
 	Info	info;
@@ -287,6 +310,7 @@ private:
 	QList<CustomLineEdit *>			listOfLines;
 	QList<CustomColorLabel *>		listOfColorLabels;
 	QList<CustomParametrLineEdit *> listOfParametricLines;
+	QList<CustomAlphaLineEdit *>				listOfAlphas;
 
 	Ui::MainWindow *ui;
 };

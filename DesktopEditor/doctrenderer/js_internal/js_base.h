@@ -484,6 +484,12 @@ namespace NSJSBase
 		void Exit();
 
 		/**
+		 * Сheck if context is current.
+		 * This method is not safe.
+		 */
+		bool IsEntered();
+
+		/**
 		 * Embeds specified class in JS contexts.
 		 * @tparam T Embedded class name.
 		 * @param isAllowedInJS If true, user can create the embedded object instance from JS code using CreateEmbedObject().

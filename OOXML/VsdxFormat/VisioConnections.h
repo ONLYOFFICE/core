@@ -42,6 +42,58 @@ namespace OOX
 	{
 		class CRel;
 
+		class CAutoLinkComparison : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CAutoLinkComparison)
+			CAutoLinkComparison() {}
+			virtual ~CAutoLinkComparison() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable_string ColumnName;
+			nullable_uint ContextType;
+			nullable_string ContextTypeLabel;
+		};
+		class CRefreshConflict : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CRefreshConflict)
+			CRefreshConflict() {}
+			virtual ~CRefreshConflict() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable_uint RowID;
+			nullable_uint PageID;
+			nullable_uint ShapeID;
+		};
 		class CRowMap : public WritingElement
 		{
 		public:

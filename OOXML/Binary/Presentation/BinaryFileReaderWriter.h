@@ -63,6 +63,7 @@ namespace NSCommon
 	class nullable_uint;
 	class nullable_double;
 	class nullable_sizet;
+	class nullable_astring;
 }
 namespace NSStringUtils
 {
@@ -100,7 +101,7 @@ namespace NSBinPptxRW
 
 	struct _imageManager2Info
 	{
-		std::wstring sFilepathAdditional;
+		std::vector<std::wstring> sFilepathAdditionals;
 		std::wstring sFilepathImage;
 	};
 
@@ -219,10 +220,10 @@ namespace NSBinPptxRW
 		int IsDisplayedImage(const std::wstring& strInput);
 
 		_imageManager2Info GenerateMedia(const std::wstring& strInput);
-		_imageManager2Info GenerateImage(const std::wstring& strInput, NSCommon::smart_ptr<OOX::File> & additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_imageManager2Info GenerateImage(const std::wstring& strInput, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		
 		_imageManager2Info GenerateMediaExec(const std::wstring& strInput);
-		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, const std::wstring& strAdditionalImage, int & nAdditionalType, const std::wstring& oleData);
+		_imageManager2Info GenerateImageExec(const std::wstring& strInput, const std::wstring& strExts, std::vector<std::pair<std::wstring, int>> & additional, const std::wstring& oleData);
 
 		bool SaveImageAsPng(const std::wstring& strFileSrc, const std::wstring& strFileDst);
 		bool SaveImageAsJPG(const std::wstring& strFileSrc, const std::wstring& strFileDst);
@@ -315,7 +316,6 @@ namespace NSBinPptxRW
 		void WriteDoubleReal(const double& dValue);
 		
 		void WriteBYTEArray	(const BYTE* pBuffer, size_t len);
-		void WriteStringA	(std::string& sBuffer);
 		
 		void WriteStringW	(const std::wstring& sBuffer);
         void WriteStringW2	(const std::wstring& sBuffer);
@@ -342,6 +342,13 @@ namespace NSBinPptxRW
 		void WriteString2	(int type, const NSCommon::nullable_string& val);
 		void WriteString	(const std::wstring& val);
 		void WriteStringData(const WCHAR* pData, _UINT32 len);
+
+		void WriteString1	(int type, const std::string& val);
+		void WriteString2	(int type, const NSCommon::nullable_astring& val);
+		void WriteStringA	(std::string& val);
+
+		void WriteStringUtf8(int type, const NSCommon::nullable_string& val);
+		void WriteStringUtf8(int type, const NSCommon::nullable_astring& val);
 
 		void WriteString1Data(int type, const WCHAR* pData, _UINT32 len);
 
@@ -439,7 +446,11 @@ namespace NSBinPptxRW
         bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	private:
 		_INT32	_WriteString(const WCHAR* sBuffer, _UINT32 lCount);
+		_INT32	_WriteString(const char* sBuffer, _UINT32 lCount);
+		_INT32	_WriteStringUtf8(const WCHAR* sBuffer, _UINT32 lCount);
 		void	_WriteStringWithLength(const WCHAR* sBuffer, _UINT32 lCount, bool bByte);
+		void	_WriteStringWithLength(const char* sBuffer, _UINT32 lCount);
+		void	_WriteStringUtf8WithLength(const WCHAR* sBuffer, _UINT32 lCount);
 	};
 
 	class CStreamBinaryWriter : public NSFile::CFileBinary, public CBinaryFileWriter
@@ -508,7 +519,7 @@ namespace NSBinPptxRW
 		void AddRels (const std::wstring& strRels);
 		void SaveRels (const std::wstring& strFile);
 
-		_relsGeneratorInfo WriteImage (const std::wstring& strImage, NSCommon::smart_ptr<OOX::File>& additionalFile, const std::wstring& oleData, std::wstring strBase64Image);
+		_relsGeneratorInfo WriteImage (const std::wstring& strImage, std::vector<NSCommon::smart_ptr<OOX::File>>& additionalFiles, const std::wstring& oleData, std::wstring strBase64Image);
 		_relsGeneratorInfo WriteMedia (const std::wstring& strMedia, int type = 0);
 	};
 
@@ -537,6 +548,7 @@ namespace NSBinPptxRW
 		std::wstring					m_strFolderThemes;
 		std::wstring					m_strFolderExternalThemes;
 
+		_INT32							m_nCountImage = 1;
 		_INT32							m_nCountEmbedded = 1;
 		_INT32							m_nCountCharts = 1;
 		_INT32							m_nCountDiagram = 1;
@@ -585,9 +597,11 @@ namespace NSBinPptxRW
 		std::wstring GetString2(bool bDeleteZero = false);
 		std::wstring GetString3(_INT32 len, bool bDeleteZero = false);
 		std::wstring GetString4(_INT32 len);
+		std::wstring GetStringUtf8(_INT32 len);
 
         bool GetArray(BYTE *pBuffer, _INT32 len);
 
+		std::wstring GetStringUtf8();
 		std::string GetString2A();
 		void SkipRecord();
 

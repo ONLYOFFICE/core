@@ -476,7 +476,7 @@ namespace PdfWriter
 
 #ifndef FILTER_FLATE_DECODE_DISABLED
 
-		if (unFilter & STREAM_FILTER_FLATE_DECODE)
+		if ((unFilter & STREAM_FILTER_FLATE_DECODE) && !(unFilter & STREAM_FILTER_ALREADY_DECODE))
 			return WriteStreamWithDeflate(pStream, pEncrypt);
 
 #endif
@@ -614,7 +614,7 @@ namespace PdfWriter
 		if (pDict->GetStream())
 		{
 			unsigned int unFilter = pDict->GetFilter();
-			if (STREAM_FILTER_NONE != unFilter)
+			if (STREAM_FILTER_NONE != unFilter && STREAM_FILTER_ALREADY_DECODE != unFilter)
 			{
 				CArrayObject* pFilter = new CArrayObject();
 				pDict->Add("Filter", pFilter);
@@ -786,6 +786,17 @@ namespace PdfWriter
 	unsigned int CMemoryStream::Size()
 	{
 		return m_unSize;
+	}
+	BYTE* CMemoryStream::GetBuffer()
+	{
+		return m_pBuffer;
+	}
+	void CMemoryStream::ClearWithoutAttack()
+	{
+		m_nBufferSize = 0;
+		m_pBuffer     = NULL;
+		m_pCur        = NULL;
+		m_unSize      = 0;
 	}
 	void         CMemoryStream::Shrink(unsigned int unSize)
 	{

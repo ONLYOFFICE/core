@@ -58,7 +58,7 @@ CImageFileFormatChecker::CImageFileFormatChecker()
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 }
-CImageFileFormatChecker::CImageFileFormatChecker(std::wstring sFileName)
+CImageFileFormatChecker::CImageFileFormatChecker(const std::wstring& sFileName)
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	isImageFile(sFileName);
@@ -433,7 +433,7 @@ bool CImageFileFormatChecker::isPicFile(BYTE *pBuffer, DWORD dwBytes)
     return false;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
+bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
 {
 	eFileType  = _CXIMAGE_FORMAT_UNKNOWN;
 	///////////////////////////////////////////////////////////////////////////////
@@ -673,7 +673,7 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
 	if (eFileType) return true;
 	return false;
 }
-bool CImageFileFormatChecker::isSvmFile(std::wstring & fileName)
+bool CImageFileFormatChecker::isSvmFile(const std::wstring & fileName)
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	////////////////////////////////////////////////////////////////////////////////
@@ -703,7 +703,7 @@ bool CImageFileFormatChecker::isSvmFile(std::wstring & fileName)
 	if (eFileType)return true;
 	else return false;
 }
-bool CImageFileFormatChecker::isPngFile(std::wstring & fileName)
+bool CImageFileFormatChecker::isPngFile(const std::wstring & fileName)
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
 	////////////////////////////////////////////////////////////////////////////////
@@ -735,7 +735,7 @@ bool CImageFileFormatChecker::isPngFile(std::wstring & fileName)
 
 }
 
-bool CImageFileFormatChecker::isRawFile(std::wstring& fileName)
+bool CImageFileFormatChecker::isRawFile(const std::wstring& fileName)
 {
 	// TODO:
 	return false;
@@ -745,7 +745,7 @@ bool CImageFileFormatChecker::isRawFile(BYTE* pBuffer, DWORD dwBytes)
 	// TODO:
 	return false;
 }
-bool CImageFileFormatChecker::isSvgFile(std::wstring& fileName)
+bool CImageFileFormatChecker::isSvgFile(const std::wstring& fileName)
 {
 #ifndef IMAGE_CHECKER_DISABLE_XML
 	XmlUtils::CXmlLiteReader oReader;

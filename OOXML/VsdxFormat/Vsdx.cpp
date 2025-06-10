@@ -65,14 +65,13 @@ bool OOX::Draw::CVsdx::Read(const CPath& oFilePath)
 	m_pDocument = Find(FileTypes::Document).smart_dynamic_cast<Draw::CDocumentFile>();
 	m_pApp = Find(OOX::FileTypes::App).smart_dynamic_cast<CApp>();
 	m_pCore = Find(OOX::FileTypes::Core).smart_dynamic_cast<CCore>();
+	
+	m_pContentTypes = new CContentTypes(m_sDocumentPath);
 	return true;
 }
 bool OOX::Draw::CVsdx::Write(const CPath& oDirPath, OOX::CContentTypes &oContentTypes)
 {  
-    //CPath oVisioPath = oDirPath / m_pWorkbook->DefaultDirectory();
-    //WriteWorkbook(oVisioPath);
-
-	IFileContainer::Write(oDirPath / L"" , OOX::CPath(_T("")), oContentTypes);
+	IFileContainer::Write(oDirPath / L"" , OOX::CPath(L""), oContentTypes);
 
     oContentTypes.Write(oDirPath);
     return true;

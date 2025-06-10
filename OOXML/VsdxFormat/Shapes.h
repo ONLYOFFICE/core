@@ -275,10 +275,10 @@ namespace OOX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const;
 
-			nullable_string N;
+			nullable_astring N;
 			nullable_string LocalName;
 			nullable_uint IX;
-			nullable_string T; // todooo GeometryRowTypes
+			nullable_astring T; // todooo GeometryRowTypes
 			nullable_bool Del;
 		};
 		class CSection : public WritingElementWithChilds<>
@@ -300,7 +300,7 @@ namespace OOX
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 			virtual EElementType getType() const;
 
-			nullable_string N;
+			nullable_astring N;
 			nullable_bool Del;
 			nullable_uint IX;
 		};
@@ -353,13 +353,15 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable_string N;
-			nullable_string U; //todooo type 
-			nullable_string E; //todooo err 
-			nullable_string F;
-			nullable_string V;
+			nullable_astring N;
+			nullable_astring U; //todooo type 
+			nullable_astring E; //todooo err 
+			nullable_astring F;
+			nullable_astring V;
 
 			nullable<CRefBy> RefBy;
+			
+			std::wstring content;
 		};
 		class CTrigger : public WritingElement
 		{
@@ -384,7 +386,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 
 		public:
-			nullable_string N;
+			nullable_astring N;
 
 			nullable<CRefBy> RefBy;
 		};
@@ -464,10 +466,10 @@ namespace OOX
 
 		public:
 			nullable_uint FromSheet;
-			nullable_string FromCell;
+			nullable_astring FromCell;
 			nullable_int FromPart;
 			nullable_uint ToSheet;
-			nullable_string ToCell;
+			nullable_astring ToCell;
 			nullable_int ToPart;
 		};
 		class CConnects : public WritingElementWithChilds<CConnect>

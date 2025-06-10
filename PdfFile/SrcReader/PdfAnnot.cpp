@@ -63,7 +63,7 @@ double ArrGetNum(Object* pArr, int nI)
 	oObj.free();
 	return dRes;
 }
-TextString* getName(Object* oField)
+TextString* getFullFieldName(Object* oField)
 {
 	TextString* sResName = NULL;
 
@@ -262,7 +262,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 			if (oHide.isString())
 				s = new TextString(oHide.getString());
 			else if (oHide.isDict())
-				s = getName(&oHide);
+				s = getFullFieldName(&oHide);
 
 			if (s)
 			{
@@ -298,7 +298,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 					if (oField.isString())
 						s = new TextString(oField.getString());
 					else if (oField.isDict())
-						s = getName(&oField);
+						s = getFullFieldName(&oField);
 
 					if (s)
 					{
@@ -317,9 +317,7 @@ CAction* getAction(PDFDoc* pdfDoc, Object* oAction)
 	}
 
 	if (pRes)
-	{
 		pRes->pNext = NULL;
-	}
 
 	Object oNextAction;
 	if (pRes && oAction->dictLookup("Next", &oNextAction)->isDict())
@@ -343,18 +341,14 @@ std::string getValue(Object* oV, bool bArray = true)
 		{
 			Object oContents;
 			if (oV->dictLookup("Contents", &oContents)->isString())
-			{
 				s = new TextString(oContents.getString());
-			}
 			oContents.free();
 		}
 		else if (bArray && oV->isArray())
 		{
 			Object oContents;
 			if (oV->arrayGet(0, &oContents)->isString())
-			{
 				s = new TextString(oContents.getString());
-			}
 			oContents.free();
 		}
 		if (s)
@@ -428,12 +422,12 @@ CAnnotFileAttachment::CEmbeddedFile* getEF(Object* oObj)
 		pRes->nLength = oObj2.getInt();
 	oObj2.free();
 
-	Stream* pImage = oObj->getStream();
-	pImage->reset();
+	Stream* pFile = oObj->getStream();
+	pFile->reset();
 	pRes->pFile = new BYTE[pRes->nLength];
 	BYTE* pBufferPtr = pRes->pFile;
 	for (int nI = 0; nI < pRes->nLength; ++nI)
-		*pBufferPtr++ = (BYTE)pImage->getChar();
+		*pBufferPtr++ = (BYTE)pFile->getChar();
 
 	return pRes;
 }
@@ -1060,7 +1054,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetFreeTextFont(PDFDoc* pdfDoc
 // Widget
 //------------------------------------------------------------------------
 
-CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
+CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID) : CAnnotWidget(pdfDoc, pField, nStartRefID)
 {
 	m_unIFFlag = 0;
 
@@ -1081,7 +1075,10 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 	oField.free();
 
 	if (pField->fieldLookup("AS", &oObj)->isName())
+	{
 		m_sV = oObj.getName();
+		m_unFlags |= (1 << 9);
+	}
 	oObj.free();
 
 	Object oMK;
@@ -1180,7 +1177,7 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 
 	// 14 - Имя вкл состояния - AP - N - Yes
 	Object oNorm;
-	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict())
+	if (pField->fieldLookup("AP", &oObj)->isDict() && oObj.dictLookup("N", &oNorm)->isDict() && oOpt.isNull())
 	{
 		for (int j = 0, nNormLength = oNorm.dictGetLength(); j < nNormLength; ++j)
 		{
@@ -1189,43 +1186,13 @@ CAnnotWidgetBtn::CAnnotWidgetBtn(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 			{
 				m_unFlags |= (1 << 14);
 				m_sAP_N_Yes = sNormName;
-
-				int nOptI;
-				if (oOpt.isArray() && isdigit(sNormName[0]) && (nOptI = std::stoi(sNormName)) >= 0 && nOptI < oOpt.arrayGetLength())
-				{
-					Object oOptJ;
-					if (!oOpt.arrayGet(nOptI, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
-					{
-						oOptJ.free();
-						break;
-					}
-
-					if (oOptJ.isString())
-					{
-						TextString* s = new TextString(oOptJ.getString());
-						m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-						delete s;
-					}
-					else if (oOptJ.isArray() && oOptJ.arrayGetLength() > 0)
-					{
-						Object oOptJ2;
-						if (oOptJ.arrayGet(0, &oOptJ2)->isString())
-						{
-							TextString* s = new TextString(oOptJ2.getString());
-							m_sAP_N_Yes = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-							delete s;
-						}
-						oOptJ2.free();
-					}
-					oOptJ.free();
-				}
 				break;
 			}
 		}
 	}
 	oNorm.free(); oObj.free(); oOpt.free();
 }
-CAnnotWidgetTx::CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
+CAnnotWidgetTx::CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID) : CAnnotWidget(pdfDoc, pField, nStartRefID)
 {
 	Object oObj;
 	Object oFieldRef, oField;
@@ -1244,18 +1211,18 @@ CAnnotWidgetTx::CAnnotWidgetTx(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 	oField.free();
 
 	// 10 - Максимальное количество символов в Tx - MaxLen
-	int nMaxLen = pField->getMaxLen();
-	if (nMaxLen > 0)
+	if (oField.dictLookup("MaxLen", &oObj)->isInt())
 	{
 		m_unFlags |= (1 << 10);
-		m_unMaxLen = nMaxLen;
+		m_unMaxLen = oObj.getInt();
 	}
+	oObj.free();
 
 	// 11 - Расширенный текст RV - RichText
 	if (pField->getFlags() & (1 << 25))
 		m_sRV = FieldLookupString(pField, "RV", 11);
 }
-CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
+CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID) : CAnnotWidget(pdfDoc, pField, nStartRefID)
 {
 	Object oObj;
 	Object oFieldRef, oField;
@@ -1330,8 +1297,7 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 	if (oField.dictLookup("I", &oOpt)->isArray())
 	{
 		m_unFlags |= (1 << 12);
-		int nILength = oOpt.arrayGetLength();
-		for (int j = 0; j < nILength; ++j)
+		for (int j = 0; j < oOpt.arrayGetLength(); ++j)
 		{
 			if (oOpt.arrayGet(j, &oObj)->isInt())
 				m_arrI.push_back(oObj.getInt());
@@ -1360,7 +1326,7 @@ CAnnotWidgetCh::CAnnotWidgetCh(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWi
 
 	oField.free();
 }
-CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnotWidget(pdfDoc, pField)
+CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID) : CAnnotWidget(pdfDoc, pField, nStartRefID)
 {
 	Object oObj;
 	Object oFieldRef, oField;
@@ -1375,7 +1341,7 @@ CAnnotWidgetSig::CAnnotWidgetSig(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot
 
 	oField.free();
 }
-CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDoc, pField)
+CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID) : CAnnot(pdfDoc, pField, nStartRefID)
 {
 	Object oObj, oField;
 	XRef* xref = pdfDoc->getXRef();
@@ -1418,7 +1384,10 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	}
 
 	// Флаг - Ff
-	m_unFieldFlag = pField->getFlags();
+	m_unFieldFlag = -1;
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+		m_unFieldFlag = oObj.getInt();
+	oObj.free();
 
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
 	m_sTU = FieldLookupString(pField, "TU", 0);
@@ -1492,22 +1461,24 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	oObj.free();
 
 	// 17 - Родитель - Parent
+	m_unRefNumParent = 0;
 	if (oField.dictLookupNF("Parent", &oObj)->isRef())
 	{
-		m_unRefNumParent = oObj.getRefNum();
+		m_unRefNumParent = oObj.getRefNum() + nStartRefID;
 		m_unFlags |= (1 << 17);
 	}
 	oObj.free();
 
 	// 18 - Частичное имя поля - T
 	m_sT = DictLookupString(&oField, "T", 18);
+	m_sFullName = m_sT;
 
 	// 20 - OO метаданные форм - OMetadata
 	m_sOMetadata = DictLookupString(&oField, "OMetadata", 20);
 
 	// Action - A
 	Object oAction;
-	if (pField->fieldLookup("A", &oAction)->isDict())
+	if (oField.dictLookup("A", &oAction)->isDict())
 	{
 		std::string sAA = "A";
 		CAction* pA = getAction(pdfDoc, &oAction);
@@ -1521,11 +1492,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 
 	// Actions - AA
 	Object oAA;
-	Object parent, parent2;
-	bool bParent = oField.dictLookup("Parent", &parent)->isDict();
-	bool bAA = bParent && parent.dictLookup("AA", &oAA)->isDict();
-	oAA.free();
-
 	if (oField.dictLookup("AA", &oAA)->isDict())
 	{
 		for (int j = 0; j < oAA.dictGetLength(); ++j)
@@ -1533,8 +1499,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 			if (oAA.dictGetVal(j, &oAction)->isDict())
 			{
 				std::string sAA(oAA.dictGetKey(j));
-				if (bAA && (sAA == "K" || sAA == "F" || sAA == "V" || sAA == "C"))
-					continue;
 				CAction* pA = getAction(pdfDoc, &oAction);
 				if (pA)
 				{
@@ -1547,45 +1511,11 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField) : CAnnot(pdfDo
 	}
 	oAA.free();
 
-	if (bParent)
-	{
-		int depth = 0;
-		while (parent.isDict() && depth < 50)
-		{
-			if (parent.dictLookup("AA", &oAA)->isDict())
-			{
-				for (int j = 0; j < oAA.dictGetLength(); ++j)
-				{
-					if (oAA.dictGetVal(j, &oAction)->isDict())
-					{
-						std::string sAA(oAA.dictGetKey(j));
-						if (sAA == "E" || sAA == "X" || sAA == "D" || sAA == "U" || sAA == "Fo" || sAA == "Bl" || sAA == "PO" || sAA == "PC" || sAA == "PV" || sAA == "PI")
-							continue;
-						CAction* pA = getAction(pdfDoc, &oAction);
-						if (pA)
-						{
-							pA->sType = sAA;
-							m_arrAction.push_back(pA);
-						}
-					}
-					oAction.free();
-				}
-			}
-			oAA.free();
-			parent.dictLookup("Parent", &parent2);
-			parent.free();
-			parent = parent2;
-			++depth;
-		}
-	}
-	parent.free();
-
 	oField.free();
 }
 CAnnotWidget::~CAnnotWidget()
 {
-	for (int i = 0; i < m_arrAction.size(); ++i)
-		RELEASEOBJECT(m_arrAction[i]);
+	ClearActions();
 }
 std::string CAnnotWidget::FieldLookupString(AcroFormField* pField, const char* sName, int nByte)
 {
@@ -1654,12 +1584,29 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 
 	oFontRef.free();
 }
+bool CAnnotWidget::ChangeFullName(const std::string& sPrefixForm)
+{
+	if (m_unFlags & (1 << 18))
+	{
+		m_sT += sPrefixForm;
+		m_sFullName += sPrefixForm;
+		// ClearActions();
+		return true;
+	}
+	return false;
+}
+void CAnnotWidget::ClearActions()
+{
+	for (int i = 0; i < m_arrAction.size(); ++i)
+		RELEASEOBJECT(m_arrAction[i]);
+	m_arrAction.clear();
+}
 
 //------------------------------------------------------------------------
 // Popup
 //------------------------------------------------------------------------
 
-CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnot(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	m_unFlags = 0;
 
@@ -1676,7 +1623,7 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 	if (oAnnot.dictLookupNF("Parent", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 1);
-		m_unRefNumParent = oObj.getRefNum();
+		m_unRefNumParent = oObj.getRefNum() + nStartRefID;
 	}
 	oObj.free();
 	oAnnot.free();
@@ -1686,7 +1633,7 @@ CAnnotPopup::CAnnotPopup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 // Text
 //------------------------------------------------------------------------
 
-CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1752,7 +1699,7 @@ CAnnotText::CAnnotText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnn
 // Ink
 //------------------------------------------------------------------------
 
-CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1788,7 +1735,7 @@ CAnnotInk::CAnnotInk(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot
 // Line
 //------------------------------------------------------------------------
 
-CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1896,7 +1843,7 @@ CAnnotLine::CAnnotLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnn
 // TextMarkup: Highlight, Underline, Squiggly, StrikeOut
 //------------------------------------------------------------------------
 
-CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1936,7 +1883,7 @@ CAnnotTextMarkup::CAnnotTextMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageI
 // Square, Circle
 //------------------------------------------------------------------------
 
-CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -1983,7 +1930,7 @@ CAnnotSquareCircle::CAnnotSquareCircle(PDFDoc* pdfDoc, Object* oAnnotRef, int nP
 // Polygon, PolyLine
 //------------------------------------------------------------------------
 
-CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -2059,7 +2006,7 @@ CAnnotPolygonLine::CAnnotPolygonLine(PDFDoc* pdfDoc, Object* oAnnotRef, int nPag
 // FreeText
 //------------------------------------------------------------------------
 
-CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -2200,7 +2147,7 @@ CAnnotFreeText::CAnnotFreeText(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex
 // Caret
 //------------------------------------------------------------------------
 
-CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj, oObj2;
 	XRef* pXref = pdfDoc->getXRef();
@@ -2236,7 +2183,7 @@ CAnnotCaret::CAnnotCaret(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 // FileAttachment
 //------------------------------------------------------------------------
 
-CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	m_pEF = NULL;
 
@@ -2333,21 +2280,16 @@ CAnnotFileAttachment::CAnnotFileAttachment(PDFDoc* pdfDoc, Object* oAnnotRef, in
 	oEF.free();
 
 	// 25 - Встроенные файловые потоки - RF
-	Object oRF;
-	if (oFS.dictLookup("RF", &oRF)->isDict())
-	{
+	if (oFS.dictLookup("RF", &oObj)->isDict())
 		m_unFlags |= (1 << 25);
-	}
-	oRF.free();
+	oObj.free();
 
 	// 26 - Описание файла - Desc
 	m_sDesc = DictLookupString(&oFS, "Desc", 26);
 
 	// 27 - Коллекция - Cl
 	if (oFS.dictLookup("Cl", &oObj)->isDict())
-	{
 		m_unFlags |= (1 << 27);
-	}
 	oObj.free();
 
 	oFS.free(); oAnnot.free();
@@ -2361,7 +2303,7 @@ CAnnotFileAttachment::~CAnnotFileAttachment()
 // Stamp
 //------------------------------------------------------------------------
 
-CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	Object oAnnot, oObj;
 	XRef* pXref = pdfDoc->getXRef();
@@ -2369,9 +2311,7 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 
 	// Иконка - Name
 	if (oAnnot.dictLookup("Name", &oObj)->isName())
-	{
 		m_sName = oObj.getName();
-	}
 	oObj.free();
 
 	m_dRotate = 0;
@@ -2394,8 +2334,8 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 				oObj1.free();
 			}
 		}
-
 		oObj.free();
+
 		if (oObj2.streamGetDict()->lookup("Matrix", &oObj)->isArray() && oObj.arrayGetLength() == 6)
 		{
 			for (int i = 0; i < 6; ++i)
@@ -2463,16 +2403,16 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 	m[5] = m[5] * sy + ty;
 
 	m_dX1 = bbox[0] * m[0] + bbox[1] * m[2] + m[4];
-	m_dY1 = bbox[0] * m[1] + bbox[1] * m[3] + m[5];
+	m_dY1 = m_dHeight - (bbox[0] * m[1] + bbox[1] * m[3] + m[5]);
 
 	m_dX2 = bbox[0] * m[0] + bbox[3] * m[2] + m[4];
-	m_dY2 = bbox[0] * m[1] + bbox[3] * m[3] + m[5];
+	m_dY2 = m_dHeight - (bbox[0] * m[1] + bbox[3] * m[3] + m[5]);
 
 	m_dX3 = bbox[2] * m[0] + bbox[3] * m[2] + m[4];
-	m_dY3 = bbox[2] * m[1] + bbox[3] * m[3] + m[5];
+	m_dY3 = m_dHeight - (bbox[2] * m[1] + bbox[3] * m[3] + m[5]);
 
 	m_dX4 = bbox[2] * m[0] + bbox[1] * m[2] + m[4];
-	m_dY4 = bbox[2] * m[1] + bbox[1] * m[3] + m[5];
+	m_dY4 = m_dHeight - (bbox[2] * m[1] + bbox[1] * m[3] + m[5]);
 
 	oAnnot.free();
 }
@@ -2481,7 +2421,7 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CA
 // Annots
 //------------------------------------------------------------------------
 
-CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList)
+CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, int nStartPage, int nStartRefID)
 {
 	Object oObj1, oObj2;
 	XRef* xref = pdfDoc->getXRef();
@@ -2494,7 +2434,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		for (int j = 0; j < oObj1.arrayGetLength(); ++j)
 		{
 			if (oObj1.arrayGetNF(j, &oObj2)->isRef())
-				m_arrCO.push_back(oObj2.getRefNum());
+				m_arrCO.push_back(oObj2.getRefNum() + nStartRefID);
 			oObj2.free();
 		}
 	}
@@ -2514,7 +2454,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		if (pField->getPageNum() < 1)
 		{
 			oField.free(); oFieldRef.free();
-			std::vector<int>::iterator it = std::find(m_arrCO.begin(), m_arrCO.end(), oFieldRef.getRefNum());
+			std::vector<int>::iterator it = std::find(m_arrCO.begin(), m_arrCO.end(), oFieldRef.getRefNum() + nStartRefID);
 			if (it != m_arrCO.end())
 				m_arrCO.erase(it);
 			continue;
@@ -2523,7 +2463,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		// Родители
 		Object oParentRefObj;
 		if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
-			getParents(xref, &oParentRefObj);
+			getParents(pdfDoc, &oParentRefObj, nStartRefID);
 		oParentRefObj.free();
 		oField.free(); oFieldRef.free();
 
@@ -2535,7 +2475,7 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		case acroFormFieldRadioButton:
 		case acroFormFieldCheckbox:
 		{
-			pAnnot = new CAnnotWidgetBtn(pdfDoc, pField);
+			pAnnot = new CAnnotWidgetBtn(pdfDoc, pField, nStartRefID);
 			break;
 		}
 		case acroFormFieldFileSelect:
@@ -2543,18 +2483,18 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 		case acroFormFieldText:
 		case acroFormFieldBarcode:
 		{
-			pAnnot = new CAnnotWidgetTx(pdfDoc, pField);
+			pAnnot = new CAnnotWidgetTx(pdfDoc, pField, nStartRefID);
 			break;
 		}
 		case acroFormFieldComboBox:
 		case acroFormFieldListBox:
 		{
-			pAnnot = new CAnnotWidgetCh(pdfDoc, pField);
+			pAnnot = new CAnnotWidgetCh(pdfDoc, pField, nStartRefID);
 			break;
 		}
 		case acroFormFieldSignature:
 		{
-			pAnnot = new CAnnotWidgetSig(pdfDoc, pField);
+			pAnnot = new CAnnotWidgetSig(pdfDoc, pField, nStartRefID);
 			break;
 		}
 		default:
@@ -2565,6 +2505,22 @@ CAnnots::CAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontLi
 			pAnnot->SetFont(pdfDoc, pField, pFontManager, pFontList);
 			if (pField->getAcroFormFieldType() == acroFormFieldPushbutton)
 				pAnnot->SetButtonFont(pdfDoc, pField, pFontManager, pFontList);
+			pAnnot->SetPage(nStartPage + pField->getPageNum());
+
+			unsigned int unRefNumParent = pAnnot->GetRefNumParent();
+			if (unRefNumParent)
+			{
+				std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
+				if (it != m_arrParents.end() && !((*it)->sFullName.empty()))
+				{
+					const std::string& sFullNameChild = pAnnot->GetFullName();
+					if (sFullNameChild.empty())
+						pAnnot->SetFullName((*it)->sFullName);
+					else
+						pAnnot->SetFullName((*it)->sFullName + "." + sFullNameChild);
+				}
+			}
+
 			m_arrAnnots.push_back(pAnnot);
 		}
 	}
@@ -2577,22 +2533,22 @@ CAnnots::~CAnnots()
 	for (int i = 0; i < m_arrAnnots.size(); ++i)
 		RELEASEOBJECT(m_arrAnnots[i]);
 }
-void CAnnots::getParents(XRef* xref, Object* oFieldRef)
+void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 {
-	if (!oFieldRef || !xref || !oFieldRef->isRef() ||
-		std::find_if(m_arrParents.begin(), m_arrParents.end(), [oFieldRef] (CAnnotParent* pAP) { return oFieldRef->getRefNum() == pAP->unRefNum; }) != m_arrParents.end())
+	if (!oFieldRef || !pdfDoc || !oFieldRef->isRef() ||
+		std::find_if(m_arrParents.begin(), m_arrParents.end(), [oFieldRef, nStartRefID] (CAnnotParent* pAP) { return oFieldRef->getRefNum() + nStartRefID == pAP->unRefNum; }) != m_arrParents.end())
 		return;
 
 	Object oField;
 	CAnnotParent* pAnnotParent = new CAnnotParent();
-	if (!pAnnotParent || !oFieldRef->fetch(xref, &oField)->isDict())
+	if (!pAnnotParent || !oFieldRef->fetch(pdfDoc->getXRef(), &oField)->isDict())
 	{
 		oField.free();
 		RELEASEOBJECT(pAnnotParent);
 		return;
 	}
 
-	pAnnotParent->unRefNum = oFieldRef->getRefNum();
+	pAnnotParent->unRefNum = oFieldRef->getRefNum() + nStartRefID;
 
 	Object oObj;
 	if (oField.dictLookup("T", &oObj)->isString())
@@ -2601,6 +2557,7 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		pAnnotParent->unFlags |= (1 << 0);
 		pAnnotParent->sT = sStr;
+		pAnnotParent->sFullName = sStr;
 		delete s;
 	}
 	oObj.free();
@@ -2661,21 +2618,97 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 		for (int j = 0; j < nOptLength; ++j)
 		{
 			Object oOptJ;
-			if (!oOpt.arrayGet(j, &oOptJ) || !oOptJ.isString())
+			if (!oOpt.arrayGet(j, &oOptJ) || !(oOptJ.isString() || oOptJ.isArray()))
 			{
 				oOptJ.free();
 				continue;
 			}
 
-			TextString* s = new TextString(oOptJ.getString());
-			pAnnotParent->arrOpt.push_back(NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength()));
-			delete s;
+			std::string sOpt1, sOpt2;
+			if (oOptJ.isArray() && oOptJ.arrayGetLength() > 1)
+			{
+				Object oOptJ2;
+				if (oOptJ.arrayGet(0, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt1 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+				if (oOptJ.arrayGet(1, &oOptJ2)->isString())
+				{
+					TextString* s = new TextString(oOptJ2.getString());
+					sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+					delete s;
+				}
+				oOptJ2.free();
+			}
+			else if (oOptJ.isString())
+			{
+				TextString* s = new TextString(oOptJ.getString());
+				sOpt2 = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+				delete s;
+			}
+			pAnnotParent->arrOpt.push_back(std::make_pair(sOpt1, sOpt2));
 			oOptJ.free();
 		}
+
 		if (!pAnnotParent->arrOpt.empty())
 			pAnnotParent->unFlags |= (1 << 6);
 	}
 	oOpt.free();
+
+	// 7 - Флаг - Ff
+	if (oField.dictLookup("Ff", &oObj)->isInt())
+	{
+		pAnnotParent->unFieldFlag = oObj.getInt();
+		pAnnotParent->unFlags |= (1 << 7);
+	}
+	oObj.free();
+
+	// 8 - Actions - A/AA
+	Object oAction;
+	if (oField.dictLookup("A", &oAction)->isDict())
+	{
+		std::string sAA = "A";
+		CAction* pA = getAction(pdfDoc, &oAction);
+		if (pA)
+		{
+			pA->sType = sAA;
+			pAnnotParent->arrAction.push_back(pA);
+			pAnnotParent->unFlags |= (1 << 8);
+		}
+	}
+	oAction.free();
+
+	Object oAA;
+	if (oField.dictLookup("AA", &oAA)->isDict())
+	{
+		for (int j = 0; j < oAA.dictGetLength(); ++j)
+		{
+			if (oAA.dictGetVal(j, &oAction)->isDict())
+			{
+				std::string sAA(oAA.dictGetKey(j));
+				CAction* pA = getAction(pdfDoc, &oAction);
+				if (pA)
+				{
+					pA->sType = sAA;
+					pAnnotParent->arrAction.push_back(pA);
+					pAnnotParent->unFlags |= (1 << 8);
+				}
+			}
+			oAction.free();
+		}
+	}
+	oAA.free();
+
+	// 9 - MaxLen
+	if (oField.dictLookup("MaxLen", &oObj)->isInt())
+	{
+		pAnnotParent->unMaxLen = oObj.getInt();
+		pAnnotParent->unFlags |= (1 << 9);
+	}
+	oObj.free();
 
 	m_arrParents.push_back(pAnnotParent);
 
@@ -2683,19 +2716,83 @@ void CAnnots::getParents(XRef* xref, Object* oFieldRef)
 	if (oField.dictLookupNF("Parent", &oParentRefObj)->isRef())
 	{
 		pAnnotParent->unFlags |= (1 << 4);
-		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum();
-		getParents(xref, &oParentRefObj);
+		pAnnotParent->unRefNumParent = oParentRefObj.getRefNum() + nStartRefID;
+		getParents(pdfDoc, &oParentRefObj, nStartRefID);
+
+		unsigned int unRefNumParent = pAnnotParent->unRefNumParent;
+		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
+		if (it != m_arrParents.end() && !((*it)->sFullName.empty()))
+		{
+			if (pAnnotParent->sFullName.empty())
+				pAnnotParent->sFullName = (*it)->sFullName;
+			else
+				pAnnotParent->sFullName = (*it)->sFullName + "." + pAnnotParent->sFullName;
+		}
 	}
 	oParentRefObj.free();
 
 	oField.free();
+}
+bool CAnnots::ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm)
+{
+	if (nAnnot < 0 || nAnnot > m_arrAnnots.size())
+		return false;
+
+	CAnnotWidget* pWidget = m_arrAnnots[nAnnot];
+	if (pWidget->ChangeFullName(sPrefixForm))
+		return true;
+	unsigned int unRefNumParent = pWidget->GetRefNumParent();
+	if (unRefNumParent)
+	{
+		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
+		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
+		{
+			pWidget->AddFullName(sPrefixForm);
+			// pWidget->ClearActions();
+			return true;
+		}
+	}
+	return false;
+}
+bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
+{
+	if (nParent < 0 || nParent > m_arrParents.size())
+		return false;
+
+	CAnnotParent* pParent = m_arrParents[nParent];
+	if (pParent->unFlags & (1 << 0))
+	{
+		pParent->sT += sPrefixForm;
+		pParent->sFullName += sPrefixForm;
+		// pParent->ClearActions();
+		return true;
+	}
+	else if (pParent->unFlags & (1 << 4))
+	{
+		unsigned int unRefNumParent = pParent->unRefNumParent;
+		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
+		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
+		{
+			pParent->sFullName += sPrefixForm;
+			// pParent->ClearActions();
+			return true;
+		}
+	}
+	return false;
+}
+void CAnnots::CAnnotParent::ClearActions()
+{
+	unFlags &= ~(1 << 8);
+	for (int i = 0; i < arrAction.size(); ++i)
+		RELEASEOBJECT(arrAction[i]);
+	arrAction.clear();
 }
 
 //------------------------------------------------------------------------
 // Markup
 //------------------------------------------------------------------------
 
-CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : CAnnot(pdfDoc, oAnnotRef, nPageIndex)
+CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnot(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
 {
 	m_unFlags = 0;
 
@@ -2707,7 +2804,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	if (oAnnot.dictLookupNF("Popup", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 0);
-		m_unRefNumPopup = oObj.getRefNum();
+		m_unRefNumPopup = oObj.getRefNum() + nStartRefID;
 	}
 
 	// 1 - Текстовая метка пользователя - T
@@ -2739,7 +2836,7 @@ CAnnotMarkup::CAnnotMarkup(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex) : 
 	if (oAnnot.dictLookupNF("IRT", &oObj)->isRef())
 	{
 		m_unFlags |= (1 << 5);
-		m_unRefNumIRT = oObj.getRefNum();
+		m_unRefNumIRT = oObj.getRefNum() + nStartRefID;
 	}
 	oObj.free();
 
@@ -2917,7 +3014,7 @@ void CAnnotMarkup::SetFont(PDFDoc* pdfDoc, Object* oAnnotRef, NSFonts::IFontMana
 // Annot
 //------------------------------------------------------------------------
 
-CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
+CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 {
 	m_pBorder = NULL;
 	m_unAnnotFlag = 0;
@@ -2926,7 +3023,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 
 	Object oObj;
 	pField->getFieldRef(&oObj);
-	m_unRefNum = oObj.getRefNum();
+	m_unRefNum = oObj.getRefNum() + nStartRefID;
 	oObj.free();
 
 	// Флаг аннотации - F
@@ -2936,12 +3033,10 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 
 	// Номер страницы - P
 	m_unPage = pField->getPageNum();
-	if (m_unPage > 0)
-		--m_unPage;
 
 	// Координаты - Rect
 	pField->getBBox(&m_pRect[0], &m_pRect[1], &m_pRect[2], &m_pRect[3]);
-	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage + 1)->getCropBox();
+	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage)->getCropBox();
 	m_dHeight = pCropBox->y2;
 	m_dX = pCropBox->x1;
 	double dTemp = m_pRect[1];
@@ -3041,7 +3136,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField)
 	}
 	oObj.free();
 }
-CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
+CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID)
 {
 	m_pBorder = NULL;
 	m_unAnnotFlag = 0;
@@ -3053,7 +3148,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 	oAnnotRef->fetch(pXref, &oAnnot);
 
 	// Номер объекта аннотации
-	m_unRefNum = oAnnotRef->getRefNum();
+	m_unRefNum = oAnnotRef->getRefNum() + nStartRefID;
 
 	// Флаг аннотации - F
 	if (oAnnot.dictLookup("F", &oObj)->isInt())
@@ -3062,7 +3157,7 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex)
 
 	// Номер страницы - P
 	m_unPage = nPageIndex;
-	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage + 1)->getCropBox();
+	PDFRectangle* pCropBox = pdfDoc->getCatalog()->getPage(m_unPage)->getCropBox();
 	m_dHeight = pCropBox->y2;
 	m_dX = pCropBox->x1;
 
@@ -3192,7 +3287,7 @@ std::string CAnnot::DictLookupString(Object* pObj, const char* sName, int nByte)
 // AP
 //------------------------------------------------------------------------
 
-CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField)
+CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, const char* sButtonView, AcroFormField* pField, int nStartRefID)
 {
 	m_gfx = NULL;
 	m_pFrame = NULL;
@@ -3205,7 +3300,15 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 	Object oAP;
 	if (pField->fieldLookup("AP", &oAP)->isDict() && oAP.dictGetLength())
 	{
-		Init(pField);
+		// Номер аннотации для сопоставления с AP
+		Object oRef;
+		pField->getFieldRef(&oRef);
+		m_unRefNum = oRef.getRefNum() + nStartRefID;
+		oRef.free();
+
+		// Координаты - BBox
+		pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
+
 		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
 		Draw(pdfDoc, &oAP, nRasterH, nBackgroundColor, nPageIndex, pField, sView, sButtonView);
 	}
@@ -3213,7 +3316,7 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 
 	Clear();
 }
-CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef)
+CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, const char* sView, Object* oAnnotRef, int nStartRefID)
 {
 	m_gfx = NULL;
 	m_pFrame = NULL;
@@ -3228,7 +3331,7 @@ CAnnotAP::CAnnotAP(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFont
 	m_bIsStamp = oAnnot.dictLookup("Subtype", &oSubtype)->isName("Stamp") == gTrue;
 	if (oAnnot.dictLookup("AP", &oAP)->isDict())
 	{
-		m_unRefNum = oAnnotRef->getRefNum();
+		m_unRefNum = oAnnotRef->getRefNum() + nStartRefID;
 
 		Init(&oAnnot);
 		Init(pdfDoc, pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex);
@@ -3256,13 +3359,13 @@ void CAnnotAP::Clear()
 }
 void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList*  pFontList, int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex)
 {
-	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
 	PDFRectangle* pCropBox = pPage->getCropBox();
 	m_dCropX = pCropBox->x1;
 	m_dCropY = pCropBox->y1;
 
-	double dWidth  = round(pdfDoc->getPageCropWidth(nPageIndex + 1));
-	double dHeight = round(pdfDoc->getPageCropHeight(nPageIndex + 1));
+	double dWidth  = round(pdfDoc->getPageCropWidth(nPageIndex));
+	double dHeight = round(pdfDoc->getPageCropHeight(nPageIndex));
 	double dRasterW = (double)nRasterW * m_dRWScale;
 	double dRasterH = (double)nRasterH * m_dRHScale;
 
@@ -3310,22 +3413,11 @@ void CAnnotAP::Init(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFon
 	pPage->makeBox(72.0, 72.0, 0, gFalse, m_pRendererOut->upsideDown(), -1, -1, -1, -1, &box, &crop);
 	PDFRectangle* cropBox = pPage->getCropBox();
 
-	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex + 1, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
+	m_gfx = new Gfx(pdfDoc, m_pRendererOut, nPageIndex, pPage->getAttrs()->getResourceDict(), 72.0, 72.0, &box, crop ? cropBox : (PDFRectangle *)NULL, 0, NULL, NULL);
 
 	// Координаты внешнего вида
 	m_dRx1 = (m_dx1 - m_dCropX) * m_dWScale - 1;
-	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex + 1) - m_dy2 + m_dCropY) * m_dHScale - 1;
-}
-void CAnnotAP::Init(AcroFormField* pField)
-{
-	// Номер аннотации для сопоставления с AP
-	Object oRef;
-	pField->getFieldRef(&oRef);
-	m_unRefNum = oRef.getRefNum();
-	oRef.free();
-
-	// Координаты - BBox
-	pField->getBBox(&m_dx1, &m_dy1, &m_dx2, &m_dy2);
+	m_dRy1 = (pdfDoc->getPageCropHeight(nPageIndex) - m_dy2 + m_dCropY) * m_dHScale - 1;
 }
 void CAnnotAP::Init(Object* oAnnot)
 {
@@ -3442,7 +3534,6 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 
 	double dOffsetX = -(m_dx1 - m_dCropX) * m_dWScale + 1 + m_dWTale / 2;
 	double dOffsetY = (m_dy2 - m_dCropY) * m_dHScale - nRasterH + 1 + m_dHTale / 2;
-	nPageIndex++;
 
 	std::vector<const char*> arrAPName { "N", "D", "R" };
 	for (unsigned int j = 0; j < arrAPName.size(); ++j)
@@ -3492,6 +3583,7 @@ void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundCo
 void CAnnotAP::Draw(PDFDoc* pdfDoc, Object* oAP, int nRasterH, int nBackgroundColor, Object* oAnnotRef, const char* sView)
 {
 	((GlobalParamsAdaptor*)globalParams)->setDrawFormField(true);
+
 	// Отрисовка внешних видов аннотации
 	Object oAnnot;
 	XRef* xref = pdfDoc->getXRef();
@@ -3548,7 +3640,6 @@ void CAnnotAP::WriteAppearance(unsigned int nColor, CAnnotAPView* pView)
 	}
 
 	pView->pAP = pSubMatrix;
-	pView->sText = ((GlobalParamsAdaptor*)globalParams)->GetTextFormField();
 }
 BYTE CAnnotAP::GetBlendMode()
 {
@@ -3581,14 +3672,6 @@ void CAnnotAP::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(npSubMatrix >> 32);
 
 		oRes.WriteBYTE(m_arrAP[i]->nBlendMode);
-
-		if (m_arrAP[i]->sText.empty())
-			oRes.WriteBYTE(0);
-		else
-		{
-			oRes.WriteBYTE(1);
-			oRes.WriteString(m_arrAP[i]->sText);
-		}
 	}
 }
 void CAnnots::ToWASM(NSWasm::CData& oRes)
@@ -3633,16 +3716,32 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 6))
 	{
-		oRes.AddInt((unsigned int)arrOpt.size());
+		oRes.AddInt(arrOpt.size());
 		for (int i = 0; i < arrOpt.size(); ++i)
-			oRes.WriteString(arrOpt[i]);
+		{
+			oRes.WriteString(arrOpt[i].first);
+			oRes.WriteString(arrOpt[i].second);
+		}
 	}
+	if (unFlags & (1 << 7))
+		oRes.AddInt(unFieldFlag);
+	if (unFlags & (1 << 8))
+	{
+		oRes.AddInt(arrAction.size());
+		for (int i = 0; i < arrAction.size(); ++i)
+		{
+			oRes.WriteString(arrAction[i]->sType);
+			arrAction[i]->ToWASM(oRes);
+		}
+	}
+	if (unFlags & (1 << 9))
+		oRes.AddInt(unMaxLen);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {
 	oRes.AddInt(m_unRefNum);
 	oRes.AddInt(m_unAnnotFlag);
-	oRes.AddInt(m_unPage);
+	oRes.AddInt(m_unPage - 1);
 	for (int i = 0; i < 4; ++i)
 		oRes.WriteDouble(m_pRect[i]);
 	oRes.AddInt(m_unAFlags);
@@ -3875,7 +3974,7 @@ void CAnnotWidgetTx::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sV);
 	if (m_unFlags & (1 << 10))
 		oRes.AddInt(m_unMaxLen);
-	if (m_unFieldFlag & (1 << 25))
+	if (m_unFlags & (1 << 11))
 		oRes.WriteString(m_sRV);
 }
 void CAnnotWidgetCh::ToWASM(NSWasm::CData& oRes)

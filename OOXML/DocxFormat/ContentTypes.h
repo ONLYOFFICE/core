@@ -30,13 +30,12 @@
  *
  */
 #pragma once
-#ifndef OOX_CONTENT_TYPES_INCLUDE_H_
-#define OOX_CONTENT_TYPES_INCLUDE_H_
 
 #include "../SystemUtility/SystemUtility.h"
 
 #include "WritingElement.h"
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
+#include <map>
 
 namespace OOX
 {
@@ -82,28 +81,23 @@ namespace OOX
 			COverride(const std::wstring& sType, const CPath& oPath);
 			virtual ~COverride();
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& oNode);
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
 
-		private:
-			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
-
-		public:
 			const std::wstring type() const;
 			const OOX::CPath filename() const;
 
-		private:
-            std::wstring	m_sType;
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+          
+			std::wstring	m_sType;
 			OOX::CPath		m_oPart;
-
 		};
 	} // namespace ContentTypes
 
-    static const CPath c_oContentTypeFileName (_T("[Content_Types].xml"));
+    static const CPath c_oContentTypeFileName (L"[Content_Types].xml");
 
 	class CContentTypes
 	{
@@ -128,10 +122,10 @@ namespace OOX
 		void AddOverride(const std::wstring& sType, std::wstring sPath);
 
 	public:
-        boost::unordered_map<std::wstring, ContentTypes::CDefault>	m_mapDefaults;
-        boost::unordered_map<std::wstring, ContentTypes::COverride>	m_mapOverrides;
+        std::unordered_map<std::wstring, ContentTypes::CDefault> m_mapDefaults;
+        std::unordered_map<std::wstring, smart_ptr<ContentTypes::COverride>> m_mapOverrides;
+		
+		std::multimap<std::wstring, smart_ptr<ContentTypes::COverride>> m_mapOverridesByType;
 	};
 
 } // namespace OOX
-
-#endif // OOX_CONTENT_TYPES_INCLUDE_H_

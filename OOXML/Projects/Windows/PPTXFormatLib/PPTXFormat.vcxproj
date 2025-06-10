@@ -648,6 +648,7 @@
     <ClInclude Include="..\..\..\PPTXFormat\Theme\FmtScheme.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Theme\FontScheme.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Theme\ThemeElements.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\CViewPr.h" />
@@ -1278,6 +1279,7 @@
     <ClCompile Include="..\..\..\PPTXFormat\Theme\FmtScheme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Theme\FontScheme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Theme\ThemeElements.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CSldViewPr.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\CViewPr.cpp" />

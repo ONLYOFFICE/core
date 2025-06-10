@@ -75,12 +75,13 @@ public:
     static const wchar_t * name;
 
     static const ElementType type = typeMath;
-
 	
 	friend class odf_document;
 
 	virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
 	virtual void add_child_element(const office_element_ptr & child_element);
+
+	std::wstring content_;
 private:
 	virtual void serialize(std::wostream & _Wostream);
 

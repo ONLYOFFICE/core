@@ -42,6 +42,12 @@ CBinaryReader.prototype.readByte = function()
 	this.pos += 1;
 	return val;
 };
+CBinaryReader.prototype.readShort = function()
+{
+	let val = this.data[this.pos] | this.data[this.pos + 1] << 8;
+	this.pos += 2;
+	return val;
+};
 CBinaryReader.prototype.readInt = function()
 {
 	let val = this.data[this.pos] | this.data[this.pos + 1] << 8 | this.data[this.pos + 2] << 16 | this.data[this.pos + 3] << 24;
@@ -56,6 +62,10 @@ CBinaryReader.prototype.readDouble2 = function()
 {
 	return this.readInt() / 10000;
 };
+CBinaryReader.prototype.readDouble3 = function()
+{
+	return this.readInt() / 100000;
+};
 CBinaryReader.prototype.readString = function()
 {
 	let len = this.readInt();
@@ -63,9 +73,20 @@ CBinaryReader.prototype.readString = function()
 	this.pos += len;
 	return val;
 };
+CBinaryReader.prototype.readString2 = function()
+{
+	let len = this.readShort();
+	let val = "";
+	for (let i = 0; i < len; ++i)
+	{
+		let c = this.readShort();
+		val += String.fromCharCode(c);
+	}
+	return val;
+};
 CBinaryReader.prototype.readData = function()
 {
-	let len = this.readInt();
+	let len = this.readInt() - 4;
 	let val = this.data.slice(this.pos, this.pos + len);
 	this.pos += len;
 	return val;

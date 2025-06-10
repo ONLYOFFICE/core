@@ -108,7 +108,7 @@ namespace MetaFile
 		void WriteNodeEnd(const std::wstring& wsNodeName);
 		void WriteText(const std::wstring& wsText, const TPointD& oCoord, const TRectL& oBounds = TRectL(), const TPointD& oScale = TPointD(1, 1), const std::vector<double>& arDx = {});
 
-		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) override;
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode) override;
 
 		void ResetClip() override;
 		void IntersectClip(const TRectD& oClip) override;

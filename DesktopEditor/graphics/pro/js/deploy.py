@@ -7,7 +7,7 @@ import os
 
 base.configure_common_apps()
 
-base.cmd_in_dir("./../../../../../core/Common/js", "make.py", ["./../../DesktopEditor/graphics/pro/js/drawingfile.json"])
+base.cmd_in_dir("./../../../../../core/Common/js", sys.executable, ["make.py", "./../../DesktopEditor/graphics/pro/js/drawingfile.json"])
 
 src_dir = "./deploy/"
 dst_dir = "./../../../../../sdkjs/pdf/src/engine/"

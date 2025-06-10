@@ -198,12 +198,9 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
-		
-		for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
-		{
-			convert(oox_math->m_arrItems[i]);
-		}
 
+		bool bOldConvert = !bStart;
+		
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
@@ -212,22 +209,32 @@ namespace Oox2Odf
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 
-			if (false == annotation_text.empty())
+			if (annotation_text.empty())
 			{
-				CREATE_MATH_TAG(L"annotation");
-				typedef odf_writer::math_annotation* T;
-				T tmp = dynamic_cast<T>(elm.get());
-				if (tmp)
-				{
-					tmp->encoding_ = L"StarMath 5.0";
-				}
-				elm->add_text(annotation_text);
+				bOldConvert = true;
+			}
+			else
+			{
+				std::wstring content = starMathConverter.GetOdf();
+				odf_context()->math_context()->add_content(content);
 
-				OPEN_MATH_TAG(elm);
-				CLOSE_MATH_TAG;
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
+			
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
+				
+				odf_context()->end_math();
 			}
 
-			odf_context()->end_math();
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math->m_arrItems.size(); ++i)
+			{
+				convert(oox_math->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 
@@ -285,11 +292,7 @@ namespace Oox2Odf
 			}
 		}
 		bool bStart = odf_context()->start_math(base_font_size, base_font_color);
-
-		for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
-		{
-			convert(oox_math_para->m_arrItems[i]);
-		}
+		bool bOldConvert = false;
 		if (bStart)
 		{
 			StarMath::COOXml2Odf starMathConverter;
@@ -298,21 +301,31 @@ namespace Oox2Odf
 
 			std::wstring annotation_text = starMathConverter.GetAnnotation();
 
-			if (false == annotation_text.empty())
+			if (annotation_text.empty())
 			{
-				CREATE_MATH_TAG(L"annotation");
-				typedef odf_writer::math_annotation* T;
-				T tmp = dynamic_cast<T>(elm.get());
-				if (tmp)
-				{
-					tmp->encoding_ = L"StarMath 5.0";
-				}
-				elm->add_text(annotation_text);
-
-				OPEN_MATH_TAG(elm);
-				CLOSE_MATH_TAG;
+				bOldConvert = true;
 			}
-			odf_context()->end_math();
+			else
+			{
+				std::wstring content = starMathConverter.GetOdf();
+				StarMath::TFormulaSize size = starMathConverter.GetFormulaSize();
+
+				odf_context()->math_context()->add_content(content);
+
+				odf_context()->math_context()->symbol_counter = size.m_iWidth;
+				odf_context()->math_context()->lvl_max = size.m_iHeight;
+				odf_context()->math_context()->lvl_min = 0;
+			
+				odf_context()->end_math();
+			}
+		}
+		if (bOldConvert)
+		{
+			for (size_t i = 0; i < oox_math_para->m_arrItems.size(); ++i)
+			{
+				convert(oox_math_para->m_arrItems[i]);
+			}
+			if (bStart) odf_context()->end_math();
 		}
 	}
 

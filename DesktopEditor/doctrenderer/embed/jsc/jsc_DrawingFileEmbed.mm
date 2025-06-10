@@ -27,6 +27,9 @@
 -(JSValue*) ScanPage : (JSValue*)nPageIndex : (JSValue*)mode;
 -(JSValue*) GetImageBase64 : (JSValue*)rId;
 -(JSValue*) FreeWasmData : (JSValue*)typedArray;
+-(JSValue*) SplitPages : (JSValue*)arrPageIndexes : (JSValue*)data;
+-(JSValue*) MergePages : (JSValue*)data : (JSValue*)nMaxID : (JSValue*)sPrefixForm;
+-(JSValue*) UnmergePages;
 @end
 
 @interface CJSCDrawingFileEmbed : NSObject<IJSCDrawingFileEmbed, JSEmbedObjectProtocol>
@@ -61,6 +64,9 @@ FUNCTION_WRAPPER_JS_0(IsNeedCMap, IsNeedCMap)
 FUNCTION_WRAPPER_JS_2(ScanPage, ScanPage)
 FUNCTION_WRAPPER_JS_1(GetImageBase64, GetImageBase64)
 FUNCTION_WRAPPER_JS_1(FreeWasmData, FreeWasmData)
+FUNCTION_WRAPPER_JS_2(SplitPages, SplitPages)
+FUNCTION_WRAPPER_JS_3(MergePages, MergePages)
+FUNCTION_WRAPPER_JS_0(UnmergePages, UnmergePages)
 @end
 
 class CDrawingFileEmbedAdapter : public CJSEmbedObjectAdapterJSC

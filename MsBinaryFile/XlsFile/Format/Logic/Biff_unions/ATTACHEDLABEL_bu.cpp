@@ -158,6 +158,22 @@ const bool ATTACHEDLABEL::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ATTACHEDLABEL::saveContent(BinProcessor& proc)
+{
+	if(m_TextProperties == nullptr)
+		return false;
+	proc.mandatory(*m_TextProperties);
+	proc.mandatory<Begin>();
+	if(m_Pos != nullptr)
+		proc.mandatory(*m_Pos);
+	if(m_FontX != nullptr)
+		proc.mandatory(*m_FontX);
+	if(m_AlRuns != nullptr)
+		proc.mandatory(*m_AlRuns);
+	proc.mandatory<End>();
+	return true;
+}
+
 int ATTACHEDLABEL::serialize_txPr(std::wostream & _stream)
 {
 	FontX *font			= dynamic_cast<FontX*>(m_FontX.get());

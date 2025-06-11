@@ -106,6 +106,20 @@ const bool LD::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool LD::saveContent(BinProcessor& proc)
+{
+	if(m_Legend == nullptr)
+		return false;
+	proc.mandatory(*m_Legend);
+	proc.mandatory<Begin>();
+	if(m_Pos != nullptr)
+		proc.mandatory(*m_Pos);
+	if(m_ATTACHEDLABEL != nullptr)
+		proc.mandatory(*m_ATTACHEDLABEL);
+	proc.mandatory<End>();
+	return true;
+}
+
 int LD::serialize (std::wostream & _stream, const std::wstring & entries)
 {
 	ATTACHEDLABEL	*att	= dynamic_cast<ATTACHEDLABEL*>	(m_ATTACHEDLABEL.get());

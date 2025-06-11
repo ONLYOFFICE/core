@@ -777,8 +777,6 @@ void CConverter2OOXML::WriteTableProperties(const CCtrlTable* pTable, short shPa
 		oBuilder.WriteString(L"</w:tblCellMar>");
 	}
 
-	oBuilder.WriteString(L"<w:tblLayout w:type=\"fixed\"/>");
-
 	WriteParaShapeProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
 
 	// const CHWPRecordBorderFill* pBorderFill = nullptr;

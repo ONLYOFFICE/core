@@ -321,7 +321,11 @@ const bool CRT::saveContent(BinProcessor& proc)
                 proc.mandatory(*(bp->m_Custom));
         }
     }
-
+	proc.mandatory<CrtLink>();
+	if(m_SeriesList != nullptr)
+		proc.mandatory(*m_SeriesList);
+	if(m_Chart3d != nullptr)
+		proc.mandatory(*m_Chart3d);
     proc.mandatory<End>();
     return true;
 }

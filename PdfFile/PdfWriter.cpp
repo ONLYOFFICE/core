@@ -2287,6 +2287,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetParentID(pPr->GetParentID());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
+		else
+			pWidgetAnnot->Remove("T");
 		if (nFlags & (1 << 20))
 			pWidgetAnnot->SetOMetadata(pPr->GetOMetadata());
 

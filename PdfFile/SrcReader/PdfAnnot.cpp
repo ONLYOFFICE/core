@@ -527,7 +527,7 @@ bool CAnnotFonts::IsBaseFont(const std::wstring& wsName)
 		   wsName == L"Helvetica-Oblique" || wsName == L"Symbol" || wsName == L"Times-Bold" || wsName == L"Times-BoldItalic" ||
 		   wsName == L"Times-Italic" || wsName == L"Times-Roman" || wsName == L"ZapfDingbats";
 }
-std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList)
+std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, bool bIsNeedCMap)
 {
 	std::map<std::wstring, std::wstring> mFonts;
 
@@ -569,7 +569,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 			std::string sActualFontName;
 			std::wstring wsFileName;
 			bool bBold = false, bItalic = false;
-			wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
+			wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic, bIsNeedCMap);
 
 			if (!sActualFontName.empty())
 			{
@@ -593,7 +593,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 				std::string sFontKey;
 				if (GetFontFromAP(pdfDoc, pField, &oFontRef, sFontKey) && std::find(arrUniqueFontsRef.begin(), arrUniqueFontsRef.end(), oFontRef.getRefNum()) == arrUniqueFontsRef.end())
 				{
-					wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic);
+					wsFileName = GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, sFontName, sActualFontName, bBold, bItalic, bIsNeedCMap);
 
 					std::wstring wsFontName = UTF8_TO_U(sFontName);
 					if (sActualFontName.empty() && mFonts.find(wsFontName) == mFonts.end())
@@ -680,7 +680,7 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAllFonts(PDFDoc* pdfDoc, NS
 
 	return mFonts;
 }
-std::wstring CAnnotFonts::GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic)
+std::wstring CAnnotFonts::GetFontData(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oFontRef, std::string& sFontName, std::string& sActualFontName, bool& bBold, bool& bItalic, bool bIsNeedCMap)
 {
 	bBold = false, bItalic = false;
 	XRef* xref = pdfDoc->getXRef();

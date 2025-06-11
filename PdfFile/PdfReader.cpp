@@ -370,7 +370,7 @@ void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 	if (m_vPDFContext.empty())
 		return;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList, false);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
@@ -638,11 +638,8 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 		return false;
 	}
 
-	if (!IsNeedCMap())
-	{
-		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-		m_mFonts.insert(mFonts.begin(), mFonts.end());
-	}
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
 }
@@ -677,11 +674,8 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 		return false;
 	}
 
-	if (!IsNeedCMap())
-	{
-		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-		m_mFonts.insert(mFonts.begin(), mFonts.end());
-	}
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
 }

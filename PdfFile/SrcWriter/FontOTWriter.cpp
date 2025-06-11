@@ -34,6 +34,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <set>
 
 namespace PdfWriter
 {
@@ -141,6 +142,61 @@ namespace PdfWriter
 	};
 	typedef std::list<DictOperand> DictOperandList;
 	typedef std::map<unsigned short, DictOperandList> UShortToDictOperandListMap;
+	enum EEncodingType
+	{
+		eEncodingStandard = 0,
+		eEncodingExpert,
+		eEncodingCustom
+	};
+	typedef std::list<BYTE> ByteList;
+	typedef std::map<unsigned short, ByteList> UShortToByteList;
+	struct EncodingsInfo
+	{
+		EncodingsInfo() { mEncoding = NULL; }
+
+		long long mEncodingStart;
+		long long mEncodingEnd;
+
+		EEncodingType mType;
+		BYTE mEncodingsCount;
+		BYTE* mEncoding;
+		UShortToByteList mSupplements;
+	};
+	struct IndexElement
+	{
+		IndexElement() { mStartPosition = 0; mEndPosition = 0; mIndex = 0; }
+
+		long long mStartPosition;
+		long long mEndPosition;
+		unsigned short mIndex;
+	};
+	typedef IndexElement CharString;
+	typedef CharString* CharStringsIndex;
+	struct CharStrings
+	{
+		CharStrings(){mCharStringsIndex = NULL; mCharStringsType = 0; mCharStringsCount = 0;}
+
+		BYTE mCharStringsType;
+		unsigned short mCharStringsCount;
+		CharStringsIndex mCharStringsIndex;
+	};
+	struct PrivateDictInfo
+	{
+		PrivateDictInfo() {mPrivateDictStart=0;mPrivateDictEnd=0;mLocalSubrs=NULL;}
+
+		long long mPrivateDictStart;
+		long long mPrivateDictEnd;
+		UShortToDictOperandListMap mPrivateDict;
+		CharStrings* mLocalSubrs;
+
+	};
+	struct FontDictInfo
+	{
+		long long mFontDictStart;
+		long long mFontDictEnd;
+		UShortToDictOperandListMap mFontDict;
+		PrivateDictInfo mPrivateDict;
+	};
 
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
@@ -548,6 +604,7 @@ namespace PdfWriter
 		bool SetOrWriteNibble(BYTE inValue, BYTE& ioBuffer, bool& ioUsedFirst);
 		bool WriteDictOperator(unsigned short inOperator);
 		bool Pad5Bytes();
+		bool WriteSID(unsigned short inValue);
 	};
 	CPrimitiveWriter::CPrimitiveWriter(CStream* pStream)
 	{
@@ -812,6 +869,10 @@ namespace PdfWriter
 		BYTE BytesPad5[5] = {'0','0','0','0','0'};
 		return Write(BytesPad5, 5);
 	}
+	bool CPrimitiveWriter::WriteSID(unsigned short inValue)
+	{
+		return WriteCard16(inValue);
+	}
 	//----------------------------------------------------------------------------------------
 	// CCFFReader
 	//----------------------------------------------------------------------------------------
@@ -832,15 +893,6 @@ namespace PdfWriter
 			eCharSetExpertSubset,
 			eCharSetCustom
 		};
-		struct IndexElement
-		{
-			IndexElement() { mStartPosition = 0; mEndPosition = 0; mIndex = 0; }
-
-			long long mStartPosition;
-			long long mEndPosition;
-			unsigned short mIndex;
-		};
-		typedef IndexElement CharString;
 		typedef std::map<unsigned short, CharString*> UShortToCharStringMap;
 		struct CharSetInfo
 		{
@@ -851,53 +903,6 @@ namespace PdfWriter
 			unsigned short* mSIDs; // count is like glyphs count
 		};
 		typedef std::vector<CharSetInfo*> CharSetInfoVector;
-		enum EEncodingType
-		{
-			eEncodingStandard = 0,
-			eEncodingExpert,
-			eEncodingCustom
-		};
-		typedef std::list<BYTE> ByteList;
-		typedef std::map<unsigned short, ByteList> UShortToByteList;
-		struct EncodingsInfo
-		{
-			EncodingsInfo() {mEncoding = NULL;}
-
-			long long mEncodingStart;
-			long long mEncodingEnd;
-
-			EEncodingType mType;
-			BYTE mEncodingsCount;
-			BYTE* mEncoding;
-			UShortToByteList mSupplements;
-
-		};
-		typedef CharString* CharStringsIndex;
-		struct CharStrings
-		{
-			CharStrings(){mCharStringsIndex = NULL; mCharStringsType = 0; mCharStringsCount = 0;}
-
-			BYTE mCharStringsType;
-			unsigned short mCharStringsCount;
-			CharStringsIndex mCharStringsIndex;
-		};
-		struct PrivateDictInfo
-		{
-			PrivateDictInfo() {mPrivateDictStart=0;mPrivateDictEnd=0;mLocalSubrs=NULL;}
-
-			long long mPrivateDictStart;
-			long long mPrivateDictEnd;
-			UShortToDictOperandListMap mPrivateDict;
-			CharStrings* mLocalSubrs;
-
-		};
-		struct FontDictInfo
-		{
-			long long mFontDictStart;
-			long long mFontDictEnd;
-			UShortToDictOperandListMap mFontDict;
-			PrivateDictInfo mPrivateDict;
-		};
 		struct TopDictInfo
 		{
 			TopDictInfo()
@@ -1000,6 +1005,7 @@ namespace PdfWriter
 		long long GetFDArrayPosition(unsigned short inFontIndex);
 		bool ReadFDSelect(unsigned short inFontIndex);
 		long long GetFDSelectPosition(unsigned short inFontIndex);
+		unsigned short GetGlyphSID(unsigned short inFontIndex, unsigned short inGlyphIndex);
 	};
 	CCFFReader::CCFFReader()
 	{
@@ -1987,6 +1993,34 @@ namespace PdfWriter
 	{
 		return GetSingleIntegerValue(inFontIndex, scFDSelect, 0);
 	}
+	unsigned short CCFFReader::GetGlyphSID(unsigned short inFontIndex, unsigned short inGlyphIndex)
+	{
+		if (inFontIndex >= mFontsCount || inGlyphIndex >= mCharStrings[inFontIndex].mCharStringsCount)
+		{
+			return 0;
+		}
+		else
+		{
+			unsigned short sid;
+			if (0 == inGlyphIndex)
+			{
+				sid = 0;
+			}
+			else
+			{
+				if (eCharSetCustom == mTopDictIndex[inFontIndex].mCharSet->mType)
+				{
+					sid = mTopDictIndex[inFontIndex].mCharSet->mSIDs[inGlyphIndex];
+				}
+				else
+				{
+					// SID 0 is omitted for the default charsets
+					sid = scDefaultCharsets[(BYTE)mTopDictIndex[inFontIndex].mCharSet->mType][inGlyphIndex - 1];
+				}
+			}
+			return sid;
+		}
+	}
 	//----------------------------------------------------------------------------------------
 	// COpenTypeReader
 	//----------------------------------------------------------------------------------------
@@ -2824,10 +2858,68 @@ namespace PdfWriter
 		return mCFF.ReadCFFFile(mPrimitivesReader);
 	}
 	//----------------------------------------------------------------------------------------
+	// CharStringType2Flattener
+	//----------------------------------------------------------------------------------------
+	struct CharStringType2Flattener
+	{
+	public:
+		CharStringType2Flattener();
+		~CharStringType2Flattener();
+
+		// will write a font program to another stream, flattening the references to subrs and gsubrs, so that
+		// the charstring becomes independent (with possible references to other charachters through seac-like endchar)
+		bool WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter);
+	};
+	CharStringType2Flattener::CharStringType2Flattener()
+	{
+
+	}
+	CharStringType2Flattener::~CharStringType2Flattener()
+	{
+
+	}
+	bool CharStringType2Flattener::WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter)
+	{
+		/* TODO
+		CharStringType2Interpreter interpreter;
+		bool status = inCFFFileInput->PrepareForGlyphIntepretation(inFontIndex, inGlyphIndex);
+
+		mWriter = inWriter;
+		mHelper = inCFFFileInput;
+		mOperandsToWrite.clear();
+		mStemsCount = 0;
+
+		if (!status)
+			return false;
+
+		CharString* charString = inCFFFileInput->GetGlyphCharString(inFontIndex,inGlyphIndex);
+		if (!charString)
+			return false;
+
+		status = interpreter.Intepret(*charString,this);
+		*/
+
+		/*
+			The alrogithm for writing a flattened charstring is as follows:
+			1. enumerator, through interpretation, the charstring
+			2. hit an operand? accumulate.
+			3. hit an operator? if it's not callgsubr or callsubr just write the operand stack, and continue.
+								if it is callgsubr/callsubr pop the last element on the operand stack and write it, then continue.
+			4. an exception would be when callgsubr/callsubr follow an operator, in which case their index operand is already written. just call drop.
+
+		*/
+		// return status;
+	}
+	//----------------------------------------------------------------------------------------
 	// CCFFWriter
 	//----------------------------------------------------------------------------------------
 	struct CCFFWriter
 	{
+		typedef std::pair<BYTE, unsigned short> ByteAndUShort;
+		typedef std::list<ByteAndUShort> ByteAndUShortList;
+		typedef std::map<FontDictInfo*, BYTE> FontDictInfoToByteMap;
+		typedef std::set<FontDictInfo*> FontDictInfoSet;
+
 		BYTE* mFile;
 		COpenTypeReader mOpenTypeInput;
 		CPrimitiveWriter* mPrimitivesWriter;
@@ -2843,6 +2935,14 @@ namespace PdfWriter
 		long long mFDArrayPlaceHolderPosition;
 		long long mFDSelectPlaceHolderPosition;
 
+		long long mEncodingPosition;
+		long long mCharsetPosition;
+		long long mCharStringPosition;
+		long long mPrivatePosition;
+		long long mPrivateSize;
+		long long mFDArrayPosition;
+		long long mFDSelectPosition;
+
 	public:
 		CCFFWriter();
 		~CCFFWriter();
@@ -2854,6 +2954,13 @@ namespace PdfWriter
 		bool WriteTopIndex();
 		static const unsigned short scEmbeddedPostscript = 0xC15;
 		bool WriteTopDictSegment(CMemoryStream* ioTopDictSegment);
+		bool WriteStringIndex();
+		bool WriteGlobalSubrsIndex();
+		bool WriteEncodings(const std::vector<unsigned int>& inSubsetGlyphIDs);
+		bool WriteCharsets(const std::vector<unsigned int>& inSubsetGlyphIDs, std::vector<unsigned short>* inCIDMapping);
+		void DetermineFDArrayIndexes(const std::vector<unsigned int>& inSubsetGlyphIDs, FontDictInfoToByteMap& outNewFontDictsIndexes);
+		bool WriteFDSelect(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes);
+		bool WriteCharStrings(const std::vector<unsigned int>& inSubsetGlyphIDs);
 	};
 	CCFFWriter::CCFFWriter()
 	{
@@ -2908,6 +3015,36 @@ namespace PdfWriter
 			return false;
 
 		status = WriteTopIndex();
+		if (!status)
+			return false;
+
+		status = WriteStringIndex();
+		if (!status)
+			return false;
+
+		status = WriteGlobalSubrsIndex();
+		if (!status)
+			return false;
+
+		status = WriteEncodings(subsetGlyphIDs);
+		if (!status)
+			return false;
+
+		std::vector<unsigned short>* inCIDMapping = NULL; // TODO
+		status = WriteCharsets(subsetGlyphIDs, inCIDMapping);
+		if (!status)
+			return false;
+
+		FontDictInfoToByteMap newFDIndexes;
+		if (mIsCID)
+		{
+			DetermineFDArrayIndexes(subsetGlyphIDs, newFDIndexes);
+			status = WriteFDSelect(subsetGlyphIDs, newFDIndexes);
+			if (!status)
+				return false;
+		}
+
+		status = WriteCharStrings(subsetGlyphIDs);
 		if (!status)
 			return false;
 
@@ -3085,6 +3222,266 @@ namespace PdfWriter
 			mFDSelectPlaceHolderPosition = 0;
 		}
 		return true;
+	}
+	bool CCFFWriter::WriteStringIndex()
+	{
+		// if added a new string...needs to work hard, otherwise just copy the strings.
+		if (mOptionalEmbeddedPostscript.size() == 0)
+		{
+			// copy as is from the original file. note that the global subroutines
+			// starting position is equal to the strings end position. hence length is...
+
+			mFontFileStream->Write(mFile + mOpenTypeInput.mCFF.mCFFOffset + mOpenTypeInput.mCFF.mStringIndexPosition,
+									 mOpenTypeInput.mCFF.mGlobalSubrsPosition - mOpenTypeInput.mCFF.mStringIndexPosition);
+		}
+		else
+		{
+			// need to write the bloody strings...[remember that i'm adding one more string at the end]
+			mPrimitivesWriter->WriteCard16(mOpenTypeInput.mCFF.mStringsCount + 1);
+
+			// calculate the total data size to determine the required offset size
+			unsigned long totalSize = 0;
+			for (int i = 0; i < mOpenTypeInput.mCFF.mStringsCount; ++i)
+				totalSize += (unsigned long)strlen(mOpenTypeInput.mCFF.mStrings[i]);
+			totalSize += (unsigned long)mOptionalEmbeddedPostscript.size();
+
+			BYTE sizeOfOffset = GetMostCompressedOffsetSize(totalSize + 1);
+			mPrimitivesWriter->WriteOffSize(sizeOfOffset);
+			mPrimitivesWriter->SetOffSize(sizeOfOffset);
+
+			unsigned long currentOffset = 1;
+
+			// write the offsets
+			for (int i = 0; i < mOpenTypeInput.mCFF.mStringsCount; ++i)
+			{
+				mPrimitivesWriter->WriteOffset(currentOffset);
+				currentOffset += (unsigned long)strlen(mOpenTypeInput.mCFF.mStrings[i]);
+			}
+			mPrimitivesWriter->WriteOffset(currentOffset);
+			currentOffset += (unsigned long)mOptionalEmbeddedPostscript.size();
+			mPrimitivesWriter->WriteOffset(currentOffset);
+
+			// write the data
+			for (int i = 0; i < mOpenTypeInput.mCFF.mStringsCount; ++i)
+			{
+				mFontFileStream->Write((const BYTE*)(mOpenTypeInput.mCFF.mStrings[i]), strlen(mOpenTypeInput.mCFF.mStrings[i]));
+			}
+			mFontFileStream->Write((const BYTE*)(mOptionalEmbeddedPostscript.c_str()), mOptionalEmbeddedPostscript.size());
+		}
+		return true;
+	}
+	bool CCFFWriter::WriteGlobalSubrsIndex()
+	{
+		// global subrs index is empty!. no subrs in my CFF outputs. all charstrings are flattened
+
+		return mPrimitivesWriter->WriteCard16(0);
+	}
+	bool CCFFWriter::WriteEncodings(const std::vector<unsigned int>& inSubsetGlyphIDs)
+	{
+		// if it's a CID. don't bother with encodings (marks as 0)
+		if (mIsCID)
+		{
+			mEncodingPosition = 0;
+			return true;
+		}
+
+		// not CID, write encoding, according to encoding values from the original font
+		EncodingsInfo* encodingInfo = mOpenTypeInput.mCFF.mTopDictIndex[0].mEncoding;
+		if (encodingInfo->mEncodingStart <= 1)
+		{
+			mEncodingPosition = encodingInfo->mEncodingStart;
+			return true;
+		}
+		else
+		{
+			// original font had custom encoding, let's subset it according to just the glyphs we
+			// actually have. but cause i'm lazy i'll just do the first format.
+
+			// figure out if we got supplements
+			std::vector<unsigned int>::const_iterator it = inSubsetGlyphIDs.begin();
+			ByteAndUShortList supplements;
+
+			for (; it != inSubsetGlyphIDs.end();++it)
+			{
+				// don't be confused! the supplements is by SID! not GID!
+				unsigned short sid = mOpenTypeInput.mCFF.GetGlyphSID(0, *it);
+
+				UShortToByteList::iterator itSupplements = encodingInfo->mSupplements.find(sid);
+				if(itSupplements != encodingInfo->mSupplements.end())
+				{
+					ByteList::iterator itMoreEncoding = itSupplements->second.begin();
+					for(; itMoreEncoding != itSupplements->second.end(); ++itMoreEncoding)
+						supplements.push_back(ByteAndUShort(*itMoreEncoding,sid));
+				}
+			}
+
+			mEncodingPosition = mFontFileStream->Tell();
+
+			if (supplements.size() > 0)
+				mPrimitivesWriter->WriteCard8(0x80);
+			else
+				mPrimitivesWriter->WriteCard8(0);
+
+			// assuming that 0 is in the subset glyphs IDs, which does not require encoding
+			// get the encodings count
+			BYTE encodingGlyphsCount = std::min((BYTE)(inSubsetGlyphIDs.size() - 1),encodingInfo->mEncodingsCount);
+
+			mPrimitivesWriter->WriteCard8(encodingGlyphsCount);
+			for (BYTE i = 0; i < encodingGlyphsCount; ++i)
+			{
+				if (inSubsetGlyphIDs[i + 1] < encodingInfo->mEncodingsCount)
+					mPrimitivesWriter->WriteCard8(encodingInfo->mEncoding[inSubsetGlyphIDs[i + 1] - 1]);
+				else
+					mPrimitivesWriter->WriteCard8(0);
+			}
+
+			if (supplements.size() > 0)
+			{
+				mPrimitivesWriter->WriteCard8(BYTE(supplements.size()));
+				ByteAndUShortList::iterator itCollectedSupplements = supplements.begin();
+
+				for (; itCollectedSupplements != supplements.end(); ++itCollectedSupplements)
+				{
+					mPrimitivesWriter->WriteCard8(itCollectedSupplements->first);
+					mPrimitivesWriter->WriteCard16(itCollectedSupplements->second);
+				}
+			}
+		}
+
+		return true;
+	}
+	bool CCFFWriter::WriteCharsets(const std::vector<unsigned int>& inSubsetGlyphIDs, std::vector<unsigned short>* inCIDMapping)
+	{
+		// since this is a subset the chances that i'll get a defult charset are 0.
+		// hence i'll always do some charset. and using format 0 !!1
+		std::vector<unsigned int>::const_iterator it = inSubsetGlyphIDs.begin();
+		++it; // skip the 0
+
+		mCharsetPosition = mFontFileStream->Tell();
+
+		mPrimitivesWriter->WriteCard8(0);
+		if (mIsCID && inCIDMapping)
+		{
+			std::vector<unsigned short>::const_iterator itCIDs = inCIDMapping->begin();
+			++itCIDs;
+			for (; it != inSubsetGlyphIDs.end(); ++it, ++itCIDs)
+				mPrimitivesWriter->WriteSID(*itCIDs);
+
+		}
+		else
+		{
+			// note that this also works for CIDs! cause in this case the SIDs are actually
+			// CIDs
+			for (; it != inSubsetGlyphIDs.end(); ++it)
+				mPrimitivesWriter->WriteSID(mOpenTypeInput.mCFF.GetGlyphSID(0, *it));
+		}
+		return true;
+	}
+	void CCFFWriter::DetermineFDArrayIndexes(const std::vector<unsigned int>& inSubsetGlyphIDs, FontDictInfoToByteMap& outNewFontDictsIndexes)
+	{
+		std::vector<unsigned int>::const_iterator itGlyphs = inSubsetGlyphIDs.begin();
+		FontDictInfoSet fontDictInfos;
+
+		for (; itGlyphs != inSubsetGlyphIDs.end(); ++itGlyphs)
+			if (mOpenTypeInput.mCFF.mTopDictIndex[0].mFDSelect[*itGlyphs])
+				fontDictInfos.insert(mOpenTypeInput.mCFF.mTopDictIndex[0].mFDSelect[*itGlyphs]);
+
+		FontDictInfoSet::iterator itFontInfos;
+		BYTE i = 0;
+
+		for (itFontInfos = fontDictInfos.begin(); itFontInfos != fontDictInfos.end(); ++itFontInfos,++i)
+			outNewFontDictsIndexes.insert(FontDictInfoToByteMap::value_type(*itFontInfos, i));
+	}
+	bool CCFFWriter::WriteFDSelect(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes)
+	{
+		// always write format 3. cause at most cases the FD dicts count will be so low that it'd
+		// take a bloody mircale for no repeats to occur.
+		std::vector<unsigned int>::const_iterator itGlyphs = inSubsetGlyphIDs.begin();
+
+		mFDSelectPosition = mFontFileStream->Tell();
+		mPrimitivesWriter->WriteCard8(3);
+
+		long long rangesCountPosition = mFontFileStream->Tell();
+		mPrimitivesWriter->WriteCard16(1); // temporary. will get back to this later
+
+		unsigned short rangesCount = 1;
+		BYTE currentFD, newFD;
+		unsigned short glyphIndex = 1;
+		FontDictInfoToByteMap::const_iterator itNewIndex = inNewFontDictsIndexes.find(mOpenTypeInput.mCFF.mTopDictIndex[0].mFDSelect[*itGlyphs]);
+
+		// k. seems like i probably just imagine exceptions here. i guess there must
+		// be a proper FDSelect with FDs for all...so i'm defaulting to some 0
+		currentFD = (itNewIndex == inNewFontDictsIndexes.end() ? 0 : itNewIndex->second);
+		mPrimitivesWriter->WriteCard16(0);
+		mPrimitivesWriter->WriteCard8(currentFD);
+		++itGlyphs;
+
+		for (; itGlyphs != inSubsetGlyphIDs.end(); ++itGlyphs, ++glyphIndex)
+		{
+			itNewIndex = inNewFontDictsIndexes.find(mOpenTypeInput.mCFF.mTopDictIndex[0].mFDSelect[*itGlyphs]);
+			newFD = (itNewIndex == inNewFontDictsIndexes.end() ? 0 : itNewIndex->second);
+			if (newFD != currentFD)
+			{
+				currentFD = newFD;
+				mPrimitivesWriter->WriteCard16(glyphIndex);
+				mPrimitivesWriter->WriteCard8(currentFD);
+				++rangesCount;
+			}
+		}
+		mPrimitivesWriter->WriteCard16((unsigned short)inSubsetGlyphIDs.size());
+		// go back to ranges count if not equal to what's already written
+		if (rangesCount != 1)
+		{
+			long long currentPosition = mFontFileStream->Tell();
+			mFontFileStream->Seek(rangesCountPosition, SeekSet);
+			mPrimitivesWriter->WriteCard16(rangesCount);
+			mFontFileStream->Seek(currentPosition, SeekSet);
+		}
+		return true;
+	}
+	bool CCFFWriter::WriteCharStrings(const std::vector<unsigned int>& inSubsetGlyphIDs)
+	{
+		/*
+			1. build the charstrings data, looping the glyphs charstrings and writing a flattened
+			   version of each charstring
+			2. write the charstring index based on offsets inside the data (size should be according to the max)
+			3. copy the data into the stream
+		*/
+
+		unsigned long* offsets = new unsigned long[inSubsetGlyphIDs.size() + 1];
+		// CMemoryStream charStringsData;
+		CMemoryStream charStringsDataWriteStream;
+		CharStringType2Flattener charStringFlattener;
+		std::vector<unsigned int>::const_iterator itGlyphs = inSubsetGlyphIDs.begin();
+		bool status = true;
+
+		unsigned short i = 0;
+		for (; itGlyphs != inSubsetGlyphIDs.end() && status; ++itGlyphs, ++i)
+		{
+			offsets[i] = (unsigned long)charStringsDataWriteStream.Tell();
+			status = charStringFlattener.WriteFlattenedGlyphProgram(0, *itGlyphs, &(mOpenTypeInput.mCFF), &charStringsDataWriteStream);
+		}
+		if (!status)
+			return false;
+
+		offsets[i] = (unsigned long)charStringsDataWriteStream.Tell();
+
+		charStringsDataWriteStream.Seek(0, SeekSet);
+
+		// write index section
+		mCharStringPosition = mFontFileStream->Tell();
+		BYTE sizeOfOffset = GetMostCompressedOffsetSize(offsets[i] + 1);
+		mPrimitivesWriter->WriteCard16((unsigned short)inSubsetGlyphIDs.size());
+		mPrimitivesWriter->WriteOffSize(sizeOfOffset);
+		mPrimitivesWriter->SetOffSize(sizeOfOffset);
+		for (i = 0; i <= inSubsetGlyphIDs.size(); ++i)
+			mPrimitivesWriter->WriteOffset(offsets[i] + 1);
+
+		// Write data
+		mFontFileStream->WriteStream(&charStringsDataWriteStream, 0, NULL);
+
+		delete[] offsets;
+		return status;
 	}
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType

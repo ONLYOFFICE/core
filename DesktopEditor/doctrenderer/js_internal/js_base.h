@@ -194,9 +194,17 @@ namespace NSJSBase
 		 */
 		virtual CJSEmbedObjectAdapterBase* getAdapter();
 
+		/**
+		 * Use the externalize flag if you are monitoring the object's destruction yourself.
+		 */
+		virtual void SetExternalize(const bool& isExternalize = true);
+		virtual bool GetExternalize();
+
 	protected:
 		CJSEmbedObjectPrivateBase* embed_native_internal;
 		CJSEmbedObjectAdapterBase* m_pAdapter;
+
+		bool m_isExternalize;
 
 		friend class CJSEmbedObjectPrivateBase;
 		friend class CJSEmbedObjectPrivate;

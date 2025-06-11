@@ -74,6 +74,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, cons
 	global->set("native", oNativeCtrl);
 
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
+	pBuilderJSNative->SetExternalize(true);
 	pBuilderJSNative->m_pBuilder = pBuilder;
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()

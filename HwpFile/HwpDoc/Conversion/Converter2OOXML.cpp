@@ -299,6 +299,13 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 	{
 		case ECtrlCharType::PARAGRAPH_BREAK:
 		{
+			// Таблицы пишутся без тега <w:p>, поэтому для них не открывается параграф
+			if (ECtrlObjectType::Table == oState.m_ePrevElementType && !oState.m_bInTable)
+			{
+				oState.m_ePrevElementType = ECtrlObjectType::Character;
+				break;
+			}
+
 			if (!oState.m_bOpenedP)
 				WriteEmptyParagraph(shParaShapeID, shParaStyleID, pCharacter->GetCharShapeId(), oBuilder, oState);
 			else
@@ -321,6 +328,8 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaS
 {
 	if (nullptr == pShape || oState.m_bInTextBox)
 		return;
+
+	oState.m_ePrevElementType = ECtrlObjectType::Shape;
 
 	switch (pShape->GetShapeType())
 	{
@@ -368,6 +377,11 @@ void CConverter2OOXML::WriteShape(const CCtrlGeneralShape* pShape, short shParaS
 
 void CConverter2OOXML::WriteNote(const CCtrlNote* pNote, short shParaShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
+	if (nullptr == pNote)
+		return;
+
+	oState.m_ePrevElementType = ECtrlObjectType::Note;
+
 	oBuilder.WriteString(L"<w:r>");
 
 	CRunnerStyle oRunnerStyle;
@@ -384,6 +398,8 @@ void CConverter2OOXML::WriteField(const CCtrlField* pShape, short shParaShapeID,
 {
 	if (nullptr == pShape)
 		return;
+
+	oState.m_ePrevElementType = ECtrlObjectType::AutoNumber;
 
 	switch (pShape->GetType())
 	{
@@ -492,7 +508,7 @@ void CConverter2OOXML::WriteCaption(const CCtrlCommon* pCtrlCommon, NSStringUtil
 
 void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
 {
-	if (oState.m_bOpenedP || oState.m_bLastEmptyNode)
+	if (oState.m_bOpenedP)
 		return;
 
 	oBuilder.WriteString(L"<w:p>");
@@ -503,8 +519,6 @@ void CConverter2OOXML::WriteEmptyParagraph(short shParaShapeID, short shParaStyl
 
 	oBuilder.WriteString(L"</w:pPr>");
 	oBuilder.WriteString(L"</w:p>");
-
-	oState.m_bLastEmptyNode = true;
 }
 
 void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -536,7 +550,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			case ECtrlObjectType::ParaText:
 			{
 				WriteText((const CParaText*)pCtrl, pParagraph->GetRangeTags(), pParagraph->GetShapeID(), pParagraph->GetStyleID(), oBuilder, oState);
-				// WriteText(((const CParaText*)pCtrl)->GetText(), pParagraph->GetShapeID(), ((const CParaText*)pCtrl)->GetCharShapeID(), oBuilder, oState);
 				break;
 			}
 			case ECtrlObjectType::Character:
@@ -601,7 +614,6 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 	}
 
 	CloseParagraph(oBuilder, oState);
-	oState.m_bLastEmptyNode = false;
 }
 
 void CConverter2OOXML::WriteParagraphProperties(short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -668,14 +680,17 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 	if (nullptr == pTable || pTable->Empty())
 		return;
 
+	oState.m_ePrevElementType = ECtrlObjectType::Table;
+
 	CloseParagraph(oBuilder, oState);
 
 	++m_ushTableCount;
 
 	oBuilder.WriteString(L"<w:tbl>");
 
+	const bool bTableInTable = oState.m_bInTable;
+
 	oState.m_bInTable = true;
-	oState.m_bLastEmptyNode = false;
 
 	WriteTableProperties(pTable, shParaShapeID, shParaStyleID, oBuilder, oState);
 
@@ -753,7 +768,7 @@ void CConverter2OOXML::WriteTable(const CCtrlTable* pTable, short shParaShapeID,
 
 	oBuilder.WriteString(L"</w:tbl>");
 
-	oState.m_bInTable = false;
+	oState.m_bInTable = bTableInTable;
 }
 
 void CConverter2OOXML::WriteTableProperties(const CCtrlTable* pTable, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -828,8 +843,10 @@ void CConverter2OOXML::WriteCell(const CTblCell* pCell, NSStringUtils::CStringBu
 		for (const CHWPPargraph* pParagraph : pCell->GetParagraphs())
 		{
 			NSStringUtils::CStringBuilder oCellBuilder;
+
 			TConversionState oCellState;
 			oCellState.m_pRelationships = oState.m_pRelationships;
+			oCellState.m_bInTable       = oState.m_bInTable;
 
 			WriteParagraph(pParagraph, oCellBuilder, oCellState);
 
@@ -1736,7 +1753,6 @@ void CConverter2OOXML::OpenParagraph(short shParaShapeID, short shParaStyleID, N
 
 	oBuilder.WriteString(L"<w:p>");
 	oState.m_bOpenedP = true;
-	oState.m_bLastEmptyNode = false;
 	WriteParagraphProperties(shParaShapeID, shParaStyleID, oBuilder, oState);
 }
 
@@ -1857,10 +1873,9 @@ std::vector<std::wstring> SplitText(const std::wstring& wsText)
 void CConverter2OOXML::WriteText(const HWP_STRING& wsText, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& oExternalStyle)
 {
 	if (!oState.m_bOpenedP && wsText.empty())
-	{
-		WriteEmptyParagraph(shParaShapeID, shParaStyleID, shCharShapeID, oBuilder, oState);
 		return;
-	}
+
+	oState.m_ePrevElementType = ECtrlObjectType::ParaText;
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
@@ -2041,6 +2056,8 @@ void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short
 {
 	if (nullptr == pAutoNumber)
 		return;
+
+	oState.m_ePrevElementType = ECtrlObjectType::AutoNumber;
 
 	unsigned short ushValue = 0;
 	HWP_STRING wsType;

@@ -246,6 +246,11 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 	if (oCharShape.StrikeOut())
 		oRunnerStyle.SetStrike(EStrikeType::Single);
 
+	if (oCharShape.SuperScript())
+		oRunnerStyle.SetVerticalAlign(EVerticalAlignRun::Superscript);
+	else if (oCharShape.SubScript())
+		oRunnerStyle.SetVerticalAlign(EVerticalAlignRun::Subscript);
+
 	const int nHeight = static_cast<int>(((double)(std::abs)(oCharShape.GetHeight()) * ((double)oCharShape.GetRelSize(ELang::HANGUL) / 100.) / 100.) * 2.);
 	oRunnerStyle.SetSz(nHeight);
 

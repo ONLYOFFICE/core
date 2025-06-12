@@ -313,6 +313,16 @@ bool CHWPRecordCharShape::StrikeOut() const
 	return ELineStyle2::NONE != m_eStrikeOutShape;
 }
 
+bool CHWPRecordCharShape::SuperScript() const
+{
+	return m_bSuperScript;
+}
+
+bool CHWPRecordCharShape::SubScript() const
+{
+	return m_bSubScript;
+}
+
 int CHWPRecordCharShape::GetHeight() const
 {
 	return m_nHeight;

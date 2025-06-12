@@ -109,6 +109,8 @@ public:
 	bool Italic() const;
 	bool Underline() const;
 	bool StrikeOut() const;
+	bool SuperScript() const;
+	bool SubScript() const;
 
 	int GetHeight() const;
 

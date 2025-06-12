@@ -2482,7 +2482,7 @@ namespace StarMath
 	}
 //class methods CIndex
 	CElementIndex::CElementIndex(const TypeElement& enType,const TypeConversion &enTypeConversion)
-		: CElement(TypeElement::Index,enTypeConversion),m_pValueIndex(nullptr),m_pUpperIndex(nullptr),m_pLowerIndex(nullptr),m_pLsubIndex(nullptr),m_pLsupIndex(nullptr),m_pCsubIndex(nullptr),m_pCsupIndex(nullptr),m_pLeftArg(nullptr),m_enTypeIndex(enType),m_bEQN(false)
+		: CElement(TypeElement::Index,enTypeConversion),m_pValueIndex(nullptr),m_pUpperIndex(nullptr),m_pLowerIndex(nullptr),m_pLsubIndex(nullptr),m_pLsupIndex(nullptr),m_pCsubIndex(nullptr),m_pCsupIndex(nullptr),m_pLeftArg(nullptr),m_enTypeIndex(enType),m_enTempTypeIndex(TypeElement::undefine),m_bEQN(false)
 	{
 	}
 	CElementIndex::~CElementIndex()
@@ -2595,25 +2595,30 @@ namespace StarMath
 				switch(m_enTypeIndex)
 				{
 				case TypeElement::upper:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pUpperIndex);
+				// CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pUpperIndex,m_bEQN);
+					ParseIndex(pReader,m_pUpperIndex);
 				break;
 				case TypeElement::lower:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLowerIndex);
+				// CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLowerIndex,m_bEQN);
+					ParseIndex(pReader,m_pLowerIndex);
 				break;
 				case TypeElement::lsub:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLsubIndex);
+				// CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLsubIndex,m_bEQN);
+					ParseIndex(pReader,m_pLsubIndex);
 				break;
 				case TypeElement::lsup:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLsupIndex);
+				// CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pLsupIndex,m_bEQN);
+					ParseIndex(pReader,m_pLsupIndex);
 				break;
 				case TypeElement::csub:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pCsubIndex);
+				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pCsubIndex,m_bEQN);
 				break;
 				case TypeElement::csup:
-				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pCsupIndex);
+				CParserStarMathString::ReadingElementsWithAttributes(pReader,m_pCsupIndex,m_bEQN);
 				break;
 				}
 				pReader->ReadingTheNextToken();
+				m_enTempTypeIndex = m_enTypeIndex;
 				m_enTypeIndex = pReader->GetLocalType();
 			}while(GetUpperIndex(pReader->GetLocalType()) || GetLowerIndex(pReader->GetLocalType()));
 		}
@@ -2625,10 +2630,22 @@ namespace StarMath
 			Parse(pReader);
 		else
 		{
-			m_pValueIndex = CParserStarMathString::ParseElementEQN(pReader);
-			pReader->ReadingTheNextToken(true);
-			if()
+			m_pLeftArg = CParserStarMathString::ParseElementEQN(pReader);
+			Parse(pReader);
+			m_enTypeIndex = TypeElement::underover;
 		}
+	}
+	void CElementIndex::ParseIndex(CStarMathReader *pReader, CElement *&pElement)
+	{
+		if(m_bEQN && (m_enTempTypeIndex == m_enTypeIndex ) && pElement != nullptr)
+		{
+			CElement* pTempElement = new CElementIndex(m_enTempTypeIndex,GetTypeConversion());
+			pTempElement->ParseEQN(pReader);
+			CParserStarMathString::AddLeftArgument(pElement,pTempElement,pReader);
+			pElement = pTempElement;
+		}
+		else
+			CParserStarMathString::ReadingElementsWithAttributes(pReader,pElement,m_bEQN);
 	}
 	void CElementIndex::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
@@ -3408,6 +3425,12 @@ namespace StarMath
 		else if(m_wsLowerCaseToken == L"left")
 		{
 			m_enUnderType = TypeElement::left;
+			m_enGlobalType = TypeElement::Bracket;
+			return;
+		}
+		m_enUnderType = CElementBracket::GetBracketOpen(m_wsLowerCaseToken,true);
+		if(m_enUnderType != TypeElement::undefine)
+		{
 			m_enGlobalType = TypeElement::Bracket;
 			return;
 		}

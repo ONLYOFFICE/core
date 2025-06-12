@@ -213,6 +213,7 @@ namespace StarMath
 		TFormulaSize GetSize() override;
 		void ConversionOfIndicesToValue(XmlUtils::CXmlWriter* pXmlWrite);
 		void ConversionOfIndicesAfterValue(XmlUtils::CXmlWriter* pXmlWrite);
+		void ParseIndex(CStarMathReader* pReader,CElement*& pElement);
 		CElement* m_pValueIndex;
 		CElement* m_pUpperIndex;
 		CElement* m_pLowerIndex;
@@ -221,7 +222,7 @@ namespace StarMath
 		CElement* m_pCsubIndex;
 		CElement* m_pCsupIndex;
 		CElement* m_pLeftArg;
-		TypeElement m_enTypeIndex;
+		TypeElement m_enTypeIndex,m_enTempTypeIndex;
 		bool m_bEQN;
 	};
 

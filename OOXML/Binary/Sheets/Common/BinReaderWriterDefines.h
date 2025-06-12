@@ -589,7 +589,8 @@ namespace BinXlsxRW
 		Text = 53,
 		Print = 54,
 		ItemLst = 55,
-		Item = 56
+		Item = 56,
+		Shape = 57
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{

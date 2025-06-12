@@ -84,14 +84,20 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 			case xml::typeWhitespace:
 			{
 				const std::wstring value = Reader->value();
-				add_space(value);
+				if (false == value.empty())
+				{
+					add_space(value);
+				}
 			}
 			break;
 			case xml::typeCDATA:
 			case xml::typeText:
 			{
 				const std::wstring value = Reader->value();
-				add_text(value);
+				if (false == value.empty())
+				{
+					add_text(value);
+				}
 			}
 			break;
         }

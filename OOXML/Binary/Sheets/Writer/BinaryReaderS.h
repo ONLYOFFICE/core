@@ -413,7 +413,7 @@ namespace BinXlsxRW
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
-		std::wstring GetControlVmlShape(void* pControl);
+		void GetControlVmlShape(void* pControl);
         int ReadSheetDataToBin(BYTE type, long length, void* poResult);
         bool m_bWriteToXlsb = false;
 	};

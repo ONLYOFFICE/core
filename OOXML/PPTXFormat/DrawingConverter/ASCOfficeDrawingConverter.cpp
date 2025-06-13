@@ -6154,7 +6154,8 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 		oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap, GetRels());
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 	--m_nCurrentIndexObject;
 
@@ -6182,7 +6183,8 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 		
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, GetRels(), false, bSignature);
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels, false, bSignature);
 	}
 }
 
@@ -6195,7 +6197,8 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
 		
 		PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
-		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, GetRels());
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 }
 void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape)

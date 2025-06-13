@@ -81,29 +81,26 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 
 					unsigned int unInfoLength = 0;
 
-					if (sText.length() >= unIndex + 6 && sText[unIndex] == sText[unIndex + 6])
+					if (sText.length() > unIndex + 6 && sText[unIndex] == sText[unIndex + 6] && sText[unIndex + 1] >= 0x20)
 						unInfoLength = 4;
-					else if (sText.length() >= unIndex + 7 && sText[unIndex] == sText[unIndex + 7])
+					else if (sText.length() > unIndex + 7 && sText[unIndex] == sText[unIndex + 7] && sText[unIndex + 1] >= 0x20)
 						unInfoLength = 5;
-					else
+					else if (6 >= unIndex && unIndex > 2) //Случай, когда запись в самом начале
 					{
-						if (7 >= unIndex) //Случай, когда запись в самом начале
-						{
-							nStartText = -1;
-							sCurrentText.clear();
+						nStartText = -1;
+						sCurrentText.clear();
 
-							sType.resize(4);
-							sType[0] = (sText[0] & 0xFF);
-							sType[1] = ((sText[0] >> 8) & 0xFF);
-							sType[2] = (sText[1] & 0xFF);
-							sType[3] = ((sText[1] >> 8) & 0xFF);
+						sType.resize(4);
+						sType[0] = (sText[0] & 0xFF);
+						sType[1] = ((sText[0] >> 8) & 0xFF);
+						sType[2] = (sText[1] & 0xFF);
+						sType[3] = ((sText[1] >> 8) & 0xFF);
 
-							unInfoLength = 4;
-							unIndex = 0;
-						}
-						else
-							continue;
+						unInfoLength = 4;
+						unIndex = 0;
 					}
+					else
+						continue;
 
 					if (sType.empty())
 					{

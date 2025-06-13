@@ -493,7 +493,7 @@ namespace NSCSS
 
 		if (L"#text" == arSelectors.back().m_wsName)
 		{
-			if (arSelectors.size() > 1)
+			if (arSelectors.size() > 1 && arSelectors.back().m_pCompiledStyle->Empty())
 				*arSelectors.back().m_pCompiledStyle += *(arSelectors.end() - 2)->m_pCompiledStyle;
 
 			if(arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(),

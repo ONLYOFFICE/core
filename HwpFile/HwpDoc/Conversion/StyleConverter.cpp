@@ -11,6 +11,8 @@ namespace HWP
 #define DEFAULT_STYLE_NAME L"Style"
 #define DEFAULT_SPACING 240
 
+#define SPACING_SCALE_MS_WORD 1.21
+
 #define ADD_COLOR(r, g, b, enum_value) {{r, g, b}, enum_value}
 
 static const std::vector<std::pair<TColor, EHighlightColors>> s_arHighlightColors
@@ -232,6 +234,8 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 
 	oRunnerStyle.SetAscii(oCharShape.GetFontName(ELang::LATIN));
 	oRunnerStyle.SetEastAsia(oCharShape.GetFontName(ELang::HANGUL));
+	oRunnerStyle.SetRatio(oCharShape.GetRatio(ELang::LATIN));
+	oRunnerStyle.SetSpacing(static_cast<short>((double)oCharShape.GetSpacing(ELang::LATIN) * SPACING_SCALE_MS_WORD));
 
 	if (oCharShape.Bold())
 		oRunnerStyle.SetBold(true);
@@ -241,6 +245,11 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 
 	if (oCharShape.StrikeOut())
 		oRunnerStyle.SetStrike(EStrikeType::Single);
+
+	if (oCharShape.SuperScript())
+		oRunnerStyle.SetVerticalAlign(EVerticalAlignRun::Superscript);
+	else if (oCharShape.SubScript())
+		oRunnerStyle.SetVerticalAlign(EVerticalAlignRun::Subscript);
 
 	const int nHeight = static_cast<int>(((double)(std::abs)(oCharShape.GetHeight()) * ((double)oCharShape.GetRelSize(ELang::HANGUL) / 100.) / 100.) * 2.);
 	oRunnerStyle.SetSz(nHeight);
@@ -438,6 +447,12 @@ void CStyleConverter::WriteRunnerProperties(const CRunnerStyle& oRunnerStyle, NS
 
 	if (oRunnerStyle.ColorIsSet())
 		oBuilder.WriteString(L"<w:color w:val=\"" + oRunnerStyle.GetColor().ToHEX() + L"\"/>");
+
+	if (oRunnerStyle.RatioIsSet() && 100 != oRunnerStyle.GetRatio())
+		oBuilder.WriteString(L"<w:w w:val=\"" + std::to_wstring(oRunnerStyle.GetRatio()) + L"\"/>");
+
+	if (oRunnerStyle.SpacingIsSet() && 0 != oRunnerStyle.GetSpacing())
+		oBuilder.WriteString(L"<w:spacing w:val=\"" + std::to_wstring(oRunnerStyle.GetSpacing()) + L"\"/>");
 
 	if (oRunnerStyle.UIsSet())
 	{
@@ -709,9 +724,10 @@ CRunnerStyle& CRunnerStyle::operator-=(const CRunnerStyle& oRunnerStyle)
 	m_nSz            -= oRunnerStyle.m_nSz;
 	m_oColor         -= oRunnerStyle.m_oColor;
 	m_nShadeColor    -= oRunnerStyle.m_nShadeColor;
+	m_shRatio        -= oRunnerStyle.m_shRatio;
 	m_oU             -= oRunnerStyle.m_oU;
 	m_eStrike        -= oRunnerStyle.m_eStrike;
-	m_nSpacing       -= oRunnerStyle.m_nSpacing;
+	m_shSpacing      -= oRunnerStyle.m_shSpacing;
 	m_oHighlight     -= oRunnerStyle.m_oHighlight;
 	m_eVerticalAlign -= oRunnerStyle.m_eVerticalAlign;
 
@@ -727,9 +743,10 @@ void CRunnerStyle::Clear()
 	m_nSz.UnSet();
 	m_oColor.UnSet();
 	m_nShadeColor.UnSet();
+	m_shRatio.UnSet();
 	m_oU.UnSet();
 	m_eStrike.UnSet();
-	m_nSpacing.UnSet();
+	m_shSpacing.UnSet();
 	m_oHighlight.UnSet();
 	m_eVerticalAlign.UnSet();
 }
@@ -737,8 +754,8 @@ void CRunnerStyle::Clear()
 bool CRunnerStyle::Empty() const
 {
 	return !m_oRFonts.m_wsAscii.IsSet() && !m_oRFonts.m_wsEastAsia.IsSet() && !m_bBold.IsSet() && !m_bItalic.IsSet() &&
-	       !m_nSz.IsSet() && !m_oColor.IsSet() && !m_nShadeColor.IsSet() && !m_oU.IsSet() && !m_eStrike.IsSet() &&
-	       !m_nSpacing.IsSet() && !m_oHighlight.IsSet() && !m_eVerticalAlign.IsSet();
+	       !m_nSz.IsSet() && !m_oColor.IsSet() && !m_nShadeColor.IsSet() && !m_shRatio.IsSet() && !m_oU.IsSet() &&
+	       !m_eStrike.IsSet() && !m_shSpacing.IsSet() && !m_oHighlight.IsSet() && !m_eVerticalAlign.IsSet();
 }
 
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, std::wstring, Ascii, m_oRFonts.m_wsAscii);
@@ -748,9 +765,10 @@ CREATE_BODY_METHODS_FOR_PROPERTY_BOOL(CRunnerStyle, Italic, m_bItalic);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, Sz, m_nSz);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, TColor, Color, m_oColor);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, ShadeColor, m_nShadeColor)
+CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, short, Ratio, m_shRatio)
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, TU, U, m_oU);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, EStrikeType, Strike, m_eStrike);
-CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, int, Spacing, m_nSpacing);
+CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, short, Spacing, m_shSpacing);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, EHighlightColors, Highlight, m_oHighlight);
 CREATE_BODY_METHODS_FOR_PROPERTY(CRunnerStyle, EVerticalAlignRun, VerticalAlign, m_eVerticalAlign);
 

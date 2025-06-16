@@ -109,14 +109,14 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 /////////////////////////////////////////////////////////////////////////////////
 	std::vector<const odf_reader::style_instance *> instances;
 
-	const std::wstring grStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
-	const std::wstring baseStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
+	const std::wstring drawStyleName		= common_draw_attlist_.draw_style_name_.get_value_or(L"");
+	const std::wstring presentationStyleName	= common_draw_attlists_.shape_with_text_and_styles_.common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
 
 	odf_reader::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(drawStyleName, odf_types::style_family::Graphic,Context.process_masters_);
 	
 	odf_reader::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
+		Context.root()->odf_context().styleContainer().style_by_name(presentationStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{

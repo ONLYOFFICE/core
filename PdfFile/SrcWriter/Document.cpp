@@ -1346,6 +1346,10 @@ namespace PdfWriter
 				if (pV && pV->GetType() == object_type_STRING)
 					pParent->Add("V", pV->Copy());
 
+				CObjectBase* pAA = pBase->Get("AA");
+				if (pAA)
+					pParent->Add("AA", pAA->Copy());
+
 				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
 				int nMaxLen = 0;
 				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))

@@ -895,7 +895,16 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAnnotFont(PDFDoc* pdfDoc, N
 			continue;
 
 		std::wstring wsFontName = UTF8_TO_U(sFontName);
-		NSFonts::IFontStream* pFontStream = pMemoryStorage ? (NSFonts::IFontStream*)pMemoryStorage->Get(sFontPath) : NULL;
+		NSFonts::IFontStream* pFontStream = NULL;
+		bool bRemoveStream = false;
+		if (pMemoryStorage)
+			pFontStream = (NSFonts::IFontStream*)pMemoryStorage->Get(sFontPath);
+		else
+		{
+			pFontStream = NSFonts::NSStream::Create();
+			pFontStream->CreateFromFile(sFontPath);
+			bRemoveStream = true;
+		}
 		if (pFontStream)
 		{
 			bool bNew = true;
@@ -914,6 +923,8 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAnnotFont(PDFDoc* pdfDoc, N
 			if (bNew)
 				pAppFontList->Add(sFontPath, pFontStream);
 		}
+		if (bRemoveStream)
+			RELEASEINTERFACE(pFontStream);
 		mFontFreeText[wsFontName] = sFontPath;
 	}
 

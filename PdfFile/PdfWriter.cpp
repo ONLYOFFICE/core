@@ -2682,7 +2682,13 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		}
 
 		if (nFlags & (1 << 2))
-			pParentObj->Add("DV", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sDV)).c_str(), true));
+		{
+			std::string sDV = U_TO_UTF8(pParent->sDV);
+			if (sFT == "Btn")
+				pParentObj->Add("DV", sDV.c_str());
+			else
+				pParentObj->Add("DV", new PdfWriter::CStringObject(sDV.c_str(), true));
+		}
 		if (nFlags & (1 << 3))
 		{
 			PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
@@ -2797,7 +2803,11 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 							pKid->SetAP_N_Yes((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) ? mNameAP_N_Yes[sOptI] : std::to_wstring(i));
 
 						if (((bRadiosInUnison || nType == PdfWriter::WidgetCheckbox) && sOptI == sOpt) || (!bRadiosInUnison && i == nOptIndex))
+						{
+							if (i == nOptIndex)
+								pKid->RenameAP_N_Yes(pParent->sV);
 							sV = pKid->Yes();
+						}
 						else
 							pKid->Off();
 					}

@@ -109,6 +109,8 @@ public:
 	bool Italic() const;
 	bool Underline() const;
 	bool StrikeOut() const;
+	bool SuperScript() const;
+	bool SubScript() const;
 
 	int GetHeight() const;
 
@@ -121,6 +123,7 @@ public:
 
 	short GetRelSize(ELang eLang) const;
 	HWP_STRING GetFontName(ELang eLang) const;
+	short GetRatio(ELang eLang) const;
 	short GetSpacing(ELang eLang) const;
 	int GetTextColor() const;
 	int GetShadeColor() const;

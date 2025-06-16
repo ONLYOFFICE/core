@@ -1869,10 +1869,14 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
 	pD = pPageBox->Get(0);
 	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	pPageBox = (PdfWriter::CArrayObject*)pPage->Get("MediaBox");
+	pD = pPageBox->Get(3);
+	double dPageY = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	dPageY -= dPageH;
 	oInfo.GetBounds(dX1, dY1, dX2, dY2);
 	pAnnot->SetRect({dPageX + dX1, dPageH - dY1, dPageX + dX2, dPageH - dY2});
 
-	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX);
+	pAnnot->SetPage(pPage, pPage->GetWidth(), dPageH, dPageX, dPageY);
 	pAnnot->SetAnnotFlag(oInfo.GetAnnotFlag());
 	pAnnot->SetDocument(m_pDocument);
 
@@ -2204,10 +2208,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pPr->GetInRect(dRD1, dRD2, dRD3, dRD4);
 				PdfWriter::CArrayObject* pArray = new PdfWriter::CArrayObject();
 				pAP->Add("BBox", pArray);
-				pArray->Add(dRD1);
-				pArray->Add(MM_2_PT(m_dPageHeight) - dRD4);
-				pArray->Add(dRD3);
-				pArray->Add(MM_2_PT(m_dPageHeight) - dRD2);
+				pArray->Add(dRD1 + dPageX);
+				pArray->Add(dPageH - dRD4);
+				pArray->Add(dRD3 + dPageX);
+				pArray->Add(dPageH - dRD2);
 				pStampAnnot->SetAPStream(pAP);
 			}
 			else if (bRenderCopy)
@@ -2283,6 +2287,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetParentID(pPr->GetParentID());
 		if (nFlags & (1 << 18))
 			pWidgetAnnot->SetT(pPr->GetT());
+		else
+			pWidgetAnnot->Remove("T");
 		if (nFlags & (1 << 20))
 			pWidgetAnnot->SetOMetadata(pPr->GetOMetadata());
 
@@ -3922,7 +3928,7 @@ PdfWriter::CAnnotAppearanceObject* CPdfWriter::DrawAP(PdfWriter::CAnnotation* pA
 	PdfWriter::CPage* pFakePage = new PdfWriter::CPage(m_pDocument);
 	m_pPage = pFakePage;
 	m_pDocument->SetCurPage(pFakePage);
-	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), 0);
+	m_pPage->StartTransform(1, 0, 0, 1, -pAnnot->GetPageX(), pAnnot->GetPageY());
 
 	PdfWriter::CAnnotAppearanceObject* pAP = pAnnot->StartAP(0);
 
@@ -4321,9 +4327,9 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (nAP == 0)
 		wsValue = pButtonWidget->GetCA();
 	else if (nAP == 1)
-		wsValue = pButtonWidget->GetRC().empty() ? pButtonWidget->GetCA() : pButtonWidget->GetRC();
+		wsValue = pButtonWidget->GetRC();
 	else
-		wsValue = pButtonWidget->GetAC().empty() ? pButtonWidget->GetCA() : pButtonWidget->GetAC();
+		wsValue = pButtonWidget->GetAC();
 
 	if (!pButtonWidget->HaveBorder() && pButtonWidget->HaveBC())
 		pButtonWidget->SetBorder(0, 1, {});

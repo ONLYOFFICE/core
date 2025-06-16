@@ -522,13 +522,17 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				{
 					switch(image->style_repeat_->get_type())
 					{
-						case style_repeat::Repeat	:	
+						case style_repeat::NoRepeat:
+							fill.bitmap->bTile = false;
+							fill.bitmap->bStretch = false;
+						break;
+						case style_repeat::Repeat	:
 							fill.bitmap->bTile		= true;		
 							fill.bitmap->bStretch	= false;	
 						break;
 						case style_repeat::Stretch	:	
 							fill.bitmap->bStretch	= true;	
-							fill.bitmap->bTile		= false;  //?? для background точно выключать
+							fill.bitmap->bTile		= false; 
 						break;
 					}
 				}
@@ -550,8 +554,12 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 					fill.bitmap->bTile		= true;		
 					fill.bitmap->bStretch	= false;	
 				break;
-				case style_repeat::Stretch	:	
-					fill.bitmap->bStretch	= true;	
+				case style_repeat::NoRepeat	:	
+					fill.bitmap->bTile		= false;
+					fill.bitmap->bStretch	= false;
+				break;
+				case style_repeat::Stretch	:
+					fill.bitmap->bStretch	= true;
 					fill.bitmap->bTile		= false;
 				break;
 			}

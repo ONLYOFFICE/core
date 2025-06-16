@@ -384,21 +384,50 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			}
 			if (fill != ns + L":noFill")
 			{
-				_CP_OPT(std::wstring)	strVal;
+				_CP_OPT(std::wstring) strVal;
 
 				if (dash_style.length() > 0 && dash_style != L"solid")
 				{
-					CP_XML_NODE(ns + L":prstDash"){CP_XML_ATTR2(ns_att + L"val", dash_style);}	
+					CP_XML_NODE(ns + L":prstDash")
+					{
+						CP_XML_ATTR2(ns_att + L"val", dash_style);
+					}	
 				}
 				odf_reader::GetProperty(prop,L"marker-start", strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(ns + L":headEnd"){CP_XML_ATTR2(ns_att + L"type", strVal.get());}
+					CP_XML_NODE(ns + L":headEnd") 
+					{
+						CP_XML_ATTR2(ns_att + L"type", strVal.get());
+						_CP_OPT(double) dWidth;
+						odf_reader::GetProperty(prop, L"marker-start-width", dWidth);
+						if (dWidth && dStrokeWidth)
+						{
+							double kf = *dWidth / *dStrokeWidth;
+							
+							if (kf > 3.5) CP_XML_ATTR2(ns_att + L"w", L"lg");
+							else if (kf < 2.6) CP_XML_ATTR2(ns_att + L"w", L"sm");
+							else CP_XML_ATTR2(ns_att + L"w", L"med");
+						}
+					}
 				}
-				odf_reader::GetProperty(prop,L"marker-end",strVal);	
+				odf_reader::GetProperty(prop,L"marker-end", strVal);	
 				if (strVal)
 				{
-					CP_XML_NODE(ns + L":tailEnd"){CP_XML_ATTR2(ns_att + L"type",strVal.get());}
+					CP_XML_NODE(ns + L":tailEnd")
+					{
+						CP_XML_ATTR2(ns_att + L"type", strVal.get());
+						_CP_OPT(double) dWidth;
+						odf_reader::GetProperty(prop, L"marker-start-width", dWidth);
+						if (dWidth && dStrokeWidth)
+						{
+							double kf = *dWidth / *dStrokeWidth;
+							
+							if (kf > 3.5) CP_XML_ATTR2(ns_att + L"w", L"lg");
+							else if (kf < 2.6) CP_XML_ATTR2(ns_att + L"w", L"sm");
+							else CP_XML_ATTR2(ns_att + L"w", L"med");
+						}
+					}
 				}
 			}
 		}

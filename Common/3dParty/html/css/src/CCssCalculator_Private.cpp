@@ -491,6 +491,21 @@ namespace NSCSS
 		if (arSelectors.empty())
 			return false;
 
+		if (L"#text" == arSelectors.back().m_wsName)
+		{
+			if (arSelectors.size() > 1 && arSelectors.back().m_pCompiledStyle->Empty())
+				*arSelectors.back().m_pCompiledStyle += *(arSelectors.end() - 2)->m_pCompiledStyle;
+
+			if(arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(),
+			                                       [](const CNode& oNode){ return IsTableElement(oNode.m_wsName); }))
+			{
+				arSelectors.back().m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors.back().m_pCompiledStyle->m_oBorder.Clear();
+			}
+
+			return true;
+		}
+
 		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
 		if (oItem != m_mUsedStyles.end())
@@ -690,6 +705,16 @@ namespace NSCSS
 				arFindedElements.push_back(pFoundName);
 
 			FindPrevAndKindElements(pFoundName, arNextNodes, arFindedElements, wsName, arClasses);
+		}
+
+		const CElement* pFoundAll = m_oStyleStorage.FindElement(L"*");
+
+		if (nullptr != pFoundAll)
+		{
+			if (!pFoundAll->Empty())
+				arFindedElements.push_back(pFoundAll);
+
+			FindPrevAndKindElements(pFoundAll, arNextNodes, arFindedElements, wsName, arClasses);
 		}
 
 		if (arFindedElements.size() > 1)

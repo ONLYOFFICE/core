@@ -189,7 +189,7 @@ void draw_line::reset_svg_attributes()
 	double x2 = draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
 	double y2 = draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
 	
-	if (x1 > x2)
+	if (x1 - x2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
@@ -200,7 +200,7 @@ void draw_line::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x1_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x2-x1, length::pt);
 	}
-	if (y1 > y2)
+	if (y1 - y2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);

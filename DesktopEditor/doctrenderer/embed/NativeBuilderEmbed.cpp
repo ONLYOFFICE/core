@@ -88,6 +88,7 @@ JSSmart<CJSValue> CBuilderEmbed::OpenTmpFile(JSSmart<CJSValue> path, JSSmart<CJS
 	JSSmart<CJSObject> oBuilderTmpDoc = CJSContext::createEmbedObject("CBuilderDocumentEmbed");
 	CBuilderDocumentEmbed* pBuilderTmpDocNative = static_cast<CBuilderDocumentEmbed*>(oBuilderTmpDoc->getNative());
 	pBuilderTmpDocNative->m_pBuilder = m_pBuilder;
+	pBuilderTmpDocNative->SetExternalize(true);
 	pBuilderTmpDocNative->_OpenFile(sPath, sParams);
 	return oBuilderTmpDoc->toValue();
 }

@@ -331,8 +331,8 @@ namespace Draw
 	{
 		ReadAttributes(oReader);
 		
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CDataConnection::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -887,8 +887,8 @@ namespace Draw
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CDataColumn::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1114,8 +1114,8 @@ namespace Draw
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRowKeyValue::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1260,8 +1260,8 @@ namespace Draw
 	void CRowMap::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRowMap::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1323,8 +1323,8 @@ namespace Draw
 	void CRefreshConflict::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRefreshConflict::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1386,8 +1386,8 @@ namespace Draw
 	void CAutoLinkComparison::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CAutoLinkComparison::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

@@ -52,6 +52,12 @@ namespace HWP
 
 	};
 
+	struct TRelationship
+	{
+		std::wstring m_wsID;
+		std::wstring m_wsType;
+		std::wstring m_wsTarget;
+	};
 }
 
 #endif // TYPES_H

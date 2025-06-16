@@ -190,9 +190,10 @@ public:
 	CREATE_METHODS_FOR_PROPERTY(int, Sz);
 	CREATE_METHODS_FOR_PROPERTY(TColor, Color);
 	CREATE_METHODS_FOR_PROPERTY(int, ShadeColor);
+	CREATE_METHODS_FOR_PROPERTY(short, Ratio);
 	CREATE_METHODS_FOR_PROPERTY(TU, U);
 	CREATE_METHODS_FOR_PROPERTY(EStrikeType, Strike);
-	CREATE_METHODS_FOR_PROPERTY(int, Spacing);
+	CREATE_METHODS_FOR_PROPERTY(short, Spacing);
 	CREATE_METHODS_FOR_PROPERTY(EHighlightColors, Highlight);
 	CREATE_METHODS_FOR_PROPERTY(EVerticalAlignRun, VerticalAlign);
 private:
@@ -202,9 +203,10 @@ private:
 	CProperty<int> m_nSz;
 	CProperty<TColor> m_oColor;
 	CProperty<int> m_nShadeColor;
+	CProperty<short> m_shRatio;
 	CProperty<TU> m_oU;
 	CProperty<EStrikeType> m_eStrike;
-	CProperty<int> m_nSpacing;
+	CProperty<short> m_shSpacing;
 	CProperty<EHighlightColors> m_oHighlight;
 	CProperty<EVerticalAlignRun> m_eVerticalAlign;
 };

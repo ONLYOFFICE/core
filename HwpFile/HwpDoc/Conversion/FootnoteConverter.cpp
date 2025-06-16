@@ -54,6 +54,9 @@ std::wstring CFootnoteConverter::CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHead
 
 	TConversionState oState;
 
+	VECTOR<TRelationship> arRelationships;
+	oState.m_pRelationships = &arRelationships;
+
 	for (const CHWPPargraph* pParagraphs : pCtrlHeadFoot->GetParagraphs())
 		oConverter.WriteParagraph(pParagraphs, oNewDocumentBuilder, oState);
 
@@ -105,6 +108,30 @@ std::wstring CFootnoteConverter::CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHead
 	oFile.WriteStringUTF8(L"</w:" + wsNodeName + L">");
 
 	oFile.CloseFile();
+
+	if (arRelationships.empty())
+		return wsFileName;
+
+	// TODO:: пока это копия из Converter2OOXML
+	NSFile::CFileBinary oRelsWriter;
+	if (oRelsWriter.CreateFileW(oConverter.GetTempDirectory() + L"/word/_rels/" + wsFileName + L".rels"))
+	{
+		oRelsWriter.WriteStringUTF8(L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
+
+		for (const TRelationship& oRelationship : arRelationships)
+		{
+			oRelsWriter.WriteStringUTF8(L"<Relationship Id=\"" + oRelationship.m_wsID + L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/" + oRelationship.m_wsType + L"\" Target=\"" + oRelationship.m_wsTarget + L'\"');
+
+			if (L"hyperlink" == oRelationship.m_wsType)
+				oRelsWriter.WriteStringUTF8(L" TargetMode=\"External\"/>");
+			else
+				oRelsWriter.WriteStringUTF8(L"/>");
+			}
+
+		oRelsWriter.WriteStringUTF8(L"</Relationships>");
+
+		oRelsWriter.CloseFile();
+	}
 
 	return wsFileName;
 }

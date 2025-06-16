@@ -121,7 +121,20 @@ bool CHWPFile::GetComponent(const HWP_STRING& sEntryName, CHWPStream& oBuffer)
 {
 	return m_oOleFile.GetComponent(sEntryName, oBuffer);
 }
+
 //------------
+bool CompareStrings(const HWP_STRING& sFirst, const HWP_STRING& sSecond)
+{
+	if (sFirst.length() != sSecond.length())
+		return false;
+
+	for (unsigned int unIndex = 0; unIndex < sFirst.length(); ++unIndex)
+		if (tolower(sFirst[unIndex]) != tolower(sSecond[unIndex]))
+			return false;
+
+	return true;
+}
+
 CDirectoryEntry* CHWPFile::FindChildEntry(const HWP_STRING& sBasePath, const CDirectoryEntry& oBaseEntry, const HWP_STRING& sEntryName) const
 {
 	for (CDirectoryEntry* pEntry : m_oOleFile.GetChildEntries(&oBaseEntry))
@@ -134,7 +147,7 @@ CDirectoryEntry* CHWPFile::FindChildEntry(const HWP_STRING& sBasePath, const CDi
 		}
 		else
 		{
-			if (sEntryName == pEntry->GetDirectoryEntryName())
+			if (CompareStrings(sEntryName, pEntry->GetDirectoryEntryName()))
 				return pEntry;
 		}
 	}

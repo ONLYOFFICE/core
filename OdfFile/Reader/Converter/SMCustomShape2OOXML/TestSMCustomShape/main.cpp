@@ -18,7 +18,7 @@ TEST(SMCustomShapeTest,Plus)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+/ left gd2 1 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+/ 0 gd2 1 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Minus)
@@ -28,7 +28,7 @@ TEST(SMCustomShapeTest,Minus)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 0 bottom gd2 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35\" fmla=\"+- 0 h gd2 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Multi)
@@ -48,7 +48,7 @@ TEST(SMCustomShapeTest,Divide)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35.1.1\" fmla=\"+/ 0 pi 8 \" /><a:gd name=\"gd35.1\" fmla=\"cos 1 gd35.1.1 \" /><a:gd name=\"gd35\" fmla=\"+/ 0 10800 gd35.1 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35.1.1.1\" fmla=\"+/ 0 314 100\" /><a:gd name=\"gd35.1.1\" fmla=\"+/ 0 gd35.1.1.1 8 \" /><a:gd name=\"gd35.1\" fmla=\"cos 1 gd35.1.1 \" /><a:gd name=\"gd35\" fmla=\"+/ 0 10800 gd35.1 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Sqrt)
@@ -68,7 +68,7 @@ TEST(SMCustomShapeTest,DoubleBracket)
     OdfCustomShape::SMCustomShapeConversion oConvers;
 	oPars.StartParsSMCustomShape(wsString);
 	oConvers.StartConversion(oPars.GetVector(),L"gd35");
-	std::wstring wsXmlString = L"<a:gd name=\"gd35.1.1.1\" fmla=\"+/ 0 pi 180 \" /><a:gd name=\"gd35.1.1\" fmla=\"*/ gd0 gd35.1.1.1 1 \" /><a:gd name=\"gd35.1\" fmla=\"sin 1 gd35.1.1 \" /><a:gd name=\"gd35\" fmla=\"*/ $0 gd35.1 1 \" />";
+	std::wstring wsXmlString = L"<a:gd name=\"gd35.1.1.1.1\" fmla=\"+/ 0 314 100\" /><a:gd name=\"gd35.1.1.1\" fmla=\"+/ 0 gd35.1.1.1.1 180 \" /><a:gd name=\"gd35.1.1\" fmla=\"*/ gd0 gd35.1.1.1 1 \" /><a:gd name=\"gd35.1\" fmla=\"sin 1 gd35.1.1 \" /><a:gd name=\"gd35\" fmla=\"*/ $0 gd35.1 1 \" />";
 	EXPECT_EQ(oConvers.GetStringXml(),wsXmlString);
 }
 TEST(SMCustomShapeTest,Min)

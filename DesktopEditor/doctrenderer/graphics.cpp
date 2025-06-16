@@ -42,6 +42,7 @@ namespace NSGraphics
 
 		m_pRenderer = NSGraphics::Create();
 		m_pRenderer->SetFontManager(pManager);
+		RELEASEINTERFACE(pManager);
 
 		int nRasterW = (int)width_px;
 		int nRasterH = (int)height_px;

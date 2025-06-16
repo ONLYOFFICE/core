@@ -297,8 +297,9 @@ namespace PdfWriter
 	{
 	public:
 		CStringObject(const char* sValue, bool isUTF16 = false, bool isDictValue = false);
+		CStringObject();
 		virtual ~CStringObject();
-		void Set(const char* sValue, bool isUTF16, bool isDictValue);
+		void Set(const char* sValue, bool isUTF16, bool isDictValue, int nMax = LIMIT_MAX_STRING_LEN);
 		const BYTE*  GetString() const
 		{
 			return (const BYTE*)m_pValue;

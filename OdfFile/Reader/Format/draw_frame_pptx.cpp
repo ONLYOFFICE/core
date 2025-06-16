@@ -182,7 +182,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+				fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 			}
 			
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
@@ -523,7 +523,6 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			if (!math_content.empty())
 			{
 				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-//				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 				text_content += math_content;
 				text_content += L"</a14:m></a:p>";
 

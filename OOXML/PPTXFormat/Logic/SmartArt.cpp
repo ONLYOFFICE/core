@@ -161,17 +161,18 @@ namespace PPTX
 			if (m_oDrawing.IsInit())
 				return;
 
-			OOX::IFileContainer	& pRelsPPTX = parentFileAs<OOX::IFileContainer>();
-			OOX::IFileContainer	* pRels = NULL;
-
-			if (pWriter)
+			bool result = false;
+			if (parentFileIs<OOX::IFileContainer>())
 			{
-				pRels = pWriter->GetRels().GetPointer();
+				OOX::IFileContainer	& pRelsPPTX = parentFileAs<OOX::IFileContainer>();
+				result = LoadDrawing(&pRelsPPTX);
 			}
 
-			bool result = LoadDrawing(&pRelsPPTX);
-			if (!result)
+			if (!result && pWriter)
+			{
+				OOX::IFileContainer	* pRels = pWriter->GetRels().GetPointer();
 				result = LoadDrawing(pRels);
+			}
 		}
 		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

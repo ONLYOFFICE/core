@@ -1595,6 +1595,20 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 			m_pWriter->EditPage(pPage);
 			m_nEditPage = _nPageIndex;
 		}
+		if (bCropBox)
+		{
+			Page* pOPage = pCatalog->getPage(nPageIndex);
+			if (pOPage->isCropped())
+			{
+				PDFRectangle* pCropBox = pOPage->getCropBox();
+				PdfWriter::CStream* pStream = pPage->GetStream();
+				pStream->WriteStr("1 0 0 1 ");
+				pStream->WriteReal(pCropBox->x1);
+				pStream->WriteChar(' ');
+				pStream->WriteReal(pCropBox->y2 - pOPage->getMediaBox()->y2);
+				pStream->WriteStr(" cm\012");
+			}
+		}
 		pPage->StartTransform(dCTM[0], dCTM[1], dCTM[2], dCTM[3], dCTM[4], dCTM[5]);
 		pPage->SetStrokeColor(0, 0, 0);
 		pPage->SetFillColor(0, 0, 0);
@@ -2958,6 +2972,18 @@ void CPdfEditor::ClearPage()
 	pageObj.free();
 
 	pDoc->ClearPage();
+
+	Page* pOPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+	if (pOPage->isCropped())
+	{
+		PDFRectangle* pCropBox = pOPage->getCropBox();
+		PdfWriter::CStream* pStream = pDoc->GetCurPage()->GetStream();
+		pStream->WriteStr("1 0 0 1 ");
+		pStream->WriteReal(pCropBox->x1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(pCropBox->y2 - pOPage->getMediaBox()->y2);
+		pStream->WriteStr(" cm\012");
+	}
 }
 void CPdfEditor::AddShapeXML(const std::string& sXML)
 {

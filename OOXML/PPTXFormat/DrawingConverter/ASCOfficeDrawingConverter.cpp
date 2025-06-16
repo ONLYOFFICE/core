@@ -5350,7 +5350,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			nullable_string sPictId;
 			XmlMacroReadAttributeBase(oNodeFillID, L"r:pict", sPictId);
 
-			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init() || oElem->m_binaryData.IsInit() || sTitle.IsInit())
+			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init() || oElem->m_binaryData.IsInit() || (sTitle.IsInit() && !sTitle->empty()))
 			{
 				nullable_string sType;
 				XmlMacroReadAttributeBase(oNodeFillID, L"type", sType);

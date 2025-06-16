@@ -60,6 +60,14 @@ void AreaFormat::readFields(CFRecord& record)
 	fInvertNeg	= GETBIT(flags, 1);
 }
 
+void AreaFormat::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fAuto)
+	SETBIT(flags, 1, fInvertNeg)
+	record << rgbFore << rgbBack << fls << flags << icvFore << icvBack;
+}
+
 int AreaFormat::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

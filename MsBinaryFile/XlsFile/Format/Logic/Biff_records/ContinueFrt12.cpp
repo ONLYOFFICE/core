@@ -55,5 +55,12 @@ void ContinueFrt12::readFields(CFRecord& record)
 {		
 }
 
+void ContinueFrt12::writeFields(CFRecord& record)
+{
+	record << frtHeader;
+	for(auto i: rgb)
+		record << i;
+}
+
 } // namespace XLS
 

@@ -290,32 +290,41 @@ const bool CHARTFORMATS::loadContent(BinProcessor& proc)
 
 const bool CHARTFORMATS::saveContent(BinProcessor& proc)
 {
-    if(m_ChartRect == nullptr)
-        return false;
-    proc.mandatory(*m_ChartRect);
-    proc.mandatory<Begin>();
-    if(m_Scl != nullptr)
-        proc.mandatory(*m_Scl);
-    else
-        proc.mandatory<Scl>();
-    if(m_PlotGrowth != nullptr)
-        proc.mandatory(*m_PlotGrowth);
-    else
-        proc.mandatory<PlotGrowth>();
+	if(m_ChartRect == nullptr)
+		return false;
+	proc.mandatory(*m_ChartRect);
+	proc.mandatory<Begin>();
+	if(m_Scl != nullptr)
+		proc.mandatory(*m_Scl);
+	else
+		proc.mandatory<Scl>();
+	if(m_PlotGrowth != nullptr)
+		proc.mandatory(*m_PlotGrowth);
+	else
+		proc.mandatory<PlotGrowth>();
+	if(m_FRAME != nullptr)
+		proc.mandatory(*m_FRAME);
 
-    if(m_ShtProps != nullptr)
-        proc.mandatory(*m_ShtProps);
-    else
-        proc.mandatory<ShtProps>();
-    if(m_AxesUsed != nullptr)
-        proc.mandatory(*m_AxesUsed);
-    else
-        proc.mandatory<AxesUsed>();
-    for(auto i : m_arAXISPARENT)
-        if(i != nullptr)
-            proc.mandatory(*i);
-    proc.mandatory<End>();
-    return true;
+	if(m_ShtProps != nullptr)
+		proc.mandatory(*m_ShtProps);
+	else
+		proc.mandatory<ShtProps>();
+	if(m_AxesUsed != nullptr)
+		proc.mandatory(*m_AxesUsed);
+	else
+		proc.mandatory<AxesUsed>();
+	for(auto i : m_arAXISPARENT)
+	if(i != nullptr)
+		proc.mandatory(*i);
+	if(m_CrtLayout12A != nullptr)
+		proc.mandatory(*m_CrtLayout12A);
+	if(m_DAT != nullptr)
+		proc.mandatory(*m_DAT);
+	for(auto i : m_arATTACHEDLABEL)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<End>();
+	return true;
 }
 
 BaseObjectPtr CHARTFORMATS::find_label( _UINT16 link_id, unsigned short ex)

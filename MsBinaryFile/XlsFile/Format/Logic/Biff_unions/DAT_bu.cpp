@@ -72,6 +72,18 @@ const bool DAT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DAT::saveContent(BinProcessor& proc)
+{
+	if(m_Dat == nullptr)
+		return false;
+	proc.mandatory(*m_Dat);
+	proc.mandatory<Begin>();
+	if(m_LD != nullptr)
+		proc.mandatory(*m_LD);
+	proc.mandatory<End>();
+	return true;
+}
+
 int DAT::serialize (std::wostream & _stream)
 {
 	Dat * dat = dynamic_cast<Dat*>(m_Dat.get());

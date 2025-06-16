@@ -101,14 +101,17 @@ const bool AXISPARENT::loadContent(BinProcessor& proc)
 
 const bool AXISPARENT::saveContent(BinProcessor& proc)
 {
-    if(m_AxisParent == nullptr)
-        return false;
-    proc.mandatory(*m_AxisParent);
-    proc.mandatory<Begin>();
-    if(m_Pos != nullptr)
-        proc.mandatory(*m_Pos);
-    proc.mandatory<End>();
-    return true;
+	if(m_AxisParent == nullptr)
+		return false;
+	proc.mandatory(*m_AxisParent);
+	proc.mandatory<Begin>();
+	if(m_Pos != nullptr)
+		proc.mandatory(*m_Pos);
+	for(auto i: m_arCRT)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	proc.mandatory<End>();
+	return true;
 }
 
 void AXISPARENT::concatinate_second (BaseObjectPtr & addit)

@@ -116,6 +116,10 @@ const bool LD::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_Pos);
 	if(m_ATTACHEDLABEL != nullptr)
 		proc.mandatory(*m_ATTACHEDLABEL);
+	if(m_FRAME != nullptr)
+		proc.mandatory(*m_FRAME);
+	if(m_CrtLayout12 != nullptr)
+		proc.mandatory(*m_CrtLayout12);
 	proc.mandatory<End>();
 	return true;
 }

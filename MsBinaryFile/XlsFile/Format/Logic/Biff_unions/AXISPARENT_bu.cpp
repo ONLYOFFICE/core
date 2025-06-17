@@ -107,6 +107,8 @@ const bool AXISPARENT::saveContent(BinProcessor& proc)
 	proc.mandatory<Begin>();
 	if(m_Pos != nullptr)
 		proc.mandatory(*m_Pos);
+	if(m_AXES != nullptr)
+		proc.mandatory(*m_AXES);
 	for(auto i: m_arCRT)
 		if(i!= nullptr)
 			proc.mandatory(*i);

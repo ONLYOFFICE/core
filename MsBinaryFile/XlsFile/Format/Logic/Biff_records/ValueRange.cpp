@@ -65,5 +65,20 @@ void ValueRange::readFields(CFRecord& record)
 	fMaxCross = GETBIT(flags, 7);
 }
 
+void ValueRange::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fAutoMin)
+	SETBIT(flags, 1, fAutoMax)
+	SETBIT(flags, 2, fAutoMajor)
+	SETBIT(flags, 3, fAutoMinor)
+	SETBIT(flags, 4, fAutoCross)
+	SETBIT(flags, 5, fLog)
+	SETBIT(flags, 6, fReversed)
+	SETBIT(flags, 7, fMaxCross)
+	record << numMin << numMax << numMajor << numMinor << numCross << flags;
+}
+
 } // namespace XLS
 

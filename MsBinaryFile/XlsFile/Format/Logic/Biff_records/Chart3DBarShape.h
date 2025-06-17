@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & _stream);
 
 	static const ElementType	type = typeChart3DBarShape;
 
 //-----------------------------
-	unsigned char	riser;
-	unsigned char	taper;
+	unsigned char	riser = 0;
+	unsigned char	taper = 0;
 
 };
 

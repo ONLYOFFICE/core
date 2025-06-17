@@ -304,7 +304,9 @@ const bool CHARTFORMATS::saveContent(BinProcessor& proc)
 		proc.mandatory<PlotGrowth>();
 	if(m_FRAME != nullptr)
 		proc.mandatory(*m_FRAME);
-
+	for(auto i : m_arSS)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_ShtProps != nullptr)
 		proc.mandatory(*m_ShtProps);
 	else

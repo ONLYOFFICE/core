@@ -326,6 +326,12 @@ const bool CRT::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_SeriesList);
 	if(m_Chart3d != nullptr)
 		proc.mandatory(*m_Chart3d);
+	if(m_LD != nullptr)
+		proc.mandatory(*m_LD);
+	if(m_DataLabExtContents != nullptr)
+		proc.mandatory(*m_DataLabExtContents);
+	if(m_SS!= nullptr)
+		proc.mandatory(*m_SS);
     proc.mandatory<End>();
     return true;
 }

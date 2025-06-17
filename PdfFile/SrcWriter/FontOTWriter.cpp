@@ -197,6 +197,20 @@ namespace PdfWriter
 		UShortToDictOperandListMap mFontDict;
 		PrivateDictInfo mPrivateDict;
 	};
+	typedef std::set<unsigned short> UShortSet;
+	struct CharString2Dependencies
+	{
+		UShortSet mCharCodes; // from seac-like endchar operator
+		UShortSet mGlobalSubrs; // from callgsubr
+		UShortSet mLocalSubrs; // from callsubr
+	};
+	struct CharStringOperand
+	{
+		bool IsInteger;
+		long IntegerValue;
+		double RealValue;
+	};
+	typedef std::list<CharStringOperand> CharStringOperandList;
 
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
@@ -955,6 +969,10 @@ namespace PdfWriter
 		long long mNameIndexPosition;
 		long long mTopDictIndexPosition;
 		CharPToUShortMap mStringToSID;
+
+		CharString2Dependencies* mCurrentDependencies;
+		CharStrings* mCurrentLocalSubrs;
+		CharSetInfo* mCurrentCharsetInfo;
 	public:
 		CCFFReader();
 		~CCFFReader();
@@ -1006,6 +1024,9 @@ namespace PdfWriter
 		bool ReadFDSelect(unsigned short inFontIndex);
 		long long GetFDSelectPosition(unsigned short inFontIndex);
 		unsigned short GetGlyphSID(unsigned short inFontIndex, unsigned short inGlyphIndex);
+		bool PrepareForGlyphIntepretation(unsigned short inFontIndex, unsigned short inCharStringIndex);
+		CharString* GetGlyphCharString(unsigned short inFontIndex, unsigned short inCharStringIndex);
+		bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString);
 	};
 	CCFFReader::CCFFReader()
 	{
@@ -2021,6 +2042,58 @@ namespace PdfWriter
 			return sid;
 		}
 	}
+	bool CCFFReader::PrepareForGlyphIntepretation(unsigned short inFontIndex, unsigned short inCharStringIndex)
+	{
+		if (inFontIndex >= mFontsCount)
+			return false;
+
+		if (mCharStrings[inFontIndex].mCharStringsCount <= inCharStringIndex)
+			return false;
+
+		if (2 == mCharStrings[inFontIndex].mCharStringsType)
+		{
+			if (mTopDictIndex[inFontIndex].mFDSelect) // CIDs have FDSelect
+			{
+				mCurrentLocalSubrs = mTopDictIndex[inFontIndex].mFDSelect[inCharStringIndex]->mPrivateDict.mLocalSubrs;
+				mCurrentCharsetInfo = mTopDictIndex[inFontIndex].mCharSet;
+				mCurrentDependencies = NULL;
+			}
+			else
+			{
+				mCurrentLocalSubrs = mPrivateDicts[inFontIndex].mLocalSubrs;
+				mCurrentCharsetInfo = mTopDictIndex[inFontIndex].mCharSet;
+				mCurrentDependencies = NULL;
+			}
+			return true;
+		}
+		return false;
+	}
+	CharString* CCFFReader::GetGlyphCharString(unsigned short inFontIndex, unsigned short inCharStringIndex)
+	{
+		if (inFontIndex >= mFontsCount)
+			return NULL;
+		if (mCharStrings[inFontIndex].mCharStringsCount <= inCharStringIndex)
+			return NULL;
+		return mCharStrings[inFontIndex].mCharStringsIndex + inCharStringIndex;
+	}
+	bool CCFFReader::ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString)
+	{
+		bool status = true;
+		mPrimitivesReader->Seek(inCharStringStart, SeekSet);
+		*outCharString = NULL;
+
+		unsigned int nReadLength = inCharStringEnd - inCharStringStart;
+		*outCharString = new BYTE[nReadLength];
+
+		mPrimitivesReader->Read(*outCharString, &nReadLength);
+		if (nReadLength != inCharStringEnd - inCharStringStart)
+			status = false;
+
+		if (!status && *outCharString)
+			delete[] *outCharString;
+
+		return status;
+	}
 	//----------------------------------------------------------------------------------------
 	// COpenTypeReader
 	//----------------------------------------------------------------------------------------
@@ -2858,10 +2931,92 @@ namespace PdfWriter
 		return mCFF.ReadCFFFile(mPrimitivesReader);
 	}
 	//----------------------------------------------------------------------------------------
+	// IType2InterpreterImplementation
+	//----------------------------------------------------------------------------------------
+	struct IType2InterpreterImplementation
+	{
+		virtual bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString) = 0;
+	};
+	//----------------------------------------------------------------------------------------
+	// CharStringType2Interpreter
+	//----------------------------------------------------------------------------------------
+	struct CharStringType2Interpreter
+	{
+		unsigned short mStemsCount;
+		IType2InterpreterImplementation* mImplementationHelper;
+		bool mGotEndChar;
+		bool mCheckedWidth;
+		unsigned short mSubrsNesting;
+
+	public:
+		CharStringType2Interpreter();
+		~CharStringType2Interpreter();
+
+		bool Intepret(const CharString& inCharStringToIntepret, IType2InterpreterImplementation* inImplementationHelper);
+		bool ProcessCharString(BYTE* inCharString, long long inCharStringLength);
+	};
+	bool CharStringType2Interpreter::Intepret(const CharString& inCharStringToIntepret, IType2InterpreterImplementation* inImplementationHelper)
+	{
+		BYTE* charString = NULL;
+		bool status = false;
+
+		mImplementationHelper = inImplementationHelper;
+		mGotEndChar = false;
+		mStemsCount = 0;
+		mCheckedWidth = false;
+		mSubrsNesting = 0;
+		if (!inImplementationHelper)
+			return false;
+
+		status = mImplementationHelper->ReadCharString(inCharStringToIntepret.mStartPosition,inCharStringToIntepret.mEndPosition,&charString);
+		if (!status)
+			return false;
+
+		status = ProcessCharString(charString, inCharStringToIntepret.mEndPosition - inCharStringToIntepret.mStartPosition);
+
+		delete charString;
+
+		return status;
+	}
+	bool CharStringType2Interpreter::ProcessCharString(BYTE* inCharString, long long inCharStringLength)
+	{
+		bool status = true;
+		BYTE* pointer = inCharString;
+		bool gotEndExecutionOperator = false;
+
+		// TODO
+
+		while (pointer - inCharString < inCharStringLength && status && !gotEndExecutionOperator && !mGotEndChar)
+		{
+			long long readLimit = inCharStringLength - (pointer - inCharString); // should be at least 1
+
+			if (IsOperator(*pointer))
+			{
+				pointer = InterpretOperator(pointer,gotEndExecutionOperator, readLimit);
+				if (!pointer)
+					status = false;
+			}
+			else
+			{
+				pointer = InterpretNumber(pointer, readLimit);
+				if (!pointer)
+					status = false;
+
+				if (mOperandStack.size() > MAX_ARGUMENTS_STACK_SIZE)
+					status = false;
+			}
+		}
+		return status;
+	}
+	//----------------------------------------------------------------------------------------
 	// CharStringType2Flattener
 	//----------------------------------------------------------------------------------------
-	struct CharStringType2Flattener
+	struct CharStringType2Flattener : public IType2InterpreterImplementation
 	{
+		CMemoryStream* mWriter;
+		CCFFReader* mHelper;
+		unsigned short mStemsCount;
+		CharStringOperandList mOperandsToWrite;
 	public:
 		CharStringType2Flattener();
 		~CharStringType2Flattener();
@@ -2869,6 +3024,7 @@ namespace PdfWriter
 		// will write a font program to another stream, flattening the references to subrs and gsubrs, so that
 		// the charstring becomes independent (with possible references to other charachters through seac-like endchar)
 		bool WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter);
+		virtual bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString) override;
 	};
 	CharStringType2Flattener::CharStringType2Flattener()
 	{
@@ -2880,7 +3036,6 @@ namespace PdfWriter
 	}
 	bool CharStringType2Flattener::WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter)
 	{
-		/* TODO
 		CharStringType2Interpreter interpreter;
 		bool status = inCFFFileInput->PrepareForGlyphIntepretation(inFontIndex, inGlyphIndex);
 
@@ -2896,9 +3051,7 @@ namespace PdfWriter
 		if (!charString)
 			return false;
 
-		status = interpreter.Intepret(*charString,this);
-		*/
-
+		status = interpreter.Intepret(*charString, this);
 		/*
 			The alrogithm for writing a flattened charstring is as follows:
 			1. enumerator, through interpretation, the charstring
@@ -2908,7 +3061,11 @@ namespace PdfWriter
 			4. an exception would be when callgsubr/callsubr follow an operator, in which case their index operand is already written. just call drop.
 
 		*/
-		// return status;
+		return status;
+	}
+	bool CharStringType2Flattener::ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString)
+	{
+		return mHelper->ReadCharString(inCharStringStart,inCharStringEnd,outCharString);
 	}
 	//----------------------------------------------------------------------------------------
 	// CCFFWriter

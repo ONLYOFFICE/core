@@ -211,6 +211,7 @@ namespace PdfWriter
 		double RealValue;
 	};
 	typedef std::list<CharStringOperand> CharStringOperandList;
+	typedef std::vector<CharStringOperand> CharStringOperandVector;
 
 	BYTE GetMostCompressedOffsetSize(unsigned long inOffset)
 	{
@@ -1027,6 +1028,9 @@ namespace PdfWriter
 		bool PrepareForGlyphIntepretation(unsigned short inFontIndex, unsigned short inCharStringIndex);
 		CharString* GetGlyphCharString(unsigned short inFontIndex, unsigned short inCharStringIndex);
 		bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString);
+		CharString* GetLocalSubr(long inSubrIndex);
+		unsigned short GetBiasedIndex(unsigned short inSubroutineCollectionSize, long inSubroutineIndex);
+		CharString* GetGlobalSubr(long inSubrIndex);
 	};
 	CCFFReader::CCFFReader()
 	{
@@ -2094,6 +2098,42 @@ namespace PdfWriter
 
 		return status;
 	}
+	CharString* CCFFReader::GetLocalSubr(long inSubrIndex)
+	{
+		// locate local subr and return. also - push it to the dependendecy stack to start calculating dependencies for it
+		// also - record dependency on this subr.
+		unsigned short biasedIndex = GetBiasedIndex(mCurrentLocalSubrs->mCharStringsCount,inSubrIndex);
+
+		if (biasedIndex < mCurrentLocalSubrs->mCharStringsCount)
+		{
+			CharString* returnValue = mCurrentLocalSubrs->mCharStringsIndex + biasedIndex;
+			if (mCurrentDependencies)
+				mCurrentDependencies->mLocalSubrs.insert(biasedIndex);
+			return returnValue;
+		}
+		return NULL;
+	}
+	unsigned short CCFFReader::GetBiasedIndex(unsigned short inSubroutineCollectionSize, long inSubroutineIndex)
+	{
+		if (inSubroutineCollectionSize < 1240)
+			return (unsigned short)(107 + inSubroutineIndex);
+		else if (inSubroutineCollectionSize < 33900)
+			return (unsigned short)(1131 + inSubroutineIndex);
+		return (unsigned short)(32768 + inSubroutineIndex);
+	}
+	CharString* CCFFReader::GetGlobalSubr(long inSubrIndex)
+	{
+		unsigned short biasedIndex = GetBiasedIndex(mGlobalSubrs.mCharStringsCount,inSubrIndex);
+
+		if (biasedIndex < mGlobalSubrs.mCharStringsCount)
+		{
+			CharString* returnValue = mGlobalSubrs.mCharStringsIndex + biasedIndex;
+			if (mCurrentDependencies)
+				mCurrentDependencies->mGlobalSubrs.insert(biasedIndex);
+			return returnValue;
+		}
+		return NULL;
+	}
 	//----------------------------------------------------------------------------------------
 	// COpenTypeReader
 	//----------------------------------------------------------------------------------------
@@ -2936,15 +2976,69 @@ namespace PdfWriter
 	struct IType2InterpreterImplementation
 	{
 		virtual bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString) = 0;
+		virtual bool Type2InterpretNumber(const CharStringOperand& inOperand) = 0;
+		virtual bool Type2Hstem(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vstem(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vmoveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Rlineto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hlineto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vlineto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2RRCurveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Return(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Endchar(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hstemhm(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hintmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit) = 0;
+		virtual bool Type2Cntrmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit) = 0;
+		virtual bool Type2Rmoveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hmoveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vstemhm(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Rcurveline(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Rlinecurve(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vvcurveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hvcurveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hhcurveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Vhcurveto(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hflex(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Hflex1(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Flex(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Flex1(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2And(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Or(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Not(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Abs(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Add(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Sub(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Div(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Neg(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Eq(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Drop(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Put(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Get(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Ifelse(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Random(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Mul(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Sqrt(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Dup(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Exch(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Index(const CharStringOperandList& inOperandList) = 0;
+		virtual bool Type2Roll(const CharStringOperandList& inOperandList) = 0;
+		virtual CharString* GetLocalSubr(long inSubrIndex) = 0;
+		virtual CharString* GetGlobalSubr(long inSubrIndex) = 0;
 	};
 	//----------------------------------------------------------------------------------------
 	// CharStringType2Interpreter
 	//----------------------------------------------------------------------------------------
 	struct CharStringType2Interpreter
 	{
+		#define MAX_ARGUMENTS_STACK_SIZE 48
+		#define MAX_STEM_HINTS_SIZE 96
+		#define MAX_SUBR_NESTING_STACK_SIZE 10
+
+		CharStringOperandList mOperandStack;
 		unsigned short mStemsCount;
 		IType2InterpreterImplementation* mImplementationHelper;
 		bool mGotEndChar;
+		CharStringOperandVector mStorage;
 		bool mCheckedWidth;
 		unsigned short mSubrsNesting;
 
@@ -2954,7 +3048,67 @@ namespace PdfWriter
 
 		bool Intepret(const CharString& inCharStringToIntepret, IType2InterpreterImplementation* inImplementationHelper);
 		bool ProcessCharString(BYTE* inCharString, long long inCharStringLength);
+		bool IsOperator(BYTE inCurrentByte);
+		BYTE* InterpretNumber(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretOperator(BYTE* inProgramCounter, bool& outGotEndExecutionCommand, long long inReadLimit);
+		void CheckWidth();
+		bool AddStemsCount(unsigned short inBy);
+		BYTE* InterpretHStem(BYTE* inProgramCounter, long long inReadLimit);
+		void ClearStack();
+		BYTE* InterpretVStem(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretVMoveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRLineto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHLineto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretVLineto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRRCurveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretCallSubr(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretReturn(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretEndChar(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHStemHM(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHintMask(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretCntrMask(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRMoveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHMoveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretVStemHM(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRCurveLine(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRLineCurve(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretVVCurveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHHCurveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretCallGSubr(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretVHCurveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHVCurveto(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretAnd(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretOr(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretNot(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretAbs(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretAdd(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretSub(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretDiv(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretNeg(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretEq(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretDrop(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretPut(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretGet(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretIfelse(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRandom(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretMul(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretSqrt(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretDup(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretExch(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretIndex(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretRoll(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHFlex(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretFlex(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretHFlex1(BYTE* inProgramCounter, long long inReadLimit);
+		BYTE* InterpretFlex1(BYTE* inProgramCounter, long long inReadLimit);
 	};
+	CharStringType2Interpreter::CharStringType2Interpreter()
+	{
+		mImplementationHelper = NULL;
+	}
+	CharStringType2Interpreter::~CharStringType2Interpreter()
+	{
+	}
 	bool CharStringType2Interpreter::Intepret(const CharString& inCharStringToIntepret, IType2InterpreterImplementation* inImplementationHelper)
 	{
 		BYTE* charString = NULL;
@@ -3008,6 +3162,1124 @@ namespace PdfWriter
 		}
 		return status;
 	}
+	bool CharStringType2Interpreter::IsOperator(BYTE inCurrentByte)
+	{
+		return ((inCurrentByte) <= 27) || (29 <= (inCurrentByte) && (inCurrentByte) <= 31);
+	}
+	BYTE* CharStringType2Interpreter::InterpretNumber(BYTE* inProgramCounter, long long inReadLimit)
+	{
+		CharStringOperand operand;
+		BYTE* newPosition = inProgramCounter;
+
+		if (inReadLimit < 1)
+			return NULL; // error, cant read a single byte
+
+		if (28 == *newPosition && inReadLimit >= 3)
+		{
+			operand.IsInteger = true;
+			operand.IntegerValue = (short)(((unsigned short)(*(newPosition + 1)) << 8) + (*(newPosition + 2)));
+			newPosition += 3;
+		}
+		else if (32 <= *newPosition && *newPosition <= 246)
+		{
+			operand.IsInteger = true;
+			operand.IntegerValue = (short)*newPosition - 139;
+			++newPosition;
+		}
+		else if (247 <= *newPosition && *newPosition <= 250  && inReadLimit >= 2)
+		{
+			operand.IsInteger = true;
+			operand.IntegerValue = (*newPosition - 247) * 256 + *(newPosition + 1) + 108;
+			newPosition += 2;
+		}
+		else if (251 <= *newPosition && *newPosition <= 254  && inReadLimit >= 2)
+		{
+			operand.IsInteger = true;
+			operand.IntegerValue = -(short)(*newPosition - 251) * 256 - *(newPosition + 1) - 108;
+			newPosition += 2;
+		}
+		else if (255 == *newPosition  && inReadLimit >= 5)
+		{
+			operand.IsInteger = false;
+			operand.RealValue = (short)(((unsigned short)(*(newPosition + 1)) << 8) + (*(newPosition + 2)));
+			if (operand.RealValue > 0)
+				operand.RealValue += (double)(((unsigned short)(*(newPosition + 3)) << 8) + (*(newPosition + 4))) / (1 << 16);
+			else
+				operand.RealValue -= (double)(((unsigned short)(*(newPosition + 3)) << 8) + (*(newPosition + 4))) / (1 << 16);
+			newPosition += 5;
+		}
+		else
+			newPosition = NULL; // error
+
+		if (newPosition)
+		{
+			mOperandStack.push_back(operand);
+			bool status = mImplementationHelper->Type2InterpretNumber(operand);
+			if (!status)
+				return NULL;
+		}
+
+		return newPosition;
+	}
+	BYTE* CharStringType2Interpreter::InterpretOperator(BYTE* inProgramCounter, bool& outGotEndExecutionCommand, long long inReadLimit)
+	{
+		unsigned short operatorValue;
+		BYTE* newPosition = inProgramCounter;
+		outGotEndExecutionCommand = false;
+
+		if (inReadLimit < 1)
+			return NULL; // error, cant read a single byte
+
+		if (12 == *newPosition)
+		{
+			if (inReadLimit < 2)
+				return NULL;
+
+			operatorValue = 0x0c00 + *(newPosition + 1);
+			newPosition += 2;
+			inReadLimit -= 2;
+		}
+		else
+		{
+			operatorValue = *newPosition;
+			++newPosition;
+			--inReadLimit;
+		}
+
+		switch (operatorValue)
+		{
+			case 1: // hstem
+				CheckWidth();
+				newPosition = InterpretHStem(newPosition, inReadLimit);
+				break;
+			case 3: // vstem
+				CheckWidth();
+				newPosition = InterpretVStem(newPosition, inReadLimit);
+				break;
+			case 4: // vmoveto
+				CheckWidth();
+				newPosition = InterpretVMoveto(newPosition, inReadLimit);
+				break;
+			case 5: // rlineto
+				newPosition = InterpretRLineto(newPosition, inReadLimit);
+				break;
+			case 6: // hlineto
+				newPosition = InterpretHLineto(newPosition, inReadLimit);
+				break;
+			case 7: // vlineto
+				newPosition = InterpretVLineto(newPosition, inReadLimit);
+				break;
+			case 8: // rrcurveto
+				newPosition = InterpretRRCurveto(newPosition, inReadLimit);
+				break;
+			case 10: // callsubr
+				newPosition = InterpretCallSubr(newPosition, inReadLimit);
+				break;
+			case 11: // return
+				newPosition = InterpretReturn(newPosition, inReadLimit);
+				outGotEndExecutionCommand = true;
+				break;
+			case 14: // endchar
+				CheckWidth();
+				newPosition = InterpretEndChar(newPosition, inReadLimit);
+				break;
+			case 18: // hstemhm
+				CheckWidth();
+				newPosition = InterpretHStemHM(newPosition, inReadLimit);
+				break;
+			case 19: // hintmask
+				CheckWidth();
+				newPosition = InterpretHintMask(newPosition, inReadLimit);
+				break;
+			case 20: // cntrmask
+				CheckWidth();
+				newPosition = InterpretCntrMask(newPosition, inReadLimit);
+				break;
+			case 21: // rmoveto
+				CheckWidth();
+				newPosition = InterpretRMoveto(newPosition, inReadLimit);
+				break;
+			case 22: // hmoveto
+				CheckWidth();
+				newPosition = InterpretHMoveto(newPosition, inReadLimit);
+				break;
+			case 23: // vstemhm
+				CheckWidth();
+				newPosition = InterpretVStemHM(newPosition, inReadLimit);
+				break;
+			case 24: // rcurveline
+				newPosition = InterpretRCurveLine(newPosition, inReadLimit);
+				break;
+			case 25: // rlinecurve
+				newPosition = InterpretRLineCurve(newPosition, inReadLimit);
+				break;
+			case 26: // vvcurveto
+				newPosition = InterpretVVCurveto(newPosition, inReadLimit);
+				break;
+			case 27: // hhcurveto
+				newPosition = InterpretHHCurveto(newPosition, inReadLimit);
+				break;
+			case 29: // callgsubr
+				newPosition = InterpretCallGSubr(newPosition, inReadLimit);
+				break;
+			case 30: // vhcurveto
+				newPosition = InterpretVHCurveto(newPosition, inReadLimit);
+				break;
+			case 31: // hvcurveto
+				newPosition = InterpretHVCurveto(newPosition, inReadLimit);
+				break;
+			case 0x0c00: // dotsection, depracated
+				// ignore
+				break;
+			case 0x0c03: // and
+				newPosition = InterpretAnd(newPosition, inReadLimit);
+				break;
+			case 0x0c04: // or
+				newPosition = InterpretOr(newPosition, inReadLimit);
+				break;
+			case 0x0c05: // not
+				newPosition = InterpretNot(newPosition, inReadLimit);
+				break;
+			case 0x0c09: // abs
+				newPosition = InterpretAbs(newPosition, inReadLimit);
+				break;
+			case 0x0c0a: // add
+				newPosition = InterpretAdd(newPosition, inReadLimit);
+				break;
+			case 0x0c0b: // sub
+				newPosition = InterpretSub(newPosition, inReadLimit);
+				break;
+			case 0x0c0c: // div
+				newPosition = InterpretDiv(newPosition, inReadLimit);
+				break;
+			case 0x0c0e: // neg
+				newPosition = InterpretNeg(newPosition, inReadLimit);
+				break;
+			case 0x0c0f: // eq
+				newPosition = InterpretEq(newPosition, inReadLimit);
+				break;
+			case 0x0c12: // drop
+				newPosition = InterpretDrop(newPosition, inReadLimit);
+				break;
+			case 0x0c14: // put
+				newPosition = InterpretPut(newPosition, inReadLimit);
+				break;
+			case 0x0c15: // get
+				newPosition = InterpretGet(newPosition, inReadLimit);
+				break;
+			case 0x0c16: // ifelse
+				newPosition = InterpretIfelse(newPosition, inReadLimit);
+				break;
+			case 0x0c17: // random
+				newPosition = InterpretRandom(newPosition, inReadLimit);
+				break;
+			case 0x0c18: // mul
+				newPosition = InterpretMul(newPosition, inReadLimit);
+				break;
+			case 0x0c1a: // sqrt
+				newPosition = InterpretSqrt(newPosition, inReadLimit);
+				break;
+			case 0x0c1b: // dup
+				newPosition = InterpretDup(newPosition, inReadLimit);
+				break;
+			case 0x0c1c: // exch
+				newPosition = InterpretExch(newPosition, inReadLimit);
+				break;
+			case 0x0c1d: // index
+				newPosition = InterpretIndex(newPosition, inReadLimit);
+				break;
+			case 0x0c1e: // roll
+				newPosition = InterpretRoll(newPosition, inReadLimit);
+				break;
+			case 0x0c22: // hflex
+				newPosition = InterpretHFlex(newPosition, inReadLimit);
+				break;
+			case 0x0c23: // flex
+				newPosition = InterpretFlex(newPosition, inReadLimit);
+				break;
+			case 0x0c24: // hflex1
+				newPosition = InterpretHFlex1(newPosition, inReadLimit);
+				break;
+			case 0x0c25: // flex1
+				newPosition = InterpretFlex1(newPosition, inReadLimit);
+				break;
+		}
+		return newPosition;
+	}
+	void CharStringType2Interpreter::CheckWidth()
+	{
+		if (!mCheckedWidth)
+		{
+			if (mOperandStack.size() % 2 != 0) // has width
+				mOperandStack.pop_front();
+			mCheckedWidth = true;
+		}
+	}
+	bool CharStringType2Interpreter::AddStemsCount(unsigned short inBy)
+	{
+		if (mStemsCount + inBy > MAX_STEM_HINTS_SIZE)
+			return false;
+		mStemsCount += inBy;
+		return true;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHStem(BYTE* inProgramCounter, long long)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2));
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Hstem(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	void CharStringType2Interpreter::ClearStack()
+	{
+		mOperandStack.clear();
+	}
+	BYTE* CharStringType2Interpreter::InterpretVStem(BYTE* inProgramCounter, long long)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2));
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Vstem(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretVMoveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Vmoveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRLineto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Rlineto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHLineto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hlineto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretVLineto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Vlineto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRRCurveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2RRCurveto(mOperandStack);
+		if(!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretCallSubr(BYTE* inProgramCounter, long long)
+	{
+		CharString* aCharString = NULL;
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		aCharString = mImplementationHelper->GetLocalSubr(mOperandStack.back().IntegerValue);
+		mOperandStack.pop_back();
+
+		if (aCharString != NULL)
+		{
+			BYTE* charString = NULL;
+			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition,aCharString->mEndPosition, &charString);
+			if (!status)
+			{
+				delete charString;
+				return NULL;
+			}
+
+			++mSubrsNesting;
+
+			if (mSubrsNesting > MAX_SUBR_NESTING_STACK_SIZE)
+			{
+				delete charString;
+				return NULL;
+			}
+
+			status = ProcessCharString(charString, aCharString->mEndPosition - aCharString->mStartPosition);
+			--mSubrsNesting;
+
+			delete charString;
+			if (!status)
+				return NULL;
+			else
+				return inProgramCounter;
+		}
+		return NULL;
+	}
+	BYTE* CharStringType2Interpreter::InterpretReturn(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Return(mOperandStack);
+		if (!status)
+			return NULL;
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretEndChar(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Endchar(mOperandStack);
+		if (!status)
+			return NULL;
+
+		mGotEndChar = true;
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHStemHM(BYTE* inProgramCounter, long long)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2));
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Hstemhm(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHintMask(BYTE* inProgramCounter, long long inReadLimit)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2)); // assuming this is a shortcut of dropping vstem if got arguments
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Hintmask(mOperandStack,inProgramCounter, inReadLimit);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		long long programCounterStemReadSize = (mStemsCount /  + (mStemsCount % 8 != 0 ? 1 : 0));
+		if (programCounterStemReadSize > inReadLimit)
+			return NULL;
+		return inProgramCounter+programCounterStemReadSize;
+	}
+	BYTE* CharStringType2Interpreter::InterpretCntrMask(BYTE* inProgramCounter, long long inReadLimit)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2)); // assuming this is a shortcut of dropping vstem if got arguments
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Cntrmask(mOperandStack, inProgramCounter, inReadLimit);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		long long programCounterStemReadSize = (mStemsCount / 8 + (mStemsCount % 8 != 0 ? 1 : 0));
+		if (programCounterStemReadSize > inReadLimit)
+			return NULL;
+		return inProgramCounter+programCounterStemReadSize;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRMoveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Rmoveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHMoveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hmoveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretVStemHM(BYTE* inProgramCounter, long long)
+	{
+		bool status = AddStemsCount((unsigned short)(mOperandStack.size() / 2));
+		if (!status)
+			return NULL;
+
+		status = mImplementationHelper->Type2Vstemhm(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRCurveLine(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Rcurveline(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRLineCurve(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Rlinecurve(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretVVCurveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Vvcurveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHHCurveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hhcurveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretCallGSubr(BYTE* inProgramCounter, long long)
+	{
+		CharString* aCharString = NULL;
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		aCharString = mImplementationHelper->GetGlobalSubr(mOperandStack.back().IntegerValue);
+		mOperandStack.pop_back();
+
+		if (aCharString != NULL)
+		{
+			BYTE* charString = NULL;
+			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition,aCharString->mEndPosition,&charString);
+			if (!status)
+			{
+				delete charString;
+				return NULL;
+			}
+
+			++mSubrsNesting;
+
+			if (mSubrsNesting > MAX_SUBR_NESTING_STACK_SIZE)
+			{
+				delete charString;
+				return NULL;
+			}
+
+			status = ProcessCharString(charString,aCharString->mEndPosition - aCharString->mStartPosition);
+			--mSubrsNesting;
+
+			delete charString;
+			if (!status)
+				return NULL;
+			return inProgramCounter;
+		}
+		return NULL;
+	}
+	BYTE* CharStringType2Interpreter::InterpretVHCurveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Vhcurveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHVCurveto(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hvcurveto(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretAnd(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2And(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+		newOperand.IsInteger = true;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		newOperand.IntegerValue = (
+			(valueB.IsInteger ? valueB.IntegerValue : valueB.RealValue) &&
+			(valueA.IsInteger ? valueA.IntegerValue : valueA.RealValue)
+			) ? 1 : 0;
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretOr(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Or(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+		newOperand.IsInteger = true;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		newOperand.IntegerValue = (
+			(valueB.IsInteger ? valueB.IntegerValue : valueB.RealValue) ||
+			(valueA.IsInteger ? valueA.IntegerValue : valueA.RealValue)
+			) ? 1:0;	mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretNot(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Not(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+		CharStringOperand newOperand;
+		newOperand.IsInteger = true;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		newOperand.IntegerValue = (value.IsInteger ? value.IntegerValue : value.RealValue)  ? 1 : 0;
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretAbs(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Abs(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		newOperand.IsInteger = value.IsInteger;
+		mOperandStack.pop_back();
+
+		if (value.IsInteger)
+			newOperand.IntegerValue = labs(value.IntegerValue);
+		else
+			newOperand.RealValue = fabs(value.RealValue);
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretAdd(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Add(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		if (!valueA.IsInteger || !valueB.IsInteger)
+		{
+			newOperand.IsInteger = false;
+			newOperand.RealValue =
+				(valueA.IsInteger ? (double)valueA.IntegerValue : valueA.RealValue)
+				+
+				(valueB.IsInteger ? (double)valueB.IntegerValue : valueB.RealValue);
+		}
+		else
+		{
+			newOperand.IsInteger = true;
+			newOperand.IntegerValue = valueA.IntegerValue + valueB.IntegerValue;
+		}
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretSub(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Sub(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		if (!valueA.IsInteger || !valueB.IsInteger)
+		{
+			newOperand.IsInteger = false;
+			newOperand.RealValue =
+				(valueA.IsInteger ? (double)valueA.IntegerValue : valueA.RealValue)
+				-
+				(valueB.IsInteger ? (double)valueB.IntegerValue : valueB.RealValue);
+		}
+		else
+		{
+			newOperand.IsInteger = true;
+			newOperand.IntegerValue = valueA.IntegerValue - valueB.IntegerValue;
+		}
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretDiv(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Div(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		if (!valueA.IsInteger || !valueB.IsInteger)
+		{
+			newOperand.IsInteger = false;
+			newOperand.RealValue =
+				(valueA.IsInteger ? (double)valueA.IntegerValue : valueA.RealValue)
+				/
+				(valueB.IsInteger ? (double)valueB.IntegerValue : valueB.RealValue);
+		}
+		else
+		{
+			newOperand.IsInteger = true;
+			newOperand.IntegerValue = valueA.IntegerValue / valueB.IntegerValue;
+		}
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretNeg(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Neg(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		newOperand.IsInteger = value.IsInteger;
+		mOperandStack.pop_back();
+
+		if (value.IsInteger)
+			newOperand.IntegerValue = -value.IntegerValue;
+		else
+			newOperand.RealValue = -value.RealValue;
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretEq(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Eq(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+
+		newOperand.IsInteger = true;
+		newOperand.IntegerValue = (
+		(valueB.IsInteger ? valueB.IntegerValue : valueB.RealValue) ==
+		(valueA.IsInteger ? valueA.IntegerValue : valueA.RealValue)
+		) ? 1 : 0;
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretDrop(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Drop(mOperandStack);
+		if (!status)
+			return NULL;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		mOperandStack.pop_back();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretPut(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Put(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		mStorage[(valueB.IsInteger ? valueB.IntegerValue : (long)valueB.RealValue)] = valueA;
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretGet(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Get(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		mOperandStack.pop_back();
+		long index = (value.IsInteger ? value.IntegerValue : (long)value.RealValue);
+
+		if((mStorage.size() > (unsigned long)index) && (index >= 0))
+		{
+			mOperandStack.push_back(mStorage[index]);
+			return inProgramCounter;
+		}
+		return NULL;
+	}
+	BYTE* CharStringType2Interpreter::InterpretIfelse(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Ifelse(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand valueC;
+		CharStringOperand valueD;
+
+		if (mOperandStack.size() < 4)
+			return NULL;
+
+		valueD = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueC = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		if (!valueC.IsInteger || !valueD.IsInteger)
+		{
+			if ((valueC.IsInteger ? (double)valueC.IntegerValue : valueC.RealValue) >
+				(valueD.IsInteger ? (double)valueD.IntegerValue : valueD.RealValue))
+				mOperandStack.push_back(valueB);
+			else
+				mOperandStack.push_back(valueA);
+		}
+		else
+		{
+			if (valueC.IntegerValue > valueD.IntegerValue)
+				mOperandStack.push_back(valueB);
+			else
+				mOperandStack.push_back(valueA);
+		}
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRandom(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Random(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand newOperand;
+
+		newOperand.IsInteger = false;
+		newOperand.RealValue = ((double)rand() + 1) / ((double)RAND_MAX + 1);
+
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretMul(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Mul(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		if (!valueA.IsInteger || !valueB.IsInteger)
+		{
+			newOperand.IsInteger = false;
+			newOperand.RealValue =
+				(valueA.IsInteger ? (double)valueA.IntegerValue : valueA.RealValue)
+				*
+				(valueB.IsInteger ? (double)valueB.IntegerValue : valueB.RealValue);
+		}
+		else
+		{
+			newOperand.IsInteger = true;
+			newOperand.IntegerValue = valueA.IntegerValue * valueB.IntegerValue;
+		}
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretSqrt(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Sqrt(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+		CharStringOperand newOperand;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		newOperand.IsInteger = false;
+		newOperand.RealValue = sqrt(value.IsInteger ? value.IntegerValue:value.RealValue);
+		mOperandStack.push_back(newOperand);
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretDup(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Dup(mOperandStack);
+		if (!status)
+			return NULL;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		mOperandStack.push_back(mOperandStack.back());
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretExch(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Exch(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+
+		if (mOperandStack.size() < 2)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		mOperandStack.push_back(valueB);
+		mOperandStack.push_back(valueA);
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretIndex(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Index(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand value;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		value = mOperandStack.back();
+		mOperandStack.pop_back();
+		long index = (value.IsInteger ? value.IntegerValue : (long)value.RealValue);
+		CharStringOperandList::reverse_iterator it = mOperandStack.rbegin();
+
+		while (index > 0 && it != mOperandStack.rend())
+			++it;
+		mOperandStack.push_back(*it);
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretRoll(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Roll(mOperandStack);
+		if (!status)
+			return NULL;
+
+		CharStringOperand valueA;
+		CharStringOperand valueB;
+
+		if (mOperandStack.size() < 1)
+			return NULL;
+
+		valueB = mOperandStack.back();
+		mOperandStack.pop_back();
+		valueA = mOperandStack.back();
+		mOperandStack.pop_back();
+
+		long shiftAmount = (valueB.IsInteger ? valueB.IntegerValue : (long)valueB.RealValue);
+		long itemsCount  = (valueA.IsInteger ? valueA.IntegerValue : (long)valueA.RealValue);
+
+		if (itemsCount > 0)
+		{
+			CharStringOperandList groupToShift;
+
+			for (long i = 0; i < itemsCount && mOperandStack.size() > 0; ++i)
+			{
+				groupToShift.push_front(mOperandStack.back());
+				mOperandStack.pop_back();
+			}
+
+			if (shiftAmount > 0)
+			{
+				for (long j = 0; j < shiftAmount; ++j)
+				{
+					groupToShift.push_front(groupToShift.back());
+					groupToShift.pop_back();
+				}
+			}
+			else
+			{
+				for (long j = 0; j < -shiftAmount; ++j)
+				{
+					groupToShift.push_back(groupToShift.front());
+					groupToShift.pop_front();
+				}
+			}
+
+			// put back the rolled group
+			for (long i = 0; i < itemsCount; ++i)
+			{
+				mOperandStack.push_back(groupToShift.front());
+				groupToShift.pop_front();
+			}
+		}
+
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHFlex(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hflex(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretFlex(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Flex(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretHFlex1(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Hflex1(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
+	BYTE* CharStringType2Interpreter::InterpretFlex1(BYTE* inProgramCounter, long long)
+	{
+		bool status = mImplementationHelper->Type2Flex1(mOperandStack);
+		if (!status)
+			return NULL;
+
+		ClearStack();
+		return inProgramCounter;
+	}
 	//----------------------------------------------------------------------------------------
 	// CharStringType2Flattener
 	//----------------------------------------------------------------------------------------
@@ -3025,6 +4297,60 @@ namespace PdfWriter
 		// the charstring becomes independent (with possible references to other charachters through seac-like endchar)
 		bool WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter);
 		virtual bool ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString) override;
+		virtual bool Type2InterpretNumber(const CharStringOperand& inOperand) override;
+		virtual bool Type2Hstem(const CharStringOperandList& inOperandList) override;
+		bool WriteRegularOperator(unsigned short inOperatorCode);
+		bool WriteCharStringOperand(const CharStringOperand& inOperand);
+		bool WriteCharStringOperator(unsigned short inOperatorCode);
+		bool WriteByte(BYTE inValue);
+		virtual bool Type2Vstem(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Vmoveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Rlineto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hlineto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Vlineto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2RRCurveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Return(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Endchar(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hstemhm(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hintmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit) override;
+		bool WriteStemMask(BYTE* inProgramCounter, long long inReadLimit);
+		bool WriteSubrOperator(unsigned short inOperatorCode);
+		virtual bool Type2Cntrmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit) override;
+		virtual bool Type2Rmoveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hmoveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Vstemhm(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Rcurveline(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Rlinecurve(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Vvcurveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hvcurveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hhcurveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Vhcurveto(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hflex(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Hflex1(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Flex(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Flex1(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2And(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Or(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Not(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Abs(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Add(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Sub(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Div(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Neg(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Eq(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Drop(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Put(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Get(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Ifelse(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Random(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Mul(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Sqrt(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Dup(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Exch(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Index(const CharStringOperandList& inOperandList) override;
+		virtual bool Type2Roll(const CharStringOperandList& inOperandList) override;
+		virtual CharString* GetLocalSubr(long inSubrIndex) override;
+		virtual CharString* GetGlobalSubr(long inSubrIndex) override;
 	};
 	CharStringType2Flattener::CharStringType2Flattener()
 	{
@@ -3066,6 +4392,328 @@ namespace PdfWriter
 	bool CharStringType2Flattener::ReadCharString(long long inCharStringStart, long long inCharStringEnd, BYTE** outCharString)
 	{
 		return mHelper->ReadCharString(inCharStringStart,inCharStringEnd,outCharString);
+	}
+	bool CharStringType2Flattener::Type2InterpretNumber(const CharStringOperand& inOperand)
+	{
+		mOperandsToWrite.push_back(inOperand);
+		return true;
+	}
+	bool CharStringType2Flattener::Type2Hstem(const CharStringOperandList& inOperandList)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+		return WriteRegularOperator(1);
+	}
+	bool CharStringType2Flattener::WriteRegularOperator(unsigned short inOperatorCode)
+	{
+		CharStringOperandList::iterator it = mOperandsToWrite.begin();
+		bool status = true;
+
+		for(; it != mOperandsToWrite.end() && status; ++it)
+			status = WriteCharStringOperand(*it);
+		if (status)
+			status = WriteCharStringOperator(inOperatorCode);
+
+		mOperandsToWrite.clear();
+
+		return status;
+	}
+	bool CharStringType2Flattener::WriteCharStringOperand(const CharStringOperand& inOperand)
+	{
+		if (inOperand.IsInteger)
+		{
+			long value = inOperand.IntegerValue;
+
+			if (-107 <= value && value <= 107)
+			{
+				return WriteByte((BYTE)(value + 139));
+			}
+			else if (108 <= value && value <= 1131)
+			{
+				value -= 108;
+				WriteByte(((value >> 8) & 0xff) + 247);
+				WriteByte(value & 0xff);
+			}
+			else if (-1131 <= value && value <= -108)
+			{
+				value = -(value + 108);
+				WriteByte(((value >> 8) & 0xff) + 251);
+				WriteByte(value & 0xff);
+			}
+			else if (-32768 <= value && value<= 32767)
+			{
+				WriteByte(28);
+				WriteByte((value >> 8) & 0xff);
+				WriteByte(value & 0xff);
+			}
+			else
+				return false;
+		}
+		else
+		{
+			double value = inOperand.RealValue;
+			bool sign = inOperand.RealValue < 0;
+			if (sign)
+				value = -value;
+			long integerPart = (long)floor(value);
+			long realPart = (long)((value - floor(value)) * 65536);
+			if (sign)
+				integerPart = -integerPart;
+
+			WriteByte(BYTE(0xff));
+			WriteByte(BYTE((integerPart >> 8) & 0xff));
+			WriteByte(BYTE(integerPart & 0xff));
+			WriteByte(BYTE((realPart >> 8) & 0xff));
+			WriteByte(BYTE(realPart & 0xff));
+		}
+		return true;
+	}
+	bool CharStringType2Flattener::WriteCharStringOperator(unsigned short inOperatorCode)
+	{
+		if ((inOperatorCode & 0xff00) == 0x0c00)
+		{
+			if (!WriteByte(0x0c))
+				return false;
+		}
+		return WriteByte(BYTE(inOperatorCode & 0xff));
+	}
+	bool CharStringType2Flattener::WriteByte(BYTE inValue)
+	{
+		mWriter->Write(&inValue, 1);
+		return true;
+	}
+	bool CharStringType2Flattener::Type2Vstem(const CharStringOperandList& inOperandList)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+		return WriteRegularOperator(3);
+	}
+	bool CharStringType2Flattener::Type2Vmoveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(4);
+	}
+	bool CharStringType2Flattener::Type2Rlineto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(5);
+	}
+	bool CharStringType2Flattener::Type2Hlineto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(6);
+	}
+	bool CharStringType2Flattener::Type2Vlineto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(7);
+	}
+	bool CharStringType2Flattener::Type2RRCurveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(8);
+	}
+	bool CharStringType2Flattener::Type2Return(const CharStringOperandList&)
+	{
+		// ignore returns
+		return true;
+	}
+	bool CharStringType2Flattener::Type2Endchar(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(14);
+	}
+	bool CharStringType2Flattener::Type2Hstemhm(const CharStringOperandList& inOperandList)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+		return WriteRegularOperator(18);
+	}
+	bool CharStringType2Flattener::Type2Hintmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+
+		if (!WriteRegularOperator(19))
+			return false;
+
+		return WriteStemMask(inProgramCounter, inReadLimit);
+	}
+	bool CharStringType2Flattener::WriteStemMask(BYTE* inProgramCounter, long long inReadLimit)
+	{
+		unsigned short maskSize = mStemsCount / 8 + (mStemsCount % 8 != 0 ? 1 : 0);
+
+		if (maskSize > inReadLimit)
+			return false;
+
+		mWriter->Write(inProgramCounter, maskSize);
+		return true;
+	}
+	bool CharStringType2Flattener::WriteSubrOperator(unsigned short)
+	{
+		if (mOperandsToWrite.size() > 0)
+		{
+			bool status = true;
+			mOperandsToWrite.pop_back(); // pop back parameter, which is the subr index
+
+			// now continue writing all operands
+			CharStringOperandList::iterator it = mOperandsToWrite.begin();
+
+			for (; it != mOperandsToWrite.end() && status; ++it)
+				status = WriteCharStringOperand(*it);
+
+			mOperandsToWrite.clear();
+			return status;
+		}
+		else // no current operands. either result of calculation or just multiple operators one of the other
+			return WriteCharStringOperator(0x0c12); // write a "drop" command for the subr index
+	}
+	bool CharStringType2Flattener::Type2Cntrmask(const CharStringOperandList& inOperandList, BYTE* inProgramCounter, long long inReadLimit)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+
+		if (!WriteRegularOperator(20))
+			return false;
+
+		return WriteStemMask(inProgramCounter, inReadLimit);
+	}
+	bool CharStringType2Flattener::Type2Rmoveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(21);
+	}
+	bool CharStringType2Flattener::Type2Hmoveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(22);
+	}
+	bool CharStringType2Flattener::Type2Vstemhm(const CharStringOperandList& inOperandList)
+	{
+		mStemsCount += (unsigned short)(inOperandList.size() / 2);
+
+		return WriteRegularOperator(23);
+	}
+	bool CharStringType2Flattener::Type2Rcurveline(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(24);
+	}
+	bool CharStringType2Flattener::Type2Rlinecurve(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(25);
+	}
+	bool CharStringType2Flattener::Type2Vvcurveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(26);
+	}
+	bool CharStringType2Flattener::Type2Hvcurveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(31);
+	}
+	bool CharStringType2Flattener::Type2Hhcurveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(27);
+	}
+	bool CharStringType2Flattener::Type2Vhcurveto(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(30);
+	}
+	bool CharStringType2Flattener::Type2Hflex(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c22);
+	}
+	bool CharStringType2Flattener::Type2Hflex1(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c24);
+	}
+	bool CharStringType2Flattener::Type2Flex(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c23);
+	}
+	bool CharStringType2Flattener::Type2Flex1(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c25);
+	}
+	bool CharStringType2Flattener::Type2And(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c03);
+	}
+	bool CharStringType2Flattener::Type2Or(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c04);
+	}
+	bool CharStringType2Flattener::Type2Not(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c05);
+	}
+	bool CharStringType2Flattener::Type2Abs(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c09);
+	}
+	bool CharStringType2Flattener::Type2Add(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c0a);
+	}
+	bool CharStringType2Flattener::Type2Sub(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c0b);
+	}
+	bool CharStringType2Flattener::Type2Div(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c0c);
+	}
+	bool CharStringType2Flattener::Type2Neg(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c0e);
+	}
+	bool CharStringType2Flattener::Type2Eq(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c0f);
+	}
+	bool CharStringType2Flattener::Type2Drop(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c12);
+	}
+	bool CharStringType2Flattener::Type2Put(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c14);
+	}
+	bool CharStringType2Flattener::Type2Get(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c15);
+	}
+	bool CharStringType2Flattener::Type2Ifelse(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c16);
+	}
+	bool CharStringType2Flattener::Type2Random(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c17);
+	}
+	bool CharStringType2Flattener::Type2Mul(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c18);
+	}
+	bool CharStringType2Flattener::Type2Sqrt(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c1a);
+	}
+	bool CharStringType2Flattener::Type2Dup(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c1b);
+	}
+	bool CharStringType2Flattener::Type2Exch(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c1c);
+	}
+	bool CharStringType2Flattener::Type2Index(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c1d);
+	}
+	bool CharStringType2Flattener::Type2Roll(const CharStringOperandList&)
+	{
+		return WriteRegularOperator(0x0c1e);
+	}
+	CharString* CharStringType2Flattener::GetLocalSubr(long inSubrIndex)
+	{
+		if (!WriteSubrOperator(10))
+			return NULL;
+
+		return mHelper->GetLocalSubr(inSubrIndex);
+	}
+	CharString* CharStringType2Flattener::GetGlobalSubr(long inSubrIndex)
+	{
+		if (!WriteSubrOperator(29))
+			return NULL;
+
+		return mHelper->GetGlobalSubr(inSubrIndex);
 	}
 	//----------------------------------------------------------------------------------------
 	// CCFFWriter

@@ -48,14 +48,15 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeYMult;
 
 	FrtHeaderOld	frtHeaderOld;
-	short			axmid;
+	short			axmid = 0;
 	Xnum			numLabelMultiplier;
-	bool			fAutoShowMultiplier;
-	bool			fBeingEditted;
+	bool			fAutoShowMultiplier = false;
+	bool			fBeingEditted = false;
 };
 
 } // namespace XLS

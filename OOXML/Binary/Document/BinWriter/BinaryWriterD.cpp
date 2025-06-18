@@ -3141,7 +3141,12 @@ void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstrac
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
-
+	if (num.m_oNsid.IsInit() && num.m_oNsid->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::Nsid);
+		m_oBcw.m_oStream.WriteULONG(num.m_oNsid->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);

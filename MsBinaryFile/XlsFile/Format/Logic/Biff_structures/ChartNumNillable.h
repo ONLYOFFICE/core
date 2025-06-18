@@ -63,7 +63,7 @@ private:
 			unsigned short type;
 			unsigned short fExprO;
 		};
-		double xnum;
+		double xnum = 0;
 	} data;
 	unsigned short nil_type_;
 };

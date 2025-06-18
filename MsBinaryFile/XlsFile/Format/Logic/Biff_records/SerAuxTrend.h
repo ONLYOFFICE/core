@@ -49,15 +49,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSerAuxTrend;
 
 //-----------------------------
-	unsigned char		regt;
-	unsigned char		ordUser;
+	unsigned char		regt = 0;
+	unsigned char		ordUser = 0;
 	ChartNumNillable	numIntercept;
-	unsigned char		fEquation;
-	unsigned char		fRSquared;
+	unsigned char		fEquation = 0;
+	unsigned char		fRSquared = 0;
 	Xnum				numForecast;
 	Xnum				numBackcast;
 

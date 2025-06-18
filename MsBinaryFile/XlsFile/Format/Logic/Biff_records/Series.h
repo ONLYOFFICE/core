@@ -50,17 +50,18 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSeries;
 
 //-----------------------------
-	_UINT16 sdtX;
-	_UINT16 sdtY;
-	_UINT16 sdtBSize;
+	_UINT16 sdtX = 0;
+	_UINT16 sdtY = 0;
+	_UINT16 sdtBSize = 0;
 
-	_UINT16 cValx;
-	_UINT16 cValy;
-	_UINT16 cValBSize;
+	_UINT16 cValx = 0;
+	_UINT16 cValy = 0;
+	_UINT16 cValBSize = 0;
 };
 
 } // namespace XLS

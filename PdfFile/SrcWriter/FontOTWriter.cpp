@@ -129,6 +129,7 @@ namespace PdfWriter
 	static const unsigned short scEncoding = 16;
 	static const unsigned short scCharStrings = 17;
 	static const unsigned short scPrivate = 18;
+	static const unsigned short scSubrs = 19;
 	static const unsigned short scFDArray = 0xC24;
 	static const unsigned short scFDSelect = 0xC25;
 	static const unsigned short scROS = 0xC1E;
@@ -1008,7 +1009,6 @@ namespace PdfWriter
 		bool ReadPrivateDicts();
 		bool ReadPrivateDict(const UShortToDictOperandListMap& inReferencingDict, PrivateDictInfo* outPrivateDict);
 		bool ReadLocalSubrs();
-		static const unsigned short scSubrs = 19;
 		bool ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType);
 		bool ReadCharsets();
 		bool ReadEncodings();
@@ -4354,11 +4354,9 @@ namespace PdfWriter
 	};
 	CharStringType2Flattener::CharStringType2Flattener()
 	{
-
 	}
 	CharStringType2Flattener::~CharStringType2Flattener()
 	{
-
 	}
 	bool CharStringType2Flattener::WriteFlattenedGlyphProgram(unsigned short inFontIndex, unsigned short inGlyphIndex, CCFFReader* inCFFFileInput, CMemoryStream* inWriter)
 	{
@@ -4766,6 +4764,9 @@ namespace PdfWriter
 		void DetermineFDArrayIndexes(const std::vector<unsigned int>& inSubsetGlyphIDs, FontDictInfoToByteMap& outNewFontDictsIndexes);
 		bool WriteFDSelect(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes);
 		bool WriteCharStrings(const std::vector<unsigned int>& inSubsetGlyphIDs);
+		bool WritePrivateDictionary();
+		bool WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition);
+		bool WriteFDArray(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes);
 	};
 	CCFFWriter::CCFFWriter()
 	{
@@ -4852,6 +4853,17 @@ namespace PdfWriter
 		status = WriteCharStrings(subsetGlyphIDs);
 		if (!status)
 			return false;
+
+		status = WritePrivateDictionary();
+		if (!status)
+			return false;
+
+		if (mIsCID)
+		{
+			status = WriteFDArray(subsetGlyphIDs, newFDIndexes);
+			if (!status)
+				return false;
+		}
 
 		// TODO
 
@@ -5267,7 +5279,10 @@ namespace PdfWriter
 			status = charStringFlattener.WriteFlattenedGlyphProgram(0, *itGlyphs, &(mOpenTypeInput.mCFF), &charStringsDataWriteStream);
 		}
 		if (!status)
+		{
+			delete[] offsets;
 			return false;
+		}
 
 		offsets[i] = (unsigned long)charStringsDataWriteStream.Tell();
 
@@ -5284,6 +5299,115 @@ namespace PdfWriter
 
 		// Write data
 		mFontFileStream->WriteStream(&charStringsDataWriteStream, 0, NULL);
+
+		delete[] offsets;
+		return status;
+	}
+	bool CCFFWriter::WritePrivateDictionary()
+	{
+		return WritePrivateDictionaryBody(mOpenTypeInput.mCFF.mPrivateDicts[0], mPrivateSize, mPrivatePosition);
+	}
+	bool CCFFWriter::WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition)
+	{
+		// just copy the private dict, without the subrs reference
+		if (inPrivateDictionary.mPrivateDictStart != 0)
+		{
+			UShortToDictOperandListMap::const_iterator it = inPrivateDictionary.mPrivateDict.begin();
+
+			outWritePosition = mFontFileStream->Tell();
+			for (; it != inPrivateDictionary.mPrivateDict.end(); ++it)
+				if(it->first != scSubrs) // should get me a nice little pattern for this some time..a filter thing
+					mPrimitivesWriter->WriteDictItems(it->first, it->second);
+
+			outWriteSize = mFontFileStream->Tell() - outWritePosition;
+			return true;
+		}
+		outWritePosition = 0;
+		outWriteSize = 0;
+		return true;
+	}
+	bool CCFFWriter::WriteFDArray(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes)
+	{
+		// loop the glyphs IDs, for each get their respective dictionary. put them in a set.
+		// now itereate them, and write each private dictionary [no need for index]. save the private dictionary position.
+		// now write the FDArray. remember it's an index, so first write into a separate, maintain the offsets and only then write the actual buffer.
+		// save a mapping between the original pointer and a new index.
+
+		FontDictInfoToLongFilePositionTypePairMap privateDictionaries;
+		bool status = true;
+		unsigned long* offsets = NULL;
+
+		if (inNewFontDictsIndexes.size() == 0)
+		{
+			// if no valid font infos, write an empty index and finish
+			mFDArrayPosition = mFontFileStream.GetCurrentPosition();
+			status = mPrimitivesWriter.WriteCard16(0);
+			break;
+		}
+
+		// loop the font infos, and write the private dictionaries
+		LongFilePositionType privatePosition,privateSize;
+		FontDictInfoToByteMap::const_iterator itFontInfos = inNewFontDictsIndexes.begin();
+		for(; itFontInfos != inNewFontDictsIndexes.end() && PDFHummus::eSuccess == status; ++itFontInfos)
+		{
+			status = WritePrivateDictionaryBody(itFontInfos->first->mPrivateDict,privateSize,privatePosition);
+			privateDictionaries.insert(
+				FontDictInfoToLongFilePositionTypePairMap::value_type(itFontInfos->first,
+																	LongFilePositionTypePair(privateSize,privatePosition)));
+		}
+		if(status != PDFHummus::eSuccess)
+			break;
+
+		// write FDArray segment
+		offsets = new unsigned long[inNewFontDictsIndexes.size() + 1];
+		MyStringBuf fontDictsInfoData;
+		OutputStringBufferStream fontDictDataWriteStream(&fontDictsInfoData);
+		CFFPrimitiveWriter fontDictPrimitiveWriter;
+		Byte i=0;
+
+		fontDictPrimitiveWriter.SetStream(&fontDictDataWriteStream);
+
+		for(itFontInfos = inNewFontDictsIndexes.begin(); itFontInfos != inNewFontDictsIndexes.end() && PDFHummus::eSuccess == status; ++itFontInfos,++i)
+		{
+			offsets[i] = (unsigned long)fontDictDataWriteStream.GetCurrentPosition();
+
+			UShortToDictOperandListMap::const_iterator itDict= itFontInfos->first->mFontDict.begin();
+
+			for(; itDict != itFontInfos->first->mFontDict.end() && PDFHummus::eSuccess == status; ++itDict)
+				if(itDict->first != scPrivate) // should get me a nice little pattern for this some time..a filter thing
+					status = fontDictPrimitiveWriter.WriteDictItems(itDict->first,itDict->second);
+
+			// now add the private key
+			if(PDFHummus::eSuccess == status && privateDictionaries[itFontInfos->first].first != 0)
+			{
+				fontDictPrimitiveWriter.WriteIntegerOperand(long(privateDictionaries[itFontInfos->first].first));
+				fontDictPrimitiveWriter.WriteIntegerOperand(long(privateDictionaries[itFontInfos->first].second));
+				fontDictPrimitiveWriter.WriteDictOperator(scPrivate);
+				status = fontDictPrimitiveWriter.GetInternalState();
+			}
+		}
+		if(status != PDFHummus::eSuccess)
+			break;
+
+		offsets[i] = (unsigned long)fontDictDataWriteStream.GetCurrentPosition();
+
+		fontDictsInfoData.pubseekoff(0,std::ios_base::beg);
+
+		// write index section
+		mFDArrayPosition = mFontFileStream.GetCurrentPosition();
+		Byte sizeOfOffset = GetMostCompressedOffsetSize(offsets[i] + 1);
+		mPrimitivesWriter.WriteCard16((unsigned short)inNewFontDictsIndexes.size());
+		mPrimitivesWriter.WriteOffSize(sizeOfOffset);
+		mPrimitivesWriter.SetOffSize(sizeOfOffset);
+		for(i=0;i<=inNewFontDictsIndexes.size();++i)
+			mPrimitivesWriter.WriteOffset(offsets[i] + 1);
+
+		// Write data
+		InputStringBufferStream fontDictDataReadStream(&fontDictsInfoData);
+		OutputStreamTraits streamCopier(&mFontFileStream);
+		status = streamCopier.CopyToOutputStream(&fontDictDataReadStream);
+		if(status != PDFHummus::eSuccess)
+			break;
 
 		delete[] offsets;
 		return status;

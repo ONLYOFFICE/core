@@ -278,6 +278,12 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 		i += nPathLength;
 	}
+	if (nFlags & (1 << 9))
+	{
+		nPathLength = READ_INT(pWidgets + i);
+		i += 4;
+		std::cout << "MEOptions " << nPathLength << ", ";
+	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)

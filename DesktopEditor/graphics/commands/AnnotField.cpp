@@ -214,7 +214,8 @@ int  CAnnotFieldInfo::GetFlag()      const { return m_nFlag; }
 int  CAnnotFieldInfo::GetID()        const { return m_nID; }
 int  CAnnotFieldInfo::GetAnnotFlag() const { return m_nAnnotFlag; }
 int  CAnnotFieldInfo::GetPage()      const { return m_nPage; }
-int CAnnotFieldInfo::GetCopyAP()     const { return m_nCopyAP; }
+int  CAnnotFieldInfo::GetCopyAP()    const { return m_nCopyAP; }
+int  CAnnotFieldInfo::GetMEOptions() const { return m_nMEOptions; }
 void CAnnotFieldInfo::GetBE(BYTE& nS, double& dI) { nS = m_pBE.first; dI = m_pBE.second; }
 BYTE* CAnnotFieldInfo::GetRender(LONG& nLen)
 {
@@ -362,6 +363,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 		m_wsOUserID = pReader->ReadString();
 	if (nFlags & (1 << 8))
 		m_nCopyAP = pReader->ReadInt();
+	if (nFlags & (1 << 9))
+		m_nMEOptions = pReader->ReadInt();
 
 	if (IsMarkup())
 	{

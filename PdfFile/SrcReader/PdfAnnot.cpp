@@ -3146,6 +3146,14 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 		delete s;
 	}
 	oObj.free();
+
+	// 9 - MEOptions
+	if (pField->fieldLookup("MEOptions", &oObj)->isInt())
+	{
+		m_unAFlags |= (1 << 9);
+		m_unMEOptions = oObj.getInt();
+	}
+	oObj.free();
 }
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID)
 {
@@ -3270,6 +3278,14 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 		TextString* s = new TextString(oObj.getString());
 		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		delete s;
+	}
+	oObj.free();
+
+	// 9 - MEOptions
+	if (oAnnot.dictLookup("MEOptions", &oObj)->isInt())
+	{
+		m_unAFlags |= (1 << 9);
+		m_unMEOptions = oObj.getInt();
 	}
 	oObj.free();
 
@@ -3777,6 +3793,8 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sM);
 	if (m_unAFlags & (1 << 7))
 		oRes.WriteString(m_sOUserID);
+	if (m_unAFlags & (1 << 9))
+		oRes.AddInt(m_unMEOptions);
 }
 void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {

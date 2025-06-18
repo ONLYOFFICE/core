@@ -199,6 +199,7 @@ private:
 	unsigned int m_unAnnotFlag; // Флаг аннотации - F
 	unsigned int m_unRefNum; // Номер ссылки на объект
 	unsigned int m_unPage; // Страница
+	unsigned int m_unMEOptions; // MEOptions
 	std::pair<BYTE, double> m_pBE; // Эффекты границы
 	std::string m_sContents; // Отображаемый текст
 	std::string m_sNM; // Уникальное имя

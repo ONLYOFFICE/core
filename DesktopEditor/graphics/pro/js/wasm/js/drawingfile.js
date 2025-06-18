@@ -546,6 +546,9 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 	// User ID
 	if (flags & (1 << 8))
 		rec["AP"]["Copy"] = reader.readInt();
+	// MEOptions
+	if (flags & (1 << 9))
+		rec["MEOptions"] = reader.readInt();
 }
 function readAnnotAP(reader, AP)
 {

@@ -1908,6 +1908,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 7))
 		pAnnot->SetOUserID(oInfo.GetOUserID());
 	bool bRenderCopy = (nFlags >> 8) & 1;
+	if (nFlags & (1 << 9))
+		pAnnot->SetMEOptions(oInfo.GetMEOptions());
 
 	if (oInfo.IsMarkup())
 	{

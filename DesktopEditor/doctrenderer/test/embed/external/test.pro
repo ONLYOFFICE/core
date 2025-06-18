@@ -29,10 +29,18 @@ core_linux {
     LIBS += -ldl
 }
 
-SOURCES += main.cpp \
-    Embed.cpp
-
 HEADERS += \
-    Embed.h
+	Embed.h \
+	test_functions.h
+
+SOURCES += \
+	Embed.cpp \
+	test_functions.cpp
+
+use_javascript_core {
+	OBJECTIVE_SOURCES += main.mm
+} else {
+	SOURCES += main.cpp
+}
 
 ADD_FILES_FOR_EMBEDDED_CLASS_HEADER(Embed.h)

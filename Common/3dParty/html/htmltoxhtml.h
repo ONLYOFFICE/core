@@ -68,10 +68,10 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
 	if (bNeedConvert)
 	{ // Определение кодировки
-		std::string sEncoding = NSStringFinder::FindPropety(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
+		std::string sEncoding = NSStringFinder::FindProperty(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
 
 		if (sEncoding.empty())
-			sEncoding = NSStringFinder::FindPropety(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
+			sEncoding = NSStringFinder::FindProperty(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
 
 		if (!sEncoding.empty() && !NSStringFinder::Equals("utf-8", sEncoding))
 		{
@@ -210,7 +210,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	NSStringFinder::TFoundedData<char> oData;
 	
 	// Content-Type
-	oData =  NSStringFinder::FindPropety(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
+	oData =  NSStringFinder::FindProperty(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentType{oData.m_sValue};
 
 	if (sContentType.empty())
@@ -226,18 +226,18 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	unCharsetBegin = oData.m_unEndPosition;
 
 	// name
-//	std::string sName = NSStringFinder::FindPropety(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
+//	std::string sName = NSStringFinder::FindProperty(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
 //	unContentPosition = std::max(unContentPosition, unLastPosition);
 
 	// Content-Location
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
 	std::string sContentLocation{oData.m_sValue};
 
 	if (!oData.Empty())
 		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
 
 	// Content-ID
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
 	std::string sContentID{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -251,7 +251,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 		sContentLocation = "cid:" + sContentID;
 
 	// Content-Transfer-Encoding
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentEncoding{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -265,7 +265,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 
 	if (std::string::npos != unCharsetEnd && unCharsetBegin < unCharsetEnd)
 	{
-		sCharset = NSStringFinder::FindPropety(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
+		sCharset = NSStringFinder::FindProperty(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
 		NSStringFinder::CutInside<std::string>(sCharset, "\"");
 	}
 
@@ -337,7 +337,7 @@ static std::string mhtTohtml(const std::string& sFileContent)
 	NSStringUtils::CStringBuilderA oRes;
 
 	// Поиск boundary
-	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindPropety(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
+	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindProperty(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
 
 	size_t nFound{oData.m_unEndPosition};
 	std::string sBoundary{oData.m_sValue};
@@ -436,17 +436,17 @@ static void substitute_xml_entities_into_text(std::string& text)
 }
 
 // After running through Gumbo, the values of type "&#1;" are replaced with the corresponding code '0x01'
-// Since the attribute value does not use control characters (value <= 0x1F),
+// Since the attribute value does not use control characters (value <= 0x09),
 // then just delete them, otherwise XmlUtils::CXmlLiteReader crashes on them.
 // bug#73486
 static void remove_control_symbols(std::string& text)
 {
-	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](char chValue){ return chValue <= 0x1F; });
+	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
 
 	while (itFound != text.end())
 	{
 		itFound = text.erase(itFound);
-		itFound = std::find_if(itFound, text.end(), [](char chValue){ return chValue <= 0x1F; });
+		itFound = std::find_if(itFound, text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
 	}
 }
 
@@ -489,6 +489,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 		oBuilder.WriteString("<!DOCTYPE ");
 		oBuilder.WriteString(node->v.document.name);
 		std::string pi(node->v.document.public_identifier);
+		remove_control_symbols(pi);
 		if ((node->v.document.public_identifier != NULL) && !pi.empty())
 		{
 			oBuilder.WriteString(" PUBLIC \"");
@@ -509,6 +510,10 @@ static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringB
 		GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
 		std::string sVal(at->value);
 		std::string sName(at->name);
+
+		remove_control_symbols(sVal);
+		remove_control_symbols(sName);
+
 		atts.WriteString(" ");
 
 		bool bCheck = false;
@@ -569,6 +574,7 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 		if (child->type == GUMBO_NODE_TEXT)
 		{
 			std::string val(child->v.text.text);
+			remove_control_symbols(val);
 			substitute_xml_entities_into_text(val);
 
 			// Избавление от FF
@@ -608,6 +614,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	}
 
 	std::string tagname            = get_tag_name(node);
+	remove_control_symbols(tagname);
 
 	if (NodeIsUnprocessed(tagname))
 		return;

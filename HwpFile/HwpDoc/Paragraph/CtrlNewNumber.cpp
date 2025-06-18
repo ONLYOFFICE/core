@@ -12,7 +12,7 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	int nAttr;
 	oBuffer.ReadInt(nAttr);
 
-	m_eNumType = GetNumType(nAttr & 0xF);
+	m_eNumType = ::HWP::GetNumType(nAttr & 0xF);
 	m_eNumShape = GetNumberShape2((nAttr >> 4) & 0xF);
 
 	oBuffer.ReadShort(m_shNum);
@@ -24,7 +24,7 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 	: CCtrl(sCtrlID)
 {
 	m_shNum = oNode.GetAttributeInt(L"num");
-	m_eNumType = GetNumType(oNode.GetAttributeInt(L"numType"));
+	m_eNumType = ::HWP::GetNumType(oNode.GetAttribute(L"numType"));
 	//TODO:: проверить данный момент
 	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"autoNumFormat"));
 
@@ -34,5 +34,15 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 ECtrlObjectType CCtrlNewNumber::GetCtrlType() const
 {
 	return ECtrlObjectType::NewNumber;
+}
+
+ENumType CCtrlNewNumber::GetNumType() const
+{
+	return m_eNumType;
+}
+
+short CCtrlNewNumber::GetNum() const
+{
+	return m_shNum;
 }
 }

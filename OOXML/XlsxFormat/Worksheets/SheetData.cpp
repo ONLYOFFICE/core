@@ -1895,7 +1895,7 @@ namespace OOX
 			int nCol = 0;
 			getRowCol(nRow, nCol);
 			xlsx->m_nLastReadCol = nCol > xlsx->m_nLastReadCol ? nCol : xlsx->m_nLastReadCol + 1;
-			setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
+            setRowCol(xlsx->m_nLastReadRow, xlsx->m_nLastReadCol);
 		}
 		void CCell::AfterRead()
 		{
@@ -2709,7 +2709,7 @@ namespace OOX
             }
             else
             {
-                CellReference.row = m_oRow.get() - 1;
+                CellReference.row = m_oRow.get() -1;
                 CellReference.column = m_oCol.get();
             }
             if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
@@ -3516,7 +3516,7 @@ namespace OOX
 				if (parseRefA(m_oRef->c_str(), nRow, nCol))
 				{
 					bRes = true;
-					//nRow--;
+                    //nRow--;
 					nCol--;
 				}
 			}
@@ -3769,6 +3769,11 @@ namespace OOX
 		}
 		void CRow::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
+            if(m_oDataCache.IsInit() && !(m_oDataCache.get().empty()))
+            {
+                writer.WriteString(m_oDataCache.get());
+                return;
+            }
 			toXMLStart(writer);
 
 			for ( size_t i = 0; i < m_arrItems.size(); ++i)
@@ -3858,6 +3863,13 @@ namespace OOX
 				}
 			}
 		}
+        void CRow::storeXmlCache()
+        {
+            NSStringUtils::CStringBuilder writer;
+            toXML(writer);
+            m_oDataCache = writer.GetData();
+            ClearItems();
+        }
         void CRow::fromBin(XLS::BaseObjectPtr& obj)
         {
             ReadAttributes(obj);
@@ -4416,27 +4428,35 @@ namespace OOX
 		void CSheetData::toXML(NSStringUtils::CStringBuilder& writer) const
 		{
 			toXMLStart(writer);
-			for ( size_t i = 0; i < m_arrItems.size(); ++i)
-			{
-				if (  m_arrItems[i] )
-				{
-					m_arrItems[i]->toXML(writer);
-                    if(m_arrItems[i]->m_oRepeated.IsInit())
+            if(m_oDataCache.IsInit() && m_oDataCache->GetCurSize())
+            {
+                writer.Write(m_oDataCache.get2());
+                m_oDataCache->Clear();
+            }
+            else
+            {
+                for ( size_t i = 0; i < m_arrItems.size(); ++i)
+                {
+                    if (  m_arrItems[i] )
                     {
-                        _INT32 rowTimes = m_arrItems[i]->m_oRepeated.get() - 1;
-                        while(rowTimes > 0)
+                        m_arrItems[i]->toXML(writer);
+                        if(m_arrItems[i]->m_oRepeated.IsInit())
                         {
-                            if(m_arrItems[i]->m_oR.IsInit())
-                                m_arrItems[i]->m_oR = m_arrItems[i]->m_oR->GetValue() + 1;
-                            if(!m_arrItems[i]->m_arrItems.empty() && m_arrItems[i]->m_arrItems.at(0)->m_oRow.IsInit())
-                                m_arrItems[i]->m_arrItems.at(0)->m_oRow = m_arrItems[i]->m_oR->GetValue();
-                            m_arrItems[i]->toXML(writer);
-                            rowTimes--;
-                        }
+                            _INT32 rowTimes = m_arrItems[i]->m_oRepeated.get() - 1;
+                            while(rowTimes > 0)
+                            {
+                                if(m_arrItems[i]->m_oR.IsInit())
+                                    m_arrItems[i]->m_oR = m_arrItems[i]->m_oR->GetValue() + 1;
+                                if(!m_arrItems[i]->m_arrItems.empty() && m_arrItems[i]->m_arrItems.at(0)->m_oRow.IsInit())
+                                    m_arrItems[i]->m_arrItems.at(0)->m_oRow = m_arrItems[i]->m_oR->GetValue();
+                                m_arrItems[i]->toXML(writer);
+                                rowTimes--;
+                            }
 
+                        }
                     }
-				}
-			}
+                }
+            }
 			toXMLEnd(writer);
 		}
 		void CSheetData::toXMLStart(NSStringUtils::CStringBuilder& writer) const
@@ -4447,6 +4467,12 @@ namespace OOX
 		{
 			writer.WriteString(_T("</sheetData>"));
 		}
+        void CSheetData::AddRowToCache(CRow &row)
+        {
+            if(!m_oDataCache.IsInit())
+                m_oDataCache.Init();
+            row.toXML(m_oDataCache.get2());
+        }
         void CSheetData::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
 			WritingElement_ReadAttributes_Start(oReader)
@@ -4596,6 +4622,13 @@ namespace OOX
 			}
 			m_mapStyleMerges2003.clear();
 		}
+        void CSheetData::ClearSharedFmlaRefs()
+        {
+            if(SharedFormulasRef::sharedRefsLocations)
+                SharedFormulasRef::sharedRefsLocations.reset();
+            if(SharedFormulasRef::ArrayRefsLocations)
+                SharedFormulasRef::ArrayRefsLocations.reset();
+        }
 		void CSheetData::fromXLSB (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nType, CSVWriter* pCSVWriter, NSFile::CStreamWriter& oStreamWriter)
 		{
             oStream.XlsbSkipRecord();//XLSB::rt_BeginSheetData
@@ -4732,10 +4765,7 @@ namespace OOX
                 else
                     delete pRow;
             }
-            if(SharedFormulasRef::sharedRefsLocations)
-                SharedFormulasRef::sharedRefsLocations.reset();
-            if(SharedFormulasRef::ArrayRefsLocations)
-                SharedFormulasRef::ArrayRefsLocations.reset();
+            ClearSharedFmlaRefs();
         }
 		XLS::BaseObjectPtr CSheetData::toBin()
 		{
@@ -4792,10 +4822,7 @@ namespace OOX
                 }
             it = m_arrItems.erase(it);
         }
-		if(SharedFormulasRef::sharedRefsLocations)
-			SharedFormulasRef::sharedRefsLocations.reset();
-		if(SharedFormulasRef::ArrayRefsLocations)
-			SharedFormulasRef::ArrayRefsLocations.reset();
+        ClearSharedFmlaRefs();
         {
             auto record = writer->getNextRecord(XLSB::rt_EndSheetData);
             writer->storeNextRecord(record);

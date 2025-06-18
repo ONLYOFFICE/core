@@ -51,7 +51,7 @@ namespace PPTX
 	namespace Logic
 	{
         void CalculateFill(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, smart_ptr<PPTX::Theme>& oTheme,
-				smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
+				smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, std::wstring& strAttr, std::wstring& strNode, bool bOle = false, bool bSignature = false);
 
         void CalculateLine(BYTE lDocType, PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle,
 				smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, std::wstring& strAttr, std::wstring& strNode, bool bOle = false);
@@ -85,11 +85,11 @@ namespace PPTX
 
 			void InitElem(WrapperWritingElement* pElem);
 
-			virtual void fromPPTY	(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toPPTY		(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY (NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY (NSBinPptxRW::CBinaryFileWriter* pWriter) const;
 
-			void toXmlWriterVML	(NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap) const;
-			virtual void toXmlWriter	(NSBinPptxRW::CXmlWriter* pWriter) const;
+			void toXmlWriterVML (NSBinPptxRW::CXmlWriter* pWriter, smart_ptr<PPTX::Theme>& oTheme, smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer) const;
+			virtual void toXmlWriter (NSBinPptxRW::CXmlWriter* pWriter) const;
 
 			std::wstring GetUriElem();			
 			smart_ptr<WrapperWritingElement> GetElem();

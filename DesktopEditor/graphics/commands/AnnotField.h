@@ -194,6 +194,7 @@ public:
 		const std::wstring& GetT();
 		const std::wstring& GetFontName();
 		const std::wstring& GetFontKey();
+		const std::wstring& GetOMetadata();
 		const std::vector<double>& GetTC();
 		const std::vector<double>& GetBC();
 		const std::vector<double>& GetBG();
@@ -223,6 +224,7 @@ public:
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
 		std::wstring m_wsFK;
+		std::wstring m_wsOMetadata;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
@@ -463,6 +465,7 @@ public:
 	int   GetID()        const;
 	int   GetAnnotFlag() const;
 	int   GetPage()      const;
+	int   GetCopyAP()    const;
 	void  GetBE(BYTE& nS, double& dI);
 	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
@@ -520,6 +523,7 @@ private:
 	int          m_nID;
 	int          m_nAnnotFlag;
 	int          m_nPage;
+	int          m_nCopyAP;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
 	std::wstring m_wsOUserID;
@@ -565,25 +569,31 @@ public:
 	{
 		int nID;
 		int nFlags;
+		int nMaxLen;
 		int nParentID;
+		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
+		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;
+		std::vector< std::pair<std::wstring, std::wstring> > arrOpt;
 	};
 
 	CWidgetsInfo();
 	virtual ~CWidgetsInfo();
 
-	const std::vector<int>& GetCO();
+	const std::vector< std::pair<int, int> >& GetCO();
 	const std::vector<std::wstring>& GetButtonImg();
 	const std::vector<CParent*>& GetParents();
+
+	void ChangeCO(int i, int nNum, int nGen);
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
-	std::vector<int> m_arrCO;
+	std::vector< std::pair<int, int> > m_arrCO;
 	std::vector<std::wstring> m_arrButtonImg;
 	std::vector<CParent*> m_arrParents;
 };

@@ -37,6 +37,8 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../PPTXFormat/Logic/SpTreeElem.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 #include "../../XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h"
 #include "../../XlsbFormat/Biff12_records/ActiveX.h"
@@ -389,7 +391,7 @@ namespace OOX
 		}
         void CControls::toBin(XLS::StreamCacheWriterPtr& writer)
         {
-            {
+ /*           {
                 auto begin = writer->getNextRecord(XLSB::rt_BeginActiveXControls);
                 writer->storeNextRecord(begin);
             }
@@ -398,7 +400,7 @@ namespace OOX
             {
                 auto end = writer->getNextRecord(XLSB::rt_EndActiveXControls);
                 writer->storeNextRecord(end);
-            }
+            }*/
         }
 		CListItem::CListItem() {}
 		CListItem::~CListItem() {}

@@ -70,8 +70,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CTimelineCachePivotTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{
@@ -107,8 +107,8 @@ namespace OOX
 
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CTimelineRange::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

@@ -416,6 +416,16 @@ namespace agg
         {
             return self_type(rgba::from_wavelength(wl, gamma));
         }
+
+		bool operator==(const self_type& other)
+		{
+			return a == other.a && r == other.r && g == other.g && b == other.b;
+		}
+
+		bool operator!=(const self_type& other)
+		{
+			return !operator==(other);
+		}
     };
 
 

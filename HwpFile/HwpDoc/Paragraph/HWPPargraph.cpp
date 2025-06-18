@@ -60,7 +60,7 @@ CHWPPargraph::CHWPPargraph(CXMLNode& oNode, int nVersion)
 	}
 
 	if (m_arP.empty() || ECtrlObjectType::Character != m_arP.back()->GetCtrlType())
-		m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+		m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK, nCharShapeID));
 }
 
 CHWPPargraph::~CHWPPargraph()

@@ -196,7 +196,9 @@ JSSmart<CJSValue> CGraphicsEmbed::create(JSSmart<CJSValue> Native, JSSmart<CJSVa
 }
 JSSmart<CJSValue> CGraphicsEmbed::Destroy()
 {
+	// For save image bits, if needed.
 	m_pInternal->Destroy();
+	RELEASEOBJECT(m_pInternal);
 	return NULL;
 }
 JSSmart<CJSValue> CGraphicsEmbed::EndDraw()

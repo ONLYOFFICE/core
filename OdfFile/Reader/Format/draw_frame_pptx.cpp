@@ -142,21 +142,21 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		//////////////////////////////////////////////
 		std::vector<const odf_reader::style_instance *> instances;
 
-		const std::wstring grStyleName = common_draw_attlist_.draw_style_name_.get_value_or(L"");
-		const std::wstring baseStyleName = common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
+		const std::wstring drawStyleName = common_draw_attlist_.draw_style_name_.get_value_or(L"");
+		const std::wstring presentationStyleName = common_presentation_attlist_.presentation_style_name_.get_value_or(L"");
 
 		odf_reader::style_instance* grStyleInst =
-			Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic, Context.process_masters_);
+			Context.root()->odf_context().styleContainer().style_by_name(drawStyleName, odf_types::style_family::Graphic, Context.process_masters_);
 
 		odf_reader::style_instance* baseStyleInst =
-			Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation, Context.process_masters_);
+			Context.root()->odf_context().styleContainer().style_by_name(presentationStyleName, odf_types::style_family::Presentation, Context.process_masters_);
 
 		if (baseStyleInst && ((!common_presentation_attlist_.presentation_user_transformed_) ||
 			((common_presentation_attlist_.presentation_user_transformed_) &&
 			(common_presentation_attlist_.presentation_user_transformed_->get() == false))))//векторная фигура презентаций 
 		{
 			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
-			if (defaultStyle)instances.push_back(defaultStyle);
+			if (defaultStyle) instances.push_back(defaultStyle);
 			instances.push_back(baseStyleInst);
 		}
 		else if (common_presentation_attlist_.presentation_class_)
@@ -166,7 +166,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		if (grStyleInst)//обычная векторная фигура
 		{
 			style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
-			if (defaultStyle)instances.push_back(defaultStyle);
+			if (defaultStyle) instances.push_back(defaultStyle);
 
 			instances.push_back(grStyleInst);
 		}
@@ -182,7 +182,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			if (properties->fo_clip_)
 			{
 				std::wstring strRectClip = properties->fo_clip_.get();
-				Context.get_slide_context().set_clipping(strRectClip.substr(5, strRectClip.length() - 6));
+				fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
 			}
 			
 			Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left", Compute_BorderWidth(properties, sideLeft)));
@@ -226,7 +226,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().set_is_placeHolder(is_placeholder);
 			}
 
-			if (!textStyleName.empty())
+			if (false == textStyleName.empty())
 			{
 				odf_reader::style_instance* textStyleInst =
 					Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
@@ -243,7 +243,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 			Context.get_slide_context().set_hidden(true);
 		}
 
-		if (!textStyleName.empty())
+		if (false == textStyleName.empty())
 		{
 			odf_reader::style_instance* textStyleInst =
 				Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
@@ -265,10 +265,20 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 				}
 			}
 		}
+		bool bOfficeDrawing = (Context.root()->get_office_mime_type() == 7); // office:drawing
+
+		if (bOfficeDrawing)
+		{
+			Context.get_text_context().start_base_style(drawStyleName, odf_types::style_family::Graphic);
+		}
+		else
+		{
+			Context.get_text_context().start_base_style(presentationStyleName, odf_types::style_family::Presentation);
+		}
 
 		if (office_event_listeners_) office_event_listeners_->pptx_convert(Context);
 
-		Context.get_text_context().start_base_style(baseStyleName, odf_types::style_family::Presentation);
+		
 
 		oox_drawing_ = oox_drawing_ptr(new oox::_pptx_drawing());
 	}
@@ -518,7 +528,6 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			if (!math_content.empty())
 			{
 				std::wstring text_content = L"<a:p><a14:m xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\">";
-//				text_content += L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
 				text_content += math_content;
 				text_content += L"</a14:m></a:p>";
 

@@ -41,24 +41,24 @@ namespace PPTX
 			XmlMacroReadAttributeBase(node, L"i", i);
 			XmlMacroReadAttributeBase(node, L"b", b);
 
-			fontRef = node.ReadNodeNoNS(_T("fontRef"));
+			fontRef = node.ReadNodeNoNS(L"fontRef");
 			Color.GetColorFrom(node);
 
 			FillParentPointersForChilds();
 		}
 		void TcTxStyle::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(_T("a:tcTxStyle"));
+			pWriter->StartNode(L"a:tcTxStyle");
 
 			pWriter->StartAttributes();
-			pWriter->WriteAttribute(_T("i"), i);
-			pWriter->WriteAttribute(_T("b"), b);
+			pWriter->WriteAttribute(L"i", i);
+			pWriter->WriteAttribute(L"b", b);
 			pWriter->EndAttributes();
 
 			pWriter->Write(fontRef);
 			Color.toXmlWriter(pWriter);
 
-			pWriter->EndNode(_T("a:tcTxStyle"));
+			pWriter->EndNode(L"a:tcTxStyle");
 		}
 		void TcTxStyle::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

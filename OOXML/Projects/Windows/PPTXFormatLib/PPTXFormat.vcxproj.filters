@@ -21,7 +21,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\SlideLayout.h" />
     <ClInclude Include="..\..\..\PPTXFormat\SlideMaster.h" />
     <ClInclude Include="..\..\..\PPTXFormat\TableStyles.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\Theme.h" />
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps.h" />
     <ClInclude Include="..\..\..\PPTXFormat\WrapperFile.h" />
     <ClInclude Include="..\..\..\PPTXFormat\WrapperWritingElement.h" />
@@ -1895,6 +1894,10 @@
     <ClInclude Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.h">
       <Filter>Binary</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\PPTXFormat\Theme.h" />
+    <ClInclude Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\PPTXFormat\FileContainer.cpp" />
@@ -1942,7 +1945,6 @@
     <ClCompile Include="..\..\..\PPTXFormat\SlideLayout.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\SlideMaster.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\TableStyles.cpp" />
-    <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\WrapperFile.cpp" />
     <ClCompile Include="..\..\..\PPTXFormat\Logic\Bullets\BuAutoNum.cpp">
@@ -3727,6 +3729,10 @@
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\DrawingConverter\ASCOfficeDrawingConverter.cpp">
       <Filter>Binary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\PPTXFormat\Theme.cpp" />
+    <ClCompile Include="..\..\..\PPTXFormat\Theme\VisioThemeElements.cpp">
+      <Filter>Theme</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

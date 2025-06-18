@@ -232,10 +232,14 @@ namespace NSJSBase
 		{
 			[m_internal->context evaluateScript:@"function jsc_toBase64(r){for(var o=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\",\"H\",\"I\",\"J\",\"K\",\"L\",\"M\",\"N\",\"O\",\"P\",\"Q\",\"R\",\"S\",\"T\",\"U\",\"V\",\"W\",\"X\",\"Y\",\"Z\",\"a\",\"b\",\"c\",\"d\",\"e\",\"f\",\"g\",\"h\",\"i\",\"j\",\"k\",\"l\",\"m\",\"n\",\"o\",\"p\",\"q\",\"r\",\"s\",\"t\",\"u\",\"v\",\"w\",\"x\",\"y\",\"z\",\"0\",\"1\",\"2\",\"3\",\"4\",\"5\",\"6\",\"7\",\"8\",\"9\",\"+\",\"/\"],a=r.length,f=4*(a/3>>0),n=f/76>>0,t=19,v=0,e=[],i=\"\",s=0;s<=n;s++){s==n&&(t=f%76/4>>0);for(var u=0;u<t;u++){for(var c=0,h=0;h<3;h++)c|=r[0+v++],c<<=8;i=\"\";for(var A=0;A<4;A++){i+=o[c>>>26&255],c<<=6,c&=4294967295}e.push(i)}}if(n=a%3!=0?a%3+1:0){for(c=0,h=0;h<3;h++)h<a%3&&(c|=r[0+v++]),c<<=8;i=\"\";for(A=0;A<n;A++){i+=o[c>>>26&255],c<<=6}t=0!=n?4-n:0;for(u=0;u<t;u++)i+=\"=\";e.push(i)}return e.join(\"\")}function jsc_fromBase64(r,o){for(var a,f=r.length,n=0,t=new Array(void 0===o?f:o),v=t,e=0,i=0;e<f;){for(var s=0,u=0,c=0;c<4&&!(f<=e);c++){var h=65<=(a=r.charCodeAt(e++))&&a<=90?a-65:97<=a&&a<=122?a-71:48<=a&&a<=57?a+4:43==a?62:47==a?63:-1;-1!=h?(s<<=6,s|=h,u+=6):c--}for(s<<=24-u,i=u>>>3,c=0;c<i;c++)v[n++]=(16711680&s)>>>16,s<<=8}return t}\n"];
 		}
-		// insert CreateEmbedObject() function to global object of this context
+		// insert embed functions to global object of this context
 		m_internal->context[@"CreateEmbedObject"] = ^(NSString* name) {
 			return CreateEmbedNativeObject(name);
 		};
+		m_internal->context[@"FreeEmbedObject"] = ^(id embedded_object) {
+			FreeNativeObject(embedded_object);
+		};
+
 
 		JSValue* global_js = [m_internal->context globalObject];
 		[global_js setValue:global_js forProperty:[[NSString alloc] initWithUTF8String:"window"]];
@@ -246,6 +250,8 @@ namespace NSJSBase
 		{
 			CGlobalContext::GetInstance().UnregisterContextForId(*i);
 		}
+		// remove any exceptions pending to not prevent any JSValue deallocations
+		m_internal->context.exception = nil;
 		m_internal->context = nil;
 	}
 
@@ -439,6 +445,11 @@ namespace NSJSBase
 	{
 	}
 
+	bool CJSContext::IsEntered()
+	{
+		return true;
+	}
+
 	class CJSLocalScopePrivate
 	{
 	public:
@@ -496,6 +507,15 @@ namespace NSJSBase
 		id pEmbedObj = pAdapter->getExportedObject(pNativeObj);
 
 		return pEmbedObj;
+	}
+
+	void FreeNativeObject(id embedded_object)
+	{
+		// check if the object was actually embedded and do nothing if it wasn't
+		if ([embedded_object conformsToProtocol:@protocol(JSEmbedObjectProtocol)])
+		{
+			[embedded_object freeNative];
+		}
 	}
 
 	JSSmart<CJSValue> CJSEmbedObjectAdapterJSC::Native2Value(JSValue* value)

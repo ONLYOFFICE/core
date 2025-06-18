@@ -2,8 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <fstream>
-#include <cmath>
 #include <algorithm>
 #include <numeric>
 
@@ -186,7 +184,7 @@ namespace NSCSS
 	}
 	#endif
 
-	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector)
+	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector) const
 	{
 		if (wsSelector.empty())
 			return nullptr;
@@ -472,7 +470,7 @@ namespace NSCSS
 		}
 	}
 
-	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData)
+	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData) const
 	{
 		std::map<std::wstring, CElement*>::const_iterator itFound = mStyleData.find(wsSelector);
 
@@ -488,6 +486,95 @@ namespace NSCSS
 	{}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
+	bool CCssCalculator_Private::CalculateCompiledStyle(std::vector<CNode>& arSelectors)
+	{
+		if (arSelectors.empty())
+			return false;
+
+		if (L"#text" == arSelectors.back().m_wsName)
+		{
+			if (arSelectors.size() > 1 && arSelectors.back().m_pCompiledStyle->Empty())
+				*arSelectors.back().m_pCompiledStyle += *(arSelectors.end() - 2)->m_pCompiledStyle;
+
+			if(arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(),
+			                                       [](const CNode& oNode){ return IsTableElement(oNode.m_wsName); }))
+			{
+				arSelectors.back().m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors.back().m_pCompiledStyle->m_oBorder.Clear();
+			}
+
+			return true;
+		}
+
+		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
+
+		if (oItem != m_mUsedStyles.end())
+		{
+			arSelectors.back().SetCompiledStyle(new CCompiledStyle(oItem->second));
+			return true;
+		}
+
+		arSelectors.back().m_pCompiledStyle->SetDpi(m_nDpi);
+		unsigned int unStart = 0;
+
+		std::vector<CNode>::const_reverse_iterator itFound = std::find_if(arSelectors.crbegin(), arSelectors.crend(), [](const CNode& oNode){ return !oNode.m_pCompiledStyle->Empty(); });
+
+		if (itFound != arSelectors.crend())
+			unStart = itFound.base() - arSelectors.cbegin();
+
+		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors, unStart);
+		std::vector<std::wstring> arPrevNodes;
+		bool bInTable = false;
+
+		for (size_t i = 0; i < unStart; ++i)
+		{
+			if (!bInTable)
+				bInTable = IsTableElement(arSelectors[i].m_wsName);
+			else
+				break;
+		}
+
+		for (size_t i = unStart; i < arSelectors.size(); ++i)
+		{
+			if (0 != i)
+				*arSelectors[i].m_pCompiledStyle += *arSelectors[i - 1].m_pCompiledStyle;
+
+			arSelectors[i].m_pCompiledStyle->AddParent(arSelectors[i].m_wsName);
+
+			if (!bInTable)
+				bInTable = IsTableElement(arSelectors[i].m_wsName);
+
+			if (bInTable)
+			{
+				arSelectors[i].m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oBorder.Clear();
+			}
+
+			arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_mAttributes, i + 1);
+
+			for (const CElement* oElement : FindElements(arNodes, arPrevNodes))
+				arSelectors[i].m_pCompiledStyle->AddStyle(oElement->GetStyle(), i + 1);
+
+			if (!arSelectors[i].m_wsStyle.empty())
+				arSelectors[i].m_pCompiledStyle->AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
+
+			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
+			if (bInTable && i < arSelectors.size() - 1)
+			{
+				arSelectors[i].m_pCompiledStyle->m_oFont.GetLineHeight().Clear();
+				arSelectors[i].m_pCompiledStyle->m_oPadding.Clear();
+				arSelectors[i].m_pCompiledStyle->m_oMargin.Clear();
+			}
+		}
+
+		arSelectors.back().m_pCompiledStyle->SetID(CalculateStyleId(arSelectors.back()));
+
+		if (!arSelectors.back().m_pCompiledStyle->Empty())
+			m_mUsedStyles[arSelectors] = *arSelectors.back().m_pCompiledStyle;
+
+		return true;
+	}
+
 	void CCssCalculator_Private::SetPageData(NSProperties::CPage &oPage, const std::map<std::wstring, std::wstring> &mData, unsigned int unLevel, bool bHardMode)
 	{
 		//TODO:: пересмотреть данный метод
@@ -505,11 +592,11 @@ namespace NSCSS
 	}
 	#endif
 
-	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors)
+	std::vector<std::wstring> CCssCalculator_Private::CalculateAllNodes(const std::vector<CNode> &arSelectors, unsigned int unStart)
 	{
 		std::vector<std::wstring> arNodes;
 		
-		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend(); ++oNode)
+		for (std::vector<CNode>::const_reverse_iterator oNode = arSelectors.rbegin(); oNode != arSelectors.rend() - unStart; ++oNode)
 		{
 			if (!oNode->m_wsName.empty())
 				arNodes.push_back(oNode->m_wsName);
@@ -620,6 +707,16 @@ namespace NSCSS
 			FindPrevAndKindElements(pFoundName, arNextNodes, arFindedElements, wsName, arClasses);
 		}
 
+		const CElement* pFoundAll = m_oStyleStorage.FindElement(L"*");
+
+		if (nullptr != pFoundAll)
+		{
+			if (!pFoundAll->Empty())
+				arFindedElements.push_back(pFoundAll);
+
+			FindPrevAndKindElements(pFoundAll, arNextNodes, arFindedElements, wsName, arClasses);
+		}
+
 		if (arFindedElements.size() > 1)
 		{
 			std::sort(arFindedElements.rbegin(), arFindedElements.rend(),
@@ -631,79 +728,6 @@ namespace NSCSS
 	}
 
 	#ifdef CSS_CALCULATOR_WITH_XHTML
-	CCompiledStyle CCssCalculator_Private::GetCompiledStyle(const std::vector<CNode>& arSelectors)
-	{
-		if (arSelectors.empty())
-			return CCompiledStyle();
-
-		CCompiledStyle oStyle;
-
-		GetCompiledStyle(oStyle, arSelectors);
-
-		return oStyle;
-	}
-
-	bool CCssCalculator_Private::GetCompiledStyle(CCompiledStyle &oStyle, const std::vector<CNode> &arSelectors)
-	{
-		if (arSelectors.empty())
-			return false;
-
-		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
-
-		if (oItem != m_mUsedStyles.end())
-		{
-			oStyle = oItem->second;
-			return true;
-		}
-
-		oStyle.SetDpi(m_nDpi);
-
-		std::vector<std::wstring> arNodes = CalculateAllNodes(arSelectors);
-		std::vector<std::wstring> arPrevNodes;
-		bool bInTable = false;
-		
-		for (size_t i = 0; i < arSelectors.size(); ++i)
-		{
-			oStyle.AddParent(arSelectors[i].m_wsName);
-
-			if (!bInTable)
-				bInTable = IsTableElement(arSelectors[i].m_wsName);
-
-			if (bInTable)
-			{
-				oStyle.m_oBackground.Clear();
-				oStyle.m_oBorder.Clear();
-			}
-
-			CCompiledStyle oTempStyle;
-
-			oTempStyle.AddStyle(arSelectors[i].m_mAttributes, i + 1);
-
-			for (const CElement* oElement : FindElements(arNodes, arPrevNodes))
-				oTempStyle.AddStyle(oElement->GetStyle(), i + 1);
-
-			if (!arSelectors[i].m_wsStyle.empty())
-				oTempStyle.AddStyle(arSelectors[i].m_wsStyle, i + 1, true);
-
-			oStyle += oTempStyle;
-
-			// Скидываем некоторые внешние стили, которые внутри таблицы переопределяются
-			if (bInTable && i < arSelectors.size() - 1)
-			{
-				oStyle.m_oFont.GetLineHeight().Clear();
-				oStyle.m_oPadding.Clear();
-				oStyle.m_oMargin.Clear();
-			}
-		}
-
-		oStyle.SetID(CalculateStyleId(arSelectors.back()));
-
-		if (!oStyle.Empty())
-			m_mUsedStyles[arSelectors] = oStyle;
-
-		return true;
-	}
-
 	std::wstring CCssCalculator_Private::CalculateStyleId(const CNode& oNode)
 	{
 		return oNode.m_wsName + ((!oNode.m_wsClass.empty()) ? L'.' + oNode.m_wsClass : L"") + ((oNode.m_wsId.empty()) ? L"" : L'#' + oNode.m_wsId) + L'-' + std::to_wstring(++m_nCountNodes);
@@ -764,6 +788,11 @@ namespace NSCSS
 	unsigned short int CCssCalculator_Private::GetDpi() const
 	{
 		return m_nDpi;
+	}
+
+	bool CCssCalculator_Private::HaveStylesById(const std::wstring& wsId) const
+	{
+		return nullptr != m_oStyleStorage.FindElement(L'#' + wsId);
 	}
 
 	void CCssCalculator_Private::ClearEmbeddedStyles()
@@ -908,6 +937,13 @@ inline static std::wstring StringifyValue(const KatanaValue* oValue)
 	}
 
 	return str;
+}
+
+inline static bool IsTableElement(const std::wstring& wsNameTag)
+{
+	return  L"td" == wsNameTag || L"tr" == wsNameTag || L"table" == wsNameTag ||
+	        L"tbody" == wsNameTag || L"thead" == wsNameTag || L"tfoot" == wsNameTag ||
+	        L"th" == wsNameTag;
 }
 
 

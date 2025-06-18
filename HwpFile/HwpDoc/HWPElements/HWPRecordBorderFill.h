@@ -101,6 +101,15 @@ public:
 	bool ImageFill() const;
 
 	int GetFaceColor() const;
+
+	EGradFillType GetGradFillType() const;
+	int GetGradAngle() const;
+	int GetGradCenterX() const;
+	int GetGradCenterY() const;
+	int GetGradStep() const;
+	int GetGradColorNum() const;
+	std::vector<int> GetGradColors() const;
+
 	HWP_STRING GetBinItemID() const;
 };
 

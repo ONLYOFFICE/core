@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -36,6 +36,7 @@
 #include "../../XlsbFormat/ConnectionsStream.h"
 #include "../../XlsbFormat/Biff12_unions/EXTCONNECTIONS.h"
 #include "../../XlsbFormat/Biff12_unions/EXTCONNECTION.h"
+#include "../../XlsbFormat/Biff12_unions/FRTEXTCONNECTIONS.h"
 #include "../../XlsbFormat/Biff12_records/BeginExtConnection.h"
 #include "../../XlsbFormat/Biff12_unions/ECDBPROPS.h"
 #include "../../XlsbFormat/Biff12_records/BeginECDbProps.h"
@@ -1060,115 +1061,101 @@ namespace OOX
 		XLS::BaseObjectPtr CConnection::toBin()
 		{
 			XLS::BaseObjectPtr objectPtr;
-			if(m_oRangePr.IsInit())
-			{
-				auto ptr(new XLSB::EXTCONN15);
-				objectPtr = XLS::BaseObjectPtr{ptr};
-				auto ptr1(new XLSB::BeginExtConn15);
-                ptr1->fAutoDelete = false;
-                ptr1->fExcludeFromRefreshAll = false;
-                ptr1->fSandbox = false;
-                ptr1->fUsedByAddin = false;
-                if(m_oId.IsInit())
-                    ptr1->irstId = m_oId->GetValue();
-                else
-                    ptr1->irstId = false;
 
-				ptr->m_BrtBeginExtConn15 = XLS::BaseObjectPtr{ptr1};
-				ptr->m_source = m_oRangePr->toBin();
-			}
-			else
-			{
-				auto ptr(new XLSB::EXTCONNECTION);
-				objectPtr = XLS::BaseObjectPtr{ptr};
-				auto ptr1(new XLSB::BeginExtConnection);
-				ptr->m_BrtBeginExtConnection = XLS::BaseObjectPtr{ptr1};
+            auto ptr(new XLSB::EXTCONNECTION);
+            objectPtr = XLS::BaseObjectPtr{ptr};
+            auto ptr1(new XLSB::BeginExtConnection);
+            ptr->m_BrtBeginExtConnection = XLS::BaseObjectPtr{ptr1};
 
-				if(m_oType.IsInit())
-					ptr1->idbtype = m_oType.get();
-                else
-                    ptr1->idbtype = 0;
-				if(m_oName.IsInit())
-					ptr1->stConnName = m_oName.get();
-				else
-					ptr1->stConnName = L"";
+            if(m_oType.IsInit())
+                ptr1->idbtype = m_oType.get();
+            else
+                ptr1->idbtype = 0;
+            if(m_oName.IsInit())
+                ptr1->stConnName = m_oName.get();
+            else
+                ptr1->stConnName = L"";
 
-				if(m_oId.IsInit())
-					ptr1->dwConnID = m_oId->GetValue();
-				if(m_oCredentials.IsInit())
-					ptr1->iCredMethod = m_oCredentials->GetValue();
+            if(m_oId.IsInit())
+                ptr1->dwConnID = m_oId->GetValue();
+            if(m_oCredentials.IsInit())
+                ptr1->iCredMethod = m_oCredentials->GetValue();
 
-				if(m_oBackground.IsInit())
-					ptr1->fBackgroundQuery = m_oBackground.get();        
-				if(m_oDeleted.IsInit())
-					ptr1->fDeleted = m_oDeleted.get();
+            if(m_oBackground.IsInit())
+                ptr1->fBackgroundQuery = m_oBackground.get();
+            if(m_oDeleted.IsInit())
+                ptr1->fDeleted = m_oDeleted.get();
 
-				if(m_oDescription.IsInit())
-                {
-					ptr1->stConnDesc = m_oDescription.get();
-                    ptr1->fLoadConnectionDesc = true;
-                }
-				if(m_oInterval.IsInit())
-					ptr1->wInterval = m_oInterval.get();
+            if(m_oDescription.IsInit())
+            {
+                ptr1->stConnDesc = m_oDescription.get();
+                ptr1->fLoadConnectionDesc = true;
+            }
+            if(m_oInterval.IsInit())
+                ptr1->wInterval = m_oInterval.get();
 
-				if(m_oKeepAlive.IsInit())
-					ptr1->fMaintain = m_oKeepAlive.get();
+            if(m_oKeepAlive.IsInit())
+                ptr1->fMaintain = m_oKeepAlive.get();
 
-				if(m_oMinRefreshableVersion.IsInit())
-					ptr1->bVerRefreshableMin = m_oMinRefreshableVersion.get();
-                else if(m_oRefreshedVersion.IsInit())
-                    ptr1->bVerRefreshableMin = m_oRefreshedVersion.get();
-                else
-                    ptr1->bVerRefreshableMin = 0;
+            if(m_oMinRefreshableVersion.IsInit())
+                ptr1->bVerRefreshableMin = m_oMinRefreshableVersion.get();
+            else if(m_oRefreshedVersion.IsInit())
+                ptr1->bVerRefreshableMin = m_oRefreshedVersion.get();
+            else
+                ptr1->bVerRefreshableMin = 0;
 
-				if(m_oNew.IsInit())
-					ptr1->fNewQuery = m_oNew.get();
+            if(m_oNew.IsInit())
+                ptr1->fNewQuery = m_oNew.get();
 
-				if(m_oOdcFile.IsInit())
-                {
-					ptr1->stConnectionFile = m_oOdcFile.get();
-                    ptr1->fLoadSourceConnectionFile = true;
-                }
-				if(m_oOnlyUseConnectionFile.IsInit())
-					ptr1->fAlwaysUseConnectionFile = m_oOnlyUseConnectionFile.get();
+            if(m_oOdcFile.IsInit())
+            {
+                ptr1->stConnectionFile = m_oOdcFile.get();
+                ptr1->fLoadSourceConnectionFile = true;
+            }
+            if(m_oOnlyUseConnectionFile.IsInit())
+                ptr1->fAlwaysUseConnectionFile = m_oOnlyUseConnectionFile.get();
 
-				if(m_oReconnectionMethod.IsInit())
-					ptr1->irecontype = m_oReconnectionMethod.get();
+            if(m_oReconnectionMethod.IsInit())
+                ptr1->irecontype = m_oReconnectionMethod.get();
 
-				if(m_oRefreshedVersion.IsInit())
-					ptr1->bVerRefreshed = m_oRefreshedVersion.get();
-				if(m_oRefreshOnLoad.IsInit())
-					ptr1->fRefreshOnLoad = m_oRefreshOnLoad.get();
+            if(m_oRefreshedVersion.IsInit())
+                ptr1->bVerRefreshed = m_oRefreshedVersion.get();
+            if(m_oRefreshOnLoad.IsInit())
+                ptr1->fRefreshOnLoad = m_oRefreshOnLoad.get();
 
-				if(m_oSaveData.IsInit())
-					ptr1->fSaveData = m_oSaveData.get();
+            if(m_oSaveData.IsInit())
+                ptr1->fSaveData = m_oSaveData.get();
 
-				if(m_oSavePassword.IsInit())
-                    ptr1->pc = m_oSavePassword.get();
+            if(m_oSavePassword.IsInit())
+                ptr1->pc = m_oSavePassword.get();
 
-				if(m_oSingleSignOnId.IsInit())
-                {
-					ptr1->stSso = m_oSingleSignOnId.get();
-                    ptr1->fLoadSSOApplicationID = true;
-                }
-				if(m_oSourceFile.IsInit())
-                {
-					ptr1->stDataFile = m_oSourceFile.get();
-                    ptr1->fLoadSourceDataFile = true;
-                }
+            if(m_oSingleSignOnId.IsInit())
+            {
+                ptr1->stSso = m_oSingleSignOnId.get();
+                ptr1->fLoadSSOApplicationID = true;
+            }
+            if(m_oSourceFile.IsInit())
+            {
+                ptr1->stDataFile = m_oSourceFile.get();
+                ptr1->fLoadSourceDataFile = true;
+            }
 
-				if(m_oDbPr.IsInit())
-					ptr->m_ECDBPROPS = m_oDbPr->toBin();
-				if(m_oOlapPr.IsInit())
-					ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
-				if(m_oTextPr.IsInit())
-					ptr->m_ECTXTWIZ = m_oTextPr->toBin();
-				if(m_oWebPr.IsInit())
-					ptr->m_ECWEBPROPS = m_oWebPr->toBin();
-                if(m_oExtLst.IsInit())
-                    ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
-			}
-
+            if(m_oDbPr.IsInit())
+                ptr->m_ECDBPROPS = m_oDbPr->toBin();
+            if(m_oOlapPr.IsInit())
+                ptr->m_ECOLAPPROPS = m_oOlapPr->toBin();
+            if(m_oTextPr.IsInit())
+                ptr->m_ECTXTWIZ = m_oTextPr->toBin();
+            if(m_oWebPr.IsInit())
+                ptr->m_ECWEBPROPS = m_oWebPr->toBin();
+            if(m_oExtLst.IsInit())
+                ptr->m_FRTEXTCONNECTIONS = m_oExtLst->toBinConnections();
+            else if(m_oRangePr.IsInit())
+            {
+                auto frtPrt(new XLSB::FRTEXTCONNECTIONS);
+                ptr->m_FRTEXTCONNECTIONS = XLS::BaseObjectPtr{frtPrt};
+                frtPrt->m_EXTCONN15 = toBin15();
+            }
 			return objectPtr;
 		}
 		EElementType CConnection::getType() const

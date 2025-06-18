@@ -37,11 +37,11 @@
 
 #include "../../PPTXFormat/DrawingConverter/ASCOfficeDrawingConverter.h"
 
-#include "../../Binary/Sheets/Reader/BinaryWriter.h"
+#include "../../Binary/Sheets/Reader/BinaryWriterS.h"
 
 #include "../../Binary/Document/DocWrapper/XlsxSerializer.h"
 #include "../../Binary/Document/DocWrapper/FontProcessor.h"
-#include "../../Binary/Document/BinWriter/BinWriters.h"
+#include "../../Binary/Document/BinWriter/BinaryWriterD.h"
 
 #include "../../XlsxFormat/Chart/Chart.h"
 
@@ -161,17 +161,18 @@ namespace PPTX
 			if (m_oDrawing.IsInit())
 				return;
 
-			OOX::IFileContainer	& pRelsPPTX = parentFileAs<OOX::IFileContainer>();
-			OOX::IFileContainer	* pRels = NULL;
-
-			if (pWriter)
+			bool result = false;
+			if (parentFileIs<OOX::IFileContainer>())
 			{
-				pRels = pWriter->GetRels().GetPointer();
+				OOX::IFileContainer	& pRelsPPTX = parentFileAs<OOX::IFileContainer>();
+				result = LoadDrawing(&pRelsPPTX);
 			}
 
-			bool result = LoadDrawing(&pRelsPPTX);
-			if (!result)
+			if (!result && pWriter)
+			{
+				OOX::IFileContainer	* pRels = pWriter->GetRels().GetPointer();
 				result = LoadDrawing(pRels);
+			}
 		}
 		void SmartArt::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

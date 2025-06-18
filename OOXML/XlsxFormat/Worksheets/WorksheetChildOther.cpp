@@ -393,8 +393,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CCellWatch::fromBin(XLS::BaseObjectPtr& obj)
 		{
@@ -1472,9 +1472,9 @@ namespace OOX
             BYTE flags = 0;
             if(m_oState.IsInit())
             {
-                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
+                if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
                     SETBIT(flags, 0, 1)
-                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+                else if(m_oState == SimpleTypes::Spreadsheet::EPaneState::panestateFrozenSplit)
                     SETBIT(flags, 1, 1)
             }
             *record << flags;
@@ -2816,7 +2816,7 @@ namespace OOX
                     *begin << dataString;
                 }
                 {
-                    XLSB::XLNullableWideString dataString;
+                 XLSB::XLNullableWideString dataString;
                     if(m_oOddFooter.IsInit())
                         dataString = m_oOddFooter->m_sText;
                     else
@@ -2825,7 +2825,6 @@ namespace OOX
                 }
                 {
                     XLSB::XLNullableWideString dataString;
-
                     if(m_oEvenHeader.IsInit())
                         dataString = m_oEvenHeader->m_sText;
                     else
@@ -2842,7 +2841,6 @@ namespace OOX
                 }
                 {
                     XLSB::XLNullableWideString dataString;
-
                     if(m_oFirstHeader.IsInit())
                         dataString = m_oFirstHeader->m_sText;
                     else

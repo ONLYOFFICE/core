@@ -617,21 +617,11 @@ const bool SyntaxPtg::extract_PtgList(std::wstring::const_iterator& first, std::
 			}
 			else if (boost::regex_search(first, last, results_1, reg_inside_table6))
 			{
-				auto colCount = XMLSTUFF::getColumnsCount(indexTable);
-				if(colCount>1)
-				{
-					ptgList.columns = 0x02;
-					ptgList.colFirst = 0;
-					ptgList.colLast = colCount-1;
-                    first = results_1[0].second;
-				}
-				else
-				{
-					ptgList.columns = 0x01;
-					ptgList.colFirst = 0;
-                    ptgList.colLast = 0;
-					first = results_1[0].second;
-				}
+                ptgList.columns = 0;
+                ptgList.colFirst = 0;
+                ptgList.colLast = 0;
+                ptgList.rowType = 0x00;
+                first = results_1[0].second;
 				return true;
 			}
 			else if(boost::regex_search(first, last, results_1, reg_inside_table4))

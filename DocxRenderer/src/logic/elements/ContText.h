@@ -2,16 +2,15 @@
 #include "../../../../DesktopEditor/common/StringBuilder.h"
 
 #include "BaseItem.h"
+#include "Shape.h"
 #include "../managers/FontManager.h"
-#include "../managers//FontStyleManager.h"
+#include "../managers/FontStyleManager.h"
 #include "../styles/FontStyle.h"
 #include "../../resources/Constants.h"
 #include "../../resources/LinesTable.h"
 
 namespace NSDocxRenderer
 {
-	class CShape;
-
 	enum class eVertAlignType
 	{
 		vatUnknown,
@@ -32,7 +31,7 @@ namespace NSDocxRenderer
 		CSelectedSizes& operator=(const CSelectedSizes& oSelectedSizes);
 	};
 
-	class CContText : public CBaseItem
+	class CContText : public CBaseItem, public IOoxmlItem
 	{
 	public:
 		// utils
@@ -76,16 +75,17 @@ namespace NSDocxRenderer
 
 		bool m_bIsAddBrEnd{false};
 		bool m_bWriteStyleRaw{false};
-		bool m_bPossibleSplit{false};
+		bool m_bPossibleHorSplit{false};
 
 		CContText() = default;
 		CContText(CFontManager* pManager) : m_pManager(pManager) {}
 		CContText(const CContText& rCont);
 		virtual ~CContText();
 
-		virtual void Clear() override final;
+		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CContText* pItem) const noexcept;
 
 		// calc sizes in selected font (uses m_oSelectedFont & m_pManager)
@@ -123,16 +123,16 @@ namespace NSDocxRenderer
 		// check font effect and delete not needed cont
 		// return true if was deleted
 		static bool CheckFontEffects
-			(std::shared_ptr<CContText>& pFirstCont,
-			 std::shared_ptr<CContText>& pSecondCont,
-			 eVerticalCrossingType eVType,
-			 eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText>& pFirstCont,
+		 std::shared_ptr<CContText>& pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
 		static bool CheckVertAlignTypeBetweenConts
-			(std::shared_ptr<CContText> pFirstCont,
-			 std::shared_ptr<CContText> pSecondCont,
-			 eVerticalCrossingType eVType,
-			 eHorizontalCrossingType eHType);
+		(std::shared_ptr<CContText> pFirstCont,
+		 std::shared_ptr<CContText> pSecondCont,
+		 eVerticalCrossingType eVType,
+		 eHorizontalCrossingType eHType);
 
 		static bool IsUnicodeRtl(uint32_t cSym);
 		static bool IsUnicodeBullet(uint32_t cSym);
@@ -157,24 +157,34 @@ namespace NSDocxRenderer
 		CContTextBuilder(CFontStyleManager* pFontStyleManager, CFontSelector* pFontSelector);
 		~CContTextBuilder() = default;
 
-		// after call CContTextBuilder is empty
+		// after call CContTextBuilder conts is empty
 		std::vector<cont_ptr_t> GetConts();
+
+		// after call CContTextBuilder diacs is empty
+		std::vector<cont_ptr_t> GetDiacs();
+
 		void AddUnicode(
-			double dTop,
-			double dBot,
-			double dLeft,
-			double dRight,
-			const NSStructures::CFont& oFont,
-			const NSStructures::CBrush& oBrush,
-			CFontManager* pFontManager,
-			const NSStringUtils::CStringUTF32& oText,
-			bool bForcedBold = false,
-			bool bUseDefaultFont = false,
-			bool bWriteStyleRaw = false);
+		        double dTop,
+		        double dBot,
+		        double dLeft,
+		        double dRight,
+		        const NSStructures::CFont& oFont,
+		        const NSStructures::CBrush& oBrush,
+		        CFontManager* pFontManager,
+		        const NSStringUtils::CStringUTF32& oText,
+		        bool bForcedBold = false,
+		        bool bUseDefaultFont = false,
+		        bool bWriteStyleRaw = false);
+
+		void NullCurrCont();
+		void Clear();
 
 	private:
 		std::vector<cont_ptr_t> m_arConts;
+		std::vector<cont_ptr_t> m_arDiacs;
+
 		cont_ptr_t m_pCurrCont {nullptr};
+
 		NSStructures::CFont m_oPrevFont;
 		NSStructures::CBrush m_oPrevBrush;
 

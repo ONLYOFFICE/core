@@ -127,8 +127,7 @@ public:
 	void set_anchor_start(std::wstring anchor, double x_pt, double y_pt, bool group = false);
 	void set_anchor_end	(std::wstring anchor, double x_pt, double y_pt, bool group = false);
 	
-	void set_clipping	(const std::wstring & str );
-	void set_fill		(_oox_fill & fill);
+	void set_fill(_oox_fill & fill);
 
 	void set_is_line_shape(bool val);
 	void set_is_connector_shape(bool val);

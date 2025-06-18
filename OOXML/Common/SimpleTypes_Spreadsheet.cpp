@@ -3415,5 +3415,25 @@ namespace SimpleTypes
 			}
 			return L"edit";
 		}
+		EXmlDataType CXmlDataType::FromString(const std::wstring& sValue)
+		{
+			if (L"date" == sValue)
+				this->m_eValue = typeDate;
+			else if (L"float" == sValue)
+				this->m_eValue = typeFloat;
+			else
+				this->m_eValue = typeString;
+			return this->m_eValue;
+		}
+		std::wstring CXmlDataType::ToString() const
+		{
+			switch (this->m_eValue)
+			{
+			case typeString: return L"string"; break;
+			case typeDate: return L"date"; break;
+			case typeFloat: return L"float"; break;
+			}
+			return L"edit";
+		}
 	}// Spreadsheet
 } // SimpleTypes

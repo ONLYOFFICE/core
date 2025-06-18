@@ -30,7 +30,7 @@
  *
  */
 
-#include "../Writer/BinaryReader.h"
+#include "../Writer/BinaryReaderS.h"
 
 #include "../../Presentation/BinReaderWriterDefines.h"
 #include "../../Document/BinReader/DefaultThemeWriter.h"
@@ -1339,7 +1339,7 @@ namespace BinXlsxRW
 			oDrawingConverter.m_pReader->Init(pData, 0, length);
 
 			oDrawingConverter.SetDstPath(sDstEmbeddedTemp + FILE_SEPARATOR_STR + L"xl");
-			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pReader->m_strFolder, 2);
+			oDrawingConverter.SetSrcPath(m_pOfficeDrawingConverter->m_pReader->m_strFolder, XMLWRITER_DOC_TYPE_XLSX);
 
 			oDrawingConverter.SetMediaDstPath(sMediaPath);
 			oDrawingConverter.SetEmbedDstPath(sEmbedPath);

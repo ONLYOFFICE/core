@@ -1629,6 +1629,10 @@ namespace NSFile
 		{
 			wsTemp = L"";
 		}
+#if defined(_WIN32) || defined (_WIN64)
+		if (wsTempDir)
+			free(wsTempDir);
+#endif
 		wsTemp += L"x";
 		int nTime = (int)time(NULL);
 		for (int nIndex = 0; nIndex < 1000; ++nIndex)

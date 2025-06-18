@@ -53,6 +53,261 @@
 
 namespace PdfWriter
 {
+
+	void AdjustLineEndpoint(ELineEndType nType, double x, double y, double dx, double dy, double w, double& tx, double& ty)
+	{
+		tx = x;
+		ty = y;
+
+		switch (nType)
+		{
+		case ELineEndType::ClosedArrow:
+		case ELineEndType::OpenArrow:
+		case ELineEndType::Diamond:
+		{
+			tx += w * dx;
+			if ((dx > 0.001 && dy > 0) || (dx < -0.001 && dy < 0))
+				ty += w * dy;
+			break;
+		}
+		case ELineEndType::Square:
+		case ELineEndType::Circle:
+		{
+			if ((dx > -0.02 && dy < 0.02) || (dx < 0.02 && dy > -0.02))
+				tx += w * dx;
+			break;
+		}
+		case ELineEndType::Slash:
+		case ELineEndType::Butt:
+		case ELineEndType::ROpenArrow:
+		case ELineEndType::RClosedArrow:
+		case ELineEndType::None:
+		default:
+			break;
+		}
+	}
+	void StreamWriteCM(CStream* pStream, double m11, double m12, double m21, double m22, double tx, double ty)
+	{
+		pStream->WriteReal(m11);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(m12);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(m21);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(m22);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(tx);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(ty);
+		pStream->WriteStr(" cm\012");
+	}
+	void StreamWriteXYMove(CStream* pStream, double x, double y)
+	{
+		pStream->WriteReal(x);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y);
+		pStream->WriteStr(" m\012");
+	}
+	void StreamWriteXYLine(CStream* pStream, double x, double y)
+	{
+		pStream->WriteReal(x);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y);
+		pStream->WriteStr(" l\012");
+	}
+	void StreamWriteXYCurve(CStream* pStream, double x1, double y1, double x2, double y2, double x3, double y3)
+	{
+		pStream->WriteReal(x1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x3);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y3);
+		pStream->WriteStr(" c\012");
+	}
+	void StreamWriteRect(CStream* pStream, double x1, double y1, double x2, double y2)
+	{
+		pStream->WriteReal(x1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y1);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(x2);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(y2);
+		pStream->WriteStr(" re\012");
+	}
+	void StreamWriteCircle(CStream* pStream, double cx, double cy, double r)
+	{
+		double bezierCircle = 0.55228475 * r;
+		StreamWriteXYMove(pStream, cx + r, cy);
+		StreamWriteXYCurve(pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
+		StreamWriteXYCurve(pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
+		StreamWriteXYCurve(pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
+		StreamWriteXYCurve(pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
+	}
+	void DrawArrow(CStream* pStream, ELineEndType nType, double x, double y, double dx, double dy, double w)
+	{
+		double lineEndSize1 = 3, pi = 3.14159265358979323846;
+		switch (nType)
+		{
+		case ELineEndType::Butt:
+		{
+			w *= lineEndSize1;
+			StreamWriteXYMove(pStream, x + w * dy, y - w * dx);
+			StreamWriteXYLine(pStream, x - w * dy, y + w * dx);
+			pStream->WriteStr("S\012");
+			break;
+		}
+		case ELineEndType::Circle:
+		{
+			StreamWriteCircle(pStream, x, y, w * lineEndSize1);
+			pStream->WriteStr("h\012B\012");
+			break;
+		}
+		case ELineEndType::Diamond:
+		{
+			w *= lineEndSize1;
+			StreamWriteXYMove(pStream, x - w, y);
+			StreamWriteXYLine(pStream, x, y + w);
+			StreamWriteXYLine(pStream, x + w, y);
+			StreamWriteXYLine(pStream, x, y - w);
+			pStream->WriteStr("b\012");
+			break;
+		}
+		case ELineEndType::OpenArrow:
+		case ELineEndType::ClosedArrow:
+		{
+			w *= lineEndSize1 * lineEndSize1;
+			double d32 = pi * 32.0 / 180.0;
+			double d28 = pi * 28.0 / 180.0;
+			if ((dx > 0.001 && dy < 0) || (dx < -0.001 && dy > 0))
+			{
+				StreamWriteXYMove(pStream, x + w * cos(d32) * dx + w * sin(d32) * dy, y + w * cos(d32) * dy - w * sin(d32) * dx);
+				StreamWriteXYLine(pStream, x, y);
+				StreamWriteXYLine(pStream, x + w * cos(d28) * dx - w * sin(d28) * dy, y + w * cos(d28) * dy + w * sin(d28) * dx);
+			}
+			else
+			{
+				double dCos = w * cos(pi / 6.0);
+				double dSin = w * sin(pi / 6.0);
+
+				StreamWriteXYMove(pStream, x + dCos * dx + dSin * dy, y + dCos * dy - dSin * dx);
+				StreamWriteXYLine(pStream, x, y);
+				StreamWriteXYLine(pStream, x + dCos * dx - dSin * dy, y + dCos * dy + dSin * dx);
+			}
+			pStream->WriteStr(nType == ELineEndType::OpenArrow ? "S\012" : "b\012");
+			break;
+		}
+		case ELineEndType::ROpenArrow:
+		case ELineEndType::RClosedArrow:
+		{
+			x -= cos(pi / 18.0) * dx * w;
+			y -= cos(pi / 18.0) * dy * w;
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(pi / 6.0);
+			double dSin = w * sin(pi / 6.0);
+			StreamWriteXYMove(pStream, x - dCos * dx + dSin * dy, y - dCos * dy - dSin * dx);
+			StreamWriteXYLine(pStream, x, y);
+			StreamWriteXYLine(pStream, x - dCos * dx - dSin * dy, y - dCos * dy + dSin * dx);
+			pStream->WriteStr(nType == ELineEndType::ROpenArrow ? "S\012" : "b\012");
+			break;
+		}
+		case ELineEndType::Slash:
+		{
+			w *= lineEndSize1 * lineEndSize1;
+			double dCos = w * cos(pi / 6.0);
+			double dSin = w * sin(pi / 6.0);
+			StreamWriteXYMove(pStream, x + dCos * dy - dSin * dx, y - dCos * dx - dSin * dy);
+			StreamWriteXYLine(pStream, x - dCos * dy + dSin * dx, y + dCos * dx + dSin * dy);
+			pStream->WriteStr("S\012");
+			break;
+		}
+		case ELineEndType::Square:
+		{
+			w *= lineEndSize1;
+			pStream->WriteReal(x - w);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(y - w);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(w * 2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(w * 2);
+			pStream->WriteStr(" re\012");
+			pStream->WriteStr("B\012");
+			break;
+		}
+		case ELineEndType::None:
+		default:
+		{
+			break;
+		}
+		}
+	}
+	void DrawLineArrow(CStream* pStream, double dBorderSize, double x1, double y1, double x2, double y2, ELineEndType nLE1, ELineEndType nLE2, double dLL = 0, double dLLO = 0, double dLLE = 0)
+	{
+		double dDX = x2 - x1;
+		double dDY = y2 - y1;
+		double dLen = sqrt(dDX * dDX + dDY * dDY);
+		if (dLen > 0)
+		{
+			dDX /= dLen;
+			dDY /= dLen;
+		}
+
+		double lx1, ly1, lx2, ly2;
+		double ax1, ay1, ax2, ay2;
+		double bx1, by1, bx2, by2;
+		if (dLL != 0)
+		{
+			ax1 = x1 + dLLO * dDY;
+			ay1 = y1 - dLLO * dDX;
+			lx1 = ax1 + dLL * dDY;
+			ly1 = ay1 - dLL * dDX;
+			bx1 = lx1 + dLLE * dDY;
+			by1 = ly1 - dLLE * dDX;
+			ax2 = x2 + dLLO * dDY;
+			ay2 = y2 - dLLO * dDX;
+			lx2 = ax2 + dLL * dDY;
+			ly2 = ay2 - dLL * dDX;
+			bx2 = lx2 + dLLE * dDY;
+			by2 = ly2 - dLLE * dDX;
+		}
+		else
+		{
+			lx1 = x1;
+			ly1 = y1;
+			lx2 = x2;
+			ly2 = y2;
+			ax1 = ay1 = ax2 = ay2 = 0;
+			bx1 = by1 = bx2 = by2 = 0;
+		  }
+
+		double tx1, ty1, tx2, ty2;
+		AdjustLineEndpoint(nLE1, lx1, ly1,  dDX,  dDY, dBorderSize, tx1, ty1);
+		AdjustLineEndpoint(nLE2, lx2, ly2, -dDX, -dDY, dBorderSize, tx2, ty2);
+
+		if (dLL)
+		{
+			StreamWriteXYMove(pStream, ax1, ay1);
+			StreamWriteXYLine(pStream, bx1, by1);
+
+			StreamWriteXYMove(pStream, ax2, ay2);
+			StreamWriteXYLine(pStream, bx2, by2);
+		}
+
+		StreamWriteXYMove(pStream, tx1, ty1);
+		StreamWriteXYLine(pStream, tx2, ty2);
+		pStream->WriteStr("S\012");
+
+		DrawArrow(pStream, nLE1, tx1, ty1,  dDX,  dDY, dBorderSize);
+		DrawArrow(pStream, nLE2, tx2, ty2, -dDX, -dDY, dBorderSize);
+	}
+
 	//----------------------------------------------------------------------------------------
 	// CFieldBase
 	//----------------------------------------------------------------------------------------
@@ -201,6 +456,7 @@ namespace PdfWriter
 		Remove("FT");
 		Remove("Ff");
 		Remove("V");
+		Remove("AA");
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
@@ -1502,7 +1758,7 @@ namespace PdfWriter
 		return m_pResources;
 	}
 	//----------------------------------------------------------------------------------------
-	// CAnnotAppearance
+	// CDateTimeField
 	//----------------------------------------------------------------------------------------
 	CDateTimeField::CDateTimeField(CXref* pXref, CDocument* pDocument) : CFieldBase(pXref, pDocument)
 	{
@@ -1513,11 +1769,25 @@ namespace PdfWriter
 	{
 		SetFormat(NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsFormat));
 	}
+	std::string CorrectFormat(const std::string& s)
+	{
+		std::string sRes = s;
+		NSStringUtils::string_replaceA(sRes, "am/pm", "tt");
+		NSStringUtils::string_replaceA(sRes, "AM/PM", "tt");
+		NSStringUtils::string_replaceA(sRes, "M", "m");
+		NSStringUtils::string_replaceA(sRes, "Y", "y");
+		NSStringUtils::string_replaceA(sRes, "D", "d");
+		NSStringUtils::string_replaceA(sRes, ":mm", ":MM");
+		NSStringUtils::string_replaceA(sRes, "m\xeb\xb6\x84", "M\xeb\xb6\x84");
+		NSStringUtils::string_replaceA(sRes, "m\xe5\x88\x86", "M\xe5\x88\x86");
+		return sRes;
+	}
 	void CDateTimeField::SetFormat(const std::string& sFormat)
 	{
-		std::string script = "AFDate_FormatEx(\"" + sFormat + "\");";
+		std::string sCorrectFormat = CorrectFormat(sFormat);
+		std::string script = "AFDate_FormatEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("F", script);
-		script = "AFDate_KeystrokeEx(\"" + sFormat + "\");";
+		script = "AFDate_KeystrokeEx(\"" + sCorrectFormat + "\");";
 		AddScriptToAA("K", script);
 	}
 	//----------------------------------------------------------------------------------------
@@ -1591,7 +1861,6 @@ namespace PdfWriter
 	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CFieldBase* pField, const char* sYesName)
 	{
 		m_pXref  = pXref;
-		m_pField = pField;
 
 		m_pYesN = new CAnnotAppearanceObject(pXref, pField);
 		m_pOffN = new CAnnotAppearanceObject(pXref, pField);
@@ -1603,6 +1872,25 @@ namespace PdfWriter
 		pDictN->Add(sYesName ? sYesName : "Yes", m_pYesN);
 		pDictN->Add("Off", m_pOffN);
 		
+		CDictObject* pDictD = new CDictObject();
+		Add("D", pDictD);
+		pDictD->Add(sYesName ? sYesName : "Yes", m_pYesD);
+		pDictD->Add("Off", m_pOffD);
+	}
+	CCheckBoxAnnotAppearance::CCheckBoxAnnotAppearance(CXref* pXref, CAnnotation* pAnnot, const char* sYesName)
+	{
+		m_pXref  = pXref;
+
+		m_pYesN = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pOffN = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pYesD = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+		m_pOffD = new CAnnotAppearanceObject(pXref, pAnnot, new CResourcesDict(pXref, true, false));
+
+		CDictObject* pDictN = new CDictObject();
+		Add("N", pDictN);
+		pDictN->Add(sYesName ? sYesName : "Yes", m_pYesN);
+		pDictN->Add("Off", m_pOffN);
+
 		CDictObject* pDictD = new CDictObject();
 		Add("D", pDictD);
 		pDictD->Add(sYesName ? sYesName : "Yes", m_pYesD);
@@ -1757,7 +2045,7 @@ namespace PdfWriter
 			BYTE nType = 0;
 			if (pAnnot)
 			{
-				nType = pAnnot->GetBorderType();
+				nType = (BYTE)pAnnot->GetBorderType();
 				switch (nType)
 				{
 				case 1: // Beveled
@@ -1979,7 +2267,7 @@ namespace PdfWriter
 			dBorderSize      = pAnnot->GetBorderWidth();
 			dBorderSizeStyle = dBorderSize;
 
-			if (pAnnot->GetBorderType() == 1 || pAnnot->GetBorderType() == 3)
+			if (pAnnot->GetBorderType() == EBorderType::Beveled || pAnnot->GetBorderType() == EBorderType::Inset)
 				dBorderSizeStyle *= 2;
 		}
 
@@ -1993,7 +2281,7 @@ namespace PdfWriter
 			BYTE nType = 0;
 			if (pAnnot)
 			{
-				nType = pAnnot->GetBorderType();
+				nType = (BYTE)pAnnot->GetBorderType();
 				switch (nType)
 				{
 				case 1: // Beveled
@@ -2242,8 +2530,8 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 
 		double dBorderSize = pAnnot->GetBorderWidth();
-		BYTE nType = pAnnot->GetBorderType();
-		if (nType == 1 || nType == 3)
+		EBorderType nType = pAnnot->GetBorderType();
+		if (nType == EBorderType::Beveled || nType == EBorderType::Inset)
 			dBorderSize *= 2;
 
 		if (pAnnot->GetWidgetType() == WidgetPushbutton && !((CPushButtonWidget*)pAnnot)->GetRespectBorder())
@@ -2294,7 +2582,7 @@ namespace PdfWriter
 		if (pFont)
 			m_pStream->WriteStr(pAnnot->GetDAforAP(pFont).c_str());
 	}
-	void CAnnotAppearanceObject::DrawPictureInline(const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
+	void CAnnotAppearanceObject::DrawPictureInline(const double& dWidth, const double& dHeight, const char* sImageName, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bRespectBorder)
 	{
 		CWidgetAnnotation* pAnnot  = dynamic_cast<CWidgetAnnotation*>(m_pAnnot);
 		if (!m_pStream || !pAnnot || !sImageName)
@@ -2304,13 +2592,9 @@ namespace PdfWriter
 
 		if (bRespectBorder)
 		{
-			TRect oRect = pAnnot->GetRect();
-			double dWidth  = fabs(oRect.fRight - oRect.fLeft);
-			double dHeight = fabs(oRect.fBottom - oRect.fTop);
-
 			double dBorderSize = pAnnot->GetBorderWidth();
-			BYTE nType = pAnnot->GetBorderType();
-			if (nType == 1 || nType == 3)
+			EBorderType nType = pAnnot->GetBorderType();
+			if (nType == EBorderType::Beveled || nType == EBorderType::Inset)
 				dBorderSize *= 2;
 
 			m_pStream->WriteReal(2 * dBorderSize);
@@ -2371,14 +2655,14 @@ namespace PdfWriter
 		m_pStream->WriteStr("q\012");
 
 		double dBorderSize = pAnnot->GetBorderWidth();
-		BYTE nType = pAnnot->GetBorderType();
+		EBorderType nType = pAnnot->GetBorderType();
 
 		switch (nType)
 		{
-		case 1: // Beveled
-		case 3: // Inset
+		case EBorderType::Beveled:
+		case EBorderType::Inset:
 		{
-			m_pStream->WriteStr(nType == 1 ? "1 g\012" : "0.501953 g\012");
+			m_pStream->WriteStr(nType == EBorderType::Beveled ? "1 g\012" : "0.501953 g\012");
 
 			m_pStream->WriteReal(dBorderSize);
 			m_pStream->WriteChar(' ');
@@ -2412,7 +2696,7 @@ namespace PdfWriter
 
 			m_pStream->WriteStr("f\012");
 
-			if (nType == 1 && pAnnot->HaveBG())
+			if (nType == EBorderType::Beveled && pAnnot->HaveBG())
 			{
 				m_pStream->WriteStr(pAnnot->GetBGforAP(-0.25).c_str());
 				m_pStream->WriteStr("\012");
@@ -2453,7 +2737,7 @@ namespace PdfWriter
 			m_pStream->WriteStr("f\012");
 			break;
 		}
-		case 2: // Dashed
+		case EBorderType::Dashed:
 		{
 			m_pStream->WriteStr(pAnnot->GetBorderDash().c_str());
 			break;
@@ -2466,7 +2750,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dBorderSize);
 		m_pStream->WriteStr(" w\0120 j\0120 J\012");
 
-		if (nType == 4) // Underline
+		if (nType == EBorderType::Underline)
 		{
 			m_pStream->WriteInt(0);
 			m_pStream->WriteChar(' ');
@@ -2843,5 +3127,382 @@ namespace PdfWriter
 	{
 		m_pStream->WriteStr(sColor.c_str());
 		m_pStream->WriteStr(" 0 G 0 i 0.59 w 4 M 1 j 0 J [] 0 d 1 0 0 1 2.8335 1.7627 cm 0 0 m -2.74 15.16 l 12.345 12.389 l 9.458 9.493 l 14.027 4.91 l 7.532 -1.607 l 2.964 2.975 l b");
+	}
+	void CAnnotAppearanceObject::DrawLine()
+	{
+		AddBBox(m_pAnnot->GetRect().fLeft, m_pAnnot->GetRect().fBottom, m_pAnnot->GetRect().fRight, m_pAnnot->GetRect().fTop);
+		AddMatrix(1, 0, 0, 1, -m_pAnnot->GetRect().fLeft, -m_pAnnot->GetRect().fBottom);
+
+		if (m_pAnnot->GetBorderType() == EBorderType::Dashed)
+			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+
+		double dBorderSize = m_pAnnot->GetBorderWidth();
+		m_pStream->WriteReal(dBorderSize);
+		m_pStream->WriteStr(" w\012");
+
+		m_pStream->WriteStr(m_pAnnot->GetColorName("IC", false).c_str());
+
+		m_pStream->WriteStr(m_pAnnot->GetColorName("C", true).c_str());
+
+		CObjectBase* pObj = m_pAnnot->Get("CA");
+		if (pObj && pObj->GetType() == object_type_REAL)
+		{
+			float dAlpha = ((CRealObject*)pObj)->Get();
+			if (dAlpha != 1)
+			{
+				CExtGrState* pExtGrState = m_pAnnot->GetDocument()->GetExtGState(dAlpha, dAlpha);
+				const char* sExtGrStateName =  m_pAnnot->GetDocument()->GetFieldsResources()->GetExtGrStateName(pExtGrState);
+				if (sExtGrStateName)
+				{
+					m_pStream->WriteEscapeName(sExtGrStateName);
+					m_pStream->WriteStr(" gs\012");
+				}
+			}
+		}
+
+		double dLL = 0, dLLE = 0, dLLO = 0;
+		pObj = m_pAnnot->Get("LL");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLL = ((CRealObject*)pObj)->Get();
+		pObj = m_pAnnot->Get("LLE");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLLE = ((CRealObject*)pObj)->Get();
+		pObj = m_pAnnot->Get("LLO");
+		if (pObj && pObj->GetType() == object_type_REAL)
+			dLLO = ((CRealObject*)pObj)->Get();
+
+		CLineAnnotation* pAnnot = (CLineAnnotation*)m_pAnnot;
+		DrawLineArrow(m_pStream, dBorderSize, pAnnot->dL[0], pAnnot->dL[1], pAnnot->dL[2], pAnnot->dL[3], pAnnot->m_nLE1, pAnnot->m_nLE2, dLL, dLLE, dLLO);
+	}
+	void CAnnotAppearanceObject::DrawCheckBoxCircle(int nRotate, bool bSet, bool bN)
+	{
+		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
+		if (!pAnnot)
+			return;
+
+		double dBorder = 1;
+		EBorderType nBorderType = EBorderType::Inset;
+		if (m_pAnnot->HaveBorder())
+		{
+			dBorder = m_pAnnot->GetBorderWidth();
+			nBorderType = m_pAnnot->GetBorderType();
+		}
+		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
+		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
+		double dCX = dW / 2.0, dCY = dH / 2.0;
+		double dR = std::min(dW, dH) / 2.0;
+
+		// Задний фон
+		std::string sBG;
+		if (!bN && nBorderType != EBorderType::Beveled)
+		{
+			sBG = pAnnot->GetBGforAP();
+			if (sBG == "1 g")
+				sBG = "0.749023 -0.250977 -0.250977 rg";
+			else if (sBG.empty())
+				sBG = "0.749023 g";
+			else
+				sBG = pAnnot->GetBGforAP(-0.250977);
+		}
+		else
+			sBG = pAnnot->GetBGforAP();
+		if (!sBG.empty())
+		{
+			m_pStream->WriteStr(sBG.c_str());
+			m_pStream->WriteStr("\012q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
+			StreamWriteCircle(m_pStream, 0, 0, dR);
+			m_pStream->WriteStr("f\012Q\012");
+		}
+
+		// Граница
+		if (dBorder != 1)
+		{
+			m_pStream->WriteReal(dBorder);
+			m_pStream->WriteStr(" w\012");
+		}
+		if (nBorderType == EBorderType::Dashed)
+			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012q\012");
+		m_pStream->WriteStr("1 0 0 1 ");
+		m_pStream->WriteReal(dCX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dCY);
+		m_pStream->WriteStr(" cm\012");
+
+		StreamWriteCircle(m_pStream, 0, 0, dR - dBorder / 2.0);
+		m_pStream->WriteStr("s\012Q\012");
+
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+		{
+			double ca = cos(45.0 / 180.0 * M_PI);
+			double cx = 0, cy = 0, r = dR - dBorder * 1.5;
+			double bezierCircle = 0.55228475 * r;
+			std::string sBG = pAnnot->GetBGforAP(-0.250977, true);
+			if (sBG.empty())
+				sBG = "0.749023 G";
+
+			if (nBorderType == EBorderType::Inset)
+				m_pStream->WriteStr(bN ? "0.501953 G" : "0 G");
+			else // Beveled
+				m_pStream->WriteStr(bN ? "1 G" : sBG.c_str());
+
+			m_pStream->WriteStr("\012q\012");
+			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
+			StreamWriteXYMove(m_pStream, cx + r, cy);
+			StreamWriteXYCurve(m_pStream, cx + r, cy + bezierCircle, cx + bezierCircle, cy + r, cx, cy + r);
+			StreamWriteXYCurve(m_pStream, cx - bezierCircle, cy + r, cx - r, cy + bezierCircle, cx - r, cy);
+			m_pStream->WriteStr("S\012Q\012");
+
+			if (nBorderType == EBorderType::Inset)
+				m_pStream->WriteStr(bN ? "0.75293 G" : "1 G");
+			else // Beveled
+				m_pStream->WriteStr(bN ? sBG.c_str() : "1 G");
+
+			m_pStream->WriteStr("\012q\012");
+			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
+			StreamWriteXYMove(m_pStream, cx - r, cy);
+			StreamWriteXYCurve(m_pStream, cx - r, cy - bezierCircle, cx - bezierCircle, cy - r, cx, cy - r);
+			StreamWriteXYCurve(m_pStream, cx + bezierCircle, cy - r, cx + r, cy - bezierCircle, cx + r, cy);
+			m_pStream->WriteStr("S\012Q\012");
+		}
+
+		// Установлен
+		if (!bSet)
+			return;
+		double dShift = dBorder / 2.0;
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			dShift *= 2.0;
+		m_pStream->WriteStr("q\012");
+		m_pStream->WriteStr("1 0 0 1 ");
+		m_pStream->WriteReal(dCX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dCY);
+		m_pStream->WriteStr(" cm\012");
+		m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+		StreamWriteCircle(m_pStream, 0, 0, dR / 2.0 - dShift);
+		m_pStream->WriteStr("f\012Q\012");
+	}
+	void CAnnotAppearanceObject::DrawCheckBoxSquare(int nRotate, bool bSet, bool bN)
+	{
+		CCheckBoxWidget* pAnnot = dynamic_cast<CCheckBoxWidget*>(m_pAnnot);
+		if (!pAnnot)
+			return;
+
+		double dBorder = 1;
+		EBorderType nBorderType = EBorderType::Inset;
+		if (m_pAnnot->HaveBorder())
+		{
+			dBorder = m_pAnnot->GetBorderWidth();
+			nBorderType = m_pAnnot->GetBorderType();
+		}
+		double dW = m_pAnnot->GetRect().fRight - m_pAnnot->GetRect().fLeft;
+		double dH = std::abs(m_pAnnot->GetRect().fBottom - m_pAnnot->GetRect().fTop);
+		if (nRotate == 90 || nRotate == 270)
+			std::swap(dW, dH);
+
+		// Задний фон
+		m_pStream->WriteStr("q\012");
+		std::string sBG;
+		if (!bN && nBorderType != EBorderType::Beveled)
+		{
+			sBG = pAnnot->GetBGforAP(-0.250977);
+			if (sBG.empty())
+				sBG = "0.749023 g";
+		}
+		else
+			sBG = pAnnot->GetBGforAP();
+		if (!sBG.empty())
+		{
+			m_pStream->WriteStr(sBG.c_str());
+			m_pStream->WriteStr("\012");
+			StreamWriteRect(m_pStream, 0, 0, dW, dH);
+			m_pStream->WriteStr("f\012");
+		}
+
+		// Граница
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+		{
+			std::string sBG = pAnnot->GetBGforAP(-0.250977);
+			if (sBG.empty())
+				sBG = "0.749023 g";
+
+			if (nBorderType == EBorderType::Inset)
+				m_pStream->WriteStr(bN ? "0.501953 g" : "0 g");
+			else // Beveled
+				m_pStream->WriteStr(bN ? "1 g" : sBG.c_str());
+			m_pStream->WriteStr("\012");
+
+			StreamWriteXYMove(m_pStream, dBorder, dBorder);
+			StreamWriteXYLine(m_pStream, dBorder, dH - dBorder);
+			StreamWriteXYLine(m_pStream, dW - dBorder, dH - dBorder);
+			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
+			StreamWriteXYLine(m_pStream, dBorder * 2.0, dH - dBorder * 2.0);
+			StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
+			m_pStream->WriteStr("f\012");
+
+			if (nBorderType == EBorderType::Inset)
+				m_pStream->WriteStr(bN ? "0.75293 g" : "1 g");
+			else // Beveled
+				m_pStream->WriteStr(bN ? sBG.c_str() : "1 g");
+			m_pStream->WriteStr("\012");
+
+			StreamWriteXYMove(m_pStream, dW - dBorder, dH - dBorder);
+			StreamWriteXYLine(m_pStream, dW - dBorder, dBorder);
+			StreamWriteXYLine(m_pStream, dBorder, dBorder);
+			StreamWriteXYLine(m_pStream, dBorder * 2.0, dBorder * 2.0);
+			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dBorder * 2.0);
+			StreamWriteXYLine(m_pStream, dW - dBorder * 2.0, dH - dBorder * 2.0);
+			m_pStream->WriteStr("f\012");
+		}
+
+		if (dBorder != 1)
+		{
+			m_pStream->WriteReal(dBorder);
+			m_pStream->WriteStr(" w\012");
+		}
+		if (nBorderType == EBorderType::Dashed)
+			m_pStream->WriteStr(m_pAnnot->GetBorderDash().c_str());
+		m_pStream->WriteStr(pAnnot->GetBCforAP().c_str());
+		m_pStream->WriteStr("\012");
+
+		if (nBorderType == EBorderType::Underline)
+		{
+			StreamWriteXYMove(m_pStream, 0, dBorder / 2.0);
+			StreamWriteXYLine(m_pStream, dW, dBorder / 2.0);
+		}
+		else
+			StreamWriteRect(m_pStream, dBorder / 2.0, dBorder / 2.0, dW - dBorder, dH - dBorder);
+		m_pStream->WriteStr("s\012Q\012");
+
+		// Установлен
+		if (!bSet)
+			return;
+		double dDiff = std::abs(dW - dH) / 2.0;
+		double dShift = dBorder;
+		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+			dShift *= 2;
+		bool bW = dW > dH;
+		double dCX = dW / 2.0, dCY = dH / 2.0;
+		double dC = std::min(dW, dH) / 2.0;
+
+		ECheckBoxStyle nStyle = pAnnot->GetStyle();
+		switch (nStyle)
+		{
+		case ECheckBoxStyle::Check:
+		{
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal((bW ? dDiff : 0) + dShift);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal((bW ? 0 : dDiff) + dShift);
+			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+
+			double dScale = (std::min(dW, dH) - dShift * 2.0) / 20.0;
+			StreamWriteXYMove(m_pStream, 5.2381 * dScale, 11.2 * dScale);
+			StreamWriteXYLine(m_pStream, 4 * dScale, 8.2 * dScale);
+			StreamWriteXYLine(m_pStream, 7.71429 * dScale, 4 * dScale);
+			StreamWriteXYCurve(m_pStream, 12.0476 * dScale, 10.6 * dScale, 13.2857 * dScale, 11.8 * dScale, 17 * dScale, 16 * dScale);
+			StreamWriteXYCurve(m_pStream, 14.5238 * dScale, 16 * dScale, 9.77778 * dScale, 11.2 * dScale, 7.71429 * dScale, 8.2 * dScale);
+			StreamWriteXYLine(m_pStream, 5.2381 * dScale, 11.2 * dScale);
+
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
+		case ECheckBoxStyle::Cross:
+		{
+			double dCross = dBorder;
+			if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
+				dCross *= 2;
+			m_pStream->WriteStr("q\012");
+			StreamWriteRect(m_pStream, dCross, dCross, dW - dCross, dH - dCross);
+			m_pStream->WriteStr("W\012n\0121 w\012");
+			m_pStream->WriteStr(pAnnot->GetTC(true).c_str());
+
+			double x1 = dShift + 1 + (bW ? dDiff : 0);
+			double y1 = dShift + 1 + (bW ? 0 : dDiff);
+			double x2 = dW - dShift - 1 - (bW ? dDiff : 0);
+			double y2 = dH - dShift - 1 - (bW ? 0 : dDiff);
+			StreamWriteXYMove(m_pStream, x1, y2);
+			StreamWriteXYLine(m_pStream, x2, y1);
+			StreamWriteXYMove(m_pStream, x2, y2);
+			StreamWriteXYLine(m_pStream, x1, y1);
+
+			m_pStream->WriteStr("s\012Q\012");
+			break;
+		}
+		case ECheckBoxStyle::Diamond:
+		{
+			double dSq = dC - dShift * 2.0 - 1;
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+			StreamWriteXYMove(m_pStream, -dSq, 0);
+			StreamWriteXYLine(m_pStream, 0, dSq);
+			StreamWriteXYLine(m_pStream, dSq, 0);
+			StreamWriteXYLine(m_pStream, 0, -dSq);
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
+		case ECheckBoxStyle::Circle:
+		{
+			double dR = dC - dShift * 2.0 - 1;
+
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr("1 0 0 1 ");
+			m_pStream->WriteReal(dCX);
+			m_pStream->WriteChar(' ');
+			m_pStream->WriteReal(dCY);
+			m_pStream->WriteStr(" cm\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+			StreamWriteCircle(m_pStream, 0, 0, dR);
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
+		case ECheckBoxStyle::Star:
+		{
+			double dROuter = dC - dShift * 2.0 - 1;
+			double dRInner = dROuter / 2.5;
+			int nPoints = 5;
+
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+			for (int i = 0; i < nPoints * 2; ++i)
+			{
+				double dR = i % 2 == 0 ? dROuter : dRInner;
+				double dAngle = M_PI / nPoints * i;
+				double dX = dCX - dR * std::sin(dAngle);
+				double dY = dCY + dR * std::cos(dAngle);
+				if (i == 0)
+					StreamWriteXYMove(m_pStream, dX, dY);
+				else
+					StreamWriteXYLine(m_pStream, dX, dY);
+			}
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
+		case ECheckBoxStyle::Square:
+		{
+			double dSq = std::min(dW, dH) * 2.0 / 3.0 - dShift * 2.0 - 1;
+
+			m_pStream->WriteStr("q\012");
+			m_pStream->WriteStr(pAnnot->GetTC(false).c_str());
+			StreamWriteRect(m_pStream, dCX - dSq / 2.0, dCY - dSq / 2.0, dSq, dSq);
+			m_pStream->WriteStr("f\012Q\012");
+			break;
+		}
+		}
 	}
 }

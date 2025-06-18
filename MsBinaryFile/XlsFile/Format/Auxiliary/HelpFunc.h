@@ -94,7 +94,6 @@ unsigned short sheetsnames2ixti(std::wstring name);
 unsigned int definenames2index(std::wstring name);
 bool isTableFmla(const std::wstring& tableName, _UINT32& listIndex);
 bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexColumn);
-unsigned int getColumnsCount(_UINT32 listIndex);
 unsigned short AddMultysheetXti(const std::wstring& name, const _INT32& firstIxti, const _INT32& secondIxti);
 unsigned int AddDefinedName(const std::wstring& name);
 }

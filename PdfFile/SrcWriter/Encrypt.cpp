@@ -203,6 +203,7 @@ namespace PdfWriter
 		m_unPermission = ENABLE_PRINT | ENABLE_EDIT_ALL | ENABLE_COPY | ENABLE_EDIT | PERMISSION_PAD;
 		
 		MemSet(m_anEncryptID, 0, ID_LEN);
+		m_unIDLength = ID_LEN;
 
 		MemSet(m_anOwnerKey, 0, 48);
 		MemSet(m_anUserKey, 0, 48);
@@ -292,7 +293,7 @@ namespace PdfWriter
             }
         }
         else if (impl->m_sOwnerPassword.empty())
-            return MakeFileKey2(impl->m_sUserPassword);
+            return MakeFileKey2((BYTE*)impl->m_sUserPassword.c_str(), impl->m_sUserPassword.length());
         else
         {
             int nLen = impl->m_sOwnerPassword.length();
@@ -332,9 +333,8 @@ namespace PdfWriter
                     rc4Decryption.ProcessData(arrOwnerKey, arrOwnerKey, 32);
                 }
             }
-            std::string sUserPassword2((char *)arrOwnerKey, 32);
 
-            return MakeFileKey2(sUserPassword2);
+            return MakeFileKey2(arrOwnerKey, 32);
         }
         return false;
     }
@@ -392,28 +392,22 @@ namespace PdfWriter
         memcpy (pHash, K, 32); // pHash - from sha256
         return true;
     }
-    bool CEncrypt::MakeFileKey2(const std::string &sUserPassword)
+    bool CEncrypt::MakeFileKey2(BYTE* sUserPassword, int nLength)
     {
         unsigned char sTest[32];
         unsigned char sTempKey[16];
-        int nLen = 0;
+        int nLen = nLength;
         bool bResult = true;
 
-        unsigned char* pBuffer = new unsigned char[72 + 16];
+        unsigned char* pBuffer = new unsigned char[72 + m_unIDLength];
 
-        if (false == sUserPassword.empty())
+        if (nLen < 32)
         {
-            nLen = sUserPassword.length();
-            if (nLen < 32)
-            {
-                memcpy(pBuffer, sUserPassword.c_str(), nLen);
-                memcpy(pBuffer + nLen, passwordPad, 32 - nLen);
-            }
-            else
-                memcpy(pBuffer, sUserPassword.c_str(), 32);
+            memcpy(pBuffer, sUserPassword, nLen);
+            memcpy(pBuffer + nLen, passwordPad, 32 - nLen);
         }
         else
-            memcpy(pBuffer, passwordPad, 32);
+            memcpy(pBuffer, sUserPassword, 32);
 
         memcpy(pBuffer + 32, m_anOwnerKey, 32);
 
@@ -422,8 +416,8 @@ namespace PdfWriter
         pBuffer[66] = (m_unPermission >> 16) & 0xff;
         pBuffer[67] = (m_unPermission >> 24) & 0xff;
 
-        memcpy(pBuffer + 68, m_anEncryptID, 16);
-        nLen = 68 + 16;
+        memcpy(pBuffer + 68, m_anEncryptID, m_unIDLength);
+        nLen = 68 + m_unIDLength;
         if (!true)
         {
             pBuffer[nLen++] = 0xff;
@@ -458,9 +452,9 @@ namespace PdfWriter
                 rc4Decryption.ProcessData(sTest, sTest, 32);
             }
             memcpy(pBuffer, passwordPad, 32);
-            memcpy(pBuffer + 32, m_anEncryptID, 16);
+            memcpy(pBuffer + 32, m_anEncryptID, m_unIDLength);
 
-            MD5(pBuffer, 32 + 16, pBuffer);
+            MD5(pBuffer, 32 + m_unIDLength, pBuffer);
 
             bResult = (memcmp(sTest, pBuffer, 16) == 0);
         }

@@ -118,7 +118,7 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
         parser.SetBaseItalic(Context.base_font_italic_);
         parser.SetBaseBold(Context.base_font_bold_);
 
-        /*result = */        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
+        converter.StartConversion(parser.Parse(annotation_text,iTypeConversion),parser.GetAlignment());
 
         auto sizes = parser.GetFormulaSize();
 
@@ -134,11 +134,15 @@ void math_semantics::oox_convert(oox::math_context &Context, int iTypeConversion
 
     if (!result)
     {
+ 		Context.output_stream() << L"<m:oMathPara xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
+        Context.output_stream() << L"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\">";
         for (size_t i = 0; i < content_.size(); i++)
         {
             office_math_element* math_element = dynamic_cast<office_math_element*>(content_[i].get());
             math_element->oox_convert(Context);
         }
+        Context.output_stream() << L"</m:oMath>";
+        Context.output_stream() << L"</m:oMathPara>";
     }
 }
 

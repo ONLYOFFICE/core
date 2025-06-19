@@ -62,6 +62,7 @@ public:
 	bool LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password = L"", const std::wstring& user_password = L"");
 
 	void Close();
+	void CleanUp();
 
 	void SetParams(COfficeDrawingPageParams* pParams);
 	std::wstring GetTempDirectory();
@@ -77,6 +78,7 @@ public:
 	int GetMaxRefID();
 	int GetNumPages();
 	bool ValidMetaData();
+	// Захватывает полученную память malloc data
 	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();

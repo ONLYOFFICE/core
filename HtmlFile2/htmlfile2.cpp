@@ -264,6 +264,7 @@ struct CTextSettings
 	bool bAddSpaces; // Добавлять пробелы перед текстом?
 	bool bMergeText; // Объединять подяр идущий текст в 1?
 	int  nLi;  // Уровень списка
+	bool bNumberingLi; // Является ли список нумерованным
 
 	std::wstring sPStyle;
 
@@ -277,11 +278,12 @@ struct CTextSettings
 	NSCSS::CCompiledStyle oAdditionalStyle;
 
 	CTextSettings()
-		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), eTextMode(Normal)
+		: bBdo(false), bPre(false), bQ(false), bAddSpaces(true), bMergeText(false), nLi(-1), bNumberingLi(false), eTextMode(Normal)
 	{}
 
 	CTextSettings(const CTextSettings& oTS) :
-		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText), nLi(oTS.nLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
+		bBdo(oTS.bBdo), bPre(oTS.bPre), bQ(oTS.bQ), bAddSpaces(oTS.bAddSpaces), bMergeText(oTS.bMergeText),
+	    nLi(oTS.nLi),bNumberingLi(oTS.bNumberingLi), sPStyle(oTS.sPStyle), eTextMode(oTS.eTextMode)
 	{}
 
 	void AddPStyle(const std::wstring& wsStyle)
@@ -2288,6 +2290,9 @@ private:
 			{
 				oNode.m_wsId = EncodeXmlString(m_oLightReader.GetText());
 				WriteBookmark(oXml, oNode.m_wsId);
+
+				if (!m_oStylesCalculator.HaveStylesById(oNode.m_wsId))
+					oNode.m_wsId.clear();
 			}
 			else if(sName == L"style")
 				oNode.m_wsStyle += m_oLightReader.GetText();
@@ -2381,7 +2386,30 @@ private:
 
 		std::wstring sText = m_oLightReader.GetText();
 
-		if (sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+		if (sText.empty())
+			return false;
+
+		m_oStylesCalculator.CalculateCompiledStyle(arSelectors);
+
+		bool bPre = oTS.bPre;
+
+		if (!bPre && nullptr != arSelectors.back().m_pCompiledStyle)
+		{
+			NSCSS::CCompiledStyle* pCompiledStyle{arSelectors.back().m_pCompiledStyle};
+
+			// TODO::поведение должно быть немного разное (реализовать)
+			switch(pCompiledStyle->m_oDisplay.GetWhiteSpace().ToInt())
+			{
+				case NSCSS::NSProperties::EWhiteSpace::Pre:
+				case NSCSS::NSProperties::EWhiteSpace::Pre_Wrap:
+				case NSCSS::NSProperties::EWhiteSpace::Pre_Line:
+					bPre = true;
+				default:
+					break;
+			}
+		}
+
+		if (!bPre && sText.end() == std::find_if_not(sText.begin(), sText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
 			return false;
 
 		if(oTS.bBdo)
@@ -2389,22 +2417,14 @@ private:
 
 		const bool bInT = m_oState.m_bInT;
 
-		if (oTS.bPre)
-		{
-			CloseT(pXml);
-			CloseR(pXml);
-		}
-
 		GetSubClass(pXml, arSelectors);
 
-		if (oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
-			WriteSpace(pXml);
-
+		//TODO:: сделать так, чтобы параграф (со своими стилями) открывался при чтении сооответствующей ноды, а не при чтении текста
 		OpenP(pXml);
 
 		NSStringUtils::CStringBuilder oPPr;
 
-		std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
+		const std::wstring sPStyle = wrP(&oPPr, arSelectors, oTS);
 
 		WriteToStringBuilder(oPPr, *pXml);
 
@@ -2424,89 +2444,79 @@ private:
 		if (oTS.bQ)
 			pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
-		if(oTS.bPre)
+		if (!bPre && oTS.bAddSpaces && m_oState.m_bInP && !m_oState.m_bInR && !iswspace(sText.front()) && !iswpunct(sText.front()) && !m_oState.m_bWasSpace && CTextSettings::Normal == oTS.eTextMode)
+			WriteSpace(pXml);
+
+		if(bPre)
 		{
-			if (L'\n' == sText.front() || L'\r' == sText.front())
-				sText.erase(0, 1);
+			size_t unBegin = 0, unEnd = sText.find_first_of(L"\n\r\t");
 
-			size_t nAfter = sText.find_first_of(L"\n\r\t");
-			while(nAfter != std::wstring::npos)
+			while (std::wstring::npos != unBegin)
 			{
-				if (L'\t' == sText[0])
+				if (OpenR(pXml))
 				{
-					pXml->WriteString(L"<w:tab/>");
-					sText.erase(0, 1);
-
-					if (0 == nAfter)
-					{
-						nAfter = sText.find_first_of(L"\n\r\t");
-						continue;
-					}
-
-					nAfter--;
+					pXml->WriteString(L"<w:test/>");
+					WriteToStringBuilder(oRPr, *pXml);
 				}
 
 				OpenT(pXml);
-				pXml->WriteEncodeXmlString(sText.c_str(), nAfter);
-				CloseT(pXml);
-				CloseR(pXml);
-
-				if (L'\t' == sText[nAfter])
+				if (unEnd == std::wstring::npos)
 				{
-					sText.erase(0, nAfter);
-					nAfter = 1;
+					pXml->WriteEncodeXmlString(sText.c_str() + unBegin, sText.length() - unBegin);
+					break;
 				}
-				else
-				{
-					CloseP(pXml, arSelectors);
-					OpenP(pXml);
-					WriteToStringBuilder(oPPr, *pXml);
-					sText.erase(0, nAfter + 1);
-					nAfter = 0;
-				}
-				OpenR(pXml);
-				WriteToStringBuilder(oRPr, *pXml);
-				nAfter = sText.find_first_of(L"\n\r\t", nAfter);
-			}
 
-			if (sText.empty())
-			{
-				arSelectors.pop_back();
-				return true;
+				if (unBegin != unEnd)
+				{
+					pXml->WriteEncodeXmlString(sText.c_str() + unBegin, unEnd - unBegin);
+					CloseT(pXml);
+				}
+
+				if (L'\n' == sText[unEnd])
+				{
+					pXml->WriteString(L"<w:br/>");
+				}
+				else if (L'\t' == sText[unEnd])
+				{
+					pXml->WriteString(L"<w:tab/>");
+				}
+
+				unBegin = unEnd + 1;
+				unEnd = sText.find_first_of(L"\n\r\t", unBegin);
 			}
 		}
 		else
+		{
 			ReplaceSpaces(sText);
 
-		if (!sText.empty() && L'\t' == sText[0])
-		{
-			pXml->WriteString(L"<w:tab/>");
-			sText.erase(0, 1);
-		}
+			if (!sText.empty() && L'\t' == sText[0])
+			{
+				pXml->WriteString(L"<w:tab/>");
+				sText.erase(0, 1);
+			}
 
-		if (!oTS.bPre && !sText.empty() && std::iswspace(sText.front()) && m_oState.m_bWasSpace)
-			sText.erase(0, 1);
+			if (!sText.empty() && std::iswspace(sText.front()) && m_oState.m_bWasSpace)
+				sText.erase(0, 1);
 
-		if (!sText.empty())
-		{
 			OpenT(pXml);
 
-			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT && !oTS.bPre)
+			if (oTS.bMergeText && !m_oState.m_bWasSpace && bInT && !bPre)
 				pXml->WriteEncodeXmlString(L" ");
 
-			m_oState.m_bWasSpace = std::iswspace(sText.back());
-
-			pXml->WriteEncodeXmlString(sText);
+			if (!sText.empty())
+			{
+				m_oState.m_bWasSpace = std::iswspace(sText.back());
+				pXml->WriteEncodeXmlString(sText);
+			}
 		}
 
 		if (oTS.bQ)
 			pXml->WriteString(L"<w:t xml:space=\"preserve\">&quot;</w:t>");
 
+		CloseT(pXml);
+
 		if (!oTS.bMergeText)
-		{
-			CloseT(pXml);
 			CloseR(pXml);
-		}
 
 		arSelectors.pop_back();
 		return true;
@@ -2616,7 +2626,6 @@ private:
 
 		CTextSettings oTSR(oTS);
 		oTSR.oAdditionalStyle.m_oFont.SetFamily(L"Courier New", UINT_MAX, true);
-		oTSR.oAdditionalStyle.m_oFont.SetSize(20, UINT_MAX, true);
 
 		return readStream(pXml, arSelectors, oTSR);
 	}
@@ -2757,7 +2766,10 @@ private:
 		if (NULL == pXml || arSelectors.empty() || arSelectors.back().m_wsClass == L"MsoFootnoteReference")
 			return false;
 
-		return readStream(pXml, arSelectors, oTS);
+		CTextSettings oTSR(oTS);
+		oTSR.bAddSpaces = false;
+
+		return readStream(pXml, arSelectors, oTSR);
 	}
 
 	bool ReadNobr(NSStringUtils::CStringBuilder* pXml, std::vector<NSCSS::CNode>& arSelectors, CTextSettings& oTS)
@@ -3922,6 +3934,8 @@ private:
 
 			CTextSettings oTSLiP(oTS);
 
+			oTSLiP.bNumberingLi = !bType;
+
 			std::wstring wsValue;
 			const std::wstring wsParentName{(!sSelectors.empty()) ? sSelectors.back().m_wsName : L""};
 
@@ -3944,26 +3958,10 @@ private:
 					oTSLiP.oAdditionalStyle.m_oText.SetColor(L"#808080", NEXT_LEVEL);
 				else if (L"selected" == wsArgumentName)
 					oTSLiP.oAdditionalStyle.m_oText.SetDecoration(L"underline", NEXT_LEVEL);
-					// oTSLiP.AddRStyle(L"<w:u w:val=\"single\"/>");
 			}
 			m_oLightReader.MoveToElement();
 
-			if (std::wstring::npos != oTS.sPStyle.find(L"<w:numPr>"))
-			{
-				wrP(oXml, sSelectors, oTS);
-				CloseP(oXml, sSelectors);
-				oTSLiP.sPStyle.clear();
-			}
-
 			oTSLiP.nLi++;
-
-			const std::wstring wsOldPStyle{oTSLiP.sPStyle};
-
-			oTSLiP.sPStyle += L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTSLiP.nLi) + L"\"/><w:numId w:val=\"" +
-			                  (bType ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>";
-
-			wrP(oXml, sSelectors, oTSLiP);
-			oTSLiP.sPStyle = wsOldPStyle;
 
 			if (!wsValue.empty())
 			{
@@ -4095,6 +4093,8 @@ private:
 		{
 			if (m_oState.m_bInHyperlink)
 			{
+				CloseT(oXml);
+				CloseR(oXml);
 				oXml->WriteString(L"</w:hyperlink>");
 				m_oState.m_bInHyperlink = false;
 			}
@@ -4369,7 +4369,7 @@ private:
 		if (sPStyle.empty() && !ElementInTable(sSelectors))
 			sPStyle = L"normal-web";
 
-		if (sPStyle.empty() && oTS.sPStyle.empty())
+		if (sPStyle.empty() && oTS.sPStyle.empty() && 0 > oTS.nLi)
 			return L"";
 
 		m_oXmlStyle.WriteLitePStyle(oTS.oAdditionalStyle);
@@ -4384,6 +4384,10 @@ private:
 			oXml->WriteString(sPStyle);
 			oXml->WriteString(L"\"/>");
 		}
+
+		if (oTS.nLi >= 0)
+			oXml->WriteString(L"<w:numPr><w:ilvl w:val=\"" + std::to_wstring(oTS.nLi) + L"\"/><w:numId w:val=\"" +
+							  (!oTS.bNumberingLi ? L"1" : std::to_wstring(m_nNumberingId + 1)) + L"\"/></w:numPr>");
 
 		oXml->WriteString(oTS.sPStyle + sPSettings);
 		oXml->WriteNodeEnd(L"w:pPr");

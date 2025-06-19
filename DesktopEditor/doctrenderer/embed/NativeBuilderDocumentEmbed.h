@@ -45,7 +45,7 @@ public:
 
 public:
 	CBuilderDocumentEmbed() : m_pBuilder(NULL), m_bIsValid(false) {}
-	~CBuilderDocumentEmbed() { if(m_pBuilder) RELEASEOBJECT(m_pBuilder); }
+	~CBuilderDocumentEmbed() { if(m_pBuilder && !m_isExternalize) RELEASEOBJECT(m_pBuilder); }
 
 	virtual void* getObject() { return (void*)m_pBuilder; }
 	NSDoctRenderer::CDocBuilder_Private* GetPrivate(NSDoctRenderer::CDocBuilder* pBuilder) { return pBuilder->GetPrivate(); }

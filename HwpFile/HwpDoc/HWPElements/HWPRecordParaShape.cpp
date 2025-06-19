@@ -228,12 +228,17 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLNode& oNode)
 		m_nMarginPrev = oNode.GetAttributeInt(L"value");
 	else if (L"hc:next" == oNode.GetName())
 		m_nMarginNext = oNode.GetAttributeInt(L"value");
-	else if (L"hp:switch" == oNode.GetName() ||
+	else if (/*L"hp:switch" == oNode.GetName() ||
 	         L"hp:case" == oNode.GetName() ||
-	         L"hp:default" == oNode.GetName() ||
+	         L"hp:default" == oNode.GetName() ||*/
 	         L"hh:margin" == oNode.GetName())
 	{
 		for (CXMLNode& oChild : oNode.GetChilds())
+			RecursiveParaShape(oChild);
+	}
+	else if (L"hp:switch" == oNode.GetName())
+	{
+		for (CXMLNode& oChild : oNode.GetChild(L"hp:default").GetChilds())
 			RecursiveParaShape(oChild);
 	}
 }
@@ -291,6 +296,16 @@ int CHWPRecordParaShape::GetMarginNext() const
 int CHWPRecordParaShape::GetIndent() const
 {
 	return m_nIndent;
+}
+
+int CHWPRecordParaShape::GetLeftIndent() const
+{
+	return m_nMarginLeft;
+}
+
+int CHWPRecordParaShape::GetRightIndent() const
+{
+	return m_nMarginRight;
 }
 
 bool CHWPRecordParaShape::KeepWithNext() const

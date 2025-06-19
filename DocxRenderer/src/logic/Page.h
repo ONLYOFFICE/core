@@ -68,50 +68,65 @@ namespace NSDocxRenderer
 		void DrawPath(LONG lType, const std::shared_ptr<CImageInfo> pInfo);
 
 		void AddText(
-			const PUINT pUnicodes,
-			const PUINT pGids,
-			const UINT& nCount,
-			const double& fX,
-			const double& fY,
-			const double& fWidth,
-			const double& fHeight,
-			const double& fBaseLineOffset);
+		        const PUINT pUnicodes,
+		        const PUINT pGids,
+		        const UINT& nCount,
+		        const double& fX,
+		        const double& fY,
+		        const double& fWidth,
+		        const double& fHeight,
+		        const double& fBaseLineOffset);
 
 		void Analyze();
 		void Record(NSStringUtils::CStringBuilder& oWriter, bool bIsLastPage);
 
 		std::vector<std::wstring> GetXmlShapes();
 		std::vector<std::wstring> GetXmlShapesPptx();
-		void AddCompleteXml(const std::wstring oXml);
+		NSWasm::CData GetShapesBin();
+
+		void AddCompleteXml(const std::wstring& oXml);
+		void AddCompleteBinBase64(const std::string& oBase64);
 
 	private:
 		using shape_ptr_t = std::shared_ptr<CShape>;
 		using cont_ptr_t = std::shared_ptr<CContText>;
-		using line_ptr_t = std::shared_ptr<CTextLine>;
-		using item_ptr_t = std::shared_ptr<CBaseItem>;
+		using text_line_ptr_t = std::shared_ptr<CTextLine>;
+		using base_item_ptr_t = std::shared_ptr<CBaseItem>;
+		using ooxml_item_ptr_t = std::shared_ptr<IOoxmlItem>;
 		using paragraph_ptr_t = std::shared_ptr<CParagraph>;
 		using table_ptr_t = std::shared_ptr<CTable>;
+
+		using graphical_cell_ptr_t = std::shared_ptr<CGraphicalCell>;
+		using text_cell_ptr_t = std::shared_ptr<CTextCell>;
+		using cell_ptr_t = std::shared_ptr<CTable::CCell>;
+
+		using text_line_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextLine>>;
+		using text_cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTextCell>>;
+		using cell_group_ptr_t = std::shared_ptr<CBaseItemGroup<CTable::CCell>>;
 
 		// returns std::vector of conts with diac. symbols and remove it from m_arConts
 		std::vector<cont_ptr_t> MoveDiacriticalSymbols();
 
 		// returns std::vector of text lines builded from m_arConts
-		std::vector<line_ptr_t> BuildTextLines();
+		std::vector<text_line_ptr_t> BuildTextLines(const std::vector<cont_ptr_t>& arConts);
+
+		// build text line groups
+		std::vector<text_line_group_ptr_t> BuildTextLineGroups();
 
 		// returns std::vector of paragraphs builded from m_arTextLines
-		std::vector<paragraph_ptr_t> BuildParagraphs();
+		std::vector<paragraph_ptr_t> BuildParagraphs(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
+
+		// return groups of text cells
+		std::vector<text_cell_group_ptr_t> BuildTextCellGroups(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
 		// returns std::vector of tables builded from shapes and paragraphes
-		std::vector<table_ptr_t> BuildTables();
+		std::vector<table_ptr_t> BuildTables(const std::vector<text_line_group_ptr_t>& arTextLineGroups);
 
-		// returns std::vector of cells for tables
-		std::vector<CTable::cell_ptr_t> BuildCells();
-
-		// returns std::vector of rows for tables
-		std::vector<CTable::row_ptr_t> BuildRows(std::vector<CTable::cell_ptr_t>& arCells);
+		// return std::vector of graphical cells (from shapes)
+		std::vector<graphical_cell_ptr_t> BuildGraphicalCells();
 
 		// returns std::vector of base items builded from m_arParagraphs
-		std::vector<item_ptr_t> BuildOutputObjects();
+		std::vector<ooxml_item_ptr_t> BuildOutputObjects();
 
 		// analyze shapes (set lines type)
 		void AnalyzeShapes();
@@ -132,7 +147,7 @@ namespace NSDocxRenderer
 		void AnalyzeEffects();
 
 		// adds diacritical symbols in conts
-		void AddDiacriticalSymbols();
+		void AddDiacriticalSymbols(const std::vector<cont_ptr_t>& arDiac);
 
 		// super-sub scripts line merge
 		void MergeTextLinesByVatType();
@@ -167,27 +182,24 @@ namespace NSDocxRenderer
 		// for drawingml is no tag behind-doc - so we need to reorder shapes
 		void ReorderShapesForPptx();
 
-		// get lines by groups by X
-		std::vector<std::vector<line_ptr_t>> GetLinesByGroups();
-
 		bool IsLineCrossingText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsLineBelowText(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsHighlight(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 		bool IsOutline(shape_ptr_t pShape, cont_ptr_t pCont) const noexcept;
 
-		bool IsVerticalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
-		bool IsHorizontalLineBetween(item_ptr_t pFirst, item_ptr_t pSecond) const noexcept;
+		bool IsVerticalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(base_item_ptr_t pFirst, base_item_ptr_t pSecond) const noexcept;
 
-		bool IsVerticalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
-		bool IsHorizontalLineBetween(line_ptr_t pFirst, line_ptr_t pSecond) const noexcept;
+		bool IsVerticalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
+		bool IsHorizontalLineBetween(text_line_ptr_t pFirst, text_line_ptr_t pSecond) const noexcept;
 
-		bool IsVerticalLineTrough(item_ptr_t pFirst) const noexcept;
-		bool IsHorizontalLineTrough(item_ptr_t pFirst) const noexcept;
+		bool IsVerticalLineTrough(base_item_ptr_t pFirst) const noexcept;
+		bool IsHorizontalLineTrough(base_item_ptr_t pFirst) const noexcept;
 
 		void ToXml(NSStringUtils::CStringBuilder& oWriter) const noexcept;
 		void WriteSectionToFile(bool bLastPage, NSStringUtils::CStringBuilder& oWriter) const noexcept;
 
-		static shape_ptr_t CreateSingleLineShape(line_ptr_t& pLine);
+		static shape_ptr_t CreateSingleLineShape(text_line_ptr_t& pLine);
 		static shape_ptr_t CreateSingleParagraphShape(paragraph_ptr_t& pParagraph);
 
 		void DrawImage(shape_ptr_t pShape, std::shared_ptr<CImageInfo> oImg, CVectorGraphics& imageVector);
@@ -204,15 +216,14 @@ namespace NSDocxRenderer
 		CContTextBuilder      m_oContBuilder;
 		CHorVerLinesCollector m_oHorVerLinesCollector;
 
-		std::vector<cont_ptr_t>      m_arConts;
-		std::vector<line_ptr_t>      m_arTextLines;
-		std::vector<cont_ptr_t>      m_arDiacriticalSymbols;
-		std::vector<shape_ptr_t>     m_arShapes;
-		std::vector<paragraph_ptr_t> m_arParagraphs;
-		std::vector<table_ptr_t>     m_arTables;
+		std::vector<shape_ptr_t>      m_arShapes;
+		std::vector<text_line_ptr_t>  m_arTextLines;
+		std::vector<paragraph_ptr_t>  m_arParagraphs;
+		std::vector<table_ptr_t>      m_arTables;
+		std::vector<ooxml_item_ptr_t> m_arOutputObjects;
 
-		std::vector<item_ptr_t>   m_arOutputObjects;
 		std::vector<std::wstring> m_arCompleteObjectsXml;
+		std::vector<std::string>  m_arCompleteObjectsBinBase64;
 
 		// save the luminosity shapes for later filling
 		std::vector<shape_ptr_t> m_arLuminosityShapes;

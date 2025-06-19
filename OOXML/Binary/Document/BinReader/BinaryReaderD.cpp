@@ -3119,6 +3119,12 @@ int Binary_NumberingTableReader::ReadAbstractNum(BYTE type, long length, void* p
 		odocANum->m_oMultiLevelType->m_oVal.Init();
 		odocANum->m_oMultiLevelType->m_oVal->SetValueFromByte(m_oBufferedStream.GetUChar());
 	}
+	else if (c_oSerNumTypes::Nsid == type)
+	{
+		odocANum->m_oNsid.Init();
+		odocANum->m_oNsid->m_oVal.Init();
+		odocANum->m_oNsid->m_oVal->SetValue(m_oBufferedStream.GetULong());
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;

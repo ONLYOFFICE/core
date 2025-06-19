@@ -433,10 +433,9 @@ void table_table_cell::add_child_element( xml::sax * Reader, const std::wstring 
 		text::p *p = dynamic_cast<text::p*>(content_.elements_.back().get());
 		if (p)
 		{
-			is_present_hyperlink_ = p->paragraph_.is_present_hyperlink_;
-            if (content_.elements_.size() > 1)
-                is_AligmentWrap_ = true;
-        }
+			is_present_hyperlink_ |= p->paragraph_.is_present_hyperlink_;
+            count_paragraph++;
+         }
 	}
 }
 

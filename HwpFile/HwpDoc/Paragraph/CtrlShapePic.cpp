@@ -32,7 +32,7 @@ CPicColor::CPicColor(CXMLNode& oNode)
 }
 
 CPicEffect::CPicEffect(EPicEffectType eType)
-	: m_eType(eType)
+	: m_eType(eType), m_nSize(0)
 {}
 
 CPicEffect::CPicEffect(int nType)
@@ -228,8 +228,8 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVe
 				{
 					if ((L"hc:pt" + std::to_wstring(unIndex)) == oGrandChild.GetName())
 					{
-						m_arBorderPoints[unIndex].m_nX = oChild.GetAttributeInt(L"x");
-						m_arBorderPoints[unIndex].m_nY = oChild.GetAttributeInt(L"y");
+						m_arBorderPoints[unIndex].m_nX = oGrandChild.GetAttributeInt(L"x");
+						m_arBorderPoints[unIndex].m_nY = oGrandChild.GetAttributeInt(L"y");
 						break;
 					}
 				}
@@ -327,6 +327,16 @@ int CCtrlShapePic::GetBorderColor() const
 int CCtrlShapePic::GetBorderThick() const
 {
 	return m_nBorderThick;
+}
+
+int CCtrlShapePic::GetImageRectWidth() const
+{
+	return m_arBorderPoints[1].m_nX - m_arBorderPoints[0].m_nX;
+}
+
+int CCtrlShapePic::GetIMageRectHeight() const
+{
+	return m_arBorderPoints[2].m_nY - m_arBorderPoints[0].m_nY;
 }
 
 int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

@@ -112,13 +112,14 @@ size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_ptr &te
 	fonts_array_t::const_iterator i = fonts_.find(fnt);
     if (i != fonts_.end())
         return i->index;
-    else
+    else if (fnt.bEnabled)
     {
         fnt.index = fonts_.size();
         fonts_.insert(fnt);
-        //fonts_.push_back(OdfFont2XlsxFont(textProp, parProp, cellProp));
         return fnt.index;
     }
+    else
+        return 0;
 }
 
 //const xlsx_font & xlsx_fonts::Impl::getFont(size_t id) const

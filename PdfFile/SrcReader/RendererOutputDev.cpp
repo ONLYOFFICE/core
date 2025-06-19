@@ -43,6 +43,7 @@
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
+#include "../lib/xpdf/TextString.h"
 #include "XmlUtils.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
@@ -705,8 +706,15 @@ namespace PdfReader
 		if (oFontObject.isDict())
 		{
 			Dict* pFontDict = oFontObject.getDict();
-			Object oFontDescriptor;
-			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+			Object oFontDescriptor, oDescendantFonts;
+			pFontDict->lookup("FontDescriptor", &oFontDescriptor);
+			if (!oFontDescriptor.isDict() && pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray())
+			{
+				oFontDescriptor.free(); oFontObject.free();
+				if (oDescendantFonts.arrayGet(0, &oFontObject)->isDict())
+					oFontObject.dictLookup("FontDescriptor", &oFontDescriptor);
+			}
+			if (oFontDescriptor.isDict())
 			{
 				Object oDictItem;
 				oFontDescriptor.dictLookup("FontName", &oDictItem);
@@ -717,6 +725,12 @@ namespace PdfReader
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
+				if (oDictItem.isString())
+				{
+					TextString* s = new TextString(oDictItem.getString());
+					oFontSelect.wsAltName = new std::wstring(NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength()));
+					delete s;
+				}
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
@@ -777,14 +791,14 @@ namespace PdfReader
 
 				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 				oDictItem.free();
-
 			}
 			else
 				oFontSelect.wsName = new std::wstring(wsFontBaseName);
-			oFontDescriptor.free();
+			oFontDescriptor.free(); oDescendantFonts.free();
 		}
 		else
 			oFontSelect.wsName = new std::wstring(wsFontBaseName);
+		oFontObject.free();
 
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
@@ -2478,6 +2492,7 @@ namespace PdfReader
 				unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
 				long lStyle;
 				m_pRenderer->get_FontStyle(&lStyle);
+				m_pFontManager->SetStringGID(FALSE);
 				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, 72, 72);
 
 				NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
@@ -2514,6 +2529,7 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
+							m_pFontManager->LoadFontFromFile(wsFileName, 0, dOldSize, 72, 72);
 							bReplace = true;
 						}
 					}

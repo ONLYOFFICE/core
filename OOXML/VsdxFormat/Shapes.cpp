@@ -62,8 +62,8 @@ namespace OOX
 		void CRel::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CRel::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
@@ -648,8 +648,8 @@ namespace OOX
 		void CText_tp::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CText_tp::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -697,8 +697,8 @@ namespace OOX
 		void CText_pp::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CText_pp::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -746,8 +746,8 @@ namespace OOX
 		void CText_cp::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CText_cp::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -1063,8 +1063,8 @@ namespace OOX
 		void CRefBy::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CRefBy::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -1649,8 +1649,8 @@ namespace OOX
 		void CConnect::fromXML(XmlUtils::CXmlLiteReader& oReader)
 		{
 			ReadAttributes(oReader);
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CConnect::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{

@@ -4,7 +4,7 @@
 
 namespace NSDocxRenderer
 {
-	class CTextLine : public CBaseItem
+	class CTextLine : public CBaseItem, public IOoxmlItem
 	{
 	public:
 		enum AssumedTextAlignmentType
@@ -31,16 +31,19 @@ namespace NSDocxRenderer
 
 		double m_dFirstWordWidth{0.0};
 
+		bool m_bIsPossibleVerSplit = false;
+
 	public:
 		CTextLine() = default;
 		virtual ~CTextLine();
-		virtual void Clear() override final;
+		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 		virtual void RecalcWithNewItem(const CContText* pCont);
 		virtual eVerticalCrossingType GetVerticalCrossingType(const CTextLine* pLine) const noexcept;
 
-		void AddCont(std::shared_ptr<CContText> pCont);
+		void AddCont(const std::shared_ptr<CContText>& pCont);
 		void AddConts(const std::vector<std::shared_ptr<CContText>>& arConts);
 		void MergeConts();
 		void CalcFirstWordWidth();

@@ -115,17 +115,16 @@ namespace NSGraphics
 	class CGraphics
 	{
 	public:
-		CGraphicsAppImage* m_pAppImage;
+		CGraphicsAppImage* m_pAppImage = nullptr;
 		CBgraFrame m_oFrame;
 
 	private:
-		NSGraphics::IGraphicsRenderer* m_pRenderer;
+		NSGraphics::IGraphicsRenderer* m_pRenderer = nullptr;
 		CGrState   m_oGrState;
 
 	public:
 		CGraphics()
 		{
-			m_pAppImage = NULL;
 		}
 		~CGraphics()
 		{

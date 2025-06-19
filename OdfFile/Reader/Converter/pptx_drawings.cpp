@@ -142,7 +142,8 @@ public:
 			if (pptx_drawing_rels_[i].type == typeUnknown		|| 
 				pptx_drawing_rels_[i].type == typeTable			||
 				pptx_drawing_rels_[i].type == typeShape			||
-				pptx_drawing_rels_[i].type == typeGroupShape)	continue;
+				pptx_drawing_rels_[i].type == typeGroupShape || 
+				pptx_drawing_rels_[i].type == typeControl)	continue;
 
 			if (pptx_drawing_rels_[i].type == typeComment)
 			{

@@ -184,7 +184,7 @@ namespace NSCSS
 	}
 	#endif
 
-	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector)
+	const CElement* CStyleStorage::FindElement(const std::wstring& wsSelector) const
 	{
 		if (wsSelector.empty())
 			return nullptr;
@@ -470,7 +470,7 @@ namespace NSCSS
 		}
 	}
 
-	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData)
+	const CElement* CStyleStorage::FindSelectorFromStyleData(const std::wstring& wsSelector, const std::map<std::wstring, CElement*>& mStyleData) const
 	{
 		std::map<std::wstring, CElement*>::const_iterator itFound = mStyleData.find(wsSelector);
 
@@ -490,6 +490,21 @@ namespace NSCSS
 	{
 		if (arSelectors.empty())
 			return false;
+
+		if (L"#text" == arSelectors.back().m_wsName)
+		{
+			if (arSelectors.size() > 1 && arSelectors.back().m_pCompiledStyle->Empty())
+				*arSelectors.back().m_pCompiledStyle += *(arSelectors.end() - 2)->m_pCompiledStyle;
+
+			if(arSelectors.crend() != std::find_if(arSelectors.crbegin(), arSelectors.crend(),
+			                                       [](const CNode& oNode){ return IsTableElement(oNode.m_wsName); }))
+			{
+				arSelectors.back().m_pCompiledStyle->m_oBackground.Clear();
+				arSelectors.back().m_pCompiledStyle->m_oBorder.Clear();
+			}
+
+			return true;
+		}
 
 		const std::map<std::vector<CNode>, CCompiledStyle>::iterator oItem = m_mUsedStyles.find(arSelectors);
 
@@ -692,6 +707,16 @@ namespace NSCSS
 			FindPrevAndKindElements(pFoundName, arNextNodes, arFindedElements, wsName, arClasses);
 		}
 
+		const CElement* pFoundAll = m_oStyleStorage.FindElement(L"*");
+
+		if (nullptr != pFoundAll)
+		{
+			if (!pFoundAll->Empty())
+				arFindedElements.push_back(pFoundAll);
+
+			FindPrevAndKindElements(pFoundAll, arNextNodes, arFindedElements, wsName, arClasses);
+		}
+
 		if (arFindedElements.size() > 1)
 		{
 			std::sort(arFindedElements.rbegin(), arFindedElements.rend(),
@@ -763,6 +788,11 @@ namespace NSCSS
 	unsigned short int CCssCalculator_Private::GetDpi() const
 	{
 		return m_nDpi;
+	}
+
+	bool CCssCalculator_Private::HaveStylesById(const std::wstring& wsId) const
+	{
+		return nullptr != m_oStyleStorage.FindElement(L'#' + wsId);
 	}
 
 	void CCssCalculator_Private::ClearEmbeddedStyles()

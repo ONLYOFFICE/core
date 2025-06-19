@@ -398,7 +398,7 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-	table_table_cell() : last_cell_(false), is_present_hyperlink_(false) { }
+	table_table_cell() { }
 
     virtual void docx_convert(oox::docx_conversion_context & Context) ;
     virtual void xlsx_convert(oox::xlsx_conversion_context & Context) ;
@@ -412,9 +412,9 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-    bool is_AligmentWrap_;
-    bool is_present_hyperlink_;
-	bool last_cell_;
+    int count_paragraph = 0;
+    bool is_present_hyperlink_ = false;
+	bool last_cell_ = false;
 	bool empty(bool bWithStyle = true);
 
     table_table_cell_attlist		attlist_;

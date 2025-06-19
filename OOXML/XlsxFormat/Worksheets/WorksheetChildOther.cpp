@@ -393,8 +393,8 @@ namespace OOX
 		{
 			ReadAttributes(oReader);
 
-			if (oReader.IsEmptyNode())
-				return;
+			if (!oReader.IsEmptyNode())
+				oReader.ReadTillEnd();
 		}
 		void CCellWatch::fromBin(XLS::BaseObjectPtr& obj)
 		{

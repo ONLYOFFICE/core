@@ -686,7 +686,8 @@ namespace PPTX
 			}
 		}
 
-		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, bool in_group, bool bSignature)
+		void Shape::toXmlWriterVML(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap
+									, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer, bool in_group, bool bSignature)
 		{
 			std::wstring strPath, strTextRect;
 			SimpleTypes::Vml::SptType vmlPrst = SimpleTypes::Vml::sptNotPrimitive;
@@ -736,7 +737,7 @@ namespace PPTX
 			std::wstring strFillNode;
 			std::wstring strStrokeNode;;
 
-			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false, bSignature);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, pContainer, strFillAttr, strFillNode, false, bSignature);
 			CalculateLine(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
 			//-------------------------------------------------------------
 			std::wstring node_name = L"v:shape";
@@ -922,10 +923,10 @@ namespace PPTX
 			pWriter->m_strStyleMain.clear();
 			pWriter->m_strStyleWrap.clear();
 		}
-		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap)
+		void Shape::toXmlWriterVMLBackground(NSBinPptxRW::CXmlWriter *pWriter, NSCommon::smart_ptr<PPTX::Theme>& oTheme, NSCommon::smart_ptr<PPTX::Logic::ClrMap>& oClrMap, NSCommon::smart_ptr<OOX::IFileContainer>& pContainer)
 		{
 			std::wstring strFillAttr, strFillNode;
-			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, false);
+			CalculateFill(pWriter->m_lDocType, spPr, style, oTheme, oClrMap, pContainer, strFillAttr, strFillNode, false);
 
 			pWriter->StartNode(L"v:background");
 			pWriter->StartAttributes();

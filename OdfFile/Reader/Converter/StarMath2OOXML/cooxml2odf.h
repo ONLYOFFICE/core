@@ -146,6 +146,7 @@ namespace StarMath
 		void CreateAttribute(StValuePr*& pAttribute);
 		StarMath::TypeFont FontCheck(const std::wstring& wsFont, bool& bAttribute);
 		static bool ColorCheck(const std::wstring& wsColor,std::wstring& wsRecordColor);
+		void CheckVectorElementsForMf(std::vector<OOX::WritingElement*> arWrElement);
 		TFormulaSize GetFormulaSize();
 		void EndOdf();
 		std::wstring GetOdf();

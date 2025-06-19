@@ -160,9 +160,10 @@ namespace PdfWriter
 
 		CXref* m_pXref;
 		TRect  m_oRect;
-		double m_dPageWidth  = 0;
+		double m_dPageW  = 0;
 		double m_dPageH = 0;
 		double m_dPageX = 0;
+		double m_dPageY = 0;
 		CDocument* m_pDocument;
 		CAnnotAppearance* m_pAppearance;
 
@@ -184,7 +185,7 @@ namespace PdfWriter
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0);
+		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0, double dY = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
 		void SetNM(const std::wstring& wsNM);
@@ -206,6 +207,7 @@ namespace PdfWriter
 		double GetWidth()  { return abs(m_oRect.fRight - m_oRect.fLeft); }
 		double GetHeight() { return abs(m_oRect.fTop - m_oRect.fBottom); }
 		double GetPageX() { return m_dPageX; }
+		double GetPageY() { return m_dPageY; }
 		double GetPageH() { return m_dPageH; }
 	};
 	class CPopupAnnotation : public CAnnotation

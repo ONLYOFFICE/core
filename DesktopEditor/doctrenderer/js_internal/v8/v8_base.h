@@ -883,6 +883,7 @@ namespace NSJSBase
 
 	// embed
 	void CreateEmbedNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
+	void FreeNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args);
 
 	class CJSEmbedObjectAdapterV8Template : public CJSEmbedObjectAdapterBase
 	{
@@ -900,6 +901,8 @@ namespace NSJSBase
 	{
 	public:
 		v8::Persistent<v8::Object> handle;
+		// contstant id for all weak native handles
+		static const uint16_t kWeakHandleId = 1;
 
 		CJSEmbedObjectPrivate(v8::Local<v8::Object> obj)
 		{
@@ -918,6 +921,8 @@ namespace NSJSBase
 
 			handle.Reset(CV8Worker::GetCurrent(), obj);
 			handle.SetWeak(pEmbedObject, EmbedObjectWeakCallback, v8::WeakCallbackType::kParameter);
+			// set class_id for being able to iterate over all these handles to destroy them on isolate disposal
+			handle.SetWrapperClassId(kWeakHandleId);
 
 			pEmbedObject->embed_native_internal = this;
 		}
@@ -931,8 +936,6 @@ namespace NSJSBase
 
 		static void EmbedObjectWeakCallback(const v8::WeakCallbackInfo<CJSEmbedObject>& data)
 		{
-			v8::Isolate* isolate = data.GetIsolate();
-			v8::HandleScope scope(isolate);
 			CJSEmbedObject* wrap = data.GetParameter();
 			((CJSEmbedObjectPrivate*)wrap->embed_native_internal)->handle.Reset();
 			delete wrap;

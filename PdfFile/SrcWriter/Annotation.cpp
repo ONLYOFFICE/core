@@ -240,12 +240,13 @@ namespace PdfWriter
 	{
 		Add("F", nAnnotFlag);
 	}
-	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX)
+	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX, double dY)
 	{
 		Add("P", pPage);
-		m_dPageWidth  = dW;
+		m_dPageW  = dW;
 		m_dPageH = dH;
 		m_dPageX = dX;
+		m_dPageY = dY;
 	}
 	void CAnnotation::SetBE(BYTE nType, const double& dBE)
 	{
@@ -366,9 +367,9 @@ namespace PdfWriter
 		pAnnot->SetAnnotFlag(28);
 
 		TRect oRect = m_oRect;
-		oRect.fLeft = m_dPageWidth - 100 - (oRect.fRight - oRect.fLeft);
+		oRect.fLeft = m_dPageW - 100 - (oRect.fRight - oRect.fLeft);
 		oRect.fBottom -= 100;
-		oRect.fRight = m_dPageWidth;
+		oRect.fRight = m_dPageW;
 		pAnnot->SetRect(oRect);
 
 		return pAnnot;
@@ -1712,6 +1713,25 @@ namespace PdfWriter
 	}
 	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
 	{
+		if (!pForm && !pCodes)
+		{
+			CObjectBase* pAP = Get("AP");
+			if (pAP && pAP->GetType() == object_type_DICT)
+			{
+				CDictObject* pDAP = (CDictObject*)pAP;
+				std::string sAP = nAP == 0 ? "N" : (nAP == 1 ? "R" : "D");
+				pDAP->Remove(sAP);
+			}
+			if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			if (nAP != 0)
+				return;
+
+		}
+
 		if (!m_pAppearance)
 		{
 			m_pAppearance = new CAnnotAppearance(m_pXref, this);
@@ -1856,6 +1876,11 @@ namespace PdfWriter
 			CheckMK();
 			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
 			m_pMK->Add(sAP, pForm);
+		}
+		else if (m_pMK)
+		{
+			std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+			m_pMK->Remove(sAP);
 		}
 
 		if (pCodes)

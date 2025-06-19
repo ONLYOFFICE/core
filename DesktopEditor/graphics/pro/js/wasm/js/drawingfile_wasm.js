@@ -101,9 +101,8 @@ CFile.prototype._openFile = function(buffer, password)
 	{
 		let data = new Uint8Array(buffer);
 		this.stream_size = data.length;
-		let stream = Module["_malloc"](this.stream_size);
-		Module["HEAP8"].set(data, stream);
-		this.stream.push(stream);
+		this.stream = Module["_malloc"](this.stream_size);
+		Module["HEAP8"].set(data, this.stream);
 	}
 
 	let passwordPtr = 0;
@@ -114,7 +113,7 @@ CFile.prototype._openFile = function(buffer, password)
 		Module["HEAP8"].set(passwordBuf, passwordPtr);
 	}
 
-	this.nativeFile = Module["_Open"](this.stream[0], this.stream_size, passwordPtr);
+	this.nativeFile = Module["_Open"](this.stream, this.stream_size, passwordPtr);
 
 	if (passwordPtr)
 		Module["_free"](passwordPtr);
@@ -128,7 +127,7 @@ CFile.prototype._closeFile = function()
 
 CFile.prototype._getType = function()
 {
-	return Module["_GetType"](this.stream[0], this.stream_size);
+	return Module["_GetType"](this.nativeFile);
 };
 
 CFile.prototype._getError = function()
@@ -180,10 +179,7 @@ CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
 	}
 
 	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID, prefixPtr);
-	if (bRes == 1)
-		this.stream.push(stream2);
-	else
-		Module["_free"](stream2);
+	stream2 = 0; // Success or not, stream2 is either taken or freed
 
 	if (prefixPtr)
 		Module["_free"](prefixPtr);
@@ -193,13 +189,7 @@ CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
 
 CFile.prototype._UndoMergePages = function()
 {
-	let bRes = Module["_UnmergePages"](this.nativeFile);
-	if (bRes == 1)
-	{
-		let str = this.stream.pop();
-		Module["_free"](str);
-	}
-	return bRes == 1;
+	return Module["_UnmergePages"](this.nativeFile) == 1;
 };
 
 // FONTS

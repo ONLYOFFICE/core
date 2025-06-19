@@ -37,7 +37,7 @@
 namespace cpdoccore {
 namespace oox {
 
-	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(false), bCrop(false), bTile(false), isInternal(true)
+	oox_bitmap_fill::oox_bitmap_fill() : name_space(L"a"), bStretch(true), bCrop(false), bTile(false), isInternal(true)
 	{
 		memset(cropRect, 0, sizeof(double)*4);
 	}
@@ -163,10 +163,9 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 
 	CP_XML_WRITER(strm)
 	{
-		CP_XML_NODE(std::wstring(val.bitmap->name_space + L":blipFill"))
+		CP_XML_NODE(val.bitmap->name_space + L":blipFill")
 		{
-			//if (val.bitmap->rotate)	CP_XML_ATTR(ns + L":rotWithShape",*(val.bitmap->rotate));
-			//else CP_XML_ATTR(ns + L":rotWithShape",1);
+			CP_XML_ATTR2(ns_att + L"rotWithShape", false);
 
 			if (val.bitmap->dpi)	
 			{
@@ -241,10 +240,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 			}
 			if (val.bitmap->bTile)
 			{
+				if (!val.bitmap->bCrop)
+				{
+					CP_XML_NODE(ns + L":srcRect");
+				}
 				CP_XML_NODE(ns + L":tile")
 				{
-					//tx="0" ty="0" sx="100000" sy="100000"
-					CP_XML_ATTR2(ns_att + L"flip", "none");
+					CP_XML_ATTR2(ns_att + L"tx", 0);
+					CP_XML_ATTR2(ns_att + L"ty", 0);
+					CP_XML_ATTR2(ns_att + L"sx", (int)(val.bitmap->sx.get_value_or(100) * 1000));
+					CP_XML_ATTR2(ns_att + L"sy", (int)(val.bitmap->sy.get_value_or(100) * 1000));
 					CP_XML_ATTR2(ns_att + L"algn", L"ctr");
 				}
 			}
@@ -254,7 +259,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val, cons
 				{
 					if (!val.bitmap->bCrop)
 					{
-						CP_XML_NODE(ns + L":fillRect");
+						CP_XML_NODE(ns + L":fillRect")
+						{
+							if (val.bitmap->sx && val.bitmap->sy)
+							{ //todooo focus
+								CP_XML_ATTR2(ns_att + L"l", (int)((100 - *val.bitmap->sx) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"t", (int)((100 - *val.bitmap->sy) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"r", (int)((100 - *val.bitmap->sx) / 2 * 1000));
+								CP_XML_ATTR2(ns_att + L"b", (int)((100 - *val.bitmap->sy) / 2 * 1000));
+							}
+						}
 					}
 				}
 			}	

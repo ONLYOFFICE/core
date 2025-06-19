@@ -6364,8 +6364,6 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 		{
 			continue;
 		}
-		if (pShape)
-			pFind->second.bUsed = true;
 //-----------------------------------------------------------------------------------------------------
 		int nCurPos2 = m_oBcw.WriteItemStart(c_oSerControlTypes::Control);
 			int nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::ControlAnchor);
@@ -6378,6 +6376,21 @@ void BinaryWorksheetTableWriter::WriteControls(const OOX::Spreadsheet::CWorkshee
 				m_oBcw.m_oStream.WriteStringW(*pControl->m_oName);
 			}
 			WriteControlPr(pControl->m_oControlPr.GetPointer(), pFormControlPr);
+			if (pShape)
+			{
+				pFind->second.bUsed = true;
+
+				nCurPos3 = m_oBcw.WriteItemStart(c_oSerControlTypes::Shape);
+
+				std::wstring* pMainProps = NULL;
+				smart_ptr<OOX::IFileContainer> oldRels = m_pOfficeDrawingConverter->GetRels();
+				m_pOfficeDrawingConverter->SetRels(pVmlDrawing);
+
+				m_pOfficeDrawingConverter->AddObject(L"<pict>" + pFind->second.sXml + L"</pict>", &pMainProps);
+
+				m_pOfficeDrawingConverter->SetRels(oldRels);
+				m_oBcw.WriteItemEnd(nCurPos3);
+			}
 		m_oBcw.WriteItemEnd(nCurPos2);
 	}
 	m_oBcw.WriteItemEnd(nCurPos);

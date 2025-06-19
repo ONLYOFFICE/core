@@ -914,14 +914,14 @@ void FileStream::moveStart(int delta) {
 // MemStream
 //------------------------------------------------------------------------
 
-MemStream::MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA):
+MemStream::MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA, GBool needFreeA):
     BaseStream(dictA) {
   buf = bufA;
   start = startA;
   length = lengthA;
   bufEnd = buf + start + length;
   bufPtr = buf + start;
-  needFree = gFalse;
+  needFree = needFreeA;
 }
 
 MemStream::~MemStream() {

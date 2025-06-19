@@ -1314,6 +1314,18 @@ namespace PdfWriter
 	{
 		m_pXref->Add(pObj);
 	}
+	void CDocument::FreeHidden(CObjectBase* pObj)
+	{
+		pObj->SetHidden();
+		if (!pObj->IsIndirect())
+			return;
+		TXrefEntry* pEntry = m_pXref->GetEntryByObjectId(pObj->GetObjId());
+		if (pEntry)
+		{
+			pEntry->nEntryType = 'f'; // FREE_ENTRY
+			pEntry->unGenNo = MAX_GENERATION_NUM;
+		}
+	}
 	bool CDocument::CheckFieldName(CFieldBase* pField, const std::string& sName)
 	{
 		CFieldBase* pBase = m_mFields[sName];
@@ -1326,19 +1338,24 @@ namespace PdfWriter
 				pParent->Add("Ff", pBase->GetFieldFlag());
 				pParent->Add("FT", pBase->GetFieldType());
 
+				CObjectBase* pT = pBase->Get("T");
+				if (pT && pT->GetType() == object_type_STRING)
+					pParent->Add("T", pT->Copy());
+
+				CObjectBase* pV = pBase->Get("V");
+				if (pV && pV->GetType() == object_type_STRING)
+					pParent->Add("V", pV->Copy());
+
+				CObjectBase* pAA = pBase->Get("AA");
+				if (pAA)
+					pParent->Add("AA", pAA->Copy());
+
 				CTextField* pTextField = dynamic_cast<CTextField*>(pBase);
 				int nMaxLen = 0;
-				if (pTextField)
+				if (pTextField && 0 != (nMaxLen = pTextField->GetMaxLen()))
 				{
-					CObjectBase* pT = pBase->Get("T");
-					if (pT && pT->GetType() == object_type_STRING)
-						pParent->Add("V", pT->Copy());
-
-					if (0 != (nMaxLen = pTextField->GetMaxLen()))
-					{
-						pBase->Remove("MaxLen");
-						pParent->Add("MaxLen", nMaxLen);
-					}
+					pBase->Remove("MaxLen");
+					pParent->Add("MaxLen", nMaxLen);
 				}
 
 				pBase->SetParent(pParent);
@@ -1968,7 +1985,9 @@ namespace PdfWriter
 			CArrayObject* pArrayImage = new CArrayObject();
 			pMetaOForm->Add("Image", pArrayImage);
 		}
-		pArrayMeta->Add(new CStringObject(sXML.c_str()));
+		CStringObject* pXML = new CStringObject();
+		pXML->Set(sXML.c_str(), false, false, -1);
+		pArrayMeta->Add(pXML);
 
 		CDictObject* pBDC = new CDictObject();
 		pBDC->Add("MCID", pArrayMeta->GetCount() - 1);

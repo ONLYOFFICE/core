@@ -34,6 +34,7 @@ namespace NSJSBase
 
 	// embed
 	id CreateEmbedNativeObject(NSString* name);
+	void FreeNativeObject(id embedded_object);
 }
 
 namespace NSJSBase

@@ -444,7 +444,44 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 		} // p:graphicFrame
     }  // CP_XML_WRITER  
 }
+void pptx_serialize_control(std::wostream& strm, _pptx_drawing& val)
+{
+	val.fill.type = 0;
 
+	CP_XML_WRITER(strm)
+	{
+		CP_XML_NODE(L"p:sp")
+		{
+			CP_XML_NODE(L"p:nvSpPr")
+			{
+				CP_XML_NODE(L"p:cNvPr")
+				{
+					CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
+					CP_XML_ATTR(L"name", val.name);
+					if (val.hidden) CP_XML_ATTR(L"hidden", true);
+
+					oox_serialize_action(CP_XML_STREAM(), val.action);
+				}
+				CP_XML_NODE(L"p:cNvSpPr")//non visual properies (собственно тока 1 там)
+				{
+					CP_XML_ATTR(L"txBox", 1);
+				}
+				CP_XML_NODE(L"p:nvPr")
+				{
+				}
+			}
+			CP_XML_NODE(L"p:spPr")
+			{
+				val.serialize_xfrm(CP_XML_STREAM(), L"a", true);
+				val.serialize_shape(CP_XML_STREAM());
+
+				oox_serialize_ln(CP_XML_STREAM(), val.additional);
+				oox_serialize_effects(CP_XML_STREAM(), val.additional);
+			}
+			pptx_serialize_text(CP_XML_STREAM(), val);
+		}
+	}  // CP_XML_WRITER  
+}
 
 void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
 {
@@ -490,7 +527,36 @@ void pptx_serialize_object(std::wostream & strm, _pptx_drawing & val)
     }  // CP_XML_WRITER  
 }
 
-
+//void _xlsx_drawing::serialize_control(std::wostream& strm)
+//{
+//	if (type != typeControl) return;
+//	CP_XML_WRITER(strm)
+//	{
+//		CP_XML_NODE(L"control")
+//		{
+//			CP_XML_ATTR(L"r:id", objectId);
+//			CP_XML_ATTR(L"shapeId", id);
+//			//CP_XML_ATTR(L"name",	objectProgId);
+//
+//			CP_XML_NODE(L"controlPr")
+//			{
+//				CP_XML_ATTR(L"defaultSize", 0);
+//				if (fill.bitmap)
+//				{
+//					CP_XML_ATTR(L"r:id", fill.bitmap->rId);
+//				}
+//				CP_XML_NODE(L"anchor")
+//				{
+//					CP_XML_ATTR(L"moveWithCells", 1);
+//
+//					from_.serialize(CP_XML_STREAM(), L"", L"xdr");
+//					to_.serialize(CP_XML_STREAM(), L"", L"xdr");
+//
+//				}
+//			}
+//		}
+//	}
+//}
 void _pptx_drawing::serialize(std::wostream & strm)
 {
 	if (type == typeShape)
@@ -515,6 +581,10 @@ void _pptx_drawing::serialize(std::wostream & strm)
 	else if (type == typeMsObject || type == typeOleObject || type == typePDF)
 	{
 		pptx_serialize_object(strm, *this);
+	}
+	else if (type == typeControl)
+	{
+		pptx_serialize_control(strm, *this);
 	}
 	else if (type == typeMedia || type == typeAudio || type == typeVideo )
 	{

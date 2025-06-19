@@ -713,7 +713,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 
 	_CP_OPT(std::wstring)	xml_id_;
 	_CP_OPT(std::wstring)	caption_id_;

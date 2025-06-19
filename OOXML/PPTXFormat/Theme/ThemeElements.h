@@ -61,6 +61,9 @@ namespace PPTX
 			nullable<LineStyles> lineStyles;
 			nullable<FontStylesGroup> fontStylesGroup;
 			nullable<VariationStyleSchemeLst> variationStyleSchemeLst;
+			nullable<Scheme> themeScheme;
+			nullable<Scheme> fmtSchemeEx;
+			nullable<Scheme> fmtConnectorSchemeEx;
 
 		protected:
 			virtual void FillParentPointersForChilds();

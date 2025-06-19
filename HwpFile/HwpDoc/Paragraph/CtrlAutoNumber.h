@@ -9,7 +9,6 @@
 
 namespace HWP
 {
-
 enum class ENumType
 {
 	PAGE,

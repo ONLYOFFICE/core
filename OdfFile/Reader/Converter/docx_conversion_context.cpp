@@ -2435,7 +2435,7 @@ bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPa
 {
 	if (current_master_page_name_ == MasterPageName) return false;
 
-    current_master_page_name_ = MasterPageName;
+    current_master_page_name_ = MasterPageName; 
 	return true;
 }
 

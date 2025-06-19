@@ -44,6 +44,11 @@ public:
 	short GetCountCells() const;
 	short GetBorderFillID() const;
 
+	short GetInLSpace() const;
+	short GetInRSpace() const;
+	short GetInTSpace() const;
+	short GetInBSpace() const;
+
 	void AddCell(CTblCell* pCell);
 
 	bool HaveCells();

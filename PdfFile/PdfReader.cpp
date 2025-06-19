@@ -244,6 +244,11 @@ void CPdfReader::Clear()
 		delete pPDFContext;
 	m_vPDFContext.clear();
 }
+void CPdfReader::CleanUp()
+{
+	while(UnmergePages());
+	m_eError = errNone;
+}
 
 bool CPdfReader::IsNeedCMap()
 {
@@ -365,7 +370,7 @@ void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 	if (m_vPDFContext.empty())
 		return;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList);
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList, false);
 	m_mFonts.insert(mFonts.begin(), mFonts.end());
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
@@ -403,6 +408,12 @@ bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* dat
 
 	m_eError = errNone;
 	m_nFileLength = length;
+
+	// Все LoadFromMemory копируют память в свои классы
+	// Кроме того MemStream использует malloc/free память
+	BYTE* pCopy = (BYTE*)malloc(length);
+	memcpy(pCopy, data, length);
+	data = pCopy;
 
 	return MergePages(data, length, wsOwnerPassword);
 }
@@ -591,7 +602,10 @@ bool CPdfReader::ValidMetaData()
 bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
 {
 	if (m_eError)
+	{
+		free(pData);
 		return false;
+	}
 
 	GString* owner_pswd = NSStrings::CreateString(wsPassword);
 	GString* user_pswd  = NSStrings::CreateString(wsPassword);
@@ -599,7 +613,8 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	Object obj;
 	obj.initNull();
 	// будет освобожден в деструкторе PDFDoc
-	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj);
+	// Время его жизни > copy и makeSubStream из MemStream
+	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj, gTrue);
 	CPdfReaderContext* pContext = new CPdfReaderContext();
 	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
 	pContext->m_pFontList = new PdfReader::CPdfFontList();
@@ -617,16 +632,14 @@ bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPa
 	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
 	if (!pDoc || !pDoc->isOk())
 	{
+		// pData освобождается
 		delete pContext;
 		m_vPDFContext.pop_back();
 		return false;
 	}
 
-	if (!IsNeedCMap())
-	{
-		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-		m_mFonts.insert(mFonts.begin(), mFonts.end());
-	}
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
 }
@@ -661,17 +674,14 @@ bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPa
 		return false;
 	}
 
-	if (!IsNeedCMap())
-	{
-		std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList);
-		m_mFonts.insert(mFonts.begin(), mFonts.end());
-	}
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 
 	return true;
 }
 bool CPdfReader::UnmergePages()
 {
-	if (m_vPDFContext.size() < 1)
+	if (m_vPDFContext.size() <= 1)
 		return false;
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
 	delete pPDFContext;

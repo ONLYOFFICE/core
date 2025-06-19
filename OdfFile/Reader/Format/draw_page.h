@@ -74,6 +74,7 @@ public:
 	office_element_ptr_array	content_;
 	office_element_ptr			animation_;
 	office_element_ptr			presentation_notes_;
+    office_element_ptr			office_forms_;
 
 	draw_page_attr				attlist_;
 private:

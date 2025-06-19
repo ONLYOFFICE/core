@@ -1022,9 +1022,9 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	RELEASEARRAYOBJECTS(pFileData);
+
 	// SPLIT & MERGE
-	BYTE* pSplitPages = NULL;
-	BYTE* pFileMerge = NULL;
 	if (false)
 	{
 		int nBufferLen = NULL;
@@ -1036,12 +1036,19 @@ int main(int argc, char* argv[])
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
-			NSFile::CFileBinary oFile;
-			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split1.pdf"))
-				oFile.WriteFile(pSplitPages + 4, nLength - 4);
-			oFile.CloseFile();
+			if (nLength > 4)
+			{
+				NSFile::CFileBinary oFile;
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split1.pdf"))
+					oFile.WriteFile(pSplitPages + 4, nLength - 4);
+				oFile.CloseFile();
 
-			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge1");
+				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
+				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
+
+				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge1");
+			}
+			RELEASEARRAYOBJECTS(pSplitPages);
 		}
 		RELEASEARRAYOBJECTS(pBuffer);
 
@@ -1051,12 +1058,19 @@ int main(int argc, char* argv[])
 			BYTE* pSplitPages = SplitPages(pGrFile, arrPages.data(), arrPages.size(), pBuffer, nBufferLen);
 			int nLength = READ_INT(pSplitPages);
 
-			NSFile::CFileBinary oFile;
-			if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
-				oFile.WriteFile(pSplitPages + 4, nLength - 4);
-			oFile.CloseFile();
+			if (nLength > 4)
+			{
+				NSFile::CFileBinary oFile;
+				if (oFile.CreateFileW(NSFile::GetProcessDirectory() + L"/split2.pdf"))
+					oFile.WriteFile(pSplitPages + 4, nLength - 4);
+				oFile.CloseFile();
 
-			MergePages(pGrFile, pSplitPages + 4, nLength - 4, 0, "merge2");
+				BYTE* pMallocData = (BYTE*)malloc(nLength - 4);
+				memcpy(pMallocData, pSplitPages + 4, nLength - 4);
+
+				MergePages(pGrFile, pMallocData, nLength - 4, 0, "merge2");
+			}
+			RELEASEARRAYOBJECTS(pSplitPages);
 		}
 		RELEASEARRAYOBJECTS(pBuffer);
 	}
@@ -2053,10 +2067,6 @@ int main(int argc, char* argv[])
 	}
 
 	Close(pGrFile);
-	RELEASEARRAYOBJECTS(pFileData);
-	RELEASEARRAYOBJECTS(pSplitPages);
-	RELEASEARRAYOBJECTS(pFileMerge);
-	RELEASEARRAYOBJECTS(pCMapData);
 
 	return 0;
 }

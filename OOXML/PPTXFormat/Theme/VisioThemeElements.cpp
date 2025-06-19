@@ -1408,5 +1408,162 @@ namespace PPTX
 			}
 			pReader->Seek(_end_rec);
 		}
+//-----------------------------------------------------------------------------------------
+		SchemeID& SchemeID::operator=(const SchemeID& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
+
+			schemeEnum = oSrc.schemeEnum;
+			schemeGUID = oSrc.schemeGUID;
+
+			return *this;
+		}
+		void SchemeID::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"schemeEnum", schemeEnum);
+			XmlMacroReadAttributeBase(node, L"schemeGUID", schemeGUID);
+		}
+		std::wstring SchemeID::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			if (bSchemas)
+			{
+				oAttr.Write(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			}
+			oAttr.Write(L"schemeEnum", schemeEnum);
+			oAttr.Write(L"schemeGUID", schemeGUID);
+
+			XmlUtils::CNodeValue oValue;
+
+			return XmlUtils::CreateNode(L"vt:schemeID", oAttr, oValue);
+		}
+		void SchemeID::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteUInt2(0, schemeEnum);
+			pWriter->WriteString2(1, schemeGUID);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void SchemeID::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"vt:schemeID");
+			if (bSchemas)
+			{
+				pWriter->WriteAttribute(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			}
+			pWriter->WriteAttribute2(L"schemeEnum", schemeEnum);
+			pWriter->WriteAttribute2(L"schemeGUID", schemeGUID);
+			pWriter->EndAttributes();
+			pWriter->EndNode(L"vt:schemeID");
+		}
+		void SchemeID::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+				{
+					schemeEnum = pReader->GetULong();
+				}break;
+				case 1:
+				{
+					schemeGUID = pReader->GetString2();
+				}break;
+				default:
+					break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+//-----------------------------------------------------------------------------------------
+		Scheme& Scheme::operator=(const Scheme& oSrc)
+		{
+			parentFile = oSrc.parentFile;
+			parentElement = oSrc.parentElement;
+
+			node_name = oSrc.node_name;
+			schemeID = oSrc.schemeID;
+
+			return *this;
+		}
+		void Scheme::fromXML(XmlUtils::CXmlNode& node)
+		{
+			node_name = node.GetName();
+
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			if (node.GetNodes(L"*", oNodes))
+			{
+				for (size_t i = 0; i < oNodes.size(); ++i)
+				{
+					XmlUtils::CXmlNode& oNode = oNodes[i];
+
+					std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+					if (L"schemeID" == strName)
+					{
+						schemeID = oNode;
+					}
+				}
+			}
+			FillParentPointersForChilds();
+		}
+		std::wstring Scheme::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+
+			XmlUtils::CNodeValue oValue;
+			oValue.WriteNullable(schemeID);
+
+			return XmlUtils::CreateNode(node_name, oAttr, oValue);
+		}
+		void Scheme::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecord2(0, schemeID);
+		}
+		void Scheme::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(node_name);
+			pWriter->WriteAttribute(L"xmlns:vt", L"http://schemas.microsoft.com/office/visio/2012/theme");
+			pWriter->EndAttributes();
+
+			pWriter->Write(schemeID);
+
+			pWriter->EndNode(node_name);
+		}
+		void Scheme::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					schemeID.Init();
+					schemeID->fromPPTY(pReader);
+				}break;
+				default:
+					break;
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void Scheme::FillParentPointersForChilds()
+		{
+			if (schemeID.IsInit())
+				schemeID->SetParentPointer(this);
+		}
 	} // namespace nsTheme
 } // namespace PPTX

@@ -57,6 +57,7 @@ void ContinueFrt12::readFields(CFRecord& record)
 
 void ContinueFrt12::writeFields(CFRecord& record)
 {
+	frtHeader.rt = rt_ContinueFrt12;
 	record << frtHeader;
 	for(auto i: rgb)
 		record << i;

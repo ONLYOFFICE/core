@@ -432,7 +432,7 @@ namespace PdfWriter
 		// Fractal part (if there was an integer or not)
 		if (fractalValue != 0 && inFractalLength > 0)
 		{
-			if (!SetOrWriteNibble(0xa,buffer,usedFirst))
+			if (!SetOrWriteNibble(0xa, buffer, usedFirst))
 				return false;
 
 			while (fractalValue != 0 && inFractalLength > 0)
@@ -447,7 +447,7 @@ namespace PdfWriter
 		// now, if there's any exponent, write it
 		if (minusExponent)
 		{
-			if(!SetOrWriteNibble(0xc, buffer, usedFirst))
+			if (!SetOrWriteNibble(0xc, buffer, usedFirst))
 				return false;
 			if (!WriteIntegerOfReal(exponentSize, buffer, usedFirst))
 				return false;
@@ -570,7 +570,7 @@ namespace PdfWriter
 		{
 			bool operator() (const char* left, const char* right) const
 			{
-				return strcmp(left ,right) < 0;
+				return strcmp(left, right) < 0;
 			}
 		};
 		typedef std::map<const char*, unsigned short, StringLess> CharPToUShortMap;
@@ -622,7 +622,7 @@ namespace PdfWriter
 		bool ReadDictOperand(BYTE inFirstByte, DictOperand& outOperand);
 
 		bool ReadHeader();
-		bool ReadIndexHeader(unsigned long** outOffsets,unsigned short& outItemsCount);
+		bool ReadIndexHeader(unsigned long** outOffsets, unsigned short& outItemsCount);
 		bool ReadNameIndex();
 		bool ReadTopDictIndex();
 		bool ReadDict(unsigned long inReadAmount, UShortToDictOperandListMap& outDict);
@@ -705,14 +705,14 @@ namespace PdfWriter
 		RELEASEARRAYOBJECTS(mPrivateDicts);
 
 		LongFilePositionTypeToCharStringsMap::iterator itLocalSubrs = mLocalSubrs.begin();
-		for(; itLocalSubrs != mLocalSubrs.end(); ++itLocalSubrs)
+		for (; itLocalSubrs != mLocalSubrs.end(); ++itLocalSubrs)
 		{
 			delete[] itLocalSubrs->second->mCharStringsIndex;
 			delete itLocalSubrs->second;
 		}
 
 		CharSetInfoVector::iterator itCharSets = mCharSets.begin();
-		for(; itCharSets != mCharSets.end(); ++itCharSets)
+		for (; itCharSets != mCharSets.end(); ++itCharSets)
 		{
 			delete[] (*itCharSets)->mSIDs;
 			(*itCharSets)->mSIDToGlyphMap.clear();
@@ -721,7 +721,7 @@ namespace PdfWriter
 		mCharSets.clear();
 
 		EncodingsInfoVector::iterator itEncodings = mEncodings.begin();
-		for(; itEncodings != mEncodings.end(); ++itEncodings)
+		for (; itEncodings != mEncodings.end(); ++itEncodings)
 		{
 			delete[] (*itEncodings)->mEncoding;
 			delete (*itEncodings);
@@ -1069,7 +1069,7 @@ namespace PdfWriter
 		mStringIndexPosition = mPrimitivesReader->Tell();
 
 		unsigned long* offsets;
-		bool status = ReadIndexHeader(&offsets,mStringsCount);
+		bool status = ReadIndexHeader(&offsets, mStringsCount);
 		if (!status)
 			return false;
 
@@ -1101,7 +1101,7 @@ namespace PdfWriter
 		// failure case, null all the rest of the strings for later delete to not perofrm errors
 		if (!status)
 		{
-			for(; i < mStringsCount; ++i)
+			for (; i < mStringsCount; ++i)
 				mStrings[i] = NULL;
 		}
 
@@ -1262,7 +1262,7 @@ namespace PdfWriter
 				mPrimitivesReader->Seek(inPrivateDict->mPrivateDictStart + subrsPosition, SeekSet);
 				status = ReadSubrsFromIndex(charStrings->mCharStringsCount, &(charStrings->mCharStringsIndex));
 				if (status)
-					it = mLocalSubrs.insert(LongFilePositionTypeToCharStringsMap::value_type(inPrivateDict->mPrivateDictStart + subrsPosition,charStrings)).first;
+					it = mLocalSubrs.insert(LongFilePositionTypeToCharStringsMap::value_type(inPrivateDict->mPrivateDictStart + subrsPosition, charStrings)).first;
 			}
 			inPrivateDict->mLocalSubrs = it->second;
 		}
@@ -1294,7 +1294,7 @@ namespace PdfWriter
 				{
 					BYTE charsetFormat;
 					charSet->mType = eCharSetCustom;
-					mPrimitivesReader->Seek(charsetPosition, SeekSet);
+					mPrimitivesReader->Seek((int)charsetPosition, SeekSet);
 					charsetFormat = mPrimitivesReader->ReadUChar();
 
 					if (0 == charsetFormat)
@@ -1305,7 +1305,7 @@ namespace PdfWriter
 						status = ReadFormat2Charset(isCID, charSet->mSIDToGlyphMap, &charSet->mSIDs, mCharStrings[i]);
 				}
 				mCharSets.push_back(charSet);
-				it = offsetToIndex.insert(LongFilePositionTypeToCharSetInfoMap::value_type(charsetPosition,charSet)).first;
+				it = offsetToIndex.insert(LongFilePositionTypeToCharSetInfoMap::value_type(charsetPosition, charSet)).first;
 			}
 			mTopDictIndex[i].mCharSet = it->second;
 		}
@@ -1328,9 +1328,9 @@ namespace PdfWriter
 			if (it == offsetToEncoding.end())
 			{
 				EncodingsInfo* encoding = new EncodingsInfo();
-				ReadEncoding(encoding,encodingPosition);
+				ReadEncoding(encoding, encodingPosition);
 				mEncodings.push_back(encoding);
-				it = offsetToEncoding.insert(LongFilePositionTypeToEncodingsInfoMap::value_type(encodingPosition,encoding)).first;
+				it = offsetToEncoding.insert(LongFilePositionTypeToEncodingsInfoMap::value_type(encodingPosition, encoding)).first;
 			}
 			mTopDictIndex[i].mEncoding = it->second;
 		}
@@ -1448,7 +1448,7 @@ namespace PdfWriter
 	}
 	bool CCFFReader::ReadFormat1Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
 	{
-		if(!inIsCID)
+		if (!inIsCID)
 			ioGlyphMap.insert(UShortToCharStringMap::value_type(0, inCharStrings.mCharStringsIndex));
 		*inSIDArray = new unsigned short[inCharStrings.mCharStringsCount];
 		(*inSIDArray)[0] = 0;
@@ -1733,7 +1733,7 @@ namespace PdfWriter
 	{
 		// locate local subr and return. also - push it to the dependendecy stack to start calculating dependencies for it
 		// also - record dependency on this subr.
-		unsigned short biasedIndex = GetBiasedIndex(mCurrentLocalSubrs->mCharStringsCount,inSubrIndex);
+		unsigned short biasedIndex = GetBiasedIndex(mCurrentLocalSubrs->mCharStringsCount, inSubrIndex);
 
 		if (biasedIndex < mCurrentLocalSubrs->mCharStringsCount)
 		{
@@ -1754,7 +1754,7 @@ namespace PdfWriter
 	}
 	CharString* CCFFReader::GetGlobalSubr(long inSubrIndex)
 	{
-		unsigned short biasedIndex = GetBiasedIndex(mGlobalSubrs.mCharStringsCount,inSubrIndex);
+		unsigned short biasedIndex = GetBiasedIndex(mGlobalSubrs.mCharStringsCount, inSubrIndex);
 
 		if (biasedIndex < mGlobalSubrs.mCharStringsCount)
 		{
@@ -1996,7 +1996,7 @@ namespace PdfWriter
 		RELEASEARRAYOBJECTS(mLoca);
 		RELEASEARRAYOBJECTS(mGlyf);
 		UShortToGlyphEntryMap::iterator it = mActualGlyphs.begin();
-		for(; it != mActualGlyphs.end(); ++it)
+		for (; it != mActualGlyphs.end(); ++it)
 			RELEASEOBJECT(it->second);
 		mActualGlyphs.clear();
 	}
@@ -2101,7 +2101,7 @@ namespace PdfWriter
 			return false;
 
 		mPrimitivesReader->Seek(mHeaderOffset, SeekSet);
-		unsigned int sfntVersion = mPrimitivesReader->ReadUInt();
+		mPrimitivesReader->ReadUInt(); // sfntVersion
 		mTablesCount = mPrimitivesReader->ReadUShort();
 		// skip the next 6
 		mPrimitivesReader->Seek(6, SeekCur);
@@ -2131,7 +2131,7 @@ namespace PdfWriter
 		{
 			// mgubi: a TrueType composite font, just get to the right face table
 			// for the format see http://www.microsoft.com/typography/otspec/otff.htm
-			unsigned int ttcVersion = mPrimitivesReader->ReadUInt();
+			mPrimitivesReader->ReadUInt(); // ttcVersion
 			unsigned int numFonts   = mPrimitivesReader->ReadUInt();
 
 			if (mFaceIndex >= numFonts)
@@ -2166,12 +2166,13 @@ namespace PdfWriter
 		// see: https://developer.apple.com/legacy/mac/library/documentation/mac/pdf/MoreMacintoshToolbox.pdf
 
 		unsigned int rdata_pos, map_pos, rdata_len, map_offset;
+		(void) rdata_len;
 		// verify that the header is composed as expected
 		BYTE head[16], head2[16];
 
 		mPrimitivesReader->Seek(mHeaderOffset, SeekSet);
 
-		for (unsigned short i = 0; i < 16; i++)
+		for (unsigned short i = 0; i < 16; ++i)
 			head[i] = mPrimitivesReader->ReadUChar();
 
 		if (mPrimitivesReader->IsEof())
@@ -2183,7 +2184,7 @@ namespace PdfWriter
 
 		mPrimitivesReader->Seek(map_pos, SeekSet);
 
-		for (unsigned short i = 0; i < 16; i++)
+		for (unsigned short i = 0; i < 16; ++i)
 			head2[i] = mPrimitivesReader->ReadUChar();
 		if (mPrimitivesReader->IsEof())
 			return false;
@@ -2236,22 +2237,22 @@ namespace PdfWriter
 
 				for (int j = 0; j < subcnt + 1 && !mPrimitivesReader->IsEof(); ++j )
 				{
-					unsigned short res_id, res_name;
-					unsigned int temp, mbz, res_offset;
+					unsigned short res_id;
+					unsigned int temp, res_offset;
 					res_id = mPrimitivesReader->ReadUShort();
 					if (mPrimitivesReader->IsEof())
 						break;
-					res_name = mPrimitivesReader->ReadUShort();
+					mPrimitivesReader->ReadUShort(); // res_name
 					if (mPrimitivesReader->IsEof())
 						break;
 					temp = mPrimitivesReader->ReadUInt();
 					if (mPrimitivesReader->IsEof())
 						break;
-					mbz = mPrimitivesReader->ReadUInt();
+					mPrimitivesReader->ReadUInt(); // mbz
 					if (mPrimitivesReader->IsEof())
 						break;
 					res_offset = temp & 0xFFFFFFL;
-					resOffsetsMap.insert(std::pair<unsigned short, unsigned long>(res_id,rdata_pos + res_offset));
+					resOffsetsMap.insert(std::pair<unsigned short, unsigned long>(res_id, rdata_pos + res_offset));
 				}
 				if (mPrimitivesReader->IsEof())
 					break;
@@ -2292,13 +2293,13 @@ namespace PdfWriter
 		BYTE buffer[4];
 		unsigned short i = 0;
 
-		for(; i < strlen(inTagName); ++i)
+		for (; i < strlen(inTagName); ++i)
 			buffer[i] = (BYTE)inTagName[i];
-		for(; i < 4; ++i)
+		for (; i < 4; ++i)
 			buffer[i] = 0x20;
 
-		return	((unsigned long)buffer[0] << 24) + ((unsigned long)buffer[1] << 16) +
-				((unsigned long)buffer[2] << 8) + buffer[3];
+		return ((unsigned long)buffer[0] << 24) + ((unsigned long)buffer[1] << 16) +
+			   ((unsigned long)buffer[2] << 8) + buffer[3];
 	}
 	bool COpenTypeReader::ReadHead()
 	{
@@ -2394,13 +2395,13 @@ namespace PdfWriter
 		mHMtx = new HMtxTableEntry[mMaxp.NumGlyphs];
 
 		unsigned int i = 0;
-		for(; i < mHHea.NumberOfHMetrics; ++i)
+		for (; i < mHHea.NumberOfHMetrics; ++i)
 		{
 			mHMtx[i].AdvanceWidth    = mPrimitivesReader->ReadUShort();
 			mHMtx[i].LeftSideBearing = mPrimitivesReader->ReadUShort();
 		}
 
-		for(; i < mMaxp.NumGlyphs; ++i)
+		for (; i < mMaxp.NumGlyphs; ++i)
 		{
 			mHMtx[i].AdvanceWidth = mHMtx[mHHea.NumberOfHMetrics - 1].AdvanceWidth;
 			mHMtx[i].LeftSideBearing = mPrimitivesReader->ReadUShort();
@@ -3120,7 +3121,7 @@ namespace PdfWriter
 	BYTE* CharStringType2Interpreter::InterpretRRCurveto(BYTE* inProgramCounter, long long)
 	{
 		bool status = mImplementationHelper->Type2RRCurveto(mOperandStack);
-		if(!status)
+		if (!status)
 			return NULL;
 
 		ClearStack();
@@ -3138,7 +3139,7 @@ namespace PdfWriter
 		if (aCharString != NULL)
 		{
 			BYTE* charString = NULL;
-			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition,aCharString->mEndPosition, &charString);
+			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition, aCharString->mEndPosition, &charString);
 			if (!status)
 			{
 				delete charString;
@@ -3159,8 +3160,7 @@ namespace PdfWriter
 			delete charString;
 			if (!status)
 				return NULL;
-			else
-				return inProgramCounter;
+			return inProgramCounter;
 		}
 		return NULL;
 	}
@@ -3201,7 +3201,7 @@ namespace PdfWriter
 		if (!status)
 			return NULL;
 
-		status = mImplementationHelper->Type2Hintmask(mOperandStack,inProgramCounter, inReadLimit);
+		status = mImplementationHelper->Type2Hintmask(mOperandStack, inProgramCounter, inReadLimit);
 		if (!status)
 			return NULL;
 
@@ -3225,7 +3225,7 @@ namespace PdfWriter
 		long long programCounterStemReadSize = (mStemsCount / 8 + (mStemsCount % 8 != 0 ? 1 : 0));
 		if (programCounterStemReadSize > inReadLimit)
 			return NULL;
-		return inProgramCounter+programCounterStemReadSize;
+		return inProgramCounter + programCounterStemReadSize;
 	}
 	BYTE* CharStringType2Interpreter::InterpretRMoveto(BYTE* inProgramCounter, long long)
 	{
@@ -3306,7 +3306,7 @@ namespace PdfWriter
 		if (aCharString != NULL)
 		{
 			BYTE* charString = NULL;
-			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition,aCharString->mEndPosition,&charString);
+			bool status = mImplementationHelper->ReadCharString(aCharString->mStartPosition, aCharString->mEndPosition, &charString);
 			if (!status)
 			{
 				delete charString;
@@ -3321,7 +3321,7 @@ namespace PdfWriter
 				return NULL;
 			}
 
-			status = ProcessCharString(charString,aCharString->mEndPosition - aCharString->mStartPosition);
+			status = ProcessCharString(charString, aCharString->mEndPosition - aCharString->mStartPosition);
 			--mSubrsNesting;
 
 			delete charString;
@@ -3644,7 +3644,7 @@ namespace PdfWriter
 		mOperandStack.pop_back();
 		long index = (value.IsInteger ? value.IntegerValue : (long)value.RealValue);
 
-		if((mStorage.size() > (unsigned long)index) && (index >= 0))
+		if ((mStorage.size() > (unsigned long)index) && (index >= 0))
 		{
 			mOperandStack.push_back(mStorage[index]);
 			return inProgramCounter;
@@ -4000,7 +4000,7 @@ namespace PdfWriter
 		if (!status)
 			return false;
 
-		CharString* charString = inCFFFileInput->GetGlyphCharString(inFontIndex,inGlyphIndex);
+		CharString* charString = inCFFFileInput->GetGlyphCharString(inFontIndex, inGlyphIndex);
 		if (!charString)
 			return false;
 
@@ -4035,7 +4035,7 @@ namespace PdfWriter
 		CharStringOperandList::iterator it = mOperandsToWrite.begin();
 		bool status = true;
 
-		for(; it != mOperandsToWrite.end() && status; ++it)
+		for (; it != mOperandsToWrite.end() && status; ++it)
 			status = WriteCharStringOperand(*it);
 		if (status)
 			status = WriteCharStringOperator(inOperatorCode);
@@ -4362,12 +4362,12 @@ namespace PdfWriter
 		std::string mOptionalEmbeddedPostscript;
 		unsigned short mSubsetFontGlyphsCount;
 
-		long long mCharsetPlaceHolderPosition;
-		long long mEncodingPlaceHolderPosition;
-		long long mCharstringsPlaceHolderPosition;
-		long long mPrivatePlaceHolderPosition;
-		long long mFDArrayPlaceHolderPosition;
-		long long mFDSelectPlaceHolderPosition;
+		int mCharsetPlaceHolderPosition;
+		int mEncodingPlaceHolderPosition;
+		int mCharstringsPlaceHolderPosition;
+		int mPrivatePlaceHolderPosition;
+		int mFDArrayPlaceHolderPosition;
+		int mFDSelectPlaceHolderPosition;
 
 		long long mEncodingPosition;
 		long long mCharsetPosition;
@@ -4396,7 +4396,7 @@ namespace PdfWriter
 		bool WriteFDSelect(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes);
 		bool WriteCharStrings(const std::vector<unsigned int>& inSubsetGlyphIDs);
 		bool WritePrivateDictionary();
-		bool WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition);
+		void WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition);
 		bool WriteFDArray(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes);
 		bool UpdateIndexesAtTopDict();
 	};
@@ -4411,7 +4411,6 @@ namespace PdfWriter
 	bool CCFFWriter::CreateCFFSubset(BYTE* pFile, unsigned int nLen, unsigned short unFontIndex, const std::string& inSubsetFontName, CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount)
 	{
 		mFile = pFile;
-		bool outNotEmbedded = true;
 
 		bool status = mOpenTypeInput.ReadOpenTypeFile(pFile, nLen, unFontIndex);
 		if (!status)
@@ -4422,12 +4421,7 @@ namespace PdfWriter
 
 		// see if font may be embedded
 		if (mOpenTypeInput.mOS2Exists && !FSType::CanEmbed(mOpenTypeInput.mOS2.fsType))
-		{
-			outNotEmbedded = true;
 			return true;
-		}
-		else
-			outNotEmbedded = false;
 
 		std::vector<unsigned int> subsetGlyphIDs;
 		for (unsigned long i = 0; i < unCodesCount; ++i)
@@ -4582,7 +4576,7 @@ namespace PdfWriter
 
 		topDictSegment->Seek(0, SeekSet);
 
-		long long topDictDataOffset = mFontFileStream->Tell();
+		int topDictDataOffset = mFontFileStream->Tell();
 
 		// Write data
 		mFontFileStream->WriteStream(topDictSegment, 0, NULL);
@@ -4758,11 +4752,11 @@ namespace PdfWriter
 				unsigned short sid = mOpenTypeInput.mCFF.GetGlyphSID(0, *it);
 
 				UShortToByteList::iterator itSupplements = encodingInfo->mSupplements.find(sid);
-				if(itSupplements != encodingInfo->mSupplements.end())
+				if (itSupplements != encodingInfo->mSupplements.end())
 				{
 					ByteList::iterator itMoreEncoding = itSupplements->second.begin();
-					for(; itMoreEncoding != itSupplements->second.end(); ++itMoreEncoding)
-						supplements.push_back(ByteAndUShort(*itMoreEncoding,sid));
+					for (; itMoreEncoding != itSupplements->second.end(); ++itMoreEncoding)
+						supplements.push_back(ByteAndUShort(*itMoreEncoding, sid));
 				}
 			}
 
@@ -4775,7 +4769,7 @@ namespace PdfWriter
 
 			// assuming that 0 is in the subset glyphs IDs, which does not require encoding
 			// get the encodings count
-			BYTE encodingGlyphsCount = std::min((BYTE)(inSubsetGlyphIDs.size() - 1),encodingInfo->mEncodingsCount);
+			BYTE encodingGlyphsCount = std::min((BYTE)(inSubsetGlyphIDs.size() - 1), encodingInfo->mEncodingsCount);
 
 			mPrimitivesWriter->WriteCard8(encodingGlyphsCount);
 			for (BYTE i = 0; i < encodingGlyphsCount; ++i)
@@ -4940,7 +4934,7 @@ namespace PdfWriter
 	{
 		return WritePrivateDictionaryBody(mOpenTypeInput.mCFF.mPrivateDicts[0], mPrivateSize, mPrivatePosition);
 	}
-	bool CCFFWriter::WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition)
+	void CCFFWriter::WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition)
 	{
 		// just copy the private dict, without the subrs reference
 		if (inPrivateDictionary.mPrivateDictStart != 0)
@@ -4949,17 +4943,16 @@ namespace PdfWriter
 
 			outWritePosition = mFontFileStream->Tell();
 			for (; it != inPrivateDictionary.mPrivateDict.end(); ++it)
-				if(it->first != scSubrs) // should get me a nice little pattern for this some time..a filter thing
+				if (it->first != scSubrs) // should get me a nice little pattern for this some time..a filter thing
 					mPrimitivesWriter->WriteDictItems(it->first, it->second);
 
 			outWriteSize = mFontFileStream->Tell() - outWritePosition;
-			return true;
+			return;
 		}
 		outWritePosition = 0;
 		outWriteSize = 0;
-		return true;
 	}
-	bool CCFFWriter::WriteFDArray(const std::vector<unsigned int>& inSubsetGlyphIDs, const FontDictInfoToByteMap& inNewFontDictsIndexes)
+	bool CCFFWriter::WriteFDArray(const std::vector<unsigned int>&, const FontDictInfoToByteMap& inNewFontDictsIndexes)
 	{
 		// loop the glyphs IDs, for each get their respective dictionary. put them in a set.
 		// now itereate them, and write each private dictionary [no need for index]. save the private dictionary position.
@@ -4974,21 +4967,19 @@ namespace PdfWriter
 		{
 			// if no valid font infos, write an empty index and finish
 			mFDArrayPosition = mFontFileStream->Tell();
-			status = mPrimitivesWriter->WriteCard16(0);
-			return status;
+			mPrimitivesWriter->WriteCard16(0);
+			return true;
 		}
 
 		// loop the font infos, and write the private dictionaries
 		long long privatePosition, privateSize;
 		FontDictInfoToByteMap::const_iterator itFontInfos = inNewFontDictsIndexes.begin();
-		for (; itFontInfos != inNewFontDictsIndexes.end() && status; ++itFontInfos)
+		for (; itFontInfos != inNewFontDictsIndexes.end(); ++itFontInfos)
 		{
-			status = WritePrivateDictionaryBody(itFontInfos->first->mPrivateDict, privateSize, privatePosition);
+			WritePrivateDictionaryBody(itFontInfos->first->mPrivateDict, privateSize, privatePosition);
 			privateDictionaries.insert(
 				FontDictInfoToLongFilePositionTypePairMap::value_type(itFontInfos->first, LongFilePositionTypePair(privateSize, privatePosition)));
 		}
-		if (!status)
-			return false;
 
 		// write FDArray segment
 		offsets = new unsigned long[inNewFontDictsIndexes.size() + 1];
@@ -5004,7 +4995,7 @@ namespace PdfWriter
 
 			for (; itDict != itFontInfos->first->mFontDict.end() && status; ++itDict)
 				if (itDict->first != scPrivate) // should get me a nice little pattern for this some time..a filter thing
-					status = fontDictPrimitiveWriter.WriteDictItems(itDict->first,itDict->second);
+					status = fontDictPrimitiveWriter.WriteDictItems(itDict->first, itDict->second);
 
 			// now add the private key
 			if (status && privateDictionaries[itFontInfos->first].first != 0)
@@ -5073,7 +5064,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CFontFileTrueType
 	//----------------------------------------------------------------------------------------
-	void CFontFileTrueType::WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount, unsigned char* pUseGlyfs, long lGlyfsCount)
+	void CFontFileTrueType::WriteCIDFontType0C(CStream* pOutputStream, unsigned short* pCodeToGID, unsigned int unCodesCount)
 	{
 		if (!m_bOpenTypeCFF)
 		{

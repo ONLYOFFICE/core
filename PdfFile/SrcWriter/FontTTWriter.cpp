@@ -377,7 +377,7 @@ namespace PdfWriter
 		// Записываем OpenType шрифт не меняя его
 		if (m_bOpenTypeCFF)
 		{
-			WriteCIDFontType0C(pOutputStream, pCodeToGID, unCodesCount, pUseGlyfs, lGlyfsCount);
+			WriteCIDFontType0C(pOutputStream, pCodeToGID, unCodesCount);
 			return;
 		}
 

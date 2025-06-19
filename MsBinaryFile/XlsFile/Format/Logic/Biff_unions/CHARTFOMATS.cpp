@@ -314,6 +314,9 @@ const bool CHARTFORMATS::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_ShtProps);
 	else
 		proc.mandatory<ShtProps>();
+	for(auto i : m_arDFTTEXT)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_AxesUsed != nullptr)
 		proc.mandatory(*m_AxesUsed);
 	else

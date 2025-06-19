@@ -332,6 +332,17 @@ const bool CRT::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_DROPBAR[0]);
 	if(m_DROPBAR[1] != nullptr)
 		proc.mandatory(*m_DROPBAR[1]);
+	for(auto i : m_arCrtLine)
+	{
+		if(i != nullptr)
+			proc.mandatory(*i);
+		auto castedPtr = static_cast<CrtLine*>(i.get());
+		if(castedPtr->m_LineFormat != nullptr)
+			proc.mandatory(*(castedPtr->m_LineFormat));
+	}
+	for(auto i : m_arDFTTEXT)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_DataLabExtContents != nullptr)
 		proc.mandatory(*m_DataLabExtContents);
 	if(m_SS!= nullptr)

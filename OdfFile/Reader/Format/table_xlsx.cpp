@@ -548,7 +548,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 							bool set_default = false;
 							if (columnsRepeated > 100) set_default = true;
 
-							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
+							size_t style_ = Context.get_style_manager().xfId(NULL, NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
 
 							//if (set_default)
 							//	CP_XML_ATTR(L"style", style_ );

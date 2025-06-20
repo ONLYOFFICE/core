@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
-	bool fMTREnabled;
-	bool fUserSetThreadCount;
+	bool fMTREnabled = false;
+	bool fUserSetThreadCount = false;
 	
-	_UINT32	cUserThreadCount;
+	_UINT32	cUserThreadCount = 0;
 
 };
 

@@ -50,22 +50,6 @@
 
 namespace PdfWriter
 {
-	struct TrueTypeTable
-	{
-		unsigned int unTag;
-		unsigned int unChecksum;
-		int          nOffset;
-		int          nOrigOffset;
-		int          nLen;
-	};
-	struct TrueTypeCmap
-	{
-		int nPlatform;
-		int nEncoding;
-		int nOffset;
-		int nLen;
-		int nFormat;
-	};
 	struct TrueTypeLoca
 	{
 		int nIndex;
@@ -393,7 +377,7 @@ namespace PdfWriter
 		// Записываем OpenType шрифт не меняя его
 		if (m_bOpenTypeCFF)
 		{
-			WriteOTF(pOutputStream, sName, pCodeToGID);
+			WriteCIDFontType0C(pOutputStream, pCodeToGID, unCodesCount);
 			return;
 		}
 
@@ -1051,6 +1035,8 @@ namespace PdfWriter
 	{
 		return m_nWeight;
 	}
+	bool CFontFileTrueType::GetOpenTypeCFF() { return m_bOpenTypeCFF; }
+	void CFontFileTrueType::SetName(const std::string& sName) { m_sName = sName; }
 	unsigned int CFontFileTrueType::ComputeTableChecksum(unsigned char *sData, int nLength)
 	{
 		unsigned int nWord = 0;
@@ -1124,9 +1110,7 @@ namespace PdfWriter
 			m_pTables[nIndex].nOffset = (int)GetU32BE(nPos + 8, &m_bSuccess);
 			m_pTables[nIndex].nLen = (int)GetU32BE(nPos + 12, &m_bSuccess);
 			if (m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen < m_pTables[nIndex].nOffset || m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen > m_nLen)
-			{
 				m_bSuccess = false;
-			}
 			nPos += 16;
 		}
 		if (!m_bSuccess)

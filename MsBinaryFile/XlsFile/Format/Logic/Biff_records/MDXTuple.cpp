@@ -62,5 +62,24 @@ void MDXTuple::readFields(CFRecord& record)
 	}
 }
 
+void MDXTuple::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDXTuple;
+	record << frtHeader << istrConnName << tfnSrc << cistr;
+	const auto maxElemCount = 2050;
+	if(rgistr.size() < maxElemCount)
+	{
+		for(auto i : rgistr)
+			if(i != nullptr)
+				record << *i;
+	}
+	else
+	{
+		for(auto i = 0; i < maxElemCount; i++)
+			if(rgistr[i] != nullptr)
+				record << *rgistr[i];
+	}
+}
+
 } // namespace XLS
 

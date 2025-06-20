@@ -715,6 +715,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		for(auto i : m_arBUNDLESHEET)
 			if(i != nullptr)
 				proc.mandatory(*i);
+	if(m_METADATA != nullptr)
+		proc.mandatory(*m_METADATA);
 	if(m_MTRSettings != nullptr)
 		proc.mandatory(*m_MTRSettings);
 	if(m_Country != nullptr)

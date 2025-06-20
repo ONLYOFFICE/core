@@ -47,9 +47,9 @@ public:
 	static const ElementType	type = typeMDXStrIndex;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-
-	_UINT32 index;
+	_UINT32 index = 0;
 };
 
 typedef boost::shared_ptr<MDXStrIndex> MDXStrIndexPtr;

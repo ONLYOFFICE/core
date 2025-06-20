@@ -139,7 +139,7 @@ namespace PdfWriter
 		bool IsInteger;
 		long IntegerValue;
 		double RealValue;
-		long RealValueFractalEnd; // this fellow is here for writing, due to double being terribly inexact.
+		long RealValueFractalEnd;
 	};
 	typedef std::list<DictOperand> DictOperandList;
 	typedef std::map<unsigned short, DictOperandList> UShortToDictOperandListMap;
@@ -386,7 +386,7 @@ namespace PdfWriter
 
 		if (0 == fractalValue)
 		{
-			if (long(integerValue) % 1000 == 0 && integerValue >= 1000) // bother only if larger than 1000
+			if (long(integerValue) % 1000 == 0 && integerValue >= 1000) // bother only if > 1000
 			{
 				plusExponent = true;
 				while (long(integerValue) % 10 == 0)
@@ -4932,7 +4932,8 @@ namespace PdfWriter
 	}
 	bool CCFFWriter::WritePrivateDictionary()
 	{
-		return WritePrivateDictionaryBody(mOpenTypeInput.mCFF.mPrivateDicts[0], mPrivateSize, mPrivatePosition);
+		WritePrivateDictionaryBody(mOpenTypeInput.mCFF.mPrivateDicts[0], mPrivateSize, mPrivatePosition);
+		return true;
 	}
 	void CCFFWriter::WritePrivateDictionaryBody(const PrivateDictInfo& inPrivateDictionary, long long& outWriteSize, long long& outWritePosition)
 	{

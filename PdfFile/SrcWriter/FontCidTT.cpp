@@ -318,6 +318,7 @@ namespace PdfWriter
 			}
 			else
 			{
+				m_pFont->Add("DW", pWidths[0]);
 				m_pFontFileDict->Add("Subtype", "CIDFontType0C");
 			}
 

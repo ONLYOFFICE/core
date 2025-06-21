@@ -81,6 +81,7 @@
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../../DocxFormat/Logic/Paragraph.h"
 
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../XlsxFormat/Slicer/SlicerCache.h"
@@ -7465,6 +7466,7 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	std::wstring strStrokeAttr;
 	std::wstring strFillNode;
 	std::wstring strStrokeNode;
+	std::wstring strText;
 
 	smart_ptr<PPTX::Logic::Shape> oShape;
 
@@ -7503,12 +7505,17 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	strXmlShapeControl += strStrokeNode;
 
 	strXmlShapeControl += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
-	
-	if (pControl->m_oFormControlPr->m_oText.IsInit())
+
+	if (oShape->txBody.IsInit())
+	{
+		strXmlShapeControl += oShape->txBody->toVML();
+	}
+	else if (pControl->m_oFormControlPr->m_oText.IsInit())
 	{
 		OOX::Vml::CTextbox oTextbox;
-
+		oTextbox.m_oTxtbxContent.Init();
 		oTextbox.m_oText = pControl->m_oFormControlPr->m_oText;
+		
 		strXmlShapeControl += oTextbox.toXML();
 	}
 

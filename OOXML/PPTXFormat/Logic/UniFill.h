@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_UNIFILL_INCLUDE_H_
-#define PPTX_LOGIC_UNIFILL_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Fills/BlipFill.h"
@@ -70,15 +68,13 @@ namespace PPTX
 			const UniFill& operator+=(const UniFill& fill);
 			void Merge(UniFill& fill) const;
 
-			smart_ptr<WrapperWritingElement>	Fill;
+			smart_ptr<WrapperWritingElement> Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
-			Type								m_type;
-			std::wstring						m_namespace;
+			Type m_type;
+			std::wstring m_namespace;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_UNIFILL_INCLUDE_H

@@ -732,6 +732,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_ExtSST);
 	else
 		proc.mandatory<ExtSST>();
+	if(m_THEME != nullptr)
+		proc.mandatory(*m_THEME);
 	proc.mandatory<EOF_T>();
 	return true;
 }

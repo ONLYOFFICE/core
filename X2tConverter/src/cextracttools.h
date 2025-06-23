@@ -965,6 +965,14 @@ namespace NExtractTools
 					if (nFormatFrom != FileFormatChecker.nFileType && FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
+						bool bOFormAsPdf = nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF && 
+							NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_oformAsPdf) && 
+							NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_oformAsPdf);
+						if (bOFormAsPdf)
+						{
+							nFormatFrom = AVS_OFFICESTUDIO_FILE_DOCUMENT_CROSSPLATFORM_PDF;
+						}
+						
 						*m_nFormatFrom = nFormatFrom;
 						
 						 changeFormatFromPrev(nFormatFrom); 

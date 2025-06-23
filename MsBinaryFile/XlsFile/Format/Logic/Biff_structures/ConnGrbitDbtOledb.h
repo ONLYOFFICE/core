@@ -48,17 +48,18 @@ public:
 	static const ElementType type = typeConnGrbitDbtOledb;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned char	dbost;
-	bool			fLocalConn;
-	bool			fNoRefreshCube;
-	bool			fUseOfficeLcid;
-	bool			fSrvFmtNum;
-	bool			fSrvFmtBack;
-	bool			fSrvFmtFore;
-	bool			fSrvFmtFlags;
-	bool			fSupportsLangCellProp;
-	bool			fSrvSupportsClientCube;
+	unsigned char	dbost = 0;
+	bool			fLocalConn = false;
+	bool			fNoRefreshCube = false;
+	bool			fUseOfficeLcid = false;
+	bool			fSrvFmtNum = false;
+	bool			fSrvFmtBack = false;
+	bool			fSrvFmtFore = false;
+	bool			fSrvFmtFlags = false;
+	bool			fSupportsLangCellProp = false;
+	bool			fSrvSupportsClientCube = false;
 };
 
 } // namespace XLS

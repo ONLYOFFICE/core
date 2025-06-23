@@ -319,10 +319,11 @@ public:
 	
 	virtual void load(CFRecord& record);
 	virtual void load(IBinaryReader* reader);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeStringSegmented;
 
-	_UINT32						cchTotal;
+	_UINT32						cchTotal = 0;
 	std::vector<std::wstring>	arStrings;
 	std::wstring				strTotal;
 };

@@ -734,6 +734,9 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory<ExtSST>();
 	if(m_BookExt != nullptr)
 		proc.mandatory(*m_BookExt);
+	for(auto i : m_arDConn)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_THEME != nullptr)
 		proc.mandatory(*m_THEME);
 	proc.mandatory<EOF_T>();

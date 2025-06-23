@@ -49,6 +49,13 @@ void BookExt_Conditional11::load(CFRecord& record)
 	fShowInkAnnotation = GETBIT(flags, 1);
 }
 
+void BookExt_Conditional11::save(CFRecord& record)
+{
+	unsigned char flags = 0;
+	SETBIT(flags, 0, fBuggedUserAboutSolution)
+	SETBIT(flags, 1, fShowInkAnnotation)
+	record << flags;
+}
 
 } // namespace XLS
 

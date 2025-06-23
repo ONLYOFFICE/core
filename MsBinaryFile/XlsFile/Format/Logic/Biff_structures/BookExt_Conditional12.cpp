@@ -49,6 +49,14 @@ void BookExt_Conditional12::load(CFRecord& record)
 	fShowPivotChartFilter = GETBIT(flags, 2);
 }
 
+void BookExt_Conditional12::save(CFRecord& record)
+{
+	unsigned char flags = 0;
+	SETBIT(flags, 1, fPublishedBookItems)
+	SETBIT(flags, 2, fShowPivotChartFilter)
+	record << flags;
+}
+
 
 } // namespace XLS
 

@@ -64,7 +64,7 @@ namespace OdfCustomShape
 			CElement* pElement = SMCustomShapePars::ParseElement(pReader);
 			if(pElement != nullptr)
 			{
-				if(pElement->GetBaseType() == TypeElement::ArithmeticOperation && !arVec.empty())
+				if(pElement->GetBaseType() == TypeElement::ArithmeticOperation && !arVec.empty() && arVec.back()->GetBaseType() != TypeElement::comma)
 				{
 					CElementArithmeticOperations* pSign = static_cast<CElementArithmeticOperations*>(pElement);
 					pSign->SetFirstValue(arVec.back());

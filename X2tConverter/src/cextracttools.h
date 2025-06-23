@@ -970,7 +970,7 @@ namespace NExtractTools
 							NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_oformAsPdf);
 						if (bOFormAsPdf)
 						{
-							nFormatFrom = AVS_OFFICESTUDIO_FILE_DOCUMENT_CROSSPLATFORM_PDF;
+							nFormatFrom = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
 						}
 						
 						*m_nFormatFrom = nFormatFrom;

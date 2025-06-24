@@ -7506,7 +7506,7 @@ void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 
 	strXmlShapeControl += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
 
-	if (oShape->txBody.IsInit())
+	if (oShape.IsInit() && oShape->txBody.IsInit())
 	{
 		strXmlShapeControl += oShape->txBody->toVML();
 	}

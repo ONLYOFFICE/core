@@ -100,6 +100,21 @@ const bool QUERYTABLE::loadContent(BinProcessor& proc)
 
 	return true;
 }
+
+const bool QUERYTABLE::saveContent(BinProcessor& proc)
+{
+	if(m_Qsi == nullptr)
+		return false;
+	proc.mandatory(*m_Qsi);
+	if(m_DBQUERY != nullptr)
+		proc.mandatory(*m_DBQUERY);
+	if(m_QsiSXTag != nullptr)
+		proc.mandatory(*m_QsiSXTag);
+	if(m_DBQUERYEXT != nullptr)
+		proc.mandatory(*m_DBQUERYEXT);
+	return true;
+}
+
 int QUERYTABLE::serialize(std::wostream & strm)
 {
 	Qsi *info = dynamic_cast<Qsi*>(m_Qsi.get());

@@ -808,6 +808,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
     if(m_LRng != nullptr)
         proc.mandatory(*m_LRng);
+	for(auto i : m_arQUERYTABLE)
+		if(i != nullptr)
+			proc.mandatory(*i);
     if(m_CONDFMTS != nullptr)
         proc.mandatory(*m_CONDFMTS);
     for(auto i : m_arHLINK)

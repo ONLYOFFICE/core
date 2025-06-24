@@ -1033,7 +1033,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			xlsx_value_type = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 		}		
 //---------------------------------------------------------------------------------------------------------			
-		if (skip_next_cell) break;
+		if (skip_next_cell)
+		{
+			Context.end_table_cell();
+			break;
+		}
 	
 	// пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))

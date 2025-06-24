@@ -67,7 +67,7 @@ TEST(OOXml2OdfTest,MTextHard)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mn>20</mn><mspace /><mrow><mn>2</mn><mo stretchy=\"false\">+</mo><mn>3</mn></mrow>";
+	StCorrect.m_wsSemantic = L"<mn>20</mn><mspace width=\"0.5em\" /><mrow><mn>2</mn><mo stretchy=\"false\">+</mo><mn>3</mn></mrow>";
 	StCorrect.m_wsAnnotation = L"20 ` 2 + 3 ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -82,7 +82,7 @@ TEST(OOXml2OdfTest,MTextHardAttribute)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mstyle mathcolor=\"red\"><mn>20</mn></mstyle><mspace /><mstyle mathcolor=\"#ED7D31\"><mn>2</mn></mstyle><mrow><mstyle mathcolor=\"#70AD47\"><mo stretchy=\"false\">-</mo><mstyle mathcolor=\"#1F4E79\"><mn>3</mn></mstyle></mstyle></mrow>";
+	StCorrect.m_wsSemantic = L"<mstyle mathcolor=\"red\"><mn>20</mn></mstyle><mspace width=\"0.5em\" /><mstyle mathcolor=\"#ED7D31\"><mn>2</mn></mstyle><mrow><mstyle mathcolor=\"#70AD47\"><mo stretchy=\"false\">-</mo><mstyle mathcolor=\"#1F4E79\"><mn>3</mn></mstyle></mstyle></mrow>";
 	StCorrect.m_wsAnnotation = L"color red 20 ` color hex ED7D31 2 color hex 70AD47 - color hex 1F4E79 3 ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -97,7 +97,7 @@ TEST(OOXml2OdfTest,FractionOver)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mfrac><mn>1</mn><mn>2</mn></mfrac>";
+	StCorrect.m_wsSemantic = L"<mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac>";
 	StCorrect.m_wsAnnotation = L"{ 1 } over { 2 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -112,7 +112,7 @@ TEST(OOXml2OdfTest,FractionWideslash)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mfrac bevelled=\"true\"><mn>1</mn><mn>2</mn></mfrac>";
+	StCorrect.m_wsSemantic = L"<mfrac bevelled=\"true\"><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac>";
 	StCorrect.m_wsAnnotation = L"{ 1 } wideslash { 2 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -142,7 +142,7 @@ TEST(OOXml2OdfTest,Delimiter)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />[<mrow><mrow><mn>2</mn><mo stretchy=\"false\">-</mo><mn>3</mn></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />]</mrow>";
+	StCorrect.m_wsSemantic = L"<mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">[</mo><mrow><mrow><mn>2</mn><mo stretchy=\"false\">-</mo><mn>3</mn></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">]</mo></mrow>";
 	StCorrect.m_wsAnnotation = L"left [ 2 - 3 right ] ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -247,7 +247,7 @@ TEST(OOXml2OdfTest,Box)
 	StMath StCorrect,StResult;
 	StResult.m_wsSemantic = oTest.GetOdf();
 	StResult.m_wsAnnotation = oTest.GetAnnotation();
-	StCorrect.m_wsSemantic = L"<mfrac><mn>1</mn><mn>2</mn></mfrac>";
+	StCorrect.m_wsSemantic = L"<mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac>";
 	StCorrect.m_wsAnnotation = L"{ 1 } over { 2 } ";
 	EXPECT_EQ(StResult,StCorrect);
 }
@@ -439,7 +439,7 @@ TEST(OOXml2OdfTest,Example2)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>x</mtext><mo stretchy=\"false\">=</mo></mrow><mfrac><mrow><mrow><mo stretchy=\"false\">-</mo><mtext>b</mtext></mrow><mo stretchy=\"false\">\xB1</mo></mrow><sqrt><msup><mtext>b</mtext><mn>2</mn></msup><mrow><mo stretchy=\"false\">-</mo><mn>4</mn></mrow><mtext>ac</mtext></sqrt><mn>2a</mn></mfrac></mrow><annotation encoding=\"StarMath 5.0\">&quot;x&quot; =  { - &quot;b&quot; +- sqrt { &quot;b&quot; ^ {2 } - 4 &quot;ac&quot; } } over { 2a } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>x</mtext><mo stretchy=\"false\">=</mo></mrow><mfrac><mrow><mrow><mrow><mo stretchy=\"false\">-</mo><mtext>b</mtext></mrow><mo stretchy=\"false\">\xB1</mo></mrow><msqrt><msup><mtext>b</mtext><mn>2</mn></msup><mrow><mo stretchy=\"false\">-</mo><mn>4</mn></mrow><mtext>ac</mtext></msqrt></mrow><mrow><mn>2a</mn></mrow></mfrac></mrow><annotation encoding=\"StarMath 5.0\">&quot;x&quot; =  { - &quot;b&quot; +- sqrt { &quot;b&quot; ^ {2 } - 4 &quot;ac&quot; } } over { 2a } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Example1)
@@ -450,7 +450,7 @@ TEST(OOXml2OdfTest,Example1)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msup><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mtext>x</mtext><mo stretchy=\"false\">+</mo><mtext>a</mtext></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow><mtext>n</mtext></msup><mtext>=</mtext><munderover><mo stretchy=\"false\">\x2211</mo><mrow><mtext>k</mtext><mo stretchy=\"false\">=</mo><mn>0</mn></mrow><mtext>n</mtext></munderover><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mtable><mtr><mtd><mtext>n</mtext></mtd></mtr><mtr><mtd><mtext>k</mtext></mtd></mtr></mtable></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow><msup><mtext>x</mtext><mtext>k</mtext></msup><msup><mtext>a</mtext><mrow><mtext>n</mtext><mo stretchy=\"false\">-</mo><mtext>k</mtext></mrow></msup></mrow><annotation encoding=\"StarMath 5.0\">left ( &quot;x&quot; + &quot;a&quot; right ) ^ {&quot;n&quot; } &quot;=&quot; sum from {&quot;k&quot; =  0 } to {&quot;n&quot; } left ( binom { &quot;n&quot; } { &quot;k&quot; } right ) &quot;x&quot; ^ {&quot;k&quot; } &quot;a&quot; ^ {&quot;n&quot; - &quot;k&quot; } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><msup><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mrow><mtext>x</mtext><mo stretchy=\"false\">+</mo><mtext>a</mtext></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow><mtext>n</mtext></msup><mtext>=</mtext><munderover><mo stretchy=\"false\">\x2211</mo><mrow><mtext>k</mtext><mo stretchy=\"false\">=</mo><mn>0</mn></mrow><mtext>n</mtext></munderover><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mtable><mtr><mtd><mtext>n</mtext></mtd></mtr><mtr><mtd><mtext>k</mtext></mtd></mtr></mtable></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow><msup><mtext>x</mtext><mtext>k</mtext></msup><msup><mtext>a</mtext><mrow><mtext>n</mtext><mo stretchy=\"false\">-</mo><mtext>k</mtext></mrow></msup></mrow><annotation encoding=\"StarMath 5.0\">left ( &quot;x&quot; + &quot;a&quot; right ) ^ {&quot;n&quot; } &quot;=&quot; sum from {&quot;k&quot; =  0 } to {&quot;n&quot; } left ( binom { &quot;n&quot; } { &quot;k&quot; } right ) &quot;x&quot; ^ {&quot;k&quot; } &quot;a&quot; ^ {&quot;n&quot; - &quot;k&quot; } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Example3)
@@ -472,7 +472,7 @@ TEST(OOXml2OdfTest,LimLowWithRelation)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><munder><mtext>lim</mtext><mrow><mtext>n</mtext><mo stretchy=\"false\">\x2192</mo><mi mathvariant=\"normal\">\x221E</mi></mrow></munder><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mn>1</mn></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;lim&quot; csub { &quot;n&quot; toward  infinity } left ( 1 right ) </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><munder><mtext>lim</mtext><mrow><mtext>n</mtext><mo stretchy=\"false\">\x2192</mo><mi mathvariant=\"normal\">\x221E</mi></mrow></munder><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mn>1</mn></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;lim&quot; csub { &quot;n&quot; toward  infinity } left ( 1 right ) </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,HarmonicSeries)
@@ -483,7 +483,7 @@ TEST(OOXml2OdfTest,HarmonicSeries)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><msup><mstyle mathcolor=\"red\"><mstyle mathvariant=\"italic\"><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mn>1</mn><mstyle mathcolor=\"#70AD47\"><mtext>+</mtext></mstyle><mfrac><mn>1</mn><mtext>n</mtext></mfrac></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mstyle></mstyle><mstyle mathcolor=\"red\"><mtext>n</mtext></mstyle></msup><annotation encoding=\"StarMath 5.0\">color red ital left ( 1 color hex 70AD47 &quot;+&quot;{ 1 } over { &quot;n&quot; } right ) ^ {color red &quot;n&quot; } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><msup><mstyle mathcolor=\"red\"><mstyle mathvariant=\"italic\"><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mn>1</mn><mstyle mathcolor=\"#70AD47\"><mtext>+</mtext></mstyle><mfrac><mrow><mn>1</mn></mrow><mrow><mtext>n</mtext></mrow></mfrac></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mstyle></mstyle><mstyle mathcolor=\"red\"><mtext>n</mtext></mstyle></msup><annotation encoding=\"StarMath 5.0\">color red ital left ( 1 color hex 70AD47 &quot;+&quot; { 1 } over { &quot;n&quot; } right ) ^ {color red &quot;n&quot; } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Example8)
@@ -494,7 +494,7 @@ TEST(OOXml2OdfTest,Example8)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>sin</mtext><mi mathvariant=\"normal\">\x3B1</mi></mrow><mrow><mo stretchy=\"false\">\xB1</mo></mrow><mrow><mtext>sin</mtext><mi mathvariant=\"normal\">\x3B2</mi></mrow><mrow><mo stretchy=\"false\">=</mo><mn>2</mn></mrow><mrow><mtext>sin</mtext><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">\xB1</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow><mrow><mtext>cos</mtext><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">\x2213</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;sin&quot; %alpha +- &quot;sin&quot; %beta =  2 &quot;sin&quot; { 1 } over { 2 } left ( %alpha +- %beta right ) &quot;cos&quot; { 1 } over { 2 } left ( %alpha -+ %beta right ) </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>sin</mtext><mi mathvariant=\"normal\">\x3B1</mi></mrow><mrow><mo stretchy=\"false\">\xB1</mo></mrow><mrow><mtext>sin</mtext><mi mathvariant=\"normal\">\x3B2</mi></mrow><mrow><mo stretchy=\"false\">=</mo><mn>2</mn></mrow><mrow><mtext>sin</mtext><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">\xB1</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mrow><mrow><mtext>cos</mtext><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">\x2213</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;sin&quot; %alpha +- &quot;sin&quot; %beta =  2 &quot;sin&quot; { 1 } over { 2 } left ( %alpha +- %beta right ) &quot;cos&quot; { 1 } over { 2 } left ( %alpha -+ %beta right ) </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,Example7)
@@ -516,7 +516,7 @@ TEST(OOXml2OdfTest,Example9)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>cos</mtext><mi mathvariant=\"normal\">\x3B1</mi></mrow><mrow><mo stretchy=\"false\">+</mo></mrow><mrow><mtext>cos</mtext><mi mathvariant=\"normal\">\x3B2</mi></mrow><mrow><mo stretchy=\"false\">=</mo><mn>2</mn></mrow><mrow><mtext>cos</mtext><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">+</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow><mrow><mtext>cos</mtext><mfrac><mn>1</mn><mn>2</mn></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\" />(<mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">-</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\" />)</mrow></mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;cos&quot; %alpha + &quot;cos&quot; %beta =  2 &quot;cos&quot; { 1 } over { 2 } left ( %alpha + %beta right ) &quot;cos&quot; { 1 } over { 2 } left ( %alpha - %beta right ) </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mrow><mtext>cos</mtext><mi mathvariant=\"normal\">\x3B1</mi></mrow><mrow><mo stretchy=\"false\">+</mo></mrow><mrow><mtext>cos</mtext><mi mathvariant=\"normal\">\x3B2</mi></mrow><mrow><mo stretchy=\"false\">=</mo><mn>2</mn></mrow><mrow><mtext>cos</mtext><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">+</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mrow><mrow><mtext>cos</mtext><mfrac><mrow><mn>1</mn></mrow><mrow><mn>2</mn></mrow></mfrac><mrow><mo fence=\"true\" form=\"prefix\" stretchy=\"true\">(</mo><mrow><mrow><mi mathvariant=\"normal\">\x3B1</mi><mo stretchy=\"false\">-</mo><mi mathvariant=\"normal\">\x3B2</mi></mrow></mrow><mo fence=\"true\" form=\"postfix\" stretchy=\"true\">)</mo></mrow></mrow></mrow><annotation encoding=\"StarMath 5.0\">&quot;cos&quot; %alpha + &quot;cos&quot; %beta =  2 &quot;cos&quot; { 1 } over { 2 } left ( %alpha + %beta right ) &quot;cos&quot; { 1 } over { 2 } left ( %alpha - %beta right ) </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,TextMrPr)
@@ -538,7 +538,7 @@ TEST(OOXml2OdfTest,ColorByName)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mstyle mathcolor=\"midnightblue\"><mtext>q</mtext></mstyle><mstyle mathcolor=\"orangered\"><mtext>b</mtext></mstyle></mfrac><annotation encoding=\"StarMath 5.0\">{ color midnightblue &quot;q&quot; } over { color orangered &quot;b&quot; } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mrow><mstyle mathcolor=\"midnightblue\"><mtext>q</mtext></mstyle></mrow><mrow><mstyle mathcolor=\"orangered\"><mtext>b</mtext></mstyle></mrow></mfrac><annotation encoding=\"StarMath 5.0\">{ color midnightblue &quot;q&quot; } over { color orangered &quot;b&quot; } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,EmptyNumerator)
@@ -549,7 +549,7 @@ TEST(OOXml2OdfTest,EmptyNumerator)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mi mathvariant=\"normal\">\u2751</mi><mn>2</mn></mfrac><annotation encoding=\"StarMath 5.0\">{\u0026lt;\u003F\u0026gt;} over { 2 } </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mfrac><mrow><mi mathvariant=\"normal\">\u2751</mi></mrow><mrow><mn>2</mn></mrow></mfrac><annotation encoding=\"StarMath 5.0\">{\u0026lt;\u003F\u0026gt;} over { 2 } </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,IdentityMatrixDiagonally)
@@ -571,7 +571,7 @@ TEST(OOXml2OdfTest,ExceptionsDiacritics)
 		pElement->fromXML(oReader);
 	StarMath::COOXml2Odf oTest;
 	oTest.StartConversion(pElement);
-	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover><mn>1</mn><mtext>\x2194</mtext></mover><mspace /><mover><mstyle mathvariant=\"bold-italic\"><mn>2b</mn></mstyle><mtext>\x2190</mtext></mover><mspace /><mover><mtext>abc</mtext><mtext>\x21BC</mtext></mover></mrow><annotation encoding=\"StarMath 5.0\">1 csup &quot;\x2194&quot; ` bold ital { 2b } csup &quot;\x2190&quot; ` &quot;abc&quot; csup &quot;\x21BC&quot; </annotation></semantics></math>";
+	std::wstring wsOdf = L"<math xmlns=\"http://www.w3.org/1998/Math/MathML\" display=\"block\"><semantics><mrow><mover><mn>1</mn><mtext>\x2194</mtext></mover><mspace width=\"0.5em\" /><mover><mstyle mathvariant=\"bold-italic\"><mn>2b</mn></mstyle><mtext>\x2190</mtext></mover><mspace width=\"0.5em\" /><mover><mtext>abc</mtext><mtext>\x21BC</mtext></mover></mrow><annotation encoding=\"StarMath 5.0\">1 csup &quot;\x2194&quot; ` bold ital { 2b } csup &quot;\x2190&quot; ` &quot;abc&quot; csup &quot;\x21BC&quot; </annotation></semantics></math>";
 	EXPECT_EQ(oTest.GetOdf(),wsOdf);
 }
 TEST(OOXml2OdfTest,ExceptionsGroupChr)

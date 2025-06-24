@@ -356,7 +356,8 @@ std::wstring xlsx_table_state::default_column_cell_style() const
 
 void xlsx_table_state::end_row()
 {
-    table_row_style_ = L"";
+	in_cell = false;
+	table_row_style_ = L"";
 }
 
 std::wstring xlsx_table_state::current_row_style() const

@@ -33,6 +33,8 @@
 #include "TxBody.h"
 #include "ClrMap.h"
 #include "../Theme.h"
+#include "../../Common/SimpleTypes_Word.h"
+
 #include "boost/format.hpp"
 
 namespace PPTX
@@ -132,6 +134,78 @@ namespace PPTX
 			oValue.WriteArray(Paragrs);
 
 			return XmlUtils::CreateNode(m_name, oValue);
+		}
+		std::wstring TxBody::toVML()
+		{
+			std::wstring sResult = L"<v:textbox>";
+			for (auto p : Paragrs)
+			{
+				sResult += L"<div";
+				if (p.pPr.IsInit())
+				{
+					//todooo
+				}
+				sResult += L">";
+
+				for (auto elm : p.RunElems)
+				{
+					smart_ptr<Run> run = elm.GetElem().smart_dynamic_cast<Run>();
+					if (run.IsInit())
+					{
+						if (run->rPr.IsInit())
+						{
+							sResult += L"<font";
+							if (run->rPr->latin.is_init())
+							{
+								sResult += L" face=\"" + run->rPr->latin->typeface + L"\"";
+							}							
+							if (run->rPr->sz.is_init())
+							{
+								sResult += L" size=\"" + std::to_wstring(*run->rPr->sz / 5) + L"\""; //kf = 20
+							}
+
+							smart_ptr<SolidFill> solidFill = run->rPr->Fill.Fill.smart_dynamic_cast<SolidFill>();
+							if (solidFill.IsInit())
+							{
+								SimpleTypes::CHexColor color;
+								color.SetValue(SimpleTypes::hexcolorARGB);
+
+								color.Set_A(solidFill->Color.Color->alpha);
+								color.Set_R(solidFill->Color.Color->red);
+								color.Set_G(solidFill->Color.Color->green);
+								color.Set_B(solidFill->Color.Color->blue);
+
+								sResult += L" color=\"#" + color.ToStringNoAlpha() + L"\"";
+							}
+							sResult += L">";
+							if (run->rPr->b.is_init())
+							{
+								sResult += L"<b>";
+							}
+							if (run->rPr->i.is_init())
+							{
+								sResult += L"<i>";
+							}
+							sResult += run->GetText();
+							if (run->rPr->i.is_init())
+							{
+								sResult += L"</i>";
+							}
+							if (run->rPr->b.is_init())
+							{
+								sResult += L"</b>";
+							}
+							sResult += L"</font>";
+						}
+						else 
+							sResult += run->GetText();
+					}
+				}
+
+				sResult += L"</div>";
+			}
+			sResult += L"</v:textbox>";
+			return sResult;
 		}
 		void TxBody::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{

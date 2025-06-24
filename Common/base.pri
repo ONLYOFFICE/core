@@ -202,7 +202,12 @@ core_linux {
 
     QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
 	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
-	QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+
+    # todo 32bit support?
+	core_linux_64 {
+	    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+	}
+
 	QMAKE_CUSTOM_SYSROOT_INCLUDE = $$(QMAKE_CUSTOM_SYSROOT)/usr/include
 
     !isEmpty(QMAKE_CUSTOM_SYSROOT) {

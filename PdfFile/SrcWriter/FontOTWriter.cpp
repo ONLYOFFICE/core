@@ -222,7 +222,7 @@ namespace PdfWriter
 	}
 	}
 	//----------------------------------------------------------------------------------------
-	// CCFFReader
+	// CPrimitiveWriter
 	//----------------------------------------------------------------------------------------
 	struct CPrimitiveWriter
 	{
@@ -748,31 +748,29 @@ namespace PdfWriter
 		}
 		else if (byte0 >= 247 && byte0 <= 250)
 		{
-			byte1 = mPrimitivesReader->ReadUChar();
 			if (mPrimitivesReader->IsEof())
 				return false;
-
+			byte1 = mPrimitivesReader->ReadUChar();
 			outValue = (byte0 - 247) * 256 + byte1 + 108;
 		}
 		else if (byte0 >= 251 && byte0 <= 254)
 		{
-			byte1 = mPrimitivesReader->ReadUChar();
 			if (mPrimitivesReader->IsEof())
 				return false;
-
+			byte1 = mPrimitivesReader->ReadUChar();
 			outValue = -(long)((long)byte0 - 251) * 256 - byte1 - 108;
 		}
 		else if (28 == byte0)
 		{
-			outValue = mPrimitivesReader->ReadUShort();
 			if (mPrimitivesReader->IsEof())
 				return false;
+			outValue = mPrimitivesReader->ReadUShort();
 		}
 		else if (29 == byte0)
 		{
-			outValue = mPrimitivesReader->ReadUInt();
 			if (mPrimitivesReader->IsEof())
 				return false;
+			outValue = mPrimitivesReader->ReadUInt();
 		}
 		else
 			status = false;
@@ -798,9 +796,9 @@ namespace PdfWriter
 
 		do
 		{
-			buffer = mPrimitivesReader->ReadUChar();
 			if (mPrimitivesReader->IsEof())
 				return false;
+			buffer = mPrimitivesReader->ReadUChar();
 
 			nibble[0] = (buffer >> 4) & 0xf;
 			nibble[1] = buffer & 0xf;
@@ -864,9 +862,9 @@ namespace PdfWriter
 	{
 		if (12 == inFirstByte)
 		{
-			BYTE buffer = mPrimitivesReader->ReadUChar();
 			if (!mPrimitivesReader->IsEof())
 			{
+				BYTE buffer = mPrimitivesReader->ReadUChar();
 				outOperator = ((unsigned short)inFirstByte << 8) | buffer;
 				return true;
 			}
@@ -957,28 +955,26 @@ namespace PdfWriter
 		mHeader.minor = mPrimitivesReader->ReadUChar();
 		mHeader.hdrSize = mPrimitivesReader->ReadUChar();
 		mHeader.offSize = mPrimitivesReader->ReadUChar();
-
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadIndexHeader(unsigned long** outOffsets, unsigned short& outItemsCount)
 	{
 		outItemsCount = mPrimitivesReader->ReadUShort();
-		if (mPrimitivesReader->IsEof())
-			return false;
-
 		if (0 == outItemsCount)
 		{
 			*outOffsets = NULL;
 			return true;
 		}
 
+		if (mPrimitivesReader->IsEof())
+			return false;
 		BYTE offSizeForIndex = mPrimitivesReader->ReadUChar();
 		*outOffsets = new unsigned long[outItemsCount + 1];
 
 		for (unsigned int i = 0; i <= outItemsCount && !mPrimitivesReader->IsEof(); ++i)
 			(*outOffsets)[i] = mPrimitivesReader->ReadOffset(offSizeForIndex);
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadNameIndex()
 	{
@@ -1006,7 +1002,7 @@ namespace PdfWriter
 		}
 
 		delete[] offsets;
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadTopDictIndex()
 	{
@@ -1027,9 +1023,7 @@ namespace PdfWriter
 			status = ReadDict(offsets[i + 1] - offsets[i], mTopDictIndex[i].mTopDict);
 
 		delete[] offsets;
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	bool CCFFReader::ReadDict(unsigned long inReadAmount, UShortToDictOperandListMap& outDict)
 	{
@@ -1043,8 +1037,6 @@ namespace PdfWriter
 		while (status && (mPrimitivesReader->Tell() - dictStartPosition < (long long)inReadAmount))
 		{
 			aBuffer = mPrimitivesReader->ReadUChar();
-			if (mPrimitivesReader->IsEof())
-				return false;
 			if (IsDictOperator(aBuffer))
 			{ // operator
 				status = ReadDictOperator(aBuffer, anOperator);
@@ -1089,12 +1081,12 @@ namespace PdfWriter
 		{
 			unsigned int nLength = offsets[i + 1] - offsets[i];
 			mStrings[i] = new char[nLength + 1];
-			mPrimitivesReader->Read((BYTE*)mStrings[i], &nLength);
 			if (mPrimitivesReader->IsEof())
 			{
 				status = false;
 				break;
 			}
+			mPrimitivesReader->Read((BYTE*)mStrings[i], &nLength);
 			mStrings[i][nLength] = 0;
 		}
 
@@ -1112,9 +1104,7 @@ namespace PdfWriter
 			mStringToSID.insert(CharPToUShortMap::value_type(mStrings[i - N_STD_STRINGS], i));
 
 		delete[] offsets;
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	bool CCFFReader::ReadGlobalSubrs()
 	{
@@ -1151,7 +1141,7 @@ namespace PdfWriter
 		mPrimitivesReader->Seek(offsets[outSubrsCount] - 1, SeekCur);
 
 		delete[] offsets;
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadCharStrings()
 	{
@@ -1175,9 +1165,7 @@ namespace PdfWriter
 			}
 		}
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	long long CCFFReader::GetCharStringsPosition(unsigned short inFontIndex)
 	{
@@ -1206,9 +1194,7 @@ namespace PdfWriter
 		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 			status = ReadPrivateDict(mTopDictIndex[i].mTopDict, mPrivateDicts + i);
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	bool CCFFReader::ReadPrivateDict(const UShortToDictOperandListMap& inReferencingDict, PrivateDictInfo* outPrivateDict)
 	{
@@ -1239,9 +1225,7 @@ namespace PdfWriter
 		for (unsigned int i = 0; i < mFontsCount && status; ++i)
 			status = ReadLocalSubrsForPrivateDict(mPrivateDicts + i, (BYTE)GetCharStringType(i));
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	bool CCFFReader::ReadLocalSubrsForPrivateDict(PrivateDictInfo* inPrivateDict, BYTE inCharStringType)
 	{
@@ -1310,9 +1294,7 @@ namespace PdfWriter
 			mTopDictIndex[i].mCharSet = it->second;
 		}
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	bool CCFFReader::ReadEncodings()
 	{
@@ -1335,9 +1317,7 @@ namespace PdfWriter
 			mTopDictIndex[i].mEncoding = it->second;
 		}
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	void CCFFReader::ReadEncoding(EncodingsInfo* inEncoding, long long inEncodingPosition)
 	{
@@ -1444,7 +1424,7 @@ namespace PdfWriter
 				ioGlyphMap.insert(UShortToCharStringMap::value_type(sid, inCharStrings.mCharStringsIndex + i));
 			}
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadFormat1Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
 	{
@@ -1479,7 +1459,7 @@ namespace PdfWriter
 				}
 			}
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool CCFFReader::ReadFormat2Charset(bool inIsCID, UShortToCharStringMap& ioGlyphMap, unsigned short** inSIDArray, const CharStrings& inCharStrings)
 	{
@@ -1514,7 +1494,7 @@ namespace PdfWriter
 				}
 			}
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	long long CCFFReader::GetCharsetPosition(unsigned short inFontIndex)
 	{
@@ -1585,9 +1565,7 @@ namespace PdfWriter
 		}
 
 		delete[] offsets;
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	long long CCFFReader::GetFDArrayPosition(unsigned short inFontIndex)
 	{
@@ -1641,9 +1619,7 @@ namespace PdfWriter
 			}
 		}
 
-		if (!status)
-			return status;
-		return !mPrimitivesReader->IsEof();
+		return status;
 	}
 	long long CCFFReader::GetFDSelectPosition(unsigned short inFontIndex)
 	{
@@ -2115,9 +2091,8 @@ namespace PdfWriter
 			tableEntry.Offset += mTableOffset;
 			mTables.insert(UIntToTableEntryMap::value_type(tableTag, tableEntry));
 		}
-		status = !mPrimitivesReader->IsEof();
 
-		return status;
+		return true;
 	}
 	bool COpenTypeReader::ReadOpenTypeSFNT()
 	{
@@ -2175,9 +2150,6 @@ namespace PdfWriter
 		for (unsigned short i = 0; i < 16; ++i)
 			head[i] = mPrimitivesReader->ReadUChar();
 
-		if (mPrimitivesReader->IsEof())
-			return false;
-
 		rdata_pos = ( head[0] << 24 )  | ( head[1] << 16 )  | ( head[2] <<  8 )  | head[3] ;
 		map_pos   = ( head[4] << 24 )  | ( head[5] << 16 )  | ( head[6] <<  8 )  | head[7] ;
 		rdata_len = ( head[8] << 24 )  | ( head[9] << 16 )  | ( head[10] << 8 )  | head[11];
@@ -2198,8 +2170,6 @@ namespace PdfWriter
 							   , SeekCur);
 
 		unsigned short type_list = mPrimitivesReader->ReadUShort();
-		if (mPrimitivesReader->IsEof())
-			return false;
 
 		map_offset = map_pos + type_list;
 
@@ -2208,8 +2178,6 @@ namespace PdfWriter
 		// read the resource type list
 
 		unsigned short cnt = mPrimitivesReader->ReadUShort();
-		if (mPrimitivesReader->IsEof())
-			return false;
 
 		bool foundSfnt = false;
 
@@ -2326,7 +2294,7 @@ namespace PdfWriter
 		mHead.IndexToLocFormat   = mPrimitivesReader->ReadUShort();
 		mHead.GlyphDataFormat    = mPrimitivesReader->ReadUShort();
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadMaxP()
 	{
@@ -2357,7 +2325,7 @@ namespace PdfWriter
 			mMaxp.MaxComponentElements  = mPrimitivesReader->ReadUShort();
 			mMaxp.MaxCompontentDepth    = mPrimitivesReader->ReadUShort();
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadHHea()
 	{
@@ -2382,7 +2350,7 @@ namespace PdfWriter
 		mHHea.MetricDataFormat    = mPrimitivesReader->ReadUShort();
 		mHHea.NumberOfHMetrics    = mPrimitivesReader->ReadUShort();
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadHMtx()
 	{
@@ -2407,7 +2375,7 @@ namespace PdfWriter
 			mHMtx[i].LeftSideBearing = mPrimitivesReader->ReadUShort();
 		}
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadOS2()
 	{
@@ -2469,7 +2437,7 @@ namespace PdfWriter
 			mOS2.BreakChar      = mPrimitivesReader->ReadUShort();
 			mOS2.MaxContext     = mPrimitivesReader->ReadUShort();
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadName()
 	{
@@ -2502,7 +2470,7 @@ namespace PdfWriter
 			mName.mNameEntries[i].Length = nLength;
 		}
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadLoca()
 	{
@@ -2527,7 +2495,7 @@ namespace PdfWriter
 			for (int i = 0; i < mMaxp.NumGlyphs + 1; ++i)
 				mLoca[i] = mPrimitivesReader->ReadUInt();
 		}
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadGlyfForDependencies()
 	{
@@ -2590,7 +2558,7 @@ namespace PdfWriter
 			}
 		}
 
-		return !mPrimitivesReader->IsEof();
+		return true;
 	}
 	bool COpenTypeReader::ReadCFF()
 	{

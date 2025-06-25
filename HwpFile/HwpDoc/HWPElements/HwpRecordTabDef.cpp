@@ -80,4 +80,17 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int n
 			m_arTabs.push_back(new TTab(oTabItem));
 		}
 }
+
+int CHwpRecordTabDef::GetCount() const
+{
+	return m_nCount;
+}
+
+const TTab* CHwpRecordTabDef::GetTab(unsigned int unIndex) const
+{
+	if (unIndex >= m_arTabs.size())
+		return nullptr;
+
+	return dynamic_cast<const TTab*>(m_arTabs.at(unIndex));
+}
 }

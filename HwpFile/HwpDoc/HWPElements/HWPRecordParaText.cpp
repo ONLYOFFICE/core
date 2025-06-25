@@ -148,11 +148,21 @@ LIST<CCtrl*> CHWPRecordParaText::Parse(int nTagNum, int nLevel, int nSize, CHWPS
 					unIndex += unInfoLength + 2;
 					break;
 				}
+				case 0x09: // Tabs
+				{
+					UPDATE_CURRENT_TEXT();
+
+					if (sText.length() < unIndex + 6 || (sText[unIndex] != sText[unIndex + 6] && sText[unIndex] != sText[unIndex + 7]))
+						continue;
+
+					arParas.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));
+					unIndex += 6;
+					break;
+				}
 				case 0x05: // Scheduling
 				case 0x06: // Scheduling
 				case 0x07: // Scheduling
 				case 0x08: // Title mark
-				case 0x09: // Tabs
 				case 0x13: // Scheduling
 				case 0x14: // Scheduling
 				{

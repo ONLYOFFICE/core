@@ -308,6 +308,11 @@ int CHWPRecordParaShape::GetRightIndent() const
 	return m_nMarginRight;
 }
 
+short CHWPRecordParaShape::GetTabDef() const
+{
+	return m_shTabDef;
+}
+
 bool CHWPRecordParaShape::KeepWithNext() const
 {
 	return m_bKeepWithNext;

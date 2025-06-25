@@ -321,6 +321,12 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 			oState.m_eBreakType = TConversionState::EBreakType::TextWrapping;
 			break;
 		}
+		case ECtrlCharType::TABULATION:
+		{
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r><w:tab/></w:r>");
+			break;
+		}
 		case ECtrlCharType::HARD_HYPHEN:
 		case ECtrlCharType::HARD_SPACE:
 			break;
@@ -669,6 +675,60 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		case EHeadingType::OUTLINE:
 		case EHeadingType::NONE:
 			break;
+	}
+
+	if (oState.m_bInTable)
+		return;
+
+	const CHwpRecordTabDef* pTabDef = m_pContext->GetTabDef(pParaShape->GetTabDef());
+
+	if (nullptr != pTabDef && 0 != pTabDef->GetCount())
+	{
+		oBuilder.WriteString(L"<w:tabs>");
+
+		const TTab *pTab = nullptr;
+		for (unsigned int unIndex = 0; unIndex < pTabDef->GetCount(); ++unIndex)
+		{
+			pTab = pTabDef->GetTab(unIndex);
+
+			if (nullptr == pTab)
+				continue;
+
+			oBuilder.WriteString(L"<w:tab w:val=\"");
+
+			switch (pTab->m_eType)
+			{
+				case TTab::EType::LEFT: oBuilder.WriteString(L"start"); break;
+				case TTab::EType::RIGHT: oBuilder.WriteString(L"end"); break;
+				case TTab::EType::CENTER: oBuilder.WriteString(L"center"); break;
+				case TTab::EType::DECIMAL: oBuilder.WriteString(L"decimal"); break;
+			}
+
+			oBuilder.WriteString(L"\" w:leader=\"");
+
+			switch (pTab->m_eLeader)
+			{
+				case ELineStyle2::NONE: oBuilder.WriteString(L"none"); break;
+				case ELineStyle2::SOLID:
+				case ELineStyle2::DOUBLE_SLIM:
+				case ELineStyle2::SLIM_THICK:
+				case ELineStyle2::THICK_SLIM:
+				case ELineStyle2::SLIM_THICK_SLIM:
+					oBuilder.WriteString(L"heavy"); break;
+				case ELineStyle2::DASH:
+				case ELineStyle2::LONG_DASH:
+				case ELineStyle2::DASH_DOT:
+				case ELineStyle2::DASH_DOT_DOT:
+					oBuilder.WriteString(L"hyphen"); break;
+				case ELineStyle2::DOT:
+				case ELineStyle2::CIRCLE:
+					oBuilder.WriteString(L"dot"); break;
+			}
+
+			oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(pTab->m_nPos / 10) + L"\"/>");
+		}
+
+		oBuilder.WriteString(L"</w:tabs>");
 	}
 }
 
@@ -1740,6 +1800,7 @@ void CConverter2OOXML::WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStrin
 		}
 		case ETextWrap::BEHIND_TEXT:
 		case ETextWrap::IN_FRONT_OF_TEXT:
+		default:
 		{
 			oBuilder.WriteString(L"<wp:wrapNone/>");
 			break;

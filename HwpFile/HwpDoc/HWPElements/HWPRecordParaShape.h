@@ -94,6 +94,8 @@ public:
 	int GetLeftIndent() const;
 	int GetRightIndent() const;
 
+	short GetTabDef() const;
+
 	bool KeepWithNext() const;
 };
 }

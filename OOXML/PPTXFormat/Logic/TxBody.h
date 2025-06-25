@@ -61,6 +61,8 @@ namespace PPTX
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 
 			virtual std::wstring toXML() const;
+			std::wstring toVML();
+
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 			void toXmlWriterExcel(NSBinPptxRW::CXmlWriter* pWriter) const;
 

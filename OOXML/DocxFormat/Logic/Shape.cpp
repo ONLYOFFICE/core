@@ -163,7 +163,7 @@ namespace OOX
 
 			for ( size_t i = 0; i < m_arrItems.size(); ++i)
 			{
-				if ( m_arrItems[i] )
+				if (m_arrItems[i])
 				{
 					sResult += m_arrItems[i]->toXML();
 				}

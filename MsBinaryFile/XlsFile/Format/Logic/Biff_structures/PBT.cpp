@@ -49,6 +49,14 @@ void PBT::load(CFRecord& record)
 	fNeedRefresh	= GETBIT(flags, 4);
 }
 
+void PBT::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBITS(flags, 0, 2, pbt)
+	SETBIT(flags, 3, fAutoRefresh)
+	SETBIT(flags, 4, fNeedRefresh)
+	record 	<< flags;
+}
 
 } // namespace XLS
 

@@ -640,6 +640,7 @@ private:
 		std::string sT;
 		std::string sV;
 		std::string sDV;
+		std::string sTU;
 		std::string sFullName;
 	};
 

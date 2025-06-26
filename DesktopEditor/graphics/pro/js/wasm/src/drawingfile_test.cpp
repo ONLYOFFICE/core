@@ -415,6 +415,13 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 4;
 			std::cout << "MaxLen " << nPathLength << ", ";
 		}
+		if (nFlags & (1 << 10))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
+			i += nPathLength;
+		}
 
 		std::cout << std::endl;
 	}

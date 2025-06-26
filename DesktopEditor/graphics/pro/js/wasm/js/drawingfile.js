@@ -1000,7 +1000,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 	let flags = reader.readInt();
 	// Alternative field name, used in tooltip and error messages - TU
 	if (flags & (1 << 0))
-		rec["userName"] = readStringFunc.call(reader);
+		rec["tooltip"] = readStringFunc.call(reader);
 	// Default style string (CSS2 format) - DS
 	if (flags & (1 << 1))
 		rec["defaultStyle"] = readStringFunc.call(reader);
@@ -1317,6 +1317,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			}
 			if (flags & (1 << 9))
 				rec["maxLen"] = reader.readInt();
+			if (flags & (1 << 10))
+				rec["tooltip"] = reader.readString();
 			res["Parents"].push(rec);
 		}
 

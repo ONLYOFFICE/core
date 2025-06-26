@@ -1143,6 +1143,8 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		}
 		if (nFlags & (1 << 9))
 			pParent->nMaxLen = pReader->ReadInt();
+		if (nFlags & (1 << 10))
+			pParent->sTU = pReader->ReadString();
 		m_arrParents.push_back(pParent);
 	}
 

@@ -1401,7 +1401,13 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	oObj.free();
 
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-	m_sTU = FieldLookupString(pField, "TU", 0);
+	if (oField.dictLookup("TU", &oObj))
+	{
+		m_sTU = getValue(&oObj);
+		if (!m_sTU.empty())
+			m_unFlags |= (1 << 0);
+	}
+	oObj.free();
 
 	// 1 - Строка стиля по умолчанию - DS
 	m_sDS = FieldLookupString(pField, "DS", 1);
@@ -2721,6 +2727,17 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 	}
 	oObj.free();
 
+	// 10 - TU
+	if (oField.dictLookup("TU", &oObj)->isString())
+	{
+		TextString* s = new TextString(oObj.getString());
+		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		pAnnotParent->unFlags |= (1 << 10);
+		pAnnotParent->sTU = sStr;
+		delete s;
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -3747,6 +3764,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 9))
 		oRes.AddInt(unMaxLen);
+	if (unFlags & (1 << 10))
+		oRes.WriteString(sTU);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {

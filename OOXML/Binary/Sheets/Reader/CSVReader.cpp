@@ -202,9 +202,9 @@ int CSVReader::Impl::AddCell(std::wstring &sText, INT nStartCell, std::stack<INT
 
 	pCell->m_oCacheValue = sText; // как есть
 
+	pCell->setRowCol(nRow, nCol);
 	result = cellFormatController_->ProcessCellType(pCell, sText, bIsWrap);
 
-	pCell->setRowCol(nRow, nCol);
 	oRow.m_arrItems.push_back(pCell);
 
 	return result;
@@ -226,6 +226,7 @@ _UINT32 CSVReader::Impl::Read(const std::wstring &sFileName, OOX::Spreadsheet::C
 	pWorksheet->m_oSheetFormatPr.Init();
 	pWorksheet->m_oSheetFormatPr->m_oBaseColWidth = 9;
 
+	cellFormatController_->m_pWorksheet = pWorksheet.GetPointer();
 	//-----------------------------------------------------------------------------------
 	DWORD nFileSize = 0;
 	BYTE* pFileData = new BYTE[oFile.GetFileSize() + 64];

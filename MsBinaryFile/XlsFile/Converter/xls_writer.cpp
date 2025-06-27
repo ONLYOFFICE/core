@@ -1,5 +1,5 @@
-﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+﻿#/*
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,56 +29,27 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "../../../../Common/3dParty/pole/pole.h"
+#include "xls_writer.h"
+#include "../Format/Binary/CompoundFile.h"
+#include "../Format/Binary/CFStreamCacheWriter.h"
+#include "../Format/Logic/WorkbookStreamObject.h"
 
-#include "BinSmartPointers.h"
+ bool XlsWriter::Open(const std::wstring &fileName)
+ {
+	xls_file = boost::shared_ptr<XLS::CompoundFile>(new XLS::CompoundFile(fileName, XLS::CompoundFile::cf_WriteMode));
+	if(xls_file->isError())
+		return false;
+    return true;
+ }
 
-#include <map>
+ bool XlsWriter::WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject)
+ {
+	auto xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
+	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(xls_file->createNamedStream(streamName), xls_global_info));
 
-namespace XLS
-{
-
-
-class CompoundFile
-{
-public:
-	enum ReadWriteMode
-	{
-		cf_WriteMode,
-		cf_ReadMode
-	};
-
-public:
-	CompoundFile(const std::wstring & file_path, const ReadWriteMode mode);
-	~CompoundFile();
-
-	bool Open(const std::wstring & file_path, const ReadWriteMode mode);
-	
-	bool isError();
-
-	void copy( int indent, std::wstring path, POLE::Storage * storageOut, bool bWithRoot = true, bool bSortFiles = false);
-
-	CFStreamPtr getWorkbookStream	();
-	CFStreamPtr getNamedStream		(const std::wstring& name);
-
-	POLE::Storage *storage_;
-
-	CFStreamPtr createNamedStream	(const std::wstring& name);
-	void		closeNamedStream	(const std::wstring& name);
-private:
-	void copy_stream(std::wstring streamNameOpen, std::wstring streamNameCreate, POLE::Storage * storageOut, bool bWithRoot = true);
-	
-	POLE::Stream* openStream		(const std::wstring & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
-	POLE::Stream* createStream		(const std::wstring & stream_name); // Creates a new stream in the storage
-
-
-	std::map<std::wstring, CFStreamPtr>	streams;
-	ReadWriteMode						rwMode;
-};
-typedef boost::shared_ptr<CompoundFile> CompoundFilePtr;
-
-
-} // namespace XLS
-
+	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
+	stream_proc.mandatory(*streamObject);
+	xls_file->storage_->close();
+	return true;
+ }

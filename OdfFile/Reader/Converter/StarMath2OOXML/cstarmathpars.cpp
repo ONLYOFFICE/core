@@ -2519,16 +2519,20 @@ namespace StarMath
 		else if(L"_" == wsCheckToken) return TypeElement::lower;
 		else if(L"lsup" == wsCheckToken) return TypeElement::lsup;
 		else if(L"lsub" == wsCheckToken) return TypeElement::lsub;
-		if(!bEQN)
+		else if(L"sqrt" == wsCheckToken) return TypeElement::sqrt;
+		if(bEQN)
+		{
+			if(L"underover" == wsCheckToken) return TypeElement::underover;
+			else if(L"root" == wsCheckToken) return TypeElement::nroot;
+		}
+		else
 		{
 			if(L"rsup" == wsCheckToken) return TypeElement::upper;
 			else if(L"rsub" == wsCheckToken) return TypeElement::lower;
 			else if(L"csup" == wsCheckToken) return TypeElement::csup;
 			else if(L"csub" == wsCheckToken) return TypeElement::csub;
 			else if(L"nroot" == wsCheckToken) return TypeElement::nroot;
-			else if(L"sqrt" == wsCheckToken) return TypeElement::sqrt;
 		}
-		else if(L"underover" == wsCheckToken) return TypeElement::underover;
 		return TypeElement::undefine;
 	}
 	bool CElementIndex::GetUpperIndex(const TypeElement &enType)
@@ -2560,15 +2564,28 @@ namespace StarMath
 		if(m_enTypeIndex == TypeElement::nroot)
 		{
 			m_pLeftArg = CParserStarMathString::ParseElement(pReader);
-			pReader->ReadingTheNextToken();
+			pReader->ReadingTheNextToken(m_bEQN);
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
 				CParserStarMathString::AddLeftArgument(m_pLeftArg,pElement,pReader);
 				m_pLeftArg = pElement;
 			}
+			if(m_bEQN)
+			{
+				pReader->ReadingTheNextToken(m_bEQN);
+				if(pReader->GetLowerCaseString() == L"of")
+					pReader->ClearReader();
+				else
+				{
+					m_pValueIndex = m_pLeftArg;
+					m_pLeftArg = nullptr;
+					m_enTypeIndex = TypeElement::sqrt;
+					return;
+				}
+			}
 			m_pValueIndex = CParserStarMathString::ParseElement(pReader);
-			pReader->ReadingTheNextToken();
+			pReader->ReadingTheNextToken(m_bEQN);
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
@@ -2579,7 +2596,7 @@ namespace StarMath
 		else if(m_enTypeIndex == TypeElement::sqrt)
 		{
 			m_pValueIndex = CParserStarMathString::ParseElement(pReader);
-			pReader->ReadingTheNextToken();
+			pReader->ReadingTheNextToken(m_bEQN);
 			if(CElementIndex::GetLowerIndex(pReader->GetLocalType()) || CElementIndex::GetUpperIndex(pReader->GetLocalType()))
 			{
 				CElement* pElement = CParserStarMathString::ParseElement(pReader);
@@ -2663,9 +2680,9 @@ namespace StarMath
 			pXmlWrite->WriteNodeEnd(L"m:radPr",false,false);
 			if(m_pLeftArg != nullptr && m_enTypeIndex == TypeElement::nroot)
 			{
-			pXmlWrite->WriteNodeBegin(L"m:deg",false);
-			m_pLeftArg->ConversionToOOXML(pXmlWrite);
-			pXmlWrite->WriteNodeEnd(L"m:deg",false,false);
+				pXmlWrite->WriteNodeBegin(L"m:deg",false);
+				m_pLeftArg->ConversionToOOXML(pXmlWrite);
+				pXmlWrite->WriteNodeEnd(L"m:deg",false,false);
 			}
 			else
 			{
@@ -3452,6 +3469,12 @@ namespace StarMath
 			m_enGlobalType = TypeElement::Index;
 			return;
 		}
+		m_enUnderType = CElementDiacriticalMark::GetMark(m_wsLowerCaseToken,true);
+		if(m_enUnderType != TypeElement::undefine)
+		{
+			m_enGlobalType = TypeElement::Mark;
+			return;
+		}
 		if(m_enUnderType == TypeElement::undefine && !m_wsLowerCaseToken.empty())
 		{
 			m_enGlobalType = TypeElement::String;
@@ -4206,116 +4229,144 @@ namespace StarMath
 	{
 		m_pValueMark = pValue;
 	}
-	TypeElement CElementDiacriticalMark::GetMark(const std::wstring &wsToken)
+	TypeElement CElementDiacriticalMark::GetMark(const std::wstring &wsToken, const bool bEQN)
 	{
 		if(L"acute" == wsToken) return TypeElement::acute;
 		else if(L"breve" == wsToken) return TypeElement::breve;
 		else if(L"dot" == wsToken) return TypeElement::dot;
-		else if(L"dddot" == wsToken) return TypeElement::dddot;
 		else if(L"vec" == wsToken) return TypeElement::vec;
-		else if(L"tilde" == wsToken) return TypeElement::tilde;
-		else if(L"check" == wsToken) return TypeElement::check;
-		else if(L"grave" == wsToken) return TypeElement::grave;
-		else if(L"circle" == wsToken) return TypeElement::circle;
 		else if(L"ddot" == wsToken) return TypeElement::ddot;
 		else if(L"bar" == wsToken) return TypeElement::bar;
-		else if(L"harpoon" == wsToken) return TypeElement::harpoon;
 		else if(L"hat" == wsToken) return TypeElement::hat;
-		else if(L"widevec" == wsToken) return TypeElement::widevec;
-		else if(L"widetilde" == wsToken) return TypeElement::widetilde;
-		else if(L"overline" == wsToken) return TypeElement::overline;
-		else if(L"overstrike" == wsToken) return TypeElement::overstrike;
-		else if(L"wideharpoon" == wsToken) return TypeElement::wideharpoon;
-		else if(L"widehat" == wsToken) return TypeElement::widehat;
-		else if(L"underline" == wsToken) return TypeElement::underline;
-		else return TypeElement::undefine;
+		else if(L"check" == wsToken) return TypeElement::check;
+		else if(L"tilde" == wsToken) return TypeElement::tilde;
+		if(bEQN)
+		{
+			if(L"dyad" == wsToken) return TypeElement::dyad;
+			else if(L"arch" == wsToken) return TypeElement::undefine;
+			else if(L"under" == wsToken) return TypeElement::underline;
+			else if(L"box" == wsToken) return TypeElement::box;
+		}
+		else
+		{
+			if(L"dddot" == wsToken) return TypeElement::dddot;
+			else if(L"grave" == wsToken) return TypeElement::grave;
+			else if(L"circle" == wsToken) return TypeElement::circle;
+			else if(L"harpoon" == wsToken) return TypeElement::harpoon;
+			else if(L"widevec" == wsToken) return TypeElement::widevec;
+			else if(L"widetilde" == wsToken) return TypeElement::widetilde;
+			else if(L"overline" == wsToken) return TypeElement::overline;
+			else if(L"overstrike" == wsToken) return TypeElement::overstrike;
+			else if(L"wideharpoon" == wsToken) return TypeElement::wideharpoon;
+			else if(L"widehat" == wsToken) return TypeElement::widehat;
+			else if(L"underline" == wsToken) return TypeElement::underline;
+		}
+		return TypeElement::undefine;
+
 	}
 	void CElementDiacriticalMark::Parse(CStarMathReader *pReader)
 	{
 		SetValueMark(CParserStarMathString::ParseElement(pReader));
 	}
 	void CElementDiacriticalMark::ParseEQN(CStarMathReader *pReader)
-	{}
+	{
+		Parse(pReader);
+	}
 	void CElementDiacriticalMark::ConversionToOOXML(XmlUtils::CXmlWriter *pXmlWrite)
 	{
-		std::wstring wsTypeMark;
-		switch(m_enTypeMark)
+		if(m_enTypeMark == TypeElement::box)
 		{
-			case TypeElement::dot:
-				wsTypeMark = L"\u0307";
-				break;
-			case TypeElement::overline:
-				wsTypeMark = L"\u0305";
-				break;
-			case TypeElement::vec:
-				wsTypeMark = L"\u20D7";
-				break;
-			case TypeElement::acute:
-				wsTypeMark = L"\u0301";
-				break;
-			case TypeElement::grave:
-				wsTypeMark = L"\u0300";
-				break;
-			case TypeElement::breve:
-				wsTypeMark = L"\u0306";
-				break;
-			case TypeElement::circle:
-				wsTypeMark = L"\u030A";
-				break;
-			case TypeElement::ddot:
-				wsTypeMark = L"\u0308";
-				break;
-			case TypeElement::bar:
-				wsTypeMark = L"\u0304";
-				break;
-			case TypeElement::dddot:
-				wsTypeMark = L"\u20DB";
-				break;
-			case TypeElement::harpoon:
-				wsTypeMark = L"\u20D1";
-			break;
-			case TypeElement::tilde:
-				wsTypeMark = L"\u0342";
-			break;
-			case TypeElement::hat:
-				wsTypeMark = L"\u0302";
-			break;
-			case TypeElement::check:
-				wsTypeMark = L"\u030C";
-			break;
-			case TypeElement::widevec:
-				wsTypeMark = L"\u20D7";
-			break;
-			case TypeElement::widetilde:
-				wsTypeMark = L"\u0360";
-			break;
-			case TypeElement::wideharpoon:
-				wsTypeMark = L"\u20D1";
-			break;
-			case TypeElement::underline:
-				wsTypeMark = L"\u0332";
-			break;
-			default:
-				break;
+			pXmlWrite->WriteNodeBegin(L"m:borderBox",false);
+			pXmlWrite->WriteNodeBegin(L"m:borderBoxPr",false);
+			CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,GetAttribute(),GetTypeConversion());
+			pXmlWrite->WriteNodeEnd(L"m:borderboxPr",false,false);
+			CConversionSMtoOOXML::WriteNodeConversion(L"m:e",m_pValueMark,pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:borderBox",false,false);
 		}
-		pXmlWrite->WriteNodeBegin(L"m:acc",false);
-		pXmlWrite->WriteNodeBegin(L"m:accPr",false);
-		switch(m_enTypeMark)
+		else
 		{
-			case TypeElement::widehat:
-			break;
-			default:
+			std::wstring wsTypeMark;
+			switch(m_enTypeMark)
 			{
-				pXmlWrite->WriteNodeBegin(L"m:chr",true);
-				pXmlWrite->WriteAttribute(L"m:val",wsTypeMark);
-				pXmlWrite->WriteNodeEnd(L"w",true,true);
+				case TypeElement::dot:
+					wsTypeMark = L"\u0307";
+					break;
+				case TypeElement::overline:
+					wsTypeMark = L"\u0305";
+					break;
+				case TypeElement::vec:
+					wsTypeMark = L"\u20D7";
+					break;
+				case TypeElement::acute:
+					wsTypeMark = L"\u0301";
+					break;
+				case TypeElement::grave:
+					wsTypeMark = L"\u0300";
+					break;
+				case TypeElement::breve:
+					wsTypeMark = L"\u0306";
+					break;
+				case TypeElement::circle:
+					wsTypeMark = L"\u030A";
+					break;
+				case TypeElement::ddot:
+					wsTypeMark = L"\u0308";
+					break;
+				case TypeElement::bar:
+					wsTypeMark = L"\u0304";
+					break;
+				case TypeElement::dddot:
+					wsTypeMark = L"\u20DB";
+					break;
+				case TypeElement::harpoon:
+					wsTypeMark = L"\u20D1";
 				break;
+				case TypeElement::tilde:
+					wsTypeMark = L"\u0342";
+				break;
+				case TypeElement::hat:
+					wsTypeMark = L"\u0302";
+				break;
+				case TypeElement::check:
+					wsTypeMark = L"\u030C";
+				break;
+				case TypeElement::widevec:
+					wsTypeMark = L"\u20D7";
+				break;
+				case TypeElement::widetilde:
+					wsTypeMark = L"\u0360";
+				break;
+				case TypeElement::wideharpoon:
+					wsTypeMark = L"\u20D1";
+				break;
+				case TypeElement::underline:
+					wsTypeMark = L"\u0332";
+				break;
+				case TypeElement::dyad:
+					wsTypeMark = L"\u20E1";
+				break;
+				default:
+					break;
 			}
+			pXmlWrite->WriteNodeBegin(L"m:acc",false);
+			pXmlWrite->WriteNodeBegin(L"m:accPr",false);
+			switch(m_enTypeMark)
+			{
+				case TypeElement::widehat:
+				break;
+				default:
+				{
+					pXmlWrite->WriteNodeBegin(L"m:chr",true);
+					pXmlWrite->WriteAttribute(L"m:val",wsTypeMark);
+					pXmlWrite->WriteNodeEnd(L"w",true,true);
+					break;
+				}
+			}
+			CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,GetAttribute(),GetTypeConversion());
+			pXmlWrite->WriteNodeEnd(L"m:accPr",false,false);
+			CConversionSMtoOOXML::WriteNodeConversion(L"m:e",m_pValueMark,pXmlWrite);
+			pXmlWrite->WriteNodeEnd(L"m:acc",false,false);
 		}
-		CConversionSMtoOOXML::WriteCtrlPrNode(pXmlWrite,GetAttribute(),GetTypeConversion());
-		pXmlWrite->WriteNodeEnd(L"m:accPr",false,false);
-		CConversionSMtoOOXML::WriteNodeConversion(L"m:e",m_pValueMark,pXmlWrite);
-		pXmlWrite->WriteNodeEnd(L"m:acc",false,false);
 	}
 	void CElementDiacriticalMark::SetAttribute(CAttribute *pAttribute)
 	{

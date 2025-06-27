@@ -480,7 +480,7 @@ namespace StarMath
 		CElementDiacriticalMark(const TypeElement& enType,const TypeConversion &enTypeConversion);
 		virtual ~CElementDiacriticalMark();
 		void SetValueMark(CElement* pValue);
-		static TypeElement GetMark(const std::wstring& wsToken);
+		static TypeElement GetMark(const std::wstring& wsToken, const bool bEQN = false);
 	private:
 		void SetAttribute(CAttribute* pAttribute) override;
 		void Parse(CStarMathReader* pReader) override;

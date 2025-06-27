@@ -149,6 +149,10 @@ enum class TypeElement{
 	wideharpoon,
 	widehat,
 	underline,//top elements
+	//EQN top elements
+	dyad,
+	box,
+	//
 	color,
 	hex,
 	rgb,

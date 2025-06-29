@@ -44,6 +44,10 @@
 #include "PICT/PICFile.h"
 #endif
 
+#if CXIMAGE_SUPPORT_HEIF
+#include "heif/heif.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -444,11 +448,18 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 #endif
 
 #if CXIMAGE_SUPPORT_PIC
-    if (CXIMAGE_FORMAR_PIC == m_nFileType)
-    {
-        PICT::CPictFile PIC;
-        return PIC.Open(this, strFileName, !m_bIsRGBA);
-    }
+	if (CXIMAGE_FORMAR_PIC == m_nFileType)
+	{
+		PICT::CPictFile PIC;
+		return PIC.Open(this, strFileName, !m_bIsRGBA);
+	}
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this,	strFileName, !m_bIsRGBA);
+	}
 #endif
 
 	NSFile::CFileBinary oFile;
@@ -532,6 +543,13 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
         PICT::CPictFile PIC;
         return PIC.Open(this, pBuffer, nSize, !m_bIsRGBA);
     }
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this, pBuffer, nSize, !m_bIsRGBA);
+	}
 #endif
 
 	CxImage img;

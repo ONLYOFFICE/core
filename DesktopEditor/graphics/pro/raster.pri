@@ -39,7 +39,8 @@ core_android {
 INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
-	$$LIB_GRAPHICS_PRI_PATH/cximage/png
+	$$LIB_GRAPHICS_PRI_PATH/cximage/png \
+	$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api \
 
 HEADERS += \
 	$$PWD/../../graphics/Image.h \
@@ -284,6 +285,9 @@ SOURCES += \
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
+
+SOURCES += \
+	$$LIB_GRAPHICS_PRI_PATH/raster/heif/heif.cpp
 
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

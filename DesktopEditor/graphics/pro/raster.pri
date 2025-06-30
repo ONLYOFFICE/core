@@ -42,6 +42,8 @@ INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/png \
 	$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api \
 
+LIBS += $$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/Release/heif.lib
+
 HEADERS += \
 	$$PWD/../../graphics/Image.h \
 	$$PWD/../../raster/BgraFrame.h \

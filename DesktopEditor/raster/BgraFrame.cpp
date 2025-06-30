@@ -458,7 +458,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 #if CXIMAGE_SUPPORT_HEIF
 	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
 	{
-		return NSHeif::CHeifFile::Open(this,	strFileName, !m_bIsRGBA);
+		return NSHeif::CHeifFile::Open(this,	strFileName);
 	}
 #endif
 
@@ -548,7 +548,7 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 #if CXIMAGE_SUPPORT_HEIF
 	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
 	{
-		return NSHeif::CHeifFile::Open(this, pBuffer, nSize, !m_bIsRGBA);
+		return NSHeif::CHeifFile::Open(this, pBuffer, nSize);
 	}
 #endif
 

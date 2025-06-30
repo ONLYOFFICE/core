@@ -1,24 +1,20 @@
 #include "heif.h"
-#include "../../Common/3dParty/heif/libheif/libheif/api/libheif/heif.h"
-#include "../../UnicodeConverter/UnicodeConverter.h"
 #include "../../common/File.h"
 
 namespace NSHeif {
 	bool CHeifFile::isHeif(const std::wstring& fileName)
 	{
-		NSUnicodeConverter::CUnicodeConverter converter;
-
 		heif_context* ctx = heif_context_alloc();
-		bool status = heif_context_read_from_file(ctx, converter.fromUnicode(fileName, "UTF-8").c_str(), nullptr).code == heif_error_Ok;
+		defer(heif_context_free(ctx););
+		bool status = heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr).code == heif_error_Ok;
 
-		heif_context_free(ctx);
 		return status;
 	}
 
-	bool CHeifFile::isHeif(BYTE* buffer, size_t size)
+	bool CHeifFile::isHeif(BYTE* buffer, DWORD size)
 	{
 		NSFile::CFileBinary file;
-		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heif");
+		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heiс");
 
 		if (!file.CreateFile(tmp_file))
 			return false;
@@ -29,20 +25,24 @@ namespace NSHeif {
 		return isHeif(tmp_file);
 	}
 
-	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName, bool isRGBA)
+	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName)
 	{
-		NSUnicodeConverter::CUnicodeConverter converter;
-
 		heif_context* ctx = heif_context_alloc();
-		if (heif_context_read_from_file(ctx, converter.fromUnicode(fileName, "UTF-8").c_str(), nullptr).code != heif_error_Ok)
+		defer(heif_context_free(ctx););
+
+		if (IsError(heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr)))
 			return false;
 
 		heif_image_handle* handle;
-		if (heif_context_get_primary_image_handle(ctx, &handle).code != heif_error_Ok)
+		defer(heif_image_handle_release(handle););
+
+		if (IsError(heif_context_get_primary_image_handle(ctx, &handle)))
 			return false;
 
 		heif_image* img;
-		if (heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr).code != heif_error_Ok)
+		defer(heif_image_release(img););
+
+		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr)))
 			return false;
 
 		int width = heif_image_get_primary_width(img);
@@ -60,17 +60,23 @@ namespace NSHeif {
 		frame->put_Height(height);
 		frame->put_Stride(stride);
 		frame->put_Data(data);
-		frame->put_IsRGBA(isRGBA);
-		memcpy(data, source, stride * height);
 
-		heif_image_release(img);
-		heif_image_handle_release(handle);
-		heif_context_free(ctx);
+
+		for (size_t i = 0; i < height; ++i)
+		{
+			const BYTE* row = source + i * stride;
+			for (size_t j = 0; j < width; ++j)
+			{
+				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
+				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
+				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
+			}
+		}
 
 		return true;
 	}
 
-	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, size_t size, bool isRGBA)
+	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, DWORD size)
 	{
 		NSFile::CFileBinary file;
 		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heif");
@@ -82,7 +88,7 @@ namespace NSHeif {
 		file.CloseFile();
 
 		bool status = false;
-		if (Open(frame, tmp_file, isRGBA))
+		if (Open(frame, tmp_file))
 			status = true;
 
 		if (NSFile::CFileBinary::Exists(tmp_file))
@@ -92,31 +98,59 @@ namespace NSHeif {
 	}
 
 	bool CHeifFile::Save(CBgraFrame *frame, const std::wstring& dstPath)
-	{
+	{	
 		if (!frame)
 			return false;
 
 		heif_context* ctx = heif_context_alloc();
+		defer(heif_context_free(ctx););
+
 		heif_encoder* encoder;
-		if (heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder).code != heif_error_Ok)
+		defer(heif_encoder_release(encoder););
+
+		if (IsError(heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder)))
 			return false;
 
-		if (heif_encoder_set_lossy_quality(encoder, 50).code != heif_error_Ok)
+		if (IsError(heif_encoder_set_lossy_quality(encoder, 50)))
 			return false;
 
 		heif_image* img;
-		if (heif_context_encode_image(ctx, img, encoder, nullptr, nullptr).code != heif_error_Ok)
+		defer(heif_image_release(img););
+
+		int width = frame->get_Width();
+		int height = frame->get_Height();
+
+		if (IsError(heif_image_create(width, height, heif_colorspace_RGB, heif_chroma_interleaved_RGB, &img)))
 			return false;
 
-		heif_encoder_release(encoder);
+		BYTE* data = heif_image_get_plane(img, heif_channel_interleaved, nullptr);
+		const BYTE* source = frame->get_Data();
 
-		NSUnicodeConverter::CUnicodeConverter converter;
+		for (size_t i = 0; i <height; ++i)
+		{
+			const BYTE* row = source + i * frame->get_Stride();
+			for (size_t j = 0; j < width; ++j)
+			{
+				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
+				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
+				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
+			}
+		}
 
-		if (heif_context_write_to_file(ctx, converter.fromUnicode(dstPath, "UTF-8").c_str()).code != heif_error_Ok)
+		if (!data)
 			return false;
 
-		heif_context_free(ctx);
+		if (IsError(heif_context_encode_image(ctx, img, encoder, nullptr, nullptr)))
+			return false;
+
+		if (IsError(heif_context_write_to_file(ctx, m_oConverter.fromUnicode(dstPath, "UTF-8").c_str())))
+			return false;
 
 		return true;
+	}
+
+	inline bool CHeifFile::IsError(heif_error err)
+	{
+		return err.code != heif_error_Ok;
 	}
 }

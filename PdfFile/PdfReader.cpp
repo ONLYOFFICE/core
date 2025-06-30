@@ -596,7 +596,65 @@ bool CPdfReader::ValidMetaData()
 	oTID.free();
 
 	bool bRes = oID2.getString()->cmp(oID.getString()) == 0;
-	oID.free(); oID2.free();
+	oID.free();
+
+	int nNumXRefTables = xref->getNumXRefTables();
+	if (bRes && nNumXRefTables > 1)
+	{
+		GFileOffset nOffeset = xref->getXRefTablePos(nNumXRefTables - 2);
+		BaseStream* str = pPDFContext->m_pDocument->getBaseStream();
+		str->setPos(nOffeset);
+		Object oDict, obj1, obj2, obj3, obj4;
+		char buf[100];
+
+		int i, n = str->getBlock(buf, 100);
+		for (i = 0; i < n && Lexer::isSpace(buf[i]); ++i);
+		// xref table
+		if (i + 4 < n && buf[i] == 'x' && buf[i+1] == 'r' && buf[i+2] == 'e' && buf[i+3] == 'f' && Lexer::isSpace(buf[i+4]))
+		{
+			Stream* pSubStr = str->makeSubStream(nOffeset + i + 5, gFalse, 0, &oDict);
+			int c = pSubStr->getChar();
+			while (c != 't')
+				c = pSubStr->getChar();
+			pSubStr->getBlock(buf, 6);
+
+			Parser* parser = new Parser(NULL, new Lexer(NULL, pSubStr->getBaseStream()->makeSubStream(pSubStr->getPos(), gFalse, 0, &oDict)), gTrue);
+			parser->getObj(&obj1);
+			delete parser;
+			delete pSubStr;
+			if (obj1.isDict() && obj1.dictLookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID)->isString())
+			{
+				bRes = oID2.getString()->cmp(oID.getString()) != 0;
+			}
+			obj1.free();
+			oTID.free();
+		}
+		else // xref stream
+		{
+			Stream* pSubStr = str->makeSubStream(nOffeset, gFalse, 0, &oDict);
+			Parser* parser = new Parser(NULL, new Lexer(NULL, pSubStr), gTrue);
+			parser->getObj(&obj1);
+			parser->getObj(&obj2);
+			parser->getObj(&obj3);
+			parser->getObj(&obj4);
+			if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isStream())
+			{
+				Dict* pPrevXRefDict = obj4.streamGetDict();
+				if (pPrevXRefDict->lookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID)->isString())
+				{
+					bRes = oID2.getString()->cmp(oID.getString()) != 0;
+				}
+				oTID.free();
+			}
+			obj4.free();
+			obj3.free();
+			obj2.free();
+			obj1.free();
+			delete parser;
+		}
+	}
+	oID2.free(); oID.free();
+
 	return bRes;
 }
 bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)

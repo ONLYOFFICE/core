@@ -2896,6 +2896,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		}
 		if (nFlags & (1 << 9))
 			pParentObj->Add("MaxLen", pParent->nMaxLen);
+		if (nFlags & (1 << 10))
+			pParentObj->Add("TU", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sTU)).c_str(), true));
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

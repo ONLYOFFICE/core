@@ -580,28 +580,32 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 		return res;
 	}
-	else
 #endif
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == nFileType)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.CreateFileW(strFileName))
-			return false;
-		
-		CxImage img;
-
-		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
-			return false;
-
-		if (m_pPalette)
-		{
-			img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
-		}
-
-		if (!img.Encode(oFile.GetFileNative(), nFileType))
-			return false;
-
-		oFile.CloseFile();
+		return NSHeif::CHeifFile::Save(m_pData, m_lWidth, m_lHeight, strFileName);
 	}
+#endif
+
+	NSFile::CFileBinary oFile;
+	if (!oFile.CreateFileW(strFileName))
+		return false;
+		
+	CxImage img;
+
+	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
+		return false;
+
+	if (m_pPalette)
+	{
+		img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
+	}
+
+	if (!img.Encode(oFile.GetFileNative(), nFileType))
+		return false;
+
+	oFile.CloseFile();
 	return true;
 }
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)

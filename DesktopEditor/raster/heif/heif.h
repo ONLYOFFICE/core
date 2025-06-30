@@ -24,7 +24,7 @@ namespace NSHeif {
 
 		static bool Open(CBgraFrame* frame, const std::wstring& fileName);
 		static bool Open(CBgraFrame* frame, BYTE* buffer, DWORD size);
-		static bool Save(CBgraFrame* frame, const std::wstring& dstPath);
+		static bool Save(const BYTE* source, int width, int height, const std::wstring& dstPath);
 
 	private:
 		static inline bool IsError(heif_error err);

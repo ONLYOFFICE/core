@@ -14,7 +14,7 @@ namespace NSHeif {
 	bool CHeifFile::isHeif(BYTE* buffer, DWORD size)
 	{
 		NSFile::CFileBinary file;
-		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heiс");
+		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heic");
 
 		if (!file.CreateFile(tmp_file))
 			return false;
@@ -79,7 +79,7 @@ namespace NSHeif {
 	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, DWORD size)
 	{
 		NSFile::CFileBinary file;
-		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heif");
+		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heic");
 
 		if (!file.CreateFile(tmp_file))
 			return false;
@@ -97,38 +97,29 @@ namespace NSHeif {
 		return status;
 	}
 
-	bool CHeifFile::Save(CBgraFrame *frame, const std::wstring& dstPath)
-	{	
-		if (!frame)
+	bool CHeifFile::Save(const BYTE* source, int width, int height, const std::wstring& dstPath)
+	{
+		if (!source)
 			return false;
 
-		heif_context* ctx = heif_context_alloc();
-		defer(heif_context_free(ctx););
-
-		heif_encoder* encoder;
-		defer(heif_encoder_release(encoder););
-
-		if (IsError(heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder)))
-			return false;
-
-		if (IsError(heif_encoder_set_lossy_quality(encoder, 50)))
-			return false;
-
-		heif_image* img;
+		heif_image* img = nullptr;
 		defer(heif_image_release(img););
-
-		int width = frame->get_Width();
-		int height = frame->get_Height();
 
 		if (IsError(heif_image_create(width, height, heif_colorspace_RGB, heif_chroma_interleaved_RGB, &img)))
 			return false;
 
-		BYTE* data = heif_image_get_plane(img, heif_channel_interleaved, nullptr);
-		const BYTE* source = frame->get_Data();
+		if (IsError(heif_image_add_plane(img, heif_channel_interleaved, width, height, 24)))
+			return false;
 
-		for (size_t i = 0; i <height; ++i)
+		int stride;
+		BYTE* data = heif_image_get_plane(img, heif_channel_interleaved, &stride);
+
+		if (!data || stride == 0)
+			return false;
+
+		for (size_t i = 0; i < height; ++i)
 		{
-			const BYTE* row = source + i * frame->get_Stride();
+			const BYTE* row = source + i * stride;
 			for (size_t j = 0; j < width; ++j)
 			{
 				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
@@ -137,7 +128,16 @@ namespace NSHeif {
 			}
 		}
 
-		if (!data)
+		heif_context* ctx = heif_context_alloc();
+		defer(heif_context_free(ctx););
+
+		heif_encoder* encoder = nullptr;
+		defer(heif_encoder_release(encoder););
+
+		if (IsError(heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder)))
+			return false;
+
+		if (IsError(heif_encoder_set_lossy_quality(encoder, 80)))
 			return false;
 
 		if (IsError(heif_context_encode_image(ctx, img, encoder, nullptr, nullptr)))

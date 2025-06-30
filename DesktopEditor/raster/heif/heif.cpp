@@ -22,7 +22,12 @@ namespace NSHeif {
 		file.WriteFile(buffer, size);
 		file.CloseFile();
 
-		return isHeif(tmp_file);
+		bool status = isHeif(tmp_file);
+
+		if (NSFile::CFileBinary::Exists(tmp_file))
+			NSFile::CFileBinary::Remove(tmp_file);
+
+		return status;
 	}
 
 	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName)
@@ -87,9 +92,7 @@ namespace NSHeif {
 		file.WriteFile(buffer, size);
 		file.CloseFile();
 
-		bool status = false;
-		if (Open(frame, tmp_file))
-			status = true;
+		bool status = Open(frame, tmp_file);
 
 		if (NSFile::CFileBinary::Exists(tmp_file))
 			NSFile::CFileBinary::Remove(tmp_file);

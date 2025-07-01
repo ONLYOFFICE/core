@@ -161,6 +161,7 @@ CPdfWriter::CPdfWriter(NSFonts::IApplicationFonts* pAppFonts, bool isPDFA, IRend
 	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
+	m_bSplit      = false;
 	m_dPageHeight = 297;
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
@@ -2067,7 +2068,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pLineAnnot->SetCO(dCO1, dCO2);
 			}
 
-			//pLineAnnot->SetAP();
 			if (bRender)
 			{
 				pMarkupAnnot->RemoveAP();
@@ -2187,8 +2187,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			}
 			if (nFlags & (1 << 16))
 				pCaretAnnot->SetSy(pPr->GetSy());
-
-			// pMarkupAnnot->RemoveAP();
 		}
 		else if (oInfo.IsStamp())
 		{
@@ -2354,19 +2352,19 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (nFlags & (1 << 10))
 				{
 					pButtonWidget->SetCA(pPr->GetCA());
-					if (nTP == 0)
+					if (nTP == 0 && !m_bSplit)
 						DrawButtonWidget(pAppFonts, pButtonWidget, 0, NULL);
 				}
 				if (nFlags & (1 << 11))
 				{
 					pButtonWidget->SetRC(pPr->GetRC());
-					if (nTP == 0)
+					if (nTP == 0 && !m_bSplit)
 						DrawButtonWidget(pAppFonts, pButtonWidget, 1, NULL);
 				}
 				if (nFlags & (1 << 12))
 				{
 					pButtonWidget->SetAC(pPr->GetAC());
-					if (nTP == 0)
+					if (nTP == 0 && !m_bSplit)
 						DrawButtonWidget(pAppFonts, pButtonWidget, 2, NULL);
 				}
 			}
@@ -2475,7 +2473,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (pFont)
 					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
 			}
-			else if ((bValue && pTextWidget->Get("T")) || bAPValue)
+			else if (!m_bSplit && ((bValue && pTextWidget->Get("T")) || bAPValue))
 			{
 				put_FontName(wsFontName);
 				put_FontStyle(nStyle);
@@ -2542,7 +2540,7 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				if (pFont)
 					pWidgetAnnot->SetDA(pFont, oInfo.GetWidgetAnnotPr()->GetFontSize(), dFontSize, oInfo.GetWidgetAnnotPr()->GetTC());
 			}
-			else if (!arrValue.empty())
+			else if (!m_bSplit && !arrValue.empty())
 			{
 				put_FontName(wsFontName);
 				put_FontStyle(nStyle);
@@ -2904,6 +2902,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	std::vector<PdfWriter::CXObject*> arrForm;
 	for (int i = 0; i < arrBI.size(); ++i)
 	{
+		if (m_bSplit)
+			break;
+
 		std::wstring wsPath = arrBI[i];
 		if (wsPath.empty())
 		{
@@ -2923,6 +2924,9 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	std::map<int, PdfWriter::CAnnotation*> mAnnots = m_pDocument->GetAnnots();
 	for (auto it = mAnnots.begin(); it != mAnnots.end(); it++)
 	{
+		if (m_bSplit)
+			break;
+
 		PdfWriter::CAnnotation* pAnnot = it->second;
 		if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget)
 			continue;
@@ -3301,6 +3305,8 @@ bool CPdfWriter::GetBaseFont14(const std::wstring& wsFontName, int nBase14)
 		if (!FindFontPath(wsFontName, m_oFont.IsBold(), m_oFont.IsItalic(), wsFontPath, lFaceIndex))
 			return false;
 	}
+	if (m_bSplit)
+		return false;
 	if (!m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, m_oFont.GetSize(), 72, 72))
 		return false;
 	PdfWriter::EStandard14Fonts nType = (PdfWriter::EStandard14Fonts)nBase14;
@@ -3410,6 +3416,9 @@ PdfWriter::CFontCidTrueType* CPdfWriter::GetFont(const std::wstring& wsFontPath,
 	{
 		pFont = m_pDocument->FindCidTrueTypeFont(wsFontPath, lFaceIndex);
 		if (pFont)
+			return pFont;
+
+		if (m_bSplit)
 			return pFont;
 
 		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType

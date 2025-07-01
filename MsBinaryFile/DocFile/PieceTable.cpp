@@ -88,9 +88,9 @@ namespace DocFileFormat
 						int indexCpNext = (i+1) * 4;
 						int cpNext = FormatUtils::BytesToInt32(piecetable, indexCpNext, lcb);
 
-						if (cpNext > streamSize)
+						if (cpNext > fib->m_FibBase.fcMac)
 						{
-							cpNext = streamSize;
+							cpNext = fib->m_FibBase.fcMac;
 						}
 
 						//read the PCD

@@ -2722,7 +2722,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 				if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 				{
 					PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-					if (!pKid->HaveAPV())
+					if (!pKid->HaveAPV() && !m_bSplit)
 						DrawChoiceWidget(pAppFonts, pKid, pParent->arrV);
 				}
 			}
@@ -2854,13 +2854,13 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 					if (nType == PdfWriter::WidgetCombobox || nType == PdfWriter::WidgetListbox)
 					{
 						PdfWriter::CChoiceWidget* pKid = dynamic_cast<PdfWriter::CChoiceWidget*>(pObj);
-						if (!pKid->HaveAPV())
+						if (!pKid->HaveAPV() && !m_bSplit)
 							DrawChoiceWidget(pAppFonts, pKid, {pParent->sV});
 					}
 					else if (nType == PdfWriter::WidgetText)
 					{
 						PdfWriter::CTextWidget* pKid = dynamic_cast<PdfWriter::CTextWidget*>(pObj);
-						if (!pKid->HaveAPV())
+						if (!pKid->HaveAPV() && !m_bSplit)
 							DrawTextWidget(pAppFonts, pKid, pParent->sV);
 					}
 				}

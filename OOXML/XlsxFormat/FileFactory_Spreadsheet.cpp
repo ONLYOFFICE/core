@@ -46,6 +46,7 @@
 #include "Worksheets/Worksheet.h"
 #include "CalcChain/CalcChain.h"
 #include "WorkbookComments.h"
+#include "Workbook/CustomsXml.h"
 #include "Comments/ThreadedComments.h"
 #include "Comments/Comments.h"
 #include "Controls/Controls.h"
@@ -83,8 +84,8 @@ namespace OOX
 	{
 		smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation, OOX::Document *pMain)
 		{
-			OOX::CPath	oRelationFilename = oRelation.Filename();
-			CPath		oFileName;
+			OOX::CPath oRelationFilename = oRelation.Filename();
+			CPath oFileName;
 			
 			if (oRelation.IsExternal())
 			{
@@ -114,6 +115,8 @@ namespace OOX
                 return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, oRelation.rId().ToString(), true ));
 			else if ( oRelation.Type() == FileTypes::Table )
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
+			else if (oRelation.Type() == FileTypes::TableSingleCells)
+				return smart_ptr<OOX::File>(new CTableSingleCellsFile(pMain, oRootPath, oFileName));
 			else if ( oRelation.Type() == FileTypes::QueryTable )
 				return smart_ptr<OOX::File>(new CQueryTableFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == FileTypes::PivotTable )
@@ -140,7 +143,9 @@ namespace OOX
                 return smart_ptr<OOX::File>(new CExternalLink( pMain, oRootPath, oFileName, oRelation.rId().ToString() ));
 			else if ( oRelation.Type() == FileTypes::Connections )
 				return smart_ptr<OOX::File>(new CConnectionsFile( pMain, oRootPath, oFileName ));
-			
+			else if (oRelation.Type() == FileTypes::XmlMaps)
+				return smart_ptr<OOX::File>(new CXmlMapsFile(pMain, oRootPath, oFileName));
+
 			else if ( oRelation.Type() == OOX::FileTypes::Chart )
 				return smart_ptr<OOX::File>(new CChartFile( pMain, oRootPath, oFileName ));
 			else if ( oRelation.Type() == OOX::FileTypes::ChartEx )
@@ -251,6 +256,8 @@ namespace OOX
                 return smart_ptr<OOX::File>(new CWorksheet( pMain, oRootPath, oFileName, pRelation->rId().ToString(), true ));
 			else if ( pRelation->Type() == FileTypes::Table )
 				return smart_ptr<OOX::File>(new CTableFile( pMain, oRootPath, oFileName ));
+			else if (pRelation->Type() == FileTypes::TableSingleCells)
+				return smart_ptr<OOX::File>(new CTableSingleCellsFile(pMain, oRootPath, oFileName));
 			else if ( pRelation->Type() == FileTypes::QueryTable )
 				return smart_ptr<OOX::File>(new CQueryTableFile( pMain, oRootPath, oFileName ));
 			else if ( pRelation->Type() == FileTypes::PivotTable )
@@ -331,8 +338,10 @@ namespace OOX
 				return smart_ptr<OOX::File>(new CRdRichValueFile(pMain, oRootPath, oFileName));
 			else if (pRelation->Type() == FileTypes::RdRichValueTypes)
 				return smart_ptr<OOX::File>(new CRdRichValueTypesFile(pMain, oRootPath, oFileName));
+			else if (pRelation->Type() == FileTypes::XmlMaps)
+			return smart_ptr<OOX::File>(new CXmlMapsFile(pMain, oRootPath, oFileName));
 
 			return smart_ptr<OOX::File>( new UnknowTypeFile(pMain) );
 		}
-	}
+	}                                                                                                                                               
 } // namespace OOX

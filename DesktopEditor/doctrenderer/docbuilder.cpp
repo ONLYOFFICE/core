@@ -47,14 +47,6 @@ namespace NSDoctRenderer
 		RELEASEOBJECT(m_pInternal);
 	}
 
-	int CDocBuilder::OpenFile(const wchar_t* path, const wchar_t* params)
-	{
-		m_pInternal->m_nFileType = -1;
-		if (!NSDirectory::Exists(m_pInternal->m_sTmpFolder))
-			NSDirectory::CreateDirectory(m_pInternal->m_sTmpFolder);
-
-		return m_pInternal->OpenFile(path, params);
-	}
 	int CDocBuilder::SaveFile(const int& type, const wchar_t* path, const wchar_t* params)
 	{
 		return m_pInternal->SaveFile(type, path, params);
@@ -65,7 +57,7 @@ namespace NSDoctRenderer
 	}
 	bool CDocBuilder::ExecuteCommand(const wchar_t* command, CDocBuilderValue* retValue)
 	{
-		return m_pInternal->ExecuteCommand(command, retValue);
+		return m_pInternal->ExecuteCommand(command, retValue, false, false);
 	}
 
 	CDocBuilderContext CDocBuilder::GetContext(bool enterContext)

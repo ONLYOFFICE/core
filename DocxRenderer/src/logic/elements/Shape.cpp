@@ -25,7 +25,7 @@ namespace NSDocxRenderer
 	}
 
 	CShape::CShape(std::shared_ptr<CImageInfo> pInfo, const std::wstring& strDstMedia) :
-		m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
+	    m_strDstMedia(strDstMedia), m_pImageInfo(pInfo)
 	{
 		m_nRelativeHeight = m_gRelativeHeight;
 		m_gRelativeHeight += c_iStandartRelativeHeight;
@@ -94,7 +94,7 @@ namespace NSDocxRenderer
 		if (m_dHeight < 0.0001)
 			m_dHeight = 0.0001;
 
-		m_dBaselinePos = m_dTop + m_dHeight;
+		m_dBot = m_dTop + m_dHeight;
 		m_dRight = m_dLeft + m_dWidth;
 	}
 
@@ -110,40 +110,40 @@ namespace NSDocxRenderer
 		double dHorNearby = 30;
 		double dVerNearby = 30;
 
-		if(
-			// только для фигур
-			(pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-			 pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+		if (
+		        // только для фигур
+		        (pShape->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+		         pShape->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-			(this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
-			 this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
+		        (this->m_eGraphicsType == eGraphicsType::gtComplicatedFigure ||
+		         this->m_eGraphicsType == eGraphicsType::gtRectangle) &&
 
-				// все совпадает
-				pShape->m_eType == this->m_eType &&
-			pShape->m_oPen.IsEqual(&m_oPen) &&
-			pShape->m_oBrush.IsEqual(&m_oBrush) &&
-			pShape->m_bIsNoFill == m_bIsNoFill &&
-			pShape->m_bIsNoStroke == m_bIsNoStroke &&
+		        // все совпадает
+		        pShape->m_eType == this->m_eType &&
+		        pShape->m_oPen.IsEqual(&m_oPen) &&
+		        pShape->m_oBrush.IsEqual(&m_oBrush) &&
+		        pShape->m_bIsNoFill == m_bIsNoFill &&
+		        pShape->m_bIsNoStroke == m_bIsNoStroke &&
 
-				// не картинка
-				pShape->m_pImageInfo == nullptr &&
-			this->m_pImageInfo == nullptr &&
+		        // не картинка
+		        pShape->m_pImageInfo == nullptr &&
+		        this->m_pImageInfo == nullptr &&
 
-			// недалеко друг от друга по горизонтали
-			(fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
-			 fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
+		        // недалеко друг от друга по горизонтали
+		        (fabs(pShape->m_dRight - this->m_dLeft) < dHorNearby ||
+		         fabs(pShape->m_dLeft - this->m_dRight) < dHorNearby ||
 
-				 // друг в друге тоже учитываем
-				 fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
-			 fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
+		         // друг в друге тоже учитываем
+		         fabs(pShape->m_dRight - this->m_dRight) < dHorNearby ||
+		         fabs(pShape->m_dLeft - this->m_dLeft) < dHorNearby) &&
 
-			// недалеко друг от друга по вертикали
-			(fabs(pShape->m_dBaselinePos - this->m_dTop) < dVerNearby ||
-			 fabs(pShape->m_dTop - this->m_dBaselinePos) < dVerNearby ||
+		        // недалеко друг от друга по вертикали
+		        (fabs(pShape->m_dBot - this->m_dTop) < dVerNearby ||
+		         fabs(pShape->m_dTop - this->m_dBot) < dVerNearby ||
 
-				 // друг в друге
-				 fabs(pShape->m_dBaselinePos - this->m_dBaselinePos) < dVerNearby ||
-			 fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
+		         // друг в друге
+		         fabs(pShape->m_dBot - this->m_dBot) < dVerNearby ||
+		         fabs(pShape->m_dTop - this->m_dTop) < dVerNearby))
 		{
 			RecalcWithNewItem(pShape.get());
 			m_oVector.Join(std::move(pShape->m_oVector));
@@ -327,7 +327,7 @@ namespace NSDocxRenderer
 			return;
 
 		if (!pFirstShape->IsItFitLine() || !pSecondShape->IsItFitLine() || !pFirstShape->IsCorrelated(pSecondShape) ||
-		    fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
+		        fabs(pFirstShape->m_dHeight - pSecondShape->m_dHeight) > c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
 			return; // линия должна быть одного размера по высоте
 		}
@@ -360,8 +360,8 @@ namespace NSDocxRenderer
 		}
 
 		else if (fabs(pFirstShape->m_dTop - pSecondShape->m_dTop) < c_dGRAPHICS_ERROR_IN_LINES_MM * 5 &&
-				 fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
-				 fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
+		         fabs(pFirstShape->m_dWidth - pSecondShape->m_dWidth) < c_dGRAPHICS_ERROR_IN_LINES_MM &&
+		         fabs(pFirstShape->m_dLeft - pSecondShape->m_dLeft) < c_dGRAPHICS_ERROR_IN_LINES_MM)
 		{
 			// условие первого определения
 			if (pFirstShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash && pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHLongDash)
@@ -450,14 +450,14 @@ namespace NSDocxRenderer
 			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotted ||
-					 pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDottedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDottedHeavy : eLineType::ltDotted;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy ||
-						  pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				          pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotDotHeavy : eLineType::ltDotDotDash;
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
@@ -467,13 +467,13 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-					pSecondShape->m_eLineType == eLineType::ltUnknown)
+				        pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDash;
 					passed = true;
@@ -485,13 +485,13 @@ namespace NSDocxRenderer
 			if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDash)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDash ||
-					 pFirstShape->m_eLineType == eLineType::ltDashedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDashedHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashedHeavy : eLineType::ltDash;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					passed = true;
 				}
@@ -499,14 +499,14 @@ namespace NSDocxRenderer
 			else if (pSecondShape->m_eSimpleLineType == eSimpleLineType::sltHDot)
 			{
 				if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDotDash ||
-					 pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+				     pFirstShape->m_eLineType == eLineType::ltDashDotHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashDotHeavy : eLineType::ltDotDash;
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
 					passed = true;
 				}
 				else if ((pFirstShape->m_eLineType == eLineType::ltDotDotDash || pFirstShape->m_eLineType == eLineType::ltDashDotDotHeavy) &&
-						 pSecondShape->m_eLineType == eLineType::ltUnknown)
+				         pSecondShape->m_eLineType == eLineType::ltUnknown)
 				{
 					pFirstShape->m_eSimpleLineType = eSimpleLineType::sltHDot;
 					passed = true;
@@ -516,13 +516,13 @@ namespace NSDocxRenderer
 
 		case eSimpleLineType::sltHLongDash:
 			if (fabs(pFirstShape->m_dLeft +pFirstShape->m_dWidth - pSecondShape->m_dLeft) < 0.7 ||
-				pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
+			        pFirstShape->m_eLineType == eLineType::ltThick || pFirstShape->m_eLineType == eLineType::ltSingle)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltThick : eLineType::ltSingle;
 				passed = true;
 			}
 			else if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltDashLong ||
-					  pFirstShape->m_eLineType == eLineType::ltDashLongHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
+			          pFirstShape->m_eLineType == eLineType::ltDashLongHeavy) && pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_dHeight > 0.3 ? eLineType::ltDashLongHeavy : eLineType::ltDashLong;
 				passed = true;
@@ -531,8 +531,8 @@ namespace NSDocxRenderer
 
 		case eSimpleLineType::sltHWave:
 			if ((pFirstShape->m_eLineType == eLineType::ltUnknown || pFirstShape->m_eLineType == eLineType::ltWave ||
-				 pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
-				pSecondShape->m_eLineType == eLineType::ltUnknown)
+			     pFirstShape->m_eLineType == eLineType::ltWavyHeavy || pFirstShape->m_eLineType == eLineType::ltWavyDouble) &&
+			        pSecondShape->m_eLineType == eLineType::ltUnknown)
 			{
 				pFirstShape->m_eLineType = pFirstShape->m_oPen.Size > 0.3 ? eLineType::ltWavyHeavy : eLineType::ltWave;
 				passed = true;
@@ -585,7 +585,7 @@ namespace NSDocxRenderer
 		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 		double width = right - left;
 		double height = bot - top;
@@ -707,7 +707,7 @@ namespace NSDocxRenderer
 			double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 			double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 			double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+			double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 			double height = bot - top;
 			double width = right - left;
@@ -908,7 +908,7 @@ namespace NSDocxRenderer
 		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
 		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
 		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
-		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBaselinePos;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
 
 		double height = bot - top;
 		double width = right - left;
@@ -1046,5 +1046,346 @@ namespace NSDocxRenderer
 			oWriter.WriteString(L"</a:txBody>");
 		}
 		oWriter.WriteString(L"</p:sp>");
+	}
+	void CShape::ToBin(NSWasm::CData& oWriter) const
+	{
+		auto& vector = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector : m_oVector;
+		auto& data = vector.GetData();
+
+		double left = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetLeft() : m_dLeft;
+		double right = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetRight() : m_dRight;
+		double top = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetTop() : m_dTop;
+		double bot = fabs(m_dRotation) > c_dMIN_ROTATION ? m_oNoRotVector.GetBottom() : m_dBot;
+
+		double height = bot - top;
+		double width = right - left;
+
+		// WriteUniColor
+		auto WriteUniColor = [&oWriter] (long color, long alpha) {
+			BYTE r = reinterpret_cast<BYTE*>(&color)[0];
+			BYTE g = reinterpret_cast<BYTE*>(&color)[1];
+			BYTE b = reinterpret_cast<BYTE*>(&color)[2];
+
+			oWriter.StartRecord(1); // COLOR_TYPE_SRGB
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.WriteBYTE(r);
+			oWriter.WriteBYTE(1); oWriter.WriteBYTE(g);
+			oWriter.WriteBYTE(2); oWriter.WriteBYTE(b);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			// WriteMods (alpha)
+			oWriter.StartRecord(0);
+			oWriter.AddInt(1);
+			oWriter.StartRecord(1);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"alpha");
+			oWriter.WriteBYTE(1); oWriter.AddInt(alpha * 100000 / 255);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+		};
+
+		auto WriteUniFill = [&oWriter, &WriteUniColor] (long color, long alpha) {
+			oWriter.StartRecord(3); // FILL_TYPE_SOLID
+			oWriter.StartRecord(0);
+			WriteUniColor(color, alpha);
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+		};
+
+		auto write_spPr = [this, &oWriter, &vector, &data, &WriteUniFill, &top, &left, &height, &width] () {
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			// WriteRecord WriteXfrm
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.AddInt(static_cast<unsigned int>(left * c_dMMToEMU));
+			oWriter.WriteBYTE(1); oWriter.AddInt(static_cast<unsigned int>(top * c_dMMToEMU));
+			oWriter.WriteBYTE(2); oWriter.AddInt(static_cast<unsigned int>(width * c_dMMToEMU));
+			oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(height * c_dMMToEMU));
+
+			if (fabs(m_dRotation) > c_dMIN_ROTATION)
+			{
+				double degree = m_dRotation;
+				if (m_dRotation < 0) degree = 360.0 - m_dRotation;
+				oWriter.WriteBYTE(10); oWriter.AddInt(degree * c_dDegreeToAngle);
+			}
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+			// end of WriteRecord WriteXfrm
+
+			// WriteRecord WriteGeometry
+			oWriter.StartRecord(1);
+			if (vector.IsEmpty())
+			{
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"rect"); // default rect for text
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+			}
+			else
+			{
+				oWriter.StartRecord(2);
+
+				// WritePathLst
+				oWriter.StartRecord(4);
+				oWriter.AddInt(1);
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(2); oWriter.AddInt(height * c_dMMToEMU); // pathH
+				oWriter.WriteBYTE(4); oWriter.AddInt(width * c_dMMToEMU); // pathW
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.StartRecord(0);
+				oWriter.AddInt(static_cast<unsigned int>(data.size()));
+
+				auto write_coords = [&oWriter, &left, &top] (const CVectorGraphics::CPathCommand& command) {
+					BYTE byte_count = 0;
+					oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+					for (const auto& point : command.points)
+					{
+						int x_coord = static_cast<int>((point.x - left) * c_dMMToEMU);
+						int y_coord = static_cast<int>((point.y - top) * c_dMMToEMU);
+						oWriter.WriteBYTE(byte_count++);
+						oWriter.WriteStringUtf16(std::to_wstring(x_coord));
+						oWriter.WriteBYTE(byte_count++);
+						oWriter.WriteStringUtf16(std::to_wstring(y_coord));
+					}
+					oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				};
+
+				for (const auto& command : data)
+				{
+					oWriter.StartRecord(0);
+					switch (command.type)
+					{
+					case CVectorGraphics::ePathCommandType::pctMove:
+						oWriter.StartRecord(1);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctLine:
+						oWriter.StartRecord(2);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctCurve:
+						oWriter.StartRecord(4);
+						write_coords(command);
+						oWriter.EndRecord();
+						break;
+					case CVectorGraphics::ePathCommandType::pctClose:
+						oWriter.StartRecord(3);
+						oWriter.EndRecord();
+						break;
+					default:
+						break;
+					}
+					oWriter.EndRecord();
+				}
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+				oWriter.EndRecord();
+				// end of WritePathLst
+
+				// WriteRecord WriteTextRect
+				oWriter.StartRecord(5);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(L"l");
+				oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(L"t");
+				oWriter.WriteBYTE(2); oWriter.WriteStringUtf16(L"r");
+				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(L"b");
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+				// end of WriteRecord WriteTextRect
+
+				oWriter.EndRecord();
+			}
+			oWriter.EndRecord();
+			// end of WriteRecord WriteGeometry
+
+			// WriteRecord WriteUniFill
+			if (!m_bIsNoFill && m_eType != CShape::eShapeType::stVectorTexture)
+			{
+				oWriter.StartRecord(2);
+				WriteUniFill(m_oBrush.Color1, m_oBrush.Alpha1);
+				oWriter.EndRecord();
+			}
+
+			if (!m_bIsNoStroke)
+			{
+				// WriteRecord WriteLn
+				oWriter.StartRecord(3);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(m_oPen.Size * c_dMMToEMU)); // ln w
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+				oWriter.StartRecord(0);
+				WriteUniFill(m_oPen.Color, m_oPen.Alpha);
+				oWriter.EndRecord();
+
+				oWriter.EndRecord();
+			}
+		};
+
+		if (m_eType == eShapeType::stVectorTexture)
+		{
+			oWriter.StartRecord(2);
+
+			// WriteRecord WriteUniNvPr
+			oWriter.StartRecord(0);
+
+			// WriteRecord Write_cNvPr
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(0); oWriter.AddInt(m_pImageInfo->m_nId);
+			std::wstring name = L"Picture " + std::to_wstring(m_pImageInfo->m_nId);
+			oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(name);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			// WriteRecord WritePicCNvPr
+			oWriter.StartRecord(1);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(3); oWriter.WriteBool(true); // noChangeAspect
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.EndRecord();
+
+			oWriter.EndRecord();
+			// end of WriteRecord WriteUniNvPr
+
+			// WriteRecord WriteUniFill (blip)
+			oWriter.StartRecord(1);
+			oWriter.StartRecord(1); // FILL_TYPE_BLIP
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+			// WriteBlip
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			oWriter.StartRecord(2);
+			oWriter.AddInt(0); // effects
+			oWriter.EndRecord();
+
+			std::wstring rId = L"rId" + std::to_wstring(c_iStartingIdForImages + m_pImageInfo->m_nId);
+			oWriter.WriteBYTE(10); oWriter.WriteStringUtf16(rId); // embed
+
+			oWriter.EndRecord();
+			// end of WriteBlip
+
+			if (m_oBrush.Image == NULL)
+			{
+				oWriter.StartRecord(1);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+
+				// coeff
+				double src_offset_left = 1 - (width / (right - m_dImageLeft));
+				double src_offset_right = 1 - (width / (m_dImageRight - left));
+				double src_offset_top = 1 - (height / (bot - m_dImageTop));
+				double src_offset_bot = 1 - (height / (m_dImageBot - top));
+
+				// percentage
+				src_offset_left *= 100;
+				src_offset_right *= 100;
+				src_offset_top *= 100;
+				src_offset_bot *= 100;
+
+				std::wstring l = std::to_wstring(static_cast<int>(src_offset_left * 1000));
+				std::wstring t = std::to_wstring(static_cast<int>(src_offset_top * 1000));
+				std::wstring r = std::to_wstring(static_cast<int>(src_offset_right * 1000));
+				std::wstring b = std::to_wstring(static_cast<int>(src_offset_bot * 1000));
+
+				oWriter.WriteBYTE(0); oWriter.WriteStringUtf16(l);
+				oWriter.WriteBYTE(1); oWriter.WriteStringUtf16(t);
+				oWriter.WriteBYTE(2); oWriter.WriteStringUtf16(r);
+				oWriter.WriteBYTE(3); oWriter.WriteStringUtf16(b);
+
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+
+				oWriter.StartRecord(3);
+				oWriter.EndRecord();
+			}
+			else // tile
+			{
+				oWriter.StartRecord(2);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+				oWriter.WriteBYTE(0); oWriter.AddInt(100);
+				oWriter.WriteBYTE(1); oWriter.AddInt(100);
+				oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+				oWriter.EndRecord();
+			}
+
+			oWriter.EndRecord();
+			oWriter.EndRecord();
+			// end of WriteRecord WriteUniFill (blip)
+
+			// WriteRecord WriteSpPr
+			oWriter.StartRecord(2); write_spPr(); oWriter.EndRecord();
+
+			oWriter.EndRecord();
+			return;
+		}
+
+		oWriter.StartRecord(1);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+		oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+
+		// WriteRecord WriteSpPr
+		oWriter.StartRecord(1); write_spPr(); oWriter.EndRecord();
+
+		if (m_eType == eShapeType::stTextBox && !m_arOutputObjects.empty())
+		{
+			// WriteRecord WriteTxBody
+			oWriter.StartRecord(3);
+
+			// WriteRecord WriteBodyPr
+			oWriter.StartRecord(0);
+			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
+			oWriter.WriteBYTE(1); oWriter.WriteBYTE(1);      // anchor
+			oWriter.WriteBYTE(2); oWriter.WriteBool(false);  // anchorCtr
+			oWriter.WriteBYTE(3); oWriter.AddInt(0);         // bIns
+			oWriter.WriteBYTE(4); oWriter.WriteBool(true);   // compatLnSpc
+			oWriter.WriteBYTE(5); oWriter.WriteBool(false);  // forceAA
+			oWriter.WriteBYTE(6); oWriter.WriteBool(false);  // fromWordArt
+			oWriter.WriteBYTE(7); oWriter.WriteBYTE(1);      // horzOverflow
+			oWriter.WriteBYTE(8); oWriter.AddInt(0);         // lIns
+			oWriter.WriteBYTE(9); oWriter.AddInt(1);         // numCol
+			oWriter.WriteBYTE(10); oWriter.AddInt(0);        // rIns
+			oWriter.WriteBYTE(11); oWriter.AddInt(0);        // rot
+			oWriter.WriteBYTE(12); oWriter.WriteBool(false); // rtlCol
+			oWriter.WriteBYTE(13); oWriter.AddInt(0);        // spcCol
+			oWriter.WriteBYTE(14); oWriter.WriteBool(false); // spcFirstLastPara
+			oWriter.WriteBYTE(15); oWriter.AddInt(0);        // tIns
+			// 16 is upright param
+			oWriter.WriteBYTE(17); oWriter.WriteBYTE(1);     // vert
+			oWriter.WriteBYTE(18); oWriter.WriteBYTE(1);     // vertOverflow
+			oWriter.WriteBYTE(19); oWriter.WriteBYTE(1);     // vert
+
+			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
+			// todo WritePrstTxWarp
+			oWriter.EndRecord();
+			// end of WriteRecord WriteBodyPr
+
+			// WriteRecordArray WriteParagraph
+			oWriter.StartRecord(2);
+			unsigned int len = static_cast<unsigned int>(m_arOutputObjects.size());
+			oWriter.AddInt(len);
+			for (const auto& o : m_arOutputObjects)
+			{
+				oWriter.StartRecord(0);
+				o->ToBin(oWriter);
+				oWriter.EndRecord();
+			}
+
+			oWriter.EndRecord();
+			// end of WriteRecordArray WriteParagraph
+
+			oWriter.EndRecord();
+			// end of WriteRecord WriteTxBody
+		}
+		oWriter.EndRecord();
 	}
 }; // namespace NSDocxRenderer

@@ -43,6 +43,7 @@
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
+#include "../lib/xpdf/TextString.h"
 #include "XmlUtils.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
@@ -474,6 +475,13 @@ namespace PdfReader
 	void RendererOutputDev::restoreState(GfxState* pGState)
 	{
 		RELEASEINTERFACE(m_pSoftMask);
+		if (m_sStates.empty())
+		{ // Несбалансированный q/Q - сломанный файл
+			updateAll(pGState);
+			UpdateAllClip(pGState);
+			return;
+		}
+
 		m_pSoftMask = m_sStates.back().pSoftMask;
 		if (c_nGrRenderer == m_lRendererType)
 		{
@@ -698,8 +706,15 @@ namespace PdfReader
 		if (oFontObject.isDict())
 		{
 			Dict* pFontDict = oFontObject.getDict();
-			Object oFontDescriptor;
-			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+			Object oFontDescriptor, oDescendantFonts;
+			pFontDict->lookup("FontDescriptor", &oFontDescriptor);
+			if (!oFontDescriptor.isDict() && pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray())
+			{
+				oFontDescriptor.free(); oFontObject.free();
+				if (oDescendantFonts.arrayGet(0, &oFontObject)->isDict())
+					oFontObject.dictLookup("FontDescriptor", &oFontDescriptor);
+			}
+			if (oFontDescriptor.isDict())
 			{
 				Object oDictItem;
 				oFontDescriptor.dictLookup("FontName", &oDictItem);
@@ -710,6 +725,12 @@ namespace PdfReader
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
+				if (oDictItem.isString())
+				{
+					TextString* s = new TextString(oDictItem.getString());
+					oFontSelect.wsAltName = new std::wstring(NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength()));
+					delete s;
+				}
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
@@ -770,14 +791,14 @@ namespace PdfReader
 
 				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 				oDictItem.free();
-
 			}
 			else
 				oFontSelect.wsName = new std::wstring(wsFontBaseName);
-			oFontDescriptor.free();
+			oFontDescriptor.free(); oDescendantFonts.free();
 		}
 		else
 			oFontSelect.wsName = new std::wstring(wsFontBaseName);
+		oFontObject.free();
 
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
@@ -1812,12 +1833,13 @@ namespace PdfReader
 			return true;
 		case 6:
 		case 7:
-			int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
+			// int nComps = ((GfxPatchMeshShading*)pShading)->getNComps();
 			int nPatches = ((GfxPatchMeshShading*)pShading)->getNPatches();
 
 			NSGraphics::IGraphicsRenderer* GRenderer = dynamic_cast<NSGraphics::IGraphicsRenderer*>(m_pRenderer);
 			if (GRenderer)
 				GRenderer->SetSoftMask(NULL);
+
 			m_pRenderer->BeginCommand(c_nLayerType);
 
 			for (int i = 0; i < nPatches; i++) {
@@ -2168,7 +2190,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2179,7 +2201,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::eoClip(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2190,7 +2212,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::clipToStrokePath(GfxState* pGState)
 	{
-		if (m_bDrawOnlyText)
+		if (m_bDrawOnlyText || m_sStates.empty())
 			return;
 
 		if (!m_sStates.back().pClip)
@@ -2244,7 +2266,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::endTextObject(GfxState* pGState)
 	{
-		if (m_sStates.back().pTextClip && 4 <= pGState->getRender())
+		if (!m_sStates.empty() && m_sStates.back().pTextClip && 4 <= pGState->getRender())
 		{
 			AddTextClip(pGState, &m_sStates.back());
 			updateFont(pGState);
@@ -2307,10 +2329,6 @@ namespace PdfReader
 		if (3 == nRendererMode) // Невидимый текст
 			return;
 
-		double* pCTM  = pGState->getCTM();
-		double* pTm   = pGState->getTextMat();
-		GfxFont* pFont = pGState->getFont();
-
 		unsigned int unGidsCount = seString->getLength();
 		unsigned int* pGids = new unsigned int[unGidsCount];
 		if (!pGids)
@@ -2319,7 +2337,7 @@ namespace PdfReader
 		std::wstring  wsUnicodeText;
 		for (int nIndex = 0; nIndex < seString->getLength(); nIndex++)
 		{
-			char nChar = seString->getChar(nIndex);
+			int nChar = seString->getChar(nIndex);
 
 			if (NULL != oEntry.pCodeToUnicode)
 			{
@@ -2417,9 +2435,6 @@ namespace PdfReader
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
-		// Здесь мы посылаем координаты текста в пунктах
-		double dPageHeight = pGState->getPageHeight();
-
 		std::wstring wsUnicodeText;
 
 		bool isCIDFont = pFont->isCIDFont();
@@ -2477,6 +2492,7 @@ namespace PdfReader
 				unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
 				long lStyle;
 				m_pRenderer->get_FontStyle(&lStyle);
+				m_pFontManager->SetStringGID(FALSE);
 				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, 72, 72);
 
 				NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
@@ -2513,6 +2529,7 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
+							m_pFontManager->LoadFontFromFile(wsFileName, 0, dOldSize, 72, 72);
 							bReplace = true;
 						}
 					}
@@ -2584,9 +2601,13 @@ namespace PdfReader
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
 			// tmpchange
-			if (!m_sStates.back().pTextClip)
-				m_sStates.back().pTextClip = new GfxTextClip();
-			m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+			if (!m_sStates.empty())
+			{
+				if (!m_sStates.back().pTextClip)
+					m_sStates.back().pTextClip = new GfxTextClip();
+				m_sStates.back().pTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, dShiftX, /*-fabs(pFont->getFontBBox()[3]) * dTfs + */ dShiftY, 0, 0, 0);
+
+			}
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
@@ -2890,9 +2911,10 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		StreamKind nSK = pStream->getKind();
 		int nComponentsCount = pColorMap->getNumPixelComps();
+		BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 
 		// Чтение jpeg через cximage происходит быстрее чем через xpdf на ~40%
-		if (pMaskColors || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
+		if (pMaskColors || unAlpha != 255 || (nSK != strDCT || nComponentsCount != 3 || !ReadImage(&oImage, pRef, pStream)))
 		{
 			int nBufferSize = 4 * nWidth * nHeight;
 			if (nBufferSize < 1)
@@ -2906,7 +2928,6 @@ namespace PdfReader
 			ImageStream* pImageStream = new ImageStream(pStream, nWidth, nComponentsCount, pColorMap->getBits());
 			pImageStream->reset();
 
-			BYTE unAlpha = std::min(255, std::max(0, int(pGState->getFillOpacity() * 255)));
 			int nComps = pImageStream->getComps();
 			int nCheckWidth = std::min(nWidth, pImageStream->getVals() / nComps);
 			GfxRenderingIntent intent = pGState->getRenderingIntent();

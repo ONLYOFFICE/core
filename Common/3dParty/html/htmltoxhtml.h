@@ -19,7 +19,6 @@ static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|df
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";
 static std::string special_handling    = "|html|body|";
-static std::string no_entity_sub       = ""; //"|style|";
 static std::string treat_like_inline   = "|p|";
 
 static std::vector<std::string> html_tags = {"div","span","a","img","p","h1","h2","h3","h4","h5","h6",
@@ -69,10 +68,10 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
 	if (bNeedConvert)
 	{ // Определение кодировки
-		std::string sEncoding = NSStringFinder::FindPropety(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
+		std::string sEncoding = NSStringFinder::FindProperty(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
 
 		if (sEncoding.empty())
-			sEncoding = NSStringFinder::FindPropety(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
+			sEncoding = NSStringFinder::FindProperty(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;
 
 		if (!sEncoding.empty() && !NSStringFinder::Equals("utf-8", sEncoding))
 		{
@@ -211,7 +210,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	NSStringFinder::TFoundedData<char> oData;
 	
 	// Content-Type
-	oData =  NSStringFinder::FindPropety(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
+	oData =  NSStringFinder::FindProperty(sMhtContent, "content-type", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentType{oData.m_sValue};
 
 	if (sContentType.empty())
@@ -227,18 +226,18 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 	unCharsetBegin = oData.m_unEndPosition;
 
 	// name
-//	std::string sName = NSStringFinder::FindPropety(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
+//	std::string sName = NSStringFinder::FindProperty(sMhtContent, "name", {"="}, {";", "\\n", "\\r"}, 0, unLastPosition);
 //	unContentPosition = std::max(unContentPosition, unLastPosition);
 
 	// Content-Location
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-location", {":"}, {";", "\\n", "\\r"});
 	std::string sContentLocation{oData.m_sValue};
 
 	if (!oData.Empty())
 		unContentPosition = std::max(unContentPosition, oData.m_unEndPosition);
 
 	// Content-ID
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-id", {":"}, {";", "\\n", "\\r"});
 	std::string sContentID{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -252,7 +251,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 		sContentLocation = "cid:" + sContentID;
 
 	// Content-Transfer-Encoding
-	oData = NSStringFinder::FindPropety(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
+	oData = NSStringFinder::FindProperty(sMhtContent, "content-transfer-encoding", {":"}, {";", "\\n", "\\r"});
 	const std::string sContentEncoding{oData.m_sValue};
 
 	if (!oData.Empty())
@@ -266,7 +265,7 @@ static void ReadMht(const std::string& sMhtContent, std::map<std::string, std::s
 
 	if (std::string::npos != unCharsetEnd && unCharsetBegin < unCharsetEnd)
 	{
-		sCharset = NSStringFinder::FindPropety(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
+		sCharset = NSStringFinder::FindProperty(sMhtContent.substr(unCharsetBegin, unCharsetEnd - unCharsetBegin), "charset", {"="}, {";", "\\n", "\\r"}).m_sValue;
 		NSStringFinder::CutInside<std::string>(sCharset, "\"");
 	}
 
@@ -338,7 +337,7 @@ static std::string mhtTohtml(const std::string& sFileContent)
 	NSStringUtils::CStringBuilderA oRes;
 
 	// Поиск boundary
-	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindPropety(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
+	NSStringFinder::TFoundedData<char> oData{NSStringFinder::FindProperty(sFileContent, "boundary", {"="}, {"\\r", "\\n", "\""})};
 
 	size_t nFound{oData.m_unEndPosition};
 	std::string sBoundary{oData.m_sValue};
@@ -436,9 +435,25 @@ static void substitute_xml_entities_into_text(std::string& text)
 	replace_all(text, ">", "&gt;");
 }
 
+// After running through Gumbo, the values of type "&#1;" are replaced with the corresponding code '0x01'
+// Since the attribute value does not use control characters (value <= 0x09),
+// then just delete them, otherwise XmlUtils::CXmlLiteReader crashes on them.
+// bug#73486
+static void remove_control_symbols(std::string& text)
+{
+	std::string::iterator itFound = std::find_if(text.begin(), text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
+
+	while (itFound != text.end())
+	{
+		itFound = text.erase(itFound);
+		itFound = std::find_if(itFound, text.end(), [](unsigned char chValue){ return chValue <= 0x09; });
+	}
+}
+
 // Заменяет сущности " в text
 static void substitute_xml_entities_into_attributes(std::string& text)
 {
+	remove_control_symbols(text);
 	substitute_xml_entities_into_text(text);
 	replace_all(text, "\"", "&quot;");
 }
@@ -474,6 +489,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 		oBuilder.WriteString("<!DOCTYPE ");
 		oBuilder.WriteString(node->v.document.name);
 		std::string pi(node->v.document.public_identifier);
+		remove_control_symbols(pi);
 		if ((node->v.document.public_identifier != NULL) && !pi.empty())
 		{
 			oBuilder.WriteString(" PUBLIC \"");
@@ -486,7 +502,7 @@ static void build_doctype(GumboNode* node, NSStringUtils::CStringBuilderA& oBuil
 	}
 }
 
-static void build_attributes(const GumboVector* attribs, bool no_entities, NSStringUtils::CStringBuilderA& atts)
+static void build_attributes(const GumboVector* attribs, NSStringUtils::CStringBuilderA& atts)
 {
 	std::vector<std::string> arrRepeat;
 	for (size_t i = 0; i < attribs->length; ++i)
@@ -494,6 +510,10 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 		GumboAttribute* at = static_cast<GumboAttribute*>(attribs->data[i]);
 		std::string sVal(at->value);
 		std::string sName(at->name);
+
+		remove_control_symbols(sVal);
+		remove_control_symbols(sName);
+
 		atts.WriteString(" ");
 
 		bool bCheck = false;
@@ -532,8 +552,7 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 		std::string qs ="\"";
 		atts.WriteString("=");
 		atts.WriteString(qs);
-		if(!no_entities)
-			substitute_xml_entities_into_attributes(sVal);
+		substitute_xml_entities_into_attributes(sVal);
 		atts.WriteString(sVal);
 		atts.WriteString(qs);
 	}
@@ -542,7 +561,6 @@ static void build_attributes(const GumboVector* attribs, bool no_entities, NSStr
 static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA& contents, bool bCheckValidNode)
 {
 	std::string key             = "|" + get_tag_name(node) + "|";
-	bool no_entity_substitution = no_entity_sub.find(key) != std::string::npos;
 	bool keep_whitespace        = preserve_whitespace.find(key) != std::string::npos;
 	bool is_inline              = nonbreaking_inline.find(key) != std::string::npos;
 	bool is_like_inline         = treat_like_inline.find(key) != std::string::npos;
@@ -556,8 +574,8 @@ static void prettyprint_contents(GumboNode* node, NSStringUtils::CStringBuilderA
 		if (child->type == GUMBO_NODE_TEXT)
 		{
 			std::string val(child->v.text.text);
-			if(!no_entity_substitution)
-				substitute_xml_entities_into_text(val);
+			remove_control_symbols(val);
+			substitute_xml_entities_into_text(val);
 
 			// Избавление от FF
 			size_t found = val.find_first_of("\014");
@@ -596,6 +614,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	}
 
 	std::string tagname            = get_tag_name(node);
+	remove_control_symbols(tagname);
 
 	if (NodeIsUnprocessed(tagname))
 		return;
@@ -613,7 +632,6 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 	std::string closeTag           = "";
 	std::string key                = "|" + tagname + "|";
 	bool is_empty_tag              = empty_tags.find(key) != std::string::npos;
-	bool no_entity_substitution    = no_entity_sub.find(key) != std::string::npos;
 	
 	// determine closing tag type
 	if (is_empty_tag)
@@ -626,7 +644,7 @@ static void prettyprint(GumboNode* node, NSStringUtils::CStringBuilderA& oBuilde
 
 	// build attr string
 	const GumboVector* attribs = &node->v.element.attributes;
-	build_attributes(attribs, no_entity_substitution, oBuilder);
+	build_attributes(attribs, oBuilder);
 	oBuilder.WriteString(close + ">");
 
 	// prettyprint your contents

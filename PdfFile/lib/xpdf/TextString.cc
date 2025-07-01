@@ -25,16 +25,19 @@
 TextString::TextString() {
   u = NULL;
   len = size = 0;
+  bPDFDocEncoding = true;
 }
 
 TextString::TextString(GString *s) {
   u = NULL;
   len = size = 0;
+  bPDFDocEncoding = true;
   append(s);
 }
 
 TextString::TextString(TextString *s) {
   len = size = s->len;
+  bPDFDocEncoding = s->bPDFDocEncoding;
   if (len) {
     u = (Unicode *)gmallocn(size, sizeof(Unicode));
     memcpy(u, s->u, len * sizeof(Unicode));
@@ -90,6 +93,7 @@ TextString *TextString::insert(int idx, GString *s) {
     // look for a UTF-16BE BOM
     if ((s->getChar(0) & 0xff) == 0xfe &&
 	(s->getChar(1) & 0xff) == 0xff) {
+	  bPDFDocEncoding = false;
       i = 2;
       n = 0;
       while (getUTF16BE(s, &i, uBuf + n)) {
@@ -109,6 +113,7 @@ TextString *TextString::insert(int idx, GString *s) {
     // PDF files use it)
     } else if ((s->getChar(0) & 0xff) == 0xff &&
 	       (s->getChar(1) & 0xff) == 0xfe) {
+	  bPDFDocEncoding = false;
       i = 2;
       n = 0;
       while (getUTF16LE(s, &i, uBuf + n)) {
@@ -127,6 +132,7 @@ TextString *TextString::insert(int idx, GString *s) {
     } else if ((s->getChar(0) & 0xff) == 0xef &&
 	       (s->getChar(1) & 0xff) == 0xbb &&
 	       (s->getChar(2) & 0xff) == 0xbf) {
+	  bPDFDocEncoding = false;
       i = 3;
       n = 0;
       while (getUTF8(s, &i, uBuf + n)) {
@@ -143,6 +149,7 @@ TextString *TextString::insert(int idx, GString *s) {
 
     // otherwise, use PDFDocEncoding
     } else {
+	  bPDFDocEncoding = true;
       n = s->getLength();
       expand(n);
       if (idx < len) {

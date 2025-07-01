@@ -38,4 +38,44 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVe
 	m_shLangID = oNode.GetAttributeInt(L"langID");
 	m_bLockForm = oNode.GetAttributeBool(L"lockForm");
 }
+
+HWP_STRING CHWPRecordStyle::GetName() const
+{
+	return m_sName;
+}
+
+HWP_STRING CHWPRecordStyle::GetEngName() const
+{
+	return m_sEngName;
+}
+
+HWP_BYTE CHWPRecordStyle::GetType() const
+{
+	return m_chType;
+}
+
+HWP_BYTE CHWPRecordStyle::GetNextStyle() const
+{
+	return m_chNextStyle;
+}
+
+short CHWPRecordStyle::GetLangId() const
+{
+	return m_shLangID;
+}
+
+int CHWPRecordStyle::GetParaShapeId() const
+{
+	return m_nParaShape;
+}
+
+int CHWPRecordStyle::GetCharShapeId() const
+{
+	return m_nCharShape;
+}
+
+bool CHWPRecordStyle::LockForm() const
+{
+	return m_bLockForm;
+}
 }

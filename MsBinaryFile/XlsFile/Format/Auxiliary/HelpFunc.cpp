@@ -371,9 +371,9 @@ const std::wstring wchar_t2hex_str(const wchar_t val)
 }
 
 
-static boost::wregex match_hex(L"^_x[0-9A-F]{4}_");
 const std::wstring escape_ST_Xstring(const std::wstring& wstr)
 {
+	static boost::wregex match_hex(L"^_x[0-9A-F]{4}_");
 	std::wstring ret_val = L"";
 
 	for (size_t i = 0; i < wstr.length(); i++)
@@ -399,6 +399,7 @@ const std::wstring escape_ST_Xstring(const std::wstring& wstr)
 
 const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 {
+	static boost::wregex match_hex(L"^_x[0-9A-F]{4}_");
 	std::wstring::const_iterator x_pos_noncopied = wstr.begin();
 	std::wstring::const_iterator x_pos_next;// = wstr.begin();
 	std::wstring::const_iterator wstr_end = wstr.end();
@@ -778,21 +779,6 @@ bool isColumn(const std::wstring& columnName, _UINT32 listIndex, _UINT16& indexC
 		}
 	}
 	return false;
-}
-unsigned int getColumnsCount(_UINT32 listIndex)
-{
-    auto arrColumn = XLS::GlobalWorkbookInfo::mapTableColumnNames_static.find(listIndex);
-	if(arrColumn != XLS::GlobalWorkbookInfo::mapTableColumnNames_static.end())
-	{
-		auto counter = 0;
-		for(auto i:arrColumn->second)
-		{
-			if(!i.empty())
-				counter++;
-		}
-		return counter;
-	}
-	return 0;
 }
 } //namespace XMLSTUFF
 

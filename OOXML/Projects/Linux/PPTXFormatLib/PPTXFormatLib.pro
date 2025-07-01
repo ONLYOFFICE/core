@@ -105,7 +105,8 @@ SOURCES += \
 	../../../PPTXFormat/Theme/FmtScheme.cpp \
 	../../../PPTXFormat/Theme/FontScheme.cpp \
 	../../../PPTXFormat/Theme/ThemeElements.cpp \
-	\
+        ../../../PPTXFormat/Theme/VisioThemeElements.cpp \
+        \
         ../../../PPTXFormat/ShowPr/PresentationPr.cpp \
 	../../../PPTXFormat/ShowPr/Present.cpp \
 	../../../PPTXFormat/ShowPr/Kiosk.cpp \
@@ -166,6 +167,7 @@ HEADERS += \
 	../../../PPTXFormat/Theme/FmtScheme.h \
 	../../../PPTXFormat/Theme/FontScheme.h \
 	../../../PPTXFormat/Theme/ThemeElements.h \
+        ../../../PPTXFormat/Theme/VisioThemeElements.h \
 	\
 	../../../PPTXFormat/ViewProps/CSldViewPr.h \
 	../../../PPTXFormat/ViewProps/CViewPr.h \

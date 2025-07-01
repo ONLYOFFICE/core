@@ -153,7 +153,13 @@ namespace MetaFile
 
 		const std::wstring wsText{ConvertToUnicode(pString, (long)shStringLength, (NULL != pFont) ? pFont->GetCharSet() : DEFAULT_CHARSET)};
 
-		TPointD oScale((m_pParser->IsWindowFlippedX()) ? -1 : 1, (m_pParser->IsWindowFlippedY()) ? -1 : 1);
+		TPointD oScale(1, 1);
+
+		if (NULL != m_pParser)
+		{
+			oScale.X = m_pParser->IsWindowFlippedX() ? -1 : 1;
+			oScale.Y = m_pParser->IsWindowFlippedY() ? -1 : 1;
+		}
 
 		std::vector<double> arDx(0);
 
@@ -464,9 +470,9 @@ namespace MetaFile
 		m_bUpdatedClip = false;
 	}
 
-	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CWmfInterpretatorSvg::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
-		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
+		CInterpretatorSvgBase::DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CWmfInterpretatorSvg::ResetClip()

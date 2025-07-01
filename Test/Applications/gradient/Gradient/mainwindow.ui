@@ -55,7 +55,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>4</number>
      </property>
      <widget class="QWidget" name="Linear_Page">
       <widget class="QGroupBox" name="groupBox">
@@ -2468,7 +2468,7 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="page_11">
       <widget class="QGroupBox" name="groupBox_Linear">
@@ -2603,6 +2603,111 @@
         </property>
         <property name="text">
          <string/>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="page_9">
+      <widget class="QGroupBox" name="groupBox_26">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>201</width>
+         <height>101</height>
+        </rect>
+       </property>
+       <property name="title">
+        <string>Set alphas and fill color</string>
+       </property>
+       <widget class="CustomColorLabel" name="label_125">
+        <property name="geometry">
+         <rect>
+          <x>70</x>
+          <y>70</y>
+          <width>30</width>
+          <height>20</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+       <widget class="CustomAlphaLineEdit" name="lineEdit_88">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>30</y>
+          <width>31</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>0</string>
+        </property>
+        <property name="placeholderText">
+         <string>0</string>
+        </property>
+       </widget>
+       <widget class="CustomAlphaLineEdit" name="lineEdit_89">
+        <property name="geometry">
+         <rect>
+          <x>60</x>
+          <y>30</y>
+          <width>31</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>150</string>
+        </property>
+        <property name="placeholderText">
+         <string>150</string>
+        </property>
+       </widget>
+       <widget class="CustomAlphaLineEdit" name="lineEdit_90">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>30</y>
+          <width>31</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>150</string>
+        </property>
+        <property name="placeholderText">
+         <string>150</string>
+        </property>
+       </widget>
+       <widget class="CustomAlphaLineEdit" name="lineEdit_91">
+        <property name="geometry">
+         <rect>
+          <x>140</x>
+          <y>30</y>
+          <width>31</width>
+          <height>28</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>255</string>
+        </property>
+        <property name="placeholderText">
+         <string>255</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_35">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>70</y>
+          <width>49</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Fill color</string>
         </property>
        </widget>
       </widget>
@@ -3360,7 +3465,7 @@
      <x>0</x>
      <y>0</y>
      <width>1126</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>
@@ -3383,6 +3488,7 @@
    <addaction name="actionCoons_Patch_Parametric"/>
    <addaction name="actionTensor_Coons_Patch_Gradient"/>
    <addaction name="actionTensor_Coons_Patch_Parametric"/>
+   <addaction name="actionactionLuminocity_Gradient"/>
   </widget>
   <action name="actionLinear_Gradient">
    <property name="text">
@@ -3442,6 +3548,17 @@
     <enum>QAction::TextHeuristicRole</enum>
    </property>
   </action>
+  <action name="actionactionLuminocity_Gradient">
+   <property name="text">
+    <string>Luminocity Gradient</string>
+   </property>
+   <property name="toolTip">
+    <string>TensorPatchLuminosity</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::TextHeuristicRole</enum>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -3466,6 +3583,11 @@
    <slots>
     <slot>onMouseClicked()</slot>
    </slots>
+  </customwidget>
+  <customwidget>
+   <class>CustomAlphaLineEdit</class>
+   <extends>QLineEdit</extends>
+   <header>mainwindow.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

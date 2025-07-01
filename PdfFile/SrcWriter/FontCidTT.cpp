@@ -95,7 +95,11 @@ namespace PdfWriter
 		pToUnicodeDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pToUnicodeStream = pToUnicodeDict->GetStream();
 
-		CreateCIDFont2(pFont);
+		CreateCIDFont(pFont);
+		if (pFontTT->GetOpenTypeCFF())
+			CreateCIDFont0(pFont);
+		else
+			CreateCIDFont2(pFont);
 
 		m_pFace         = NULL;
 		m_pFaceMemory   = NULL;
@@ -114,11 +118,10 @@ namespace PdfWriter
 		if (m_pFaceMemory)
 			delete[] m_pFaceMemory;
 	}
-	void CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
+	void CFontCidTrueType::CreateCIDFont(CDictObject* pFont)
 	{
 		m_pFont = pFont;
 		pFont->Add("Type", "Font");
-		pFont->Add("Subtype", "CIDFontType2");
 
 		CDictObject* pSystemInfo = new CDictObject();
 		pSystemInfo->Add("Registry", new CStringObject("Adobe"));
@@ -160,9 +163,24 @@ namespace PdfWriter
 		pFontDescriptor->Add("FontWeight", m_pFontFile ? m_pFontFile->GetWeight() : 400);
 
 		m_pFontFileDict = new CDictObject(m_pXref);
-		pFontDescriptor->Add("FontFile2", m_pFontFileDict);
 
 		pFont->Add("FontDescriptor", pFontDescriptor);
+	}
+	void CFontCidTrueType::CreateCIDFont0(CDictObject* pFont)
+	{
+		pFont->Add("Subtype", "CIDFontType0");
+
+		pFont->Add("DW", 1000);
+
+		m_pFontDescriptor->Add("FontFile3", m_pFontFileDict);
+
+		m_pFontDescriptor->Add("CIDSet", new CDictObject(m_pXref));
+	}
+	void CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
+	{
+		pFont->Add("Subtype", "CIDFontType2");
+
+		m_pFontDescriptor->Add("FontFile2", m_pFontFileDict);
 
 		CDictObject* pCIDToGIDMapDict = new CDictObject(m_pXref);
 		pFont->Add("CIDToGIDMap", pCIDToGIDMapDict);
@@ -274,7 +292,6 @@ namespace PdfWriter
 
 			CStream* pStream = m_pFontFileDict->GetStream();
 			m_pFontFile->WriteTTF(pStream, NULL, pCodeToGid, m_ushCodesCount, pGlyphs, unGlyphsCount);
-			m_pFontFileDict->Add("Length1", pStream->Size());
 			m_pFontFileDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 
 			CArrayObject* pWArray = new CArrayObject();
@@ -287,12 +304,22 @@ namespace PdfWriter
 				pWidthsArray->Add(pWidths[ushIndex]);
 			}
 
-			pStream = m_pCidToGidMapStream;
-			for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
+			if (!m_pFontFile->GetOpenTypeCFF())
 			{
-				unsigned short ushGid = pCodeToGid[ushCode];
-				pStream->WriteChar(((ushGid >> 8) & 0xFF));
-				pStream->WriteChar((ushGid & 0xFF));
+				m_pFontFileDict->Add("Length1", pStream->Size());
+
+				pStream = m_pCidToGidMapStream;
+				for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
+				{
+					unsigned short ushGid = pCodeToGid[ushCode];
+					pStream->WriteChar(((ushGid >> 8) & 0xFF));
+					pStream->WriteChar((ushGid & 0xFF));
+				}
+			}
+			else
+			{
+				m_pFont->Add("DW", pWidths[0]);
+				m_pFontFileDict->Add("Subtype", "CIDFontType0C");
 			}
 
 			RELEASEARRAYOBJECTS(pCodeToGid);
@@ -339,9 +366,12 @@ namespace PdfWriter
 		}
 
 		memset((void *)pGlyphs, 0x00, m_nGlyphsCount * sizeof(unsigned char));
-		for (auto oIt : m_mGlyphs)
+		if (m_nGlyphsCount >= m_mGlyphs.size())
 		{
-			pGlyphs[oIt.first] = 1;
+			for (auto oIt : m_mGlyphs)
+			{
+				pGlyphs[oIt.first] = 1;
+			}
 		}
 
 		*ppCodeToGid  = pCodeToGID;
@@ -454,6 +484,8 @@ namespace PdfWriter
 			m_pFont->Add("BaseFont", sName);
 			m_pFontDescriptor->Add("FontName", sName);
 			m_bNeedAddFontName = false;
+
+			m_pFontFile->SetName(sFontName);
 		}
 
 		return true;
@@ -484,6 +516,7 @@ namespace PdfWriter
 					for (unsigned int i = 0; i < unCount; i++)
 						vUnicodes.push_back(pUnicodes[i]);
 					m_vUnicodes[ushCurCode] = vUnicodes;
+					m_mGlyphs[unGID] = true;
 				}
 				return ushCurCode;
 			}
@@ -530,7 +563,7 @@ namespace PdfWriter
 
 				m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, false));
 
-				EncodeGID(nSubGID, NULL, 0); // TODO необходимо верно указать Unicode для случая записи подсимволов
+				EncodeGID(nSubGID, NULL, 0);
 				FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE);
 			}
 		}
@@ -538,6 +571,8 @@ namespace PdfWriter
 		{
 			m_vWidths.push_back(0);
 			m_vGlypWidths.push_back(0);
+			m_vCodeToGid.back() = 0;
+			return 0;
 		}
 
 		return ushCode;

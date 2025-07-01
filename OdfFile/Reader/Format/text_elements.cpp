@@ -255,6 +255,9 @@ size_t paragraph::drop_cap_docx_convert(oox::docx_conversion_context & Context)
 
 void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 {
+	if (Context.get_list_style_level() == 0)
+		return;
+
 	if (content_.size() <= 0)
 		return;
 
@@ -270,7 +273,6 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 	if (!span_style_content)
 		return;
 
-	std::wstringstream ss;
 	style_text_properties* text_props = span_style_content->get_style_text_properties();
 
 	if (text_props)
@@ -283,17 +285,7 @@ void paragraph::process_list_bullet_style(oox::docx_conversion_context& Context)
 				paragraph_style->content()->get_style_text_properties(true)->content_.apply_from(text_props->content_);
 			}
 		}
-
-		const _CP_OPT(odf_types::font_weight)& font_weight = text_props->content_.fo_font_weight_;
-		const _CP_OPT(odf_types::font_style)& font_style = text_props->content_.fo_font_style_;
-
-		if (font_weight && font_weight->get_type() == odf_types::font_weight::WBold)
-			ss << "<w:b/>";
-		if (font_style && font_style->get_type() == odf_types::font_style::Italic)
-			ss << "<w:i/>";
 	}
-
-	Context.get_text_tracked_context().dumpRPrInsDel_ = ss.str();
 }
 
 void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std::wstring) next_element_style_name)
@@ -365,7 +357,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
         }
 		else next_masterPageName = boost::none;
     } 
-	if (next_section_ || next_end_section_) // remove in text::section  - GreekSynopsis.odt
+	if (!Context.process_headers_footers_ && (next_section_ || next_end_section_)) // remove in text::section  - GreekSynopsis.odt
 	{
 		Context.get_section_context().get_last().is_dump_ = true;
 		is_empty = false;
@@ -526,6 +518,15 @@ void soft_page_break::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.process_headers_footers_) 
 		return;
+
+	std::wstring currentMasterPageName = Context.get_master_page_name();
+	style_master_page* masterPage = Context.root()->odf_context().pageLayoutContainer().master_page_by_name(currentMasterPageName);
+
+	if (masterPage && masterPage->attlist_.style_next_style_name_)
+	{
+		Context.set_next_master_page_name(*masterPage->attlist_.style_next_style_name_);
+		Context.next_dump_page_properties(true);
+	}
 	
 	if (0 == Context.get_page_break_after() && 0 == Context.get_page_break_before())
 	{

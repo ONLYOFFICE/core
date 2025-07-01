@@ -166,6 +166,48 @@ JSSmart<CJSValue> CDrawingFileEmbed::FreeWasmData(JSSmart<CJSValue> typedArray)
 	return NULL;
 }
 
+JSSmart<CJSValue> CDrawingFileEmbed::SplitPages(JSSmart<CJSValue> arrPageIndexes, JSSmart<CJSValue> data)
+{
+	JSSmart<CJSArray> arrPages = arrPageIndexes->toArray();
+	CJSDataBuffer changes;
+	if (data->isTypedArray())
+		changes = data->toTypedArray()->getData();
+
+	int nCountPages = arrPages->getCount();
+	int* pPages = NULL;
+	if (0 < nCountPages)
+		pPages = new int[nCountPages];
+
+	for (int i = 0; i < nCountPages; i++)
+		pPages[i] = arrPages->get(i)->toInt32();
+
+	JSSmart<CJSValue> res = WasmMemoryToJS(m_pFile->SplitPages(pPages, nCountPages, changes.Data, (LONG)changes.Len));
+	if (pPages)
+		delete [] pPages;
+	return res;
+}
+JSSmart<CJSValue> CDrawingFileEmbed::MergePages(JSSmart<CJSValue> data, JSSmart<CJSValue> nMaxID, JSSmart<CJSValue> sPrefixForm)
+{
+	bool result = false;
+	if (m_pFile)
+	{
+		JSSmart<CJSTypedArray> dataPtr = data->toTypedArray();
+		int maxID = nMaxID->toInt32();
+		std::string prefix = sPrefixForm->toStringA();
+		CJSDataBuffer buffer = dataPtr->getData();
+		result = m_pFile->MergePages(buffer.Data, (LONG)buffer.Len, maxID, prefix, true);
+		if (buffer.IsExternalize)
+			buffer.Free();
+	}
+	return CJSContext::createBool(result);
+}
+JSSmart<CJSValue> CDrawingFileEmbed::UnmergePages()
+{
+	if (m_pFile)
+		return CJSContext::createBool(m_pFile->UnmergePages());
+	return CJSContext::createBool(false);
+}
+
 bool EmbedDrawingFile(JSSmart<NSJSBase::CJSContext>& context, IOfficeDrawingFile* pFile)
 {
 	CJSContext::Embed<CDrawingFileEmbed>(false);

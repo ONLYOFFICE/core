@@ -145,6 +145,21 @@ CFile.prototype["isNeedPassword"] = function()
 {
 	return this._isNeedPassword;
 };
+CFile.prototype["SplitPages"] = function(arrPageIndex, arrayBufferChanges)
+{
+	let ptr = this._SplitPages(arrPageIndex, arrayBufferChanges);
+	let res = ptr.getMemory(true);
+	ptr.free();
+	return res;
+};
+CFile.prototype["MergePages"] = function(arrayBuffer, maxID, prefixForm)
+{
+	return this._MergePages(arrayBuffer, maxID, prefixForm);
+};
+CFile.prototype["UndoMergePages"] = function()
+{
+	return this._UndoMergePages();
+};
 
 // INFO DOCUMENT
 CFile.prototype.getInfo = function()
@@ -180,6 +195,38 @@ CFile.prototype.getInfo = function()
 
 	ptr.free();
 	return this.pages.length > 0;
+};
+CFile.prototype.getPagesInfo = function()
+{
+	if (!this.nativeFile)
+		return [];
+
+	let ptr = this._getInfo();
+	let reader = ptr.getReader();
+	if (!reader) return [];
+
+	// change StartID
+	this.StartID = reader.readInt();
+
+	let _pages = [];
+	let nPages = reader.readInt();
+	for (let i = 0; i < nPages; i++)
+	{
+		let rec = {};
+		rec["W"] = reader.readInt();
+		rec["H"] = reader.readInt();
+		rec["Dpi"] = reader.readInt();
+		rec["Rotate"] = reader.readInt();
+		rec["originIndex"] = i;
+		rec.fonts = [];
+		rec.fontsUpdateType = UpdateFontsSource.Undefined;
+		rec.text = null;
+		_pages.push(rec);
+	}
+	// skip json_info
+
+	ptr.free();
+	return _pages;
 };
 
 CFile.prototype["getStructure"] = function()
@@ -944,13 +991,16 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		rec["alignment"] = reader.readByte();
 	rec["flag"] = reader.readInt();
 	// 12.7.3.1
-	rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
-	rec["required"] = (rec["flag"] >> 1) & 1; // Required
-	rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+	if (rec["flag"] >= 0)
+	{
+		rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+		rec["required"] = (rec["flag"] >> 1) & 1; // Required
+		rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+	}
 	let flags = reader.readInt();
 	// Alternative field name, used in tooltip and error messages - TU
 	if (flags & (1 << 0))
-		rec["userName"] = readStringFunc.call(reader);
+		rec["tooltip"] = readStringFunc.call(reader);
 	// Default style string (CSS2 format) - DS
 	if (flags & (1 << 1))
 		rec["defaultStyle"] = readStringFunc.call(reader);
@@ -994,6 +1044,8 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		rec["name"] = readStringFunc.call(reader);
 	if (flags & (1 << 19))
 		rec["font"]["AP"] = readStringFunc.call(reader);
+	if (flags & (1 << 20))
+		rec["meta"] = readStringFunc.call(reader);
 	// Action
 	let nAction = reader.readInt();
 	if (nAction > 0)
@@ -1062,8 +1114,11 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		if (flags & (1 << 14))
 			rec["ExportValue"] = readStringFunc.call(reader);
 		// 12.7.4.2.1
-		rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
-		rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+		if (rec["flag"] >= 0)
+		{
+			rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+			rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+		}
 	}
 	else if (rec["type"] == 30)
 	{
@@ -1071,7 +1126,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["value"] = readStringFunc.call(reader);
 		if (flags & (1 << 10))
 			rec["maxLen"] = reader.readInt();
-		if (rec["flag"] & (1 << 25))
+		if (flags & (1 << 11))
 			rec["richValue"] = readStringFunc.call(reader);
 		if (isRead)
 		{
@@ -1081,13 +1136,16 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
 		}
 		// 12.7.4.3
-		rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
-		rec["password"]        = (rec["flag"] >> 13) & 1; // Password
-		rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
-		rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
-		rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
-		rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
-		rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
+		if (rec["flag"] >= 0)
+		{
+			rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+			rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+			rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+			rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+			rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+			rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+			rec["richText"]        = (rec["flag"] >> 25) & 1; // RichText
+		}
 	}
 	else if (rec["type"] == 31 || rec["type"] == 32)
 	{
@@ -1144,15 +1202,21 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
 		}
 		// 12.7.4.4
-		rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
-		rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
-		rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
-		rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+		if (rec["flag"] >= 0)
+		{
+			rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+			rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+			rec["doNotSpellCheck"]   = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+			rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+		}
+		
 	}
 	else if (rec["type"] == 33)
 	{
 		rec["Sig"] = (flags >> 9) & 1;
 	}
+	if (rec["flag"] < 0)
+		delete rec["flag"];
 }
 
 CFile.prototype["getInteractiveFormsInfo"] = function()
@@ -1162,66 +1226,118 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 	if (!reader) return {};
 
 	let res = {};
-	let k = reader.readInt();
-	if (k > 0)
-		res["CO"] = [];
-	for (let i = 0; i < k; ++i)
-		res["CO"].push(reader.readInt());
-	
-	k = reader.readInt();
-	if (k > 0)
-		res["Parents"] = [];
-	for (let i = 0; i < k; ++i)
+	while (reader.isValid())
 	{
-		let rec = {};
-		rec["i"] = reader.readInt();
-		let flags = reader.readInt();
-		if (flags & (1 << 0))
-			rec["name"] = reader.readString();
-		if (flags & (1 << 1))
-			rec["value"] = reader.readString();
-		if (flags & (1 << 2))
-			rec["defaultValue"] = reader.readString();
-		if (flags & (1 << 3))
-		{
-			let n = reader.readInt();
-			rec["curIdxs"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["curIdxs"].push(reader.readInt());
-		}
-		if (flags & (1 << 4))
-			rec["Parent"] = reader.readInt();
-		if (flags & (1 << 5))
-		{
-			let n = reader.readInt();
-			rec["value"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["value"].push(reader.readString());
-		}
-		if (flags & (1 << 6))
-		{
-			let n = reader.readInt();
-			rec["Opt"] = [];
-			for (let i = 0; i < n; ++i)
-				rec["Opt"].push(reader.readString());
-		}
-		res["Parents"].push(rec);
-	}
-
-	res["Fields"] = [];
-	k = reader.readInt();
-	for (let q = 0; reader.isValid() && q < k; ++q)
-	{
-		let rec = {};
-		// Widget type - FT
-		// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
-		rec["type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		// Widget type
-		readWidgetType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+		let k = reader.readInt();
+		if (k > 0 && res["CO"] == undefined)
+			res["CO"] = [];
+		for (let i = 0; i < k; ++i)
+			res["CO"].push(reader.readInt());
 		
-		res["Fields"].push(rec);
+		k = reader.readInt();
+		if (k > 0 && res["Parents"] == undefined)
+			res["Parents"] = [];
+		for (let i = 0; i < k; ++i)
+		{
+			let rec = {};
+			rec["i"] = reader.readInt();
+			let flags = reader.readInt();
+			if (flags & (1 << 0))
+				rec["name"] = reader.readString();
+			if (flags & (1 << 1))
+				rec["value"] = reader.readString();
+			if (flags & (1 << 2))
+				rec["defaultValue"] = reader.readString();
+			if (flags & (1 << 3))
+			{
+				let n = reader.readInt();
+				rec["curIdxs"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["curIdxs"].push(reader.readInt());
+			}
+			if (flags & (1 << 4))
+				rec["Parent"] = reader.readInt();
+			if (flags & (1 << 5))
+			{
+				let n = reader.readInt();
+				rec["value"] = [];
+				for (let i = 0; i < n; ++i)
+					rec["value"].push(reader.readString());
+			}
+			if (flags & (1 << 6))
+			{
+				let n = reader.readInt();
+				rec["opt"] = [];
+				for (let i = 0; i < n; ++i)
+				{
+					let opt1 = reader.readString();
+					let opt2 = reader.readString();
+					if (opt1 == "")
+						rec["opt"].push(opt2);
+					else
+						rec["opt"].push([opt2, opt1]);
+				}
+			}
+			if (flags & (1 << 7))
+			{
+				rec["flag"] = reader.readInt();
+
+				rec["readOnly"] = (rec["flag"] >> 0) & 1; // ReadOnly
+				rec["required"] = (rec["flag"] >> 1) & 1; // Required
+				rec["noexport"] = (rec["flag"] >> 2) & 1; // NoExport
+
+				rec["NoToggleToOff"]  = (rec["flag"] >> 14) & 1; // NoToggleToOff
+				if ((rec["flag"] >> 15) & 1) // If radiobutton
+					rec["radiosInUnison"] = (rec["flag"] >> 25) & 1; // RadiosInUnison
+				else
+					rec["richText"]       = (rec["flag"] >> 25) & 1; // RichText
+
+				rec["multiline"]       = (rec["flag"] >> 12) & 1; // Multiline
+				rec["password"]        = (rec["flag"] >> 13) & 1; // Password
+				rec["fileSelect"]      = (rec["flag"] >> 20) & 1; // FileSelect
+				rec["doNotSpellCheck"] = (rec["flag"] >> 22) & 1; // DoNotSpellCheck
+				rec["doNotScroll"]     = (rec["flag"] >> 23) & 1; // DoNotScroll
+				rec["comb"]            = (rec["flag"] >> 24) & 1; // Comb
+
+				rec["editable"]          = (rec["flag"] >> 18) & 1; // Edit
+				rec["multipleSelection"] = (rec["flag"] >> 21) & 1; // MultiSelect
+				rec["commitOnSelChange"] = (rec["flag"] >> 26) & 1; // CommitOnSelChange
+			}
+			if (flags & (1 << 8))
+			{
+				let nAction = reader.readInt();
+				if (nAction > 0)
+					rec["AA"] = {};
+				for (let i = 0; i < nAction; ++i)
+				{
+					let AAType = reader.readString();
+					rec["AA"][AAType] = {};
+					readAction(reader, rec["AA"][AAType], reader.readDouble, reader.readString);
+				}
+			}
+			if (flags & (1 << 9))
+				rec["maxLen"] = reader.readInt();
+			if (flags & (1 << 10))
+				rec["tooltip"] = reader.readString();
+			res["Parents"].push(rec);
+		}
+
+		k = reader.readInt();
+		if (k > 0 && res["Fields"] == undefined)
+			res["Fields"] = [];
+		for (let q = 0; reader.isValid() && q < k; ++q)
+		{
+			let rec = {};
+			// Widget type - FT
+			// 26 - Unknown, 27 - button, 28 - radiobutton, 29 - checkbox, 30 - text, 31 - combobox, 32 - listbox, 33 - signature
+			rec["type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			// Widget type
+			readWidgetType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+
+			res["Fields"].push(rec);
+		}
 	}
 
 	ptr.free();
@@ -1347,19 +1463,23 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 	let res = [];
 	while (reader.isValid())
 	{
-		let rec = {};
-		// Annotation type
-		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
-		// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
-		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
-		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
-		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-		rec["Type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		// Annot type
-		readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
-		res.push(rec);
+		let n = reader.readInt();
+		for (let i = 0; i < n; ++i)
+		{
+			let rec = {};
+			// Annotation type
+			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+			rec["Type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			// Annot type
+			readAnnotType(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
+			res.push(rec);
+		}
 	}
 	
 	ptr.free();
@@ -1448,8 +1568,13 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 CFile.prototype["scanPage"] = function(page, mode)
 {
 	let ptr = this._scanPage(page, mode);
-	let reader = ptr.getReader();
+	if (mode == 2) {
+		data = ptr.getMemory(true);
+		ptr.free();
+		return data;
+	}
 
+	let reader = ptr.getReader();
 	if (!reader) return [];
 
 	let shapesCount = reader.readInt();

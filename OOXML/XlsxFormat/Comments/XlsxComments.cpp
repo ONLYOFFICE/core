@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -50,6 +50,7 @@
 #include "../SharedStrings/Si.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 namespace OOX
 {
@@ -552,6 +553,17 @@ mc:Ignorable=\"xr\">");
 					castedPtr->stRelId.value = m_oId->GetValue();
             return ptr;
 		}
+        void CLegacyDrawingWorksheet::toBin(XLS::StreamCacheWriterPtr& writer)
+        {
+            auto record = writer->getNextRecord(XLSB::rt_LegacyDrawing);
+            XLSB::RelID stRelId;
+            if(m_oId.IsInit())
+                stRelId = m_oId->GetValue();
+            else
+                stRelId.value.setSize(0xFFFFFFFF);
+            *record << stRelId;
+            writer->storeNextRecord(record);
+        }
 		EElementType CLegacyDrawingWorksheet::getType () const
 		{
 			return et_x_LegacyDrawingWorksheet;

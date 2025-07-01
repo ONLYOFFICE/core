@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2024
  *
  * This program is a free software product. You can redistribute it and/or
@@ -38,10 +38,15 @@
 #include "../../XlsbFormat/Biff12_unions/MG.h"
 #include "../../XlsbFormat/Biff12_unions/MGMAPS.h"
 #include "../../XlsbFormat/Biff12_unions/MAP.h"
+#include "../../XlsbFormat/Biff12_unions/PCDCALCITEMS.h"
+#include "../../XlsbFormat/Biff12_unions/PCDCALCITEM.h"
 
 #include "../../XlsbFormat/Biff12_records/BeginDim.h"
 #include "../../XlsbFormat/Biff12_records/BeginMG.h"
 #include "../../XlsbFormat/Biff12_records/BeginMap.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDCalcItems.h"
+#include "../../XlsbFormat/Biff12_records/BeginPCDCalcItem.h"
+
 
 namespace OOX
 {
@@ -362,6 +367,138 @@ XLS::BaseObjectPtr CMeasureDimensionMap::toBin()
         ptr->img = m_oMeasureGroup.get();
 
     return objectPtr;
+}
+
+void CCalculatedItems::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+    WritingElement_ReadAttributes_Start( oReader )
+        WritingElement_ReadAttributes_Read_if		( oReader, L"count", m_oCount )
+    WritingElement_ReadAttributes_End( oReader )
+
+    auto nCurDepth = oReader.GetDepth();
+    while( oReader.ReadNextSiblingNode( nCurDepth ) )
+    {
+        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+
+        if ( L"calculatedItem" == sName )
+        {
+            CCalculatedItem* pCalcItem = new CCalculatedItem();
+            *pCalcItem = oReader;
+            m_arrItems.push_back(pCalcItem);
+        }
+    }
+}
+
+void CCalculatedItems::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+    writer.WriteString(L"<calculatedItems");
+    WritingStringAttrInt(L"count", (int)m_arrItems.size());
+    if(!m_arrItems.empty())
+        writer.WriteString(L">");
+    else
+    {
+        writer.WriteString(L"/>");
+        return;
+    }
+
+    for ( size_t i = 0; i < m_arrItems.size(); ++i)
+    {
+        if (  m_arrItems[i] )
+        {
+            m_arrItems[i]->toXML(writer);
+        }
+    }
+    writer.WriteString(L"</calculatedItems>");
+}
+
+void CCalculatedItems::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::PCDCALCITEMS*>(obj.get());
+    if(!ptr)
+        return;
+    m_oCount = (_UINT32)ptr->m_arPCDCALCITEM.size();
+    for(auto i:ptr->m_arPCDCALCITEM)
+        m_arrItems.push_back(new CCalculatedItem(i));
+}
+
+XLS::BaseObjectPtr CCalculatedItems::toBin()
+{
+    auto ptr(new XLSB::PCDCALCITEMS);
+    XLS::BaseObjectPtr objectPtr(ptr);
+    for(auto i : m_arrItems)
+        ptr->m_arPCDCALCITEM.push_back(i->toBin());
+
+    return objectPtr;
+}
+
+
+void CCalculatedItem::fromXML(XmlUtils::CXmlLiteReader& oReader)
+{
+    ReadAttributes( oReader );
+    int nCurDepth = oReader.GetDepth();
+    while( oReader.ReadNextSiblingNode( nCurDepth ) )
+    {
+        std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
+        if ( L"pivotArea" == sName )
+            m_oPivotArea = oReader;
+        else if (L"extLst" == sName)
+            m_oExtLst = oReader;
+    }
+}
+
+void CCalculatedItem::toXML(NSStringUtils::CStringBuilder& writer) const
+{
+    writer.WriteString(L"<calculatedItem");
+    WritingStringNullableAttrUInt( L"field", m_oField,  m_oField.get());
+    WritingStringNullableAttrEncodeXmlString2(L"formula", m_oFormula);
+    if(!m_oExtLst.IsInit() && !m_oPivotArea.IsInit())
+    {
+        writer.WriteString(L"/>");
+        return;
+    }
+    writer.WriteString(L">");
+    if(m_oPivotArea.IsInit())
+        m_oPivotArea->toXML(writer);
+    if(m_oExtLst.IsInit())
+        writer.WriteString(m_oExtLst->toXMLWithNS(_T("")));
+     writer.WriteString(L"</calculatedItem>");
+}
+
+void CCalculatedItem::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+{
+    WritingElement_ReadAttributes_Start( oReader )
+        WritingElement_ReadAttributes_Read_if	( oReader, L"field", m_oField )
+        WritingElement_ReadAttributes_Read_else_if	( oReader, L"formula", m_oFormula )
+    WritingElement_ReadAttributes_End( oReader )
+}
+
+XLS::BaseObjectPtr CCalculatedItem::toBin()
+{
+    auto ptr(new XLSB::PCDCALCITEM);
+    auto ptr1(new XLSB::BeginPCDCalcItem);
+    ptr->m_BrtBeginPCDCalcItem = XLS::BaseObjectPtr{ptr1};
+    XLS::BaseObjectPtr objectPtr(ptr);
+
+    if(m_oFormula.IsInit())
+        ptr1->fmla = m_oFormula.get();
+
+    if(m_oPivotArea.IsInit())
+        ptr->m_PIVOTRULE = m_oPivotArea->toBin();
+    return objectPtr;
+}
+
+void CCalculatedItem::fromBin(XLS::BaseObjectPtr& obj)
+{
+    auto ptr = static_cast<XLSB::PCDCALCITEM*>(obj.get());
+    auto ptr1 = static_cast<XLSB::BeginPCDCalcItem*>(ptr->m_BrtBeginPCDCalcItem.get());
+
+    m_oFormula = ptr1->fmla.getAssembledFormula();
+
+    if(ptr->m_PIVOTRULE != nullptr)
+    {
+        m_oPivotArea = ptr->m_PIVOTRULE;
+    }
+
 }
 
 }

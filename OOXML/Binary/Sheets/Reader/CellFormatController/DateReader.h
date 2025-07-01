@@ -98,6 +98,11 @@ private:
     /// @return true если строка является именем месяца
     bool parseMonthName(std::vector<wchar_t> &stringBuf, tm &date);
 
-    _INT32 lcid_;
+    _INT32 lcid_ = 9;
+
+    /// @brief счетчик ячеек
+    _UINT16 cellCounter_ = 0;
+
+    bool dateFound_ = false;
 };
 

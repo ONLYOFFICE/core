@@ -449,8 +449,9 @@ namespace MetaFile
 
 		unsigned int ulBitsSizeSkip = 0 == ulBitsSize ? 0 : ((int)(((double)ulBitsSize - 0.5) / 4) + 1) * 4;
 		m_oStream.Skip(ulBitsSizeSkip);
+		unsigned int unColorUsed;
 
-		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+		MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 
 		return true;
 	}
@@ -593,6 +594,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEBRUSHINDIRECT(ulBrushIndex, pBrush);
+		else
+			delete pBrush;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTCOLOR()
@@ -630,6 +633,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEFONTINDIRECTW(ulIndex, pFont);
+		else
+			delete pFont;
 	}
 
 	void CEmfParser::Read_EMR_SETTEXTALIGN()
@@ -722,6 +727,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_EXTCREATEPEN(ulPenIndex, pPen, arUnused);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_CREATEPEN()
@@ -744,6 +751,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPEN(ulPenIndex, widthX, pPen);
+		else
+			delete pPen;
 	}
 
 	void CEmfParser::Read_EMR_SETPOLYFILLMODE()
@@ -1011,6 +1020,8 @@ namespace MetaFile
 
 		if (!BanEMFProcesses())
 			HANDLE_EMR_CREATEPALETTE(ulPaletteIndex, pPalette);
+		else
+			delete pPalette;
 	}
 
 	void CEmfParser::Read_EMR_SELECTPALETTE()

@@ -71,7 +71,6 @@ public:
 	void set_anchor		(std::wstring anchor, double x_pt, double y_pt);
 	void set_property	(odf_reader::_property p);
 	std::vector<odf_reader::_property> & get_properties();
-    void set_clipping	(const std::wstring & str );
 	void set_fill		(_oox_fill & fill);
 	void set_hidden		(bool val);
 	
@@ -101,6 +100,9 @@ public:
 		void set_media		(const std::wstring & path);
 		void set_media_param(std::wstring name, std::wstring value);
 	void end_frame();
+
+	void start_control(const std::wstring& ctrlPropId, int type);
+	void end_control();
 
 	void start_action	(std::wstring action);
 		void set_link	(std::wstring link, _rels_type typeRels = typeHyperlink); 

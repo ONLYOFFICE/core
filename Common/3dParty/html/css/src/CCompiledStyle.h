@@ -1,9 +1,6 @@
 #ifndef CCOMPILEDSTYLE_H
 #define CCOMPILEDSTYLE_H
 
-#include "CssCalculator_global.h"
-#include "ConstValues.h"
-
 #include <map>
 #include <set>
 #include <vector>

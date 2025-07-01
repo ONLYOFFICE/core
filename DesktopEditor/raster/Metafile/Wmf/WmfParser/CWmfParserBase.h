@@ -188,6 +188,7 @@ namespace MetaFile
 		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle) const;
 
 		void MoveTo(short shX, short shY);
+		void MoveToD(double dX, double dY);
 		void LineTo(short shX, short shY);
 		void ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep);
 		void ClosePath();
@@ -196,7 +197,7 @@ namespace MetaFile
 
 		void RegisterPoint(short shX, short shY);
 
-		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
+		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight, unsigned int& unColorUsed);
 		void DrawImage(const TRectL& oDestRect, const TRectL& oSrcRect, unsigned int unColorUsage, unsigned int unRasterOperation);
 
 		static BYTE* ClipBuffer(BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight, TRectL& oNewRect);

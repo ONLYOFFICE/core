@@ -55,11 +55,14 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 	CP_APPLY_ATTR(L"draw:fit-to-contour",				draw_fit_to_contour_);
 	CP_APPLY_ATTR(L"style:shrink-to-fit",				style_shrink_to_fit_);
 	CP_APPLY_ATTR(L"draw:fit-to-size",					draw_fit_to_size_str_);
+	CP_APPLY_ATTR(L"draw:ole-draw-aspect",				draw_ole_draw_aspect_);
 
 	CP_APPLY_ATTR(L"draw:stroke",						draw_stroke_); 
 	CP_APPLY_ATTR(L"draw:stroke-dash",					draw_stroke_dash_); 
 	CP_APPLY_ATTR(L"draw:marker-start",					draw_marker_start_); 
 	CP_APPLY_ATTR(L"draw:marker-end",					draw_marker_end_); 
+	CP_APPLY_ATTR(L"draw:marker-start-width",			draw_marker_start_width_);
+	CP_APPLY_ATTR(L"draw:marker-end-width",				draw_marker_end_width_);
 
 	CP_APPLY_ATTR(L"draw:stroke-gradient-name",			draw_stroke_gradient_name_);
 
@@ -127,16 +130,18 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	{
 		properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
 	}
+	if (draw_marker_start_width_)
+	{
+		properties.push_back(_property(L"marker-start-width", draw_marker_start_width_->get_value_unit(odf_types::length::pt)));
+	}
 	if (draw_marker_end_)
 	{
-		//const std::wstring style_name = draw_marker_end_->get();
-		//if (!style_name.empty())
-		////if (office_element_ptr style = styles.find_by_style_name(style_name))
-		//{
-			properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
-		//}
+		properties.push_back(_property(L"marker-end", draw_marker_end_->get() ));
 	}
-	
+	if (draw_marker_end_width_)
+	{
+		properties.push_back(_property(L"marker-end-width", draw_marker_end_width_->get_value_unit(odf_types::length::pt)));
+	}
 	if (draw_textarea_horizontal_align_)properties.push_back(_property(L"textarea-horizontal_align",draw_textarea_horizontal_align_->get_type() ));
 	if (draw_textarea_vertical_align_)	properties.push_back(_property(L"textarea-vertical_align",	draw_textarea_vertical_align_->get_type() ));
 
@@ -149,7 +154,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 
 	if (common_draw_fill_attlist_.draw_color_mode_)
 	{
-		properties.push_back(_property(L"color-mode", *common_draw_fill_attlist_.draw_color_mode_));
+		properties.push_back(_property(L"color-mode", (int)common_draw_fill_attlist_.draw_color_mode_->get_type()));
 	}
 	if (common_draw_fill_attlist_.draw_luminance_)
 	{
@@ -188,7 +193,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (fo_wrap_option_)	
 		properties.push_back(_property(L"text-wrap", (int)fo_wrap_option_->get_type()));
 }
-void graphic_format_properties::apply_from(const graphic_format_properties * Other)
+void graphic_format_properties::apply_from(const graphic_format_properties *Other)
 {
 	if (Other == NULL) return;
 
@@ -198,13 +203,16 @@ void graphic_format_properties::apply_from(const graphic_format_properties * Oth
 	_CP_APPLY_PROP3(draw_stroke_dash_); 
 	_CP_APPLY_PROP3(draw_marker_start_); 
 	_CP_APPLY_PROP3(draw_marker_end_); 
-	_CP_APPLY_PROP3(draw_textarea_horizontal_align_); 
+	_CP_APPLY_PROP3(draw_marker_start_width_);
+	_CP_APPLY_PROP3(draw_marker_end_width_);
+	_CP_APPLY_PROP3(draw_textarea_horizontal_align_);
 	_CP_APPLY_PROP3(draw_textarea_vertical_align_); 
 	_CP_APPLY_PROP3(draw_auto_grow_height_);
 	_CP_APPLY_PROP3(draw_auto_grow_width_);
 	_CP_APPLY_PROP3(draw_fit_to_size_);
 	_CP_APPLY_PROP3(draw_fit_to_contour_);
 	_CP_APPLY_PROP3(style_shrink_to_fit_);
+	_CP_APPLY_PROP3(draw_ole_draw_aspect_);
 	
 	_CP_APPLY_PROP3(svg_stroke_color_); 
 	_CP_APPLY_PROP3(svg_stroke_width_);	
@@ -214,7 +222,8 @@ void graphic_format_properties::apply_from(const graphic_format_properties * Oth
     _CP_APPLY_PROP3(fo_min_height_);
     _CP_APPLY_PROP3(fo_max_width_);
     _CP_APPLY_PROP3(fo_max_height_);
-	_CP_APPLY_PROP3(fo_wrap_option_);
+	
+	fo_wrap_option_ = Other->fo_wrap_option_;
 
     _CP_APPLY_PROP3(style_print_content_);
     _CP_APPLY_PROP3(style_protect_);

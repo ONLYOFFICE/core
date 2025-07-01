@@ -16,6 +16,9 @@ public:
 	CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
+
+	ENumType GetNumType() const;
+	short GetNum() const;
 };
 }
 

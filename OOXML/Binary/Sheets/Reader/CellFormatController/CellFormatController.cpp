@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -31,8 +31,6 @@
  */
 
 #include "CellFormatController.h"
-#include "DateReader.h"
-#include "DigitReader.h"
 
 #include "../../../../XlsxFormat/Styles/NumFmts.h"
 #include "../../../../XlsxFormat/Styles/Xfs.h"
@@ -98,7 +96,7 @@ std::vector<std::map<std::wstring, std::wstring>> FormulaController::mapReplacem
 //---------------------------------------------------------------------------------------------------------------------
 
 CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _INT32 lcid):
-    m_pStyles{styles}, lcid_{lcid}
+    m_pStyles{styles}, lcid_{lcid}, dateReader_{lcid_}
 {
 	// Добавим стили для wrap-а
 	m_pStyles->m_oCellXfs.Init();
@@ -135,7 +133,7 @@ CellFormatController::CellFormatController(OOX::Spreadsheet::CStyles *styles, _I
 int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap)
 {
 	int result = 0; // ok
-
+	const auto maxCustomWidthRow = 40;
 	pCell_ = pCell;
 	/// формат для булева значения в верхнем регистре
 	if(value == L"true" || value == L"false")
@@ -152,11 +150,10 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		
 		return result;
 	}
-	DigitReader digits = {};
 	std::wstring digitFormat = {};
 	std::wstring digitValue = {};
 	
-	if(digits.ReadScientific(value, digitValue, digitFormat))
+    if(digitReader_.ReadScientific(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
@@ -184,9 +181,13 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		{
 			pCell_->m_oStyle = 1;
 		}
+		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+		{
+			addCustomColWidth(pCell, digitFormat.size()+1);
+		}
 		return result;
 	}
-	else if(digits.ReadDigit(value, digitValue, digitFormat))
+    else if(digitReader_.ReadDigit(value, digitValue, digitFormat))
 	{
 		if(!pCell_->m_oValue.IsInit())
 		{
@@ -215,15 +216,21 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
 		{
 			pCell_->m_oStyle = 1;
 		}
+		if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+		{
+			if(!digitFormat.empty())
+				addCustomColWidth(pCell, digitFormat.size()+1);
+			else
+				addCustomColWidth(pCell, digitValue.size()+1);
+		}
 		return result;
 	}
 
-    DateReader dateReader = {lcid_};
     double digitalDate  = 0;
     bool hasDate = false;
     bool hasTime = false;
    
-	auto validDate = dateReader.GetDigitalDate(value, digitalDate, hasDate, hasTime);
+    auto validDate = dateReader_.GetDigitalDate(value, digitalDate, hasDate, hasTime);
 	if (validDate)
 	{
 		if(!pCell_->m_oValue.IsInit())
@@ -235,18 +242,30 @@ int CellFormatController::ProcessCellType(OOX::Spreadsheet::CCell *pCell, const 
             pCell_->m_oValue->m_sText = std::to_wstring((_INT32)digitalDate);
             std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateFormat);
             pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultDateFormat.size() +2);
+			}
         }
         else if(!hasDate && hasTime)
         {
             pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
-            std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultTimeFormat);
+			std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultTimeFormat);
             pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultTimeFormat.size());
+			}
         }
         else if(hasDate && hasTime)
         {
             pCell_->m_oValue->m_sText = std::to_wstring(digitalDate);
             std::map<std::wstring, unsigned int>::iterator pFind = mapDataNumber_.find(DefaultDateTimeFormat);
             pCell_->m_oStyle = pFind->second;
+			if(pCell->m_oRow.IsInit() && pCell->m_oRow.get() <= maxCustomWidthRow)
+			{
+				addCustomColWidth(pCell, DefaultDateTimeFormat.size() + 4);
+			}
         }
 	}
 	else
@@ -365,5 +384,38 @@ void CellFormatController::createFormatStyle(const std::wstring &format)
 
 	auto styleNum = (unsigned int)(m_pStyles->m_oCellXfs->m_arrItems.size() - 1);
 	mapDataNumber_.insert(std::make_pair(format, styleNum));
+}
+
+void CellFormatController::addCustomColWidth(OOX::Spreadsheet::CCell *pCell, double width)
+{
+	if(m_pWorksheet == nullptr || pCell == nullptr || !pCell->m_oCol.IsInit())
+		return;
+	//не сужаем колонки, только расширяем
+	if(m_pWorksheet->m_oSheetFormatPr.IsInit() && m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.IsInit() &&
+		m_pWorksheet->m_oSheetFormatPr->m_oBaseColWidth.get() > width)
+		return;
+	auto colNumber = pCell->m_oCol.get() + 1;
+	if(!m_pWorksheet->m_oCols.IsInit())
+	{
+		m_pWorksheet->m_oCols.Init();
+	}
+	for(auto i : m_pWorksheet->m_oCols->m_arrItems)
+	{
+		if(i->m_oMin.IsInit() && i->m_oMin->GetValue() == colNumber)
+		{
+			if(!i->m_oWidth.IsInit() ||  (i->m_oWidth.IsInit() && i->m_oWidth->GetValue() < width))
+			{
+				i->m_oWidth = width;
+			}
+			return;
+		}
+	}
+	OOX::Spreadsheet::CCol* CustomCol = new OOX::Spreadsheet::CCol;
+	CustomCol->m_oMin = colNumber;
+	CustomCol->m_oMax = colNumber;
+	CustomCol->m_oWidth = width;
+	CustomCol->m_oCustomWidth = true;
+	CustomCol->m_oBestFit = true;
+	m_pWorksheet->m_oCols->m_arrItems.push_back(CustomCol);
 }
 

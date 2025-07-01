@@ -931,7 +931,7 @@ std::wstring OoxConverter::find_link_by (smart_ptr<OOX::File> & oFile, int type,
 		if (pOleObject)
 		{
 			ref = pOleObject->filename().GetPath();
-			bExternal = pOleObject->IsExternal();
+			bExternal = dynamic_cast<OOX::Media*>(pOleObject)->IsExternal();
 		}
 	}
 	return ref;

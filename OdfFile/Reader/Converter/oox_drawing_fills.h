@@ -66,15 +66,23 @@ namespace oox {
 		bool			bStretch;
 		bool			bCrop;
 		bool			bTile;
-
-		double			cropRect[4];//0-left, 1 -top, 2- right, 3 - bottom
 		
-		_CP_OPT(int)	dpi;
-		_CP_OPT(bool)	rotate;
+		_CP_OPT(double)	sx;
+		_CP_OPT(double)	sy;
+		_CP_OPT(double)	sx_pt;
+		_CP_OPT(double)	sy_pt;
 
-		bool			bGrayscale;
+		double cropRect[4]; //0-left, 1 -top, 2- right, 3 - bottom
+		
+		_CP_OPT(int) width;
+		_CP_OPT(int) height;
+
+		_CP_OPT(int) dpi;
+		_CP_OPT(bool) rotate;
+
 		_CP_OPT(double)	luminance;
 		_CP_OPT(double)	contrast;
+		_CP_OPT(int) color_mode;
 	};
 /////////////////////////////////////////////////////////
 	class oox_hatch_fill;
@@ -131,11 +139,14 @@ namespace oox {
 		_CP_OPT(double) opacity;
 		_CP_OPT(double) image_opacity;
 
+		std::wstring clipping;
+
 		void clear()
 		{
 			type = -1;
 			opacity = boost::none;
 			image_opacity = boost::none;
+			clipping.clear();
 
 			gradient.reset();
 			hatch.reset();

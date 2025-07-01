@@ -65,7 +65,7 @@
 #include "../../DocxFormat/Drawing/DrawingExt.h"
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
-
+#include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -203,7 +203,91 @@ namespace Spreadsheet
 
 		WritingElement_ReadAttributes_End( oReader )
 	}
+	//-----------------------------------------------------------------------------------------------------------------------------
+	EElementType CXmlColumnPr::getType() const
+	{
+		return et_x_xmlColumnPr;
+	}
+	void CXmlColumnPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "mapId", mapId)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "xpath", xpath)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "xmlDataType", xmlDataType)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "denormalized", denormalized)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CXmlColumnPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
 
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
+	}
+	void CXmlColumnPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, mapId);
+		pWriter->WriteString2(1, xpath);
+		if (xmlDataType.IsInit())
+			pWriter->WriteByte1(2, xmlDataType->GetValue());
+		pWriter->WriteBool2(1, denormalized);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CXmlColumnPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				mapId = pReader->GetULong();
+			}break;
+			case 1:
+			{
+				xpath = pReader->GetString2();
+			}break;
+			case 2:
+			{
+				xmlDataType.Init();
+				xmlDataType->SetValueFromByte(pReader->GetUChar());
+			}break;
+			case 3:
+			{
+				denormalized = pReader->GetBool();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CXmlColumnPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"xmlColumnPr");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"mapId", mapId);
+		pWriter->WriteAttribute2(L"xpath", xpath);
+		if (xmlDataType.IsInit()) pWriter->WriteAttribute(L"xmlDataType", xmlDataType->ToString());
+		pWriter->WriteAttribute(L"denormalized", denormalized);
+		pWriter->EndAttributes();
+
+		pWriter->WriteNodeEnd(L"xmlColumnPr");
+	}
+	void CXmlColumnPr::toXML(NSStringUtils::CStringBuilder& writer) const
+	{
+		writer.WriteString(L"<xmlColumnPr");
+		WritingStringNullableAttrInt2(L"mapId", mapId);
+		WritingStringNullableAttrEncodeXmlString(L"xpath", xpath, *xpath);
+		WritingStringNullableAttrString(L"xmlDataType", xmlDataType, xmlDataType->ToString());
+		WritingStringNullableAttrBool2(L"denormalized", denormalized);
+		writer.WriteString(L"/>");
+	}
+	
 	void CTableColumn::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
         std::wstring sRoot;
@@ -221,15 +305,20 @@ namespace Spreadsheet
 		WritingStringNullableAttrInt(L"headerRowDxfId", m_oHeaderRowDxfId, m_oHeaderRowDxfId->GetValue());
 		WritingStringNullableAttrString(L"totalsRowCellStyle", m_oTotalsRowCellStyle, *m_oTotalsRowCellStyle);
 		WritingStringNullableAttrInt(L"totalsRowDxfId", m_oTotalsRowDxfId, m_oTotalsRowDxfId->GetValue());
-		if(m_oTotalsRowFormula.IsInit() || m_oCalculatedColumnFormula.IsInit())
+		
+		if (m_oTotalsRowFormula.IsInit() || m_oCalculatedColumnFormula.IsInit() || m_oXmlColumnPr.IsInit())
 		{
 			writer.WriteString(L">");
 
-			if(m_oCalculatedColumnFormula.IsInit())
+			if (m_oXmlColumnPr.IsInit())
+			{
+				m_oXmlColumnPr->toXML(writer);
+			}
+			if (m_oCalculatedColumnFormula.IsInit())
 			{
 				WritingStringValEncodeXmlString(L"calculatedColumnFormula", m_oCalculatedColumnFormula.get());
 			}
-			if(m_oTotalsRowFormula.IsInit())
+			if (m_oTotalsRowFormula.IsInit())
 			{
 				WritingStringValEncodeXmlString(L"totalsRowFormula", m_oTotalsRowFormula.get());
 			}
@@ -253,10 +342,12 @@ namespace Spreadsheet
 		{
 			std::wstring sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-			if ( (L"totalsRowFormula") == sName )
+			if (L"totalsRowFormula" == sName)
 				m_oTotalsRowFormula = oReader.GetText3();
-			else if ( (L"calculatedColumnFormula") == sName )
+			else if (L"calculatedColumnFormula" == sName)
 				m_oCalculatedColumnFormula = oReader.GetText3();
+			else if (L"xmlColumnPr" == sName)
+				m_oXmlColumnPr = oReader;
 		}
 	}
     void CTableColumn::fromBin(XLS::BaseObjectPtr& obj)
@@ -942,6 +1033,15 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			ptr->stRelID.value = m_oRId->GetValue();
 		return objectPtr;
 	}
+    void CTablePart::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        auto record = writer->getNextRecord(XLSB::rt_ListPart);
+        XLSB::RelID stRelID;
+        if(m_oRId.IsInit())
+            stRelID = m_oRId->GetValue();
+        *record << stRelID;
+        writer->storeNextRecord(record);
+    }
 	void CTablePart::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start_No_NS( oReader )
@@ -1024,6 +1124,23 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 		}
 		return objectPtr;
 	}
+    void CTableParts::toBin(XLS::StreamCacheWriterPtr& writer)
+    {
+        {
+            auto begin = writer->getNextRecord(XLSB::rt_BeginListParts);
+            _UINT32 count = m_arrItems.size();
+            *begin << count;
+            writer->storeNextRecord(begin);
+        }
+        for(auto i:m_arrItems)
+        {
+            i->toBin(writer);
+        }
+        {
+            auto end = writer->getNextRecord(XLSB::rt_EndListParts);
+            writer->storeNextRecord(end);
+        }
+    }
 	void CTableParts::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{
 		WritingElement_ReadAttributes_Start( oReader )
@@ -1870,6 +1987,410 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return OOX::Spreadsheet::FileTypes::QueryTable;
 	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	EElementType CXmlPr::getType() const
+	{
+		return et_x_xmlPr;
+	}
+	void CXmlPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "mapId", mapId)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "xpath", xpath)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "xmlDataType", xmlDataType)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CXmlPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
 
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
+	}
+	void CXmlPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, mapId);
+		pWriter->WriteString2(1, xpath);
+		if (xmlDataType.IsInit()) 
+			pWriter->WriteByte1(2, xmlDataType->GetValue());
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+	}
+	void CXmlPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				mapId = pReader->GetULong();
+			}break;			
+			case 1:
+			{
+				xpath = pReader->GetString2();
+			}break;
+			case 2:
+			{
+				xmlDataType.Init();
+				xmlDataType->SetValueFromByte(pReader->GetUChar());
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CXmlPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"xmlPr");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"mapId", mapId);
+		pWriter->WriteAttribute2(L"xpath", xpath);
+		if (xmlDataType.IsInit()) pWriter->WriteAttribute(L"xmlDataType", xmlDataType->ToString());
+		pWriter->EndAttributes();
+
+		pWriter->WriteNodeEnd(L"xmlPr");
+	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	EElementType CXmlCellPr::getType() const
+	{
+		return et_x_xmlCellPr;
+	}
+	void CXmlCellPr::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "uniqueName", uniqueName)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "id", id)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CXmlCellPr::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetNameNoNS();
+
+			if (L"xmlPr" == sName)
+			{
+				xmlPr = oReader;
+			}
+		}
+	}
+	void CXmlCellPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteString2(0, uniqueName);
+		pWriter->WriteUInt2(1, id);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+		pWriter->WriteRecord2(0, xmlPr);
+	}
+	void CXmlCellPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				uniqueName = pReader->GetString2();
+			}break;
+			case 1:
+			{
+				id = pReader->GetULong();
+			}break;
+			}
+		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _rec = pReader->GetUChar();
+			switch (_rec)
+			{
+			case 0:
+			{
+				xmlPr.Init();
+				xmlPr->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CXmlCellPr::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"xmlCellPr");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"id", id);
+		pWriter->WriteAttribute2(L"uniqueName", uniqueName);
+		pWriter->EndAttributes();
+
+		if (xmlPr.IsInit())
+			xmlPr->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"xmlCellPr");
+	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	EElementType CSingleXmlCell::getType() const
+	{
+		return et_x_SingleXmlCell;
+	}
+	void CSingleXmlCell::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
+	{
+		WritingElement_ReadAttributes_StartChar_No_NS(oReader)
+			WritingElement_ReadAttributes_Read_ifChar(oReader, "connectionId", connectionId)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "id", id)
+			WritingElement_ReadAttributes_Read_else_ifChar(oReader, "r", r)
+		WritingElement_ReadAttributes_EndChar_No_NS(oReader)
+	}
+	void CSingleXmlCell::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		ReadAttributes(oReader);
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetNameNoNS();
+
+			if (L"xmlCellPr" == sName)
+			{
+				xmlCellPr = oReader;
+			}
+		}
+	}
+	void CSingleXmlCell::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+		pWriter->WriteUInt2(0, connectionId);
+		pWriter->WriteUInt2(1, id);
+		pWriter->WriteString2(2, r);
+		pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+		pWriter->WriteRecord2(0, xmlCellPr);
+	}
+	void CSingleXmlCell::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		pReader->Skip(1); // start attributes
+		while (true)
+		{
+			BYTE _at = pReader->GetUChar_TypeNode();
+			if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+				break;
+			switch (_at)
+			{
+			case 0:
+			{
+				connectionId = pReader->GetULong();
+			}break;
+			case 1:
+			{
+				id = pReader->GetULong();
+			}break;
+			case 2:
+			{
+				r = pReader->GetString2();
+			}break;
+			}
+		}
+		while (pReader->GetPos() < _end_rec)
+		{
+			BYTE _rec = pReader->GetUChar();
+			switch (_rec)
+			{
+			case 0:
+			{
+				xmlCellPr.Init();
+				xmlCellPr->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(_end_rec);
+	}
+	void CSingleXmlCell::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"singleXmlCell");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"id", id);
+		pWriter->WriteAttribute2(L"r", r);
+		pWriter->WriteAttribute2(L"connectionId", connectionId);
+		pWriter->EndAttributes();
+
+		if (xmlCellPr.IsInit())
+			xmlCellPr->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"singleXmlCell");
+	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	void CSingleXmlCells::fromXML(XmlUtils::CXmlLiteReader& oReader)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			std::wstring sName = oReader.GetNameNoNS();
+
+			if (L"singleXmlCell" == sName)
+			{
+				CSingleXmlCell* pItem = new CSingleXmlCell();
+				*pItem = oReader;
+
+				if (pItem)
+					m_arrItems.push_back(pItem);
+			}
+		}
+	}
+	EElementType CSingleXmlCells::getType() const
+	{
+		return et_x_SingleXmlCells;
+	}
+	void CSingleXmlCells::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+		while (pReader->GetPos() < end)
+		{
+			BYTE _rec = pReader->GetUChar();
+			switch (_rec)
+			{
+			case 0:
+			{
+				m_arrItems.push_back(new CSingleXmlCell());
+				m_arrItems.back()->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(end);
+	}
+	void CSingleXmlCells::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			pWriter->WriteRecord2(0, dynamic_cast<OOX::WritingElement*>(m_arrItems[i]));
+	}
+	void CSingleXmlCells::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+	{
+		pWriter->StartNode(L"singleXmlCells");
+		pWriter->StartAttributes();
+		pWriter->WriteAttribute2(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+		pWriter->EndAttributes();
+
+		for (size_t i = 0; i < m_arrItems.size(); ++i)
+			m_arrItems[i]->toXmlWriter(pWriter);
+
+		pWriter->WriteNodeEnd(L"singleXmlCells");
+	}
+//-----------------------------------------------------------------------------------------------------------------------------
+	CTableSingleCellsFile::CTableSingleCellsFile(OOX::Document* pMain) : OOX::File(pMain)
+	{
+	}
+	CTableSingleCellsFile::CTableSingleCellsFile(OOX::Document* pMain, const CPath& uri) : OOX::File(pMain)
+	{
+		read(uri.GetDirectory(), uri);
+	}
+	CTableSingleCellsFile::CTableSingleCellsFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::File(pMain)
+	{
+		read(oRootPath, oPath);
+	}
+	CTableSingleCellsFile::~CTableSingleCellsFile()
+	{
+	}
+	void CTableSingleCellsFile::read(const CPath& oFilePath)
+	{
+		CPath oRootPath;
+		read(oRootPath, oFilePath);
+	}
+	void CTableSingleCellsFile::read(const CPath& oRootPath, const CPath& oFilePath)
+	{
+		XmlUtils::CXmlLiteReader oReader;
+
+		if (!oReader.FromFile(oFilePath.GetPath()))
+			return;
+
+		if (!oReader.ReadNextNode())
+			return;
+
+		singleXmlCells = oReader;
+	}
+	void CTableSingleCellsFile::write(const CPath& oFilePath, const CPath& oDirectory, CContentTypes& oContent) const
+	{
+		NSBinPptxRW::CXmlWriter oXmlWriter;
+		oXmlWriter.WriteString((L"<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
+
+		oXmlWriter.m_lDocType = XMLWRITER_DOC_TYPE_XLSX;
+		
+		if (singleXmlCells.IsInit())
+			singleXmlCells->toXmlWriter(&oXmlWriter);
+
+		NSFile::CFileBinary::SaveToFile(oFilePath.GetPath(), oXmlWriter.GetXmlString());
+
+		oContent.Registration(type().OverrideType(), oDirectory, oFilePath.GetFilename());
+	}
+	const OOX::FileType CTableSingleCellsFile::type() const
+	{
+		return FileTypes::TableSingleCells;
+	}
+	const OOX::CPath CTableSingleCellsFile::DefaultDirectory() const
+	{
+		return type().DefaultDirectory();
+	}
+	const OOX::CPath CTableSingleCellsFile::DefaultFileName() const
+	{
+		return type().DefaultFileName();
+	}
+	void CTableSingleCellsFile::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+	{
+		LONG end = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+		while (pReader->GetPos() < end)
+		{
+			BYTE _rec = pReader->GetUChar();
+
+			switch (_rec)
+			{
+			case 0:
+			{
+				singleXmlCells.Init();
+				singleXmlCells->fromPPTY(pReader);
+			}break;
+			default:
+			{
+				pReader->SkipRecord();
+			}break;
+			}
+		}
+		pReader->Seek(end);
+	}
+	void CTableSingleCellsFile::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+	{
+		pWriter->WriteRecord2(0, singleXmlCells);
+	}
 } //Spreadsheet
 } // namespace OOX

@@ -637,6 +637,8 @@ void odf_drawing_context::end_drawing()
 			draw->common_draw_attlists_.shape_with_text_and_styles_.common_shape_draw_attlist_.drawooo_display_ = L"printer"; // L"none" ??? 
 		if (!impl_->current_drawing_state_.xml_id_.empty())
 			draw->xml_id_ = impl_->current_drawing_state_.xml_id_;
+		if (impl_->anchor_settings_.style_wrap_)
+			impl_->current_graphic_properties->style_wrap_ = *impl_->anchor_settings_.style_wrap_;
 
 		std::wstring strTransform;
 
@@ -1455,7 +1457,7 @@ void odf_drawing_context::set_grayscale()
 {
 	if (!impl_->current_graphic_properties)return;
 
-	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = L"greyscale";
+	impl_->current_graphic_properties->common_draw_fill_attlist_.draw_color_mode_ = color_mode(color_mode::greyscale);
 }
 void odf_drawing_context::set_white_balance(double red, double green, double blue)
 {
@@ -2652,10 +2654,14 @@ graphic_format_properties* odf_drawing_context::get_graphic_properties()
 {
 	return impl_->current_graphic_properties;
 }
+text_format_properties* odf_drawing_context::get_text_properties()
+{
+	return impl_->current_text_properties;
+}
 
 void odf_drawing_context::set_textarea_vertical_align(int align)
 {
-	if (!impl_->current_graphic_properties)return;
+	if (!impl_->current_graphic_properties) return;
 	switch(align)
 	{
 	case 0://SimpleTypes::textanchoringtypeB: 
@@ -3321,19 +3327,23 @@ void odf_drawing_context::end_image()
 		end_shape();
 		return;
 	}
+
+	if (impl_->current_drawing_state_.flipV_)
+	{
+		if (impl_->current_drawing_state_.rotateAngle_)
+			*impl_->current_drawing_state_.rotateAngle_ -= 3.1415926535;
+		else 
+			impl_->current_drawing_state_.rotateAngle_ = -3.1415926535;
+
+		impl_->current_drawing_state_.flipH_ = !impl_->current_drawing_state_.flipH_;
+	}
+
 	if (impl_->current_drawing_state_.flipH_)
 	{
 		if (impl_->current_graphic_properties->style_mirror_)
 			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" horizontal");
 		else
 			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"horizontal");
-	}	
-	if (impl_->current_drawing_state_.flipV_)
-	{
-		if (impl_->current_graphic_properties->style_mirror_)
-			impl_->current_graphic_properties->style_mirror_ = *impl_->current_graphic_properties->style_mirror_ + std::wstring(L" vertical");
-		else
-			impl_->current_graphic_properties->style_mirror_ = std::wstring(L"vertical");
 	}
 	end_element();
 	end_frame();

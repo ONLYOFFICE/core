@@ -34,10 +34,6 @@
 #include "../lib/xpdf/TextString.h"
 #include "../../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
 
-void GlobalParamsAdaptor::SetFontManager(NSFonts::IFontManager *pFontManager)
-{
-    m_pFontManager = pFontManager;
-}
 void GlobalParamsAdaptor::SetCMapFolder(const std::wstring &wsFolder)
 {
     m_wsCMapFolder = wsFolder;

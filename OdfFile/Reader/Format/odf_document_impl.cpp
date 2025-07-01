@@ -491,7 +491,7 @@ void odf_document::Impl::parse_fonts(office_element *element)
 
             std::vector<std::wstring> fontNames;
             boost::algorithm::split(fontNames, fontNameTmp, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-            if (fontNames.empty() || fontNames[0].empty())
+            if (fontNames.empty()) // nextcloud_sync_issue-1.ods
                 fontName = styleName;
             else
                 fontName = fontNames[0];
@@ -637,7 +637,7 @@ void odf_document::Impl::parse_settings(office_element *element)
 						for (auto info_elm = conf_item_set->content_.begin(); info_elm != conf_item_set->content_.end(); ++info_elm)
 						{
 							settings_config_item* info = dynamic_cast<settings_config_item*>(info_elm->get());
-							if (info)
+							if (info && !info->content_.empty())
 							{
 								context_->Settings().add(L"modify:" + info->config_name_, info->content_);
 							}

@@ -242,7 +242,7 @@ Annot::Annot(PDFDoc *docA, Dict *dict, Ref *refA, const char* AP, const char* AS
       }
       obj2.free();
     }
-  } else if (type && type->cmp("FreeText")) {
+  } else if (type && type->cmp("FreeText") && type->cmp("Link")) {
     bBorder = gFalse;
   }
   obj1.free();

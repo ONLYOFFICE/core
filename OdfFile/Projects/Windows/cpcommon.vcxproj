@@ -202,6 +202,7 @@
     <ClInclude Include="..\..\DataTypes\charttimeunit.h" />
     <ClInclude Include="..\..\DataTypes\clockvalue.h" />
     <ClInclude Include="..\..\DataTypes\color.h" />
+    <ClInclude Include="..\..\DataTypes\color_mode.h" />
     <ClInclude Include="..\..\DataTypes\commandtype.h" />
     <ClInclude Include="..\..\DataTypes\common_attlists.h" />
     <ClInclude Include="..\..\DataTypes\custom_shape_types_convert.h" />
@@ -336,6 +337,7 @@
     <ClCompile Include="..\..\DataTypes\charttimeunit.cpp" />
     <ClCompile Include="..\..\DataTypes\clockvalue.cpp" />
     <ClCompile Include="..\..\DataTypes\color.cpp" />
+    <ClCompile Include="..\..\DataTypes\color_mode.cpp" />
     <ClCompile Include="..\..\DataTypes\commandtype.cpp" />
     <ClCompile Include="..\..\DataTypes\common_attlists.cpp" />
     <ClCompile Include="..\..\DataTypes\dategroup.cpp" />

@@ -1020,22 +1020,39 @@ void CBooleanOperations::TracePaths()
 {
 	size_t length = Segments1.size();
 	Result.StartFigure();
+	bool first_start = true;
 	for (size_t i = 0; i < length + Segments2.size(); i++)
 	{
 		Segment s = i >= length ? Segments2[i - length] : Segments1[i];
 		bool valid = s.IsValid(Op),
-			start = true;
+			 start = true;
+		PointD start_point;
 		while (valid)
 		{
 			if (!start || (Op == Intersection && s.Inters && !GetNextSegment(s).Inters))
 				SetVisited(s);
 
-			if (start)
+			if (first_start)
+			{
 				Result.MoveTo(s.P.X, s.P.Y);
+				start_point = s.P;
+			}
+			else if (start)
+			{
+				double x, y;
+				Result.GetLastPoint(x, y);
+				if (isZero(start_point.X - x) && isZero(start_point.Y - y))
+				{
+					Result.MoveTo(s.P.X, s.P.Y);
+					start_point = s.P;
+				}
+				else
+					Result.LineTo(s.P.X, s.P.Y);
+			}
 			else if (s.IsCurve)
 				Result.CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y,
-								s.HO.X + s.P.X, s.HO.Y + s.P.Y,
-								s.P.X, s.P.Y);
+							   s.HO.X + s.P.X, s.HO.Y + s.P.Y,
+							   s.P.X, s.P.Y);
 			else
 				Result.LineTo(s.P.X, s.P.Y);
 
@@ -1065,6 +1082,9 @@ void CBooleanOperations::TracePaths()
 
 			if (start)
 				start = false;
+
+			if (first_start)
+				first_start = false;
 		}
 
 		if (!start && AllOverlap()) break;
@@ -1645,12 +1665,14 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
 		Curve line(segment, Segment(point));
 
-		int count = 0;
-		for (const auto& r : roots)
-			if (line.GetTimeOf(curve.GetPoint(r)) != -1)
-				count++;
+		return roots.size() % 2;
 
-		return count;
+		// int count = 0;
+		// for (const auto& r : roots)
+		// 	if (line.GetTimeOf(curve.GetPoint(r)) != -1)
+		// 		count++;
+
+		// return count;
 	}
 	return 0;
 }

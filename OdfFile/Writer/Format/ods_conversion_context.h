@@ -101,6 +101,7 @@ public:
 //-----------------------------------------------------------------------
 	ods_table_state_ptr & current_table() { return table_context_.state();}
 //-----------------------------------------------------------------------
+	virtual bool is_child_text_context();
 
 	virtual odf_drawing_context		* drawing_context();
 	virtual odf_text_context		* text_context();

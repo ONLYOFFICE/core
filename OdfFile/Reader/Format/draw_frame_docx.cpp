@@ -1069,6 +1069,14 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, union_comm
 }
 void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
 //--------------------------------------------------------------------------------------------------
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
@@ -1114,8 +1122,8 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool runState	= Context.get_run_state();
-	bool paraState	= Context.get_paragraph_state();
+	runState	= Context.get_run_state();
+	paraState	= Context.get_paragraph_state();
 
 	Context.reset_context_state();
 	Context.set_run_state		(runState);	
@@ -1133,6 +1141,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 			if (!paraState)
 			{
 				Context.start_paragraph();
+				Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 			}
 			Context.add_new_run(L"");
 
@@ -1151,7 +1160,6 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}
 
-	//Context.set_paragraph_state(paraState);		
 	Context.back_context_state();
 
 	Context.get_drawing_context().stop_shape();
@@ -1196,6 +1204,8 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	{
 		if (href[0] == L'#') href = href.substr(1);
 	}
+	bool bSvg = href.rfind(L".svg") == href.length() - 4;
+	bool bPdf = href.rfind(L".pdf") == href.length() - 4;
 
 	oox::_docx_drawing * drawing = dynamic_cast<oox::_docx_drawing *>(frame->oox_drawing_.get()); 
 	if (!drawing) 
@@ -1212,7 +1222,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	if (href[0] == L'#') href = href.substr(1);
 
 	if (drawing->type == oox::typeUnknown)
-		drawing->type = type;
+		drawing->type = bPdf ? oox::typePDF : type;
 
 	oox::StreamsManPtr prev = Context.get_stream_man();
 	
@@ -1244,16 +1254,19 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		drawing->action.typeRels= oox::typeHyperlink;
 	}
 /////////
-	drawing->fill.bitmap = oox::oox_bitmap_fill::create();
-	drawing->fill.type = 2;
-	drawing->fill.bitmap->isInternal = false;
-	drawing->fill.bitmap->bStretch = true;
-
+	
+	if (!drawing->fill.bitmap)
+	{
+		drawing->fill.bitmap = oox::oox_bitmap_fill::create();
+		drawing->fill.type = 2;
+		drawing->fill.bitmap->isInternal = false;
+		drawing->fill.bitmap->bStretch = true;
+	}
 	std::wstring href_out;
-	if (drawing->type == oox::typePDF)
+	if (drawing->type == oox::typePDF && bPdf)
 	{
 		drawing->objectProgId = L"Acrobat.Document.DC";
-		drawing->objectId = Context.get_mediaitems()->add_or_find(href, type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+		drawing->objectId = Context.get_mediaitems()->add_or_find(href, drawing->type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
 
 		std::wstring image_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(Context.root()->get_folder() + FILE_SEPARATOR_STR, L"img");
 		
@@ -1264,7 +1277,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		}
 	}	
 
-	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, oox::typeImage, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
+	drawing->fill.bitmap->rId = Context.get_mediaitems()->add_or_find(href, type, drawing->fill.bitmap->isInternal, href_out, Context.get_type_place());
 
 	const std::wstring styleName = frame->common_draw_attlists_.shape_with_text_and_styles_.
 									common_shape_draw_attlist_.draw_style_name_.get_value_or(L"");
@@ -1276,15 +1289,30 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 ////////////////
 	if (properties)
 	{
-		if (properties->fo_clip_ && drawing->fill.bitmap)
+		std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + xlink_attlist_.href_.get_value_or(L"");
+		_image_file_::GetResolution(fileName.c_str(), drawing->fill.bitmap->width, drawing->fill.bitmap->height, Context.get_mediaitems()->applicationFonts());
+
+		if (drawing->fill.bitmap->width && drawing->fill.bitmap->height)
 		{
-			std::wstring strRectClip = properties->fo_clip_.get();
-			strRectClip = strRectClip.substr(5, strRectClip.length() - 6);
-			
-			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR + xlink_attlist_.href_.get_value_or(L"");
-			
-			drawing->fill.bitmap->bCrop = parse_clipping(strRectClip, fileName, drawing->fill.bitmap->cropRect, Context.get_mediaitems()->applicationFonts());
+			if (properties->fo_clip_)
+			{
+				std::wstring strRectClip = properties->fo_clip_.get();
+				drawing->fill.clipping = strRectClip.length() > 6 ? strRectClip.substr(5, strRectClip.length() - 6) : L"";
+
+				drawing->fill.bitmap->bCrop = odf_reader::parse_clipping(drawing->fill.clipping, *drawing->fill.bitmap->width, *drawing->fill.bitmap->height, drawing->fill.bitmap->cropRect);
+			}
+
+			if (drawing->fill.bitmap->sx_pt && drawing->fill.bitmap->sy_pt)
+			{
+				drawing->fill.bitmap->sx = (*drawing->fill.bitmap->sx_pt * 100. / *drawing->fill.bitmap->width) * 4 /3;
+				drawing->fill.bitmap->sy = (*drawing->fill.bitmap->sy_pt * 100. / *drawing->fill.bitmap->height) * 4 / 3;
+			}
 		}
+		if (!drawing->fill.bitmap->bTile && drawing->fill.bitmap->sx && drawing->fill.bitmap->sy)
+		{
+			drawing->fill.bitmap->bStretch = true;
+		}
+
 		if (properties->common_draw_fill_attlist_.draw_luminance_)
 		{
 			drawing->fill.bitmap->luminance = properties->common_draw_fill_attlist_.draw_luminance_->get_value();
@@ -1292,6 +1320,10 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 		if (properties->common_draw_fill_attlist_.draw_contrast_)
 		{
 			drawing->fill.bitmap->contrast = properties->common_draw_fill_attlist_.draw_contrast_->get_value();
+		}
+		if (properties->common_draw_fill_attlist_.draw_color_mode_)
+		{
+			drawing->fill.bitmap->color_mode = properties->common_draw_fill_attlist_.draw_color_mode_->get_type();
 		}
 	}
 }
@@ -1417,7 +1449,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	}
 	if (auto_fit_shape)
 	{
-		drawing->additional.push_back(_property(L"text-wrap"	, 0));
+		drawing->additional.push_back(_property(L"text-wrap", 0));
 		drawing->additional.push_back(_property(L"auto-grow-height", auto_fit_shape));
 	}
 	else if (auto_fit_text)
@@ -1431,11 +1463,14 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_g::docx_convert(oox::docx_conversion_context & Context)
 {
-	if ((!Context.get_paragraph_state() && !Context.get_drawing_context().in_group()) && !Context.delayed_converting_)
-    {
-        Context.add_delayed_element(this);
-        return;
-    }
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
 
 	if (object_index >= 0) //только в документах нельзя объект объединять с шейпами в группы (
 	{
@@ -1533,31 +1568,40 @@ void draw_g::docx_convert(oox::docx_conversion_context & Context)
 //--------------------------------------------------
     std::wostream & strm = Context.output_stream();
 
-	bool runState	= Context.get_run_state();	
-	bool pState		= Context.get_paragraph_state();
+	runState	= Context.get_run_state();	
+	paraState = Context.get_paragraph_state();
 
-	if (!Context.get_drawing_context().in_group() && !pState)
+	if (!Context.get_drawing_context().in_group() && !paraState)
 	{
 		Context.start_paragraph();
-		Context.set_paragraph_keep(true);
-		pState	= Context.get_paragraph_state();
+		Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>";
+		paraState = Context.get_paragraph_state();
 	}
 
 	Context.set_paragraph_state(false);
 
 	if (!Context.get_drawing_context().in_group())
-		Context.add_new_run(_T(""));
+		Context.add_new_run(L"");
 	
 	drawing.serialize(strm/*, Context.get_drawing_state_content()*/);
  	
 	if (!Context.get_drawing_context().in_group())
 		Context.finish_run();
 
-	Context.set_paragraph_state(pState);
+	Context.set_paragraph_state(paraState);
 //--------------------------------------------------
 }
 void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
+
 	bool bImage = false;
 	if (content_.empty() == false)
 	{
@@ -1599,8 +1643,8 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
     }
 
 //-----------------------------------------------------------------------------------------------------
-	bool runState	= Context.get_run_state();
-	bool paraState	= Context.get_paragraph_state();
+	runState	= Context.get_run_state();
+	paraState = Context.get_paragraph_state();
 
 	Context.reset_context_state();
 
@@ -1609,6 +1653,7 @@ void draw_frame::docx_convert(oox::docx_conversion_context & Context)
 		if (!paraState)//0115GS3-KeyboardShortcuts.odt
 		{
 			Context.start_paragraph();
+			Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 		}
 		Context.add_new_run(L"");
 	}
@@ -1858,6 +1903,15 @@ void draw_object_ole::docx_convert(oox::docx_conversion_context & Context)
 }
 void draw_control::docx_convert(oox::docx_conversion_context & Context)
 {
+	bool runState = Context.get_run_state();
+	bool paraState = Context.get_paragraph_state();
+
+	if (!Context.get_drawing_context().in_group() && !runState && !paraState && !Context.delayed_converting_)
+	{
+		Context.add_delayed_element(this);
+		return;
+	}
+
 	if (!control_id_) return;
 
 	oox::forms_context::_state & state = Context.get_forms_context().get_state_element(*control_id_);
@@ -1946,8 +2000,8 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
     std::wostream & strm = Context.output_stream();
 
-	bool pState		= Context.get_paragraph_state();
-	bool runState	= Context.get_run_state();
+	paraState = Context.get_paragraph_state();
+	runState = Context.get_run_state();
 	bool keepState	= Context.get_paragraph_keep();
 
 	//Context.set_run_state		(false);	
@@ -1955,16 +2009,17 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 
 	bool new_run = false;
 	
-	if ((pState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
+	if ((paraState == false && Context.get_drawing_context().get_current_level() == 1) || (Context.get_drawing_context().in_group()))
 	{
 	}
 	else
 	{
 		if (!Context.get_drawing_context().in_group() && !runState)
 		{
-			if (!pState)
+			if (!paraState)
 			{
 				Context.start_paragraph();
+				Context.output_stream() << L"<w:pPr><w:keepNext/></w:pPr>"; 
 			}
 			Context.add_new_run(L"");
 
@@ -1977,13 +2032,13 @@ void draw_control::docx_convert(oox::docx_conversion_context & Context)
 	if (new_run)
 	{
 		Context.finish_run();
-		if (!pState)
+		if (!paraState)
 		{
 			Context.finish_paragraph();
 		}
 	}
 
-	Context.set_paragraph_state(pState);	
+	Context.set_paragraph_state(paraState);
 
 	Context.get_drawing_context().stop_shape();
 }

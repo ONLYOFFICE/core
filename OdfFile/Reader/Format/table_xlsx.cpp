@@ -548,7 +548,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 							bool set_default = false;
 							if (columnsRepeated > 100) set_default = true;
 
-							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
+							size_t style_ = Context.get_style_manager().xfId(NULL, NULL, &cellFormatProperties, NULL, L"", 0, set_default);	
 
 							//if (set_default)
 							//	CP_XML_ATTR(L"style", style_ );
@@ -943,7 +943,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
  //----------------------------------------------------------------------------------------------------------------------------------
 	bool is_style_visible = (!cellStyleName.empty() || defaultColumnCellStyle || !num_format.empty()) ? true : false;
 
-	if (is_AligmentWrap_)
+	if (count_paragraph > 1)
 	{
 	   is_style_visible = true;
 	   cellFormatProperties.fo_wrap_option_ = odf_types::wrap_option::Wrap;
@@ -1033,7 +1033,11 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			xlsx_value_type = oox::XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 		}		
 //---------------------------------------------------------------------------------------------------------			
-		if (skip_next_cell) break;
+		if (skip_next_cell)
+		{
+			Context.end_table_cell();
+			break;
+		}
 	
 	// пустые ячейки пропускаем.
         if ( is_data_visible || ((cellStyle || defaultColumnCellStyle) && is_style_visible))
@@ -1085,7 +1089,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
                     }
 					else if ((xlsx_value_type == oox::XlsxCellType::str || xlsx_value_type == oox::XlsxCellType::inlineStr)  && str_val) 
                     {    
-						CP_XML_NODE(L"v")	{ CP_XML_CONTENT(str_val.get()); }
+						CP_XML_NODE(L"v")	{ CP_XML_CONTENT(XmlUtils::EncodeXmlString(str_val.get())); }
 					}
                     else if (!number_val.empty())
                     {

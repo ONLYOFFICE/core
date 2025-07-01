@@ -39,7 +39,7 @@ CWasmPointer.prototype.free = function()
 	Module["_free"](this.ptr);
 	this.ptr = 0;
 };
-CWasmPointer.prototype.getReader = function()
+CWasmPointer.prototype.getMemory = function(isCopy)
 {
 	if (!this.ptr)
 		return null;
@@ -59,8 +59,23 @@ CWasmPointer.prototype.getReader = function()
 	}
 
 	len -= 4;
-	let buffer = new Uint8Array(Module["HEAP8"].buffer, this.ptr + 4, len);
-	return new CBinaryReader(buffer, 0, len);
+	
+	let noCopyArray = new Uint8Array(Module["HEAP8"].buffer, this.ptr + 4, len);
+	if (!isCopy)
+		return noCopyArray;
+
+	let copyArray = new Uint8Array(len);
+	copyArray.set(noCopyArray);
+
+	return copyArray;
+};
+CWasmPointer.prototype.getReader = function()
+{
+	let noCopyArray = this.getMemory(false);
+	if (!noCopyArray)
+		return null;
+	
+	return new CBinaryReader(noCopyArray, 0, noCopyArray.length);
 };
 
 var g_module_pointer = new CWasmPointer();
@@ -112,12 +127,69 @@ CFile.prototype._closeFile = function()
 
 CFile.prototype._getType = function()
 {
-	return Module["_GetType"](this.stream, this.stream_size);
+	return Module["_GetType"](this.nativeFile);
 };
 
 CFile.prototype._getError = function()
 {
 	return Module["_GetErrorCode"](this.nativeFile);
+};
+
+CFile.prototype._SplitPages = function(memoryBuffer, arrayBufferChanges)
+{
+	let changesPtr = 0;
+	let changesLen = 0;
+	if (arrayBufferChanges)
+	{
+		let changes = new Uint8Array(arrayBufferChanges);
+		changesLen = changes.length;
+		changesPtr = Module["_malloc"](changesLen);
+		Module["HEAP8"].set(changes, changesPtr);
+	}
+
+	let pointer = Module["_malloc"](memoryBuffer.length * 4);
+	Module["HEAP32"].set(memoryBuffer, pointer >> 2);
+	let ptr = Module["_SplitPages"](this.nativeFile, pointer, memoryBuffer.length, changesPtr, changesLen);
+	Module["_free"](pointer);
+	if (changesPtr)
+		Module["_free"](changesPtr);
+
+	g_module_pointer.ptr = ptr;
+	return g_module_pointer;
+};
+
+CFile.prototype._MergePages = function(buffer, maxID, prefixForm)
+{
+	if (!buffer)
+		return false;
+
+	let data = (undefined !== buffer.byteLength) ? new Uint8Array(buffer) : buffer;
+	let stream2 = Module["_malloc"](data.length);
+	Module["HEAP8"].set(data, stream2);
+
+	if (!maxID)
+		maxID = 0;
+
+	let prefixPtr = 0;
+	if (prefixForm)
+	{
+		let prefixBuf = prefixForm.toUtf8();
+		prefixPtr = Module["_malloc"](prefixBuf.length);
+		Module["HEAP8"].set(prefixBuf, prefixPtr);
+	}
+
+	let bRes = Module["_MergePages"](this.nativeFile, stream2, data.length, maxID, prefixPtr);
+	stream2 = 0; // Success or not, stream2 is either taken or freed
+
+	if (prefixPtr)
+		Module["_free"](prefixPtr);
+
+	return bRes == 1;
+};
+
+CFile.prototype._UndoMergePages = function()
+{
+	return Module["_UnmergePages"](this.nativeFile) == 1;
 };
 
 // FONTS

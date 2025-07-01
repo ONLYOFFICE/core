@@ -1328,8 +1328,14 @@ namespace NSCSS
 
 	// DISPLAY
 	CDisplay::CDisplay()
-	    : m_oDisplay(L"inline", 0)
-	{}
+	{
+		m_eWhiteSpace.SetMapping({{L"normal",   EWhiteSpace::Normal  },
+		                          {L"nowrap",   EWhiteSpace::Nowrap  },
+		                          {L"pre",      EWhiteSpace::Pre     },
+		                          {L"pre-line", EWhiteSpace::Pre_Line},
+		                          {L"pre-wrap", EWhiteSpace::Pre_Wrap}},
+		                                        EWhiteSpace::Normal);
+	}
 
 	void CDisplay::Equation(CDisplay &oFirstDisplay, CDisplay &oSecondDisplay)
 	{
@@ -1342,6 +1348,8 @@ namespace NSCSS
 		CString::Equation(oFirstDisplay.m_oHAlign, oSecondDisplay.m_oHAlign);
 
 		CString::Equation(oFirstDisplay.m_oDisplay, oSecondDisplay.m_oDisplay);
+
+		CEnum::Equation(oFirstDisplay.m_eWhiteSpace, oSecondDisplay.m_eWhiteSpace);
 	}
 
 	bool CDisplay::SetX(const std::wstring &wsValue, unsigned int unLevel, bool bHardMode)
@@ -1405,6 +1413,11 @@ namespace NSCSS
 		return m_oDisplay.SetValue(wsValue, NSConstValues::DISPLAY_VALUES, unLevel, bHardMode);
 	}
 
+	bool CDisplay::SetWhiteSpace(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode)
+	{
+		return m_eWhiteSpace.SetValue(wsValue, unLevel, bHardMode);
+	}
+
 	const CDigit& CDisplay::GetX() const
 	{
 		return m_oX;
@@ -1440,34 +1453,42 @@ namespace NSCSS
 		return m_oDisplay;
 	}
 
+	const CEnum& CDisplay::GetWhiteSpace() const
+	{
+		return m_eWhiteSpace;
+	}
+
 	bool CDisplay::Empty() const
 	{
 		return m_oX.Empty() && m_oY.Empty() && m_oWidth.Empty() && m_oHeight.Empty() &&
-		       m_oHeight.Empty() && m_oVAlign.Empty() && m_oDisplay.Empty();
+		       m_oHeight.Empty() && m_oVAlign.Empty() && m_oDisplay.Empty() &&
+		       (m_eWhiteSpace.Empty() || m_eWhiteSpace == EWhiteSpace::Normal);
 	}
 
 	CDisplay &CDisplay::operator+=(const CDisplay &oDisplay)
 	{
-		m_oX       += oDisplay.m_oX;
-		m_oY       += oDisplay.m_oY;
-		m_oWidth   = oDisplay.m_oWidth;
-		m_oHeight  = oDisplay.m_oHeight;
-		m_oHAlign  += oDisplay.m_oHAlign;
-		m_oVAlign  += oDisplay.m_oVAlign;
-		m_oDisplay += oDisplay.m_oDisplay;
+		m_oX          += oDisplay.m_oX;
+		m_oY          += oDisplay.m_oY;
+		m_oWidth       = oDisplay.m_oWidth;
+		m_oHeight      = oDisplay.m_oHeight;
+		m_oHAlign     += oDisplay.m_oHAlign;
+		m_oVAlign     += oDisplay.m_oVAlign;
+		m_oDisplay    += oDisplay.m_oDisplay;
+		m_eWhiteSpace += oDisplay.m_eWhiteSpace;
 
 		return *this;
 	}
 
 	bool CDisplay::operator==(const CDisplay &oDisplay) const
 	{
-		return m_oX       == oDisplay.m_oX      &&
-		       m_oY       == oDisplay.m_oY      &&
-		       m_oWidth   == oDisplay.m_oWidth  &&
-		       m_oHeight  == oDisplay.m_oHeight &&
-		       m_oHAlign  == oDisplay.m_oHAlign &&
-		       m_oVAlign  == oDisplay.m_oVAlign &&
-		       m_oDisplay == oDisplay.m_oDisplay;
+		return m_oX          == oDisplay.m_oX       &&
+		       m_oY          == oDisplay.m_oY       &&
+		       m_oWidth      == oDisplay.m_oWidth   &&
+		       m_oHeight     == oDisplay.m_oHeight  &&
+		       m_oHAlign     == oDisplay.m_oHAlign  &&
+		       m_oVAlign     == oDisplay.m_oVAlign  &&
+		       m_oDisplay    == oDisplay.m_oDisplay &&
+		       m_eWhiteSpace == oDisplay.m_eWhiteSpace.ToInt();
 	}
 
 	// STROKE

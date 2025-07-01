@@ -196,7 +196,7 @@ namespace MetaFile
 		if (InterpretatorType::Svg == oInterpretatorType)
 		{
 			CWmfInterpretatorSvg *pWmfInterpretatorSvg = new CWmfInterpretatorSvg(this, unWidth, unHeight);
-			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::CrispEdges);
+			pWmfInterpretatorSvg->SetShapeRendering(EShapeRendering::OptimizeSpeed);
 			m_pInterpretator = pWmfInterpretatorSvg;
 		}
 	}
@@ -241,10 +241,10 @@ namespace MetaFile
 		{
 			const double dKoef = 96. / (double)m_oPlaceable.ushInch;
 
-			m_oDCRect.Left   = std::round(m_oDCRect.Left   * dKoef);
-			m_oDCRect.Top    = std::round(m_oDCRect.Top    * dKoef);
-			m_oDCRect.Right  = std::round(m_oDCRect.Right  * dKoef);
-			m_oDCRect.Bottom = std::round(m_oDCRect.Bottom * dKoef);
+			m_oDCRect.Left   = static_cast<int>(std::round(m_oDCRect.Left   * dKoef));
+			m_oDCRect.Top    = static_cast<int>(std::round(m_oDCRect.Top    * dKoef));
+			m_oDCRect.Right  = static_cast<int>(std::round(m_oDCRect.Right  * dKoef));
+			m_oDCRect.Bottom = static_cast<int>(std::round(m_oDCRect.Bottom * dKoef));
 		}
 
 		// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
@@ -290,6 +290,16 @@ namespace MetaFile
 		}
 
 		m_pDC->SetCurPos(shX, shY);
+	}
+
+	void CWmfParserBase::MoveToD(double dX, double dY)
+	{
+		if (NULL != m_pInterpretator)
+			m_pInterpretator->MoveTo(dX, dY);
+		else
+			RegisterPoint(static_cast<short>(dX), static_cast<short>(dY));
+
+		m_pDC->SetCurPos(static_cast<short>(dX), static_cast<short>(dY));
 	}
 
 	void CWmfParserBase::LineTo(short shX, short shY)
@@ -396,7 +406,7 @@ namespace MetaFile
 				NSFonts::IFontManager* pFontManager = GetFontManager();
 				if (pFontManager)
 				{
-					int lLogicalFontHeight = pFont->GetHeight();
+					int lLogicalFontHeight = static_cast<int>(pFont->GetHeight());
 					if (lLogicalFontHeight < 0)
 						lLogicalFontHeight = -lLogicalFontHeight;
 					if (lLogicalFontHeight < 0.01)
@@ -444,8 +454,8 @@ namespace MetaFile
 					{
 						pFontManager->LoadString1(wsText, 0, 0);
 						TBBox oBox = pFontManager->MeasureString2();
-						fL = (float)(oBox.fMinX);
-						fW = (float)(oBox.fMaxX - oBox.fMinX);
+						fL = static_cast<float>(oBox.fMinX);
+						fW = static_cast<float>(oBox.fMaxX - oBox.fMinX);
 					}
 
 					pFontManager->LoadString1(wsText, 0, 0);
@@ -520,7 +530,7 @@ namespace MetaFile
 				}
 				else
 				{
-					int lLogicalFontHeight = pFont->GetHeight();
+					int lLogicalFontHeight = static_cast<int>(pFont->GetHeight());
 					if (lLogicalFontHeight < 0)
 						lLogicalFontHeight = -lLogicalFontHeight;
 					if (lLogicalFontHeight < 0.01)
@@ -548,7 +558,7 @@ namespace MetaFile
 						fW = (float)(dFontHeight * wsText.length());
 					}
 
-					fH = dFontHeight * 1.2;
+					fH = (float)dFontHeight * 1.2f;
 
 					double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
 					double dCosTheta = (float)cos(dTheta);
@@ -656,14 +666,14 @@ namespace MetaFile
 		}
 	}
 
-	bool CWmfParserBase::ReadImage(unsigned short ushColorUsage, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight)
+	bool CWmfParserBase::ReadImage(unsigned short ushColorUsage, BYTE **ppBgraBuffer, unsigned int *pulWidth, unsigned int *pulHeight, unsigned int& unColorUsed)
 	{
 		unsigned int unRemainBytes = GetRecordRemainingBytesCount();
 		if (unRemainBytes <= 0)
 			return false;
 
 		BYTE* pBuffer = m_oStream.GetCurPtr();
-		MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight);
+		MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight, unColorUsed);
 		return true;
 	}
 
@@ -672,11 +682,16 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			BYTE* pBgra = NULL;
-			unsigned int unWidth, unHeight;
+			unsigned int unWidth, unHeight, unColorUsed;
 
-			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight))
+			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight, unColorUsed))
 			{
 				ProcessRasterOperation(unRasterOperation, &pBgra, unWidth, unHeight);
+
+				unsigned int unBlendMode{BLEND_MODE_DEFAULT};
+
+				if (2 == unColorUsed && 0x00660046 == unRasterOperation)
+					unBlendMode = BLEND_MODE_DRAW_ON_BLACK;
 
 				double dX, dY, dX1, dY1;
 				TranslatePoint(oDestRect.Left, oDestRect.Top, dX, dY);
@@ -693,14 +708,14 @@ namespace MetaFile
 
 					if (NULL != pNewBuffer)
 					{
-						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top));
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pNewBuffer, std::abs(oClip.Right - oClip.Left), std::abs(oClip.Bottom - oClip.Top), unBlendMode);
 						delete[] pNewBuffer;
 					}
 					else
-						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
+						m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight, unBlendMode);
 				}
 				else
-					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight);
+					m_pInterpretator->DrawBitmap(dX, dY, dX1 - dX, dY1 - dY, pBgra, unWidth, unHeight, unBlendMode);
 			}
 
 			if (pBgra)
@@ -724,17 +739,17 @@ namespace MetaFile
 		    oNewRect.Top  < 0 || oNewRect.Bottom < 0)
 			return NULL;
 
-		if (unHeight < (oNewRect.Bottom - oNewRect.Top))
-			oNewRect.Bottom = oNewRect.Top + unWidth;
+		if (unHeight < static_cast<unsigned int>(std::abs(oNewRect.Bottom - oNewRect.Top)))
+			oNewRect.Bottom = oNewRect.Top + unHeight;
 
-		if (unWidth < (oNewRect.Right - oNewRect.Left))
+		if (unWidth < static_cast<unsigned int>(std::abs(oNewRect.Right - oNewRect.Left)))
 			oNewRect.Right = oNewRect.Left + unWidth;
 
 		if (unHeight == (oNewRect.Bottom - oNewRect.Top) &&
 		    unWidth  == (oNewRect.Right  - oNewRect.Left))
 			return NULL;
 
-		int nBeginX, nBeginY, nEndX, nEndY;
+		ULONG nBeginX, nBeginY, nEndX, nEndY;
 
 		nBeginX = (std::min)(oNewRect.Left, oNewRect.Right);
 		nBeginY = (std::min)(oNewRect.Top,  oNewRect.Bottom);
@@ -924,7 +939,7 @@ namespace MetaFile
 
 		double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
-		MoveTo(dX1, dY1);
+		MoveToD(dX1, dY1);
 		ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 		DrawPath(true, false);
 	}
@@ -1210,7 +1225,7 @@ namespace MetaFile
 		if (NULL != m_pInterpretator)
 		{
 			m_pInterpretator->HANDLE_META_SETPIXEL(oColor, shY, shX);
-			m_pInterpretator->DrawBitmap(shX, shY, 1, 1, pBgraBuffer, 1, 1);
+			m_pInterpretator->DrawBitmap(shX, shY, 1, 1, pBgraBuffer, 1, 1, BLEND_MODE_DEFAULT);
 		}
 	}
 
@@ -1300,8 +1315,8 @@ namespace MetaFile
 			m_pInterpretator->HANDLE_META_DIBCREATEPATTERNBRUSH(ushStyle, ushColorUsage, *pBrush, m_oStream);
 
 			BYTE* pBgra = NULL;
-			unsigned int unWidth = 0, unHeight = 0;
-			if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
+			unsigned int unWidth = 0, unHeight = 0, unColorUsed = 0;
+			if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight, unColorUsed))
 			{
 				pBrush->SetDibPattern(pBgra, unWidth, unHeight);
 			}

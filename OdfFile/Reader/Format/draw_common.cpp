@@ -49,35 +49,47 @@
 #include "odfcontext.h"
 
 /////////////////////////////////////////////////////////////////////////////////
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../DesktopEditor/graphics/pro/Image.h"
 #include "../../../OOXML/Base/Unit.h"
 
 namespace _image_file_
 {
-    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts* appFonts)
-	{
-		CBgraFrame image;
-        MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
+    bool GetResolution(const wchar_t* fileName, _CP_OPT(int)& Width, _CP_OPT(int)&Height, NSFonts::IApplicationFonts* appFonts)
+	{ /// todooo fast detect resolutions
+		CImageFileFormatChecker image_checker;
 
-        bool bRet = false;
-        if ( appFonts && meta_file->LoadFromFile(fileName))
+		bool bRet = false;
+		if (image_checker.isImageFile(fileName))
 		{
-			double dX = 0, dY = 0, dW = 0, dH = 0;
-            meta_file->GetBounds(&dX, &dY, &dW, &dH);
-			
-			Width  = dW;
-			Height = dH;
-		}
-		else if ( image.OpenFile(fileName, 0 ))
-		{
-			Width  = image.get_Width();
-			Height = image.get_Height();
+			if (image_checker.eFileType == _CXIMAGE_FORMAT_WMF || image_checker.eFileType == _CXIMAGE_FORMAT_EMF
+				|| image_checker.eFileType == _CXIMAGE_FORMAT_SVM)
+			{
+				MetaFile::IMetaFile* meta_file = MetaFile::Create(appFonts);
 
-            bRet = true;
-		}
+				if (appFonts && meta_file->LoadFromFile(fileName))
+				{
+					double dX = 0, dY = 0, dW = 0, dH = 0;
+					meta_file->GetBounds(&dX, &dY, &dW, &dH);
 
-        RELEASEOBJECT(meta_file);
+					Width = dW;
+					Height = dH;
+				}
+				RELEASEOBJECT(meta_file);
+			}
+			else
+			{
+				CBgraFrame image;
+				if (image.OpenFile(fileName, 0))
+				{
+					Width = image.get_Width();
+					Height = image.get_Height();
+
+					bRet = true;
+				}
+			}
+		}
         return bRet;
 	}
 
@@ -120,11 +132,11 @@ int get_value_emu(double pt)
 {
     return static_cast<int>((pt* 360000 * 2.54) / 72);
 } 
-bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts *appFonts)
+bool parse_clipping(std::wstring strClipping, int fileWidth, int fileHeight, double_4& clip_rect)
 {
     memset(clip_rect, 0, 4*sizeof(double));
 
-	if (strClipping.empty() || fileName.empty()) return false;
+	if (strClipping.empty()) return false;
 		
 	//<top>, <right>, <bottom>, <left> - http://www.w3.org/TR/2001/REC-xsl-20011015/xslspec.html#clip
 
@@ -143,10 +155,6 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	}
 
 	if (!bEnableCrop) return false;
-
-	int fileWidth = 0,fileHeight = 0;
-
-	if (!_image_file_::GetResolution(fileName.data(), fileWidth, fileHeight, appFonts) || fileWidth < 1 || fileHeight < 1)	return false;
 
 	if (Points_pt.size() > 3)//если другое количество точек .. попозже
 	{
@@ -301,8 +309,14 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 	if (gradient_style->draw_style_) 
 		style = gradient_style->draw_style_->get_type();
 
-	if (gradient_style->draw_angle_) 
-		fill->angle = -90 - gradient_style->draw_angle_->get_value();
+	if (gradient_style->draw_angle_)
+	{
+		double angle = std::fmod(gradient_style->draw_angle_->get_value(), 360.0);
+		if (angle < 0)
+			angle += 360.0;
+
+		fill->angle = -angle + 90;
+	}
 
 	if (fill->angle < 0)
 	{
@@ -322,7 +336,7 @@ void Compute_GradientFill(draw_gradient* gradient_style, oox::oox_gradient_fill_
 			if (gradient_stop->color_value_)
 				fill->colors[i].color_ref = gradient_stop->color_value_->get_hex_value();
 			if (gradient_stop->svg_offset_)
-				fill->colors[i].pos = 100 - *gradient_stop->svg_offset_ * 100;
+				fill->colors[i].pos = *gradient_stop->svg_offset_ * 100;
 		}
 	}
 	fill->style = 0;
@@ -508,13 +522,17 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 				{
 					switch(image->style_repeat_->get_type())
 					{
-						case style_repeat::Repeat	:	
+						case style_repeat::NoRepeat:
+							fill.bitmap->bTile = false;
+							fill.bitmap->bStretch = false;
+						break;
+						case style_repeat::Repeat	:
 							fill.bitmap->bTile		= true;		
 							fill.bitmap->bStretch	= false;	
 						break;
 						case style_repeat::Stretch	:	
 							fill.bitmap->bStretch	= true;	
-							fill.bitmap->bTile		= false;  //?? для background точно выключать
+							fill.bitmap->bTile		= false; 
 						break;
 					}
 				}
@@ -536,32 +554,39 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_el
 					fill.bitmap->bTile		= true;		
 					fill.bitmap->bStretch	= false;	
 				break;
-				case style_repeat::Stretch	:	
-					fill.bitmap->bStretch	= true;	
+				case style_repeat::NoRepeat	:	
+					fill.bitmap->bTile		= false;
+					fill.bitmap->bStretch	= false;
+				break;
+				case style_repeat::Stretch	:
+					fill.bitmap->bStretch	= true;
 					fill.bitmap->bTile		= false;
 				break;
 			}
 		}
-		else
+		if (props.draw_fill_image_width_ && props.draw_fill_image_height_)
 		{
-			if (props.draw_fill_image_width_ && props.draw_fill_image_height_)
+			if (props.draw_fill_image_width_->get_type() == odf_types::length_or_percent::Percent &&
+				props.draw_fill_image_height_->get_type() == odf_types::length_or_percent::Percent)
 			{
-				if (props.draw_fill_image_width_->get_type() == odf_types::length_or_percent::Percent && 
-					props.draw_fill_image_height_->get_type() == odf_types::length_or_percent::Percent)
+				fill.bitmap->sx = props.draw_fill_image_width_->get_percent().get_value();
+				fill.bitmap->sy = props.draw_fill_image_height_->get_percent().get_value();
+
+				if ( !props.style_repeat_ && props.draw_fill_image_width_->get_percent().get_value() > 99.9 &&
+					props.draw_fill_image_height_->get_percent().get_value() > 99.9 &&
+					props.draw_fill_image_width_->get_percent().get_value() < 100.1 &&
+					props.draw_fill_image_height_->get_percent().get_value() < 100.1)
 				{
-					if (props.draw_fill_image_width_->get_percent().get_value()  > 99.9  && 
-						props.draw_fill_image_height_->get_percent().get_value() > 99.9  && 
-						props.draw_fill_image_width_->get_percent().get_value()  < 100.1 && 
-						props.draw_fill_image_height_->get_percent().get_value() < 100.1 )
-					{
-						fill.bitmap->bStretch	= true;
-						fill.bitmap->bTile		= false;
-					}
+					fill.bitmap->bStretch = true;
+					fill.bitmap->bTile = false;
 				}
 			}
+			else
+			{
+				fill.bitmap->sx_pt = props.draw_fill_image_width_->get_length().get_value_unit(length::pt);
+				fill.bitmap->sy_pt = props.draw_fill_image_height_->get_length().get_value_unit(length::pt);
+			}
 		}
-		if ((props.draw_color_mode_) && (*props.draw_color_mode_ == L"greyscale"))
-			fill.bitmap->bGrayscale = true;
 	}
 	if (props.draw_fill_gradient_name_)
 	{
@@ -731,7 +756,7 @@ void docx_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_
 					double x_pt = Points[0].get_value_unit(length::pt);
 					double y_pt = 0;
 					
-					if (Points.size()>1) y_pt = Points[1].get_value_unit(length::pt);	//ее может не быть
+					if (Points.size() > 1) y_pt = Points[1].get_value_unit(length::pt);	//ее может не быть
 
 					//Context.get_drawing_context().set_translate(x_pt,y_pt);
 					additional.push_back(_property(L"svg:translate_x", x_pt));

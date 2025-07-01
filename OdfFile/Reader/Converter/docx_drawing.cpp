@@ -179,7 +179,7 @@ void _docx_drawing::serialize_text(std::wostream & strm)
 
 	CP_XML_WRITER(strm)
 	{			
-		if (strTextContent)
+		if (strTextContent && !strTextContent->empty())
 		{
 			CP_XML_NODE(L"wps:txbx")
 			{  
@@ -296,8 +296,8 @@ void docx_serialize_image_child(std::wostream & strm, _docx_drawing & val)
 						CP_XML_ATTR(L"id", val.id + 1);
 						CP_XML_ATTR(L"name", val.name);
 
-						CP_XML_ATTR_OPT(L"title", title);
-						CP_XML_ATTR_OPT(L"descr", descr);
+						CP_XML_ATTR_OPT_ENCODE_STRING(L"title", title);
+						CP_XML_ATTR_OPT_ENCODE_STRING(L"descr", descr);
 					
 						//oox_serialize_action(CP_XML_STREAM(), val.action);
 					}
@@ -413,8 +413,8 @@ void docx_serialize_common(std::wostream & strm, _docx_drawing & val)
 			CP_XML_ATTR(L"name",	val.name);
 			CP_XML_ATTR(L"id",		0xf000 + val.id + 1);
 
-			CP_XML_ATTR_OPT(L"title", title);
-			CP_XML_ATTR_OPT(L"descr", descr);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"title", title);
+			CP_XML_ATTR_OPT_ENCODE_STRING(L"descr", descr);
 			
 			oox_serialize_action(CP_XML_STREAM(), val.action);
 		}

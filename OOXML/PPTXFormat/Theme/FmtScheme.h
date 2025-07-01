@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_THEME_FMTSCHEME_INCLUDE_H_
-#define PPTX_THEME_FMTSCHEME_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Logic/UniFill.h"
@@ -45,11 +43,10 @@ namespace PPTX
 		class FmtScheme : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(FmtScheme)
-
+			FmtScheme() : nameNode(L"a:fmtScheme") {}
+			PPTX_LOGIC_BASE_NC(FmtScheme)
 			FmtScheme& operator=(const FmtScheme& oSrc);
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -63,7 +60,9 @@ namespace PPTX
 
 			void FillWithDefaults();
 
-		public:
+			std::wstring nameNode;
+			std::wstring xmlns_attr;
+
 			std::wstring name;
 			std::vector<Logic::UniFill>		fillStyleLst;
 			std::vector<Logic::Ln>			lnStyleLst;
@@ -76,4 +75,3 @@ namespace PPTX
 	} // namespace nsTheme
 } // namespace PPTX
 
-#endif // PPTX_THEME_FMTSCHEME_INCLUDE_H

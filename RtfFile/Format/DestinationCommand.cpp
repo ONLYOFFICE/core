@@ -5355,8 +5355,8 @@ bool RtfListTableReader::ListReader::ListLevelReader::ExecuteCommand(RtfDocument
 	}
 	else if( "leveltext" == sCommand  )
 	{
-		TextReader oLevelTextReader( m_oListLevelProp.m_sText );
-		oLevelTextReader.m_bUseGlobalCodepage = true;
+		TextReader oLevelTextReader( m_oListLevelProp.m_sLevelText);
+		oLevelTextReader.m_bUseGlobalCodepage = true; // font Symbol
 		return StartSubReader( oLevelTextReader, oDocument, oReader );
 	}
 	else if( "levelnumbers" == sCommand  )

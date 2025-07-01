@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -142,11 +142,6 @@ namespace NExtractTools
 		else
 		{
 			BinXlsxRW::CXlsxSerializer oCXlsxSerializer;
-			if (oCXlsxSerializer.hasPivot(sFrom))
-			{
-				// save Editor.xlsx for pivot
-				nRes = CopyOOXOrigin(sToDir, sFrom, L"Editor.xlsx", convertParams.m_sTempParamOOXMLFile);
-			}
 
 			// Save to file (from temp dir)
 			oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
@@ -178,8 +173,6 @@ namespace NExtractTools
 	}
 	_UINT32 xlst_bin2xlsb_dir(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sTempUnpackedXLSX = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
-		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
 
 		_UINT32 nRes = 0;
 		
@@ -194,14 +187,9 @@ namespace NExtractTools
 		
 		std::wstring sTempUnpackedXLSB = convertParams.m_sTempResultOOXMLDirectory;
 
-		convertParams.m_sTempResultOOXMLDirectory = sTempUnpackedXLSX;
-		nRes = xlst_bin2xlsx_dir(sTargetBin, sTempUnpackedXLSX, params, convertParams);
+        convertParams.m_sTempResultOOXMLDirectory = sTempUnpackedXLSB;
+        nRes = xlst_bin2xlsx_dir(sTargetBin, sTempUnpackedXLSB, params, convertParams);
 
-		if (SUCCEEDED_X2T(nRes))
-		{
-			convertParams.m_sTempResultOOXMLDirectory = sTempUnpackedXLSB;
-			nRes = xlsx_dir2xlsb_dir(sTempUnpackedXLSX, sTempUnpackedXLSB, params, convertParams);
-		}
 		// удаляем EditorWithChanges, потому что он не в Temp
 		if (sFrom != sTargetBin)
 			NSFile::CFileBinary::Remove(sTargetBin);
@@ -279,7 +267,7 @@ namespace NExtractTools
 		oCXlsxSerializer.setIsNoBase64(params.getIsNoBase64());
 		oCXlsxSerializer.setFontDir(params.getFontPath());
 
-		std::wstring sXmlOptions = _T("");
+        std::wstring sXmlOptions = params.getXmlOptions();
 		std::wstring sMediaPath; // will be filled by 'CreateXlsxFolders' method
 		std::wstring sEmbedPath; // will be filled by 'CreateXlsxFolders' method
 
@@ -301,7 +289,6 @@ namespace NExtractTools
 	{
 		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsx);
 	}
-	
 	_UINT32 xlst2xlsb(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
 		return NSCommon::oot2format(sFrom, sTo, params, convertParams, L"xlst", xlst_bin2xlsb);

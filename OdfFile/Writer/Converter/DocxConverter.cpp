@@ -87,8 +87,6 @@
 
 using namespace cpdoccore;
 
-std::vector<double> current_font_size;
-
 namespace Oox2Odf
 {
 
@@ -1199,6 +1197,8 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oDirty;
 	//SimpleTypes::COnOff<SimpleTypes::onoffFalse> m_oFldLock;
 
+	bool run_state = odt_context->text_context()->in_span();
+
 	odt_context->start_field(true);
 	{	
 		if (oox_fld->m_sInstr.IsInit())	
@@ -1212,6 +1212,11 @@ void DocxConverter::convert(OOX::Logic::CFldSimple	*oox_fld)
 		}
 	}
 	odt_context->end_field();
+
+	if (!run_state)
+	{
+		odt_context->end_run();
+	}
 }
 void DocxConverter::convert(OOX::Logic::CInstrText *oox_instrText)
 {
@@ -1609,6 +1614,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 	//}	
 
 	convert(oox_paragraph_pr->m_oJc.GetPointer(), paragraph_properties->fo_text_align_);
+
+	if (!oox_paragraph_pr->m_oJc.GetPointer() && oox_paragraph_pr->m_oBidi.IsInit())
+		paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::End);
 
 	if (oox_paragraph_pr->m_oTextAlignment.IsInit() && oox_paragraph_pr->m_oTextAlignment->m_oVal.IsInit())
 	{
@@ -3287,7 +3295,7 @@ void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 
 	if (oox_anchor->m_oPositionV.IsInit() && oox_anchor->m_oPositionV->m_oRelativeFrom.IsInit())
 	{
-		int vert_rel = oox_anchor->m_oPositionV->m_oRelativeFrom->GetValue();
+		SimpleTypes::ERelFromV vert_rel = oox_anchor->m_oPositionV->m_oRelativeFrom->GetValue();
 
 		odt_context->drawing_context()->set_vertical_rel(vert_rel);
 
@@ -3296,20 +3304,12 @@ void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 
 		else if (oox_anchor->m_oPositionV->m_oPosOffset.IsInit())
 		{
-			//	relfromvBottomMargin = 0,
-			//	relfromvInsideMargin = 1,
-			//	relfromvLine = 2,
-			//	relfromvMargin = 3,
-			//	relfromvOutsideMargin = 4,
-			//	relfromvPage = 5,
-			//	relfromvParagraph = 6,
-			//	relfromvTopMargin = 7	
 			switch (vert_rel)
 			{
-			case 2: anchor_type_x = anchor_type::Char;		break;
-			case 5:	anchor_type_y = anchor_type::Page;		break;
-			case 3:
-			case 6:	anchor_type_y = anchor_type::Paragraph;	break;
+				case SimpleTypes::relfromvLine:			anchor_type_x = anchor_type::Char;		break;
+				case SimpleTypes::relfromvPage:			anchor_type_y = anchor_type::Page;		break;
+				case SimpleTypes::relfromvMargin:
+				case SimpleTypes::relfromvParagraph:	anchor_type_y = anchor_type::Paragraph;	break;
 			}
 			odt_context->drawing_context()->set_vertical_pos(oox_anchor->m_oPositionV->m_oPosOffset->ToPoints());
 		}
@@ -3318,7 +3318,7 @@ void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 	}
 	if (oox_anchor->m_oPositionH.IsInit() && oox_anchor->m_oPositionH->m_oRelativeFrom.IsInit())
 	{
-		int horiz_rel = oox_anchor->m_oPositionH->m_oRelativeFrom->GetValue();
+		SimpleTypes::ERelFromH horiz_rel = oox_anchor->m_oPositionH->m_oRelativeFrom->GetValue();
 		odt_context->drawing_context()->set_horizontal_rel(horiz_rel);
 
 		if (oox_anchor->m_oPositionH->m_oAlign.IsInit())
@@ -3327,21 +3327,14 @@ void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 		else if (oox_anchor->m_oPositionH->m_oPosOffset.IsInit())
 		{
 			odt_context->drawing_context()->set_horizontal_pos(oox_anchor->m_oPositionH->m_oPosOffset->ToPoints());
-			//	relfromhCharacter = 0,
-			//	relfromhColumn = 1,
-			//	relfromhInsideMargin = 2,
-			//	relfromhLeftMargin = 3,
-			//	relfromhMargin = 4,
-			//	relfromhOutsideMargin = 5,
-			//	relfromhPage = 6,
-			//	relfromhRightMargin = 7
+
 			switch (horiz_rel)
 			{
-			case 0: anchor_type_x = anchor_type::Char;		break;
-			case 1: anchor_type_x = anchor_type::Frame;		break;
-			case 4:
-			case 2:	anchor_type_x = anchor_type::Paragraph;	break;
-			case 6:	anchor_type_x = anchor_type::Page;		break;
+				case SimpleTypes::relfromhCharacter:	anchor_type_x = anchor_type::Char;		break;
+				case SimpleTypes::relfromhColumn:		anchor_type_x = anchor_type::Frame;		break;
+				case SimpleTypes::relfromhMargin:
+				case SimpleTypes::relfromhInsideMargin:	anchor_type_x = anchor_type::Paragraph;	break;
+				case SimpleTypes::relfromhPage:			anchor_type_x = anchor_type::Page;		break;
 			}
 		}
 		else
@@ -3350,6 +3343,9 @@ void DocxConverter::convert(OOX::Drawing::CAnchor* oox_anchor)
 
 	if (anchor_type_x && anchor_type_y)
 	{
+		if (*anchor_type_x == anchor_type::Paragraph || *anchor_type_y == anchor_type::Paragraph)
+			*anchor_type_x = *anchor_type_y = anchor_type::Paragraph;
+
 		if (*anchor_type_x == *anchor_type_y)
 			odt_context->drawing_context()->set_anchor(*anchor_type_x);
 		else if (*anchor_type_x == anchor_type::Frame  && *anchor_type_y == anchor_type::Paragraph)

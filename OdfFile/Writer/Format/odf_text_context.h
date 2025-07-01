@@ -116,8 +116,9 @@ public:
 	office_element_ptr start_field(int type, const std::wstring& value, const std::wstring& format);
 	void end_field();
 
-	void start_span			(bool styled = false); 
-    void end_span			();
+	void start_span (bool styled = false); 
+    void end_span ();
+	bool in_span();
 
 	void start_list_item	();
 	void end_list_item		();

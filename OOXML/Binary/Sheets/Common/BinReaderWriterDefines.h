@@ -238,7 +238,8 @@ namespace BinXlsxRW
 		ExternalLinksAutoRefresh = 26,
 		TimelineCaches = 27,
 		TimelineCache = 28,
-		Metadata = 29
+		Metadata = 29,
+		XmlMap = 30
 	};}
 	namespace c_oSerWorkbookProtection {enum c_oSerWorkbookProtection{
 		AlgorithmName = 0,
@@ -456,7 +457,7 @@ namespace BinXlsxRW
 		TimelinesList = 48,
 		Timelines = 49,
 		Timeline = 50,
-
+		TableSingleCells = 51
 	};}
 	namespace c_oSerWorksheetProtection {enum c_oSerWorksheetPropTypes
 	{
@@ -588,7 +589,8 @@ namespace BinXlsxRW
 		Text = 53,
 		Print = 54,
 		ItemLst = 55,
-		Item = 56
+		Item = 56,
+		Shape = 57
 	};}
 	namespace c_oSerCellTypes{enum c_oSerCellTypes
 	{
@@ -1113,7 +1115,12 @@ namespace BinXlsxRW
 		QueryTableFieldId = 11,
 		TotalsRowCellStyle = 12,
 		TotalsRowDxfId = 13,
-		UniqueName = 14
+		UniqueName = 14,
+		XmlColumnPr = 15,
+		MapId = 16,
+		Xpath = 17,
+		Denormalized = 18,
+		XmlDataType = 19
 	};}
 	namespace c_oSer_SortState{enum c_oSer_SortState
 	{

@@ -40,6 +40,7 @@
 
 #include "../Document.h"
 #include "../../XlsxFormat/Xlsx.h"
+#include "../../VsdxFormat/Vsdx.h"
 
 #include "../../PPTXFormat/Logic/SpTree.h"
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
@@ -56,8 +57,8 @@ namespace OOX
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 
 	template<typename E>
@@ -1061,8 +1062,8 @@ namespace OOX
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 
 	EElementType Diagram::CCxn::getType() const
@@ -1562,8 +1563,8 @@ namespace OOX
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 
 	EElementType Diagram::CCat::getType() const
@@ -1710,8 +1711,8 @@ namespace OOX
 
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 
 	void Diagram::CText::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -1776,6 +1777,7 @@ namespace OOX
 	{
 		m_bDocument = (NULL != dynamic_cast<OOX::CDocument*>(pMain));
 		m_bSpreadsheets = (NULL != dynamic_cast<OOX::Spreadsheet::CXlsx*>(pMain));
+		m_bVisioPages = (NULL != dynamic_cast<OOX::Draw::CVsdx*>(pMain));
 
 		read( oRootPath, oPath );
 	}

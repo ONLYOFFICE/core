@@ -282,6 +282,8 @@
     <ClCompile Include="..\..\Reader\Converter\pptx_text_context.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.cpp" />
+    <ClCompile Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.cpp" />
     <ClCompile Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.cpp" />
     <ClCompile Include="..\..\Reader\Converter\xlsxconversioncontext.cpp">
@@ -679,6 +681,8 @@
     <ClInclude Include="..\..\Reader\Converter\pptx_slide_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_table_context.h" />
     <ClInclude Include="..\..\Reader\Converter\pptx_text_context.h" />
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\customshape.h" />
+    <ClInclude Include="..\..\Reader\Converter\SMCustomShape2OOXML\smcustomshapepars.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cconversionsmtoooxml.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\cstarmathpars.h" />
     <ClInclude Include="..\..\Reader\Converter\StarMath2OOXML\fontType.h" />

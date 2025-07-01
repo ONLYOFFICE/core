@@ -32,8 +32,8 @@
 
 #include "NamedSheetViews.h"
 #include "../Styles/dxf.h"
-#include "../../Binary/Sheets/Reader/BinaryWriter.h"
-#include "../../Binary/Sheets/Writer/BinaryReader.h"
+#include "../../Binary/Sheets/Reader/BinaryWriterS.h"
+#include "../../Binary/Sheets/Writer/BinaryReaderS.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../Styles/Colors.h"

@@ -93,6 +93,9 @@ void odf_settings_context::end_table()
 }
 void odf_settings_context::set_modify_info(const std::wstring& crypt, const std::wstring& algorithm, const std::wstring& solt, const std::wstring& hash, int iteration_count)
 {
+	if (algorithm.empty() && solt.empty() && hash.empty())
+		return;
+
 	office_element_ptr elm_item_set;
 	create_element(L"config", L"config-item-set", elm_item_set, odf_context_);
 	config_content_.push_back(elm_item_set);

@@ -1757,9 +1757,11 @@ namespace SimpleTypes
 
 	///
 
-	CHexColor::CHexColor(unsigned char r, unsigned char g, unsigned char b)
+	CHexColor::CHexColor(unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 	{
 		this->m_eValue = hexcolorRGB;
+		
+		m_unA = a;
 		m_unR = r;
 		m_unG = g;
 		m_unB = b;
@@ -1779,9 +1781,19 @@ namespace SimpleTypes
 		if ( m_sValue.length() < 6 )
 			return;
 
-		m_unR = HexToInt( (int)m_sValue[1] ) + (unsigned char)(HexToInt( (int)m_sValue[0] ) << 4);
-		m_unG = HexToInt( (int)m_sValue[3] ) + (unsigned char)(HexToInt( (int)m_sValue[2] ) << 4);
-		m_unB = HexToInt( (int)m_sValue[5] ) + (unsigned char)(HexToInt( (int)m_sValue[4] ) << 4);
+		if (m_sValue.length() > 6)
+		{
+			m_unR = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
+			m_unG = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
+			m_unB = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
+			m_unA = HexToInt((int)m_sValue[7]) + (unsigned char)(HexToInt((int)m_sValue[6]) << 4);
+		}
+		else
+		{
+			m_unR = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
+			m_unG = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
+			m_unB = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
+		}
 	}
 
 	void CHexColor::Parse3()
@@ -1823,8 +1835,8 @@ namespace SimpleTypes
 			}
 			else if (8 <= sValue.length())
 			{
-				this->m_eValue = hexcolorRGB;
-				m_sValue = sValue.substr(2, 6);
+				this->m_eValue = hexcolorARGB;
+				m_sValue = sValue.substr(0, 8);
 				Parse();
 			}
 			else if ( 6 <= sValue.length() )
@@ -1842,52 +1854,20 @@ namespace SimpleTypes
 			else   this->m_eValue = EHexColor::hexcolorAuto;//eDefValue;
 
 		}
-
 		return this->m_eValue;
 	}
 
-	/*
-	template<>
-	EHexColor CHexColor<EHexColor::hexcolorRGB>::FromString(const std::wstring &sValue)
-	{
-		if ( _T("auto") == sValue || _T("none") == sValue )
-			this->m_eValue = hexcolorAuto;
-		else
-		{
-			//В документации не написано, что цвет может приходить строкой, но в реальных докуентах встречается и word это разруливает.
-			//CHighlightColor<highlightcolorNone> oHighlightColor(sValue);
-			CPresetColorVal<> oPresetColorVal;
-			if(oPresetColorVal.FromStringIgnoreCase(sValue))
-			{
-				this->m_eValue = hexcolorRGB;
-				m_unR = oPresetColorVal.Get_R();
-				m_unG = oPresetColorVal.Get_G();
-				m_unB = oPresetColorVal.Get_B();
-			}
-			else if ( 6 <= sValue.length() )
-			{
-				this->m_eValue = hexcolorRGB;
-				m_sValue = sValue.substr( 0, 6 );
-				Parse();
-			}
-			else if ( 3 == sValue.length() )// a la #339 (Compo 3AP.docx)
-			{
-				this->m_eValue = hexcolorRGB;
-				m_sValue = sValue;
-				Parse3();
-			}
-			else   this->m_eValue = EHexColor::hexcolorAuto;//eDefValue;
-
-		}
-
-		return this->m_eValue;
-	}
-	*/
-
-	std::wstring CHexColor::ToString  () const
+	std::wstring CHexColor::ToString () const
 	{
 		switch(this->m_eValue)
 		{
+		case hexcolorARGB:
+		{
+			std::wstringstream sstream;
+			sstream << boost::wformat(L"%02x%02x%02x%02x") % m_unR % m_unG % m_unB % m_unA;
+
+			return sstream.str();
+		}
 		case hexcolorRGB  :
 		{
 			std::wstringstream sstream;
@@ -1901,42 +1881,43 @@ namespace SimpleTypes
 		}
 	}
 
-	std::wstring CHexColor::ToStringNoAlpha  () const
+	std::wstring CHexColor::ToStringNoAlpha () const
 	{
-		switch(this->m_eValue)
+		switch (this->m_eValue)
 		{
-		case hexcolorRGB  :
-		{
-			std::wstringstream sstream;
-			sstream << boost::wformat( L"%02x%02x%02x" ) % m_unR % m_unG % m_unB;
+			case hexcolorARGB:
+			case hexcolorRGB:
+			{
+				std::wstringstream sstream;
+				sstream << boost::wformat(L"%02x%02x%02x") % m_unR % m_unG % m_unB;
 
-			return sstream.str();
+				return sstream.str();
+			}
+			case hexcolorAuto:
+			default:
+				return (L"auto");
 		}
-		case hexcolorAuto :
-		default :
-			return (L"auto");			}
 	}
-
+	void CHexColor::Set_A(unsigned char A)
+	{
+		m_unA = A;
+	}
 	void CHexColor::Set_R(unsigned char R)
 	{
 		m_unR = R;
 	}
-
 	void CHexColor::Set_G(unsigned char G)
 	{
 		m_unG = G;
 	}
-
 	void CHexColor::Set_B(unsigned char B)
 	{
 		m_unB = B;
 	}
-
 	unsigned char CHexColor::Get_R() const
 	{
 		return m_unR;
 	}
-
 	unsigned char CHexColor::Get_G() const
 	{
 		return m_unG;
@@ -1949,7 +1930,7 @@ namespace SimpleTypes
 
 	unsigned char CHexColor::Get_A() const
 	{
-		return 255;
+		return m_unA;
 	}
 
 	//--------------------------------------------------------------------------------

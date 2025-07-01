@@ -916,7 +916,11 @@ void OoxConverter::convert(PPTX::Logic::Shape *oox_shape)
 				odf_context()->start_text_context();
 
 					//docx_converter->convert(oox_shape->oTextBoxShape.GetPointer());
-					
+					convert(oox_shape->oTextBoxBodyPr.GetPointer());
+
+					if (oox_shape->style.IsInit())
+						convert(&oox_shape->style->fontRef);
+
                     for (size_t i = 0; i < oox_shape->oTextBoxShape->m_arrItems.size(); i++)
 					{
 						docx_converter->convert(oox_shape->oTextBoxShape->m_arrItems[i]);
@@ -1303,15 +1307,15 @@ void OoxConverter::convert(PPTX::Logic::EffectStyle *oox_effects, DWORD ARGB)
 {
 	if (!oox_effects) return;
 
-	if (oox_effects->EffectList.is_init())
+	if (oox_effects->Effects.is_init())
 	{
-		if (oox_effects->EffectList.is<PPTX::Logic::EffectLst>())
+		if (oox_effects->Effects.is<PPTX::Logic::EffectLst>())
 		{
-			convert(dynamic_cast<PPTX::Logic::EffectLst*>(oox_effects->EffectList.List.GetPointer()), ARGB);
+			convert(dynamic_cast<PPTX::Logic::EffectLst*>(oox_effects->Effects.List.GetPointer()), ARGB);
 		}
-		else if(oox_effects->EffectList.is<PPTX::Logic::EffectDag>())
+		else if(oox_effects->Effects.is<PPTX::Logic::EffectDag>())
 		{
-			convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_effects->EffectList.List.GetPointer()), ARGB);
+			convert(dynamic_cast<PPTX::Logic::EffectDag*>(oox_effects->Effects.List.GetPointer()), ARGB);
 		}
 	}
 	if (oox_effects->scene3d.IsInit())
@@ -3001,6 +3005,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	}
 	else if (type == 3) 
 	{
+		index -= 1;
 		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.effectStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index], nARGB);		

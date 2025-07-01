@@ -54,7 +54,7 @@ public:
 	const unsigned short get_ixfe() const;
 
 	GlobalWorkbookInfoPtr	global_info_;
-	unsigned short			ixfe;
+	unsigned short			ixfe = 0;
 	RkNumber				RK_;
 };
 

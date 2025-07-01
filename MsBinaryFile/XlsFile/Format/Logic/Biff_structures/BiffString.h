@@ -215,8 +215,12 @@ public:
             case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
                 if(0 == cch) break;
             case aw_READ_FROM_RECORD:
-                //stub
-                break;
+				{
+					is_wide = true;
+					byte wideFlag = 1; // for wide chars writing
+					record << wideFlag;
+					break;
+				}
             case aw_WIDE:
                 is_wide = true;
                 break;

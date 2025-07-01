@@ -50,6 +50,5 @@
 
 	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
 	stream_proc.mandatory(*streamObject);
-	xls_file->storage_->close();
 	return true;
  }

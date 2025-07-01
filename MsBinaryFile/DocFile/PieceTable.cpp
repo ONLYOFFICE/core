@@ -38,8 +38,10 @@ namespace DocFileFormat
 	{
 		if (fib->m_FibWord97.lcbClx < 1/* || !fib->m_FibBase.fComplex*/) return;
 
+		int streamSize = wordStream->size();
+
 		// Read the bytes of complex file information
-		unsigned char* clx	=	new unsigned char[fib->m_FibWord97.lcbClx];
+		unsigned char* clx = new unsigned char[fib->m_FibWord97.lcbClx];
 
 		if (tableStream)
 		{
@@ -47,7 +49,7 @@ namespace DocFileFormat
 			tableStream->read(clx, (int)fib->m_FibWord97.lcbClx);
 		}
 
-		Pieces					= std::list<PieceDescriptor>();
+		Pieces = std::list<PieceDescriptor>();
 		FileCharacterPositions	= new std::map<int, int>();
 		CharacterPositions		= new std::map<int, int>();
 
@@ -85,6 +87,11 @@ namespace DocFileFormat
 						//read the next CP
 						int indexCpNext = (i+1) * 4;
 						int cpNext = FormatUtils::BytesToInt32(piecetable, indexCpNext, lcb);
+
+						if (cpNext > streamSize)
+						{
+							cpNext = streamSize;
+						}
 
 						//read the PCD
 						int indexPcd = ((n + 1) * 4) + (i * 8);

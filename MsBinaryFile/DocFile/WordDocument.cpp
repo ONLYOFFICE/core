@@ -273,7 +273,7 @@ namespace DocFileFormat
 				bDocumentCodePage = true;
 			}
 		}
-		if (nWordVersion == 0)
+		if (nWordVersion == 0 && !bDocumentCodePage)
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;

@@ -99,7 +99,7 @@ const bool COLUMNS::saveContent(BinProcessor& proc)
         proc.mandatory(*m_DefColWidth);
     else
         proc.mandatory<DefColWidth>();
-    if(global_info_ && global_info_->sheets_info.size() > global_info_->current_sheet)
+	/*if(global_info_ && global_info_->sheets_info.size() > global_info_->current_sheet)
     {
         for(auto i:global_info_->sheets_info[global_info_->current_sheet - 1].customColumnsWidth)
         {
@@ -109,7 +109,7 @@ const bool COLUMNS::saveContent(BinProcessor& proc)
             column_info.coldx = i.second * 256;
             proc.mandatory(column_info);
         }
-    }
+	}*/
     return true;
 }
 int COLUMNS::serialize(std::wostream & stream)

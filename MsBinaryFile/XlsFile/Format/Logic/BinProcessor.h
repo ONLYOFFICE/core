@@ -136,7 +136,7 @@ public:
 	virtual const bool getNextSubstreamType(_UINT16& type) override { return false; }
 	virtual void SeekToEOF() override {}
 	virtual void SkipRecord(bool log_debug = true) override {}
-	virtual const int GetRecordPosition() override { return 0; }
+	virtual const int GetRecordPosition() override;
 	virtual void SetRecordPosition(const int position) override {}
 
 private:

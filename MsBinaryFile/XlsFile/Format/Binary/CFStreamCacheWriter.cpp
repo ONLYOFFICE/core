@@ -81,6 +81,11 @@ bool CFStreamCacheWriter::storeNextRecord(CFRecordPtr record)
 	return true;
 }
 
+const size_t CFStreamCacheWriter::GetRecordPosition()
+{
+	return stream_->getStreamPointer();
+}
+
 // Actual transporting record to the CFStream and then to IStream
 const size_t CFStreamCacheWriter::writeToStream(const size_t num_of_records_min_necessary)
 {

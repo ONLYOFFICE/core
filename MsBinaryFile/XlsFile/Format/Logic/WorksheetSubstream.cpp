@@ -731,7 +731,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 {
+	auto globInfo = proc.getGlobalWorkbookInfo();
     {
+		if(globInfo->sheets_info.size() > globInfo->current_sheet)
+			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition() + 1;
+
         BOF bof;
         bof.dt= 0x0010;
         proc.mandatory(bof);

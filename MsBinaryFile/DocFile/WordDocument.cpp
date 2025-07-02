@@ -102,6 +102,7 @@ namespace DocFileFormat
 		bDocumentCodePage	= false;
 		nDocumentCodePage	= ENCODING_WINDOWS_1250;
 		nFontsCodePage		= ENCODING_WINDOWS_1250;
+		nDocumentCodePageInfo = 0;
 	}
 
 	WordDocument::~WordDocument()
@@ -147,7 +148,7 @@ namespace DocFileFormat
 //-------------------------------------------------------------------------------------------------------------------
 		FIB	 =	new FileInformationBlock(VirtualStreamReader(WordDocumentStream, 0, false ));
 
-		if (FIB->m_FibBase.nFib)
+		if (FIB->m_FibBase.nFib > 0)
 		{
             if (FIB->m_FibBase.nFib <= Fib1995)
 			{
@@ -171,6 +172,12 @@ namespace DocFileFormat
 				}
 			}
 		}
+
+		if (FIB->m_FibBase.nFibBack != 0x00BF && FIB->m_FibBase.nFibBack != 0x00C1)
+		{
+			bErrorFile = true;
+		}
+
 		bool res = false;
 
 		if (FIB->m_FibBase.fWhichTblStm)
@@ -256,7 +263,7 @@ namespace DocFileFormat
 			
 			if (document_code_page1 > 0)
 			{
-				nDocumentCodePage = document_code_page1;		
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page1;
 				bDocumentCodePage = true;
 			}
 		}
@@ -269,18 +276,25 @@ namespace DocFileFormat
 
 			if (document_code_page2 > 0)
 			{
-				nDocumentCodePage = document_code_page2;
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page2;
 				bDocumentCodePage = true;
 			}
 		}
-		if (nWordVersion == 0 && !bDocumentCodePage)
+		if (TableStream)
+		{
+			DocProperties = new WordDocumentProperties(FIB, TableStream);
+			if (DocProperties && DocProperties->cpgText > 0)
+			{
+				FIB->m_CodePageSaved = DocProperties->cpgText;
+			}
+		}
+		if (nWordVersion == 0 && !bErrorFile)
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;
 		}
-
+		
 		FIB->m_CodePage =  nDocumentCodePage;
-
 		if (!bDocumentCodePage && m_nUserLCID > 0)
 		{
 			int user_codepage = m_lcidConverter.get_codepage(m_nUserLCID);
@@ -440,7 +454,6 @@ namespace DocFileFormat
 // Read custom tables
 		if (TableStream)
 		{
-			DocProperties			=	new WordDocumentProperties	(FIB, TableStream);
 			Styles					=	new StyleSheet				(FIB, TableStream, DataStream);
 			listTable				=	new ListTable				(FIB, TableStream);
 			listFormatOverrideTable	=	new ListFormatOverrideTable	(FIB, TableStream);
@@ -480,8 +493,8 @@ namespace DocFileFormat
 		{
 			FIB->m_FibBase.fComplex = true;
 			// Parse the piece table and construct a list that contains all chars
-			m_PieceTable	= new PieceTable (FIB, TableStream, WordDocumentStream );
-			Text			= m_PieceTable->GetAllEncodingText (WordDocumentStream);
+			m_PieceTable = new PieceTable (FIB, TableStream, WordDocumentStream );
+			Text = m_PieceTable->GetAllEncodingText (WordDocumentStream);
 		}
 		
         if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))

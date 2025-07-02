@@ -6,98 +6,32 @@ namespace NSHeif {
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
-		bool status = heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr).code == heif_error_Ok;
-
-		return status;
+		return !IsError(heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr));
 	}
 
 	bool CHeifFile::isHeif(BYTE* buffer, DWORD size)
 	{
-		NSFile::CFileBinary file;
-		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heic");
-
-		if (!file.CreateFile(tmp_file))
-			return false;
-
-		file.WriteFile(buffer, size);
-		file.CloseFile();
-
-		bool status = isHeif(tmp_file);
-
-		if (NSFile::CFileBinary::Exists(tmp_file))
-			NSFile::CFileBinary::Remove(tmp_file);
-
-		return status;
+		heif_context* ctx = heif_context_alloc();
+		defer(heif_context_free(ctx););
+		return !IsError(heif_context_read_from_memory(ctx, buffer, size, nullptr));
 	}
 
 	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName)
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
-
 		if (IsError(heif_context_read_from_file(ctx, m_oConverter.fromUnicode(fileName, "UTF-8").c_str(), nullptr)))
 			return false;
-
-		heif_image_handle* handle;
-		defer(heif_image_handle_release(handle););
-
-		if (IsError(heif_context_get_primary_image_handle(ctx, &handle)))
-			return false;
-
-		heif_image* img;
-		defer(heif_image_release(img););
-
-		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr)))
-			return false;
-
-		int width = heif_image_get_primary_width(img);
-		int height = heif_image_get_primary_height(img);
-
-		int stride;
-		const BYTE* source = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
-
-		if (stride == 0 || source == nullptr)
-			return false;
-
-		BYTE* data = new BYTE[stride * height];
-
-		frame->put_Width(width);
-		frame->put_Height(height);
-		frame->put_Stride(stride);
-		frame->put_Data(data);
-
-
-		for (size_t i = 0; i < height; ++i)
-		{
-			const BYTE* row = source + i * stride;
-			for (size_t j = 0; j < width; ++j)
-			{
-				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
-				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
-				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
-			}
-		}
-
-		return true;
+		return Decode(ctx, frame);
 	}
 
 	bool CHeifFile::Open(CBgraFrame *frame, BYTE* buffer, DWORD size)
 	{
-		NSFile::CFileBinary file;
-		std::wstring tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"heic");
-
-		if (!file.CreateFile(tmp_file))
+		heif_context* ctx = heif_context_alloc();
+		defer(heif_context_free(ctx););
+		if (IsError(heif_context_read_from_memory(ctx, buffer, size, nullptr)))
 			return false;
-
-		file.WriteFile(buffer, size);
-		file.CloseFile();
-
-		bool status = Open(frame, tmp_file);
-
-		if (NSFile::CFileBinary::Exists(tmp_file))
-			NSFile::CFileBinary::Remove(tmp_file);
-
-		return status;
+		return Decode(ctx, frame);
 	}
 
 	bool CHeifFile::Save(const BYTE* source, int width, int height, const std::wstring& dstPath)
@@ -155,5 +89,50 @@ namespace NSHeif {
 	inline bool CHeifFile::IsError(heif_error err)
 	{
 		return err.code != heif_error_Ok;
+	}
+
+	inline bool CHeifFile::Decode(heif_context* ctx, CBgraFrame* frame)
+	{
+		heif_image_handle* handle;
+		defer(heif_image_handle_release(handle););
+
+		if (IsError(heif_context_get_primary_image_handle(ctx, &handle)))
+			return false;
+
+		heif_image* img;
+		defer(heif_image_release(img););
+
+		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr)))
+			return false;
+
+		int width = heif_image_get_primary_width(img);
+		int height = heif_image_get_primary_height(img);
+
+		int stride;
+		const BYTE* source = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+
+		if (stride == 0 || source == nullptr)
+			return false;
+
+		BYTE* data = new BYTE[stride * height];
+
+		frame->put_Width(width);
+		frame->put_Height(height);
+		frame->put_Stride(stride);
+		frame->put_Data(data);
+
+
+		for (size_t i = 0; i < height; ++i)
+		{
+			const BYTE* row = source + i * stride;
+			for (size_t j = 0; j < width; ++j)
+			{
+				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
+				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
+				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
+			}
+		}
+
+		return true;
 	}
 }

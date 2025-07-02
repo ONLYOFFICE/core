@@ -43,6 +43,7 @@ class XlsWriter
 {
 public:
 	bool Open(const std::wstring &fileName);
+	bool WriteWorkbook(XLS::BaseObjectPtr streamObject);
 	bool WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject);
 private:
     std::wstring fileName_ = L"";

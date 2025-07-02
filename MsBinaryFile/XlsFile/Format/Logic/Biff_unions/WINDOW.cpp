@@ -98,6 +98,8 @@ const bool WINDOW::saveContent(BinProcessor& proc)
 {
     if(m_Window2 != nullptr)
         proc.mandatory(*m_Window2);
+	else
+		proc.mandatory<Window2>();
     if(m_PLV != nullptr)
         proc.mandatory(*m_PLV);
     if(m_Scl != nullptr)

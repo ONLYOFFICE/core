@@ -66,14 +66,16 @@ const bool BUNDLESHEET::loadContent(BinProcessor& proc)
 const bool BUNDLESHEET::saveContent(BinProcessor& proc)
 {
 	if( bundleSheetRecord == nullptr)
-		return false;
+	{
+		bundleSheetRecord = BaseObjectPtr(new BoundSheet8);
+	}
 	{
 		auto castedPtr = static_cast<BoundSheet8*>(bundleSheetRecord.get());
 		auto globInfo = proc.getGlobalWorkbookInfo();
 		GlobalWorkbookInfo::_sheet_info sheet_info;
 		sheet_info.state = castedPtr->hsState;
 		sheet_info.name = castedPtr->name_;
-		sheet_info.BoundSheetPos = proc.GetRecordPosition() + 5; // + size and type of record + 1
+		sheet_info.BoundSheetPos = proc.GetRecordPosition() + 4; // + size and type of record
 		globInfo->sheets_info.push_back(sheet_info);
 	}
 	proc.mandatory(*bundleSheetRecord);

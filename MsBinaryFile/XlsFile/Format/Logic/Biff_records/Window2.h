@@ -66,15 +66,15 @@ public:
 	bool fPaged = false;
 	bool fSLV = false;
 
-	bool is_contained_in_chart_substream;
+	bool is_contained_in_chart_substream = false;
 
-    UncheckedRw rwTop;
-    UncheckedCol colLeft;
+	UncheckedRw rwTop = 0;
+	UncheckedCol colLeft = 0;
 
     _UINT16 icvHdr = 64; // 1 Byte in biff12
 	
-	_UINT16 wScaleSLV;
-	_UINT16 wScaleNormal;
+	_UINT16 wScaleSLV = 0;
+	_UINT16 wScaleNormal = 0;
 	std::wstring topLeftCell;
 
     //biff12
@@ -84,9 +84,9 @@ public:
 
     _UINT32 xlView;
 
-    _UINT16 wScale;
-    _UINT16 wScalePLV;
-    _UINT32 iWbkView;
+	_UINT16 wScale = 0;
+	_UINT16 wScalePLV = 0;
+	_UINT32 iWbkView = 0;
 
     bool _isChart = false;
 };

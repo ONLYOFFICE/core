@@ -6246,27 +6246,29 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 								for (auto node2 : nodesDiv2)
 								{
 									name = node2.GetName();
-									std::wstring text2 = node1.GetText();
+									std::wstring text2 = node2.GetText();
 
-									if (name == L"b") run->rPr->b = true;
-									else if (name == L"i") run->rPr->i = true;
+									if (name == L"b") 
+										run->rPr->b = true;
+									else if (name == L"i")
+										run->rPr->i = true;
 
 									if (false == text2.empty())
 									{
 										text += text2;
 									}
-									else
-									{
-										std::vector<XmlUtils::CXmlNode> nodesDiv3 = node2.GetNodes(L"*");
-										for (auto node3 : nodesDiv3)
-										{
-											name = node3.GetName();
-											
-											if (name == L"b") run->rPr->b = true;
-											else if (name == L"i") run->rPr->i = true;
 
-											text += node3.GetText();
-										}
+									std::vector<XmlUtils::CXmlNode> nodesDiv3 = node2.GetNodes(L"*");
+									for (auto node3 : nodesDiv3)
+									{
+										name = node3.GetName();
+
+										if (name == L"b") 
+											run->rPr->b = true;
+										else if (name == L"i")
+											run->rPr->i = true;
+
+										text += node3.GetText();
 									}
 								}
 							}

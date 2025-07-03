@@ -243,7 +243,7 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 	if (oCharShape.Italic())
 		oRunnerStyle.SetItalic(true);
 
-	if (oCharShape.StrikeOut())
+	if (oCharShape.StrikeOut() && ELineStyle2::NONE != oCharShape.GetStrikeOutType())
 		oRunnerStyle.SetStrike(EStrikeType::Single);
 
 	if (oCharShape.SuperScript())
@@ -284,7 +284,7 @@ CRunnerStyle CStyleConverter::GenerateRunnerStyle(const CHWPRecordCharShape& oCh
 				case ELineStyle1::SOLID_3D_REVERS_LI: oRunnerStyle.SetU({EUType::Thick, oCharShape.GetUnderlineColor()}); break;
 			}
 		}
-		else if (EUnderline::CENTER == eUnderlineType)
+		else if (EUnderline::CENTER == eUnderlineType && !oCharShape.StrikeOut())
 		{
 			if (eUnderlineStyle == ELineStyle1::DOUBLE_SLIM ||
 				eUnderlineStyle == ELineStyle1::DOUBLE_WAVE)

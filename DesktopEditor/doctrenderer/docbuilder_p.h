@@ -927,7 +927,7 @@ namespace NSDoctRenderer
 
 			COfficeFileFormatChecker oChecker;
 			if (!oChecker.isOfficeFile(sFileCopy))
-				return false;
+				return 1;
 
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 				m_nFileType = 0;

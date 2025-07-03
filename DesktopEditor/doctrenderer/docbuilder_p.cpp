@@ -1273,7 +1273,7 @@ namespace NSDoctRenderer
 		if (m_pInternal->m_nFileType != -1 && m_pInternal->m_bIsOpenedFromSimpleJS)
 		{
 			m_pInternal->m_bIsOpenedFromSimpleJS = false;
-			return true;
+			return 0;
 		}
 
 		m_pInternal->m_nFileType = -1;
@@ -1514,7 +1514,8 @@ namespace NSDoctRenderer
 					if (nCountParameters > 2)
 						sParams = _builder_params[2].c_str();
 
-					this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
+					int nSaveError = this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
+					bIsNoError = (0 == nSaveError);
 				}
 				else if ("WriteData" == sFuncNum)
 				{

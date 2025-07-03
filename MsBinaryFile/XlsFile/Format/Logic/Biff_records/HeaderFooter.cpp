@@ -86,7 +86,8 @@ void HeaderFooter::writeFields(CFRecord& record)
     frtHeader.grbitFrt.fFrtRef = 0;
     frtHeader.grbitFrt.fFrtAlert = 0;
     record << frtHeader;
-    _GUID_ guid_num(0, 0, 0, 0);
+	_GUID_ guid_num;
+	STR::bstr2guid(guidSView ,guid_num);
     record << guid_num;
     _UINT16 flags = 0;
     SETBIT(flags, 0, fHFDiffOddEven);

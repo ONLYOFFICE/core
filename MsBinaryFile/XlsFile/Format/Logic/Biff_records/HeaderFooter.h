@@ -52,12 +52,12 @@ public:
 	static const ElementType type = typeHeaderFooter;
 
 //-----------------------------
-    std::wstring	guidSView = L"";
+	std::wstring	guidSView = L"{00000000-0000-0000-0000-000000000000}";
 	
     bool			fHFDiffOddEven = false;
     bool			fHFDiffFirst = false;
-    bool			fHFScaleWithDoc = false;
-    bool			fHFAlignMargins = false;
+	bool			fHFScaleWithDoc = true;
+	bool			fHFAlignMargins = true;
 	
     _UINT16			cchHeaderEven = 0;
     _UINT16			cchFooterEven = 0;

@@ -62,7 +62,7 @@ const bool RECORD12::loadContent(BinProcessor& proc)
 const bool RECORD12::saveContent(BinProcessor& proc)
 {
     if(m_HeaderFooter == nullptr)
-        return false;
+		m_HeaderFooter = BaseObjectPtr(new HeaderFooter);
     proc.mandatory(*m_HeaderFooter);
     return true;
 }

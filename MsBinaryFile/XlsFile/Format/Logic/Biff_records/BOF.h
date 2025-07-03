@@ -74,8 +74,8 @@ public:
 //-----------------------------
     _UINT16 vers = 0x0600;
 	_UINT16 dt = 0;
-	_UINT16 rupBuild = 0;
-    _UINT16 rupYear = 0x07CC;
+	_UINT16 rupBuild = 0x4F5A;
+	_UINT16 rupYear = 0x07CD;
 	
     bool fWin = 1;
     bool fRisc = 0;
@@ -88,9 +88,9 @@ public:
     bool fGlJmp = 0;
     bool fFontLimit = 0;
 	
-    _UINT16 verXLHigh = 0;
-    unsigned char	verLowestBiff = 0;
-    unsigned char	verLastXLSaved = 0;
+	_UINT16 verXLHigh = 0x7;
+	unsigned char	verLowestBiff = 0x6;
+	unsigned char	verLastXLSaved = 0x7;
 	
 	_CP_OPT(unsigned int) stream_ptr;
 

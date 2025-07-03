@@ -58,7 +58,7 @@ public:
     bool fDspRwColRt = false; //fDspRwCol in biff12
 	bool fFrozenRt = false;
     bool fDspZerosRt = false; // fDspZeros in biff12
-    bool fDefaultHdr = false; // *
+	bool fDefaultHdr = true; // *
     bool fRightToLeft = false; // *
     bool fDspGuts = false; // *
 	bool fFrozenNoSplit = false;

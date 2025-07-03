@@ -88,9 +88,9 @@ namespace DocFileFormat
 						int indexCpNext = (i+1) * 4;
 						int cpNext = FormatUtils::BytesToInt32(piecetable, indexCpNext, lcb);
 
-						if (cpNext > fib->m_FibBase.fcMac)
+						if (cpNext > streamSize)
 						{
-							cpNext = fib->m_FibBase.fcMac;
+							cpNext = streamSize;
 						}
 
 						//read the PCD
@@ -187,6 +187,8 @@ namespace DocFileFormat
 			pcdFcEnd += (int)pcd.fc;
 
 			int cb = pcdFcEnd - (int)pcd.fc;
+			if (cb < 0)
+				break;
 
 			unsigned char *bytes = new unsigned char[cb];
 

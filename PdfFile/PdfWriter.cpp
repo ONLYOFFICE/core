@@ -101,7 +101,7 @@ static const long c_BrushTypeRadialGradient = 8002;
 
 Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
-	if (wsPath.find(L"base64,") == 0)
+	if (wsPath.find(L"data:") == 0)
 	{
 		std::wstring::size_type posZ = wsPath.find(L',');
 		int nBase64Size = (int)(wsPath.length() - posZ - 1);
@@ -114,11 +114,13 @@ Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const st
 		int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(nBase64Size);
 		BYTE* pImageBuffer = new BYTE[nBufferLen + 64];
 
+		Aggplus::CImage* pImage = new Aggplus::CImage();
 		if (NSBase64::Base64Decode(pBase64Buffer, nBase64Size, pImageBuffer, &nBufferLen))
-		{
-			CBgraFrame oFrame;
-			Aggplus::CImage* pImage = new Aggplus::CImage();
-		}
+			pImage->Decode(pImageBuffer, nBufferLen);
+
+		RELEASEARRAYOBJECTS(pImageBuffer);
+		RELEASEARRAYOBJECTS(pBase64Buffer);
+		return pImage;
 	}
 
 	CImageFileFormatChecker oImageFormat(wsPath);
@@ -2922,9 +2924,6 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	std::vector<PdfWriter::CXObject*> arrForm;
 	for (int i = 0; i < arrBI.size(); ++i)
 	{
-		if (m_bSplit)
-			break;
-
 		std::wstring wsPath = arrBI[i];
 		if (wsPath.empty())
 		{
@@ -2934,7 +2933,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		std::wstring sTempImagePath = GetDownloadFile(wsPath, wsTempDirectory);
 		std::wstring wsImagePath = sTempImagePath.empty() ? wsPath : sTempImagePath;
 
-		Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsImagePath, GetTempFile(wsTempDirectory));
+		Aggplus::CImage* pCImage = ConvertMetafile(pAppFonts, wsImagePath, m_bSplit ? L"" : GetTempFile(wsTempDirectory));
 		PdfWriter::CImageDict* pImage = LoadImage(pCImage, 255);
 		RELEASEOBJECT(pCImage);
 
@@ -2944,9 +2943,6 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 	std::map<int, PdfWriter::CAnnotation*> mAnnots = m_pDocument->GetAnnots();
 	for (auto it = mAnnots.begin(); it != mAnnots.end(); it++)
 	{
-		if (m_bSplit)
-			break;
-
 		PdfWriter::CAnnotation* pAnnot = it->second;
 		if (pAnnot->GetAnnotationType() != PdfWriter::AnnotWidget)
 			continue;
@@ -3231,6 +3227,8 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 }
 bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned int& unLen, const double& dX, const double& dY, const std::wstring& wsUnicodeText)
 {
+	if (m_bSplit)
+		return false;
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
@@ -3404,6 +3402,9 @@ bool CPdfWriter::GetFontPath(const std::wstring &wsFontName, const bool &bBold, 
 
 	if (!bFind)
 	{
+		if (m_bSplit)
+			return false;
+
 		NSFonts::CFontSelectFormat oFontSelect;
 		oFontSelect.wsName  = new std::wstring(wsFontName);
 		oFontSelect.bItalic = new INT(bItalic ? 1 : 0);

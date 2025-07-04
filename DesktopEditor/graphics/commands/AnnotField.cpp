@@ -1153,7 +1153,10 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 	for (int i = 0; i < n; ++i)
 	{
 		std::string sImagePath = pReader->ReadStringA();
-		m_arrButtonImg.push_back(pCorrector->GetImagePath(UTF8_TO_U(sImagePath)));
+		std::wstring sImage = UTF8_TO_U(sImagePath);
+		if (sImagePath.find("data:") != 0 && !sImagePath.empty())
+			sImage = pCorrector->GetImagePath(sImage);
+		m_arrButtonImg.push_back(sImage);
 	}
 
 	return true;

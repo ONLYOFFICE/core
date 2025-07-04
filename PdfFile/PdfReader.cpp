@@ -1205,29 +1205,6 @@ BYTE* CPdfReader::GetWidgets()
 
 				std::string sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm;
 				pAnnots->ChangeFullNameAnnot(i, sPrefix);
-
-				/*
-				const std::string& sFullName = arrAnnots[i]->GetFullName();
-				std::map<std::string, std::string>::iterator it = mForms.find(sFullName);
-				if (it == mForms.end())
-					mForms[sFullName] = arrAnnots[i]->GetType();
-				else if (mForms[sFullName] != arrAnnots[i]->GetType())
-				{
-					if (iPDF == 0)
-					{
-						// error
-						// throw "Same full names for forms of different types within the same file";
-					}
-					else
-					{
-						int nPrefix = 0;
-						std::string sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
-						pAnnots->ChangeFullNameAnnot(i, sPrefix);
-						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
-							sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
-					}
-				}
-				*/
 			}
 
 			pAnnots->ToWASM(oRes);

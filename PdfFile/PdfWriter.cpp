@@ -101,6 +101,26 @@ static const long c_BrushTypeRadialGradient = 8002;
 
 Aggplus::CImage* ConvertMetafile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsPath, const std::wstring& wsTempDirectory, double dWidth = -1, double dHeight = -1)
 {
+	if (wsPath.find(L"base64,") == 0)
+	{
+		std::wstring::size_type posZ = wsPath.find(L',');
+		int nBase64Size = (int)(wsPath.length() - posZ - 1);
+		const wchar_t* pBase64Data = wsPath.c_str() + posZ + 1;
+
+		char* pBase64Buffer = new char[nBase64Size];
+		for (int i = 0; i < nBase64Size; ++i)
+			pBase64Buffer[i] = (char)pBase64Data[i];
+
+		int nBufferLen = NSBase64::Base64DecodeGetRequiredLength(nBase64Size);
+		BYTE* pImageBuffer = new BYTE[nBufferLen + 64];
+
+		if (NSBase64::Base64Decode(pBase64Buffer, nBase64Size, pImageBuffer, &nBufferLen))
+		{
+			CBgraFrame oFrame;
+			Aggplus::CImage* pImage = new Aggplus::CImage();
+		}
+	}
+
 	CImageFileFormatChecker oImageFormat(wsPath);
 	if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
 		_CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||

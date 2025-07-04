@@ -1200,6 +1200,13 @@ BYTE* CPdfReader::GetWidgets()
 			const std::vector<PdfReader::CAnnotWidget*>& arrAnnots = pAnnots->GetAnnots();
 			for (int i = 0; i < arrAnnots.size(); ++i)
 			{
+				if (m_vPDFContext[iPDF]->m_sPrefixForm.empty())
+					continue;
+
+				std::string sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm;
+				pAnnots->ChangeFullNameAnnot(i, sPrefix);
+
+				/*
 				const std::string& sFullName = arrAnnots[i]->GetFullName();
 				std::map<std::string, std::string>::iterator it = mForms.find(sFullName);
 				if (it == mForms.end())
@@ -1214,11 +1221,13 @@ BYTE* CPdfReader::GetWidgets()
 					else
 					{
 						int nPrefix = 0;
-						std::string sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
+						std::string sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
+						pAnnots->ChangeFullNameAnnot(i, sPrefix);
 						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
-							sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
+							sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
 					}
 				}
+				*/
 			}
 
 			pAnnots->ToWASM(oRes);

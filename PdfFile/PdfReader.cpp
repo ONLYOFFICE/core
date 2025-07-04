@@ -1507,7 +1507,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBas
 				}
 				oStr.free(); oResources.free();
 			}
-			else if (oAP.isDict() && (oStr.free(), true) && oAP.dictLookup(arrAPName[j], &oStr)->isStream())
+			else if ((oStr.free(), true) && oMK.dictLookup("I", &oStr)->isNull() && oAP.isDict() && (oStr.free(), true) && oAP.dictLookup(arrAPName[j], &oStr)->isStream())
 			{
 				// Получение единственного XObject из Resources, если возможно
 				Object oResources;

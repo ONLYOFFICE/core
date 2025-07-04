@@ -2788,10 +2788,13 @@ bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 		return false;
 
 	CAnnotParent* pParent = m_arrParents[nParent];
+	if (pParent->bChangeFullName)
+		return true;
 	if (pParent->unFlags & (1 << 0))
 	{
 		pParent->sT += sPrefixForm;
 		pParent->sFullName += sPrefixForm;
+		pParent->bChangeFullName = true;
 		// pParent->ClearActions();
 		return true;
 	}
@@ -2802,6 +2805,7 @@ bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
 		{
 			pParent->sFullName += sPrefixForm;
+			pParent->bChangeFullName = true;
 			// pParent->ClearActions();
 			return true;
 		}

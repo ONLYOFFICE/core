@@ -619,6 +619,7 @@ private:
 			unFlags = 0;
 			unRefNum = 0;
 			unRefNumParent = 0;
+			bChangeFullName = false;
 		}
 		~CAnnotParent()
 		{
@@ -628,6 +629,7 @@ private:
 
 		void ToWASM(NSWasm::CData& oRes);
 
+		bool bChangeFullName;
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unMaxLen; // Ограничение на максимальную длину text field

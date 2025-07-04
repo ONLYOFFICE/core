@@ -110,6 +110,10 @@ const bool STYLES::saveContent(BinProcessor& proc)
         if(i.second != nullptr)
             proc.mandatory(*i.second);
     }
+	if(m_arStyles.empty())
+	{
+		proc.mandatory<Style>();
+	}
     return true;
 }
 

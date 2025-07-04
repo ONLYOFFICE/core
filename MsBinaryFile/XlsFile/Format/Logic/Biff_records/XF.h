@@ -66,17 +66,17 @@ namespace XLS
         _UINT16		ifmt = 0; //used
         std::wstring format_code = L"";
 		
-        _UINT16		ixfParent = 0;
+		_UINT16		ixfParent = 0xFFF;
 
-		bool fLocked = false;
+		bool fLocked = true;
 		bool fHidden = false;
-		bool fStyle = false;
+		bool fStyle = true;
 		bool f123Prefix = false;
 
 	//-----------------------------
-		unsigned char	alc = 0xff;
+		unsigned char	alc = 0;
 		bool			fWrap = false;
-		unsigned char	alcV = 0xff;
+		unsigned char	alcV = 2;
 		bool			fJustLast = false;
 		unsigned short	trot = 0;
 		unsigned char	cIndent = 0;

@@ -172,6 +172,8 @@ namespace XLS
 		font_x_id	= -1;
 		
 		fill.fls	= 0;
+		fill.icvBack = 0x41;
+		fill.icvFore = 0x40;
 
 		ixfParent = 0;
 		font_index = 0xffff;
@@ -413,6 +415,12 @@ void XF::writeFields(CFRecord& record)
     }*/
     if (global_info->Version < 0x0800)
     {
+		if(font_index == 0xffff)
+			font_index = 0;
+		if(ifmt == 0xffff)
+			ifmt = 0;
+		if(ixfParent == 0)
+			ixfParent = 0xfff;
         FontIndex ifnt;
         ifnt.setValue(font_index);
         record <<ifnt  << ifmt;

@@ -54,8 +54,8 @@ public:
 
 	static const ElementType	type = typeCountry;
 
-    _UINT16 iCountryDef = 0;
-    _UINT16 iCountryWinIni = 0;
+	_UINT16 iCountryDef = 7;
+	_UINT16 iCountryWinIni = 7;
 
 };
 

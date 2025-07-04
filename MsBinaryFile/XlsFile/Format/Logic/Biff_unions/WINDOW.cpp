@@ -96,21 +96,23 @@ const bool WINDOW::loadContent(BinProcessor& proc)
 
 const bool WINDOW::saveContent(BinProcessor& proc)
 {
-    if(m_Window2 != nullptr)
-        proc.mandatory(*m_Window2);
+	if(m_Window2 != nullptr)
+		proc.mandatory(*m_Window2);
 	else
 		proc.mandatory<Window2>();
-    if(m_PLV != nullptr)
-        proc.mandatory(*m_PLV);
+	if(m_PLV != nullptr)
+		proc.mandatory(*m_PLV);
 	else
 		proc.mandatory<PLV>();
-    if(m_Scl != nullptr)
-        proc.mandatory(*m_Scl);
-    if(m_Pane != nullptr)
-        proc.mandatory(*m_Pane);
-    for(auto i : m_arSelection)
-        if(i != nullptr)
-            proc.mandatory(*i);
+	if(m_Scl != nullptr)
+		proc.mandatory(*m_Scl);
+	if(m_Pane != nullptr)
+		proc.mandatory(*m_Pane);
+	for(auto i : m_arSelection)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_arSelection.empty())
+		proc.mandatory<Selection>();
     return true;
 }
 

@@ -59,7 +59,7 @@ public:
 	BuiltInStyle 	builtInData;
 	XLUnicodeString user;
 
-    bool			fBuiltIn = false;
+	bool			fBuiltIn = true;
 };
 
 } // namespace XLS

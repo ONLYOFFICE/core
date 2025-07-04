@@ -115,6 +115,16 @@ const bool XFS::saveContent(BinProcessor& proc)
 {   for (auto i: m_arCellXFs)
         if(i!= nullptr)
             proc.mandatory(*i);
+	if(m_arCellXFs.empty())
+	{
+		for(auto i = 0; i < 16; i++)
+			{
+				size_t cellId = 0;
+				size_t StyleId = 0;
+				XF cellXf(cellId, StyleId);
+				proc.mandatory(cellXf);
+			}
+	}
     for (auto i: m_arCellStyles)
         if(i!= nullptr)
             proc.mandatory(*i);

@@ -358,6 +358,12 @@ namespace NSBinPptxRW
 			}
 			addit.push_back(std::make_pair(strAdditional, typeAdditional));
 		}
+		
+		if (pPair != m_mapImages.end())
+		{
+			return pPair->second;
+		}
+
 		if (false == strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));

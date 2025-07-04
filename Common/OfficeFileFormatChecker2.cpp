@@ -240,7 +240,7 @@ bool COfficeFileFormatChecker::isPdfFormatFile(unsigned char *pBuffer, int dwByt
 
 	documentID.clear();
 
-	if (dwBytes < 1)
+	if (dwBytes < 5 || (pBuffer[0] == 'P' && pBuffer[1] == 'K'))
 		return false;
 
 	pBuffer[dwBytes - 1] = '\0';

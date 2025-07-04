@@ -1360,6 +1360,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	oObj.fetch(xref, &oField);
 	oObj.free();
 
+	m_bChangeFullName = false;
 	m_dFontSize = 0.0;
 	m_unFontStyle = 0;
 
@@ -1603,11 +1604,11 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 }
 bool CAnnotWidget::ChangeFullName(const std::string& sPrefixForm)
 {
+	m_bChangeFullName = true;
 	if (m_unFlags & (1 << 18))
 	{
 		m_sT += sPrefixForm;
 		m_sFullName += sPrefixForm;
-		// ClearActions();
 		return true;
 	}
 	return false;
@@ -2767,7 +2768,7 @@ bool CAnnots::ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm)
 		return false;
 
 	CAnnotWidget* pWidget = m_arrAnnots[nAnnot];
-	if (pWidget->ChangeFullName(sPrefixForm))
+	if (pWidget->m_bChangeFullName)
 		return true;
 	unsigned int unRefNumParent = pWidget->GetRefNumParent();
 	if (unRefNumParent)
@@ -2775,12 +2776,16 @@ bool CAnnots::ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm)
 		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
 		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
 		{
-			pWidget->AddFullName(sPrefixForm);
-			// pWidget->ClearActions();
+			const std::string& sFullNameChild = pWidget->GetFullName();
+			if (sFullNameChild.empty())
+				pWidget->SetFullName((*it)->sFullName);
+			else
+				pWidget->SetFullName((*it)->sFullName + "." + sFullNameChild);
+			pWidget->m_bChangeFullName = true;
 			return true;
 		}
 	}
-	return false;
+	return pWidget->ChangeFullName(sPrefixForm);
 }
 bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 {
@@ -2790,25 +2795,27 @@ bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 	CAnnotParent* pParent = m_arrParents[nParent];
 	if (pParent->bChangeFullName)
 		return true;
-	if (pParent->unFlags & (1 << 0))
-	{
-		pParent->sT += sPrefixForm;
-		pParent->sFullName += sPrefixForm;
-		pParent->bChangeFullName = true;
-		// pParent->ClearActions();
-		return true;
-	}
-	else if (pParent->unFlags & (1 << 4))
+
+	if (pParent->unFlags & (1 << 4))
 	{
 		unsigned int unRefNumParent = pParent->unRefNumParent;
 		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
 		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
 		{
-			pParent->sFullName += sPrefixForm;
+			if (pParent->sT.empty())
+				pParent->sFullName = (*it)->sFullName;
+			else
+				pParent->sFullName = (*it)->sFullName + "." + sPrefixForm;
 			pParent->bChangeFullName = true;
-			// pParent->ClearActions();
 			return true;
 		}
+	}
+	else if (pParent->unFlags & (1 << 0))
+	{
+		pParent->sT += sPrefixForm;
+		pParent->sFullName += sPrefixForm;
+		pParent->bChangeFullName = true;
+		return true;
 	}
 	return false;
 }

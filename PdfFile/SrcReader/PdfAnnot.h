@@ -222,11 +222,12 @@ public:
 	unsigned int GetRefNumParent() { return m_unRefNumParent; }
 	const std::string& GetFullName() { return m_sFullName; }
 	void SetFullName(const std::string& sFullName) { m_sFullName = sFullName; }
-	void AddFullName(const std::string& sPrefixForm) { m_sFullName += sPrefixForm; }
 	bool ChangeFullName(const std::string& sPrefixForm);
 	void ClearActions();
 	virtual std::string GetType() = 0;
 	virtual void ToWASM(NSWasm::CData& oRes) override;
+
+	bool m_bChangeFullName;
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);

@@ -77,5 +77,28 @@ void FeatHdr::readFields(CFRecord& record)
 
 }
 
+void FeatHdr::writeFields(CFRecord& record)
+{
+	FrtHeader frtHeader(rt_FeatHdr);
+	record << frtHeader << isf;
+	byte reserved = 1;
+	record << reserved << cbHdrData;
+	if(cbHdrData = 0)
+		return;
+	switch(isf)
+	{
+	case 0x0002://ISFPROTECTION:
+		record << protection;
+		break;
+	case 0x0004://ISFFACTOID:
+		if(is_contained_in_Globals)
+		{
+			record << prop;
+		}
+		break;
+	}
+
+}
+
 } // namespace XLS
 

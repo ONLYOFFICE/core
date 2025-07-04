@@ -64,6 +64,20 @@ void PropertyBagStore::load(XLS::CFRecord& record)
 	}
 }
 
+void PropertyBagStore::save(XLS::CFRecord& record)
+{
+	_UINT32 cFactoidType = factoidTypes.size();
+	record << cFactoidType;
+	for(auto i : factoidTypes)
+		record << i;
+	record << cbHdr << sVer;
+	record.reserveNunBytes(4);
+	_UINT32 cste = stringTable.size();
+	record << cste;
+	for(auto i : stringTable)
+		record << i;
+}
+
 
 } // namespace OSHARED
 

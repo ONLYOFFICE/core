@@ -52,11 +52,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeFeatHdr;
 
-	_UINT16						isf;
-	_UINT32						cbHdrData;
+	_UINT16						isf = 0x0002;
+	_UINT32						cbHdrData = 0xFFFFFFFF;
 	EnhancedProtection			protection;
 	OSHARED::PropertyBagStore	prop;
 

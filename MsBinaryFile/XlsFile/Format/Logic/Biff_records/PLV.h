@@ -58,7 +58,7 @@ public:
 	_UINT16 wScalePLV;
 	
 	bool fPageLayoutView = false;
-	bool fRulerVisible = false;
+	bool fRulerVisible = true;
 	bool fWhitespaceHidden = false;
 
 };

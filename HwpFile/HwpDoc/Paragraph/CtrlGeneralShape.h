@@ -53,13 +53,13 @@ class CCtrlGeneralShape : public CCtrlObjElement
 	friend class CCtrlShapePolygon;
 	friend class CCtrlShapeRect;
 
-	void ReadSubList(CXMLNode& oNode, int nVersion);
+	void ReadSubList(CXMLReader& oReader, int nVersion);
 public:
 	CCtrlGeneralShape();
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID);
 	CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape);
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 	virtual ~CCtrlGeneralShape();
 
 	ECtrlObjectType GetCtrlType() const override;

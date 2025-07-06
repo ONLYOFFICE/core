@@ -44,7 +44,7 @@ public:
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;
@@ -54,6 +54,8 @@ public:
 
 	int GetFinalWidth() const;
 	int GetFinalHeight() const;
+
+	short GetGroupLevel() const;
 
 	TMatrix GetFinalMatrix() const;
 

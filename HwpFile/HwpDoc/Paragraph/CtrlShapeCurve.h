@@ -16,7 +16,7 @@ public:
 	CCtrlShapeCurve(const HWP_STRING& sCtrlID);
 	CCtrlShapeCurve(const CCtrlGeneralShape& oShape);
 	CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

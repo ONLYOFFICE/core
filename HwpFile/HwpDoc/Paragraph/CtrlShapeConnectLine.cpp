@@ -25,28 +25,45 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSiz
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_eType = GetConnectLineType(oNode.GetAttributeInt(L"type"));
+	m_eType = GetConnectLineType(oReader.GetAttributeInt("type"));
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:startPt" == oChild.GetName())
+		if ("hp:startPt" == sNodeName)
 		{
-			m_oStartPt.m_nX = oChild.GetAttributeInt(L"x");
-			m_oStartPt.m_nY = oChild.GetAttributeInt(L"y");
-			m_oStartPt.m_shSubjectIDRef = oChild.GetAttributeInt(L"subjectIDRef");
-			m_oStartPt.m_shSubjectIdx = oChild.GetAttributeInt(L"subjectIdx");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_oStartPt.m_nX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_oStartPt.m_nY = oReader.GetInt();
+				else if ("subjectIDRef" == sAttributeName)
+					m_oStartPt.m_shSubjectIDRef = oReader.GetInt();
+				else if ("subjectIdx" == sAttributeName)
+					m_oStartPt.m_shSubjectIdx = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:endPt" == oChild.GetName())
+		else if ("hp:endPt" == sNodeName)
 		{
-			m_oEndPt.m_nX = oChild.GetAttributeInt(L"x");
-			m_oEndPt.m_nY = oChild.GetAttributeInt(L"y");
-			m_oEndPt.m_shSubjectIDRef = oChild.GetAttributeInt(L"subjectIDRef");
-			m_oEndPt.m_shSubjectIdx = oChild.GetAttributeInt(L"subjectIdx");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_oEndPt.m_nX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_oEndPt.m_nY = oReader.GetInt();
+				else if ("subjectIDRef" == sAttributeName)
+					m_oEndPt.m_shSubjectIDRef = oReader.GetInt();
+				else if ("subjectIdx" == sAttributeName)
+					m_oEndPt.m_shSubjectIdx = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeConnectLine::GetShapeType() const

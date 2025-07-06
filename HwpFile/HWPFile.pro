@@ -99,8 +99,8 @@ SOURCES += \
 HEADERS += \
     HWPFile.h \
     HwpDoc/Common/Common.h \
-    HwpDoc/Common/XMLNode.h \
     HwpDoc/Common/WriterContext.h \
+    HwpDoc/Common/XMLReader.h \
     HwpDoc/Conversion/ConversionState.h \
     HwpDoc/Conversion/Converter2OOXML.h \
     HwpDoc/Conversion/FootnoteConverter.h \

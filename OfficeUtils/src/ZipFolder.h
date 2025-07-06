@@ -37,6 +37,8 @@
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 #include "../../DesktopEditor/xml/include/xmlutils.h"
+#include <iostream>
+#include <ostream>
 
 class IFolder
 {

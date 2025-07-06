@@ -17,24 +17,37 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_shAttr = (short)oNode.GetAttributeBool(L"isReverseHV");
+	m_shAttr = (short)oReader.GetAttributeBool("isReverseHV");
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hc:startPt" == oChild.GetName())
+		if ("hc:startPt" == sNodeName)
 		{
-			m_nStartX = oChild.GetAttributeInt(L"x");
-			m_nStartY = oChild.GetAttributeInt(L"y");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nStartX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nStartY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hc:endPt" == oChild.GetName())
+		else if ("hc:endPt" == sNodeName)
 		{
-			m_nEndX = oChild.GetAttributeInt(L"x");
-			m_nEndY = oChild.GetAttributeInt(L"y");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nEndX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nEndY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeLine::GetShapeType() const

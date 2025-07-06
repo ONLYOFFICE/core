@@ -20,23 +20,36 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel,
 	m_nCharShape = oBuffer.ReadShort();
 }
 
-CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_STYLE, 0, 0), m_pParent(&oDocInfo)
 {
-	HWP_STRING sType = oNode.GetAttribute(L"type");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("type" == sAttributeName)
+		{
+			const std::string sType{oReader.GetText2A()};
 
-	if (L"PARA" == sType)
-		m_chType = 0;
-	else if (L"CHAR" == sType)
-		m_chType = 1;
-
-	m_sName = oNode.GetAttribute(L"name");
-	m_sEngName = oNode.GetAttribute(L"engName");
-	m_nParaShape = oNode.GetAttributeInt(L"paraPrIDRef");
-	m_nCharShape = oNode.GetAttributeInt(L"charPrIDRef");
-	m_chNextStyle = oNode.GetAttributeInt(L"nextStyleIDRef");
-	m_shLangID = oNode.GetAttributeInt(L"langID");
-	m_bLockForm = oNode.GetAttributeBool(L"lockForm");
+			if ("PARA" == sType)
+				m_chType = 0;
+			else if ("CHAR" == sType)
+				m_chType = 1;
+		}
+		else if ("name" == sAttributeName)
+			m_sName = oReader.GetText2();
+		else if ("engName" == sAttributeName)
+			m_sEngName = oReader.GetText2();
+		else if ("paraPrIDRef" == sAttributeName)
+			m_nParaShape = oReader.GetInt();
+		else if ("charPrIDRef" == sAttributeName)
+			m_nCharShape = oReader.GetInt();
+		else if ("nextStyleIDRef" == sAttributeName)
+			m_chNextStyle = oReader.GetInt();
+		else if ("langID" == sAttributeName)
+			m_shLangID = oReader.GetInt();
+		else if ("lockForm" == sAttributeName)
+			m_bLockForm = oReader.GetBool();
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 HWP_STRING CHWPRecordStyle::GetName() const

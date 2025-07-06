@@ -3,7 +3,7 @@
 
 #include "HWPRecord.h"
 #include "../HWPDocInfo.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -22,7 +22,7 @@ class CHWPRecordStyle : public CHWPRecord
 public:
 	CHWPRecordStyle(int nTagNum, int nLevel, int nSize);
 	CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+	CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
 
 	HWP_STRING GetName() const;
 	HWP_STRING GetEngName() const;

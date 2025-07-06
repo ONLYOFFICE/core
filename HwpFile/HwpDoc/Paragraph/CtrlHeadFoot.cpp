@@ -24,23 +24,33 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	oBuffer.ReadInt(m_nSerialInSec);
 }
 
-CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrl(sCtrlID)
 {
 	m_bIsHeader = L"daeh" == sCtrlID;
 
-	m_eWhichPage = GetPageRange(oNode.GetAttributeInt(L"applyPageType"));
+	m_eWhichPage = GetPageRange(oReader.GetAttributeInt("applyPageType"));
 
-	for (CXMLNode& oChild : oNode.GetChilds(L"hp:subList"))
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:subList")
 	{
-		m_chRefLevelNum = (HWP_BYTE)oChild.GetAttributeInt(L"hasNumRef");
-		m_chRefLevelText = (HWP_BYTE)oChild.GetAttributeInt(L"hasTextRef");
-		m_nTextHeight = oChild.GetAttributeInt(L"textHeight");
-		m_nTextWidth = oChild.GetAttributeInt(L"textWidth");
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("hasNumRef" == sAttributeName)
+				m_chRefLevelNum = (HWP_BYTE)oReader.GetInt();
+			else if ("hasTextRef" == sAttributeName)
+				m_chRefLevelText = (HWP_BYTE)oReader.GetInt();
+			else if ("textHeight" == sAttributeName)
+				m_nTextHeight = oReader.GetInt();
+			else if ("textWidth" == sAttributeName)
+				m_nTextWidth = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
 
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
-			m_arParas.push_back(new CHWPPargraph(oGrandChild, nVersion));
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:p")
+			m_arParas.push_back(new CHWPPargraph(oReader, nVersion));
+		END_WHILE
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

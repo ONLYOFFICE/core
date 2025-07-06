@@ -5,28 +5,49 @@ namespace HWP
 CPageBorderFill::CPageBorderFill()
 {}
 
-CPageBorderFill::CPageBorderFill(CXMLNode& oNode, int nVersion)
+CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
 {
-	m_shBorderFill = oNode.GetAttributeInt(L"borderFillIDRef");
-	m_bTextBorder = L"PAPER" == oNode.GetAttribute(L"textBorder");
-	m_bHeaderInside = oNode.GetAttributeBool(L"headerInside");
-	m_bFooterInside = oNode.GetAttributeBool(L"footerInside");
-
-	HWP_STRING sType = oNode.GetAttribute(L"fillArea");
-
-	if (L"PAPER" == sType)
-		m_chFillArea = 0;
-	else if (L"PAGE" == sType)
-		m_chFillArea = 1;
-	else if (L"BORDER" == sType)
-		m_chFillArea = 2;
-
-	for (CXMLNode& oChild : oNode.GetChilds(L"offset"))
+	START_READ_ATTRIBUTES(oReader)
 	{
-		m_shOffsetLeft   = oChild.GetAttributeInt(L"left");
-		m_shOffsetRight  = oChild.GetAttributeInt(L"right");
-		m_shOffsetTop    = oChild.GetAttributeInt(L"top");
-		m_shOffsetBottom = oChild.GetAttributeInt(L"bottom");
+		if ("borderFillIDRef" == sAttributeName)
+			m_shBorderFill = oReader.GetInt();
+		else if ("textBorder" == sAttributeName)
+			m_bTextBorder = "PAPER" == oReader.GetText2A();
+		else if ("headerInside" == sAttributeName)
+			m_bHeaderInside = oReader.GetBool();
+		else if ("footerInside" == sAttributeName)
+			m_bFooterInside = oReader.GetBool();
+		else if ("fillArea" == sAttributeName)
+		{
+			const std::string sType{oReader.GetText2A()};
+
+			if ("PAPER" == sType)
+				m_chFillArea = 0;
+			else if ("PAGE" == sType)
+				m_chFillArea = 1;
+			else if ("BORDER" == sType)
+				m_chFillArea = 2;
+		}
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+	{
+		if ("offset" != oReader.GetNameA())
+			continue;
+
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("left" == sAttributeName)
+				m_shOffsetLeft = oReader.GetInt();
+			else if ("right" == sAttributeName)
+				m_shOffsetRight = oReader.GetInt();
+			else if ("top" == sAttributeName)
+				m_shOffsetTop = oReader.GetInt();
+			else if ("bottom" == sAttributeName)
+				m_shOffsetBottom = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 }
 

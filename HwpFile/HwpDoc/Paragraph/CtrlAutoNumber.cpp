@@ -44,57 +44,63 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	m_bFullFilled = true;
 }
 
-CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	m_eNumType = ::HWP::GetNumType(oNode.GetAttribute(L"numType"));
+	m_eNumType = ::HWP::GetNumType(oReader.GetAttribute("numType"));
 
-	HWP_STRING sType;
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		m_bSuperscript = oChild.GetAttributeBool(L"supscript");
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("supscript" == sAttributeName)
+				m_bSuperscript = oReader.GetBool();
+			else if ("type" == sAttributeName)
+			{
+				const std::string sType{oReader.GetText2A()};
 
-		sType = oChild.GetAttribute(L"type");
-
-		if (L"DIGIT" == sType)
-			m_eNumShape = ENumberShape2::DIGIT;
-		else if (L"CIRCLE_DIGIT" == sType)
-			m_eNumShape = ENumberShape2::CIRCLE_DIGIT;
-		else if (L"ROMAN_CAPITAL" == sType)
-			m_eNumShape = ENumberShape2::ROMAN_CAPITAL;
-		else if (L"ROMAN_SMALL" == sType)
-			m_eNumShape = ENumberShape2::ROMAN_SMALL;
-		else if (L"LATIN_CAPITAL" == sType)
-			m_eNumShape = ENumberShape2::LATIN_CAPITAL;
-		else if (L"LATIN_SMALL" == sType)
-			m_eNumShape = ENumberShape2::LATIN_SMALL;
-		else if (L"CIRCLED_LATIN_CAPITAL" == sType)
-			m_eNumShape = ENumberShape2::CIRCLED_LATIN_CAPITAL;
-		else if (L"CIRCLED_LATIN_SMALL" == sType)
-			m_eNumShape = ENumberShape2::CIRCLED_LATIN_SMALL;
-		else if (L"CIRCLED_HANGUL_SYLLABLE" == sType)
-			m_eNumShape = ENumberShape2::CIRCLED_HANGUL_SYLLABLE;
-		else if (L"HANGUL_JAMO" == sType)
-			m_eNumShape = ENumberShape2::HANGUL_JAMO;
-		else if (L"CIRCLED_HANGUL_JAMO" == sType)
-			m_eNumShape = ENumberShape2::CIRCLED_HANGUL_JAMO;
-		else if (L"HANGUL_PHONETIC" == sType)
-			m_eNumShape = ENumberShape2::HANGUL_PHONETIC;
-		else if (L"IDEOGRAPH" == sType)
-			m_eNumShape = ENumberShape2::IDEOGRAPH;
-		else if (L"CIRCLED_IDEOGRAPH" == sType)
-			m_eNumShape = ENumberShape2::CIRCLED_IDEOGRAPH;
-		else if (L"DECAGON_CIRCLE" == sType)
-			m_eNumShape = ENumberShape2::DECAGON_CIRCLE;
-		else if (L"DECAGON_CRICLE_HANGJA" == sType)
-			m_eNumShape = ENumberShape2::DECAGON_CRICLE_HANGJA;
-		else if (L"SYMBOL" == sType)
-			m_eNumShape = ENumberShape2::SYMBOL;
-		else if (L"USER_CHAR" == sType)
-			m_eNumShape = ENumberShape2::USER_HWP_CHAR;
-
-		m_eNumShape = GetNumberShape2(oChild.GetAttributeInt(L"hp:autoNumFormat", oChild.GetAttributeInt(L"autoNumFormat")));
+				if ("DIGIT" == sType)
+					m_eNumShape = ENumberShape2::DIGIT;
+				else if ("CIRCLE_DIGIT" == sType)
+					m_eNumShape = ENumberShape2::CIRCLE_DIGIT;
+				else if ("ROMAN_CAPITAL" == sType)
+					m_eNumShape = ENumberShape2::ROMAN_CAPITAL;
+				else if ("ROMAN_SMALL" == sType)
+					m_eNumShape = ENumberShape2::ROMAN_SMALL;
+				else if ("LATIN_CAPITAL" == sType)
+					m_eNumShape = ENumberShape2::LATIN_CAPITAL;
+				else if ("LATIN_SMALL" == sType)
+					m_eNumShape = ENumberShape2::LATIN_SMALL;
+				else if ("CIRCLED_LATIN_CAPITAL" == sType)
+					m_eNumShape = ENumberShape2::CIRCLED_LATIN_CAPITAL;
+				else if ("CIRCLED_LATIN_SMALL" == sType)
+					m_eNumShape = ENumberShape2::CIRCLED_LATIN_SMALL;
+				else if ("CIRCLED_HANGUL_SYLLABLE" == sType)
+					m_eNumShape = ENumberShape2::CIRCLED_HANGUL_SYLLABLE;
+				else if ("HANGUL_JAMO" == sType)
+					m_eNumShape = ENumberShape2::HANGUL_JAMO;
+				else if ("CIRCLED_HANGUL_JAMO" == sType)
+					m_eNumShape = ENumberShape2::CIRCLED_HANGUL_JAMO;
+				else if ("HANGUL_PHONETIC" == sType)
+					m_eNumShape = ENumberShape2::HANGUL_PHONETIC;
+				else if ("IDEOGRAPH" == sType)
+					m_eNumShape = ENumberShape2::IDEOGRAPH;
+				else if ("CIRCLED_IDEOGRAPH" == sType)
+					m_eNumShape = ENumberShape2::CIRCLED_IDEOGRAPH;
+				else if ("DECAGON_CIRCLE" == sType)
+					m_eNumShape = ENumberShape2::DECAGON_CIRCLE;
+				else if ("DECAGON_CRICLE_HANGJA" == sType)
+					m_eNumShape = ENumberShape2::DECAGON_CRICLE_HANGJA;
+				else if ("SYMBOL" == sType)
+					m_eNumShape = ENumberShape2::SYMBOL;
+				else if ("USER_CHAR" == sType)
+					m_eNumShape = ENumberShape2::USER_HWP_CHAR;
+			}
+			else if ("hp:autoNumFormat" == sAttributeName ||
+			         "autoNumFormat" == sAttributeName)
+				m_eNumShape = GetNumberShape2(oReader.GetInt());
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 
 	m_bFullFilled = true;

@@ -17,20 +17,35 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_chCurv = (HWP_BYTE)oNode.GetAttributeInt(L"ratio");
+	m_chCurv = (HWP_BYTE)oReader.GetAttributeInt("ratio");
 
-	for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
-	{
-		if ((L"hc:pt" + std::to_wstring(unIndex)) == oNode.GetName())
-		{
-			m_arPoints[unIndex].m_nX = oNode.GetAttributeInt(L"x");
-			m_arPoints[unIndex].m_nY = oNode.GetAttributeInt(L"y");
-			break;
-		}
+	#define READ_POINT(point_index)\
+	{\
+		START_READ_ATTRIBUTES(oReader)\
+		{\
+			if ("x" == sAttributeName)\
+				m_arPoints[point_index].m_nX = oReader.GetInt();\
+			else if ("y" == sAttributeName)\
+				m_arPoints[point_index].m_nY = oReader.GetInt();\
+		}\
+		END_READ_ATTRIBUTES(oReader)\
 	}
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hc:pt0" == sNodeName)
+			READ_POINT(0)
+		else if ("hc:pt1" == sNodeName)
+			READ_POINT(1)
+		else if ("hc:pt2" == sNodeName)
+			READ_POINT(2)
+		else if ("hc:pt3" == sNodeName)
+			READ_POINT(3)
+	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeRect::GetShapeType() const

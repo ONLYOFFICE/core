@@ -50,27 +50,29 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 	       pFirstCtrl->m_bFullFilled == pSecondCtrl->m_bFullFilled;
 }
 
-CCtrl* CCtrl::GetCtrl(CXMLNode& oNode, int nVersion)
+CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, int nVersion)
 {
-	if (L"hp:colPr" == oNode.GetName())
-		return new CCtrlColumnDef(L"dloc", oNode, nVersion);
-	else if (L"hp:header" == oNode.GetName())
-		return new CCtrlHeadFoot(L"daeh", oNode, nVersion);
-	else if (L"hp:footer" == oNode.GetName())
-		return new CCtrlHeadFoot(L"toof", oNode, nVersion);
-	else if (L"hp:footNote" == oNode.GetName())
-		return new CCtrlNote(L"  nf", oNode, nVersion);
-	else if (L"hp:endNote" == oNode.GetName())
-		return new CCtrlNote(L"  ne", oNode, nVersion);
-	else if (L"hp:autoNum" == oNode.GetName())
-		return new CCtrlAutoNumber(L"onta", oNode, nVersion);
-	else if (L"hp:newNum" == oNode.GetName())
-		return new CCtrlNewNumber(L"onwn", oNode, nVersion);
-	else if (L"hp:pageNum" == oNode.GetName())
-		return new CCtrlPageNumPos(L"pngp", oNode, nVersion);
-	else if (L"hp:fieldBegin" == oNode.GetName() ||
-	         L"hp:fieldEnd" == oNode.GetName())
-		return new CCtrlField(L"", oNode, nVersion);
+	const std::string sNodeName{oReader.GetNameA()};
+
+	if ("hp:colPr" == sNodeName)
+		return new CCtrlColumnDef(L"dloc", oReader, nVersion);
+	else if ("hp:header" == sNodeName)
+		return new CCtrlHeadFoot(L"daeh", oReader, nVersion);
+	else if ("hp:footer" == sNodeName)
+		return new CCtrlHeadFoot(L"toof", oReader, nVersion);
+	else if ("hp:footNote" == sNodeName)
+		return new CCtrlNote(L"  nf", oReader, nVersion);
+	else if ("hp:endNote" == sNodeName)
+		return new CCtrlNote(L"  ne", oReader, nVersion);
+	else if ("hp:autoNum" == sNodeName)
+		return new CCtrlAutoNumber(L"onta", oReader, nVersion);
+	else if ("hp:newNum" == sNodeName)
+		return new CCtrlNewNumber(L"onwn", oReader, nVersion);
+	else if ("hp:pageNum" == sNodeName)
+		return new CCtrlPageNumPos(L"pngp", oReader, nVersion);
+	else if ("hp:fieldBegin" == sNodeName ||
+	         "hp:fieldEnd"   == sNodeName)
+		return new CCtrlField(L"", oReader, nVersion);
 
 	return nullptr;
 }

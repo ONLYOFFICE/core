@@ -17,16 +17,23 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_sBinDataID = oNode.GetAttribute(L"binaryItemIDRef");
+	m_sBinDataID = oReader.GetAttribute("binaryItemIDRef");
 
-	for (CXMLNode& oChild : oNode.GetChilds(L"hc:extent"))
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:extent")
 	{
-		m_nExtentX = oChild.GetAttributeInt(L"x");
-		m_nExtentY = oChild.GetAttributeInt(L"y");
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("x" == sAttributeName)
+				m_nExtentX = oReader.GetInt();
+			else if ("y" == sAttributeName)
+				m_nExtentY = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeOle::GetShapeType() const

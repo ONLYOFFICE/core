@@ -5,31 +5,54 @@ namespace HWP
 HWP::CPage::CPage()
 {}
 
-CPage::CPage(CXMLNode& oNode)
+CPage::CPage(CXMLReader& oReader)
 {
-	m_bLandscape = L"NARROWLY" == oNode.GetAttribute(L"landscape");
-
-	m_nWidth = oNode.GetAttributeInt(L"width");
-	m_nHeight = oNode.GetAttributeInt(L"height");
-
-	std::wstring wsType = oNode.GetAttribute(L"gutterType");
-
-	if (L"LEFT_ONELY" == wsType)
-		m_chGutterType = 0;
-	else if (L"LEFT_RIGHT" == wsType)
-		m_chGutterType = 1;
-	else if (L"TOP_BOTTOM" == wsType)
-		m_chGutterType = 2;
-
-	for (CXMLNode& oChild : oNode.GetChilds(L"hp:margin"))
+	START_READ_ATTRIBUTES(oReader)
 	{
-		m_nMarginLeft   = oChild.GetAttributeInt(L"left");
-		m_nMarginRight  = oChild.GetAttributeInt(L"right");
-		m_nMarginTop    = oChild.GetAttributeInt(L"top");
-		m_nMarginBottom = oChild.GetAttributeInt(L"bottom");
-		m_nMarginHeader = oChild.GetAttributeInt(L"header");
-		m_nMarginFooter = oChild.GetAttributeInt(L"footer");
-		m_nMarginGutter = oChild.GetAttributeInt(L"gutter");
+		if ("landscape" == sAttributeName)
+			m_bLandscape = "NARROWLY" == oReader.GetText2A();
+		else if ("width" == sAttributeName)
+			m_nWidth = oReader.GetInt();
+		else if ("height" == sAttributeName)
+			m_nHeight = oReader.GetInt();
+		else if ("gutterType" == sAttributeName)
+		{
+			const std::string sType{oReader.GetText2A()};
+
+			if ("LEFT_ONELY" == sType)
+				m_chGutterType = 0;
+			else if ("LEFT_RIGHT" == sType)
+				m_chGutterType = 1;
+			else if ("TOP_BOTTOM" == sType)
+				m_chGutterType = 2;
+		}
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+	{
+		if ("hp:margin" != oReader.GetNameA())
+			continue;
+
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("left" == sAttributeName)
+				m_nMarginLeft = oReader.GetInt();
+			else if ("right" == sAttributeName)
+				m_nMarginRight = oReader.GetInt();
+			else if ("top" == sAttributeName)
+				m_nMarginTop = oReader.GetInt();
+			else if ("bottom" == sAttributeName)
+				m_nMarginBottom = oReader.GetInt();
+			else if ("header" == sAttributeName)
+				m_nMarginHeader = oReader.GetInt();
+			else if ("footer" == sAttributeName)
+				m_nMarginFooter = oReader.GetInt();
+			else if ("gutter" == sAttributeName)
+				m_nMarginGutter = oReader.GetInt();
+
+		}
+		END_READ_ATTRIBUTES(oReader)
 	}
 }
 

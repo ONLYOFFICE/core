@@ -62,118 +62,155 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	InitData();
 }
 
-CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlObjElement(sCtrlID, oNode, nVersion)
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlObjElement(sCtrlID, oReader, nVersion)
 {
 	InitData();
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	std::string sNodeName;
+
+	bool bHeadFill = false, bTailFill = false;
+
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if (L"hp:lineShape" == oChild.GetName())
+		sNodeName = oReader.GetNameA();
+
+		if ("hp:lineShape" == sNodeName)
 		{
-			m_nLineColor = oChild.GetAttributeColor(L"color");
-			m_nLineThick = std::abs(oChild.GetAttributeInt(L"width"));
-			m_eLineStyle = GetLineStyle2(oChild.GetAttribute(L"style"));
+			std::string sHeadStyle, sTailStyle;
 
-			HWP_STRING sType = oChild.GetAttribute(L"headStyle");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("color" == sAttributeName)
+					m_nLineColor = oReader.GetInt();
+				else if ("width" == sAttributeName)
+					m_nLineThick = oReader.GetInt();
+				else if ("style" == sAttributeName)
+					m_eLineStyle = GetLineStyle2(oReader.GetText2());
+				else if ("headStyle" == sAttributeName)
+					sHeadStyle = oReader.GetText2A();
+				else if ("headfill" == sAttributeName)
+					bHeadFill = oReader.GetBool();
+				else if ("headSz" == sAttributeName)
+				{
+					const std::string sHeadSz{oReader.GetText2A()};
 
-			if (L"ARROW" == sType)
+					if ("SMALL_SMALL" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::SMALL_SMALL;
+					else if ("SMALL_MEDIUM" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::SMALL_MEDIUM;
+					else if ("SMALL_LARGE" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::SMALL_LARGE;
+					else if ("MEDIUM_SMALL" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::MEDIUM_SMALL;
+					else if ("MEDIUM_MEDIUM" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
+					else if ("MEDIUM_LARGE" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::MEDIUM_LARGE;
+					else if ("LARGE_SMALL" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::LARGE_SMALL;
+					else if ("LARGE_MEDIUM" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::LARGE_MEDIUM;
+					else if ("LARGE_LARGE" == sHeadSz)
+						m_eLineHeadSz = ELineArrowSize::LARGE_LARGE;
+					else
+						m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
+				}
+				else if ("tailStyle" == sAttributeName)
+					sTailStyle = oReader.GetText2A();
+				else if ("tailfill" == sAttributeName)
+					bTailFill = oReader.GetBool();
+				else if ("tailSz" == sAttributeName)
+				{
+					const std::string sType{oReader.GetText2A()};
+
+					if ("SMALL_SMALL" == sType)
+						m_eLineTailSz = ELineArrowSize::SMALL_SMALL;
+					else if ("SMALL_MEDIUM" == sType)
+						m_eLineTailSz = ELineArrowSize::SMALL_MEDIUM;
+					else if ("SMALL_LARGE" == sType)
+						m_eLineTailSz = ELineArrowSize::SMALL_LARGE;
+					else if ("MEDIUM_SMALL" == sType)
+						m_eLineTailSz = ELineArrowSize::MEDIUM_SMALL;
+					else if ("MEDIUM_MEDIUM" == sType)
+						m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
+					else if ("MEDIUM_LARGE" == sType)
+						m_eLineTailSz = ELineArrowSize::MEDIUM_LARGE;
+					else if ("LARGE_SMALL" == sType)
+						m_eLineTailSz = ELineArrowSize::LARGE_SMALL;
+					else if ("LARGE_MEDIUM" == sType)
+						m_eLineTailSz = ELineArrowSize::LARGE_MEDIUM;
+					else if ("LARGE_LARGE" == sType)
+						m_eLineTailSz = ELineArrowSize::LARGE_LARGE;
+					else
+						m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
+				}
+			}
+			END_READ_ATTRIBUTES(oReader)
+
+			if (sHeadStyle.empty())
+				m_eLineHead = ELineArrowStyle::NORMAL;
+			else if ("ARROW" == sHeadStyle)
 				m_eLineHead = ELineArrowStyle::ARROW;
-			else if (L"SPEAR" == sType)
+			else if ("SPEAR" == sHeadStyle)
 				m_eLineHead = ELineArrowStyle::SPEAR;
-			else if (L"CONCAVE_ARROW" == sType)
+			else if ("CONCAVE_ARROW" == sHeadStyle)
 				m_eLineHead = ELineArrowStyle::CONCAVE_ARROW;
-			else if (L"EMPTY_DIAMOND" == sType)
-				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
-			else if (L"EMPTY_CIRCLE" == sType)
-				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
-			else if (L"EMPTY_BOX" == sType)
-				m_eLineHead = (oChild.GetAttributeBool(L"headfill")) ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+			else if ("EMPTY_DIAMOND" == sHeadStyle)
+				m_eLineHead = bHeadFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+			else if ("EMPTY_CIRCLE" == sHeadStyle)
+				m_eLineHead = bHeadFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+			else if ("EMPTY_BOX" == sHeadStyle)
+				m_eLineHead = bHeadFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
 			else
 				m_eLineHead = ELineArrowStyle::NORMAL;
 
-			sType = oChild.GetAttribute(L"headSz");
-
-			if (L"SMALL_SMALL" == sType)
-				m_eLineHeadSz = ELineArrowSize::SMALL_SMALL;
-			else if (L"SMALL_MEDIUM" == sType)
-				m_eLineHeadSz = ELineArrowSize::SMALL_MEDIUM;
-			else if (L"SMALL_LARGE" == sType)
-				m_eLineHeadSz = ELineArrowSize::SMALL_LARGE;
-			else if (L"MEDIUM_SMALL" == sType)
-				m_eLineHeadSz = ELineArrowSize::MEDIUM_SMALL;
-			else if (L"MEDIUM_MEDIUM" == sType)
-				m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
-			else if (L"MEDIUM_LARGE" == sType)
-				m_eLineHeadSz = ELineArrowSize::MEDIUM_LARGE;
-			else if (L"LARGE_SMALL" == sType)
-				m_eLineHeadSz = ELineArrowSize::LARGE_SMALL;
-			else if (L"LARGE_MEDIUM" == sType)
-				m_eLineHeadSz = ELineArrowSize::LARGE_MEDIUM;
-			else if (L"LARGE_LARGE" == sType)
-				m_eLineHeadSz = ELineArrowSize::LARGE_LARGE;
-			else
-				m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
-
-			sType = oChild.GetAttribute(L"tailStyle");
-
-			if (L"ARROW" == sType)
+			if (sTailStyle.empty())
+				m_eLineTail = ELineArrowStyle::NORMAL;
+			else if ("ARROW" == sTailStyle)
 				m_eLineTail = ELineArrowStyle::ARROW;
-			else if (L"SPEAR" == sType)
+			else if ("SPEAR" == sTailStyle)
 				m_eLineTail = ELineArrowStyle::SPEAR;
-			else if (L"CONCAVE_ARROW" == sType)
+			else if ("CONCAVE_ARROW" == sTailStyle)
 				m_eLineTail = ELineArrowStyle::CONCAVE_ARROW;
-			else if (L"EMPTY_DIAMOND" == sType)
-				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
-			else if (L"EMPTY_CIRCLE" == sType)
-				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
-			else if (L"EMPTY_BOX" == sType)
-				m_eLineTail = (oChild.GetAttributeBool(L"tailfill")) ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+			else if ("EMPTY_DIAMOND" == sTailStyle)
+				m_eLineTail = bTailFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+			else if ("EMPTY_CIRCLE" == sTailStyle)
+				m_eLineTail = bTailFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+			else if ("EMPTY_BOX" == sTailStyle)
+				m_eLineTail = bTailFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
 			else
 				m_eLineTail = ELineArrowStyle::NORMAL;
-
-			sType = oChild.GetAttribute(L"tailSz");
-
-			if (L"SMALL_SMALL" == sType)
-				m_eLineTailSz = ELineArrowSize::SMALL_SMALL;
-			else if (L"SMALL_MEDIUM" == sType)
-				m_eLineTailSz = ELineArrowSize::SMALL_MEDIUM;
-			else if (L"SMALL_LARGE" == sType)
-				m_eLineTailSz = ELineArrowSize::SMALL_LARGE;
-			else if (L"MEDIUM_SMALL" == sType)
-				m_eLineTailSz = ELineArrowSize::MEDIUM_SMALL;
-			else if (L"MEDIUM_MEDIUM" == sType)
-				m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
-			else if (L"MEDIUM_LARGE" == sType)
-				m_eLineTailSz = ELineArrowSize::MEDIUM_LARGE;
-			else if (L"LARGE_SMALL" == sType)
-				m_eLineTailSz = ELineArrowSize::LARGE_SMALL;
-			else if (L"LARGE_MEDIUM" == sType)
-				m_eLineTailSz = ELineArrowSize::LARGE_MEDIUM;
-			else if (L"LARGE_LARGE" == sType)
-				m_eLineTailSz = ELineArrowSize::LARGE_LARGE;
-			else
-				m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
 		}
-		else if (L"hc:fillBrush" ==  oChild.GetName())
-			m_pFill = new CFill(oChild);
-		else if (L"hp:drawText" == oChild.GetName())
+		else if ("hc:fillBrush" == sNodeName)
+			m_pFill = new CFill(oReader);
+		else if ("hp:drawText" == sNodeName)
 		{
-			m_nMaxTxtWidth = oChild.GetAttributeInt(L"lastWidth");
+			m_nMaxTxtWidth = oReader.GetAttributeInt("lastWidth");
 
-			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			const int nChildDepth = oReader.GetDepth();
+			std::string sChildNodeName;
+			while (oReader.ReadNextSiblingNode2(nChildDepth))
 			{
-				if (L"hp:textMargin" == oGrandChild.GetName())
+				sChildNodeName = oReader.GetNameA();
+
+				if ("hp:textMargin" == sChildNodeName)
 				{
-					m_shLeftSpace = oGrandChild.GetAttributeInt(L"left");
-					m_shRightSpace = oGrandChild.GetAttributeInt(L"right");
-					m_shTopSpace = oGrandChild.GetAttributeInt(L"top");
-					m_shBottomSpace = oGrandChild.GetAttributeInt(L"bottom");
+					START_READ_ATTRIBUTES(oReader)
+					{
+						if ("left" == sAttributeName)
+							m_shLeftSpace = oReader.GetInt();
+						else if ("right" == sAttributeName)
+							m_shRightSpace =  oReader.GetInt();
+						else if ("top" == sAttributeName)
+							m_shTopSpace =  oReader.GetInt();
+						else if ("bottom" == sAttributeName)
+							m_shBottomSpace =  oReader.GetInt();
+					}
+					END_READ_ATTRIBUTES(oReader)
 				}
-				else if (L"hp:subList" == oGrandChild.GetName())
-				{
-					ReadSubList(oGrandChild, nVersion);
-				}
+				else if ("hp:subList" == sChildNodeName)
+					ReadSubList(oReader, nVersion);
 			}
 		}
 	}
@@ -201,29 +238,27 @@ void CCtrlGeneralShape::InitData()
 	m_pFill = nullptr;
 }
 
-void CCtrlGeneralShape::ReadSubList(CXMLNode& oNode, int nVersion)
+void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader, int nVersion)
 {
-	m_eTextVerAlign = GetVertAlign(oNode.ReadAttributeInt(L"vertAlign"));
+	m_eTextVerAlign = GetVertAlign(oReader.GetAttributeInt("vertAlign"));
 
-	std::vector<CXMLNode> arChilds{oNode.GetChilds()};
+	// CHWPPargraph* pLatestParagraph = nullptr;
 
-	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		CHWPPargraph* pLatestParagraph = nullptr;
+		if ("hp:p" != oReader.GetNameA())
+			continue;
 
-		if (L"hp:p" == arChilds[unIndex].GetName())
-		{
-			CHWPPargraph* pParagraph = new CHWPPargraph(arChilds[unIndex], nVersion);
+		CHWPPargraph* pParagraph = new CHWPPargraph(oReader, nVersion);
 
-			if (nullptr == pParagraph)
-				continue;
+		if (nullptr == pParagraph)
+			continue;
 
-			m_arParas.push_back(pParagraph);
-			pLatestParagraph = pParagraph;
-		}
+		m_arParas.push_back(pParagraph);
+		// pLatestParagraph = pParagraph;
 
-		if (nullptr != pLatestParagraph && 0 != pLatestParagraph->GetCountCtrls() && ECtrlObjectType::ParaText == pLatestParagraph->GetCtrls().back()->GetCtrlType() && unIndex < arChilds.size() - 1)
-			pLatestParagraph->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
+		// if (nullptr != pLatestParagraph && 0 != pLatestParagraph->GetCountCtrls() && ECtrlObjectType::ParaText == pLatestParagraph->GetCtrls().back()->GetCtrlType())
+		// 	pLatestParagraph->AddCtrl(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK));
 	}
 }
 

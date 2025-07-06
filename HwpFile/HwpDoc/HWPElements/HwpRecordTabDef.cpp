@@ -5,11 +5,18 @@ namespace HWP
 TTab::TTab()
 {}
 
-TTab::TTab(CXMLNode& oNode)
+TTab::TTab(CXMLReader& oReader)
 {
-	m_nPos = oNode.GetAttributeInt(L"pos");
-	SetType(oNode.GetAttributeInt(L"type"));
-	m_eLeader = GetLineStyle2(oNode.GetAttribute(L"leader"));
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("pos" == sAttributeName)
+			m_nPos = oReader.GetInt();
+		else if ("type" == sAttributeName)
+			SetType(oReader.GetInt());
+		else if ("leader" == sAttributeName)
+			m_eLeader = GetLineStyle2(oReader.GetText2());
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 void TTab::SetType(int nValue)
@@ -24,7 +31,7 @@ void TTab::SetType(int nValue)
 }
 
 CHwpRecordTabDef::CHwpRecordTabDef(int nTagNum, int nLevel, int nSize)
-	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(nullptr)
+	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(nullptr), m_nAttr(0), m_nCount(0)
 {}
 
 CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -60,25 +67,35 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
-	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo)
+CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo), m_nAttr(0), m_nCount(0)
 {
-	if (oNode.GetAttributeBool(L"autoTabLeft"))
-		m_nAttr |= 0x00000001;
-	else
-		m_nAttr &= 0xFFFFFFFE;
-
-	if (oNode.GetAttributeBool(L"autoTabRight"))
-		m_nAttr |= 0x00000002;
-	else
-		m_nAttr &= 0xFFFFFFFD;
-
-	for (CXMLNode& oChild : oNode.GetChilds(L"hp:switch"))
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:default"))
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("autoTabLeft" == sAttributeName)
 		{
-			CXMLNode oTabItem{oGrandChild.GetChild(L"hh:tabItem")};
-			m_arTabs.push_back(new TTab(oTabItem));
+			if (oReader.GetBool())
+				m_nAttr |= 0x00000001;
+			else
+				m_nAttr &= 0xFFFFFFFE;
 		}
+		else if ("autoTabRight" == sAttributeName)
+		{
+			if (oReader.GetBool())
+				m_nAttr |= 0x00000002;
+			else
+				m_nAttr &= 0xFFFFFFFD;
+		}
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:switch")
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:default")
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, TabChild, "hh:tabItem")
+				m_arTabs.push_back(new TTab(oReader));
+			END_WHILE
+		END_WHILE
+	END_WHILE
 }
 
 int CHwpRecordTabDef::GetCount() const

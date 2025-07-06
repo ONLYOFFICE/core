@@ -17,23 +17,40 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrlGeneralShape(sCtrlID)
 {
-	m_sVersion = oNode.GetAttribute(L"version");
-	m_nBaseline = oNode.GetAttributeInt(L"baseLine");
-	m_nColor = oNode.GetAttributeColor(L"textColor");
-	m_nCharSize = oNode.GetAttributeInt(L"baseUnit");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("version" == sAttributeName)
+			m_sVersion = oReader.GetText2();
+		else if ("baseLine" == sAttributeName)
+			m_nBaseline = oReader.GetInt();
+		else if ("textColor" == sAttributeName)
+			m_nColor = oReader.GetColor();
+		else if ("baseUnit" == sAttributeName)
+			m_nCharSize = oReader.GetInt();
+		else if ("lineMode" == sAttributeName)
+		{
+			const std::string sType{oReader.GetText2A()};
 
-	HWP_STRING sType = oNode.GetAttribute(L"lineMode");
+			if ("LINE" == sType)
+				m_nAttr = 1;
+			else if ("CHAR" == sType)
+				m_nAttr = 0;
+		}
+		else if ("font" == sAttributeName)
+			m_sFont = oReader.GetText2();
+	}
+	END_READ_ATTRIBUTES(oReader)
 
-	if (L"LINE" == sType)
-		m_nAttr = 1;
-	else if (L"CHAR" == sType)
-		m_nAttr = 0;
+	        WHILE_READ_NEXT_NODE(oReader)
+	{
+		if ("hp:script" != oReader.GetNameA())
+			continue;
 
-	m_sFont = oNode.GetAttribute(L"font");
-	m_sEqn = oNode.GetChild(L"hp:script").GetText();
+		m_sEqn = oReader.GetText2();
+	}
 
 	m_bFullFilled = true;
 }

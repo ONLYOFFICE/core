@@ -2,9 +2,6 @@
 #define COMMONOBJ_H
 
 #include "HWPPargraph.h"
-#include <string>
-#include <vector>
-#include <list>
 
 namespace HWP
 {

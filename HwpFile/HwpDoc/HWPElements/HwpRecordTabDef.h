@@ -4,7 +4,7 @@
 #include "HWPRecord.h"
 #include "../HWPDocInfo.h"
 #include "HwpRecordTypes.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -22,7 +22,7 @@ struct TTab
 
 
 	TTab();
-	TTab(CXMLNode& oNode);
+	TTab(CXMLReader& oReader);
 
 	void SetType(int nValue);
 };
@@ -37,7 +37,7 @@ class CHwpRecordTabDef : public CHWPRecord
 public:
 	CHwpRecordTabDef(int nTagNum, int nLevel, int nSize);
 	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
 
 	int GetCount() const;
 	const TTab* GetTab(unsigned int unIndex) const;

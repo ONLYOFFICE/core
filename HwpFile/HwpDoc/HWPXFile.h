@@ -32,7 +32,7 @@ private:
 	bool GetFileHeader();
 	bool GetDocInfo(int nVersion);
 	bool ReadSection(const HWP_STRING& sName, int nVersion);
-	CXMLNode GetDocument(const HWP_STRING& sEntryName);
+	CXMLReader GetDocument(const HWP_STRING& sEntryName);
 };
 }
 

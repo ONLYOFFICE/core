@@ -25,31 +25,34 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	std::string sNodeName;
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if (L"hp:container" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlContainer(L"noc$", oChild, nVersion));
-		else if (L"hp:line" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oChild, nVersion));
-		else if (L"hp:rect" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oChild, nVersion));
-		else if (L"hp:ellipse" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oChild, nVersion));
-		else if (L"hp:arc" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oChild, nVersion));
-		else if (L"hp:polygon" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oChild, nVersion));
-		else if (L"hp:curve" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oChild, nVersion));
-		else if (L"hp:connectLine" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oChild, nVersion));
-		else if (L"hp:pic" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oChild, nVersion));
-		else if (L"hp:ole" == oChild.GetName())
-			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oChild, nVersion));
+		sNodeName = oReader.GetNameA();
+
+		if ("hp:container" == sNodeName)
+			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion));
+		else if ("hp:line" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion));
+		else if ("hp:rect" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion));
+		else if ("hp:ellipse" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion));
+		else if ("hp:arc" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion));
+		else if ("hp:polygon" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion));
+		else if ("hp:curve" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion));
+		else if ("hp:connectLine" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion));
+		else if ("hp:pic" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion));
+		else if ("hp:ole" == sNodeName)
+			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion));
 	}
 
 	m_shNElement = m_arShapes.size();

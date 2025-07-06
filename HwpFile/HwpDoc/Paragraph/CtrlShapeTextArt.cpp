@@ -17,58 +17,79 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_sText = oNode.GetAttribute(L"text");
+	m_sText = oReader.GetAttribute("text");
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	#define READ_POINT(variable_point)\
+	{\
+		START_READ_ATTRIBUTES(oReader)\
+		{\
+			if ("x" == sAttributeName)\
+				variable_point.m_nX = oReader.GetInt();\
+			else if ("y" == sAttributeName)\
+				variable_point.m_nY = oReader.GetInt();\
+		}\
+		END_READ_ATTRIBUTES(oReader)\
+	}
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:pt0" == oChild.GetName())
+		if ("hp:pt0" == sNodeName)
+			READ_POINT(m_oPt0)
+		else if ("hp:pt1" == sNodeName)
+			READ_POINT(m_oPt1)
+		else if ("hp:pt2" == sNodeName)
+			READ_POINT(m_oPt2)
+		else if ("hp:pt3" == sNodeName)
+			READ_POINT(m_oPt3)
+		else if ("hp:textartPr" == sNodeName)
 		{
-			m_oPt0.m_nX = oNode.GetAttributeInt(L"x");
-			m_oPt0.m_nY = oNode.GetAttributeInt(L"y");
-		}
-		else if (L"hp:pt1" == oChild.GetName())
-		{
-			m_oPt1.m_nX = oNode.GetAttributeInt(L"x");
-			m_oPt1.m_nY = oNode.GetAttributeInt(L"y");
-		}
-		else if (L"hp:pt2" == oChild.GetName())
-		{
-			m_oPt2.m_nX = oNode.GetAttributeInt(L"x");
-			m_oPt2.m_nY = oNode.GetAttributeInt(L"y");
-		}
-		else if (L"hp:pt3" == oChild.GetName())
-		{
-			m_oPt3.m_nX = oNode.GetAttributeInt(L"x");
-			m_oPt3.m_nY = oNode.GetAttributeInt(L"y");
-		}
-		else if (L"hp:textartPr" == oChild.GetName())
-		{
-			m_sFontName = oChild.GetAttribute(L"fontName");
-			m_sFontStyle = oChild.GetAttribute(L"fontStyle");
-			m_sFontType = oChild.GetAttribute(L"fontType");
-			m_sTextShape = oChild.GetAttribute(L"textShape");
-			m_sFontStyle = oChild.GetAttribute(L"fontStyle");
-			m_shLineSpacing = oChild.GetAttributeInt(L"lineSpacing");
-			m_shSpacing = oChild.GetAttributeInt(L"spacing");
-			m_sAlign = oChild.GetAttribute(L"align");
-
-			//TODO:: реализовать shadows
-		}
-		else if (L"hp:outline" == oChild.GetName())
-		{
-			std::vector<CXMLNode> arGrandChilds{oChild.GetChilds(L"hp:pt")};
-			m_arOutline.resize(arGrandChilds.size());
-
-			for (unsigned int unIndex = 0; unIndex < arGrandChilds.size(); ++unIndex)
+			START_READ_ATTRIBUTES(oReader)
 			{
-				m_arOutline[unIndex].m_nX = arGrandChilds[unIndex].GetAttributeInt(L"x");
-				m_arOutline[unIndex].m_nY = arGrandChilds[unIndex].GetAttributeInt(L"y");
+				if ("fontName" == sAttributeName)
+					m_sFontName = oReader.GetText2();
+				else if ("fontStyle" == sAttributeName)
+					m_sFontStyle = oReader.GetText2();
+				else if ("fontType" == sAttributeName)
+					m_sFontType = oReader.GetText2();
+				else if ("textShape" == sAttributeName)
+					m_sTextShape = oReader.GetText2();
+				else if ("align" == sAttributeName)
+					m_sAlign = oReader.GetText2();
+				else if ("lineSpacing" == sAttributeName)
+					m_shLineSpacing = oReader.GetInt();
+				else if ("spacing" == sAttributeName)
+					m_shSpacing = oReader.GetInt();
+
+				//TODO:: реализовать shadows
 			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:outline" == sNodeName)
+		{
+			TPoint oPoint{0, 0};
+
+			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:pt")
+			{
+				START_READ_ATTRIBUTES(oReader)
+				{
+					if ("x" == sAttributeName)
+						oPoint.m_nX = oReader.GetInt();
+					else if ("y" == sAttributeName)
+						oPoint.m_nY = oReader.GetInt();
+				}
+				END_READ_ATTRIBUTES(oReader)
+
+				m_arOutline.push_back(oPoint);
+
+				oPoint = {0, 0};
+			}
+			END_WHILE
 		}
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeTextArt::GetShapeType() const

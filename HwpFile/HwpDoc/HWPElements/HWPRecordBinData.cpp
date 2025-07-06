@@ -74,35 +74,41 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CHWPRecordBinData::CHWPRecordBinData(CXMLNode& oNode, int nVersion)
+CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
 {
-	m_sItemID = oNode.GetAttribute(L"id");
+	std::string sType;
+	HWP_STRING sSubPath;
 
-	HWP_STRING sType = oNode.GetAttribute(L"isEmbeded");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("id" == sAttributeName)
+			m_sItemID = oReader.GetText2();
+		else if ("isEmbeded" == sAttributeName)
+			sType = oReader.GetText2A();
+		else if ("href" == sAttributeName)
+			m_sAPath = oReader.GetText2();
+		else if ("sub-path" == sAttributeName)
+			sSubPath = oReader.GetText2();
+		else if ("media-type" == sAttributeName)
+		{
+			m_sFormat = oReader.GetText2();
 
-	if (L"0" == sType)
+			std::wregex oRegex(L"image/(.*)");
+			m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
+		}
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	if ("0" == sType)
 	{
 		m_eType = EType::LINK;
 
-		m_sAPath = oNode.GetAttribute(L"sub-path");
-
-		if (m_sAPath.empty())
-			m_sAPath = oNode.GetAttribute(L"href");
+		if (!sSubPath.empty())
+			m_sAPath = sSubPath;
 	}
-	else if (L"1" == sType)
-	{
+	else if ("1" == sType)
 		m_eType = EType::EMBEDDING;
-		m_sAPath = oNode.GetAttribute(L"href");
-	}
-	else
-		m_sAPath = oNode.GetAttribute(L"href");
-
-	m_sFormat = oNode.GetAttribute(L"media-type");
-
-	std::wregex oRegex(L"image/(.*)");
-
-	m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");
 }
 
 HWP_STRING CHWPRecordBinData::GetPath() const

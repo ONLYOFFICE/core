@@ -53,45 +53,72 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 		oBuffer.ReadString(m_sBasicFaceName, EStringCharacter::UTF16);
 }
 
-CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_FACE_NAME, 0, 0), m_pParent(&oDocInfo)
 {
-	m_sFaceName = oNode.GetAttribute(L"face");
+	m_sFaceName = oReader.GetAttribute("face");
 
-	for (CXMLNode& oChild: oNode.GetChilds())
+	std::string sNodeName;
+
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if (L"hh:substFont" == oChild.GetName())
+		sNodeName = oReader.GetNameA();
+
+		if ("hh:substFont" == sNodeName)
 		{
 			m_bSubstExists = true;
-			m_sSubstFace = oChild.GetAttribute(L"face");
 
-			HWP_STRING sType = oChild.GetAttribute(L"type");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("face" == sAttributeName)
+					m_sSubstFace = oReader.GetText2();
+				else if ("type" == sAttributeName)
+				{
+					const std::string sType{oReader.GetText2A()};
 
-			if (L"TTF" == sType)
-				m_eSubstType = EAltType::FFT;
-			else if (L"HFT" == sType)
-				m_eSubstType = EAltType::HFT;
-			else
-				m_eSubstType = EAltType::UNKNOWN;
+					if ("TTF" == sType)
+						m_eSubstType = EAltType::FFT;
+					else if ("HFT" == sType)
+						m_eSubstType = EAltType::HFT;
+					else
+						m_eSubstType = EAltType::UNKNOWN;
+				}
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hh:typeInfo" == oChild.GetName())
+		else if ("hh:typeInfo" == sNodeName)
 		{
 			m_bAttrExists = true;
 
-			m_sBasicFaceName = oChild.GetAttribute(L"familyType");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("familyType" == sAttributeName)
+				{
+					m_sBasicFaceName = oReader.GetText2();
 
-			if (!m_sBasicFaceName.empty())
-				m_bBasicFaceExists = true;
-
-			m_chSerifStyle = (HWP_BYTE)oChild.GetAttributeInt(L"serifStyle");
-			m_shWeight = oChild.GetAttributeInt(L"weight");
-			m_shPropotion = oChild.GetAttributeInt(L"proportion");
-			m_shContrast = oChild.GetAttributeInt(L"contrast");
-			m_shStrokeVariation = oChild.GetAttributeInt(L"strokeVariation");
-			m_shArmStyle = oChild.GetAttributeInt(L"armStyle");
-			m_shLetterform = oChild.GetAttributeInt(L"letterform");
-			m_shMidLine = oChild.GetAttributeInt(L"midline");
-			m_shXHeight = oChild.GetAttributeInt(L"xHeight");
+					if (!m_sBasicFaceName.empty())
+						m_bBasicFaceExists = true;
+				}
+				else if ("serifStyle" == sAttributeName)
+					m_chSerifStyle = (HWP_BYTE)oReader.GetInt();
+				else if ("weight" == sAttributeName)
+					m_shWeight = oReader.GetInt();
+				else if ("proportion" == sAttributeName)
+					m_shPropotion = oReader.GetInt();
+				else if ("contrast" == sAttributeName)
+					m_shContrast = oReader.GetInt();
+				else if ("strokeVariation" == sAttributeName)
+					m_shStrokeVariation = oReader.GetInt();
+				else if ("armStyle" == sAttributeName)
+					m_shArmStyle = oReader.GetInt();
+				else if ("letterform" == sAttributeName)
+					m_shLetterform = oReader.GetInt();
+				else if ("midline" == sAttributeName)
+					m_shMidLine = oReader.GetInt();
+				else if ("xHeight" == sAttributeName)
+					m_shXHeight = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 	}
 }

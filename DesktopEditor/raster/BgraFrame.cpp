@@ -584,7 +584,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 #if CXIMAGE_SUPPORT_HEIF
 	if (CXIMAGE_FORMAT_HEIF == nFileType)
 	{
-		return NSHeif::CHeifFile::Save(m_pData, m_lWidth, m_lHeight, strFileName);
+		return NSHeif::CHeifFile::Save(m_pData, m_lWidth, m_lHeight, m_lStride, strFileName);
 	}
 #endif
 

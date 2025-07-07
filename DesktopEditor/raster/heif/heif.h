@@ -24,11 +24,18 @@ namespace NSHeif {
 
 		static bool Open(CBgraFrame* frame, const std::wstring& fileName);
 		static bool Open(CBgraFrame* frame, BYTE* buffer, DWORD size);
-		static bool Save(const BYTE* source, int width, int height, const std::wstring& dstPath);
+		static bool Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath);
 
 	private:
 		static inline bool IsError(heif_error err);
 		static inline bool Decode(heif_context* ctx, CBgraFrame* frame);
 		static inline NSUnicodeConverter::CUnicodeConverter m_oConverter{};
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+		static inline const char* m_sPluginPath = "..\\..\\..\\Common\\3dParty\\heif\\libheif\\libheif\\api\\libheif\\libheif\\plugins\\Release\\heif-x265.dll";
+#elif defined(_LINUX)
+		static inline const char* m_sPluginPath = "../../../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/plugins/libheif-x265.so";
+#else
+		static inline const char* m_sPluginPath = "../../../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/plugins/libheif-x265.dylib";
+#endif
 	};
 }

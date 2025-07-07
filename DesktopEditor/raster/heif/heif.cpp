@@ -13,7 +13,7 @@ namespace NSHeif {
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
-		return !IsError(heif_context_read_from_memory(ctx, buffer, size, nullptr));
+		return !IsError(heif_context_read_from_memory_without_copy(ctx, buffer, size, nullptr));
 	}
 
 	bool CHeifFile::Open(CBgraFrame *frame, const std::wstring& fileName)
@@ -29,17 +29,17 @@ namespace NSHeif {
 	{
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
-		if (IsError(heif_context_read_from_memory(ctx, buffer, size, nullptr)))
+		if (IsError(heif_context_read_from_memory_without_copy(ctx, buffer, size, nullptr)))
 			return false;
 		return Decode(ctx, frame);
 	}
 
-	bool CHeifFile::Save(const BYTE* source, int width, int height, const std::wstring& dstPath)
+	bool CHeifFile::Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath)
 	{
 		if (!source)
 			return false;
 
-		heif_image* img = nullptr;
+		heif_image* img;
 		defer(heif_image_release(img););
 
 		if (IsError(heif_image_create(width, height, heif_colorspace_RGB, heif_chroma_interleaved_RGB, &img)))
@@ -56,25 +56,27 @@ namespace NSHeif {
 
 		for (size_t i = 0; i < height; ++i)
 		{
-			const BYTE* row = source + i * stride;
+			const BYTE* row = source + (height - i - 1) * (sourceStride < 0 ? -sourceStride : sourceStride);
 			for (size_t j = 0; j < width; ++j)
 			{
-				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
-				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
-				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
+				data[(i * width + j) * 3 + 0] = row[(width - j - 1) * 4 + 2];
+				data[(i * width + j) * 3 + 1] = row[(width - j - 1) * 4 + 1];
+				data[(i * width + j) * 3 + 2] = row[(width - j - 1) * 4 + 0];
 			}
 		}
 
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
 
-		heif_encoder* encoder = nullptr;
+		const heif_plugin_info *inf;
+
+		if (IsError(heif_load_plugin(m_sPluginPath, &inf)))
+			return false;
+
+		heif_encoder* encoder;
 		defer(heif_encoder_release(encoder););
 
 		if (IsError(heif_context_get_encoder_for_format(ctx, heif_compression_HEVC, &encoder)))
-			return false;
-
-		if (IsError(heif_encoder_set_lossy_quality(encoder, 80)))
 			return false;
 
 		if (IsError(heif_context_encode_image(ctx, img, encoder, nullptr, nullptr)))

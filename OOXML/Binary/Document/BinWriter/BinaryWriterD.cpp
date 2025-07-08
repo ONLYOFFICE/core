@@ -1672,18 +1672,18 @@ void Binary_pPrWriter::WritePageMargin(OOX::Logic::CSectionProperty* pSectPr)
 		}
 	}				
 }
-void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr)
+void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<nullable<ComplexTypes::Word::CHdrFtrRef>>& aRefs, bool bHdr)
 {
 	int nCurPos = 0;
 	for (size_t i = 0, length = aRefs.size(); i < length; ++i)
 	{
-		const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
-		if ( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
+		nullable<ComplexTypes::Word::CHdrFtrRef>& oRef = aRefs[i];
+		if (oRef.IsInit() && oRef->m_oType.IsInit() && oRef->m_oId.IsInit())
 		{
 			int nIndex = 0;
 			OOX::CHdrFtr* pHdrFtr = NULL;
 			
-			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
+			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef->m_oId->GetValue());
 			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
 			{
 				pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
@@ -1695,14 +1695,14 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
 					m_oBinaryHeaderFooterTableWriter->m_aHeaders.push_back(pHdrFtr);
-					m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef.m_oType->GetValue());
+					m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef->m_oType->GetValue());
 					m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.push_back(pSectPr);
 				}
 				else
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
 					m_oBinaryHeaderFooterTableWriter->m_aFooters.push_back(pHdrFtr);
-					m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef.m_oType->GetValue());
+					m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef->m_oType->GetValue());
 					m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.push_back(pSectPr);
 				}
 				nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::hdrftrelem);
@@ -3141,7 +3141,12 @@ void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstrac
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
-
+	if (num.m_oNsid.IsInit() && num.m_oNsid->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::Nsid);
+		m_oBcw.m_oStream.WriteULONG(num.m_oNsid->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);

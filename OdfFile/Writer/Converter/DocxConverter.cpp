@@ -1840,16 +1840,9 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 
 	if (other->m_arrFooterReference.size() > 0)
 	{
-		for (size_t i =0 ; i < props->m_arrFooterReference.size() ; i++)
-		{
-			if (props->m_arrFooterReference[i]) delete props->m_arrFooterReference[i];
-			props->m_arrFooterReference[i] = NULL;
-		}
-		props->m_arrFooterReference.clear();
-
 		for (size_t i =0 ; i < other->m_arrFooterReference.size() ; i++)
 		{
-			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
+			nullable < ComplexTypes::Word::CHdrFtrRef> ref; ref.Init();
 
 			ref->m_oId= other->m_arrFooterReference[i]->m_oId;
 			ref->m_oType= other->m_arrFooterReference[i]->m_oType;
@@ -1860,17 +1853,10 @@ void DocxConverter::apply_HF_from(OOX::Logic::CSectionProperty *props, OOX::Logi
 	}
 	if (other->m_arrHeaderReference.size() > 0)
 	{
-		for (size_t i =0 ; i < props->m_arrHeaderReference.size() ; i++)
-		{
-			if (props->m_arrHeaderReference[i]) delete props->m_arrHeaderReference[i];
-			props->m_arrHeaderReference[i] = NULL;
-		}
-		props->m_arrHeaderReference.clear();
-		
 		for (size_t i =0 ; i < other->m_arrHeaderReference.size() ; i++)
 		{
-			ComplexTypes::Word::CHdrFtrRef* ref = new ComplexTypes::Word::CHdrFtrRef();
-			
+			nullable < ComplexTypes::Word::CHdrFtrRef> ref; ref.Init();
+
 			ref->m_oId= other->m_arrHeaderReference[i]->m_oId;
 			ref->m_oType= other->m_arrHeaderReference[i]->m_oType;
 
@@ -2122,7 +2108,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 
 		for (size_t i = 0; i < s->m_arrHeaderReference.size(); i++)
 		{
-			if (s->m_arrHeaderReference[i] == NULL) continue;
+			if (false == s->m_arrHeaderReference[i].IsInit()) continue;
 
 			int type = s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() : 0;
 
@@ -2153,7 +2139,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 
 		for (size_t i = 0; i < s->m_arrFooterReference.size(); i++)
 		{
-			if (s->m_arrFooterReference[i] == NULL) continue;
+			if (false == s->m_arrFooterReference[i].IsInit()) continue;
 
 			int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() : 0;
 
@@ -2267,7 +2253,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 			
 			for (size_t i = 0; i < oox_section_pr->m_oCols->m_arrColumns.size(); i++)
 			{
-				if (oox_section_pr->m_oCols->m_arrColumns[i] == NULL) continue;
+				if (false == oox_section_pr->m_oCols->m_arrColumns[i].IsInit()) continue;
 				
 				double space = default_space_pt;
 				if (oox_section_pr->m_oCols->m_arrColumns[i]->m_oSpace.IsInit())

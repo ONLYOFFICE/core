@@ -176,6 +176,7 @@ SOURCES += \
     SrcWriter/FontCidTT.cpp \
     SrcWriter/FontTT.cpp \
     SrcWriter/FontTTWriter.cpp \
+    SrcWriter/FontOTWriter.cpp \
     SrcWriter/GState.cpp \
     SrcWriter/Image.cpp \
     SrcWriter/Info.cpp \

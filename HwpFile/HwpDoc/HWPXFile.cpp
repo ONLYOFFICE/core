@@ -115,8 +115,11 @@ VECTOR<HWP_STRING> CHWPXFile::GetPathsToSections() const
 
 bool CHWPXFile::GetFileHeader()
 {
-	CXMLNode oVersionXml{GetDocument(L"version.xml")};
-	CXMLReader oReader{GetDocument(L"version.xml")};
+	CXMLReader oReader;
+
+	if (!GetDocument(L"version.xml", oReader))
+		return false;
+
 	return m_oFileHeader.Parse(oReader);
 }
 
@@ -147,10 +150,18 @@ bool CHWPXFile::GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer)
 
 bool CHWPXFile::GetDocInfo(int nVersion)
 {
-	CXMLReader oContentReader{GetDocument(L"Contents/content.hpf")};
+	CXMLReader oContentReader;
+
+	if (!GetDocument(L"Contents/content.hpf", oContentReader))
+		return false;
+
 	if (m_oDocInfo.ReadContentHpf(oContentReader, nVersion))
 	{
-		CXMLReader oHeaderReader{GetDocument(L"Contents/header.xml")};
+		CXMLReader oHeaderReader;
+
+		if (!GetDocument(L"Contents/header.xml", oHeaderReader))
+			return false;
+
 		return m_oDocInfo.Parse(oHeaderReader, nVersion);
 	}
 
@@ -159,7 +170,10 @@ bool CHWPXFile::GetDocInfo(int nVersion)
 
 bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 {
-	CXMLReader oReader{GetDocument(sName)};
+	CXMLReader oReader;
+
+	if (!GetDocument(sName, oReader))
+		return false;
 
 	CHWPSection* pSection = new CHWPSection();
 	const bool bResult = pSection->Parse(oReader, nVersion);
@@ -172,34 +186,14 @@ bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 	return bResult;
 }
 
-CXMLReader CHWPXFile::GetDocument(const HWP_STRING& sEntryName)
+bool CHWPXFile::GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader)
 {
-	if (nullptr == m_pZipFolder)
-		return CXMLReader();
+	if (nullptr == m_pZipFolder || nullptr == oReader.GetReader())
+		return false;
 
-	XmlUtils::CXmlLiteReader oTempReader{m_pZipFolder->getReaderFromFile(sEntryName)};
+	if (m_pZipFolder->getReaderFromFile(sEntryName, *oReader.GetReader()))
+		return oReader.ReadNextNode();
 
-	std::cout << oTempReader.GetNameA() << std::endl;
-
-	if (oTempReader.IsValid())
-		std::cout << "Valid" << std::endl;
-	else
-		std::cout << "No valid" << std::endl;
-
-	oTempReader.ReadNextNode();
-
-	if (oTempReader.IsValid())
-		std::cout << "Valid" << std::endl;
-	else
-		std::cout << "No valid" << std::endl;
-
-	std::wcout << oTempReader.GetDepth() << L" _ " << oTempReader.GetName() << std::endl;
-
-	CXMLReader oReader(oTempReader);
-
-	std::wcout << oReader.GetInnerXml() << std::endl;
-
-
-	return oReader;
+	return false;
 }
 }

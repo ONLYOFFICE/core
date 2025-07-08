@@ -22,16 +22,21 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 {
 	m_sBinDataID = oReader.GetAttribute("binaryItemIDRef");
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:extent")
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		START_READ_ATTRIBUTES(oReader)
+		if ("hc:extent" == oReader.GetName())
 		{
-			if ("x" == sAttributeName)
-				m_nExtentX = oReader.GetInt();
-			else if ("y" == sAttributeName)
-				m_nExtentY = oReader.GetInt();
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nExtentX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nExtentY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		END_READ_ATTRIBUTES(oReader)
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

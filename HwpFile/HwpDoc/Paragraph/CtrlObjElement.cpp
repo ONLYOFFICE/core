@@ -75,87 +75,87 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader,
     : CCtrlCommon(sCtrlID, oReader, nVersion)
 {
 	m_shNGrp = oReader.GetAttributeInt("groupLevel");
+}
 
-	std::string sNodeName;
+void CCtrlObjElement::ParseChildren(CXMLReader& oReader, int nVersion)
+{
+	const std::string sNodeName{oReader.GetName()};
 
-	WHILE_READ_NEXT_NODE(oReader)
+	if ("hp:offset" == sNodeName)
 	{
-		sNodeName = oReader.GetNameA();
-
-		if ("hp:offset" == sNodeName)
+		START_READ_ATTRIBUTES(oReader)
 		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("x" == sAttributeName)
-					m_nXGrpOffset = oReader.GetInt();
-				else if ("y" == sAttributeName)
-					m_nYGrpOffset = oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
+			if ("x" == sAttributeName)
+				m_nXGrpOffset = oReader.GetInt();
+			else if ("y" == sAttributeName)
+				m_nYGrpOffset = oReader.GetInt();
 		}
-
-		else if ("hp:orgSz" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("width" == sAttributeName)
-					m_nOrgWidth = oReader.GetInt();
-				else if ("height" == sAttributeName)
-					m_nOrgHeight = oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
-		else if ("hp:curSz" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("width" == sAttributeName)
-					m_nCurWidth = oReader.GetInt();
-				else if ("height" == sAttributeName)
-					m_nCurHeight = oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
-		else if ("hp:flip" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("horizontal" == sAttributeName)
-					m_bHorzFlip = oReader.GetBool();
-				else if ("vertical" == sAttributeName)
-					m_bVerFlip = oReader.GetBool();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
-		else if ("hp:rotationInfo" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("angle" == sAttributeName)
-					m_shRotat = oReader.GetInt();
-				else if ("centerX" == sAttributeName)
-					m_nXCenter = oReader.GetInt();
-				else if ("centerY" == sAttributeName)
-					m_nYCenter = oReader.GetInt();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
-		else if ("hp:renderingInfo" == sNodeName)
-		{
-			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
-			{
-				// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
-
-				if ("hc:transMatrix" != sNodeChildName &&
-				    "hc:scaMatrix"   != sNodeChildName &&
-				    "hc:rotMatrix"   != sNodeChildName)
-					continue;
-
-				m_arMatrixs.push_back(ReadMatrix(oReader));
-			}
-			END_WHILE
-		}
+		END_READ_ATTRIBUTES(oReader)
 	}
+
+	else if ("hp:orgSz" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("width" == sAttributeName)
+				m_nOrgWidth = oReader.GetInt();
+			else if ("height" == sAttributeName)
+				m_nOrgHeight = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:curSz" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("width" == sAttributeName)
+				m_nCurWidth = oReader.GetInt();
+			else if ("height" == sAttributeName)
+				m_nCurHeight = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:flip" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("horizontal" == sAttributeName)
+				m_bHorzFlip = oReader.GetBool();
+			else if ("vertical" == sAttributeName)
+				m_bVerFlip = oReader.GetBool();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:rotationInfo" == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if ("angle" == sAttributeName)
+				m_shRotat = oReader.GetInt();
+			else if ("centerX" == sAttributeName)
+				m_nXCenter = oReader.GetInt();
+			else if ("centerY" == sAttributeName)
+				m_nYCenter = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
+	else if ("hp:renderingInfo" == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+		{
+			// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
+
+			if ("hc:transMatrix" != sNodeChildName &&
+				"hc:scaMatrix"   != sNodeChildName &&
+				"hc:rotMatrix"   != sNodeChildName)
+				continue;
+
+			m_arMatrixs.push_back(ReadMatrix(oReader));
+		}
+		END_WHILE
+	}
+	else
+		CCtrlCommon::ParseChildren(oReader, nVersion);
 }
 
 int CCtrlObjElement::GetCurWidth() const

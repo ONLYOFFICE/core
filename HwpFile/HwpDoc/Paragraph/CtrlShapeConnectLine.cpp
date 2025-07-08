@@ -62,6 +62,8 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLRead
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

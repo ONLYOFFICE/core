@@ -46,6 +46,8 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

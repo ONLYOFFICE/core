@@ -63,11 +63,11 @@ void TBorder::Read(CXMLReader& oReader)
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("type" == sAttributeName)
-			m_eStyle = GetLineStyle2(oReader.GetText2());
+			m_eStyle = GetLineStyle2(oReader.GetText());
 		else if ("color" == sAttributeName)
 			m_nColor = oReader.GetInt();
 		else if ("width" == sAttributeName)
-			m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetText2A());
+			m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
 	}
 	END_READ_ATTRIBUTES(oReader)
 }
@@ -157,11 +157,8 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 CFill::CFill(CXMLReader& oReader)
 	: m_nFillType(0), m_eHatchStyle(EColorFillPattern::NONE), m_eMode(EImageFillType::NONE), m_chAlpha(0xff)
 {
-	std::string sNodeName;
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hc:winBrush" == sNodeName)
 		{
 			ReadWinBrush(oReader);
@@ -178,6 +175,7 @@ CFill::CFill(CXMLReader& oReader)
 			m_nFillType |= 0x02;
 		}
 	}
+	END_WHILE
 }
 
 void CFill::ReadWinBrush(CXMLReader& oReader)
@@ -222,31 +220,26 @@ void CFill::ReadGradation(CXMLReader& oReader)
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:color")
 	{
-		if ("hc:color" != oReader.GetNameA())
-			continue;
-
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("value" != oReader.GetNameA())
+			if ("value" != oReader.GetName())
 				continue;
 
-			m_arColors.push_back(oReader.GetColor());
+			m_arColors.push_back(oReader.GetColor(true));
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 }
 
 void CFill::ReadImgBrush(CXMLReader& oReader)
 {
 	m_eMode = GetImageFillType(oReader.GetAttributeInt("mode"));
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:img")
 	{
-		if ("hc:img" != oReader.GetNameA())
-			continue;
-
 		START_READ_ATTRIBUTES(oReader)
 		{
 			if ("bright" == sAttributeName)
@@ -255,7 +248,7 @@ void CFill::ReadImgBrush(CXMLReader& oReader)
 				m_chContrast = (HWP_BYTE)oReader.GetInt();
 			else if ("effect" == sAttributeName)
 			{
-				const std::string sEffect{oReader.GetText2A()};
+				const std::string sEffect{oReader.GetTextA()};
 
 				if ("REAL_PIC" == sEffect)
 					m_chEffect = 0;
@@ -265,12 +258,13 @@ void CFill::ReadImgBrush(CXMLReader& oReader)
 					m_chEffect = 2;
 			}
 			else if ("binaryItemIDRef" == sAttributeName)
-				m_sBinItemID = oReader.GetText2();
+				m_sBinItemID = oReader.GetText();
 			else if ("alpha" == sAttributeName)
 				m_chAlpha = (HWP_BYTE)oReader.GetInt();
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 }
 
 int CFill::GetSize() const
@@ -395,18 +389,15 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oR
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	std::string sNodeName;
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hh:slash" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("type" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("NONE" == sType)
 						m_chSlash = 0x0;
@@ -432,7 +423,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oR
 			{
 				if ("type" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("NONE" == sType)
 						m_chBackSlash = 0x0;
@@ -465,6 +456,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oR
 		else if ("hc:fillBrush" == sNodeName)
 			m_pFill = new CFill(oReader);
 	}
+	END_WHILE
 }
 
 CHWPRecordBorderFill::~CHWPRecordBorderFill()

@@ -227,17 +227,14 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 		else if ("useKerning" == sAttributeName)
 			m_bUseKerning = oReader.GetBool();
 		else if ("symMark" == sAttributeName)
-			m_eSymMark = GetAccent(oReader.GetText2());
+			m_eSymMark = GetAccent(oReader.GetText());
 		else if ("borderFillIDRef" == sAttributeName)
 			m_shBorderFillIDRef = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	std::string sNodeName;
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hh:fontRef" == sNodeName)
 		{
 			if (nullptr == m_pParent)
@@ -284,9 +281,9 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("type" == sAttributeName)
-					m_eUnderline = GetUnderline(oReader.GetText2());
+					m_eUnderline = GetUnderline(oReader.GetText());
 				else if ("shape" == sAttributeName)
-					m_eUnderLineShape = GetLineStyle1(oReader.GetText2());
+					m_eUnderLineShape = GetLineStyle1(oReader.GetText());
 				else if ("color" == sAttributeName)
 					m_nUnderlineColor = oReader.GetColor();
 			}
@@ -297,7 +294,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("shape" == sAttributeName)
-					m_eStrikeOutShape = GetLineStyle2(oReader.GetText2());
+					m_eStrikeOutShape = GetLineStyle2(oReader.GetText());
 				else if ("color" == sAttributeName)
 					m_nStrikeOutColor = oReader.GetColor();
 			}
@@ -311,7 +308,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 			{
 				if ("type" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("DROP" == sType)
 						m_eShadow = EShadow::DISCRETE;
@@ -342,6 +339,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 		else if ("hh:subscript" == sNodeName)
 			m_bSubScript = true;
 	}
+	END_WHILE
 }
 
 bool CHWPRecordCharShape::Bold() const

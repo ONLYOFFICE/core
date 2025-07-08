@@ -49,15 +49,15 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("fontName" == sAttributeName)
-					m_sFontName = oReader.GetText2();
+					m_sFontName = oReader.GetText();
 				else if ("fontStyle" == sAttributeName)
-					m_sFontStyle = oReader.GetText2();
+					m_sFontStyle = oReader.GetText();
 				else if ("fontType" == sAttributeName)
-					m_sFontType = oReader.GetText2();
+					m_sFontType = oReader.GetText();
 				else if ("textShape" == sAttributeName)
-					m_sTextShape = oReader.GetText2();
+					m_sTextShape = oReader.GetText();
 				else if ("align" == sAttributeName)
-					m_sAlign = oReader.GetText2();
+					m_sAlign = oReader.GetText();
 				else if ("lineSpacing" == sAttributeName)
 					m_shLineSpacing = oReader.GetInt();
 				else if ("spacing" == sAttributeName)
@@ -88,6 +88,8 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			}
 			END_WHILE
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

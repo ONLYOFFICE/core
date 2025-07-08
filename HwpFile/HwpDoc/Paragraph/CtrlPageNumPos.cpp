@@ -60,11 +60,11 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("pos" == sAttributeName)
-			m_ePos = GetNumPos(oReader.GetText2());
+			m_ePos = GetNumPos(oReader.GetText());
 		else if ("formatType" == sAttributeName)
 			m_eNumShape = GetNumberShape2(oReader.GetInt());
 		else if ("sideChar" == sAttributeName)
-			m_sPostfix = oReader.GetText2();
+			m_sPostfix = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)
 

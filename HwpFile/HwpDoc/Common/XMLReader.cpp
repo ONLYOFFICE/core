@@ -3,23 +3,38 @@
 namespace HWP
 {
 CXMLReader::CXMLReader()
+	: m_pReader(new XmlUtils::CXmlLiteReader), m_bParseAttribute(false)
 {}
 
-CXMLReader::CXMLReader(CXmlLiteReader& oReader)
-	// : XmlUtils::CXmlLiteReader(oReader)
+CXMLReader::~CXMLReader()
 {
-	oReader.ReadNextNode();
-	FromString(oReader.GetInnerXml());
+	if (nullptr != m_pReader)
+		delete m_pReader;
+}
+
+XmlUtils::CXmlLiteReader* CXMLReader::GetReader()
+{
+	return m_pReader;
+}
+
+unsigned int CXMLReader::GetDepth()
+{
+	return (nullptr != m_pReader) ? m_pReader->GetDepth() : 0;
+}
+
+bool CXMLReader::IsEmptyNode()
+{
+	return (nullptr != m_pReader) ? m_pReader->IsEmptyNode() : true;
 }
 
 bool CXMLReader::GetBool()
 {
-	return "1" == GetText2A();
+	return "1" == GetTextAValue(*this);
 }
 
 int CXMLReader::GetColor(const int& nDefault)
 {
-	return ConvertHexToInt(GetText2A(), nDefault);
+	return ConvertHexToInt(GetTextAValue(*this), nDefault);
 }
 
 int CXMLReader::GetInt()
@@ -32,8 +47,24 @@ double CXMLReader::GetDouble()
 	return GetDoubleValue(*this);
 }
 
+std::string CXMLReader::GetTextA()
+{
+	if (nullptr == m_pReader)
+		return std::string();
+
+	return (m_bParseAttribute) ? m_pReader->GetTextA() : m_pReader->GetText2A();
+}
+
+std::wstring CXMLReader::GetText()
+{
+	if (nullptr == m_pReader)
+		return std::wstring();
+
+	return (m_bParseAttribute) ? m_pReader->GetText() : m_pReader->GetText2();
+}
+
 template<typename T>
-T CXMLReader::GetAttribute(const std::string& sName, T _default, T (*GetValue)(CXMLReader& oReader))
+T CXMLReader::GetAttribute(const std::string& sName, T _default, T (*GetValue)(CXMLReader&))
 {
 	if (!MoveToFirstAttribute())
 		return _default;
@@ -42,12 +73,12 @@ T CXMLReader::GetAttribute(const std::string& sName, T _default, T (*GetValue)(C
 
 	do
 	{
-		if (sName == GetNameA())
+		if (sName == m_pReader->GetNameA())
 		{
 			oValue = GetValue(*this);
 			break;
 		}
-	}while(MoveToNextAttribute());
+	}while(m_pReader->MoveToNextAttribute());
 
 	MoveToElement();
 
@@ -79,29 +110,74 @@ std::wstring CXMLReader::GetAttribute(const std::string& sName)
 	return GetAttribute<std::wstring>(sName, L"", &GetTextValue);
 }
 
+bool CXMLReader::MoveToFirstAttribute()
+{
+	if (nullptr == m_pReader || !m_pReader->MoveToFirstAttribute())
+		return false;
+
+	m_bParseAttribute = true;
+
+	return true;
+}
+
+bool CXMLReader::MoveToNextAttribute()
+{
+	return (nullptr != m_pReader) ? m_pReader->MoveToNextAttribute() : false;
+}
+
+bool CXMLReader::MoveToElement()
+{
+	if (nullptr == m_pReader || !m_pReader->MoveToElement())
+		return false;
+
+	m_bParseAttribute = false;
+
+	return true;
+}
+
+std::wstring CXMLReader::GetInnerXml()
+{
+	return m_pReader->GetInnerXml();
+}
+
+std::string CXMLReader::GetName()
+{
+	return (nullptr != m_pReader) ? m_pReader->GetNameA() : std::string();
+}
+
+bool CXMLReader::ReadNextSiblingNode(unsigned int unDepth)
+{
+	return (nullptr != m_pReader) ? m_pReader->ReadNextSiblingNode(unDepth) : false;
+}
+
+bool CXMLReader::ReadNextNode()
+{
+	return (nullptr != m_pReader) ? m_pReader->ReadNextNode() : false;
+}
+
 int CXMLReader::GetIntValue(CXMLReader& oXmlReader)
 {
-	return std::atoi(oXmlReader.GetText2A().c_str());
+	return std::atoi(oXmlReader.GetTextA().c_str());
 }
 
 bool CXMLReader::GetBoolValue(CXMLReader& oXmlReader)
 {
-	return "1" == oXmlReader.GetText2A();
+	return "1" == oXmlReader.GetTextA();
 }
 
 double CXMLReader::GetDoubleValue(CXMLReader& oXmlReader)
 {
-	return std::atof(oXmlReader.GetText2A().c_str());
+	return std::atof(oXmlReader.GetTextA().c_str());
 }
 
 std::string CXMLReader::GetTextAValue(CXMLReader& oXmlReader)
 {
-	return oXmlReader.GetText2A();
+	return oXmlReader.GetTextA();
 }
 
 std::wstring CXMLReader::GetTextValue(CXMLReader& oXmlReader)
 {
-	return oXmlReader.GetText2();
+	return oXmlReader.GetText();
 }
 
 int ConvertWidthToHWP(const std::string& sValue)

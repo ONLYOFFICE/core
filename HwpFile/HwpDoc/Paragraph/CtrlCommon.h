@@ -121,6 +121,8 @@ public:
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
 
+	void ParseChildren(CXMLReader& oReader, int nVersion);
+
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddCaption(CCapParagraph* pCapPara);
 

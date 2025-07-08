@@ -65,6 +65,8 @@ public:
 	ECtrlObjectType GetCtrlType() const override;
 	virtual EShapeType GetShapeType() const;
 
+	void ParseChildren(CXMLReader& oReader, int nVersion);
+
 	void SetParent(CHWPPargraph* pParent);
 	CHWPPargraph* GetParent();
 

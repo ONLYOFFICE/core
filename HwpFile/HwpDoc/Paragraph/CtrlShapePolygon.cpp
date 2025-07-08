@@ -22,20 +22,25 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oRea
 {
 	TPoint oPoint{0, 0};
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:pt")
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		START_READ_ATTRIBUTES(oReader)
+		if ("hc:pt" == oReader.GetName())
 		{
-			if ("x" == sAttributeName)
-				oPoint.m_nX = oReader.GetInt();
-			else if ("y" == sAttributeName)
-				oPoint.m_nY = oReader.GetInt();
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					oPoint.m_nX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					oPoint.m_nY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+
+			m_arPoints.push_back(oPoint);
+
+			oPoint = {0, 0};
 		}
-		END_READ_ATTRIBUTES(oReader)
-
-		m_arPoints.push_back(oPoint);
-
-		oPoint = {0, 0};
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 

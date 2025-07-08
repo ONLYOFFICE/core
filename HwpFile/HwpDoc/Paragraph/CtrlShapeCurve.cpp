@@ -24,36 +24,41 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 	TPoint oPoint1{0, 0}, oPoint2{0, 0};
 	HWP_BYTE chSegmentType = 0;
 
-	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:seg")
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		chSegmentType = 0;
-		oPoint1 = {0, 0};
-		oPoint2 = {0, 0};
-
-		START_READ_ATTRIBUTES(oReader)
+		if ("hp:seg" == oReader.GetName())
 		{
-			if ("type" == sAttributeName)
+			chSegmentType = 0;
+			oPoint1 = {0, 0};
+			oPoint2 = {0, 0};
+
+			START_READ_ATTRIBUTES(oReader)
 			{
-				const std::string sType{oReader.GetText2A()};
+				if ("type" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
 
-				if ("CURVE" == sType)
-					chSegmentType = 1;
-				else if ("LINE" == sType)
-					chSegmentType = 0;
+					if ("CURVE" == sType)
+						chSegmentType = 1;
+					else if ("LINE" == sType)
+						chSegmentType = 0;
+				}
+				else if ("x1" == sAttributeName)
+					oPoint1.m_nX = oReader.GetInt();
+				else if ("y1" == sAttributeName)
+					oPoint1.m_nY = oReader.GetInt();
+				else if ("x2" == sAttributeName)
+					oPoint2.m_nX = oReader.GetInt();
+				else if ("y2" == sAttributeName)
+					oPoint2.m_nY = oReader.GetInt();
 			}
-			else if ("x1" == sAttributeName)
-				oPoint1.m_nX = oReader.GetInt();
-			else if ("y1" == sAttributeName)
-				oPoint1.m_nY = oReader.GetInt();
-			else if ("x2" == sAttributeName)
-				oPoint2.m_nX = oReader.GetInt();
-			else if ("y2" == sAttributeName)
-				oPoint2.m_nY = oReader.GetInt();
-		}
-		END_READ_ATTRIBUTES(oReader)
+			END_READ_ATTRIBUTES(oReader)
 
-		m_arSegmentType.push_back(chSegmentType);
-		m_arPoints.push_back(oPoint1);
+			m_arSegmentType.push_back(chSegmentType);
+			m_arPoints.push_back(oPoint1);
+		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 

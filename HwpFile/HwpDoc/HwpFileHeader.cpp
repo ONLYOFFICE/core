@@ -62,21 +62,18 @@ bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
 
 bool CHwpFileHeader::Parse(CXMLReader& oReader)
 {
-	if (!oReader.IsValid())
-		return false;
-
 	HWP_STRING wsMajor, wsMinor, wsMicro, wsBuildNumber;
 
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("major" == sAttributeName)
-			wsMajor = oReader.GetText2();
+			wsMajor = oReader.GetText();
 		else if ("minor" == sAttributeName)
-			wsMinor = oReader.GetText2();
+			wsMinor = oReader.GetText();
 		else if ("micro" == sAttributeName)
-			wsMicro = oReader.GetText2();
+			wsMicro = oReader.GetText();
 		else if ("buildNumber" == sAttributeName)
-			wsBuildNumber = oReader.GetText2();
+			wsBuildNumber = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)
 

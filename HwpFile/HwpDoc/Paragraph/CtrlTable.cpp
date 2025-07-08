@@ -74,6 +74,8 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 				m_arCells.push_back(new CTblCell(oReader, nVersion));
 			END_WHILE
 		}
+		else
+			CCtrlCommon::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

@@ -52,31 +52,28 @@ CHWPPargraph::CHWPPargraph(CXMLReader& oReader, int nVersion)
 	END_READ_ATTRIBUTES(oReader)
 
 	int nCharShapeID = 0;
-	std::string sNodeName;
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hp:run" == sNodeName)
 		{
 			nCharShapeID = oReader.GetAttributeInt("charPrIDRef");
 
-			WHILE_READ_NEXT_NODE(oReader)
+			WHILE_READ_NEXT_NODE_WITH_DEPTH(oReader, Child)
 				ParseHWPParagraph(oReader, nCharShapeID, nVersion);
+			END_WHILE
 		}
 		else if ("hp:linesegarray" == sNodeName)
 		{
-			WHILE_READ_NEXT_NODE(oReader)
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:lineseg")
 			{
-				if ("hp:lineseg" != oReader.GetNameA())
-					continue;
-
 				m_pLineSegs = new CLineSeg(oReader, nVersion);
 				break;
 			}
+			END_WHILE
 		}
 	}
+	END_WHILE
 
 	if (m_arP.empty() || ECtrlObjectType::Character != m_arP.back()->GetCtrlType())
 		m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::PARAGRAPH_BREAK, nCharShapeID));
@@ -92,7 +89,7 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 {
 	const size_t unCurrentParaCount = m_arP.size();
 
-	const std::string sNodeName{oReader.GetNameA()};
+	const std::string sNodeName{oReader.GetName()};
 
 	if ("hp:secPr" == sNodeName)
 		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader, nVersion));
@@ -100,27 +97,25 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 	{
 		WHILE_READ_NEXT_NODE(oReader)
 			AddCtrl(CCtrl::GetCtrl(oReader, nVersion));
+		END_WHILE
 	}
 	else if ("hp:t" == sNodeName)
 	{
 		m_arP.push_back(new CParaText(L"____", oReader.GetText(), 0, nCharShapeID));
 
-		std::string sChildNodeName;
-
-		WHILE_READ_NEXT_NODE(oReader)
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
 		{
-			sChildNodeName = oReader.GetNameA();
-
-			if ("hp:lineBreak" == sChildNodeName)
+			if ("hp:lineBreak" == sNodeChildName)
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
-			else if ("hp:hyphen" == sChildNodeName)
+			else if ("hp:hyphen" == sNodeChildName)
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
-			else if ("hp:nbSpace" == sChildNodeName ||
-			         "hp:fwSpace" == sChildNodeName)
+			else if ("hp:nbSpace" == sNodeChildName ||
+			         "hp:fwSpace" == sNodeChildName)
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
-			else if ("hp:tab" == sChildNodeName)
+			else if ("hp:tab" == sNodeChildName)
 				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));
 		}
+		END_WHILE
 	}
 	else if ("hp:tbl" == sNodeName)
 		m_arP.push_back(new CCtrlTable(L" lbt", oReader, nVersion));
@@ -158,14 +153,16 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 	{
 		WHILE_READ_NEXT_NODE(oReader)
 		{
-			if ("hp:case" != oReader.GetNameA() &&
-			    "hp:default" != oReader.GetNameA())
+			if ("hp:case" != oReader.GetName() &&
+			    "hp:default" != oReader.GetName())
 				continue;
 
 			WHILE_READ_NEXT_NODE(oReader)
 				if (ParseHWPParagraph(oReader, nCharShapeID, nVersion))
 					return true;
+			END_WHILE
 		}
+		END_WHILE
 	}
 
 	return false;

@@ -59,20 +59,17 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 	}
 
 	unsigned int unColSzIndex = 0;
-	std::string sNodeName;
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hp:colLine" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("type" == sAttributeName)
-					m_eColLineStyle = GetLineStyle2(oReader.GetText2());
+					m_eColLineStyle = GetLineStyle2(oReader.GetText());
 				else if ("width" == sAttributeName)
-					m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetText2A());
+					m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
 				else if ("color" == sAttributeName)
 					m_nColLineColor = oReader.GetColor();
 			}
@@ -90,6 +87,7 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 			END_READ_ATTRIBUTES(oReader)
 		}
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

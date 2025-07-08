@@ -28,11 +28,8 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	std::string sNodeName;
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hp:container" == sNodeName)
 			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion));
 		else if ("hp:line" == sNodeName)
@@ -54,6 +51,7 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 		else if ("hp:ole" == sNodeName)
 			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion));
 	}
+	END_WHILE
 
 	m_shNElement = m_arShapes.size();
 }

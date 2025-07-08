@@ -203,7 +203,7 @@ bool CHWPDocInfo::ReadRefList(CXMLReader& oReader, int nVersion)
 		if ("hh:fontfaces" == sNodeName)
 		{
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, FontFace, "hh:fontface")
-			        WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Font, "hh:font")
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Font, "hh:font")
 			        m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oReader, nVersion));
 				END_WHILE
 			END_WHILE
@@ -236,6 +236,7 @@ bool CHWPDocInfo::ReadRefList(CXMLReader& oReader, int nVersion)
 		{
 			WHILE_READ_NEXT_NODE_WITH_DEPTH(oReader, Bullet)
 				m_arBullets.push_back(new CHWPRecordBullet(*this, oReader, nVersion));
+			END_WHILE
 		}
 		else if ("hh:paraProperties" == sNodeName)
 		{

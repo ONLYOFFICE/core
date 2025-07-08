@@ -27,7 +27,7 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int
 	{
 		if ("type" == sAttributeName)
 		{
-			const std::string sType{oReader.GetText2A()};
+			const std::string sType{oReader.GetTextA()};
 
 			if ("PARA" == sType)
 				m_chType = 0;
@@ -35,9 +35,9 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int
 				m_chType = 1;
 		}
 		else if ("name" == sAttributeName)
-			m_sName = oReader.GetText2();
+			m_sName = oReader.GetText();
 		else if ("engName" == sAttributeName)
-			m_sEngName = oReader.GetText2();
+			m_sEngName = oReader.GetText();
 		else if ("paraPrIDRef" == sAttributeName)
 			m_nParaShape = oReader.GetInt();
 		else if ("charPrIDRef" == sAttributeName)

@@ -1,6 +1,8 @@
 #include "CtrlCommon.h"
 #include "../Common/Common.h"
 #include <climits>
+#include <iostream>
+#include <ostream>
 
 #include "CapParagraph.h"
 
@@ -251,7 +253,7 @@ namespace HWP
 				m_nObjInstanceID = std::abs(oReader.GetInt());
 			else if ("textFlow" == sAttributeName)
 			{
-				sType = oReader.GetText2A();
+				sType = oReader.GetTextA();
 
 				if ("BOTH_SIDES" == sType)
 					m_chTextFlow = 0;
@@ -264,7 +266,7 @@ namespace HWP
 			}
 			else if ("textWrap" == sAttributeName)
 			{
-				sType = oReader.GetText2A();
+				sType = oReader.GetTextA();
 
 				if ("SQUARE" == sType)
 					m_eTextWrap = ETextWrap::SQUARE;
@@ -279,7 +281,7 @@ namespace HWP
 				m_nZOrder = oReader.GetInt();
 			else if ("numberingType" == sAttributeName)
 			{
-				sType = oReader.GetText2A();
+				sType = oReader.GetTextA();
 
 				if ("NONE" == sType)
 					m_chNumeringType = 0;
@@ -292,133 +294,6 @@ namespace HWP
 			}
 		}
 		END_READ_ATTRIBUTES(oReader)
-
-		std::string sNodeName;
-
-		WHILE_READ_NEXT_NODE(oReader)
-		{
-			sNodeName = oReader.GetNameA();
-
-			if ("hp:sz" == sNodeName)
-			{
-				START_READ_ATTRIBUTES(oReader)
-				{
-					if ("width" == sAttributeName)
-						m_nWidth = oReader.GetInt();
-					else if ("widthRelTo" == sAttributeName)
-						m_eWidthRelTo = ::HWP::GetWidthRelTo(oReader.GetText2());
-					else if ("height" == sAttributeName)
-						m_nHeight = oReader.GetInt();
-					else if ("heightRelTo" == sAttributeName)
-						m_eHeightRelTo = ::HWP::GetHeightRelTo(oReader.GetText2());
-				}
-				END_READ_ATTRIBUTES(oReader)
-			}
-			else if ("hp:pos" == sNodeName)
-			{
-				START_READ_ATTRIBUTES(oReader)
-				{
-					if ("treatAsChar" == sAttributeName)
-						m_bTreatAsChar = oReader.GetBool();
-					else if ("affectLSpacing" == sAttributeName)
-						m_bAffectLSpacing = oReader.GetBool();
-					else if ("allowOverlap" == sAttributeName)
-						m_bAllowOverlap = oReader.GetBool();
-					else if ("vertRelTo" == sAttributeName)
-						m_eVertRelTo = GetVRelTo(oReader.GetText2());
-					else if ("horzRelTo" == sAttributeName)
-						m_eHorzRelTo = GetHRelTo(oReader.GetText2());
-					else if ("flowWithText" == sAttributeName)
-						m_bFlowWithText = oReader.GetBool();
-					else if ("vertAlign" == sAttributeName)
-						m_eVertAlign = GetVertAlign(oReader.GetText2());
-					else if ("horzAlign" == sAttributeName)
-						m_eHorzAlign = GetHorzAlign(oReader.GetText2());
-					else if ("vertOffset" == sAttributeName)
-						m_nVertOffset = oReader.GetInt();
-					else if ("horzOffset" == sAttributeName)
-						m_nHorzOffset = oReader.GetInt();
-				}
-				END_READ_ATTRIBUTES(oReader)
-			}
-			else if ("hp:outMargin" == sNodeName)
-			{
-				START_READ_ATTRIBUTES(oReader)
-				{
-					if ("left" == sAttributeName)
-						m_arOutMargin[0] = oReader.GetInt();
-					else if ("right" == sAttributeName)
-						m_arOutMargin[1] = oReader.GetInt();
-					else if ("top" == sAttributeName)
-						m_arOutMargin[2] = oReader.GetInt();
-					else if ("bottom" == sAttributeName)
-						m_arOutMargin[3] = oReader.GetInt();
-				}
-				END_READ_ATTRIBUTES(oReader)
-			}
-			else if ("hp:inMargin" == sNodeName)
-			{
-				START_READ_ATTRIBUTES(oReader)
-				{
-					if ("left" == sAttributeName)
-						m_arInMargin[0] = oReader.GetInt();
-					else if ("right" == sAttributeName)
-						m_arInMargin[1] = oReader.GetInt();
-					else if ("top" == sAttributeName)
-						m_arInMargin[2] = oReader.GetInt();
-					else if ("bottom" == sAttributeName)
-						m_arInMargin[3] = oReader.GetInt();
-				}
-				END_READ_ATTRIBUTES(oReader)
-			}
-			else if ("hp:caption" == sNodeName)
-			{
-				START_READ_ATTRIBUTES(oReader)
-				{
-					if ("side" == sAttributeName)
-					{
-						sType = oReader.GetText2A();
-
-						if ("LEFT" == sType)
-							m_nCaptionAttr = 0b00;
-						else if ("RIGHT" == sType)
-							m_nCaptionAttr = 0b01;
-						else if ("TOP" == sType)
-							m_nCaptionAttr = 0b10;
-						else if ("BOTTOM" == sType)
-							m_nCaptionAttr = 0b11;
-					}
-					else if ("fullSz" == sAttributeName)
-					{
-						if (oReader.GetBool())
-							m_nCaptionAttr |= 0b100;
-					}
-					else if ("width" == sAttributeName)
-						m_nCaptionWidth = oReader.GetInt();
-					else if ("gap" == sAttributeName)
-						m_nCaptionSpacing = oReader.GetInt();
-					else if ("lastWidth" == sAttributeName)
-						m_nCaptionMaxW = oReader.GetInt();
-				}
-				END_READ_ATTRIBUTES(oReader)
-
-				const int nChildDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode2(nChildDepth))
-				{
-					if ("hp:subList" != oReader.GetNameA())
-						continue;
-
-					const int nSubChildDepth = oReader.GetDepth();
-					while (oReader.ReadNextSiblingNode2(nSubChildDepth))
-					{
-						if ("hp:p" != oReader.GetNameA())
-							continue;
-
-						m_arCaption.push_back(new CCapParagraph(oReader, nVersion));
-					}
-				}
-			}
-		}
 	}
 
 	CCtrlCommon::~CCtrlCommon()
@@ -444,6 +319,121 @@ namespace HWP
 	void CCtrlCommon::SetTextVerAlign(EVertAlign eVertAlign)
 	{
 		m_eTextVerAlign = eVertAlign;
+	}
+
+	void CCtrlCommon::ParseChildren(CXMLReader& oReader, int nVersion)
+	{
+		const std::string sNodeName{oReader.GetName()};
+
+		if ("hp:sz" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("width" == sAttributeName)
+					m_nWidth = oReader.GetInt();
+				else if ("widthRelTo" == sAttributeName)
+					m_eWidthRelTo = ::HWP::GetWidthRelTo(oReader.GetText());
+				else if ("height" == sAttributeName)
+					m_nHeight = oReader.GetInt();
+				else if ("heightRelTo" == sAttributeName)
+					m_eHeightRelTo = ::HWP::GetHeightRelTo(oReader.GetText());
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:pos" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("treatAsChar" == sAttributeName)
+					m_bTreatAsChar = oReader.GetBool();
+				else if ("affectLSpacing" == sAttributeName)
+					m_bAffectLSpacing = oReader.GetBool();
+				else if ("allowOverlap" == sAttributeName)
+					m_bAllowOverlap = oReader.GetBool();
+				else if ("vertRelTo" == sAttributeName)
+					m_eVertRelTo = GetVRelTo(oReader.GetText());
+				else if ("horzRelTo" == sAttributeName)
+					m_eHorzRelTo = GetHRelTo(oReader.GetText());
+				else if ("flowWithText" == sAttributeName)
+					m_bFlowWithText = oReader.GetBool();
+				else if ("vertAlign" == sAttributeName)
+					m_eVertAlign = GetVertAlign(oReader.GetText());
+				else if ("horzAlign" == sAttributeName)
+					m_eHorzAlign = GetHorzAlign(oReader.GetText());
+				else if ("vertOffset" == sAttributeName)
+					m_nVertOffset = oReader.GetInt();
+				else if ("horzOffset" == sAttributeName)
+					m_nHorzOffset = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:outMargin" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("left" == sAttributeName)
+					m_arOutMargin[0] = oReader.GetInt();
+				else if ("right" == sAttributeName)
+					m_arOutMargin[1] = oReader.GetInt();
+				else if ("top" == sAttributeName)
+					m_arOutMargin[2] = oReader.GetInt();
+				else if ("bottom" == sAttributeName)
+					m_arOutMargin[3] = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:inMargin" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("left" == sAttributeName)
+					m_arInMargin[0] = oReader.GetInt();
+				else if ("right" == sAttributeName)
+					m_arInMargin[1] = oReader.GetInt();
+				else if ("top" == sAttributeName)
+					m_arInMargin[2] = oReader.GetInt();
+				else if ("bottom" == sAttributeName)
+					m_arInMargin[3] = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:caption" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("side" == sAttributeName)
+				{
+					const std::string sType{oReader.GetTextA()};
+
+					if ("LEFT" == sType)
+						m_nCaptionAttr = 0b00;
+					else if ("RIGHT" == sType)
+						m_nCaptionAttr = 0b01;
+					else if ("TOP" == sType)
+						m_nCaptionAttr = 0b10;
+					else if ("BOTTOM" == sType)
+						m_nCaptionAttr = 0b11;
+				}
+				else if ("fullSz" == sAttributeName)
+				{
+					if (oReader.GetBool())
+						m_nCaptionAttr |= 0b100;
+				}
+				else if ("width" == sAttributeName)
+					m_nCaptionWidth = oReader.GetInt();
+				else if ("gap" == sAttributeName)
+					m_nCaptionSpacing = oReader.GetInt();
+				else if ("lastWidth" == sAttributeName)
+					m_nCaptionMaxW = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, SubList, "hp:subList")
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Paragraph, "hp:p")
+					m_arCaption.push_back(new CCapParagraph(oReader, nVersion));
+				END_WHILE
+			END_WHILE
+		}
 	}
 
 	void CCtrlCommon::AddParagraph(CHWPPargraph* pParagraph)

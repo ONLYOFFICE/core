@@ -61,12 +61,10 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 
 	unsigned int unIndex = 0;
 	short shLevel = 0;
-	std::string sNodeName, sNumFormat;
+	std::string sNumFormat;
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hh:paraHead" == sNodeName ||
 		    "paraHead"    == sNodeName)
 		{
@@ -74,7 +72,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 			{
 				if ("align" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("LEFT" == sType)
 						m_arNumbering[unIndex].m_chAlign = 0;
@@ -91,7 +89,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 					m_arNumbering[unIndex].m_shWidthAdjust = oReader.GetInt();
 				else if ("textOffsetType" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("PERCENT" == sType)
 						m_arNumbering[unIndex].m_chTextOffsetType = 0;
@@ -105,7 +103,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 				else if ("start" == sAttributeName)
 					m_arNumbering[unIndex].m_nStartNumber = oReader.GetInt();
 				else if ("numFormat" == sAttributeName)
-					sNumFormat = oReader.GetText2A();
+					sNumFormat = oReader.GetTextA();
 				else if ("level" == sAttributeName)
 					shLevel = oReader.GetInt();
 			}
@@ -204,6 +202,7 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 		if (7 == unIndex)
 			return;
 	}
+	END_WHILE
 }
 
 short CHWPRecordNumbering::GetStart() const

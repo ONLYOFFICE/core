@@ -22,12 +22,8 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 {
 	m_eType = GetArcType(oReader.GetAttributeInt("type"));
 
-	std::string sNodeName;
-
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hp:center" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
@@ -61,7 +57,10 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeArc::GetShapeType() const

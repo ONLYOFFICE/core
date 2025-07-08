@@ -12,14 +12,14 @@ CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
 		if ("borderFillIDRef" == sAttributeName)
 			m_shBorderFill = oReader.GetInt();
 		else if ("textBorder" == sAttributeName)
-			m_bTextBorder = "PAPER" == oReader.GetText2A();
+			m_bTextBorder = "PAPER" == oReader.GetTextA();
 		else if ("headerInside" == sAttributeName)
 			m_bHeaderInside = oReader.GetBool();
 		else if ("footerInside" == sAttributeName)
 			m_bFooterInside = oReader.GetBool();
 		else if ("fillArea" == sAttributeName)
 		{
-			const std::string sType{oReader.GetText2A()};
+			const std::string sType{oReader.GetTextA()};
 
 			if ("PAPER" == sType)
 				m_chFillArea = 0;
@@ -31,11 +31,8 @@ CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "offset")
 	{
-		if ("offset" != oReader.GetNameA())
-			continue;
-
 		START_READ_ATTRIBUTES(oReader)
 		{
 			if ("left" == sAttributeName)
@@ -49,6 +46,7 @@ CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 }
 
 CPageBorderFill* CPageBorderFill::Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

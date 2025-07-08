@@ -57,7 +57,7 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 				m_bSuperscript = oReader.GetBool();
 			else if ("type" == sAttributeName)
 			{
-				const std::string sType{oReader.GetText2A()};
+				const std::string sType{oReader.GetTextA()};
 
 				if ("DIGIT" == sType)
 					m_eNumShape = ENumberShape2::DIGIT;
@@ -102,6 +102,7 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

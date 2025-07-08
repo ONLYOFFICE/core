@@ -44,6 +44,8 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 			READ_POINT(2)
 		else if ("hc:pt3" == sNodeName)
 			READ_POINT(3)
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

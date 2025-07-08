@@ -256,7 +256,7 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, HWP::CXMLReader& oReader, int nVersion)
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
@@ -305,6 +305,9 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, HWP::CXMLReader& oReader
 		}
 		else if ("hp:effects" == sNodeName)
 		{
+			if (oReader.GetReader()->IsEmptyNode())
+				continue;
+
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
 			{
 				if ("hp:shadow" == sNodeChildName)
@@ -328,7 +331,7 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, HWP::CXMLReader& oReader
 					m_chContrast = (HWP_BYTE)oReader.GetInt();
 				else if ("effect" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("REAL_PIC" == sType)
 						m_chEffect = 0;
@@ -338,7 +341,7 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, HWP::CXMLReader& oReader
 						m_chEffect = 2;
 				}
 				else if ("binaryItemIDRef" == sAttributeName)
-					m_sBinDataID = oReader.GetText2();
+					m_sBinDataID = oReader.GetText();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
@@ -353,6 +356,8 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, HWP::CXMLReader& oReader
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

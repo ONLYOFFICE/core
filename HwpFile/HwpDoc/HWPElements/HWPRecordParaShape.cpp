@@ -150,26 +150,21 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE(oReader)
-		RecursiveParaShape(oReader);
+	RecursiveParaShape(oReader);
 }
 
 void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 {
-	std::string sNodeName;
-
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hh:align" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("horizontal" == sAttributeName)
-					m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetText2());
+					m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetText());
 				else if ("vertical" == sAttributeName)
-					m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetText2());
+					m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetText());
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
@@ -178,7 +173,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("type" == sAttributeName)
-					m_eHeadingType = ::HWP::GetHeadingType(oReader.GetText2());
+					m_eHeadingType = ::HWP::GetHeadingType(oReader.GetText());
 				else if ("idRef" == sAttributeName)
 					m_shHeadingIdRef = oReader.GetInt();
 				else if ("level" == sAttributeName)
@@ -192,7 +187,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			{
 				if ("breakLatinWord" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("KEEP_WORD" == sType)
 						m_chBreakLatinWord = 0;
@@ -201,7 +196,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 				}
 				else if ("breakNonLatinWord" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("KEEP_WORD" == sType)
 						m_chBreakNonLatinWord = 0;
@@ -216,7 +211,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 					m_bPageBreakBefore = oReader.GetBool();
 				else if ("lineWrap" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("BREAK" == sType)
 						m_chLineWrap = 0;
@@ -232,7 +227,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			{
 				if ("type" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("PERCENT" == sType)
 						m_nLineSpacingType = 0;
@@ -290,13 +285,12 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			m_nMarginPrev = oReader.GetAttributeInt("value");
 		else if ("hc:next" == sNodeName)
 			m_nMarginNext = oReader.GetAttributeInt("value");
-		else if ("hh:margin" == sNodeName ||
-		         "hp:switch" == sNodeName)
-		{
-			WHILE_READ_NEXT_NODE(oReader)
-				RecursiveParaShape(oReader);
-		}
+		else if ("hh:margin"  == sNodeName ||
+		         "hp:switch"  == sNodeName ||
+		         "hp:default" == sNodeName)
+			RecursiveParaShape(oReader);
 	}
+	END_WHILE
 }
 
 EHorizontalAlign CHWPRecordParaShape::GetHorizantalAlign() const

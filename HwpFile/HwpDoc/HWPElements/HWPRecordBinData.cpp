@@ -83,16 +83,16 @@ CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion)
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("id" == sAttributeName)
-			m_sItemID = oReader.GetText2();
+			m_sItemID = oReader.GetText();
 		else if ("isEmbeded" == sAttributeName)
-			sType = oReader.GetText2A();
+			sType = oReader.GetTextA();
 		else if ("href" == sAttributeName)
-			m_sAPath = oReader.GetText2();
+			m_sAPath = oReader.GetText();
 		else if ("sub-path" == sAttributeName)
-			sSubPath = oReader.GetText2();
+			sSubPath = oReader.GetText();
 		else if ("media-type" == sAttributeName)
 		{
-			m_sFormat = oReader.GetText2();
+			m_sFormat = oReader.GetText();
 
 			std::wregex oRegex(L"image/(.*)");
 			m_sFormat = std::regex_replace(m_sFormat, oRegex, L"$1");

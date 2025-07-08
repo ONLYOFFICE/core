@@ -52,14 +52,14 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, i
 	{
 		if ("char" == sAttributeName)
 		{
-			const HWP_STRING wsValue{oReader.GetText2()};
+			const HWP_STRING wsValue{oReader.GetText()};
 
 			if (!wsValue.empty())
 				m_chBulletChar = wsValue.at(0);
 		}
 		else if ("checkedChar" == sAttributeName)
 		{
-			const HWP_STRING wsValue{oReader.GetText2()};
+			const HWP_STRING wsValue{oReader.GetText()};
 
 			if (!wsValue.empty())
 				m_chCheckBulletChar = wsValue.at(0);
@@ -69,19 +69,8 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, i
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE(oReader)
-	{
-		if ("hc:img" != oReader.GetNameA())
-			continue;
-
-		START_READ_ATTRIBUTES(oReader)
-		{
-			if ("binaryItemIDRef" != sAttributeName)
-				continue;
-
-			m_sBinItemRefID = oReader.GetText2();
-		}
-		END_READ_ATTRIBUTES(oReader)
-	}
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hc:img")
+		m_sBinItemRefID = oReader.GetAttribute("binaryItemIDRef");
+	END_WHILE
 }
 }

@@ -18,12 +18,12 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 {}
 
 CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-	: CCtrlGeneralShape(sCtrlID)
+	: CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("version" == sAttributeName)
-			m_sVersion = oReader.GetText2();
+			m_sVersion = oReader.GetText();
 		else if ("baseLine" == sAttributeName)
 			m_nBaseline = oReader.GetInt();
 		else if ("textColor" == sAttributeName)
@@ -32,7 +32,7 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 			m_nCharSize = oReader.GetInt();
 		else if ("lineMode" == sAttributeName)
 		{
-			const std::string sType{oReader.GetText2A()};
+			const std::string sType{oReader.GetTextA()};
 
 			if ("LINE" == sType)
 				m_nAttr = 1;
@@ -40,17 +40,18 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 				m_nAttr = 0;
 		}
 		else if ("font" == sAttributeName)
-			m_sFont = oReader.GetText2();
+			m_sFont = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	        WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if ("hp:script" != oReader.GetNameA())
-			continue;
-
-		m_sEqn = oReader.GetText2();
+		if ("hp:script" == oReader.GetName())
+			m_sEqn = oReader.GetText();
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

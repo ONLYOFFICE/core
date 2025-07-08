@@ -10,14 +10,14 @@ CPage::CPage(CXMLReader& oReader)
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("landscape" == sAttributeName)
-			m_bLandscape = "NARROWLY" == oReader.GetText2A();
+			m_bLandscape = "NARROWLY" == oReader.GetTextA();
 		else if ("width" == sAttributeName)
 			m_nWidth = oReader.GetInt();
 		else if ("height" == sAttributeName)
 			m_nHeight = oReader.GetInt();
 		else if ("gutterType" == sAttributeName)
 		{
-			const std::string sType{oReader.GetText2A()};
+			const std::string sType{oReader.GetTextA()};
 
 			if ("LEFT_ONELY" == sType)
 				m_chGutterType = 0;
@@ -29,11 +29,8 @@ CPage::CPage(CXMLReader& oReader)
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:margin")
 	{
-		if ("hp:margin" != oReader.GetNameA())
-			continue;
-
 		START_READ_ATTRIBUTES(oReader)
 		{
 			if ("left" == sAttributeName)
@@ -54,6 +51,7 @@ CPage::CPage(CXMLReader& oReader)
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}
+	END_WHILE
 }
 
 int CPage::GetWidth() const

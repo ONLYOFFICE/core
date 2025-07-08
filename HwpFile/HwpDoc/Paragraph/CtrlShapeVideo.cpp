@@ -21,7 +21,7 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 	{
 		if ("type" == sAttributeName)
 		{
-			const std::string sType{oReader.GetText2A()};
+			const std::string sType{oReader.GetTextA()};
 
 			if ("Local" == sType)
 				m_nVideoType = 0;
@@ -33,9 +33,13 @@ CCtrlShapeVideo::CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 		else if ("imageIDRef" == sAttributeName)
 			m_sThumnailBinID = oReader.GetInt();
 		else if ("tag" == sAttributeName)
-			m_sWebURL = oReader.GetText2();
+			m_sWebURL = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+	END_WHILE
 }
 
 EShapeType CCtrlShapeVideo::GetShapeType() const

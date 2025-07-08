@@ -44,7 +44,7 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oRea
 		else if ("hasArcPr" == sAttributeName)
 			m_bHasArcProperty = oReader.GetBool();
 		else if ("arcType" == sAttributeName)
-			m_eArcType = GetArcType(oReader.GetText2());
+			m_eArcType = GetArcType(oReader.GetText());
 	}
 	END_READ_ATTRIBUTES(oReader)
 
@@ -127,6 +127,8 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
 	END_WHILE
 }

@@ -28,7 +28,7 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 		if ("num" == sAttributeName)
 			m_shNum = oReader.GetInt();
 		else if ("numType" == sAttributeName)
-			m_eNumType = ::HWP::GetNumType(oReader.GetText2());
+			m_eNumType = ::HWP::GetNumType(oReader.GetText());
 		//TODO:: проверить данный момент
 		else if ("autoNumFormat" == sAttributeName)
 			m_eNumShape = GetNumberShape2(oReader.GetInt());

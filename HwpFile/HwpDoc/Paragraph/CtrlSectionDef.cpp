@@ -45,53 +45,35 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 {
 	std::string sType;
 
-	if (oReader.MoveToFirstAttribute())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		std::string sAttributeName;
-		do
+		if ("textDirection" == sAttributeName)
 		{
-			sAttributeName = oReader.GetNameA();
+			sType = oReader.GetTextA();
 
-			if ("textDirection" == sAttributeName)
-			{
-				sType = oReader.GetText2A();
-
-				if ("HORIZONTAL" == sType)
-					m_chTextDirection = 0;
-				else if ("VERTICAL" == sType)
-					m_chTextDirection = 1;
-			}
-			else if ("spaceColumns" == sAttributeName)
-				m_shSpaceColumns = oReader.GetInt();
-			else if ("tabStop" == sAttributeName)
-				m_nTabStop = oReader.GetInt();
-			else if ("outlineShapeIDRef" == sAttributeName)
-				m_nOutlineNumberingID = oReader.GetInt();
-		}while(oReader.MoveToNextAttribute());
-
-		oReader.MoveToElement();
+			if ("HORIZONTAL" == sType)
+				m_chTextDirection = 0;
+			else if ("VERTICAL" == sType)
+				m_chTextDirection = 1;
+		}
+		else if ("spaceColumns" == sAttributeName)
+			m_shSpaceColumns = oReader.GetInt();
+		else if ("tabStop" == sAttributeName)
+			m_nTabStop = oReader.GetInt();
+		else if ("outlineShapeIDRef" == sAttributeName)
+			m_nOutlineNumberingID = oReader.GetInt();
 	}
+	END_READ_ATTRIBUTES(oReader)
 
-	std::string sNodeName;
-
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName =  oReader.GetNameA();
-
 		if ("hp:startNum" == sNodeName)
 		{
-			if (!oReader.MoveToFirstAttribute())
-				continue;
-
-			std::string sAttributeName;
-
-			do
+			START_READ_ATTRIBUTES(oReader)
 			{
-				sAttributeName = oReader.GetNameA();
-
 				if ("pageStartsOn" == sAttributeName)
 				{
-					sType = oReader.GetText2A();
+					sType = oReader.GetTextA();
 
 					if ("BOTH" == sType)
 						m_chPageStartOn = 0;
@@ -108,40 +90,24 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 					m_shTable = oReader.GetInt();
 				else if ("equation" == sAttributeName)
 					m_shEquation = oReader.GetInt();
-			}while(oReader.MoveToNextAttribute());
-
-			oReader.MoveToElement();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 		else if ("hp:grid" == sNodeName)
 		{
-			if (!oReader.MoveToFirstAttribute())
-				continue;
-
-			std::string sAttributeName;
-
-			do
+			START_READ_ATTRIBUTES(oReader)
 			{
-				sAttributeName = oReader.GetNameA();
-
 				if ("lineGrid" == sAttributeName)
 					m_shLineGrid = oReader.GetInt();
 				else if ("charGrid" == sAttributeName)
 					m_shCharGrid = oReader.GetInt();
-			}while(oReader.MoveToNextAttribute());
-
-			oReader.MoveToElement();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 		else if ("hp:visibility" == sNodeName)
 		{
-			if (!oReader.MoveToFirstAttribute())
-				continue;
-
-			std::string sAttributeName;
-
-			do
+			START_READ_ATTRIBUTES(oReader)
 			{
-				sAttributeName = oReader.GetNameA();
-
 				if ("hideFirstHeader" == sAttributeName)
 					m_bHideHeader = oReader.GetBool();
 				else if ("hideFirstFooter" == sAttributeName)
@@ -150,7 +116,7 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 					m_bHideMasterPage = oReader.GetBool();
 				else if ("border" == sAttributeName)
 				{
-					sType = oReader.GetText2A();
+					sType = oReader.GetTextA();
 
 					if ("HIDE_FIRST" == sType)
 					{
@@ -170,7 +136,7 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 				}
 				else if ("fill" == sAttributeName)
 				{
-					sType = oReader.GetText2A();
+					sType = oReader.GetTextA();
 
 					if ("HIDE_FIRST" == sType)
 					{
@@ -192,9 +158,8 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 					m_bHidePageNumPos = oReader.GetBool();
 				else if ("hideFirstEmptyLine" == sAttributeName)
 					m_bHideEmptyLine = oReader.GetBool();
-			}while(oReader.MoveToNextAttribute());
-
-			oReader.MoveToElement();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 		else if ("hp:pagePr" == sNodeName)
 			m_pPage = new CPage(oReader);
@@ -208,6 +173,7 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 			//TODO:: добавить реализацию
 		}
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

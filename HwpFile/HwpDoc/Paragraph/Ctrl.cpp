@@ -52,7 +52,7 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 
 CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, int nVersion)
 {
-	const std::string sNodeName{oReader.GetNameA()};
+	const std::string sNodeName{oReader.GetName()};
 
 	if ("hp:colPr" == sNodeName)
 		return new CCtrlColumnDef(L"dloc", oReader, nVersion);

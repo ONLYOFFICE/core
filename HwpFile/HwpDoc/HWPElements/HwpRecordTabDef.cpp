@@ -14,7 +14,7 @@ TTab::TTab(CXMLReader& oReader)
 		else if ("type" == sAttributeName)
 			SetType(oReader.GetInt());
 		else if ("leader" == sAttributeName)
-			m_eLeader = GetLineStyle2(oReader.GetText2());
+			m_eLeader = GetLineStyle2(oReader.GetText());
 	}
 	END_READ_ATTRIBUTES(oReader)
 }

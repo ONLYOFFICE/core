@@ -58,12 +58,8 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 {
 	m_sFaceName = oReader.GetAttribute("face");
 
-	std::string sNodeName;
-
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		sNodeName = oReader.GetNameA();
-
 		if ("hh:substFont" == sNodeName)
 		{
 			m_bSubstExists = true;
@@ -71,10 +67,10 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("face" == sAttributeName)
-					m_sSubstFace = oReader.GetText2();
+					m_sSubstFace = oReader.GetText();
 				else if ("type" == sAttributeName)
 				{
-					const std::string sType{oReader.GetText2A()};
+					const std::string sType{oReader.GetTextA()};
 
 					if ("TTF" == sType)
 						m_eSubstType = EAltType::FFT;
@@ -94,7 +90,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 			{
 				if ("familyType" == sAttributeName)
 				{
-					m_sBasicFaceName = oReader.GetText2();
+					m_sBasicFaceName = oReader.GetText();
 
 					if (!m_sBasicFaceName.empty())
 						m_bBasicFaceExists = true;
@@ -121,6 +117,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 			END_READ_ATTRIBUTES(oReader)
 		}
 	}
+	END_WHILE
 }
 
 HWP_STRING CHWPRecordFaceName::GetFaceName() const

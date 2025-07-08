@@ -24,8 +24,6 @@
 
 namespace HWP
 {
-
-
 struct TContentType
 {
 	HWP_STRING m_wsName;

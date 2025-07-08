@@ -34,7 +34,7 @@ void CCtrlField::UpdateType(const HWP_STRING& sCtrlID)
 CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrl(sCtrlID), m_eType(EFieldType::Unknown)
 {
-	const std::string sNodeName{oReader.GetNameA()};
+	const std::string sNodeName{oReader.GetName()};
 	HWP_STRING wsName;
 
 	if ("hp:fieldBegin" == sNodeName)
@@ -43,7 +43,7 @@ CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 		{
 			if ("type" == sAttributeName)
 			{
-				const std::string sType{oReader.GetText2A()};
+				const std::string sType{oReader.GetTextA()};
 
 				if ("HYPERLINK" == sType)
 					m_eType = EFieldType::Hyperlink;
@@ -53,7 +53,7 @@ CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 			else if ("fieldid" == sAttributeName)
 				m_nInstanceID = oReader.GetInt();
 			else if ("name" == sAttributeName)
-				wsName = oReader.GetText2();
+				wsName = oReader.GetText();
 		}
 		END_READ_ATTRIBUTES(oReader)
 
@@ -65,7 +65,7 @@ CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
 			{
 				if ("hp:stringParam" == sNodeChildName)
-					AddStringParam(oReader.GetAttribute("name"), oReader.GetText2());
+					AddStringParam(oReader.GetAttribute("name"), oReader.GetText());
 				else if ("hp:integerParam" == sNodeChildName)
 					AddIntegerParam(oReader.GetAttribute("name"), oReader.GetInt());
 			}

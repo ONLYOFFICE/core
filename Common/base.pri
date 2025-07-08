@@ -330,8 +330,8 @@ linux_arm64 {
 
 	!isEmpty(ARM64_TOOLCHAIN_BIN){
 		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
-
 			ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
+			message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
 
 			QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
 			QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")

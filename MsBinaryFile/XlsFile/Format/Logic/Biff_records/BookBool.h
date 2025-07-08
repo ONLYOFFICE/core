@@ -56,7 +56,7 @@ public:
     bool fEnvelopeVisible = false;
     bool fEnvelopeInitDone = false;
     bool fHideBorderUnselLists = false;
-    std::wstring grUpdateLinks = L"";
+	std::wstring grUpdateLinks = L"userSet";
 };
 
 } // namespace XLS

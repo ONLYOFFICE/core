@@ -58,7 +58,7 @@ public:
     std::wstring hsState = L"visible";
     unsigned char dt = 0;
 //-----------------------------
-    std::wstring				name_ = L"Sheet_1";
+	std::wstring				name_ = L"Sheet1";
 };
 
 } // namespace XLS

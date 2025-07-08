@@ -165,7 +165,7 @@ const bool FORMATTING::saveContent(BinProcessor& proc)
 		proc.mandatory(*i.second);
 	if(global_info->m_mapNumFormats.empty())
 	{
-		for(auto i = 0; i < 9; i ++)
+		for(auto i = 0; i < 8; i ++)
 			proc.mandatory<Format>();
 	}
 	if(m_XFS != nullptr)
@@ -174,8 +174,8 @@ const bool FORMATTING::saveContent(BinProcessor& proc)
 		proc.mandatory<XFS>();
 	if(m_Styles != nullptr)
 		proc.mandatory(*m_Styles);
-	//else
-		//proc.mandatory<STYLES>();
+	else
+		proc.mandatory<STYLES>();
 	if(m_TABLESTYLES != nullptr)
 		proc.mandatory(*m_TABLESTYLES);
 	if(m_Palette != nullptr)

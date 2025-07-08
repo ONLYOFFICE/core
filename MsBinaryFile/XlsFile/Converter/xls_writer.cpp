@@ -47,6 +47,8 @@ bool XlsWriter::WriteWorkbook(XLS::BaseObjectPtr streamObject)
 	auto WokrkbokStreamName = L"Workbook";
 	auto xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
 	auto BookStream = xls_file->createNamedStream(WokrkbokStreamName);
+	if(BookStream == nullptr)
+		return false;
 	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(BookStream, xls_global_info));
 	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
 	stream_proc.mandatory(*streamObject);
@@ -56,8 +58,12 @@ bool XlsWriter::WriteWorkbook(XLS::BaseObjectPtr streamObject)
 		auto filePos = BookStream->getStreamPointer();
 		for(auto sheet : xls_global_info->sheets_info)
 		{
+			//bof of worksheet
 			BookStream->seekFromBegin(sheet.BoundSheetPos);
 			BookStream->write(&sheet.StreamPos, 4);
+			//def col width
+			BookStream->seekFromBegin(sheet.indexPos + 15);// skip other fields
+			BookStream->write(&sheet.defColWidthPos, 4);
 		}
 		BookStream->seekFromBegin(filePos);
 	}

@@ -54,16 +54,16 @@ public:
     static const ElementType type = typeWindow2;
 
     bool fDspFmlaRt = false; //fDspFmla in biff12
-    bool fDspGridRt = false; //fDspGrid in biff12
-    bool fDspRwColRt = false; //fDspRwCol in biff12
+	bool fDspGridRt = true; //fDspGrid in biff12
+	bool fDspRwColRt = true; //fDspRwCol in biff12
 	bool fFrozenRt = false;
-    bool fDspZerosRt = false; // fDspZeros in biff12
+	bool fDspZerosRt = true; // fDspZeros in biff12
 	bool fDefaultHdr = true; // *
     bool fRightToLeft = false; // *
-    bool fDspGuts = false; // *
+	bool fDspGuts = true; // *
 	bool fFrozenNoSplit = false;
-    bool fSelected = false; // *
-	bool fPaged = false;
+	bool fSelected = true; // *
+	bool fPaged = true;
 	bool fSLV = false;
 
 	bool is_contained_in_chart_substream = false;
@@ -75,7 +75,7 @@ public:
 	
 	_UINT16 wScaleSLV = 0;
 	_UINT16 wScaleNormal = 0;
-	std::wstring topLeftCell;
+	std::wstring topLeftCell = L"A1";
 
     //biff12
     bool fWnProt = false;

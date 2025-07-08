@@ -95,6 +95,8 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 const bool COLUMNS::saveContent(BinProcessor& proc)
 {
     global_info_ = proc.getGlobalWorkbookInfo();
+	if(global_info_->sheets_info.size() > global_info_->current_sheet)
+			global_info_->sheets_info.at(global_info_->current_sheet).defColWidthPos = proc.GetRecordPosition() + 1;
     if(m_DefColWidth != nullptr)
         proc.mandatory(*m_DefColWidth);
     else

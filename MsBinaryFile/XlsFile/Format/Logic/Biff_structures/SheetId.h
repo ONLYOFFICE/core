@@ -49,7 +49,7 @@ public:
 	virtual void load(CFRecord& record);
     virtual void save(CFRecord& record);
 
-    unsigned short id = 0;
+	unsigned short id = 1;
 };
 
 typedef boost::shared_ptr<SheetId> SheetIdPtr;

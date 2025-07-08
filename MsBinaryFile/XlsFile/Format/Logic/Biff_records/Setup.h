@@ -55,8 +55,8 @@ public:
 	_UINT32 iPaperSize = 0;
 	_UINT32 iScale = 100;
 	_INT32 iPageStart = 1;
-	_UINT32 iFitWidth = 0;
-	_UINT32 iFitHeight = 0;
+	_UINT32 iFitWidth = 1;
+	_UINT32 iFitHeight = 1;
 
 	bool fLeftToRight = false;
 	bool fPortrait = false;

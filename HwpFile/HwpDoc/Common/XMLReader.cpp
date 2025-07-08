@@ -167,7 +167,74 @@ bool CXMLReader::GetBoolValue(CXMLReader& oXmlReader)
 
 double CXMLReader::GetDoubleValue(CXMLReader& oXmlReader)
 {
-	return std::atof(oXmlReader.GetTextA().c_str());
+	const std::string sValue{oXmlReader.GetTextA()};
+	const char* pCur = sValue.c_str();
+
+	while (std::isspace(*pCur))
+		++pCur;
+
+	if (!pCur)
+		return 0.;
+
+	bool bNegative = false;
+
+	while ('-' == *pCur || '+' == *pCur)
+	{
+		if ('-' == *pCur)
+			bNegative = !bNegative;
+
+		++pCur;
+	}
+
+	if (!pCur)
+		return 0.;
+
+	double dResult = 0.;
+
+	while (std::isdigit(*pCur))
+		dResult = dResult * 10. + (*pCur++ - '0');
+
+	if (',' == *pCur || '.' == *pCur)
+	{
+		++pCur;
+
+		double dFraction = 0.0;
+		double dDivisor  = 1.0;
+
+		while (std::isdigit(*pCur))
+		{
+			dFraction = dFraction * 10. + (*pCur++ - '0');
+			dDivisor *= 10;
+		}
+
+		dResult += dFraction / dDivisor;
+	}
+
+	if ('e' == *pCur || 'E' == *pCur)
+	{
+		++pCur;
+
+		bool bExpNegative = false;
+		while ('-' == *pCur || '+' == *pCur)
+		{
+			if ('-' == *pCur)
+				bExpNegative = !bExpNegative;
+
+			++pCur;
+		}
+
+		int nExponent = 0;
+
+		while (std::isdigit(*pCur))
+			nExponent = nExponent * 10 + (*pCur++ - '0');
+
+		if (bExpNegative)
+			nExponent = -nExponent;
+
+		dResult *= std::pow(10., nExponent);
+	}
+
+	return bNegative ? -dResult : dResult;
 }
 
 std::string CXMLReader::GetTextAValue(CXMLReader& oXmlReader)

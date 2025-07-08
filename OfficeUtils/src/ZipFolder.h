@@ -107,7 +107,7 @@ public:
 	virtual CBuffer* finalize() { return NULL; }
 	// чтение ноды
 	virtual XmlUtils::CXmlNode getNodeFromFile(const std::wstring& path) = 0;
-	virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path) = 0;
+	virtual bool getReaderFromFile(const std::wstring& path, XmlUtils::CXmlLiteReader& oReader) = 0;
 
 	// вспомогательные функции
 	void writeXml(const std::wstring& path, const std::wstring& xml)
@@ -449,11 +449,9 @@ public:
 		node.FromXmlFile(getFullFilePath(path));
 		return node;
 	}
-	virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+	virtual bool getReaderFromFile(const std::wstring& path, XmlUtils::CXmlLiteReader& oReader)
 	{
-		XmlUtils::CXmlLiteReader oReader;
-		oReader.FromFile(getFullFilePath(path));
-		return oReader;
+		return oReader.FromFile(getFullFilePath(path));
 	}
 };
 
@@ -603,17 +601,16 @@ public:
 		delete buffer;
 		return node;
 	}
-	virtual XmlUtils::CXmlLiteReader getReaderFromFile(const std::wstring& path)
+	virtual bool getReaderFromFile(const std::wstring& path, XmlUtils::CXmlLiteReader& oReader)
 	{
 		CBuffer* buffer = NULL;
-		XmlUtils::CXmlLiteReader oReader;
 		if (!read(path, buffer))
-			return oReader;
+			return false;
 
-		std::string sUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
-		oReader.FromStringA(sUtf8);
+		const std::string sUtf8((char*)buffer->Buffer, (size_t)buffer->Size);
 		delete buffer;
-		return oReader;
+
+		return oReader.FromStringA(sUtf8);
 	}
 };
 

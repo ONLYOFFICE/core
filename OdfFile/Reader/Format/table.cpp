@@ -642,7 +642,8 @@ void table_rows::remove_equals_empty()
 		table_table_row *prev = dynamic_cast<table_table_row*>(table_table_row_[i-1].get());
 		table_table_row *next = dynamic_cast<table_table_row*>(table_table_row_[i].get());
 
-		if (prev->content_.size() > 1 || next->content_.size() > 1) break;
+		if (prev->content_.size() > 1 || next->content_.size() > 1 ) break;
+        if (prev->content_.empty() || next->content_.empty()) break;
 
 		if (prev->attlist_.table_style_name_.get_value_or(L"") != next->attlist_.table_style_name_.get_value_or(L"")) break;
 

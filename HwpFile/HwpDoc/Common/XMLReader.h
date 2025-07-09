@@ -24,6 +24,7 @@ public:
 	double GetDouble();
 	std::string GetTextA();
 	std::wstring GetText();
+	const char* GetTextChar();
 
 	int GetAttributeInt(const std::string& sName, int nDefault = 0);
 	bool GetAttributeBool(const std::string& sName);
@@ -40,6 +41,7 @@ public:
 	std::string GetName();
 	bool ReadNextSiblingNode(unsigned int unDepth);
 	bool ReadNextNode();
+	bool Read(XmlUtils::XmlNodeType& eNodeType);
 private:
 	static int GetIntValue(CXMLReader& oXmlReader);
 	static bool GetBoolValue(CXMLReader& oXmlReader);

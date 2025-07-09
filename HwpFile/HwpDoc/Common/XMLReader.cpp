@@ -63,6 +63,14 @@ std::wstring CXMLReader::GetText()
 	return (m_bParseAttribute) ? m_pReader->GetText() : m_pReader->GetText2();
 }
 
+const char* CXMLReader::GetTextChar()
+{
+	if (nullptr == m_pReader)
+		return "";
+
+	return m_pReader->GetTextChar();
+}
+
 template<typename T>
 T CXMLReader::GetAttribute(const std::string& sName, T _default, T (*GetValue)(CXMLReader&))
 {
@@ -155,6 +163,11 @@ bool CXMLReader::ReadNextNode()
 	return (nullptr != m_pReader) ? m_pReader->ReadNextNode() : false;
 }
 
+bool CXMLReader::Read(XmlUtils::XmlNodeType& eNodeType)
+{
+	return (nullptr != m_pReader) ? m_pReader->Read(eNodeType) : false;
+}
+
 int CXMLReader::GetIntValue(CXMLReader& oXmlReader)
 {
 	return std::atoi(oXmlReader.GetTextA().c_str());
@@ -231,7 +244,7 @@ double CXMLReader::GetDoubleValue(CXMLReader& oXmlReader)
 		if (bExpNegative)
 			nExponent = -nExponent;
 
-		dResult *= std::pow(10., nExponent);
+		dResult *= pow(10., nExponent);
 	}
 
 	return bNegative ? -dResult : dResult;

@@ -19,6 +19,8 @@
 #include "CtrlShapeVideo.h"
 #include "ParaText.h"
 
+#include "../../../DesktopEditor/common/File.h"
+
 namespace HWP
 {
 CHWPPargraph::CHWPPargraph()
@@ -101,21 +103,42 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 	}
 	else if ("hp:t" == sNodeName)
 	{
-		m_arP.push_back(new CParaText(L"____", oReader.GetText(), 0, nCharShapeID));
+		if (oReader.IsEmptyNode())
+			return false;
 
-		WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+		const int nDepth = oReader.GetDepth();
+		XmlUtils::XmlNodeType eNodeType = XmlUtils::XmlNodeType_EndElement;
+		while (oReader.Read(eNodeType) && oReader.GetDepth() >= nDepth && XmlUtils::XmlNodeType_EndElement != eNodeType)
 		{
-			if ("hp:lineBreak" == sNodeChildName)
-				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
-			else if ("hp:hyphen" == sNodeChildName)
-				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
-			else if ("hp:nbSpace" == sNodeChildName ||
-			         "hp:fwSpace" == sNodeChildName)
-				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
-			else if ("hp:tab" == sNodeChildName)
-				m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));
+			if (eNodeType == XmlUtils::XmlNodeType_Text ||
+			    eNodeType == XmlUtils::XmlNodeType_Whitespace ||
+			    eNodeType == XmlUtils::XmlNodeType_SIGNIFICANT_WHITESPACE ||
+			    eNodeType == XmlUtils::XmlNodeType_CDATA)
+			{
+				const char* pValue = oReader.GetTextChar();
+				std::wstring wsValue;
+
+				if('\0' != pValue[0])
+				{
+					NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen(pValue), wsValue);
+					m_arP.push_back(new CParaText(L"____", wsValue, 0, nCharShapeID));
+				}
+			}
+			else if (eNodeType == XmlUtils::XmlNodeType_Element)
+			{
+				const std::string sChildNodeName{oReader.GetName()};
+
+				if ("hp:lineBreak" == sChildNodeName)
+					m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::LINE_BREAK));
+				else if ("hp:hyphen" == sChildNodeName)
+					m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_HYPHEN));
+				else if ("hp:nbSpace" == sChildNodeName ||
+				         "hp:fwSpace" == sChildNodeName)
+					m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::HARD_SPACE));
+				else if ("hp:tab" == sChildNodeName)
+					m_arP.push_back(new CCtrlCharacter(L"   _", ECtrlCharType::TABULATION));
+			}
 		}
-		END_WHILE
 	}
 	else if ("hp:tbl" == sNodeName)
 		m_arP.push_back(new CCtrlTable(L" lbt", oReader, nVersion));

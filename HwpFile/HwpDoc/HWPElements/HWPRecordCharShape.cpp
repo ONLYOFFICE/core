@@ -359,7 +359,7 @@ bool CHWPRecordCharShape::Underline() const
 
 bool CHWPRecordCharShape::StrikeOut() const
 {
-	return ELineStyle2::NONE != m_eStrikeOutShape;
+	return 0x01 == m_chStrikeOut;
 }
 
 bool CHWPRecordCharShape::SuperScript() const

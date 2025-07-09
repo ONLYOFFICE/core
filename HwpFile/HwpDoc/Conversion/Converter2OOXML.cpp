@@ -1647,56 +1647,14 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	double dScaleX = 1., dScaleY = 1.;
+	int nFinalWidth  = pCtrlShape->GetCurWidth();
+	int nFinalHeight = pCtrlShape->GetCurHeight();
 
-	const int nOrgWidth{pCtrlShape->GetOrgWidth()}, nOrgHeight{pCtrlShape->GetOrgHeight()};
-	const int nCurWidth{pCtrlShape->GetCurWidth()}, nCurHeight{pCtrlShape->GetCurHeight()};
-
-	if (0 != nCurWidth && 0 != nOrgWidth)
-		dScaleX = (double)nCurWidth / (double)nOrgWidth;
-
-	if (0 != nCurHeight && 0 != nOrgHeight)
-		dScaleY = (double)nCurHeight / (double)nOrgHeight;
-
-	if (0 != pCtrlShape->GetWidth() && 0 != nCurWidth)
-		dScaleX *= (double)pCtrlShape->GetWidth() / (double)nCurWidth;
-
-	if (0 != pCtrlShape->GetHeight() && 0 != nCurHeight)
-		dScaleY *= (double)pCtrlShape->GetHeight() / (double)nCurHeight;
-
-	int nFinalWidth {pCtrlShape->GetWidth() };
-	int nFinalHeight{pCtrlShape->GetHeight()};
-
-	if (0 == nFinalWidth)
+	if (0 == nFinalWidth || 0 == nFinalHeight)
 	{
-		if (nullptr != pWidth && 0 != *pWidth)
-			nFinalWidth = *pWidth;
-		else
-			nFinalWidth = nCurWidth;
+		nFinalWidth = std::abs(pCtrlShape->GetWidth());
+		nFinalHeight = std::abs(pCtrlShape->GetHeight());
 	}
-
-	if (nullptr != pWidth && 0 != *pWidth)
-		dScaleX *= (double)*pWidth / (double)nFinalWidth;
-
-	if (0 == nFinalHeight)
-	{
-		if (nullptr != pHeight && 0 != *pHeight)
-			nFinalHeight = *pHeight;
-		else
-			nFinalHeight = nCurHeight;
-	}
-
-	if (nullptr != pHeight && 0 != *pHeight)
-		dScaleY *= (double)*pHeight / (double)nFinalHeight;
-
-	TMatrix oFinalMatrix{pCtrlShape->GetFinalMatrix()};
-	oFinalMatrix.ApplyToSize(dScaleX, dScaleY);
-
-	nFinalWidth = ceil((double)nFinalWidth * dScaleX);
-	nFinalHeight = ceil((double)nFinalHeight * dScaleY);
-
-	nFinalWidth  -= (pCtrlShape->GetLeftInMargin() + pCtrlShape->GetRightInMargin());
-	nFinalHeight -= (pCtrlShape->GetTopInMargin() + pCtrlShape->GetBottomInMargin());
 
 	if (nullptr != pWidth)
 		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);

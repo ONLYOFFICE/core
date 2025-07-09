@@ -333,10 +333,8 @@ namespace OOX
 					{
 						CParagraphProperty prop2(document);
 						prop2.fromXML(oReader);
-						
-						CParagraphProperty newProp = CParagraphProperty::Merge(*m_oParagraphProperty, prop2);
 
-						pItem = m_oParagraphProperty = new CParagraphProperty(newProp);
+						pItem = m_oParagraphProperty = new CParagraphProperty(CParagraphProperty::Merge(*m_oParagraphProperty, prop2));
 						m_arrItems.push_back( pItem );
 						continue;
 					}

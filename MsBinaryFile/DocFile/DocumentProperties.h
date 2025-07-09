@@ -53,7 +53,9 @@ namespace DocFileFormat
         WordDocumentProperties( FileInformationBlock* fib, POLE::Stream* tableStream );
 
         friend class SettingsMapping;
-	private:    
+
+        unsigned short cpgText;
+    private:
         // True when facing pages should be printed
 		bool fFacingPages;
         // True when window control is in effect
@@ -535,7 +537,6 @@ namespace DocFileFormat
 		unsigned short grfFmtFilter;
         // Book fold printing: sheets per booklet
 		short iFolioPages;
-		unsigned short cpgText;
         // Revision mark CP info
 		int cpMinRMText;
         // Revision mark CP info

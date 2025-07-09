@@ -238,8 +238,18 @@ namespace HWP
 		oBuffer.ReadInt(m_nObjInstanceID);
 		oBuffer.ReadInt(m_nBlockPageBreak);
 
-		if (nSize > oBuffer.GetDistanceToLastPos(true))
+		if (nSize > oBuffer.GetDistanceToLastPos())
 			oBuffer.ReadString(m_sObjDesc, EStringCharacter::UTF16);
+
+		if (nSize > oBuffer.GetDistanceToLastPos())
+		{
+			oBuffer.ReadInt(m_nCaptionAttr);
+			oBuffer.ReadInt(m_nCaptionWidth);
+			oBuffer.ReadInt(m_nCaptionSpacing);
+			oBuffer.ReadInt(m_nCaptionMaxW);
+		}
+
+		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)

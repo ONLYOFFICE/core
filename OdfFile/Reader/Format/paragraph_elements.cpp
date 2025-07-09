@@ -616,7 +616,7 @@ void span::docx_convert(oox::docx_conversion_context & Context)
 					style_text_properties *text_props = styleContent->get_style_text_properties();
 					std::wstring parent = styleInst->parent_name();
 
-					if (false == parent.empty())
+					if (text_props && false == parent.empty())
 					{
 						text_props->content_.r_style_ = Context.styles_map_.get(parent, styleInst->type());
 					}

@@ -1,6 +1,19 @@
 #include "heif.h"
 #include "../../common/File.h"
 
+#include <functional>
+
+#define CONCAT_IMPL(x, y) x##y
+#define CONCAT(x, y) CONCAT_IMPL(x, y)
+#define defer(code) Defer CONCAT(_defer_, __COUNTER__)([&](){code;})
+
+class Defer {
+	std::function<void()> func;
+public:
+	explicit Defer(std::function<void()> func) : func(func) {}
+	~Defer() { func(); }
+};
+
 namespace NSHeif {
 	bool CHeifFile::isHeif(const std::wstring& fileName)
 	{

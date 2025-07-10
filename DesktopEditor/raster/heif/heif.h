@@ -1,20 +1,8 @@
 #include "../BgraFrame.h"
 #include "../../Common/3dParty/heif/libheif/libheif/api/libheif/heif.h"
 #include "../../UnicodeConverter/UnicodeConverter.h"
-#include <functional>
 
 namespace NSHeif {
-#define CONCAT_IMPL(x, y) x##y
-#define CONCAT(x, y) CONCAT_IMPL(x, y)
-#define defer(code) Defer CONCAT(_defer_, __COUNTER__)([&](){code;})
-
-	class Defer {
-		std::function<void()> func;
-	public:
-		explicit Defer(std::function<void()> func) : func(func) {}
-		~Defer() { func(); }
-	};
-
 	class GRAPHICS_DECL CHeifFile {
 	private:
 		CHeifFile() = delete;

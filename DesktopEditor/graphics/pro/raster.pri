@@ -17,23 +17,28 @@ DEFINES += \
 core_linux {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 	QMAKE_CXXFLAGS += -Wno-narrowing
+	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
 }
 
 core_linux_clang {
     QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
+	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
 }
 
 core_mac {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
+	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
 }
 
 core_windows {
 	DEFINES += JAS_WIN_MSVC_BUILD NOMINMAX
 	LIBS += -lUser32
+	LIBS += $$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/Release/heif.lib
 }
 
 core_android {
 	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
+	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/heif.a
 }
 
 INCLUDEPATH += \
@@ -41,8 +46,6 @@ INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/png \
 	$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api \
-
-LIBS += $$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/Release/heif.lib
 
 HEADERS += \
 	$$PWD/../../graphics/Image.h \

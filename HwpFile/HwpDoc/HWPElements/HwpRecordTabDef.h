@@ -32,7 +32,6 @@ class CHwpRecordTabDef : public CHWPRecord
 	CHWPDocInfo *m_pParent;
 
 	int m_nAttr;
-	int m_nCount;
 	VECTOR<TTab*> m_arTabs;
 public:
 	CHwpRecordTabDef(int nTagNum, int nLevel, int nSize);

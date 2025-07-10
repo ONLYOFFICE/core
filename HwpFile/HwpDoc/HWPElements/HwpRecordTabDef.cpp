@@ -31,7 +31,7 @@ void TTab::SetType(int nValue)
 }
 
 CHwpRecordTabDef::CHwpRecordTabDef(int nTagNum, int nLevel, int nSize)
-	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(nullptr), m_nAttr(0), m_nCount(0)
+	: CHWPRecord(nTagNum, nLevel, nSize), m_pParent(nullptr), m_nAttr(0)
 {}
 
 CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -40,13 +40,15 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	oBuffer.SavePosition();
 
 	oBuffer.ReadInt(m_nAttr);
-	oBuffer.ReadInt(m_nCount);
 
-	if (nSize - oBuffer.GetDistanceToLastPos() != m_nCount * 8)
+	int nCount = 0;
+	oBuffer.ReadInt(nCount);
+
+	if (nSize - oBuffer.GetDistanceToLastPos() != nCount * 8)
 		return; // TODO:: ошибка
 
 	TTab *pTab = nullptr;
-	for (unsigned int unIndex = 0; unIndex < m_nCount; ++unIndex)
+	for (unsigned int unIndex = 0; unIndex < nCount; ++unIndex)
 	{
 		pTab = new TTab();
 
@@ -68,7 +70,7 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 }
 
 CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
-	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo), m_nAttr(0), m_nCount(0)
+	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo), m_nAttr(0)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -96,11 +98,12 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, i
 			END_WHILE
 		END_WHILE
 	END_WHILE
+
 }
 
 int CHwpRecordTabDef::GetCount() const
 {
-	return m_nCount;
+	return m_arTabs.size();
 }
 
 const TTab* CHwpRecordTabDef::GetTab(unsigned int unIndex) const

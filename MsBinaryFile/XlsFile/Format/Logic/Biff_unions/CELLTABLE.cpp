@@ -153,16 +153,6 @@ const bool CELL_GROUP::saveContent(BinProcessor& proc)
     for(auto i : m_arCells)
         if(i != nullptr)
             proc.mandatory(*i);
-    {
-        DBCell dbcell;
-        for(auto i: m_arRows)
-        {
-            FileOffsetPtr element(new FileOffset);
-            dbcell.rgdb.push_back(element);
-        }
-        proc.mandatory(dbcell);
-
-    }
     /*for(auto i : m_DBCells)
         if(i != nullptr)
             proc.mandatory(*i);*/

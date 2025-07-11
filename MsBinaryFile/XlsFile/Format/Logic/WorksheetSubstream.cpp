@@ -740,22 +740,6 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 		bof.dt= 0x0010;
 		proc.mandatory(bof);
 	}
-	{
-		Index sheetIndex;
-		if(m_CELLTABLE != nullptr)
-		{
-			CELLTABLE *cellTable = dynamic_cast<CELLTABLE*>(m_CELLTABLE.get());
-			auto blocks = cellTable->m_arCellGroups.size();
-			for(auto i = 0; i < blocks; i ++)
-			{
-				FilePointerPtr CellBlockPointer(new FilePointer);
-				sheetIndex.rgibRw.push_back(CellBlockPointer);
-			}
-		}
-		if(globInfo->sheets_info.size() > globInfo->current_sheet)
-			globInfo->sheets_info.at(globInfo->current_sheet).indexPos = proc.GetRecordPosition() + 1;
-		proc.mandatory(sheetIndex);
-	}
 	if(m_GLOBALS != nullptr)
 		proc.mandatory(*m_GLOBALS);
 	else

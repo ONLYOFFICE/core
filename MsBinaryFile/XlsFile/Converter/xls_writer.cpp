@@ -61,9 +61,6 @@ bool XlsWriter::WriteWorkbook(XLS::BaseObjectPtr streamObject)
 			//bof of worksheet
 			BookStream->seekFromBegin(sheet.BoundSheetPos);
 			BookStream->write(&sheet.StreamPos, 4);
-			//def col width
-			BookStream->seekFromBegin(sheet.indexPos + 15);// skip other fields
-			BookStream->write(&sheet.defColWidthPos, 4);
 		}
 		BookStream->seekFromBegin(filePos);
 	}

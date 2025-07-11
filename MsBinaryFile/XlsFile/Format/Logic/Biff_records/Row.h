@@ -56,7 +56,7 @@ namespace XLS
         UncheckedRw     rw = 0;
         unsigned short	colMic = 0;
         unsigned short	colMac = 0;
-        _UINT16			miyRw = 0;
+		_UINT16			miyRw = 256;
 
 		unsigned char	iOutLevel = 0;
 		bool			fCollapsed = false;

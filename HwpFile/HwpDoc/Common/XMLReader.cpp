@@ -1,4 +1,5 @@
 #include "XMLReader.h"
+#include <cmath>
 
 namespace HWP
 {
@@ -244,7 +245,7 @@ double CXMLReader::GetDoubleValue(CXMLReader& oXmlReader)
 		if (bExpNegative)
 			nExponent = -nExponent;
 
-		dResult *= pow(10., nExponent);
+		dResult *= std::pow(10., nExponent);
 	}
 
 	return bNegative ? -dResult : dResult;

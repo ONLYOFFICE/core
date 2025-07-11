@@ -167,6 +167,7 @@ namespace Oox2Odf
 		void			convert		(OOX::WritingElement *oox_unknown);		
 		std::wstring	dump_text	(OOX::WritingElement *oox_unknown);
     private:
+		bool current_bidi_set = false;
 		struct _section
 		{
             OOX::Logic::CSectionProperty *props = NULL;
@@ -241,7 +242,7 @@ namespace Oox2Odf
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
 		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);
 		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
-		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf_types::text_align)		& align);
+		void convert(ComplexTypes::Word::CJc			*oox_jc, bool bidi, _CP_OPT(odf_types::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		

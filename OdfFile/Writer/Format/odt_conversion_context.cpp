@@ -79,11 +79,10 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
 
-	is_hyperlink_				= false;
-
-	is_header_					= false;
-	is_footer_					= false;
-
+	is_hyperlink_ = false;
+	is_header_ = false;
+	is_footer_ = false;
+	is_background_ = false;
 	is_paragraph_in_current_section_		= false;
 
 	text_changes_state_.main_text_context	= NULL; //header, footer, drawing, main, ..

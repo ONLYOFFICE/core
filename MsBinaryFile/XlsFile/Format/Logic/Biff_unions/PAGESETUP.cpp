@@ -186,12 +186,6 @@ const bool PAGESETUP::saveContent(BinProcessor& proc)
         proc.mandatory(*m_VCenter);
     else
         proc.mandatory<VCenter>();
-
-	proc.mandatory<LeftMargin>();
-	proc.mandatory<RightMargin>();
-	proc.mandatory<TopMargin>();
-	proc.mandatory<BottomMargin>();
-
     if(m_Setup != nullptr)
         proc.mandatory(*m_Setup);
     else

@@ -117,13 +117,13 @@ const bool XFS::saveContent(BinProcessor& proc)
             proc.mandatory(*i);
 	if(m_arCellXFs.empty())
 	{
-		for(auto i = 0; i < 16; i++)
-			{
-				size_t cellId = 0;
-				size_t StyleId = 0;
-				XF cellXf(cellId, StyleId);
-				proc.mandatory(cellXf);
-			}
+		size_t cellId = 0;
+		size_t StyleId = 0;
+		XF styleXf(cellId, StyleId);
+		proc.mandatory(styleXf);
+		XF cellXf(cellId, StyleId);
+		cellXf.fStyle = false;
+		proc.mandatory(cellXf);
 	}
     for (auto i: m_arCellStyles)
         if(i!= nullptr)

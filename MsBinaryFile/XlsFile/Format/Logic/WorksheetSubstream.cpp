@@ -734,7 +734,7 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	auto globInfo = proc.getGlobalWorkbookInfo();
 	{
 		if(globInfo->sheets_info.size() > globInfo->current_sheet)
-			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition() + 1;
+			globInfo->sheets_info.at(globInfo->current_sheet).StreamPos = proc.GetRecordPosition();
 
 		BOF bof;
 		bof.dt= 0x0010;

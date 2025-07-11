@@ -654,8 +654,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 	if(m_FileSharing != nullptr)
 		proc.mandatory(*m_FileSharing);
 	proc.mandatory<CodePage>();
-	proc.mandatory<Excel9File>();
 	proc.mandatory<DSF>();
+	proc.mandatory<Excel9File>();
 	if(m_RRTabId != nullptr)
 		proc.mandatory(*m_RRTabId);
 	else
@@ -731,8 +731,8 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_SHAREDSTRINGS);
 	if(m_ExtSST != nullptr)
 		proc.mandatory(*m_ExtSST);
-	else
-		proc.mandatory<ExtSST>();
+	//else
+		//proc.mandatory<ExtSST>();
 	if(m_BookExt != nullptr)
 		proc.mandatory(*m_BookExt);
 	for(auto i : m_arDConn)

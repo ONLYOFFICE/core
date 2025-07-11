@@ -73,8 +73,8 @@ void WriteAccess::writeFields(CFRecord& record)
     auto userNamePos = record.getRdPtr();
     if(userName.value() == L"")
     {
-        ShortXLAnsiString name;
-        name = "\0x20\0x20";
+		XLUnicodeString name;
+		name = std::wstring(L"  ");
         record << name;
         record.reserveNunBytes(maxRecordSize - (record.getRdPtr() - userNamePos));
         return;

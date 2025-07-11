@@ -54,8 +54,8 @@ public:
 	int serialize(std::wostream & stream);
 //-----------------------------
 	_UINT16			ifmt_used = 0xFFFF;
-	_UINT16			ifmt = 0xFFFF;
-    std::wstring	stFormat = L"";
+	_UINT16			ifmt = 164;
+	std::wstring	stFormat = L"General";
 };
 
 class Format_BIFF23 : public Format

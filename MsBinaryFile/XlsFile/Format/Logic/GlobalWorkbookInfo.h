@@ -183,11 +183,11 @@ public:
 		double						defaultColumnWidth = 8.0;
 		double						defaultRowHeight = 14.4;
 		std::map<int, _row_info>	mapRows;
-		size_t						StreamPos; // pose in stream for writing
-		size_t						BoundSheetPos; // pose of related BoundSheet8's lbPlyPos field
+		size_t						StreamPos = 0; // pose in stream for writing
+		size_t						BoundSheetPos = 0; // pose of related BoundSheet8's lbPlyPos field
 
-		size_t						indexPos; // pose in stream for writing
-		size_t						defColWidthPos; // pose of related BoundSheet8's lbPlyPos field
+		size_t						indexPos = 0; // pose in stream for writing
+		size_t						defColWidthPos = 0; // pose of related BoundSheet8's lbPlyPos field
 	};
 	std::vector<_sheet_info>		sheets_info;
 	std::vector<std::wstring>		external_sheets_info; //current

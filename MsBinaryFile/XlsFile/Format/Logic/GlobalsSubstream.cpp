@@ -654,6 +654,7 @@ const bool GlobalsSubstream::saveContent(BinProcessor& proc)
 	if(m_FileSharing != nullptr)
 		proc.mandatory(*m_FileSharing);
 	proc.mandatory<CodePage>();
+	proc.mandatory<Excel9File>();
 	proc.mandatory<DSF>();
 	if(m_RRTabId != nullptr)
 		proc.mandatory(*m_RRTabId);

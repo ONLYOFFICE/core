@@ -66,6 +66,11 @@ void RRTabId::writeFields(CFRecord& record)
     {
         record << *i;
     }
+	if(sheet_ids.empty())
+	{
+		SheetId sheetId1;
+		record << sheetId1;
+	}
 }
 
 } // namespace XLS

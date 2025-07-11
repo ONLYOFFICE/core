@@ -39,7 +39,7 @@ Window2::Window2(bool isChart)
 {
 	is_contained_in_chart_substream = false;
 	
-	fSelected		= false;
+	/*fSelected		= false;
 	fDspFmlaRt		= false;
 	fDspGridRt		= false;
 	fDspRwColRt		= false;
@@ -50,7 +50,7 @@ Window2::Window2(bool isChart)
 	fDspGuts		= false;
 	fFrozenNoSplit	= false;
 	fPaged			= false;
-	fSLV			= false;
+	fSLV			= false;*/
 
 	wScaleSLV = wScaleNormal = 0;
 

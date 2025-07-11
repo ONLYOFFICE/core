@@ -764,7 +764,6 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_PAGESETUP);
 	else
 		proc.mandatory<PAGESETUP>();
-	proc.mandatory<RECORD12>();
 	if(m_BACKGROUND != nullptr)
 		proc.mandatory(*m_BACKGROUND);
 	if(m_PROTECTION != nullptr)
@@ -832,8 +831,6 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	for(auto i : m_arFEAT)
 		if(i != nullptr)
 			proc.mandatory(*i);
-	if(m_arFEAT.empty())
-		proc.mandatory<FEAT>();
 	for(auto i : m_arRECORD12)
 		if(i != nullptr)
 			proc.mandatory(*i);

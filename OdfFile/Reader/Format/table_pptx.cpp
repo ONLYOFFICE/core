@@ -119,17 +119,17 @@ void table_table_row::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_table_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_row_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
     }
 }
 
 void table_table_header_rows::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_row_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_row_[i]->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
     }
 }
 
@@ -300,9 +300,9 @@ void table_columns::pptx_convert(oox::pptx_conversion_context & Context)
 
 void table_table_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
     }
 }
 
@@ -326,9 +326,9 @@ void table_columns_and_groups::pptx_convert(oox::pptx_conversion_context & Conte
 
 void table_table_header_columns::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	for (size_t i = 0; i < table_table_column_.size(); i++)
+	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->pptx_convert(Context);
+		content_[i]->pptx_convert(Context);
     }    
 }
 

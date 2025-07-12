@@ -546,6 +546,15 @@ bool xlsx_conversion_context::start_table(const std::wstring& tableName, const s
 
 void xlsx_conversion_context::end_table()
 {
+	if (false == get_table_context().state()->rowsHeaders_.empty())
+	{//first only ??? 
+		int header_start = get_table_context().state()->rowsHeaders_.front().first + 1;
+		int header_end = get_table_context().state()->rowsHeaders_.front().first + get_table_context().state()->rowsHeaders_.front().second;
+
+		std::wstring ref = L"'" + get_table_context().state()->tableName_ + L"'!$" + std::to_wstring(header_start) + L":$" + std::to_wstring(header_end); 
+		get_table_context().set_print_titles(ref);
+	}
+
 	const std::wstring external_ref = current_sheet().external_ref();
 
 	if (false == external_ref.empty())
@@ -662,10 +671,10 @@ void xlsx_conversion_context::add_control_props(const std::wstring & rid, const 
 			L"../ctrlProps/" + target));
 }
 
-void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax)
+void xlsx_conversion_context::start_table_column(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax, bool bHeader)
 {
     cMin = get_table_context().columns_count();
-    get_table_context().start_column(repeated, defaultCellStyleName);
+    get_table_context().start_column(repeated, defaultCellStyleName, bHeader);
     cMax = get_table_context().columns_count();
 }
 

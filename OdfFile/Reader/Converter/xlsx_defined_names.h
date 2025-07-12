@@ -46,6 +46,8 @@ namespace oox {
         ~xlsx_defined_names();
 
         void add(std::wstring const & name, std::wstring const & ref, bool formula, int tableId);
+        void add(std::wstring const& name, std::wstring const& oox_ref, int tableId);
+
         void xlsx_serialize(std::wostream & _Wostream);
 
     private:

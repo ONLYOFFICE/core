@@ -86,11 +86,13 @@ void SST::writeFields(CFRecord& record)
 {
     const auto MaxRecordSize = 8224;
     cstUnique = rgb.size();
+	if(cstTotal == 0 && cstTotal < cstUnique)
+		cstTotal = cstUnique;
     record << cstTotal << cstUnique;
     while(!rgb.empty())
     {
         auto oldPose = record.getRdPtr();
-        record << rgb.at(0);
+		record << *rgb.at(0);
         if(record.getRdPtr() > MaxRecordSize)
         {
             record.RollRdPtrBack(record.getRdPtr() - oldPose);

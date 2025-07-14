@@ -109,8 +109,6 @@ const bool WINDOW::saveContent(BinProcessor& proc)
 	for(auto i : m_arSelection)
 		if(i != nullptr)
 			proc.mandatory(*i);
-	if(m_arSelection.empty())
-		proc.mandatory<Selection>();
     return true;
 }
 

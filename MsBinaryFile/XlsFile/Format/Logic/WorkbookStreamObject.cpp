@@ -203,6 +203,7 @@ const bool WorkbookStreamObject::saveContent(BinProcessor& proc)
 {
     if(m_GlobalsSubstream == nullptr || m_arWorksheetSubstream.empty())
         return false;
+	auto globalInfo = proc.getGlobalWorkbookInfo();
     proc.mandatory(*m_GlobalsSubstream);
     for(auto i : m_arWorksheetSubstream)
         if(i == nullptr)
@@ -210,7 +211,10 @@ const bool WorkbookStreamObject::saveContent(BinProcessor& proc)
             Log::warning("Worksheet substream is corrupted");
         }
         else
+		{
             proc.mandatory(*i);
+			globalInfo->current_sheet++;
+		}
     return true;
 }
 

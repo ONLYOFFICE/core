@@ -62,7 +62,7 @@ public:
     bool fRightToLeft = false; // *
 	bool fDspGuts = true; // *
 	bool fFrozenNoSplit = false;
-	bool fSelected = true; // *
+	bool fSelected = false; // *
 	bool fPaged = true;
 	bool fSLV = false;
 

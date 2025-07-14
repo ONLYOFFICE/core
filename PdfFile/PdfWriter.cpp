@@ -2979,7 +2979,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			}
 		}
 
-		if (!pPBWidget->Get("AP"))
+		if (!pPBWidget->Get("AP") && !m_bSplit)
 			DrawButtonWidget(pAppFonts, pPBWidget, 0, NULL);
 	}
 
@@ -4378,7 +4378,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 	if (nTP != 1 && !pForm)
 		nTP = 0;
 
-	if (nTP != 1)
+	if (nTP != 1 && !m_bSplit)
 	{
 		PdfWriter::CFontCidTrueType* pFont = pButtonWidget->GetFont();
 		if (!pFont)
@@ -4450,7 +4450,7 @@ void CPdfWriter::DrawButtonWidget(NSFonts::IApplicationFonts* pAppFonts, PdfWrit
 		}
 	}
 
-	pButtonWidget->SetAP(pForm, nAP, pCodes, unLen, dShiftX, dShiftY, dLineW, dLineH, ppFonts);
+	pButtonWidget->SetAP(pForm, nAP, pCodes, unLen, dShiftX, dShiftY, dLineW, dLineH, ppFonts, m_bSplit);
 
 	RELEASEARRAYOBJECTS(pUnicodes);
 	RELEASEARRAYOBJECTS(pCodes);

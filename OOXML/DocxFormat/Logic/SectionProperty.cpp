@@ -986,12 +986,6 @@ namespace OOX
 		}
 		CColumns::~CColumns()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
-			{
-				if ( m_arrColumns[nIndex] )	delete m_arrColumns[nIndex];
-				m_arrColumns[nIndex] = NULL;
-			}
-			m_arrColumns.clear();
 		}
 		void CColumns::fromXML(XmlUtils::CXmlNode& oNode)
 		{
@@ -1006,13 +1000,13 @@ namespace OOX
 			{
 				for ( size_t nIndex = 0; nIndex < oCols.size(); nIndex++ )
 				{
-					XmlUtils::CXmlNode& oCol = oCols[nIndex];
-					if ( oCol.IsValid() )
+					XmlUtils::CXmlNode& oColNode = oCols[nIndex];
+					if (oColNode.IsValid() )
 					{
-						ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
-						*oColumn = oCol;
+						nullable<ComplexTypes::Word::CColumn> oColumn; oColumn.Init();
+						oColumn->FromXML(oColNode);
 
-						if (oColumn) m_arrColumns.push_back( oColumn );
+						m_arrColumns.push_back( oColumn );
 					}
 				}
 			}
@@ -1030,10 +1024,10 @@ namespace OOX
 				std::wstring sName = oReader.GetName();
 				if ( L"w:col" == sName )
 				{
-					ComplexTypes::Word::CColumn *oColumn = new ComplexTypes::Word::CColumn();
-					*oColumn = oReader;
+					nullable<ComplexTypes::Word::CColumn> oColumn; oColumn.Init();
+					oColumn->FromXML(oReader);
 
-					if (oColumn) m_arrColumns.push_back( oColumn );
+					m_arrColumns.push_back( oColumn );
 				}
 			}
 		}
@@ -1072,7 +1066,7 @@ namespace OOX
 			for ( unsigned int nIndex = 0; nIndex < m_arrColumns.size(); nIndex++ )
 			{
 				sResult += L"<w:col ";
-				if (m_arrColumns[nIndex])
+				if (m_arrColumns[nIndex].IsInit())
 					sResult += m_arrColumns[nIndex]->ToString();
 				sResult += L"/>";
 			}
@@ -1502,19 +1496,6 @@ namespace OOX
 		}
 		void CSectionProperty::ClearItems()
 		{
-			for ( unsigned int nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++ )
-			{
-				if ( m_arrFooterReference[nIndex] ) delete m_arrFooterReference[nIndex];
-				m_arrFooterReference[nIndex] = NULL;
-			}
-			m_arrFooterReference.clear();
-
-			for ( unsigned int nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++ )
-			{
-				if ( m_arrHeaderReference[nIndex] ) delete m_arrHeaderReference[nIndex];
-				m_arrHeaderReference[nIndex] = NULL;
-			}
-			m_arrHeaderReference.clear();
 		}
 		CSectionProperty& CSectionProperty::operator =(const XmlUtils::CXmlNode& oNode)
 		{
@@ -1562,10 +1543,10 @@ namespace OOX
 						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
 						if ( oNode.IsValid() )
 						{
-							ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
+							nullable<ComplexTypes::Word::CHdrFtrRef> oFooter; oFooter.Init();
 							oFooter->FromXML(oNode);
 
-							if (oFooter) m_arrFooterReference.push_back( oFooter );
+							m_arrFooterReference.push_back( oFooter );
 						}
 					}
 				}
@@ -1587,10 +1568,10 @@ namespace OOX
 						XmlUtils::CXmlNode& oNode = oNodes[nIndex];
 						if ( oNode.IsValid())
 						{
-							ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
+							nullable < ComplexTypes::Word::CHdrFtrRef> oHeader; oHeader.Init();
 							oHeader->FromXML(oNode);
 
-							if (oHeader) m_arrHeaderReference.push_back( oHeader );
+							m_arrHeaderReference.push_back( oHeader );
 						}
 					}
 				}
@@ -1661,10 +1642,10 @@ namespace OOX
 					m_oEndnotePr = oReader;
 				else if ( !m_bSectPrChange && L"w:footerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oFooter = new ComplexTypes::Word::CHdrFtrRef();
-					*oFooter = oReader;
+					nullable<ComplexTypes::Word::CHdrFtrRef> oFooter; oFooter.Init();
+					oFooter->FromXML(oReader);
 
-					if (oFooter) m_arrFooterReference.push_back( oFooter );
+					m_arrFooterReference.push_back( oFooter );
 				}
 				else if ( L"w:footnotePr" == sName )
 					m_oFootnotePr = oReader;
@@ -1672,10 +1653,10 @@ namespace OOX
 					m_oFormProt = oReader;
 				else if ( !m_bSectPrChange && L"w:headerReference" == sName )
 				{
-					ComplexTypes::Word::CHdrFtrRef *oHeader = new ComplexTypes::Word::CHdrFtrRef();
-					*oHeader = oReader;
+					nullable < ComplexTypes::Word::CHdrFtrRef> oHeader; oHeader.Init();
+					oHeader->FromXML(oReader);
 
-					if (oHeader) m_arrHeaderReference.push_back( oHeader );
+					m_arrHeaderReference.push_back( oHeader );
 				}
 				else if ( L"w:lnNumType" == sName )
 					m_oLnNumType = oReader;
@@ -1710,10 +1691,10 @@ namespace OOX
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 					if (docx_flat)
 					{
-						ComplexTypes::Word::CHdrFtrRef *pHeaderRef = new ComplexTypes::Word::CHdrFtrRef();
+						nullable<ComplexTypes::Word::CHdrFtrRef> pHeaderRef; pHeaderRef.Init();
 						NSCommon::smart_ptr<OOX::CHdrFtr> pHeader = new OOX::CHdrFtr(document);
 
-						if (pHeaderRef && pHeader.IsInit())
+						if (pHeaderRef.IsInit() && pHeader.IsInit())
 						{
 							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
 							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pHeader.GetPointer());
@@ -1735,10 +1716,10 @@ namespace OOX
 					CDocxFlat* docx_flat = dynamic_cast<CDocxFlat*>(document);
 					if (docx_flat)
 					{
-						ComplexTypes::Word::CHdrFtrRef *pFooterRef = new ComplexTypes::Word::CHdrFtrRef();
+						nullable<ComplexTypes::Word::CHdrFtrRef> pFooterRef; pFooterRef.Init();
 						NSCommon::smart_ptr<OOX::CHdrFtr> pFooter = new OOX::CHdrFtr(document);
 
-						if (pFooter.IsInit() && pFooterRef)
+						if (pFooter.IsInit() && pFooterRef.IsInit())
 						{
 							OOX::IFileContainer* oldContainer = docx_flat->m_currentContainer;
 							docx_flat->m_currentContainer = dynamic_cast<OOX::IFileContainer*>(pFooter.GetPointer());
@@ -1783,14 +1764,14 @@ namespace OOX
 				for (size_t nIndex = 0; nIndex < m_arrHeaderReference.size(); nIndex++)
 				{
 					sResult += (L"<w:headerReference");
-					if (m_arrHeaderReference[nIndex])
+					if (m_arrHeaderReference[nIndex].IsInit())
 						sResult += m_arrHeaderReference[nIndex]->ToString();
 					sResult += (L"/>");
 				}
 				for (size_t nIndex = 0; nIndex < m_arrFooterReference.size(); nIndex++)
 				{
 					sResult += (L"<w:footerReference");
-					if (m_arrFooterReference[nIndex])
+					if (m_arrFooterReference[nIndex].IsInit())
 						sResult += m_arrFooterReference[nIndex]->ToString();
 					sResult += (L"/>");
 				}
@@ -1890,6 +1871,11 @@ namespace OOX
 			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidRPr"),  m_oRsidRPr )
 			WritingElement_ReadAttributes_Read_else_if( oReader, (L"w:rsidSect"), m_oRsidSect )
 			WritingElement_ReadAttributes_End( oReader )
+		}
+		const CSectionProperty CSectionProperty::Merge(const CSectionProperty& oPrev, const CSectionProperty& oCurrent)
+		{
+			// ??? ну не хорошо это			
+			return oPrev;
 		}
 
 	} // Logic

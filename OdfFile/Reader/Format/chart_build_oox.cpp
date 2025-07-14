@@ -1178,7 +1178,7 @@ void process_build_object::visit(table_table& val)
 }   
 void process_build_object::visit(table_table_rows& val)
 {        
-    ACCEPT_ALL_CONTENT(val.table_table_row_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 
 void process_build_object::visit(table_table_row & val)
@@ -1203,7 +1203,7 @@ void process_build_object::visit(table_table_column_group& val)
 }
 void process_build_object::visit(table_table_columns& val)
 {
-    ACCEPT_ALL_CONTENT(val.table_table_column_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 void process_build_object::visit(table_columns_no_group& val)
 {
@@ -1288,11 +1288,11 @@ void process_build_object::visit(table_covered_table_cell& val)
 }
 void process_build_object::visit(table_table_header_columns& val)
 {
-    ACCEPT_ALL_CONTENT(val.table_table_column_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 void process_build_object::visit(table_table_header_rows& val)
 {        
-    ACCEPT_ALL_CONTENT(val.table_table_row_);
+    ACCEPT_ALL_CONTENT(val.content_);
 }
 }
 }

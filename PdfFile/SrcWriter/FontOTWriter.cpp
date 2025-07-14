@@ -4313,6 +4313,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CCFFWriter
 	//----------------------------------------------------------------------------------------
+	const unsigned short scEmbeddedPostscript = 0xC15;
 	struct CCFFWriter
 	{
 		typedef std::pair<BYTE, unsigned short> ByteAndUShort;
@@ -4354,7 +4355,6 @@ namespace PdfWriter
 		bool WriteName(const std::string& inSubsetFontName);
 		BYTE GetMostCompressedOffsetSize(unsigned long inOffset);
 		bool WriteTopIndex();
-		static const unsigned short scEmbeddedPostscript = 0xC15;
 		bool WriteTopDictSegment(CMemoryStream* ioTopDictSegment);
 		bool WriteStringIndex();
 		bool WriteGlobalSubrsIndex();

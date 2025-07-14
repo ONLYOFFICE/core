@@ -557,7 +557,7 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 }
 void text_format_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
-	double font_size = process_font_size_impl(fo_font_size_, NULL);
+	double font_size = process_font_size_impl(fo_font_size_, NULL, 1., 0.5); // sz in pt
 
 	bool bBold = false, bItalic = false;
 	if (font_size > 0)
@@ -588,7 +588,7 @@ void text_format_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conv
 		if (font)
 			font_name = font->name();
 	}
-	//if (font_name.empty())
+	if (font_name.empty())
 	{
 		font_name = L"-";
 	}

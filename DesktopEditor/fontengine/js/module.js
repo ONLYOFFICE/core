@@ -917,15 +917,15 @@ function onLoadFontsModule(window, undefined)
 				this._mapToNames = AscCommon.spellcheckGetLanguages();
 
 			let _langKey = "" + lang;
-			let _langName = this._mapToNames[_langKey];
-			if (_langName === undefined)
+			let _langObj = this._mapToNames[_langKey];
+			if (!_langObj || !_langObj["hyphen"] || !_langObj["name"])
 			{
 				this._dictionaries[_langKey] = false;
 				callback();
 				return;
 			}
 
-			this._loadDictionaryAttemt(_langKey, _langName, callback);
+			this._loadDictionaryAttemt(_langKey, _langObj["name"], callback);
 		};
 
 		this._loadDictionaryAttemt = function(langKey, langName, callback, currentAttempt)

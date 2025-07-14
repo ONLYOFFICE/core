@@ -1891,7 +1891,7 @@ int Binary_pPrReader::Read_pgHeader(BYTE type, long length, void* poResult)
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = m_oFileWriter.get_headers_footers_writer().m_aHeaders[nHdrFtrIndex];
 
-			ComplexTypes::Word::CHdrFtrRef* pRef = new ComplexTypes::Word::CHdrFtrRef();
+			nullable<ComplexTypes::Word::CHdrFtrRef> pRef;  pRef.Init();
 
 			pRef->m_oType.Init();
 			pRef->m_oType->SetValueFromByte(pHdrFtrItem->eType);
@@ -1918,7 +1918,7 @@ int Binary_pPrReader::Read_pgFooter(BYTE type, long length, void* poResult)
 		{
 			Writers::HdrFtrItem* pHdrFtrItem = oBinary_HdrFtrTableReader.m_oHeaderFooterWriter.m_aFooters[nHdrFtrIndex];
 
-			ComplexTypes::Word::CHdrFtrRef* pRef = new ComplexTypes::Word::CHdrFtrRef();
+			nullable<ComplexTypes::Word::CHdrFtrRef> pRef; pRef.Init();
 
 			pRef->m_oType.Init();
 			pRef->m_oType->SetValueFromByte(pHdrFtrItem->eType);
@@ -2016,8 +2016,8 @@ int Binary_pPrReader::ReadCols(BYTE type, long length, void* poResult)
 	}
 	else if ( c_oSerProp_Columns::Column == type )
 	{
-		ComplexTypes::Word::CColumn* pCol = new ComplexTypes::Word::CColumn();
-		READ1_DEF(length, res, this->ReadCol, pCol);
+		nullable<ComplexTypes::Word::CColumn> pCol; pCol.Init();
+		READ1_DEF(length, res, this->ReadCol, pCol.GetPointer());
 		pCols->m_arrColumns.push_back(pCol);
 	}
 	else

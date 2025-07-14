@@ -939,7 +939,10 @@ namespace OOX
 			oProperties.m_oPPrChange = Merge(oPrev.m_oPPrChange, oCurrent.m_oPPrChange);
 			oProperties.m_oPStyle = Merge(oPrev.m_oPStyle, oCurrent.m_oPStyle);
 			oProperties.m_oRPr = Merge(oPrev.m_oRPr, oCurrent.m_oRPr);
-			oProperties.m_oSectPr = Merge(oPrev.m_oSectPr, oCurrent.m_oSectPr);
+			if (oCurrent.m_oSectPr.IsInit() && oPrev.m_oSectPr.IsInit())
+				oProperties.m_oSectPr = OOX::Logic::CSectionProperty::Merge(oPrev.m_oSectPr.get(), oCurrent.m_oSectPr.get());
+			else
+				oProperties.m_oSectPr = Merge(oPrev.m_oSectPr, oCurrent.m_oSectPr);
 			oProperties.m_oShd = Merge(oPrev.m_oShd, oCurrent.m_oShd);
 			oProperties.m_oSnapToGrid = Merge(oPrev.m_oSnapToGrid, oCurrent.m_oSnapToGrid);
 

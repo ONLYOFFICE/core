@@ -17,18 +17,32 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	std::vector<CXMLNode> arChilds{oNode.GetChilds(L"hc:pt")};
+	TPoint oPoint{0, 0};
 
-	m_arPoints.resize(arChilds.size());
-
-	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
+	WHILE_READ_NEXT_NODE(oReader)
 	{
-		m_arPoints[unIndex].m_nX = arChilds[unIndex].GetAttributeInt(L"x");
-		m_arPoints[unIndex].m_nY = arChilds[unIndex].GetAttributeInt(L"y");
+		if ("hc:pt" == oReader.GetName())
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					oPoint.m_nX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					oPoint.m_nY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+
+			m_arPoints.push_back(oPoint);
+
+			oPoint = {0, 0};
+		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 
 	m_nPoints = m_arPoints.size();
 }

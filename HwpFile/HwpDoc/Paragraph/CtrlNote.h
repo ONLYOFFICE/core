@@ -14,7 +14,7 @@ public:
 	CCtrlNote();
 	CCtrlNote(const HWP_STRING& sCtrlID);
 	CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlNote(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlNote(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
 

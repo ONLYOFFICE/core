@@ -16,14 +16,24 @@ CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo
 	oBuffer.ReadInt(m_nCharUnitLocInPara);
 }
 
-CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion)
+CHWPRecordDocumentProperties::CHWPRecordDocumentProperties(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
 	: CHWPRecord(EHWPTag::HWPTAG_DOCUMENT_PROPERTIES, 0, 0), m_pParent(&oDocInfo)
 {
-	m_shFigureStartNo   = oNode.GetAttributeInt(L"page");
-	m_shFootNoteStartNo = oNode.GetAttributeInt(L"footnote");
-	m_shEndNoteStartNo  = oNode.GetAttributeInt(L"endnote");
-	m_shFigureStartNo   = oNode.GetAttributeInt(L"pic");
-	m_shTableStartNo    = oNode.GetAttributeInt(L"tbl");
-	m_shEqStartNo       = oNode.GetAttributeInt(L"equation");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("page" == sAttributeName)
+			m_shPageStartNo = oReader.GetInt();
+		else if ("footnote" == sAttributeName)
+			m_shFootNoteStartNo = oReader.GetInt();
+		else if ("endnote" == sAttributeName)
+			m_shEndNoteStartNo = oReader.GetInt();
+		else if ("pic" == sAttributeName)
+			m_shFigureStartNo = oReader.GetInt();
+		else if ("tbl" == sAttributeName)
+			m_shTableStartNo = oReader.GetInt();
+		else if ("equation" == sAttributeName)
+			m_shEqStartNo = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 }

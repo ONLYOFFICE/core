@@ -54,13 +54,20 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 }
 
-CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrl(sCtrlID)
 {
-	m_ePos = GetNumPos(oNode.GetAttribute(L"pos"));
-	m_eNumShape = GetNumberShape2(oNode.GetAttributeInt(L"formatType"));
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("pos" == sAttributeName)
+			m_ePos = GetNumPos(oReader.GetText());
+		else if ("formatType" == sAttributeName)
+			m_eNumShape = GetNumberShape2(oReader.GetInt());
+		else if ("sideChar" == sAttributeName)
+			m_sPostfix = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
 
-	m_sPostfix = oNode.GetAttribute(L"sideChar");
 	m_sPrefix  = m_sPostfix;
 }
 

@@ -31,7 +31,7 @@ class CCtrlHeadFoot : public CCtrl
 public:
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID);
 	CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion, bool bIsHeader);
-	CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
 

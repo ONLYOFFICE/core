@@ -4347,6 +4347,21 @@ GBool Gfx::doImage(Object *ref, Stream *str, GBool inlineImg) {
     maskColorMap = NULL; // make gcc happy
     dict->lookup("Mask", &maskObj);
     dict->lookup("SMask", &smaskObj);
+
+	if (maskObj.isString())
+	{
+		GString* maskStr = maskObj.getString();
+		Object oDict, oMaskObj;
+		oDict.initNull();
+		MemStream* stream = new MemStream(maskStr->getCString(), 0, maskStr->getLength(), &oDict);
+		Parser* parser = new Parser(NULL, new Lexer(NULL, stream), gTrue);
+		parser->getObj(&oMaskObj);
+		maskObj.free();
+		oMaskObj.copy(&maskObj);
+		oMaskObj.free();
+		delete parser;
+	}
+
     if (smaskObj.isStream()) {
       // soft mask
       if (inlineImg) {

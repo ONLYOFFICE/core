@@ -64,7 +64,7 @@ public:
 			unsigned char Byte6;
 			unsigned short fExprO;
 		};
-		double xnum;
+		double xnum = 0;
 	} data;
 };
 

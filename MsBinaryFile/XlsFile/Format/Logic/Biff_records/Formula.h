@@ -59,11 +59,11 @@ public:
 	bool			bBiff_3_4 = false;
 	Cell			cell;
 	FormulaValue	val;
-	bool			fAlwaysCalc;
-	bool			fShrFmla;
+	bool			fAlwaysCalc = false;
+	bool			fShrFmla = false;
 	
-	bool			fFill;
-	bool			fClearErrors;
+	bool			fFill = false;
+	bool			fClearErrors = false;
 
 	CellParsedFormula		formula;
 };

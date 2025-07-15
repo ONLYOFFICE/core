@@ -108,7 +108,10 @@ namespace PdfWriter
 		if (m_pFontFile && m_pFontFileDict)
 		{
 			CStream* pStream = m_pFontFileDict->GetStream();
-			m_pFontFile->WriteTTF(pStream);
+			if (m_pFontFile->GetOpenTypeCFF())
+				m_pFontFile->WriteOTF(pStream);
+			else
+				m_pFontFile->WriteTTF(pStream);
 			m_pFontFileDict->Add("Length1", pStream->Size());
 			m_pFontFileDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		}

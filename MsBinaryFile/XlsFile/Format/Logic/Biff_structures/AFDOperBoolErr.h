@@ -43,10 +43,11 @@ public:
 	BiffStructurePtr clone();
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 	
 	static const ElementType type = typeAFDOperBoolErr;
 
-	_INT16 bes;
+    _INT16 bes = 0;
 };
 
 } // namespace XLS

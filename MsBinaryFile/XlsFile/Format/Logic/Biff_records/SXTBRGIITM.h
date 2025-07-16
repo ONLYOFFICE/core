@@ -47,10 +47,11 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXTBRGIITM;
 
-	unsigned short cItems;
+    unsigned short cItems = 0;
 
 };
 

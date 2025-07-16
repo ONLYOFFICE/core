@@ -56,5 +56,10 @@ void GridSet::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void GridSet::writeFields(CFRecord& record)
+{
+    _UINT16 gridset = 1; // reserved
+    record << gridset;
+}
 } // namespace XLS
 

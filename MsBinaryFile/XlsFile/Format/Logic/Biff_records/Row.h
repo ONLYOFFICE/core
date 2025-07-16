@@ -53,10 +53,10 @@ namespace XLS
 
 		static const ElementType type = typeRow;
 
-		UncheckedRw     rw;
-		unsigned short	colMic;
-		unsigned short	colMac;
-		_UINT16			miyRw;
+        UncheckedRw     rw = 0;
+        unsigned short	colMic = 0;
+        unsigned short	colMac = 0;
+		_UINT16			miyRw = 256;
 
 		unsigned char	iOutLevel = 0;
 		bool			fCollapsed = false;

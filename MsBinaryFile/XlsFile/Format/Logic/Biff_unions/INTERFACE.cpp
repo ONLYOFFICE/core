@@ -77,5 +77,13 @@ const bool INTERFACE_T::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool INTERFACE_T::saveContent(BinProcessor& proc)
+{
+    proc.mandatory<InterfaceHdr>();
+    proc.mandatory<Mms>();
+    proc.mandatory<InterfaceEnd>();
+    return true;
+}
+
 
 } // namespace XLS

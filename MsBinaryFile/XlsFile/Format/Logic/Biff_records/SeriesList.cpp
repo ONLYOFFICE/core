@@ -55,6 +55,10 @@ void SeriesList::readFields(CFRecord& record)
 	rgiser.load(record);
 }
 
+void SeriesList::writeFields(CFRecord& record)
+{
+	rgiser.save(record);
+}
 
 BiffStructurePtr RGISeriesListSpecial::clone()
 {
@@ -75,6 +79,15 @@ void RGISeriesListSpecial::load(CFRecord& record)
 	}
 }
 
+void RGISeriesListSpecial::save(CFRecord& record)
+{
+	unsigned short cser = series.size();
+	record << cser;
+	for(auto i : series)
+	{
+		record << i;
+	}
+}
 
 } // namespace XLS
 

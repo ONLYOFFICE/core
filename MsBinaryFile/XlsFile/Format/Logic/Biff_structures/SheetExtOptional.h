@@ -50,15 +50,16 @@ public:
 	static const ElementType	type = typeSheetExtOptional;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	unsigned char	icvPlain12;
-	bool			fCondFmtCalc;
-	bool			fNotPublished;
+    unsigned char	icvPlain12 = 0;
+    bool			fCondFmtCalc = false;
+    bool			fNotPublished = false;
 	CFColor			color;
 
 //----------------------------------------
-	bool			bEnabled;
+    bool			bEnabled = false;
 };
 
 } // namespace XLS

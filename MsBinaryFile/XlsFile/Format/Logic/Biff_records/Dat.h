@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDat;
 
 //-----------------------------
-	bool fHasBordHorz;
-	bool fHasBordVert;
-	bool fHasBordOutline;
-	bool fShowSeriesKey;
+	bool fHasBordHorz = false;
+	bool fHasBordVert = false;
+	bool fHasBordOutline = false;
+	bool fShowSeriesKey = false;
 };
 
 } // namespace XLS

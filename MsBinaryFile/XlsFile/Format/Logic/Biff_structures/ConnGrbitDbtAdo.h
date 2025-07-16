@@ -48,8 +48,9 @@ public:
 	static const ElementType type = typeConnGrbitDbtAdo;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	bool fAdoRefreshable;
+	bool fAdoRefreshable = false;
 
 };
 

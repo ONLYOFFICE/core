@@ -44,6 +44,11 @@ void TxtWf::load(CFRecord& record)
 	record 	>> fieldType >> fieldStart;
 }
 
+void TxtWf::save(CFRecord& record)
+{
+	record 	<< fieldType << fieldStart;
+}
+
 
 } // namespace XLS
 

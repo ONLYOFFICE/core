@@ -52,25 +52,25 @@ public:
 
 	static const ElementType type = typeSetup;
 
-	_UINT32 iPaperSize = 0;
+	_UINT32 iPaperSize = 9;
 	_UINT32 iScale = 100;
 	_INT32 iPageStart = 1;
-	_UINT32 iFitWidth = 0;
-	_UINT32 iFitHeight = 0;
+	_UINT32 iFitWidth = 1;
+	_UINT32 iFitHeight = 1;
 
 	bool fLeftToRight = false;
-	bool fPortrait = false;
+	bool fPortrait = true;
 	bool fNoPls = false;
 	bool fNoColor = false;
 	bool fDraft = false;
 	bool fNotes = false;
 	bool fNoOrient = false;
-	bool fUsePage = false;
+	bool fUsePage = true;
 	bool fEndNotes = false;
 	unsigned char iErrors = 0;
 
-	_UINT32 iRes = 0;
-	_UINT32 iVRes = 0;
+	_UINT32 iRes = 300;
+	_UINT32 iVRes = 300;
 
 	Xnum	numHdr;
 	Xnum	numFtr;

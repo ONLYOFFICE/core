@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	static const ElementType type = typeCELLTABLE;
 
@@ -57,9 +58,43 @@ public:
    
 	std::vector<BaseObjectPtr>	m_arEntExU2;
 
+    std::vector<BaseObjectPtr>	m_arCellGroups;
+
 	GlobalWorkbookInfoPtr		global_info_;
 	int							index_sheet_info_;
 	bool						isConcatinate_;
+};
+
+class CELL_GROUP : public CompositeObject
+{
+    BASE_OBJECT_DEFINE_CLASS_NAME(CELL_GROUP)
+public:
+    CELL_GROUP(std::vector<CellRangeRef>& shared_formulas_locations_ref) :
+                            shared_formulas_locations_ref_(shared_formulas_locations_ref)
+    {
+    }
+
+    BaseObjectPtr clone()
+    {
+        return BaseObjectPtr(new CELL_GROUP(*this));
+    }
+
+    const bool loadContent(BinProcessor& proc);
+    const bool saveContent(BinProcessor& proc);
+
+
+    static const ElementType type = typeCELL_GROUP;
+
+//---------------------------------------------------------------------------
+    std::vector<BaseObjectPtr>	m_arRows;//for xls writing
+    std::vector<BaseObjectPtr>	m_arCells;
+
+    std::list<BaseObjectPtr>    m_DBCells;
+
+private:
+    std::vector<CellRangeRef>& shared_formulas_locations_ref_;
+
+    GlobalWorkbookInfoPtr global_info_;
 };
 
 } // namespace XLS

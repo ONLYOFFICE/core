@@ -48,13 +48,14 @@ public:
 
 	BaseObjectPtr clone();
 
-	
+
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeRefreshAll;
 
 //-----------------------------
-	Boolean<unsigned short> refreshAll;
+    Boolean<unsigned short> refreshAll = false;
 
 };
 

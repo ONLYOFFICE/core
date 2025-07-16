@@ -34,6 +34,8 @@
 #include "../CompositeObject.h"
 #include "../Biff_structures/CellRef.h"
 #include "../Biff_structures/CellRangeRef.h"
+#include "../Biff_structures/BiffString.h"
+#include "../Base/Nullable.h"
 
 namespace XLS
 {
@@ -51,6 +53,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 	static const ElementType	type = typeFORMULA;
 
 	int serialize(std::wostream & stream);
@@ -64,6 +67,7 @@ public:
 
 	BaseObjectPtr				m_Cash;
 	std::vector<BaseObjectPtr>	m_arContinue;
+    nullable<XLUnicodeString>   m_stringValCache;
 
 	CellRef location;
 

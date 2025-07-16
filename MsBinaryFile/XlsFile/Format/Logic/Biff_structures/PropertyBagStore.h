@@ -49,11 +49,12 @@ public:
 	static const XLS::ElementType	type = XLS::typePropertyBagStore;
 	
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
 	std::vector<FactoidType> factoidTypes;
-	unsigned short cbHdr;
-	unsigned short sVer;
+	unsigned short cbHdr = 0xC;
+	unsigned short sVer = 0x0100;
 	std::vector<PBString> stringTable;
 };
 

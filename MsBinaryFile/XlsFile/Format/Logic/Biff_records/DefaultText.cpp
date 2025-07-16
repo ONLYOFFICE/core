@@ -55,5 +55,10 @@ void DefaultText::readFields(CFRecord& record)
 	record >> id;
 }
 
+void DefaultText::writeFields(CFRecord& record)
+{
+	record << id;
+}
+
 } // namespace XLS
 

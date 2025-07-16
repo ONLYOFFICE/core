@@ -95,9 +95,9 @@ public:
 	const bool getWideRecommendation() const;
 
 protected:
-	std::wstring 	str_;
+    std::wstring 	str_= L"";
 
-	size_t struct_size;
+    size_t struct_size  = 0;
 	_CP_OPT(size_t) cch_;
 };
 
@@ -215,8 +215,12 @@ public:
             case aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO:
                 if(0 == cch) break;
             case aw_READ_FROM_RECORD:
-                //stub
-                break;
+				{
+					is_wide = true;
+					byte wideFlag = 1; // for wide chars writing
+					record << wideFlag;
+					break;
+				}
             case aw_WIDE:
                 is_wide = true;
                 break;
@@ -319,10 +323,11 @@ public:
 	
 	virtual void load(CFRecord& record);
 	virtual void load(IBinaryReader* reader);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeStringSegmented;
 
-	_UINT32						cchTotal;
+	_UINT32						cchTotal = 0;
 	std::vector<std::wstring>	arStrings;
 	std::wstring				strTotal;
 };

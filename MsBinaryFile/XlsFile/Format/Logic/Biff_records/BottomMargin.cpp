@@ -37,6 +37,7 @@ namespace XLS
 
 BottomMargin::BottomMargin()
 {
+	num.data.value = 0.75;
 }
 
 
@@ -53,6 +54,11 @@ BaseObjectPtr BottomMargin::clone()
 void BottomMargin::readFields(CFRecord& record)
 {
 	record >> num;
+}
+
+void BottomMargin::writeFields(CFRecord& record)
+{
+	record << num;
 }
 
 } // namespace XLS

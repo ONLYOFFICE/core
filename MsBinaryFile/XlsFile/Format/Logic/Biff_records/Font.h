@@ -63,26 +63,26 @@ public:
 	GlobalWorkbookInfoPtr global_info;
 
 //-----------------------------
-	_UINT16 dyHeight; // measured in twips (1/20 of of a printer's point)
+	_UINT16 dyHeight = 220; // measured in twips (1/20 of of a printer's point)
 
-	bool fItalic;
-	bool fStrikeOut;
-	bool fOutline;
-	bool fShadow;
-	bool fCondense;
-	bool fExtend;
+	bool fItalic = false;
+	bool fStrikeOut = false;
+	bool fOutline = false;
+	bool fShadow = false;
+	bool fCondense = false;
+	bool fExtend = false;
 
-	_UINT16 icv;
-	_UINT16 bls = 0;
+	_UINT16 icv = 8;
+	_UINT16 bls = 400;
 	_UINT16 sss = 0;
 	unsigned char uls = 0;
-	unsigned char bFamily = 0;
-	unsigned char bCharSet = 0;
+	unsigned char bFamily = 0x02;
+	unsigned char bCharSet = 0xCC;
 
-    std::wstring fontName;
+	std::wstring fontName = L"calibri";
 	FillInfoExt color_ext;
 
-	bool correct;
+	bool correct = true;
 
  //xlsb
     XLSB::Color brtColor;

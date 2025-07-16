@@ -71,6 +71,16 @@ void SheetExtOptional::load(CFRecord& record)
 	record >> color;
 }
 
+void SheetExtOptional::save(CFRecord& record)
+{
+    _UINT32 flags = 0;
+    SETBITS(flags, 0, 6, icvPlain12);
+    SETBIT(flags, 7, fCondFmtCalc)
+    SETBIT(flags, 8, fNotPublished)
+    record << flags;
+    record << color;
+}
+
 
 } // namespace XLS
 

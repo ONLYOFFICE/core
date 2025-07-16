@@ -56,5 +56,10 @@ void SXStreamID::readFields(CFRecord& record)
 	record >> idStm;
 }
 
+void SXStreamID::writeFields(CFRecord& record)
+{
+    record << idStm;
+}
+
 } // namespace XLS
 

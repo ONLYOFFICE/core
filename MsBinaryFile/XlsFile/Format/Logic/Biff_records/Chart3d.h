@@ -49,23 +49,24 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeChart3d;
 
 //-----------------------------
-	_INT16	anRot;
-	_INT16	anElev;
-	_INT16	pcDist;
-	_UINT16 pcHeightPie;
-	short	pcHeight3D;
-	_INT16	pcDepth;
-	_UINT16 pcGap;
+	_INT16	anRot = 0;
+	_INT16	anElev = 0;
+	_INT16	pcDist = 0;
+	_UINT16 pcHeightPie = 0;
+	short	pcHeight3D = 0;
+	_INT16	pcDepth = 0;
+	_UINT16 pcGap = 0;
 
-	bool fPerspective;
-	bool fCluster;
-	bool f3DScaling;
-	bool fNotPieChart;
-	bool fWalls2D;
+	bool fPerspective = false;
+	bool fCluster = false;
+	bool f3DScaling = false;
+	bool fNotPieChart = false;
+	bool fWalls2D = false;
 
 };
 

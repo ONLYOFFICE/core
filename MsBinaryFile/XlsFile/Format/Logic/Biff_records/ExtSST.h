@@ -51,13 +51,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeExtSST;
 
 //-----------------------------
-	_UINT16 dsst;
+    _UINT16 dsst = 8;
 	BiffStructurePtrVector rgISSTInf;
-	_UINT32 num_sets;
+    _UINT32 num_sets = 0;
 
 };
 

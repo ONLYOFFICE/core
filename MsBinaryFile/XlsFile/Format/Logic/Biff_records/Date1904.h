@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDate1904;
 
 //-----------------------------
-	Boolean<unsigned short> f1904DateSystem;
+    Boolean<unsigned short> f1904DateSystem = false;
 
 };
 

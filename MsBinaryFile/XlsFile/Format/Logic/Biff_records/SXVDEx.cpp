@@ -90,5 +90,39 @@ void SXVDEx::readFields(CFRecord& record)
 	}
 }
 
+void SXVDEx::writeFields(CFRecord& record)
+{
+    unsigned short	flags1 = 0;
+    unsigned char	flags2 = 0;
+    SETBIT(flags1, 0, fShowAllItems)
+    SETBIT(flags1, 1, fDragToRow)
+    SETBIT(flags1, 2, fDragToColumn)
+    SETBIT(flags1, 3, fDragToPage)
+    SETBIT(flags1, 4, fDragToHide)
+    SETBIT(flags1, 5, fNotDragToData)
+
+    SETBIT(flags1, 7, fServerBased)
+
+    SETBIT(flags1, 9, fAutoSort)
+    SETBIT(flags1, 10, fAscendSort)
+    SETBIT(flags1, 11, fAutoShow)
+    SETBIT(flags1, 12, fTopAutoShow)
+    SETBIT(flags1, 13, fCalculatedField)
+    SETBIT(flags1, 14, fPageBreaksBetweenItems)
+    SETBIT(flags1, 15, fHideNewItems)
+
+    SETBIT(flags2, 5, fOutline)
+    SETBIT(flags2, 6, fInsertBlankRow)
+    SETBIT(flags2, 7, fSubtotalAtTop)
+    record << flags1 << flags2 << citmAutoShow << isxdiAutoSort << isxdiAutoShow << ifmt;
+    cchSubName = stSubName.getSize();
+    if (cchSubName > 0 && cchSubName < 0xffff)
+    {
+        record << cchSubName;
+        record.reserveNunBytes(8);
+        record << stSubName;
+    }
+}
+
 } // namespace XLS
 

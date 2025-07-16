@@ -50,13 +50,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeChartFormat;
 
 	int serialize(std::wostream & _stream);
 //-----------------------------
-	bool fVaried;
-	_UINT16 icrt;
+    bool fVaried = false;
+    _UINT16 icrt = 0;
 };
 
 } // namespace XLS

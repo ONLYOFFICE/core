@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeValueRange;
 
@@ -58,14 +59,14 @@ public:
 	Xnum numMinor;
 	Xnum numCross;
 
-	bool fAutoMin;
-	bool fAutoMax;
-	bool fAutoMajor;
-	bool fAutoMinor;
-	bool fAutoCross;
-	bool fLog;
-	bool fReversed;
-	bool fMaxCross;
+	bool fAutoMin = false;
+	bool fAutoMax = false;
+	bool fAutoMajor = false;
+	bool fAutoMinor = false;
+	bool fAutoCross = false;
+	bool fLog = false;
+	bool fReversed = false;
+	bool fMaxCross = false;
 };
 
 } // namespace XLS

@@ -55,5 +55,11 @@ void MDXKPI::readFields(CFRecord& record)
 	record >> frtHeader >> istrConnName >> tfnSrc >> kpiprop >> istrKPIName >> istrMbrKPI;
 }
 
+void MDXKPI::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDXKPI;
+	record << frtHeader << istrConnName << tfnSrc << kpiprop << istrKPIName << istrMbrKPI;
+}
+
 } // namespace XLS
 

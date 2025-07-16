@@ -57,6 +57,10 @@ void FilePointer::load(CFRecord& record)
 	record >> offset;
 }
 
+void FilePointer::save(CFRecord& record)
+{
+    record << offset;
+}
 
 } // namespace XLS
 

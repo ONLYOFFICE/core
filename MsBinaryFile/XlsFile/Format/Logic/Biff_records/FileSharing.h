@@ -55,10 +55,10 @@ public:
 
 	static const ElementType	type = typeFileSharing;
 
-    Boolean<unsigned short>     fReadOnlyRec;
+    Boolean<unsigned short>     fReadOnlyRec = false;
     unsigned short              wResPassNum = 0;
     std::wstring                wResPass;
-    _UINT16                     iNoResPass;
+    _UINT16                     iNoResPass = 0;
     XLUnicodeString             stUNUsername;
     XLSB::XLNullableWideString	stUserName;
 };

@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeScenarioProtect;
 
 //-----------------------------
-	Boolean<unsigned short> fScenProtect;
+    Boolean<unsigned short> fScenProtect = false;
 };
 
 } // namespace XLS

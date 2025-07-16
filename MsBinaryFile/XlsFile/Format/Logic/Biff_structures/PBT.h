@@ -48,10 +48,11 @@ public:
 	static const ElementType type = typePBT;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned char	pbt;
-	bool			fAutoRefresh;
-	bool			fNeedRefresh;
+	unsigned char	pbt = 0;
+	bool			fAutoRefresh = false;
+	bool			fNeedRefresh = false;
 };
 
 } // namespace XLS

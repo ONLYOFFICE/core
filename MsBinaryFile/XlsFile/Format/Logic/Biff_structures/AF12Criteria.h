@@ -47,6 +47,7 @@ public:
 	~AF12Criteria();
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	static const ElementType type = typeAF12Criteria;
 

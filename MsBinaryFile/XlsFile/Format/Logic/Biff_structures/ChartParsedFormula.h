@@ -45,6 +45,7 @@ public:
 
 	BiffStructurePtr clone();
 	void load(CFRecord& record);
+	void save(CFRecord& record);
 
 	std::vector<CellRangeRef>	cell_ranges;
 

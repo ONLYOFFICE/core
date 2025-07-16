@@ -62,5 +62,10 @@ void Chart::readFields(CFRecord& record)
 
 }
 
+void Chart::writeFields(CFRecord& record)
+{
+    record << x << y << dx << dy;
+}
+
 } // namespace XLS
 

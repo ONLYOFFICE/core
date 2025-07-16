@@ -50,6 +50,7 @@ public:
 	static const ElementType	type = typeFrtRefHeader;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;

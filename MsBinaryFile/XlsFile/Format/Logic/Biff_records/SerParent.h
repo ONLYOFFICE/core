@@ -46,10 +46,11 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSerParent;
 
-	_UINT16 series;
+	_UINT16 series = 0;
 
 	BaseObjectPtr m_SerAuxTrend;
 	BaseObjectPtr m_SerAuxErrBar;

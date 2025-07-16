@@ -47,5 +47,11 @@ void Fbi2::readFields(CFRecord& record)
 	scab = (val != 0);
 }
 
+void Fbi2::writeFields(CFRecord& record)
+{
+    unsigned short	val = scab!= false;
+    record << dmixBasis << dmiyBasis << twpHeightBasis << val << ifnt;
+}
+
 } // namespace XLS
 

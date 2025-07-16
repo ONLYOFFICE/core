@@ -86,6 +86,30 @@ void ItemMoniker::load(XLS::CFRecord& record)
 
 }
 
+void ItemMoniker::save(XLS::CFRecord& record)
+{
+    if(delimiterAnsi.empty() || delimiterAnsi.at(delimiterAnsi.size()-1) != '\0')
+    {
+        delimiterAnsi += '\0';
+    }
+    _UINT32 length = delimiterAnsi.size() + (delimiterUnicode.size() * 2);
+    record << length;
+    for(auto i : delimiterAnsi)
+        record << i;
+    for(auto i : delimiterUnicode)
+        record << i;
+
+    if(itemAnsi.empty() || itemAnsi.at(itemAnsi.size()-1) != '\0')
+    {
+        itemAnsi += '\0';
+    }
+    length = itemAnsi.size() + (itemUnicode.size() * 2);
+    record << length;
+    for(auto i : itemAnsi)
+        record << i;
+    for(auto i : itemUnicode)
+        record << i;
+}
 
 } // namespace OSHARED
 

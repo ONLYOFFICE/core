@@ -64,6 +64,16 @@ void SXDI::readFields(CFRecord& record)
 	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 }
 
+void SXDI::writeFields(CFRecord& record)
+{
+    cchName = stName.getSize();
+    record << isxvdData << iiftab << df << isxvd << isxvi << ifmt << cchName;
+    if (cchName > 0 && cchName < 0xFFFF)
+    {
+        record << stName;
+    }
+}
+
 int SXDI::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)

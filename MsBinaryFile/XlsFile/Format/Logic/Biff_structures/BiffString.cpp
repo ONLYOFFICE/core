@@ -319,6 +319,17 @@ namespace XLS
 			strTotal		+= arStrings.back();
 		}
 	}
+	void XLUnicodeStringSegmented::save(CFRecord& record)
+	{
+		record << cchTotal;
+		for(auto tempStr : arStrings)
+		{
+			XLUnicodeString string;
+			string = tempStr;
+			record << string;
+		}
+	}
+
 	void XLUnicodeStringSegmented::load(IBinaryReader* reader)
 	{
 		cchTotal = reader->ReadUInt32();

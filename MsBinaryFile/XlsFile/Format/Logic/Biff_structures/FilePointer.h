@@ -50,9 +50,10 @@ public:
 	static const ElementType	type = typeFilePointer;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	_UINT32 offset;
+    _UINT32 offset = 0;
 };
 
 typedef boost::shared_ptr<FilePointer> FilePointerPtr;

@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize		(std::wostream & _stream);
 	int serialize_rPr	(std::wostream & _stream, int iFmt, _CP_OPT(unsigned int) color, bool rtl, bool defRPr);

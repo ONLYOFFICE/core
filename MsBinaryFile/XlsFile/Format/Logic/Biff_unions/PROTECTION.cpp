@@ -88,6 +88,32 @@ const bool PROTECTION::loadContent(BinProcessor& proc)
 	}
 	return m_WinProtect || m_Protect || m_Password;
 }
+
+const bool PROTECTION::saveContent(BinProcessor& proc)
+{
+    if(m_WinProtect != nullptr)
+        proc.mandatory(*m_WinProtect);
+    else
+        proc.mandatory<WinProtect>();
+    if(m_Protect != nullptr)
+        proc.mandatory(*m_Protect);
+    else
+        proc.mandatory<Protect>();
+    if(m_Password != nullptr)
+        proc.mandatory(*m_Password);
+    else
+        proc.mandatory<Password>();
+    if(m_Prot4Rev != nullptr)
+        proc.mandatory(*m_Prot4Rev);
+    else
+        proc.mandatory<Prot4Rev>();
+    if(m_Prot4RevPass != nullptr)
+        proc.mandatory(*m_Prot4RevPass);
+    else
+        proc.mandatory<Prot4RevPass>();
+    return true;
+}
+
 int PROTECTION::serialize (std::wostream & _stream)
 {
 	WinProtect		*win_protect	= dynamic_cast<WinProtect*>		(m_WinProtect.get());

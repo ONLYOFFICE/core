@@ -46,6 +46,10 @@ void AntiMoniker::load(XLS::CFRecord& record)
 	record >> count;
 }
 
+void AntiMoniker::save(XLS::CFRecord& record)
+{
+    record << count;
+}
 
 } // namespace OSHARED
 

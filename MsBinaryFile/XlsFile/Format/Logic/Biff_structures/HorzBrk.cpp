@@ -44,6 +44,10 @@ namespace XLS
 	{
 		record >> row >> colStart >> colEnd;
 	}
+    void HorzBrk::save(CFRecord& record)
+    {
+        record << row << colStart << colEnd;
+    }
 	int HorzBrk::serialize(std::wostream & stream)
 	{
 		CP_XML_WRITER(stream)

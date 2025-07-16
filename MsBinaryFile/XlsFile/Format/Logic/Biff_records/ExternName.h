@@ -53,22 +53,23 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeExternName;
 
 //-----------------------------
-	bool fBuiltIn;
-	bool fWantAdvise;
-	bool fWantPict;
-	bool fOle;
-	bool fOleLink;
-	short cf;
-	bool fIcon;
+    bool fBuiltIn = false;
+    bool fWantAdvise = false;
+    bool fWantPict = false;
+    bool fOle = false;
+    bool fOleLink = false;
+    short cf  = 0;
+    bool fIcon = false;
 	BiffStructurePtr body;
 
 //-----------------------------
-	_UINT16		supbook_cch;
-	bool		bOleVirtualPath;
+    _UINT16		supbook_cch  = 0;
+    bool		bOleVirtualPath = false;
 };
 
 typedef boost::shared_ptr<ExternName> ExternNamePtr;

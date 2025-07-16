@@ -46,14 +46,15 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDataFormat;
 
-	_UINT16 xi;
-	_UINT16 yi;
-	_UINT16 iss;
+	_UINT16 xi = 0;
+	_UINT16 yi = 0;
+	_UINT16 iss = 0;
 
-	bool fUnknown;
+	bool fUnknown = false;
 };
 
 } // namespace XLS

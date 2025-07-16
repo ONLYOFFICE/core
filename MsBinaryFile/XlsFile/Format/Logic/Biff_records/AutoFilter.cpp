@@ -142,5 +142,46 @@ void AutoFilter::readFields(CFRecord& record)
 	}
 }
 
+void AutoFilter::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+
+    SETBITS(flags, 0, 1, wJoin)
+
+    SETBIT(flags, 2, fSimple1)
+    SETBIT(flags, 3, fSimple2)
+    SETBIT(flags, 4, fTopN)
+    SETBIT(flags, 5, fTop) //top(1) or bottom(0)
+    SETBIT(flags, 6, fPercent)
+
+    SETBITS(flags, 7, 15, wTopN)
+
+    record << iEntry << flags;
+    if (fTopN != 1)
+    {
+        record << doper1;
+        record << doper2;
+        if(doper1.vt == 0x06)
+        {
+            XLUnicodeStringNoCch s;
+            s.setSize(doper1.vtValueStr.cch);
+            s = str1;
+            record << s;
+        }
+        if(doper2.vt == 0x06)
+        {
+            XLUnicodeStringNoCch s;
+            s.setSize(doper2.vtValueStr.cch);
+            s = str2;
+            record << s;
+        }
+    }
+    else
+    {
+        record.reserveNunBytes(20);
+    }
+
+}
+
 } // namespace XLS
 

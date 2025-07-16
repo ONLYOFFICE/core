@@ -55,6 +55,10 @@ void CalcIter::readFields(CFRecord& record)
 {
 	record >> vfIter;
 }
+void CalcIter::writeFields(CFRecord& record)
+{
+    record << vfIter;
+}
 
 } // namespace XLS
 

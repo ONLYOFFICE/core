@@ -47,7 +47,10 @@ void RkRec::load(CFRecord& record)
 	
 	record >> ixfe >> RK_;
 }
-
+void RkRec::save(CFRecord& record)
+{
+    record << ixfe << RK_;
+}
 
 const unsigned short RkRec::get_ixfe() const
 {

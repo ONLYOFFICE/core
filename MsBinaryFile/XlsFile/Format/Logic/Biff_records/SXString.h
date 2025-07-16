@@ -48,12 +48,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	std::wstring value();
 
 	static const ElementType type = typeSXString;
 
-	unsigned short			cch;
+    unsigned short			cch = 0;
 	XLUnicodeStringNoCch	segment;
 };
 

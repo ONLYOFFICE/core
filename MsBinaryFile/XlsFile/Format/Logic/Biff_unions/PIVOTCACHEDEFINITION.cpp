@@ -99,6 +99,17 @@ const bool PIVOTCACHEDEFINITION::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool PIVOTCACHEDEFINITION::saveContent(BinProcessor& proc)
+{
+    if(m_SXStreamID == nullptr || m_SXVS == nullptr)
+        return false;
+    proc.mandatory(*m_SXStreamID);
+    proc.mandatory(*m_SXVS);
+    if(m_SXSRC != nullptr)
+        proc.mandatory(*m_SXSRC);
+    return true;
+}
+
 int PIVOTCACHEDEFINITION::serialize_definitions(std::wostream & strm)
 {
 	SXStreamID* streamId = dynamic_cast<SXStreamID*>(m_SXStreamID.get());

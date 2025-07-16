@@ -49,10 +49,11 @@ public:
 	static const ElementType	type = typeMOper;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 	int serialize(std::wostream & strm);
 
-	ColunByteU colLast;
-	RwU rowLast;
+    ColunByteU colLast = 0;
+    RwU rowLast = 0;
 	std::vector<SerArPtr> extOper;
 };
 

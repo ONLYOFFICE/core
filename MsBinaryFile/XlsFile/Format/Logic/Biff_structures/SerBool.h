@@ -50,7 +50,7 @@ public:
 
 private:
 
-    unsigned char f;
+    unsigned char f = false;
 };
 
 } // namespace XLS

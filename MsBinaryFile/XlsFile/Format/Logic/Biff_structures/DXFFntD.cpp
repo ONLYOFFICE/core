@@ -43,6 +43,11 @@ BiffStructurePtr DXFFntD::clone()
 	return BiffStructurePtr(new DXFFntD(*this));
 }
 
+DXFFntD::DXFFntD()
+{
+    stFontName = L"";
+}
+
 void DXFFntD::load(CFRecord& record)
 {
 	global_info = record.getGlobalWorkbookInfo();
@@ -67,6 +72,21 @@ void DXFFntD::load(CFRecord& record)
 	record >> tsNinch >> fSssNinch >> fUlsNinch >> fBlsNinch;
 	record.skipNunBytes(4); // unused1
 	record >> ich >> cch >> iFnt;
+}
+
+void DXFFntD::save(CFRecord& record)
+{
+
+    unsigned char cchFont = stFontName.getSize();
+    record << cchFont;
+    if(cchFont)
+        record << stFontName;
+    record.reserveNunBytes(63 - cchFont);
+    record << stxp << icvFore;
+    record.reserveNunBytes(4); // reserved
+    record << tsNinch << fSssNinch << fUlsNinch << fBlsNinch;
+    record.reserveNunBytes(4); // reserved
+    record << ich << cch << iFnt;
 }
 
 int DXFFntD::serialize(std::wostream & stream, bool extOnly)

@@ -60,5 +60,14 @@ void CatLab::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void CatLab::writeFields(CFRecord& record)
+{
+	FrtHeaderOld frtHeaderOld(rt_CatLab);
+	unsigned short flags = 0;
+	SETBIT(flags, 0, cAutoCatLabelReal);
+	record << frtHeaderOld << wOffset << at << flags;
+	record.reserveNunBytes(2);
+}
+
 } // namespace XLS
 

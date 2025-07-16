@@ -48,6 +48,11 @@ void Stxp::load(CFRecord& record)
 	record.skipNunBytes(1); // unused
 }
 
+void Stxp::save(CFRecord& record)
+{
+    record << twpHeight << ts << bls << sss << uls << bFamily << bCharSet;
+    record.reserveNunBytes(1); // unused
+}
 
 } // namespace XLS
 

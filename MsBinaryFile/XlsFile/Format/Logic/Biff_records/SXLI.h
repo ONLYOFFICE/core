@@ -37,15 +37,17 @@ namespace XLS
 {
 	struct SXLIItem
 	{
-		short			cSic;
-		unsigned short	itmType;
-		short			isxviMac;
-		bool			fMultiDataName;
-		unsigned char	iData;
-		bool			fSbt;
-		bool			fBlock;
-		bool			fGrand;
-		bool			fMultiDataOnAxis;
+        void            save(CFRecord& record);
+
+        short			cSic = 0;
+        unsigned short	itmType = 0;
+        short			isxviMac = 0;
+        bool			fMultiDataName = 0;
+        unsigned char	iData = 0;
+        bool			fSbt = 0;
+        bool			fBlock = 0;
+        bool			fGrand = 0;
+        bool			fMultiDataOnAxis = 0;
 
 		std::vector<short> rgisxvi;
 	};
@@ -61,11 +63,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeSXLI;
 	
 	std::vector<SXLIItem> m_arItems;
-	int count;
+    int count = 0;
 };
 
 } // namespace XLS

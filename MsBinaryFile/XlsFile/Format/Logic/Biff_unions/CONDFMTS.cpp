@@ -199,6 +199,21 @@ const bool CONDFMTS::loadContent(BinProcessor& proc)
 	return res;
 }
 
+const bool CONDFMTS::saveContent(BinProcessor& proc)
+{
+    for(auto i : m_arCONDFMT)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arCFEx)
+    {
+        if(i.ex != nullptr)
+            proc.mandatory(*i.ex);
+        if(i.cf12 != nullptr)
+            proc.mandatory(*i.cf12);
+    }
+    return true;
+}
+
 int CONDFMTS::serialize(std::wostream & stream)
 {
 	if (m_arCONDFMT.empty()) return 0;

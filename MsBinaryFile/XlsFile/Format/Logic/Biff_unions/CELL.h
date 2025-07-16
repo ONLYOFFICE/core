@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
 
@@ -55,6 +56,8 @@ public:
 
     int RowNumber;
     int ColumnNumber;
+
+    BaseObjectPtr cellContent; // for xls writing
 
 	std::vector<CellRangeRef>& shared_formulas_locations_ref_;
 };

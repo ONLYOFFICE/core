@@ -222,6 +222,22 @@ const bool AXES::loadContent(BinProcessor& proc)
 	return res;
 }
 
+const bool AXES::saveContent(BinProcessor& proc)
+{
+	for(auto i: m_arAxes)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i: m_arATTACHEDLABEL)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	if(m_PlotArea_FRAME != nullptr)
+	{
+		proc.mandatory<PlotArea>();
+		proc.mandatory(*m_PlotArea_FRAME);
+	}
+	return true;
+}
+
 int AXES::serialize(std::wostream & _stream)
 {
 	return serialize(_stream, false);

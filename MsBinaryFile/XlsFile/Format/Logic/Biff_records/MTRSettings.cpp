@@ -31,7 +31,7 @@
  */
 
 #include "MTRSettings.h"
-
+#include "../Biff_structures/FrtHeader.h"
 namespace XLS
 {
 
@@ -59,6 +59,16 @@ void MTRSettings::readFields(CFRecord& record)
 
 	fMTREnabled			= temp1;
 	fUserSetThreadCount	= temp2;
+}
+
+void MTRSettings::writeFields(CFRecord& record)
+{
+	FrtHeader header(rt_MTRSettings);
+	record << header;
+	_UINT32 flags1 = 0, flags2 = 0;
+	flags1 = fMTREnabled;
+	flags2 = fUserSetThreadCount;
+	record << flags1 << flags2 << cUserThreadCount;
 }
 
 } // namespace XLS

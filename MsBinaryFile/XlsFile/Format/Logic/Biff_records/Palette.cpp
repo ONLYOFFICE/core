@@ -87,6 +87,15 @@ void Palette::readFields(CFRecord& record)
 	}
 }
 
+void Palette::writeFields(CFRecord& record)
+{
+    ccv = rgColor.size();
+    record << ccv;
+    for(auto i: rgColor)
+        if(i != nullptr)
+            record << i;
+}
+
 
 
 int Palette::serialize(std::wostream & stream)

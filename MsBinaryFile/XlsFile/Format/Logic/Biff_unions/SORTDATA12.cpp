@@ -68,6 +68,13 @@ const bool SORTDATA12::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool SORTDATA12::saveContent(BinProcessor& proc)
+{
+    if(m_SortData == nullptr)
+        return false;
+    proc.mandatory(*m_SortData);
+    return true;
+}
 
 int SORTDATA12::serialize(std::wostream & stream)
 {

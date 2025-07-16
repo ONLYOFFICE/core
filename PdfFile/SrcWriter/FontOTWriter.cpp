@@ -4313,6 +4313,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CCFFWriter
 	//----------------------------------------------------------------------------------------
+	const unsigned short scEmbeddedPostscript = 0xC15;
 	struct CCFFWriter
 	{
 		typedef std::pair<BYTE, unsigned short> ByteAndUShort;
@@ -4354,7 +4355,6 @@ namespace PdfWriter
 		bool WriteName(const std::string& inSubsetFontName);
 		BYTE GetMostCompressedOffsetSize(unsigned long inOffset);
 		bool WriteTopIndex();
-		static const unsigned short scEmbeddedPostscript = 0xC15;
 		bool WriteTopDictSegment(CMemoryStream* ioTopDictSegment);
 		bool WriteStringIndex();
 		bool WriteGlobalSubrsIndex();
@@ -4394,7 +4394,8 @@ namespace PdfWriter
 		std::vector<unsigned int> subsetGlyphIDs;
 		for (unsigned long i = 0; i < unCodesCount; ++i)
 			subsetGlyphIDs.push_back(pCodeToGID[i]);
-		// Убедиться, что есть 0 глиф
+		if (subsetGlyphIDs.empty())
+			subsetGlyphIDs.push_back(0);
 
 		// Добавить зависимые глифы
 		// Они есть в m_vCodeToGid из pCodeToGID. В pUseGlyfs они тоже есть из m_mGlyphs, но только в m_mGlyphs, они имеют false

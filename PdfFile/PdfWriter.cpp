@@ -2691,7 +2691,7 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 		int nFlags = pParent->nFlags;
 		// Adobe не может смешивать юникод и utf имена полей
 		if (nFlags & (1 << 0))
-			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str()));
+			pParentObj->Add("T", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sName)).c_str(), true));
 
 		std::string sFT = m_pDocument->SetParentKids(pParent->nID);
 		PdfWriter::CArrayObject* pKids = dynamic_cast<PdfWriter::CArrayObject*>(pParentObj->Get("Kids"));

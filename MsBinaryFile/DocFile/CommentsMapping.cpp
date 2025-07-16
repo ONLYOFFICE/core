@@ -169,10 +169,17 @@ namespace DocFileFormat
 				{
 					m_pXmlWriter->WriteNodeBegin( L"w15:commentEx", TRUE );
 
-					m_pXmlWriter->WriteAttribute( L"w15:paraId", arrParaId[index]);
+					if (index < arrParaId.size())
+					{
+						m_pXmlWriter->WriteAttribute(L"w15:paraId", arrParaId[index]);
+					}
 					if (m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDepth > 0)
 					{
-						m_pXmlWriter->WriteAttribute( L"w15:paraIdParent", arrParaId[index + m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDiatrdParent]);
+						size_t ind = index + m_document->AnnotationsReferencesEx->m_ReferencesEx[index].nDiatrdParent;
+						if (ind < arrParaId.size())
+						{
+							m_pXmlWriter->WriteAttribute(L"w15:paraIdParent", arrParaId[ind]);
+						}
 					}
 					m_pXmlWriter->WriteAttribute( L"w15:done", L"0");
 					m_pXmlWriter->WriteNodeEnd( L"", TRUE, FALSE );

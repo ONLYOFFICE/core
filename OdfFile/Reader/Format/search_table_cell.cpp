@@ -143,12 +143,12 @@ public:
 
     virtual void visit(const table_table_columns& val)
     {
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_column_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_header_columns& val)
     {
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_column_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_column_group& val)
@@ -191,12 +191,12 @@ public:
 
     virtual void visit(const table_table_header_rows& val)
     {        
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_row_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_rows& val)
     {        
-        ACCEPT_ALL_CONTENT_CONST(val.table_table_row_, stop_);
+        ACCEPT_ALL_CONTENT_CONST(val.content_, stop_);
     }
 
     virtual void visit(const table_table_row& val)

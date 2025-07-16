@@ -1868,7 +1868,7 @@ namespace NSFile
 
 namespace NSFile
 {
-	bool CBase64Converter::Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags)
+	bool CBase64Converter::Encode(const BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags)
 	{
 		if (!pDataSrc || nLenSrc < 1)
 			return false;

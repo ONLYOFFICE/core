@@ -612,8 +612,8 @@ bool CCompoundFile::ParseHeader(CHWPStream& oBuffer)
 	oBuffer.Skip(16); // Header CLSID
 	m_nMinorVersion = oBuffer.ReadShort();
 
-	if (0x003E != m_nMinorVersion)
-		return false; //TODO:: возможно следует просто пропускать такие несоответсвия
+	// if (0x003E != m_nMinorVersion)
+		// return false; //TODO:: возможно следует просто пропускать такие несоответсвия
 
 	m_nMajorVersion = oBuffer.ReadShort();
 

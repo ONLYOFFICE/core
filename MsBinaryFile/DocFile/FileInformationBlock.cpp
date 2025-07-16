@@ -840,8 +840,9 @@ namespace DocFileFormat
 	}
 	FileInformationBlock::FileInformationBlock( VirtualStreamReader reader )
 	{
-		m_nWordVersion	= 0;
-		m_CodePage		= 1250;
+		m_nWordVersion = 0;
+		m_CodePage = 1250;
+		m_CodePageSaved = 0;
 
 		unsigned int flag16 = 0;
 		unsigned char flag8 = 0;

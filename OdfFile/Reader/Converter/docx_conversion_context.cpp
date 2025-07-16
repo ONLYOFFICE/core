@@ -1877,7 +1877,9 @@ static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_con
 	odf_reader::list_style_container& lists = context.root()->odf_context().listStyleContainer();
 
 	odf_reader::text_list_style* curStyle = lists.list_style_by_name(curStyleName);
-	_CP_PTR(odf_reader::text_list_style) newStyle = boost::make_shared<odf_reader::text_list_style>(*curStyle);
+
+	_CP_PTR(odf_reader::text_list_style) newStyle = curStyle ?	boost::make_shared<odf_reader::text_list_style>(*curStyle) : 
+																boost::make_shared<odf_reader::text_list_style>();
 
 	newStyle->attr_.style_name_ = newStyleName;
 

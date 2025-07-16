@@ -2110,7 +2110,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 		{
 			RtfSectionProperty::ColumnProperty::CollumnVar oNewColumn;
 			
-			if (m_ooxSectionProperty->m_oCols->m_arrColumns[i] != NULL)
+			if (m_ooxSectionProperty->m_oCols->m_arrColumns[i].IsInit())
 			{
 				if(m_ooxSectionProperty->m_oCols->m_arrColumns[i]->m_oW.IsInit() )
 					oNewColumn.m_nColumnWidth = m_ooxSectionProperty->m_oCols->m_arrColumns[i]->m_oW->ToTwips(); //twips??? todooo 
@@ -2336,7 +2336,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrHeaderReference.size(); i++ )
 	{
-		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i]);
+		OOXHeaderReader oHeaderReader(m_ooxSectionProperty->m_arrHeaderReference[i].GetPointer());
 		
 		if(m_ooxSectionProperty->m_arrHeaderReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrHeaderReference[i]->m_oId.IsInit() )
@@ -2375,7 +2375,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	}
 	for (size_t i = 0 ; i < m_ooxSectionProperty->m_arrFooterReference.size(); i++ )
 	{
-		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i]);
+		OOXHeaderReader oFooterReader(m_ooxSectionProperty->m_arrFooterReference[i].GetPointer());
 		
 		if(m_ooxSectionProperty->m_arrFooterReference[i]->m_oType.IsInit() &&
 			m_ooxSectionProperty->m_arrFooterReference[i]->m_oId.IsInit() )

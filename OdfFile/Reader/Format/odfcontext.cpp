@@ -387,8 +387,8 @@ namespace cpdoccore {
 				const style_header_footer_properties_attlist& attr = headerProp->style_header_footer_properties_attlist_;
 				_CP_OPT(double) header;
 
-				if (attr.fo_min_height_)	header = attr.fo_min_height_->get_value_unit(length::pt);
-				else if (attr.svg_height_)	header = attr.svg_height_->get_value_unit(length::pt);
+				if (attr.fo_min_height_)	header = attr.fo_min_height_->get_value_unit(length::inch);
+				else if (attr.svg_height_)	header = attr.svg_height_->get_value_unit(length::inch);
 
 				Context.get_table_context().set_header_page(header);
 			}
@@ -398,8 +398,8 @@ namespace cpdoccore {
 				const style_header_footer_properties_attlist& attr = footerProp->style_header_footer_properties_attlist_;
 				_CP_OPT(double) footer;
 
-				if (attr.fo_min_height_)	footer = attr.fo_min_height_->get_value_unit(length::pt);
-				else if (attr.svg_height_)	footer = attr.svg_height_->get_value_unit(length::pt);
+				if (attr.fo_min_height_)	footer = attr.fo_min_height_->get_value_unit(length::inch);
+				else if (attr.svg_height_)	footer = attr.svg_height_->get_value_unit(length::inch);
 
 				Context.get_table_context().set_footer_page(footer);
 			}

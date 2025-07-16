@@ -55,6 +55,8 @@
 #include "../../XlsbFormat/Biff12_unions/FRTWORKBOOK.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalWorkbookInfo.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
 
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
@@ -440,6 +442,15 @@ namespace OOX
                 }
             }
 			return workBookStream;
+		}
+		XLS::BaseObjectPtr CWorkbook::toXLS() const
+		{
+			auto globalsSubstream = new XLS::GlobalsSubstream(XLS::WorkbookStreamObject::DefaultCodePage);
+			auto objectPtr = XLS::BaseObjectPtr(globalsSubstream);
+			if(m_oSheets.IsInit())
+				m_oSheets->toXLS(objectPtr);
+
+			return objectPtr;
 		}
 		void CWorkbook::read(const CPath& oPath)
 		{

@@ -198,6 +198,7 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	auto workbookStream = new XLS::WorkbookStreamObject;
 	auto workbookPtr = XLS::BaseObjectPtr(workbookStream);
 	XlsWriter writer;
+	workbookStream->m_GlobalsSubstream = m_pWorkbook->toXLS();
 	//todo substreams conversion
 
 	writer.Open(oFilePath.GetPath());

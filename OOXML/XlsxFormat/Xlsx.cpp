@@ -58,6 +58,9 @@
 #include "ComplexTypes_Spreadsheet.h"
 #include "../../DesktopEditor/common/SystemUtils.h"
 
+#include "../../MsBinaryFile/XlsFile/Converter/xls_writer.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
 	init();
@@ -186,6 +189,20 @@ bool OOX::Spreadsheet::CXlsx::Write(const CPath& oDirPath, OOX::CContentTypes &o
 
     oContentTypes.Write(oDirPath);
     return true;
+}
+bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
+{
+	PrepareToWrite();
+	if(NULL == m_pWorkbook ||  m_arWorksheets.empty ())
+		return false;
+	auto workbookStream = new XLS::WorkbookStreamObject;
+	auto workbookPtr = XLS::BaseObjectPtr(workbookStream);
+	XlsWriter writer;
+	//todo substreams conversion
+
+	writer.Open(oFilePath.GetPath());
+	writer.WriteWorkbook(workbookPtr);
+	return true;
 }
 bool OOX::Spreadsheet::CXlsx::WriteWorkbook(const CPath& oDirPath)
 {

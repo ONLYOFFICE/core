@@ -63,6 +63,9 @@
 #include "../../XlsbFormat/Biff12_records/Cell.h"
 #include "../../XlsbFormat/Biff12_records/Fmla.h"
 #include "../../XlsbFormat/Biff12_structures/GrbitFmla.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CELLTABLE.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CELL.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Row.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgRef.h"
@@ -2692,6 +2695,32 @@ namespace OOX
 				oCell->iStyleRef = 0;
 			return objectPtr;
 		}
+		void CCell::toXLS(XLS::BaseObjectPtr cellPtr)
+		{
+			auto castedPtr = static_cast<XLS::CELL*>(cellPtr.get());
+			XLS::CellRef CellReference;
+			if((!m_oRow.IsInit() || !m_oCol.IsInit()))
+			{
+				if(m_oRef.IsInit())
+				{
+					std::wstring wstringRef(m_oRef.get().begin(), m_oRef.get().end());
+					CellReference = XLS::CellRef(wstringRef);
+					m_oCol = CellReference.column;
+				}
+				else
+				{
+				   CellReference.row = 0;
+				   CellReference.column = 0;
+				}
+			}
+			else
+			{
+				CellReference.row = m_oRow.get() -1;
+				CellReference.column = m_oCol.get();
+			}
+			castedPtr->RowNumber = CellReference.row;
+			castedPtr->ColumnNumber = CellReference.column;
+		}
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             XLS::CellRef CellReference;
@@ -4024,6 +4053,32 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CRow::toXLS()
+		{
+			auto rowPtr = new XLS::Row;
+			auto basePtr = XLS::BaseObjectPtr(rowPtr);
+			if(m_oR.IsInit())
+				rowPtr->rw = m_oR->GetValue();
+			if(m_oOutlineLevel.IsInit())
+				rowPtr->iOutLevel = m_oOutlineLevel->GetValue();
+			if(m_oHidden.IsInit())
+				rowPtr->fDyZero = m_oHidden->GetValue();
+			if(m_oCustomFormat.IsInit())
+				rowPtr->fGhostDirty = m_oCustomFormat->GetValue();
+			if(m_oS.IsInit())
+				rowPtr->ixfe_val = m_oS->GetValue();
+			if(m_oCustomHeight.IsInit())
+				rowPtr->fUnsynced = m_oCustomHeight->GetValue();
+			if(m_oHt.IsInit())
+				rowPtr->miyRw = m_oHt->GetValue() * 20.;
+			if(m_oPh.IsInit())
+				rowPtr->fPhonetic = m_oPh->GetValue();
+			if(m_oThickBot.IsInit())
+				rowPtr->fExDes = m_oThickBot->GetValue();
+			if(m_oThickTop.IsInit())
+				rowPtr->fExAsc = m_oThickTop->GetValue();
+			return basePtr;
+		}
         void CRow::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             WriteAttributes(writer);
@@ -4799,6 +4854,26 @@ namespace OOX
 
 			return objectPtr;
 		}
+	XLS::BaseObjectPtr CSheetData::toXLS()
+	{
+		std::vector<CellRangeRef> shared_formulas_locations_ref;
+		auto cellTable = new XLS::CELLTABLE(shared_formulas_locations_ref);
+		auto tablePtr = XLS::BaseObjectPtr(cellTable);
+		auto cellGroup = new XLS::CELL_GROUP(shared_formulas_locations_ref);
+		cellTable->m_arCellGroups.push_back(XLS::BaseObjectPtr(cellGroup));
+		for(auto row : m_arrItems)
+		{
+			cellGroup->m_arRows.push_back(row->toXLS());
+			for(auto cell : row->m_arrItems)
+			{
+				auto Cellptr = XLS::BaseObjectPtr(new XLS::CELL(shared_formulas_locations_ref));
+				cell->toXLS(Cellptr);
+				cellGroup->m_arCells.push_back(Cellptr);
+			}
+		}
+
+		return tablePtr;
+	}
     void CSheetData::toBin(XLS::StreamCacheWriterPtr& writer)
     {
         {

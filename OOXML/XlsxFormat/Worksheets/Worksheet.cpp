@@ -365,6 +365,9 @@ namespace OOX
 			auto worksheetPtr = new XLS::WorksheetSubstream(0);
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
 
+			if(m_oSheetData.IsInit())
+				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
+
 			return sheetPtr;
 		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const

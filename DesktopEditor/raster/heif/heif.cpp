@@ -81,11 +81,6 @@ namespace NSHeif {
 		heif_context* ctx = heif_context_alloc();
 		defer(heif_context_free(ctx););
 
-		const heif_plugin_info *inf;
-
-		if (IsError(heif_load_plugin(m_sPluginPath, &inf)))
-			return false;
-
 		heif_encoder* encoder;
 		defer(heif_encoder_release(encoder););
 

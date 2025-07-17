@@ -1,4 +1,5 @@
 LIB_GRAPHICS_PRI_PATH=$$PWD/../..
+LIB_3DPARTY_PRI_PATH=$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/lib
 
 DEFINES -= UNICODE
 DEFINES -= _UNICODE
@@ -12,34 +13,35 @@ DEFINES += \
 	MNG_SUPPORT_WRITE \
 	MNG_ACCESS_CHUNKS \
 	MNG_STORE_CHUNKS\
-	MNG_ERROR_TELLTALE
+	MNG_ERROR_TELLTALE\
+	LIBHEIF_STATIC_BUILD
 
 core_linux {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 	QMAKE_CXXFLAGS += -Wno-narrowing
-	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
 }
 
 core_linux_clang {
-    QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
-	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
+	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
 }
 
 core_mac {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
-	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif -lheif
 }
 
 core_windows {
 	DEFINES += JAS_WIN_MSVC_BUILD NOMINMAX
 	LIBS += -lUser32
-	LIBS += $$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/Release/heif.lib
 }
 
 core_android {
 	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
-	LIBS += -L$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api/libheif/libheif/heif.a
 }
+
+LIBS += -L$$LIB_3DPARTY_PRI_PATH \
+		-lheif \
+		-llibde265 \
+		-lx265-static
 
 INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \

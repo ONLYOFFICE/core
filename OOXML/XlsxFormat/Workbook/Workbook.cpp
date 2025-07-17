@@ -449,6 +449,8 @@ namespace OOX
 			auto objectPtr = XLS::BaseObjectPtr(globalsSubstream);
 			if(m_oSheets.IsInit())
 				m_oSheets->toXLS(objectPtr);
+			if(m_oDefinedNames.IsInit())
+				m_oDefinedNames->toXLS(objectPtr);
 
 			return objectPtr;
 		}

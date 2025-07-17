@@ -51,6 +51,7 @@
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
 
 namespace OOX
 {
@@ -358,6 +359,13 @@ namespace OOX
 				return workSheetStream;
 			}
 
+		}
+		XLS::BaseObjectPtr CWorksheet::toXLS() const
+		{
+			auto worksheetPtr = new XLS::WorksheetSubstream(0);
+			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
+
+			return sheetPtr;
 		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const
         {

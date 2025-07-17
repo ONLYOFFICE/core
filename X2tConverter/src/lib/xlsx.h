@@ -389,22 +389,9 @@ namespace NExtractTools
 		}
 		return nRes;
 	}
-	_UINT32 xlsx_dir2xls(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
-	{
-		return NSCommon::ooxml2ooxml(sFrom, sTo, params, convertParams, L"xls", xlsx_dir2xls_dir);
-	}
 	_UINT32 xlsx2xls(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{
-		std::wstring sTempUnpackedXLSX = combinePath(convertParams.m_sTempDir, L"xlsx_unpacked");
-		NSDirectory::CreateDirectory(sTempUnpackedXLSX);
-
-		COfficeUtils oCOfficeUtils(NULL);
-		_UINT32 nRes = oCOfficeUtils.ExtractToDirectory(sFrom, sTempUnpackedXLSX, NULL, 0);
-		if (SUCCEEDED_X2T(nRes))
-		{
-			nRes = xlsx_dir2xls(sTempUnpackedXLSX, sTo, params, convertParams);
-		}
-		return nRes;
+		return NSCommon::ooxml2format(sFrom, sTo, params, convertParams, L"xls", xlsx_dir2xls_dir);
 	}
 	_UINT32 xml2xlsx(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)
 	{

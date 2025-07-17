@@ -2108,6 +2108,74 @@ namespace OOX
 			}
 			oStream.Seek(nEnd);
 		}
+		const SimpleTypes::Spreadsheet::ECellTypeType processCellType(const std::wstring &value,bool &isReal, double &realCache)
+		{
+				SimpleTypes::Spreadsheet::ECellTypeType cellType;
+				cellType = SimpleTypes::Spreadsheet::celltypeStr;
+				if(value != L"")
+				{
+					if(value == L"TRUE" || value == L"FALSE")
+						cellType = SimpleTypes::Spreadsheet::celltypeBool;
+					else if(std::all_of(value.begin(), value.end(), [](const char c) { return std::isdigit(c); }) && value.size() <= 10 && value.size() > 0)
+					{
+						if(value.size() < 10 )
+						{
+							realCache = std::stoi(value);
+							cellType = SimpleTypes::Spreadsheet::celltypeNumber;
+						}
+						else if(value.size() == 10)
+						{
+							_INT64 tempVal = std::stoll(value);
+							if(tempVal < MAXINT32 && tempVal > MININT32)
+							{
+								realCache = tempVal;
+								cellType = SimpleTypes::Spreadsheet::celltypeNumber;
+							}
+						}
+					}
+
+					if((value.find(L".") == std::string::npos || value.find(L".") == value.rfind(L"."))
+						&& value.size() <=17 && value.size() > 0)
+					{
+						if(value.size() < 17)
+						{
+							wchar_t *tail;
+							double tempVal = std::wcstod(value.c_str(), &tail);
+							if(*tail == L'\0')
+							{
+								cellType = SimpleTypes::Spreadsheet::celltypeNumber;
+								isReal = true;
+								realCache = tempVal;
+							}
+						}
+						else
+						{
+							wchar_t *tail;
+							long double tempVal = std::wcstold(value.c_str(), &tail);
+							if(*tail == L'\0')
+								if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
+								{
+									cellType = SimpleTypes::Spreadsheet::celltypeNumber;
+									realCache = tempVal;
+									isReal = true;
+								}
+						}
+					}
+					else if((value.find(L"E") == std::string::npos || value.find(L"E") == value.rfind(L"E")))
+					{
+						wchar_t *tail;
+						long double tempVal = std::wcstold(value.c_str(), &tail);
+						if(*tail == L'\0')
+							if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
+							{
+								cellType = SimpleTypes::Spreadsheet::celltypeNumber;
+								realCache = tempVal;
+								isReal = true;
+							}
+					}
+				}
+			return cellType;
+		}
 		XLS::BaseObjectPtr CCell::toBin(sharedFormula &sharedFormulas)
 		{
 			std::vector<XLS::CellRangeRef> shared_formulas_locations_ref;
@@ -2143,7 +2211,6 @@ namespace OOX
 			BiffRecord* pSource = nullptr;
 			XLSB::Cell* oCell;
 			bool isReal = false;
-			_INT32 intCache = 0;
 			double realCache = 0;
 
             XLS::CellRef cellref;
@@ -2174,69 +2241,8 @@ namespace OOX
 			{
 				m_oType.Init();
 				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
-                if(m_oValue.IsInit())
-				{
-					if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
-						m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
-                    else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10 && m_oValue->m_sText.size() > 0)
-					{
-                        if(m_oValue->m_sText.size() < 10 )
-						{
-							intCache = std::stoi(m_oValue->m_sText);
-							m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-						}
-						else if(m_oValue->m_sText.size() == 10)
-						{
-							_INT64 tempVal = std::stoll(m_oValue->m_sText);
-							if(tempVal < MAXINT32 && tempVal > MININT32)
-							{	
-								intCache = tempVal;
-								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-							}
-						}
-					}
-					
-					if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L".")) 
-                        && m_oValue->m_sText.size() <=17 && m_oValue->m_sText.size() > 0)
-					{
-						if(m_oValue->m_sText.size() < 17)
-						{
-							wchar_t *tail;
-							double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
-                            if(*tail == L'\0')
-							{
-								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-								isReal = true;
-								realCache = tempVal;
-							}
-						}
-						else
-						{
-							wchar_t *tail;
-							long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
-							if(*tail == L'\0')
-                                if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
-								{
-									m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-									realCache = tempVal;
-									isReal = true;
-								}
-						}
-					}
-					else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
-					{
-						wchar_t *tail;
-						long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
-						if(*tail == L'\0')
-							if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
-							{
-								m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-								realCache = tempVal;
-								isReal = true;
-							}
-					}
-					
-				}
+				if(m_oValue.IsInit())
+					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
 			}
 			switch (m_oType->GetValue())
 			{
@@ -2249,7 +2255,7 @@ namespace OOX
 								auto pCellRk = new(XLSB::CellRk);
 								pCellRk->value.fInt = 1;
 								pCellRk->value.fX100 = 0;
-								pCellRk->value.num = intCache;
+								pCellRk->value.num = realCache;
 								oCell = &pCellRk->cell;
 								pSource = pCellRk;
 							}
@@ -2260,7 +2266,7 @@ namespace OOX
                                     pCellRk->grbitFlags.fAlwaysCalc = m_oFormula->m_oAca->GetValue();
                                 else
                                     pCellRk->grbitFlags.fAlwaysCalc = false;
-								pCellRk->value.data.value = intCache;
+								pCellRk->value.data.value = realCache;
 								oCell = &pCellRk->cell;
 								pSource = pCellRk;
 							}
@@ -2758,75 +2764,13 @@ namespace OOX
                 }
             }
             bool isReal = false;
-            _INT32 intCache = 0;
             double realCache = 0;
             if(!m_oType.IsInit())
             {
                 m_oType.Init();
                 m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
-                if(m_oValue.IsInit())
-                {
-                    if(m_oValue->m_sText == L"TRUE" || m_oValue->m_sText == L"FALSE")
-                        m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeBool);
-                    else if(std::all_of(m_oValue->m_sText.begin(), m_oValue->m_sText.end(), [](const char c) { return std::isdigit(c); }) && m_oValue->m_sText.size() <= 10 && m_oValue->m_sText.size() > 0)
-                    {
-                        if(m_oValue->m_sText.size() < 10 )
-                        {
-                            intCache = std::stoi(m_oValue->m_sText);
-                            m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-                        }
-                        else if(m_oValue->m_sText.size() == 10)
-                        {
-                            _INT64 tempVal = std::stoll(m_oValue->m_sText);
-                            if(tempVal < MAXINT32 && tempVal > MININT32)
-                            {
-                                intCache = tempVal;
-                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-                            }
-                        }
-                    }
-
-                    if((m_oValue->m_sText.find(L".") == std::string::npos || m_oValue->m_sText.find(L".") == m_oValue->m_sText.rfind(L"."))
-                        && m_oValue->m_sText.size() <=17 && m_oValue->m_sText.size() > 0)
-                    {
-                        if(m_oValue->m_sText.size() < 17)
-                        {
-                            wchar_t *tail;
-                            double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
-                            if(*tail == L'\0')
-                            {
-                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-                                isReal = true;
-                                realCache = tempVal;
-                            }
-                        }
-                        else
-                        {
-                            wchar_t *tail;
-                            long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
-                            if(*tail == L'\0')
-                                if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
-                                {
-                                    m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-                                    realCache = tempVal;
-                                    isReal = true;
-                                }
-                        }
-                    }
-                    else if((m_oValue->m_sText.find(L"E") == std::string::npos || m_oValue->m_sText.find(L"E") == m_oValue->m_sText.rfind(L"E")))
-                    {
-                        wchar_t *tail;
-                        long double tempVal = std::wcstold(m_oValue->m_sText.c_str(), &tail);
-                        if(*tail == L'\0')
-                            if(tempVal <= DBL_MAX && tempVal >= -DBL_MAX)
-                            {
-                                m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
-                                realCache = tempVal;
-                                isReal = true;
-                            }
-                    }
-
-                }
+				if(m_oValue.IsInit())
+					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
             }
             auto cellType = m_oType->GetValue();
             //основная запись ячейки
@@ -2880,7 +2824,7 @@ namespace OOX
                         XLS::RkNumber cellRk;
                         cellRk.fInt = 1;
                         cellRk.fX100 = 0;
-                        cellRk.num = intCache;
+						cellRk.num = realCache;
                         *CellRecord << cellRk;
                     }
                     break;

@@ -1985,6 +1985,13 @@ int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
+		else if (sType == "Redact")
+		{
+			PdfReader::CAnnotRedact* pRedact = new PdfReader::CAnnotRedact(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
+			std::map<std::wstring, std::wstring> mFont = PdfReader::CAnnotFonts::GetAnnotFont(pdfDoc, pFontManager, pFontList, &oAnnotRef);
+			pRedact->SetFont(mFont);
+			pAnnot = pRedact;
+		}
 		// else if (sType == "FileAttachment")
 		// {
 		// 	pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);

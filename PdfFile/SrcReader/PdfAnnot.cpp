@@ -860,10 +860,14 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAnnotFont(PDFDoc* pdfDoc, N
 	std::map<std::wstring, std::wstring> mFontFreeText;
 
 	Object oAP, oN;
-	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
+	if (!oAnnot.dictLookup("RO", &oN)->isStream())
 	{
-		oAP.free(); oN.free(); oAnnot.free();
-		return mFontFreeText;
+		oN.free();
+		if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
+		{
+			oAP.free(); oN.free(); oAnnot.free();
+			return mFontFreeText;
+		}
 	}
 	oAP.free();
 
@@ -2426,6 +2430,118 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 	m_dY4 = m_dHeight - (bbox[2] * m[1] + bbox[1] * m[3] + m[5]);
 
 	oAnnot.free();
+}
+
+//------------------------------------------------------------------------
+// Redact
+//------------------------------------------------------------------------
+
+CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID) : CAnnotMarkup(pdfDoc, oAnnotRef, nPageIndex, nStartRefID)
+{
+	Object oAnnot, oObj, oObj2;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	// 15 - Координаты - QuadPoints
+	if (oAnnot.dictLookup("QuadPoints", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 15);
+		for (int i = 0; i < oObj.arrayGetLength(); ++i)
+		{
+			if (oObj.arrayGet(i, &oObj2)->isNum())
+				m_arrQuadPoints.push_back(i % 2 == 0 ? oObj2.getNum() - m_dX : m_dHeight - oObj2.getNum());
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// 16 - Цвет заполнения - IC
+	if (oAnnot.dictLookup("IC", &oObj)->isArray())
+	{
+		m_unFlags |= (1 << 16);
+		for (int j = 0; j < oObj.arrayGetLength(); ++j)
+		{
+			m_arrIC.push_back(oObj.arrayGet(j, &oObj2)->isNum() ? oObj2.getNum() : 0.0);
+			oObj2.free();
+		}
+	}
+	oObj.free();
+
+	// RO во внешних видах
+
+	// 17 - Текст наложения - OverlayText
+	m_sOverlayText = DictLookupString(&oAnnot, "OverlayText", 17);
+
+	// 18 - Повторять текст - Repeat
+	if (oAnnot.dictLookup("Repeat", &oObj)->isBool() && oObj.getBool())
+		m_unFlags |= (1 << 18);
+
+	// 19 - Выравнивание текста - Q
+	m_nQ = 0;
+	if (oAnnot.dictLookup("Q", &oObj)->isInt())
+	{
+		m_unFlags |= (1 << 19);
+		m_nQ = oObj.getInt();
+	}
+	oObj.free();
+
+	// 20 - Шрифт, размер, цвет текста замены - DA
+	if (oAnnot.dictLookup("DA", &oObj)->isString())
+	{
+		m_unFlags |= (1 << 20);
+		// parse the default appearance string
+		GList* daToks = tokenize(oObj.getString());
+		for (int i = daToks->getLength() - 1; i > 0; --i)
+		{
+			// handle the g operator
+			if (!((GString *)daToks->get(i))->cmp("G") && m_arrCFromDA.empty())
+			{
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 1))->getCString()));
+			}
+			// handle the rg operator
+			else if (i >= 3 && !((GString *)daToks->get(i))->cmp("RG") && m_arrCFromDA.empty())
+			{
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 3))->getCString()));
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 2))->getCString()));
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 1))->getCString()));
+			}
+			// handle the k operator
+			else if (i >= 4 && !((GString *)daToks->get(i))->cmp("K") && m_arrCFromDA.empty())
+			{
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 4))->getCString()));
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 3))->getCString()));
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 2))->getCString()));
+				m_arrCFromDA.push_back(atof(((GString *)daToks->get(i - 1))->getCString()));
+			}
+			else if (i >= 2 && !((GString *)daToks->get(i))->cmp("Tf"))
+			{
+				m_dFontSize = atof(((GString *)daToks->get(i - 1))->getCString());
+			}
+		}
+		deleteGList(daToks, GString);
+	}
+	oObj.free();
+
+	oAnnot.free();
+}
+void CAnnotRedact::SetFont(const std::map<std::wstring, std::wstring>& mFont)
+{
+	if (mFont.empty())
+		return;
+	std::map<std::wstring, std::wstring>::const_iterator it = mFont.begin();
+	std::wstring sFont = it->first;
+	m_sActualFontName = U_TO_UTF8(sFont);
+	if (mFont.size() > 1)
+	{
+		++it;
+		sFont = it->first;
+		m_sFontName = U_TO_UTF8(sFont);
+	}
+	else
+	{
+		m_sFontName = m_sActualFontName;
+		m_sActualFontName.clear();
+	}
 }
 
 //------------------------------------------------------------------------
@@ -4326,5 +4442,37 @@ void CAnnotStamp::ToWASM(NSWasm::CData& oRes)
 	oRes.WriteDouble(m_dY3);
 	oRes.WriteDouble(m_dX4);
 	oRes.WriteDouble(m_dY4);
+}
+void CAnnotRedact::ToWASM(NSWasm::CData& oRes)
+{
+	oRes.WriteBYTE(25); // Redact
+
+	CAnnotMarkup::ToWASM(oRes);
+
+	if (m_unFlags & (1 << 15))
+	{
+		oRes.AddInt((unsigned int)m_arrQuadPoints.size());
+		for (int i = 0; i < m_arrQuadPoints.size(); ++i)
+			oRes.AddDouble(m_arrQuadPoints[i]);
+	}
+	if (m_unFlags & (1 << 16))
+	{
+		oRes.AddInt((unsigned int)m_arrIC.size());
+		for (int i = 0; i < m_arrIC.size(); ++i)
+			oRes.WriteDouble(m_arrIC[i]);
+	}
+	if (m_unFlags & (1 << 17))
+		oRes.WriteString(m_sOverlayText);
+	if (m_unFlags & (1 << 19))
+		oRes.WriteBYTE(m_nQ);
+	if (m_unFlags & (1 << 20))
+	{
+		oRes.AddInt((unsigned int)m_arrCFromDA.size());
+		for (int i = 0; i < m_arrCFromDA.size(); ++i)
+			oRes.WriteDouble(m_arrCFromDA[i]);
+		oRes.AddDouble(m_dFontSize);
+		oRes.WriteString(m_sFontName);
+		oRes.WriteString(m_sActualFontName);
+	}
 }
 }

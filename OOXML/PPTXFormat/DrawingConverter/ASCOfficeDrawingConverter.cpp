@@ -4866,7 +4866,7 @@ void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 	if (!pSpPr) return;
 
 	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");
-	SimpleTypes::CTrueFalse bShadowEnabled = SimpleTypes::booleanTrue;
+	SimpleTypes::CTrueFalse bShadowEnabled = SimpleTypes::booleanFalse;
 
 	if (oNodeShadow.IsValid())
 	{

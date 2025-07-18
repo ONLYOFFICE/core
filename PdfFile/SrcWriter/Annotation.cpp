@@ -823,6 +823,9 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1229,6 +1232,9 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1711,7 +1717,7 @@ namespace PdfWriter
 		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
 		m_wsAC = wsAC;
 	}
-	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts, bool bNoAP)
 	{
 		if (!pForm && !pCodes)
 		{
@@ -1761,6 +1767,22 @@ namespace PdfWriter
 					m_pAppearance->Add("R", pNewAPi);
 				}
 			}
+		}
+
+		if (bNoAP)
+		{
+			if (pForm)
+			{
+				CheckMK();
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Add(sAP, pForm);
+			}
+			else if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			return;
 		}
 
 		CAnnotAppearanceObject* pAppearance = NULL;

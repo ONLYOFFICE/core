@@ -79,9 +79,9 @@ bool CSvgFile::GetBounds(double &dX, double &dY, double &dWidth, double &dHeight
 	else
 		dHeight = m_oContainer.GetViewBox().m_oHeight.ToDouble(NSCSS::Pixel);
 
-	if (0. == dWidth)
+	if (DBL_EPSILON > dWidth)
 		dWidth  = SVG_FILE_WIDTH;
-	if (0. == dHeight)
+	if (DBL_EPSILON > dHeight)
 		dHeight = SVG_FILE_HEIGHT;
 
 	return true;

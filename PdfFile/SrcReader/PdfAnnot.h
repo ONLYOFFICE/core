@@ -591,10 +591,36 @@ public:
 	CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
 
 	void ToWASM(NSWasm::CData& oRes) override;
+
 private:
 	std::string m_sName; // Иконка
 	double m_dRotate;
 	double m_dX1, m_dY1, m_dX2, m_dY2, m_dX3, m_dY3, m_dX4, m_dY4;
+};
+
+//------------------------------------------------------------------------
+// PdfReader::CAnnotRedact
+//------------------------------------------------------------------------
+
+class CAnnotRedact final : public CAnnotMarkup
+{
+public:
+	CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
+
+	void SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
+
+	void ToWASM(NSWasm::CData& oRes) override;
+
+private:
+	BYTE m_nQ; // Выравнивание текста
+	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	double m_dFontSize; // Размер шрифта - из DA
+	std::string m_sFontName; // Имя шрифта - из DA
+	std::string m_sActualFontName; // Имя замененного шрифта
+	std::string m_sOverlayText; // Текст наложения
+	std::vector<double> m_arrQuadPoints; // Координаты
+	std::vector<double> m_arrIC; // Цвет заполнения
+	std::vector<double> m_arrCFromDA; // Цвет текста
 };
 
 //------------------------------------------------------------------------
@@ -667,7 +693,6 @@ public:
 	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
 	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
 	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
-private:
 	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 

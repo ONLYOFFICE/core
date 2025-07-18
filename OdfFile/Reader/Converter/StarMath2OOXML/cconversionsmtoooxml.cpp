@@ -252,7 +252,7 @@ namespace StarMath {
 		WriteCtrlPrNode(pXmlWrite,pAttribute,enTypeConversion);
 		pXmlWrite->WriteNodeEnd(L"m:fPr",false,false);
 	}
-	void CConversionSMtoOOXML::PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::PropertiesNaryPr(const TypeElement& enTypeOp,bool bEmptySub,bool bEmptySup,XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion,const bool& bEQN)
 	{
 		pXmlWrite->WriteNodeBegin(L"m:naryPr",false);
 		switch(enTypeOp)
@@ -283,10 +283,25 @@ namespace StarMath {
 		case TypeElement::lllint:
 		WriteChrNode(L"\u2230",pXmlWrite);
 		break;
+		case TypeElement::inter:
+		WriteChrNode(L"\u22C2",pXmlWrite);
+		break;
+		case TypeElement::UnionOp:
+		WriteChrNode(L"\u22C3",pXmlWrite);
+		break;
+		case TypeElement::bigvee:
+		WriteChrNode(L"\u22C1",pXmlWrite);
+		break;
+		case TypeElement::bigwedge:
+		WriteChrNode(L"\u22C0",pXmlWrite);
+		break;
 		default:
 		break;
 		}
-		WriteLimLocNode(L"undOvr",pXmlWrite);
+		 if(bEQN && (enTypeOp == TypeElement::Int || enTypeOp == TypeElement::iint || enTypeOp == TypeElement::iiint || enTypeOp == TypeElement::lint || enTypeOp == TypeElement::llint || enTypeOp == TypeElement::lllint))
+			WriteLimLocNode(L"subSup",pXmlWrite);
+		else
+			WriteLimLocNode(L"undOvr",pXmlWrite);
 		if(bEmptySub)
 		{
 			pXmlWrite->WriteNodeBegin(L"m:subHide",true);

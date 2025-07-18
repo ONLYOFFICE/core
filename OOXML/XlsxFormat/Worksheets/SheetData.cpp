@@ -66,6 +66,10 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CELLTABLE.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CELL.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Row.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Number.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RK.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BoolErr.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LabelSst.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/BIFF12/CellRef.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgArea.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/PtgRef.h"
@@ -2724,8 +2728,117 @@ namespace OOX
 				CellReference.row = m_oRow.get() -1;
 				CellReference.column = m_oCol.get();
 			}
-			castedPtr->RowNumber = CellReference.row;
-			castedPtr->ColumnNumber = CellReference.column;
+			bool isReal = false;
+			double realCache = 0;
+			if(!m_oType.IsInit())
+			{
+				m_oType.Init();
+				m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeStr);
+				if(m_oValue.IsInit())
+					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
+			}
+			auto cellType = m_oType->GetValue();
+
+			switch(cellType)
+			{
+				case SimpleTypes::Spreadsheet::celltypeNumber:
+				{
+					if(isReal || m_oFormula.IsInit())
+					{
+
+						auto  cellNumber = new XLS::Number;
+						XLS::Xnum number;
+						number.data.value = realCache;
+						cellNumber->num = number;
+						cellNumber->cell.rw = CellReference.row;
+						cellNumber->cell.col = CellReference.column;
+						if(m_oStyle.IsInit())
+							cellNumber->cell.ixfe = m_oStyle.get();
+						castedPtr->cellContent = XLS::BaseObjectPtr(cellNumber);
+					}
+					else
+					{
+						auto RkCell = new XLS::RK;
+						XLS::RkNumber cellRk;
+						cellRk.fInt = 1;
+						cellRk.fX100 = 0;
+						cellRk.num = realCache;
+						RkCell->rkrec.RK_ = cellRk;
+						RkCell->cell.rw = CellReference.row;
+						RkCell->cell.col = CellReference.column;
+						if(m_oStyle.IsInit())
+							RkCell->rkrec.ixfe = m_oStyle.get();
+						castedPtr->cellContent = XLS::BaseObjectPtr(RkCell);
+					}
+					break;
+				}
+				case SimpleTypes::Spreadsheet::celltypeBool:
+				{
+
+					auto BoolErrCell = new XLS::BoolErr;
+					BoolErrCell->cell.rw = CellReference.row;
+					BoolErrCell->cell.col = CellReference.column;
+					if(m_oStyle.IsInit())
+							BoolErrCell->cell.ixfe = m_oStyle.get();
+					BYTE cellval = 0;
+					if(m_oValue.IsInit())
+						cellval = m_oValue->m_sText == L"1" ? true : false;
+					BoolErrCell->bes.bBoolErr = cellval;
+					castedPtr->cellContent = XLS::BaseObjectPtr(BoolErrCell);
+					break;
+				}
+				case SimpleTypes::Spreadsheet::celltypeError:
+				{
+
+					auto BoolErrCell = new XLS::BoolErr;
+					BoolErrCell->cell.rw = CellReference.row;
+					BoolErrCell->cell.col = CellReference.column;
+					if(m_oStyle.IsInit())
+							BoolErrCell->cell.ixfe = m_oStyle.get();
+					BoolErrCell->bes.fError = true;
+					BYTE cellval = 0;
+					if(m_oValue.IsInit())
+					{
+						if(m_oValue->m_sText == L"#NULL!")
+							cellval =  0x00;
+						else if (m_oValue->m_sText == L"#DIV/0!")
+							cellval =  0x07;
+						else if (m_oValue->m_sText == L"#VALUE!")
+							cellval =  0x0F;
+						else if (m_oValue->m_sText == L"#REF!")
+							cellval =  0x17;
+						else if (m_oValue->m_sText == L"#NAME?")
+							cellval =  0x1D;
+						else if (m_oValue->m_sText == L"#NUM!")
+							cellval =  0x24;
+						else if (m_oValue->m_sText == L"#N/A")
+							cellval =  0x2A;
+						else if (m_oValue->m_sText == L"#GETTING_DATA")
+							cellval =  0x2B;
+					}
+					BoolErrCell->bes.bBoolErr = cellval;
+					castedPtr->cellContent = XLS::BaseObjectPtr(BoolErrCell);
+					break;
+				}
+				case SimpleTypes::Spreadsheet::celltypeSharedString:
+				{
+					if(m_oValue.IsInit())
+					{
+						auto CellSst = new XLS::LabelSst;
+						CellSst->cell.rw = CellReference.row;
+						CellSst->cell.col = CellReference.column;
+						if(m_oStyle.IsInit())
+								CellSst->cell.ixfe = m_oStyle.get();
+						_UINT32 isst = 0;
+						isst = std::stoi(m_oValue->m_sText);
+						CellSst->isst = isst;
+						castedPtr->cellContent = XLS::BaseObjectPtr(CellSst);
+					}
+					break;
+				}
+
+			}
+
 		}
         void CCell::toBin(XLS::StreamCacheWriterPtr& writer)
         {

@@ -860,14 +860,10 @@ std::map<std::wstring, std::wstring> CAnnotFonts::GetAnnotFont(PDFDoc* pdfDoc, N
 	std::map<std::wstring, std::wstring> mFontFreeText;
 
 	Object oAP, oN;
-	if (!oAnnot.dictLookup("RO", &oN)->isStream())
+	if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
 	{
-		oN.free();
-		if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("N", &oN)->isStream())
-		{
-			oAP.free(); oN.free(); oAnnot.free();
-			return mFontFreeText;
-		}
+		oAP.free(); oN.free(); oAnnot.free();
+		return mFontFreeText;
 	}
 	oAP.free();
 
@@ -2516,6 +2512,7 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 			else if (i >= 2 && !((GString *)daToks->get(i))->cmp("Tf"))
 			{
 				m_dFontSize = atof(((GString *)daToks->get(i - 1))->getCString());
+				m_unFontStyle = 0;
 			}
 		}
 		deleteGList(daToks, GString);
@@ -2524,24 +2521,54 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 
 	oAnnot.free();
 }
-void CAnnotRedact::SetFont(const std::map<std::wstring, std::wstring>& mFont)
+void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef)
 {
-	if (mFont.empty())
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
+	Object oAP, oN;
+	if (!oAnnot.dictLookup("RO", &oN)->isStream())
+	{
+		oN.free();
+		if (!oAnnot.dictLookup("AP", &oAP)->isDict() || !oAP.dictLookup("D", &oN)->isStream())
+		{
+			oAP.free(); oN.free(); oAnnot.free();
+			return;
+		}
+	}
+	oAP.free();
+
+	Object oFonts;
+	if (!CAnnotFonts::FindFonts(&oN, 0, &oFonts))
+	{
+		oN.free(); oFonts.free(); oAnnot.free();
 		return;
-	std::map<std::wstring, std::wstring>::const_iterator it = mFont.begin();
-	std::wstring sFont = it->first;
-	m_sActualFontName = U_TO_UTF8(sFont);
-	if (mFont.size() > 1)
-	{
-		++it;
-		sFont = it->first;
-		m_sFontName = U_TO_UTF8(sFont);
 	}
-	else
+	oN.free();
+
+	for (int i = 0, nFonts = oFonts.dictGetLength(); i < nFonts; ++i)
 	{
-		m_sFontName = m_sActualFontName;
-		m_sActualFontName.clear();
+		Object oFontRef;
+		if (!oFonts.dictGetValNF(i, &oFontRef)->isRef())
+		{
+			oFontRef.free();
+			continue;
+		}
+
+		std::string sFontName, sActualFontName;
+		bool bBold = false, bItalic = false;
+		std::wstring sFontPath = CAnnotFonts::GetFontData(pdfDoc, pFontManager, pFontList, &oFontRef, m_sFontName, m_sActualFontName, bBold, bItalic);
+		oFontRef.free();
+
+		m_unFontStyle = 0;
+		if (bBold)
+			m_unFontStyle |= (1 << 0);
+		if (bItalic)
+			m_unFontStyle |= (1 << 1);
 	}
+
+	oFonts.free(); oAnnot.free();
 }
 
 //------------------------------------------------------------------------
@@ -4473,6 +4500,7 @@ void CAnnotRedact::ToWASM(NSWasm::CData& oRes)
 		oRes.AddDouble(m_dFontSize);
 		oRes.WriteString(m_sFontName);
 		oRes.WriteString(m_sActualFontName);
+		oRes.AddInt(m_unFontStyle);
 	}
 }
 }

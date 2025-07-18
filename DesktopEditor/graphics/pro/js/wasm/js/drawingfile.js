@@ -580,7 +580,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 {
 	// Markup
 	let flags = 0;
-	if ((rec["Type"] < 18 && rec["Type"] != 1 && rec["Type"] != 15) || rec["Type"] == 25)
+	if ((rec["type"] < 18 && rec["type"] != 1 && rec["type"] != 15) || rec["type"] == 25)
 	{
 		flags = reader.readInt();
 		if (flags & (1 << 0))
@@ -635,7 +635,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["Subj"] = readStringFunc.call(reader);
 	}
 	// Text
-	if (rec["Type"] == 0)
+	if (rec["type"] == 0)
 	{
 		// Background color - C->IC
 		if (rec["C"])
@@ -659,7 +659,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		
 	}
 	// Line
-	else if (rec["Type"] == 3)
+	else if (rec["type"] == 3)
 	{
 		// L
 		rec["L"] = [];
@@ -709,7 +709,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		}
 	}
 	// Ink
-	else if (rec["Type"] == 14)
+	else if (rec["type"] == 14)
 	{
 		// offsets like getStructure and viewer.navigate
 		let n = reader.readInt();
@@ -723,7 +723,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		}
 	}
 	// Highlight, Underline, Squiggly, Strikeout
-	else if (rec["Type"] > 7 && rec["Type"] < 12)
+	else if (rec["type"] > 7 && rec["type"] < 12)
 	{
 		// QuadPoints
 		let n = reader.readInt();
@@ -732,7 +732,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["QuadPoints"].push(readDoubleFunc.call(reader));
 	}
 	// Square, Circle
-	else if (rec["Type"] == 4 || rec["Type"] == 5)
+	else if (rec["type"] == 4 || rec["type"] == 5)
 	{
 		// Rect and RD differences
 		if (flags & (1 << 15))
@@ -751,7 +751,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		}
 	}
 	// Polygon, PolyLine
-	else if (rec["Type"] == 6 || rec["Type"] == 7)
+	else if (rec["type"] == 6 || rec["type"] == 7)
 	{
 		let nVertices = reader.readInt();
 		rec["Vertices"] = [];
@@ -779,8 +779,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["IT"] = reader.readByte();
 	}
 	// Popup
-	/*
-	else if (rec["Type"] == 15)
+	else if (rec["type"] == 15)
 	{
 		flags = reader.readInt();
 		rec["Open"] = (flags >> 0) & 1;
@@ -788,9 +787,8 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		if (flags & (1 << 1))
 			rec["PopupParent"] = reader.readInt();
 	}
-	*/
 	// FreeText
-	else if (rec["Type"] == 2)
+	else if (rec["type"] == 2)
 	{
 		// Background color - C->IC
 		if (!isRead && rec["C"])
@@ -846,7 +844,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 		}
 	}
 	// Caret
-	else if (rec["Type"] == 13)
+	else if (rec["type"] == 13)
 	{
 		// Rect and RD differenses
 		if (flags & (1 << 15))
@@ -861,7 +859,7 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["Sy"] = reader.readByte();
 	}
 	// FileAttachment
-	else if (rec["Type"] == 16)
+	else if (rec["type"] == 16)
 	{
 		if (flags & (1 << 15))
 			rec["Icon"] = readStringFunc.call(reader);
@@ -960,13 +958,59 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 			rec["Desc"] = readStringFunc.call(reader);
 	}
 	// Stamp
-	else if (rec["Type"] == 12)
+	else if (rec["type"] == 12)
 	{
 		rec["Icon"] = readStringFunc.call(reader);
 		rec["Rotate"] = readDouble2Func.call(reader);
 		rec["InRect"] = [];
 		for (let i = 0; i < 8; ++i)
 			rec["InRect"].push(readDouble2Func.call(reader));
+	}
+	// Redact
+	else if (rec["type"] == 25)
+	{
+		// QuadPoints
+		if (flags & (1 << 15))
+		{
+			let n = reader.readInt();
+			rec["QuadPoints"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["QuadPoints"].push(readDoubleFunc.call(reader));
+		}
+		// IC
+		if (flags & (1 << 16))
+		{
+			let n = reader.readInt();
+			rec["IC"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["IC"].push(readDouble2Func.call(reader));
+		}
+		// OverlayText
+		if (flags & (1 << 17))
+			rec["OverlayText"] = readStringFunc.call(reader);
+		// Repeat
+		rec["Repeat"] = (flags >> 18) & 1;
+		// Q - alignment
+		if (flags & (1 << 19))
+		{
+			// 0 - left-justified, 1 - centered, 2 - right-justified
+			rec["alignment"] = reader.readByte();
+		}
+		// Font from DA
+		if (flags & (1 << 20))
+		{
+			rec["font"] = {};
+			let n = reader.readInt();
+			rec["font"]["color"] = [];
+			for (let i = 0; i < n; ++i)
+				rec["font"]["color"].push(readDouble2Func.call(reader));
+			rec["font"]["size"] = readDoubleFunc.call(reader);
+			rec["font"]["name"] = readStringFunc.call(reader);
+			let fontActual = readStringFunc.call(reader);
+			if (fontActual != "")
+				rec["font"]["actual"] = fontActual;
+			rec["font"]["style"] = reader.readInt();
+		}
 	}
 }
 function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
@@ -986,7 +1030,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 			rec["font"]["color"].push(readDouble2Func.call(reader));
 	}
 	// 0 - left-justified, 1 - centered, 2 - right-justified
-	if (!isRead || (rec["Type"] != 29 && rec["Type"] != 28 && rec["Type"] != 27))
+	if (!isRead || (rec["type"] != 29 && rec["type"] != 28 && rec["type"] != 27))
 		rec["alignment"] = reader.readByte();
 	rec["flag"] = reader.readInt();
 	// 12.7.3.1
@@ -1470,7 +1514,7 @@ CFile.prototype["getAnnotationsInfo"] = function(pageIndex)
 			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
 			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
 			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-			rec["Type"] = reader.readByte();
+			rec["type"] = reader.readByte();
 			// Annot
 			readAnnot(reader, rec, reader.readDouble, reader.readDouble2, reader.readString);
 			// Annot type
@@ -1545,12 +1589,12 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
 		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
 		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-		rec["Type"] = reader.readByte();
+		rec["type"] = reader.readByte();
 		// Annot
 		readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
 		// Annot type
 		readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		if (rec["Type"] >= 26 && rec["Type"] <= 33)
+		if (rec["type"] >= 26 && rec["type"] <= 33)
 		{
 			// Widget type
 			readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);

@@ -2106,8 +2106,11 @@ int main(int argc, char* argv[])
 						i += nPathLength;
 						nPathLength = READ_INT(pAnnots + i);
 						i += 4;
-						std::cout << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+						std::cout << std::string((char*)(pAnnots + i), nPathLength) << ", style ";
 						i += nPathLength;
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << nPathLength << ", ";
 					}
 				}
 

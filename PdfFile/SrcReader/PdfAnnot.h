@@ -606,7 +606,7 @@ class CAnnotRedact final : public CAnnotMarkup
 public:
 	CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID);
 
-	void SetFont(const std::map<std::wstring, std::wstring>& mFont);
+	void SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
 
 	void ToWASM(NSWasm::CData& oRes) override;
 
@@ -689,7 +689,6 @@ public:
 	static bool GetFontFromAP(PDFDoc* pdfDoc, AcroFormField* pField, Object* oFontRef, std::string& sFontKey);
 	static std::map<std::wstring, std::wstring> GetAnnotFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef);
 	static std::map<std::wstring, std::wstring> GetFreeTextFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList* pFontList, Object* oAnnotRef, std::vector<CAnnotMarkup::CFontData*>& arrRC);
-private:
 	static bool FindFonts(Object* oStream, int nDepth, Object* oResFonts);
 };
 

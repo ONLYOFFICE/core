@@ -32,6 +32,8 @@
 #include "Si.h"
 #include "../../XlsbFormat/Biff12_records/SSTItem.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/XLUnicodeRichExtendedString.h"
+
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
 
 namespace OOX
@@ -185,6 +187,25 @@ namespace OOX
 			}
 
 			return objectPtr;
+		}
+		XLS::BiffStructurePtr CSi::toXLS() const
+		{
+			XLS::XLUnicodeRichExtendedString* StringPtr;
+			{
+				std::list<XLS::CFRecordPtr> cfRecordPtr;// just for construction
+				StringPtr = new XLS::XLUnicodeRichExtendedString(cfRecordPtr);
+			}
+			for(auto i = 0; i < m_arrItems.size(); i++)
+			{
+				if(m_arrItems[i]->getType() == OOX::et_x_t)
+				{
+					auto text = static_cast<CText*>(m_arrItems[i]);
+					StringPtr->str_ = text->ToString();
+					continue;
+				}
+			}
+			auto StructPtr = XLS::BiffStructurePtr(StringPtr);
+			return StructPtr;
 		}
 		void CSi::fromBin(XLS::BiffStructure& obj, bool flagIsComment)
 		{

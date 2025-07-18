@@ -202,6 +202,9 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	//todo substreams conversion
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());
+	if(m_pSharedStrings != nullptr)
+		m_pSharedStrings->toXLS(workbookStream->m_GlobalsSubstream);
+
 	writer.Open(oFilePath.GetPath());
 	writer.WriteWorkbook(workbookPtr);
 	return true;

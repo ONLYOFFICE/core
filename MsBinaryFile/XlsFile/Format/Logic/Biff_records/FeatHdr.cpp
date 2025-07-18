@@ -81,7 +81,7 @@ void FeatHdr::writeFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_FeatHdr);
 	record << frtHeader << isf;
-	byte reserved = 1;
+	unsigned char reserved = 1;
 	record << reserved << cbHdrData;
 	if(cbHdrData = 0)
 		return;

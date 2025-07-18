@@ -217,7 +217,7 @@ public:
             case aw_READ_FROM_RECORD:
 				{
 					is_wide = true;
-					byte wideFlag = 1; // for wide chars writing
+					unsigned char wideFlag = 1; // for wide chars writing
 					record << wideFlag;
 					break;
 				}

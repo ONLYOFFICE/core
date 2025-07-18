@@ -450,10 +450,13 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 }
 function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
-	rec["AP"] = {};
+	if (!isRead)
+		rec["AP"] = {};
 	// Annot
 	// number for relations with AP
-	rec["AP"]["i"] = reader.readInt();
+	let APi = reader.readInt();
+	if (!isRead)
+		rec["AP"]["i"] = APi;
 	rec["annotflag"] = reader.readInt();
 	// 12.5.3
 	let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
@@ -536,7 +539,10 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 	if (flags & (1 << 6))
 	{
 		if (isRead)
-			rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
+		{
+			let APrender = reader.readData(); // TODO use Render - Uint8Array
+			// rec["AP"]["render"] = APrender;
+		}
 		else
 			rec["AP"]["have"] = (flags >> 6) & 1;
 	}
@@ -1174,9 +1180,15 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		if (isRead)
 		{
 			if (flags & (1 << 12))
-				rec["AP"]["V"] = readStringFunc.call(reader);
+			{
+				let APV = readStringFunc.call(reader);
+				// rec["AP"]["V"] = APV;
+			}
 			if (flags & (1 << 13))
-				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
+			{
+				let APrender = reader.readData(); // TODO use Render - Uint8Array
+				// rec["AP"]["render"] = APrender;
+			}
 		}
 		// 12.7.4.3
 		if (rec["flag"] >= 0)
@@ -1213,7 +1225,10 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		if (isRead)
 		{
 			if (flags & (1 << 12))
-				rec["AP"]["V"] = readStringFunc.call(reader);
+			{
+				let APV = readStringFunc.call(reader);
+				// rec["AP"]["V"] = APV;
+			}
 		}
 		else
 		{
@@ -1242,7 +1257,10 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 					rec["I"].push(reader.readInt());
 			}
 			if (flags & (1 << 15))
-				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
+			{
+				let APrender = reader.readData(); // TODO use Render - Uint8Array
+				// rec["AP"]["render"] = APrender;
+			}
 		}
 		// 12.7.4.4
 		if (rec["flag"] >= 0)

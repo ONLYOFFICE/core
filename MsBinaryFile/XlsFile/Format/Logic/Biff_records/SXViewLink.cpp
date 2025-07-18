@@ -63,5 +63,17 @@ void SXViewLink::readFields(CFRecord& record)
 	}
 }
 
+void SXViewLink::writeFields(CFRecord& record)
+{
+    record << rt;
+    record.reserveNunBytes(4);
+    cch = stPivotTable.getSize();
+    record << cch;
+    if (cch > 0 && cch < 0xff)
+    {
+        record << stPivotTable;
+    }
+}
+
 } // namespace XLS
 

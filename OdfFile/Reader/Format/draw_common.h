@@ -49,7 +49,7 @@
 
 namespace _image_file_
 {
-    bool GetResolution(const wchar_t* fileName, int & Width, int &Height, NSFonts::IApplicationFonts *appFonts);
+    bool GetResolution(const wchar_t* fileName, _CP_OPT(int) &Width, _CP_OPT(int) &Height, NSFonts::IApplicationFonts *appFonts);
 	void GenerateZeroImage(const std::wstring & fileName);
 }
 
@@ -72,7 +72,7 @@ void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props,
 						 const office_element_ptr & style_image, odf_document *document, oox::_oox_fill & fill, bool txbx = false, bool reset_fill = true);
 
 typedef double double_4[4];
-bool parse_clipping(std::wstring strClipping, std::wstring fileName, double_4 & clip_rect, NSFonts::IApplicationFonts *appFonts);
+bool parse_clipping(std::wstring strClipping, int width, int height, double_4 & clip_rect);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class draw_a : public office_element_impl<draw_a>
 {  

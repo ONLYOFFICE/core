@@ -103,5 +103,36 @@ void DBQueryExt::readFields(CFRecord& record)
 	}
 }
 
+void DBQueryExt::writeFields(CFRecord& record)
+{
+	unsigned short	flags1 = 0, flags2 = 0;
+	frtHeaderOld.rt = rt_DBQueryExt;
+	record << frtHeaderOld << dbt << flags1;
+
+	SETBIT(flags1, 0, fMaintain)
+	SETBIT(flags1, 1, fNewQuery)
+	SETBIT(flags1, 2, fImportXmlSource)
+	SETBIT(flags1, 3, fSPListSrc)
+	SETBIT(flags1, 4, fSPListReinitCache)
+	SETBIT(flags1, 7, fSrcIsXml)
+
+	record << frtHeaderOld << dbt << flags1;
+	if(dbt == 4 || dbt == 5 || dbt == 7)
+	{
+		grbitDbt->save(record);
+	}
+	else
+		record.reserveNunBytes(2);
+
+	SETBIT(flags2, 0, fTxtWiz)
+	SETBIT(flags2, 1, fTableNames)
+	record << flags2 << bVerDbqueryEdit << bVerDbqueryRefreshed << bVerDbqueryRefreshableMin;
+	record.reserveNunBytes(3);
+	record << coledb << cstFuture << wRefreshInterval << wHtmlFmt << cwParamFlags;
+	for(auto i : rgPbt)
+		i.save(record);
+	record.reserveNunBytes(cstFuture);
+}
+
 } // namespace XLS
 

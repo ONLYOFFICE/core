@@ -8,6 +8,7 @@
 
 namespace HWP
 {
+class CConverter2OOXML;
 class CNumberingConverter
 {
 	NSStringUtils::CStringBuilder m_oNumberXml;
@@ -17,7 +18,7 @@ public:
 
 	unsigned int GetCountNumbering() const;
 
-	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType);
+	int CreateNumbering(const CHWPRecordNumbering* pNumbering, EHeadingType eHeadingType, CConverter2OOXML& oConverter);
 	bool SaveToFile(const std::wstring& wsDirectory);
 };
 }

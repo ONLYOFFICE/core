@@ -91,6 +91,12 @@ void DXFN12List::load(CFRecord& record)
 	}
 }
 
+void DXFN12List::save(CFRecord& record)
+{
+	record << dxfn;
+	if(dxfn.xfext != nullptr)
+		record << *(dxfn.xfext);
+}
 
 } // namespace XLS
 

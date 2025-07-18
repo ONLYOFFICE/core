@@ -47,13 +47,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeFrame;
 
 //-----------------------------
-	_UINT16 frt;
-	bool fAutoSize;
-	bool fAutoPosition;
+	_UINT16 frt = 0;
+	bool fAutoSize = false;
+	bool fAutoPosition = false;
 
 };
 

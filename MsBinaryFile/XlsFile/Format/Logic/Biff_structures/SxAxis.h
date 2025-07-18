@@ -50,10 +50,10 @@ public:
 
 	static const ElementType type = typeSXAxis;
 
-	bool bRw;
-	bool bCol;
-	bool bPage;
-	bool bData;
+    bool bRw = false;
+    bool bCol = false;
+    bool bPage = false;
+    bool bData = false;
 
 };
 

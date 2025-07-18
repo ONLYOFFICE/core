@@ -91,6 +91,7 @@ class CCtrlCommon : public CCtrl
 	int m_nHeight;
 	int m_nZOrder;
 	short m_arOutMargin[4];
+	short m_arInMargin [4];
 	int m_nObjInstanceID;
 	int m_nBlockPageBreak;
 	HWP_STRING m_sObjDesc;
@@ -113,12 +114,14 @@ public:
 	CCtrlCommon(const HWP_STRING& sCtrlID);
 	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 	virtual ~CCtrlCommon();
 
 	ECtrlObjectType GetCtrlType() const override;
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
+
+	void ParseChildren(CXMLReader& oReader, int nVersion);
 
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddCaption(CCapParagraph* pCapPara);
@@ -127,10 +130,15 @@ public:
 	unsigned int GetCountParagraphs() const;
 	const CHWPPargraph* GetParagraphs(unsigned int unIndex) const;
 
-	short GetLeftMargin() const;
-	short GetTopMargin() const;
-	short GetRightMargin() const;
-	short GetBottomMargin() const;
+	short GetLeftOutMargin() const;
+	short GetTopOutMargin() const;
+	short GetRightOutMargin() const;
+	short GetBottomOutMargin() const;
+
+	short GetLeftInMargin() const;
+	short GetTopInMargin() const;
+	short GetRightInMargin() const;
+	short GetBottomInMargin() const;
 
 	bool GetTreatAsChar() const;
 	bool GetFlowWithText() const;

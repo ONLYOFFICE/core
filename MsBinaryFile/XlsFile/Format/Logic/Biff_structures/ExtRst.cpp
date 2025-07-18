@@ -76,6 +76,22 @@ void ExtRst::load(CFRecord& record)
 
 }
 
+void ExtRst::save(CFRecord& record)
+{
+    unsigned short reserve1 = 1;
+    record << reserve1;
+    auto cbPose = record.getRdPtr();
+    record.reserveNunBytes(2);
+    record << phs;
+    auto rphssubStart = record.getRdPtr();
+    record << rphssub;
+    cb = record.getRdPtr() - rphssubStart;
+    record.RollRdPtrBack(record.getRdPtr() - cbPose);
+    record << cb;
+    record.skipNunBytes((rphssubStart - record.getRdPtr()) + cb);
+    for(auto i : rgphruns)
+        record << i;
+}
 
 const size_t ExtRst::getSize() const
 {

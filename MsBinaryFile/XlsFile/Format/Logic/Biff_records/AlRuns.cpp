@@ -63,5 +63,14 @@ void AlRuns::readFields(CFRecord& record)
 	}
 }
 
+void AlRuns::writeFields(CFRecord& record)
+{
+	unsigned short cRuns = rgRuns.size();
+	for(auto i : rgRuns)
+	{
+		record << *i;
+	}
+}
+
 } // namespace XLS
 

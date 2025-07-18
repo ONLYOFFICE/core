@@ -927,7 +927,7 @@ namespace NSDoctRenderer
 
 			COfficeFileFormatChecker oChecker;
 			if (!oChecker.isOfficeFile(sFileCopy))
-				return false;
+				return 1;
 
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 				m_nFileType = 0;
@@ -1275,7 +1275,7 @@ namespace NSDoctRenderer
 			return SaveFile(nType, path, params);
 		}
 
-		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL, const bool& forceExecute = false)
+		bool ExecuteCommand(const std::wstring& command, CDocBuilderValue* retValue = NULL, const bool& forceExecute = false, const bool& isEnterContext = true)
 		{
 			if (command.length() < 7 && !retValue) // minimum command (!!!)
 				return true;
@@ -1291,12 +1291,12 @@ namespace NSDoctRenderer
 			if (CheckWorker())
 			{
 				bool bIsOpenedFromSimpleJSOld = m_bIsOpenedFromSimpleJS;
-				bool bResult = m_pWorker->ExecuteCommand(command, retValue);
+				bool bResult = m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
 				if (!bResult && !bIsOpenedFromSimpleJSOld && m_bIsOpenedFromSimpleJS)
 				{
 					RELEASEOBJECT(m_pWorker);
 					CheckWorker();
-					return m_pWorker->ExecuteCommand(command, retValue);
+					return m_pWorker->ExecuteCommand(command, retValue, isEnterContext);
 				}
 				else
 				{

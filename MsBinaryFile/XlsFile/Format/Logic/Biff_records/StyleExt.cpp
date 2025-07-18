@@ -37,6 +37,7 @@ namespace XLS
 
 StyleExt::StyleExt()
 {
+    stName = L"";
 }
 
 
@@ -61,6 +62,23 @@ void StyleExt::readFields(CFRecord& record)
 
 	stName.setSize(0xff); //max size
 	record >> iCategory>> builtInData >> stName >> xfProps;
+}
+
+void StyleExt::writeFields(CFRecord& record)
+{
+    unsigned char flags = 0;
+    frtHeader.rt = 0x0892;
+    SETBIT(flags, 0, fBuiltIn);
+    SETBIT(flags, 1, fHidden);
+    SETBIT(flags, 2, fCustom);
+    record << frtHeader << flags;
+    if(!fBuiltIn)
+    {
+        builtInData.iLevel = 0xFF;
+        builtInData.istyBuiltIn = 0xFF;
+    }
+    record << iCategory << builtInData << stName << xfProps;
+
 }
 
 int StyleExt::serialize(std::wostream & stream)

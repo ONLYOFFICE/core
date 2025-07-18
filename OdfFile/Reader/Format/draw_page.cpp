@@ -70,10 +70,18 @@ const wchar_t * draw_page::name = L"page";
 
 void draw_page::add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-	if	CP_CHECK_NAME(L"anim", L"par") 
+	if	CP_CHECK_NAME(L"anim", L"par")
+	{
 		CP_CREATE_ELEMENT(animation_);
-    else if (L"presentation" == Ns && L"notes" == Name)
-        CP_CREATE_ELEMENT(presentation_notes_); 
+	}
+	else if (L"presentation" == Ns && L"notes" == Name)
+	{
+		CP_CREATE_ELEMENT(presentation_notes_);
+	}
+	else if CP_CHECK_NAME(L"office", L"forms")
+	{
+		CP_CREATE_ELEMENT(office_forms_);
+	}
 	else
 		CP_CREATE_ELEMENT(content_);
 }
@@ -138,6 +146,10 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 
     Context.start_page(pageName, pageStyleName, layoutName, masterName);
 
+	if (office_forms_)
+	{
+		office_forms_->pptx_convert(Context);
+	}
 	if (attlist_.draw_style_name_)
 	{
 		style_instance * style_inst = Context.root()->odf_context().styleContainer().style_by_name(pageStyleName,style_family::DrawingPage, false);
@@ -150,6 +162,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 			{				
 				oox::_oox_fill fill;
 				Compute_GraphicFill(properties->content().common_draw_fill_attlist_, office_element_ptr(), Context.root(), fill);
+
 				Context.get_slide_context().add_background(fill);
 
 				bool is_page_visible = properties->content().presentation_visibility_.get_value_or(presentation_visibility::visible).get_type() == presentation_visibility::visible;

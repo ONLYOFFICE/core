@@ -428,7 +428,13 @@ void odf_text_context::start_span(bool styled)
 
 	current_level_.push_back(state);
 }
+bool odf_text_context::in_span()
+{
+	if (false == current_level_.empty() && dynamic_cast<text_span*>(current_level_.back().elm.get()))
+		return true;
 
+	return false;
+}
 void odf_text_context::end_span()
 {
 	if (styles_context_ == NULL || single_paragraph_)return;

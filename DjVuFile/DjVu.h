@@ -76,4 +76,11 @@ public:
 
     virtual BYTE* GetStructure();
     virtual BYTE* GetLinks (int nPageIndex);
+
+    virtual unsigned char* ConvertToPixels(
+        int nPageIndex,
+        int nRasterW, int nRasterH, bool bIsFlip = false,
+        NSFonts::IFontManager* pFonts = NULL,
+        int nBackgroundColor = 0xFFFFFF, bool bIsDarkMode = false,
+        int nBackgroundOpacity = 0xFF);
 };

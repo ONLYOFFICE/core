@@ -140,6 +140,7 @@ namespace PdfWriter
 	void  UIntChangeBit2(unsigned int& nValue, short nBit);
 
 	std::string DateNow();
+	std::wstring NormalizeWhitespace(const std::wstring& s);
 }
 
 #endif // _PDF_WRITER_SRC_UTILS_H

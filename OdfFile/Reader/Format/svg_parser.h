@@ -42,6 +42,7 @@ namespace svg_path
 {
 	struct _point
 	{
+		_point() {}
 		_point(double _x, double _y) { x = _x; y = _y; }
 
 		_CP_OPT(double) x;

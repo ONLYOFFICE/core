@@ -64,5 +64,12 @@ void ExtSST::readFields(CFRecord& record)
 	}
 }
 
+void ExtSST::writeFields(CFRecord& record)
+{
+    record << dsst;
+    for(auto i : rgISSTInf)
+        record << *i;
+}
+
 } // namespace XLS
 

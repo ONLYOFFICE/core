@@ -17,29 +17,50 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_eType = GetArcType(oNode.GetAttributeInt(L"type"));
+	m_eType = GetArcType(oReader.GetAttributeInt("type"));
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:center" == oChild.GetName())
+		if ("hp:center" == sNodeName)
 		{
-			m_nCenterX = oChild.GetAttributeInt(L"x");
-			m_nCenterY = oChild.GetAttributeInt(L"y");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nCenterX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nCenterY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:ax1" == oChild.GetName())
+		else if ("hp:ax1" == sNodeName)
 		{
-			m_nAxixX1 = oChild.GetAttributeInt(L"x");
-			m_nAxixY1 = oChild.GetAttributeInt(L"y");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nAxixX1 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nAxixY1 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:ax2" == oChild.GetName())
+		else if ("hp:ax2" == sNodeName)
 		{
-			m_nAxixX2 = oChild.GetAttributeInt(L"x");
-			m_nAxixY2 = oChild.GetAttributeInt(L"y");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nAxixX2 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nAxixY2 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeArc::GetShapeType() const

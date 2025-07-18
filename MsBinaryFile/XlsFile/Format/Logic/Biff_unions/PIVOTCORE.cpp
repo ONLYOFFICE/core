@@ -112,5 +112,29 @@ const bool PIVOTCORE::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTCORE::saveContent(BinProcessor& proc)
+{
+    if(m_SxView == nullptr)
+        return false;
+    proc.mandatory(*m_SxView);
+    for(auto i : m_arPIVOTVD)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arPIVOTIVD)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    if(m_PIVOTPI != nullptr)
+        proc.mandatory(*m_PIVOTPI);
+    for(auto i : m_arSXDI)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arPIVOTLI)
+        if(i!= nullptr)
+            proc.mandatory(*i);
+    if(m_PIVOTEX != nullptr)
+        proc.mandatory(*m_PIVOTEX);
+    return true;
+}
+
 } // namespace XLS
 

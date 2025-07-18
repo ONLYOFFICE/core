@@ -46,13 +46,14 @@ public:
 	static const ElementType	type = typeCondFmtStructure;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	const CellRef getLocation() const;
 
-	unsigned short	ccf;
-	bool			fToughRecalc;
-	unsigned short	nID;
+    unsigned short	ccf = 0;
+    bool			fToughRecalc = 0;
+    unsigned short	nID = 0;
 	Ref8U			refBound;
 	SqRefU			sqref;
 };

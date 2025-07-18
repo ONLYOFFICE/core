@@ -56,7 +56,9 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_stroke_dash_); 
 	_CP_APPLY_PROP2(draw_marker_start_); 
 	_CP_APPLY_PROP2(draw_marker_end_); 
-	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
+	_CP_APPLY_PROP2(draw_marker_start_width_);
+	_CP_APPLY_PROP2(draw_marker_end_width_);
+	_CP_APPLY_PROP2(draw_textarea_horizontal_align_);
 	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
 	_CP_APPLY_PROP2(draw_auto_grow_height_);
 	_CP_APPLY_PROP2(draw_auto_grow_width_);

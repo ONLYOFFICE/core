@@ -210,6 +210,9 @@ namespace NExtractTools
 	DECLARE_CONVERT_FUNC(fb2docx);
 	DECLARE_CONVERT_FUNC(doct_bin2fb);
 
+	//md
+	DECLARE_CONVERT_FUNC(md2html);
+
 	// ppt
 	DECLARE_CONVERT_FUNC(ppt2pptx);
 	DECLARE_CONVERT_FUNC(ppt2pptx_dir);
@@ -312,6 +315,7 @@ namespace NExtractTools
 	_UINT32 fromCrossPlatform(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 	_UINT32 fromCanvasPdf(const std::wstring& sFrom, int nFormatFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 
+	_UINT32 fromVsdtBin(const std::wstring& sFrom, const std::wstring& sTo, int nFormatTo, InputParams& params, ConvertParams& convertParams);
 	_UINT32 fromDraw(const std::wstring& sFrom, int nFormatFrom, InputParams& params, ConvertParams& convertParams);
 
 	_UINT32 fromInputParams(InputParams& oInputParams);

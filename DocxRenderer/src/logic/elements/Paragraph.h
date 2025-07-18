@@ -4,7 +4,7 @@
 
 namespace NSDocxRenderer
 {
-	class CParagraph : public CBaseItem
+	class CParagraph : public CBaseItem, public IOoxmlItem
 	{
 	public:
 		enum TextAlignmentType
@@ -31,15 +31,16 @@ namespace NSDocxRenderer
 		double m_dSpaceAfter {0.0}; // в shape по умолчанию выставляется 8pt, если отсутсвует w:after
 		double m_dLineHeight {0.0};
 
-		std::vector<std::shared_ptr<CTextLine>> m_arLines;
+		std::vector<std::shared_ptr<CTextLine>> m_arTextLines;
 		std::wstring m_wsStyleId;
 
 	public:
 		CParagraph() : CBaseItem() {}
 		virtual ~CParagraph();
-		virtual void Clear() override final;
+		virtual void Clear();
 		virtual void ToXml(NSStringUtils::CStringBuilder& oWriter) const override final;
 		virtual void ToXmlPptx(NSStringUtils::CStringBuilder& oWriter) const override final;
+		virtual void ToBin(NSWasm::CData& oWriter) const override final;
 
 		void RemoveHighlightColor();
 		void MergeLines();

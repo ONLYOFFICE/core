@@ -1559,6 +1559,12 @@ void Binary_pPrWriter::WriteSectPr (OOX::Logic::CSectionProperty* pSectPr)
 		WriteDocGrid(pSectPr->m_oDocGrid.get());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
+	if (pSectPr->m_oBidi.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::bidi);
+		m_oBcw.m_oStream.WriteBOOL(pSectPr->m_oBidi->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 }
 void Binary_pPrWriter::WritePageSettings(OOX::Logic::CSectionProperty* pSectPr)
 {
@@ -1666,18 +1672,18 @@ void Binary_pPrWriter::WritePageMargin(OOX::Logic::CSectionProperty* pSectPr)
 		}
 	}				
 }
-void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<ComplexTypes::Word::CHdrFtrRef*>& aRefs, bool bHdr)
+void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, std::vector<nullable<ComplexTypes::Word::CHdrFtrRef>>& aRefs, bool bHdr)
 {
 	int nCurPos = 0;
 	for (size_t i = 0, length = aRefs.size(); i < length; ++i)
 	{
-		const ComplexTypes::Word::CHdrFtrRef& oRef = *aRefs[i];
-		if ( oRef.m_oType.IsInit() && oRef.m_oId.IsInit())
+		nullable<ComplexTypes::Word::CHdrFtrRef>& oRef = aRefs[i];
+		if (oRef.IsInit() && oRef->m_oType.IsInit() && oRef->m_oId.IsInit())
 		{
 			int nIndex = 0;
 			OOX::CHdrFtr* pHdrFtr = NULL;
 			
-			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef.m_oId->GetValue());
+			smart_ptr<OOX::File> oFile = m_oBinaryHeaderFooterTableWriter->m_oDocumentRelsWriter->Find(oRef->m_oId->GetValue());
 			if (oFile.IsInit() && (OOX::FileTypes::Header == oFile->type() || OOX::FileTypes::Footer == oFile->type()))
 			{
 				pHdrFtr = (OOX::CHdrFtr*)oFile.GetPointer();
@@ -1689,14 +1695,14 @@ void Binary_pPrWriter::WriteHeaderFooter(OOX::Logic::CSectionProperty* pSectPr, 
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aHeaders.size();
 					m_oBinaryHeaderFooterTableWriter->m_aHeaders.push_back(pHdrFtr);
-					m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef.m_oType->GetValue());
+					m_oBinaryHeaderFooterTableWriter->m_aHeaderTypes.push_back(oRef->m_oType->GetValue());
 					m_oBinaryHeaderFooterTableWriter->m_aHeaderSectPrs.push_back(pSectPr);
 				}
 				else
 				{
 					nIndex = (int)m_oBinaryHeaderFooterTableWriter->m_aFooters.size();
 					m_oBinaryHeaderFooterTableWriter->m_aFooters.push_back(pHdrFtr);
-					m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef.m_oType->GetValue());
+					m_oBinaryHeaderFooterTableWriter->m_aFooterTypes.push_back(oRef->m_oType->GetValue());
 					m_oBinaryHeaderFooterTableWriter->m_aFooterSectPrs.push_back(pSectPr);
 				}
 				nCurPos = m_oBcw.WriteItemStart(c_oSerProp_secPrType::hdrftrelem);
@@ -2158,14 +2164,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE(c_oSerProp_tblPrType::Style);
 		m_oBcw.m_oStream.WriteStringW(p_tblPr->m_oTblStyle->ToString2());
 	}
-	//Look
 	if (p_tblPr->m_oTblLook.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Look);
 		m_oBcw.m_oStream.WriteLONG(p_tblPr->m_oTblLook->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-	//Layout
 	if (p_tblPr->m_oTblLayout.IsInit() && p_tblPr->m_oTblLayout->m_oType.IsInit())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::Layout);
@@ -2212,7 +2216,12 @@ void Binary_tblPrWriter::WriteTblPr(OOX::Logic::CTableProperty* p_tblPr)
 		m_oBcw.m_oStream.WriteBYTE((BYTE)p_tblPr->m_oTblOverlap->m_oVal->GetValue());
 		m_oBcw.WriteItemEnd(nCurPos);
 	}
-}
+	if (p_tblPr->m_oBidiVisual.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerProp_tblPrType::bidiVisual);
+		m_oBcw.m_oStream.WriteBOOL(p_tblPr->m_oBidiVisual->m_oVal.ToBool());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}}
 void Binary_tblPrWriter::WriteTblMar(const OOX::Logic::CTblCellMar& cellMar)
 {
 	int nCurPos = 0;
@@ -3132,7 +3141,12 @@ void BinaryNumberingTableWriter::WriteAbstractNum(const OOX::Numbering::CAbstrac
 		m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::StyleLink);
 		m_oBcw.m_oStream.WriteStringW(num.m_oStyleLink.get().ToString2());
 	}
-
+	if (num.m_oNsid.IsInit() && num.m_oNsid->m_oVal.IsInit())
+	{
+		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::Nsid);
+		m_oBcw.m_oStream.WriteULONG(num.m_oNsid->m_oVal->GetValue());
+		m_oBcw.WriteItemEnd(nCurPos);
+	}
 	if (false != num.m_oAbstractNumId.IsInit() && false == num.m_arrLvl.empty())
 	{
 		nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::AbstractNum_Lvls);
@@ -9874,7 +9888,7 @@ void BinaryFileWriter::intoBindoc(const std::wstring& sSrcPath)
 	{
 		BinDocxRW::BinaryCommentsTableWriter oBinaryCommentsTableWriter(m_oParamsWriter);
 		int nCurPos = this->WriteTableStart(BinDocxRW::c_oSerTableTypes::DocumentComments);
-		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreComments);
+		oBinaryCommentsTableWriter.Write(*pDocx->m_pDocumentComments, pDocx->m_pDocumentCommentsExt, pDocx->m_pDocumentCommentsExtensible, pDocx->m_pCommentsUserData, pDocx->m_pDocumentPeople, pDocx->m_pDocumentCommentsIds, m_oParamsWriter.m_mapIgnoreDocumentComments);
 		this->WriteTableEnd(nCurPos);
 	}
 	{

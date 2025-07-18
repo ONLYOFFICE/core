@@ -73,8 +73,8 @@ namespace PPTX
 			nullable_bool		rotWithShape;
 
 	//internal
-			mutable smart_ptr<OOX::File>	additionalFile;
-			std::wstring					oleData;
+			mutable std::vector<NSCommon::smart_ptr<OOX::File>> additionalFiles;
+			std::wstring oleData;
 
 		protected:
 			virtual void FillParentPointersForChilds();

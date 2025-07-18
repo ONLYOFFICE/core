@@ -2,10 +2,8 @@
 #define CCSSCALCULATOR_H
 
 #include "CssCalculator_global.h"
-#include "CCompiledStyle.h"
-#include "ConstValues.h"
-#include <iostream>
-#include <map>
+#include "StyleProperties.h"
+#include "CNode.h"
 #include <vector>
 
 namespace NSCSS
@@ -19,8 +17,7 @@ namespace NSCSS
 		CCssCalculator();
 		~CCssCalculator();
 
-		CCompiledStyle GetCompiledStyle(const std::vector<CNode> &arSelectors) const;
-		bool GetCompiledStyle(CCompiledStyle& oStyle, const std::vector<CNode> &arSelectors) const;
+		bool CalculateCompiledStyle(std::vector<CNode>& arSelectors) const;
 
 		std::wstring CalculateStyleId(const CNode& oNode);
 		bool CalculatePageStyle(NSProperties::CPage& oPageData, const std::vector<CNode> &arSelectors);
@@ -34,6 +31,8 @@ namespace NSCSS
 
 		std::wstring GetEncoding()   const;
 		unsigned short int GetDpi()  const;
+
+		bool HaveStylesById(const std::wstring& wsId) const;
 
 		void ClearPageData();
 		void ClearEmbeddedStyles();

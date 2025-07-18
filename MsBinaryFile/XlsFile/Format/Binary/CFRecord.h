@@ -33,6 +33,7 @@
 
 #include "CFRecordType.h"
 #include "CFStream.h"
+#include "CFStreamCacheWriter.h"
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 
@@ -90,6 +91,7 @@ public:
 
 	//save record to stream
 	void save(NSBinPptxRW::CXlsbBinaryWriter& writer);
+	void save(CFStreamPtr& writer);
 
 	template<class T>
 	const T* getCurData() const

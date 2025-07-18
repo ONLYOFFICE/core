@@ -38,6 +38,7 @@
 #include "../../../DocxRenderer/DocxRenderer.h"
 #include "../../../PdfFile/PdfFile.h"
 #include "../../../XpsFile/XpsFile.h"
+#include "../../../OFDFile/OFDFile.h"
 #include "../../../OfficeUtils/src/ZipFolder.h"
 
 #include "common.h"
@@ -416,6 +417,8 @@ namespace NExtractTools
 			return new CXpsFile(pFonts);
 		case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
 			return new CDjVuFile(pFonts);
+		case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD:
+			return new COFDFile(pFonts);
 		default:
 			break;
 		}
@@ -704,6 +707,9 @@ namespace NExtractTools
 				password = params.getSavePassword();
 				if (!oPdfResult.LoadFromFile(sFrom, L"", password, password))
 					return false;
+
+				RELEASEOBJECT(params.m_sPassword);
+				params.m_sPassword = new std::wstring(params.getSavePassword());
 			}
 			else
 				return false;
@@ -1026,6 +1032,9 @@ namespace NExtractTools
 				break;
 			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:
 				pReader = new CXpsFile(pApplicationFonts);
+				break;
+			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_OFD:
+				pReader = new COFDFile(pApplicationFonts);
 				break;
 			case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:
 				pReader = new CDjVuFile(pApplicationFonts);

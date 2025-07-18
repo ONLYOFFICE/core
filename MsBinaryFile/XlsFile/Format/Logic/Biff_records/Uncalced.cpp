@@ -55,5 +55,10 @@ void Uncalced::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void Uncalced::writeFields(CFRecord& record)
+{
+    record.reserveNunBytes(2); // reserved
+}
+
 } // namespace XLS
 

@@ -1078,7 +1078,6 @@ namespace SimpleTypes
 	DEFINE_SIMPLE_TYPE_START(CLongHexNumber, unsigned int, 0)
 	private:
 		bool Parse(const std::wstring &sValue);
-		int	HexToInt(int nHex, bool &bResult);
 	};
 
 	//--------------------------------------------------------------------------------

@@ -63,5 +63,20 @@ void SXPI::readFields(CFRecord& record)
 	}
 }
 
+void SXPI::writeFields(CFRecord& record)
+{
+    const auto maxRecSize = 8224;
+    while(!m_arItems.empty())
+    {
+        record << m_arItems.at(0);
+        if(record.getRdPtr() > maxRecSize)
+        {
+            record.RollRdPtrBack(6);
+            return;
+        }
+        m_arItems.erase(m_arItems.begin());
+    }
+}
+
 } // namespace XLS
 

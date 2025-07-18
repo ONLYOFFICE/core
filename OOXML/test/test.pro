@@ -23,3 +23,9 @@ DESTDIR = $$CORE_BUILDS_BINARY_PATH
 
 
 SOURCES -= $$CORE_GTEST_PATH/src/gtest_main.cc
+SOURCES -= ../../../Common/OfficeFileFormatChecker2.cpp
+SOURCES -= ../../src/cextracttools.cpp
+SOURCES -= ../../src/ASCConverters.cpp
+SOURCES += ../../Common/OfficeFileFormatChecker2.cpp
+SOURCES += $$X2T_DIR/src/cextracttools.cpp
+SOURCES += $$X2T_DIR/src/ASCConverters.cpp

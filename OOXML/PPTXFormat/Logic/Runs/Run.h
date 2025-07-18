@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_RUN_INCLUDE_H_
-#define PPTX_LOGIC_RUN_INCLUDE_H_
 
 #include "RunBase.h"
 #include "./../RunProperties.h"
@@ -60,16 +58,13 @@ namespace PPTX
 			bool HasText() const;
 			void SetText(const std::wstring& srcText);
 
-		public:
 			nullable<RunProperties> rPr;
 
 		private:
-			nullable_string			text;
+			nullable_string text;
 
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_RUN_INCLUDE_H

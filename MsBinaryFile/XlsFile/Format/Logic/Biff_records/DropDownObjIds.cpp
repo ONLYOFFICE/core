@@ -63,5 +63,18 @@ void DropDownObjIds::readFields(CFRecord& record)
 	}
 }
 
+void DropDownObjIds::writeFields(CFRecord& record)
+{
+    FrtHeader frtHeader(rt_DropDownObjIds);
+    record << frtHeader;
+    unsigned short cidObj = rgidObj.size();
+    record << cidObj;
+    for(auto i : rgidObj)
+    {
+        if(i != nullptr)
+            record << *i;
+    }
+}
+
 } // namespace XLS
 

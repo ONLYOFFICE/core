@@ -48,11 +48,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeObjProtect;
 
 //-----------------------------
-	Boolean<unsigned short> fLockObj;
+    Boolean<unsigned short> fLockObj = false;
 
 };
 

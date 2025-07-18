@@ -57,5 +57,11 @@ void DataLabExt::readFields(CFRecord& record)
 	record >> frtHeader;
 }
 
+void DataLabExt::writeFields(CFRecord& record)
+{
+	FrtHeader frtHeader(rt_DataLabExt);
+	record << frtHeader;
+}
+
 } // namespace XLS
 

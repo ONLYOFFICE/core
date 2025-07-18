@@ -48,6 +48,12 @@ void CFMStateItem::load(CFRecord& record)
 	record.skipNunBytes(4); // unused
 }
 
+void CFMStateItem::save(CFRecord& record)
+{
+    cfvo.save(record);
+    record << fEqual;
+    record.reserveNunBytes(4);
+}
 
 } // namespace XLS
 

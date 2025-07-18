@@ -52,6 +52,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType	type = typeSIIndex;
 
@@ -59,7 +60,7 @@ public:
 	int serialize(std::wostream & _stream, int idx, const CellRef & in_ref);
 
 //-----------------------------
-	_UINT16					numIndex;
+    _UINT16					numIndex = 0x0001;
 
 	std::vector<BaseObjectPtr >	m_arData;
 

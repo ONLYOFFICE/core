@@ -51,13 +51,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeLRng;
 
 //-----------------------------
-	_UINT16 crefRw;
+    _UINT16 crefRw = 0 ;
 	BiffStructurePtrVector refRow;
-	_UINT16 crefCol;
+    _UINT16 crefCol = 0;
 	BiffStructurePtrVector refCol;
 };
 

@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_RUNPROPERTIES_INCLUDE_H_
-#define PPTX_LOGIC_RUNPROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "./../Limit/TextCaps.h"
@@ -45,6 +43,13 @@
 #include "Hyperlink.h"
 #include "ExtP.h"
 
+namespace OOX
+{
+	namespace Logic
+	{
+		class CRunProperty;
+	}
+}
 namespace PPTX
 {
 	namespace Logic
@@ -185,5 +190,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_RUNPROPERTIES_INCLUDE_H

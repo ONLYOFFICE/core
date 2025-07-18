@@ -1629,6 +1629,10 @@ namespace NSFile
 		{
 			wsTemp = L"";
 		}
+#if defined(_WIN32) || defined (_WIN64)
+		if (wsTempDir)
+			free(wsTempDir);
+#endif
 		wsTemp += L"x";
 		int nTime = (int)time(NULL);
 		for (int nIndex = 0; nIndex < 1000; ++nIndex)
@@ -1864,7 +1868,7 @@ namespace NSFile
 
 namespace NSFile
 {
-	bool CBase64Converter::Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags)
+	bool CBase64Converter::Encode(const BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags)
 	{
 		if (!pDataSrc || nLenSrc < 1)
 			return false;

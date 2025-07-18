@@ -47,17 +47,18 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeScatter;
 
 	int	serialize(std::wostream & _stream);
 
 //-----------------------------
-	_UINT16 pcBubbleSizeRatio;
-	_UINT16 wBubbleSize;
-	bool fBubbles;
-	bool fShowNegBubbles;
-	bool fHasShadow;
+    _UINT16 pcBubbleSizeRatio = 0;
+    _UINT16 wBubbleSize = 0;
+    bool fBubbles = false;
+    bool fShowNegBubbles = false;
+    bool fHasShadow = false;
 
 };
 

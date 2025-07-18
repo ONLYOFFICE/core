@@ -124,5 +124,28 @@ const bool DBQUERYEXT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DBQUERYEXT::saveContent(BinProcessor& proc)
+{
+	if(m_DBQueryExt == nullptr)
+		return false;
+	proc.mandatory(*m_DBQueryExt);
+	if(m_ExtString != nullptr)
+		proc.mandatory(*m_ExtString);
+	for(auto i : m_arOleDbConn)
+	{
+		if(i.oleDbConn != nullptr)
+			proc.mandatory(*i.oleDbConn);
+		for(auto j : i.arExtString)
+			if(j != nullptr)
+				proc.mandatory(*j);
+	}
+	if(m_TxtQry != nullptr)
+		proc.mandatory(*m_TxtQry);
+	for(auto i : m_arExtString)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
+
 } // namespace XLS
 

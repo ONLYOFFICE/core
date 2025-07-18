@@ -55,5 +55,10 @@ void HCenter::readFields(CFRecord& record)
 	record >> hcenter;
 }
 
+void HCenter::writeFields(CFRecord& record)
+{
+    record << hcenter;
+}
+
 } // namespace XLS
 

@@ -405,6 +405,59 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool ChartSheetSubstream::saveContent(BinProcessor& proc)
+{
+    {
+        BOF bof;
+        bof.dt= 0x0020;
+        proc.mandatory(bof);
+    }
+    if(m_WriteProtect != nullptr)
+        proc.mandatory(*m_WriteProtect);
+    if(m_SheetExt != nullptr)
+        proc.mandatory(*m_SheetExt);
+    for(auto i : m_arHFPicture)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PAGESETUP != nullptr)
+        proc.mandatory(*m_PAGESETUP);
+    if(m_PrintSize != nullptr)
+        proc.mandatory(*m_PrintSize);
+	if(!m_arRECORD12.empty())
+		if(m_arRECORD12[0] != nullptr)
+			proc.mandatory(*m_arRECORD12[0]);
+    if(m_BACKGROUND != nullptr)
+        proc.mandatory(*m_BACKGROUND);
+    for(auto i : m_arFbi)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_PROTECTION != nullptr)
+        proc.mandatory(*m_PROTECTION);
+    if(m_Palette != nullptr)
+        proc.mandatory(*m_Palette);
+    if(m_SXViewLink != nullptr)
+        proc.mandatory(*m_SXViewLink);
+    if(m_PivotChartBits != nullptr)
+        proc.mandatory(*m_PivotChartBits);
+    if(m_SBaseRef != nullptr)
+        proc.mandatory(*m_SBaseRef);
+    proc.mandatory<Units>();
+    if(m_CHARTFORMATS != nullptr)
+        proc.mandatory(*m_CHARTFORMATS);
+    if(m_SERIESDATA != nullptr)
+        proc.mandatory(*m_SERIESDATA);
+    for(auto i : m_arWINDOW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arCUSTOMVIEW)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_CodeName != nullptr)
+        proc.mandatory(*m_CodeName);
+    proc.mandatory<EOF_T>();
+    return true;
+}
+
 void ChartSheetSubstream::recalc(CHARTFORMATS* charts)
 {
 	if (charts == NULL) return;

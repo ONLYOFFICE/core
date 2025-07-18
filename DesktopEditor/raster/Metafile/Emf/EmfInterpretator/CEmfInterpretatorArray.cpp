@@ -73,10 +73,10 @@ namespace MetaFile
 			pInterpretator->End();
 	}
 
-	void CEmfInterpretatorArray::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight)
+	void CEmfInterpretatorArray::DrawBitmap(double dX, double dY, double dW, double dH, BYTE *pBuffer, unsigned int unWidth, unsigned int unHeight, unsigned int unBlendMode)
 	{
 		for (CEmfInterpretatorBase* pInterpretator : m_arInterpretators)
-			pInterpretator->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight);
+			pInterpretator->DrawBitmap(dX, dY, dW, dH, pBuffer, unWidth, unHeight, unBlendMode);
 	}
 
 	void CEmfInterpretatorArray::DrawString(std::wstring &wsText, unsigned int unCharsCount, double dX, double dY, double *pDx,

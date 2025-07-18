@@ -50,5 +50,14 @@ void YMult::readFields(CFRecord& record)
 	fBeingEditted		= GETBIT(flags, 1);
 }
 
+void YMult::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fAutoShowMultiplier)
+	SETBIT(flags, 1, fBeingEditted)
+
+	record << frtHeaderOld << axmid << numLabelMultiplier << flags;
+}
+
 } // namespace XLS
 

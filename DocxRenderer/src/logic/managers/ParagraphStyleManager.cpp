@@ -29,11 +29,11 @@ namespace NSDocxRenderer
 
 	std::wstring CParagraphStyleManager::GetDefaultParagraphStyleId(const CParagraph& oParagraph) const noexcept
 	{
-		if(oParagraph.m_arLines.size() > 1) return L"Normal";
+		if (oParagraph.m_arTextLines.size() > 1) return L"Normal";
 
 		bool isHeading = true;
-		for(auto& val : oParagraph.m_arLines[0]->m_arConts)
-			if(val && val->m_pFontStyle->dFontSize <= m_dAvgFontSize + 1 && !val->m_pFontStyle->bBold)
+		for (auto& val : oParagraph.m_arTextLines[0]->m_arConts)
+			if (val && val->m_pFontStyle->dFontSize <= m_dAvgFontSize + 1 && !val->m_pFontStyle->bBold)
 				isHeading = false;
 
 		return isHeading ? L"Heading1" : L"Normal";

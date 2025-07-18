@@ -62,6 +62,15 @@ void RadarArea::readFields(CFRecord& record)
 	record.skipNunBytes(2); // unused
 }
 
+void RadarArea::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fRdrAxLab)
+    SETBIT(flags, 1, fHasShadow)
+    record << flags;
+    record.reserveNunBytes(2);
+}
+
 int	RadarArea::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

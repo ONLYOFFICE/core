@@ -4,7 +4,7 @@
 #include "HanType.h"
 #include "HWPStream.h"
 #include "HWPElements/HWPRecord.h"
-#include "Common/XMLNode.h"
+#include "Common/XMLReader.h"
 
 #include <map>
 
@@ -46,8 +46,8 @@ public:
 	~CHWPDocInfo();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
-	bool Parse(CXMLNode& oNode, int nVersion);
-	bool ReadContentHpf(CXMLNode& oNode, int nVersion);
+	bool Parse(CXMLReader& oReader, int nVersion);
+	bool ReadContentHpf(CXMLReader& oReader, int nVersion);
 
 	const CHWPRecord* GetRecord(int nIndex) const;
 	const CHWPRecord* GetFaceName(int nIndex) const;
@@ -65,7 +65,7 @@ public:
 	EHanType GetHanType() const;
 	ECompatDoc GetCompatibleDoc() const;
 private:
-	bool ReadRefList(CXMLNode& oNode, int nVersion);
+	bool ReadRefList(CXMLReader& oReader, int nVersion);
 };
 }
 

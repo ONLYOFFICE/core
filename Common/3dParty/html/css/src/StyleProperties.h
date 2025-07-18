@@ -328,6 +328,15 @@ namespace NSCSS
 	};
 
 	// PROPERTIES
+	typedef enum
+	{
+		Normal,
+		Nowrap,
+		Pre,
+		Pre_Line,
+		Pre_Wrap
+	} EWhiteSpace;
+
 	class CDisplay
 	{
 	public:
@@ -347,6 +356,8 @@ namespace NSCSS
 
 		bool SetDisplay(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
 
+		bool SetWhiteSpace(const std::wstring& wsValue, unsigned int unLevel, bool bHardMode = false);
+
 		const CDigit& GetX()      const;
 		const CDigit& GetY()      const;
 		const CDigit& GetWidth()  const;
@@ -356,6 +367,8 @@ namespace NSCSS
 		const CString& GetVAlign() const;
 
 		const CString& GetDisplay() const;
+
+		const CEnum& GetWhiteSpace() const;
 
 		bool Empty() const;
 
@@ -371,6 +384,8 @@ namespace NSCSS
 		CString m_oVAlign;
 
 		CString m_oDisplay;
+
+		CEnum m_eWhiteSpace;
 	};
 
 	class CStroke

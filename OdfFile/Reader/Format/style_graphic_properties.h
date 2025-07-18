@@ -83,6 +83,8 @@ public:
 
 	_CP_OPT(odf_types::marker_style)		draw_marker_end_;
 	_CP_OPT(odf_types::marker_style)		draw_marker_start_;
+    _CP_OPT(odf_types::length)              draw_marker_start_width_;
+    _CP_OPT(odf_types::length)              draw_marker_end_width_;
 
 	_CP_OPT(odf_types::text_align)			draw_textarea_horizontal_align_;
 	_CP_OPT(odf_types::vertical_align)		draw_textarea_vertical_align_;

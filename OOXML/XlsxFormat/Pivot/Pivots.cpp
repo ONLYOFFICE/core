@@ -217,11 +217,9 @@ namespace Spreadsheet
             CPivotTableDefinition tableDef;
             {
                 XmlUtils::CXmlLiteReader reader;
-                {
-                    auto wstringData = prepareData();
-                    reader.FromString(wstringData);
-                }
-                reader.ReadNextNode();
+				reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
+  
+				reader.ReadNextNode();
                 tableDef.fromXML(reader);
             }
             return tableDef.toBin();
@@ -236,24 +234,29 @@ namespace Spreadsheet
 
 	void CPivotTableFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
+		RELEASEARRAYOBJECTS(m_pData);
+
 		m_oReadPath = oPath;
         IFileContainer::Read( oRootPath, oPath );
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
         {
             readBin(m_oReadPath);
-            return;
         }
+		else
+		{
+			NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
 
-		XmlUtils::CXmlLiteReader oReader;
+			XmlUtils::CXmlLiteReader oReader;
 
-		if ( !oReader.FromFile( oPath.GetPath() ) )
-			return;
+			if (!oReader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength))
+				return;
 
-		if ( !oReader.ReadNextNode() )
-			return;
+			if (!oReader.ReadNextNode())
+				return;
 
-		m_oPivotTableDefinition = oReader;
+			m_oPivotTableDefinition = oReader;
+		}
 	}
 	void CPivotTableFile::write(const CPath& oPath, const CPath& oDirectory, CContentTypes& oContent) const
 	{
@@ -294,12 +297,6 @@ namespace Spreadsheet
             return OOX::SpreadsheetBin::FileTypes::PivotTableBin;
         }
             return OOX::Spreadsheet::FileTypes::PivotTable;
-    }
-    std::wstring CPivotTableFile::prepareData() const
-    {
-        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        return converter.from_bytes(stringData);
     }
 //------------------------------------
 	void CPivotTableDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
@@ -526,101 +523,58 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		if (m_oApplyBorderFormats.IsInit())
 			ptr->ibitAtrBdr = m_oApplyBorderFormats.get();
-		else
-			ptr->ibitAtrBdr = false;
 		if (m_oApplyFontFormats.IsInit())
 			ptr->ibitAtrFnt = m_oApplyFontFormats.get();
-		else
-			ptr->ibitAtrFnt = false;
 		if (m_oApplyNumberFormats.IsInit())
 			ptr->ibitAtrNum = m_oApplyNumberFormats.get();
-		else
-			ptr->ibitAtrNum = false;
 		if (m_oApplyPatternFormats.IsInit())
 			ptr->ibitAtrPat = m_oApplyPatternFormats.get();
-		else
-			ptr->ibitAtrPat = false;
 		if (m_oApplyWidthHeightFormats.IsInit())
 			ptr->ibitAtrProt = m_oApplyWidthHeightFormats.get();
-		else
-			ptr->ibitAtrProt = false;
 		if (m_oApplyAlignmentFormats.IsInit())
 			ptr->ibitAtrAlc = m_oApplyAlignmentFormats.get();
-		else
-			ptr->ibitAtrAlc = false;
 
 		if (m_oAsteriskTotals.IsInit())
 		 	ptr->fHideTotAnnotation = m_oAsteriskTotals.get();
-		else
-			ptr->fHideTotAnnotation = false;
 		if (m_oVisualTotals.IsInit())
 			ptr->fNotVisualTotals = m_oVisualTotals.get();
-		else
-			ptr->fNotVisualTotals = false;
 		if (m_oAutoFormatId.IsInit())
 			ptr->itblAutoFmt = m_oAutoFormatId->GetValue();
-		else
-			ptr->itblAutoFmt = 0;
 		if (m_oCacheId.IsInit())
 			ptr->idCache = m_oCacheId->GetValue();
 		if (m_oChartFormat.IsInit())
 			ptr->dwCrtFmtId = m_oChartFormat->GetValue();
-		else
-			ptr->dwCrtFmtId = 0;
 		if (m_oColGrandTotals.IsInit())
 			ptr->fColGrand = m_oColGrandTotals.get();
 
 		if (m_oColHeaderCaption.IsInit()) ptr->irstColHdrName = m_oColHeaderCaption.get();
-		else
-			ptr->fUseColHdrName = false;
 		if (m_oCompact.IsInit()) 
 			ptr->fDefaultCompact = m_oCompact.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oCompactData.IsInit()) 
 			ptr->fCompactData = m_oCompactData.get();
-		else
-			ptr->fCompactData = false;
 		if (m_oCreatedVersion.IsInit())
 		 	ptr->bVerSxMacro = m_oCreatedVersion->GetValue();
-		else
-			ptr->bVerSxMacro = false;
 		if (m_oCustomListSort.IsInit()) 
 			ptr->fDontUseCustomLists = !m_oCustomListSort.get();
-		else
-			ptr->fDontUseCustomLists = false;
 		if (m_oDataCaption.IsInit()) 
 			ptr->irstData = m_oDataCaption.get();
 		else
 			ptr->irstData = 0xFFFFFFFF;
 		if (m_oDataOnRows.IsInit()) 
-			ptr->fDefaultCompact = m_oDataOnRows.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oDataPosition.IsInit()) 
 			ptr->ipos4Data = m_oDataPosition->GetValue();
-		else	
-			ptr->ipos4Data = -1;
+
 		if (m_oDisableFieldList.IsInit()) 
 			ptr->fDisableFList = m_oDisableFieldList.get();
-		else 
-			ptr->fDisableFList = false;
+
 		if (m_oEditData.IsInit()) 
 			ptr->fEnableDataEd = m_oEditData.get();
-		else
-			ptr->fEnableDataEd = false;
 		if (m_oEnableDrill.IsInit()) 
 			ptr->fEnableDrilldown = m_oEnableDrill.get();
-		else
-			ptr->fEnableDrilldown = false;
 		if (m_oEnableFieldProperties.IsInit()) 
 			ptr->fEnableFieldDialog = m_oEnableFieldProperties.get();
-		else
-			ptr->fEnableFieldDialog = false;
 		if (m_oEnableWizard.IsInit()) 
 			ptr->fEnableWizard = m_oEnableWizard.get();
-		else
-			ptr->fEnableWizard = false;
 		if (m_oErrorCaption.IsInit()) 
 			ptr->irstErrorString = m_oErrorCaption.get();
 		else
@@ -630,46 +584,26 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		if (m_oFieldListSortAscending.IsInit()) 
 			ptr->fNonDefaultSortInFlist = m_oFieldListSortAscending.get();
-		else 
-			ptr->fNonDefaultSortInFlist = false;
 		if (m_oFieldPrintTitles.IsInit()) 
 			ptr->fPrintTitles = m_oFieldPrintTitles.get();
-		else 
-			ptr->fPrintTitles = false;
 		if (m_oGrandTotalCaption.IsInit()) 
 			ptr->irstGrand = m_oGrandTotalCaption.get();
-		else
-			ptr->fDisplayGrand = false;
 		if (m_oGridDropZones.IsInit()) 
 			ptr->fNewDropZones = !m_oGridDropZones.get();
-		else
-			ptr->fNewDropZones = false;
 		if (m_oImmersive.IsInit()) 
 			ptr->fTurnOffImmersive = m_oImmersive.get();
-		else 
-			ptr->fTurnOffImmersive = false;
 		if (m_oIndent.IsInit()) 
 			ptr->cIndentInc = m_oIndent->GetValue();
-		else
-			ptr->cIndentInc = false;
 		if (m_oItemPrintTitles.IsInit()) 
 			ptr->fRepeatItemsOnEachPrintedPage = m_oItemPrintTitles.get();
-		else
-			ptr->fRepeatItemsOnEachPrintedPage = false;
 		if (m_oMdxSubqueries.IsInit()) 
 			ptr->fDefaultCompact = m_oMdxSubqueries.get();
-		else
-			ptr->fDefaultCompact = false;
 		if (m_oMergeItem.IsInit()) 
 			ptr->fMergeLabels = m_oMergeItem.get();
-		else 
-			ptr->fMergeLabels = false;
 		if (m_oMinRefreshableVersion.IsInit()) 
 			ptr->bVerSxUpdateableMin = m_oMinRefreshableVersion->GetValue();
 		if (m_oMissingCaption.IsInit()) 
 			ptr->irstNullString = m_oMissingCaption.get();
-		else
-			ptr->fEmptyDisplayNullString = true;
 		if (m_oMultipleFieldFilters.IsInit()) 
 			ptr->fSingleFilterPerField = !m_oMultipleFieldFilters.get();
 		if (m_oName.IsInit()) ptr->irstName = m_oName.get();
@@ -679,74 +613,44 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fDefaultOutline = m_oOutline.get();
 		if (m_oOutlineData.IsInit()) 
 			ptr->fOutlineData = m_oOutlineData.get();
-		else
-			ptr->fOutlineData = false;
 		if (m_oPageOverThenDown.IsInit())
 			ptr->fAcrossPageLay = m_oPageOverThenDown.get();
-		else 
-			ptr->fAcrossPageLay = false;
 		if (m_oPageStyle.IsInit()) 
 			ptr->irstPageFieldStyle = m_oPageStyle.get();
-		else
-			ptr->fDisplayPageFieldStyle = false;
 		if (m_oPageWrap.IsInit()) 
 			ptr->cWrapPage = m_oPageWrap->GetValue();
 		else
 			ptr->cWrapPage = 0;
 		if (m_oPivotTableStyle.IsInit()) 
 			ptr->irstTableStyle = m_oPivotTableStyle.get();
-		else
-			ptr->fDisplayTableStyle = false;
 		if (m_oPreserveFormatting.IsInit()) 
 			ptr->fPreserveFormatting = m_oPreserveFormatting.get();
 		if (m_oPrintDrill.IsInit()) 
 			ptr->fPrintDrillIndicators = m_oPrintDrill.get();
-		else 
-			ptr->fPrintDrillIndicators = false;
 		if (m_oPublished.IsInit()) 
 			ptr->fPublished = m_oPublished.get();
-		else 
-			ptr->fPublished = false;
 		if (m_oRowGrandTotals.IsInit()) 
 			ptr->fRwGrand = m_oRowGrandTotals.get();
 		if (m_oRowHeaderCaption.IsInit()) 
 			ptr->irstRwHdrName = m_oRowHeaderCaption.get();
-		else
-			ptr->fUseRwHdrName = false;
 		if (m_oShowCalcMbrs.IsInit()) 
 			ptr->fNotViewCalculatedMembers = !m_oShowCalcMbrs.get();
-		else 
-			ptr->fNotViewCalculatedMembers = false;
 		if (m_oShowDataDropDown.IsInit()) 
 			ptr->fHideDDData = !m_oShowDataDropDown.get();
-		else 
-			ptr->fHideDDData = false;
 		if (m_oShowDataTips.IsInit()) 
 			ptr->fNoPivotTips = !m_oShowDataTips.get();
-		else 
-			ptr->fNoPivotTips = false;
 		if (m_oShowDrill.IsInit()) 
 			ptr->fHideDrillIndicators = !m_oShowDrill.get();
-		else 
-			ptr->fHideDrillIndicators = false;
 		if (m_oShowDropZones.IsInit()) 
 			ptr->fNoStencil = !m_oShowDropZones.get();
-		else 
-			ptr->fNoStencil = false;
 		if (m_oShowEmptyCol.IsInit()) 
 			ptr->fIncludeEmptyCol = m_oShowEmptyCol.get();
-		else 
-			ptr->fIncludeEmptyCol = false;
 		if (m_oShowEmptyRow.IsInit()) 
 			ptr->fIncludeEmptyRw = m_oShowEmptyRow.get();
-		else 
-			ptr->fIncludeEmptyRw = false;
 		if (m_oShowError.IsInit()) 
 			ptr->fDisplayErrorString = m_oShowError.get();
 		if (m_oShowHeaders.IsInit())
 			ptr->fNoHeaders = !m_oShowHeaders.get();
-		else 
-			ptr->fNoHeaders = false;
 		if (m_oShowItems.IsInit()) 
 			ptr->fDisplayImmediateItems = m_oShowItems.get();
 		if (m_oShowMemberPropertyTips.IsInit()) 
@@ -757,22 +661,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->fPageMultipleItemLabel = m_oShowMultipleLabel.get();
 		if (m_oSubtotalHiddenItems.IsInit()) 
 			ptr->fSubtotalHiddenPageItems = m_oSubtotalHiddenItems.get();
-		else 
-			ptr->fSubtotalHiddenPageItems = false;
 		if (m_oTag.IsInit()) 
 			ptr->irstTag = m_oTag.get();
-		else
-			ptr->fDisplayTag = false;
 		if (m_oUpdatedVersion.IsInit()) 
 			ptr->bVerSxLastUpdated = m_oUpdatedVersion->GetValue();
 		if (m_oUseAutoFormatting.IsInit()) 
 			ptr->fAutoFormat = m_oUseAutoFormatting.get();
 		if (m_oVacatedStyle.IsInit()) 
 			ptr->irstVacateStyle = m_oVacatedStyle.get();
-		else
-			ptr->fDisplayVacateStyle = false;
 		ptr->sxaxis4Data = 2;
-		ptr->fReenterOnLoadOnce = false;
 
 		return objectPtr;
 	}
@@ -3734,7 +3631,38 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		WritingElement_ReadAttributes_End( oReader )
 	}
 //------------------------------------
-    void CPivotCacheDefinitionFile::readBin(const CPath& oPath)
+	CPivotCacheDefinitionFile::CPivotCacheDefinitionFile(OOX::Document* pMain) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+
+		m_pData = NULL;
+		m_nDataLength = 0;
+
+		bIsWritten = false;
+	}
+	CPivotCacheDefinitionFile::CPivotCacheDefinitionFile(OOX::Document* pMain, const CPath& oRootPath, const CPath& oPath) : OOX::FileGlobalEnumerated(pMain), OOX::IFileContainer(pMain)
+	{
+		m_bSpreadsheets = true;
+
+		m_pData = NULL;
+		m_nDataLength = 0;
+
+		bIsWritten = false;
+
+		read(oRootPath, oPath);
+	}
+	CPivotCacheDefinitionFile::~CPivotCacheDefinitionFile()
+	{
+		m_nDataLength = 0;
+		RELEASEARRAYOBJECTS(m_pData)
+	}
+	void CPivotCacheDefinitionFile::read(const CPath& oPath)
+	{
+		//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+		CPath oRootPath;
+		read(oRootPath, oPath);
+	}
+	void CPivotCacheDefinitionFile::readBin(const CPath& oPath)
     {
         CXlsb* xlsb = dynamic_cast<CXlsb*>(File::m_pMainDocument);
         if (xlsb)
@@ -3755,7 +3683,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
     }
 	XLS::BaseObjectPtr CPivotCacheDefinitionFile::WriteBin() const
 	{
-
         if(m_oPivotCashDefinition.IsInit())
         {
             auto pivotCacheDefStream = m_oPivotCashDefinition->toBin();
@@ -3766,15 +3693,12 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             CPivotCacheDefinition cacheDef;
             {
                 XmlUtils::CXmlLiteReader reader;
-                {
-                    auto wstringData = prepareData();
-                    reader.FromString(wstringData);
-                }
+				reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
+
                 reader.ReadNextNode();
                 cacheDef.fromXML(reader);
             }
             return cacheDef.toBin();
-
         }
         else
         {
@@ -3784,6 +3708,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	}
 	void CPivotCacheDefinitionFile::read(const CPath& oRootPath, const CPath& oPath)
 	{
+		RELEASEARRAYOBJECTS(m_pData);
+
 		m_oReadPath = oPath;
 
         if( m_oReadPath.GetExtention() == _T(".bin"))
@@ -3792,9 +3718,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
         }
 		else
 		{
+			NSFile::CFileBinary::ReadAllBytes(oPath.GetPath(), &m_pData, m_nDataLength);
+
 			XmlUtils::CXmlLiteReader oReader;
 
-			if (!oReader.FromFile(oPath.GetPath()))
+			if (!oReader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength))
 				return;
 
 			if (!oReader.ReadNextNode())
@@ -3848,12 +3776,29 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		}
 		return OOX::Spreadsheet::FileTypes::PivotCacheDefinition;
 	}
-    std::wstring CPivotCacheDefinitionFile::prepareData() const
-    {
-        std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-        std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-        return converter.from_bytes(stringData);
-    }
+	void CPivotCacheDefinitionFile::setData(BYTE* pData, long length, const std::wstring& srIdRecords)
+	{
+		//if (srIdRecords.length() > 0)
+		//{
+		//	XmlUtils::CXmlLiteReader oReader;
+
+		//	if (!oReader.FromStringA((char*)pData, length))
+		//		return;
+
+		//	if (!oReader.ReadNextNode())
+		//		return;
+
+		//	m_oPivotCashDefinition = oReader;
+
+		//	m_oPivotCashDefinition->m_oRid = srIdRecords;
+		//}
+		//else
+		{
+			m_nDataLength = length;
+			m_pData = new BYTE[m_nDataLength];
+			memcpy(m_pData, pData, length);
+		}
+	}
 //------------------------------------
 	void CPivotCacheDefinition::toXML(NSStringUtils::CStringBuilder& writer) const
 	{
@@ -3889,6 +3834,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			m_oCacheFields->toXML(writer);
         if(m_oHierarchies.IsInit())
             m_oHierarchies->toXML(writer);
+        if(m_oCalculatedItems.IsInit())
+            m_oCalculatedItems->toXML(writer);
         if(m_oDimensions.IsInit())
             m_oDimensions->toXML(writer);
         if(m_oMeasureGroups.IsInit())
@@ -3917,10 +3864,11 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				 if (L"cacheFields" == sName)	m_oCacheFields = oReader;
 			else if (L"cacheSource" == sName)	m_oCacheSource = oReader;
 			else if (L"cacheHierarchies" == sName)	m_oHierarchies = oReader;
+             else if (L"calculatedItems" == sName)	m_oCalculatedItems = oReader;
             else if (L"dimensions" == sName)	m_oDimensions = oReader;
             else if (L"maps" == sName)          m_oMaps = oReader;
             else if (L"measureGroups" == sName) m_oMeasureGroups = oReader;
-			else if (L"extLst" == sName)		m_oExtLst = oReader;
+            else if (L"extLst" == sName)		m_oExtLst = oReader;
 		}
 	}
 	XLS::BaseObjectPtr CPivotCacheDefinition::toBin()
@@ -3934,6 +3882,8 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			ptr->m_PCDSOURCE = m_oCacheSource->toBin();
         if(m_oHierarchies.IsInit())
             ptr->m_PCDHIERARCHIES = m_oHierarchies->toBin();
+        if(m_oCalculatedItems.IsInit())
+            ptr->m_PCDCALCITEMS = m_oCalculatedItems->toBin();
         if(m_oDimensions.IsInit())
             ptr->m_DIMS = m_oDimensions->toBin();
         if(m_oMeasureGroups.IsInit())
@@ -4046,6 +3996,9 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 				
             if(ptr->m_PCDHIERARCHIES != nullptr)
                 m_oHierarchies = ptr->m_PCDHIERARCHIES;
+
+            if(ptr->m_PCDCALCITEMS != nullptr)
+                m_oCalculatedItems = ptr->m_PCDCALCITEMS;
 
             if(ptr->m_DIMS != nullptr)
                 m_oDimensions = ptr->m_DIMS;
@@ -7066,8 +7019,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		{
             CPivotCacheRecords records;
             XmlUtils::CXmlLiteReader reader;
-			auto wstringData = prepareData();
-            reader.FromString(wstringData);
+            reader.FromStringA((char*)m_pData, m_nDataLength);
 			reader.ReadNextNode();
             records.fromXML(reader);
             pivotCacheRecordsStream->m_PIVOTCACHERECORDS = records.toBin();
@@ -7076,14 +7028,16 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 	}
     void CPivotCacheRecordsFile::WriteBin(XLS::StreamCacheWriterPtr& writer) const
     {
-        if(m_oPivotCacheRecords.IsInit())
-            m_oPivotCacheRecords->toBin(writer);
-        else
+		if (m_oPivotCacheRecords.IsInit())
+		{
+			m_oPivotCacheRecords->toBin(writer);
+		}
+        else if (m_pData && m_nDataLength > 0)
         {
             CPivotCacheRecords records;
             XmlUtils::CXmlLiteReader reader;
-            auto wstringData = prepareData();
-            reader.FromString(wstringData);
+
+			reader.FromStringA(reinterpret_cast<char*>(m_pData), m_nDataLength);
             reader.ReadNextNode();
             records.ReadAttributes(reader);
             {
@@ -7096,6 +7050,7 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
             }
             if ( reader.IsEmptyNode() )
                 return;
+
             int nCurDepth = reader.GetDepth();
             while( reader.ReadNextSiblingNode( nCurDepth ) )
             {
@@ -7115,7 +7070,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
                 auto record = writer->getNextRecord(XLSB::rt_EndPivotCacheRecords);
                 writer->storeNextRecord(record);
             }
-
         }
     }
 	void CPivotCacheRecordsFile::read(const CPath& oRootPath, const CPath& oPath)
@@ -7191,14 +7145,6 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 			return OOX::SpreadsheetBin::FileTypes::PivotCacheRecordsBin;
 		}
 		return OOX::Spreadsheet::FileTypes::PivotCacheRecords;
-	}
-	std::wstring CPivotCacheRecordsFile::prepareData() const
-	{
-
-	std::string stringData(reinterpret_cast<char*>(m_pData), m_nDataLength);
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-
-    return converter.from_bytes(stringData);
 	}
 //------------------------------------
 	void CPivotCacheRecords::toXML(NSStringUtils::CStringBuilder& writer) const

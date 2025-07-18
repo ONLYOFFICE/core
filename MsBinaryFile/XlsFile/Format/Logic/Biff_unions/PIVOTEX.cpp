@@ -81,5 +81,19 @@ const bool PIVOTEX::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTEX::saveContent(BinProcessor& proc)
+{
+    if(m_SXEx == nullptr)
+        return false;
+    proc.mandatory(*m_SXEx);
+    for(auto i : m_arPIVOTSELECT)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    for(auto i : m_arPIVOTFORMAT)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 } // namespace XLS
 

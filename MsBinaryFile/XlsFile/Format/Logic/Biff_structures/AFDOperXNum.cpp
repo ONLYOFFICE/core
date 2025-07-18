@@ -31,6 +31,7 @@
  */
 
 #include "AFDOperXNum.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
 
 namespace XLS
 {
@@ -46,6 +47,13 @@ void AFDOperXNum::load(CFRecord& record)
 	record >> v1 >> v2;
 
 	val = 0;
+}
+
+void AFDOperXNum::save(CFRecord& record)
+{
+    Xnum numValue;
+    numValue.data.value = val;
+    record << numValue;
 }
 
 

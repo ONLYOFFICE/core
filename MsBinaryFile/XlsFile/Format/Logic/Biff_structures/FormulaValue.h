@@ -45,6 +45,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType type = typeFormulaValue;
 
@@ -63,7 +64,7 @@ public:
 			unsigned char Byte6;
 			unsigned short fExprO;
 		};
-		double xnum;
+		double xnum = 0;
 	} data;
 };
 

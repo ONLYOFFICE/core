@@ -47,12 +47,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeXCT;
 
-	_UINT16 ccrn;
-	_UINT16 itab;
-	bool itab_exist;
+    _UINT16 ccrn = 0;
+    _UINT16 itab = 0;
+    bool itab_exist = false;
 
 };
 

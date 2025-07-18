@@ -29,9 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-#ifndef CCONVERSIONSMTOOOXML_H
-#define CCONVERSIONSMTOOOXML_H
+#pragma once
 #include "cstarmathpars.h"
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
 
@@ -66,4 +64,3 @@ namespace StarMath {
 		XmlUtils::CXmlWriter* m_pXmlWrite;
 	};
 }
-#endif // CCONVERSIONSMTOOOXML_H

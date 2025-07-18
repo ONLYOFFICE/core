@@ -48,11 +48,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeAxisLine;
 
 //-----------------------------
-	_UINT16 id;
+	_UINT16 id = 0;
 };
 
 } // namespace XLS

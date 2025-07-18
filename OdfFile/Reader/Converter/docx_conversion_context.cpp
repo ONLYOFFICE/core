@@ -1151,6 +1151,11 @@ void docx_conversion_context::start_office_text()
 void docx_conversion_context::end_office_text()
 {
 	finish_paragraph();
+
+	if (!delayed_converting_)//иначе возможно зацикливание
+	{
+		docx_convert_delayed();
+	}
 }
 
 namespace 
@@ -1872,7 +1877,9 @@ static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_con
 	odf_reader::list_style_container& lists = context.root()->odf_context().listStyleContainer();
 
 	odf_reader::text_list_style* curStyle = lists.list_style_by_name(curStyleName);
-	_CP_PTR(odf_reader::text_list_style) newStyle = boost::make_shared<odf_reader::text_list_style>(*curStyle);
+
+	_CP_PTR(odf_reader::text_list_style) newStyle = curStyle ?	boost::make_shared<odf_reader::text_list_style>(*curStyle) : 
+																boost::make_shared<odf_reader::text_list_style>();
 
 	newStyle->attr_.style_name_ = newStyleName;
 
@@ -2291,8 +2298,8 @@ void docx_conversion_context::docx_convert_delayed()
 {
 	if (delayed_elements_.empty()) return;
 
-	if(delayed_converting_)return; //зацикливание иначе
-	if(get_drawing_context().get_current_level() > 0 )
+	if (delayed_converting_) return; //зацикливание иначе
+	if (get_drawing_context().get_current_level() > 0 )
 		return; //вложенный frame
 
 	delayed_converting_ = true;
@@ -2430,7 +2437,7 @@ bool docx_conversion_context::set_master_page_name(const std::wstring & MasterPa
 {
 	if (current_master_page_name_ == MasterPageName) return false;
 
-    current_master_page_name_ = MasterPageName;
+    current_master_page_name_ = MasterPageName; 
 	return true;
 }
 

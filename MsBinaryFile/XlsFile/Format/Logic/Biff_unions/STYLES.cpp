@@ -101,6 +101,22 @@ const bool STYLES::loadContent(BinProcessor& proc)
 	else					return false;
 }
 
+const bool STYLES::saveContent(BinProcessor& proc)
+{
+    for(auto i : m_arStyles)
+    {
+        if(i.first != nullptr)
+            proc.mandatory(*i.first);
+        if(i.second != nullptr)
+            proc.mandatory(*i.second);
+    }
+	if(m_arStyles.empty())
+	{
+		proc.mandatory<Style>();
+	}
+    return true;
+}
+
 int STYLES::serialize(std::wostream & stream)
 {
 	const std::wstring istyBuiltInStyles[54] = {L"Normal", L"RowLevel_", L"ColLevel_", L"Comma", L"Currency", L"Percent", 

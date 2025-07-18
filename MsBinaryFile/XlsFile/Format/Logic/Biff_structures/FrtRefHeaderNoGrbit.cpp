@@ -61,6 +61,11 @@ void FrtRefHeaderNoGrbit::load(CFRecord& record)
 	record >> ref8;
 }
 
+void FrtRefHeaderNoGrbit::save(CFRecord& record)
+{
+    record << rt;
+    record << ref8;
+}
 
 } // namespace XLS
 

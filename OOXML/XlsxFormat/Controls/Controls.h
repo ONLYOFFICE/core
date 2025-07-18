@@ -52,7 +52,13 @@ namespace SimpleTypes
 		class CEditValidation;
 	}
 }
-
+namespace PPTX
+{
+	namespace Logic
+	{
+		class SpTreeElem;
+	}
+}
 namespace OOX
 {
 	namespace Drawing
@@ -239,6 +245,7 @@ namespace OOX
 			nullable<CControlPr>								m_oControlPr;
 //--for-write-from-bin--------------
 			nullable<CFormControlPr>							m_oFormControlPr;
+			nullable<PPTX::Logic::SpTreeElem>					m_oShape;
 		};
 //------------------------------------------------------------------------------------------------------------------------
 		class CControls : public WritingElement

@@ -1021,8 +1021,8 @@ namespace Draw
 	void CValidationProperties::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CValidationProperties::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1077,8 +1077,8 @@ namespace Draw
 	void CIssueTarget::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CIssueTarget::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1134,8 +1134,8 @@ namespace Draw
 	void CRuleInfo::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRuleInfo::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1190,8 +1190,8 @@ namespace Draw
 	void CRuleFormula::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRuleFormula::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1240,8 +1240,8 @@ namespace Draw
 	void CRuleSetFlags::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CRuleSetFlags::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{
@@ -1708,8 +1708,8 @@ namespace Draw
 	void CAuthorEntry::fromXML(XmlUtils::CXmlLiteReader& oReader)
 	{
 		ReadAttributes(oReader);
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	void CAuthorEntry::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 	{

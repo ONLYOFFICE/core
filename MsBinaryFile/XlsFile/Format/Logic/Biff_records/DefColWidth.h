@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDefColWidth;
 
 //-----------------------------
-	_UINT16 cchdefColWidth;
+    _UINT16 cchdefColWidth = 8;
 };
 
 } // namespace XLS

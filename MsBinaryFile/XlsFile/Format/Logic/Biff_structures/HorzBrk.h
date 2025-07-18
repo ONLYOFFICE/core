@@ -45,11 +45,12 @@ public:
 	static const ElementType type = typeHorzBrk;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 	virtual int serialize(std::wostream & stream);
 
-	RwU row;
-	unsigned short colStart;
-	unsigned short colEnd;
+    RwU row = 0;
+    unsigned short colStart = 0;
+    unsigned short colEnd = 0;
 };
 typedef boost::shared_ptr<HorzBrk> HorzBrkPtr;
 

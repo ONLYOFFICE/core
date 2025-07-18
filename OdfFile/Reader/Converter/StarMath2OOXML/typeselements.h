@@ -29,9 +29,7 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-
-#ifndef TYPESELEMENTS_H
-#define TYPESELEMENTS_H
+#pragma once
 
 namespace StarMath
 {
@@ -486,4 +484,3 @@ enum class TypeElement{
 	letter_u32,
 };
 }
-#endif // TYPESELEMENTS_H

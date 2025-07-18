@@ -81,7 +81,6 @@ struct drawing_object_description
 	std::vector<odf_reader::_property>		additional_;	//shape properties
 	
 	std::wstring							xlink_href_;	//ссылка на внешний объект
-	std::wstring							clipping_string_;
 
 	_oox_fill								fill_;
 

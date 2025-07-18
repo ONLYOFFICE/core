@@ -33,6 +33,7 @@
 #include "../../../../DesktopEditor/common/File.h"
 #include <fstream>
 namespace StarMath {
+
 	CConversionSMtoOOXML::CConversionSMtoOOXML(): m_pXmlWrite(nullptr)
 	{
 	}

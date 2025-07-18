@@ -55,5 +55,10 @@ void CrtLink::readFields(CFRecord& record)
 	record.skipNunBytes(10); //unused
 }
 
+void CrtLink::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(10);
+}
+
 } // namespace XLS
 

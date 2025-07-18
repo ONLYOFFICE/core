@@ -10,44 +10,74 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlCommon(sCtrlID, oNode, nVersion)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlCommon(sCtrlID, oReader, nVersion)
 {
-	m_shNRows = oNode.GetAttributeInt(L"rowCnt");
-	m_shNCols = oNode.GetAttributeInt(L"colCnt");
-	m_shCellSpacing = oNode.GetAttributeInt(L"cellSpacing");
-	m_shBorderFillID = oNode.GetAttributeInt(L"borderFillIDRef");
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hp:inMargin" == oChild.GetName())
+		if ("rowCnt" == sAttributeName)
+			m_shNRows = oReader.GetInt();
+		else if ("colCnt" == sAttributeName)
+			m_shNCols = oReader.GetInt();
+		else if ("cellSpacing" == sAttributeName)
+			m_shCellSpacing = oReader.GetInt();
+		else if ("borderFillIDRef" == sAttributeName)
+			m_shBorderFillID = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hp:inMargin" == sNodeName)
 		{
-			m_shInLSpace = oChild.GetAttributeInt(L"left");
-			m_shInRSpace = oChild.GetAttributeInt(L"right");
-			m_shInTSpace = oChild.GetAttributeInt(L"top");
-			m_shInBSpace = oChild.GetAttributeInt(L"bottom");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("left" == sAttributeName)
+					m_shInLSpace = oReader.GetInt();
+				else if ("right" == sAttributeName)
+					m_shInRSpace = oReader.GetInt();
+				else if ("top" == sAttributeName)
+					m_shInTSpace = oReader.GetInt();
+				else if ("bottom" == sAttributeName)
+					m_shInBSpace = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:cellzoneList" == oChild.GetName())
+		else if ("hp:cellzoneList" == sNodeName)
 		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:cellzone"))
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:cellzone")
 			{
 				TCellZone* pCellZone = new TCellZone();
 
-				pCellZone->m_shStartRowAddr = oGrandChild.GetAttributeInt(L"startRowAddr");
-				pCellZone->m_shStartColAddr = oGrandChild.GetAttributeInt(L"startColAddr");
-				pCellZone->m_shEndRowAddr = oGrandChild.GetAttributeInt(L"endRowAddr");
-				pCellZone->m_shEndColAddr = oGrandChild.GetAttributeInt(L"endColAddr");
-				pCellZone->m_shBorderFillIDRef = oGrandChild.GetAttributeInt(L"borderFillIDRef");
+				START_READ_ATTRIBUTES(oReader)
+				{
+					if ("startRowAddr" == sAttributeName)
+						pCellZone->m_shStartRowAddr = oReader.GetInt();
+					else if ("startColAddr" == sAttributeName)
+						pCellZone->m_shStartColAddr = oReader.GetInt();
+					else if ("endRowAddr" == sAttributeName)
+						pCellZone->m_shEndRowAddr = oReader.GetInt();
+					else if ("endColAddr" == sAttributeName)
+						pCellZone->m_shEndColAddr = oReader.GetInt();
+					else if ("borderFillIDRef" == sAttributeName)
+						pCellZone->m_shBorderFillIDRef = oReader.GetInt();
+				}
+				END_READ_ATTRIBUTES(oReader)
 
 				m_arCellzoneList.push_back(pCellZone);
 			}
+			END_WHILE
 		}
-		else if(L"hp:tr" == oChild.GetName())
+		else if ("hp:tr" == sNodeName)
 		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:tc"))
-				m_arCells.push_back(new CTblCell(oGrandChild, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:tc")
+				m_arCells.push_back(new CTblCell(oReader, nVersion));
+			END_WHILE
 		}
+		else
+			CCtrlCommon::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 }
 
 CCtrlTable::~CCtrlTable()
@@ -101,6 +131,26 @@ short CCtrlTable::GetCountCells() const
 short CCtrlTable::GetBorderFillID() const
 {
 	return m_shBorderFillID;
+}
+
+short CCtrlTable::GetInLSpace() const
+{
+	return m_shInLSpace;
+}
+
+short CCtrlTable::GetInTSpace() const
+{
+	return m_shInTSpace;
+}
+
+short CCtrlTable::GetInRSpace() const
+{
+	return m_shInRSpace;
+}
+
+short CCtrlTable::GetInBSpace() const
+{
+	return m_shInBSpace;
 }
 
 void CCtrlTable::AddCell(CTblCell* pCell)

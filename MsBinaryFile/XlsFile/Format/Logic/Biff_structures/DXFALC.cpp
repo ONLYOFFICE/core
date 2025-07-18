@@ -56,6 +56,22 @@ void DXFALC::load(CFRecord& record)
 	record >> iIndent;
 }
 
+void DXFALC::save(CFRecord& record)
+{
+    _UINT32 flags = 0;
+    SETBITS(flags, 0, 2, alc)
+    SETBIT(flags, 3, fWrap)
+    SETBITS(flags, 4, 6, alcv)
+    SETBIT(flags, 7, fJustLast)
+    SETBITS(flags, 8, 15, trot)
+    SETBITS(flags, 16, 19, cIndent)
+    SETBIT(flags, 20, fShrinkToFit)
+    SETBIT(flags, 21, fMergeCell)
+    SETBITS(flags, 22, 23, iReadingOrder)
+
+    record << flags << iIndent;
+}
+
 int DXFALC::serialize(std::wostream & stream)
 {
 	if (parent->iReadingOrderNinch && parent->alchNinch && parent->alcvNinch && parent->wrapNinch && 

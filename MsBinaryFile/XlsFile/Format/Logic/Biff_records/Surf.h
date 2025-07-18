@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSurf;
 
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	bool fFillSurface;
-	bool f3DPhongShade;
+    bool fFillSurface = false;
+    bool f3DPhongShade = false;
 };
 
 } // namespace XLS

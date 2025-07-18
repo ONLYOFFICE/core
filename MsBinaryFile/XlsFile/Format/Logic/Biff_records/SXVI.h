@@ -47,12 +47,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & strm);
 
 	static const ElementType type = typeSXVI;
 
-	unsigned short			itmType; //enum
+    unsigned short			itmType = 0; //enum
 //0x0000	itmtypeData
 //0x0001	itmtypeDEFAULT
 //0x0002	itmtypeSUM
@@ -67,13 +68,13 @@ public:
 //0x000B	itmtypeVAR
 //0x000C	itmtypeVARP
 
-	bool					fHidden;
-	bool					fHideDetail;
-	bool					fFormula;
-	bool					fMissing;
+    bool					fHidden = false;
+    bool					fHideDetail = false;
+    bool					fFormula = false;
+    bool					fMissing = false;
 
-	short					iCache;
-	unsigned short			cchName;
+    short					iCache = 0;
+    unsigned short			cchName = 0;
 	XLUnicodeStringNoCch	stName;
 
 };

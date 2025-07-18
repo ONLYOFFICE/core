@@ -38,9 +38,9 @@ namespace XLS
 
 struct SXPI_Item
 {
-	short isxvd;
-	short isxvi;
-	short idObj;
+    short isxvd = 0;
+    short isxvi = 0;
+    short idObj = 0;
 };
 
 class SXPI: public BiffRecordContinued
@@ -54,6 +54,7 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXPI;
 

@@ -280,7 +280,7 @@ namespace BinXlsxRW
 		int ReadMdxMemeberProp(BYTE type, long length, void* poResult);
 		int ReadMetadataStringIndex(BYTE type, long length, void* poResult);
 		int ReadDynamicArrayProperties(BYTE type, long length, void* poResult);
-        OOX::Spreadsheet::CXlsb* m_pXlsb;
+        OOX::Spreadsheet::CXlsb* m_pXlsb = NULL;
 	};
 	class BinaryCommentReader : public Binary_CommonReader
 	{
@@ -413,7 +413,8 @@ namespace BinXlsxRW
 
 		void WriteComments();
 		void AddLineBreak(OOX::Spreadsheet::CSi& oSi);
-		std::wstring GetControlVmlShape(void* pControl);
+		void GetControlVmlShape(void* pControl);
+        int ReadSheetDataToBin(BYTE type, long length, void* poResult);
         bool m_bWriteToXlsb = false;
 	};
 	class BinaryOtherTableReader : public Binary_CommonReader

@@ -87,8 +87,7 @@ namespace STR
 };
 
 namespace XMLSTUFF
-{;
-
+{
 const std::wstring name2sheet_name(std::wstring name, const std::wstring prefix);
 const std::wstring xti_indexes2sheet_name(const short tabFirst, const short tabLast, std::vector<std::wstring>& names, const std::wstring prefix = L"");
 unsigned short sheetsnames2ixti(std::wstring name);

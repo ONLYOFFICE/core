@@ -44,7 +44,6 @@
 #include "Resources/BaseFonts.h"
 
 #include "lib/xpdf/PDFDoc.h"
-#include "lib/xpdf/PDFCore.h"
 #include "lib/xpdf/GlobalParams.h"
 #include "lib/xpdf/ErrorCodes.h"
 #include "lib/xpdf/TextString.h"
@@ -56,57 +55,15 @@
 #include "lib/xpdf/AcroForm.h"
 #include "lib/goo/GList.h"
 
-#include <vector>
-
-CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
+NSFonts::IFontManager* InitFontManager(NSFonts::IApplicationFonts* pAppFonts)
 {
-	m_pPDFDocument = NULL;
-	m_nFileLength  = 0;
-
-	globalParams  = new GlobalParamsAdaptor(NULL);
-#ifndef _DEBUG
-	globalParams->setErrQuiet(gTrue);
-#endif
-
-	m_pFontList = new PdfReader::CPdfFontList();
-
-	// Создаем менеджер шрифтов с собственным кэшем
-	m_pFontManager = pAppFonts->GenerateFontManager();
+	NSFonts::IFontManager* m_pFontManager = pAppFonts->GenerateFontManager();
 	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
 	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
-#ifndef BUILDING_WASM_MODULE
-	globalParams->setupBaseFonts(NULL);
-	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
-#else
-	globalParams->setDrawFormFields(gFalse);
-	globalParams->setDrawAnnotations(gFalse);
-	SetCMapMemory(NULL, 0);
-#endif
-
-	m_eError = errNone;
+	return m_pFontManager;
 }
-CPdfReader::~CPdfReader()
-{
-	if (m_pFontList)
-	{
-		m_pFontList->Clear();
-		delete m_pFontList;
-	}
-
-	if (!m_wsTempFolder.empty())
-	{
-		NSDirectory::DeleteDirectory(m_wsTempFolder);
-		m_wsTempFolder = L"";
-	}
-
-	RELEASEOBJECT(m_pPDFDocument);
-	RELEASEOBJECT(globalParams);
-	RELEASEINTERFACE(m_pFontManager);
-}
-
 bool scanFonts(Dict *pResources, const std::vector<std::string>& arrCMap, int nDepth, std::vector<int>& arrUniqueResources)
 {
 	if (nDepth > 5)
@@ -238,114 +195,183 @@ bool scanAPfonts(Object* oAnnot, const std::vector<std::string>& arrCMap, std::v
 	oAP.free();
 	return bRes;
 }
+
+CPdfReaderContext::~CPdfReaderContext()
+{
+	if (m_pFontList)
+	{
+		m_pFontList->Clear();
+		RELEASEOBJECT(m_pFontList)
+	}
+	RELEASEOBJECT(m_pDocument);
+}
+
+CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
+{
+	m_nFileLength  = 0;
+
+	globalParams  = new GlobalParamsAdaptor(NULL);
+#ifndef _DEBUG
+	globalParams->setErrQuiet(gTrue);
+#endif
+
+	// Создаем менеджер шрифтов с собственным кэшем
+	m_pFontManager = InitFontManager(pAppFonts);
+#ifndef BUILDING_WASM_MODULE
+	globalParams->setupBaseFonts(NULL);
+	SetCMapFile(NSFile::GetProcessDirectory() + L"/cmap.bin");
+#else
+	globalParams->setDrawFormFields(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
+	SetCMapMemory(NULL, 0);
+#endif
+
+	m_eError = errNone;
+}
+CPdfReader::~CPdfReader()
+{
+	Clear();
+
+	if (!m_wsTempFolder.empty())
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
+
+	RELEASEOBJECT(globalParams);
+	RELEASEINTERFACE(m_pFontManager);
+}
+void CPdfReader::Clear()
+{
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+		delete pPDFContext;
+	m_vPDFContext.clear();
+}
+void CPdfReader::CleanUp()
+{
+	while(UnmergePages());
+	m_eError = errNone;
+}
+
 bool CPdfReader::IsNeedCMap()
 {
-	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
-										"GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
-										"UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
-										"UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
-										"HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
-										"HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
-										"CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
-										"UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
-										"78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
-										"90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
-										"EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
-										"UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
-										"UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
-										"UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
-										"UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
-										"WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
-										"KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
-										"UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
-										"UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
-
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	if (!((GlobalParamsAdaptor*)globalParams)->IsNeedCMap())
 		return false;
 
+	if (m_vPDFContext.empty())
+		return false;
+
+	std::vector<std::string> arrCMap = {"GB-EUC-H", "GB-EUC-V", "GB-H", "GB-V", "GBpc-EUC-H", "GBpc-EUC-V", "GBK-EUC-H",
+"GBK-EUC-V", "GBKp-EUC-H", "GBKp-EUC-V", "GBK2K-H", "GBK2K-V", "GBT-H", "GBT-V", "GBTpc-EUC-H", "GBTpc-EUC-V",
+"UniGB-UCS2-H", "UniGB-UCS2-V", "UniGB-UTF8-H", "UniGB-UTF8-V", "UniGB-UTF16-H", "UniGB-UTF16-V", "UniGB-UTF32-H",
+"UniGB-UTF32-V", "B5pc-H", "B5pc-V", "B5-H", "B5-V", "HKscs-B5-H", "HKscs-B5-V", "HKdla-B5-H", "HKdla-B5-V",
+"HKdlb-B5-H", "HKdlb-B5-V", "HKgccs-B5-H", "HKgccs-B5-V", "HKm314-B5-H", "HKm314-B5-V", "HKm471-B5-H",
+"HKm471-B5-V", "ETen-B5-H", "ETen-B5-V", "ETenms-B5-H", "ETenms-B5-V", "ETHK-B5-H", "ETHK-B5-V", "CNS-EUC-H",
+"CNS-EUC-V", "CNS1-H", "CNS1-V", "CNS2-H", "CNS2-V", "UniCNS-UCS2-H", "UniCNS-UCS2-V", "UniCNS-UTF8-H",
+"UniCNS-UTF8-V", "UniCNS-UTF16-H", "UniCNS-UTF16-V", "UniCNS-UTF32-H", "UniCNS-UTF32-V", "78-EUC-H", "78-EUC-V",
+"78-H", "78-V", "78-RKSJ-H", "78-RKSJ-V", "78ms-RKSJ-H", "78ms-RKSJ-V","83pv-RKSJ-H", "90ms-RKSJ-H", "90ms-RKSJ-V",
+"90msp-RKSJ-H", "90msp-RKSJ-V", "90pv-RKSJ-H", "90pv-RKSJ-V", "Add-H", "Add-V", "Add-RKSJ-H", "Add-RKSJ-V",
+"EUC-H", "EUC-V", "Ext-RKSJ-H", "Ext-RKSJ-V", "H", "V", "NWP-H", "NWP-V", "RKSJ-H", "RKSJ-V", "UniJIS-UCS2-H",
+"UniJIS-UCS2-V", "UniJIS-UCS2-HW-H", "UniJIS-UCS2-HW-V", "UniJIS-UTF8-H", "UniJIS-UTF8-V", "UniJIS-UTF16-H",
+"UniJIS-UTF16-V", "UniJIS-UTF32-H", "UniJIS-UTF32-V", "UniJIS2004-UTF8-H", "UniJIS2004-UTF8-V", "UniJIS2004-UTF16-H",
+"UniJIS2004-UTF16-V", "UniJIS2004-UTF32-H", "UniJIS2004-UTF32-V", "UniJISPro-UCS2-V", "UniJISPro-UCS2-HW-V",
+"UniJISPro-UTF8-V", "UniJISX0213-UTF32-H", "UniJISX0213-UTF32-V", "UniJISX02132004-UTF32-H", "UniJISX02132004-UTF32-V",
+"WP-Symbol", "Hankaku", "Hiragana", "Katakana", "Roman", "KSC-EUC-H", "KSC-EUC-V", "KSC-H", "KSC-V", "KSC-Johab-H",
+"KSC-Johab-V", "KSCms-UHC-H", "KSCms-UHC-V", "KSCms-UHC-HW-H", "KSCms-UHC-HW-V", "KSCpc-EUC-H", "KSCpc-EUC-V",
+"UniKS-UCS2-H", "UniKS-UCS2-V", "UniKS-UTF8-H", "UniKS-UTF8-V", "UniKS-UTF16-H", "UniKS-UTF16-V", "UniKS-UTF32-H",
+"UniKS-UTF32-V", "UniAKR-UTF8-H", "UniAKR-UTF16-H", "UniAKR-UTF32-H"};
 	std::vector<int> arrUniqueResources;
 
-	for (int nPage = 1, nLastPage = m_pPDFDocument->getNumPages(); nPage <= nLastPage; ++nPage)
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 	{
-		Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPage);
-		Dict* pResources = pPage->getResourceDict();
-		if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
-			return true;
-
-		Object oAnnots;
-		if (!pPage->getAnnots(&oAnnots)->isArray())
-		{
-			oAnnots.free();
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (!pDoc || !pDoc->getCatalog())
 			continue;
-		}
-		for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
+
+		for (int nPage = 1, nLastPage = pDoc->getNumPages(); nPage <= nLastPage; ++nPage)
 		{
-			Object oAnnot;
-			if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+			Page* pPage = pDoc->getCatalog()->getPage(nPage);
+			Dict* pResources = pPage->getResourceDict();
+			if (pResources && scanFonts(pResources, arrCMap, 0, arrUniqueResources))
+				return true;
+
+			Object oAnnots;
+			if (!pPage->getAnnots(&oAnnots)->isArray())
 			{
-				oAnnot.free();
+				oAnnots.free();
 				continue;
 			}
-
-			Object oDR;
-			if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+			for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 			{
-				oDR.free(); oAnnot.free(); oAnnots.free();
-				return true;
-			}
-			oDR.free();
+				Object oAnnot;
+				if (!oAnnots.arrayGet(i, &oAnnot)->isDict())
+				{
+					oAnnot.free();
+					continue;
+				}
 
-			if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
-			{
-				oAnnot.free(); oAnnots.free();
-				return true;
+				Object oDR;
+				if (oAnnot.dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+				{
+					oDR.free(); oAnnot.free(); oAnnots.free();
+					return true;
+				}
+				oDR.free();
+
+				if (scanAPfonts(&oAnnot, arrCMap, arrUniqueResources))
+				{
+					oAnnot.free(); oAnnots.free();
+					return true;
+				}
+				oAnnot.free();
 			}
-			oAnnot.free();
+			oAnnots.free();
 		}
-		oAnnots.free();
-	}
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
-	if (!pAcroForms)
-		return false;
-	Object oDR;
-	Object* oAcroForm = pAcroForms->getAcroFormObj();
-	if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
-	{
-		oDR.free();
-		return true;
-	}
-	oDR.free();
-
-	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
-	{
-		AcroFormField* pField = pAcroForms->getField(i);
-
-		if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+		AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
+		if (!pAcroForms)
+			continue;
+		Object oDR;
+		Object* oAcroForm = pAcroForms->getAcroFormObj();
+		if (oAcroForm->dictLookup("DR", &oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
 		{
 			oDR.free();
 			return true;
 		}
 		oDR.free();
 
-		Object oWidgetRef, oWidget;
-		pField->getFieldRef(&oWidgetRef);
-		oWidgetRef.fetch(m_pPDFDocument->getXRef(), &oWidget);
-		oWidgetRef.free();
-
-		if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
+		for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 		{
+			AcroFormField* pField = pAcroForms->getField(i);
+
+			if (pField->getResources(&oDR)->isDict() && scanFonts(oDR.getDict(), arrCMap, 0, arrUniqueResources))
+			{
+				oDR.free();
+				return true;
+			}
+			oDR.free();
+
+			Object oWidgetRef, oWidget;
+			pField->getFieldRef(&oWidgetRef);
+			oWidgetRef.fetch(pDoc->getXRef(), &oWidget);
+			oWidgetRef.free();
+
+			if (scanAPfonts(&oWidget, arrCMap, arrUniqueResources))
+			{
+				oWidget.free();
+				return true;
+			}
 			oWidget.free();
-			return true;
 		}
-		oWidget.free();
 	}
-
 	return false;
 }
 void CPdfReader::SetCMapMemory(BYTE* pData, DWORD nSizeData)
 {
 	((GlobalParamsAdaptor*)globalParams)->SetCMapMemory(pData, nSizeData);
+
+	if (m_vPDFContext.empty())
+		return;
+	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pPDFContext->m_pDocument, m_pFontManager, pPDFContext->m_pFontList, false);
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
 }
 void CPdfReader::SetCMapFolder(const std::wstring& sFolder)
 {
@@ -355,97 +381,45 @@ void CPdfReader::SetCMapFile(const std::wstring& sFile)
 {
 	((GlobalParamsAdaptor*)globalParams)->SetCMapFile(sFile);
 }
+
 bool CPdfReader::LoadFromFile(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsSrcPath, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 {
+	Clear();
 	RELEASEINTERFACE(m_pFontManager);
-	m_pFontManager = pAppFonts->GenerateFontManager();
-	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-	m_pFontManager->SetOwnerCache(pMeasurerCache);
-	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
-
-	RELEASEOBJECT(m_pPDFDocument);
+	m_pFontManager = InitFontManager(pAppFonts);
 
 	if (m_wsTempFolder == L"")
 		SetTempDirectory(NSDirectory::GetTempPath());
 
 	m_eError = errNone;
-	GString* owner_pswd = NSStrings::CreateString(wsOwnerPassword);
-	GString* user_pswd  = NSStrings::CreateString(wsUserPassword);
-
-	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
-	std::string sPathUtf8 = U_TO_UTF8(wsSrcPath);
-	m_pPDFDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
-
-	delete owner_pswd;
-	delete user_pswd;
-
 	NSFile::CFileBinary oFile;
 	if (oFile.OpenFile(wsSrcPath))
 	{
 		m_nFileLength = oFile.GetFileSize();
 		oFile.CloseFile();
 	}
-
-	m_eError = m_pPDFDocument ? m_pPDFDocument->getErrorCode() : errMemory;
-
-	if (!m_pPDFDocument || !m_pPDFDocument->isOk())
-	{
-		RELEASEOBJECT(m_pPDFDocument);
-		return false;
-	}
-
-	m_pFontList->Clear();
-
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
-
-	return true;
+	return MergePages(wsSrcPath, wsOwnerPassword);
 }
-bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& owner_password, const std::wstring& user_password)
+bool CPdfReader::LoadFromMemory(NSFonts::IApplicationFonts* pAppFonts, BYTE* data, DWORD length, const std::wstring& wsOwnerPassword, const std::wstring& wsUserPassword)
 {
+	Clear();
 	RELEASEINTERFACE(m_pFontManager);
-	m_pFontManager = pAppFonts->GenerateFontManager();
-	NSFonts::IFontsCache* pMeasurerCache = NSFonts::NSFontCache::Create();
-	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
-	m_pFontManager->SetOwnerCache(pMeasurerCache);
-	pMeasurerCache->SetCacheSize(1);
-	((GlobalParamsAdaptor*)globalParams)->SetFontManager(m_pFontManager);
+	m_pFontManager = InitFontManager(pAppFonts);
 
-	RELEASEOBJECT(m_pPDFDocument);
 	m_eError = errNone;
-	GString* owner_pswd = NSStrings::CreateString(owner_password);
-	GString* user_pswd  = NSStrings::CreateString(user_password);
-
-	Object obj;
-	obj.initNull();
-	// будет освобожден в деструкторе PDFDoc
-	BaseStream *str = new MemStream((char*)data, 0, length, &obj);
-	m_pPDFDocument  = new PDFDoc(str, owner_pswd, user_pswd);
 	m_nFileLength = length;
 
-	delete owner_pswd;
-	delete user_pswd;
+	// Все LoadFromMemory копируют память в свои классы
+	// Кроме того MemStream использует malloc/free память
+	BYTE* pCopy = (BYTE*)malloc(length);
+	memcpy(pCopy, data, length);
+	data = pCopy;
 
-	m_eError = m_pPDFDocument ? m_pPDFDocument->getErrorCode() : errMemory;
-
-	if (!m_pPDFDocument || !m_pPDFDocument->isOk())
-	{
-		RELEASEOBJECT(m_pPDFDocument);
-		return false;
-	}
-
-	m_pFontList->Clear();
-
-	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(m_pPDFDocument, m_pFontManager, m_pFontList);
-	m_mFonts.insert(mFonts.begin(), mFonts.end());
-
-	return true;
+	return MergePages(data, length, wsOwnerPassword);
 }
 void CPdfReader::Close()
 {
-	RELEASEOBJECT(m_pPDFDocument);
+	Clear();
 	m_mFonts.clear();
 }
 void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
@@ -458,37 +432,111 @@ void CPdfReader::SetParams(COfficeDrawingPageParams* pParams)
 	globalParams->setDrawAnnotations(bDraw);
 }
 
+int CPdfReader::GetStartRefID(PDFDoc* _pDoc)
+{
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (_pDoc == pDoc)
+			return pPDFContext->m_nStartID;
+	}
+	return -1;
+}
+int CPdfReader::GetNumPagesBefore(PDFDoc* _pDoc)
+{
+	int nPagesBefore = 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (_pDoc == pDoc)
+			return nPagesBefore;
+		nPagesBefore += pDoc->getNumPages();
+	}
+	return -1;
+}
+int CPdfReader::FindRefNum(int nObjID, PDFDoc** _pDoc, int* _nStartRefID)
+{
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (nObjID < pPDFContext->m_nStartID + pDoc->getXRef()->getNumObjects())
+		{
+			if (_pDoc)
+				*_pDoc = pDoc;
+			if (_nStartRefID)
+				*_nStartRefID = pPDFContext->m_nStartID;
+			return nObjID - pPDFContext->m_nStartID;
+		}
+	}
+	return -1;
+}
+int CPdfReader::GetPageIndex(int nAbsPageIndex, PDFDoc** _pDoc, PdfReader::CPdfFontList** pFontList, int* nStartRefID)
+{
+	int nTotalPages = 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+
+		int nPages = pDoc->getNumPages();
+		if (nAbsPageIndex < nTotalPages + nPages)
+		{
+			if (_pDoc)
+				*_pDoc = pDoc;
+			if (pFontList)
+				*pFontList = pPDFContext->m_pFontList;
+			if (nStartRefID)
+				*nStartRefID = pPDFContext->m_nStartID;
+			return nAbsPageIndex - nTotalPages + 1;
+		}
+		nTotalPages += nPages;
+	}
+	return -1;
+}
 int CPdfReader::GetError()
 {
-	if (!m_pPDFDocument)
+	if (m_vPDFContext.empty())
 		return m_eError;
 
-	if (m_pPDFDocument->isOk())
-		return 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		PDFDoc* pDoc = pPDFContext->m_pDocument;
+		if (!pDoc)
+			return m_eError;
 
-	return m_pPDFDocument->getErrorCode();
+		if (pDoc->isOk() == gFalse)
+			return pDoc->getErrorCode();
+	}
+	return 0;
 }
 void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
-	int nPageIndex = _nPageIndex + 1;
-
-	if (!m_pPDFDocument)
+	PDFDoc* pDoc = NULL;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
+	if (nPageIndex < 0 || !pDoc)
 		return;
 
 #ifdef BUILDING_WASM_MODULE
-	*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
-	*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
+	*pdWidth  = pDoc->getPageCropWidth(nPageIndex);
+	*pdHeight = pDoc->getPageCropHeight(nPageIndex);
 #else
-	int nRotate = m_pPDFDocument->getPageRotate(nPageIndex);
+	int nRotate = pDoc->getPageRotate(nPageIndex);
 	if (nRotate % 180 == 0)
 	{
-		*pdWidth  = m_pPDFDocument->getPageCropWidth(nPageIndex);
-		*pdHeight = m_pPDFDocument->getPageCropHeight(nPageIndex);
+		*pdWidth  = pDoc->getPageCropWidth(nPageIndex);
+		*pdHeight = pDoc->getPageCropHeight(nPageIndex);
 	}
 	else
 	{
-		*pdHeight = m_pPDFDocument->getPageCropWidth(nPageIndex);
-		*pdWidth  = m_pPDFDocument->getPageCropHeight(nPageIndex);
+		*pdHeight = pDoc->getPageCropWidth(nPageIndex);
+		*pdWidth  = pDoc->getPageCropHeight(nPageIndex);
 	}
 #endif
 
@@ -497,29 +545,46 @@ void CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight,
 }
 int CPdfReader::GetRotate(int _nPageIndex)
 {
-	if (!m_pPDFDocument)
+	PDFDoc* pDoc = NULL;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
+	if (nPageIndex < 0 || !pDoc)
 		return 0;
-	return m_pPDFDocument->getPageRotate(_nPageIndex + 1);
+	return pDoc->getPageRotate(nPageIndex);
 }
 int CPdfReader::GetMaxRefID()
 {
-	if (!m_pPDFDocument)
-		return 0;
-	return m_pPDFDocument->getXRef()->getNumObjects();
+	if (!m_vPDFContext.empty())
+		return m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
+	return 0;
+}
+int CPdfReader::GetNumPages()
+{
+	int nNumPages = 0;
+	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
+	{
+		if (!pPDFContext || !pPDFContext->m_pDocument)
+			continue;
+		nNumPages += pPDFContext->m_pDocument->getNumPages();
+	}
+	return nNumPages;
 }
 bool CPdfReader::ValidMetaData()
 {
-	if (!m_pPDFDocument)
+	if (m_vPDFContext.empty() || m_vPDFContext.size() != 1)
 		return false;
 
-	XRef* xref = m_pPDFDocument->getXRef();
-	Object oMeta, oType, oID;
-	if (!xref->fetch(1, 0, &oMeta)->isStream() || !oMeta.streamGetDict()->lookup("Type", &oType)->isName("MetaOForm") || !oMeta.streamGetDict()->lookup("ID", &oID)->isString())
+	CPdfReaderContext* pPDFContext = m_vPDFContext.front();
+	if (!pPDFContext || !pPDFContext->m_pDocument)
+		return false;
+
+	XRef* xref = pPDFContext->m_pDocument->getXRef();
+	Object oMeta, oID;
+	if (!xref->fetch(1, 0, &oMeta)->isStream("MetaOForm") || !oMeta.streamGetDict()->lookup("ID", &oID)->isString())
 	{
-		oMeta.free(); oType.free(); oID.free();
+		oMeta.free(); oID.free();
 		return false;
 	}
-	oMeta.free(); oType.free();
+	oMeta.free();
 
 	Object oTID, oID2;
 	Object* pTrailerDict = xref->getTrailerDict();
@@ -531,30 +596,177 @@ bool CPdfReader::ValidMetaData()
 	oTID.free();
 
 	bool bRes = oID2.getString()->cmp(oID.getString()) == 0;
-	oID.free(); oID2.free();
+	oID.free();
+
+	int nNumXRefTables = xref->getNumXRefTables();
+	if (bRes && nNumXRefTables > 1)
+	{
+		GFileOffset nOffeset = xref->getXRefTablePos(nNumXRefTables - 2);
+		BaseStream* str = pPDFContext->m_pDocument->getBaseStream();
+		str->setPos(nOffeset);
+		Object oDict, obj1, obj2, obj3, obj4;
+		char buf[100];
+
+		int i, n = str->getBlock(buf, 100);
+		for (i = 0; i < n && Lexer::isSpace(buf[i]); ++i);
+		// xref table
+		if (i + 4 < n && buf[i] == 'x' && buf[i+1] == 'r' && buf[i+2] == 'e' && buf[i+3] == 'f' && Lexer::isSpace(buf[i+4]))
+		{
+			Stream* pSubStr = str->makeSubStream(nOffeset + i + 5, gFalse, 0, &oDict);
+			int c = pSubStr->getChar();
+			while (c != 't')
+				c = pSubStr->getChar();
+			pSubStr->getBlock(buf, 6);
+
+			Parser* parser = new Parser(NULL, new Lexer(NULL, pSubStr->getBaseStream()->makeSubStream(pSubStr->getPos(), gFalse, 0, &oDict)), gTrue);
+			parser->getObj(&obj1);
+			delete parser;
+			delete pSubStr;
+			if (obj1.isDict() && obj1.dictLookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID)->isString())
+			{
+				bRes = oID2.getString()->cmp(oID.getString()) != 0;
+			}
+			obj1.free();
+			oTID.free();
+		}
+		else // xref stream
+		{
+			Stream* pSubStr = str->makeSubStream(nOffeset, gFalse, 0, &oDict);
+			Parser* parser = new Parser(NULL, new Lexer(NULL, pSubStr), gTrue);
+			parser->getObj(&obj1);
+			parser->getObj(&obj2);
+			parser->getObj(&obj3);
+			parser->getObj(&obj4);
+			if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isStream())
+			{
+				Dict* pPrevXRefDict = obj4.streamGetDict();
+				if (pPrevXRefDict->lookup("ID", &oTID)->isArray() && oTID.arrayGet(1, &oID)->isString())
+				{
+					bRes = oID2.getString()->cmp(oID.getString()) != 0;
+				}
+				oTID.free();
+			}
+			obj4.free();
+			obj3.free();
+			obj2.free();
+			obj1.free();
+			delete parser;
+		}
+	}
+	oID2.free(); oID.free();
+
 	return bRes;
+}
+bool CPdfReader::MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+{
+	if (m_eError)
+	{
+		free(pData);
+		return false;
+	}
+
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+
+	Object obj;
+	obj.initNull();
+	// будет освобожден в деструкторе PDFDoc
+	// Время его жизни > copy и makeSubStream из MemStream
+	BaseStream *str = new MemStream((char*)pData, 0, nLength, &obj, gTrue);
+	CPdfReaderContext* pContext = new CPdfReaderContext();
+	pContext->m_pDocument = new PDFDoc(str, owner_pswd, user_pswd);
+	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	pContext->m_sPrefixForm = sPrefixForm;
+	if (nMaxID != 0)
+		pContext->m_nStartID = nMaxID;
+	else if (!m_vPDFContext.empty())
+		pContext->m_nStartID = m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
+	PDFDoc* pDoc = pContext->m_pDocument;
+	m_vPDFContext.push_back(pContext);
+
+	delete owner_pswd;
+	delete user_pswd;
+
+	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
+	if (!pDoc || !pDoc->isOk())
+	{
+		// pData освобождается
+		delete pContext;
+		m_vPDFContext.pop_back();
+		return false;
+	}
+
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
+
+	return true;
+}
+bool CPdfReader::MergePages(const std::wstring& wsFile, const std::wstring& wsPassword, int nMaxID, const std::string& sPrefixForm)
+{
+	if (m_eError)
+			return false;
+	GString* owner_pswd = NSStrings::CreateString(wsPassword);
+	GString* user_pswd  = NSStrings::CreateString(wsPassword);
+	// конвертим путь в utf8 - под виндой они сконвертят в юникод, а на остальных - так и надо
+	std::string sPathUtf8 = U_TO_UTF8(wsFile);
+
+	CPdfReaderContext* pContext = new CPdfReaderContext();
+	pContext->m_pDocument = new PDFDoc((char*)sPathUtf8.c_str(), owner_pswd, user_pswd);
+	pContext->m_pFontList = new PdfReader::CPdfFontList();
+	pContext->m_sPrefixForm = sPrefixForm;
+	if (nMaxID != 0)
+		pContext->m_nStartID = nMaxID;
+	else if (!m_vPDFContext.empty())
+		pContext->m_nStartID = m_vPDFContext.back()->m_nStartID + m_vPDFContext.back()->m_pDocument->getXRef()->getNumObjects();
+	PDFDoc* pDoc = pContext->m_pDocument;
+	m_vPDFContext.push_back(pContext);
+
+	delete owner_pswd;
+	delete user_pswd;
+
+	m_eError = pDoc ? pDoc->getErrorCode() : errMemory;
+	if (!pDoc || !pDoc->isOk())
+	{
+		delete pContext;
+		m_vPDFContext.pop_back();
+		return false;
+	}
+
+	std::map<std::wstring, std::wstring> mFonts = PdfReader::CAnnotFonts::GetAllFonts(pDoc, m_pFontManager, pContext->m_pFontList, IsNeedCMap());
+	m_mFonts.insert(mFonts.begin(), mFonts.end());
+
+	return true;
+}
+bool CPdfReader::UnmergePages()
+{
+	if (m_vPDFContext.size() <= 1)
+		return false;
+	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
+	delete pPDFContext;
+	m_vPDFContext.pop_back();
+	return true;
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
-	if (m_pPDFDocument && pRenderer)
-	{
-		PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, m_pFontList);
-		oRendererOut.NewPDF(m_pPDFDocument->getXRef());
-		oRendererOut.SetBreak(pbBreak);
-		int nRotate = 0;
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList);
+	if (nPageIndex < 0 || !pDoc || !pFontList)
+		return;
+
+	PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, pFontList);
+	oRendererOut.NewPDF(pDoc->getXRef());
+	oRendererOut.SetBreak(pbBreak);
+	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
-		nRotate = -m_pPDFDocument->getPageRotate(_nPageIndex + 1);
+	nRotate = -pDoc->getPageRotate(nPageIndex);
 #endif
-		m_pPDFDocument->displayPage(&oRendererOut, _nPageIndex + 1, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
-	}
+	pDoc->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
 }
 void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 {
 	if (!m_wsTempFolder.empty())
-	{
 		NSDirectory::DeleteDirectory(m_wsTempFolder);
-		m_wsTempFolder = wsTempFolder;
-	}
 
 	if (!wsTempFolder.empty())
 	{
@@ -581,7 +793,7 @@ std::wstring CPdfReader::GetTempDirectory()
 }
 std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStream)
 {
-	XMLConverter oConverter(m_pPDFDocument->getXRef(), isPrintStream);
+	XMLConverter oConverter(m_vPDFContext.front()->m_pDocument->getXRef(), isPrintStream);
 	std::wstring wsXml = oConverter.GetXml();
 
 	if (wsFilePath != L"")
@@ -596,24 +808,43 @@ std::wstring CPdfReader::ToXml(const std::wstring& wsFilePath, bool isPrintStrea
 
 	return wsXml;
 }
-void CPdfReader::ChangeLength(DWORD nLength)
+PDFDoc* CPdfReader::GetLastPDFDocument()
 {
-	m_nFileLength = nLength;
+	if (m_vPDFContext.empty())
+		return NULL;
+
+	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
+	if (pPDFContext)
+		return pPDFContext->m_pDocument;
+	return NULL;
+}
+PDFDoc* CPdfReader::GetPDFDocument(int PDFIndex)
+{
+	if (PDFIndex >= 0 && PDFIndex < m_vPDFContext.size())
+		return m_vPDFContext[PDFIndex]->m_pDocument;
+	return NULL;
 }
 
 std::wstring CPdfReader::GetInfo()
 {
-	if (!m_pPDFDocument)
-		return NULL;
-	XRef* xref = m_pPDFDocument->getXRef();
-	BaseStream* str = m_pPDFDocument->getBaseStream();
+	std::wstring sRes;
+	if (m_vPDFContext.empty())
+		return sRes;
+
+	CPdfReaderContext* pPDFContext = m_vPDFContext.front();
+	if (!pPDFContext || !pPDFContext->m_pDocument)
+		return sRes;
+
+	PDFDoc* pDoc = pPDFContext->m_pDocument;
+	XRef* xref = pDoc->getXRef();
+	BaseStream* str = pDoc->getBaseStream();
 	if (!xref || !str)
 		return NULL;
 
-	std::wstring sRes = L"{";
+	sRes = L"{";
 
 	Object oInfo;
-	if (m_pPDFDocument->getDocInfo(&oInfo)->isDict())
+	if (pDoc->getDocInfo(&oInfo)->isDict())
 	{
 		auto fDictLookup = [&oInfo](const char* sName, const wchar_t* wsName)
 		{
@@ -685,7 +916,7 @@ std::wstring CPdfReader::GetInfo()
 	}
 	oInfo.free();
 
-	std::wstring version = std::to_wstring(m_pPDFDocument->getPDFVersion());
+	std::wstring version = std::to_wstring(pDoc->getPDFVersion());
 	std::wstring::size_type posDot = version.find('.');
 	if (posDot != std::wstring::npos)
 		version.resize(posDot + 2);
@@ -701,34 +932,36 @@ std::wstring CPdfReader::GetInfo()
 	sRes += L",\"PageHeight\":";
 	sRes += std::to_wstring((int)(nH * 100));
 	sRes += L",\"NumberOfPages\":";
-	sRes += std::to_wstring(m_pPDFDocument->getNumPages());
+	sRes += std::to_wstring(GetNumPages());
 	sRes += L",\"FastWebView\":";
 
-	Object obj1, obj2, obj3, obj4, obj5, obj6;
 	bool bLinearized = false;
-	obj1.initNull();
-	Parser* parser = new Parser(xref, new Lexer(xref, str->makeSubStream(str->getStart(), gFalse, 0, &obj1)), gTrue);
-	parser->getObj(&obj1);
-	parser->getObj(&obj2);
-	parser->getObj(&obj3);
-	parser->getObj(&obj4);
-	if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isDict())
+	if (m_vPDFContext.size() == 1)
 	{
-		obj4.dictLookup("Linearized", &obj5);
-		obj4.dictLookup("L", &obj6);
-		if (obj5.isNum() && obj5.getNum() > 0 && obj6.isNum())
+		Object obj1, obj2, obj3, obj4, obj5, obj6;
+		obj1.initNull();
+		Parser* parser = new Parser(xref, new Lexer(xref, str->makeSubStream(str->getStart(), gFalse, 0, &obj1)), gTrue);
+		parser->getObj(&obj1);
+		parser->getObj(&obj2);
+		parser->getObj(&obj3);
+		parser->getObj(&obj4);
+		if (obj1.isInt() && obj2.isInt() && obj3.isCmd("obj") && obj4.isDict())
 		{
-			unsigned long size = (unsigned long)obj6.getNum();
-			bLinearized = size == m_nFileLength;
+			obj4.dictLookup("Linearized", &obj5);
+			if (obj5.isNum() && obj5.getNum() > 0 && obj4.dictLookup("L", &obj6)->isNum())
+			{
+				unsigned long size = (unsigned long)obj6.getNum();
+				bLinearized = size == m_nFileLength;
+			}
+			obj6.free();
+			obj5.free();
 		}
-		obj6.free();
-		obj5.free();
+		obj4.free();
+		obj3.free();
+		obj2.free();
+		obj1.free();
+		delete parser;
 	}
-	obj4.free();
-	obj3.free();
-	obj2.free();
-	obj1.free();
-	delete parser;
 
 	sRes += bLinearized ? L"true" : L"false";
 	sRes += L",\"Tagged\":";
@@ -760,7 +993,7 @@ std::wstring CPdfReader::GetFontPath(const std::wstring& wsFontName, bool bSave)
 	std::map<std::wstring, std::wstring>::const_iterator oIter = m_mFonts.find(wsFontName);
 	return oIter == m_mFonts.end() ? std::wstring() : oIter->second;
 }
-void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level)
+void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out, int level, int nStartPage)
 {
 	LinkAction* pLinkAction = pOutlineItem->getAction();
 	if (!pLinkAction || pLinkAction->getKind() != actionGoTo)
@@ -799,7 +1032,7 @@ void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out,
 
 	std::string sTitle = NSStringExt::CConverter::GetUtf8FromUTF32(pOutlineItem->getTitle(), pOutlineItem->getTitleLength());
 
-	out.AddInt(pg - 1);
+	out.AddInt(nStartPage + pg - 1);
 	out.AddInt(level);
 	out.AddDouble(dy);
 	out.WriteString((BYTE*)sTitle.c_str(), (unsigned int)sTitle.length());
@@ -815,49 +1048,75 @@ void getBookmarks(PDFDoc* pdfDoc, OutlineItem* pOutlineItem, NSWasm::CData& out,
 	{
 		OutlineItem* pOutlineItemKid = (OutlineItem*)pList->get(i);
 		if (pOutlineItemKid)
-			getBookmarks(pdfDoc, pOutlineItemKid, out, level + 1);
+			getBookmarks(pdfDoc, pOutlineItemKid, out, level + 1, nStartPage);
 	}
 	pOutlineItem->close();
 }
 BYTE* CPdfReader::GetStructure()
 {
-	if (!m_pPDFDocument)
-		return NULL;
-	Outline* pOutline = m_pPDFDocument->getOutline();
-	if (!pOutline)
-		return NULL;
-	GList* pList = pOutline->getItems();
-	if (!pList)
+	if (m_vPDFContext.empty())
 		return NULL;
 
 	NSWasm::CData oRes;
 	oRes.SkipLen();
-	for (int i = 0, num = pList->getLength(); i < num; i++)
+
+	int nStartPage = 0;
+	for (int iPDF = 0; iPDF < m_vPDFContext.size(); ++iPDF)
 	{
-		OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
-		if (pOutlineItem)
-			getBookmarks(m_pPDFDocument, pOutlineItem, oRes, 1);
+		PDFDoc* pDoc = m_vPDFContext[iPDF]->m_pDocument;
+		Outline* pOutline = pDoc->getOutline();
+		if (!pOutline)
+		{
+			nStartPage += pDoc->getNumPages();
+			continue;
+		}
+
+		GList* pList = pOutline->getItems();
+		if (!pList)
+		{
+			nStartPage += pDoc->getNumPages();
+			continue;
+		}
+
+		if (iPDF > 0)
+		{
+			oRes.AddInt(nStartPage);
+			oRes.AddInt(1);
+			oRes.AddDouble(0);
+			oRes.WriteString(std::to_string(iPDF)); // TODO Писать имя файла как Adobe?
+		}
+
+		for (int i = 0, num = pList->getLength(); i < num; i++)
+		{
+			OutlineItem* pOutlineItem = (OutlineItem*)pList->get(i);
+			if (pOutlineItem)
+				getBookmarks(pDoc, pOutlineItem, oRes, iPDF > 0 ? 2 : 1, nStartPage);
+		}
+		nStartPage += pDoc->getNumPages();
 	}
+
 	oRes.WriteLen();
 
 	BYTE* bRes = oRes.GetBuffer();
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetLinks(int nPageIndex)
+BYTE* CPdfReader::GetLinks(int _nPageIndex)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	// TODO Links должны стать частью Annots
+	PDFDoc* pDoc = NULL;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc);
+	if (nPageIndex < 0 || !pDoc || !pDoc->getCatalog())
 		return NULL;
 
-	nPageIndex++;
-	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex);
+	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	if (!pPage)
 		return NULL;
 
 	NSWasm::CPageLink oLinks;
 
 	// Гиперссылка
-	Links* pLinks = m_pPDFDocument->getLinks(nPageIndex);
+	Links* pLinks = pDoc->getLinks(nPageIndex);
 	if (pLinks)
 	{
 		PDFRectangle* cropBox = pPage->getCropBox();
@@ -882,14 +1141,14 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 			if (kind == actionGoTo)
 			{
 				str = ((LinkGoTo*)pLinkAction)->getNamedDest();
-				LinkDest* pLinkDest = str ? m_pPDFDocument->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
+				LinkDest* pLinkDest = str ? pDoc->findDest(str) : ((LinkGoTo*)pLinkAction)->getDest()->copy();
 				if (pLinkDest)
 				{
 					int pg;
 					if (pLinkDest->isPageRef())
 					{
 						Ref pageRef = pLinkDest->getPageRef();
-						pg = m_pPDFDocument->findPage(pageRef.num, pageRef.gen);
+						pg = pDoc->findPage(pageRef.num, pageRef.gen);
 					}
 					else
 						pg = pLinkDest->getPageNum();
@@ -898,7 +1157,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
 					std::string sLink = "#" + std::to_string(pg - 1);
 					str = new GString(sLink.c_str());
-					dy  = m_pPDFDocument->getPageCropHeight(pg) - pLinkDest->getTop();
+					dy  = pDoc->getPageCropHeight(pg) - pLinkDest->getTop();
 				}
 				else
 					str = NULL;
@@ -913,8 +1172,8 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 				if (!str->cmp("NextPage"))
 				{
 					pg = nPageIndex + 1;
-					if (pg > m_pPDFDocument->getNumPages())
-						pg = m_pPDFDocument->getNumPages();
+					if (pg > pDoc->getNumPages())
+						pg = pDoc->getNumPages();
 				}
 				else if (!str->cmp("PrevPage"))
 				{
@@ -923,7 +1182,7 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 						pg = 1;
 				}
 				else if (!str->cmp("LastPage"))
-					pg = m_pPDFDocument->getNumPages();
+					pg = pDoc->getNumPages();
 
 				std::string sLink = "#" + std::to_string(pg - 1);
 				str = new GString(sLink.c_str());
@@ -937,15 +1196,15 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 
 	int nRotate = 0;
 #ifdef BUILDING_WASM_MODULE
-	nRotate = -m_pPDFDocument->getPageRotate(nPageIndex);
+	nRotate = -pDoc->getPageRotate(nPageIndex);
 #endif
 
 	// Текст-ссылка
 	TextOutputControl textOutControl;
 	textOutControl.mode = textOutReadingOrder;
 	TextOutputDev* pTextOut = new TextOutputDev(NULL, &textOutControl, gFalse);
-	m_pPDFDocument->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
-	m_pPDFDocument->processLinks(pTextOut, nPageIndex);
+	pDoc->displayPage(pTextOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
+	pDoc->processLinks(pTextOut, nPageIndex);
 	TextWordList* pWordList = pTextOut->makeWordList();
 	for (int i = 0; i < pWordList->getLength(); i++)
 	{
@@ -977,18 +1236,54 @@ BYTE* CPdfReader::GetLinks(int nPageIndex)
 }
 BYTE* CPdfReader::GetWidgets()
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
-		return NULL;
-	if (!m_pPDFDocument->getCatalog()->getForm() || !m_pPDFDocument->getXRef())
-		return NULL;
-
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(m_pPDFDocument, m_pFontManager, m_pFontList);
-	if (pAnnots)
-		pAnnots->ToWASM(oRes);
-	RELEASEOBJECT(pAnnots);
+	std::map<std::string, std::string> mForms;
+	int nStartPage = 0;
+	for (int iPDF = 0; iPDF < m_vPDFContext.size(); ++iPDF)
+	{
+		PDFDoc* pDoc = m_vPDFContext[iPDF]->m_pDocument;
+		if (!pDoc || !pDoc->getCatalog())
+			continue;
+		if (!pDoc->getCatalog()->getForm() || !pDoc->getXRef())
+		{
+			nStartPage += pDoc->getNumPages();
+			continue;
+		}
+
+		PdfReader::CAnnots* pAnnots = new PdfReader::CAnnots(pDoc, m_pFontManager, m_vPDFContext[iPDF]->m_pFontList, nStartPage, m_vPDFContext[iPDF]->m_nStartID);
+		if (pAnnots)
+		{
+			const std::vector<PdfReader::CAnnotWidget*>& arrAnnots = pAnnots->GetAnnots();
+			for (int i = 0; i < arrAnnots.size(); ++i)
+			{
+				const std::string& sFullName = arrAnnots[i]->GetFullName();
+				std::map<std::string, std::string>::iterator it = mForms.find(sFullName);
+				if (it == mForms.end())
+					mForms[sFullName] = arrAnnots[i]->GetType();
+				else if (mForms[sFullName] != arrAnnots[i]->GetType())
+				{
+					if (iPDF == 0)
+					{
+						// error
+						// throw "Same full names for forms of different types within the same file";
+					}
+					else
+					{
+						int nPrefix = 0;
+						std::string sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
+						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
+							sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
+					}
+				}
+			}
+
+			pAnnots->ToWASM(oRes);
+		}
+		RELEASEOBJECT(pAnnots);
+		nStartPage += pDoc->getNumPages();
+	}
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();
@@ -1004,7 +1299,7 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 	int nFontsPos = oRes.GetSize();
 	oRes.AddInt(nFonts);
 
-	for (std::map<std::wstring, std::wstring>::iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
+	for (std::map<std::wstring, std::wstring>::const_iterator it = m_mFonts.begin(); it != m_mFonts.end(); ++it)
 	{
 		if (PdfReader::CAnnotFonts::IsBaseFont(it->second))
 		{
@@ -1030,10 +1325,14 @@ BYTE* CPdfReader::GetFonts(bool bStandart)
 }
 BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertificate, int nWidget)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	if (m_vPDFContext.empty())
 		return NULL;
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	CPdfReaderContext* pPDFContext = m_vPDFContext.front();
+	if (!pPDFContext || !pPDFContext->m_pDocument || !pPDFContext->m_pDocument->getCatalog())
+		return NULL;
+
+	AcroForm* pAcroForms = pPDFContext->m_pDocument->getCatalog()->getForm();
 	if (!pAcroForms)
 		return NULL;
 
@@ -1109,12 +1408,16 @@ BYTE* CPdfReader::VerifySign(const std::wstring& sFile, ICertificate* pCertifica
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nWidget, const char* sView, const char* sButtonView)
+BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, int _nPageIndex, int nWidget, const char* sView, const char* sButtonView)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList, &nStartRefID);
+	if (nPageIndex < 0 || !pDoc || !pFontList || !pDoc->getCatalog())
 		return NULL;
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
 	if (!pAcroForms)
 		return NULL;
 
@@ -1125,14 +1428,14 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
 		Object oRef;
-		if (pField->getPageNum() != nPageIndex + 1 || (nWidget >= 0 && pField->getFieldRef(&oRef) && oRef.getRefNum() != nWidget))
+		if (pField->getPageNum() != nPageIndex || (nWidget >= 0 && pField->getFieldRef(&oRef) && oRef.getRefNum() + nStartRefID != nWidget))
 		{
 			oRef.free();
 			continue;
 		}
 		oRef.free();
 
-		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, sButtonView, pField);
+		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, sButtonView, pField, nStartRefID);
 		if (pAP)
 			pAP->ToWASM(oRes);
 		RELEASEOBJECT(pAP);
@@ -1143,12 +1446,16 @@ BYTE* CPdfReader::GetAPWidget(int nRasterW, int nRasterH, int nBackgroundColor, 
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
+BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int _nPageIndex, bool bBase64, int nButtonWidget, const char* sIconView)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList, &nStartRefID);
+	if (nPageIndex < 0 || !pDoc || !pDoc->getCatalog())
 		return NULL;
 
-	AcroForm* pAcroForms = m_pPDFDocument->getCatalog()->getForm();
+	AcroForm* pAcroForms = pDoc->getCatalog()->getForm();
 	if (!pAcroForms)
 		return NULL;
 
@@ -1159,8 +1466,14 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	for (int i = 0, nNum = pAcroForms->getNumFields(); i < nNum; ++i)
 	{
 		AcroFormField* pField = pAcroForms->getField(i);
-		if (pField->getPageNum() != nPageIndex + 1 || pField->getAcroFormFieldType() != acroFormFieldPushbutton || (nButtonWidget >= 0 && i != nButtonWidget))
+		Object oRef;
+		if (pField->getPageNum() != nPageIndex || pField->getAcroFormFieldType() != acroFormFieldPushbutton ||
+			(nButtonWidget >= 0 && pField->getFieldRef(&oRef) && oRef.getRefNum() + nStartRefID != nButtonWidget))
+		{
+			oRef.free();
 			continue;
+		}
+		oRef.free();
 
 		Object oMK;
 		if (!pField->fieldLookup("MK", &oMK)->isDict())
@@ -1168,18 +1481,60 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 			oMK.free();
 			continue;
 		}
+		Object oAP;
+		pField->fieldLookup("AP", &oAP);
 
 		bool bFirst = true;
 		int nMKPos  = -1;
 		unsigned int nMKLength = 0;
 		std::vector<const char*> arrMKName { "I", "RI", "IX" };
+		std::vector<const char*> arrAPName { "N", "D",  "R" };
 		for (unsigned int j = 0; j < arrMKName.size(); ++j)
 		{
 			if (sIconView && strcmp(sIconView, arrMKName[j]) != 0)
 				continue;
 			std::string sMKName(arrMKName[j]);
-			Object oStr;
-			if (!oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
+			Object oStr, oXObject, oIm;;
+			if (oMK.dictLookup(sMKName.c_str(), &oStr)->isStream())
+			{
+				// Получение единственного XObject из Resources, если возможно
+				Object oResources;
+				if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+					oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
+				{
+					oStr.free(); oResources.free(); oXObject.free(); oIm.free();
+					continue;
+				}
+				oStr.free(); oResources.free();
+			}
+			else if ((oStr.free(), true) && oMK.dictLookup("I", &oStr)->isNull() && oAP.isDict() && (oStr.free(), true) && oAP.dictLookup(arrAPName[j], &oStr)->isStream())
+			{
+				// Получение единственного XObject из Resources, если возможно
+				Object oResources;
+				if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+					oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
+				{
+					oStr.free(); oResources.free(); oXObject.free(); oIm.free();
+					continue;
+				}
+				oStr.free(); oResources.free();
+
+				Object oSubtype;
+				Dict *oImDict = oIm.streamGetDict();
+				if (oImDict->is("XObject") && oImDict->lookup("Subtype", &oSubtype)->isName() && !oSubtype.isName("Image"))
+				{
+					if (!oImDict->lookup("Resources", &oResources)->isDict() || (oXObject.free(), false) || !oResources.dictLookup("XObject", &oXObject)->isDict() ||
+						oXObject.dictGetLength() != 1 || (oIm.free(), false) || !oXObject.dictGetVal(0, &oIm)->isStream())
+					{
+						oSubtype.free();
+						oResources.free(); oXObject.free(); oIm.free();
+						continue;
+					}
+					oResources.free();
+				}
+				oSubtype.free();
+			}
+			else
 			{
 				oStr.free();
 				continue;
@@ -1190,7 +1545,7 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 				Object oFieldRef;
 				pField->getFieldRef(&oFieldRef);
 				// Номер аннотации для сопоставления с AP
-				oRes.AddInt(oFieldRef.getRefNum());
+				oRes.AddInt(oFieldRef.getRefNum() + nStartRefID);
 				oFieldRef.free();
 
 				// Количество иконок 1-3
@@ -1199,29 +1554,20 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 				bFirst = false;
 			}
 
-			// Получение единственного XObject из Resources, если возможно
-			Object oResources, oXObject, oIm;
-			if (!oStr.streamGetDict()->lookup("Resources", &oResources)->isDict() || !oResources.dictLookup("XObject", &oXObject)->isDict() || oXObject.dictGetLength() != 1 || !oXObject.dictGetVal(0, &oIm)->isStream())
-			{
-				oStr.free(); oResources.free(); oXObject.free(); oIm.free();
-				continue;
-			}
-			oStr.free(); oResources.free();
-
 			Dict *oImDict = oIm.streamGetDict();
-			Object oType, oSubtype;
-			if (!oImDict->lookup("Type", &oType)->isName("XObject") || !oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
+			Object oSubtype;
+			if (!oImDict->is("XObject") || !oImDict->lookup("Subtype", &oSubtype)->isName("Image"))
 			{
-				oType.free(); oSubtype.free();
+				oSubtype.free();
 				oXObject.free(); oIm.free();
 				continue;
 			}
-			oType.free(); oSubtype.free();
+			oSubtype.free();
 
 			oRes.WriteString(sMKName);
 			Object oStrRef;
 			oXObject.dictGetValNF(0, &oStrRef);
-			int nView = oStrRef.getRefNum();
+			int nView = oStrRef.getRefNum() + nStartRefID;
 			oRes.AddInt(nView);
 			oStrRef.free(); oXObject.free();
 			if (std::find(arrUniqueImage.begin(), arrUniqueImage.end(), nView) != arrUniqueImage.end())
@@ -1238,16 +1584,97 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 			Object oWidth, oHeight;
 			int nWidth  = 0;
 			int nHeight = 0;
-			if (oImDict->lookup("Width", &oWidth)->isInt() && oImDict->lookup("Height", &oHeight)->isInt())
+			if (oImDict->lookup("Width", &oWidth)->isNull())
 			{
-				nWidth  = oWidth.getInt();
-				nHeight = oHeight.getInt();
+				oWidth.free();
+				oImDict->lookup("W", &oWidth);
 			}
+			if (oWidth.isNum())
+				nWidth = oWidth.getNum();
+			if (oImDict->lookup("Height", &oHeight)->isNull())
+			{
+				oHeight.free();
+				oImDict->lookup("H", &oHeight);
+			}
+			if (oHeight.isNum())
+				nHeight = oHeight.getNum();
 			oRes.AddInt(nWidth);
 			oRes.AddInt(nHeight);
 			oWidth.free(); oHeight.free();
 
-			if (bBase64)
+			// Mask
+			int nMaskWidth  = 0;
+			int nMaskHeight = 0;
+			bool bHaveSoftMask = false;
+			GfxImageColorMap* pMaskColorMap = NULL;
+
+			Object oMaskObj, oSMaskObj;
+			oImDict->lookup("Mask", &oMaskObj);
+			oImDict->lookup("SMask", &oSMaskObj);
+			if (oSMaskObj.isStream())
+			{
+				Dict* oMaskDict = oSMaskObj.streamGetDict();
+
+				if (oMaskDict->lookup("Width", &oWidth)->isNull())
+				{
+					oWidth.free();
+					oMaskDict->lookup("W", &oWidth);
+				}
+				if (oWidth.isNum())
+					nMaskWidth = oWidth.getNum();
+				if (oMaskDict->lookup("Height", &oHeight)->isNull())
+				{
+					oHeight.free();
+					oMaskDict->lookup("H", &oHeight);
+				}
+				if (oHeight.isNum())
+					nMaskHeight = oHeight.getNum();
+				oWidth.free(); oHeight.free();
+
+				Object oBits;
+				if (oMaskDict->lookup("BitsPerComponent", &oBits)->isNull())
+				{
+					oBits.free();
+					oMaskDict->lookup("BPC", &oBits);
+				}
+				int nMaskBits = oBits.isInt() ? oBits.getInt() : 8;
+				oBits.free();
+
+				GfxColorSpace* maskColorSpace = NULL;
+				Object oColorSpace;
+				if (oMaskDict->lookup("ColorSpace", &oColorSpace)->isNull())
+				{
+					oColorSpace.free();
+					oMaskDict->lookup("CS", &oColorSpace);
+				}
+				if (oColorSpace.isName("DeviceGray"))
+					maskColorSpace = GfxColorSpace::create(csDeviceGray);
+				oColorSpace.free();
+
+				Object oDecode;
+				if (oMaskDict->lookup("Decode", &oDecode)->isNull())
+				{
+					oDecode.free();
+					oMaskDict->lookup("D", &oDecode);
+				}
+
+				pMaskColorMap = new GfxImageColorMap(nMaskBits, &oDecode, maskColorSpace);
+				oDecode.free();
+
+				// TODO Matte
+
+				bHaveSoftMask = true;
+			}
+			else if (oMaskObj.isArray())
+			{
+
+			}
+			else if (oMaskObj.isStream())
+			{
+
+			}
+
+			if (bBase64 && !bHaveSoftMask)
 			{
 				int nLength = 0;
 				Object oLength;
@@ -1397,17 +1824,67 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 					pLineDst += 4;
 				}
 			}
+			delete pImageStream;
 			delete pColorMap;
+			oIm.free();
+
+			if (bHaveSoftMask && nWidth == nMaskWidth && nHeight == nMaskHeight)
+			{
+				ImageStream* pSMaskStream = new ImageStream(oSMaskObj.getStream(), nMaskWidth, pMaskColorMap->getNumPixelComps(), pMaskColorMap->getBits());
+				pSMaskStream->reset();
+
+				BYTE unAlpha = 0;
+				for (int nY = 0; nY < nMaskHeight; ++nY)
+				{
+					int nIndex = 4 * nY * nMaskWidth;
+					for (int nX = 0; nX < nMaskWidth; ++nX)
+					{
+						pSMaskStream->getPixel(&unAlpha);
+						GfxGray oGray;
+						pMaskColorMap->getGray(&unAlpha, &oGray, GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric);
+						pBgraData[nIndex + 3] = colToByte(oGray);
+						nIndex += 4;
+					}
+				}
+				delete pSMaskStream;
+			}
+			RELEASEOBJECT(pMaskColorMap);
+			oMaskObj.free(); oSMaskObj.free();
 
 			nMKLength++;
-			unsigned long long npSubMatrix = (unsigned long long)pBgraData;
-			unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
-			oRes.AddInt(npSubMatrix1);
-			oRes.AddInt(npSubMatrix >> 32);
+			if (bBase64)
+			{
+				CBgraFrame oFrame;
+				oFrame.put_Data(pBgraData);
+				oFrame.put_Width(nWidth);
+				oFrame.put_Height(nHeight);
+				oFrame.put_Stride(4 * nWidth);
+				oFrame.put_IsRGBA(true);
 
-			oIm.free();
+				BYTE* pPNG = NULL;
+				int nPNGSize = 0;
+				oFrame.Encode(pPNG, nPNGSize, 4);
+				oFrame.ClearNoAttack();
+				RELEASEARRAYOBJECTS(pBgraData);
+
+				char* cData64 = NULL;
+				int nData64Dst = 0;
+				NSFile::CBase64Converter::Encode(pPNG, nPNGSize, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+				oRes.WriteString((BYTE*)cData64, nData64Dst);
+
+				RELEASEARRAYOBJECTS(pPNG);
+				RELEASEARRAYOBJECTS(cData64);
+			}
+			else
+			{
+				unsigned long long npSubMatrix = (unsigned long long)pBgraData;
+				unsigned int npSubMatrix1 = npSubMatrix & 0xFFFFFFFF;
+				oRes.AddInt(npSubMatrix1);
+				oRes.AddInt(npSubMatrix >> 32);
+			}
 		}
-		oMK.free();
+		oMK.free(); oAP.free();
 
 		if (nMKPos > 0)
 			oRes.AddInt(nMKLength, nMKPos);
@@ -1418,19 +1895,33 @@ BYTE* CPdfReader::GetButtonIcon(int nBackgroundColor, int nPageIndex, bool bBase
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex)
+BYTE* CPdfReader::StreamToCData(BYTE* pSteam, int nLength)
 {
-	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex + 1);
+	NSWasm::CData oRes;
+	oRes.SkipLen();
+
+	oRes.Write(pSteam, nLength);
+
+	oRes.WriteLen();
+
+	BYTE* bRes = oRes.GetBuffer();
+	oRes.ClearWithoutAttack();
+	return bRes;
+}
+int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader::CPdfFontList *pFontList, NSWasm::CData& oRes, int nPageIndex, int nStartPage, int nStartRefID)
+{
+	Page* pPage = pdfDoc->getCatalog()->getPage(nPageIndex);
 	if (!pPage)
-		return;
+		return 0;
 
 	Object oAnnots;
 	if (!pPage->getAnnots(&oAnnots)->isArray())
 	{
 		oAnnots.free();
-		return;
+		return 0;
 	}
 
+	int nRes = 0;
 	for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 	{
 		Object oAnnot;
@@ -1451,7 +1942,7 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		oAnnots.arrayGetNF(i, &oAnnotRef);
 		if (sType == "Text")
 		{
-			pAnnot = new PdfReader::CAnnotText(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotText(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Link")
 		{
@@ -1459,143 +1950,125 @@ void GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReade
 		}
 		else if (sType == "FreeText")
 		{
-			PdfReader::CAnnotFreeText* pFreeText = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex);
+			PdfReader::CAnnotFreeText* pFreeText = new PdfReader::CAnnotFreeText(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 			pFreeText->SetFont(pdfDoc, &oAnnotRef, pFontManager, pFontList);
 			pAnnot = pFreeText;
 		}
 		else if (sType == "Line")
 		{
-			pAnnot = new PdfReader::CAnnotLine(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotLine(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Square" || sType == "Circle")
 		{
-			pAnnot = new PdfReader::CAnnotSquareCircle(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotSquareCircle(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Polygon" || sType == "PolyLine")
 		{
-			pAnnot = new PdfReader::CAnnotPolygonLine(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotPolygonLine(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Highlight" ||
 				 sType == "Underline" ||
 				 sType == "Squiggly"  ||
 				 sType == "StrikeOut")
 		{
-			pAnnot = new PdfReader::CAnnotTextMarkup(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotTextMarkup(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Stamp")
 		{
-			pAnnot = new PdfReader::CAnnotStamp(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotStamp(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Caret")
 		{
-			pAnnot = new PdfReader::CAnnotCaret(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotCaret(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		else if (sType == "Ink")
 		{
-			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex);
+			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		}
 		// else if (sType == "FileAttachment")
 		// {
-		// 	pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex);
+		// 	pAnnot = new PdfReader::CAnnotFileAttachment(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		// }
 		// else if (sType == "Popup")
 		// {
-		// 	pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex);
+		// 	pAnnot = new PdfReader::CAnnotPopup(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
 		// }
 		// TODO Все аннотации
 		oAnnotRef.free();
 
 		if (pAnnot)
+		{
+			pAnnot->SetPage(nStartPage + nPageIndex);
 			pAnnot->ToWASM(oRes);
+			nRes++;
+		}
 		RELEASEOBJECT(pAnnot);
 	}
 
 	oAnnots.free();
+	return nRes;
 }
-BYTE* CPdfReader::GetAnnots(int nPageIndex)
+BYTE* CPdfReader::GetAnnots(int _nPageIndex)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	if (m_vPDFContext.empty())
 		return NULL;
 
 	NSWasm::CData oRes;
 	oRes.SkipLen();
 
-	if (nPageIndex >= 0)
-		GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPageIndex);
+	if (_nPageIndex >= 0)
+	{
+		PDFDoc* pDoc = NULL;
+		PdfReader::CPdfFontList* pFontList = NULL;
+		int nStartRefID = 0;
+		int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList, &nStartRefID);
+		if (nPageIndex < 0 || !pDoc || !pFontList || !pDoc->getCatalog())
+			return NULL;
+
+		int nAnnots = 0;
+		int nPosAnnots = oRes.GetSize();
+		oRes.AddInt(nAnnots);
+
+		nAnnots = GetPageAnnots(pDoc, m_pFontManager, pFontList, oRes, nPageIndex, _nPageIndex + 1 - nPageIndex, nStartRefID);
+
+		oRes.AddInt(nAnnots, nPosAnnots);
+	}
 	else
-		for (int nPage = 0, nLastPage = m_pPDFDocument->getNumPages(); nPage < nLastPage; ++nPage)
-			GetPageAnnots(m_pPDFDocument, m_pFontManager, m_pFontList, oRes, nPage);
-
-	oRes.WriteLen();
-	BYTE* bRes = oRes.GetBuffer();
-	oRes.ClearWithoutAttack();
-	return bRes;
-}
-BYTE* CPdfReader::GetShapes(int nPageIndex)
-{
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
-		return NULL;
-	Dict* pResources = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1)->getResourceDict();
-	if (!pResources)
-		return NULL;
-
-	Object oProperties, oMetaOForm, oID;
-	XRef* xref = m_pPDFDocument->getXRef();
-	if (!pResources->lookup("Properties", &oProperties)->isDict() || !oProperties.dictLookup("OShapes", &oMetaOForm)->isDict("OShapes") || !oMetaOForm.dictLookup("ID", &oID)->isString())
 	{
-		oProperties.free(); oMetaOForm.free(); oID.free();
-		return NULL;
-	}
-	oProperties.free();
-
-	Object oTID, oID2;
-	Object* pTrailerDict = xref->getTrailerDict();
-	if (!pTrailerDict->dictLookup("ID", &oTID)->isArray() || !oTID.arrayGet(1, &oID2)->isString() || oID2.getString()->cmp(oID.getString()) != 0)
-	{
-		oMetaOForm.free(); oID.free(); oTID.free(); oID2.free();
-		return NULL;
-	}
-	oID.free(); oTID.free(); oID2.free();
-
-	Object oMetadata;
-	if (!oMetaOForm.dictLookup("Metadata", &oMetadata)->isArray())
-	{
-		oMetaOForm.free(); oMetadata.free();
-		return NULL;
-	}
-	oMetaOForm.free();
-
-	NSWasm::CData oRes;
-	oRes.SkipLen();
-	int nMetadataLength = oMetadata.arrayGetLength();
-	oRes.AddInt(nMetadataLength);
-
-	for (int i = 0; i < nMetadataLength; ++i)
-	{
-		Object oMetaStr;
-		std::string sStr;
-		if (oMetadata.arrayGet(i, &oMetaStr)->isString())
+		int nStartPage = 0;
+		for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 		{
-			TextString* s = new TextString(oMetaStr.getString());
-			sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
-			delete s;
+			PDFDoc* pDoc = pPDFContext->m_pDocument;
+			if (!pDoc || !pDoc->getCatalog() || !pPDFContext->m_pFontList)
+				continue;
+			int nAnnots = 0;
+			int nPosAnnots = oRes.GetSize();
+			oRes.AddInt(nAnnots);
+
+			for (int nPage = 1, nPages = pDoc->getNumPages(); nPage <= nPages; ++nPage)
+				nAnnots += GetPageAnnots(pDoc, m_pFontManager, pPDFContext->m_pFontList, oRes, nPage, nStartPage, pPDFContext->m_nStartID);
+
+			oRes.AddInt(nAnnots, nPosAnnots);
+			nStartPage += pDoc->getNumPages();
 		}
-		oRes.WriteString(sStr);
 	}
-	oMetadata.free();
 
 	oRes.WriteLen();
 	BYTE* bRes = oRes.GetBuffer();
 	oRes.ClearWithoutAttack();
 	return bRes;
 }
-BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int nPageIndex, int nAnnot, const char* sView)
+BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, int _nPageIndex, int nAnnot, const char* sView)
 {
-	if (!m_pPDFDocument || !m_pPDFDocument->getCatalog())
+	PDFDoc* pDoc = NULL;
+	PdfReader::CPdfFontList* pFontList = NULL;
+	int nStartRefID = 0;
+	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList, &nStartRefID);
+	if (nPageIndex < 0 || !pDoc || !pFontList || !pDoc->getCatalog())
 		return NULL;
 
 	Object oAnnots;
-	Page* pPage = m_pPDFDocument->getCatalog()->getPage(nPageIndex + 1);
+	Page* pPage = pDoc->getCatalog()->getPage(nPageIndex);
 	if (!pPage || !pPage->getAnnots(&oAnnots)->isArray())
 	{
 		oAnnots.free();
@@ -1608,7 +2081,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 	for (int i = 0, nNum = oAnnots.arrayGetLength(); i < nNum; ++i)
 	{
 		Object oAnnotRef;
-		if (!oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() || (nAnnot >= 0 && oAnnotRef.getRefNum() != nAnnot))
+		if (!oAnnots.arrayGetNF(i, &oAnnotRef)->isRef() || (nAnnot >= 0 && oAnnotRef.getRefNum() + nStartRefID != nAnnot))
 		{
 			oAnnotRef.free();
 			continue;
@@ -1627,7 +2100,7 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 			continue;
 		}
 
-		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(m_pPDFDocument, m_pFontManager, m_pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef);
+		PdfReader::CAnnotAP* pAP = new PdfReader::CAnnotAP(pDoc, m_pFontManager, pFontList, nRasterW, nRasterH, nBackgroundColor, nPageIndex, sView, &oAnnotRef, nStartRefID);
 		if (pAP)
 			pAP->ToWASM(oRes);
 		RELEASEOBJECT(pAP);
@@ -1641,8 +2114,4 @@ BYTE* CPdfReader::GetAPAnnots(int nRasterW, int nRasterH, int nBackgroundColor, 
 	BYTE* bRes = oRes.GetBuffer();
 	oRes.ClearWithoutAttack();
 	return bRes;
-}
-std::map<std::wstring, std::wstring> CPdfReader::GetAnnotFonts(Object* pRefAnnot)
-{
-	return PdfReader::CAnnotFonts::GetAnnotFont(m_pPDFDocument, m_pFontManager, m_pFontList, pRefAnnot);
 }

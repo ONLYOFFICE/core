@@ -25,41 +25,67 @@ CTblCell::CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CTblCell::CTblCell(CXMLNode& oNode, int nVersion)
+CTblCell::CTblCell(CXMLReader& oReader, int nVersion)
 {
-	m_shBorderFill = oNode.GetAttributeInt(L"borderFillIDRef");
+	m_shBorderFill = oReader.GetAttributeInt("borderFillIDRef");
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:cellAddr" == oChild.GetName())
+		if ("hp:cellAddr" == sNodeName)
 		{
-			m_shColAddr = oChild.GetAttributeInt(L"colAddr");
-			m_shRowAddr = oChild.GetAttributeInt(L"rowAddr");
-		}
-		else if (L"hp:cellSpan" == oChild.GetName())
-		{
-			m_shColSpan = oChild.GetAttributeInt(L"colSpan");
-			m_shRowSpan = oChild.GetAttributeInt(L"rowSpan");
-		}
-		else if (L"hp:cellSz" == oChild.GetName())
-		{
-			m_nWidth = oChild.GetAttributeInt(L"width");
-			m_nHeight = oChild.GetAttributeInt(L"height");
-		}
-		else if (L"hp:cellMargin" == oChild.GetName())
-		{
-			m_arMargin[0] = oChild.GetAttributeInt(L"left");
-			m_arMargin[1] = oChild.GetAttributeInt(L"rifht");
-			m_arMargin[2] = oChild.GetAttributeInt(L"top");
-			m_arMargin[3] = oChild.GetAttributeInt(L"bottom");
-		}
-		else if (L"hp:subList" == oChild.GetName())
-		{
-			m_eVertAlign = ::HWP::GetVertAlign(oChild.GetAttributeInt(L"vertAlign"));
-
-			for (CXMLNode& oGrandChild : oChild.GetChilds(L"hp:p"))
+			START_READ_ATTRIBUTES(oReader)
 			{
-				CCellParagraph *pCellParagraphs = new CCellParagraph(oGrandChild, nVersion);
+				if ("colAddr" == sAttributeName)
+					m_shColAddr = oReader.GetInt();
+				else if ("rowAddr" == sAttributeName)
+					m_shRowAddr = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:cellSpan" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("colSpan" == sAttributeName)
+					m_shColSpan = oReader.GetInt();
+				else if ("rowSpan" == sAttributeName)
+					m_shRowSpan = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:cellSz" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("width" == sAttributeName)
+					m_nWidth = oReader.GetInt();
+				else if ("height" == sAttributeName)
+					m_nHeight = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:cellSz" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("left" == sAttributeName)
+					m_arMargin[0] = oReader.GetInt();
+				else if ("right" == sAttributeName)
+					m_arMargin[1] = oReader.GetInt();
+				else if ("top" == sAttributeName)
+					m_arMargin[2] = oReader.GetInt();
+				else if ("bottom" == sAttributeName)
+					m_arMargin[3] = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:subList" == sNodeName)
+		{
+			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttribute("vertAlign"));
+
+			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
+			{
+				CCellParagraph *pCellParagraphs = new CCellParagraph(oReader, nVersion);
 
 				if (nullptr == pCellParagraphs)
 					continue;
@@ -69,8 +95,10 @@ CTblCell::CTblCell(CXMLNode& oNode, int nVersion)
 
 				m_arParas.push_back(pCellParagraphs);
 			}
+			END_WHILE
 		}
 	}
+	END_WHILE
 }
 
 void CTblCell::SetVertAlign(EVertAlign eVertAlign)

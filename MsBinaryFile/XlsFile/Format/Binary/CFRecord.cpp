@@ -478,6 +478,13 @@ void CFRecord::save(NSBinPptxRW::CXlsbBinaryWriter& writer)
 	writer.WriteBYTEArray((BYTE*)&intData[0], rdPtr);
 }
 
+void CFRecord::save(CFStreamPtr& writer)
+{
+	writer->write(&type_id_, 2);
+	writer->write(&rdPtr, 2);
+	writer->write(&intData[0], rdPtr);
+}
+
 CFRecord& CFRecord::operator >> (bool& val)
 {
 	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);

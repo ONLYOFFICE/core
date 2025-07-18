@@ -55,5 +55,10 @@ void BuiltInFnGroupCount::readFields(CFRecord& record)
 	record >> count;
 }
 
+void BuiltInFnGroupCount::writeFields(CFRecord& record)
+{
+    record << count;
+}
+
 } // namespace XLS
 

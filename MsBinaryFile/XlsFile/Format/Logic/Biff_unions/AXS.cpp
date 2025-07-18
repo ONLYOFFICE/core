@@ -153,6 +153,28 @@ const bool AXS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool AXS::saveContent(BinProcessor& proc)
+{
+	if(m_IFmtRecord != nullptr)
+		proc.mandatory(*m_IFmtRecord);
+	if(m_Tick != nullptr)
+		proc.mandatory(*m_Tick);
+	if(m_FontX != nullptr)
+		proc.mandatory(*m_FontX);
+	for(auto i : m_AxisLine_Format)
+	{
+		if(i.axisLine != nullptr)
+			proc.mandatory(*i.axisLine);
+		if(i.lineFormat != nullptr)
+			proc.mandatory(*i.lineFormat);
+	}
+	if(m_AreaFormat != nullptr)
+		proc.mandatory(*m_AreaFormat);
+	if(m_GELFRAME != nullptr)
+		proc.optional(*m_GELFRAME);
+	return true;
+}
+
 int AXS::serialize(std::wostream & _stream)
 {
 	BaseObjectPtr axis_line_format;

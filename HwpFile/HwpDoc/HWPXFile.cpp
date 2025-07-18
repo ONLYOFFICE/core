@@ -115,8 +115,12 @@ VECTOR<HWP_STRING> CHWPXFile::GetPathsToSections() const
 
 bool CHWPXFile::GetFileHeader()
 {
-	CXMLNode oVersionXml{GetDocument(L"version.xml")};
-	return m_oFileHeader.Parse(oVersionXml);
+	CXMLReader oReader;
+
+	if (!GetDocument(L"version.xml", oReader))
+		return false;
+
+	return m_oFileHeader.Parse(oReader);
 }
 
 const CHWPDocInfo* CHWPXFile::GetDocInfo() const
@@ -146,11 +150,19 @@ bool CHWPXFile::GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer)
 
 bool CHWPXFile::GetDocInfo(int nVersion)
 {
-	CXMLNode oContent{GetDocument(L"Contents/content.hpf")};
-	if (m_oDocInfo.ReadContentHpf(oContent, nVersion))
+	CXMLReader oContentReader;
+
+	if (!GetDocument(L"Contents/content.hpf", oContentReader))
+		return false;
+
+	if (m_oDocInfo.ReadContentHpf(oContentReader, nVersion))
 	{
-		CXMLNode oHeader{GetDocument(L"Contents/header.xml")};
-		return m_oDocInfo.Parse(oHeader, nVersion);
+		CXMLReader oHeaderReader;
+
+		if (!GetDocument(L"Contents/header.xml", oHeaderReader))
+			return false;
+
+		return m_oDocInfo.Parse(oHeaderReader, nVersion);
 	}
 
 	return false;
@@ -158,10 +170,13 @@ bool CHWPXFile::GetDocInfo(int nVersion)
 
 bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 {
-	CXMLNode oRootNode{GetDocument(sName)};
+	CXMLReader oReader;
+
+	if (!GetDocument(sName, oReader))
+		return false;
 
 	CHWPSection* pSection = new CHWPSection();
-	const bool bResult = pSection->Parse(oRootNode, nVersion);
+	const bool bResult = pSection->Parse(oReader, nVersion);
 
 	if (bResult)
 		m_arSections.push_back(pSection);
@@ -171,11 +186,14 @@ bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 	return bResult;
 }
 
-CXMLNode CHWPXFile::GetDocument(const HWP_STRING& sEntryName)
+bool CHWPXFile::GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader)
 {
-	if (nullptr == m_pZipFolder)
-		return CXMLNode();
+	if (nullptr == m_pZipFolder || nullptr == oReader.GetReader())
+		return false;
 
-	return CXMLNode(m_pZipFolder->getNodeFromFile(sEntryName));
+	if (m_pZipFolder->getReaderFromFile(sEntryName, *oReader.GetReader()))
+		return oReader.ReadNextNode();
+
+	return false;
 }
 }

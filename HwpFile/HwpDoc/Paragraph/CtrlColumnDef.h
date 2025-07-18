@@ -4,7 +4,7 @@
 #include "../HWPElements/HwpRecordTypes.h"
 #include "../HWPStream.h"
 #include "Ctrl.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -22,7 +22,7 @@ class CCtrlColumnDef : public CCtrl
 public:
 	CCtrlColumnDef(const HWP_STRING& sCtrlID);
 	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	ECtrlObjectType GetCtrlType() const override;
 

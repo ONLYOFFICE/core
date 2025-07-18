@@ -188,7 +188,11 @@ namespace OOX
 	{\
 	Value = Reader.GetText();\
 }
-
+#define WritingElement_ReadAttributesA_Read_ifChar(Reader, AttrName, Value) \
+	if ( strcmp(AttrName, wsName) == 0 )\
+	{\
+	Value = Reader.GetTextA();\
+}
 #define WritingElement_ReadAttributes_Read_else_if(Reader, AttrName, Value) \
 	else if ( AttrName == wsName )\
 	Value = Reader.GetText();
@@ -196,6 +200,10 @@ namespace OOX
 #define WritingElement_ReadAttributes_Read_else_ifChar(Reader, AttrName, Value) \
 	else if ( strcmp(AttrName, wsName) == 0 )\
 	Value = Reader.GetText();
+
+#define WritingElement_ReadAttributesA_Read_else_ifChar(Reader, AttrName, Value) \
+	else if ( strcmp(AttrName, wsName) == 0 )\
+	Value = Reader.GetTextA();
 
 #define WritingElement_ReadAttributes_ReadSingle(Reader, AttrName, Value) \
 	if ( AttrName == wsName )\
@@ -1597,8 +1605,16 @@ namespace OOX
 		et_dr_PrimaryKey,
 		et_dr_RowKeyValue,
 		et_dr_RowMap,
+		et_dr_RefreshConflict,
+		et_dr_AutoLinkComparison,
+		et_dr_ADOData,
 		et_dr_Windows,
 		et_dr_Window,
+		et_dr_SnapAngles,
+		et_dr_SnapAngle,
+		et_dr_PublishSettings,
+		et_dr_PublishedPage,
+		et_dr_RefreshableData,
 		et_dr_Solutions,
 		et_dr_Solution,
 		et_dr_Issues,

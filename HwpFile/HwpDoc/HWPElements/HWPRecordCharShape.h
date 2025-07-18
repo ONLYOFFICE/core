@@ -5,7 +5,7 @@
 #include "../HWPStream.h"
 #include "HWPRecord.h"
 #include "HwpRecordTypes.h"
-#include "../Common/XMLNode.h"
+#include "../Common/XMLReader.h"
 
 namespace HWP
 {
@@ -100,15 +100,17 @@ class CHWPRecordCharShape : public CHWPRecord
 	short m_shBorderFillIDRef;
 	int m_nStrikeOutColor;
 
-	void ReadContainerData(CXMLNode& oNode, short arValues[], int nDefaultValue = 0);
+	void ReadContainerData(CXMLReader& oReader, short arValues[], int nDefaultValue = 0);
 public:
 	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLNode& oNode, int nVersion);
+	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
 
 	bool Bold() const;
 	bool Italic() const;
 	bool Underline() const;
 	bool StrikeOut() const;
+	bool SuperScript() const;
+	bool SubScript() const;
 
 	int GetHeight() const;
 
@@ -121,8 +123,10 @@ public:
 
 	short GetRelSize(ELang eLang) const;
 	HWP_STRING GetFontName(ELang eLang) const;
+	short GetRatio(ELang eLang) const;
 	short GetSpacing(ELang eLang) const;
 	int GetTextColor() const;
+	int GetShadeColor() const;
 
 	short GetBorderFillID() const;
 };

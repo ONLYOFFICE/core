@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	int	serialize(std::wostream & _stream);
 
 	static const ElementType	type = typeArea;
 
-	bool fStacked;
-	bool f100;
-	bool fHasShadow;
+    bool fStacked = false;
+    bool f100 = false;
+    bool fHasShadow = false;
 };
 
 } // namespace XLS

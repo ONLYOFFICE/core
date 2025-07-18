@@ -48,10 +48,11 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeCodeName;
 
-	std::wstring value;
+    std::wstring value = L"";
 };
 
 } // namespace XLS

@@ -254,7 +254,6 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const std::wstring& sDstFileName, co
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
 
-
 	if (m_bIsNoBase64 || m_bIsNoBase64Save)
 	{
 		NSFile::CFileBinary oFile;

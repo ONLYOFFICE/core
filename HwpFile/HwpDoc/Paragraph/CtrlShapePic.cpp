@@ -25,14 +25,14 @@ CPicColor::CPicColor(CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = nSize;
 }
 
-CPicColor::CPicColor(CXMLNode& oNode)
+CPicColor::CPicColor(CXMLReader& oReader)
 {
 	//TODO:: проверить
 	m_nType = 0;
 }
 
 CPicEffect::CPicEffect(EPicEffectType eType)
-	: m_eType(eType)
+	: m_eType(eType), m_nSize(0)
 {}
 
 CPicEffect::CPicEffect(int nType)
@@ -65,33 +65,54 @@ CShadow::CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CShadow::CShadow(CXMLNode& oNode, int nVersion)
+CShadow::CShadow(CXMLReader& oReader, int nVersion)
 	: CPicEffect(EPicEffectType::SHADOW), m_pColor(nullptr)
 {
-	m_nStyle = oNode.GetAttributeInt(L"style");
-	m_nTransparency = oNode.GetAttributeInt(L"alpha");
-	m_nBlur = oNode.GetAttributeInt(L"radius");
-	m_nDirection = oNode.GetAttributeInt(L"direction");
-	m_nDistance = oNode.GetAttributeInt(L"distance");
-	m_nRotation = (int)oNode.GetAttributeBool(L"rotationStyle");
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hp:skew" == oChild.GetName())
-		{
-			m_fAngleX = oChild.GetAttributeDouble(L"x");
-			m_fAngleY = oChild.GetAttributeDouble(L"y");
-		}
-		else if (L"hp:scale" == oChild.GetName())
-		{
-			m_fMagnifyX = oChild.GetAttributeDouble(L"x");
-			m_fMagnifyY = oChild.GetAttributeDouble(L"y");
-		}
-		else if (L"hp:effectsColor" == oChild.GetName())
-		{
-			m_pColor = new CPicColor(oChild);
-		}
+		if ("style" == sAttributeName)
+			m_nStyle = oReader.GetInt();
+		else if ("alpha" == sAttributeName)
+			m_nTransparency = oReader.GetInt();
+		else if ("radius" == sAttributeName)
+			m_nBlur = oReader.GetInt();
+		else if ("direction" == sAttributeName)
+			m_nDirection = oReader.GetInt();
+		else if ("distance" == sAttributeName)
+			m_nDistance = oReader.GetInt();
+		else if ("rotationStyle" == sAttributeName)
+			m_nRotation = (int)oReader.GetBool();
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hp:skew" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_fAngleX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_fAngleY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:scale" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_fMagnifyX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_fMagnifyY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:effectsColor" == sNodeName)
+			m_pColor = new CPicColor(oReader);
+	}
+	END_WHILE
 }
 
 CShadow::~CShadow()
@@ -112,14 +133,24 @@ CNeon::CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CNeon::CNeon(CXMLNode& oNode, int nVersion)
+CNeon::CNeon(CXMLReader& oReader, int nVersion)
 	: CPicEffect(EPicEffectType::GLOW), m_pColor(nullptr)
 {
-	m_fTransparency = oNode.GetAttributeDouble(L"alpha");
-	m_fRadius = oNode.GetAttributeDouble(L"radius");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("alpha" == sAttributeName)
+			m_fTransparency = oReader.GetDouble();
+		else if ("radius" == sAttributeName)
+			m_fRadius = oReader.GetDouble();
+	}
+	END_READ_ATTRIBUTES(oReader)
 
-	CXMLNode oChild{oNode.GetChild(L"hp:effectsColor")};
-	m_pColor = new CPicColor(oChild);
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:effectsColor")
+	{
+		m_pColor = new CPicColor(oReader);
+		break;
+	}
+	END_WHILE
 }
 
 CNeon::~CNeon()
@@ -136,10 +167,10 @@ CSoftEdge::CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = 4;
 }
 
-CSoftEdge::CSoftEdge(CXMLNode& oNode, int nVersion)
+CSoftEdge::CSoftEdge(CXMLReader& oReader, int nVersion)
 	: CPicEffect(EPicEffectType::SOFT_EDGE)
 {
-	m_fRadius = oNode.GetAttributeDouble(L"radius");
+	m_fRadius = oReader.GetAttributeDouble("radius");
 }
 
 CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
@@ -165,38 +196,48 @@ CReflect::CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize)
 	m_nSize = oBuffer.GetDistanceToLastPos(true);
 }
 
-CReflect::CReflect(CXMLNode& oNode, int nVersion)
+CReflect::CReflect(CXMLReader& oReader, int nVersion)
 	: CPicEffect(EPicEffectType::REFLECT)
 {
-	m_fRadius = oNode.GetAttributeDouble(L"radius");
-	m_fDirection = oNode.GetAttributeInt(L"direction");
-	m_fDistance = oNode.GetAttributeInt(L"distance");
-	m_nRotateStyle = (int)oNode.GetAttributeBool(L"rotationStyle");
-	m_fOffsetDirection = oNode.GetAttributeInt(L"fadeDirection");
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hp:skew" == oChild.GetName())
-		{
-			m_fAngleX = oChild.GetAttributeDouble(L"x");
-			m_fAngleY = oChild.GetAttributeDouble(L"y");
-		}
-		else if (L"hp:scale" == oChild.GetName())
-		{
-			m_fMagnifyX = oChild.GetAttributeDouble(L"x");
-			m_fMagnifyY = oChild.GetAttributeDouble(L"y");
-		}
-		else if (L"hp:alpha" == oChild.GetName())
-		{
-			m_fStartTrans = oChild.GetAttributeDouble(L"start");
-			m_fEndTrans = oChild.GetAttributeDouble(L"end");
-		}
-		else if (L"hp:pos" == oChild.GetName())
-		{
-			m_fStartPos = oChild.GetAttributeDouble(L"start");
-			m_fEndPos = oChild.GetAttributeDouble(L"end");
-		}
+		if ("radius" == sAttributeName)
+			m_fRadius = oReader.GetDouble();
+		else if ("direction" == sAttributeName)
+			m_fDirection = oReader.GetDouble();
+		else if ("distance" == sAttributeName)
+			m_fDistance = oReader.GetDouble();
+		else if ("rotationStyle" == sAttributeName)
+			m_nRotateStyle = (int)oReader.GetBool();
+		else if ("fadeDirection" == sAttributeName)
+			m_fOffsetDirection = oReader.GetDouble();
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	#define READ_VALUES(value_1_name, value_1_variable, value_2_name, value_2_variable)\
+	{\
+		START_READ_ATTRIBUTES(oReader)\
+		{\
+			if (value_1_name == sAttributeName)\
+				value_1_variable = oReader.GetDouble();\
+			else if (value_2_name == sAttributeName)\
+				value_2_variable = oReader.GetDouble();\
+		}\
+		END_READ_ATTRIBUTES(oReader)\
+	}
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hp:skew" == sNodeName)
+			READ_VALUES("x", m_fAngleX, "y", m_fAngleY)
+		else if ("hp:scale" == sNodeName)
+			READ_VALUES("x", m_fMagnifyX, "y", m_fMagnifyY)
+		else if ("hp:alpha" == sNodeName)
+			READ_VALUES("start", m_fStartTrans, "end", m_fEndTrans)
+		else if ("hp:pos" == sNodeName)
+			READ_VALUES("start", m_fStartPos, "end", m_fEndPos)
+	}
+	END_WHILE
 }
 
 CCtrlShapePic::CCtrlShapePic()
@@ -215,69 +256,110 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:imgRect" == oChild.GetName())
+		if ("hp:imgRect" == sNodeName)
 		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			#define READ_POINT(index_point)\
+			{\
+				START_READ_ATTRIBUTES(oReader)\
+				{\
+					if ("x" == sAttributeName)\
+						m_arBorderPoints[index_point].m_nX = oReader.GetInt();\
+					else if ("y" == sAttributeName)\
+						m_arBorderPoints[index_point].m_nY = oReader.GetInt();\
+				}\
+				END_READ_ATTRIBUTES(oReader)\
+			}
+
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
 			{
-				for (unsigned int unIndex = 0; unIndex < 4; ++unIndex)
+				if ("hc:pt0" == sNodeChildName)
+					READ_POINT(0)
+				else if ("hc:pt1" == sNodeChildName)
+					READ_POINT(1)
+				else if ("hc:pt2" == sNodeChildName)
+					READ_POINT(2)
+				else if ("hc:pt3" == sNodeChildName)
+					READ_POINT(3)
+			}
+			END_WHILE
+		}
+		else if ("hp:imgClip" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("left" == sAttributeName)
+					m_nCropLeft = oReader.GetInt();
+				else if ("right" == sAttributeName)
+					m_nCropRight = oReader.GetInt();
+				else if ("top" == sAttributeName)
+					m_nCropTop = oReader.GetInt();
+				else if ("bottom" == sAttributeName)
+					m_nCropBottom = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:effects" == sNodeName)
+		{
+			if (oReader.GetReader()->IsEmptyNode())
+				continue;
+
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+			{
+				if ("hp:shadow" == sNodeChildName)
+					m_arPicEffect.push_back(new CShadow(oReader, nVersion));
+				else if ("hp:glow" == sNodeChildName)
+					m_arPicEffect.push_back(new CNeon(oReader, nVersion));
+				else if ("hp:softEdge" == sNodeChildName)
+					m_arPicEffect.push_back(new CSoftEdge(oReader, nVersion));
+				else if ("hp:reflection" == sNodeChildName)
+					m_arPicEffect.push_back(new CReflect(oReader, nVersion));
+			}
+			END_WHILE
+		}
+		else if ("hc:img" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("bright" == sAttributeName)
+					m_chBright = (HWP_BYTE)oReader.GetInt();
+				else if ("contrast" == sAttributeName)
+					m_chContrast = (HWP_BYTE)oReader.GetInt();
+				else if ("effect" == sAttributeName)
 				{
-					if ((L"hc:pt" + std::to_wstring(unIndex)) == oGrandChild.GetName())
-					{
-						m_arBorderPoints[unIndex].m_nX = oChild.GetAttributeInt(L"x");
-						m_arBorderPoints[unIndex].m_nY = oChild.GetAttributeInt(L"y");
-						break;
-					}
+					const std::string sType{oReader.GetTextA()};
+
+					if ("REAL_PIC" == sType)
+						m_chEffect = 0;
+					else if ("GRAY_SCALE" == sType)
+						m_chEffect = 1;
+					else if ("BLACK_WHITE" == sType)
+						m_chEffect = 2;
 				}
+				else if ("binaryItemIDRef" == sAttributeName)
+					m_sBinDataID = oReader.GetText();
 			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:imgClip" == oChild.GetName())
+		else if ("hp:imgDim" == sNodeName)
 		{
-			m_nCropLeft = oChild.GetAttributeInt(L"left");
-			m_nCropRight = oChild.GetAttributeInt(L"right");
-			m_nCropTop = oChild.GetAttributeInt(L"top");
-			m_nCropBottom = oChild.GetAttributeInt(L"bottom");
-		}
-		else if (L"hp:effects" == oChild.GetName())
-		{
-			for (CXMLNode& oGrandChild : oChild.GetChilds())
+			START_READ_ATTRIBUTES(oReader)
 			{
-				if (L"hp:shadow" == oGrandChild.GetName())
-					m_arPicEffect.push_back(new CShadow(oGrandChild, nVersion));
-				else if (L"hp:glow" == oGrandChild.GetName())
-					m_arPicEffect.push_back(new CNeon(oGrandChild, nVersion));
-				else if (L"hp:softEdge" == oGrandChild.GetName())
-					m_arPicEffect.push_back(new CSoftEdge(oGrandChild, nVersion));
-				else if (L"hp:reflection" == oGrandChild.GetName())
-					m_arPicEffect.push_back(new CReflect(oGrandChild, nVersion));
+				if ("dimwidth" == sAttributeName)
+					m_nIniPicWidth = oReader.GetInt();
+				else if ("dimheight" == sAttributeName)
+					m_nIniPicHeight = oReader.GetInt();
 			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hc:img" == oChild.GetName())
-		{
-			m_chBright = (HWP_BYTE)oChild.GetAttributeInt(L"bright");
-			m_chContrast = (HWP_BYTE)oChild.GetAttributeInt(L"contrast");
-
-			HWP_STRING sType = oChild.GetAttribute(L"effect");
-
-			if (L"REAL_PIC" == sType)
-				m_chEffect = 0;
-			else if (L"GRAY_SCALE" == sType)
-				m_chEffect = 1;
-			else if (L"BLACK_WHITE" == sType)
-				m_chEffect = 2;
-
-			m_sBinDataID = oChild.GetAttribute(L"binaryItemIDRef");
-		}
-		else if (L"hp:imgDim" == oChild.GetName())
-		{
-			m_nIniPicWidth = oChild.GetAttributeInt(L"dimwidth");
-			m_nIniPicHeight = oChild.GetAttributeInt(L"dimheight");
-		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
 	}
+	END_WHILE
 }
 
 CCtrlShapePic::~CCtrlShapePic()
@@ -327,6 +409,16 @@ int CCtrlShapePic::GetBorderColor() const
 int CCtrlShapePic::GetBorderThick() const
 {
 	return m_nBorderThick;
+}
+
+int CCtrlShapePic::GetImageRectWidth() const
+{
+	return m_arBorderPoints[1].m_nX - m_arBorderPoints[0].m_nX;
+}
+
+int CCtrlShapePic::GetIMageRectHeight() const
+{
+	return m_arBorderPoints[2].m_nY - m_arBorderPoints[0].m_nY;
 }
 
 int CCtrlShapePic::ParseElement(CCtrlShapePic& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

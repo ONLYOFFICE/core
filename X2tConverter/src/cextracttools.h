@@ -229,6 +229,7 @@ namespace NExtractTools
         TCD_DOCT_BIN2,
         TCD_XLST_BIN2,
         TCD_PPTT_BIN2,
+		TCD_VSDT_BIN2,
         TCD_DOCUMENT2,
         TCD_SPREADSHEET2,
         TCD_PRESENTATION2,
@@ -964,6 +965,14 @@ namespace NExtractTools
 					if (nFormatFrom != FileFormatChecker.nFileType && FileFormatChecker.nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN)
 					{
 						nFormatFrom = FileFormatChecker.nFileType;
+						bool bOFormAsPdf = nFormatFrom == AVS_OFFICESTUDIO_FILE_DOCUMENT_OFORM_PDF && 
+							NSProcessEnv::IsPresent(NSProcessEnv::Converter::gc_oformAsPdf) && 
+							NSProcessEnv::GetBoolValue(NSProcessEnv::Converter::gc_oformAsPdf);
+						if (bOFormAsPdf)
+						{
+							nFormatFrom = AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF;
+						}
+						
 						*m_nFormatFrom = nFormatFrom;
 						
 						 changeFormatFromPrev(nFormatFrom); 
@@ -1004,6 +1013,8 @@ namespace NExtractTools
 					eRes = TCD_XLST_BIN2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION == nFormatFrom)
 					eRes = TCD_PPTT_BIN2;
+				else if (AVS_OFFICESTUDIO_FILE_CANVAS_DRAW == nFormatFrom)
+					eRes = TCD_VSDT_BIN2;
 				else if (0 != (AVS_OFFICESTUDIO_FILE_CROSSPLATFORM & nFormatFrom))
 					eRes = TCD_CROSSPLATFORM2;
 				else if (AVS_OFFICESTUDIO_FILE_CANVAS_PDF == nFormatFrom)

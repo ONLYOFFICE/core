@@ -52,6 +52,18 @@ void DXFPat::load(CFRecord& record)
 	icvForeground = GETBITS(flags, 0, 6);
 	icvBackground = GETBITS(flags, 7, 13);
 }
+
+void DXFPat::save(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBITS(flags, 10, 15, fls);
+    record << flags;
+    flags = 0;
+    SETBITS(flags, 0, 6, icvForeground);
+    SETBITS(flags, 7, 13, icvBackground);
+    record << flags;
+}
+
 std::wstring GetPatternType(unsigned char fls)
 {
 	std::wstring res;

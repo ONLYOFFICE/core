@@ -74,6 +74,7 @@ CV8RealTimeWorker::CV8RealTimeWorker(NSDoctRenderer::CDocBuilder* pBuilder, cons
 	global->set("native", oNativeCtrl);
 
 	CBuilderEmbed* pBuilderJSNative = static_cast<CBuilderEmbed*>(oBuilderJS->getNative());
+	pBuilderJSNative->SetExternalize(true);
 	pBuilderJSNative->m_pBuilder = pBuilder;
 }
 CV8RealTimeWorker::~CV8RealTimeWorker()
@@ -82,7 +83,7 @@ CV8RealTimeWorker::~CV8RealTimeWorker()
 	m_context->Dispose();
 }
 
-bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContext)
+bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRenderer::CDocBuilderValue* retValue, const bool& isEnterContextSrc)
 {
 	LOGGER_SPEED_START();
 
@@ -91,6 +92,10 @@ bool CV8RealTimeWorker::ExecuteCommand(const std::wstring& command, NSDoctRender
 
 	std::string commandA = U_TO_UTF8(command);
 	//commandA = "Api." + commandA;
+
+	bool isEnterContext = isEnterContextSrc;
+	if (!isEnterContext && !m_context->IsEntered())
+		isEnterContext = true;
 
 	if (isEnterContext)
 		m_context->Enter();
@@ -1237,13 +1242,13 @@ namespace NSDoctRenderer
 
 		while (true)
 		{
-			while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+			while (_currentPos < _commandsLen && !((_commandsPtr[_currentPos] == '\"' || _commandsPtr[_currentPos] == '\'') && _commandsPtr[_currentPos - 1] != '\\'))
 				++_currentPos;
 
 			++_currentPos;
 			size_t _start = _currentPos;
 
-			while (_currentPos < _commandsLen && !(_commandsPtr[_currentPos] == '\"' && _commandsPtr[_currentPos - 1] != '\\'))
+			while (_currentPos < _commandsLen && !((_commandsPtr[_currentPos] == '\"' || _commandsPtr[_currentPos] == '\'') && _commandsPtr[_currentPos - 1] != '\\'))
 				++_currentPos;
 
 			if (_currentPos > _start)
@@ -1268,7 +1273,7 @@ namespace NSDoctRenderer
 		if (m_pInternal->m_nFileType != -1 && m_pInternal->m_bIsOpenedFromSimpleJS)
 		{
 			m_pInternal->m_bIsOpenedFromSimpleJS = false;
-			return true;
+			return 0;
 		}
 
 		m_pInternal->m_nFileType = -1;
@@ -1509,7 +1514,8 @@ namespace NSDoctRenderer
 					if (nCountParameters > 2)
 						sParams = _builder_params[2].c_str();
 
-					this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
+					int nSaveError = this->SaveFile(nFormat, _builder_params[1].c_str(), sParams);
+					bIsNoError = (0 == nSaveError);
 				}
 				else if ("WriteData" == sFuncNum)
 				{

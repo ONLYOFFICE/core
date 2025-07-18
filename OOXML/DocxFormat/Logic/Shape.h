@@ -55,8 +55,6 @@ namespace OOX
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader);
 			virtual std::wstring toXML() const;
 			virtual EElementType getType() const;
-
-			// Childs
 		};
 
 		//--------------------------------------------------------------------------------

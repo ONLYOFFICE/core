@@ -48,9 +48,10 @@ public:
 	static const ElementType	type = typePhs;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	unsigned short ifnt;
+    unsigned short ifnt = 0;
 	struct Phs_Data
 	{
 		unsigned short phType : 2;

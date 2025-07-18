@@ -35,7 +35,6 @@
 #include "templates.h"
 
 #include <vector>
-#include <boost/unordered_map.hpp>
 #include "../../DataTypes/stylefamily.h"
 #include "../../DataTypes/noteclass.h"
 
@@ -321,8 +320,8 @@ public:
     void add_font( font_instance_ptr FontInstance );
 
 private:
-    boost::unordered_map<std::wstring, int> font_names_;
-    boost::unordered_map<std::wstring, int> font_style_names_;
+    std::map<std::wstring, int> font_names_;
+    std::map<std::wstring, int> font_style_names_;
     instances_array instances_;
 
 };

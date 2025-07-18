@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBuiltInFnGroupCount;
 
 
 //-----------------------------
-	_UINT16 count;
+    _UINT16 count = 0;
 };
 
 } // namespace XLS

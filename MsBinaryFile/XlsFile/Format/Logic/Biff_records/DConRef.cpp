@@ -118,6 +118,16 @@ void DConRef::readFields(CFRecord& record)
 	record.skipNunBytes(unused);
 }
 
+void DConRef::writeFields(CFRecord& record)
+{
+    record << ref << cchFile;
+    if (cchFile > 0 && cchFile < 0xffff)
+    {
+        record << stFile;
+        record.reserveNunBytes(2);
+    }
+}
+
 void DConRef::check_external()
 {
 	bool bFound = false;

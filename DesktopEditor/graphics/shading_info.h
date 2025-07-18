@@ -371,6 +371,7 @@ namespace NSStructures
 		 *
 		 * Наверное напишу адаптор который переводит порядок точек из 6 типа в общий.
 		 */
+		agg::rgba8 fill_color;
 		std::vector<std::vector<Point>> patch;
 		std::vector<std::vector<agg::rgba8>> patch_colors; // 2 на 2 цвета по углам
 		std::vector<std::vector<float>> patch_parameters; // 2 на 2 параметра
@@ -388,8 +389,8 @@ namespace NSStructures
 			xsize(1.0f), ysize(1.0f),
 			linstretch(1.0f), linoffset(0.0f),
 			continue_shading_f(false),
-			continue_shading_b(false)
-
+			continue_shading_b(false),
+			luminocity(false)
 		{
 		}
 		void setAngleDegrees(float deg)
@@ -403,6 +404,57 @@ namespace NSStructures
 		void setStepByNum(int n) // recommended to use
 		{
 			discrete_step = 1.0f / n;
+		}
+		bool checkLuminosity() const
+		{
+			if (shading.patch_colors.empty())
+				return false;
+
+			for (const auto& ar : shading.patch_colors)
+				for (const auto& c : ar)
+					if (c.r != c.g || c.g != c.b)
+						return false;
+
+			return true;
+		}
+		bool colorEqual(const agg::rgba8& c1, const agg::rgba8& c2) const
+		{
+			return	c1.r == c2.r &&
+					c1.g == c2.g &&
+					c1.b == c2.b &&
+					c1.a == c2.a;
+		}
+		bool isOneColor() const
+		{
+			switch (shading.shading_type)
+			{
+			case ShadingInfo::FunctionOnly:
+			case ShadingInfo::Parametric:
+				return false;
+			case ShadingInfo::TriangleInterpolation:
+				return	colorEqual(shading.triangle_colors[0], shading.triangle_colors[1]) &&
+						colorEqual(shading.triangle_colors[1], shading.triangle_colors[2]);
+			case ShadingInfo::CurveInterpolation:
+			case ShadingInfo::TensorCurveInterpolation:
+				return	colorEqual(shading.patch_colors[0][0], shading.patch_colors[0][1]) &&
+						colorEqual(shading.patch_colors[0][1], shading.patch_colors[1][0]) &&
+						colorEqual(shading.patch_colors[1][0], shading.patch_colors[1][1]);
+			default:
+				return false;
+			}
+		}
+		agg::rgba8 getFillColor() const
+		{
+			if (!shading.triangle_colors.empty())
+				return shading.triangle_colors[0];
+			if (!shading.patch_colors.empty())
+				return shading.patch_colors[0][0];
+			return agg::rgba8(0, 0, 0);
+		}
+		void setFillColor(const agg::rgba8& color)
+		{
+			shading.fill_color = color;
+			luminocity = true;
 		}
 		void transform(const Aggplus::CMatrix& matrix)
 		{
@@ -502,6 +554,7 @@ namespace NSStructures
 		float linstretch; // stretch linear gradient, can be negative (eq angle = 180) can not be zero
 		float linoffset;  // offset relative to image size
 		float continue_shading_b, continue_shading_f;
+		bool luminocity;
 		ShadingInfo shading;
 	};
 
@@ -643,6 +696,7 @@ namespace NSStructures
 											 const std::vector<std::vector<float>> &curve_parametrs,
 											 const std::vector<std::vector<agg::rgba8>> &curve_colors,
 											 bool parametric,
+											 bool luminosity = false,
 											 float t0 = 0.0f, float t1 = 1.0f)
 		{
 			GradientInfo ginfo;
@@ -651,6 +705,7 @@ namespace NSStructures
 
 			ginfo.shading.f_type = ShadingInfo::UseNew;
 			ginfo.shading.function = ColorFunction<agg::rgba8>(256, t0, t1);
+			ginfo.luminocity = luminosity;
 			ginfo.continue_shading_f = false;
 			ginfo.continue_shading_b = false;
 

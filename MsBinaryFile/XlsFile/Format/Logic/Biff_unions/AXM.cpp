@@ -78,5 +78,17 @@ const bool AXM::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool AXM::saveContent(BinProcessor& proc)
+{
+	if(m_YMult != nullptr)
+		return false;
+	proc.mandatory(*m_YMult);
+	proc.mandatory<StartObject>();
+	if(m_ATTACHEDLABEL != nullptr)
+		proc.mandatory(*m_ATTACHEDLABEL);
+	proc.mandatory<EndObject>();
+	return true;
+}
+
 } // namespace XLS
 

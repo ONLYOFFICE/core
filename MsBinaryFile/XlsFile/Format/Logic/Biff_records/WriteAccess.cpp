@@ -37,6 +37,7 @@ namespace XLS
 
 WriteAccess::WriteAccess()
 {
+    userName = L"";
 }
 
 
@@ -64,6 +65,22 @@ void WriteAccess::readFields(CFRecord& record)
 		record >> userName;
 	}
 	record.skipNunBytes(record.getDataSize() - record.getRdPtr()); // unused
+}
+
+void WriteAccess::writeFields(CFRecord& record)
+{
+    auto maxRecordSize = 112;
+    auto userNamePos = record.getRdPtr();
+    if(userName.value() == L"")
+    {
+		XLUnicodeString name;
+		name = std::wstring(L"  ");
+        record << name;
+        record.reserveNunBytes(maxRecordSize - (record.getRdPtr() - userNamePos));
+        return;
+    }
+    record << userName;
+    record.reserveNunBytes(maxRecordSize - (record.getRdPtr() - userNamePos));
 }
 
 } // namespace XLS

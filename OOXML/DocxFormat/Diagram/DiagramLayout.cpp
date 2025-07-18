@@ -1725,8 +1725,8 @@ namespace OOX
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	EElementType Diagram::CParam::getType() const
 	{
@@ -1973,8 +1973,8 @@ namespace OOX
 	{
 		ReadAttributes(oReader);
 
-		if (oReader.IsEmptyNode())
-			return;
+		if (!oReader.IsEmptyNode())
+			oReader.ReadTillEnd();
 	}
 	EElementType Diagram::CShapeAdjust::getType() const
 	{

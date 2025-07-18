@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCrtLine;
 
 	int serialize(std::wostream & _stream);
 
-	_UINT16		id;
+	_UINT16		id = 0;
 	BaseObjectPtr	m_LineFormat;
 
 //-----------------------------

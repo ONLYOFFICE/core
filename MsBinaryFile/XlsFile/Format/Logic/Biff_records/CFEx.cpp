@@ -68,5 +68,14 @@ void CFEx::readFields(CFRecord& record)
 	}
 }
 
+void CFEx::writeFields(CFRecord& record)
+{
+    record << frtRefHeaderU << fIsCF12 << nID;
+    if(!fIsCF12)
+    {
+        record << content;
+    }
+}
+
 } // namespace XLS
 

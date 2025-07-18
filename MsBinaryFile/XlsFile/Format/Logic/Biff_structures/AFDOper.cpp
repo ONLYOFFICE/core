@@ -92,6 +92,38 @@ void AFDOper::load(CFRecord& record)
 	}
 }
 
+void AFDOper::save(CFRecord& record)
+{
+    record << vt << grbitSign;
+    switch(vt)
+    {
+        case  0x02:
+        {
+            record << vtValueRk;
+        }break;
+        case  0x04:
+        {
+            record << vtValueNum;
+        }break;
+        case  0x06:
+        {
+            vtValueStr.m_bAutoFilter = m_bAutoFilter;
+            record << vtValueStr;
+        }break;
+        case  0x08:
+        {
+            record << vtValueBool;
+        }break;
+        case 0x0C:	//All blanks are matched.
+        case 0x0E:	//All non-blanks are matched.
+        case 0x00:
+        default:
+        {
+            record.reserveNunBytes(8);
+        }break;
+    }
+}
+
 int AFDOper::serialize(std::wostream & strm, const std::wstring &node_name, const std::wstring &val)
 {
 	if (grbitSign < 1 || grbitSign > 6) return 0;

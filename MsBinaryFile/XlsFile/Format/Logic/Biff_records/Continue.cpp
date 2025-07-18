@@ -78,5 +78,10 @@ void Continue::readFields(CFRecord& record)
 	record.skipNunBytes(m_iDataSize);
 }
 
+void Continue::writeFields(CFRecord& record)
+{
+    record.appendRawDataToStatic(reinterpret_cast<unsigned char*>(m_pData), m_iDataSize);
+}
+
 } // namespace XLS
 

@@ -47,7 +47,7 @@ win32 {
 DEFINES += COPYRIGHT_YEAR=$${CURRENT_YEAR}
 
 QMAKE_TARGET_COMPANY = $$PUBLISHER_NAME
-QMAKE_TARGET_COPYRIGHT = Copyright (C) $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved
+QMAKE_TARGET_COPYRIGHT = © $${PUBLISHER_NAME} $${CURRENT_YEAR}. All rights reserved.
 
 # CONFIGURATION
 CONFIG(debug, debug|release) {
@@ -107,6 +107,31 @@ win32:contains(QMAKE_TARGET.arch, x86_64): {
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64): {
 	CONFIG += core_win_32
+}
+
+linux-clang-libc++ {
+    CONFIG += core_linux
+	CONFIG += core_linux_64
+	CONFIG += core_linux_clang
+	message("linux-64-clang-libc++")
+}
+linux-clang-libc++-32 {
+    CONFIG += core_linux
+	CONFIG += core_linux_32
+	CONFIG += core_linux_clang
+	message("linux-32-clang-libc++")
+}
+linux-clang {
+	CONFIG += core_linux
+	CONFIG += core_linux_64
+	CONFIG += core_linux_clang
+	message("linux-64-clang")
+}
+linux-clang-32 {
+	CONFIG += core_linux
+	CONFIG += core_linux_32
+	CONFIG += core_linux_clang
+	message("linux-32-clang")
 }
 
 linux-g++ {
@@ -194,6 +219,10 @@ core_mac {
 		QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.12
 		!apple_silicon:QMAKE_APPLE_DEVICE_ARCHS = x86_64
 	}
+}
+
+core_linux_clang {
+	QMAKE_CFLAGS += -Wno-implicit-function-declaration
 }
 
 # PREFIXES
@@ -416,6 +445,12 @@ message($$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX)
 # COMPILER
 CONFIG += c++11
 
+#CONFIG += enable_cpp_17
+enable_cpp_17 {
+	CONFIG += c++1z
+	DEFINES += _LIBCPP_ENABLE_CXX17_REMOVED_UNARY_BINARY_FUNCTION
+}
+
 !core_windows {
 	QMAKE_CXXFLAGS += -Wno-register
 	QMAKE_CFLAGS += -Wno-register
@@ -423,7 +458,11 @@ CONFIG += c++11
 
 core_linux {
 core_static_link_libstd {
-	QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+	!core_linux_clang {
+		QMAKE_LFLAGS += -static-libstdc++ -static-libgcc
+	} else {
+		# TODO: add libc++abi?
+	}
 	message(core_static_link_libstd)
 }
 plugin {

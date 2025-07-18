@@ -182,81 +182,94 @@ bool CHWPDocInfo::Parse(CHWPStream& oBuffer, int nVersion)
 	return true;
 }
 
-bool CHWPDocInfo::Parse(CXMLNode& oNode, int nVersion)
+bool CHWPDocInfo::Parse(CXMLReader& oReader, int nVersion)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hh:beginNum" == oChild.GetName())
-			m_arRecords.push_back(new CHWPRecordDocumentProperties(*this, oChild, nVersion));
-		else if (L"hh:refList" == oChild.GetName())
-			ReadRefList(oChild, nVersion);
+		if ("hh:beginNum" == sNodeName)
+			m_arRecords.push_back(new CHWPRecordDocumentProperties(*this, oReader, nVersion));
+		else if ("hh:refList" == sNodeName)
+			ReadRefList(oReader, nVersion);
 	}
+	END_WHILE
 
 	return true;
 }
 
-bool CHWPDocInfo::ReadRefList(CXMLNode& oNode, int nVersion)
+bool CHWPDocInfo::ReadRefList(CXMLReader& oReader, int nVersion)
 {
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hh:fontfaces" == oChild.GetName())
+		if ("hh:fontfaces" == sNodeName)
 		{
-			for (CXMLNode& oFontFaceNode : oChild.GetChilds(L"hh:fontface"))
-				for (CXMLNode& oFontNode : oFontFaceNode.GetChilds(L"hh:font"))
-					m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oFontNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, FontFace, "hh:fontface")
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Font, "hh:font")
+			        m_arFaseNames.push_back(new CHWPRecordFaceName(*this, oReader, nVersion));
+				END_WHILE
+			END_WHILE
 		}
-		else if (L"hh:borderFills" == oChild.GetName())
+		else if ("hh:borderFills" == sNodeName)
 		{
-			for (CXMLNode& oBorderFillNode : oChild.GetChilds(L"hh:borderFill"))
-				m_arBorderFills.push_back(new CHWPRecordBorderFill(*this, oBorderFillNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, BorderFill, "hh:borderFill")
+				m_arBorderFills.push_back(new CHWPRecordBorderFill(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:charProperties" == oChild.GetName())
+		else if ("hh:charProperties" == sNodeName)
 		{
-			for (CXMLNode& oCharPrNode : oChild.GetChilds(L"hh:charPr"))
-				m_arCharShapes.push_back(new CHWPRecordCharShape(*this, oCharPrNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, CharPr, "hh:charPr")
+				m_arCharShapes.push_back(new CHWPRecordCharShape(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:tabProperties" == oChild.GetName())
+		else if ("hh:tabProperties" == sNodeName)
 		{
-			for (CXMLNode& oTabPrNode : oChild.GetChilds(L"hh:tabPr"))
-				m_arTabDefs.push_back(new CHwpRecordTabDef(*this, oTabPrNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, TabPr, "hh:tabPr")
+				m_arTabDefs.push_back(new CHwpRecordTabDef(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:numberings" == oChild.GetName())
+		else if ("hh:numberings" == sNodeName)
 		{
-			for (CXMLNode& oNumberingNode : oChild.GetChilds(L"hh:numbering"))
-				m_arNumberings.push_back(new CHWPRecordNumbering(*this, oNumberingNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Numbering, "hh:numbering")
+				m_arNumberings.push_back(new CHWPRecordNumbering(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:bullets" == oChild.GetName())
+		else if ("hh:bullets" == sNodeName)
 		{
-			for (CXMLNode& oBulletNode : oChild.GetChilds())
-				m_arBullets.push_back(new CHWPRecordBullet(*this, oBulletNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH(oReader, Bullet)
+				m_arBullets.push_back(new CHWPRecordBullet(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:paraProperties" == oChild.GetName())
+		else if ("hh:paraProperties" == sNodeName)
 		{
-			for (CXMLNode& oParaPrNode : oChild.GetChilds(L"hh:paraPr"))
-				m_arParaShapes.push_back(new CHWPRecordParaShape(*this, oParaPrNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, ParaPr, "hh:paraPr")
+				m_arParaShapes.push_back(new CHWPRecordParaShape(*this, oReader, nVersion));
+			END_WHILE
 		}
-		else if (L"hh:styles" == oChild.GetName())
+		else if ("hh:styles" == sNodeName)
 		{
-			for (CXMLNode& oStyleNode : oChild.GetChilds(L"hh:style"))
-				m_arStyles.push_back(new CHWPRecordStyle(*this, oStyleNode, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Style, "hh:style")
+				m_arStyles.push_back(new CHWPRecordStyle(*this, oReader, nVersion));
+			END_WHILE
 		}
 	}
+	END_WHILE
 
 	return true;
 }
 
-bool CHWPDocInfo::ReadContentHpf(CXMLNode& oNode, int nVersion)
+bool CHWPDocInfo::ReadContentHpf(CXMLReader& oReader, int nVersion)
 {
 	CHWPRecordBinData *pRecordBinData = nullptr;
 
-	for (CXMLNode& oChild : oNode.GetChilds(L"opf:manifest"))
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "opf:manifest")
 	{
-		for (CXMLNode& oGrandChild : oChild.GetChilds(L"opf:item"))
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Item, "opf:item")
 		{
-			pRecordBinData = new CHWPRecordBinData(oGrandChild, nVersion);
+			pRecordBinData = new CHWPRecordBinData(oReader, nVersion);
 			m_mBinDatas.insert(std::make_pair<HWP_STRING, CHWPRecord*>(pRecordBinData->GetItemID(), (HWP::CHWPRecord*)pRecordBinData));
 		}
+		END_WHILE
 	}
+	END_WHILE
 
 	return true;
 }
@@ -321,26 +334,12 @@ const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 	switch (m_eHanType)
 	{
 		case EHanType::HWP:
-		{
-			short shID = std::stoi(sID) - 1;
-
-			if (shID >= m_mBinDatas.size())
-				return nullptr;
-
-			std::map<HWP_STRING, CHWPRecord*>::const_iterator itElement = m_mBinDatas.cbegin();
-
-			for (unsigned short ushIndex = 0; ushIndex < shID; ++ushIndex)
-				++itElement;
-
-			return itElement->second;
-		}
 		case EHanType::HWPX:
 		{
-			if (m_mBinDatas.end() == m_mBinDatas.find(sID))
-				return nullptr;
+			std::map<HWP_STRING, CHWPRecord*>::const_iterator itFound = m_mBinDatas.find(sID);
 
-			return m_mBinDatas.at(sID);
-			break;
+			if (m_mBinDatas.cend() != itFound)
+				return itFound->second;
 		}
 		default:
 			return nullptr;

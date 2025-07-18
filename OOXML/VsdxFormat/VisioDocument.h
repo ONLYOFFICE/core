@@ -41,6 +41,115 @@ namespace OOX
 {
 	namespace Draw
 	{
+		class CPublishedPage : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CPublishedPage)
+
+			CPublishedPage() {}
+			virtual ~CPublishedPage() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable_uint ID;
+		};
+		class CRefreshableData : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CRefreshableData)
+
+			CRefreshableData() {}
+			virtual ~CRefreshableData() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+		private:
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+		public:
+			nullable_uint ID;
+		};
+		class CPublishSettings : public WritingElementWithChilds<>
+		{
+		public:
+			WritingElement_AdditionMethods(CPublishSettings)
+			CPublishSettings() {}
+			virtual ~CPublishSettings() {}
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual EElementType getType() const;
+		};
+		class CSnapAngle : public WritingElement
+		{
+		public:
+			WritingElement_AdditionMethods(CSnapAngle)
+
+				CSnapAngle() {}
+			virtual ~CSnapAngle() {}
+
+			virtual std::wstring toXML() const { return L""; }
+
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		public:
+			nullable_double content;
+		};
+		class CSnapAngles : public WritingElementWithChilds<CSnapAngle>
+		{
+		public:
+			WritingElement_AdditionMethods(CSnapAngles)
+				CSnapAngles() {}
+			virtual ~CSnapAngles() {}
+
+			virtual std::wstring toXML() const { return L""; }
+			virtual void fromXML(XmlUtils::CXmlNode& node) {}
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
+
+			virtual EElementType getType() const;
+
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+		};
 		class CDocumentSettings : public WritingElement
 		{
 		public:
@@ -69,7 +178,7 @@ namespace OOX
 			nullable_int GlueSettings;
 			nullable_int SnapSettings;
 			nullable_int SnapExtensions;
-			nullable_int SnapAngles;
+			nullable<CSnapAngles> SnapAngles;
 			nullable_bool DynamicGridEnabled;
 			nullable_bool ProtectStyles;
 			nullable_bool ProtectShapes;
@@ -372,11 +481,12 @@ namespace OOX
 			nullable_uint GlueSettings;
 			nullable_uint SnapSettings;
 			nullable_uint SnapExtensions;
-			nullable_bool SnapAngles;
 			nullable_bool DynamicGridEnabled;
 			nullable_double TabSplitterPos;
 			nullable_uint StencilGroup;
 			nullable_uint StencilGroupPos;
+			
+			nullable<CSnapAngles> SnapAngles;
 		};
 		class CWindows : public WritingElementWithChilds<CWindow>
 		{
@@ -431,7 +541,7 @@ namespace OOX
 			nullable<CDocumentSheet> DocumentSheet;
 			nullable<CEventList> EventList;
 			nullable<CHeaderFooter> HeaderFooter;
-			//nullable<CPublishSettings> PublishSettings;
+			nullable<CPublishSettings> PublishSettings;
 		};
 		class CWindowsFile : public OOX::File
 		{

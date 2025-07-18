@@ -638,6 +638,15 @@ namespace svg_path
 						nLastControlY = nY;
                     }                    
 				}break;
+                case 'a':
+                {
+                    bRelative = true;
+                }
+                case 'A':
+                {
+                    skipSpaces(nPos, rSvgDStatement, nLen);
+                    return false;
+                }break;
                 default:
                 {
                      ++nPos;
@@ -1147,6 +1156,16 @@ namespace svg_path
                     nLastControlX = nX;
                     nLastControlY = nY;
                 }
+            }break;
+            case 'a':
+            {
+                bRelative = true;
+            }
+            case 'A':
+            {
+                skipSpaces(nPos, rSvgDStatement, nLen);
+
+                return false;
             }break;
             default:
             {

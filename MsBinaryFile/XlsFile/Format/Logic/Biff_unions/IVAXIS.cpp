@@ -128,6 +128,24 @@ const bool IVAXIS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool IVAXIS::saveContent(BinProcessor& proc)
+{
+	if(m_Axis == nullptr)
+		return false;
+	proc.mandatory(*m_Axis);
+	proc.mandatory<Begin>();
+	if(m_CatSerRange != nullptr)
+		proc.mandatory(*m_CatSerRange);
+	if(m_AxcExt != nullptr)
+		proc.mandatory(*m_AxcExt);
+	if(m_CatLab != nullptr)
+		proc.mandatory(*m_CatLab);
+	if(m_AXS != nullptr)
+		proc.mandatory(*m_AXS);
+	proc.mandatory<End>();
+	return true;
+}
+
 int IVAXIS::serialize(std::wostream & _stream)
 {
 	CatSerRange * cat_ser_range = dynamic_cast<CatSerRange*>(m_CatSerRange.get());

@@ -2481,6 +2481,14 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 	}
 	oObj.free();
 
+	oAnnot.free();
+}
+void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef)
+{
+	Object oAnnot, oObj;
+	XRef* pXref = pdfDoc->getXRef();
+	oAnnotRef->fetch(pXref, &oAnnot);
+
 	// 20 - Шрифт, размер, цвет текста замены - DA
 	if (oAnnot.dictLookup("DA", &oObj)->isString())
 	{
@@ -2518,14 +2526,6 @@ CAnnotRedact::CAnnotRedact(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, in
 		deleteGList(daToks, GString);
 	}
 	oObj.free();
-
-	oAnnot.free();
-}
-void CAnnotRedact::SetFont(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, CPdfFontList *pFontList, Object* oAnnotRef)
-{
-	Object oAnnot, oObj;
-	XRef* pXref = pdfDoc->getXRef();
-	oAnnotRef->fetch(pXref, &oAnnot);
 
 	Object oAP, oN;
 	if (!oAnnot.dictLookup("RO", &oN)->isStream())

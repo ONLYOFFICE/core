@@ -152,6 +152,7 @@ namespace OOX
 			void fromXLSBExt (NSBinPptxRW::CBinaryFileReader& oStream, _UINT16 nFlags);
             void fromBin(XLS::StreamCacheReaderPtr& reader, XLS::CFRecordPtr& record);
             void fromBin(XLS::BaseObjectPtr& obj, SimpleTypes::Spreadsheet::ECellFormulaType eType);
+			void toXls(XLS::BaseObjectPtr& obj);
             void toBin(XLS::BaseObjectPtr& obj);
             void toBin(XLS::CFRecordPtr& record, const XLS::CellRef& cellBaseRef);
 

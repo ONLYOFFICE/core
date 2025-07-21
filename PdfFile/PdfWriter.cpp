@@ -2228,6 +2228,39 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 
 			pStampAnnot->SetRotate(nRotate);
 		}
+		else if (oInfo.IsRedact())
+		{
+			CAnnotFieldInfo::CRedactAnnotPr* pPr = oInfo.GetRedactAnnotPr();
+			PdfWriter::CRedactAnnotation* pRedactAnnot = (PdfWriter::CRedactAnnotation*)pAnnot;
+
+			if (nFlags & (1 << 15))
+				pRedactAnnot->SetQuadPoints(pPr->GetQuadPoints());
+			if (nFlags & (1 << 16))
+				pRedactAnnot->SetIC(pPr->GetIC());
+			if (nFlags & (1 << 17))
+				pRedactAnnot->SetOverlayText(pPr->GetOverlayText());
+			if (nFlags & (1 << 18))
+				pRedactAnnot->SetRepeat(true);
+			if (nFlags & (1 << 19))
+				pRedactAnnot->SetQ(pPr->GetQ());
+			if (nFlags & (1 << 20))
+			{
+				std::wstring wsFontName = pPr->GetFontName();
+				int nStyle = pPr->GetFontStyle();
+				double dFontSize = pPr->GetFontSize();
+				PdfWriter::CFontTrueType* pFontTT = NULL;
+
+				put_FontName(wsFontName);
+				put_FontStyle(nStyle);
+				put_FontSize(dFontSize);
+
+				if (m_bNeedUpdateTextFont)
+					UpdateFont();
+				if (m_pFont)
+					pFontTT = m_pDocument->CreateTrueTypeFont(m_pFont);
+				pRedactAnnot->SetDA(pFontTT, dFontSize, pPr->GetFontColor());
+			}
+		}
 	}
 	else if (oInfo.IsPopup())
 	{

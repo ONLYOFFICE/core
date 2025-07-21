@@ -416,6 +416,23 @@ namespace PdfWriter
 
 		CDictObject* GetAPStream();
 	};
+	class CRedactAnnotation : public CMarkupAnnotation
+	{
+	public:
+		CRedactAnnotation(CXref* pXref);
+		EAnnotType GetAnnotationType() const override
+		{
+			return AnnotRedact;
+		}
+
+		void SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC);
+
+		void SetRepeat(bool bRepeat);
+		void SetQ(BYTE nQ);
+		void SetOverlayText(const std::wstring& wsOverlayText);
+		void SetIC(const std::vector<double>& arrIC);
+		void SetQuadPoints(const std::vector<double>& arrQuadPoints);
+	};
 	class CWidgetAnnotation : public CAnnotation
 	{
 	protected:

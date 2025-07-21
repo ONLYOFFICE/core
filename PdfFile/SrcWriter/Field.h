@@ -79,7 +79,8 @@ namespace PdfWriter
 		AnnotPolygon        = 15,
 		AnnotPolyLine       = 16,
 		AnnotCaret          = 17,
-		AnnotWidget         = 18
+		AnnotWidget         = 18,
+		AnnotRedact         = 25
 	};
 	enum EWidgetType
 	{

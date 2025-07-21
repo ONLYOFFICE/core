@@ -76,6 +76,7 @@ CAnnotFieldInfo::CAnnotFieldInfo() : IAdvancedCommand(AdvancedCommandType::Annot
 	m_pFreeTextPr     = NULL;
 	m_pCaretPr        = NULL;
 	m_pStampPr        = NULL;
+	m_pRedactPr       = NULL;
 	m_pWidgetPr       = NULL;
 }
 CAnnotFieldInfo::~CAnnotFieldInfo()
@@ -91,6 +92,7 @@ CAnnotFieldInfo::~CAnnotFieldInfo()
 	RELEASEOBJECT(m_pFreeTextPr);
 	RELEASEOBJECT(m_pCaretPr);
 	RELEASEOBJECT(m_pStampPr);
+	RELEASEOBJECT(m_pRedactPr);
 	RELEASEOBJECT(m_pWidgetPr);
 }
 
@@ -176,6 +178,13 @@ void CAnnotFieldInfo::SetType(int nType)
 	{
 		RELEASEOBJECT(m_pPopupPr);
 		m_pPopupPr = new CAnnotFieldInfo::CPopupAnnotPr();
+		break;
+	}
+	case EAnnotType::Redact:
+	{
+		CreateMarkup();
+		RELEASEOBJECT(m_pRedactPr);
+		m_pRedactPr = new CAnnotFieldInfo::CRedactAnnotPr();
 		break;
 	}
 	case EAnnotType::Widget:
@@ -291,6 +300,10 @@ bool CAnnotFieldInfo::IsStamp() const
 {
 	return (m_nType == 12);
 }
+bool CAnnotFieldInfo::IsRedact() const
+{
+	return (m_nType == 25);
+}
 
 CAnnotFieldInfo::CMarkupAnnotPr*       CAnnotFieldInfo::GetMarkupAnnotPr()       { return m_pMarkupPr; }
 CAnnotFieldInfo::CTextAnnotPr*         CAnnotFieldInfo::GetTextAnnotPr()         { return m_pTextPr; }
@@ -303,6 +316,7 @@ CAnnotFieldInfo::CPopupAnnotPr*        CAnnotFieldInfo::GetPopupAnnotPr()       
 CAnnotFieldInfo::CFreeTextAnnotPr*     CAnnotFieldInfo::GetFreeTextAnnotPr()     { return m_pFreeTextPr; }
 CAnnotFieldInfo::CCaretAnnotPr*        CAnnotFieldInfo::GetCaretAnnotPr()        { return m_pCaretPr; }
 CAnnotFieldInfo::CStampAnnotPr*        CAnnotFieldInfo::GetStampAnnotPr()        { return m_pStampPr; }
+CAnnotFieldInfo::CRedactAnnotPr*       CAnnotFieldInfo::GetRedactAnnotPr()       { return m_pRedactPr; }
 CAnnotFieldInfo::CWidgetAnnotPr*       CAnnotFieldInfo::GetWidgetAnnotPr()       { return m_pWidgetPr; }
 
 bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
@@ -388,6 +402,8 @@ bool CAnnotFieldInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMeta
 			m_pCaretPr->Read(pReader, nFlags);
 		else if (IsStamp())
 			m_pStampPr->Read(pReader, nFlags);
+		else if (IsRedact())
+			m_pRedactPr->Read(pReader, nFlags);
 	}
 	else if (IsPopup())
 		m_pPopupPr->Read(pReader);
@@ -660,6 +676,46 @@ void CAnnotFieldInfo::CStampAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader*
 	m_dInRect[1] = pReader->ReadDouble();
 	m_dInRect[2] = pReader->ReadDouble();
 	m_dInRect[3] = pReader->ReadDouble();
+}
+
+BYTE CAnnotFieldInfo::CRedactAnnotPr::GetQ() const { return m_nQ; }
+int CAnnotFieldInfo::CRedactAnnotPr::GetFontStyle()  const { return m_nFontStyle; }
+double CAnnotFieldInfo::CRedactAnnotPr::GetFontSize() const { return m_dFS; }
+const std::wstring& CAnnotFieldInfo::CRedactAnnotPr::GetFontName() { return m_wsFN; }
+const std::wstring& CAnnotFieldInfo::CRedactAnnotPr::GetOverlayText() { return m_wsOverlayText; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetIC() { return m_arrIC; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetFontColor() { return m_arrFC; }
+const std::vector<double>& CAnnotFieldInfo::CRedactAnnotPr::GetQuadPoints() { return m_arrQuadPoints; }
+void CAnnotFieldInfo::CRedactAnnotPr::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, int nFlags)
+{
+	if (nFlags & (1 << 15))
+	{
+		int n = pReader->ReadInt();
+		m_arrQuadPoints.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrQuadPoints.push_back(pReader->ReadDouble());
+	}
+	if (nFlags & (1 << 16))
+	{
+		int n = pReader->ReadInt();
+		m_arrIC.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrIC.push_back(pReader->ReadDouble());
+	}
+	if (nFlags & (1 << 17))
+		m_wsOverlayText = pReader->ReadString();
+	if (nFlags & (1 << 19))
+		m_nQ = pReader->ReadByte();
+	if (nFlags & (1 << 20))
+	{
+		int n = pReader->ReadInt();
+		m_arrFC.reserve(n);
+		for (int i = 0; i < n; ++i)
+			m_arrFC.push_back(pReader->ReadDouble());
+		m_dFS = pReader->ReadDouble();
+		m_wsFN = pReader->ReadString();
+		m_nFontStyle = pReader->ReadInt();
+	}
 }
 
 bool CAnnotFieldInfo::CPopupAnnotPr::IsOpen()      const { return m_bOpen; }

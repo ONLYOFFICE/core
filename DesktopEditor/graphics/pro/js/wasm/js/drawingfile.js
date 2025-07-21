@@ -1591,35 +1591,50 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 	let reader = new CBinaryReader(AnnotInfo, 0, AnnotInfo.length);
 	if (!reader) return [];
 
-	let res = [];
+	let res = { annots:[], imgs:[] };
 	while (reader.isValid())
 	{
 		let nCommand = reader.readByte();
 		let nPos = reader.pos;
 		let nSize = reader.readInt();
-		if (nCommand != 164) // ctAnnotField
+		if (nCommand == 164) // ctAnnotField
+		{
+			let rec = {};
+			// Annotation type
+			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+			rec["type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			// Annot type
+			readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			if (rec["type"] >= 26 && rec["type"] <= 33)
+			{
+				// Widget type
+				readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			}
+			res.annots.push(rec);
+		}
+		else if (nCommand == 166) // ctWidgetsInfo
+		{
+			reader.readInt(); // CO must be 0
+			reader.readInt(); // Parents must be 0
+			// ButtonImg
+			let n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+			{
+				let data = reader.readString();
+				res.imgs.push(data);
+			}
+		}
+		else
 		{
 			reader.pos = nPos + nSize;
 			continue;
 		}
-		let rec = {};
-		// Annotation type
-		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
-		// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
-		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
-		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
-		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-		rec["type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		// Annot type
-		readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		if (rec["type"] >= 26 && rec["type"] <= 33)
-		{
-			// Widget type
-			readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		}
-		res.push(rec);
 	}
 
 	return res;

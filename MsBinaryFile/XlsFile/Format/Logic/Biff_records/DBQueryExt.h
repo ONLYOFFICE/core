@@ -61,7 +61,7 @@ public:
 	bool				fSPListSrc = false;
 	bool				fSPListReinitCache = false;
 	bool				fSrcIsXml = false;
-	BiffStructurePtr	grbitDbt = false;
+	BiffStructurePtr	grbitDbt;
 	bool				fTxtWiz = false;
 	bool				fTableNames;
 	unsigned char		bVerDbqueryEdit = 0;	//DataFunctionalityLevel

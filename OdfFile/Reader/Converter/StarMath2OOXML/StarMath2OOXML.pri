@@ -9,12 +9,12 @@ ADD_DEPENDENCY(UnicodeConverter, kernel)
 
 
 SOURCES +=  $$PWD/cconversionsmtoooxml.cpp \
-   $$PWD/cooxml2odf.cpp \
+    # $$PWD/cooxml2odf.cpp \
     $$PWD/cstarmathpars.cpp
 
 HEADERS += \
     $$PWD/cconversionsmtoooxml.h \
-   $$PWD/cooxml2odf.h \
+    # $$PWD/cooxml2odf.h \
     $$PWD/cstarmathpars.h \
     $$PWD/fontType.h \
     $$PWD/typeConversion.h \

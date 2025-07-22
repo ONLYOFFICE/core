@@ -34,6 +34,7 @@
 #define CSTARMATHPARS_H
 #include "typeselements.h"
 #include "typeConversion.h"
+#include "TypeLanguage.h"
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -42,7 +43,6 @@
 #include <ctype.h>
 #include <cwctype>
 #include "../../../../DesktopEditor/xml/include/xmlwriter.h"
-#include "../../../../OOXML/Base/Unit.h" 
 
 namespace StarMath
 {
@@ -242,7 +242,9 @@ namespace StarMath
 		void Parse(CStarMathReader* pReader) override;
 		void ParseEQN(CStarMathReader* pReader) override;
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
+		void CheckingForArabicCharacters();
 		TFormulaSize GetSize() override;
+		TypeLanguage m_enTypeLang;
 		std::wstring m_wsString;
 	};
 

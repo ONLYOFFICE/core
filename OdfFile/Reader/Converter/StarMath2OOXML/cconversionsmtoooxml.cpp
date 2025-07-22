@@ -31,7 +31,6 @@
  */
 #include "cconversionsmtoooxml.h"
 #include "../../../../DesktopEditor/common/File.h"
-#include <fstream>
 namespace StarMath {
 
 	CConversionSMtoOOXML::CConversionSMtoOOXML(): m_pXmlWrite(nullptr)
@@ -106,7 +105,7 @@ namespace StarMath {
 		m_pXmlWrite->WriteNodeEnd(L"m:oMath",false,false);
 		m_pXmlWrite->WriteNodeEnd(L"m:oMathPara",false,false);
 	}
-	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite,CAttribute* pAttribute,const TypeConversion &enTypeConversion)
+	void CConversionSMtoOOXML::StandartProperties(XmlUtils::CXmlWriter* pXmlWrite, CAttribute* pAttribute, const TypeConversion &enTypeConversion, const TypeLanguage &enTypeLang)
 	{
 		if(TypeConversion::docx == enTypeConversion || TypeConversion::undefine == enTypeConversion)
 		{
@@ -188,6 +187,22 @@ namespace StarMath {
 				{
 					pXmlWrite->WriteNodeBegin(L"w:strike",true);
 					pXmlWrite->WriteNodeEnd(L"w",true,true);
+				}
+				if(enTypeLang != TypeLanguage::Russian)
+				{
+					switch (enTypeLang) {
+					case StarMath::TypeLanguage::Arabic:
+					{
+						pXmlWrite->WriteNodeBegin(L"w:rtl",true);
+						pXmlWrite->WriteNodeEnd(L"w",true,true);
+						pXmlWrite->WriteNodeBegin(L"w:lang",true);
+						pXmlWrite->WriteAttribute(L"w:bidi",L"ar-SA");
+						pXmlWrite->WriteNodeEnd(L"w",true,true);
+						break;
+					}
+					default:
+						break;
+					}
 				}
 				pXmlWrite->WriteNodeEnd(L"w:rPr",false,false);
 			}

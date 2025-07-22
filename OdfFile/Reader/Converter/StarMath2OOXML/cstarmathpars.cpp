@@ -32,6 +32,7 @@
 
 #include "cstarmathpars.h"
 #include "cconversionsmtoooxml.h"
+#include "../../../../OOXML/Base/Unit.h"
 
 namespace StarMath
 {
@@ -55,12 +56,13 @@ namespace StarMath
 		if(!pReader->EmptyString())
 		{
 			if(pReader->GetLocalType() == TypeElement::newline)
-			{																																																																																																																																																																																																																																																																																																																																																																											m_arEquation.push_back(new CElementSpecialSymbol(pReader->GetLocalType(),pReader->GetTypeConversion()));
+			{
+				m_arEquation.push_back(new CElementSpecialSymbol(pReader->GetLocalType(),pReader->GetTypeConversion()));
 				pReader->ClearReader();
 			}
 			CElement* pTempElement = ParseElement(pReader);
 			if(nullptr != pTempElement)
-					m_arEquation.push_back(pTempElement);
+				m_arEquation.push_back(pTempElement);
 		}
 		TFormulaSize tSize;
 		for(CElement* pElement:m_arEquation)
@@ -74,7 +76,7 @@ namespace StarMath
 					tSize.Zeroing();
 				}
 				else
-					ComparisonByHeight(tSize,pElement->GetSize());			
+					ComparisonByHeight(tSize,pElement->GetSize());
 			}
 			else
 				ComparisonByHeight(tSize,pElement->GetSize());
@@ -915,7 +917,7 @@ namespace StarMath
 	}
 //class methods CElementString
 	CElementString::CElementString(const std::wstring& wsTokenString,const TypeConversion &enTypeConversion)
-		:CElement(TypeElement::String,enTypeConversion),m_wsString(wsTokenString)
+		:CElement(TypeElement::String,enTypeConversion),m_enTypeLang(TypeLanguage::Russian),m_wsString(wsTokenString)
 	{
 	}
 	CElementString::~CElementString()
@@ -939,7 +941,17 @@ namespace StarMath
 					break;
 			}
 		}
+		CheckingForArabicCharacters();
 		pReader->ClearReader();
+	}
+	void CElementString::CheckingForArabicCharacters()
+	{
+		for(wchar_t cOneElement:m_wsString)
+		{
+			if(cOneElement > 1791 && cOneElement < 1536)
+				return;
+		}
+		m_enTypeLang = TypeLanguage::Arabic;
 	}
 	void CElementString::ParseEQN(CStarMathReader *pReader)
 	{}
@@ -948,7 +960,7 @@ namespace StarMath
 		if(m_wsString !=L"" && m_wsString!=L" ")
 		{
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
-		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion());
+		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion(),m_enTypeLang);
 		pXmlWrite->WriteNodeBegin(L"m:t",false);
 		pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsString));
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
@@ -3822,6 +3834,8 @@ namespace StarMath
 			else if(L"lint" == wsToken) return TypeElement::lint;
 			else if(L"llint" == wsToken) return TypeElement::llint;
 			else if(L"lllint" == wsToken) return TypeElement::lllint;
+			else if(L"maj" == wsToken) return TypeElement::sum;
+			else if(L"hadd" == wsToken) return TypeElement::lim;
 			else if(L"oper" == wsToken) return TypeElement::oper;
 		}
 		return TypeElement::undefine;
@@ -3831,18 +3845,10 @@ namespace StarMath
 		TypeElement enType = CElementOperator::GetOperator(wsToken,true);
 		if(enType != TypeElement::undefine)
 			return enType;
-		// if(L"bigsqcap" == wsToken) return TypeElement::bigsqcap;
-		// else if(L"bigsqcup" == wsToken) return TypeElement::bigsqcup;
 		if(L"inter" == wsToken) return TypeElement::inter;
 		else if(L"union" == wsToken) return TypeElement::UnionOp;
-		// else if(L"bigoplus" == wsToken) return TypeElement::bigoplus;
-		// else if(L"bigominus" == wsToken) return TypeElement::bigominus;
-		// else if(L"bigotimes" == wsToken) return TypeElement::bigotimes;
-		// else if(L"bigodiv" == wsToken) return TypeElement::bigodiv;
-		// else if(L"bigodot" == wsToken) return TypeElement::bigodot;
 		else if(L"bigvee" == wsToken) return TypeElement::bigvee;
 		else if(L"bigwedge" == wsToken) return TypeElement::bigwedge;
-		// else if(L"biguplus" == wsToken) return TypeElement::biguplus;
 		else if(L"dint" == wsToken) return TypeElement::iint;
 		else if(L"tint" == wsToken) return TypeElement::iiint;
 		else if(L"oint" == wsToken) return TypeElement::lint;
@@ -3906,7 +3912,7 @@ namespace StarMath
 	}
 	void CElementOperator::ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite)
 	{
-		if(m_enTypeOperator == TypeElement::lim || TypeElement::liminf == m_enTypeOperator || TypeElement::limsup == m_enTypeOperator || TypeElement::oper == m_enTypeOperator)
+		if(m_enTypeOperator == TypeElement::lim || TypeElement::liminf == m_enTypeOperator || TypeElement::limsup == m_enTypeOperator || TypeElement::oper == m_enTypeOperator )
 		{
 			pXmlWrite->WriteNodeBegin(L"m:func",false);
 			CConversionSMtoOOXML::PropertiesFuncPr(pXmlWrite,GetAttribute(),GetTypeConversion());
@@ -4393,7 +4399,7 @@ namespace StarMath
 			{
 				if(CElementBracket::GetBracketOpen(m_wsLowerCaseToken,bEQN) == TypeElement::left)
 				{
-					if(GetToken() && (m_wsLowerCaseToken == L"none" || (m_wsLowerCaseToken != L"left" && CElementBracket::GetBracketOpen(m_wsLowerCaseToken) != TypeElement::undefine)))
+					if(GetToken() && (m_wsLowerCaseToken == L"none" || (m_wsLowerCaseToken != L"left" && CElementBracket::GetBracketOpen(m_wsLowerCaseToken,bEQN) != TypeElement::undefine)))
 					{
 						inBracketInside += 1;
 						continue;

@@ -2043,6 +2043,83 @@ int main(int argc, char* argv[])
 					i += 4;
 					std::cout << "Y4 " << (double)nPathLength / 10000.0 << ", ";
 				}
+				else if (sType == "Redact")
+				{
+					if (nFlags & (1 << 15))
+					{
+						std::cout << "QuadPoints";
+						int nQuadPointsLength = READ_INT(pAnnots + i);
+						i += 4;
+
+						for (int j = 0; j < nQuadPointsLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << " " << (double)nPathLength / 100.0;
+						}
+						std::cout << ", ";
+					}
+					if (nFlags & (1 << 16))
+					{
+						int nICLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "IC ";
+
+						for (int j = 0; j < nICLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << (double)nPathLength / 10000.0 << " ";
+						}
+						std::cout << ", ";
+					}
+					if (nFlags & (1 << 17))
+					{
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "OverlayText " << std::string((char*)(pAnnots + i), nPathLength) << ", ";
+						i += nPathLength;
+					}
+					if (nFlags & (1 << 18))
+						std::cout << "Repeat true, ";
+					else
+						std::cout << "Repeat false, ";
+					if (nFlags & (1 << 19))
+					{
+						std::string arrQ[] = {"left-justified", "centered", "right-justified"};
+						nPathLength = READ_BYTE(pAnnots + i);
+						i += 1;
+						std::cout << "Q " << arrQ[nPathLength] << ", ";
+					}
+					if (nFlags & (1 << 20))
+					{
+						int nICLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << "DA color ";
+
+						for (int j = 0; j < nICLength; ++j)
+						{
+							nPathLength = READ_INT(pAnnots + i);
+							i += 4;
+							std::cout << (double)nPathLength / 10000.0 << " ";
+						}
+						std::cout << ", size ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << (double)nPathLength / 100.0 << ", font ";
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << std::string((char*)(pAnnots + i), nPathLength) << " actual ";
+						i += nPathLength;
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << std::string((char*)(pAnnots + i), nPathLength) << ", style ";
+						i += nPathLength;
+						nPathLength = READ_INT(pAnnots + i);
+						i += 4;
+						std::cout << nPathLength << ", ";
+					}
+				}
 
 				std::cout << std::endl << "]" << std::endl;
 			}

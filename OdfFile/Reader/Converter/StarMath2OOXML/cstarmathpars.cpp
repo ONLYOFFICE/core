@@ -946,12 +946,16 @@ namespace StarMath
 	}
 	void CElementString::CheckingForArabicCharacters()
 	{
+		bool bArabic;
 		for(wchar_t cOneElement:m_wsString)
 		{
-			if(cOneElement > 1791 && cOneElement < 1536)
+			if(cOneElement <= 1791 && cOneElement >= 1536)
+				bArabic = true;
+			else
 				return;
 		}
-		m_enTypeLang = TypeLanguage::Arabic;
+		if(bArabic)
+			m_enTypeLang = TypeLanguage::Arabic;
 	}
 	void CElementString::ParseEQN(CStarMathReader *pReader)
 	{}
@@ -962,7 +966,10 @@ namespace StarMath
 		pXmlWrite->WriteNodeBegin(L"m:r",false);
 		CConversionSMtoOOXML::StandartProperties(pXmlWrite,GetAttribute(),GetTypeConversion(),m_enTypeLang);
 		pXmlWrite->WriteNodeBegin(L"m:t",false);
-		pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsString));
+		if(m_wsString == L"'")
+			pXmlWrite->WriteString(m_wsString);
+		else
+			pXmlWrite->WriteString(XmlUtils::EncodeXmlString(m_wsString));
 		pXmlWrite->WriteNodeEnd(L"m:t",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:r",false,false);
 		}

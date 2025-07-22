@@ -1394,7 +1394,7 @@ TEST(SMConvectorTest,LimWithArrow)
 	EXPECT_EQ(oTest.GetOOXML(),wsXmlString);
 }
 
-TEST(SMConvectorTest,FuctionWithAttributeAndIndex)
+TEST(SMConvectorTest,FunctionWithAttributeAndIndex)
 {
 	std::wstring wsString = L"{%sigma' = %sigma color red bold func e ^ color blue frac 2 3 }";
 	StarMath::CParserStarMathString oTemp;

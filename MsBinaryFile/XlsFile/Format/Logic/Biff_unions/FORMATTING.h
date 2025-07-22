@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & stream);
 
@@ -58,8 +59,8 @@ public:
 
 	BaseObjectPtr				m_Styles;
 	BaseObjectPtr				m_XFS;
-	//std::vector<BaseObjectPtr>	m_arFormats; in global
-	//std::vector<BaseObjectPtr>	m_arFonts; in global
+    //std::vector<BaseObjectPtr>	m_arFormats; in global
+    //std::vector<BaseObjectPtr>	m_arFonts; in global
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
 	std::vector<BaseObjectPtr>	m_arDXF;

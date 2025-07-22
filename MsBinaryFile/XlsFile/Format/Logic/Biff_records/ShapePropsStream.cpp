@@ -69,5 +69,20 @@ void ShapePropsStream::readFields(CFRecord& record)
 	}
 }
 
+void ShapePropsStream::writeFields(CFRecord& record)
+{
+	FrtHeader header(rt_ShapePropsStream);
+	record << header << wObjContext;
+	record.reserveNunBytes(2);
+	record << dwChecksum;
+	_UINT32	cb= xml_.size();
+	record << cb;
+	auto limit = 8200;
+	if(cb <= limit)
+		limit = cb;
+	for(auto i = 0; i < limit; i++)
+		record << xml_[i];
+}
+
 } // namespace XLS
 

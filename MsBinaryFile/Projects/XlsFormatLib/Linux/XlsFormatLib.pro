@@ -78,7 +78,8 @@ SOURCES +=  \
 	../../../XlsFile/Converter/xlsx_external_context.cpp \
 	../../../XlsFile/Converter/xlsx_activeX_context.cpp \
 	../../../XlsFile/Converter/xlsx_comments.cpp \
-	../../../XlsFile/Converter/xlsx_comments_context.cpp
+	../../../XlsFile/Converter/xlsx_comments_context.cpp \
+	../../../XlsFile/Converter/xls_writer.cpp 
 
 HEADERS +=  \
 	../../../XlsFile/Format/Binary/BinSmartPointers.h \
@@ -129,5 +130,6 @@ HEADERS +=  \
 	\
 	../../../XlsFile/Converter/ShapeType.h \
 	../../../XlsFile/Converter/xlsx_chart_context.h \
-	../../../XlsFile/Format/Auxiliary/HelpFunc.h
+	../../../XlsFile/Format/Auxiliary/HelpFunc.h \
+	../../../XlsFile/Converter/xls_writer.h 
 

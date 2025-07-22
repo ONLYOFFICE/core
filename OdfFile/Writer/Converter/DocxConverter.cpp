@@ -1622,6 +1622,9 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr,
 			paragraph_properties->fo_text_align_);
 	}
 
+	if (!oox_paragraph_pr->m_oJc.GetPointer() && oox_paragraph_pr->m_oBidi.IsInit())
+		paragraph_properties->fo_text_align_ = odf_types::text_align(odf_types::text_align::End);
+
 	if (oox_paragraph_pr->m_oTextAlignment.IsInit() && oox_paragraph_pr->m_oTextAlignment->m_oVal.IsInit())
 	{
 		//switch(oox_paragraph_pr->m_oTextAlignment->m_oVal->GetValue())

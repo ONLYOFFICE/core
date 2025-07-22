@@ -80,6 +80,12 @@ void Number::readFields(CFRecord& record)
 		record >> val;
 	}
 }
+
+void Number::writeFields(CFRecord& record)
+{
+    record << cell << num;
+}
+
 const CellRef Number::getLocation() const
 {
 	return cell.getLocation();

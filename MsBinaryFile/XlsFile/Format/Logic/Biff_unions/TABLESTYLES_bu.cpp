@@ -108,6 +108,19 @@ const bool TABLESTYLES::loadContent(BinProcessor& proc)
 	}	
 	return true;
 }
+const bool TABLESTYLES::saveContent(BinProcessor& proc)
+{
+    if(m_TableStyles != nullptr)
+        proc.mandatory(*m_TableStyles);
+    for(auto i: m_arTableStyles)
+    {
+        proc.mandatory(*i.style_);
+        for(auto j:i.elements_)
+            proc.mandatory(*j);
+    }
+    return true;
+}
+
 int TABLESTYLES::serialize(std::wostream & stream)
 {
 	TableStyles * styles = dynamic_cast<TableStyles*>(m_TableStyles.get());

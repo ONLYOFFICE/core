@@ -94,5 +94,18 @@ const bool DCON::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DCON::saveContent(BinProcessor& proc)
+{
+    if(m_DCon == nullptr)
+        return false;
+    proc.mandatory(*m_DCon);
+
+    for(auto i : m_arDCon)
+        if(i != nullptr)
+            proc.mandatory(*i);
+
+    return true;
+}
+
 } // namespace XLS
 

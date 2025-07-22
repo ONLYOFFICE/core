@@ -111,14 +111,11 @@ CHWPSection::~CHWPSection()
 	CLEAR_ARRAY(CHWPPargraph, m_arParas);
 }
 
-bool CHWPSection::Parse(CXMLNode& oNode, int nVersion)
+bool CHWPSection::Parse(CXMLReader& oReader, int nVersion)
 {
-	std::vector<CXMLNode> arParagraphNodes{oNode.GetChilds(L"hp:p")};
-
-	m_arParas.resize(arParagraphNodes.size());
-
-	for (unsigned int unIndex = 0; unIndex < arParagraphNodes.size(); ++unIndex)
-		m_arParas[unIndex] = new CHWPPargraph(arParagraphNodes[unIndex], nVersion);
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
+		m_arParas.push_back(new CHWPPargraph(oReader, nVersion));
+	END_WHILE
 
 	return true;
 }

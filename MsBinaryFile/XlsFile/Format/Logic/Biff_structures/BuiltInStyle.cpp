@@ -46,5 +46,10 @@ void BuiltInStyle::load(CFRecord& record)
 	record >> istyBuiltIn >> iLevel;
 }
 
+void BuiltInStyle::save(CFRecord& record)
+{
+    record << istyBuiltIn << iLevel;
+}
+
 
 } // namespace XLS

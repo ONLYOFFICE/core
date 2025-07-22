@@ -51,16 +51,17 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDataLabExtContents;
 
 	int serialize(std::wostream & _stream);
 
-	bool fSerName;
-	bool fCatName;
-	bool fValue;
-	bool fPercent;
-	bool fBubSizes;
+	bool fSerName = false;
+	bool fCatName = false;
+	bool fValue = false;
+	bool fPercent = false;
+	bool fBubSizes = false;
 
 	XLUnicodeStringMin2 rgchSep;
 

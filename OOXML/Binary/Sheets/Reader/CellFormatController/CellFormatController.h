@@ -53,12 +53,21 @@ public:
     /// @param value вставляемые в ячейку данные в строковом типе
     int ProcessCellType(OOX::Spreadsheet::CCell *pCell, const std::wstring &value, bool bIsWrap = false);
 
+
+	/// @brief указатель на лист документа
+	OOX::Spreadsheet::CWorksheet *m_pWorksheet = nullptr;
+
 private:
     bool isFormula(const std::wstring& formula);
     std::wstring ConvertFormulaArguments(const std::wstring& formula);
     /// @brief создание стиля для указанного формата
     /// @param format формат значения
     void createFormatStyle(const std::wstring &format);
+
+	/// @brief Добавление кастомной ширины столбца для ячейки
+	/// @param pCell ячейка для которой будет добавлена ширина
+	/// @param width значение ширины которое будет установлено для столбца, если оно больше текущего
+	void addCustomColWidth(OOX::Spreadsheet::CCell *pCell, double width);
 
     /// @brief указатель на ячейку с которой ведется работа
     OOX::Spreadsheet::CCell *pCell_;

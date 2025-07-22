@@ -59,5 +59,12 @@ void SxFormat::readFields(CFRecord& record)
 	rlType = GETBITS(flags, 0, 3);
 }
 
+void SxFormat::writeFields(CFRecord& record)
+{
+    unsigned short	flags = 0;
+    SETBITS(flags, 0, 3, rlType)
+    record << flags << cbData;
+}
+
 } // namespace XLS
 

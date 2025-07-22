@@ -48,13 +48,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDCon;
 //-----------------------------
-	unsigned short iiftab;
-	unsigned short fLeftCat;
-	unsigned short fTopCat;
-	unsigned short fLinkConsole;
+    unsigned short iiftab = 0;
+    unsigned short fLeftCat = 0;
+    unsigned short fTopCat = 0;
+    unsigned short fLinkConsole = 0;
 
 
 };

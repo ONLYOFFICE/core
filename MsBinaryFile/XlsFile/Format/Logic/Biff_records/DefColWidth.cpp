@@ -61,5 +61,10 @@ void DefColWidth::readFields(CFRecord& record)
 	}
 }
 
+void DefColWidth::writeFields(CFRecord& record)
+{
+    record << cchdefColWidth;
+}
+
 } // namespace XLS
 

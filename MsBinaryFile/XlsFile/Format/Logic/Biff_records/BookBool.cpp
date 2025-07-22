@@ -80,5 +80,22 @@ void BookBool::readFields(CFRecord& record)
 	fHideBorderUnselLists = GETBIT(flags, 8);
 }
 
+void BookBool::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fNoSaveSup)
+    SETBIT(flags, 2, fHasEnvelope)
+    SETBIT(flags, 3, fEnvelopeVisible)
+    SETBIT(flags, 4, fEnvelopeInitDone)
+    unsigned char grUpdateLinks_num = 0;
+    if(grUpdateLinks == L"never")
+        grUpdateLinks_num = 1;
+    else if(grUpdateLinks == L"always")
+        grUpdateLinks_num = 2;
+    SETBITS(flags, 5, 6, grUpdateLinks_num)
+    SETBIT(flags, 8, fHideBorderUnselLists)
+    record << flags;
+}
+
 } // namespace XLS
 

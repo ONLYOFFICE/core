@@ -110,6 +110,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	static const ElementType	type = typeCFExTemplateParams;

@@ -67,6 +67,19 @@ void Legend::readFields(CFRecord& record)
 	fWasDataTable	= GETBIT(flags, 5);	
 }
 
+void Legend::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fAutoPosition)
+	SETBIT(flags, 2, fAutoPosX)
+	SETBIT(flags, 3, fAutoPosY)
+	SETBIT(flags, 4, fVert)
+	SETBIT(flags, 5, fWasDataTable)
+	record << x << y << dx << dy;
+	record.reserveNunBytes(1); // unused
+	record << wSpace << flags;
+}
+
 int Legend::serialize(std::wostream & _stream, int size)
 {
 	CrtLayout12 *crtLayout = dynamic_cast<CrtLayout12 *> (m_CrtLayout12.get());

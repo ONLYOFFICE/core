@@ -74,6 +74,19 @@ void URLMoniker::load(XLS::CFRecord& record)
 	}
 }
 
+void URLMoniker::save(XLS::CFRecord& record)
+{
+    if(!url.empty() && url.at(url.size()-1) != L'\0')
+    {
+        url+= L'\0';
+    }
+    _UINT32 length = url.size() * 2;
+    record << length;
+    for(auto i : url)
+    {
+        record << i;
+    }
+}
 
 } // namespace OSHARED
 

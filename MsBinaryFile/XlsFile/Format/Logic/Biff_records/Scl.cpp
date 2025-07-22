@@ -56,5 +56,11 @@ void Scl::readFields(CFRecord& record)
 	//Fraction = static_cast<double>(nscl) / static_cast<double>(dscl);
 }
 
+void Scl::writeFields(CFRecord& record)
+{
+    record << nscl << dscl;
+    //Fraction = static_cast<double>(nscl) / static_cast<double>(dscl);
+}
+
 } // namespace XLS
 

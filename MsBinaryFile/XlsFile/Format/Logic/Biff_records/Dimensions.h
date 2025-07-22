@@ -47,17 +47,18 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDimensions;
 
 	int serialize(std::wostream & stream);
 	
-	std::wstring ref_;
+    std::wstring ref_ = L"";
 //-----------------------------
-	_UINT32		rwMic;
-	_UINT32		rwMac;
-	_UINT16		colMic;
-	_UINT16		colMac;
+    _UINT32		rwMic = 0;
+    _UINT32		rwMac = 0;
+    _UINT16		colMic = 0;
+    _UINT16		colMac = 0;
 	
 
 };

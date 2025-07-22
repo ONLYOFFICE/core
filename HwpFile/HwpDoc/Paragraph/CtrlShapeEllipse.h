@@ -39,7 +39,7 @@ public:
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID);
 	CCtrlShapeEllipse(const CCtrlGeneralShape& oShape);
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

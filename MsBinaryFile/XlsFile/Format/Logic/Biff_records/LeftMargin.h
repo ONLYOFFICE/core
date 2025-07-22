@@ -50,6 +50,7 @@ public:
 	static const ElementType	type = typeLeftMargin;
 
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
 	Xnum num;
 

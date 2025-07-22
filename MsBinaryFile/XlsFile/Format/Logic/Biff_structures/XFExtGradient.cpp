@@ -55,6 +55,14 @@ void XFExtGradient::load(CFRecord& record)
 	}
 }
 
+void XFExtGradient::save(CFRecord& record)
+{
+    cGradStops = rgGradStops.size();
+    record << gradient << cGradStops;
+    for(auto i : rgGradStops)
+        record << i;
+}
+
 int XFExtGradient::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)

@@ -61,5 +61,17 @@ void Dat::readFields(CFRecord& record)
 	fShowSeriesKey = GETBIT(flags, 3);
 }
 
+void Dat::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fHasBordHorz)
+	SETBIT(flags, 1, fHasBordVert)
+	SETBIT(flags, 2, fHasBordOutline)
+	SETBIT(flags, 3, fShowSeriesKey)
+
+	record << flags;
+}
+
 } // namespace XLS
 

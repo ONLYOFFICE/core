@@ -57,5 +57,12 @@ void SxDXF::readFields(CFRecord& record)
 	record >> *dxfn.xfext;
 }
 
+void SxDXF::writeFields(CFRecord& record)
+{
+    record << dxfn;
+    if(dxfn.xfext != nullptr)
+        record << *(dxfn.xfext);
+}
+
 } // namespace XLS
 

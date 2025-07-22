@@ -47,10 +47,11 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType	type = typeExternOleDdeLink;
 
-	_UINT32					lStgName;
+    _UINT32					lStgName = 0;
 	ShortXLUnicodeString	linkName;
 	MOper					moper;
 };

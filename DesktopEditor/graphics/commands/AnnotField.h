@@ -604,6 +604,7 @@ public:
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
+		std::wstring sTU;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
 		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;

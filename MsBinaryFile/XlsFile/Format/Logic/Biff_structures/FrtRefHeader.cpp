@@ -48,6 +48,12 @@ void FrtRefHeader::load(CFRecord& record)
 	record >> ref8;
 }
 
+void FrtRefHeader::save(CFRecord& record)
+{
+    record << rt << grbitFrt;
+    record << ref8;
+}
+
 
 } // namespace XLS
 

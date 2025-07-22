@@ -63,6 +63,15 @@ void MOper::load(CFRecord& record)
 	}
 }
 
+void MOper::save(CFRecord& record)
+{
+    record << colLast << rowLast;
+    for (auto i : extOper)
+    {
+        record << i;
+    }
+}
+
 int MOper::serialize(std::wostream & strm)
 {
 	if (extOper.empty()) return 0;

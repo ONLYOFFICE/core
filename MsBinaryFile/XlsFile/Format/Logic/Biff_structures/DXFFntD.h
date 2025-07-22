@@ -48,15 +48,17 @@ class DXFFntD : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFFntD)
 public:
+    DXFFntD();
 	BiffStructurePtr clone();
 
 	static const ElementType type = typeDXFFntD;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream, bool extOnly = false);
 
-	XLUnicodeStringNoCch stFontName;
+    XLUnicodeStringNoCch stFontName;
 
 	Stxp	stxp;
     _INT32	icvFore = 0;

@@ -47,36 +47,37 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDbOrParamQry;
 
-	int					typeRecord;
+    int					typeRecord = 2;
 
 //PARAMQRY_Fixed - 8 bytes + variable
 	struct
 	{
-		unsigned short		wTypeSql;
-		unsigned char		pbt;
-		bool				fNonDefaultName;
-		unsigned short		grbit;
-		unsigned short		fVal;
+        unsigned short		wTypeSql = 0;
+        unsigned char		pbt = 0;
+        bool				fNonDefaultName = false;
+        unsigned short		grbit = 0;
+        unsigned short		fVal = 0;
 	}param;
 
 //---------------------------------------
 	struct
 	{
-		unsigned char		dbt;
-		bool				fOdbcConn;
-		bool				fSql;
-		bool				fSqlSav;
-		bool				fWeb;
-		bool				fSavePwd;
-		bool				fTablesOnlyHTML;
-		short				cparams;
-		short				cstQuery;
-		short				cstWebPost;
-		short				cstSQLSav;
-		short				cstOdbcConn;
+        unsigned char		dbt = 0;
+        bool				fOdbcConn = false;
+        bool				fSql = false;
+        bool				fSqlSav = false;
+        bool				fWeb = false;
+        bool				fSavePwd = false;
+        bool				fTablesOnlyHTML = false;
+        short				cparams = 0;
+        short				cstQuery = 0;
+        short				cstWebPost = 0;
+        short				cstSQLSav = 0;
+        short				cstOdbcConn = 0;
 	}query;
 };
 

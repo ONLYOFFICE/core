@@ -67,6 +67,23 @@ void SXVI::readFields(CFRecord& record)
 
 	}
 }
+
+void SXVI::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fHidden)
+    SETBIT(flags, 1, fHideDetail)
+    SETBIT(flags, 3, fFormula)
+    SETBIT(flags, 4, fMissing)
+    cchName = stName.getSize();
+
+    record << itmType << flags << iCache << cchName;
+    if (cchName > 0 && cchName < 0xFFFF)
+    {
+        record << stName;
+    }
+}
+
 int SXVI::serialize(std::wostream & strm)
 {
 	CP_XML_WRITER(strm)

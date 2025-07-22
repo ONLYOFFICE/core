@@ -58,5 +58,14 @@ void Frame::readFields(CFRecord& record)
 	fAutoPosition	= GETBIT(flags, 1);
 }
 
+void Frame::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fAutoSize)
+	SETBIT(flags, 1, fAutoPosition)
+	record << frt << flags;
+}
+
 } // namespace XLS
 

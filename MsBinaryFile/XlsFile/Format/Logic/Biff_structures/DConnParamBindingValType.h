@@ -47,8 +47,9 @@ public:
 	static const ElementType type = typeDConnParamBindingValType;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned short		wBindingValueGrbit;
+	unsigned short		wBindingValueGrbit = 1;
 	BiffStructurePtr	rgbBindingValue;
 
 };
@@ -65,8 +66,9 @@ public:
 	static const ElementType type = typeDConnParamBindingValByte;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned char	fVal;
+	unsigned char	fVal = false;
 };
 
 class DConnParamBindingValInt: public BiffStructure
@@ -81,8 +83,9 @@ public:
 	static const ElementType type = typeDConnParamBindingValInt;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32	val;
+	_UINT32	val = 0;
 };
 
 } // namespace XLS

@@ -243,6 +243,45 @@ const bool SERIESFORMAT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool SERIESFORMAT::saveContent(BinProcessor& proc)
+{
+	if(m_Series == nullptr)
+		return false;
+	proc.mandatory(*m_Series);
+	proc.mandatory<Begin>();
+	for(auto i : m_arAI)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	for(auto i : m_arPtSS)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_SerToCrt != nullptr)
+		proc.mandatory(*m_SerToCrt);
+	if(m_SerParent != nullptr)
+	{
+		proc.mandatory(*m_SerParent);
+		auto castedParent = static_cast<SerParent*>(m_SerParent.get());
+		if(castedParent->m_SerAuxTrend != nullptr)
+			proc.mandatory(*castedParent->m_SerAuxTrend);
+		else if(castedParent->m_SerAuxErrBar != nullptr)
+			proc.mandatory(*castedParent->m_SerAuxErrBar);
+	}
+	for(auto i : m_SeriesEx)
+	{
+		if(i.legendException == nullptr)
+			continue;
+		proc.mandatory(*i.legendException);
+		if(i.attachedLABEL != nullptr)
+		{
+			proc.mandatory<Begin>();
+			proc.mandatory(*i.attachedLABEL);
+			proc.mandatory<End>();
+		}
+	}
+	proc.mandatory<End>();
+	return true;
+}
+
 int SERIESFORMAT::serialize_legend(std::wostream & _stream, int idx)
 {
 	if (m_SeriesEx.empty()) return 0;

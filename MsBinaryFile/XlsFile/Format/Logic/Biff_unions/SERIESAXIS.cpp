@@ -129,6 +129,21 @@ const bool SERIESAXIS::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
+
+const bool SERIESAXIS::saveContent(BinProcessor& proc)
+{
+	if(m_Axis == nullptr)
+		return false;
+	proc.mandatory(*m_Axis);
+	proc.mandatory<Begin>();
+	if(m_CatSerRange != nullptr)
+		proc.mandatory(*m_CatSerRange);
+	if(m_AXS != nullptr)
+		proc.mandatory(*m_AXS);
+	proc.mandatory<End>();
+	return true;
+}
+
 int SERIESAXIS::serialize(std::wostream & _stream)
 {
 	CatSerRange * cat_ser_range = dynamic_cast<CatSerRange*>(m_CatSerRange.get());

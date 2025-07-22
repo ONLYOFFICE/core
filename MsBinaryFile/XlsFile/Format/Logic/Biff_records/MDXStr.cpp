@@ -55,5 +55,18 @@ void MDXStr::readFields(CFRecord& record)
 	record >> frtHeader >> st;
 }
 
+void MDXStr::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDXStr;
+	record << frtHeader;
+	if(st.getSize() <= 4104)
+		record << st;
+	else
+	{
+		LPWideString tempVal = st.value().substr(0, 4104);
+		record << tempVal;
+	}
+}
+
 } // namespace XLS
 

@@ -47,6 +47,10 @@ void SheetId::load(CFRecord& record)
 	record >> id;
 }
 
+void SheetId::save(CFRecord& record)
+{
+    record << id;
+}
 
 } // namespace XLS
 

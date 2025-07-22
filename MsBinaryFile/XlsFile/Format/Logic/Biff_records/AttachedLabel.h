@@ -50,21 +50,22 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 	
 	static const ElementType	type = typeAttachedLabel;
 
 	int serialize(std::wostream & _stream);
 
-	bool fShowValue;
-	bool fShowPercent;
-	bool fShowLabelAndPerc;
-	bool fShowLabel;
-	bool fShowBubbleSizes;
-	bool fShowSeriesName;
+	bool fShowValue = false;
+	bool fShowPercent = false;
+	bool fShowLabelAndPerc = false;
+	bool fShowLabel = false;
+	bool fShowBubbleSizes = false;
+	bool fShowSeriesName = false;
 
 //-----------------------------
 
-	bool is_area;
+	bool is_area = false;
 
 };
 

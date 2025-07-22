@@ -60,6 +60,15 @@ void Scatter::readFields(CFRecord& record)
 	fHasShadow		= GETBIT(flags, 2);
 }
 
+void Scatter::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fBubbles)
+    SETBIT(flags, 1, fShowNegBubbles)
+    SETBIT(flags, 2, fHasShadow)
+    record << pcBubbleSizeRatio << wBubbleSize << flags;
+}
+
 int	Scatter::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

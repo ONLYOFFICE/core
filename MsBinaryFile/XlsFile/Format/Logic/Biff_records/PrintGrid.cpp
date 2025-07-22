@@ -57,5 +57,12 @@ void PrintGrid::readFields(CFRecord& record)
 	fPrintGrid = GETBIT(flags, 0);
 }
 
+void PrintGrid::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fPrintGrid);
+    record << flags;
+}
+
 } // namespace XLS
 

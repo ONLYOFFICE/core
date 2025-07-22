@@ -82,7 +82,7 @@ void CF12::readFields(CFRecord& record)
 	record >> flags;
 	fStopIfTrue = GETBIT(flags, 1);
 	
-	record >> ipriority >> icfTemplate;
+    record >> ipriority >> icfTemplate;
 	
 	unsigned char cbTemplateParm;
 	
@@ -116,6 +116,42 @@ void CF12::readFields(CFRecord& record)
 	dxf.serialize(strm);
 	
 	dxfId_ = global_info->RegistrDxfn(strm.str());
+}
+void CF12::writeFields(CFRecord& record)
+{   frtRefHeader.rt = 0x087A;
+    record << frtRefHeader;
+    record << ct << cp;
+
+    record.reserveNunBytes(4);
+    auto ccePos = record.getRdPtr();
+    record << dxf;
+    auto rgce1pos = record.getRdPtr();
+    auto dxfSize = rgce1pos - ccePos;
+    rgce1.save(record);
+    unsigned short rgceSize = record.getRdPtr() - rgce1pos;
+    record.RollRdPtrBack(rgceSize + dxfSize + 4);
+    record << rgceSize;
+    record.skipNunBytes(2 + rgceSize + dxfSize);
+
+    auto rgce2pos = record.getRdPtr();
+    rgce2.save(record);
+    rgceSize = record.getRdPtr() - rgce2pos;
+    record.RollRdPtrBack((record.getRdPtr() - ccePos) + 2);
+    record << rgceSize;
+    record.skipNunBytes((rgce2pos - ccePos) + rgceSize);
+
+    fmlaActive.save(record);
+
+    unsigned char flags = 0;
+
+    SETBIT(flags, 1, fStopIfTrue);
+    record << flags;
+    BYTE cbTemplateParm = 16;
+    record << ipriority << icfTemplate << cbTemplateParm;
+    record << rgbTemplateParms;
+    if(rgbCT != nullptr)
+        rgbCT->save(record);
+
 }
 int CF12::serialize(std::wostream & stream)
 {

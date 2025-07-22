@@ -64,6 +64,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
     const int GetRow()		const;
 	const int GetColumn()	const;

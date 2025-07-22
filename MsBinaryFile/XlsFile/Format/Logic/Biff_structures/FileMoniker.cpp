@@ -73,6 +73,26 @@ void FileMoniker::load(XLS::CFRecord& record)
 	}
 }
 
+void FileMoniker::save(XLS::CFRecord& record)
+{
+    _UINT32 ansiLength = ansiPath.size();
+    record << cAnti << ansiLength << ansiPath << endServer << versionNumber;
+    record.reserveNunBytes(20);
+    if(!unicodePath.empty())
+    {
+        cbUnicodePathSize = (unicodePath.size() * 2) + 6;
+        _UINT32 cbUnicodePathBytes = (unicodePath.size() * 2);
+        record << cbUnicodePathSize << cbUnicodePathBytes << usKeyValue;
+        for(auto i : unicodePath)
+            record << i;
+
+    }
+    else
+        record.reserveNunBytes(4);
+
+
+
+}
 
 } // namespace OSHARED
 

@@ -306,5 +306,11 @@ const bool BinWriterProcessor::writeChild(BaseObject& object, const bool is_mand
 	return ret_val;
 }
 
+const int BinWriterProcessor::GetRecordPosition()
+{
+	if (!writer_)
+		return 0;
+	return writer_->GetRecordPosition();
+}
 
 } // namespace XLS

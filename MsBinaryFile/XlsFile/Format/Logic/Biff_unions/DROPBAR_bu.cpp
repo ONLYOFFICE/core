@@ -101,6 +101,24 @@ const bool DROPBAR::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DROPBAR::saveContent(BinProcessor& proc)
+{
+	if(m_DropBar == nullptr)
+		return false;
+	proc.mandatory(*m_DropBar);
+	proc.mandatory<Begin>();
+	if(m_LineFormat != nullptr)
+		proc.mandatory(*m_LineFormat);
+	if(m_AreaFormat != nullptr)
+		proc.mandatory(*m_AreaFormat);
+	if(m_GELFRAME != nullptr)
+		proc.optional(*m_GELFRAME);
+	if(m_SHAPEPROPS != nullptr)
+		proc.mandatory(*m_SHAPEPROPS);
+	proc.mandatory<End>();
+	return true;
+}
+
 int DROPBAR::serialize(std::wostream & _stream)
 {
 	DropBar *dropBar = dynamic_cast<DropBar*>(m_DropBar.get());

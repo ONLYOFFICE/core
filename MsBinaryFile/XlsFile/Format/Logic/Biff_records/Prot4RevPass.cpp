@@ -31,6 +31,7 @@
  */
 
 #include "Prot4RevPass.h"
+#include <sstream>
 
 namespace XLS
 {
@@ -55,6 +56,17 @@ void Prot4RevPass::readFields(CFRecord& record)
 	record >> protPwdRev_num;
 	
 	protPwdRev = STR::int2hex_wstr(protPwdRev_num, sizeof(protPwdRev_num));
+}
+
+void Prot4RevPass::writeFields(CFRecord& record)
+{
+   if(protPwdRev_num == 0 && !protPwdRev.empty())
+    {
+        std::wstringstream ss;
+        ss << std::hex << protPwdRev;
+        ss >> protPwdRev;
+    }
+    record << protPwdRev_num;
 }
 
 } // namespace XLS

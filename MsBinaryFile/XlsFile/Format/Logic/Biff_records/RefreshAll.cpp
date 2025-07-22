@@ -55,5 +55,10 @@ void RefreshAll::readFields(CFRecord& record)
 	record >> refreshAll;
 }
 
+void RefreshAll::writeFields(CFRecord& record)
+{
+    record << refreshAll;
+}
+
 } // namespace XLS
 

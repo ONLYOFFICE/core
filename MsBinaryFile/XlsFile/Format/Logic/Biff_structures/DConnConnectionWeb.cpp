@@ -54,6 +54,11 @@ void DConnConnectionWeb::load(CFRecord& record)
 	record 	>> rgbURL >> rgbWebPost;
 }
 
+void DConnConnectionWeb::save(CFRecord& record)
+{
+	record 	<< rgbURL << rgbWebPost;
+}
+
 
 } // namespace XLS
 

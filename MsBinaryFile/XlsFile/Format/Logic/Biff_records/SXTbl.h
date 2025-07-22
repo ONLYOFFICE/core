@@ -47,14 +47,15 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXTbl;
 
-	unsigned short	cdref;
-	unsigned short	csxtbpg;
-	unsigned short	cPages;
+    unsigned short	cdref = 0;
+    unsigned short	csxtbpg = 0;
+    unsigned short	cPages = 0;
 
-	bool			fAutoPage;
+    bool			fAutoPage = false;
 };
 
 } // namespace XLS

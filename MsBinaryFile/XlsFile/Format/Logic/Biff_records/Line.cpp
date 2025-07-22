@@ -59,6 +59,15 @@ void Line::readFields(CFRecord& record)
 	fHasShadow = GETBIT(flags, 2);
 }
 
+void Line::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fStacked)
+    SETBIT(flags, 1, f100)
+    SETBIT(flags, 2, fHasShadow)
+    record << flags;
+}
+
 int	Line::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

@@ -66,5 +66,13 @@ void BRAI::readFields(CFRecord& record)
 
 }
 
+void BRAI::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fUnlinkedIfmt)
+	record << id << rt << flags << ifmt;
+	formula.save(record);
+}
+
 } // namespace XLS
 

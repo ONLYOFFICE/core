@@ -90,7 +90,7 @@ void TableStyles::writeFields(CFRecord& record)
 
 		cchDefTableStyle = rgchDefTableStyle_.getSize();
 		cchDefPivotStyle = rgchDefPivotStyle_.getSize();
-
+        frtHeader.rt = 0x088E;
 		record << frtHeader << cts << cchDefTableStyle << cchDefPivotStyle;
 		record << rgchDefTableStyle_ << rgchDefPivotStyle_;
 	}

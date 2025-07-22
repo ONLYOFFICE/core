@@ -52,6 +52,18 @@ void ConnGrbitDbtWeb::load(CFRecord& record)
 
 }
 
+void ConnGrbitDbtWeb::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fParsePreFormatted)
+	SETBIT(flags, 1, fConsecDelim)
+	SETBIT(flags, 2, fSameSettings)
+	SETBIT(flags, 3, fXL97Format)
+	SETBIT(flags, 4, fNoDateRecog)
+	SETBIT(flags, 5, fRefreshedInXl9)
+
+	record 	<< flags;
+}
 
 } // namespace XLS
 

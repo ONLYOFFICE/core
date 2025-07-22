@@ -47,10 +47,11 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType type = typeExtProp;
 
-	unsigned short cb;
+    unsigned short cb = 0;
 
 	enum _type
 	{

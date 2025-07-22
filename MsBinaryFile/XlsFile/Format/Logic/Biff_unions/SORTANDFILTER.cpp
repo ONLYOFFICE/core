@@ -93,6 +93,21 @@ const bool SORTANDFILTER::loadContent(BinProcessor& proc)
 	return res1 || res2 || res3 || res4 || res5;
 }
 
+const bool SORTANDFILTER::saveContent(BinProcessor& proc)
+{
+    if(m_Sort != nullptr)
+        proc.mandatory(*m_Sort);
+    if(m_SORTDATA12 != nullptr)
+        proc.mandatory(*m_SORTDATA12);
+    if(m_FilterMode != nullptr)
+        proc.mandatory(*m_FilterMode);
+    if(m_DropDownObjIds != nullptr)
+        proc.mandatory(*m_DropDownObjIds);
+    if(m_AUTOFILTER != nullptr)
+        proc.mandatory(*m_AUTOFILTER);
+    return true;
+}
+
 int SORTANDFILTER::serialize(std::wostream & stream)
 {
 	if (m_AUTOFILTER)

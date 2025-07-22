@@ -121,6 +121,22 @@ const bool DVAXIS::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DVAXIS::saveContent(BinProcessor& proc)
+{
+	if(m_Axis == nullptr)
+		return false;
+	proc.mandatory(*m_Axis);
+	proc.mandatory<Begin>();
+	if(m_ValueRange != nullptr)
+		proc.mandatory(*m_ValueRange);
+	if(m_AXM != nullptr)
+		proc.mandatory(*m_AXM);
+	if(m_AXS != nullptr)
+		proc.mandatory(*m_AXS);
+	proc.mandatory<End>();
+	return true;
+}
+
 int DVAXIS::serialize(std::wostream & _stream)
 {
 	ValueRange	*value_range	= dynamic_cast<ValueRange*>	(m_ValueRange.get());

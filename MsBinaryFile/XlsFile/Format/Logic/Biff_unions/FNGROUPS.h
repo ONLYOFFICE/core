@@ -48,8 +48,14 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	static const ElementType	type = typeFNGROUPS;
+
+    BaseObjectPtr               fnGroupCount;
+    std::vector<BaseObjectPtr>  fnGroupNames;
+    std::vector<BaseObjectPtr>  fnGrp12;
+
 };
 
 } // namespace XLS

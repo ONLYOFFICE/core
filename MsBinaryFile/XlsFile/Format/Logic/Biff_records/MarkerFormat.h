@@ -48,6 +48,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & _stream, int index, BaseObjectPtr _GELFRAME);
 	int serialize(std::wostream & _stream);
@@ -55,14 +56,14 @@ public:
 	LongRGB rgbFore;
 	LongRGB rgbBack;
 	
-	_UINT16 imk;
-	bool fAuto;
-	bool fNotShowInt;
-	bool fNotShowBrd;
+	_UINT16 imk = 0;
+	bool fAuto = false;
+	bool fNotShowInt = false;
+	bool fNotShowBrd = false;
 	
-	IcvChart icvFore;
-	IcvChart icvBack;
-	_UINT32	miSize;
+	IcvChart icvFore = 0;
+	IcvChart icvBack = 0;
+	_UINT32	miSize = 0;
 	
 	GlobalWorkbookInfoPtr global_info;
 };

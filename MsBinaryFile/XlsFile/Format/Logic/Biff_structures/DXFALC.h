@@ -48,21 +48,21 @@ public:
 	static const ElementType	type = typeDXFALC;
 
 	virtual void load(CFRecord& record);
-
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
-	unsigned char	alc;
-	bool			fWrap;
-	unsigned char	alcv;
-	bool			fJustLast;
-	unsigned char	trot;
-	unsigned char	cIndent;
-	bool			fShrinkToFit;
-	bool			fMergeCell;
-	unsigned char	iReadingOrder;
+    unsigned char	alc = 0;
+    bool			fWrap = 0;
+    unsigned char	alcv = 0;
+    bool			fJustLast = 0;
+    unsigned char	trot = 0;
+    unsigned char	cIndent = 0;
+    bool			fShrinkToFit = 0;
+    bool			fMergeCell = 0;
+    unsigned char	iReadingOrder = 0;
 
-	_UINT32			iIndent;
+    _UINT32			iIndent = 0;
 //------------------------------------------------
 	DXFN *parent;
 };

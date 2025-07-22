@@ -67,6 +67,21 @@ void AxcExt::readFields(CFRecord& record)
 	fAutoDate	= GETBIT(flags, 7);
 }
 
+void AxcExt::writeFields(CFRecord& record)
+{
+	unsigned char flags = 0;
+	SETBIT(flags, 0, fAutoMin)
+	SETBIT(flags, 1, fAutoMax)
+	SETBIT(flags, 2, fAutoMajor)
+	SETBIT(flags, 3, fAutoMinor)
+
+	SETBIT(flags, 4, fDateAxis)
+	SETBIT(flags, 5, fAutoBase)
+	SETBIT(flags, 6, fAutoCross)
+	SETBIT(flags, 7, fAutoDate)
+	record << catMin << catMax << catMajor << duMajor << catMinor << duMinor << duBase << catCrossDate << flags;
+}
+
 int AxcExt::serialize(std::wostream & _stream)
 {
 	if (fDateAxis == false) return 0;

@@ -1360,6 +1360,7 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	oObj.fetch(xref, &oField);
 	oObj.free();
 
+	m_bChangeFullName = false;
 	m_dFontSize = 0.0;
 	m_unFontStyle = 0;
 
@@ -1401,7 +1402,13 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	oObj.free();
 
 	// 0 - Альтернативное имя поля, используется во всплывающей подсказке и сообщениях об ошибке - TU
-	m_sTU = FieldLookupString(pField, "TU", 0);
+	if (oField.dictLookup("TU", &oObj))
+	{
+		m_sTU = getValue(&oObj);
+		if (!m_sTU.empty())
+			m_unFlags |= (1 << 0);
+	}
+	oObj.free();
 
 	// 1 - Строка стиля по умолчанию - DS
 	m_sDS = FieldLookupString(pField, "DS", 1);
@@ -1597,11 +1604,11 @@ void CAnnotWidget::SetButtonFont(PDFDoc* pdfDoc, AcroFormField* pField, NSFonts:
 }
 bool CAnnotWidget::ChangeFullName(const std::string& sPrefixForm)
 {
+	m_bChangeFullName = true;
 	if (m_unFlags & (1 << 18))
 	{
 		m_sT += sPrefixForm;
 		m_sFullName += sPrefixForm;
-		// ClearActions();
 		return true;
 	}
 	return false;
@@ -2864,6 +2871,17 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 	}
 	oObj.free();
 
+	// 10 - TU
+	if (oField.dictLookup("TU", &oObj)->isString())
+	{
+		TextString* s = new TextString(oObj.getString());
+		std::string sStr = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		pAnnotParent->unFlags |= (1 << 10);
+		pAnnotParent->sTU = sStr;
+		delete s;
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -2893,7 +2911,7 @@ bool CAnnots::ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm)
 		return false;
 
 	CAnnotWidget* pWidget = m_arrAnnots[nAnnot];
-	if (pWidget->ChangeFullName(sPrefixForm))
+	if (pWidget->m_bChangeFullName)
 		return true;
 	unsigned int unRefNumParent = pWidget->GetRefNumParent();
 	if (unRefNumParent)
@@ -2901,12 +2919,16 @@ bool CAnnots::ChangeFullNameAnnot(int nAnnot, const std::string& sPrefixForm)
 		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
 		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
 		{
-			pWidget->AddFullName(sPrefixForm);
-			// pWidget->ClearActions();
+			const std::string& sFullNameChild = pWidget->GetFullName();
+			if (sFullNameChild.empty())
+				pWidget->SetFullName((*it)->sFullName);
+			else
+				pWidget->SetFullName((*it)->sFullName + "." + sFullNameChild);
+			pWidget->m_bChangeFullName = true;
 			return true;
 		}
 	}
-	return false;
+	return pWidget->ChangeFullName(sPrefixForm);
 }
 bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 {
@@ -2914,23 +2936,29 @@ bool CAnnots::ChangeFullNameParent(int nParent, const std::string& sPrefixForm)
 		return false;
 
 	CAnnotParent* pParent = m_arrParents[nParent];
-	if (pParent->unFlags & (1 << 0))
-	{
-		pParent->sT += sPrefixForm;
-		pParent->sFullName += sPrefixForm;
-		// pParent->ClearActions();
+	if (pParent->bChangeFullName)
 		return true;
-	}
-	else if (pParent->unFlags & (1 << 4))
+
+	if (pParent->unFlags & (1 << 4))
 	{
 		unsigned int unRefNumParent = pParent->unRefNumParent;
 		std::vector<CAnnotParent*>::iterator it = std::find_if(m_arrParents.begin(), m_arrParents.end(), [unRefNumParent](CAnnotParent* pP) { return pP->unRefNum == unRefNumParent; });
 		if (it != m_arrParents.end() && ChangeFullNameParent(std::distance(m_arrParents.begin(), it), sPrefixForm))
 		{
-			pParent->sFullName += sPrefixForm;
-			// pParent->ClearActions();
+			if (pParent->sT.empty())
+				pParent->sFullName = (*it)->sFullName;
+			else
+				pParent->sFullName = (*it)->sFullName + "." + sPrefixForm;
+			pParent->bChangeFullName = true;
 			return true;
 		}
+	}
+	else if (pParent->unFlags & (1 << 0))
+	{
+		pParent->sT += sPrefixForm;
+		pParent->sFullName += sPrefixForm;
+		pParent->bChangeFullName = true;
+		return true;
 	}
 	return false;
 }
@@ -3890,6 +3918,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 9))
 		oRes.AddInt(unMaxLen);
+	if (unFlags & (1 << 10))
+		oRes.WriteString(sTU);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {

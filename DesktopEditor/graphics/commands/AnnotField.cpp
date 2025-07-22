@@ -1199,6 +1199,8 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 		}
 		if (nFlags & (1 << 9))
 			pParent->nMaxLen = pReader->ReadInt();
+		if (nFlags & (1 << 10))
+			pParent->sTU = pReader->ReadString();
 		m_arrParents.push_back(pParent);
 	}
 
@@ -1207,7 +1209,10 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 	for (int i = 0; i < n; ++i)
 	{
 		std::string sImagePath = pReader->ReadStringA();
-		m_arrButtonImg.push_back(pCorrector->GetImagePath(UTF8_TO_U(sImagePath)));
+		std::wstring sImage = UTF8_TO_U(sImagePath);
+		if (sImagePath.find("data:") != 0 && !sImagePath.empty())
+			sImage = pCorrector->GetImagePath(sImage);
+		m_arrButtonImg.push_back(sImage);
 	}
 
 	return true;

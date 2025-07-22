@@ -222,11 +222,12 @@ public:
 	unsigned int GetRefNumParent() { return m_unRefNumParent; }
 	const std::string& GetFullName() { return m_sFullName; }
 	void SetFullName(const std::string& sFullName) { m_sFullName = sFullName; }
-	void AddFullName(const std::string& sPrefixForm) { m_sFullName += sPrefixForm; }
 	bool ChangeFullName(const std::string& sPrefixForm);
 	void ClearActions();
 	virtual std::string GetType() = 0;
 	virtual void ToWASM(NSWasm::CData& oRes) override;
+
+	bool m_bChangeFullName;
 
 protected:
 	CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID);
@@ -645,6 +646,7 @@ private:
 			unFlags = 0;
 			unRefNum = 0;
 			unRefNumParent = 0;
+			bChangeFullName = false;
 		}
 		~CAnnotParent()
 		{
@@ -654,6 +656,7 @@ private:
 
 		void ToWASM(NSWasm::CData& oRes);
 
+		bool bChangeFullName;
 		unsigned int unFlags;
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unMaxLen; // Ограничение на максимальную длину text field
@@ -666,6 +669,7 @@ private:
 		std::string sT;
 		std::string sV;
 		std::string sDV;
+		std::string sTU;
 		std::string sFullName;
 	};
 

@@ -66,5 +66,39 @@ const bool MDBLOCK::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool MDBLOCK::saveContent(BinProcessor& proc)
+{
+	if(m_MDB == nullptr)
+		return false;
+	proc.mandatory(*m_MDB);
+	auto castedPtr = static_cast<MDB*>(m_MDB.get());
+	auto maxElemCount = 1026; //max size for one record storage
+	if(castedPtr->rgmdir.size() > maxElemCount)
+	{
+		auto arraySize = castedPtr->rgmdir.size();
+		auto Stpos = maxElemCount;
+		while(Stpos+1 < arraySize)
+		{
+			auto tempLen = 0;
+			if(arraySize < Stpos + maxElemCount)
+				tempLen = arraySize - Stpos;
+			else
+				tempLen = maxElemCount;
+			{
+				ContinueFrt12 continueRecord;
+				continueRecord.rgb.reserve(tempLen*8);
+				CFRecord TempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+				for(auto i = Stpos; i < Stpos+ tempLen; i++)
+					TempRecord << *(castedPtr->rgmdir[i]);
+				memcpy(continueRecord.rgb.data(), (TempRecord.getCurStaticData<char>()), tempLen*8);
+				proc.mandatory(continueRecord);
+			}
+			Stpos+=tempLen;
+		}
+	}
+	return true;
+
+}
+
 } // namespace XLS
 

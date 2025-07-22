@@ -48,6 +48,12 @@ void ISSTInf::load(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void ISSTInf::save(CFRecord& record)
+{
+    record << ib << cbOffset;
+    record.reserveNunBytes(2);
+}
+
 
 } // namespace XLS
 

@@ -63,5 +63,10 @@ void Note::readFields(CFRecord& record)
 // 	}
 }
 
+void Note::writeFields(CFRecord& record)
+{
+    record << note_sh;
+}
+
 } // namespace XLS
 

@@ -108,4 +108,23 @@ global_info->sTheme = \
 	}
 }
 
+void Theme::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_Theme;
+	record << frtHeader << dwThemeVersion;
+	if(dwThemeVersion == 0)
+	{
+		const auto maxSize = 8208;
+		auto loadingSize = 0;
+		if(nThemeDataSize < maxSize)
+			loadingSize = nThemeDataSize;
+		else
+			loadingSize = maxSize;
+		for(auto i = 0; i < loadingSize; i++)
+		{
+			record << pThemeData[i];
+		}
+	}
+}
+
 } // namespace XLS

@@ -55,5 +55,10 @@ void ObjProtect::readFields(CFRecord& record)
 	record >> fLockObj;
 }
 
+void ObjProtect::writeFields(CFRecord& record)
+{
+    record << fLockObj;
+}
+
 } // namespace XLS
 

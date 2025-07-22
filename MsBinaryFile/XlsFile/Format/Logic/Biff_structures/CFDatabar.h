@@ -47,6 +47,7 @@ public:
 	static const ElementType type = typeCFDatabar;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual int serialize(std::wostream & _stream);
 

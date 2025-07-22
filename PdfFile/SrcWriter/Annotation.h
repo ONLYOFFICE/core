@@ -538,7 +538,7 @@ namespace PdfWriter
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
 
-		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts);
+		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts, bool bNoAP = false);
 		const std::wstring& GetCA() { return m_wsCA; }
 		const std::wstring& GetRC() { return m_wsRC; }
 		const std::wstring& GetAC() { return m_wsAC; }

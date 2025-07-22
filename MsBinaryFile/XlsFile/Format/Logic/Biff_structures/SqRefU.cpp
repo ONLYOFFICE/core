@@ -32,6 +32,7 @@
 
 #include "SqRefU.h"
 #include "CellRangeRef.h"
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {
@@ -55,6 +56,22 @@ void SqRefU::load(CFRecord& record)
 		strValue += std::wstring (ref8.toString(false).c_str()) + ((i == cref - 1) ? L"" : L" ");
 	}
 }
+void SqRefU::save(CFRecord& record)
+{
+    std::vector<std::wstring> results;
+
+    boost::algorithm::split(results, strValue, boost::is_any_of(L" "));
+    unsigned short crfx = results.size();
+
+    record << crfx;
+
+    for (auto& item : results)
+    {
+        Ref8U rfx(item);
+        record << rfx;
+    }
+}
+
 struct refs_sort
 {
 	inline bool operator() (const CellRangeRef& ref1, const CellRangeRef& ref2)

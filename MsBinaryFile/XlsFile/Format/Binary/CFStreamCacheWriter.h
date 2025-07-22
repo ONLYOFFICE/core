@@ -55,6 +55,7 @@ public:
 	// Saves the next CFRecord to the stream or caches for later saving. Returns whether the record was saved to file or stored for later saving
 	virtual bool storeNextRecord(CFRecordPtr record);
 
+	virtual const size_t GetRecordPosition() = 0;
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 
 private:
@@ -78,6 +79,8 @@ public:
 	// Saves the next CFRecord to the CFStream or caches for later saving. Returns whether the record was saved to file or stored for later saving
 	bool storeNextRecord(CFRecordPtr record) override;
 
+	const size_t GetRecordPosition()override;
+
 private:
 	// Actual transporting record to the CFStream and then to IStream
 	const size_t writeToStream(const size_t num_of_records_min_necessary) override;
@@ -91,7 +94,7 @@ class BinaryStreamCacheWriter : public StreamCacheWriter
 public:
         BinaryStreamCacheWriter(boost::shared_ptr<NSBinPptxRW::CXlsbBinaryWriter> binaryStream, const GlobalWorkbookInfoPtr global_info);
         ~BinaryStreamCacheWriter();
-	
+		const size_t GetRecordPosition()override{return 0;}
 private:
 	const size_t writeToStream(const size_t num_of_records_min_necessary) override;
 

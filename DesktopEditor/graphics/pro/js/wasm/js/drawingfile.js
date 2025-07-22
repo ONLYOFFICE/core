@@ -450,13 +450,10 @@ function readAction(reader, rec, readDoubleFunc, readStringFunc)
 }
 function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc, isRead = false)
 {
-	if (!isRead)
-		rec["AP"] = {};
+	rec["AP"] = {};
 	// Annot
 	// number for relations with AP
-	let APi = reader.readInt();
-	if (!isRead)
-		rec["AP"]["i"] = APi;
+	rec["AP"]["i"] = reader.readInt();
 	rec["annotflag"] = reader.readInt();
 	// 12.5.3
 	let bHidden = (rec["annotflag"] >> 1) & 1; // Hidden
@@ -539,10 +536,7 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 	if (flags & (1 << 6))
 	{
 		if (isRead)
-		{
-			let APrender = reader.readData(); // TODO use Render - Uint8Array
-			// rec["AP"]["render"] = APrender;
-		}
+			rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
 		else
 			rec["AP"]["have"] = (flags >> 6) & 1;
 	}
@@ -1049,7 +1043,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 	let flags = reader.readInt();
 	// Alternative field name, used in tooltip and error messages - TU
 	if (flags & (1 << 0))
-		rec["userName"] = readStringFunc.call(reader);
+		rec["tooltip"] = readStringFunc.call(reader);
 	// Default style string (CSS2 format) - DS
 	if (flags & (1 << 1))
 		rec["defaultStyle"] = readStringFunc.call(reader);
@@ -1180,15 +1174,9 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		if (isRead)
 		{
 			if (flags & (1 << 12))
-			{
-				let APV = readStringFunc.call(reader);
-				// rec["AP"]["V"] = APV;
-			}
+				rec["AP"]["V"] = readStringFunc.call(reader);
 			if (flags & (1 << 13))
-			{
-				let APrender = reader.readData(); // TODO use Render - Uint8Array
-				// rec["AP"]["render"] = APrender;
-			}
+				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
 		}
 		// 12.7.4.3
 		if (rec["flag"] >= 0)
@@ -1225,10 +1213,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		if (isRead)
 		{
 			if (flags & (1 << 12))
-			{
-				let APV = readStringFunc.call(reader);
-				// rec["AP"]["V"] = APV;
-			}
+				rec["AP"]["V"] = readStringFunc.call(reader);
 		}
 		else
 		{
@@ -1257,10 +1242,7 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 					rec["I"].push(reader.readInt());
 			}
 			if (flags & (1 << 15))
-			{
-				let APrender = reader.readData(); // TODO use Render - Uint8Array
-				// rec["AP"]["render"] = APrender;
-			}
+				rec["AP"]["render"] = reader.readData(); // TODO use Render - Uint8Array
 		}
 		// 12.7.4.4
 		if (rec["flag"] >= 0)
@@ -1378,6 +1360,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			}
 			if (flags & (1 << 9))
 				rec["maxLen"] = reader.readInt();
+			if (flags & (1 << 10))
+				rec["tooltip"] = reader.readString();
 			res["Parents"].push(rec);
 		}
 
@@ -1589,35 +1573,50 @@ CFile.prototype["readAnnotationsInfoFromBinary"] = function(AnnotInfo)
 	let reader = new CBinaryReader(AnnotInfo, 0, AnnotInfo.length);
 	if (!reader) return [];
 
-	let res = [];
+	let res = { annots:[], imgs:[] };
 	while (reader.isValid())
 	{
 		let nCommand = reader.readByte();
 		let nPos = reader.pos;
 		let nSize = reader.readInt();
-		if (nCommand != 164) // ctAnnotField
+		if (nCommand == 164) // ctAnnotField
+		{
+			let rec = {};
+			// Annotation type
+			// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
+			// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
+			// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
+			// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
+			// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
+			rec["type"] = reader.readByte();
+			// Annot
+			readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			// Annot type
+			readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			if (rec["type"] >= 26 && rec["type"] <= 33)
+			{
+				// Widget type
+				readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
+			}
+			res.annots.push(rec);
+		}
+		else if (nCommand == 166) // ctWidgetsInfo
+		{
+			reader.readInt(); // CO must be 0
+			reader.readInt(); // Parents must be 0
+			// ButtonImg
+			let n = reader.readInt();
+			for (let i = 0; i < n; ++i)
+			{
+				let data = reader.readString();
+				res.imgs.push(data);
+			}
+		}
+		else
 		{
 			reader.pos = nPos + nSize;
 			continue;
 		}
-		let rec = {};
-		// Annotation type
-		// 0 - Text, 1 - Link, 2 - FreeText, 3 - Line, 4 - Square, 5 - Circle,
-		// 6 - Polygon, 7 - PolyLine, 8 - Highlight, 9 - Underline, 10 - Squiggly, 
-		// 11 - Strikeout, 12 - Stamp, 13 - Caret, 14 - Ink, 15 - Popup, 16 - FileAttachment, 
-		// 17 - Sound, 18 - Movie, 19 - Widget, 20 - Screen, 21 - PrinterMark,
-		// 22 - TrapNet, 23 - Watermark, 24 - 3D, 25 - Redact
-		rec["type"] = reader.readByte();
-		// Annot
-		readAnnot(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		// Annot type
-		readAnnotType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		if (rec["type"] >= 26 && rec["type"] <= 33)
-		{
-			// Widget type
-			readWidgetType(reader, rec, reader.readDouble3, reader.readDouble3, reader.readString2, true);
-		}
-		res.push(rec);
 	}
 
 	return res;

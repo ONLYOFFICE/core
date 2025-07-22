@@ -51,20 +51,21 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeBookExt;
 
-	_UINT32	cb;
+	_UINT32	cb = 20;
 
-	bool fDontAutoRecover;
-	bool fHidePivotList;
-	bool fFilterPrivacy;
-	bool fEmbedFactoids;
-	unsigned char	mdFactoidDisplay;
-	bool fSavedDuringRecovery;
-	bool fCreatedViaMinimalSave;
-	bool fOpenedViaDataRecovery;
-	bool fOpenedViaSafeLoad;
+	bool fDontAutoRecover = false;
+	bool fHidePivotList = false;
+	bool fFilterPrivacy = false;
+	bool fEmbedFactoids = false;
+	unsigned char	mdFactoidDisplay = 0;
+	bool fSavedDuringRecovery = false;
+	bool fCreatedViaMinimalSave = false;
+	bool fOpenedViaDataRecovery = false;
+	bool fOpenedViaSafeLoad = false;
 
 	BookExt_Conditional11 grbit1;
 	BookExt_Conditional12 grbit2;

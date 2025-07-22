@@ -1234,13 +1234,38 @@ namespace OOX
         }
 		void CFormula::toXls(XLS::BaseObjectPtr& obj)
 		{
-			auto xlsFmla = static_cast<XLS::Formula*>(obj.get());
-			if(m_oT.IsInit() && m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
+			auto FmlaUnion = static_cast<XLS::FORMULA*>(obj.get());
+			auto xlsFmla = static_cast<XLS::Formula*>(FmlaUnion->m_Formula.get());
+			if(!m_oT.IsInit())
+				m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal;
+			if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeNormal && !m_sText.empty())
+				xlsFmla->formula = m_sText;
+			else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeShared)
+			{
 				xlsFmla->fShrFmla = true;
+				if(!m_sText.empty() && m_oRef.IsInit())
+				{
+					CellRef cell_base_ref;
+					cell_base_ref.column = xlsFmla->cell.col;
+					cell_base_ref.row = xlsFmla->cell.rw;
+					auto shrFmla = new XLS::ShrFmla(cell_base_ref);
+					FmlaUnion->m_SharedFormula = XLS::BaseObjectPtr(shrFmla);
+					shrFmla->ref_.fromString(m_oRef.get());
+					shrFmla->formula = m_sText;
+					FmlaUnion->shared_formulas_locations_ref_.push_back(shrFmla->ref_);
+				}
+				if(m_oSi.IsInit() && FmlaUnion->shared_formulas_locations_ref_.size() > m_oSi->GetValue())
+				{
+					auto SharedFmlaRef = FmlaUnion->shared_formulas_locations_ref_.at(m_oSi->GetValue()).getTopLeftCell();
+					auto rowPos = new XLS::PtgExp;
+					rowPos->row = SharedFmlaRef.row;
+					rowPos->col = SharedFmlaRef.column;
+					xlsFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+
+				}
+			}
 			if(m_oAca.IsInit())
 				xlsFmla->fAlwaysCalc = m_oAca->GetValue();
-			if(!m_sText.empty())
-				xlsFmla->formula = m_sText;
 		}
 		void CFormula::toBin(XLS::BaseObjectPtr& obj)
 		{
@@ -2906,7 +2931,7 @@ namespace OOX
 					FmlaCell->val.data.Byte3 = cellval;
 				}
 				if(m_oFormula.IsInit())
-					m_oFormula->toXls(fmlaUnion->m_Formula);
+					m_oFormula->toXls(castedPtr->cellContent);
 			}
 
 		}

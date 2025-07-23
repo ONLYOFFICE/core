@@ -115,7 +115,7 @@ bool CPdfFile::EditPdf(const std::wstring& wsDstFile)
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this, true, m_pInternal->wsTempFolder);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, wsDstFile, m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::WriteNew);
 	return m_pInternal->pEditor->GetError() == 0;
 }
 bool CPdfFile::EditPage(int nPageIndex)
@@ -444,7 +444,7 @@ BYTE* CPdfFile::SplitPages(const int* arrPageIndex, unsigned int unLength, BYTE*
 	m_pInternal->pWriter = new CPdfWriter(m_pInternal->pAppFonts, false, this);
 
 	RELEASEOBJECT(m_pInternal->pEditor);
-	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter);
+	m_pInternal->pEditor = new CPdfEditor(m_pInternal->wsSrcFile, m_pInternal->wsPassword, L"", m_pInternal->pReader, m_pInternal->pWriter, CPdfEditor::Mode::Split);
 
 	BYTE* pRes = NULL;
 	int nLen = 0;

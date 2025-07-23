@@ -73,12 +73,14 @@ public:
 	{
 		Unknown,
 		ReadOnly,
-		WriteNew,
-		WriteAppend
+		Split,
+		WriteAppend,
+		WriteNew
 	};
 
-	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter);
+	CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode = Mode::Unknown);
 
+	void SetMode(Mode nMode);
 	bool IncrementalUpdates();
 
 	int  GetError();

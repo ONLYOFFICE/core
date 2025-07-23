@@ -1006,9 +1006,12 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 				rec["font"]["color"].push(readDouble2Func.call(reader));
 			rec["font"]["size"] = readDoubleFunc.call(reader);
 			rec["font"]["name"] = readStringFunc.call(reader);
-			let fontActual = readStringFunc.call(reader);
-			if (fontActual != "")
-				rec["font"]["actual"] = fontActual;
+			if (!isRead)
+			{
+				let fontActual = readStringFunc.call(reader);
+				if (fontActual != "")
+					rec["font"]["actual"] = fontActual;
+			}
 			rec["font"]["style"] = reader.readInt();
 		}
 	}

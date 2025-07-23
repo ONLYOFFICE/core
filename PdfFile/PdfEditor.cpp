@@ -927,7 +927,7 @@ void CObjectsManager::DeleteObjTree(Object* obj, XRef* xref, int nStartRefID)
 }
 void CObjectsManager::SetDoc(PdfWriter::CDocument* pDoc) { m_pDoc = pDoc; }
 
-CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter)
+CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPassword, const std::wstring& _wsDstFile, CPdfReader* _pReader, CPdfWriter* _pWriter, Mode nMode)
 {
 	m_wsSrcFile  = _wsSrcFile;
 	m_wsDstFile  = _wsDstFile;
@@ -954,6 +954,23 @@ CPdfEditor::CPdfEditor(const std::wstring& _wsSrcFile, const std::wstring& _wsPa
 	}
 
 	m_nOriginIndex = m_pReader->GetNumPages();
+	SetMode(nMode);
+}
+void CPdfEditor::SetMode(Mode nMode)
+{
+	if (m_nMode != Mode::Unknown)
+		return;
+	m_nMode = nMode;
+	if (m_nMode == Mode::WriteAppend)
+		IncrementalUpdates();
+	else if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		m_mObjManager.SetDoc(pDoc);
+		int nPages = m_pReader->GetNumPages();
+		pPageTree->CreateFakePages(nPages);
+	}
 }
 bool CPdfEditor::IncrementalUpdates()
 {
@@ -1193,7 +1210,7 @@ void CPdfEditor::Close()
 			NSFile::CFileBinary::Copy(m_wsSrcFile, m_wsDstFile);
 		return;
 	}
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode == Mode::Split)
 	{
 		m_pWriter->SaveToFile(m_wsDstFile);
 		return;
@@ -1399,7 +1416,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 
 	PdfWriter::CPage* pEditPage = NULL;
 	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
-	if (m_nMode == Mode::WriteNew && !pEditPage)
+	if (m_nMode == Mode::Split && !pEditPage)
 		return false;
 	if (pEditPage)
 	{
@@ -2044,10 +2061,8 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 }
 bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength)
 {
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode != Mode::Split)
 		return false;
-	if (m_nMode == Mode::Unknown)
-		m_nMode = Mode::WriteNew;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	if (!pDoc)
 		return false;
@@ -2276,13 +2291,12 @@ bool CPdfEditor::AddPage(int nPageIndex)
 {
 	if (m_nMode == Mode::Unknown && !IncrementalUpdates())
 		return false;
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode == Mode::Split)
 	{
 		std::vector<int>::iterator it = std::find(m_mObjManager.m_arrSplitAddPages.begin(), m_mObjManager.m_arrSplitAddPages.end(), m_nOriginIndex++);
 		if (it == m_mObjManager.m_arrSplitAddPages.end())
 		{
-			PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-			PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+			PdfWriter::CPageTree* pPageTree = m_pWriter->GetDocument()->GetPageTree();
 			pPageTree->CreateFakePages(1, nPageIndex);
 			return false;
 		}
@@ -2307,7 +2321,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, true) || m_nMode == Mode::WriteNew)
+	if (EditPage(nPageIndex, true, true) || m_nMode == Mode::Split)
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;
 }
@@ -2620,7 +2634,7 @@ bool CPdfEditor::DeleteAnnot(int nID, Object* oAnnots)
 		pDoc->FreeHidden(pObj);
 		return true;
 	}
-	if (m_nMode == Mode::WriteNew)
+	if (m_nMode == Mode::Split)
 		return true;
 
 	PDFDoc* pPDFDocument = NULL;

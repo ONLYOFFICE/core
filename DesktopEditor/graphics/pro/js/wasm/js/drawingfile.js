@@ -545,6 +545,8 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 		rec["OUserID"] = readStringFunc.call(reader);
 	// if (flags & (1 << 8))
 	// 	reader.readInt();
+	if (flags & (1 << 9))
+		rec["meta"] = readStringFunc.call(reader);
 }
 function readAnnotAP(reader, AP)
 {
@@ -1006,9 +1008,12 @@ function readAnnotType(reader, rec, readDoubleFunc, readDouble2Func, readStringF
 				rec["font"]["color"].push(readDouble2Func.call(reader));
 			rec["font"]["size"] = readDoubleFunc.call(reader);
 			rec["font"]["name"] = readStringFunc.call(reader);
-			let fontActual = readStringFunc.call(reader);
-			if (fontActual != "")
-				rec["font"]["actual"] = fontActual;
+			if (!isRead)
+			{
+				let fontActual = readStringFunc.call(reader);
+				if (fontActual != "")
+					rec["font"]["actual"] = fontActual;
+			}
 			rec["font"]["style"] = reader.readInt();
 		}
 	}
@@ -1087,8 +1092,6 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		rec["name"] = readStringFunc.call(reader);
 	if (flags & (1 << 19))
 		rec["font"]["AP"] = readStringFunc.call(reader);
-	if (flags & (1 << 20))
-		rec["meta"] = readStringFunc.call(reader);
 	// Action
 	let nAction = reader.readInt();
 	if (nAction > 0)

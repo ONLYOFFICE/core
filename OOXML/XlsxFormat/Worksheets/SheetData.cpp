@@ -1245,10 +1245,10 @@ namespace OOX
 				xlsFmla->fShrFmla = true;
 				if(!m_sText.empty() && m_oRef.IsInit())
 				{
-					CellRef cell_base_ref;
-					cell_base_ref.column = xlsFmla->cell.col;
-					cell_base_ref.row = xlsFmla->cell.rw;
-					auto shrFmla = new XLS::ShrFmla(cell_base_ref);
+					CellRef cellBaseRef;
+					cellBaseRef.column = xlsFmla->cell.col;
+					cellBaseRef.row = xlsFmla->cell.rw;
+					auto shrFmla = new XLS::ShrFmla(cellBaseRef);
 					FmlaUnion->m_SharedFormula = XLS::BaseObjectPtr(shrFmla);
 					shrFmla->ref_.fromString(m_oRef.get());
 					shrFmla->formula = m_sText;
@@ -1257,12 +1257,45 @@ namespace OOX
 				if(m_oSi.IsInit() && FmlaUnion->shared_formulas_locations_ref_.size() > m_oSi->GetValue())
 				{
 					auto SharedFmlaRef = FmlaUnion->shared_formulas_locations_ref_.at(m_oSi->GetValue()).getTopLeftCell();
-					auto rowPos = new XLS::PtgExp;
-					rowPos->row = SharedFmlaRef.row;
-					rowPos->col = SharedFmlaRef.column;
-					xlsFmla->formula.rgce.addPtg(PtgPtr{rowPos});
+					auto cellPos = new XLS::PtgExp;
+					cellPos->row = SharedFmlaRef.row;
+					cellPos->col = SharedFmlaRef.column;
+					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
 
 				}
+			}
+			else if(m_oT->GetValue() == SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray)
+			{
+				if(!m_sText.empty() && m_oRef.IsInit())
+				{
+					if(!SharedFormulasRef::ArrayRefsLocations)
+						SharedFormulasRef::ArrayRefsLocations = std::unique_ptr<std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>>>(new std::vector<std::pair<XLS::CellRangeRef, XLS::CellRef>>);
+					auto rangeRef = XLS::CellRangeRef(m_oRef.get());
+					CellRef cellBaseRef;
+					cellBaseRef.column = xlsFmla->cell.col;
+					cellBaseRef.row = xlsFmla->cell.rw;
+					SharedFormulasRef::ArrayRefsLocations->push_back(std::pair<XLS::CellRangeRef, XLS::CellRef>(rangeRef, cellBaseRef));
+
+					auto ArrayFmla = new XLS::Array(cellBaseRef);
+					FmlaUnion->m_ArrayFormula = XLS::BaseObjectPtr(ArrayFmla);
+					ArrayFmla->ref_.fromString(m_oRef.get());
+					ArrayFmla->formula = m_sText;
+
+					auto cellPos = new XLS::PtgExp;
+					cellPos->row = cellBaseRef.row;
+					cellPos->col = cellBaseRef.column;
+					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
+				}
+				else if(!m_sText.empty())
+				{
+					CellRef cellBaseRef;
+					cellBaseRef.fromString(m_sText);
+					auto cellPos = new XLS::PtgExp;
+					cellPos->row = cellBaseRef.row;
+					cellPos->col = cellBaseRef.column;
+					xlsFmla->formula.rgce.addPtg(PtgPtr{cellPos});
+				}
+
 			}
 			if(m_oAca.IsInit())
 				xlsFmla->fAlwaysCalc = m_oAca->GetValue();
@@ -2775,6 +2808,19 @@ namespace OOX
 					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
 			}
 			auto cellType = m_oType->GetValue();
+			if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
+			{
+				for(auto i: *SharedFormulasRef::ArrayRefsLocations)
+				{
+					if(i.first.inRange(CellReference))
+					{
+						m_oFormula.Init();
+						m_oFormula->m_oT = SimpleTypes::Spreadsheet::ECellFormulaType::cellformulatypeArray;
+						m_oFormula->m_sText = i.second.toString();
+						break;
+					}
+				}
+			}
 			if(!m_oFormula.IsInit())
 			{
 				switch(cellType)

@@ -72,6 +72,8 @@
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Dimensions.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -1155,6 +1157,14 @@ namespace OOX
 			XLS::BaseObjectPtr ptr(castedPtr);
 			if (m_oRef.IsInit())
 				castedPtr->rfx = m_oRef.get();
+			return ptr;
+		}
+		XLS::BaseObjectPtr CDimension::toXLS()
+		{
+			auto dimensions = new XLS::Dimensions;
+			XLS::BaseObjectPtr ptr(dimensions);
+			if (m_oRef.IsInit())
+				dimensions->ref_ = m_oRef.get();
 			return ptr;
 		}
         void CDimension::toBin(XLS::StreamCacheWriterPtr& writer)

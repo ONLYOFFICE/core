@@ -191,6 +191,7 @@ namespace PdfWriter
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
 		void SetOUserID(const std::wstring& wsOUserID);
+		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage();
@@ -463,7 +464,6 @@ namespace PdfWriter
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
-		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);

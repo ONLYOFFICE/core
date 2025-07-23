@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -190,6 +190,9 @@ namespace OOX
 				}
 			}
 		}
+		std::sort(m_arRelations.begin(), m_arRelations.end(),[](const OOX::Rels::CRelationShip* a, const OOX::Rels::CRelationShip* b) {
+		return a->rId().getNumber() < b->rId().getNumber();
+		});
 	}
 	void CRels::Write(const CPath& oFilePath) const
 	{

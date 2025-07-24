@@ -1604,6 +1604,14 @@ NSFonts::IApplicationFonts* CApplicationFontsWorker::Check()
 	if (m_sDirectory.empty())
 		return NULL;
 
+	for (std::vector<std::wstring>::iterator i = m_arAdditionalFolders.begin(); i != m_arAdditionalFolders.end(); i++)
+	{
+		if (0 == i->find(L"./"))
+			*i = NSFile::GetProcessDirectory() + L"/" + i->substr(2);
+		else if (0 == i->find(L"../"))
+			*i = NSFile::GetProcessDirectory() + L"/" + *i;
+	}
+
 	std::wstring strAllFontsJSPath      = m_sDirectory + L"/AllFonts.js";
 	std::wstring strFontsSelectionBin   = m_sDirectory + L"/font_selection.bin";
 

@@ -376,6 +376,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPage::CPage(CDocument* pDocument)
 	{
+		m_bFakePage = true;
 		Init(pDocument);
 	}
 	void CPage::Fix()
@@ -473,6 +474,7 @@ namespace PdfWriter
 	}
 	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
 	{
+		m_bFakePage = false;
 		pXref->Add(this);
 		Init(pDocument);
 
@@ -496,6 +498,14 @@ namespace PdfWriter
 			delete pGrState;
 			pGrState = pPrev;
 		}
+	}
+	void CPage::SetFakePage(bool bFakePage)
+	{
+		m_bFakePage = bFakePage;
+	}
+	bool CPage::IsFakePage()
+	{
+		return m_bFakePage;
 	}
 	void CPage::Init(CDocument* pDocument)
 	{

@@ -100,6 +100,8 @@ namespace PdfWriter
 		~CPage();
 
 		void      Fix();
+		void      SetFakePage(bool bFakePage);
+		bool      IsFakePage();
 		void      SetHeight(double dHeight);
 		void      SetWidth(double dWidth);
 		double    GetWidth();
@@ -199,6 +201,7 @@ namespace PdfWriter
 
 	private:
 
+		bool         m_bFakePage;
 		CDocument*   m_pDocument;
 		CPageTree*   m_pParent;
 		CPoint       m_oStartPos;          // Позиция начала текущего пата

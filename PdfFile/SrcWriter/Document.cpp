@@ -1708,6 +1708,11 @@ namespace PdfWriter
 		{
 			if (pObj->IsIndirect())
 				return true;
+			if (pObj && pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE && ((CPage*)pObj)->IsFakePage())
+			{
+				delete pObj;
+				return true;
+			}
 			CXref* pXref = new CXref(this, pObj->GetObjId(), pObj->GetGenNo());
 			delete pObj;
 			if (!pXref)

@@ -451,6 +451,8 @@ namespace OOX
 				m_oSheets->toXLS(objectPtr);
 			if(m_oDefinedNames.IsInit())
 				m_oDefinedNames->toXLS(objectPtr);
+			if(m_oBookViews.IsInit())
+				m_oBookViews->toXLS(objectPtr);
 
 			return objectPtr;
 		}

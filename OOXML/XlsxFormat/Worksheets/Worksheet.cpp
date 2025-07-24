@@ -366,6 +366,10 @@ namespace OOX
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
 			if(m_oDimension.IsInit())
 				worksheetPtr->m_Dimensions = m_oDimension->toXLS();
+			if(m_oCols.IsInit())
+				worksheetPtr->m_COLUMNS = m_oCols->toXLS();
+			if (m_oMergeCells.IsInit())
+				worksheetPtr->m_arMergeCells = m_oMergeCells->toXLS();
 			if(m_oSheetData.IsInit())
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
 

@@ -1491,9 +1491,6 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	m_sT = DictLookupString(&oField, "T", 18);
 	m_sFullName = m_sT;
 
-	// 20 - OO метаданные форм - OMetadata
-	m_sOMetadata = DictLookupString(&oField, "OMetadata", 20);
-
 	// Action - A
 	Object oAction;
 	if (oField.dictLookup("A", &oAction)->isDict())
@@ -3317,6 +3314,16 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 		delete s;
 	}
 	oObj.free();
+
+	// 9 - OO метаданные форм - OMetadata
+	if (pField->fieldLookup("OMetadata", &oObj)->isString())
+	{
+		m_unAFlags |= (1 << 9);
+		TextString* s = new TextString(oObj.getString());
+		m_sOMetadata = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
+		delete s;
+	}
+	oObj.free();
 }
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID)
 {
@@ -3443,6 +3450,9 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 		delete s;
 	}
 	oObj.free();
+
+	// 9 - OO метаданные форм - OMetadata
+	m_sOMetadata = DictLookupString(&oAnnot, "OMetadata", 9);
 
 	oAnnot.free();
 }
@@ -3950,6 +3960,8 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sM);
 	if (m_unAFlags & (1 << 7))
 		oRes.WriteString(m_sOUserID);
+	if (m_unAFlags & (1 << 9))
+		oRes.WriteString(m_sOMetadata);
 }
 void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {
@@ -4015,8 +4027,6 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 19))
 		oRes.WriteString(m_sButtonFontName);
-	if (m_unFlags & (1 << 20))
-		oRes.WriteString(m_sOMetadata);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

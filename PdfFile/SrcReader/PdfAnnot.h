@@ -204,6 +204,7 @@ private:
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
 	std::string m_sOUserID; // OO User ID
+	std::string m_sOMetadata; // OO метаданные формы
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
@@ -255,7 +256,6 @@ private:
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFullName; // Полное имя поля
 	std::string m_sFontName; // Имя шрифта - из DA
-	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
 	std::string m_sButtonFontName; // Имя шрифта кнопки
 };

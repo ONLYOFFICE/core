@@ -1931,6 +1931,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	if (nFlags & (1 << 7))
 		pAnnot->SetOUserID(oInfo.GetOUserID());
 	bool bRenderCopy = (nFlags >> 8) & 1;
+	if (nFlags & (1 << 9))
+		pAnnot->SetOMetadata(oInfo.GetOMetadata());
 
 	if (oInfo.IsMarkup())
 	{
@@ -2309,8 +2311,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetT(pPr->GetT());
 		else
 			pWidgetAnnot->Remove("T");
-		if (nFlags & (1 << 20))
-			pWidgetAnnot->SetOMetadata(pPr->GetOMetadata());
 
 		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
 		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)

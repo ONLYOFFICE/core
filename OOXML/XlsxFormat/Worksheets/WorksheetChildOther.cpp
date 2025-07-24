@@ -72,6 +72,8 @@
 #include "../../Common/SimpleTypes_Word.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/WINDOW.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Window2.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Dimensions.h"
 
 namespace OOX
@@ -1597,6 +1599,28 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CSelection::toXLS()
+		{
+			auto sel = new XLS::Selection;
+			if(m_oActiveCell.IsInit())
+				sel->activeCell = m_oActiveCell.get();
+			if(m_oPane.IsInit())
+			{
+				if(m_oPane->GetValue() == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+					sel->pnn.value() = XLS::PaneType::REVTPNNBOTRIGHT;
+				else if(m_oPane->GetValue() == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+					sel->pnn.value() = XLS::PaneType::REVTPNNTOPRIGHT;
+				else if(m_oPane->GetValue() == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+					sel->pnn.value() = XLS::PaneType::REVTPNNBOTLEFT;
+				else if(m_oPane->GetValue() == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+					sel->pnn.value() = XLS::PaneType::REVTPNNTOPLEFT;
+			}
+			else
+				sel->pnn.value() = XLS::PaneType::REVTPNNTOPLEFT;
+			if(m_oSqref.IsInit())
+				sel->sqref = m_oSqref.get();
+			return XLS::BaseObjectPtr(sel);
+		}
         void CSelection::toBin(XLS::StreamCacheWriterPtr& writer)
         {
             auto record = writer->getNextRecord(XLSB::rt_Sel);
@@ -1859,6 +1883,70 @@ namespace OOX
 				}
 				return castedPtr;
            
+		}
+		XLS::BaseObjectPtr CSheetView::toXLS()
+		{
+			auto windowUnion = new XLS::WINDOW;
+			auto window = new XLS::Window2;
+			windowUnion->m_Window2 = XLS::BaseObjectPtr(window);
+			if(m_oShowFormulas.IsInit())
+				window->fDspFmlaRt = m_oShowFormulas->GetValue();
+			if(m_oShowGridLines.IsInit())
+				window->fDspGridRt = m_oShowGridLines->GetValue();
+			if(m_oShowRowColHeaders.IsInit())
+				window->fDspRwColRt = m_oShowRowColHeaders->GetValue();
+			if(m_oShowZeros.IsInit())
+				window->fDspZerosRt = m_oShowZeros->GetValue();
+			if(m_oTabSelected.IsInit())
+			{
+				window->fSelected = m_oTabSelected->GetValue();
+				window->fPaged = true;
+			}
+			if(m_oDefaultGridColor.IsInit())
+				window->fDefaultHdr = m_oDefaultGridColor->GetValue();
+			if(m_oTopLeftCell.IsInit())
+				window->topLeftCell = m_oTopLeftCell.get();
+			if(m_oZoomScale.IsInit())
+				window->wScale = m_oZoomScale->GetValue();
+			if(m_oZoomScaleNormal.IsInit())
+				window->wScaleNormal = m_oZoomScale->GetValue();
+			if(m_oColorId.IsInit())
+				window->icvHdr = m_oColorId->m_eValue;
+			if(m_oPane.IsInit())
+			{
+				if(m_oPane->m_oState.IsInit())
+				{
+					if(m_oPane->m_oState->GetValue() != SimpleTypes::Spreadsheet::EPaneState::panestateSplit)
+					{
+						window->fFrozenRt = true;
+						if(m_oPane->m_oState->GetValue() == SimpleTypes::Spreadsheet::EPaneState::panestateFrozen)
+							window->fFrozenNoSplit = true;
+					}
+				}
+				auto pane = new XLS::Pane;
+				windowUnion->m_Pane = XLS::BaseObjectPtr(pane);
+				if(m_oPane->m_oTopLeftCell.IsInit())
+					pane->topLeftCell = m_oPane->m_oTopLeftCell.get();
+				if(m_oPane->m_oXSplit.IsInit())
+					pane->x = m_oPane->m_oXSplit->GetValue();
+				if(m_oPane->m_oYSplit.IsInit())
+					pane->y = m_oPane->m_oYSplit->GetValue();
+				if(m_oPane->m_oActivePane.IsInit())
+				{
+					if(m_oPane->m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomRight)
+						pane->pnnAcct.value() = XLS::PaneType::REVTPNNBOTRIGHT;
+					else if(m_oPane->m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopRight)
+						pane->pnnAcct.value() = XLS::PaneType::REVTPNNTOPRIGHT;
+					else if(m_oPane->m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneBottomLeft)
+						pane->pnnAcct.value() = XLS::PaneType::REVTPNNBOTLEFT;
+					else if(m_oPane->m_oActivePane == SimpleTypes::Spreadsheet::EActivePane::activepaneTopLeft)
+						pane->pnnAcct.value() = XLS::PaneType::REVTPNNTOPLEFT;
+				}
+
+			}
+			for(auto i : m_arrItems)
+				windowUnion->m_arSelection.push_back(i->toXLS());
+			return  XLS::BaseObjectPtr(windowUnion);
 		}
         void CSheetView::toBin(XLS::StreamCacheWriterPtr& writer)
         {
@@ -2123,6 +2211,13 @@ namespace OOX
 				for(auto i:m_arrItems)
 					castedPtr->m_arWSVIEW2.push_back(i->toBin());
 				return ptr;
+		}
+		std::vector<XLS::BaseObjectPtr> CSheetViews::toXLS()
+		{
+			std::vector<XLS::BaseObjectPtr> ptrVector;
+			for(auto i:m_arrItems)
+					ptrVector.push_back(i->toXLS());
+			return ptrVector;
 		}
         void CSheetViews::toBin(XLS::StreamCacheWriterPtr& writer)
         {

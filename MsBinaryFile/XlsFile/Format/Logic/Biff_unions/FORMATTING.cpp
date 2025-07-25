@@ -156,17 +156,17 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 }
 const bool FORMATTING::saveContent(BinProcessor& proc)
 {
-	global_info = proc.getGlobalWorkbookInfo();
-	for(auto i:global_info->m_arFonts)
-		proc.mandatory(*i);
-	if(global_info->m_arFonts.empty())
+
+	if(m_arFonts.empty())
 		proc.mandatory<Font>();
-	for(auto i:global_info->m_mapNumFormats)
-		proc.mandatory(*i.second);
-	if(global_info->m_mapNumFormats.empty())
-	{
+	for(auto i : m_arFonts)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	if(m_arFormats.empty())
 		proc.mandatory<Format>();
-	}
+	for(auto i:m_arFormats)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_XFS != nullptr)
 		proc.mandatory(*m_XFS);
 	else

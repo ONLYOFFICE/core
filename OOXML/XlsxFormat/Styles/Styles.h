@@ -106,6 +106,7 @@ namespace OOX
 
 			void readBin(const CPath& oPath);
 			XLS::BaseObjectPtr WriteBin() const;
+			void toXLS(XLS::BaseObjectPtr globalsStreamPtr) const;
 
 			virtual void read(const CPath& oPath);
 			virtual void read(const CPath& oRootPath, const CPath& oPath);

@@ -63,6 +63,15 @@
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FORMATTING.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/STYLES.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Format.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Style.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -249,6 +258,15 @@ namespace OOX
             if (m_oExtLst.IsInit())
                 stylesStream->m_FRTSTYLESHEET = m_oExtLst->toBinStyles();
 			return objectPtr;
+		}
+		void CStyles::toXLS(XLS::BaseObjectPtr globalsStreamPtr) const
+		{
+			auto workbookPtr = static_cast<XLS::GlobalsSubstream*>(globalsStreamPtr.get());
+			auto FormatPtr = new XLS::FORMATTING;
+			workbookPtr->m_Formating = XLS::BaseObjectPtr(FormatPtr);
+			if (m_oFonts.IsInit())
+				FormatPtr->m_arFonts = m_oFonts->toXLS();
+
 		}
 		void CStyles::read(const CPath& oPath)
 		{

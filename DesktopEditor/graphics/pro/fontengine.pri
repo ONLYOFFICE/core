@@ -18,6 +18,12 @@ SOURCES += \
 	$$FONT_ENGINE_PATH/FontPath.cpp \
 	$$FONT_ENGINE_PATH/GlyphString.cpp
 
+core_mac {
+    OBJECTIVE_SOURCES += $$FONT_ENGINE_PATH/ApplicationFonts_mac.mm
+    LIBS += -framework Foundation
+    LIBS += -framework CoreText
+}
+
 # Application fonts worker
 HEADERS += $$FONT_ENGINE_PATH/ApplicationFontsWorker.h
 SOURCES += $$FONT_ENGINE_PATH/ApplicationFontsWorker.cpp

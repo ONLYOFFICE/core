@@ -137,6 +137,7 @@ namespace OOX
 
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
@@ -178,6 +179,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			XLS::BaseObjectPtr toBin();
+			void toXLS(XLS::BaseObjectPtr Xfs);
 
 			virtual EElementType getType () const;
 
@@ -207,6 +209,7 @@ namespace OOX
 
 			void fromBin(std::vector<XLS::BaseObjectPtr>& obj);
 			XLS::BaseObjectPtr toBin();
+			void toXLS(XLS::BaseObjectPtr Xfs);
 
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);

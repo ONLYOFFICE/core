@@ -112,20 +112,11 @@ const bool XFS::loadContent(BinProcessor& proc)
 }
 
 const bool XFS::saveContent(BinProcessor& proc)
-{   for (auto i: m_arCellXFs)
-        if(i!= nullptr)
-            proc.mandatory(*i);
-	if(m_arCellXFs.empty())
-	{
-		size_t cellId = 0;
-		size_t StyleId = 0;
-		XF styleXf(cellId, StyleId);
-		proc.mandatory(styleXf);
-		XF cellXf(cellId, StyleId);
-		cellXf.fStyle = false;
-		proc.mandatory(cellXf);
-	}
-    for (auto i: m_arCellStyles)
+{
+	for (auto i: m_arCellStyles)
+		if(i!= nullptr)
+			proc.mandatory(*i);
+	for (auto i: m_arCellXFs)
         if(i!= nullptr)
             proc.mandatory(*i);
     if(m_XFCRC != nullptr )

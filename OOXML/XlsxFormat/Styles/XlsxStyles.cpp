@@ -65,10 +65,9 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FORMATTING.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/STYLES.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Style.h"
 
 namespace OOX
@@ -267,6 +266,15 @@ namespace OOX
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
 			if (m_oNumFmts.IsInit())
 				FormatPtr->m_arFormats = m_oNumFmts->toXLS();
+			if(m_oCellStyleXfs.IsInit() || m_oCellXfs.IsInit())
+			{
+				auto xfs = new XLS::XFS;
+				FormatPtr->m_XFS = XLS::BaseObjectPtr(xfs);
+				if(m_oCellStyleXfs.IsInit())
+					m_oCellStyleXfs->toXLS(FormatPtr->m_XFS);
+				if(m_oCellXfs.IsInit())
+					m_oCellXfs->toXLS(FormatPtr->m_XFS);
+			}
 
 		}
 		void CStyles::read(const CPath& oPath)

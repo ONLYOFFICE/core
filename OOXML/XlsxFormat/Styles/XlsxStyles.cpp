@@ -67,7 +67,6 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FORMATTING.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/STYLES.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Format.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Style.h"
@@ -266,6 +265,8 @@ namespace OOX
 			workbookPtr->m_Formating = XLS::BaseObjectPtr(FormatPtr);
 			if (m_oFonts.IsInit())
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
+			if (m_oNumFmts.IsInit())
+				FormatPtr->m_arFormats = m_oNumFmts->toXLS();
 
 		}
 		void CStyles::read(const CPath& oPath)

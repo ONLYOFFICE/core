@@ -65,10 +65,8 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FORMATTING.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/STYLES.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Style.h"
 
 namespace OOX
 {
@@ -275,6 +273,8 @@ namespace OOX
 				if(m_oCellXfs.IsInit())
 					m_oCellXfs->toXLS(FormatPtr->m_XFS);
 			}
+			if (m_oCellStyles.IsInit())
+				FormatPtr->m_Styles = m_oCellStyles->toXLS();
 
 		}
 		void CStyles::read(const CPath& oPath)

@@ -2408,7 +2408,7 @@ CAnnotStamp::CAnnotStamp(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int 
 	else
 		sy = (m_pRect[3] - m_pRect[1]) / (formYMax - formYMin);
 	double tx = -formXMin * sx + m_pRect[0];
-	double ty = -formYMin * sy + m_pRect[1];
+	double ty = -formYMin * sy - m_pRect[3] + m_dHeight;
 
 	m[0] *= sx;
 	m[1] *= sy;

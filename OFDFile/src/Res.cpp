@@ -47,7 +47,7 @@ bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 	if (!oLiteReader.FromFile(wsFullPath) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return false;
 
-	std::wstring wsResRootPath;
+	std::wstring wsResRootPath{wsRootPath};
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 	{

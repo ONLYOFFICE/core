@@ -248,15 +248,14 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 	oLiteReader.MoveToElement();
 
 	const int nDepth = oLiteReader.GetDepth();
-	unsigned int unCount = 0;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth) && unCount < oCGTransform.m_unGlyphCount)
+	while (oLiteReader.ReadNextSiblingNode(nDepth))
 	{
-		if ("ofd:Glyphs" == oLiteReader.GetNameA())
-		{
-			oCGTransform.m_arGlyphs.push_back(oLiteReader.GetUInteger());
-			++unCount;
-		}
+		if ("ofd:Glyphs" != oLiteReader.GetNameA())
+			continue;
+
+		const std::vector<unsigned int> arValues{oLiteReader.GetArrayUInteger()};
+		// oCGTransform.m_arGlyphs.insert(oCGTransform.m_arGlyphs.end(), arValues.begin(), arValues.end());
 	}
 
 	return oCGTransform;
@@ -264,10 +263,10 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 
 bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const
 {
-	if (m_unCodePosition != unIndex || 0 == m_unCodeCount || 0 == m_unGlyphCount)
+	if (m_unCodePosition != unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
 		return false;
 
-	for (unsigned int unGlyphCount = 0; unGlyphCount < m_unGlyphCount; ++unGlyphCount)
+	for (unsigned int unGlyphCount = 0; unGlyphCount < m_arGlyphs.size(); ++unGlyphCount)
 		pRenderer->CommandDrawTextExCHAR(lUnicode, m_arGlyphs[unGlyphCount], dX, dY, 0, 0);
 
 	unIndex += m_unCodeCount;

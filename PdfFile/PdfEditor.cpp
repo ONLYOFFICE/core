@@ -969,11 +969,7 @@ void CPdfEditor::SetMode(Mode nMode)
 		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 		m_mObjManager.SetDoc(pDoc);
 		int nPages = m_pReader->GetNumPages();
-		for (int i = 0; i < nPages; ++i)
-		{
-			PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
-			pPageTree->AddPage(pPage);
-		}
+		pPageTree->CreateFakePages(nPages);
 	}
 }
 bool CPdfEditor::IncrementalUpdates()
@@ -1226,8 +1222,8 @@ void CPdfEditor::Close()
 		int nPages = pPageTree->GetCount();
 		for (int i = 0; i < nPages; ++i)
 		{
-			PdfWriter::CPage* pPage = pPageTree->GetPage(i);
-			if (pPage->IsFakePage())
+			PdfWriter::CObjectBase* pObj = pPageTree->GetObj(i);
+			if (pObj && pObj->GetType() != PdfWriter::object_type_DICT)
 				EditPage(i, false, true);
 		}
 
@@ -1634,14 +1630,11 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 	PDFDoc* pPDFDocument = NULL;
 	PdfReader::CPdfFontList* pFontList = NULL;
 	int nStartRefID = 0;
-	int nPageIndex = m_pReader->GetPageIndex(_nPageIndex, &pPDFDocument, &pFontList, &nStartRefID);
-	if (nPageIndex < 0 || !pPDFDocument)
-		return NULL;
-
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	if (!pPDFDocument || !pDoc)
+	if (!pDoc)
 		return false;
 
+	PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
 	PdfWriter::CPage* pEditPage = NULL;
 	pEditPage = bActualPos ? pDoc->GetPage(_nPageIndex) : pDoc->GetEditPage(_nPageIndex);
 	if (m_nMode == Mode::Split && !pEditPage)
@@ -1657,12 +1650,25 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		return true;
 	}
 
+	int nOriginIndex = _nPageIndex;
 	if (m_nMode == Mode::WriteNew)
 	{
-		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
-		PdfWriter::CPage* pPage = pPageTree->GetPage(_nPageIndex);
+		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(_nPageIndex);
+		PdfWriter::CFakePage* pFakePage = NULL;
+		if (pObj)
+			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
+		if (pFakePage)
+			nOriginIndex = pFakePage->GetOriginIndex();
+	}
+	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument, &pFontList, &nStartRefID);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return NULL;
+
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPage* pPage = new PdfWriter::CPage(pDoc);
 		pDoc->AddObject(pPage);
-		pPage->SetFakePage(false);
+		pPageTree->ReplacePage(_nPageIndex, pPage);
 		pDoc->AddEditPage(pPage, _nPageIndex);
 
 		// Получение объекта страницы
@@ -1724,6 +1730,12 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 					oTemp.free();
 					pageObj.dictGetValNF(nIndex, &oTemp);
 				}
+			}
+			else if (strcmp("Parent", chKey) == 0)
+			{
+				// Поля родителей страниц переносятся к самим страницам
+				oTemp.free();
+				continue;
 			}
 			else if (strcmp("MediaBox", chKey) == 0)
 			{
@@ -1808,8 +1820,8 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 
 		if (bSet)
 		{
-			pDoc->SetCurPage(pEditPage);
-			m_pWriter->EditPage(pEditPage);
+			pDoc->SetCurPage(pPage);
+			m_pWriter->EditPage(pPage);
 			m_nEditPage = _nPageIndex;
 
 			if (bCropBox)
@@ -2158,7 +2170,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 					pageObj.dictGetValNF(nIndex, &oTemp);
 				}
 			}
-			else if (strcmp("Parent", chKey) == 0) // TODO может ли родитель страницы обладать важными для неё полями
+			else if (strcmp("Parent", chKey) == 0)
 			{
 				oTemp.free();
 				continue;
@@ -2729,7 +2741,7 @@ bool CPdfEditor::AddPage(int nPageIndex)
 }
 bool CPdfEditor::MovePage(int nPageIndex, int nPos)
 {
-	if (EditPage(nPageIndex, true, true) || m_nMode == Mode::Split)
+	if (m_nMode == Mode::Split || m_nMode == Mode::WriteNew || EditPage(nPageIndex, true, true))
 		return m_pWriter->GetDocument()->MovePage(nPageIndex, nPos);
 	return false;
 }

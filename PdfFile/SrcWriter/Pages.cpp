@@ -350,11 +350,16 @@ namespace PdfWriter
 	{
 		for (int i = 0; i < nPages; ++i)
 		{
-			CObjectBase* pTarget = GetObj(nPageIndex);
-			if (pTarget)
-				m_pPages->Insert(pTarget, new CObjectBase());
+			if (nPageIndex < 0)
+				m_pPages->Add(new CFakePage(i));
 			else
-				m_pPages->Add(new CObjectBase());
+			{
+				CObjectBase* pTarget = GetObj(nPageIndex);
+				if (pTarget)
+					m_pPages->Insert(pTarget, new CFakePage(nPageIndex));
+				else
+					m_pPages->Add(new CFakePage(m_pPages->GetCount()));
+			}
 			(*m_pCount)++;
 		}
 	}
@@ -376,7 +381,6 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CPage::CPage(CDocument* pDocument)
 	{
-		m_bFakePage = true;
 		Init(pDocument);
 	}
 	void CPage::Fix()
@@ -474,7 +478,6 @@ namespace PdfWriter
 	}
 	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
 	{
-		m_bFakePage = false;
 		pXref->Add(this);
 		Init(pDocument);
 
@@ -498,14 +501,6 @@ namespace PdfWriter
 			delete pGrState;
 			pGrState = pPrev;
 		}
-	}
-	void CPage::SetFakePage(bool bFakePage)
-	{
-		m_bFakePage = bFakePage;
-	}
-	bool CPage::IsFakePage()
-	{
-		return m_bFakePage;
 	}
 	void CPage::Init(CDocument* pDocument)
 	{
@@ -1586,6 +1581,14 @@ namespace PdfWriter
 		// Description: Конец маркированного контента
 
 		m_pStream->WriteStr("EMC\012");
+	}
+
+	CFakePage::CFakePage(int nOriginIndex) : m_nOriginIndex(nOriginIndex)
+	{
+	}
+	int CFakePage::GetOriginIndex()
+	{
+		return m_nOriginIndex;
 	}
 	//----------------------------------------------------------------------------------------
 	// CTextWord

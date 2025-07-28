@@ -73,7 +73,7 @@ namespace PdfWriter
 		bool ReplacePage(int nPageIndex, CPage* pPage);
 		bool Join(CPageTree* pPageTree);
 		bool Find(CPage* pPage, int& nI);
-		void CreateFakePages(int nPages, int nPageIndex = 0);
+		void CreateFakePages(int nPages, int nPageIndex = -1);
 		void ClearFakePages();
 		unsigned int GetCount()
 		{
@@ -100,8 +100,6 @@ namespace PdfWriter
 		~CPage();
 
 		void      Fix();
-		void      SetFakePage(bool bFakePage);
-		bool      IsFakePage();
 		void      SetHeight(double dHeight);
 		void      SetWidth(double dWidth);
 		double    GetWidth();
@@ -201,7 +199,6 @@ namespace PdfWriter
 
 	private:
 
-		bool         m_bFakePage;
 		CDocument*   m_pDocument;
 		CPageTree*   m_pParent;
 		CPoint       m_oStartPos;          // Позиция начала текущего пата
@@ -218,6 +215,20 @@ namespace PdfWriter
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
+	};
+	class CFakePage : public CObjectBase
+	{
+	public:
+		CFakePage(int nOriginIndex);
+		virtual CObjectBase* Copy(CObjectBase* pOut = NULL) const
+		{
+			return pOut ? pOut : new CFakePage(m_nOriginIndex);
+		}
+
+		int GetOriginIndex();
+
+	private:
+		int m_nOriginIndex;
 	};
 	//----------------------------------------------------------------------------------------
 	// CTextWord

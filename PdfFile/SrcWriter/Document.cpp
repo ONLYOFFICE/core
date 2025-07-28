@@ -1708,7 +1708,7 @@ namespace PdfWriter
 		{
 			if (pObj->IsIndirect())
 				return true;
-			if (pObj && pObj->GetType() == object_type_DICT && ((CDictObject*)pObj)->GetDictType() == dict_type_PAGE && ((CPage*)pObj)->IsFakePage())
+			if (!pObj->GetObjId())
 			{
 				delete pObj;
 				return true;

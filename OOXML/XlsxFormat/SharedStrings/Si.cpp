@@ -203,6 +203,19 @@ namespace OOX
 					StringPtr->str_ = text->ToString();
 					continue;
 				}
+				if(m_arrItems[i]->getType() == OOX::et_x_r)
+				{
+					auto crunPtr = static_cast<CRun*>(m_arrItems[i]);
+					StringPtr->fRichSt = true;
+					USHORT ind = 0;
+					XLS::FormatRun run;
+					run.ich = StringPtr->str_.size();
+					StringPtr->str_ = StringPtr->str_ + crunPtr->toBin(ind);
+					run.ifnt.value() = ind;
+					if(run.ich != 0 || run.ifnt != 0)
+						StringPtr->rgRun.push_back(run);
+					continue;
+				}
 			}
 			auto StructPtr = XLS::BiffStructurePtr(StringPtr);
 			return StructPtr;

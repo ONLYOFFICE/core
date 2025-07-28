@@ -609,6 +609,8 @@ bundle_dylibs {
 
 		VERSION = $$VERSION_CORRECT
 		MAJOR_VERSION = $$VERSION_1
+		# set framework version as A
+		QMAKE_FRAMEWORK_VERSION = A
 	}
 }
 

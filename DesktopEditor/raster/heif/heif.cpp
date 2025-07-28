@@ -112,34 +112,38 @@ namespace NSHeif {
 		heif_image* img;
 		defer(heif_image_release(img););
 
-		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_interleaved_RGB, nullptr)))
+		if (IsError(heif_decode_image(handle, &img, heif_colorspace_RGB, heif_chroma_444, nullptr)))
 			return false;
 
 		int width = heif_image_get_primary_width(img);
 		int height = heif_image_get_primary_height(img);
 
-		int stride;
-		const BYTE* source = heif_image_get_plane_readonly(img, heif_channel_interleaved, &stride);
+		int stride_R, stride_G, stride_B;
+		const BYTE* source_R = heif_image_get_plane_readonly(img, heif_channel_R, &stride_R);
+		const BYTE* source_G = heif_image_get_plane_readonly(img, heif_channel_G, &stride_G);
+		const BYTE* source_B = heif_image_get_plane_readonly(img, heif_channel_B, &stride_B);
 
-		if (stride == 0 || source == nullptr)
+		if (stride_R == 0 || !source_R)
 			return false;
 
-		BYTE* data = new BYTE[stride * height];
+		BYTE* data = new BYTE[4 * width * height];
 
 		frame->put_Width(width);
 		frame->put_Height(height);
-		frame->put_Stride(stride);
+		frame->put_Stride(4 * width);
 		frame->put_Data(data);
-
 
 		for (size_t i = 0; i < height; ++i)
 		{
-			const BYTE* row = source + i * stride;
+			const BYTE* row_R = source_R + i * stride_R;
+			const BYTE* row_G = source_G + i * stride_G;
+			const BYTE* row_B = source_B + i * stride_B;
 			for (size_t j = 0; j < width; ++j)
 			{
-				data[(i * width + j) * 3 + 0] = row[j * 3 + 2];
-				data[(i * width + j) * 3 + 1] = row[j * 3 + 1];
-				data[(i * width + j) * 3 + 2] = row[j * 3 + 0];
+				data[(i * width + j) * 4 + 0] = row_B[j];
+				data[(i * width + j) * 4 + 1] = row_G[j];
+				data[(i * width + j) * 4 + 2] = row_R[j];
+				data[(i * width + j) * 4 + 3] = 255;
 			}
 		}
 

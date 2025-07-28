@@ -418,7 +418,7 @@ void XF::writeFields(CFRecord& record)
 		if(font_index == 0xffff)
 			font_index = 0;
 		if(ifmt == 0xffff)
-			ifmt = 0;
+			ifmt = 164;
 		if(ixfParent == 0)
 			ixfParent = 0xfff;
         FontIndex ifnt;

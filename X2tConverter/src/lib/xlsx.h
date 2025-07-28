@@ -176,8 +176,9 @@ namespace NExtractTools
 		_UINT32 nRes = S_OK;
 		const OOX::CPath oox_path(sFrom);
 		{
-			OOX::Spreadsheet::CXlsx oXlsx;
+			OOX::Spreadsheet::CXlsb oXlsx;
 			oXlsx.Read(oox_path);
+			oXlsx.PrepareRichStr();
 			nRes = oXlsx.WriteXLS(sTo)? S_OK : AVS_FILEUTILS_ERROR_CONVERT;;
 		}
 		return nRes;

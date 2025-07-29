@@ -1767,43 +1767,50 @@ namespace SimpleTypes
 		m_unB = b;
 	}
 
-	int	CHexColor::HexToInt(int nHex)
+	int	CHexColor::HexToInt(int nHex, bool& bResult)
 	{
 		if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');
 		if ( nHex >= 'a' && nHex <= 'f' ) return (nHex - 'a' + 10);
 		if ( nHex >= 'A' && nHex <= 'F' ) return (nHex - 'A' + 10);
 
+		bResult = false;
 		return 0;
 	}
 
-	void CHexColor::Parse()
+	bool CHexColor::Parse()
 	{
 		if ( m_sValue.length() < 6 )
-			return;
+			return false;
 
+		bool bResult = true;
 		if (m_sValue.length() > 6)
 		{
-			m_unR = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
-			m_unG = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
-			m_unB = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
-			m_unA = HexToInt((int)m_sValue[7]) + (unsigned char)(HexToInt((int)m_sValue[6]) << 4);
+			m_unR = HexToInt((int)m_sValue[1], bResult) + (unsigned char)(HexToInt((int)m_sValue[0], bResult) << 4);
+			m_unG = HexToInt((int)m_sValue[3], bResult) + (unsigned char)(HexToInt((int)m_sValue[2], bResult) << 4);
+			m_unB = HexToInt((int)m_sValue[5], bResult) + (unsigned char)(HexToInt((int)m_sValue[4], bResult) << 4);
+			m_unA = HexToInt((int)m_sValue[7], bResult) + (unsigned char)(HexToInt((int)m_sValue[6], bResult) << 4);
 		}
 		else
 		{
-			m_unR = HexToInt((int)m_sValue[1]) + (unsigned char)(HexToInt((int)m_sValue[0]) << 4);
-			m_unG = HexToInt((int)m_sValue[3]) + (unsigned char)(HexToInt((int)m_sValue[2]) << 4);
-			m_unB = HexToInt((int)m_sValue[5]) + (unsigned char)(HexToInt((int)m_sValue[4]) << 4);
+			m_unR = HexToInt((int)m_sValue[1], bResult) + (unsigned char)(HexToInt((int)m_sValue[0], bResult) << 4);
+			m_unG = HexToInt((int)m_sValue[3], bResult) + (unsigned char)(HexToInt((int)m_sValue[2], bResult) << 4);
+			m_unB = HexToInt((int)m_sValue[5], bResult) + (unsigned char)(HexToInt((int)m_sValue[4], bResult) << 4);
 		}
+		return bResult;
 	}
 
-	void CHexColor::Parse3()
+	bool CHexColor::Parse3()
 	{
 		if ( m_sValue.length() < 3 )
-			return;
+			return false;
 
-		m_unR = HexToInt( (int)m_sValue[0] ) + (unsigned char)(HexToInt( (int)m_sValue[0]) << 4);
-		m_unG = HexToInt( (int)m_sValue[1] ) + (unsigned char)(HexToInt( (int)m_sValue[1]) << 4);
-		m_unB = HexToInt( (int)m_sValue[2] ) + (unsigned char)(HexToInt( (int)m_sValue[2]) << 4);
+		bool bResult = true;
+		
+		m_unR = HexToInt( (int)m_sValue[0], bResult) + (unsigned char)(HexToInt( (int)m_sValue[0], bResult) << 4);
+		m_unG = HexToInt( (int)m_sValue[1], bResult) + (unsigned char)(HexToInt( (int)m_sValue[1], bResult) << 4);
+		m_unB = HexToInt( (int)m_sValue[2], bResult) + (unsigned char)(HexToInt( (int)m_sValue[2], bResult) << 4);
+		
+		return bResult;
 	}
 
 	EHexColor CHexColor::FromString(const std::wstring &sValueSrc)
@@ -1829,6 +1836,7 @@ namespace SimpleTypes
 			if(oPresetColorVal.FromStringIgnoreCase(sValue))
 			{
 				this->m_eValue = hexcolorRGB;
+				
 				m_unR = oPresetColorVal.Get_R();
 				m_unG = oPresetColorVal.Get_G();
 				m_unB = oPresetColorVal.Get_B();
@@ -1837,19 +1845,23 @@ namespace SimpleTypes
 			{
 				this->m_eValue = hexcolorARGB;
 				m_sValue = sValue.substr(0, 8);
-				Parse();
+				
+				if (false == Parse()) 
+					this->m_eValue = hexcolorAuto;
 			}
 			else if ( 6 <= sValue.length() )
 			{
 				this->m_eValue = hexcolorRGB;
 				m_sValue = sValue.substr( 0, 6 );
-				Parse();
+				if (false == Parse()) this->m_eValue = hexcolorAuto;
 			}
 			else if ( 3 == sValue.length() )// a la #339 (Compo 3AP.docx)
 			{
 				this->m_eValue = hexcolorRGB;
 				m_sValue = sValue;
-				Parse3();
+				
+				if (false == Parse3()) 
+					this->m_eValue = hexcolorAuto;
 			}
 			else   this->m_eValue = EHexColor::hexcolorAuto;//eDefValue;
 

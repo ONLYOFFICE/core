@@ -743,10 +743,12 @@ bool Location::IsTouching() noexcept
 CBooleanOperations::CBooleanOperations(const CGraphicsPath& path1,
 									   const CGraphicsPath& path2,
 									   BooleanOpType op,
-									   long fillType) :
+									   long fillType,
+									   bool isLuminosity) :
 	Op(op),
 	Close1(path1.Is_poly_closed()),
 	Close2(path2.Is_poly_closed()),
+	IsLuminosity(isLuminosity),
 	FillType(fillType),
 	Path1(path1),
 	Path2(path2)
@@ -1665,14 +1667,15 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 		std::vector<double> roots = curve.GetCurveLineIntersection(segment.P.X,segment.P.Y, point.X - segment.P.X, point.Y - segment.P.Y);
 		Curve line(segment, Segment(point));
 
-		return roots.size() % 2;
+		if (IsLuminosity)
+			return roots.size() % 2;
 
-		// int count = 0;
-		// for (const auto& r : roots)
-		// 	if (line.GetTimeOf(curve.GetPoint(r)) != -1)
-		// 		count++;
+		int count = 0;
+		for (const auto& r : roots)
+			if (line.GetTimeOf(curve.GetPoint(r)) != -1)
+				count++;
 
-		// return count;
+		return count;
 	}
 	return 0;
 }
@@ -1928,7 +1931,8 @@ void CBooleanOperations::AddOffsets(std::vector<double>& offsets,
 CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 								   const CGraphicsPath& path2,
 								   BooleanOpType op,
-								   long fillType)
+								   long fillType,
+								   bool isLuminosity)
 {
 	std::vector<CGraphicsPath>	paths1 = path1.GetSubPaths(),
 								paths2 = path2.GetSubPaths(),
@@ -1938,7 +1942,7 @@ CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1,
 	{
 		for (const auto& p2 : paths2)
 		{
-			CBooleanOperations operation(p1, p2, op, fillType);
+			CBooleanOperations operation(p1, p2, op, fillType, isLuminosity);
 			paths.push_back(operation.GetResult());
 		}
 	}

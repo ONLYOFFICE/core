@@ -1808,7 +1808,7 @@ namespace SimpleTypes
 
 	EHexColor CHexColor::FromString(const std::wstring &sValueSrc)
 	{
-		if ( L"auto" == sValueSrc || L"none" == sValueSrc )
+		if (L"automatic" == sValueSrc || L"auto" == sValueSrc || L"none" == sValueSrc )
 			this->m_eValue = hexcolorAuto;
 		else
 		{

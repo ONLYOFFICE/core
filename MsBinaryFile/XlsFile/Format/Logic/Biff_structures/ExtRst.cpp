@@ -84,6 +84,7 @@ void ExtRst::save(CFRecord& record)
     record.reserveNunBytes(2);
     record << phs;
     auto rphssubStart = record.getRdPtr();
+	rphssub.crun = rgphruns.size();
     record << rphssub;
     cb = record.getRdPtr() - rphssubStart;
     record.RollRdPtrBack(record.getRdPtr() - cbPose);

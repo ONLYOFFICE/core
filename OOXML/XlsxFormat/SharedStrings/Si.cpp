@@ -35,7 +35,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/XLUnicodeRichExtendedString.h"
 
 #include "../../Binary/Presentation/BinaryFileReaderWriter.h"
-
+#include "../../Common/SimpleTypes_Shared.h"
 namespace OOX
 {
 	namespace Spreadsheet
@@ -216,6 +216,38 @@ namespace OOX
 					if(run.ich != 0 || run.ifnt != 0)
 						StringPtr->rgRun.push_back(run);
 					continue;
+				}
+				auto phonPtr = static_cast<CPhonetic*>(m_arrItems[i]);
+				if(phonPtr)
+				{
+					StringPtr->fExtSt  = true;
+					StringPtr->extRst.rphssub.st = L"";
+					if(phonPtr->m_oFontId.IsInit())
+						StringPtr->extRst.phs.ifnt = phonPtr->m_oFontId->GetValue();
+					if(phonPtr->m_oAlignment.IsInit())
+						StringPtr->extRst.phs.data.alcH = phonPtr->m_oAlignment->GetValue();
+					if(phonPtr->m_oType.IsInit())
+						StringPtr->extRst.phs.data.phType = phonPtr->m_oType->GetValue();
+
+					if(i < m_arrItems.size() - 1)
+					{
+						auto ph = static_cast<CRPh*>(m_arrItems[i+1]);
+						if(ph)
+						{
+							XLS::PhRuns runs;
+							if(ph->m_oEb.IsInit())
+								runs.ichMom = ph->m_oEb->GetValue();
+							if(ph->m_oSb.IsInit())
+								runs.ichFirst = ph->m_oSb->GetValue();
+							if(!ph->m_arrItems.empty())
+							{
+								StringPtr->extRst.rphssub.st.value() +=  ph->m_arrItems.back()->ToString();
+								runs.ichMom = ph->m_arrItems.back()->ToString().size();
+							}
+							StringPtr->extRst.rgphruns.push_back(runs);
+						}
+						i++;
+					}
 				}
 			}
 			auto StructPtr = XLS::BiffStructurePtr(StringPtr);

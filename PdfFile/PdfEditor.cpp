@@ -3501,3 +3501,7 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
+void CPdfEditor::Redact(CRedact* pCommand)
+{
+
+}

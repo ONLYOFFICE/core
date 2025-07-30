@@ -63,6 +63,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctPageClear:        return new CEmptyComand(IAdvancedCommand::AdvancedCommandType::PageClear);
 		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);
 		case ctHeadings:         return Read_Command<CHeadings>        (this, pCorrector);
+		case ctRedact:           return Read_Command<CRedact>          (this, pCorrector);
 		default: break;
 		}
 

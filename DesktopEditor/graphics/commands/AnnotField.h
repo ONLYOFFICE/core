@@ -628,4 +628,13 @@ private:
 	std::vector<CParent*> m_arrParents;
 };
 
+class GRAPHICS_DECL CRedact : public IAdvancedCommand
+{
+public:
+	CRedact();
+	virtual ~CRedact();
+
+	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+};
+
 #endif // _BUILD_ANNOTFIELD_H_

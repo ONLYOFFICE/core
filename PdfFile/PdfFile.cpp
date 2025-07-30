@@ -1234,6 +1234,7 @@ HRESULT CPdfFile::IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedComma
 	case IAdvancedCommand::AdvancedCommandType::PageClear:
 	case IAdvancedCommand::AdvancedCommandType::PageRotate:
 	case IAdvancedCommand::AdvancedCommandType::Headings:
+	case IAdvancedCommand::AdvancedCommandType::Redact:
 		return S_OK;
 	default:
 		break;
@@ -1331,6 +1332,12 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::Headings:
 	{
 		m_pInternal->pWriter->SetHeadings((CHeadings*)command);
+		return S_OK;
+	}
+	case IAdvancedCommand::AdvancedCommandType::Redact:
+	{
+		if (m_pInternal->pEditor && m_pInternal->pEditor->IsEditPage())
+			m_pInternal->pEditor->Redact((CRedact*)command);
 		return S_OK;
 	}
 	default:

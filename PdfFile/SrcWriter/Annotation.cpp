@@ -240,10 +240,6 @@ namespace PdfWriter
 	{
 		Add("F", nAnnotFlag);
 	}
-	void CAnnotation::SetMEOptions(const int& nMEOptions)
-	{
-		Add("MEOptions", nMEOptions);
-	}
 	void CAnnotation::SetPage(CPage* pPage, double dW, double dH, double dX, double dY)
 	{
 		Add("P", pPage);
@@ -1364,6 +1360,10 @@ namespace PdfWriter
 	void CWidgetAnnotation::SetParentID(int nParentID)
 	{
 		m_nParentID = nParentID;
+	}
+	void CWidgetAnnotation::SetMEOptions(const int& nMEOptions)
+	{
+		Add("MEOptions", nMEOptions);
 	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{

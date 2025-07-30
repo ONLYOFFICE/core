@@ -1487,6 +1487,14 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	// 20 - OO метаданные форм - OMetadata
 	m_sOMetadata = DictLookupString(&oField, "OMetadata", 20);
 
+	// 21 - MEOptions
+	if (oField.dictLookup("MEOptions", &oObj)->isInt())
+	{
+		m_unFlags |= (1 << 21);
+		m_unMEOptions = oObj.getInt();
+	}
+	oObj.free();
+
 	// Action - A
 	Object oAction;
 	if (oField.dictLookup("A", &oAction)->isDict())
@@ -2721,6 +2729,14 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 	}
 	oObj.free();
 
+	// 11 - MEOptions
+	if (oField.dictLookup("MEOptions", &oObj)->isInt())
+	{
+		pAnnotParent->unFlags |= (1 << 11);
+		pAnnotParent->unMEOptions = oObj.getInt();
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -3146,14 +3162,6 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefID)
 		delete s;
 	}
 	oObj.free();
-
-	// 9 - MEOptions
-	if (pField->fieldLookup("MEOptions", &oObj)->isInt())
-	{
-		m_unAFlags |= (1 << 9);
-		m_unMEOptions = oObj.getInt();
-	}
-	oObj.free();
 }
 CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefID)
 {
@@ -3278,14 +3286,6 @@ CAnnot::CAnnot(PDFDoc* pdfDoc, Object* oAnnotRef, int nPageIndex, int nStartRefI
 		TextString* s = new TextString(oObj.getString());
 		m_sOUserID = NSStringExt::CConverter::GetUtf8FromUTF32(s->getUnicode(), s->getLength());
 		delete s;
-	}
-	oObj.free();
-
-	// 9 - MEOptions
-	if (oAnnot.dictLookup("MEOptions", &oObj)->isInt())
-	{
-		m_unAFlags |= (1 << 9);
-		m_unMEOptions = oObj.getInt();
 	}
 	oObj.free();
 
@@ -3763,6 +3763,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 	}
 	if (unFlags & (1 << 9))
 		oRes.AddInt(unMaxLen);
+	if (unFlags & (1 << 11))
+		oRes.AddInt(unMEOptions);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {
@@ -3793,8 +3795,6 @@ void CAnnot::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sM);
 	if (m_unAFlags & (1 << 7))
 		oRes.WriteString(m_sOUserID);
-	if (m_unAFlags & (1 << 9))
-		oRes.AddInt(m_unMEOptions);
 }
 void CAnnot::CBorderType::ToWASM(NSWasm::CData& oRes)
 {
@@ -3862,6 +3862,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sButtonFontName);
 	if (m_unFlags & (1 << 20))
 		oRes.WriteString(m_sOMetadata);
+	if (m_unFlags & (1 << 21))
+		oRes.AddInt(m_unMEOptions);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

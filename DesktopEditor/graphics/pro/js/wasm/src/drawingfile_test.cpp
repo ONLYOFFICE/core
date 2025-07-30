@@ -278,12 +278,6 @@ void ReadAnnot(BYTE* pWidgets, int& i)
 		std::cout << "User ID " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 		i += nPathLength;
 	}
-	if (nFlags & (1 << 9))
-	{
-		nPathLength = READ_INT(pWidgets + i);
-		i += 4;
-		std::cout << "MEOptions " << nPathLength << ", ";
-	}
 }
 
 void ReadInteractiveForms(BYTE* pWidgets, int& i)
@@ -420,6 +414,12 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			nPathLength = READ_INT(pWidgets + i);
 			i += 4;
 			std::cout << "MaxLen " << nPathLength << ", ";
+		}
+		if (nFlags & (1 << 11))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MEOptions " << nPathLength << ", ";
 		}
 
 		std::cout << std::endl;
@@ -586,6 +586,12 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 4;
 			std::cout << "OMetadata " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
+		}
+		if (nFlags & (1 << 21))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MEOptions " << nPathLength << ", ";
 		}
 
 		//Action

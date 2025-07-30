@@ -546,9 +546,6 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 	// User ID
 	if (flags & (1 << 8))
 		rec["AP"]["Copy"] = reader.readInt();
-	// MEOptions
-	if (flags & (1 << 9))
-		rec["MEOptions"] = reader.readInt();
 }
 function readAnnotAP(reader, AP)
 {
@@ -1049,6 +1046,8 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		rec["font"]["AP"] = readStringFunc.call(reader);
 	if (flags & (1 << 20))
 		rec["meta"] = readStringFunc.call(reader);
+	if (flags & (1 << 21))
+		rec["MEOptions"] = reader.readInt();
 	// Action
 	let nAction = reader.readInt();
 	if (nAction > 0)
@@ -1320,6 +1319,8 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			}
 			if (flags & (1 << 9))
 				rec["maxLen"] = reader.readInt();
+			if (flags & (1 << 11))
+				rec["MEOptions"] = reader.readInt();
 			res["Parents"].push(rec);
 		}
 

@@ -185,7 +185,6 @@ namespace PdfWriter
 		void SetRect(const TRect& oRect);
 		void SetBorder(BYTE nType, double dWidth, const std::vector<double>& arrDash);
 		void SetAnnotFlag(const int& nAnnotFlag);
-		void SetMEOptions(const int& nMEOptions);
 		void SetPage(CPage* pPage, double dW = 0, double dH = 0, double dX = 0, double dY = 0);
 		void SetBE(BYTE nType, const double& dBE);
 		void SetContents(const std::wstring& wsText);
@@ -460,6 +459,7 @@ namespace PdfWriter
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
 		void SetParentID(int nParentID);
+		void SetMEOptions(const int& nMEOptions);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);

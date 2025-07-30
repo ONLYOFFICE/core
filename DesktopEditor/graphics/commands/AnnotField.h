@@ -185,6 +185,7 @@ public:
 		int  GetFlag()      const;
 		int  GetFlags()     const;
 		int  GetParentID()  const;
+		int  GetMEOptions() const;
 		int  GetFontStyle() const;
 		double GetFontSize()   const;
 		double GetFontSizeAP() const;
@@ -215,6 +216,7 @@ public:
 		int m_nFlag;
 		int m_nFlags;
 		int m_nParentID;
+		int m_nMEOptions;
 		int m_nFontStyle;
 		double m_dFS;
 		double m_dFSAP;
@@ -466,7 +468,6 @@ public:
 	int   GetAnnotFlag() const;
 	int   GetPage()      const;
 	int   GetCopyAP()    const;
-	int   GetMEOptions() const;
 	void  GetBE(BYTE& nS, double& dI);
 	BYTE* GetRender(LONG& nLen);
 	const std::wstring& GetNM();
@@ -525,7 +526,6 @@ private:
 	int          m_nAnnotFlag;
 	int          m_nPage;
 	int          m_nCopyAP;
-	int          m_nMEOptions;
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
 	std::wstring m_wsOUserID;
@@ -573,6 +573,7 @@ public:
 		int nFlags;
 		int nMaxLen;
 		int nParentID;
+		int nMEOptions;
 		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;

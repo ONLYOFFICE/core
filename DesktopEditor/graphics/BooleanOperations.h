@@ -17,10 +17,10 @@ namespace Aggplus
 		bool IsCurve	= false;
 		bool Visited	= false;
 		bool PolyClosed = false;
+		bool Winding	= false;
 
-		int Index	= -1;
-		int Id		= 0;
-		int Winding	= 0;
+		int Index = -1;
+		int Id	  = 0;
 
 		std::shared_ptr<Location> Inters{nullptr};
 
@@ -124,6 +124,7 @@ namespace Aggplus
 		Curve	GetCurve(const Segment& segment) const noexcept;
 		Curve	GetPreviousCurve(const Curve& curve) const noexcept;
 		Curve	GetNextCurve(const Curve& curve) const noexcept;
+		Segment GetPreviousSegment(const Segment& segment) const noexcept;
 		Segment GetNextSegment(const Segment& segment) const noexcept;
 		void	SetVisited(const Segment& segment);
 
@@ -141,6 +142,7 @@ namespace Aggplus
 		int  AddCurveIntersection(const Curve& curve1, const Curve& curve2, const Curve& startCurve1, const Curve& startCurve2, bool flip,
 								  int recursion = 0, int calls = 0, double tMin = 0.0, double tMax = 1.0, double uMin = 0.0, double uMax = 1.0);
 		int  CheckInters(const PointD& point, const Segment& segment, const Curve& curve, int& touchCount) const;
+		bool IsInside(const Segment& segment) const;
 		void SetWinding();
 
 		// Location

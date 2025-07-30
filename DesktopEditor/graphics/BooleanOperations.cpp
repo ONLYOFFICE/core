@@ -938,14 +938,12 @@ void CBooleanOperations::TraceAllOverlap()
 	}
 	else
 	{
-		int count1 = 0, count2 = 0;
+		bool winding1, winding2;
 		for (const auto& s : Segments1)
 		{
 			if (!s.Inters)
 			{
-				int touchCount = 0;
-				for (const auto& c : OriginCurves2)
-					count1 += CheckInters(MIN_POINT, s, c, touchCount);
+				winding1 = IsInside(s);
 				break;
 			}
 		}
@@ -954,9 +952,7 @@ void CBooleanOperations::TraceAllOverlap()
 		{
 			if (!s.Inters)
 			{
-				int touchCount = 0;
-				for (const auto& c : OriginCurves1)
-					count2 += CheckInters(MIN_POINT, s, c, touchCount);
+				winding2 = IsInside(s);
 				break;
 			}
 		}
@@ -968,19 +964,19 @@ void CBooleanOperations::TraceAllOverlap()
 		}
 		else if (Op == Union)
 		{
-			if (count1 % 2 == 0 && count2 % 2 == 0)
+			if (!winding1 && !winding2)
 				TracePaths();
-			else if (count1 % 2 == 0)
+			else if (!winding2)
 				Result = std::move(Path1);
 			else
 				Result = std::move(Path2);
 		}
-		else if (count1 % 2 == 0 && count2 % 2 == 0)
+		else if (!winding1 && !winding2)
 			Result = std::move(Path1);
 		else
 		{
 			Result.StartFigure();
-			for (const auto& seg : count1 % 2 == 0 ? Segments1 : Segments2)
+			for (const auto& seg : !winding1 ? Segments1 : Segments2)
 			{
 				if (!seg.Inters && !seg.Visited)
 				{
@@ -1022,35 +1018,18 @@ void CBooleanOperations::TracePaths()
 {
 	size_t length = Segments1.size();
 	Result.StartFigure();
-	bool first_start = true;
 	for (size_t i = 0; i < length + Segments2.size(); i++)
 	{
 		Segment s = i >= length ? Segments2[i - length] : Segments1[i];
 		bool valid = s.IsValid(Op),
 			 start = true;
-		PointD start_point;
 		while (valid)
 		{
 			if (!start || (Op == Intersection && s.Inters && !GetNextSegment(s).Inters))
 				SetVisited(s);
 
-			if (first_start)
-			{
+			if (start)
 				Result.MoveTo(s.P.X, s.P.Y);
-				start_point = s.P;
-			}
-			else if (start)
-			{
-				double x, y;
-				Result.GetLastPoint(x, y);
-				if (isZero(start_point.X - x) && isZero(start_point.Y - y))
-				{
-					Result.MoveTo(s.P.X, s.P.Y);
-					start_point = s.P;
-				}
-				else
-					Result.LineTo(s.P.X, s.P.Y);
-			}
 			else if (s.IsCurve)
 				Result.CurveTo(s.HI.X + s.P.X, s.HI.Y + s.P.Y,
 							   s.HO.X + s.P.X, s.HO.Y + s.P.Y,
@@ -1084,9 +1063,6 @@ void CBooleanOperations::TracePaths()
 
 			if (start)
 				start = false;
-
-			if (first_start)
-				first_start = false;
 		}
 
 		if (!start && AllOverlap()) break;
@@ -1247,6 +1223,14 @@ Curve CBooleanOperations::GetNextCurve(const Curve& curve) const noexcept
 
 	return path1 ? Curves1[curve.Segment1.Index + 1]
 				 : Curves2[curve.Segment1.Index + 1];
+}
+
+Segment CBooleanOperations::GetPreviousSegment(const Segment& segment) const noexcept
+{
+	if (segment.Index == 0)
+		return segment.Id == 1 ? Segments1[Segments1.size() - 1] : Segments2[Segments2.size() - 1];
+	else
+		return segment.Id == 1 ? Segments1[segment.Index - 1] : Segments2[segment.Index - 1];
 }
 
 Segment CBooleanOperations::GetNextSegment(const Segment& segment) const noexcept
@@ -1680,6 +1664,16 @@ int CBooleanOperations::CheckInters(const PointD& point, const Segment& segment,
 	return 0;
 }
 
+bool CBooleanOperations::IsInside(const Segment& segment) const
+{
+	int count = 0;
+	int touchCount = 0;
+	for(const auto& c : segment.Id == 1 ? OriginCurves2 : OriginCurves1)
+		count += CheckInters(MIN_POINT, segment, c, touchCount);
+
+	return count % 2;
+}
+
 void CBooleanOperations::SetWinding()
 {
 	if (Locations.empty() || (Locations.size() == 2 && Locations[0]->Ends))
@@ -1694,21 +1688,15 @@ void CBooleanOperations::SetWinding()
 			if (!s.Inters)
 				s2 = s;
 
-		int count = 0,
-			touchCount = 0;
-		for (const auto& c : OriginCurves2)
-			count += CheckInters(MIN_POINT, s1, c, touchCount);
+		bool winding = IsInside(s1);
 
 		for (auto& s : Segments1)
-			s.Winding = count % 2;
+			s.Winding = winding;
 
-		count = 0;
-		touchCount = 0;
-		for (const auto& c : OriginCurves1)
-			count += CheckInters(MIN_POINT, s2, c, touchCount);
+		winding = IsInside(s2);
 
 		for (auto& s : Segments2)
-			s.Winding = count % 2;
+			s.Winding = winding;
 	}
 	else
 	{
@@ -1720,18 +1708,36 @@ void CBooleanOperations::SetWinding()
 			if (s.IsEmpty() || s.Inters || s == start)
 				continue;
 
-			int count = 0,
-				touchCount = 0;
-			for (const auto& c : (s.Id == 1 ? OriginCurves2 : OriginCurves1))
-				count += CheckInters(MIN_POINT, s, c, touchCount);
+			bool winding = IsInside(s);
+
+			int winding1 = false;
+			if (s.Id == 1 ? !Close1 : !Close2)
+				winding1 = IsInside(GetPreviousSegment(start));
 
 			do
 			{
-				if (s.Id == 1 )
-					Segments1[s.Index].Winding = count % 2;
+				if (s.Id == 1)
+				{
+					Segments1[s.Index].Winding = winding;
+					if (!Close1 && s.Index == Segments1.size() - 1)
+					{
+						winding = winding1;
+						s = Segments1[0];
+					}
+					else
+						s = GetNextSegment(s);
+				}
 				else
-					Segments2[s.Index].Winding = count % 2;
-				s = GetNextSegment(s);
+				{
+					Segments2[s.Index].Winding = winding;
+					if (!Close2 && s.Index == Segments2.size() - 1)
+					{
+						winding = winding1;
+						s = Segments2[0];
+					}
+					else
+						s = GetNextSegment(s);
+				}
 			} while (!s.IsEmpty() && !s.Inters && s != start);
 		}
 	}

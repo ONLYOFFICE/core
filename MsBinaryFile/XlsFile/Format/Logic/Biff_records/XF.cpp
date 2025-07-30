@@ -422,7 +422,7 @@ void XF::writeFields(CFRecord& record)
 		if(ixfParent == 0)
 			ixfParent = 0xfff;
         FontIndex ifnt;
-        ifnt.setValue(font_index);
+        ifnt.setValue(font_index + 1);
         record <<ifnt  << ifmt;
         _UINT16 flags = 0, flags5 = 0;
         _UINT32 flags2 = 0, flags3 = 0, flags4 = 0;

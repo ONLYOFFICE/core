@@ -43,10 +43,13 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType	type = typeBopPopCustomPiesIndices;
 //-----------------------------
 	std::vector<unsigned short> pie_indices;
+    unsigned short cxi = 0;
+
 };
 
 
@@ -64,6 +67,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBopPopCustom;
 

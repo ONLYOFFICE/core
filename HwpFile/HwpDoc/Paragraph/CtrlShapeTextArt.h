@@ -28,7 +28,7 @@ public:
 	CCtrlShapeTextArt(const HWP_STRING& sCtrlID);
 	CCtrlShapeTextArt(const CCtrlGeneralShape& oShape);
 	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

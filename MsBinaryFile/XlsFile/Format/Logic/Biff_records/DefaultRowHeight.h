@@ -46,15 +46,16 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeDefaultRowHeight;
 //-----------------------------
-	bool fUnsynced;
-	bool fDyZero;
-	bool fExAsc;
-	bool fExDsc;
+    bool fUnsynced = false;
+    bool fDyZero = false;
+    bool fExAsc = false;
+    bool fExDsc = false;
 	
-	_INT16 miyRw; // measured in twips (1/20 of of a printer's point)
+    _INT16 miyRw  = 290; // measured in twips (1/20 of of a printer's point)
 };
 
 class DefaultRowHeight_BIFF2 : public DefaultRowHeight

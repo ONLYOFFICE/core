@@ -1958,6 +1958,10 @@ namespace NSFonts
 		if (FT_Open_Face(m_internal->m_library, &oOpenArgs, nFaceIndex, &pFace))
 			return;
 
+		bool bIsASC = false;
+		if (pFace->family_name && (0 == strcmp(pFace->family_name, "ASCW3")))
+			bIsASC = true;
+
 		for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
 		{
 			FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
@@ -1967,7 +1971,8 @@ namespace NSFonts
 
 			while (indexG)
 			{
-				pChecker->Check((int)character, indexG);
+				if (!bIsASC || (character < 35 || character > 255))
+					pChecker->Check((int)character, indexG);
 				character = FT_Get_Next_Char(pFace, character, &indexG);
 			}
 		}

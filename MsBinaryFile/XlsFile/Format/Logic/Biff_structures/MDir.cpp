@@ -46,5 +46,12 @@ void MDir::load(CFRecord& record)
 	record >> imdt >> mdd;
 }
 
+void MDir::save(CFRecord& record)
+{
+	record << imdt;
+	_UINT32 mdd4b = mdd;
+	record << mdd4b;
+}
+
 
 } // namespace XLS

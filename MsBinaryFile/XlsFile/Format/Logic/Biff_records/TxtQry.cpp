@@ -85,5 +85,38 @@ void TxtQry::readFields(CFRecord& record)
 	record >> rgchFile;
 }
 
+void TxtQry::writeFields(CFRecord& record)
+{
+	record << rt;
+	record.reserveNunBytes(2);
+	unsigned short flags1 = 0;
+
+	SETBIT(flags1, 0, fFile)
+	SETBIT(flags1, 1, fDelimited)
+	SETBITS(flags1, 2, 3, iCpid)
+	SETBIT(flags1, 4, fPromptForFile)
+	SETBITS(flags1, 5, 14, iCpidNew)
+	SETBIT(flags1, 15, fUseNewiCpid)
+	record << flags1;
+	record.reserveNunBytes(2);
+
+	unsigned short flags2 = 0;
+	SETBIT(flags2, 0, fTab)
+	SETBIT(flags2, 1, fSpace)
+	SETBIT(flags2, 2, fComma)
+	SETBIT(flags2, 3, fSemiColon)
+	SETBIT(flags2, 4, fCustom)
+	SETBIT(flags2, 5, fConsecutive)
+	SETBITS(flags1, 6, 7, iTextDelm)
+	record << rowStartAt << flags2 << chCustom;
+	record.reserveNunBytes(1);
+	record << itwf << chDecimal << chThousSep;
+	for(auto i : rgtxtwf)
+	{
+		i.save(record);
+	}
+	record << rgchFile;
+}
+
 } // namespace XLS
 

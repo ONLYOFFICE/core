@@ -63,6 +63,11 @@ void SIIndex::readFields(CFRecord& record)
 	record >> numIndex;
 }
 
+void SIIndex::writeFields(CFRecord& record)
+{
+    record << numIndex;
+}
+
 int SIIndex::serialize(std::wostream & _stream, int idx, const CellRef & in_ref)
 {
 	int res = 0;

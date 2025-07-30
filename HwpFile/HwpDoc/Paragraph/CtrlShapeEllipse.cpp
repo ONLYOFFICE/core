@@ -34,51 +34,103 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrlGeneralShape(sCtrlID, oNode, nVersion)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
-	m_bIntervalDirty = oNode.GetAttributeBool(L"intervalDirty");
-	m_bHasArcProperty = oNode.GetAttributeBool(L"hasArcPr");
-	m_eArcType = GetArcType(oNode.GetAttribute(L"arcType"));
-
-	for (CXMLNode& oChild : oNode.GetChilds())
+	START_READ_ATTRIBUTES(oReader)
 	{
-		if (L"hc:center" == oChild.GetName())
-		{
-			m_nCenterX = oChild.GetAttributeInt(L"x");
-			m_nCenterY = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hp:ax1" == oChild.GetName())
-		{
-			m_nAxixX1 = oChild.GetAttributeInt(L"x");
-			m_nAxixY1 = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hp:ax2" == oChild.GetName())
-		{
-			m_nAxixX2 = oChild.GetAttributeInt(L"x");
-			m_nAxixY2 = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hc:start1" == oChild.GetName())
-		{
-			m_nStartX1 = oChild.GetAttributeInt(L"x");
-			m_nStartY1 = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hc:start2" == oChild.GetName())
-		{
-			m_nStartX2 = oChild.GetAttributeInt(L"x");
-			m_nStartY2 = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hc:end1" == oChild.GetName())
-		{
-			m_nEndX1 = oChild.GetAttributeInt(L"x");
-			m_nEndY1 = oChild.GetAttributeInt(L"y");
-		}
-		else if (L"hc:end2" == oChild.GetName())
-		{
-			m_nEndX2 = oChild.GetAttributeInt(L"x");
-			m_nEndY2 = oChild.GetAttributeInt(L"y");
-		}
+		if ("intervalDirty" == sAttributeName)
+			m_bIntervalDirty = oReader.GetBool();
+		else if ("hasArcPr" == sAttributeName)
+			m_bHasArcProperty = oReader.GetBool();
+		else if ("arcType" == sAttributeName)
+			m_eArcType = GetArcType(oReader.GetText());
 	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("hc:center" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nCenterX = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nCenterY = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:ax1" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nAxixX1 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nAxixY1 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:ax2" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nAxixX2 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nAxixY2 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:start1" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nStartX1 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nStartY1 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:start2" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nStartX2 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nStartY2 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:end1" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nEndX1 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nEndY1 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else if ("hp:end2" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("x" == sAttributeName)
+					m_nEndX2 = oReader.GetInt();
+				else if ("y" == sAttributeName)
+					m_nEndY2 = oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+	}
+	END_WHILE
 }
 
 EShapeType CCtrlShapeEllipse::GetShapeType() const

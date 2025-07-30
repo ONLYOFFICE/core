@@ -55,5 +55,11 @@ void MDXProp::readFields(CFRecord& record)
 	record >> frtHeader >> istrConnName >> tfnSrc >> istrMbr >> istrProp;
 }
 
+void MDXProp::writeFields(CFRecord& record)
+{
+	frtHeader.rt = rt_MDXProp;
+	record << frtHeader << istrConnName << tfnSrc << istrMbr << istrProp;
+}
+
 } // namespace XLS
 

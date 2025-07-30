@@ -56,5 +56,15 @@ void PivotChartBits::readFields(CFRecord& record)
 	fGXHide = GETBIT(flags, 0);
 }
 
+void PivotChartBits::writeFields(CFRecord& record)
+{
+    record << rt;
+    record.reserveNunBytes(2);
+    unsigned short flags;
+    SETBIT(flags, 0, fGXHide);
+    record << flags;
+    record.reserveNunBytes(6);
+}
+
 } // namespace XLS
 

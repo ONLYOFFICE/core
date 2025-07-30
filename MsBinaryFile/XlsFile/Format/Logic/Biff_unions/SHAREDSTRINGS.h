@@ -48,10 +48,13 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	static const ElementType	type = typeSHAREDSTRINGS;
 	
 	int serialize(std::wostream & stream);
+
+    BaseObjectPtr sstPtr;
 
 	unsigned short	code_page_;
 	unsigned int	size_;

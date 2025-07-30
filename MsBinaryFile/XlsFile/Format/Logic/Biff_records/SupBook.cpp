@@ -186,6 +186,21 @@ void SupBook::readFields(CFRecord& record)
 	}
 }
 
+void SupBook::writeFields(CFRecord& record)
+{
+    record << ctab << cch;
+    if(0x0001 <= cch && 0x00ff >= cch)
+    {
+        XLUnicodeStringNoCch temp = origin;
+        record << temp;
+    }
+    for(auto i : rgst)
+    {
+        XLUnicodeString temp = i;
+        record << temp;
+    }
+}
+
 
 } // namespace XLS
 

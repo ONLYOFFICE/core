@@ -87,5 +87,27 @@ void BkHim::readFields(CFRecord& record)
 	}
 }
 
+void BkHim::writeFields(CFRecord& record)
+{
+    record << cf;
+    unsigned short reserve = 1;
+    record << reserve;
+    record << lcb;
+    auto maxRecordSize = 8224;
+    if(pData)
+    {
+        if(lcb < maxRecordSize)
+        {
+            for(auto i = 0; i < lcb; i++)
+                record << pData[i];
+        }
+        else
+        {
+            for(auto i = 0; i < maxRecordSize; i++)
+                record << pData[i];
+        }
+    }
+}
+
 } // namespace XLS
 

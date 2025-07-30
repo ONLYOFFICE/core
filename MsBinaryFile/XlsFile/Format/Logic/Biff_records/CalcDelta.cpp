@@ -37,6 +37,7 @@ namespace XLS
 
 CalcDelta::CalcDelta()
 {
+    numDelta.data.value = 0.001;
 }
 
 
@@ -54,6 +55,11 @@ BaseObjectPtr CalcDelta::clone()
 void CalcDelta::readFields(CFRecord& record)
 {
 	record >> numDelta;
+}
+
+void CalcDelta::writeFields(CFRecord& record)
+{
+    record << numDelta;
 }
 
 } // namespace XLS

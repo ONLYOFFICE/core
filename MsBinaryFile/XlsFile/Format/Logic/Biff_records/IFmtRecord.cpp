@@ -60,5 +60,10 @@ void IFmtRecord::readFields(CFRecord& record)
 	ifmt = global_info->RegisterNumFormat(ifmt, L""); // return update
 }
 
+void IFmtRecord::writeFields(CFRecord& record)
+{
+	record << ifmt;
+}
+
 } // namespace XLS
 

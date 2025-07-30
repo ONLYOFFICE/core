@@ -55,5 +55,10 @@ void Backup::readFields(CFRecord& record)
 	record >> fBackup;
 }
 
+void Backup::writeFields(CFRecord& record)
+{
+    record << fBackup;
+}
+
 } // namespace XLS
 

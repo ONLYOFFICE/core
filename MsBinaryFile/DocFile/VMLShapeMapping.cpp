@@ -1052,7 +1052,8 @@ namespace DocFileFormat
 		{
 			if (nAdjValues)												
 			{
-				m_pXmlWriter->WriteAttribute(L"arcsize", m_nAdjValues[0]);
+				double dArcsize = m_nAdjValues[0] / 21600.;
+				m_pXmlWriter->WriteAttribute(L"arcsize", dArcsize);
 			}
 		}
 		else if (DocFileFormat::msosptPictureFrame == nCode)

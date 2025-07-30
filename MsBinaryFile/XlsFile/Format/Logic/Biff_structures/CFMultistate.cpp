@@ -59,6 +59,21 @@ void CFMultistate::load(CFRecord& record)
 		rgStates.push_back(item);
 	}
 }
+
+void CFMultistate::save(CFRecord& record)
+{
+    record.reserveNunBytes(3);
+    cStates = rgStates.size();
+    record << cStates << iIconSet;
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fIconOnly);
+    SETBIT(flags, 2, fReverse);
+    record << flags;
+    for (auto i : rgStates)
+        if(i != nullptr)
+            i->save(record);
+}
+
 int CFMultistate::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

@@ -55,5 +55,10 @@ void PrintSize::readFields(CFRecord& record)
 	record >> printSize;
 }
 
+void PrintSize::writeFields(CFRecord& record)
+{
+    record << printSize;
+}
+
 } // namespace XLS
 

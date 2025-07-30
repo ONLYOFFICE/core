@@ -51,6 +51,13 @@ void AddinUdf::load(CFRecord& record)
 	record.skipNunBytes(cb); // unused
 }
 
+void AddinUdf::save(CFRecord& record)
+{
+    record.reserveNunBytes(4);
+    record << udfName;
+    unsigned short cb = 0;
+    record << cb;
+}
 
 } // namespace XLS
 

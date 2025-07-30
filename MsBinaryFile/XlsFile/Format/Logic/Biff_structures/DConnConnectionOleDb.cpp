@@ -73,6 +73,18 @@ void DConnConnectionOleDb::load(CFRecord& record)
 	}
 }
 
+void DConnConnectionOleDb::save(CFRecord& record)
+{
+	record 	<< nDrillthroughRows << cOleDb;
+	for(auto i : rgIOleDbValid)
+		record << i;
+	if(cOleDb <= 4)
+		record.skipNunBytes(2 * (4 - cOleDb));
+	record.reserveNunBytes(2);
+	for(auto i : rgConn)
+		record << i;
+}
+
 
 } // namespace XLS
 

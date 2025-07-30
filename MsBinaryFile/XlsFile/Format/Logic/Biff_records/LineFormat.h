@@ -48,17 +48,18 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeLineFormat;
 	int serialize(std::wostream & _stream);
 //-----------------------------
 	LongRGB rgb;
-	_UINT16 lns;
-	_UINT16 we;
-	bool	fAuto;
-	bool	fAxisOn;
-	bool	fAutoCo;
-	IcvChart icv;	
+	_UINT16 lns = 0;
+	_UINT16 we = 0;
+	bool	fAuto = false;
+	bool	fAxisOn = false;
+	bool	fAutoCo = false;
+	IcvChart icv = 0;
 };
 
 } // namespace XLS

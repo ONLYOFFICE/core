@@ -47,21 +47,22 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSxFilt;
 
-	bool			sxaxisRw;
-	bool			sxaxisCol;
-	bool			sxaxisPage;
-	bool			sxaxisData;
+    bool			sxaxisRw = false;
+    bool			sxaxisCol = false;
+    bool			sxaxisPage = false;
+    bool			sxaxisData = false;
 
-	char			iDim;
-	char			isxvd;
+    char			iDim = 0;
+    char			isxvd = 0;
 	
-	bool			fSelected;
+    bool			fSelected = false;
 
-	short			grbitSbt;
-	unsigned short	cisxvi;
+    short			grbitSbt = 0;
+    unsigned short	cisxvi = 0;
 };
 
 } // namespace XLS

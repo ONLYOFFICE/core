@@ -50,16 +50,17 @@ public:
 	static const ElementType	type = typeSortCond12;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 
-	bool					fSortDes;
-	unsigned short			sortOn;
+	bool					fSortDes = false;
+	unsigned short			sortOn = 0;
     RFX						rfx;
 
 	CondDataValue			condDataValue;
     CFFlag					cfflag;
 
-    _INT32					cchSt;
+	_INT32					cchSt = 0;
     XLUnicodeStringNoCch	stSslist;
 };
 

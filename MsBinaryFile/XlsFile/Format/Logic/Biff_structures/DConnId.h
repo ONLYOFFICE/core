@@ -49,8 +49,9 @@ public:
 	static const ElementType type = typeDConnId;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned char				bType;
+	unsigned char				bType = 0;
 	XLUnicodeStringSegmented	string;
 	SXStreamID					sxStreamID;
 

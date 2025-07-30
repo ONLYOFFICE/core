@@ -53,5 +53,20 @@ void SxIvd::readFields(CFRecord& record)
 	}
 }
 
+void SxIvd::writeFields(CFRecord& record)
+{
+    const auto maxRecSize = 8224;
+    while(!rgSxivd.empty())
+    {
+        record << rgSxivd.at(0);
+        if(record.getRdPtr() > maxRecSize)
+        {
+            record.RollRdPtrBack(2);
+            return;
+        }
+        rgSxivd.erase(rgSxivd.begin());
+    }
+}
+
 } // namespace XLS
 

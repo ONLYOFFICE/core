@@ -65,6 +65,14 @@ void CompositeMoniker::load(XLS::CFRecord& record)
 	}
 }
 
+void CompositeMoniker::save(XLS::CFRecord& record)
+{
+    unsigned int cMonikers = monikerArray.size();
+    record << cMonikers;
+    for(auto i : monikerArray)
+        record << i;
+}
+
 
 } // namespace OSHARED
 

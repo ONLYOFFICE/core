@@ -47,8 +47,9 @@ public:
 	static const ElementType type = typeDropDownObjId;
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
-	ObjId id;
+    ObjId id = 0;
 };
 
 typedef boost::shared_ptr<DropDownObjId> DropDownObjIdPtr;

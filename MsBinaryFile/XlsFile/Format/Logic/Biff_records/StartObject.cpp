@@ -58,5 +58,12 @@ void StartObject::readFields(CFRecord& record)
 	record >> iObjectKind >> iObjectContext >> iObjectInstance1 >> iObjectInstance2;
 }
 
+void StartObject::writeFields(CFRecord& record)
+{
+	FrtHeaderOld rt(rt_StartObject);
+	record << rt;
+	record << iObjectKind << iObjectContext << iObjectInstance1 << iObjectInstance2;
+}
+
 } // namespace XLS
 

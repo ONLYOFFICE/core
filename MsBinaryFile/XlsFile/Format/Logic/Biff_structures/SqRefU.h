@@ -48,6 +48,7 @@ public:
 	static const ElementType	type = typeSqRefU;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	const CellRef getLocationFirstCell() const;
 

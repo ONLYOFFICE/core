@@ -60,6 +60,16 @@ void SXString::readFields(CFRecord& record)
 	}
 }
 
+void SXString::writeFields(CFRecord& record)
+{
+    cch = segment.getSize();
+    record << cch;
+    if (cch > 0 && cch < 0xffff)
+    {
+        record << segment;
+    }
+}
+
 std::wstring SXString::value()
 {
 	std::wstring s = segment.value();

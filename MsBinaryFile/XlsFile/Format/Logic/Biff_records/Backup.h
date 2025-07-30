@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBackup;
 
 //-----------------------------
-	Boolean<unsigned short> fBackup;
+    Boolean<unsigned short> fBackup= false;
 };
 
 } // namespace XLS

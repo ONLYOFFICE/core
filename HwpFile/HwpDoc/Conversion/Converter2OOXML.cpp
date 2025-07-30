@@ -321,6 +321,12 @@ void CConverter2OOXML::WriteCharacter(const CCtrlCharacter* pCharacter, short sh
 			oState.m_eBreakType = TConversionState::EBreakType::TextWrapping;
 			break;
 		}
+		case ECtrlCharType::TABULATION:
+		{
+			OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
+			oBuilder.WriteString(L"<w:r><w:tab/></w:r>");
+			break;
+		}
 		case ECtrlCharType::HARD_HYPHEN:
 		case ECtrlCharType::HARD_SPACE:
 			break;
@@ -669,6 +675,60 @@ void CConverter2OOXML::WriteParaShapeProperties(short shParaShapeID, short shPar
 		case EHeadingType::OUTLINE:
 		case EHeadingType::NONE:
 			break;
+	}
+
+	if (oState.m_bInTable)
+		return;
+
+	const CHwpRecordTabDef* pTabDef = m_pContext->GetTabDef(pParaShape->GetTabDef());
+
+	if (nullptr != pTabDef && 0 != pTabDef->GetCount())
+	{
+		oBuilder.WriteString(L"<w:tabs>");
+
+		const TTab *pTab = nullptr;
+		for (unsigned int unIndex = 0; unIndex < pTabDef->GetCount(); ++unIndex)
+		{
+			pTab = pTabDef->GetTab(unIndex);
+
+			if (nullptr == pTab)
+				continue;
+
+			oBuilder.WriteString(L"<w:tab w:val=\"");
+
+			switch (pTab->m_eType)
+			{
+				case TTab::EType::LEFT: oBuilder.WriteString(L"start"); break;
+				case TTab::EType::RIGHT: oBuilder.WriteString(L"end"); break;
+				case TTab::EType::CENTER: oBuilder.WriteString(L"center"); break;
+				case TTab::EType::DECIMAL: oBuilder.WriteString(L"decimal"); break;
+			}
+
+			oBuilder.WriteString(L"\" w:leader=\"");
+
+			switch (pTab->m_eLeader)
+			{
+				case ELineStyle2::NONE: oBuilder.WriteString(L"none"); break;
+				case ELineStyle2::SOLID:
+				case ELineStyle2::DOUBLE_SLIM:
+				case ELineStyle2::SLIM_THICK:
+				case ELineStyle2::THICK_SLIM:
+				case ELineStyle2::SLIM_THICK_SLIM:
+					oBuilder.WriteString(L"heavy"); break;
+				case ELineStyle2::DASH:
+				case ELineStyle2::LONG_DASH:
+				case ELineStyle2::DASH_DOT:
+				case ELineStyle2::DASH_DOT_DOT:
+					oBuilder.WriteString(L"hyphen"); break;
+				case ELineStyle2::DOT:
+				case ELineStyle2::CIRCLE:
+					oBuilder.WriteString(L"dot"); break;
+			}
+
+			oBuilder.WriteString(L"\" w:pos=\"" + std::to_wstring(pTab->m_nPos / 10) + L"\"/>");
+		}
+
+		oBuilder.WriteString(L"</w:tabs>");
 	}
 }
 
@@ -1362,83 +1422,18 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 		return false;
 	}
 
-	NSGraphics::IGraphicsRenderer* pGrRenderer = NSGraphics::Create();
-	pGrRenderer->SetFontManager(pSvgReader->get_FontManager());
-
 	double dX, dY, dW, dH;
 	pSvgReader->GetBounds(&dX, &dY, &dW, &dH);
 
 	if (dW < 0) dW = -dW;
 	if (dH < 0) dH = -dH;
 
-	double dOneMaxSize = (double)1000.;
-
-	if (dW > dH && dW > dOneMaxSize)
-	{
-		dH *= (dOneMaxSize / dW);
-		dW = dOneMaxSize;
-	}
-	else if (dH > dW && dH > dOneMaxSize)
-	{
-		dW *= (dOneMaxSize / dH);
-		dH = dOneMaxSize;
-	}
-
-	int nWidth  = static_cast<int>(dW + 0.5);
-	int nHeight = static_cast<int>(dH + 0.5);
-
-	double dWidth  = 25.4 * nWidth / 96;
-	double dHeight = 25.4 * nHeight / 96;
-
-	unsigned char* pBgraData = (unsigned char*)malloc(nWidth * nHeight * 4);
-	if (!pBgraData)
-	{
-		double dKoef = 2000.0 / (nWidth > nHeight ? nWidth : nHeight);
-
-		nWidth = (int)(dKoef * nWidth);
-		nHeight = (int)(dKoef * nHeight);
-
-		dWidth  = 25.4 * nWidth / 96;
-		dHeight = 25.4 * nHeight / 96;
-
-		pBgraData = (unsigned char*)malloc(nWidth * nHeight * 4);
-	}
-
-	if (!pBgraData)
-		return false;
-
-	unsigned int alfa = 0xffffff;
-	//дефолтный тон должен быть прозрачным, а не белым
-	//memset(pBgraData, 0xff, nWidth * nHeight * 4);
-	for (int i = 0; i < nWidth * nHeight; i++)
-	{
-		((unsigned int*)pBgraData)[i] = alfa;
-	}
-
-	CBgraFrame oFrame;
-	oFrame.put_Data(pBgraData);
-	oFrame.put_Width(nWidth);
-	oFrame.put_Height(nHeight);
-	oFrame.put_Stride(-4 * nWidth);
-
-	pGrRenderer->CreateFromBgraFrame(&oFrame);
-	pGrRenderer->SetSwapRGB(false);
-	pGrRenderer->put_Width(dWidth);
-	pGrRenderer->put_Height(dHeight);
-
-	pSvgReader->SetTempDirectory(m_sTempDirectory);
-	pSvgReader->DrawOnRenderer(pGrRenderer, 0, 0, dWidth, dHeight);
-
 	sFileName = sFileName.substr(0, sFileName.find(L'.'));
 	sFileName += L".png";
 
-	oFrame.SaveFile(m_sTempDirectory + L"/word/media/" + sFileName, 4);
-	oFrame.put_Data(NULL);
+	const std::wstring wsImagePath{m_sTempDirectory + L"/word/media/" + sFileName};
 
-	RELEASEINTERFACE(pGrRenderer);
-
-	if (pBgraData)
-		free(pBgraData);
+	pSvgReader->ConvertToRaster(wsImagePath.c_str(), 4, dW, dH);
 
 	RELEASEINTERFACE(pSvgReader);
 	RELEASEINTERFACE(pFonts);
@@ -1652,56 +1647,14 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	double dScaleX = 1., dScaleY = 1.;
+	int nFinalWidth  = pCtrlShape->GetCurWidth();
+	int nFinalHeight = pCtrlShape->GetCurHeight();
 
-	const int nOrgWidth{pCtrlShape->GetOrgWidth()}, nOrgHeight{pCtrlShape->GetOrgHeight()};
-	const int nCurWidth{pCtrlShape->GetCurWidth()}, nCurHeight{pCtrlShape->GetCurHeight()};
-
-	if (0 != nCurWidth && 0 != nOrgWidth)
-		dScaleX = (double)nCurWidth / (double)nOrgWidth;
-
-	if (0 != nCurHeight && 0 != nOrgHeight)
-		dScaleY = (double)nCurHeight / (double)nOrgHeight;
-
-	if (0 != pCtrlShape->GetWidth() && 0 != nCurWidth)
-		dScaleX *= (double)pCtrlShape->GetWidth() / (double)nCurWidth;
-
-	if (0 != pCtrlShape->GetHeight() && 0 != nCurHeight)
-		dScaleY *= (double)pCtrlShape->GetHeight() / (double)nCurHeight;
-
-	int nFinalWidth {pCtrlShape->GetWidth() };
-	int nFinalHeight{pCtrlShape->GetHeight()};
-
-	if (0 == nFinalWidth)
+	if (0 == nFinalWidth || 0 == nFinalHeight)
 	{
-		if (nullptr != pWidth && 0 != *pWidth)
-			nFinalWidth = *pWidth;
-		else
-			nFinalWidth = nCurWidth;
+		nFinalWidth = std::abs(pCtrlShape->GetWidth());
+		nFinalHeight = std::abs(pCtrlShape->GetHeight());
 	}
-
-	if (nullptr != pWidth && 0 != *pWidth)
-		dScaleX *= (double)*pWidth / (double)nFinalWidth;
-
-	if (0 == nFinalHeight)
-	{
-		if (nullptr != pHeight && 0 != *pHeight)
-			nFinalHeight = *pHeight;
-		else
-			nFinalHeight = nCurHeight;
-	}
-
-	if (nullptr != pHeight && 0 != *pHeight)
-		dScaleY *= (double)*pHeight / (double)nFinalHeight;
-
-	TMatrix oFinalMatrix{pCtrlShape->GetFinalMatrix()};
-	oFinalMatrix.ApplyToSize(dScaleX, dScaleY);
-
-	nFinalWidth = ceil((double)nFinalWidth * dScaleX);
-	nFinalHeight = ceil((double)nFinalHeight * dScaleY);
-
-	nFinalWidth  -= (pCtrlShape->GetLeftInMargin() + pCtrlShape->GetRightInMargin());
-	nFinalHeight -= (pCtrlShape->GetTopInMargin() + pCtrlShape->GetBottomInMargin());
 
 	if (nullptr != pWidth)
 		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);
@@ -1740,6 +1693,7 @@ void CConverter2OOXML::WriteShapeWrapMode(const CCtrlCommon* pCtrlShape, NSStrin
 		}
 		case ETextWrap::BEHIND_TEXT:
 		case ETextWrap::IN_FRONT_OF_TEXT:
+		default:
 		{
 			oBuilder.WriteString(L"<wp:wrapNone/>");
 			break;

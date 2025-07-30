@@ -148,7 +148,7 @@ void Row::writeFields(CFRecord& record)
 		_UINT16 ixfe_val_2b = 0xffff;
 		record << rw_2b << colMic << colMac << miyRw;
 
-		_UINT16 unused1, rel_offset = 0xffff, flags1 = 0, flags2 = 0;
+		_UINT16 rel_offset = 0xffff, flags1 = 0, flags2 = 0;
 		record.reserveNunBytes(2);// unused1
 
 		if (ixfe_val != 0xffff)
@@ -181,6 +181,7 @@ void Row::writeFields(CFRecord& record)
 			SETBIT(flags1, 5, fDyZero)
 			SETBIT(flags1, 6, fUnsynced)
 			SETBIT(flags1, 7, fGhostDirty)
+			SETBIT(flags1, 8, 1)// reserved3 must be 1
 
 			SETBITS(flags2, 0, 11, ixfe_val_2b)
 			SETBIT(flags2, 12, fExAsc)

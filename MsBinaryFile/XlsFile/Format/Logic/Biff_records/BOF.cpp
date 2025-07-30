@@ -132,6 +132,29 @@ void BOF::readFields(CFRecord& record)
 	}
 }
 
+void BOF::writeFields(CFRecord& record)
+{
+    record << vers << dt << rupBuild << rupYear;
+    _UINT32 flags = 0;
+
+    SETBIT(flags, 0, fWin);
+    SETBIT(flags, 1, fRisc);
+    SETBIT(flags, 2, fBeta);
+    SETBIT(flags, 3, fWinAny);
+    SETBIT(flags, 4, fMacAny);
+    SETBIT(flags, 5, fBetaAny);
+    SETBIT(flags, 8, fRiscAny);
+    SETBIT(flags, 9, fOOM);
+    SETBIT(flags, 10, fGlJmp);
+    SETBIT(flags, 13, fFontLimit);
+
+    SETBITS(flags, 14, 17, verXLHigh);
+
+    record << flags;
+    record << verLowestBiff << verLastXLSaved;
+    record.reserveNunBytes(2);// reserved
+}
+
 unsigned short BOF::getSubstreamType()
 {
 	return dt;

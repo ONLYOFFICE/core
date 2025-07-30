@@ -491,7 +491,7 @@ void odf_document::Impl::parse_fonts(office_element *element)
 
             std::vector<std::wstring> fontNames;
             boost::algorithm::split(fontNames, fontNameTmp, boost::algorithm::is_any_of(L","), boost::algorithm::token_compress_on);
-            if (fontNames.empty() || fontNames[0].empty())
+            if (fontNames.empty()) // nextcloud_sync_issue-1.ods
                 fontName = styleName;
             else
                 fontName = fontNames[0];

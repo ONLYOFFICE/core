@@ -49,13 +49,14 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeUserSViewBegin;
 
 //-----------------------------
-	std::wstring	guid;
-	TabId			iTabid;
-	_UINT32			wScale;
+    std::wstring	guid = L"";
+    TabId			iTabid = 0;
+    _UINT32			wScale = 0;
 	Icv				icvHdr = 64;
 	PaneType		pnnSel;
 

@@ -46,6 +46,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+    virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & strm);
 
@@ -54,9 +55,9 @@ public:
 	BaseObjectPtr	m_PIVOTCORE;
 	BaseObjectPtr	m_PIVOTFRT;
 //----------------------------------
-	int				indexStream;
-	int				indexCache;
-	std::wstring	name;
+    int				indexStream = 0;
+    int				indexCache = 0;
+    std::wstring	name = L"";
 
 	GlobalWorkbookInfoPtr global_info_;
 };

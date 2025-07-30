@@ -82,6 +82,10 @@ void FormulaValue::load(CFRecord& record)
 	record >> data.xnum;
 }
 
+void FormulaValue::save(CFRecord& record)
+{
+    record << data.xnum;
+}
 
 unsigned char FormulaValue::getType() 
 {

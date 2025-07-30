@@ -67,5 +67,34 @@ const bool MDXSTR::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool MDXSTR::saveContent(BinProcessor& proc)
+{
+	if(m_MDXStr == nullptr)
+		return false;
+	proc.mandatory(*m_MDXStr);
+	auto maxStNameLen = 4104;
+	auto castedPtr = static_cast<MDXStr*>(m_MDXStr.get());
+	if(castedPtr->st.getSize() > maxStNameLen)
+	{	auto StSize = castedPtr->st.getSize();
+		auto Stpos = maxStNameLen;
+		while(Stpos+1 < StSize)
+		{
+			auto tempLen = 0;
+			if(StSize < Stpos + maxStNameLen)
+				tempLen = StSize - Stpos;
+			else
+				tempLen = maxStNameLen;
+			{
+				ContinueFrt12 continueRecord;
+				continueRecord.rgb.reserve(tempLen*2);
+				memcpy(continueRecord.rgb.data(), (castedPtr->st.value().c_str() + Stpos), tempLen*2);
+				proc.mandatory(continueRecord);
+			}
+			Stpos+=tempLen;
+		}
+	}
+	return true;
+}
+
 } // namespace XLS
 

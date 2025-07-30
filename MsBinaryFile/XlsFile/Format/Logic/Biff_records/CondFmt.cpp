@@ -61,6 +61,15 @@ void CondFmt::readFields(CFRecord& record)
 	refBound = static_cast<std::wstring >(refBound_ref);
 }
 
+void CondFmt::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    record << ccf << flags;
+    SETBIT(flags, 0, fToughRecalc);
+    SETBITS(flags, 1, 15, nID);
+    Ref8U refBound_ref = refBound;
+    record << refBound_ref << sqref;
+}
 
 const CellRef CondFmt::getLocation() const
 {

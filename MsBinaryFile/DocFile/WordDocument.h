@@ -103,6 +103,9 @@ namespace DocFileFormat
 		int		nDocumentCodePage;
 		bool	bDocumentCodePage;
 		int		nFontsCodePage;
+		int		nDocumentCodePageInfo;
+
+		bool bErrorFile = false;
 
 		inline StructuredStorageReader* GetStorage() const
 		{

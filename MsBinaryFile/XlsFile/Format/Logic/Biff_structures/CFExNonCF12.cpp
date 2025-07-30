@@ -60,6 +60,23 @@ void CFExNonCF12::load(CFRecord& record)
 	record >> rgbTemplateParms;
 }
 
+void CFExNonCF12::save(CFRecord& record)
+{
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fActive);
+    SETBIT(flags, 1, fStopIfTrue);
+    record << icf << cp << icfTemplate << ipriority_ << flags;
+
+    record << fHasDXF;
+
+    if(fHasDXF)
+    {
+        record << dxf;
+    }
+    unsigned char cbTemplateParm = 16;
+    record << cbTemplateParm;
+    record << rgbTemplateParms;
+}
 
 } // namespace XLS
 

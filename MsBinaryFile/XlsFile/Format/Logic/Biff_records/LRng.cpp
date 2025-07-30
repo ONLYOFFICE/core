@@ -69,5 +69,19 @@ void LRng::readFields(CFRecord& record)
 
 }
 
+void LRng::writeFields(CFRecord& record)
+{
+    crefRw = refRow.size();
+    record << crefRw;
+    for(auto i : refRow)
+        if(i!= nullptr)
+            record << *i;
+    crefCol = refCol.size();
+    for(auto i : refCol)
+        if(i!= nullptr)
+            record << *i;
+
+}
+
 } // namespace XLS
 

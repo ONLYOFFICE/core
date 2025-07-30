@@ -50,15 +50,16 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePLV;
 
 //-----------------------------
 	_UINT16 wScalePLV;
 	
-	bool fPageLayoutView;
-	bool fRulerVisible;
-	bool fWhitespaceHidden;
+	bool fPageLayoutView = false;
+	bool fRulerVisible = true;
+	bool fWhitespaceHidden = false;
 
 };
 

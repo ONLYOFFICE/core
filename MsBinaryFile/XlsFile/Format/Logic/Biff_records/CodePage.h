@@ -50,8 +50,9 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 //-----------------------------
-	_UINT16 cv;
+    _UINT16 cv = 1200;
 
 };
 

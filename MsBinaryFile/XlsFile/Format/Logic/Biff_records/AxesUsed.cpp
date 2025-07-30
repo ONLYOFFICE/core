@@ -55,5 +55,10 @@ void AxesUsed::readFields(CFRecord& record)
 	record >> cAxes;
 }
 
+void AxesUsed::writeFields(CFRecord& record)
+{
+    record << cAxes;
+}
+
 } // namespace XLS
 

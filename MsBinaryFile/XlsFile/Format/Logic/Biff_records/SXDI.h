@@ -48,18 +48,19 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & strm);
 
 	static const ElementType type = typeSXDI;
 
-	short					isxvdData;
-	short					iiftab;
-	short					df;
-	short					isxvd;
-	short					isxvi;
-	unsigned short			ifmt;
-	unsigned short			cchName;
+    short					isxvdData = 0;
+    short					iiftab = 0;
+    short					df = 0;
+    short					isxvd = 0;
+    short					isxvi = 0;
+    unsigned short			ifmt = 0;
+    unsigned short			cchName = 0;
 	XLUnicodeStringNoCch	stName;
 };
 

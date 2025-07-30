@@ -54,28 +54,28 @@ public:
     static const ElementType type = typeWindow2;
 
     bool fDspFmlaRt = false; //fDspFmla in biff12
-    bool fDspGridRt = false; //fDspGrid in biff12
-    bool fDspRwColRt = false; //fDspRwCol in biff12
+	bool fDspGridRt = true; //fDspGrid in biff12
+	bool fDspRwColRt = true; //fDspRwCol in biff12
 	bool fFrozenRt = false;
-    bool fDspZerosRt = false; // fDspZeros in biff12
-    bool fDefaultHdr = false; // *
+	bool fDspZerosRt = true; // fDspZeros in biff12
+	bool fDefaultHdr = true; // *
     bool fRightToLeft = false; // *
-    bool fDspGuts = false; // *
+	bool fDspGuts = true; // *
 	bool fFrozenNoSplit = false;
-    bool fSelected = false; // *
-	bool fPaged = false;
+	bool fSelected = false; // *
+	bool fPaged = true;
 	bool fSLV = false;
 
-	bool is_contained_in_chart_substream;
+	bool is_contained_in_chart_substream = false;
 
-    UncheckedRw rwTop;
-    UncheckedCol colLeft;
+	UncheckedRw rwTop = 0;
+	UncheckedCol colLeft = 0;
 
     _UINT16 icvHdr = 64; // 1 Byte in biff12
 	
-	_UINT16 wScaleSLV;
-	_UINT16 wScaleNormal;
-	std::wstring topLeftCell;
+	_UINT16 wScaleSLV = 0;
+	_UINT16 wScaleNormal = 0;
+	std::wstring topLeftCell = L"A1";
 
     //biff12
     bool fWnProt = false;
@@ -84,9 +84,9 @@ public:
 
     _UINT32 xlView;
 
-    _UINT16 wScale;
-    _UINT16 wScalePLV;
-    _UINT32 iWbkView;
+	_UINT16 wScale = 0;
+	_UINT16 wScalePLV = 0;
+	_UINT32 iWbkView = 0;
 
     bool _isChart = false;
 };

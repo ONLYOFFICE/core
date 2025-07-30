@@ -56,5 +56,10 @@ void Country::readFields(CFRecord& record)
 	record >> iCountryDef >> iCountryWinIni;
 }
 
+void Country::writeFields(CFRecord& record)
+{
+    record << iCountryDef << iCountryWinIni;
+}
+
 } // namespace XLS
 

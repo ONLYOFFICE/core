@@ -48,11 +48,12 @@ public:
 	static const ElementType type = typeDConnParameter;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	XLUnicodeStringSegmented	rgchName; 
-	unsigned char				pbt;
-	short						wTypeSql;// enum ODBCType
-	bool						fDefaultName;
+	unsigned char				pbt = 0;
+	short						wTypeSql = 0;// enum ODBCType
+	bool						fDefaultName = false;
 	BiffStructurePtr			paramBinding;
 
 };

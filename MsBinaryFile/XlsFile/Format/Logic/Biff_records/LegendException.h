@@ -50,10 +50,11 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
-	_UINT16	iss;
-	bool	fDelete;
-	bool	fLabel;
+	_UINT16	iss = 0;
+	bool	fDelete = false;
+	bool	fLabel = false;
 
 	int serialize(std::wostream & _stream);
 

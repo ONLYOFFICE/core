@@ -68,6 +68,19 @@ void DataLabExtContents::readFields(CFRecord& record)
 	fBubSizes	= GETBIT(flags, 4);
 }
 
+void DataLabExtContents::writeFields(CFRecord& record)
+{
+	FrtHeader frtHeader(rt_DataLabExtContents);
+	record << frtHeader;
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fSerName)
+	SETBIT(flags, 1, fCatName)
+	SETBIT(flags, 2, fValue)
+	SETBIT(flags, 3, fPercent)
+	SETBIT(flags, 4, fBubSizes)
+	record << flags << rgchSep;
+}
+
 int DataLabExtContents::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

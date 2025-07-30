@@ -94,6 +94,24 @@ const bool WINDOW::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool WINDOW::saveContent(BinProcessor& proc)
+{
+	if(m_Window2 != nullptr)
+		proc.mandatory(*m_Window2);
+	else
+		proc.mandatory<Window2>();
+	if(m_PLV != nullptr)
+		proc.mandatory(*m_PLV);
+	if(m_Scl != nullptr)
+		proc.mandatory(*m_Scl);
+	if(m_Pane != nullptr)
+		proc.mandatory(*m_Pane);
+	for(auto i : m_arSelection)
+		if(i != nullptr)
+			proc.mandatory(*i);
+    return true;
+}
+
 int WINDOW::serialize(std::wostream & stream)
 {
 	Window2 * window2 = dynamic_cast<Window2*>(m_Window2.get());

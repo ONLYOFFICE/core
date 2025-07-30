@@ -49,6 +49,15 @@ void CFGradientInterpItem::load(CFRecord& record)
 	//record >> val; numDomain = val << 32;
 	//record >> val; numDomain = val;
 }
+void CFGradientInterpItem::save(CFRecord& record)
+{
+    cfvo.save(record);
+    record << numDomain;
+    //record.skipNunBytes(8);
+    //int val;
+    //record >> val; numDomain = val << 32;
+    //record >> val; numDomain = val;
+}
 //---------------------------------------------------------------------------------------------
 BiffStructurePtr CFGradientItem::clone()
 {
@@ -64,6 +73,13 @@ void CFGradientItem::load(CFRecord& record)
 	record >> numGrange;
 	
 	color.load(record);
+}
+
+void CFGradientItem::save(CFRecord& record)
+{
+    record << numGrange;
+
+    color.save(record);
 }
 
 //--------------------------------------------------------------------------------------------
@@ -112,6 +128,23 @@ void CFGradient::load(CFRecord& record)
 
 		rgCurve.push_back(item);
 	}
+}
+void CFGradient::save(CFRecord& record)
+{
+    record.reserveNunBytes(3);
+    cInterpCurve = rgInterp.size();
+    cGradientCurve = cInterpCurve;
+    record << cInterpCurve << cGradientCurve;
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fClamp);
+    SETBIT(flags, 1, fBackground);
+    record << flags;
+    for(auto i : rgInterp)
+        if(i!= nullptr)
+            record << i;
+    for(auto i : rgCurve)
+        if(i!= nullptr)
+            record << i;
 }
 int CFGradient::serialize(std::wostream & stream)
 {

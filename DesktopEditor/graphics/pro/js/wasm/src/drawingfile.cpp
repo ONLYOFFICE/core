@@ -99,6 +99,7 @@ WASM_EXPORT int GetErrorCode(CDrawingFile* pFile)
 WASM_EXPORT void Close(CDrawingFile* pFile)
 {
 	delete pFile;
+	g_applicationFonts->GetStreams()->Clear();
 	NSFonts::NSApplicationFontStream::SetGlobalMemoryStorage(NULL);
 }
 WASM_EXPORT BYTE* GetInfo(CDrawingFile* pFile)

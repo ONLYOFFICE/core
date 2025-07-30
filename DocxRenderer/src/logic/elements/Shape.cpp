@@ -1100,16 +1100,15 @@ namespace NSDocxRenderer
 			// WriteRecord WriteXfrm
 			oWriter.StartRecord(0);
 			oWriter.WriteBYTE(kBin_g_nodeAttributeStart);
-			oWriter.WriteBYTE(0); oWriter.AddInt(static_cast<unsigned int>(left * c_dMMToEMU));
-			oWriter.WriteBYTE(1); oWriter.AddInt(static_cast<unsigned int>(top * c_dMMToEMU));
-			oWriter.WriteBYTE(2); oWriter.AddInt(static_cast<unsigned int>(width * c_dMMToEMU));
-			oWriter.WriteBYTE(3); oWriter.AddInt(static_cast<unsigned int>(height * c_dMMToEMU));
+			oWriter.WriteBYTE(0); oWriter.AddSInt(static_cast<int>(left * c_dMMToEMU));
+			oWriter.WriteBYTE(1); oWriter.AddSInt(static_cast<int>(top * c_dMMToEMU));
+			oWriter.WriteBYTE(2); oWriter.AddSInt(static_cast<int>(width * c_dMMToEMU));
+			oWriter.WriteBYTE(3); oWriter.AddSInt(static_cast<int>(height * c_dMMToEMU));
 
 			if (fabs(m_dRotation) > c_dMIN_ROTATION)
 			{
-				double degree = m_dRotation;
-				if (m_dRotation < 0) degree = 360.0 - m_dRotation;
-				oWriter.WriteBYTE(10); oWriter.AddInt(degree * c_dDegreeToAngle);
+				int degree = static_cast<int>(m_dRotation * c_dDegreeToAngle);
+				oWriter.WriteBYTE(10); oWriter.AddSInt(degree);
 			}
 			oWriter.WriteBYTE(kBin_g_nodeAttributeEnd);
 			oWriter.EndRecord();

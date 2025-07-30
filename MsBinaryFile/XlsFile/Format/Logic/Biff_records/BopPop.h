@@ -48,22 +48,23 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBopPop;
 
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	unsigned char	pst;
-	unsigned char	fAutoSplit;
-	_UINT16			split;
-	_INT16			iSplitPos;
-	_INT16			pcSplitPercent;
-	_INT16			pcPie2Size;
-	_INT16			pcGap;
-	Xnum			numSplitValue;
+    unsigned char	pst = 0;
+    unsigned char	fAutoSplit = 0;
+    _UINT16			split = 0;
+    _INT16			iSplitPos = 0;
+    _INT16			pcSplitPercent = 0;
+    _INT16			pcPie2Size = 0;
+    _INT16			pcGap = 0;
+    Xnum			numSplitValue;
 	
-	bool			fHasShadow;
+    bool			fHasShadow = false;
 
 
 	BaseObjectPtr	m_Custom;

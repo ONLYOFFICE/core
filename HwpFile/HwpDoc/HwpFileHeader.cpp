@@ -60,15 +60,27 @@ bool CHwpFileHeader::Parse(CHWPStream& oBuffer)
 	return true;
 }
 
-bool CHwpFileHeader::Parse(CXMLNode& oNode)
+bool CHwpFileHeader::Parse(CXMLReader& oReader)
 {
-	if (!oNode.IsValid())
-		return false;
+	HWP_STRING wsMajor, wsMinor, wsMicro, wsBuildNumber;
 
-	m_sVersion += oNode.GetAttribute(L"major");
-	m_sVersion += oNode.GetAttribute(L"minor");
-	m_sVersion += oNode.GetAttribute(L"micro");
-	m_sVersion += oNode.GetAttribute(L"buildNumber");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("major" == sAttributeName)
+			wsMajor = oReader.GetText();
+		else if ("minor" == sAttributeName)
+			wsMinor = oReader.GetText();
+		else if ("micro" == sAttributeName)
+			wsMicro = oReader.GetText();
+		else if ("buildNumber" == sAttributeName)
+			wsBuildNumber = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	m_sVersion = ((!wsMajor.empty()) ? wsMajor : L"0") +
+	             ((!wsMinor.empty()) ? wsMinor : L"0") +
+	             ((!wsMicro.empty()) ? wsMicro : L"0") +
+	             ((!wsBuildNumber.empty()) ? wsBuildNumber : L"0");
 
 	return true;
 }

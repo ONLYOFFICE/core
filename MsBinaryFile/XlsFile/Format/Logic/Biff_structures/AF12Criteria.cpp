@@ -65,6 +65,13 @@ void AF12Criteria::load(CFRecord& record)
 	}
 }
 
+void AF12Criteria::save(CFRecord& record)
+{
+	record << doper;
+	if(doper.vt == 0x06)
+		record << str;
+
+}
 
 } // namespace XLS
 

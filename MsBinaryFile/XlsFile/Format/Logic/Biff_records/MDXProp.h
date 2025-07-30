@@ -48,11 +48,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
-	_INT32			istrConnName;
-	unsigned char	tfnSrc;
-	_UINT32			istrMbr;
-	_UINT32			istrProp;
+	_INT32			istrConnName = 0;
+	unsigned char	tfnSrc = 0;
+	_UINT32			istrMbr = 0;
+	_UINT32			istrProp = 0;
 	FrtHeader		frtHeader;
 
 };

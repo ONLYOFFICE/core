@@ -48,11 +48,12 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDConBin;
 
-	unsigned char				nBuiltin;
-	unsigned short				cchFile;
+    unsigned char				nBuiltin = 0;
+    unsigned short				cchFile = 0;
 	XLUnicodeStringNoCch		stFile;
 
 };

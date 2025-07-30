@@ -30,8 +30,6 @@
  *
  */
 #pragma once
-#ifndef PPTX_LOGIC_RUNELEM_INCLUDE_H_
-#define PPTX_LOGIC_RUNELEM_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
 #include "Runs/RunBase.h"
@@ -82,5 +80,3 @@ namespace PPTX
 		};
 	} // namespace Logic
 } // namespace PPTX
-
-#endif // PPTX_LOGIC_RUNELEM_INCLUDE_H

@@ -61,6 +61,17 @@ void DXFNum::load(CFRecord& record)
 	fmt_id.ifmt = global_info->RegisterNumFormat(fmt_id.ifmt, user_defined.fmt.value()); // return update
 }
 
+void DXFNum::save(CFRecord& record)
+{
+    if (parent->fIfmtUser)
+    {
+        record << user_defined;
+    }
+    else
+    {
+        record << fmt_id;
+    }
+}
 
 int DXFNum::serialize(std::wostream & stream)
 {

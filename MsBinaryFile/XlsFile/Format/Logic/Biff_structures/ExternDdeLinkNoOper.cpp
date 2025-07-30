@@ -48,6 +48,12 @@ void ExternDdeLinkNoOper::load(CFRecord& record)
 	record >> linkName;
 }
 
+void ExternDdeLinkNoOper::save(CFRecord& record)
+{
+    record.reserveNunBytes(4); // reserved
+    record << linkName;
+}
+
 
 } // namespace XLS
 

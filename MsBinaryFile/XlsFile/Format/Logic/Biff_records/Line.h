@@ -50,15 +50,16 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeLine;
 
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	bool fStacked;
-	bool f100;
-	bool fHasShadow;
+    bool fStacked = false;
+    bool f100 = false;
+    bool fHasShadow = false;
 
 };
 

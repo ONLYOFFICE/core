@@ -58,6 +58,11 @@ void Blank::readFields(CFRecord& record)
 	record >> cell;
 }
 
+void Blank::writeFields(CFRecord& record)
+{
+    record << cell;
+}
+
 const CellRef Blank::getLocation() const
 {
 	return cell.getLocation();

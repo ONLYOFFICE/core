@@ -60,5 +60,16 @@ void OleDbConn::readFields(CFRecord& record)
 	record.skipNunBytes(4); //reserved2
 }
 
+void OleDbConn::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, fPasswd)
+	SETBIT(flags, 1, fLocal)
+
+	record << frtHeaderOld << flags << cst;
+	record.reserveNunBytes(4);
+}
+
 } // namespace XLS
 

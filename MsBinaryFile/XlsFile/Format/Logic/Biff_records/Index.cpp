@@ -63,5 +63,16 @@ void Index::readFields(CFRecord& record)
 	}
 }
 
+void Index::writeFields(CFRecord& record)
+{
+    record.reserveNunBytes(4); // reserved
+    record << rwMic << rwMac << ibXF;
+
+    for(auto i:rgibRw)
+    {
+        record << *i;
+    }
+}
+
 } // namespace XLS
 

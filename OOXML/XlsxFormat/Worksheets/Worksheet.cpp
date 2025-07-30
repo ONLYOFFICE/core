@@ -372,6 +372,8 @@ namespace OOX
 				worksheetPtr->m_arMergeCells = m_oMergeCells->toXLS();
 			if(m_oSheetViews.IsInit())
 				worksheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
+			if(m_oSheetProtection.IsInit())
+				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
 
 			if(m_oSheetData.IsInit())
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();

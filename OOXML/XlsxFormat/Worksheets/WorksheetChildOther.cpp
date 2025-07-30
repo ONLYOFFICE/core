@@ -73,8 +73,13 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/WINDOW.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PROTECTION_COMMON.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Window2.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Dimensions.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Protect.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ObjProtect.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ScenarioProtect.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Password.h"
 
 namespace OOX
 {
@@ -3871,6 +3876,35 @@ namespace OOX
                 writer->storeNextRecord(record);
             }
         }
+		XLS::BaseObjectPtr CSheetProtection::toXLS()
+		{
+			auto ptr = new XLS::PROTECTION_COMMON;
+			if(m_oSheet.IsInit())
+			{
+				auto protPtr = new XLS::Protect;
+				protPtr->fLock = m_oSheet->GetValue();
+				ptr->m_Protect = XLS::BaseObjectPtr(protPtr);
+			}
+			if(m_oObjects.IsInit())
+			{
+				auto objPtr = new XLS::ObjProtect;
+				objPtr->fLockObj = m_oObjects->GetValue();
+				ptr->m_ObjProtect = XLS::BaseObjectPtr(objPtr);
+			}
+			if(m_oScenarios.IsInit())
+			{
+				auto scenPtr = new XLS::ScenarioProtect;
+				scenPtr->fScenProtect = m_oScenarios->GetValue();
+				ptr->m_ScenarioProtect = XLS::BaseObjectPtr(scenPtr);
+			}
+			if(m_oPassword.IsInit())
+			{
+				auto passPtr = new XLS::Password;
+				passPtr->wPassword = m_oPassword.get();
+				ptr->m_Password = XLS::BaseObjectPtr(passPtr);
+			}
+			return XLS::BaseObjectPtr(ptr);
+		}
 		XLS::BaseObjectPtr CSheetProtection::toBinCS()
 		{
 			XLS::BaseObjectPtr objectPtr;

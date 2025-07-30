@@ -453,7 +453,8 @@ namespace OOX
 				m_oDefinedNames->toXLS(objectPtr);
 			if(m_oBookViews.IsInit())
 				m_oBookViews->toXLS(objectPtr);
-
+			if (m_oWorkbookProtection.IsInit())
+				globalsSubstream->m_PROTECTION = m_oWorkbookProtection->toXLS();
 			return objectPtr;
 		}
 		void CWorkbook::read(const CPath& oPath)

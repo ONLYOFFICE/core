@@ -429,6 +429,12 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			std::cout << "TU " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
 		}
+		if (nFlags & (1 << 11))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MEOptions " << nPathLength << ", ";
+		}
 
 		std::cout << std::endl;
 	}
@@ -587,6 +593,12 @@ void ReadInteractiveForms(BYTE* pWidgets, int& i)
 			i += 4;
 			std::cout << "Font button " << std::string((char*)(pWidgets + i), nPathLength) << ", ";
 			i += nPathLength;
+		}
+		if (nFlags & (1 << 21))
+		{
+			nPathLength = READ_INT(pWidgets + i);
+			i += 4;
+			std::cout << "MEOptions " << nPathLength << ", ";
 		}
 
 		//Action

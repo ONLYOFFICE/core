@@ -1372,6 +1372,10 @@ namespace PdfWriter
 	{
 		m_nParentID = nParentID;
 	}
+	void CWidgetAnnotation::SetMEOptions(const int& nMEOptions)
+	{
+		Add("MEOptions", nMEOptions);
+	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);

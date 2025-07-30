@@ -1491,6 +1491,14 @@ CAnnotWidget::CAnnotWidget(PDFDoc* pdfDoc, AcroFormField* pField, int nStartRefI
 	m_sT = DictLookupString(&oField, "T", 18);
 	m_sFullName = m_sT;
 
+	// 21 - MEOptions
+	if (oField.dictLookup("MEOptions", &oObj)->isInt())
+	{
+		m_unFlags |= (1 << 21);
+		m_unMEOptions = oObj.getInt();
+	}
+	oObj.free();
+
 	// Action - A
 	Object oAction;
 	if (oField.dictLookup("A", &oAction)->isDict())
@@ -2879,6 +2887,14 @@ void CAnnots::getParents(PDFDoc* pdfDoc, Object* oFieldRef, int nStartRefID)
 	}
 	oObj.free();
 
+	// 11 - MEOptions
+	if (oField.dictLookup("MEOptions", &oObj)->isInt())
+	{
+		pAnnotParent->unFlags |= (1 << 11);
+		pAnnotParent->unMEOptions = oObj.getInt();
+	}
+	oObj.free();
+
 	m_arrParents.push_back(pAnnotParent);
 
 	Object oParentRefObj;
@@ -3930,6 +3946,8 @@ void CAnnots::CAnnotParent::ToWASM(NSWasm::CData& oRes)
 		oRes.AddInt(unMaxLen);
 	if (unFlags & (1 << 10))
 		oRes.WriteString(sTU);
+	if (unFlags & (1 << 11))
+		oRes.AddInt(unMEOptions);
 }
 void CAnnot::ToWASM(NSWasm::CData& oRes)
 {
@@ -4027,6 +4045,8 @@ void CAnnotWidget::ToWASM(NSWasm::CData& oRes)
 		oRes.WriteString(m_sT);
 	if (m_unFlags & (1 << 19))
 		oRes.WriteString(m_sButtonFontName);
+	if (m_unFlags & (1 << 21))
+		oRes.AddInt(m_unMEOptions);
 	oRes.AddInt(m_arrAction.size());
 	for (int i = 0; i < m_arrAction.size(); ++i)
 	{

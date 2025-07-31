@@ -877,6 +877,11 @@ public:
 				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang SC", 36));
 				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang TC", 37));
 				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"PingFang HK", 38));
+
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Heiti SC", 39));
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Heiti TC", 40));
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Songti SC", 41));
+				mapFontsPriorityStandard.insert(std::pair<std::wstring, int>(L"Songti TC", 42));
 #endif
 
 				NSFonts::CApplicationFontsSymbols oApplicationChecker;

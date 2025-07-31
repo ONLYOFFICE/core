@@ -242,6 +242,7 @@ private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
 	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	unsigned int m_unMEOptions; // MEOptions
 	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
@@ -661,6 +662,7 @@ private:
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unMaxLen; // Ограничение на максимальную длину text field
 		unsigned int unFieldFlag; // Флаг Ff
+		unsigned int unMEOptions; // MEOptions
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;

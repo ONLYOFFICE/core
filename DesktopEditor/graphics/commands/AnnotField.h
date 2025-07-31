@@ -185,6 +185,7 @@ public:
 		int  GetFlag()      const;
 		int  GetFlags()     const;
 		int  GetParentID()  const;
+		int  GetMEOptions() const;
 		int  GetFontStyle() const;
 		double GetFontSize()   const;
 		double GetFontSizeAP() const;
@@ -214,6 +215,7 @@ public:
 		int m_nFlag;
 		int m_nFlags;
 		int m_nParentID;
+		int m_nMEOptions;
 		int m_nFontStyle;
 		double m_dFS;
 		double m_dFSAP;
@@ -571,6 +573,7 @@ public:
 		int nFlags;
 		int nMaxLen;
 		int nParentID;
+		int nMEOptions;
 		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;

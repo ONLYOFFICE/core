@@ -460,6 +460,7 @@ namespace PdfWriter
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
 		void SetParentID(int nParentID);
+		void SetMEOptions(const int& nMEOptions);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);

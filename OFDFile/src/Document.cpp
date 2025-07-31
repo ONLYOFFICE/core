@@ -55,15 +55,15 @@ bool CDocument::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 
 	const std::wstring wsCoreDirectory{pFolder->getFullFilePath(NSSystemPath::GetDirectoryName(wsFilePath))};
 	const int nDepth = oLiteReader.GetDepth();
-	std::wstring wsNodeName;
+	std::string sNodeName;
 
 	while (oLiteReader.ReadNextSiblingNode(nDepth))
 	{
-		wsNodeName = oLiteReader.GetName();
+		sNodeName = oLiteReader.GetNameA();
 
-		if (L"ofd:CommonData" == wsNodeName)
+		if ("ofd:CommonData" == sNodeName)
 			m_oCommonData.Read(oLiteReader, wsCoreDirectory);
-		else if (L"ofd:Pages" == wsNodeName)
+		else if ("ofd:Pages" == sNodeName)
 		{
 			const int nPagesDepth = oLiteReader.GetDepth();
 
@@ -99,8 +99,10 @@ bool CDocument::Read(const std::wstring& wsFilePath, IFolder* pFolder)
 				oLiteReader.MoveToElement();
 			}
 		}
-		else if (L"ofd:Permissions" == wsNodeName)
+		else if ("ofd:Permissions" == sNodeName)
 			m_oPermission.Read(oLiteReader);
+		else if ("ofd:Annotations" == sNodeName)
+			m_oAnnotation.Read(oLiteReader.GetText2(), wsCoreDirectory);
 	}
 
 	return false;
@@ -117,6 +119,8 @@ bool CDocument::DrawPage(IRenderer* pRenderer, int nPageIndex) const
 		return false;
 
 	itFound->second->Draw(pRenderer, m_oCommonData);
+
+	m_oAnnotation.Draw(pRenderer, m_oCommonData);
 
 	return true;
 }

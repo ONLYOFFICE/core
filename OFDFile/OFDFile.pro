@@ -60,6 +60,7 @@ HEADERS += \
 
 SOURCES += \
 	OFDFile.cpp \
+	src/Annotation.cpp \
 	src/Content/ImageObject.cpp \
 	src/Content/PageBlock.cpp \
 	src/Content/PathObject.cpp \

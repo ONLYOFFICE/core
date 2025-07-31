@@ -255,7 +255,7 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 			continue;
 
 		const std::vector<unsigned int> arValues{oLiteReader.GetArrayUInteger()};
-		// oCGTransform.m_arGlyphs.insert(oCGTransform.m_arGlyphs.end(), arValues.begin(), arValues.end());
+		oCGTransform.m_arGlyphs.insert(oCGTransform.m_arGlyphs.end(), arValues.begin(), arValues.end());
 	}
 
 	return oCGTransform;
@@ -263,7 +263,7 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 
 bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const
 {
-	if (m_unCodePosition != unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
+	if (m_unCodePosition + m_arGlyphs.size() > unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
 		return false;
 
 	for (unsigned int unGlyphCount = 0; unGlyphCount < m_arGlyphs.size(); ++unGlyphCount)

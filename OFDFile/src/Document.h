@@ -2,6 +2,7 @@
 #define DOCUMENT_H
 
 #include "Page.h"
+#include "Annotation.h"
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../OfficeUtils/src/ZipFolder.h"
@@ -26,6 +27,7 @@ class CDocument
 {
 	CCommonData m_oCommonData;
 	CPermission m_oPermission;
+	CAnnotation m_oAnnotation;
 
 	std::map<unsigned int, CPage*> m_mPages;
 public:

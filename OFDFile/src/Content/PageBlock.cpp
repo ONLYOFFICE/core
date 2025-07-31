@@ -9,7 +9,7 @@ namespace OFD
 CPageBlock::CPageBlock(CXmlReader& oLiteReader)
 	: IPageBlock(oLiteReader)
 {
-	if ("ofd:PageBlock" != oLiteReader.GetNameA() || oLiteReader.IsEmptyNode())
+	if (oLiteReader.IsEmptyNode())
 		return;
 
 	CPageBlock::ReadIntoContainer(oLiteReader, m_arPageBlocks);

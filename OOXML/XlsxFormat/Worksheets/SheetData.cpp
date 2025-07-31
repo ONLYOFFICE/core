@@ -941,6 +941,7 @@ namespace OOX
 				return;
 
 			m_sText = oReader.GetText3();
+			m_sText.erase(std::remove(m_sText.begin(), m_sText.end(), '\n'), m_sText.end());
 		}
 		std::wstring CFormula::toXML() const
 		{

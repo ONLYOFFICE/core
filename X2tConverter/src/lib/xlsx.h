@@ -178,6 +178,7 @@ namespace NExtractTools
 		{
 			OOX::Spreadsheet::CXlsb oXlsx;
 			oXlsx.Read(oox_path);
+			oXlsx.PrepareHlinks();
 			oXlsx.PrepareRichStr();
 			nRes = oXlsx.WriteXLS(sTo)? S_OK : AVS_FILEUTILS_ERROR_CONVERT;;
 		}

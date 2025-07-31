@@ -120,13 +120,13 @@ namespace OOX
 			if(m_oLocation.IsInit())
 			{
 				ptr->hyperlink.hlstmfHasLocationStr = true;
-				ptr->hyperlink.location = m_oLocation.get();
+				ptr->hyperlink.location = m_oRef.get();
 			}
-			if(m_oRef.IsInit())
+			if(m_oLink.IsInit())
 			{
 				ptr->hyperlink.hlstmfHasMoniker = true;
 				ptr->hyperlink.hlstmfMonikerSavedAsStr = true;
-				ptr->hyperlink.moniker = m_oRef.get();
+				ptr->hyperlink.moniker = m_oLink.get();
 			}
 			return XLS::BaseObjectPtr(unionPtr);
 		}

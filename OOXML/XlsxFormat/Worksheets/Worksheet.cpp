@@ -374,6 +374,8 @@ namespace OOX
 				worksheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
 			if(m_oSheetProtection.IsInit())
 				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
+			if(m_oHyperlinks.IsInit())
+				worksheetPtr->m_arHLINK = m_oHyperlinks->toXLS();
 
 			if(m_oSheetData.IsInit())
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();

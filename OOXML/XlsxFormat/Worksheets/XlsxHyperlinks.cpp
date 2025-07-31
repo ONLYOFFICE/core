@@ -38,6 +38,9 @@
 #include "../../XlsbFormat/Biff12_unions/HLINKS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/HLINK.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/HLink.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -101,6 +104,31 @@ namespace OOX
                 castedPtr->tooltip = L"";
 
 			return ptr;
+		}
+		XLS::BaseObjectPtr CHyperlink::toXLS()
+		{
+			auto unionPtr = new XLS::HLINK;
+			auto ptr = new XLS::HLink;
+			unionPtr->m_HLink = XLS::BaseObjectPtr(ptr);
+			if(m_oRef.IsInit())
+				ptr->ref8.fromString(m_oRef.get());
+			if(m_oDisplay.IsInit())
+			{
+				ptr->hyperlink.hlstmfHasDisplayName = true;
+				ptr->hyperlink.displayName = m_oDisplay.get();
+			}
+			if(m_oLocation.IsInit())
+			{
+				ptr->hyperlink.hlstmfHasLocationStr = true;
+				ptr->hyperlink.location = m_oLocation.get();
+			}
+			if(m_oRef.IsInit())
+			{
+				ptr->hyperlink.hlstmfHasMoniker = true;
+				ptr->hyperlink.hlstmfMonikerSavedAsStr = true;
+				ptr->hyperlink.moniker = m_oRef.get();
+			}
+			return XLS::BaseObjectPtr(unionPtr);
 		}
         void CHyperlink::toBin(XLS::StreamCacheWriterPtr& writer)
         {
@@ -244,6 +272,15 @@ namespace OOX
 				castedPtr->m_arHlinks.push_back(i->toBin());
 			}
 			return ptr;
+		}
+		std::vector<XLS::BaseObjectPtr> CHyperlinks::toXLS()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i:m_arrItems)
+			{
+				objectVector.push_back(i->toXLS());
+			}
+			return objectVector;
 		}
         void CHyperlinks::toBin(XLS::StreamCacheWriterPtr& writer)
         {

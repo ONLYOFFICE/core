@@ -2301,6 +2301,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->Remove("T");
 		if (nFlags & (1 << 21))
 			pWidgetAnnot->SetMEOptions(pPr->GetMEOptions());
+		else
+			pWidgetAnnot->Remove("MEOptions");
 
 		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
 		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
@@ -2910,6 +2912,8 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pParentObj->Add("TU", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sTU)).c_str(), true));
 		if (nFlags & (1 << 11))
 			pParentObj->Add("MEOptions", pParent->nMEOptions);
+		else
+			pParentObj->Remove("MEOptions");
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

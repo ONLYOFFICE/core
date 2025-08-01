@@ -893,9 +893,9 @@ namespace SimpleTypes
 		unsigned char Get_A() const;
 
 	private:
-		void Parse();
-		void Parse3();
-		int	HexToInt(int nHex);
+		bool Parse();
+		bool Parse3();
+		int	HexToInt(int nHex, bool& bResult);
 
 		std::wstring m_sValue;
 

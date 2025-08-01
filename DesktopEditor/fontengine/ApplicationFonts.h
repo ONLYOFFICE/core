@@ -38,6 +38,7 @@
 #include <vector>
 #include <list>
 #include "FontManager.h"
+#include <set>
 
 namespace NSFonts
 {
@@ -352,6 +353,10 @@ public:
 
 #if defined(_WIN32) || defined (_WIN64)
 	void InitFromReg();
+#endif
+
+#if defined(_MAC) && !defined(_IOS)
+	std::set<std::wstring> GetInstalledFontsMac();
 #endif
 
 	NSFonts::IFontManager* GenerateFontManager();

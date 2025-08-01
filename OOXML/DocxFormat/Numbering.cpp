@@ -114,6 +114,10 @@ namespace ComplexTypes
 			{
 				sResult += L"w:val=\"" + XmlUtils::EncodeXmlString(*m_sVal, false) + L"\" ";
 			}
+			else
+			{
+				sResult += L"w:val=\"\" ";
+			}
 			return sResult;
 		}
 		void CLevelText::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)

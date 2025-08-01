@@ -697,12 +697,18 @@ int AquirePixelsMemory(ImagePICT* image)
         return 0;
     }
 
-    image->m_nPixelsSize = image->m_nHeight * image->m_nWidth * image->number_channels;
+    int nPixelsSize_new = image->m_nHeight * image->m_nWidth * image->number_channels;
 
     if (image->ppixels == NULL)
-        image->ppixels = (unsigned char*) malloc(image->m_nPixelsSize);
-    else
-        image->ppixels = (unsigned char*) realloc(image->ppixels, image->m_nPixelsSize);
+    {
+        image->ppixels = (unsigned char*)malloc(nPixelsSize_new);
+        memset(image->ppixels, 0xff, nPixelsSize_new);
+    }
+    else if (nPixelsSize_new != image->m_nPixelsSize)
+    {
+        image->ppixels = (unsigned char*)realloc(image->ppixels, nPixelsSize_new);
+    }
+    image->m_nPixelsSize = nPixelsSize_new;
 
     return 1;
 }

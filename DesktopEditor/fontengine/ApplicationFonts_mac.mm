@@ -29,34 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "ApplicationFonts.h"
+#include "../common/File.h"
+#import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
-#include "Ptg.h"
-
-namespace XLS
+std::set<std::wstring> CApplicationFonts::GetInstalledFontsMac()
 {
+	std::set<std::wstring> paths;
 
-class CFRecord;
+	CFArrayRef fontURLs = CTFontManagerCopyAvailableFontURLs();
+	if (!fontURLs)
+		return paths;
 
-class PtgParen : public Ptg
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgParen)
-public:
-	PtgParen();
-	BiffStructurePtr clone();
+	NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding (kCFStringEncodingUTF32LE);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, bool full_ref = false);
-	static const unsigned short fixed_id = 0x15;
+	CFIndex count = CFArrayGetCount(fontURLs);
+	for (CFIndex i = 0; i < count; ++i)
+	{
+		CFURLRef url = (CFURLRef)CFArrayGetValueAtIndex(fontURLs, i);
+		if (!url)
+			continue;
 
-	void incrementParametersNum();
-	void decrementParametersNum();
-	const size_t getParametersNum() const;
+		NSString* nsPath = [(__bridge NSURL *)url path];
+		if (!nsPath)
+			continue;
 
-private:
-	size_t num_parameters = 0; // used to transfer the value to PtgFuncVar
-};
+		NSData* pSData = [nsPath dataUsingEncoding: encode];
+		paths.emplace(std::wstring((wchar_t*)[pSData bytes], [pSData length] / sizeof (wchar_t)));
+	}
 
-typedef boost::shared_ptr<PtgParen> PtgParenPtr;
-
-} // namespace XLS
-
+	CFRelease(fontURLs);
+	return paths;
+}

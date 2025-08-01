@@ -221,8 +221,8 @@ namespace SimpleTypes
 			void FromInt(int nColor);
 
 		private:
-			void Parse(const std::wstring sValue);
-			int	HexToInt(int nHex);
+			bool Parse(const std::wstring sValue);
+			int	HexToInt(int nHex, bool& bResult);
 
 		private:
 			unsigned char m_unA;

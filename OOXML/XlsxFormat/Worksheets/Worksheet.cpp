@@ -382,6 +382,10 @@ namespace OOX
 				}
 			if(m_oPageMargins.IsInit())
 				m_oPageMargins->toXLS(worksheetPtr->m_PAGESETUP);
+			if(m_oPrintOptions.IsInit())
+				m_oPrintOptions->toXLS(worksheetPtr->m_PAGESETUP);
+			if(m_oHeaderFooter.IsInit())
+				m_oHeaderFooter->toXLS(worksheetPtr->m_PAGESETUP);
 			if(m_oSheetProtection.IsInit())
 				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
 			if(m_oHyperlinks.IsInit())

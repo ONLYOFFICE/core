@@ -85,6 +85,12 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RightMargin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TopMargin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BottomMargin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/HCenter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/VCenter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/PrintGrid.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/GridSet.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Header.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Footer.h"
 
 namespace OOX
 {
@@ -1161,6 +1167,22 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CPrintOptions::toXLS(XLS::BaseObjectPtr pageSetupPtr)
+		{
+			auto castedSetup = static_cast<XLS::PAGESETUP*>(pageSetupPtr.get());
+			if(m_oHorizontalCentered.IsInit())
+			{
+				auto hcenter = new XLS::HCenter;
+				hcenter->hcenter = m_oHorizontalCentered->GetValue();
+				castedSetup->m_HCenter = XLS::BaseObjectPtr(hcenter);
+			}
+			if(m_oVerticalCentered.IsInit())
+			{
+				auto vcenter = new XLS::VCenter;
+				vcenter->vcenter = m_oVerticalCentered->GetValue();
+				castedSetup->m_VCenter = XLS::BaseObjectPtr(vcenter);
+			}
+		}
 		XLS::BaseObjectPtr CPrintOptions::toBin()
 		{
 			auto ptr(new XLSB::PrintOptions);
@@ -2010,7 +2032,7 @@ namespace OOX
 			if(m_oZoomScale.IsInit())
 				window->wScale = m_oZoomScale->GetValue();
 			if(m_oZoomScaleNormal.IsInit())
-				window->wScaleNormal = m_oZoomScale->GetValue();
+				window->wScaleNormal = m_oZoomScaleNormal->GetValue();
 			if(m_oColorId.IsInit())
 				window->icvHdr = m_oColorId->m_eValue;
 			if(m_oPane.IsInit())
@@ -3068,6 +3090,47 @@ namespace OOX
                 writer->storeNextRecord(end);
             }
         }
+		void CHeaderFooter::toXLS(XLS::BaseObjectPtr pageSetupPtr)
+		{
+			auto castedPtr = static_cast<XLS::PAGESETUP*>(pageSetupPtr.get());
+			if(m_oOddHeader.IsInit())
+			{
+				auto header = new XLS::Header;
+				header->ast = m_oOddHeader->m_sText;
+				castedPtr->m_Header = XLS::BaseObjectPtr(header);
+			}
+			else if(m_oFirstHeader.IsInit())
+			{
+				auto header = new XLS::Header;
+				header->ast = m_oFirstHeader->m_sText;
+				castedPtr->m_Header = XLS::BaseObjectPtr(header);
+			}
+			else if (m_oEvenHeader.IsInit())
+			{
+				auto header = new XLS::Header;
+				header->ast = m_oEvenHeader->m_sText;
+				castedPtr->m_Header = XLS::BaseObjectPtr(header);
+			}
+
+			if(m_oOddFooter.IsInit())
+			{
+				auto footer = new XLS::Footer;
+				footer->ast = m_oOddFooter->m_sText;
+				castedPtr->m_Footer = XLS::BaseObjectPtr(footer);
+			}
+			else if(m_oFirstFooter.IsInit())
+			{
+				auto footer = new XLS::Footer;
+				footer->ast = m_oFirstFooter->m_sText;
+				castedPtr->m_Footer = XLS::BaseObjectPtr(footer);
+			}
+			else if (m_oEvenFooter.IsInit())
+			{
+				auto footer = new XLS::Footer;
+				footer->ast = m_oEvenFooter->m_sText;
+				castedPtr->m_Footer = XLS::BaseObjectPtr(footer);
+			}
+		}
 		EElementType CHeaderFooter::getType() const
 		{
 			return et_x_HeaderFooterWorksheet;

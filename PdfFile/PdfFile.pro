@@ -58,12 +58,14 @@ SOURCES -= \
 
 SOURCES += \
     SrcReader/RendererOutputDev.cpp \
+    SrcReader/RedactOutputDev.cpp \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
     SrcReader/GfxClip.cpp
 
 HEADERS += \
     SrcReader/RendererOutputDev.h \
+    SrcReader/RedactOutputDev.h \
     SrcReader/Adaptors.h \
     SrcReader/MemoryUtils.h \
     SrcReader/PdfAnnot.h \

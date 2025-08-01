@@ -206,6 +206,7 @@ namespace PdfWriter
 		void              AddShapeXML(const std::string& sXML);
 		void              EndShapeXML();
 		void              ClearPage();
+		void              ClearPageFull();
 		bool              EditXref(CXref* pXref);
 		void              SetAcroForm(CDictObject* pObj);
 		CDictObject*      GetAcroForm() { return m_pAcroForm; }

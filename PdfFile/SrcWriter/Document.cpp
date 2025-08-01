@@ -2028,4 +2028,8 @@ namespace PdfWriter
 		m_pCurPage->ClearContent(m_pXref);
 		m_pCurPage->StartTransform(1, 0, 0, 1, 0, 0);
 	}
+	void CDocument::ClearPageFull()
+	{
+		m_pCurPage->ClearContentFull(m_pXref);
+	}
 }

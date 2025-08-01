@@ -179,6 +179,7 @@ namespace PdfWriter
         void      SetRotate(int nRotate);
         int       GetRotate();
 		void      ClearContent(CXref* pXref);
+		void      ClearContentFull(CXref* pXref);
 		CResourcesDict* GetResourcesItem();
 
 	private:

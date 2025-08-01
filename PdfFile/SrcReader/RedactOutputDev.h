@@ -32,97 +32,61 @@
 #ifndef _PDF_READER_REDACT_OUTPUTDEV_H
 #define _PDF_READER_REDACT_OUTPUTDEV_H
 
-#include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../DesktopEditor/graphics/pro/Fonts.h"
-#include "../../DesktopEditor/graphics/AlphaMask.h"
-#include "../../DesktopEditor/graphics/TemporaryCS.h"
-#include "../../DesktopEditor/graphics/structures.h"
-
-#include "GfxClip.h"
-#include <stack>
+#include "../PdfWriter.h"
+//#include "../../DesktopEditor/graphics/IRenderer.h"
+//#include "../../DesktopEditor/graphics/pro/Fonts.h"
+//#include "../../DesktopEditor/graphics/AlphaMask.h"
+//#include "../../DesktopEditor/graphics/TemporaryCS.h"
+//#include "../../DesktopEditor/graphics/structures.h"
 
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/OutputDev.h"
 
-namespace PdfReader
+namespace PdfWriter
 {
 	class RedactOutputDev : public OutputDev
 	{
 	public:
-		RedactOutputDev(IRenderer* pRenderer, NSFonts::IFontManager* pFontManager);
+		RedactOutputDev(CPdfWriter* pRenderer);
 		virtual ~RedactOutputDev();
-
+		//----- get info about output device
 		virtual GBool upsideDown() override
 		{
-			return false;
+			return gFalse;
 		}
 		virtual GBool useDrawChar() override
 		{
-			return true;
+			return gTrue;
 		}
 		virtual GBool useTilingPatternFill() override
 		{
-			return true;
+			return gTrue;
 		}
-		virtual GBool useFunctionalShadedFills()
+		virtual GBool useDrawForm() override
 		{
-			return true;
-		}
-		virtual GBool useAxialShadedFills()
-		{
-			return true;
-		}
-		virtual GBool useRadialShadedFills()
-		{
-			return true;
-		}
-		virtual GBool useGouraundTriangleFills()
-		{
-			return true;
-		}
-		virtual  GBool usePatchMeshFills()
-		{
-			return true;
-		}
-		virtual GBool useClipTo()
-		{
-			return false;//true;
+			return gTrue;
 		}
 		virtual GBool interpretType3Chars() override
 		{
-			return true;
+			return gTrue;
 		}
-		virtual GBool useFillAndStroke()
+		virtual GBool needNonText() override
 		{
-			return true;
+			return gTrue;
 		}
-		virtual GBool  useSimpleTransparentGroup()
+		virtual GBool needCharCount() override
 		{
-			return true;
+			return gFalse;
 		}
-		virtual GBool useSimpleTilingPatternFill()
-		{
-			if (NULL == m_pRenderer)
-				return false;
-
-			// TODO: m_pRenderer->GetAdditionalParam(L"TilingHtmlPattern");
-
-			return false;
-		}
-		virtual GBool isStopped()
-		{
-			if (NULL != m_pbBreak)
-				return *m_pbBreak;
-			else
-				return false;
-		}
-		//---------------------------------------------------------------------------------------------------------------------------
+		//----- initialization and control
+		virtual void setDefaultCTM(double *ctm) override;
 		virtual void startPage(int nPageIndex, GfxState *pGState) override;
 		virtual void endPage() override;
-		//----- Save/Restore GState
+		//----- save/restore graphics state
 		virtual void saveState(GfxState *pGState) override;
 		virtual void restoreState(GfxState *pGState) override;
-		//----- Изменение параметров в GState
+		//----- update graphics state
+		virtual void updateAll(GfxState *pGState) override;
 		virtual void updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32) override;
 		virtual void updateLineDash(GfxState *pGState) override;
 		virtual void updateFlatness(GfxState *pGState) override;
@@ -130,56 +94,60 @@ namespace PdfReader
 		virtual void updateLineCap(GfxState *pGState) override;
 		virtual void updateMiterLimit(GfxState *pGState) override;
 		virtual void updateLineWidth(GfxState *pGState) override;
-		virtual void updateStrokeAdjust(GfxState *pGState) override;
+		// updateStrokeAdjust -> setExtGState
+		virtual void updateFillColorSpace(GfxState *state) override;
+		virtual void updateStrokeColorSpace(GfxState *state) override;
 		virtual void updateFillColor(GfxState *pGState) override;
 		virtual void updateStrokeColor(GfxState *pGState) override;
 		virtual void updateBlendMode(GfxState *pGState) override;
 		virtual void updateFillOpacity(GfxState *pGState) override;
 		virtual void updateStrokeOpacity(GfxState *pGState) override;
-		virtual void updateAll(GfxState *pGState) override;
-		virtual void updateRender(GfxState *pGState) override;
-		//----- Изменение текстовых параметров
+		virtual void updateFillOverprint(GfxState *state) override;
+		virtual void updateStrokeOverprint(GfxState *state) override;
+		virtual void updateOverprintMode(GfxState *state) override;
+		virtual void updateRenderingIntent(GfxState *state) override;
+		virtual void updateTransfer(GfxState *state) override;
+		//----- update text state
 		virtual void updateFont(GfxState *pGState) override;
-		//----- Рисование Path
+		virtual void updateTextMat(GfxState *state) override;
+		virtual void updateCharSpace(GfxState *state) override;
+		virtual void updateRender(GfxState *state) override;
+		virtual void updateRise(GfxState *state) override;
+		virtual void updateWordSpace(GfxState *state) override;
+		virtual void updateHorizScaling(GfxState *state) override;
+		virtual void updateTextPos(GfxState *state) override;
+		virtual void updateTextShift(GfxState *state, double shift) override;
+		virtual void saveTextPos(GfxState *state) override;
+		virtual void restoreTextPos(GfxState *state) override;
+		//----- path painting
 		virtual void stroke(GfxState *pGState) override;
 		virtual void fill(GfxState *pGState) override;
 		virtual void eoFill(GfxState *pGState) override;
-		virtual void FillStroke(GfxState *pGState);
-		virtual void EoFillStroke(GfxState *pGState);
 		virtual void tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict, double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep) override;
-		virtual void StartTilingFill(GfxState *pGState);
-		virtual void EndTilingFill();
 		virtual GBool shadedFill(GfxState* pGState, GfxShading* shading) override;
-		bool FunctionShadedFill(GfxState* pGState, GfxFunctionShading* pShading);
-		bool AxialShadedFill(GfxState* pGState, GfxAxialShading* pShading);
-		bool RadialShadedFill(GfxState* pGState, GfxRadialShading* pShading);
-		bool GouraundTriangleFill(GfxState* pGState, const std::vector<GfxColor*>& colors, const std::vector<NSStructures::Point>& points);
-		bool PatchMeshFill(GfxState* pGState, GfxPatch* pPatch, GfxPatchMeshShading* pShading);
-		void StartShadedFill();
-		void EndShadedFill();
-		void StartTilingFillIteration();
-		void EndTilingFillIteration();
-		void StartSimpleTilingFill(GfxState* pGState, int  nX0, int nY0, int nX1, int nY1, double dStepX, double dStepY, double dXMin, double dYMin, double dXMax, double dYMax, double* pMatrix);
-		void EndSimpleTilingFill();
-		//----- Path clipping
+		//----- path clipping
 		virtual void clip(GfxState *pGState) override;
 		virtual void eoClip(GfxState *pGState) override;
 		virtual void clipToStrokePath(GfxState *pGState) override;
-		virtual void clipToPath(GfxState *pGState, GfxPath *pPath, double *pMatrix, bool bEO);
-		//----- Вывод текста
-		virtual void endTextObject(GfxState *pGState) override;
+		//----- text drawing
 		virtual void beginStringOp(GfxState *pGState) override;
 		virtual void endStringOp(GfxState *pGState) override;
-		virtual void drawString(GfxState *pGState, GString *seString) override;
+		virtual void beginString(GfxState *state, GString *s) override;
+		virtual void endString(GfxState *state) override;
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen) override;
-		GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
-		void endType3Char(GfxState *pGState) override;
-		//----- Дополнительные функции
+		virtual void drawString(GfxState *pGState, GString *seString) override;
+		virtual GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
+		virtual void endType3Char(GfxState *pGState) override;
+		virtual void endTextObject(GfxState *pGState) override;
+		virtual void beginActualText(GfxState *state, Unicode *u, int uLen) override;
+		virtual void endActualText(GfxState *state) override;
+		//----- additional
 		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
 		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *state) override;
-		//----- Вывод картинок
-		bool ReadImage(Aggplus::CImage* pImageRes, Object *pRef, Stream *pStream);
+		virtual GBool useExtGState() override;
+		virtual void setExtGState(Object* pDict) override;
+		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate) override;
@@ -187,7 +155,12 @@ namespace PdfReader
 									 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate) override;
 		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 										 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
-		//----- Transparency groups и SMasks
+		//----- Type 3 font operators
+		virtual void type3D0(GfxState *state, double wx, double wy) override;
+		virtual void type3D1(GfxState *state, double wx, double wy, double llx, double lly, double urx, double ury) override;
+		//----- form XObjects
+		virtual void drawForm(Ref id) override;
+		//----- transparency groups and soft masks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
 		virtual void endTransparencyGroup(GfxState *pGState) override;
 		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox) override;
@@ -196,53 +169,10 @@ namespace PdfReader
 		//----- Дополнительные функции для данного устройства
 
 	private:
-		struct GfxOutputState
-		{
-			GfxState* pGState;
-			Aggplus::CSoftMask* pSoftMask;
-			GfxClip* pClip;
-			GfxTextClip* pTextClip;
-
-			GfxOutputState() : pGState(NULL), pSoftMask(NULL), pClip(NULL), pTextClip(NULL) {}
-			~GfxOutputState()
-			{
-				RELEASEOBJECT(pClip);
-				RELEASEOBJECT(pTextClip);
-			}
-		};
-		struct GfxOutputCS
-		{
-			bool bKnockout;
-			GfxColorSpace* pBlendingCS;
-
-			GfxOutputCS() : bKnockout(false), pBlendingCS(NULL) {}
-		};
-
-		void DoPath(GfxState *pGState, GfxPath *pPath, double dPageHeight, double *pCTM, GfxClipMatrix* pCTM2 = NULL);
-		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
-		void AddClip(GfxState* pGState, GfxOutputState* pState, int nIndex);
-		void AddTextClip(GfxState* pGState, GfxOutputState* pState = NULL);
-		void UpdateAllClip(GfxState *pGState);
-		void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText = false);
-	private:
-
-		IRenderer*                    m_pRenderer;
-		long                          m_lRendererType;
-		double                        m_arrMatrix[6];
-		NSFonts::IFontManager*        m_pFontManager;
-
-		XRef*                         m_pXref; // Таблица Xref для данного PDF-документа
-
-		bool                         *m_pbBreak;         // Внешняя остановка рендерера
-
-		std::deque<GfxOutputCS>       m_sCS;
-		std::deque<GfxOutputState>    m_sStates;
-
-		Aggplus::CSoftMask*           m_pSoftMask;
-		bool                          m_bTiling;
-
-		bool                          m_bDrawOnlyText; // Special option for html-renderer
-
+		CPdfWriter* m_pRenderer;
+		CDocument*  m_pDoc;
+		CPage*      m_pPage;
+		double      m_arrMatrix[6];
 	};
 }
 

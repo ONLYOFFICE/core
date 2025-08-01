@@ -852,8 +852,21 @@ namespace PdfWriter
 		pEntry->unByteOffset = 0;
 		pEntry->unGenNo      = unObjectGen;
 		pEntry->pObject      = pObject;
-		pObject->SetRef(m_unStartOffset + m_arrEntries.size() - 1, pEntry->unGenNo);
+		pObject->SetRef(0, pEntry->unGenNo);
 		pObject->SetIndirect();
+	}
+	void CXref::Remove(CObjectBase* pObject)
+	{
+		for (unsigned int unIndex = 0, unCount = m_arrEntries.size(); unIndex < unCount; ++unIndex)
+		{
+			TXrefEntry* pEntry = m_arrEntries.at(unIndex);
+			if (pEntry->pObject == pObject)
+			{
+				m_arrEntries.erase(m_arrEntries.begin() + unIndex);
+				delete pEntry;
+				break;
+			}
+		}
 	}
     void CXref::WriteTrailer(CStream* pStream)
 	{
@@ -879,6 +892,18 @@ namespace PdfWriter
 		char* pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
 
 		CXref* pXref = this;
+		while (pXref)
+		{
+			for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
+			{
+				TXrefEntry* pEntry = pXref->m_arrEntries.at(unIndex);
+				if (pEntry->nEntryType != FREE_ENTRY && pEntry->pObject->GetObjId() == 0)
+					pEntry->pObject->SetRef(pXref->m_unStartOffset + unIndex, pEntry->unGenNo);
+			}
+			pXref = pXref->m_pPrev;
+		}
+
+		pXref = this;
 		TXrefEntry* pNextFreeObj = NULL;
 		while (pXref)
 		{

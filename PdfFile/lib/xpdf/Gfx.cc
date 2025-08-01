@@ -1006,6 +1006,13 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
     printf("\n");
   }
 
+  if (out->useExtGState())
+  {
+	out->setExtGState(&obj1);
+	obj1.free();
+	return;
+  }
+
   // parameters that are also set by individual PDF operators
   if (obj1.dictLookup("LW", &obj2)->isNum()) {
     opSetLineWidth(&obj2, 1);

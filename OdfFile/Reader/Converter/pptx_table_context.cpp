@@ -438,6 +438,10 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 						double padding = graphic_props->common_padding_attlist_.fo_padding_left_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marL", (long)padding);
 					}
+					//else
+					//{
+					//	CP_XML_ATTR(L"marL", 3600);
+					//}
 
 					if (style_cell_attlist.common_padding_attlist_.fo_padding_right_)
 					{
@@ -449,7 +453,11 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 						double padding = graphic_props->common_padding_attlist_.fo_padding_right_->get_value_unit(odf_types::length::emu);
 						CP_XML_ATTR(L"marR", (long)padding);
 					}
-				}			
+					//else
+					//{
+					//	CP_XML_ATTR(L"marR", 3600);
+					//}
+				}
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
 

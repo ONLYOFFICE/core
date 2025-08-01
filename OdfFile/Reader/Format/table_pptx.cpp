@@ -37,6 +37,8 @@
 #include "serialize_elements.h"
 #include "odfcontext.h"
 #include "odf_document.h"
+#include "odf_document_impl.h"
+#include "office_document.h"
 
 #include "style_table_properties.h"
 #include "style_graphic_properties.h"
@@ -391,8 +393,36 @@ void table_table_cell::pptx_convert(oox::pptx_conversion_context & Context)
 
 				std::wstring	style_name;
 				style_instance *style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
-				if (style_inst) style_instances.push_back(style_inst);
+				if (!style_inst)
+				{
+					default_style* def_style = new default_style();
+					
+					office_document_base* document = dynamic_cast<office_document_base*>(Context.root()->get_impl()->get_content());
+					office_automatic_styles* styles = dynamic_cast<office_automatic_styles*>(document->office_automatic_styles_.get());
+					styles->styles_.style_style_.push_back(office_element_ptr(def_style));
 
+					style_table_cell_properties* props = def_style->content_.get_style_table_cell_properties(true);
+
+					def_style->content_.style_family_ = odf_types::style_family::TableCell;
+
+					props->attlist_.common_padding_attlist_.fo_padding_left_ = length(3600 / 12700., length::pt);
+					props->attlist_.common_padding_attlist_.fo_padding_right_ = length(3600 / 12700., length::pt);
+
+					Context.root()->odf_context().styleContainer().add_style(L"", L"", &(def_style->content_), false, true, L"", L"", L"", L"", L"default");
+
+					style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+				}
+				if (style_inst)
+				{
+					style_table_cell_properties* props = style_inst->content()->get_style_table_cell_properties(true);
+
+					if (!props->attlist_.common_padding_attlist_.fo_padding_left_)
+						props->attlist_.common_padding_attlist_.fo_padding_left_ = length(3600 / 12700., length::pt);
+					if (!props->attlist_.common_padding_attlist_.fo_padding_right_)
+						props->attlist_.common_padding_attlist_.fo_padding_right_ = length(3600 / 12700., length::pt);
+
+					style_instances.push_back(style_inst);
+				}
 				style_name = Context.get_table_context().get_default_cell_style();
 				if (!style_name.empty())
 				{

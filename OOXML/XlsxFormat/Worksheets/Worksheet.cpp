@@ -52,6 +52,7 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 
 namespace OOX
 {
@@ -372,6 +373,15 @@ namespace OOX
 				worksheetPtr->m_arMergeCells = m_oMergeCells->toXLS();
 			if(m_oSheetViews.IsInit())
 				worksheetPtr->m_arWINDOW = m_oSheetViews->toXLS();
+			if(m_oPageSetup.IsInit())
+				worksheetPtr->m_PAGESETUP = m_oPageSetup->toXLS();
+			else
+				{
+					auto pageSetup = new XLS::PAGESETUP;
+					worksheetPtr->m_PAGESETUP = XLS::BaseObjectPtr(pageSetup);
+				}
+			if(m_oPageMargins.IsInit())
+				m_oPageMargins->toXLS(worksheetPtr->m_PAGESETUP);
 			if(m_oSheetProtection.IsInit())
 				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
 			if(m_oHyperlinks.IsInit())

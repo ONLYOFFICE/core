@@ -74,12 +74,17 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/WINDOW.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PROTECTION_COMMON.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Window2.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Dimensions.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Protect.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ObjProtect.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/ScenarioProtect.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Password.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LeftMargin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RightMargin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TopMargin.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BottomMargin.h"
 
 namespace OOX
 {
@@ -516,6 +521,52 @@ namespace OOX
 		{
 			ReadAttributes(obj);
 		}
+		void CPageMargins::toXLS(XLS::BaseObjectPtr setupPtr)
+		{
+			auto CastedSetup = static_cast<XLS::PAGESETUP*>(setupPtr.get());
+			if(m_oLeft.IsInit())
+			{
+				auto marginPtr = new XLS::LeftMargin;
+				marginPtr->num.data.value = m_oLeft->GetValue();
+				CastedSetup->m_LeftMargin = XLS::BaseObjectPtr(marginPtr);
+			}
+
+			if(m_oRight.IsInit())
+			{
+				auto marginPtr = new XLS::RightMargin;
+				marginPtr->num.data.value = m_oRight->GetValue();
+				CastedSetup->m_RightMargin = XLS::BaseObjectPtr(marginPtr);
+			}
+
+			if(m_oTop.IsInit())
+			{
+				auto marginPtr = new XLS::TopMargin;
+				marginPtr->num.data.value = m_oTop->GetValue();
+				CastedSetup->m_TopMargin = XLS::BaseObjectPtr(marginPtr);
+			}
+
+			if(m_oBottom.IsInit())
+			{
+				auto marginPtr = new XLS::BottomMargin;
+				marginPtr->num.data.value = m_oBottom->GetValue();
+				CastedSetup->m_BottomtMargin = XLS::BaseObjectPtr(marginPtr);
+			}
+			if(m_oHeader.IsInit() || m_oFooter.IsInit())
+			{
+				XLS::Setup* setupPtr;
+				if(CastedSetup->m_Setup == nullptr)
+				{
+					setupPtr = new XLS::Setup;
+					CastedSetup->m_Setup = XLS::BaseObjectPtr(setupPtr);
+				}
+				else
+					setupPtr = static_cast<XLS::Setup*>(CastedSetup->m_Setup.get());
+				if(m_oHeader.IsInit())
+					setupPtr->numHdr.data.value = m_oHeader->GetValue();
+				if(m_oFooter.IsInit())
+					setupPtr->numFtr.data.value = m_oFooter->GetValue();
+			}
+		}
 		XLS::BaseObjectPtr CPageMargins::toBin()
 		{
 			auto ptr(new XLSB::Margins);
@@ -675,6 +726,51 @@ namespace OOX
 		void CPageSetup::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			ReadAttributes(obj);
+		}
+		XLS::BaseObjectPtr CPageSetup::toXLS()
+		{
+			auto unionPtr = new XLS::PAGESETUP;
+			auto setup = new XLS::Setup;
+			unionPtr->m_Setup = XLS::BaseObjectPtr(setup);
+			if(m_oPaperSize.IsInit())
+				setup->iPaperSize = m_oPaperSize->GetValue();
+			if(m_oScale.IsInit())
+				setup->iScale = m_oScale->GetValue();
+			if(m_oFirstPageNumber.IsInit())
+				setup->iPageStart = m_oFirstPageNumber->GetValue();
+			if(m_oFitToWidth.IsInit())
+				setup->iFitWidth = m_oFitToWidth->GetValue();
+			if(m_oFitToHeight.IsInit())
+				setup->iFitHeight = m_oFitToHeight->GetValue();
+
+			if(m_oPageOrder.IsInit())
+				setup->fLeftToRight = m_oPageOrder->GetValue();
+			if(m_oOrientation.IsInit())
+				setup->fPortrait = m_oOrientation->GetValue();
+			if(m_oUsePrinterDefaults.IsInit())
+				setup->fNoPls = m_oUsePrinterDefaults->GetValue();
+			if(m_oBlackAndWhite.IsInit())
+				setup->fNoColor  = m_oBlackAndWhite->m_eValue;
+			if(m_oDraft.IsInit())
+				setup->fDraft = m_oDraft->GetValue();
+			if(m_oCellComments.IsInit())
+			{
+				setup->fNotes = m_oCellComments->GetValue();
+				if(m_oCellComments->GetValue() == SimpleTypes::Spreadsheet::ECellComments::cellcommentsAtEnd)
+					setup->fEndNotes = true;
+			}
+			if(m_oUseFirstPageNumber.IsInit())
+				setup->fUsePage = m_oUseFirstPageNumber->GetValue();
+
+			if(m_oErrors.IsInit())
+				setup->iErrors = m_oErrors->GetValue();
+			if(m_oHorizontalDpi.IsInit())
+				setup->iRes = m_oHorizontalDpi->GetValue();
+			if(m_oVerticalDpi.IsInit())
+				setup->iVRes = m_oVerticalDpi->GetValue();
+			if(m_oCopies.IsInit())
+				setup->iCopies = m_oCopies->GetValue();
+			return XLS::BaseObjectPtr(unionPtr);
 		}
 		XLS::BaseObjectPtr CPageSetup::toBin()
 		{

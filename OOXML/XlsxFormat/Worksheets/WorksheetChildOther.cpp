@@ -527,28 +527,28 @@ namespace OOX
 			if(m_oLeft.IsInit())
 			{
 				auto marginPtr = new XLS::LeftMargin;
-				marginPtr->num.data.value = m_oLeft->GetValue();
+				marginPtr->num.data.value = m_oLeft->GetValue() / 100;
 				CastedSetup->m_LeftMargin = XLS::BaseObjectPtr(marginPtr);
 			}
 
 			if(m_oRight.IsInit())
 			{
 				auto marginPtr = new XLS::RightMargin;
-				marginPtr->num.data.value = m_oRight->GetValue();
+				marginPtr->num.data.value = m_oRight->GetValue() / 100;
 				CastedSetup->m_RightMargin = XLS::BaseObjectPtr(marginPtr);
 			}
 
 			if(m_oTop.IsInit())
 			{
 				auto marginPtr = new XLS::TopMargin;
-				marginPtr->num.data.value = m_oTop->GetValue();
+				marginPtr->num.data.value = m_oTop->GetValue() / 100;
 				CastedSetup->m_TopMargin = XLS::BaseObjectPtr(marginPtr);
 			}
 
 			if(m_oBottom.IsInit())
 			{
 				auto marginPtr = new XLS::BottomMargin;
-				marginPtr->num.data.value = m_oBottom->GetValue();
+				marginPtr->num.data.value = m_oBottom->GetValue() / 100;
 				CastedSetup->m_BottomtMargin = XLS::BaseObjectPtr(marginPtr);
 			}
 			if(m_oHeader.IsInit() || m_oFooter.IsInit())
@@ -562,9 +562,9 @@ namespace OOX
 				else
 					setupPtr = static_cast<XLS::Setup*>(CastedSetup->m_Setup.get());
 				if(m_oHeader.IsInit())
-					setupPtr->numHdr.data.value = m_oHeader->GetValue();
+					setupPtr->numHdr.data.value = m_oHeader->GetValue() / 100;
 				if(m_oFooter.IsInit())
-					setupPtr->numFtr.data.value = m_oFooter->GetValue();
+					setupPtr->numFtr.data.value = m_oFooter->GetValue() / 100;
 			}
 		}
 		XLS::BaseObjectPtr CPageMargins::toBin()

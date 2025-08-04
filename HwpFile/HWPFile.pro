@@ -12,6 +12,9 @@ PWD_ROOT_DIR = $$PWD
 
 include($$CORE_ROOT_DIR/Common/base.pri)
 
+CONFIG += startmath_use_only_eqn
+include($$CORE_ROOT_DIR/OdfFile/Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
 
 ADD_DEPENDENCY(kernel, UnicodeConverter, graphics)

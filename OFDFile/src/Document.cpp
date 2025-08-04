@@ -118,9 +118,9 @@ bool CDocument::DrawPage(IRenderer* pRenderer, int nPageIndex) const
 	if (itFound == m_mPages.cend())
 		return false;
 
-	itFound->second->Draw(pRenderer, m_oCommonData);
+	itFound->second->Draw(pRenderer, m_oCommonData, EPageType::Page);
 
-	m_oAnnotation.Draw(pRenderer, m_oCommonData);
+	m_oAnnotation.Draw(pRenderer, m_oCommonData, EPageType::Anotation);
 
 	return true;
 }

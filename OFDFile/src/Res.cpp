@@ -135,4 +135,14 @@ const CCompositeGraphicUnit* CRes::GetCompositeGraphicUnit(unsigned int unId) co
 {
 	RETURN_ELEMENT_FROM_MAP(CCompositeGraphicUnit, m_mCCompositeGraphicUnits);
 }
+
+std::vector<const CDrawParam*> CRes::GetDrawParams() const
+{
+	std::vector<const CDrawParam*> arValues;
+
+	for (std::map<unsigned int, CDrawParam*>::const_iterator itBegin = m_mDrawParams.cbegin(); itBegin != m_mDrawParams.cend(); ++itBegin)
+		arValues.push_back(itBegin->second);
+
+	return arValues;
+}
 }

@@ -34,7 +34,7 @@ public:
 	CAnnot(CXmlReader& oLiteReader);
 	~CAnnot();
 
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 private:
 	EAnnotType m_eType;
 	bool m_bVisible;
@@ -54,7 +54,7 @@ public:
 
 	static CPageAnnot* Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
 
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 private:
 
 	std::vector<CAnnot*> m_arAnnots;
@@ -68,7 +68,7 @@ public:
 
 	bool Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath);
 
-	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const;
+	void Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const;
 private:
 	CPageAnnot *m_pPageAnnot;
 };

@@ -178,12 +178,14 @@ CTextObject::~CTextObject()
 		delete pTextCode;
 }
 
-void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer || m_arTextCodes.empty())
 		return;
 
-	const CFont* pFont = oCommonData.GetPublicRes()->GetFont(m_unFontID);
+	const CRes* pPublicRes{oCommonData.GetPublicRes()};
+
+	const CFont* pFont = pPublicRes->GetFont(m_unFontID);
 
 	if (nullptr == pFont)
 		return;
@@ -193,19 +195,25 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 	TMatrix oOldTransform;
 	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
+	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
+
 	if (m_bFill)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 
 		if (nullptr != m_pFillColor)
 		{
-			pRenderer->put_BrushColor1(m_pFillColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
 			pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
 		}
 		else
 		{
 			pRenderer->put_BrushColor1(0);
-			pRenderer->put_BrushAlpha1(0xff);
+
+			if (EPageType::TemplatePage == ePageType)
+				for (const CDrawParam* pDrawParam : arDrawParams)
+					if (pDrawParam->ApplyFillColor(pRenderer, pPublicRes))
+						break;
 		}
 	}
 	else

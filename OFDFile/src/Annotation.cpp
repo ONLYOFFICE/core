@@ -1,6 +1,8 @@
 #include "Annotation.h"
 #include "Utils/Utils.h"
 
+#include "../../../Common/File.h"
+
 namespace OFD
 {
 CParameter::CParameter(CXmlReader& oLiteReader)
@@ -106,13 +108,13 @@ CAnnot::~CAnnot()
 	ClearContainer(m_arAppearances);
 }
 
-void CAnnot::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CAnnot::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (!m_bPrint)
 		return;
 
 	for (const CAppearance* pAppearance : m_arAppearances)
-		pAppearance->Draw(pRenderer, oCommonData);
+		pAppearance->Draw(pRenderer, oCommonData, ePageType);
 }
 
 CPageAnnot::CPageAnnot()
@@ -144,10 +146,10 @@ CPageAnnot* CPageAnnot::Read(const std::wstring& wsFilePath, const std::wstring&
 	return pPageAnnot;
 }
 
-void CPageAnnot::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CPageAnnot::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	for (const CAnnot* pAnnot : m_arAnnots)
-		pAnnot->Draw(pRenderer, oCommonData);
+		pAnnot->Draw(pRenderer, oCommonData, ePageType);
 }
 
 CAnnotation::CAnnotation()
@@ -195,9 +197,9 @@ bool CAnnotation::Read(const std::wstring& wsFilePath, const std::wstring& wsRoo
 	return nullptr != m_pPageAnnot;
 }
 
-void CAnnotation::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CAnnotation::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr != m_pPageAnnot)
-		m_pPageAnnot->Draw(pRenderer, oCommonData);
+		m_pPageAnnot->Draw(pRenderer, oCommonData, ePageType);
 }
 }

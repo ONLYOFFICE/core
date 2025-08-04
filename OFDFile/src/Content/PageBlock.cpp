@@ -54,7 +54,7 @@ void CPageBlock::ReadIntoContainer(CXmlReader& oLiteReader, std::vector<IPageBlo
 	}
 }
 
-void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer)
 		return;
@@ -65,7 +65,7 @@ void CPageBlock::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) cons
 	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx + m_oBoundary.m_dX, dDy + m_oBoundary.m_dY);
 
 	for (const IPageBlock* pPageBlock : m_arPageBlocks)
-		pPageBlock->Draw(pRenderer, oCommonData);
+		pPageBlock->Draw(pRenderer, oCommonData, ePageType);
 
 	pRenderer->SetTransform(dM11, dM12, dM21, dM22, dDx, dDy);
 }

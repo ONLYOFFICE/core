@@ -1930,7 +1930,8 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 	bool bRender = (nFlags >> 6) & 1;
 	if (nFlags & (1 << 7))
 		pAnnot->SetOUserID(oInfo.GetOUserID());
-	bool bRenderCopy = (nFlags >> 8) & 1;
+	if (nFlags & (1 << 9))
+		pAnnot->SetOMetadata(oInfo.GetOMetadata());
 
 	if (oInfo.IsMarkup())
 	{
@@ -2234,17 +2235,6 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 				pArray->Add(dPageH - dRD2);
 				pStampAnnot->SetAPStream(pAP);
 			}
-			else if (bRenderCopy)
-			{
-				int nID = oInfo.GetCopyAP();
-				PdfWriter::CAnnotation* pAnnot2 = m_pDocument->GetAnnot(nID);
-				if (pAnnot2->GetAnnotationType() == PdfWriter::EAnnotType::AnnotStamp)
-				{
-					PdfWriter::CStampAnnotation* pStampAnnot2 = (PdfWriter::CStampAnnotation*)pAnnot2;
-					PdfWriter::CDictObject* pAPN = (PdfWriter::CDictObject*)pStampAnnot2->GetAPStream();
-					pStampAnnot->SetAPStream(pAPN, true);
-				}
-			}
 
 			pStampAnnot->SetRotate(nRotate);
 		}
@@ -2342,8 +2332,10 @@ HRESULT CPdfWriter::AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotF
 			pWidgetAnnot->SetT(pPr->GetT());
 		else
 			pWidgetAnnot->Remove("T");
-		if (nFlags & (1 << 20))
-			pWidgetAnnot->SetOMetadata(pPr->GetOMetadata());
+		if (nFlags & (1 << 21))
+			pWidgetAnnot->SetMEOptions(pPr->GetMEOptions());
+		else
+			pWidgetAnnot->Remove("MEOptions");
 
 		const std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrActions = pPr->GetActions();
 		for (CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget* pAction : arrActions)
@@ -2951,6 +2943,10 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 			pParentObj->Add("MaxLen", pParent->nMaxLen);
 		if (nFlags & (1 << 10))
 			pParentObj->Add("TU", new PdfWriter::CStringObject((U_TO_UTF8(pParent->sTU)).c_str(), true));
+		if (nFlags & (1 << 11))
+			pParentObj->Add("MEOptions", pParent->nMEOptions);
+		else
+			pParentObj->Remove("MEOptions");
 	}
 
 	std::vector<std::wstring> arrBI = pFieldInfo->GetButtonImg();

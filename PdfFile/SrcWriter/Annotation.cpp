@@ -292,6 +292,11 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("OUserID", new CStringObject(sValue.c_str()));
 	}
+	void CAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
+	{
+		std::string sValue = U_TO_UTF8(wsOMetadata);
+		Add("OMetadata", new CStringObject(sValue.c_str(), true));
+	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		AddToVectorD(this, "C", arrC);
@@ -1426,6 +1431,10 @@ namespace PdfWriter
 	{
 		m_nParentID = nParentID;
 	}
+	void CWidgetAnnotation::SetMEOptions(const int& nMEOptions)
+	{
+		Add("MEOptions", nMEOptions);
+	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
@@ -1458,16 +1467,6 @@ namespace PdfWriter
 		{
 			pOwner = this;
 			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
-		}
-	}
-	void CWidgetAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
-	{
-		std::string sValue = U_TO_UTF8(wsOMetadata);
-		CDictObject* pOwner = GetObjOwnValue("OMetadata");
-		if (!pOwner)
-		{
-			pOwner = this;
-			pOwner->Add("OMetadata", new CStringObject(sValue.c_str(), true));
 		}
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)

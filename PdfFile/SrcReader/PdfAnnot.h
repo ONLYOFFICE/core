@@ -204,6 +204,7 @@ private:
 	std::string m_sNM; // Уникальное имя
 	std::string m_sM; // Дата последнего изменения
 	std::string m_sOUserID; // OO User ID
+	std::string m_sOMetadata; // OO метаданные формы
 	std::vector<double> m_arrC; // Специальный цвет
 	CBorderType* m_pBorder; // Граница
 };
@@ -241,6 +242,7 @@ private:
 	unsigned int m_unR; // Поворот аннотации относительно страницы - R
 	unsigned int m_unRefNumParent; // Номер ссылки на объект родителя
 	unsigned int m_unFontStyle; // Стиль шрифта - из DA
+	unsigned int m_unMEOptions; // MEOptions
 	double m_dFontSize; // Размер шрифта - из DA
 	std::vector<double> m_arrTC; // Цвет текста - из DA
 	std::vector<double> m_arrBC; // Цвет границ - BC
@@ -255,7 +257,6 @@ private:
 	std::string m_sFontKey; // Уникальный идентификатор шрифта
 	std::string m_sFullName; // Полное имя поля
 	std::string m_sFontName; // Имя шрифта - из DA
-	std::string m_sOMetadata; // OO метаданные формы
 	std::string m_sActualFontName; // Имя замененного шрифта
 	std::string m_sButtonFontName; // Имя шрифта кнопки
 };
@@ -661,6 +662,7 @@ private:
 		unsigned int unRefNum; // Номер ссылки на объект
 		unsigned int unMaxLen; // Ограничение на максимальную длину text field
 		unsigned int unFieldFlag; // Флаг Ff
+		unsigned int unMEOptions; // MEOptions
 		unsigned int unRefNumParent; // Номер ссылки на объект родителя
 		std::vector<int> arrI;
 		std::vector<std::string> arrV;

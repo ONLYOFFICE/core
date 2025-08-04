@@ -447,6 +447,7 @@ public:
 	std::wstring Caption;
 	std::wstring Description;
 
+	std::wstring Style;
 	std::wstring Props;
 	bool IsEmpty();
 	std::wstring Write();

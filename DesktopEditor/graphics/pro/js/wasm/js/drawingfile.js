@@ -545,6 +545,8 @@ function readAnnot(reader, rec, readDoubleFunc, readDouble2Func, readStringFunc,
 		rec["OUserID"] = readStringFunc.call(reader);
 	// if (flags & (1 << 8))
 	// 	reader.readInt();
+	if (flags & (1 << 9))
+		rec["meta"] = readStringFunc.call(reader);
 }
 function readAnnotAP(reader, AP)
 {
@@ -1090,8 +1092,10 @@ function readWidgetType(reader, rec, readDoubleFunc, readDouble2Func, readString
 		rec["name"] = readStringFunc.call(reader);
 	if (flags & (1 << 19))
 		rec["font"]["AP"] = readStringFunc.call(reader);
-	if (flags & (1 << 20))
-		rec["meta"] = readStringFunc.call(reader);
+	// if (flags & (1 << 20))
+	// 	readStringFunc.call(reader);
+	if (flags & (1 << 21))
+		rec["MEOptions"] = reader.readInt();
 	// Action
 	let nAction = reader.readInt();
 	if (nAction > 0)
@@ -1364,7 +1368,9 @@ CFile.prototype["getInteractiveFormsInfo"] = function()
 			if (flags & (1 << 9))
 				rec["maxLen"] = reader.readInt();
 			if (flags & (1 << 10))
-				rec["tooltip"] = reader.readString();
+				rec["tooltip"] = reader.readString();			
+			if (flags & (1 << 11))
+				rec["MEOptions"] = reader.readInt();
 			res["Parents"].push(rec);
 		}
 

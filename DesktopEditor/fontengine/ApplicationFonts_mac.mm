@@ -29,33 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "ApplicationFonts.h"
+#include "../common/File.h"
+#import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
-#include "AFDOperXNum.h"
-#include "Xnum.h"
-
-namespace XLS
+std::set<std::wstring> CApplicationFonts::GetInstalledFontsMac()
 {
+	std::set<std::wstring> paths;
 
-BiffStructurePtr AFDOperXNum::clone()
-{
-	return BiffStructurePtr(new AFDOperXNum(*this));
+	CFArrayRef fontURLs = CTFontManagerCopyAvailableFontURLs();
+	if (!fontURLs)
+		return paths;
+
+	NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding (kCFStringEncodingUTF32LE);
+
+	CFIndex count = CFArrayGetCount(fontURLs);
+	for (CFIndex i = 0; i < count; ++i)
+	{
+		CFURLRef url = (CFURLRef)CFArrayGetValueAtIndex(fontURLs, i);
+		if (!url)
+			continue;
+
+		NSString* nsPath = [(__bridge NSURL *)url path];
+		if (!nsPath)
+			continue;
+
+		NSData* pSData = [nsPath dataUsingEncoding: encode];
+		paths.emplace(std::wstring((wchar_t*)[pSData bytes], [pSData length] / sizeof (wchar_t)));
+	}
+
+	CFRelease(fontURLs);
+	return paths;
 }
-
-void AFDOperXNum::load(CFRecord& record)
-{
-	_UINT32 v1, v2;
-	record >> v1 >> v2;
-
-	val = 0;
-}
-
-void AFDOperXNum::save(CFRecord& record)
-{
-    Xnum numValue;
-    numValue.data.value = val;
-    record << numValue;
-}
-
-
-} // namespace XLS
-

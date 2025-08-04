@@ -130,6 +130,7 @@ core_windows {
     DEFINES -= _UNICODE
 }
 
+include($$PWD/../3dParty/brotli/brotli.pri)
 include($$PWD/../DesktopEditor/graphics/pro/freetype.pri)
 
 HEADERS += \

@@ -2,12 +2,13 @@
 #define PAGEBLOCK_H
 
 #include "IPageBlock.h"
-#include "../Res.h"
 
 namespace OFD
 {
 class CPageBlock : public IPageBlock
 {
+	TBox m_oBoundary;
+
 	std::vector<IPageBlock*> m_arPageBlocks;
 public:
 	CPageBlock(CXmlReader& oLiteReader);

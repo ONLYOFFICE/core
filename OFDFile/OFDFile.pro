@@ -30,6 +30,7 @@ INCLUDEPATH += \
 
 HEADERS += \
 	OFDFile.h \
+	src/Annotation.h \
 	src/Content/ImageObject.h \
 	src/Content/PageBlock.h \
 	src/Content/PathObject.h \

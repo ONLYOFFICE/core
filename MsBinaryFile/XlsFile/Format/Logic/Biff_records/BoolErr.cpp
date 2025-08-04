@@ -71,12 +71,39 @@ int BoolErr::serialize(std::wostream & stream)
 		CP_XML_NODE(L"c")
 		{
 			CP_XML_ATTR(L"r", ref);
+			if (bes.fError)
+				CP_XML_ATTR(L"t", L"e");
+			else
+				CP_XML_ATTR(L"t", L"b");
 
 			if (cell.ixfe - global_info_->cellStyleXfs_count > 0)
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - global_info_->cellStyleXfs_count);
 			}
-		}			
+			CP_XML_NODE(L"v")
+			{
+				if (bes.fError)
+				{
+					switch (bes.bBoolErr)
+					{
+					case 0x00: CP_XML_STREAM() << L"#NULL!"; break;
+					case 0x07: CP_XML_STREAM() << L"#DIV/0!"; break;
+					case 0x0F: CP_XML_STREAM() << L"#VALUE!"; break;
+					case 0x17: CP_XML_STREAM() << L"#REF!"; break;
+					case 0x1D: CP_XML_STREAM() << L"#NAME?"; break;
+					case 0x24: CP_XML_STREAM() << L"#NUM!"; break;
+					case 0x2A: CP_XML_STREAM() << L"#N/A"; break;
+					case 0x2B: CP_XML_STREAM() << L"#GETTING_DATA"; break;
+					default:
+						break;
+					}
+				}
+				else
+				{
+					CP_XML_STREAM() << std::to_wstring(bes.bBoolErr);
+				}
+			}
+		}
 	}
 	return 0;
 }

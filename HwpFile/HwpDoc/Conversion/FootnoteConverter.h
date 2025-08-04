@@ -5,6 +5,7 @@
 
 #include "../Paragraph/CtrlNote.h"
 #include "../Paragraph/CtrlHeadFoot.h"
+#include "../Paragraph/CtrlPageNumPos.h"
 
 namespace HWP
 {
@@ -24,6 +25,7 @@ public:
 
 	std::wstring CreateNote(const CCtrlNote* pNote, CConverter2OOXML& oConverter);
 	std::wstring CreateHeadOrFoot(const CCtrlHeadFoot* pCtrlHeadFoot, CConverter2OOXML& oConverter);
+	std::wstring CreatePageNum(const CCtrlPageNumPos* pCtrlPageNumPos, CConverter2OOXML& oConverter);
 
 	bool SaveToFile(const std::wstring& wsDirectory);
 

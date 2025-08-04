@@ -298,6 +298,7 @@ namespace NSBinPptxRW
         void CheckBrushShape        (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
         void CheckPenShape          (PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 		void CheckBorderShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
+		void CheckEffectShape		(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape);
 
 		void ConvertColor			(PPTX::Logic::UniColor& uniColor, nullable_string& sColor, nullable_string& sOpacity);
 		void LoadCoordSize			(XmlUtils::CXmlNode& oNode, ::CShapePtr pShape);

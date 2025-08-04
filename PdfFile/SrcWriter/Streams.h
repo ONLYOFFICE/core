@@ -106,6 +106,9 @@ namespace PdfWriter
 		unsigned char  ReadUChar();
 		char           ReadChar();
 		unsigned short ReadUShort();
+		double         ReadFixed();
+		long long      ReadLongDateTime();
+		unsigned int   ReadOffset(BYTE nOffset);
 
 		void Write(const BYTE* pBuffer, unsigned int unSize, bool bCalcCheckSum);
 		void WriteChar (char nChar);
@@ -147,6 +150,7 @@ namespace PdfWriter
 
 		CMemoryStream();
 		CMemoryStream(unsigned int unBufferSize);
+		CMemoryStream(BYTE* pBuffer, unsigned int unSize, bool bFree = false);
 		~CMemoryStream();
 		bool         IsEof();
 		void         Write(const BYTE* pBuffer, unsigned int unSize);
@@ -160,6 +164,7 @@ namespace PdfWriter
 			return StreamMemory;
 		}
 		BYTE* GetBuffer();
+		BYTE* GetCurBuffer();
 		void ClearWithoutAttack();
 
 	private:
@@ -167,6 +172,7 @@ namespace PdfWriter
 		void Shrink(unsigned int unSize);
 
 	private:
+		bool         m_bFree;
 
 		BYTE*        m_pBuffer;
 		int          m_nBufferSize;

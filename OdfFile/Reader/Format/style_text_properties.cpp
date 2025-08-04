@@ -557,7 +557,7 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 }
 void text_format_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conversion_context & Context)
 {
-	double font_size = process_font_size_impl(fo_font_size_, NULL);
+	double font_size = process_font_size_impl(fo_font_size_, NULL, 1., 0.5); // sz in pt
 
 	bool bBold = false, bItalic = false;
 	if (font_size > 0)
@@ -588,7 +588,7 @@ void text_format_properties::xlsx_serialize(std::wostream & strm, oox::xlsx_conv
 		if (font)
 			font_name = font->name();
 	}
-	//if (font_name.empty())
+	if (font_name.empty())
 	{
 		font_name = L"-";
 	}
@@ -1597,20 +1597,65 @@ void text_format_properties::apply_from(const text_format_properties & Other)
     _CP_APPLY_PROP(style_text_line_through_text_, Other.style_text_line_through_text_);
     _CP_APPLY_PROP(style_text_line_through_text_style_, Other.style_text_line_through_text_style_);
     _CP_APPLY_PROP(style_text_position_, Other.style_text_position_);
-    _CP_APPLY_PROP(style_font_name_, Other.style_font_name_);
-    _CP_APPLY_PROP(style_font_name_asian_, Other.style_font_name_asian_);
-    _CP_APPLY_PROP(style_font_name_complex_, Other.style_font_name_complex_);
-    _CP_APPLY_PROP(fo_font_family_, Other.fo_font_family_);
-    _CP_APPLY_PROP(style_font_family_asian_, Other.style_font_family_asian_);
-    _CP_APPLY_PROP(style_font_family_complex_, Other.style_font_family_complex_);
-
+   
     _CP_APPLY_PROP(style_font_family_generic_, Other.style_font_family_generic_);
     _CP_APPLY_PROP(style_font_family_generic_asian_, Other.style_font_family_generic_asian_);
     _CP_APPLY_PROP(style_font_family_generic_complex_, Other.style_font_family_generic_complex_);
 
-    _CP_APPLY_PROP(style_font_style_name_, Other.style_font_style_name_);
-    _CP_APPLY_PROP(style_font_style_name_asian_, Other.style_font_style_name_asian_);
-    _CP_APPLY_PROP(style_font_style_name_complex_, Other.style_font_style_name_complex_);
+	if (Other.style_font_name_)
+	{
+		style_font_name_ = Other.style_font_name_;
+		style_font_style_name_.reset();
+		fo_font_family_.reset();
+	}
+	if (Other.style_font_name_asian_)
+	{
+		style_font_name_asian_ = Other.style_font_name_asian_;
+		style_font_style_name_asian_.reset();
+		style_font_family_asian_.reset();
+	}
+	if (Other.style_font_name_complex_)
+	{
+		style_font_name_complex_ = Other.style_font_name_complex_;
+		style_font_style_name_complex_.reset();
+		style_font_family_complex_.reset();
+	}
+	if (Other.style_font_style_name_)
+	{
+		style_font_style_name_ = Other.style_font_style_name_;
+		style_font_name_.reset();
+		fo_font_family_.reset();
+	}
+	if (Other.style_font_style_name_asian_)
+	{
+		style_font_style_name_asian_ = Other.style_font_style_name_asian_;
+		style_font_name_asian_.reset();
+		style_font_family_asian_.reset();
+	}
+	if (Other.style_font_style_name_complex_)
+	{
+		style_font_style_name_complex_ = Other.style_font_style_name_complex_;
+		style_font_name_complex_.reset();
+		style_font_family_complex_.reset();
+	}
+	if (Other.fo_font_family_)
+	{
+		fo_font_family_ = Other.fo_font_family_;
+		style_font_name_.reset();
+		style_font_style_name_.reset();
+	}
+	if (Other.style_font_family_asian_)
+	{
+		style_font_family_asian_ = Other.style_font_family_asian_;
+		style_font_name_asian_.reset();
+		style_font_style_name_asian_.reset();
+	}
+	if (Other.style_font_family_complex_)
+	{
+		style_font_family_complex_ = Other.style_font_family_complex_;
+		style_font_name_complex_.reset();
+		style_font_style_name_complex_.reset();
+	}
 
     _CP_APPLY_PROP(style_font_pitch_,	Other.style_font_pitch_);
     _CP_APPLY_PROP(style_font_pitch_asian_,		Other.style_font_pitch_asian_);

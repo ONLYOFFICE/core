@@ -110,7 +110,7 @@ namespace PdfWriter
 
         if (pCorrectBuffer != NULL)
         {
-            this->LoadJpeg(pCorrectBuffer, nBufferSize, unWidth, unHeight, bGrayScale);
+            this->LoadJpeg(pCorrectBuffer, nBufferSize, unWidth, unHeight, false);
             free(pCorrectBuffer);
             return;
         }

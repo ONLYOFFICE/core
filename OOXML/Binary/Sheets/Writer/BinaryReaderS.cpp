@@ -81,6 +81,7 @@
 #include "../../../DocxFormat/Core.h"
 #include "../../../DocxFormat/CustomXml.h"
 #include "../../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../../DocxFormat/Logic/Paragraph.h"
 
 #include "../../../XlsxFormat/Comments/ThreadedComments.h"
 #include "../../../XlsxFormat/Slicer/SlicerCache.h"
@@ -6453,7 +6454,9 @@ int BinaryWorksheetsTableReader::ReadDrawings(BYTE type, long length, void* poRe
 				oWriter.m_lObjectIdVML = m_pCurVmlDrawing->m_lObjectIdVML;
 
 				NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
-				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, false, true);
+				NSCommon::smart_ptr<OOX::IFileContainer> oContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
+				
+				oShape.toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer, false, true);
 
 				std::wstring strXml = oWriter.GetXmlString();
 
@@ -6567,12 +6570,17 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHF(BYTE type, long length, voi
 	if (c_oSer_LegacyDrawingHF::Drawings == type)
 	{
 		m_pOfficeDrawingConverter->SetDstContentRels();
+		
 		OOX::CVmlDrawing* pVmlDrawing = new OOX::CVmlDrawing(NULL, false);
 		pVmlDrawing->m_lObjectIdVML = m_lObjectIdVML;
+		
 		READ1_DEF(length, res, this->ReadLegacyDrawingHFDrawings, pVmlDrawing);
+		
 		m_lObjectIdVML = pVmlDrawing->m_lObjectIdVML;
+		
 		NSCommon::smart_ptr<OOX::File> pVmlDrawingFile(pVmlDrawing);
 		const OOX::RId oRId = m_pCurWorksheet->Add(pVmlDrawingFile);
+		
 		pLegacyDrawingHF->m_oId.Init();
 		pLegacyDrawingHF->m_oId->SetValue(oRId.get());
 
@@ -6700,7 +6708,10 @@ int BinaryWorksheetsTableReader::ReadLegacyDrawingHFDrawings(BYTE type, long len
 
 			//oWriter.m_strId = oVmlShape.sXml.c_str(); //??
 			
-			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap);
+			NSCommon::smart_ptr<OOX::IFileContainer> oContainer(pVmlDrawing);
+			oContainer.AddRef();
+
+			pSpTree->toXmlWriterVML(&oWriter, m_oSaveParams.pTheme, oClrMap, oContainer);
 			pVmlDrawing->m_lObjectIdVML = oWriter.m_lObjectIdVML;
 			pVmlDrawing->m_arObjectXml.push_back(oWriter.GetXmlString());
 		}
@@ -7119,10 +7130,8 @@ int BinaryWorksheetsTableReader::ReadControls(BYTE type, long length, void* poRe
 
 		READ1_DEF(length, res, this->ReadControl, pControl.GetPointer());
 		
-		std::wstring strXml = GetControlVmlShape(pControl.GetPointer());
+		GetControlVmlShape(pControl.GetPointer());
 				
-		m_pCurVmlDrawing->m_arControlXml.push_back(strXml);
-
 		smart_ptr<OOX::Spreadsheet::CCtrlPropFile> pCtrlPropFile(new OOX::Spreadsheet::CCtrlPropFile(NULL));		
 		pCtrlPropFile->m_oFormControlPr = pControl->m_oFormControlPr;
 
@@ -7339,6 +7348,15 @@ int BinaryWorksheetsTableReader::ReadControl(BYTE type, long length, void* poRes
 		pControl->m_oFormControlPr->m_oItemLst.Init();
 		READ1_DEF(length, res, this->ReadControlItems, pControl->m_oFormControlPr->m_oItemLst.GetPointer());
 	}
+	else if (c_oSerControlTypes::Shape == type)
+	{
+		pControl->m_oShape = new PPTX::Logic::SpTreeElem();
+		BYTE typeRec1 = m_oBufferedStream.GetUChar();    // must be 0;
+		LONG _e = m_oBufferedStream.GetPos() + m_oBufferedStream.GetLong() + 4;
+		m_oBufferedStream.Skip(5); // type record (must be 1) + 4 byte - len recor
+		
+		pControl->m_oShape->fromPPTY(&m_oBufferedStream);
+	}
 	else
 		res = c_oSerConstants::ReadUnknown;
 	return res;
@@ -7359,7 +7377,7 @@ int BinaryWorksheetsTableReader::ReadControlItems(BYTE type, long length, void* 
 		res = c_oSerConstants::ReadUnknown;
 	return res;
 }
-std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
+void BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 {
 	OOX::Spreadsheet::CControl* pControl = static_cast<OOX::Spreadsheet::CControl*>(pC);
 //generate ClientData
@@ -7442,29 +7460,70 @@ std::wstring BinaryWorksheetsTableReader::GetControlVmlShape(void* pC)
 	oClientData.m_oFmlaTxbx = pControl->m_oFormControlPr->m_oFmlaTxbx;
 	oClientData.m_oFmlaGroup = pControl->m_oFormControlPr->m_oFmlaGroup;
 
-	std::wstring result = L"<v:shape type=\"#_x0000_t201\" id=\"_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue()) + L"\"";
-	result += L" style='position:absolute' stroked=\"f\" strokecolor=\"windowText [64]\" o:insetmode=\"auto\"";
-	result += L" filled=\"f\" fillcolor=\"window [65]\"";
+	std::wstring strXmlShapeControl;
+
+	std::wstring strFillAttr;
+	std::wstring strStrokeAttr;
+	std::wstring strFillNode;
+	std::wstring strStrokeNode;
+	std::wstring strText;
+
+	smart_ptr<PPTX::Logic::Shape> oShape;
+
+	if (pControl->m_oShape.IsInit() && pControl->m_oShape->is_init())
+	{
+		oShape = pControl->m_oShape->GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
+	}
+
+	if (oShape.IsInit())
+	{
+		NSCommon::smart_ptr<PPTX::Logic::ClrMap> oClrMap;
+
+		NSCommon::smart_ptr<OOX::IFileContainer> pContainer = m_pCurVmlDrawing.smart_dynamic_cast<OOX::IFileContainer>();
+
+		CalculateFill(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, pContainer, strFillAttr, strFillNode, false, false);
+		CalculateLine(XMLWRITER_DOC_TYPE_XLSX, oShape->spPr, oShape->style, m_oSaveParams.pTheme, oClrMap, strStrokeAttr, strStrokeNode, false);
+	}
+	else
+	{
+		strStrokeAttr = L" stroked='f' strokecolor='windowText [64]'";
+		strFillAttr = L" filled='f' fillcolor='window [65]'";
+	}
+	strXmlShapeControl = L"<v:shape type='#_x0000_t201' id='_x0000_s" + std::to_wstring(pControl->m_oShapeId->GetValue()) + L"'";
+	strXmlShapeControl += L" style='position:absolute' o:insetmode='auto'";
 	
+	strXmlShapeControl += strFillAttr;
+	strXmlShapeControl += strStrokeAttr;
+
 	if (objectType == SimpleTypes::Vml::vmlclientdataobjecttypeButton)
 	{
-		result += L" o:button=\"t\"";
+		strXmlShapeControl += L" o:button=\"t\"";
 	}
-	result += L">";
-	result += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
+	strXmlShapeControl += L">";
+	
+	strXmlShapeControl += strFillNode;
+	strXmlShapeControl += strStrokeNode;
 
-	result += oClientData.toXML();
+	strXmlShapeControl += L"<o:lock v:ext=\"edit\" rotation=\"t\" text=\"t\"/>";
 
-	if (pControl->m_oFormControlPr->m_oText.IsInit())
+	if (oShape.IsInit() && oShape->txBody.IsInit())
+	{
+		strXmlShapeControl += oShape->txBody->toVML();
+	}
+	else if (pControl->m_oFormControlPr->m_oText.IsInit())
 	{
 		OOX::Vml::CTextbox oTextbox;
-
+		oTextbox.m_oTxtbxContent.Init();
 		oTextbox.m_oText = pControl->m_oFormControlPr->m_oText;
-		result += oTextbox.toXML();
+		
+		strXmlShapeControl += oTextbox.toXML();
 	}
-	result += L"</v:shape>";
 
-	return result;
+	strXmlShapeControl += oClientData.toXML();
+
+	strXmlShapeControl += L"</v:shape>";
+	
+	m_pCurVmlDrawing->m_arControlXml.push_back(strXmlShapeControl);
 }
 int BinaryWorksheetsTableReader::ReadFormula(BYTE type, long length, void* poResult)
 {

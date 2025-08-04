@@ -1,5 +1,5 @@
-#ifndef _BUILD_NATIVE_HASH_EMBED_H_
-#define _BUILD_NATIVE_HASH_EMBED_H_
+#ifndef CTESTEMBED_H_
+#define CTESTEMBED_H_
 
 #include "js_internal/js_base.h"
 
@@ -10,13 +10,8 @@ using namespace NSJSBase;
 class CTestEmbed : public CJSEmbedObject
 {
 public:
-	CTestEmbed()
-	{
-	}
-
-	~CTestEmbed()
-	{
-	}
+	CTestEmbed();
+	~CTestEmbed();
 
 	virtual void* getObject() override { return NULL; }
 
@@ -33,4 +28,4 @@ public:
 	DECLARE_EMBED_METHODS
 };
 
-#endif // _BUILD_NATIVE_HASH_EMBED_H_
+#endif // CTESTEMBED_H_

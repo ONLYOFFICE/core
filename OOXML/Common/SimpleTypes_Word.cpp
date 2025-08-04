@@ -2432,32 +2432,14 @@ namespace SimpleTypes
 	// LongHexNumber 17.18.50 (Part 1)
 	//--------------------------------------------------------------------------------
 
-	int	CLongHexNumber::HexToInt(int nHex, bool &bResult)
-	{
-		if ( nHex >= '0' && nHex <= '9' ) return (nHex - '0');
-		if ( nHex >= 'a' && nHex <= 'f' ) return (nHex - 'a' + 10);
-		if ( nHex >= 'A' && nHex <= 'F' ) return (nHex - 'A' + 10);
-
-		bResult = false;
-
-		return 0;
-	}
-
 	bool CLongHexNumber::Parse(const std::wstring &sValue)
 	{
-		if ( sValue.length() < 8 )
+		if ( sValue.empty())
 			return false;
 
 		bool bResult = true;
 
-		this->m_eValue  = HexToInt( (int)sValue[7], bResult );
-		this->m_eValue += HexToInt( (int)sValue[6], bResult ) <<  4;
-		this->m_eValue += HexToInt( (int)sValue[5], bResult ) <<  8;
-		this->m_eValue += HexToInt( (int)sValue[4], bResult ) << 12;
-		this->m_eValue += HexToInt( (int)sValue[3], bResult ) << 16;
-		this->m_eValue += HexToInt( (int)sValue[2], bResult ) << 20;
-		this->m_eValue += HexToInt( (int)sValue[1], bResult ) << 24;
-		this->m_eValue += HexToInt( (int)sValue[0], bResult ) << 28;
+		this->m_eValue  = XmlUtils::GetHex(sValue);
 
 		return bResult;
 	}

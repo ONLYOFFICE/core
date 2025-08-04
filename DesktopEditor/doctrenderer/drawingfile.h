@@ -289,10 +289,20 @@ public:
 			return ((CPdfFile*)m_pFile)->SplitPages(arrPageIndex, nLength, data, size);
 		return NULL;
 	}
-	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm)
+	bool MergePages(BYTE* data, LONG size, int nMaxID, const std::string& sPrefixForm, bool bCopy = false)
 	{
 		if (m_nType == 0)
+		{
+			// Память из CDrawingFileEmbed освобождается сразу после вызова функции, поэтому копируем
+			if (bCopy)
+			{
+				BYTE* pCopy = (BYTE*)malloc(size);
+				memcpy(pCopy, data, size);
+				data = pCopy;
+			}
+			// Захватывает полученную память, будет освобождена либо в деструкторе MemStream, либо free в случае неудачи
 			return ((CPdfFile*)m_pFile)->MergePages(data, size, nMaxID, sPrefixForm);
+		}
 		return false;
 	}
 	bool UnmergePages()
@@ -420,22 +430,32 @@ public:
 		oRenderer.SetExternalImageStorage(m_pImageStorage);
 		oRenderer.SetTextAssociationType(NSDocxRenderer::TextAssociationType::tatParagraphToShape);
 
-		std::vector<std::wstring> arShapes;
-		if (0 == mode)
-			arShapes = oRenderer.ScanPage(m_pFile, nPageIndex);
-		else
-			arShapes = oRenderer.ScanPagePptx(m_pFile, nPageIndex);
-
-		int nLen = (int)arShapes.size();
-
 		NSWasm::CData oRes;
-		oRes.SkipLen();
-		oRes.AddInt(nLen);
+		switch (mode)
+		{
+			case 0:
+			case 1:
+			{
+				std::vector<std::wstring> arShapes = (0 == mode) ? oRenderer.ScanPage(m_pFile, nPageIndex) : oRenderer.ScanPagePptx(m_pFile, nPageIndex);
+				int nLen = (int)arShapes.size();
 
-		for (int i = 0; i < nLen; ++i)
-			oRes.WriteString(arShapes[i]);
+				oRes.SkipLen();
+				oRes.AddInt(nLen);
 
-		oRes.WriteLen();
+				for (int i = 0; i < nLen; ++i)
+					oRes.WriteString(arShapes[i]);
+
+				oRes.WriteLen();
+				break;
+			}
+			case 2:
+			{
+				oRes = oRenderer.ScanPageBin(m_pFile, nPageIndex);
+				break;
+			}
+			default:
+				return NULL;
+		}
 
 		BYTE* res = oRes.GetBuffer();
 		oRes.ClearWithoutAttack();

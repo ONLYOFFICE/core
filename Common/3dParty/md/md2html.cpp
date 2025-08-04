@@ -29,7 +29,7 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 	oFile.WriteStringUTF8(L"<style>");
 
 	// Main styles
-	oFile.WriteStringUTF8(L"* { font-family: Arial; }");
+	oFile.WriteStringUTF8(L"* { font-family: Arial; color:black; white-space:pre; }");
 	oFile.WriteStringUTF8(L"p { margin: 0 0 10px; display: block; }");
 	oFile.WriteStringUTF8(L"a { color: #0553c1; text-decoration: underline; } a:visited { color: #954f72; text-decoration: underline; }");
 	oFile.WriteStringUTF8(L"ul { margin-top: 0; margin-bottom: 10px; }");
@@ -50,10 +50,9 @@ void WriteBaseHtmlStyles(NSFile::CFileBinary& oFile)
 
 	// Styles for code
 	oFile.WriteStringUTF8(L"code { padding: 2px 4px; font-size: 90%; color: #c7254e; background-color: #f9f2f4; border-radius: 4px; }");
-	oFile.WriteStringUTF8(L"pre code { padding: 0px; white-space: pre-wrap; background-color: transparent; border-radius: 0; color: inherit; }");
+	oFile.WriteStringUTF8(L"pre code { padding: 0px; white-space: pre-wrap; border-radius: 0; background-color: #f5f5f5; color:black; }");
 	oFile.WriteStringUTF8(L"pre { display: block; padding: 9.5px; margin: 0 0 10px; line-height: 1.4; word-break: break-all; word-wrap: break-word; background-color: #f5f5f5; border: 1px solid #ccc; border-radius: 4px; font-size: 1em; }");
 	oFile.WriteStringUTF8(L"code, pre { font-family: Menlo, Monaco, Consolas, \"Courier New\", monospace; }");
-
 
 	// Styles for headings
 	oFile.WriteStringUTF8(L"h1 { font-size: 20pt; color: #0f4761; margin-top: 18pt; margin-bottom: 4pt; }");
@@ -81,12 +80,16 @@ bool ConvertMdFileToHtml(const std::wstring& wsPathToMdFile, const std::wstring&
 	oFile.WriteStringUTF8(L"<html><body>");
 
 	oFile.WriteStringUTF8(L"<head>");
+	//oFile.WriteStringUTF8(L"<meta charset=\"UTF-8\">");
+	oFile.WriteStringUTF8(L"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
 	WriteBaseHtmlStyles(oFile);
 	oFile.WriteStringUTF8(L"</head>");
 
 	bool bResult = true;
 
-	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile, MD_DIALECT_GITHUB, 0))
+	if (0 != md_html(sMdData.c_str(), sMdData.length(), ToHtmlFile, &oFile,
+					 MD_DIALECT_GITHUB | MD_FLAG_NOINDENTEDCODEBLOCKS | MD_HTML_FLAG_SKIP_UTF8_BOM,
+					 0))
 		bResult = false;
 
 	oFile.WriteStringUTF8(L"</body></html>");

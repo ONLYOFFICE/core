@@ -32,6 +32,8 @@ namespace NSCSS
 		std::wstring GetEncoding()   const;
 		unsigned short int GetDpi()  const;
 
+		bool HaveStylesById(const std::wstring& wsId) const;
+
 		void ClearPageData();
 		void ClearEmbeddedStyles();
 		void ClearAllowedStyleFiles();

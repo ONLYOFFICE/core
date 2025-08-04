@@ -189,7 +189,7 @@ void draw_line::reset_svg_attributes()
 	double x2 = draw_line_attlist_.svg_x2_.get_value_or(length(0)).get_value_unit(length::pt);
 	double y2 = draw_line_attlist_.svg_y2_.get_value_or(length(0)).get_value_unit(length::pt);
 	
-	if (x1 > x2)
+	if (x1 - x2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x1-x2, length::pt);
@@ -200,7 +200,7 @@ void draw_line::reset_svg_attributes()
 		common_draw_attlists_.position_.svg_x_	 = draw_line_attlist_.svg_x1_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(x2-x1, length::pt);
 	}
-	if (y1 > y2)
+	if (y1 - y2 > 0.5)
 	{
 		common_draw_attlists_.position_.svg_y_	 = draw_line_attlist_.svg_y2_;
 		common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(y1-y2, length::pt);
@@ -819,46 +819,46 @@ void draw_enhanced_geometry::find_draw_type_oox()
 	else if (attlist_.draw_enhanced_path_)		odf_path_ = attlist_.draw_enhanced_path_.get();
 }
 
-static void process_polylines(std::vector<::svg_path::_polylineS>& polylines, const std::vector<std::pair<std::wstring, std::wstring>>& equations)
+static void process_polylines(std::vector<::svg_path::_polylineS>& polylines, const std::vector<std::wstring>& equation_names)
 {
 	using namespace ::svg_path;
 
-	for (size_t i = 0; i < polylines.size(); i++)
-	{
-		_polylineS& p = polylines[i];
+	//for (size_t i = 0; i < polylines.size(); i++)
+	//{
+	//	_polylineS& p = polylines[i];
 
-		if (p.command == L"a:arcTo" && p.points.size() > 1)
-		{
-			::svg_path::_pointS& pt = p.points[1];
+	//	if (p.command == L"a:arcTo" && p.points.size() > 1)
+	//	{
+	//		::svg_path::_pointS& pt = p.points[1];
 
-			auto x_it = std::find_if(equations.begin(), equations.end(),
-				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.x && eq.first == *pt.x;});
-			auto y_it = std::find_if(equations.begin(), equations.end(),
-				[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.y && eq.first == *pt.y; });
+	//		auto x_it = std::find_if(equations.begin(), equations.end(),
+	//			[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.x && eq.first == *pt.x;});
+	//		auto y_it = std::find_if(equations.begin(), equations.end(),
+	//			[&pt](const std::pair<std::wstring, std::wstring>& eq) {return pt.y && eq.first == *pt.y; });
 
-			if (x_it != equations.end())
-			{
-				const std::wstring& formula = x_it->second;
+	//		if (x_it != equations.end())
+	//		{
+	//			const std::wstring& formula = x_it->second;
 
-				std::vector<std::wstring> split;
-				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+	//			std::vector<std::wstring> split;
+	//			boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
 
-				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
-					pt.x = split[2];
-			}
+	//			if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+	//				pt.x = split[2];
+	//		}
 
-			if (y_it != equations.end())
-			{
-				const std::wstring& formula = y_it->second;
+	//		if (y_it != equations.end())
+	//		{
+	//			const std::wstring& formula = y_it->second;
 
-				std::vector<std::wstring> split;
-				boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
+	//			std::vector<std::wstring> split;
+	//			boost::split(split, formula, boost::is_any_of("\t "), boost::token_compress_on);
 
-				if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
-					pt.y = split[2];
-			}
-		}
-	}
+	//			if (split.size() == 4 && split[0] == L"*/" && split[1] == L"1" && boost::starts_with(split[2], L"gd") && split[3] == L"60000")
+	//				pt.y = split[2];
+	//		}
+	//	}
+	//}
 }
 
 bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& props)
@@ -893,7 +893,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		owner_shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
-	std::vector<std::pair<std::wstring, std::wstring>> equations;
+	std::vector<std::wstring> equation_names;
 	if (false == draw_equations_.empty() && !draw_type_oox_index_)
 	{
 		std::wstring oox_formulas;
@@ -907,8 +907,9 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				std::wstring value = eq->attlist_.draw_formula_.get_value_or(L"");
 
 				XmlUtils::replace_all(name, L"f", L"gd");
-		
+
 				oox_formulas += OdfCustomShape::convert_formula(value, name);
+				equation_names.push_back(name);
 			}
 		}
 
@@ -921,7 +922,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 	if (!odf_path_.empty())
 	{
 		bool bCPathWithArgs = (std::wstring::npos != odf_path_.find(L"?"));
-		if (bOoxType_ || (bCPathWithArgs && false == equations.empty()))
+		if (bOoxType_ || (bCPathWithArgs && false == equation_names.empty()))
 		{
 			std::vector<::svg_path::_polylineS> o_Polyline;
 
@@ -941,7 +942,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			{
 				set_shape = true;
 
-				process_polylines(o_Polyline, equations);
+				process_polylines(o_Polyline, equation_names);
 
 				std::wstringstream output_;
 				::svg_path::oox_serialize(output_, o_Polyline);
@@ -1035,7 +1036,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 			props.push_back(odf_reader::_property(L"custom_path_h", h));
 		}
 	}
-	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equations.empty())))
+	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equation_names.empty())))
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));
 	}

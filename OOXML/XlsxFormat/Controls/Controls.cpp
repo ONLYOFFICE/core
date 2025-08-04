@@ -37,6 +37,8 @@
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 
 #include "../../DocxFormat/Drawing/DrawingExt.h"
+#include "../../PPTXFormat/Logic/SpTreeElem.h"
+#include "../../DocxFormat/Logic/Pict.h"
 
 #include "../../XlsbFormat/Biff12_unions/ACTIVEXCONTROLS.h"
 #include "../../XlsbFormat/Biff12_records/ActiveX.h"

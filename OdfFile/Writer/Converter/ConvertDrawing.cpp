@@ -3005,6 +3005,7 @@ void OoxConverter::convert(PPTX::Logic::StyleRef *style_ref, int type)
 	}
 	else if (type == 3) 
 	{
+		index -= 1;
 		if (index >= 0 && index < (int)theme->themeElements.fmtScheme.effectStyleLst.size())
 		{
 			convert(&theme->themeElements.fmtScheme.effectStyleLst[index], nARGB);		

@@ -54,6 +54,7 @@ namespace NExtractTools
 		SerializeCommon::ReadFileType(params.getXmlOptions(), fileType, nCodePage, sDelimiter, saveFileType, lcid);
 
 		CSVReader csvReader;
+		csvReader.readToxmlCache_ = true;
         _UINT32 nRes = csvReader.Read(sFrom, oXlsx, nCodePage, sDelimiter, lcid);
 
 		if (SUCCEEDED_X2T(nRes))

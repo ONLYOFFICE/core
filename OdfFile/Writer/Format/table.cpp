@@ -473,9 +473,13 @@ void table_columns_no_group::serialize(std::wostream & _Wostream)
 		table_columns_1_.serialize(_Wostream);
  			
 		if (table_table_header_columns_)
+		{
 			table_table_header_columns_->serialize(_Wostream);
+		}
 		else
-			CP_XML_NODE(L"table:table-header-columns");
+		{
+			//CP_XML_NODE(L"table:table-header-columns");
+		}
 
 		table_columns_2_.serialize(_Wostream);
 	}

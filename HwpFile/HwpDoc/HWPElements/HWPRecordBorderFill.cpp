@@ -1,5 +1,4 @@
 #include "HWPRecordBorderFill.h"
-#include <regex>
 
 namespace HWP
 {
@@ -61,15 +60,17 @@ EColorFillPattern GetColorFillPattern(int nPattern)
 
 void TBorder::ReadFromNode(CXMLNode& oNode)
 {
-	m_eStyle = GetLineStyle2(oNode.GetAttribute(L"type"));
-	m_nColor = oNode.GetAttributeColor(L"color");
+	m_eStyle  = GetLineStyle2(oNode.GetAttribute(L"type"));
+	m_nColor  = oNode.GetAttributeColor(L"color");
 	m_chWidth = (HWP_BYTE)ConvertWidthToHWP(oNode.GetAttribute(L"width"));
 }
 
 CFill::CFill()
+	: m_nFillType(0)
 {}
 
 CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
+	: m_nFillType(0)
 {
 	oBuffer.SavePosition();
 
@@ -90,7 +91,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 	{
 		HWP_BYTE chTypeNum;
 		oBuffer.ReadByte(chTypeNum);
-		m_eGradType = GetGradFillType((int)chTypeNum);
+		m_eGradType = ::HWP::GetGradFillType((int)chTypeNum);
 
 		oBuffer.ReadInt(m_nAngle);
 		oBuffer.ReadInt(m_nCenterX);
@@ -147,6 +148,7 @@ CFill::CFill(CHWPStream& oBuffer, int nOff, int nSize)
 }
 
 CFill::CFill(CXMLNode& oNode)
+	: m_nFillType(0)
 {
 	for (CXMLNode& oChild : oNode.GetChilds())
 	{
@@ -178,7 +180,7 @@ void CFill::ReadWinBrush(CXMLNode& oNode)
 
 void CFill::ReadGradation(CXMLNode& oNode)
 {
-	m_eGradType = GetGradFillType(oNode.GetAttributeInt(L"type"));
+	m_eGradType = ::HWP::GetGradFillType(oNode.GetAttributeInt(L"type"));
 	m_nAngle = oNode.GetAttributeInt(L"angle");
 	m_nCenterX = oNode.GetAttributeInt(L"centerX");
 	m_nCenterY = oNode.GetAttributeInt(L"centerY");
@@ -189,12 +191,12 @@ void CFill::ReadGradation(CXMLNode& oNode)
 
 	std::vector<XmlUtils::CXmlNode> arChilds;
 
-	oNode.GetNodes(L"Color", arChilds);
+	oNode.GetNodes(L"hc:color", arChilds);
 
 	m_arColors.resize(arChilds.size());
 
 	for (unsigned int unIndex = 0; unIndex < arChilds.size(); ++unIndex)
-		m_arColors[unIndex] = ConvertHexToInt(arChilds[unIndex].GetTextA());
+		m_arColors[unIndex] = CXMLNode(arChilds[unIndex]).GetAttributeColor(L"value");
 }
 
 void CFill::ReadImgBrush(CXMLNode& oNode)
@@ -251,6 +253,41 @@ bool CFill::ImageFill() const
 int CFill::GetFaceColor() const
 {
 	return m_nFaceColor;
+}
+
+EGradFillType CFill::GetGradFillType() const
+{
+	return m_eGradType;
+}
+
+int CFill::GetGradAngle() const
+{
+	return m_nAngle;
+}
+
+int CFill::GetGradCenterX() const
+{
+	return m_nCenterX;
+}
+
+int CFill::GetGradCenterY() const
+{
+	return m_nCenterY;
+}
+
+int CFill::GetGradStep() const
+{
+	return m_nStep;
+}
+
+int CFill::GetGradColorNum() const
+{
+	return m_nColorNum;
+}
+
+std::vector<int> CFill::GetGradColors() const
+{
+	return m_arColors;
 }
 
 HWP_STRING CFill::GetBinItemID() const

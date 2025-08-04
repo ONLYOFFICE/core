@@ -54,9 +54,9 @@ public:
     static const ElementType type = typeOfficeForms;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -79,9 +79,9 @@ public:
     static const ElementType type = typeFormForm;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -129,9 +129,9 @@ public:
     static const ElementType type = typeFormProperties;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 private:
 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ){}
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -171,9 +171,9 @@ public:
     static const ElementType type = typeFormListProperty;
     CPDOCCORE_DEFINE_VISITABLE();
 
-	virtual void docx_convert(oox::docx_conversion_context & Context) ;
+	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
@@ -222,7 +222,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw) {}
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw) {}
@@ -267,7 +267,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void serialize_control_props(std::wostream & strm);
 private:
@@ -287,7 +287,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void serialize_control_props(std::wostream & strm);
 private:
@@ -322,7 +322,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
@@ -350,7 +350,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
@@ -387,7 +387,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
@@ -418,7 +418,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw);
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw);
@@ -441,7 +441,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-	virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control *draw){}
 	virtual void docx_convert_field	(oox::docx_conversion_context & Context, draw_control* draw){}
@@ -473,7 +473,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	
@@ -508,7 +508,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	virtual void serialize_control_props(std::wostream & strm);
 
 private:
@@ -541,7 +541,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	
@@ -567,7 +567,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	
@@ -593,7 +593,7 @@ public:
 
 	virtual void docx_convert(oox::docx_conversion_context & Context);
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
-    virtual void pptx_convert(oox::pptx_conversion_context & Context){}
+	virtual void pptx_convert(oox::pptx_conversion_context& Context);
 	
 	virtual void docx_convert_sdt	(oox::docx_conversion_context & Context, draw_control* draw);
 	

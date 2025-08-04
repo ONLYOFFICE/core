@@ -324,21 +324,17 @@ namespace StarMath
 			m_pXmlWrite->WriteNodeBegin(L"mtable",false);
 			m_pXmlWrite->WriteNodeBegin(L"mtr",false);
 			m_pXmlWrite->WriteNodeBegin(L"mtd",false);
-			m_wsAnnotationStarMath += L"{ ";
-			ConversionVectorWritingElement(pMf->m_oNum.GetPointer()->m_arrItems);
+			CheckVectorElementsForMf(pMf->m_oNum.GetPointer()->m_arrItems);
 			COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 			m_stSize.Zeroing();
-			m_wsAnnotationStarMath += L"} ";
 			m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
 			m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
 			m_pXmlWrite->WriteNodeBegin(L"mtr",false);
 			m_pXmlWrite->WriteNodeBegin(L"mtd",false);
-			m_wsAnnotationStarMath += L"{ ";
-			ConversionVectorWritingElement(pMf->m_oDen.GetPointer()->m_arrItems);
+			CheckVectorElementsForMf(pMf->m_oDen.GetPointer()->m_arrItems);
 			COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 			COOXml2Odf::ComparisonSizeByHeight(stStart,stFrac);
 			m_stSize = stStart;
-			m_wsAnnotationStarMath += L"} ";
 			m_pXmlWrite->WriteNodeEnd(L"mtd",false,false);
 			m_pXmlWrite->WriteNodeEnd(L"mtr",false,false);
 			m_pXmlWrite->WriteNodeEnd(L"mtable",false,false);
@@ -349,41 +345,45 @@ namespace StarMath
 			if(stPr.m_wsTypeName == L"skw")
 			{
 				m_pXmlWrite->WriteAttribute(L"bevelled",L"true");
-				m_pXmlWrite->WriteNodeEnd(L"w",true,true);
-				m_wsAnnotationStarMath += L"{ ";
-				ConversionVectorWritingElement(pMf->m_oNum.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeEnd(L"w",true,false);
+				m_pXmlWrite->WriteNodeBegin(L"mrow",false);
+				CheckVectorElementsForMf(pMf->m_oNum.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 				COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 				m_stSize.Zeroing();
-				m_wsAnnotationStarMath += L"} wideslash { ";
-				ConversionVectorWritingElement(pMf->m_oDen.GetPointer()->m_arrItems);
+				m_wsAnnotationStarMath += L"wideslash ";
+				m_pXmlWrite->WriteNodeBegin(L"mrow",false);
+				CheckVectorElementsForMf(pMf->m_oDen.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 				COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 				COOXml2Odf::ComparisonSizeByHeight(stStart,stFrac);
 				m_stSize = stStart;
-				m_wsAnnotationStarMath += L"} ";
 			}
 			else
 			{
 				m_pXmlWrite->WriteNodeEnd(L"w",true,false);
-				m_wsAnnotationStarMath += L"{ ";
-				ConversionVectorWritingElement(pMf->m_oNum.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeBegin(L"mrow",false);
+				CheckVectorElementsForMf(pMf->m_oNum.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 				COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 				m_stSize.Zeroing();
-				m_wsAnnotationStarMath += L"} over { ";
-				ConversionVectorWritingElement(pMf->m_oDen.GetPointer()->m_arrItems);
+				m_wsAnnotationStarMath += L"over ";
+				m_pXmlWrite->WriteNodeBegin(L"mrow",false);
+				CheckVectorElementsForMf(pMf->m_oDen.GetPointer()->m_arrItems);
+				m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 				COOXml2Odf::ComparisonSizeByWidth(stFrac,m_stSize);
 				COOXml2Odf::ComparisonSizeByHeight(stStart,stFrac);
 				m_stSize = stStart;
-				m_wsAnnotationStarMath += L"} ";
 			}
 			m_pXmlWrite->WriteNodeEnd(L"mfrac",false,false);
 		}
 		else
 		{
 			m_pXmlWrite->WriteNodeBegin(L"mrow",false);
-			ConversionVectorWritingElement(pMf->m_oNum.GetPointer()->m_arrItems);
+			CheckVectorElementsForMf(pMf->m_oNum.GetPointer()->m_arrItems);
 			RecordingMoNode(L"/",m_pXmlWrite);
 			m_wsAnnotationStarMath += L"/ ";
-			ConversionVectorWritingElement(pMf->m_oDen.GetPointer()->m_arrItems);
+			CheckVectorElementsForMf(pMf->m_oDen.GetPointer()->m_arrItems);
 			COOXml2Odf::ComparisonSizeByHeight(m_stSize,stStart);
 			m_pXmlWrite->WriteNodeEnd(L"mrow",false,false);
 		}
@@ -419,8 +419,9 @@ namespace StarMath
 			m_pXmlWrite->WriteAttribute(L"fence",L"true");
 			m_pXmlWrite->WriteAttribute(L"form",L"prefix");
 			m_pXmlWrite->WriteAttribute(L"stretchy",L"true");
-			m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+			m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 			m_pXmlWrite->WriteString(stDelPr.m_wsBegBracket);
+			m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
 			m_stSize.m_iWidth -= 1;
 		}
 		m_wsAnnotationStarMath += L"left " + BracketForAnnotation(stDelPr.m_wsBegBracket,true) + L" ";
@@ -442,8 +443,9 @@ namespace StarMath
 			m_pXmlWrite->WriteAttribute(L"fence",L"true");
 			m_pXmlWrite->WriteAttribute(L"form",L"postfix");
 			m_pXmlWrite->WriteAttribute(L"stretchy",L"true");
-			m_pXmlWrite->WriteNodeEnd(L"w",true,true);
+			m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 			m_pXmlWrite->WriteString(stDelPr.m_wsEndBracket);
+			m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
 			m_stSize.m_iWidth -= 1;
 		}
 		m_wsAnnotationStarMath += L"right " + BracketForAnnotation(stDelPr.m_wsEndBracket,false) + L" ";
@@ -542,7 +544,7 @@ namespace StarMath
 		}
 		m_wsAnnotationStarMath += L"_ {";
 		ConversionVectorWritingElement(pSub->m_arrItems);
-		stFrac.m_iHeight += m_stSize.m_iHeight;
+		stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 		stFrac.m_iWidth += m_stSize.m_iWidth;
 		ComparisonSizeByHeight(stStart,stFrac);
 		m_stSize = stStart;
@@ -580,7 +582,7 @@ namespace StarMath
 		}
 		m_wsAnnotationStarMath+= L"^ {";
 		ConversionVectorWritingElement(pSup->m_arrItems);
-		stFrac.m_iHeight += m_stSize.m_iHeight;
+		stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 		stFrac.m_iWidth += m_stSize.m_iWidth;
 		ComparisonSizeByHeight(stStart,stFrac);
 		m_stSize = stStart;
@@ -821,7 +823,7 @@ namespace StarMath
 			m_pXmlWrite->WriteNodeEnd(L"mo",false,false);
 		}
 		m_pXmlWrite->WriteNodeEnd(L"mover",false,false);
-		m_stSize.m_iHeight += 1;
+		m_stSize.m_iHeight += 0.5;
 	}
 	void COOXml2Odf::ConversionFunc(OOX::Logic::CFunc *pFunc)
 	{
@@ -1049,6 +1051,17 @@ namespace StarMath
 		}
 		else
 			return false;
+	}
+	void COOXml2Odf::CheckVectorElementsForMf(std::vector<OOX::WritingElement*> arWrElement)
+	{
+		if(!arWrElement.empty())
+		{
+			m_wsAnnotationStarMath += L"{ ";
+			ConversionVectorWritingElement(arWrElement);
+			m_wsAnnotationStarMath += L"} ";
+		}
+		else
+			COOXml2Odf::EmptyBlock(m_pXmlWrite,m_wsAnnotationStarMath,m_stSize);
 	}
 	TFormulaSize COOXml2Odf::GetFormulaSize()
 	{
@@ -1315,11 +1328,11 @@ namespace StarMath
 		if(bDeg)
 		{
 			m_wsAnnotationStarMath += L"sqrt ";
-			m_pXmlWrite->WriteNodeBegin(L"sqrt",false);
+			m_pXmlWrite->WriteNodeBegin(L"msqrt",false);
 			m_wsAnnotationStarMath += L"{ ";
 			NodeDefinition(pRad->m_oElement.GetPointer());
 			m_wsAnnotationStarMath += L"} ";
-			m_pXmlWrite->WriteNodeEnd(L"sqrt",false,false);
+			m_pXmlWrite->WriteNodeEnd(L"msqrt",false,false);
 			m_stSize.m_iHeight += 1;
 		}
 		else if(!bDeg)
@@ -1339,7 +1352,7 @@ namespace StarMath
 			m_wsAnnotationStarMath.clear();
 			m_wsAnnotationStarMath += L"{ ";
 			ConversionDeg(pRad->m_oDeg.GetPointer());
-			stFrac.m_iHeight += m_stSize.m_iHeight;
+			stFrac.m_iHeight += m_stSize.m_iHeight - 0.5;
 			stFrac.m_iWidth += m_stSize.m_iWidth;
 			ComparisonSizeByHeight(stStart,stFrac);
 			m_stSize = stStart;
@@ -1655,8 +1668,6 @@ namespace StarMath
 	}
 	void COOXml2Odf::StyleClosing(const StStyleMenClose &stStyle, XmlUtils::CXmlWriter *pXmlWrite)
 	{
-		if(stStyle.m_bMenClose)
-			pXmlWrite->WriteNodeEnd(L"menclose",false,false);
 		if(stStyle.m_bUnderlineClose)
 		{
 			pXmlWrite->WriteNodeBegin(L"mo",false);
@@ -1664,6 +1675,8 @@ namespace StarMath
 			pXmlWrite->WriteNodeEnd(L"mo",false,false);
 			pXmlWrite->WriteNodeEnd(L"munder",false,false);
 		}
+		if(stStyle.m_bMenClose)
+			pXmlWrite->WriteNodeEnd(L"menclose",false,false);
 		if(stStyle.m_iStyle != 0)
 		{
 			unsigned int k(0);
@@ -1927,7 +1940,7 @@ namespace StarMath
 		{
 			std::wstring wsSize = std::to_wstring(pAttribute->m_iSize);
 			pXmlWrite->WriteNodeBegin(L"mstyle",true);
-			pXmlWrite->WriteAttribute(L"mathsize",wsSize);
+			pXmlWrite->WriteAttribute(L"mathsize",wsSize+L"pt");
 			pXmlWrite->WriteNodeEnd(L"w",true,false);
 			wsAnnotation += L"size " + wsSize + L" ";
 			stStyle.m_iStyle++;
@@ -2122,7 +2135,7 @@ namespace StarMath
 				pXmlWrite->WriteNodeBegin(L"mtext",false);
 				pXmlWrite->WriteString(m_wsSymbolBinOp);
 				pXmlWrite->WriteNodeEnd(L"mtext",false,false);
-				wsAnnotation += L"\u0026quot;" + m_wsSymbolBinOp + L"\u0026quot;";
+				wsAnnotation += L"\u0026quot;" + m_wsSymbolBinOp + L"\u0026quot; ";
 				COOXml2Odf::StyleClosing(stStyle,pXmlWrite);
 				return;
 			}
@@ -2484,6 +2497,7 @@ namespace StarMath
 	{
 		stSize.m_iWidth += 1;
 		pXmlWrite->WriteNodeBegin(L"mspace",true);
+		pXmlWrite->WriteAttribute(L"width",L"0.5em");
 		pXmlWrite->WriteNodeEnd(L"w",true,true);
 		wsAnnotation += L"` ";
 	}

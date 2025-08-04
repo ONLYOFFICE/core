@@ -134,27 +134,26 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 			m_arFontNames[nIndex] = pFaceName->GetFaceName();
 	}
 
-	#define READ_SHORT (short)(oBuffer[0] & 0x00FF); oBuffer.Skip(1)
+	#define READ_ELEMENT(_type) (_type)(oBuffer[0] & 0x00FF); oBuffer.Skip(1)
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arRatios[nIndex] = READ_SHORT;
+		m_arRatios[nIndex] = READ_ELEMENT(short);
 	}
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arSpacings[nIndex] = READ_SHORT;
+		m_arSpacings[nIndex] = READ_ELEMENT(HWP_BYTE);
 	}
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arRelSizes[nIndex] = READ_SHORT;
+		m_arRelSizes[nIndex] = READ_ELEMENT(short);
 	}
 
 	for (int nIndex = 0; nIndex < MAX_ELEMENTS; ++nIndex)
 	{
-		m_arCharOffset[nIndex] = (HWP_BYTE)(oBuffer[0] & 0x00FF);
-		oBuffer.Skip(1);
+		m_arCharOffset[nIndex] = READ_ELEMENT(HWP_BYTE);
 	}
 
 	oBuffer.ReadInt(m_nHeight);
@@ -184,7 +183,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.ReadColor(m_nTextColor);
 	oBuffer.ReadColor(m_nUnderlineColor);
 	oBuffer.ReadColor(m_nShadeColor);
-	oBuffer.ReadColor(m_nShadeColor);
+	oBuffer.ReadColor(m_nShadowColor);
 
 	if (nSize > oBuffer.GetDistanceToLastPos())
 		oBuffer.ReadShort(m_shBorderFillIDRef);
@@ -311,7 +310,17 @@ bool CHWPRecordCharShape::Underline() const
 
 bool CHWPRecordCharShape::StrikeOut() const
 {
-	return ELineStyle2::NONE != m_eStrikeOutShape;
+	return 0x01 == m_chStrikeOut;
+}
+
+bool CHWPRecordCharShape::SuperScript() const
+{
+	return m_bSuperScript;
+}
+
+bool CHWPRecordCharShape::SubScript() const
+{
+	return m_bSubScript;
 }
 
 int CHWPRecordCharShape::GetHeight() const
@@ -360,6 +369,14 @@ HWP_STRING CHWPRecordCharShape::GetFontName(ELang eLang) const
 	return m_arFontNames[(int)eLang];
 }
 
+short CHWPRecordCharShape::GetRatio(ELang eLang) const
+{
+	if (ELang::MAX == eLang)
+		return 0;
+
+	return m_arRatios[(int)eLang];
+}
+
 short CHWPRecordCharShape::GetSpacing(ELang eLang) const
 {
 	if (ELang::MAX == eLang)
@@ -371,6 +388,11 @@ short CHWPRecordCharShape::GetSpacing(ELang eLang) const
 int CHWPRecordCharShape::GetTextColor() const
 {
 	return m_nTextColor;
+}
+
+int CHWPRecordCharShape::GetShadeColor() const
+{
+	return m_nShadeColor;
 }
 
 short CHWPRecordCharShape::GetBorderFillID() const

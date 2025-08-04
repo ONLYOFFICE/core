@@ -43,6 +43,7 @@
 #include "../lib/xpdf/Stream.h"
 #include "../lib/xpdf/PDFDoc.h"
 #include "../lib/xpdf/CharCodeToUnicode.h"
+#include "../lib/xpdf/TextString.h"
 #include "XmlUtils.h"
 
 #include "../../DesktopEditor/graphics/pro/Graphics.h"
@@ -705,8 +706,15 @@ namespace PdfReader
 		if (oFontObject.isDict())
 		{
 			Dict* pFontDict = oFontObject.getDict();
-			Object oFontDescriptor;
-			if (pFontDict->lookup("FontDescriptor", &oFontDescriptor)->isDict())
+			Object oFontDescriptor, oDescendantFonts;
+			pFontDict->lookup("FontDescriptor", &oFontDescriptor);
+			if (!oFontDescriptor.isDict() && pFontDict->lookup("DescendantFonts", &oDescendantFonts)->isArray())
+			{
+				oFontDescriptor.free(); oFontObject.free();
+				if (oDescendantFonts.arrayGet(0, &oFontObject)->isDict())
+					oFontObject.dictLookup("FontDescriptor", &oFontDescriptor);
+			}
+			if (oFontDescriptor.isDict())
 			{
 				Object oDictItem;
 				oFontDescriptor.dictLookup("FontName", &oDictItem);
@@ -717,6 +725,12 @@ namespace PdfReader
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontFamily", &oDictItem);
+				if (oDictItem.isString())
+				{
+					TextString* s = new TextString(oDictItem.getString());
+					oFontSelect.wsAltName = new std::wstring(NSStringExt::CConverter::GetUnicodeFromUTF32(s->getUnicode(), s->getLength()));
+					delete s;
+				}
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontStretch", &oDictItem);
@@ -726,6 +740,15 @@ namespace PdfReader
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("FontBBox", &oDictItem);
+				oDictItem.free();
+
+				oFontDescriptor.dictLookup("Flags", &oDictItem);
+				if (oDictItem.isInt() && 0 != oDictItem.getInt())
+				{
+					int nFlags = oDictItem.getInt();
+					if (nFlags & 1) // моноширинный
+						oFontSelect.bFixedWidth = new INT(1);
+				}
 				oDictItem.free();
 
 				oFontDescriptor.dictLookup("ItalicAngle", &oDictItem);
@@ -777,14 +800,14 @@ namespace PdfReader
 
 				oFontDescriptor.dictLookup("MissingWidth", &oDictItem);
 				oDictItem.free();
-
 			}
 			else
 				oFontSelect.wsName = new std::wstring(wsFontBaseName);
-			oFontDescriptor.free();
+			oFontDescriptor.free(); oDescendantFonts.free();
 		}
 		else
 			oFontSelect.wsName = new std::wstring(wsFontBaseName);
+		oFontObject.free();
 
 		pFontInfo = pFontManager->GetFontInfoByParams(oFontSelect);
 		return pFontInfo;
@@ -2400,6 +2423,7 @@ namespace PdfReader
 		arrMatrix[4] =   pNewTm[4] * pCTM[0] + pNewTm[5] * pCTM[2] + pCTM[4];
 		arrMatrix[5] = -(pNewTm[4] * pCTM[1] + pNewTm[5] * pCTM[3] + pCTM[5]) + pGState->getPageHeight();
 
+		double dSize = 1;
 		if (true)
 		{
 			double dNorma = std::min(sqrt(arrMatrix[0] * arrMatrix[0] + arrMatrix[1] * arrMatrix[1]), sqrt(arrMatrix[2] * arrMatrix[2] + arrMatrix[3] * arrMatrix[3]));
@@ -2410,9 +2434,9 @@ namespace PdfReader
 				arrMatrix[2] /= dNorma;
 				arrMatrix[3] /= dNorma;
 
-				double dSize = 1;
 				m_pRenderer->get_FontSize(&dSize);
-				m_pRenderer->put_FontSize(dSize * dNorma);
+				dSize *= dNorma;
+				m_pRenderer->put_FontSize(dSize);
 				if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
 					m_pRenderer->put_PenSize(PDFCoordsToMM(pGState->getLineWidth() * dNorma));
 			}
@@ -2477,8 +2501,12 @@ namespace PdfReader
 			{
 				unsigned int lUnicode = (unsigned int)wsUnicodeText[0];
 				long lStyle;
+				double dDpiX, dDpiY;
 				m_pRenderer->get_FontStyle(&lStyle);
-				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, 72, 72);
+				m_pRenderer->get_DpiX(&dDpiX);
+				m_pRenderer->get_DpiY(&dDpiY);
+				m_pFontManager->SetStringGID(FALSE);
+				m_pFontManager->LoadFontFromFile(sFontPath, 0, dOldSize, dDpiX, dDpiY);
 
 				NSFonts::IFontFile* pFontFile = m_pFontManager->GetFile();
 				if (pFontFile)
@@ -2514,6 +2542,7 @@ namespace PdfReader
 								return;
 							}
 							m_pRenderer->put_FontPath(wsFileName);
+							m_pFontManager->LoadFontFromFile(wsFileName, 0, dSize, dDpiX, dDpiY);
 							bReplace = true;
 						}
 					}

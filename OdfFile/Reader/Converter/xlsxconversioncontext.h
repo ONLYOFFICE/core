@@ -108,7 +108,7 @@ public:
 	int find_sheet_by_name(std::wstring tableName);
     xlsx_xml_worksheet & current_sheet(int index = -1);
 
-	void	start_table_column		(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax);
+	void	start_table_column		(unsigned int repeated, const std::wstring & defaultCellStyleName, int & cMin, int & cMax, bool bHeader = false);
     void	table_column_last_width	(double w);
     double	table_column_last_width	();
     void	end_table_column		();

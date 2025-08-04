@@ -119,7 +119,9 @@ namespace PdfWriter
 
 		void BeforeWrite();
 		bool GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** pWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount);
+		void CreateCIDFont(CDictObject* pFont);
 		void CreateCIDFont2(CDictObject* pFont);
+		void CreateCIDFont0(CDictObject* pFont);
 		void WriteToUnicode();
 		bool OpenFontFace();
 		void CloseFontFace();

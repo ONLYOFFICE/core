@@ -456,6 +456,7 @@ namespace PdfWriter
 		Remove("FT");
 		Remove("Ff");
 		Remove("V");
+		Remove("AA");
 	}
 	void CFieldBase::SetFieldHint(const std::wstring& wsHint)
 	{
@@ -3244,11 +3245,14 @@ namespace PdfWriter
 			double ca = cos(45.0 / 180.0 * M_PI);
 			double cx = 0, cy = 0, r = dR - dBorder * 1.5;
 			double bezierCircle = 0.55228475 * r;
+			std::string sBG = pAnnot->GetBGforAP(-0.250977, true);
+			if (sBG.empty())
+				sBG = "0.749023 G";
 
 			if (nBorderType == EBorderType::Inset)
 				m_pStream->WriteStr(bN ? "0.501953 G" : "0 G");
 			else // Beveled
-				m_pStream->WriteStr(bN ? "1 G" : pAnnot->GetBGforAP(-0.250977, true).c_str());
+				m_pStream->WriteStr(bN ? "1 G" : sBG.c_str());
 
 			m_pStream->WriteStr("\012q\012");
 			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
@@ -3260,7 +3264,7 @@ namespace PdfWriter
 			if (nBorderType == EBorderType::Inset)
 				m_pStream->WriteStr(bN ? "0.75293 G" : "1 G");
 			else // Beveled
-				m_pStream->WriteStr(bN ? pAnnot->GetBGforAP(-0.250977, true).c_str() : "1 G");
+				m_pStream->WriteStr(bN ? sBG.c_str() : "1 G");
 
 			m_pStream->WriteStr("\012q\012");
 			StreamWriteCM(m_pStream, ca, ca, -ca, ca, dCX, dCY);
@@ -3326,10 +3330,14 @@ namespace PdfWriter
 		// Граница
 		if (nBorderType == EBorderType::Beveled || nBorderType == EBorderType::Inset)
 		{
+			std::string sBG = pAnnot->GetBGforAP(-0.250977);
+			if (sBG.empty())
+				sBG = "0.749023 g";
+
 			if (nBorderType == EBorderType::Inset)
 				m_pStream->WriteStr(bN ? "0.501953 g" : "0 g");
 			else // Beveled
-				m_pStream->WriteStr(bN ? "1 g" : pAnnot->GetBGforAP(-0.250977).c_str());
+				m_pStream->WriteStr(bN ? "1 g" : sBG.c_str());
 			m_pStream->WriteStr("\012");
 
 			StreamWriteXYMove(m_pStream, dBorder, dBorder);
@@ -3343,7 +3351,7 @@ namespace PdfWriter
 			if (nBorderType == EBorderType::Inset)
 				m_pStream->WriteStr(bN ? "0.75293 g" : "1 g");
 			else // Beveled
-				m_pStream->WriteStr(bN ? pAnnot->GetBGforAP(-0.250977).c_str() : "1 g");
+				m_pStream->WriteStr(bN ? sBG.c_str() : "1 g");
 			m_pStream->WriteStr("\012");
 
 			StreamWriteXYMove(m_pStream, dW - dBorder, dH - dBorder);

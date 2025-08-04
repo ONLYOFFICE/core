@@ -347,7 +347,7 @@ private:
 class MemStream: public BaseStream {
 public:
 
-  MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA);
+  MemStream(char *bufA, Guint startA, Guint lengthA, Object *dictA, GBool needFreeA = gFalse);
   virtual ~MemStream();
   virtual Stream *copy();
   virtual Stream *makeSubStream(GFileOffset start, GBool limited,

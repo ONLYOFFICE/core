@@ -58,6 +58,11 @@ namespace NSCSS
 		return m_pInternal->GetDpi();
 	}
 
+	bool CCssCalculator::HaveStylesById(const std::wstring& wsId) const
+	{
+		return m_pInternal->HaveStylesById(wsId);
+	}
+
 	void CCssCalculator::ClearPageData()
 	{
 		m_pInternal->ClearPageData();

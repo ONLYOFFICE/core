@@ -240,7 +240,7 @@ bool COfficeFileFormatChecker::isPdfFormatFile(unsigned char *pBuffer, int dwByt
 
 	documentID.clear();
 
-	if (dwBytes < 1)
+	if (dwBytes < 5 || (pBuffer[0] == 'P' && pBuffer[1] == 'K'))
 		return false;
 
 	pBuffer[dwBytes - 1] = '\0';
@@ -1601,12 +1601,15 @@ bool COfficeFileFormatChecker::isOOXFlatFormatFile(unsigned char *pBuffer, int d
 	const char *xlsxPackage = "progid=\"Excel.Sheet\"";
 	const char *pptxPackage = "progid=\"PowerPoint.Show\"";
 	const char *packageFormatLine = "xmlns:pkg=\"http://schemas.microsoft.com/office/2006/xmlPackage\"";
+	const char* workbookFormatLine = "<Workbook";
+	const char* htmlFormatLine = "<html";
 
 	if (std::string::npos != xml_string.find(docxFormatLine))
 	{
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX_FLAT;
 	}
-	else if (std::string::npos != xml_string.find(xlsxFormatLine))
+	else if (std::string::npos != xml_string.find(xlsxFormatLine) && (	std::string::npos != xml_string.find(workbookFormatLine) ||
+																		std::string::npos == xml_string.find(htmlFormatLine)))
 	{
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX_FLAT;
 	}

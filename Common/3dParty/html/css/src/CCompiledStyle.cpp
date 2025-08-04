@@ -12,7 +12,7 @@
 #include "StaticFunctions.h"
 #include "ConstValues.h"
 
-#define DEFAULT_FONT_SIZE 14
+#define DEFAULT_FONT_SIZE 12
 
 namespace NSCSS
 {
@@ -442,6 +442,11 @@ namespace NSCSS
 				CASE(L"valign"):
 				{
 					m_oDisplay.SetVAlign(pPropertie.second, unLevel, bHardMode);
+					break;
+				}
+				CASE(L"white-space"):
+				{
+					m_oDisplay.SetWhiteSpace(pPropertie.second, unLevel, bHardMode);
 					break;
 				}
 				//TRANSFORM

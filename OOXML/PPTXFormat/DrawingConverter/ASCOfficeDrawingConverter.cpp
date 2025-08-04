@@ -559,9 +559,40 @@ namespace NS_DWC_Common
 	bool getColorFromString(const std::wstring& colorStr, ODRAW::CColor & color)
 	{
 		bool bSet = false;
-		if (colorStr.find(L"#") != std::wstring::npos)
+		
+		int RGB = 0;
+		std::wstring str;
+
+		size_t pos = colorStr.find(L"["); //"buttonFace [67]" "#9c0 [50]"
+		if (pos != std::wstring::npos)
 		{
-			if (colorStr.length() == 4)
+			size_t pos1 = colorStr.find(L"]", pos + 1);
+			if (pos1 != std::wstring::npos)
+			{
+				str = colorStr.substr(pos + 1, pos1 - pos - 1);
+
+				if (NSStringUtils::IsNumber(str))
+				{
+					int index = XmlUtils::GetInteger(str);
+					if (index < 64)
+					{
+						RGB = shemeDefaultColor[index];
+						bSet = true;
+					}
+				}
+			}
+			//else if (index < 93)
+			//{
+			//	RGB = background ? controlPanelColors2[index - 65] : controlPanelColors1[index - 65];
+			//	bSet = true;
+			//}
+		}
+		if (!bSet && colorStr.find(L"#") == 0) // "#9c0 [50]"
+		{
+			size_t pos_end = colorStr.find(L" ", 1); //"buttonFace [67]" "#9c0 [50]"
+			if (pos_end == std::wstring::npos) pos_end = colorStr.length();
+			
+			if (pos_end == 4)
 			{
 				int lColor = XmlUtils::GetColorBGR(colorStr.substr(1, 3));
 				BYTE lB = ((lColor >> 16) & 0x0F);
@@ -581,292 +612,263 @@ namespace NS_DWC_Common
 				color.B = (BYTE)(lColor >> 16);
 				color.A = 0;
 			}
+			RGB = color.GetLONG_RGB();
 			bSet = true;
 		}
-		else
+
+		if (!bSet)
 		{
-			int RGB = 0;
-			std::wstring str;
+			pos = colorStr.find(' ');
+			if (pos == std::wstring::npos)
+				str = colorStr;
+			else
+				str = colorStr.substr(0, pos);
 
-			size_t pos = colorStr.find(L"["); //"buttonFace [67]"
-			if (pos != std::wstring::npos)
+			switch (str[0])
 			{
-				size_t pos1 = colorStr.find(L"]", pos + 1);
-				if (pos1 != std::wstring::npos)
-				{
-					str = colorStr.substr(pos + 1, pos1 - pos - 1);
-
-					if (NSStringUtils::IsNumber(str))
-					{
-						int index = XmlUtils::GetInteger(str);
-						if (index < 64)
-						{
-							RGB = shemeDefaultColor[index];
-							bSet = true;
-						}
-					}
-				}
-				//else if (index < 93)
-				//{
-				//	RGB = background ? controlPanelColors2[index - 65] : controlPanelColors1[index - 65];
-				//	bSet = true;
-				//}
+			case 'a':
+				if (str == L"aliceBlue") { RGB = 0xF0F8FF; bSet = true; break; } // (Alice Blue Preset Color)		Specifies a color with RGB value (240,248,255)
+				else if (str == L"antiqueWhite") { RGB = 0xFAEBD7; bSet = true; break; } // (Antique White Preset Color)	Specifies a color with RGB value (250,235,215)
+				else if (str == L"aqua") { RGB = 0x00FFFF; bSet = true; break; } // (Aqua Preset Color)				Specifies a color with RGB value (0,255,255)
+				else if (str == L"aquamarine") { RGB = 0x7FFFD4; bSet = true; break; } // (Aquamarine Preset Color)		Specifies a color with RGB value (127,255,212)
+				else if (str == L"azure") { RGB = 0xF0FFFF; bSet = true; break; } // (Azure Preset Color)			Specifies a color with RGB value (240,255,255)
+				break;
+			case 'b':
+				if (str == L"beige") { RGB = 0xF5F5DC; bSet = true; break; } // (Beige Preset Color)			Specifies a color with RGB value (245,245,220)
+				else if (str == L"bisque") { RGB = 0xFFE4C4; bSet = true; break; } // (Bisque Preset Color)			Specifies a color with RGB value (255,228,196)
+				else if (str == L"black") { RGB = 0x000000; bSet = true; break; } // (Black Preset Color)			Specifies a color with RGB value (0,0,0)
+				else if (str == L"blanchedAlmond") { RGB = 0xFFEBCD; bSet = true; break; } // (Blanched Almond Preset Color)  Specifies a color with RGB value (255,235,205)
+				else if (str == L"blue") { RGB = 0x0000FF; bSet = true; break; } // (Blue Preset Color)				Specifies a color with RGB value (0,0,255)
+				else if (str == L"blueViolet") { RGB = 0x8A2BE2; bSet = true; break; } // (Blue Violet Preset Color)		Specifies a color with RGB value (138,43,226)
+				else if (str == L"brown") { RGB = 0xA52A2A; bSet = true; break; } // (Brown Preset Color)			Specifies a color with RGB value (165,42,42)
+				else if (str == L"burlyWood") { RGB = 0xDEB887; bSet = true; break; } // (Burly Wood Preset Color)		Specifies a color with RGB value (222,184,135)
+				else if (str == L"buttonFace") { RGB = 0xF0F0F0; bSet = true; break; }
+				else if (str == L"buttonText") { RGB = 0x000000; bSet = true; break; }
+				break;
+			case 'c':
+				if (str == L"cadetBlue") { RGB = 0x5F9EA0; bSet = true; break; } // (Cadet Blue Preset Color)		Specifies a color with RGB value (95,158,160)
+				else if (str == L"chartreuse") { RGB = 0x7FFF00; bSet = true; break; } // (Chartreuse Preset Color)		Specifies a color with RGB value (127,255,0)
+				else if (str == L"chocolate") { RGB = 0xD2691E; bSet = true; break; } // (Chocolate Preset Color)		Specifies a color with RGB value (210,105,30)
+				else if (str == L"coral") { RGB = 0xFF7F50; bSet = true; break; } // (Coral Preset Color)			Specifies a color with RGB value (255,127,80)
+				else if (str == L"cornflowerBlue") { RGB = 0x6495ED; bSet = true; break; } // (Cornflower Blue Preset Color)  Specifies a color with RGB value (100,149,237)
+				else if (str == L"cornsilk") { RGB = 0xFFF8DC; bSet = true; break; } // (Cornsilk Preset Color)			Specifies a color with RGB value (255,248,220)
+				else if (str == L"crimson") { RGB = 0xDC143C; bSet = true; break; } // (Crimson Preset Color)			Specifies a color with RGB value (220,20,60)
+				else if (str == L"cyan") { RGB = 0x00FFFF; bSet = true; break; } // (Cyan Preset Color)				Specifies a color with RGB value (0,255,255)
+				break;
+			case 'd':
+				if (str == L"darkBlue") { RGB = 0x00008B; bSet = true; break; } // (Dark Blue Preset Color)		Specifies a color with RGB value (0,0,139)
+				else if (str == L"darkCyan") { RGB = 0x008B8B; bSet = true; break; } // (Dark Cyan Preset Color)		Specifies a color with RGB value (0,139,139)
+				else if (str == L"darkGoldenrod") { RGB = 0xB8860B; bSet = true; break; } // (Dark Goldenrod Preset Color)	Specifies a color with RGB value (184,134,11)
+				else if (str == L"darkGray") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
+				else if (str == L"darkGreen") { RGB = 0x006400; bSet = true; break; } // (Dark Green Preset Color)		Specifies a color with RGB value (0,100,0)
+				else if (str == L"darkGrey") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
+				else if (str == L"darkKhaki") { RGB = 0xBDB76B; bSet = true; break; } // (Dark Khaki Preset Color)		Specifies a color with RGB value (189,183,107)
+				else if (str == L"darkMagenta") { RGB = 0x8B008B; bSet = true; break; } // (Dark Magenta Preset Color)		Specifies a color with RGB value (139,0,139)
+				else if (str == L"darkOliveGreen") { RGB = 0x556B2F; bSet = true; break; } // (Dark Olive Green Preset Color) Specifies a color with RGB value (85,107,47)
+				else if (str == L"darkOrange") { RGB = 0xFF8C00; bSet = true; break; } // (Dark Orange Preset Color)		Specifies a color with RGB value (255,140,0)
+				else if (str == L"darkOrchid") { RGB = 0x9932CC; bSet = true; break; } // (Dark Orchid Preset Color)		Specifies a color with RGB value (153,50,204)
+				else if (str == L"darkRed") { RGB = 0x8B0000; bSet = true; break; } // (Dark Red Preset Color)			Specifies a color with RGB value (139,0,0)
+				else if (str == L"darkSalmon") { RGB = 0xE9967A; bSet = true; break; } // (Dark Salmon Preset Color)		Specifies a color with RGB value (233,150,122)
+				else if (str == L"darkSeaGreen") { RGB = 0x8FBC8F; bSet = true; break; } // (Dark Sea Green Preset Color)	Specifies a color with RGB value (143,188,143)
+				else if (str == L"darkSlateBlue") { RGB = 0x483D8B; bSet = true; break; } // (Dark Slate Blue Preset Color)  Specifies a color with RGB value (72,61,139)
+				else if (str == L"darkSlateGray") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
+				else if (str == L"darkSlateGrey") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
+				else if (str == L"darkTurquoise") { RGB = 0x00CED1; bSet = true; break; } // (Dark Turquoise Preset Color)	Specifies a color with RGB value (0,206,209)
+				else if (str == L"darkViolet") { RGB = 0x9400D3; bSet = true; break; } // (Dark Violet Preset Color)		Specifies a color with RGB value (148,0,211)
+				else if (str == L"deepPink") { RGB = 0xFF1493; bSet = true; break; } // (Deep Pink Preset Color)		Specifies a color with RGB value (255,20,147)
+				else if (str == L"deepSkyBlue") { RGB = 0x00BFFF; bSet = true; break; } // (Deep Sky Blue Preset Color)	Specifies a color with RGB value (0,191,255)
+				else if (str == L"dimGray") { RGB = 0x696969; bSet = true; break; } // (Dim Gray Preset Color)			Specifies a color with RGB value (105,105,105)
+				else if (str == L"dimGrey") { RGB = 0x696969; bSet = true; break; } // (Dim Gray Preset Color)			Specifies a color with RGB value (105,105,105)
+				else if (str == L"dkBlue") { RGB = 0x00008B; bSet = true; break; } // (Dark Blue Preset Color)		Specifies a color with RGB value (0,0,139)
+				else if (str == L"dkCyan") { RGB = 0x008B8B; bSet = true; break; } // (Dark Cyan Preset Color)		Specifies a color with RGB value (0,139,139)
+				else if (str == L"dkGoldenrod") { RGB = 0xB8860B; bSet = true; break; } // (Dark Goldenrod Preset Color)	Specifies a color with RGB value (184,134,11)
+				else if (str == L"dkGray") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
+				else if (str == L"dkGreen") { RGB = 0x006400; bSet = true; break; } // (Dark Green Preset Color)		Specifies a color with RGB value (0,100,0)
+				else if (str == L"dkGrey") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
+				else if (str == L"dkKhaki") { RGB = 0xBDB76B; bSet = true; break; } // (Dark Khaki Preset Color)		Specifies a color with RGB value (189,183,107)
+				else if (str == L"dkMagenta") { RGB = 0x8B008B; bSet = true; break; } // (Dark Magenta Preset Color)		Specifies a color with RGB value (139,0,139)
+				else if (str == L"dkOliveGreen") { RGB = 0x556B2F; bSet = true; break; } // (Dark Olive Green Preset Color) Specifies a color with RGB value (85,107,47)
+				else if (str == L"dkOrange") { RGB = 0xFF8C00; bSet = true; break; } // (Dark Orange Preset Color)		Specifies a color with RGB value (255,140,0)
+				else if (str == L"dkOrchid") { RGB = 0x9932CC; bSet = true; break; } // (Dark Orchid Preset Color)		Specifies a color with RGB value (153,50,204)
+				else if (str == L"dkRed") { RGB = 0x8B0000; bSet = true; break; } // (Dark Red Preset Color)			Specifies a color with RGB value (139,0,0)
+				else if (str == L"dkSalmon") { RGB = 0xE9967A; bSet = true; break; } // (Dark Salmon Preset Color)		Specifies a color with RGB value (233,150,122)
+				else if (str == L"dkSeaGreen") { RGB = 0x8FBC8B; bSet = true; break; } // (Dark Sea Green Preset Color)	Specifies a color with RGB value (143,188,139)
+				else if (str == L"dkSlateBlue") { RGB = 0x483D8B; bSet = true; break; } // (Dark Slate Blue Preset Color)  Specifies a color with RGB value (72,61,139)
+				else if (str == L"dkSlateGray") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
+				else if (str == L"dkSlateGrey") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
+				else if (str == L"dkTurquoise") { RGB = 0x00CED1; bSet = true; break; } // (Dark Turquoise Preset Color)	Specifies a color with RGB value (0,206,209)
+				else if (str == L"dkViolet") { RGB = 0x9400D3; bSet = true; break; } // (Dark Violet Preset Color)		Specifies a color with RGB value (148,0,211)
+				else if (str == L"dodgerBlue") { RGB = 0x1E90FF; bSet = true; break; } // (Dodger Blue Preset Color)		Specifies a color with RGB value (30,144,255)
+				break;
+			case 'f':
+				if (str == L"firebrick") { RGB = 0xB22222; bSet = true; break; } // (Firebrick Preset Color)		Specifies a color with RGB value (178,34,34)
+				else if (str == L"floralWhite") { RGB = 0xFFFAF0; bSet = true; break; } // (Floral White Preset Color)		Specifies a color with RGB value (255,250,240)
+				else if (str == L"forestGreen") { RGB = 0x228B22; bSet = true; break; } // (Forest Green Preset Color)		Specifies a color with RGB value (34,139,34)
+				else if (str == L"fuchsia") { RGB = 0xFF00FF; bSet = true; break; } // (Fuchsia Preset Color)			Specifies a color with RGB value (255,0,255)
+				break;
+			case 'g':
+				if (str == L"gainsboro") { RGB = 0xDCDCDC; bSet = true; break; } // (Gainsboro Preset Color)		Specifies a color with RGB value (220,220,220)
+				else if (str == L"ghostWhite") { RGB = 0xF8F8FF; bSet = true; break; } // (Ghost White Preset Color)		Specifies a color with RGB value (248,248,255)
+				else if (str == L"gold") { RGB = 0xFFD700; bSet = true; break; } // (Gold Preset Color)				Specifies a color with RGB value (255,215,0)
+				else if (str == L"goldenrod") { RGB = 0xDAA520; bSet = true; break; } // (Goldenrod Preset Color)		Specifies a color with RGB value (218,165,32)
+				else if (str == L"gray") { RGB = 0x808080; bSet = true; break; } // (Gray Preset Color)				Specifies a color with RGB value (128,128,128)
+				else if (str == L"green") { RGB = 0x008000; bSet = true; break; } // (Green Preset Color)				Specifies a color with RGB value (0,128,0)
+				else if (str == L"greenYellow") { RGB = 0xADFF2F; bSet = true; break; } // (Green Yellow Preset Color)		Specifies a color with RGB value (173,255,47)
+				else if (str == L"grey") { RGB = 0x808080; bSet = true; break; } // (Gray Preset Color)				Specifies a color with RGB value (128,128,128)
+				break;
+			case 'h':
+				if (str == L"honeydew") { RGB = 0xF0FFF0; bSet = true; break; } // (Honeydew Preset Color)			Specifies a color with RGB value (240,255,240)
+				else if (str == L"hotPink") { RGB = 0xFF69B4; bSet = true; break; } // (Hot Pink Preset Color)			Specifies a color with RGB value (255,105,180)
+				break;
+			case 'i':
+				if (str == L"indianRed") { RGB = 0xCD5C5C; bSet = true; break; } // (Indian Red Preset Color)		Specifies a color with RGB value (205,92,92)
+				else if (str == L"indigo") { RGB = 0x4B0082; bSet = true; break; } // (Indigo Preset Color)			Specifies a color with RGB value (75,0,130)
+				else if (str == L"ivory") { RGB = 0xFFFFF0; bSet = true; break; } // (Ivory Preset Color)			Specifies a color with RGB value (255,255,240)
+				else if (str == L"infoText") { RGB = 0x000000; bSet = true; break; }
+				break;
+			case 'k':
+				if (str == L"khaki") { RGB = 0xF0E68C; bSet = true; break; } // (Khaki Preset Color)			Specifies a color with RGB value (240,230,140)
+				break;
+			case 'l':
+				if (str == L"lavender") { RGB = 0xE6E6FA; bSet = true; break; } // (Lavender Preset Color)			Specifies a color with RGB value (230,230,250)
+				else if (str == L"lavenderBlush") { RGB = 0xFFF0F5; bSet = true; break; } // (Lavender Blush Preset Color)	Specifies a color with RGB value (255,240,245)
+				else if (str == L"lawnGreen") { RGB = 0x7CFC00; bSet = true; break; } // (Lawn Green Preset Color)		Specifies a color with RGB value (124,252,0)
+				else if (str == L"lemonChiffon") { RGB = 0xFFFACD; bSet = true; break; } // (Lemon Chiffon Preset Color)	Specifies a color with RGB value (255,250,205)
+				else if (str == L"lightBlue") { RGB = 0xADD8E6; bSet = true; break; } // (Light Blue Preset Color)		Specifies a color with RGB value (173,216,230)
+				else if (str == L"lightCoral") { RGB = 0xF08080; bSet = true; break; } // (Light Coral Preset Color)		Specifies a color with RGB value (240,128,128)
+				else if (str == L"lightCyan") { RGB = 0xE0FFFF; bSet = true; break; } // (Light Cyan Preset Color)		Specifies a color with RGB value (224,255,255)
+				else if (str == L"lightGoldenrodYellow") { RGB = 0xFAFAD2; bSet = true; break; } // (Light Goldenrod Color)			Specifies a color with RGB value (250,250,210)
+				else if (str == L"lightGray") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
+				else if (str == L"lightGreen") { RGB = 0x90EE90; bSet = true; break; } // (Light Green Preset Color)		Specifies a color with RGB value (144,238,144)
+				else if (str == L"lightGrey") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
+				else if (str == L"lightPink") { RGB = 0xFFB6C1; bSet = true; break; } // (Light Pink Preset Color)		Specifies a color with RGB value (255,182,193)
+				else if (str == L"lightSalmon") { RGB = 0xFFA07A; bSet = true; break; } // (Light Salmon Preset Color)		Specifies a color with RGB value (255,160,122)
+				else if (str == L"lightSeaGreen") { RGB = 0x20B2AA; bSet = true; break; } // (Light Sea Green Preset Color)  Specifies a color with RGB value (32,178,170)
+				else if (str == L"lightSkyBlue") { RGB = 0x87CEFA; bSet = true; break; } // (Light Sky Blue Preset Color)	Specifies a color with RGB value (135,206,250)
+				else if (str == L"lightSlateGray") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
+				else if (str == L"lightSlateGrey") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
+				else if (str == L"lightSteelBlue") { RGB = 0xB0C4DE; bSet = true; break; } // (Light Steel Blue Preset Color) Specifies a color with RGB value (176,196,222)
+				else if (str == L"lightYellow") { RGB = 0xFFFFE0; bSet = true; break; } // (Light Yellow Preset Color)		Specifies a color with RGB value (255,255,224)
+				else if (str == L"lime") { RGB = 0x00FF00; bSet = true; break; } // (Lime Preset Color)				Specifies a color with RGB value (0,255,0)
+				else if (str == L"limeGreen") { RGB = 0x32CD32; bSet = true; break; } // (Lime Green Preset Color)		Specifies a color with RGB value (50,205,50)
+				else if (str == L"linen") { RGB = 0xFAF0E6; bSet = true; break; } // (Linen Preset Color)			Specifies a color with RGB value (250,240,230)
+				else if (str == L"ltBlue") { RGB = 0xADD8E6; bSet = true; break; } // (Light Blue Preset Color)		Specifies a color with RGB value (173,216,230)
+				else if (str == L"ltCoral") { RGB = 0xF08080; bSet = true; break; } // (Light Coral Preset Color)		Specifies a color with RGB value (240,128,128)
+				else if (str == L"ltCyan") { RGB = 0xE0FFFF; bSet = true; break; } // (Light Cyan Preset Color)		Specifies a color with RGB value (224,255,255)
+				else if (str == L"ltGoldenrodYellow") { RGB = 0xFAFA78; bSet = true; break; } // (Light Goldenrod Color)			Specifies a color with RGB value (250,250,120)
+				else if (str == L"ltGray") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
+				else if (str == L"ltGreen") { RGB = 0x90EE90; bSet = true; break; } // (Light Green Preset Color)		Specifies a color with RGB value (144,238,144)
+				else if (str == L"ltGrey") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
+				else if (str == L"ltPink") { RGB = 0xFFB6C1; bSet = true; break; } // (Light Pink Preset Color)		Specifies a color with RGB value (255,182,193)
+				else if (str == L"ltSalmon") { RGB = 0xFFA07A; bSet = true; break; } // (Light Salmon Preset Color)		Specifies a color with RGB value (255,160,122)
+				else if (str == L"ltSeaGreen") { RGB = 0x20B2AA; bSet = true; break; } // (Light Sea Green Preset Color)  Specifies a color with RGB value (32,178,170)
+				else if (str == L"ltSkyBlue") { RGB = 0x87CEFA; bSet = true; break; } // (Light Sky Blue Preset Color)	Specifies a color with RGB value (135,206,250)
+				else if (str == L"ltSlateGray") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
+				else if (str == L"ltSlateGrey") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
+				else if (str == L"ltSteelBlue") { RGB = 0xB0C4DE; bSet = true; break; } // (Light Steel Blue Preset Color) Specifies a color with RGB value (176,196,222)
+				else if (str == L"ltYellow") { RGB = 0xFFFFE0; bSet = true; break; } // (Light Yellow Preset Color)		Specifies a color with RGB value (255,255,224)
+				break;
+			case 'm':
+				if (str == L"magenta") { RGB = 0xFF00FF; bSet = true; break; } // (Magenta Preset Color)			Specifies a color with RGB value (255,0,255)
+				else if (str == L"maroon") { RGB = 0x800000; bSet = true; break; } // (Maroon Preset Color)			Specifies a color with RGB value (128,0,0)
+				else if (str == L"medAquamarine") { RGB = 0x66CDAA; bSet = true; break; } // (Medium Aquamarine Preset Color)Specifies a color with RGB value (102,205,170)
+				else if (str == L"medBlue") { RGB = 0x0000CD; bSet = true; break; } // (Medium Blue Preset Color)		Specifies a color with RGB value (0,0,205)
+				else if (str == L"mediumAquamarine") { RGB = 0x66CDAA; bSet = true; break; } // (Medium Aquamarine Color)		Specifies a color with RGB value (102,205,170)
+				else if (str == L"mediumBlue") { RGB = 0x0000CD; bSet = true; break; } // (Medium Blue Preset Color)		Specifies a color with RGB value (0,0,205)
+				else if (str == L"mediumOrchid") { RGB = 0xBA55D3; bSet = true; break; } // (Medium Orchid Preset Color)	Specifies a color with RGB value (186,85,211)
+				else if (str == L"mediumPurple") { RGB = 0x9370DB; bSet = true; break; } // (Medium Purple Preset Color)	Specifies a color with RGB value (147,112,219)
+				else if (str == L"mediumSeaGreen") { RGB = 0x3CB371; bSet = true; break; } // (Medium Sea Green Preset Color) Specifies a color with RGB value (60,179,113)
+				else if (str == L"mediumSlateBlue") { RGB = 0x7B68EE; bSet = true; break; } // (Medium Slate Blue Preset Color)Specifies a color with RGB value (123,104,238)
+				else if (str == L"mediumSpringGreen") { RGB = 0x00FA9A; bSet = true; break; } // (Medium Spring Color)			Specifies a color with RGB value (0,250,154)
+				else if (str == L"mediumTurquoise") { RGB = 0x48D1CC; bSet = true; break; } // (Medium Turquoise Preset Color) Specifies a color with RGB value (72,209,204)
+				else if (str == L"mediumVioletRed") { RGB = 0xC71585; bSet = true; break; } // (Medium Violet Red Preset Color)Specifies a color with RGB value (199,21,133)
+				else if (str == L"medOrchid") { RGB = 0xBA55D3; bSet = true; break; } // (Medium Orchid Preset Color)	Specifies a color with RGB value (186,85,211)
+				else if (str == L"medPurple") { RGB = 0x9370DB; bSet = true; break; } // (Medium Purple Preset Color)	Specifies a color with RGB value (147,112,219)
+				else if (str == L"medSeaGreen") { RGB = 0x3CB371; bSet = true; break; } // (Medium Sea Green Preset Color) Specifies a color with RGB value (60,179,113)
+				else if (str == L"medSlateBlue") { RGB = 0x7B68EE; bSet = true; break; } // (Medium Slate Blue Preset Color)Specifies a color with RGB value (123,104,238)
+				else if (str == L"medSpringGreen") { RGB = 0x00FA9A; bSet = true; break; } // (Medium Spring Preset Color)	Specifies a color with RGB value (0,250,154)
+				else if (str == L"medTurquoise") { RGB = 0x48D1CC; bSet = true; break; } // (Medium Turquoise Preset Color) Specifies a color with RGB value (72,209,204)
+				else if (str == L"medVioletRed") { RGB = 0xC71585; bSet = true; break; } // (Medium Violet Red Preset Color)Specifies a color with RGB value (199,21,133)
+				else if (str == L"midnightBlue") { RGB = 0x191970; bSet = true; break; } // (Midnight Blue Preset Color)	Specifies a color with RGB value (25,25,112)
+				else if (str == L"mintCream") { RGB = 0xF5FFFA; bSet = true; break; } // (Mint Cream Preset Color)		Specifies a color with RGB value (245,255,250)
+				else if (str == L"mistyRose") { RGB = 0xFFE4FF; bSet = true; break; } // (Misty Rose Preset Color)		Specifies a color with RGB value (255,228,225)
+				else if (str == L"moccasin") { RGB = 0xFFE4B5; bSet = true; break; } // (Moccasin Preset Color)			Specifies a color with RGB value (255,228,181)
+				else if (str == L"menuText") { RGB = 0x000000; bSet = true; break; }
+				break;
+			case 'n':
+				if (str == L"navajoWhite") { RGB = 0xFFDEAD; bSet = true; break; } // (Navajo White Preset Color)		Specifies a color with RGB value (255,222,173)
+				else if (str == L"navy") { RGB = 0x000080; bSet = true; break; } // (Navy Preset Color)				Specifies a color with RGB value (0,0,128)
+				break;
+			case 'o':
+				if (str == L"oldLace") { RGB = 0xFDF5E6; bSet = true; break; } // (Old Lace Preset Color)			Specifies a color with RGB value (253,245,230)
+				else if (str == L"olive") { RGB = 0x808000; bSet = true; break; } // (Olive Preset Color)			Specifies a color with RGB value (128,128,0)
+				else if (str == L"oliveDrab") { RGB = 0x6B8E23; bSet = true; break; } // (Olive Drab Preset Color)		Specifies a color with RGB value (107,142,35)
+				else if (str == L"orange") { RGB = 0xFFA500; bSet = true; break; } // (Orange Preset Color)			Specifies a color with RGB value (255,165,0)
+				else if (str == L"orangeRed") { RGB = 0xFF4500; bSet = true; break; } // (Orange Red Preset Color)		Specifies a color with RGB value (255,69,0)
+				else if (str == L"orchid") { RGB = 0xDA70D6; bSet = true; break; } // (Orchid Preset Color)			Specifies a color with RGB value (218,112,214)
+				break;
+			case 'p':
+				if (str == L"paleGoldenrod") { RGB = 0xEEE8AA; bSet = true; break; } // (Pale Goldenrod Preset Color)	Specifies a color with RGB value (238,232,170)
+				else if (str == L"paleGreen") { RGB = 0x98FB98; bSet = true; break; } // (Pale Green Preset Color)		Specifies a color with RGB value (152,251,152)
+				else if (str == L"paleTurquoise") { RGB = 0xAFEEEE; bSet = true; break; } // (Pale Turquoise Preset Color)	Specifies a color with RGB value (175,238,238)
+				else if (str == L"paleVioletRed") { RGB = 0xDB7093; bSet = true; break; } // (Pale Violet Red Preset Color)  Specifies a color with RGB value (219,112,147)
+				else if (str == L"papayaWhip") { RGB = 0xFFEFD5; bSet = true; break; } // (Papaya Whip Preset Color)		Specifies a color with RGB value (255,239,213)
+				else if (str == L"peachPuff") { RGB = 0xFFDAB9; bSet = true; break; } // (Peach Puff Preset Color)		Specifies a color with RGB value (255,218,185)
+				else if (str == L"peru") { RGB = 0xCD853F; bSet = true; break; } // (Peru Preset Color)				Specifies a color with RGB value (205,133,63)
+				else if (str == L"pink") { RGB = 0xFFC0CB; bSet = true; break; } // (Pink Preset Color)				Specifies a color with RGB value (255,192,203)
+				else if (str == L"plum") { RGB = 0xD3A0D3; bSet = true; break; } // (Plum Preset Color)				Specifies a color with RGB value (221,160,221)
+				else if (str == L"powderBlue") { RGB = 0xB0E0E6; bSet = true; break; } // (Powder Blue Preset Color)		Specifies a color with RGB value (176,224,230)
+				else if (str == L"purple") { RGB = 0x800080; bSet = true; break; } // (Purple Preset Color)			Specifies a color with RGB value (128,0,128)
+				break;
+			case 'r':
+				if (str == L"red") { RGB = 0xFF0000; bSet = true; break; } // (Red Preset Color)				Specifies a color with RGB value (255,0,0)
+				else if (str == L"rosyBrown") { RGB = 0xBC8F8F; bSet = true; break; } // (Rosy Brown Preset Color)		Specifies a color with RGB value (188,143,143)
+				else if (str == L"royalBlue") { RGB = 0x4169E1; bSet = true; break; } // (Royal Blue Preset Color)		Specifies a color with RGB value (65,105,225)
+				break;
+			case 's':
+				if (str == L"saddleBrown") { RGB = 0x8B4513; bSet = true; break; } // (Saddle Brown Preset Color)		Specifies a color with RGB value (139,69,19)
+				else if (str == L"salmon") { RGB = 0xFA8072; bSet = true; break; } // (Salmon Preset Color)			Specifies a color with RGB value (250,128,114)
+				else if (str == L"sandyBrown") { RGB = 0xF4A460; bSet = true; break; } // (Sandy Brown Preset Color)		Specifies a color with RGB value (244,164,96)
+				else if (str == L"seaGreen") { RGB = 0x2E8B57; bSet = true; break; } // (Sea Green Preset Color)		Specifies a color with RGB value (46,139,87)
+				else if (str == L"seaShell") { RGB = 0xFFF5EE; bSet = true; break; } // (Sea Shell Preset Color)		Specifies a color with RGB value (255,245,238)
+				else if (str == L"sienna") { RGB = 0xA0522D; bSet = true; break; } // (Sienna Preset Color)			Specifies a color with RGB value (160,82,45)
+				else if (str == L"silver") { RGB = 0xC0C0C0; bSet = true; break; } // (Silver Preset Color)			Specifies a color with RGB value (192,192,192)
+				else if (str == L"skyBlue") { RGB = 0x87CEEB; bSet = true; break; } // (Sky Blue Preset Color)			Specifies a color with RGB value (135,206,235)
+				else if (str == L"slateBlue") { RGB = 0x6A5AEB; bSet = true; break; } // (Slate Blue Preset Color)		Specifies a color with RGB value (106,90,205)
+				else if (str == L"slateGray") { RGB = 0x708090; bSet = true; break; } // (Slate Gray Preset Color)		Specifies a color with RGB value (112,128,144)
+				else if (str == L"slateGrey") { RGB = 0x708090; bSet = true; break; } // (Slate Gray Preset Color)		Specifies a color with RGB value (112,128,144)
+				else if (str == L"snow") { RGB = 0xFFFAFA; bSet = true; break; } // (Snow Preset Color)				Specifies a color with RGB value (255,250,250)
+				else if (str == L"springGreen") { RGB = 0x00FF7F; bSet = true; break; } // (Spring Green Preset Color)		Specifies a color with RGB value (0,255,127)
+				else if (str == L"steelBlue") { RGB = 0x4682B4; bSet = true; break; } // (Steel Blue Preset Color)		Specifies a color with RGB value (70,130,180)
+				break;
+			case 't':
+				if (str == L"tan") { RGB = 0xD2B48C; bSet = true; break; } // (Tan Preset Color)				Specifies a color with RGB value (210,180,140)
+				else if (str == L"teal") { RGB = 0x008080; bSet = true; break; } // (Teal Preset Color)				Specifies a color with RGB value (0,128,128)
+				else if (str == L"thistle") { RGB = 0xD8BFD8; bSet = true; break; } // (Thistle Preset Color)			Specifies a color with RGB value (216,191,216)
+				else if (str == L"tomato") { RGB = 0xFF7347; bSet = true; break; } // (Tomato Preset Color)			Specifies a color with RGB value (255,99,71)
+				else if (str == L"turquoise") { RGB = 0x40E0D0; bSet = true; break; } // (Turquoise Preset Color)		Specifies a color with RGB value (64,224,208)
+				break;
+			case 'v':
+				if (str == L"violet") { RGB = 0xEE82EE; bSet = true; break; } // (Violet Preset Color)			Specifies a color with RGB value (238,130,238)
+				break;
+			case 'w':
+				if (str == L"wheat") { RGB = 0xF5DEB3; bSet = true; break; } // (Wheat Preset Color)			Specifies a color with RGB value (245,222,179)
+				else if (str == L"white") { RGB = 0xFFFFFF; bSet = true; break; } // (White Preset Color)			Specifies a color with RGB value (255,255,255)
+				else if (str == L"whiteSmoke") { RGB = 0xF5F5F5; bSet = true; break; } // (White Smoke Preset Color)		Specifies a color with RGB value (245,245,245)
+				else if (str == L"windowsText") { RGB = 0x000000; bSet = true; break; } // (White Smoke Preset Color)		Specifies a color with RGB value (245,245,245)
+				break;
+			case 'y':
+				if (str == L"yellow") { RGB = 0xFFFF00; bSet = true; break; } // (Yellow Preset Color)			Specifies a color with RGB value (255,255,0)
+				else if (str == L"yellowGreen") { RGB = 0x9ACD32; bSet = true; break; } // (Yellow Green Preset Color)		Specifies a color with RGB value (154,205,50)
+				break;
 			}
-
-			if (!bSet)
-			{
-				pos = colorStr.find(' ');
-				if (pos == std::wstring::npos)
-					str = colorStr;
-				else
-					str = colorStr.substr(0, pos);
-
-				switch (str[0])
-				{
-				case 'a':
-					if (str == L"aliceBlue") { RGB = 0xF0F8FF; bSet = true; break; } // (Alice Blue Preset Color)		Specifies a color with RGB value (240,248,255)
-					else if (str == L"antiqueWhite") { RGB = 0xFAEBD7; bSet = true; break; } // (Antique White Preset Color)	Specifies a color with RGB value (250,235,215)
-					else if (str == L"aqua") { RGB = 0x00FFFF; bSet = true; break; } // (Aqua Preset Color)				Specifies a color with RGB value (0,255,255)
-					else if (str == L"aquamarine") { RGB = 0x7FFFD4; bSet = true; break; } // (Aquamarine Preset Color)		Specifies a color with RGB value (127,255,212)
-					else if (str == L"azure") { RGB = 0xF0FFFF; bSet = true; break; } // (Azure Preset Color)			Specifies a color with RGB value (240,255,255)
-					break;
-				case 'b':
-					if (str == L"beige") { RGB = 0xF5F5DC; bSet = true; break; } // (Beige Preset Color)			Specifies a color with RGB value (245,245,220)
-					else if (str == L"bisque") { RGB = 0xFFE4C4; bSet = true; break; } // (Bisque Preset Color)			Specifies a color with RGB value (255,228,196)
-					else if (str == L"black") { RGB = 0x000000; bSet = true; break; } // (Black Preset Color)			Specifies a color with RGB value (0,0,0)
-					else if (str == L"blanchedAlmond") { RGB = 0xFFEBCD; bSet = true; break; } // (Blanched Almond Preset Color)  Specifies a color with RGB value (255,235,205)
-					else if (str == L"blue") { RGB = 0x0000FF; bSet = true; break; } // (Blue Preset Color)				Specifies a color with RGB value (0,0,255)
-					else if (str == L"blueViolet") { RGB = 0x8A2BE2; bSet = true; break; } // (Blue Violet Preset Color)		Specifies a color with RGB value (138,43,226)
-					else if (str == L"brown") { RGB = 0xA52A2A; bSet = true; break; } // (Brown Preset Color)			Specifies a color with RGB value (165,42,42)
-					else if (str == L"burlyWood") { RGB = 0xDEB887; bSet = true; break; } // (Burly Wood Preset Color)		Specifies a color with RGB value (222,184,135)
-					else if (str == L"buttonFace") { RGB = 0xF0F0F0; bSet = true; break; }
-					else if (str == L"buttonText") { RGB = 0x000000; bSet = true; break; }
-					break;
-				case 'c':
-					if (str == L"cadetBlue") { RGB = 0x5F9EA0; bSet = true; break; } // (Cadet Blue Preset Color)		Specifies a color with RGB value (95,158,160)
-					else if (str == L"chartreuse") { RGB = 0x7FFF00; bSet = true; break; } // (Chartreuse Preset Color)		Specifies a color with RGB value (127,255,0)
-					else if (str == L"chocolate") { RGB = 0xD2691E; bSet = true; break; } // (Chocolate Preset Color)		Specifies a color with RGB value (210,105,30)
-					else if (str == L"coral") { RGB = 0xFF7F50; bSet = true; break; } // (Coral Preset Color)			Specifies a color with RGB value (255,127,80)
-					else if (str == L"cornflowerBlue") { RGB = 0x6495ED; bSet = true; break; } // (Cornflower Blue Preset Color)  Specifies a color with RGB value (100,149,237)
-					else if (str == L"cornsilk") { RGB = 0xFFF8DC; bSet = true; break; } // (Cornsilk Preset Color)			Specifies a color with RGB value (255,248,220)
-					else if (str == L"crimson") { RGB = 0xDC143C; bSet = true; break; } // (Crimson Preset Color)			Specifies a color with RGB value (220,20,60)
-					else if (str == L"cyan") { RGB = 0x00FFFF; bSet = true; break; } // (Cyan Preset Color)				Specifies a color with RGB value (0,255,255)
-					break;
-				case 'd':
-					if (str == L"darkBlue") { RGB = 0x00008B; bSet = true; break; } // (Dark Blue Preset Color)		Specifies a color with RGB value (0,0,139)
-					else if (str == L"darkCyan") { RGB = 0x008B8B; bSet = true; break; } // (Dark Cyan Preset Color)		Specifies a color with RGB value (0,139,139)
-					else if (str == L"darkGoldenrod") { RGB = 0xB8860B; bSet = true; break; } // (Dark Goldenrod Preset Color)	Specifies a color with RGB value (184,134,11)
-					else if (str == L"darkGray") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
-					else if (str == L"darkGreen") { RGB = 0x006400; bSet = true; break; } // (Dark Green Preset Color)		Specifies a color with RGB value (0,100,0)
-					else if (str == L"darkGrey") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
-					else if (str == L"darkKhaki") { RGB = 0xBDB76B; bSet = true; break; } // (Dark Khaki Preset Color)		Specifies a color with RGB value (189,183,107)
-					else if (str == L"darkMagenta") { RGB = 0x8B008B; bSet = true; break; } // (Dark Magenta Preset Color)		Specifies a color with RGB value (139,0,139)
-					else if (str == L"darkOliveGreen") { RGB = 0x556B2F; bSet = true; break; } // (Dark Olive Green Preset Color) Specifies a color with RGB value (85,107,47)
-					else if (str == L"darkOrange") { RGB = 0xFF8C00; bSet = true; break; } // (Dark Orange Preset Color)		Specifies a color with RGB value (255,140,0)
-					else if (str == L"darkOrchid") { RGB = 0x9932CC; bSet = true; break; } // (Dark Orchid Preset Color)		Specifies a color with RGB value (153,50,204)
-					else if (str == L"darkRed") { RGB = 0x8B0000; bSet = true; break; } // (Dark Red Preset Color)			Specifies a color with RGB value (139,0,0)
-					else if (str == L"darkSalmon") { RGB = 0xE9967A; bSet = true; break; } // (Dark Salmon Preset Color)		Specifies a color with RGB value (233,150,122)
-					else if (str == L"darkSeaGreen") { RGB = 0x8FBC8F; bSet = true; break; } // (Dark Sea Green Preset Color)	Specifies a color with RGB value (143,188,143)
-					else if (str == L"darkSlateBlue") { RGB = 0x483D8B; bSet = true; break; } // (Dark Slate Blue Preset Color)  Specifies a color with RGB value (72,61,139)
-					else if (str == L"darkSlateGray") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
-					else if (str == L"darkSlateGrey") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
-					else if (str == L"darkTurquoise") { RGB = 0x00CED1; bSet = true; break; } // (Dark Turquoise Preset Color)	Specifies a color with RGB value (0,206,209)
-					else if (str == L"darkViolet") { RGB = 0x9400D3; bSet = true; break; } // (Dark Violet Preset Color)		Specifies a color with RGB value (148,0,211)
-					else if (str == L"deepPink") { RGB = 0xFF1493; bSet = true; break; } // (Deep Pink Preset Color)		Specifies a color with RGB value (255,20,147)
-					else if (str == L"deepSkyBlue") { RGB = 0x00BFFF; bSet = true; break; } // (Deep Sky Blue Preset Color)	Specifies a color with RGB value (0,191,255)
-					else if (str == L"dimGray") { RGB = 0x696969; bSet = true; break; } // (Dim Gray Preset Color)			Specifies a color with RGB value (105,105,105)
-					else if (str == L"dimGrey") { RGB = 0x696969; bSet = true; break; } // (Dim Gray Preset Color)			Specifies a color with RGB value (105,105,105)
-					else if (str == L"dkBlue") { RGB = 0x00008B; bSet = true; break; } // (Dark Blue Preset Color)		Specifies a color with RGB value (0,0,139)
-					else if (str == L"dkCyan") { RGB = 0x008B8B; bSet = true; break; } // (Dark Cyan Preset Color)		Specifies a color with RGB value (0,139,139)
-					else if (str == L"dkGoldenrod") { RGB = 0xB8860B; bSet = true; break; } // (Dark Goldenrod Preset Color)	Specifies a color with RGB value (184,134,11)
-					else if (str == L"dkGray") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
-					else if (str == L"dkGreen") { RGB = 0x006400; bSet = true; break; } // (Dark Green Preset Color)		Specifies a color with RGB value (0,100,0)
-					else if (str == L"dkGrey") { RGB = 0xA9A9A9; bSet = true; break; } // (Dark Gray Preset Color)		Specifies a color with RGB value (169,169,169)
-					else if (str == L"dkKhaki") { RGB = 0xBDB76B; bSet = true; break; } // (Dark Khaki Preset Color)		Specifies a color with RGB value (189,183,107)
-					else if (str == L"dkMagenta") { RGB = 0x8B008B; bSet = true; break; } // (Dark Magenta Preset Color)		Specifies a color with RGB value (139,0,139)
-					else if (str == L"dkOliveGreen") { RGB = 0x556B2F; bSet = true; break; } // (Dark Olive Green Preset Color) Specifies a color with RGB value (85,107,47)
-					else if (str == L"dkOrange") { RGB = 0xFF8C00; bSet = true; break; } // (Dark Orange Preset Color)		Specifies a color with RGB value (255,140,0)
-					else if (str == L"dkOrchid") { RGB = 0x9932CC; bSet = true; break; } // (Dark Orchid Preset Color)		Specifies a color with RGB value (153,50,204)
-					else if (str == L"dkRed") { RGB = 0x8B0000; bSet = true; break; } // (Dark Red Preset Color)			Specifies a color with RGB value (139,0,0)
-					else if (str == L"dkSalmon") { RGB = 0xE9967A; bSet = true; break; } // (Dark Salmon Preset Color)		Specifies a color with RGB value (233,150,122)
-					else if (str == L"dkSeaGreen") { RGB = 0x8FBC8B; bSet = true; break; } // (Dark Sea Green Preset Color)	Specifies a color with RGB value (143,188,139)
-					else if (str == L"dkSlateBlue") { RGB = 0x483D8B; bSet = true; break; } // (Dark Slate Blue Preset Color)  Specifies a color with RGB value (72,61,139)
-					else if (str == L"dkSlateGray") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
-					else if (str == L"dkSlateGrey") { RGB = 0x2F4F4F; bSet = true; break; } // (Dark Slate Gray Preset Color)  Specifies a color with RGB value (47,79,79)
-					else if (str == L"dkTurquoise") { RGB = 0x00CED1; bSet = true; break; } // (Dark Turquoise Preset Color)	Specifies a color with RGB value (0,206,209)
-					else if (str == L"dkViolet") { RGB = 0x9400D3; bSet = true; break; } // (Dark Violet Preset Color)		Specifies a color with RGB value (148,0,211)
-					else if (str == L"dodgerBlue") { RGB = 0x1E90FF; bSet = true; break; } // (Dodger Blue Preset Color)		Specifies a color with RGB value (30,144,255)
-					break;
-				case 'f':
-					if (str == L"firebrick") { RGB = 0xB22222; bSet = true; break; } // (Firebrick Preset Color)		Specifies a color with RGB value (178,34,34)
-					else if (str == L"floralWhite") { RGB = 0xFFFAF0; bSet = true; break; } // (Floral White Preset Color)		Specifies a color with RGB value (255,250,240)
-					else if (str == L"forestGreen") { RGB = 0x228B22; bSet = true; break; } // (Forest Green Preset Color)		Specifies a color with RGB value (34,139,34)
-					else if (str == L"fuchsia") { RGB = 0xFF00FF; bSet = true; break; } // (Fuchsia Preset Color)			Specifies a color with RGB value (255,0,255)
-					break;
-				case 'g':
-					if (str == L"gainsboro") { RGB = 0xDCDCDC; bSet = true; break; } // (Gainsboro Preset Color)		Specifies a color with RGB value (220,220,220)
-					else if (str == L"ghostWhite") { RGB = 0xF8F8FF; bSet = true; break; } // (Ghost White Preset Color)		Specifies a color with RGB value (248,248,255)
-					else if (str == L"gold") { RGB = 0xFFD700; bSet = true; break; } // (Gold Preset Color)				Specifies a color with RGB value (255,215,0)
-					else if (str == L"goldenrod") { RGB = 0xDAA520; bSet = true; break; } // (Goldenrod Preset Color)		Specifies a color with RGB value (218,165,32)
-					else if (str == L"gray") { RGB = 0x808080; bSet = true; break; } // (Gray Preset Color)				Specifies a color with RGB value (128,128,128)
-					else if (str == L"green") { RGB = 0x008000; bSet = true; break; } // (Green Preset Color)				Specifies a color with RGB value (0,128,0)
-					else if (str == L"greenYellow") { RGB = 0xADFF2F; bSet = true; break; } // (Green Yellow Preset Color)		Specifies a color with RGB value (173,255,47)
-					else if (str == L"grey") { RGB = 0x808080; bSet = true; break; } // (Gray Preset Color)				Specifies a color with RGB value (128,128,128)
-					break;
-				case 'h':
-					if (str == L"honeydew") { RGB = 0xF0FFF0; bSet = true; break; } // (Honeydew Preset Color)			Specifies a color with RGB value (240,255,240)
-					else if (str == L"hotPink") { RGB = 0xFF69B4; bSet = true; break; } // (Hot Pink Preset Color)			Specifies a color with RGB value (255,105,180)
-					break;
-				case 'i':
-					if (str == L"indianRed") { RGB = 0xCD5C5C; bSet = true; break; } // (Indian Red Preset Color)		Specifies a color with RGB value (205,92,92)
-					else if (str == L"indigo") { RGB = 0x4B0082; bSet = true; break; } // (Indigo Preset Color)			Specifies a color with RGB value (75,0,130)
-					else if (str == L"ivory") { RGB = 0xFFFFF0; bSet = true; break; } // (Ivory Preset Color)			Specifies a color with RGB value (255,255,240)
-					else if (str == L"infoText") { RGB = 0x000000; bSet = true; break; }
-					break;
-				case 'k':
-					if (str == L"khaki") { RGB = 0xF0E68C; bSet = true; break; } // (Khaki Preset Color)			Specifies a color with RGB value (240,230,140)
-					break;
-				case 'l':
-					if (str == L"lavender") { RGB = 0xE6E6FA; bSet = true; break; } // (Lavender Preset Color)			Specifies a color with RGB value (230,230,250)
-					else if (str == L"lavenderBlush") { RGB = 0xFFF0F5; bSet = true; break; } // (Lavender Blush Preset Color)	Specifies a color with RGB value (255,240,245)
-					else if (str == L"lawnGreen") { RGB = 0x7CFC00; bSet = true; break; } // (Lawn Green Preset Color)		Specifies a color with RGB value (124,252,0)
-					else if (str == L"lemonChiffon") { RGB = 0xFFFACD; bSet = true; break; } // (Lemon Chiffon Preset Color)	Specifies a color with RGB value (255,250,205)
-					else if (str == L"lightBlue") { RGB = 0xADD8E6; bSet = true; break; } // (Light Blue Preset Color)		Specifies a color with RGB value (173,216,230)
-					else if (str == L"lightCoral") { RGB = 0xF08080; bSet = true; break; } // (Light Coral Preset Color)		Specifies a color with RGB value (240,128,128)
-					else if (str == L"lightCyan") { RGB = 0xE0FFFF; bSet = true; break; } // (Light Cyan Preset Color)		Specifies a color with RGB value (224,255,255)
-					else if (str == L"lightGoldenrodYellow") { RGB = 0xFAFAD2; bSet = true; break; } // (Light Goldenrod Color)			Specifies a color with RGB value (250,250,210)
-					else if (str == L"lightGray") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
-					else if (str == L"lightGreen") { RGB = 0x90EE90; bSet = true; break; } // (Light Green Preset Color)		Specifies a color with RGB value (144,238,144)
-					else if (str == L"lightGrey") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
-					else if (str == L"lightPink") { RGB = 0xFFB6C1; bSet = true; break; } // (Light Pink Preset Color)		Specifies a color with RGB value (255,182,193)
-					else if (str == L"lightSalmon") { RGB = 0xFFA07A; bSet = true; break; } // (Light Salmon Preset Color)		Specifies a color with RGB value (255,160,122)
-					else if (str == L"lightSeaGreen") { RGB = 0x20B2AA; bSet = true; break; } // (Light Sea Green Preset Color)  Specifies a color with RGB value (32,178,170)
-					else if (str == L"lightSkyBlue") { RGB = 0x87CEFA; bSet = true; break; } // (Light Sky Blue Preset Color)	Specifies a color with RGB value (135,206,250)
-					else if (str == L"lightSlateGray") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
-					else if (str == L"lightSlateGrey") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
-					else if (str == L"lightSteelBlue") { RGB = 0xB0C4DE; bSet = true; break; } // (Light Steel Blue Preset Color) Specifies a color with RGB value (176,196,222)
-					else if (str == L"lightYellow") { RGB = 0xFFFFE0; bSet = true; break; } // (Light Yellow Preset Color)		Specifies a color with RGB value (255,255,224)
-					else if (str == L"lime") { RGB = 0x00FF00; bSet = true; break; } // (Lime Preset Color)				Specifies a color with RGB value (0,255,0)
-					else if (str == L"limeGreen") { RGB = 0x32CD32; bSet = true; break; } // (Lime Green Preset Color)		Specifies a color with RGB value (50,205,50)
-					else if (str == L"linen") { RGB = 0xFAF0E6; bSet = true; break; } // (Linen Preset Color)			Specifies a color with RGB value (250,240,230)
-					else if (str == L"ltBlue") { RGB = 0xADD8E6; bSet = true; break; } // (Light Blue Preset Color)		Specifies a color with RGB value (173,216,230)
-					else if (str == L"ltCoral") { RGB = 0xF08080; bSet = true; break; } // (Light Coral Preset Color)		Specifies a color with RGB value (240,128,128)
-					else if (str == L"ltCyan") { RGB = 0xE0FFFF; bSet = true; break; } // (Light Cyan Preset Color)		Specifies a color with RGB value (224,255,255)
-					else if (str == L"ltGoldenrodYellow") { RGB = 0xFAFA78; bSet = true; break; } // (Light Goldenrod Color)			Specifies a color with RGB value (250,250,120)
-					else if (str == L"ltGray") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
-					else if (str == L"ltGreen") { RGB = 0x90EE90; bSet = true; break; } // (Light Green Preset Color)		Specifies a color with RGB value (144,238,144)
-					else if (str == L"ltGrey") { RGB = 0xD3D3D3; bSet = true; break; } // (Light Gray Preset Color)		Specifies a color with RGB value (211,211,211)
-					else if (str == L"ltPink") { RGB = 0xFFB6C1; bSet = true; break; } // (Light Pink Preset Color)		Specifies a color with RGB value (255,182,193)
-					else if (str == L"ltSalmon") { RGB = 0xFFA07A; bSet = true; break; } // (Light Salmon Preset Color)		Specifies a color with RGB value (255,160,122)
-					else if (str == L"ltSeaGreen") { RGB = 0x20B2AA; bSet = true; break; } // (Light Sea Green Preset Color)  Specifies a color with RGB value (32,178,170)
-					else if (str == L"ltSkyBlue") { RGB = 0x87CEFA; bSet = true; break; } // (Light Sky Blue Preset Color)	Specifies a color with RGB value (135,206,250)
-					else if (str == L"ltSlateGray") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
-					else if (str == L"ltSlateGrey") { RGB = 0x778899; bSet = true; break; } // (Light Slate Gray Preset Color) Specifies a color with RGB value (119,136,153)
-					else if (str == L"ltSteelBlue") { RGB = 0xB0C4DE; bSet = true; break; } // (Light Steel Blue Preset Color) Specifies a color with RGB value (176,196,222)
-					else if (str == L"ltYellow") { RGB = 0xFFFFE0; bSet = true; break; } // (Light Yellow Preset Color)		Specifies a color with RGB value (255,255,224)
-					break;
-				case 'm':
-					if (str == L"magenta") { RGB = 0xFF00FF; bSet = true; break; } // (Magenta Preset Color)			Specifies a color with RGB value (255,0,255)
-					else if (str == L"maroon") { RGB = 0x800000; bSet = true; break; } // (Maroon Preset Color)			Specifies a color with RGB value (128,0,0)
-					else if (str == L"medAquamarine") { RGB = 0x66CDAA; bSet = true; break; } // (Medium Aquamarine Preset Color)Specifies a color with RGB value (102,205,170)
-					else if (str == L"medBlue") { RGB = 0x0000CD; bSet = true; break; } // (Medium Blue Preset Color)		Specifies a color with RGB value (0,0,205)
-					else if (str == L"mediumAquamarine") { RGB = 0x66CDAA; bSet = true; break; } // (Medium Aquamarine Color)		Specifies a color with RGB value (102,205,170)
-					else if (str == L"mediumBlue") { RGB = 0x0000CD; bSet = true; break; } // (Medium Blue Preset Color)		Specifies a color with RGB value (0,0,205)
-					else if (str == L"mediumOrchid") { RGB = 0xBA55D3; bSet = true; break; } // (Medium Orchid Preset Color)	Specifies a color with RGB value (186,85,211)
-					else if (str == L"mediumPurple") { RGB = 0x9370DB; bSet = true; break; } // (Medium Purple Preset Color)	Specifies a color with RGB value (147,112,219)
-					else if (str == L"mediumSeaGreen") { RGB = 0x3CB371; bSet = true; break; } // (Medium Sea Green Preset Color) Specifies a color with RGB value (60,179,113)
-					else if (str == L"mediumSlateBlue") { RGB = 0x7B68EE; bSet = true; break; } // (Medium Slate Blue Preset Color)Specifies a color with RGB value (123,104,238)
-					else if (str == L"mediumSpringGreen") { RGB = 0x00FA9A; bSet = true; break; } // (Medium Spring Color)			Specifies a color with RGB value (0,250,154)
-					else if (str == L"mediumTurquoise") { RGB = 0x48D1CC; bSet = true; break; } // (Medium Turquoise Preset Color) Specifies a color with RGB value (72,209,204)
-					else if (str == L"mediumVioletRed") { RGB = 0xC71585; bSet = true; break; } // (Medium Violet Red Preset Color)Specifies a color with RGB value (199,21,133)
-					else if (str == L"medOrchid") { RGB = 0xBA55D3; bSet = true; break; } // (Medium Orchid Preset Color)	Specifies a color with RGB value (186,85,211)
-					else if (str == L"medPurple") { RGB = 0x9370DB; bSet = true; break; } // (Medium Purple Preset Color)	Specifies a color with RGB value (147,112,219)
-					else if (str == L"medSeaGreen") { RGB = 0x3CB371; bSet = true; break; } // (Medium Sea Green Preset Color) Specifies a color with RGB value (60,179,113)
-					else if (str == L"medSlateBlue") { RGB = 0x7B68EE; bSet = true; break; } // (Medium Slate Blue Preset Color)Specifies a color with RGB value (123,104,238)
-					else if (str == L"medSpringGreen") { RGB = 0x00FA9A; bSet = true; break; } // (Medium Spring Preset Color)	Specifies a color with RGB value (0,250,154)
-					else if (str == L"medTurquoise") { RGB = 0x48D1CC; bSet = true; break; } // (Medium Turquoise Preset Color) Specifies a color with RGB value (72,209,204)
-					else if (str == L"medVioletRed") { RGB = 0xC71585; bSet = true; break; } // (Medium Violet Red Preset Color)Specifies a color with RGB value (199,21,133)
-					else if (str == L"midnightBlue") { RGB = 0x191970; bSet = true; break; } // (Midnight Blue Preset Color)	Specifies a color with RGB value (25,25,112)
-					else if (str == L"mintCream") { RGB = 0xF5FFFA; bSet = true; break; } // (Mint Cream Preset Color)		Specifies a color with RGB value (245,255,250)
-					else if (str == L"mistyRose") { RGB = 0xFFE4FF; bSet = true; break; } // (Misty Rose Preset Color)		Specifies a color with RGB value (255,228,225)
-					else if (str == L"moccasin") { RGB = 0xFFE4B5; bSet = true; break; } // (Moccasin Preset Color)			Specifies a color with RGB value (255,228,181)
-					else if (str == L"menuText") { RGB = 0x000000; bSet = true; break; }
-					break;
-				case 'n':
-					if (str == L"navajoWhite") { RGB = 0xFFDEAD; bSet = true; break; } // (Navajo White Preset Color)		Specifies a color with RGB value (255,222,173)
-					else if (str == L"navy") { RGB = 0x000080; bSet = true; break; } // (Navy Preset Color)				Specifies a color with RGB value (0,0,128)
-					break;
-				case 'o':
-					if (str == L"oldLace") { RGB = 0xFDF5E6; bSet = true; break; } // (Old Lace Preset Color)			Specifies a color with RGB value (253,245,230)
-					else if (str == L"olive") { RGB = 0x808000; bSet = true; break; } // (Olive Preset Color)			Specifies a color with RGB value (128,128,0)
-					else if (str == L"oliveDrab") { RGB = 0x6B8E23; bSet = true; break; } // (Olive Drab Preset Color)		Specifies a color with RGB value (107,142,35)
-					else if (str == L"orange") { RGB = 0xFFA500; bSet = true; break; } // (Orange Preset Color)			Specifies a color with RGB value (255,165,0)
-					else if (str == L"orangeRed") { RGB = 0xFF4500; bSet = true; break; } // (Orange Red Preset Color)		Specifies a color with RGB value (255,69,0)
-					else if (str == L"orchid") { RGB = 0xDA70D6; bSet = true; break; } // (Orchid Preset Color)			Specifies a color with RGB value (218,112,214)
-					break;
-				case 'p':
-					if (str == L"paleGoldenrod") { RGB = 0xEEE8AA; bSet = true; break; } // (Pale Goldenrod Preset Color)	Specifies a color with RGB value (238,232,170)
-					else if (str == L"paleGreen") { RGB = 0x98FB98; bSet = true; break; } // (Pale Green Preset Color)		Specifies a color with RGB value (152,251,152)
-					else if (str == L"paleTurquoise") { RGB = 0xAFEEEE; bSet = true; break; } // (Pale Turquoise Preset Color)	Specifies a color with RGB value (175,238,238)
-					else if (str == L"paleVioletRed") { RGB = 0xDB7093; bSet = true; break; } // (Pale Violet Red Preset Color)  Specifies a color with RGB value (219,112,147)
-					else if (str == L"papayaWhip") { RGB = 0xFFEFD5; bSet = true; break; } // (Papaya Whip Preset Color)		Specifies a color with RGB value (255,239,213)
-					else if (str == L"peachPuff") { RGB = 0xFFDAB9; bSet = true; break; } // (Peach Puff Preset Color)		Specifies a color with RGB value (255,218,185)
-					else if (str == L"peru") { RGB = 0xCD853F; bSet = true; break; } // (Peru Preset Color)				Specifies a color with RGB value (205,133,63)
-					else if (str == L"pink") { RGB = 0xFFC0CB; bSet = true; break; } // (Pink Preset Color)				Specifies a color with RGB value (255,192,203)
-					else if (str == L"plum") { RGB = 0xD3A0D3; bSet = true; break; } // (Plum Preset Color)				Specifies a color with RGB value (221,160,221)
-					else if (str == L"powderBlue") { RGB = 0xB0E0E6; bSet = true; break; } // (Powder Blue Preset Color)		Specifies a color with RGB value (176,224,230)
-					else if (str == L"purple") { RGB = 0x800080; bSet = true; break; } // (Purple Preset Color)			Specifies a color with RGB value (128,0,128)
-					break;
-				case 'r':
-					if (str == L"red") { RGB = 0xFF0000; bSet = true; break; } // (Red Preset Color)				Specifies a color with RGB value (255,0,0)
-					else if (str == L"rosyBrown") { RGB = 0xBC8F8F; bSet = true; break; } // (Rosy Brown Preset Color)		Specifies a color with RGB value (188,143,143)
-					else if (str == L"royalBlue") { RGB = 0x4169E1; bSet = true; break; } // (Royal Blue Preset Color)		Specifies a color with RGB value (65,105,225)
-					break;
-				case 's':
-					if (str == L"saddleBrown") { RGB = 0x8B4513; bSet = true; break; } // (Saddle Brown Preset Color)		Specifies a color with RGB value (139,69,19)
-					else if (str == L"salmon") { RGB = 0xFA8072; bSet = true; break; } // (Salmon Preset Color)			Specifies a color with RGB value (250,128,114)
-					else if (str == L"sandyBrown") { RGB = 0xF4A460; bSet = true; break; } // (Sandy Brown Preset Color)		Specifies a color with RGB value (244,164,96)
-					else if (str == L"seaGreen") { RGB = 0x2E8B57; bSet = true; break; } // (Sea Green Preset Color)		Specifies a color with RGB value (46,139,87)
-					else if (str == L"seaShell") { RGB = 0xFFF5EE; bSet = true; break; } // (Sea Shell Preset Color)		Specifies a color with RGB value (255,245,238)
-					else if (str == L"sienna") { RGB = 0xA0522D; bSet = true; break; } // (Sienna Preset Color)			Specifies a color with RGB value (160,82,45)
-					else if (str == L"silver") { RGB = 0xC0C0C0; bSet = true; break; } // (Silver Preset Color)			Specifies a color with RGB value (192,192,192)
-					else if (str == L"skyBlue") { RGB = 0x87CEEB; bSet = true; break; } // (Sky Blue Preset Color)			Specifies a color with RGB value (135,206,235)
-					else if (str == L"slateBlue") { RGB = 0x6A5AEB; bSet = true; break; } // (Slate Blue Preset Color)		Specifies a color with RGB value (106,90,205)
-					else if (str == L"slateGray") { RGB = 0x708090; bSet = true; break; } // (Slate Gray Preset Color)		Specifies a color with RGB value (112,128,144)
-					else if (str == L"slateGrey") { RGB = 0x708090; bSet = true; break; } // (Slate Gray Preset Color)		Specifies a color with RGB value (112,128,144)
-					else if (str == L"snow") { RGB = 0xFFFAFA; bSet = true; break; } // (Snow Preset Color)				Specifies a color with RGB value (255,250,250)
-					else if (str == L"springGreen") { RGB = 0x00FF7F; bSet = true; break; } // (Spring Green Preset Color)		Specifies a color with RGB value (0,255,127)
-					else if (str == L"steelBlue") { RGB = 0x4682B4; bSet = true; break; } // (Steel Blue Preset Color)		Specifies a color with RGB value (70,130,180)
-					break;
-				case 't':
-					if (str == L"tan") { RGB = 0xD2B48C; bSet = true; break; } // (Tan Preset Color)				Specifies a color with RGB value (210,180,140)
-					else if (str == L"teal") { RGB = 0x008080; bSet = true; break; } // (Teal Preset Color)				Specifies a color with RGB value (0,128,128)
-					else if (str == L"thistle") { RGB = 0xD8BFD8; bSet = true; break; } // (Thistle Preset Color)			Specifies a color with RGB value (216,191,216)
-					else if (str == L"tomato") { RGB = 0xFF7347; bSet = true; break; } // (Tomato Preset Color)			Specifies a color with RGB value (255,99,71)
-					else if (str == L"turquoise") { RGB = 0x40E0D0; bSet = true; break; } // (Turquoise Preset Color)		Specifies a color with RGB value (64,224,208)
-					break;
-				case 'v':
-					if (str == L"violet") { RGB = 0xEE82EE; bSet = true; break; } // (Violet Preset Color)			Specifies a color with RGB value (238,130,238)
-					break;
-				case 'w':
-					if (str == L"wheat") { RGB = 0xF5DEB3; bSet = true; break; } // (Wheat Preset Color)			Specifies a color with RGB value (245,222,179)
-					else if (str == L"white") { RGB = 0xFFFFFF; bSet = true; break; } // (White Preset Color)			Specifies a color with RGB value (255,255,255)
-					else if (str == L"whiteSmoke") { RGB = 0xF5F5F5; bSet = true; break; } // (White Smoke Preset Color)		Specifies a color with RGB value (245,245,245)
-					else if (str == L"windowsText") { RGB = 0x000000; bSet = true; break; } // (White Smoke Preset Color)		Specifies a color with RGB value (245,245,245)
-					break;
-				case 'y':
-					if (str == L"yellow") { RGB = 0xFFFF00; bSet = true; break; } // (Yellow Preset Color)			Specifies a color with RGB value (255,255,0)
-					else if (str == L"yellowGreen") { RGB = 0x9ACD32; bSet = true; break; } // (Yellow Green Preset Color)		Specifies a color with RGB value (154,205,50)
-					break;
-				}
-			}
-			if (bSet)
-			{
-				color.R = (BYTE)(RGB >> 16);
-				color.G = (BYTE)(RGB >> 8);
-				color.B = (BYTE)(RGB);
-				color.A = 0;
-			}
+		}
+		if (bSet)
+		{
+			color.R = (BYTE)(RGB >> 16);
+			color.G = (BYTE)(RGB >> 8);
+			color.B = (BYTE)(RGB);
+			color.A = 0;
 		}
 		return bSet;
 	}
@@ -2107,8 +2109,12 @@ bool CDrawingConverter::ParceObject(const std::wstring& strXml, std::wstring** p
 							pOle = NULL;								
 						}
 					}
+					//std::wstring test;
 					if (pElem)
+					{
 						m_pBinaryWriter->WriteRecord1(1, *pElem);
+						//test = pElem->toXML();
+					}
 
 					RELEASEOBJECT(pElem)
 					RELEASEOBJECT(pOle)
@@ -2344,7 +2350,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 			}
 			else
 			{
-				pPPTShape->SetAdjustment(0, value.GetValue() / 10.);
+				if (value.GetValue() < 1)
+					pPPTShape->SetAdjustment(0, value.GetValue() * 10000);
+				else
+					pPPTShape->SetAdjustment(0, value.GetValue() / 10.);
 			}
 		}
 		pPPTShape->ReCalculate();
@@ -2554,7 +2563,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 	if (pPPTShape != NULL)
 	{	
 		if (!bSetShape)
+		{
 			oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
+			bSetShape = true;
+		}
 		if (bIsNeedCoordSizes)
 		{
 			LoadCoordSize(oNodeShape, oShapeElem.m_pShape);
@@ -3016,13 +3028,13 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		}
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
-
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
+		CheckEffectShape(elem, oNodeShape, pPPTShape);
 
 ////test
-		NSBinPptxRW::CXmlWriter oXml;
-		elem->toXmlWriter(&oXml);
-		std::wstring test = oXml.GetXmlString();
+		//NSBinPptxRW::CXmlWriter oXml;
+		//elem->toXmlWriter(&oXml);
+		//std::wstring test = oXml.GetXmlString();
 
 		
 	}
@@ -4839,6 +4851,89 @@ void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wst
 		**pMainProps = strMainProps;
 	}
 }
+void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
+{
+	if (!oElem) return;
+
+	PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
+
+	PPTX::Logic::SpPr* pSpPr = NULL;
+
+	if (pShape)		pSpPr = &pShape->spPr;
+	if (pPicture)	pSpPr = &pPicture->spPr;
+
+	if (!pSpPr) return;
+
+	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");
+	SimpleTypes::CTrueFalse bShadowEnabled = SimpleTypes::booleanTrue;
+
+	if (oNodeShadow.IsValid())
+	{
+		XmlMacroReadAttributeBase(oNodeShadow, L"on", bShadowEnabled);
+	}
+	if (bShadowEnabled.GetBool())
+	{
+		nullable<SimpleTypes::CColorType> oColor;
+		nullable<SimpleTypes::CColorType> oColor2;
+		nullable_string											oId;
+		nullable<SimpleTypes::Vml::CVml_Matrix>					oMatrix;
+		SimpleTypes::CTrueFalse									oObscured;
+		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset;
+		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset2;
+		nullable<SimpleTypes::Vml::CVml_1_65536>				oOpacity;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>	oOrigin;
+		SimpleTypes::CShadowType								oType;
+
+		XmlMacroReadAttributeBase(oNodeShadow, L"id", oId);
+		XmlMacroReadAttributeBase(oNodeShadow, L"type", oType);
+		XmlMacroReadAttributeBase(oNodeShadow, L"color", oColor);
+		XmlMacroReadAttributeBase(oNodeShadow, L"opacity", oOpacity);
+		XmlMacroReadAttributeBase(oNodeShadow, L"offset", oOffset);
+		XmlMacroReadAttributeBase(oNodeShadow, L"origin", oOrigin);
+		XmlMacroReadAttributeBase(oNodeShadow, L"obscured", oObscured);
+		XmlMacroReadAttributeBase(oNodeShadow, L"color2", oColor2);
+		XmlMacroReadAttributeBase(oNodeShadow, L"offset2", oOffset2);
+		XmlMacroReadAttributeBase(oNodeShadow, L"matrix", oMatrix);
+
+		if (false == pSpPr->EffectList.is_init())
+			pSpPr->EffectList.List = new PPTX::Logic::EffectLst();
+
+		PPTX::Logic::EffectLst* pEffectLst = dynamic_cast<PPTX::Logic::EffectLst*>(pSpPr->EffectList.List.GetPointer());
+
+		pEffectLst->outerShdw.Init();
+
+		pEffectLst->outerShdw->Color.Color = new PPTX::Logic::SrgbClr();
+
+		if (oColor.IsInit())
+			pEffectLst->outerShdw->Color.Color->SetRGB(oColor->Get_R(), oColor->Get_G(), oColor->Get_B());
+		else
+			pEffectLst->outerShdw->Color.Color->SetRGB(0x80, 0x80, 0x80);
+
+		if (oOpacity.is_init())
+		{
+			BYTE lAlpha = oOpacity->GetValue() * 255;
+
+			PPTX::Logic::ColorModifier oMod;
+			oMod.name = L"alpha";
+			int nA = (int)(lAlpha * 100000.0 / 255.0);
+			oMod.val = nA;
+			pEffectLst->outerShdw->Color.Color->Modifiers.push_back(oMod);
+		}
+		double offsetX = oOffset.IsXinPoints() ? oOffset.GetX() : 0;
+		double offsetY = oOffset.IsYinPoints() ? oOffset.GetY() : 0;
+
+		double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
+		double dir = (offsetX != 0) ? atan(offsetY / offsetX) * 180. / 3.1415926 : 0;
+		if (offsetX < 0) dir += 180;
+		if (dir < 0) dir += 360;
+
+		pEffectLst->outerShdw->dist = dist * (635 * 20);
+		pEffectLst->outerShdw->dir = (int)(dir * 60000);
+		pEffectLst->outerShdw->rotWithShape = false;
+	}
+
+}
 void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
 {
 	if (!oElem) return;
@@ -5094,10 +5189,15 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 		}
 
 		nullable_string sRid;
-		XmlMacroReadAttributeBase(oNodeFill, L"r:id", sRid);
+		XmlMacroReadAttributeBase(oNodeFill, L"o:relid", sRid);
+
 		if (false == sRid.IsInit())
 		{
 			XmlMacroReadAttributeBase(oNodeFill, L"relationships:id", sRid);
+		}
+		if (false == sRid.IsInit())
+		{
+			XmlMacroReadAttributeBase(oNodeFill, L"o:relid", sRid);
 		}
 		if (sRid.is_init())
 		{
@@ -5339,7 +5439,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils
 			nullable_string sPictId;
 			XmlMacroReadAttributeBase(oNodeFillID, L"r:pict", sPictId);
 
-			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init() || oElem->m_binaryData.IsInit() || sTitle.IsInit())
+			if (sRid.is_init() || sRelid.is_init() || sPictId.is_init() || oElem->m_binaryData.IsInit() || (sTitle.IsInit() && !sTitle->empty()))
 			{
 				nullable_string sType;
 				XmlMacroReadAttributeBase(oNodeFillID, L"type", sType);
@@ -6143,7 +6243,8 @@ std::wstring CDrawingConverter::SaveObjectBackground(LONG lStart, LONG lLength)
 		oXmlWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap);
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oShape.toXmlWriterVMLBackground(&oXmlWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 	--m_nCurrentIndexObject;
 
@@ -6171,7 +6272,8 @@ void CDrawingConverter::ConvertShapeVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе
 		
 		PPTX::Logic::Shape& oShape = oElem.as<PPTX::Logic::Shape>();
-		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, false, bSignature);
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oShape.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels, false, bSignature);
 	}
 }
 
@@ -6184,7 +6286,8 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oWriter.m_bIsTop = true; // не забыть скинуть в самом шейпе (вместе с остальными параметрами)
 		
 		PPTX::Logic::SpTree& oGroup = oElem.as<PPTX::Logic::SpTree>();
-		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap);
+		smart_ptr<OOX::IFileContainer> rels = GetRels();
+		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 }
 void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape)
@@ -6212,49 +6315,83 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 
 				//todooo oCSSParser->pPr
 
-                std::vector<XmlUtils::CXmlNode> nodesDiv = node.GetNodes(L"*");
-				for (size_t j = 0 ; j < nodesDiv.size(); j++)
+                std::vector<XmlUtils::CXmlNode> nodesDiv1 = node.GetNodes(L"*");
+				for (auto node1 : nodesDiv1)
 				{
-					XmlUtils::CXmlNode node1 = nodesDiv[j];
 					if (node1.IsValid())
 					{
+						PPTX::Logic::Run* run = new PPTX::Logic::Run();
+						
 						name = node1.GetName();
                         if (name == L"font")
 						{
-							PPTX::Logic::Run  *run = new PPTX::Logic::Run();
-							
-							run->SetText(node1.GetText());
-							
+							run->rPr = new PPTX::Logic::RunProperties();
+
+							std::wstring text = node1.GetText();
+
+							if (true == text.empty())
+							{
+								std::vector<XmlUtils::CXmlNode> nodesDiv2 = node1.GetNodes(L"*");
+								for (auto node2 : nodesDiv2)
+								{
+									name = node2.GetName();
+									std::wstring text2 = node2.GetText();
+
+									if (name == L"b") 
+										run->rPr->b = true;
+									else if (name == L"i")
+										run->rPr->i = true;
+
+									if (false == text2.empty())
+									{
+										text += text2;
+									}
+
+									std::vector<XmlUtils::CXmlNode> nodesDiv3 = node2.GetNodes(L"*");
+									for (auto node3 : nodesDiv3)
+									{
+										name = node3.GetName();
+
+										if (name == L"b") 
+											run->rPr->b = true;
+										else if (name == L"i")
+											run->rPr->i = true;
+
+										text += node3.GetText();
+									}
+								}
+							}
+							run->SetText(text);
+
 							std::vector<std::wstring > attNames, attValues;
                             node1.GetAllAttributes(attNames,attValues);
 
 							if (attNames.size() > 0)
 							{
-								run->rPr = new PPTX::Logic::RunProperties();							
-									
 								for (size_t r = 0; r < attNames.size(); r++)
 								{
-                                    if (attNames[r] == L"color" && attValues[r].length() == 7)
+									if (attNames[r] == L"color" && attValues[r].length() == 7)
 									{
-                                        XmlUtils::replace_all(attValues[r], L"#", L"");
+										XmlUtils::replace_all(attValues[r], L"#", L"");
 
-                                        PPTX::Logic::SolidFill	*fill	= new PPTX::Logic::SolidFill();
-										PPTX::Logic::SrgbClr	*color	= new PPTX::Logic::SrgbClr();
-										
+										PPTX::Logic::SolidFill* fill = new PPTX::Logic::SolidFill();
+										PPTX::Logic::SrgbClr* color = new PPTX::Logic::SrgbClr();
+
 										color->SetHexString(attValues[r]);
 										fill->Color.Color = color;
-										
+
 										run->rPr->Fill.Fill = fill;
 										run->rPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
 									}
-                                    else if (attNames[r] == L"size")
+									else if (attNames[r] == L"size")
 									{
-                                        run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
+										run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
 									}
-                                    else if (attNames[r] == L"face")
-									{	
+									else if (attNames[r] == L"face")
+									{
 										run->rPr->latin = new PPTX::Logic::TextFont();
 										run->rPr->latin->typeface = attValues[r];
+										run->rPr->latin->m_name = L"a:latin";
 									}
 								}
 							}

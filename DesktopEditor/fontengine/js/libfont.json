@@ -83,6 +83,7 @@
 		"./../../graphics/pro/js/wasm/src/lib",
 
 		"./../../../Common/3dParty/harfbuzz/harfbuzz/src",
+		"./../../../Common/3dParty/brotli/brotli/c/include",
 		
 		"./../../../OfficeUtils/src",
 		"./../../../OfficeUtils/src/zlib-1.2.11",
@@ -112,6 +113,8 @@
 		"NO_CONSOLE_IO",
 		"BUILD_ZLIB_AS_SOURCES",
 		"IMAGE_CHECKER_DISABLE_XML",
+
+		"FT_CONFIG_OPTION_USE_BROTLI",
 
 		"BUILDING_WASM_MODULE"
 	],
@@ -349,6 +352,26 @@
 	{
 		"folder": "./../../../Common/3dParty/hyphen/js/src",
 		"files": ["hyphen.cpp"]
+	},
+	{
+		"folder": "./../../../Common/3dParty/brotli/brotli/c/common",
+		"files": [
+			"constants.c",
+			"context.c",
+			"dictionary.c",
+			"platform.c",
+			"shared_dictionary.c",
+			"transform.c"
+		]
+	},
+	{
+		"folder": "./../../../Common/3dParty/brotli/brotli/c/dec",
+		"files": [
+			"bit_reader.c",
+			"decode.c",
+			"huffman.c",
+			"state.c"
+		]
 	}
 	]
 }

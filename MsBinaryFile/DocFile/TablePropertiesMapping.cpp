@@ -328,9 +328,6 @@ namespace DocFileFormat
 
 		if (tblIndent)
 		{
-			if (gabHalf)
-				tblIndent = *tblIndent + *gabHalf;
-
 			XMLTools::XMLElement tblInd(L"w:tblInd");
 
 			XMLTools::XMLAttribute tblIndW(L"w:w", FormatUtils::IntToWideString(*tblIndent));

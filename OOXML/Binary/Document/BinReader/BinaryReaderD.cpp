@@ -2246,7 +2246,7 @@ int Binary_tblPrReader::Read_tblPr(BYTE type, long length, void* poResult)
 	{
         std::wstring Name(m_oBufferedStream.GetString3(length));
 		Name = XmlUtils::EncodeXmlString(Name);
-        pWiterTblPr->Props += L"<w:tblStyle w:val=\"" + Name + L"\"/>";
+        pWiterTblPr->Style = L"<w:tblStyle w:val=\"" + Name + L"\"/>";
 	}
 	else if ( c_oSerProp_tblPrType::Look == type )
 	{

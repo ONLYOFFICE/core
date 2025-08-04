@@ -53,7 +53,7 @@ public:
 	const size_t getParametersNum() const;
 
 private:
-	size_t num_parameters; // used to transfer the value to PtgFuncVar
+	size_t num_parameters = 0; // used to transfer the value to PtgFuncVar
 };
 
 typedef boost::shared_ptr<PtgParen> PtgParenPtr;

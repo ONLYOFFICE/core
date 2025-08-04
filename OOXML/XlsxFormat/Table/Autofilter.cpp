@@ -59,6 +59,9 @@
 #include "../../Common/SimpleTypes_Shared.h"
 #include "../../Common/SimpleTypes_Spreadsheet.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTDATA12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SortData.h"
 
 namespace OOX
 {
@@ -192,6 +195,29 @@ namespace OOX
                     writer->storeNextRecord(end);
                 }
             }
+			XLS::BiffStructurePtr CSortCondition::toXLS()
+			{
+				auto ptr = new XLS::SortCond12;
+				if(m_oDescending.IsInit())
+					ptr->fSortDes = m_oDescending->GetValue();
+				if(m_oRef.IsInit())
+					ptr->rfx = m_oRef->GetValue();
+				if(m_oSortBy.IsInit())
+				{
+					if(m_oSortBy->GetValue() == SimpleTypes::Spreadsheet::ESortBy::sortbyCellColor
+						|| m_oSortBy->GetValue() == SimpleTypes::Spreadsheet::ESortBy::sortbyFontColor)
+					{
+						ptr->sortOn = 1;
+						if(m_oDxfId.IsInit())
+							ptr->condDataValue.condDataValue = m_oDxfId->GetValue();
+					}
+					else if(m_oSortBy->GetValue() == SimpleTypes::Spreadsheet::ESortBy::sortbyIcon)
+					{
+						ptr->sortOn = 3;
+					}
+				}
+				return XLS::BiffStructurePtr(ptr);
+			}
 			EElementType CSortCondition::getType () const
 			{
 				return et_x_SortCondition;
@@ -402,6 +428,26 @@ namespace OOX
                     writer->storeNextRecord(end);
                 }
             }
+			void CSortState::toXLS(XLS::BaseObjectPtr sortPtr)
+			{
+				auto CastedPtr = static_cast<XLS::SORTANDFILTER*>(sortPtr.get());
+				auto sortadaPtr = new XLS::SORTDATA12;
+				auto ptr = new XLS::SortData;
+				sortadaPtr->m_SortData = XLS::BaseObjectPtr(ptr);
+				CastedPtr->m_SORTDATA12 = XLS::BaseObjectPtr(sortadaPtr);
+				if(m_oColumnSort.IsInit())
+					ptr->fCol = m_oColumnSort->GetValue();
+				if(m_oCaseSensitive.IsInit())
+					ptr->fCaseSensitive = m_oCaseSensitive->GetValue();
+				if(m_oSortMethod.IsInit() && m_oSortMethod->GetValue() != 1)
+					ptr->fAltMethod = true;
+
+				if(m_oRef.IsInit())
+					ptr->rfx = m_oRef->GetValue();
+				for(auto i : m_arrItems)
+					ptr->sortCond12Array.push_back(i->toXLS());
+
+			}
 			EElementType CSortState::getType () const
 			{
 				return et_x_SortState;

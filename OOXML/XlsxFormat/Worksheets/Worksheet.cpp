@@ -53,6 +53,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
 
 namespace OOX
 {
@@ -365,6 +366,13 @@ namespace OOX
 		{
 			auto worksheetPtr = new XLS::WorksheetSubstream(0);
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
+			if(m_oSortState.IsInit() || m_oAutofilter.IsInit())
+			{
+				auto sortData = new XLS::SORTANDFILTER;
+				worksheetPtr->m_SORTANDFILTER = XLS::BaseObjectPtr(sortData);
+				if(m_oSortState.IsInit())
+					m_oSortState->toXLS(worksheetPtr->m_SORTANDFILTER);
+			}
 			if(m_oDimension.IsInit())
 				worksheetPtr->m_Dimensions = m_oDimension->toXLS();
 			if(m_oCols.IsInit())

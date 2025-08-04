@@ -73,6 +73,16 @@ const bool SORTDATA12::saveContent(BinProcessor& proc)
     if(m_SortData == nullptr)
         return false;
     proc.mandatory(*m_SortData);
+	auto castedPtr = static_cast<SortData*>(m_SortData.get());
+	for(auto i : castedPtr->sortCond12Array)
+	{
+		CFRecord binDataRec(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+		i->save(binDataRec);
+		ContinueFrt12 tempRecord;
+		tempRecord.rgb.resize(binDataRec.getRdPtr());
+		memcpy(tempRecord.rgb.data(), binDataRec.getCurStaticData<char>(), binDataRec.getRdPtr());
+		proc.mandatory(tempRecord);
+	}
     return true;
 }
 

@@ -80,7 +80,6 @@ void RedactOutputDev::restoreState(GfxState *pGState)
 //----- update graphics state
 void RedactOutputDev::updateAll(GfxState *pGState)
 {
-
 }
 void RedactOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 {
@@ -126,51 +125,126 @@ void RedactOutputDev::updateLineWidth(GfxState *pGState)
 {
 	m_pPage->SetLineWidth(pGState->getLineWidth());
 }
-void RedactOutputDev::updateFillColorSpace(GfxState *state)
+void RedactOutputDev::updateFillColorSpace(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateStrokeColorSpace(GfxState *state)
+void RedactOutputDev::updateStrokeColorSpace(GfxState *pGState)
 {
 
 }
 void RedactOutputDev::updateFillColor(GfxState *pGState)
 {
-
+	GfxColorSpace* pColorSpace = pGState->getFillColorSpace();
+	GfxColorSpaceMode eMode = pColorSpace->getMode();
+	GfxColor* pColor = pGState->getFillColor();
+	switch (eMode) {
+	case csDeviceGray:
+	{
+		m_pPage->SetFillG(colToDbl(pColor->c[0]));
+		break;
+	}
+	case csDeviceRGB:
+	{
+		m_pPage->SetFillRGB(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		break;
+	}
+	case csDeviceCMYK:
+	{
+		m_pPage->SetFillCMYK(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		break;
+	}
+	default:
+		break;
+	}
 }
 void RedactOutputDev::updateStrokeColor(GfxState *pGState)
 {
-
+	GfxColorSpace* pColorSpace = pGState->getStrokeColorSpace();
+	GfxColorSpaceMode eMode = pColorSpace->getMode();
+	GfxColor* pColor = pGState->getStrokeColor();
+	switch (eMode) {
+	case csDeviceGray:
+	{
+		m_pPage->SetStrokeG(colToDbl(pColor->c[0]));
+		break;
+	}
+	case csDeviceRGB:
+	{
+		m_pPage->SetStrokeRGB(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		break;
+	}
+	case csDeviceCMYK:
+	{
+		m_pPage->SetStrokeCMYK(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		break;
+	}
+	default:
+		break;
+	}
 }
-void RedactOutputDev::updateBlendMode(GfxState *pGState)
+void RedactOutputDev::updateRenderingIntent(GfxState *pGState)
+{
+	GfxRenderingIntent eRI = pGState->getRenderingIntent();
+	switch (eRI)
+	{
+	case GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric:
+		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_AbsoluteColorimetric);
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentRelativeColorimetric:
+		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_RelativeColorimetric);
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentSaturation:
+		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Saturation);
+		break;
+	case GfxRenderingIntent::gfxRenderingIntentPerceptual:
+	default:
+		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Perceptual);
+		break;
+	}
+}
+//----- update text state
+void RedactOutputDev::updateFont(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateFillOpacity(GfxState *pGState)
+void RedactOutputDev::updateTextMat(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateStrokeOpacity(GfxState *pGState)
+void RedactOutputDev::updateCharSpace(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateFillOverprint(GfxState *state)
+void RedactOutputDev::updateRender(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateStrokeOverprint(GfxState *state)
+void RedactOutputDev::updateRise(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateOverprintMode(GfxState *state)
+void RedactOutputDev::updateWordSpace(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateRenderingIntent(GfxState *state)
+void RedactOutputDev::updateHorizScaling(GfxState *pGState)
 {
 
 }
-void RedactOutputDev::updateTransfer(GfxState *state)
+void RedactOutputDev::updateTextPos(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
+{
+
+}
+void RedactOutputDev::saveTextPos(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::restoreTextPos(GfxState *pGState)
 {
 
 }

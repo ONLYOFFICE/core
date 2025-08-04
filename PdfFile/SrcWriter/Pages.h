@@ -142,7 +142,13 @@ namespace PdfWriter
 		void      GrSave();
 		void      GrRestore();
 		void      SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB);
+		void      SetStrokeG(double dG);
+		void      SetStrokeRGB(double dR, double dG, double dB);
+		void      SetStrokeCMYK(double dC, double dM, double dY, double dK);
 		void      SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB);
+		void      SetFillG(double dG);
+		void      SetFillRGB(double dR, double dG, double dB);
+		void      SetFillCMYK(double dC, double dM, double dY, double dK);
 		void      Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
@@ -155,6 +161,7 @@ namespace PdfWriter
 		void      BeginMarkedContent(const std::string& sName);
 		void      BeginMarkedContentDict(const std::string& sName, CDictObject* pBDC);
 		void      EndMarkedContent();
+		void      SetRenderingIntent(ERenderingIntent eRenderingIntent);
 
 		void      BeginText();
 		void      EndText();

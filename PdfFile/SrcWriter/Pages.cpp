@@ -58,6 +58,13 @@
 namespace PdfWriter
 {
 	static const double c_dKappa = 0.552;
+	const static char* c_sRenderingIntent[] =
+	{
+		"AbsoluteColorimetric",
+		"RelativeColorimetric",
+		"Saturation",
+		"Perceptual"
+	};
 	static void QuarterEllipseA(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
 	{
 		pStream->WriteReal(dX - dXRad);
@@ -1014,12 +1021,7 @@ namespace PdfWriter
 		double dG = unG / 255.0;
 		double dB = unB / 255.0;
 
-		m_pStream->WriteReal(dR);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dG);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dB);
-		m_pStream->WriteStr(" RG\012");
+		SetStrokeRGB(dR, dG, dB);
 
 		m_pGrState->m_oStrokeColor.r = dR;
 		m_pGrState->m_oStrokeColor.g = dG;
@@ -1035,18 +1037,81 @@ namespace PdfWriter
 		double dG = unG / 255.0;
 		double dB = unB / 255.0;
 
+		SetFillRGB(dR, dG, dB);
+
+		m_pGrState->m_oFillColor.r = dR;
+		m_pGrState->m_oFillColor.g = dG;
+		m_pGrState->m_oFillColor.b = dB;
+	}
+	void CPage::SetStrokeG(double dG)
+	{
+		// Operator   : G
+		// Description: Заливка в DeviceG
+
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteStr(" G\012");
+	}
+	void CPage::SetStrokeRGB(double dR, double dG, double dB)
+	{
+		// Operator   : RG
+		// Description: Обводка в DeviceRGB
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" RG\012");
+	}
+	void CPage::SetStrokeCMYK(double dC, double dM, double dY, double dK)
+	{
+		// Operator   : K
+		// Description: Обводка в DeviceCMYK
+
+		m_pStream->WriteReal(dC);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dK);
+		m_pStream->WriteStr(" K\012");
+	}
+	void CPage::SetFillG(double dG)
+	{
+		// Operator   : g
+		// Description: Заливка в DeviceG
+
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteStr(" g\012");
+	}
+	void CPage::SetFillRGB(double dR, double dG, double dB)
+	{
+		// Operator   : rg
+		// Description: Заливка в DeviceRGB
+
 		m_pStream->WriteReal(dR);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dG);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dB);
 		m_pStream->WriteStr(" rg\012");
-
-		m_pGrState->m_oFillColor.r = dR;
-		m_pGrState->m_oFillColor.g = dG;
-		m_pGrState->m_oFillColor.b = dB;
 	}
-    void CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	void CPage::SetFillCMYK(double dC, double dM, double dY, double dK)
+	{
+		// Operator   : k
+		// Description: Заливка в DeviceCMYK
+
+		m_pStream->WriteReal(dC);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dK);
+		m_pStream->WriteStr(" k\012");
+	}
+	void CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
 	{
 		// Operator   : cm
 		// Description: меняем матрицу преобразований (CTM - Current Transformation Matrix)
@@ -1593,6 +1658,15 @@ namespace PdfWriter
 		// Description: Конец маркированного контента
 
 		m_pStream->WriteStr("EMC\012");
+	}
+	void CPage::SetRenderingIntent(ERenderingIntent eRenderingIntent)
+	{
+		// Operator   : ri
+		// Description: Способы рендеринга/цветопередачи
+
+		m_pStream->WriteStr("ri ");
+		m_pStream->WriteEscapeName(c_sRenderingIntent[(int)eRenderingIntent]);
+		m_pStream->WriteStr("\012");
 	}
 
 	CFakePage::CFakePage(int nOriginIndex) : m_nOriginIndex(nOriginIndex)

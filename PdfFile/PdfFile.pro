@@ -57,15 +57,13 @@ SOURCES -= \
     lib/xpdf/pdfinfo.cc
 
 SOURCES += \
-    SrcReader/RendererOutputDev.cpp \
-    SrcReader/RedactOutputDev.cpp \
+	SrcReader/RendererOutputDev.cpp \
     SrcReader/Adaptors.cpp \
     SrcReader/PdfAnnot.cpp \
     SrcReader/GfxClip.cpp
 
 HEADERS += \
-    SrcReader/RendererOutputDev.h \
-    SrcReader/RedactOutputDev.h \
+	SrcReader/RendererOutputDev.h \
     SrcReader/Adaptors.h \
     SrcReader/MemoryUtils.h \
     SrcReader/PdfAnnot.h \
@@ -163,7 +161,8 @@ HEADERS += \
     SrcWriter/Utils.h \
     SrcWriter/Metadata.h \
     SrcWriter/ICCProfile.h \
-    SrcWriter/States.h
+	SrcWriter/States.h \
+	SrcWriter/RedactOutputDev.h
 
 SOURCES += \
     SrcWriter/AcroForm.cpp \
@@ -192,7 +191,8 @@ SOURCES += \
     SrcWriter/Streams.cpp \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
-    SrcWriter/States.cpp
+	SrcWriter/States.cpp \
+	SrcWriter/RedactOutputDev.cpp
 
 # PdfFile
 

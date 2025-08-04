@@ -457,6 +457,13 @@ namespace PdfWriter
 		fontCIDType2,
 		fontCIDType2OT
 	};
+	enum class ERenderingIntent
+	{
+		RenderingIntent_AbsoluteColorimetric,
+		RenderingIntent_RelativeColorimetric,
+		RenderingIntent_Saturation,
+		RenderingIntent_Perceptual
+	};
 }
 
 #endif // _PDF_WRITER_SRC_TYPES_H

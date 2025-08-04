@@ -50,6 +50,7 @@
 #include "SrcWriter/Streams.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Outline.h"
+#include "SrcWriter/RedactOutputDev.h"
 
 #define AddToObject(oVal)\
 {\
@@ -212,6 +213,8 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType->isName("Stamp"))
 		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+	else if (oType->isName("Redact"))
+		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType->isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType->isName("Widget"))
@@ -2826,6 +2829,8 @@ bool CPdfEditor::EditAnnot(int _nPageIndex, int nID)
 		pAnnot = new PdfWriter::CCaretAnnotation(pXref);
 	else if (oType.isName("Stamp"))
 		pAnnot = new PdfWriter::CStampAnnotation(pXref);
+	else if (oType.isName("Redact"))
+		pAnnot = new PdfWriter::CRedactAnnotation(pXref);
 	else if (oType.isName("Popup"))
 		pAnnot = new PdfWriter::CPopupAnnotation(pXref);
 	else if (oType.isName("Widget"))
@@ -3503,5 +3508,23 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 }
 void CPdfEditor::Redact(CRedact* pCommand)
 {
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	int nOriginIndex = m_nEditPage;
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
+		PdfWriter::CFakePage* pFakePage = NULL;
+		if (pObj)
+			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
+		if (pFakePage)
+			nOriginIndex = pFakePage->GetOriginIndex();
+	}
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return;
 
+	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
 }

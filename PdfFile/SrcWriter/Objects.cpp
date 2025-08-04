@@ -52,7 +52,7 @@
 	if (pObject && !pObject->IsIndirect())\
 		delete pObject;\
 
-static const BYTE UNICODE_HEADER[] ={ 0xFE, 0xFF };
+static const BYTE UNICODE_HEADER[] = { 0xFE, 0xFF };
 
 namespace PdfWriter
 {

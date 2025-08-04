@@ -29,8 +29,8 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#ifndef _PDF_READER_REDACT_OUTPUTDEV_H
-#define _PDF_READER_REDACT_OUTPUTDEV_H
+#ifndef _PDF_WRITER_SRC_REDACT_OUTPUTDEV_H
+#define _PDF_WRITER_SRC_REDACT_OUTPUTDEV_H
 
 #include "../PdfWriter.h"
 //#include "../../DesktopEditor/graphics/IRenderer.h"
@@ -95,30 +95,30 @@ namespace PdfWriter
 		virtual void updateMiterLimit(GfxState *pGState) override;
 		virtual void updateLineWidth(GfxState *pGState) override;
 		// updateStrokeAdjust -> setExtGState
-		virtual void updateFillColorSpace(GfxState *state) override;
-		virtual void updateStrokeColorSpace(GfxState *state) override;
+		virtual void updateFillColorSpace(GfxState *pGState) override;
+		virtual void updateStrokeColorSpace(GfxState *pGState) override;
 		virtual void updateFillColor(GfxState *pGState) override;
 		virtual void updateStrokeColor(GfxState *pGState) override;
-		virtual void updateBlendMode(GfxState *pGState) override;
-		virtual void updateFillOpacity(GfxState *pGState) override;
-		virtual void updateStrokeOpacity(GfxState *pGState) override;
-		virtual void updateFillOverprint(GfxState *state) override;
-		virtual void updateStrokeOverprint(GfxState *state) override;
-		virtual void updateOverprintMode(GfxState *state) override;
-		virtual void updateRenderingIntent(GfxState *state) override;
-		virtual void updateTransfer(GfxState *state) override;
+		// updateBlendMode -> setExtGState
+		// updateFillOpacity -> setExtGState
+		// updateStrokeOpacity -> setExtGState
+		// updateFillOverprint -> setExtGState
+		// updateStrokeOverprint -> setExtGState
+		// updateOverprintMode -> setExtGState
+		virtual void updateRenderingIntent(GfxState *pGState) override;
+		// updateTransfer -> setExtGState
 		//----- update text state
 		virtual void updateFont(GfxState *pGState) override;
-		virtual void updateTextMat(GfxState *state) override;
-		virtual void updateCharSpace(GfxState *state) override;
-		virtual void updateRender(GfxState *state) override;
-		virtual void updateRise(GfxState *state) override;
-		virtual void updateWordSpace(GfxState *state) override;
-		virtual void updateHorizScaling(GfxState *state) override;
-		virtual void updateTextPos(GfxState *state) override;
-		virtual void updateTextShift(GfxState *state, double shift) override;
-		virtual void saveTextPos(GfxState *state) override;
-		virtual void restoreTextPos(GfxState *state) override;
+		virtual void updateTextMat(GfxState *pGState) override;
+		virtual void updateCharSpace(GfxState *pGState) override;
+		virtual void updateRender(GfxState *pGState) override;
+		virtual void updateRise(GfxState *pGState) override;
+		virtual void updateWordSpace(GfxState *pGState) override;
+		virtual void updateHorizScaling(GfxState *pGState) override;
+		virtual void updateTextPos(GfxState *pGState) override;
+		virtual void updateTextShift(GfxState *pGState, double shift) override;
+		virtual void saveTextPos(GfxState *pGState) override;
+		virtual void restoreTextPos(GfxState *pGState) override;
 		//----- path painting
 		virtual void stroke(GfxState *pGState) override;
 		virtual void fill(GfxState *pGState) override;
@@ -132,19 +132,19 @@ namespace PdfWriter
 		//----- text drawing
 		virtual void beginStringOp(GfxState *pGState) override;
 		virtual void endStringOp(GfxState *pGState) override;
-		virtual void beginString(GfxState *state, GString *s) override;
-		virtual void endString(GfxState *state) override;
+		virtual void beginString(GfxState *pGState, GString *s) override;
+		virtual void endString(GfxState *pGState) override;
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen) override;
 		virtual void drawString(GfxState *pGState, GString *seString) override;
-		virtual GBool beginType3Char(GfxState *state, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
+		virtual GBool beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
 		virtual void endType3Char(GfxState *pGState) override;
 		virtual void endTextObject(GfxState *pGState) override;
 		virtual void beginActualText(GfxState *state, Unicode *u, int uLen) override;
 		virtual void endActualText(GfxState *state) override;
 		//----- additional
-		virtual GBool beginMarkedContent(GfxState *state, GString *s) override;
-		virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) override;
-		virtual void endMarkedContent(GfxState *state) override;
+		virtual GBool beginMarkedContent(GfxState *pGState, GString *s) override;
+		virtual GBool beginMCOShapes(GfxState *pGState, GString *s, Object *ref) override;
+		virtual void endMarkedContent(GfxState *pGState) override;
 		virtual GBool useExtGState() override;
 		virtual void setExtGState(Object* pDict) override;
 		//----- image drawing
@@ -156,8 +156,8 @@ namespace PdfWriter
 		virtual void drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
 										 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate) override;
 		//----- Type 3 font operators
-		virtual void type3D0(GfxState *state, double wx, double wy) override;
-		virtual void type3D1(GfxState *state, double wx, double wy, double llx, double lly, double urx, double ury) override;
+		virtual void type3D0(GfxState *pGState, double wx, double wy) override;
+		virtual void type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury) override;
 		//----- form XObjects
 		virtual void drawForm(Ref id) override;
 		//----- transparency groups and soft masks
@@ -166,7 +166,6 @@ namespace PdfWriter
 		virtual void paintTransparencyGroup(GfxState *pGState, double *pBBox) override;
 		virtual void setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor) override;
 		virtual void clearSoftMask(GfxState *pGState) override;
-		//----- Дополнительные функции для данного устройства
 
 	private:
 		CPdfWriter* m_pRenderer;
@@ -176,4 +175,4 @@ namespace PdfWriter
 	};
 }
 
-#endif // _PDF_READER_REDACT_OUTPUTDEV_H
+#endif // _PDF_WRITER_SRC_REDACT_OUTPUTDEV_H

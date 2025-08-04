@@ -637,7 +637,12 @@ public:
 	CRedact();
 	virtual ~CRedact();
 
+	const std::vector<double>& GetQuadPoints();
+
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
+
+private:
+	std::vector<double> m_arrQuadPoints;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

@@ -1853,6 +1853,16 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles(const bool& bIsUs
 #if defined(_MAC) && !defined(_IOS)
 	std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/Library/Fonts", true);
 	NSDirectory::GetFiles2(L"/System/Library/Fonts", _array, true);
+
+	std::set<std::wstring> installedList = GetInstalledFontsMac();
+	for (const auto& sysPath : installedList) {
+		if (0 == sysPath.find(L"/System/Library/Fonts/"))
+			continue;
+		if (0 == sysPath.find(L"/Library/Fonts/"))
+			continue;
+		_array.push_back(sysPath);
+	}
+
 	return _array;
 #endif
 

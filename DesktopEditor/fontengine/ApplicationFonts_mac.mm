@@ -29,34 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "ApplicationFonts.h"
+#include "../common/File.h"
+#import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
-#include <iosfwd>
-#include <string>
+std::set<std::wstring> CApplicationFonts::GetInstalledFontsMac()
+{
+	std::set<std::wstring> paths;
 
-#include "../../Common/CPScopedPtr.h"
+	CFArrayRef fontURLs = CTFontManagerCopyAvailableFontURLs();
+	if (!fontURLs)
+		return paths;
 
-namespace cpdoccore {
-namespace oox {
+	NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding (kCFStringEncodingUTF32LE);
 
-    class xlsx_defined_names
-    {
-    public:
-        xlsx_defined_names();
-        ~xlsx_defined_names();
+	CFIndex count = CFArrayGetCount(fontURLs);
+	for (CFIndex i = 0; i < count; ++i)
+	{
+		CFURLRef url = (CFURLRef)CFArrayGetValueAtIndex(fontURLs, i);
+		if (!url)
+			continue;
 
-        void add(std::wstring const & name, std::wstring const & ref, bool formula, int tableId);
-        void add(std::wstring const& name, std::wstring const& oox_ref, int tableId);
+		NSString* nsPath = [(__bridge NSURL *)url path];
+		if (!nsPath)
+			continue;
 
-        void xlsx_serialize(std::wostream & _Wostream);
+		NSData* pSData = [nsPath dataUsingEncoding: encode];
+		paths.emplace(std::wstring((wchar_t*)[pSData bytes], [pSData length] / sizeof (wchar_t)));
+	}
 
-    private:
-        class Impl;
-        _CP_SCOPED_PTR(Impl) impl_;
-
-
-    };
-
-
-}
+	CFRelease(fontURLs);
+	return paths;
 }

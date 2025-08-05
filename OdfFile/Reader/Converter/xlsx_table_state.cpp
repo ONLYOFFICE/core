@@ -218,10 +218,22 @@ xlsx_table_state::xlsx_table_state(xlsx_conversion_context * Context, std::wstri
 	}
 }
     
-void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName)
+void xlsx_table_state::start_column(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader)
 {
     for (unsigned int i = 0; i < repeated; ++i)
         column_default_cell_style_name_.push_back(defaultCellStyleName);
+	
+	if (bHeader)
+	{
+		if ((false == columnsHeaders_.empty()) && (columnsHeaders_.back().first + columnsHeaders_.back().second == columns_count_))
+		{
+			columnsHeaders_.back().second += repeated;
+		}
+		else
+		{
+			columnsHeaders_.push_back(std::make_pair(columns_count_, repeated));
+		}
+	}
 
     columns_count_ += repeated;
     columns_.push_back(repeated);
@@ -296,16 +308,41 @@ void xlsx_table_state::end_table_column_group()
 {
 	group_columns_.pop_back();
 }
-void xlsx_table_state::add_empty_row(int count)
+void xlsx_table_state::add_empty_row(int count, bool bHeader)
 {
+	if (bHeader)
+	{
+		if ((false == rowsHeaders_.empty()) && (rowsHeaders_.back().first + rowsHeaders_.back().second == current_table_row_))
+		{
+			rowsHeaders_.back().second += count;
+		}
+		else
+		{
+			rowsHeaders_.push_back(std::make_pair(current_table_row_ + 1, count));
+		}
+	}
 	current_table_row_ += count;
 }
-void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName)
+void xlsx_table_state::start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName, bool bHeader)
 {
     empty_row_ = true;
     // reset column num, column spanned style
-    current_table_column_ = -1; 
+
     current_table_row_++;
+	
+	if (bHeader)
+	{
+		if ((false == rowsHeaders_.empty()) && (rowsHeaders_.back().first + rowsHeaders_.back().second == current_table_row_))
+		{
+			rowsHeaders_.back().second += 1;
+		}
+		else
+		{
+			rowsHeaders_.push_back(std::make_pair(current_table_row_, 1));
+		}
+	}
+    
+	current_table_column_ = -1; 
     columns_spanned_style_ = L"";
     row_default_cell_style_name_ = defaultCellStyleName;
         
@@ -539,8 +576,8 @@ void xlsx_table_state::serialize_header_footer (std::wostream & strm)
 			{
 				CP_XML_ATTR(L"differentOddEven",  1);
 			}
-			if ((header_first && header_first->attlist_.style_display_ && !header_first->content_.empty()) ||
-				(footer_first && footer_first->attlist_.style_display_ && !footer_first->content_.empty()))
+			if ((header_first && header_first->attlist_.style_display_ /*&& !header_first->content_.empty()*/) ||
+				(footer_first && footer_first->attlist_.style_display_/* && !footer_first->content_.empty()*/))
 			{
 				CP_XML_ATTR(L"differentFirst",  1);
 			}

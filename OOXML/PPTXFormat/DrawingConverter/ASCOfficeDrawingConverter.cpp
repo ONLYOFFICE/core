@@ -2350,7 +2350,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 			}
 			else
 			{
-				pPPTShape->SetAdjustment(0, value.GetValue() / 10.);
+				if (value.GetValue() < 1)
+					pPPTShape->SetAdjustment(0, value.GetValue() * 10000);
+				else
+					pPPTShape->SetAdjustment(0, value.GetValue() / 10.);
 			}
 		}
 		pPPTShape->ReCalculate();
@@ -2560,7 +2563,10 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 	if (pPPTShape != NULL)
 	{	
 		if (!bSetShape)
+		{
 			oShapeElem.m_pShape->setBaseShape(CBaseShapePtr(pPPTShape));
+			bSetShape = true;
+		}
 		if (bIsNeedCoordSizes)
 		{
 			LoadCoordSize(oNodeShape, oShapeElem.m_pShape);
@@ -3022,13 +3028,13 @@ void CDrawingConverter::ConvertShape(PPTX::Logic::SpTreeElem *elem, XmlUtils::CX
 		}
 		
 		CheckBrushShape(elem, oNodeShape, pPPTShape);
-
 		CheckBorderShape(elem, oNodeShape, pPPTShape);
+		CheckEffectShape(elem, oNodeShape, pPPTShape);
 
 ////test
-		NSBinPptxRW::CXmlWriter oXml;
-		elem->toXmlWriter(&oXml);
-		std::wstring test = oXml.GetXmlString();
+		//NSBinPptxRW::CXmlWriter oXml;
+		//elem->toXmlWriter(&oXml);
+		//std::wstring test = oXml.GetXmlString();
 
 		
 	}
@@ -4844,6 +4850,89 @@ void CDrawingConverter::SendMainProps(const std::wstring& strMainProps, std::wst
 		*pMainProps = new std::wstring();
 		**pMainProps = strMainProps;
 	}
+}
+void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
+{
+	if (!oElem) return;
+
+	PPTX::Logic::Shape* pShape = dynamic_cast<PPTX::Logic::Shape*>	(oElem->GetElem().operator ->());
+	PPTX::Logic::Pic* pPicture = dynamic_cast<PPTX::Logic::Pic*>	(oElem->GetElem().operator ->());
+
+	PPTX::Logic::SpPr* pSpPr = NULL;
+
+	if (pShape)		pSpPr = &pShape->spPr;
+	if (pPicture)	pSpPr = &pPicture->spPr;
+
+	if (!pSpPr) return;
+
+	XmlUtils::CXmlNode oNodeShadow = oNode.ReadNode(L"v:shadow");
+	SimpleTypes::CTrueFalse bShadowEnabled = SimpleTypes::booleanFalse;
+
+	if (oNodeShadow.IsValid())
+	{
+		XmlMacroReadAttributeBase(oNodeShadow, L"on", bShadowEnabled);
+	}
+	if (bShadowEnabled.GetBool())
+	{
+		nullable<SimpleTypes::CColorType> oColor;
+		nullable<SimpleTypes::CColorType> oColor2;
+		nullable_string											oId;
+		nullable<SimpleTypes::Vml::CVml_Matrix>					oMatrix;
+		SimpleTypes::CTrueFalse									oObscured;
+		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset;
+		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset2;
+		nullable<SimpleTypes::Vml::CVml_1_65536>				oOpacity;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>	oOrigin;
+		SimpleTypes::CShadowType								oType;
+
+		XmlMacroReadAttributeBase(oNodeShadow, L"id", oId);
+		XmlMacroReadAttributeBase(oNodeShadow, L"type", oType);
+		XmlMacroReadAttributeBase(oNodeShadow, L"color", oColor);
+		XmlMacroReadAttributeBase(oNodeShadow, L"opacity", oOpacity);
+		XmlMacroReadAttributeBase(oNodeShadow, L"offset", oOffset);
+		XmlMacroReadAttributeBase(oNodeShadow, L"origin", oOrigin);
+		XmlMacroReadAttributeBase(oNodeShadow, L"obscured", oObscured);
+		XmlMacroReadAttributeBase(oNodeShadow, L"color2", oColor2);
+		XmlMacroReadAttributeBase(oNodeShadow, L"offset2", oOffset2);
+		XmlMacroReadAttributeBase(oNodeShadow, L"matrix", oMatrix);
+
+		if (false == pSpPr->EffectList.is_init())
+			pSpPr->EffectList.List = new PPTX::Logic::EffectLst();
+
+		PPTX::Logic::EffectLst* pEffectLst = dynamic_cast<PPTX::Logic::EffectLst*>(pSpPr->EffectList.List.GetPointer());
+
+		pEffectLst->outerShdw.Init();
+
+		pEffectLst->outerShdw->Color.Color = new PPTX::Logic::SrgbClr();
+
+		if (oColor.IsInit())
+			pEffectLst->outerShdw->Color.Color->SetRGB(oColor->Get_R(), oColor->Get_G(), oColor->Get_B());
+		else
+			pEffectLst->outerShdw->Color.Color->SetRGB(0x80, 0x80, 0x80);
+
+		if (oOpacity.is_init())
+		{
+			BYTE lAlpha = oOpacity->GetValue() * 255;
+
+			PPTX::Logic::ColorModifier oMod;
+			oMod.name = L"alpha";
+			int nA = (int)(lAlpha * 100000.0 / 255.0);
+			oMod.val = nA;
+			pEffectLst->outerShdw->Color.Color->Modifiers.push_back(oMod);
+		}
+		double offsetX = oOffset.IsXinPoints() ? oOffset.GetX() : 0;
+		double offsetY = oOffset.IsYinPoints() ? oOffset.GetY() : 0;
+
+		double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
+		double dir = (offsetX != 0) ? atan(offsetY / offsetX) * 180. / 3.1415926 : 0;
+		if (offsetX < 0) dir += 180;
+		if (dir < 0) dir += 360;
+
+		pEffectLst->outerShdw->dist = dist * (635 * 20);
+		pEffectLst->outerShdw->dir = (int)(dir * 60000);
+		pEffectLst->outerShdw->rotWithShape = false;
+	}
+
 }
 void CDrawingConverter::CheckBorderShape(PPTX::Logic::SpTreeElem* oElem, XmlUtils::CXmlNode& oNode, CPPTShape* pPPTShape)
 {

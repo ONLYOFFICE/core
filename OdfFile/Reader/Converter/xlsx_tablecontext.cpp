@@ -342,6 +342,20 @@ namespace oox {
 	{
 		xlsx_table_states_.back()->set_protection(val, key, algorithm);
 	}
+	void xlsx_table_context::set_print_area(const std::wstring& range)
+	{
+		formulasconvert::odf2oox_converter convert;
+		std::wstring oox_ref = convert.convert_named_ref(range, true, L" ", true);
+	
+		xlsx_conversion_context_->get_xlsx_defined_names().add(L"_xlnm.Print_Area", oox_ref, false, xlsx_table_states_.size() - 1);
+	}
+	void xlsx_table_context::set_print_titles(const std::wstring& range)
+	{
+		formulasconvert::odf2oox_converter convert;
+		std::wstring oox_ref = convert.convert_named_ref(range, true, L" ", true);
+
+		xlsx_conversion_context_->get_xlsx_defined_names().add(L"_xlnm.Print_Titles", oox_ref, false, xlsx_table_states_.size() - 1);
+	}
 	void xlsx_table_context::end_table()
 	{
 		xlsx_conversion_context_->get_dataValidations_context().clear();
@@ -386,9 +400,9 @@ namespace oox {
 		return state()->end_covered_cell();
 	}
 
-	void xlsx_table_context::start_column(unsigned int repeated, const std::wstring& defaultCellStyleName)
+	void xlsx_table_context::start_column(unsigned int repeated, const std::wstring& defaultCellStyleName, bool bHeader)
 	{
-		return state()->start_column(repeated, defaultCellStyleName);
+		return state()->start_column(repeated, defaultCellStyleName, bHeader);
 	}
 
 	unsigned int xlsx_table_context::columns_count()

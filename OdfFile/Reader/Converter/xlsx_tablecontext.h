@@ -50,7 +50,9 @@ public:
 
     void start_table(const std::wstring &tableName, const std::wstring & tableStyleName, int id);
 		void set_protection(bool val, const std::wstring &key, const std::wstring &algorithm);
-    void end_table();
+		void set_print_area(const std::wstring& range);
+		void set_print_titles(const std::wstring& range);
+	void end_table();
 
     void start_cell(size_t columnsSpanned,
                     size_t rowsSpanned);
@@ -72,7 +74,7 @@ public:
     int current_column();
     int current_row();
 
-    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName);
+    void start_column(unsigned int repeated, const std::wstring & defaultCellStyleName, bool bHeader = false);
 
 	unsigned int columns_count();
 

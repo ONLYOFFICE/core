@@ -252,8 +252,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    table_table_column_attlist	attlist_;
-
+    bool bHeader = false;
+    table_table_column_attlist attlist_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_column);
 
@@ -275,7 +275,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    office_element_ptr_array	table_table_column_;
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_columns);
 
@@ -298,7 +298,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    office_element_ptr_array	table_table_column_;
+    office_element_ptr_array content_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_header_columns);
@@ -454,7 +454,6 @@ public:
 
     table_table_cell_attlist	attlist_;
     table_table_cell_content	content_;
-
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(table_covered_table_cell);
@@ -483,8 +482,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    office_element_ptr_array table_table_row_;
-
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_rows);
 
@@ -510,8 +508,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-    office_element_ptr_array table_table_row_;
-
+    office_element_ptr_array content_;
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_header_rows);
 
@@ -562,8 +559,7 @@ public:
 
     table_rows			table_rows_1_;    
     office_element_ptr	table_table_header_rows_;
-    table_rows			table_rows_2_;
-    
+    table_rows			table_rows_2_;    
 };
 
 class table_rows_and_groups
@@ -578,7 +574,7 @@ public:
     void xlsx_convert(oox::xlsx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-    office_element_ptr_array	content_;
+    office_element_ptr_array content_;
 };
 
 class table_table_row_group_attlist
@@ -586,8 +582,7 @@ class table_table_row_group_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    bool table_display_; // default true
-    
+    bool table_display_; // default true    
 };
 //--------------------------------------------------------------------------------------------
 class table_table_row_group : public office_element_impl<table_table_row_group>
@@ -613,7 +608,6 @@ private:
 public:
     table_table_row_group_attlist	attlist_;
     table_rows_and_groups			table_rows_and_groups_;
-
 };
 CP_REGISTER_OFFICE_ELEMENT2(table_table_row_group);
 //--------------------------------------------------------------------------------------------

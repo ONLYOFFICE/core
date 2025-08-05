@@ -577,6 +577,7 @@ namespace OOX
 			m_oType.SetValue(SimpleTypes::Spreadsheet::celltypeNumber);
 			m_oShowPhonetic.FromBool(false);
 
+			m_oCellMetadata.reset();
 			m_oValue.Clean();
 			m_oFormula.Clean();
 			m_oRichText.reset(NULL);
@@ -698,22 +699,26 @@ namespace OOX
 				nLen += m_oRichText->getXLSBSize();
 			}
 
-			oStream.XlsbStartRecord(nType, nLen);
-			oStream.WriteULONG(m_nCol & 0x3FFF);
-
 			_UINT32 nFlags2 = m_nStyle;
 			if (m_oShowPhonetic.ToBool())
 			{
 				nFlags2 |= 0x1000000;
 			}
-			//if (m_oCellMetadata.IsInit())
-			//{
-			//	nFlags2 |= 0x2000000;
-			//}
-			//if (m_oValueMetadata.IsInit())
-			//{
-			//	nFlags2 |= 0x4000000;
-			//}
+			if (m_oCellMetadata.IsInit())
+			{
+				nFlags2 |= 0x2000000;
+				nLen += 4;
+			}
+			if (m_oValueMetadata.IsInit())
+			{
+				nFlags2 |= 0x4000000;
+				nLen += 4;
+			}
+
+			oStream.XlsbStartRecord(nType, nLen);
+			oStream.WriteULONG(m_nCol & 0x3FFF);
+
+
 			oStream.WriteULONG(nFlags2);
 			//todo RkNumber
 			switch(nType)
@@ -755,15 +760,13 @@ namespace OOX
 			{
 				m_oRichText->toXLSBExt(oStream);
 			}
-	//it's not by XLSB format
-			//if (m_oCellMetadata.IsInit())
-			//{
-			//	oStream.WriteULONG(*m_oCellMetadata);
-			//}
-			//if (m_oValueMetadata.IsInit())
-			//{
-			//	oStream.WriteULONG(*m_oValueMetadata);
-			//}
+
+			if (m_oCellMetadata.IsInit())
+			{
+				oStream.WriteULONG(*m_oCellMetadata);
+			}
+			if (m_oValueMetadata.IsInit())
+				oStream.WriteULONG(*m_oValueMetadata);
 
 			oStream.XlsbEndRecord();
 		}
@@ -938,6 +941,7 @@ namespace OOX
 				return;
 
 			m_sText = oReader.GetText3();
+			m_sText.erase(std::remove(m_sText.begin(), m_sText.end(), '\n'), m_sText.end());
 		}
 		std::wstring CFormula::toXML() const
 		{

@@ -87,13 +87,13 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	
 	if (attlist_.table_number_rows_repeated_ > 1 && empty())
 	{
-		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
+		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_, bHeader);
 		return;
 	}
 	if (attlist_.table_number_rows_repeated_ > 0x0f00 && empty_content_cells(false) || bEndTable)//0xf000 - conv_KDZO3J3xLIbZ5fC0HR0__xlsx.ods
 	{
 		Context.get_table_context().state()->set_end_table();
-		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_);
+		Context.get_table_context().state()->add_empty_row(attlist_.table_number_rows_repeated_, bHeader);
 		return;		//conv_hSX8n3lVbhALjt0aafg__xlsx.ods, conv_MA2CauoNfX_7ejKS5eg__xlsx.ods
 	}
 
@@ -176,7 +176,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     for (unsigned int i = 0; i < attlist_.table_number_rows_repeated_; ++i)
     {
-        Context.get_table_context().state()->start_row(rowStyleName, defaultCellStyleName);
+        Context.get_table_context().state()->start_row(rowStyleName, defaultCellStyleName, bHeader);
 		
 		if (bBreakBefore)	Context.get_table_context().state()->set_row_break_before();
 		if (bBreakAfter)	Context.get_table_context().state()->set_row_break_after();
@@ -266,17 +266,17 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 void table_table_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-   	for (size_t i = 0; i < table_table_row_.size(); i++)
+   	for (size_t i = 0; i < content_.size(); i++)
 	{
-        table_table_row_[i]->xlsx_convert(Context);
+		content_[i]->xlsx_convert(Context);
     }
 }
 
 void table_table_header_rows::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-   	for (size_t i = 0; i < table_table_row_.size(); i++)
+   	for (size_t i = 0; i < content_.size(); i++)
 	{
-        table_table_row_[i]->xlsx_convert(Context);
+		content_[i]->xlsx_convert(Context);
     }
 }
 
@@ -393,6 +393,10 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
 		}
 	}
 
+	if (attlist_.table_print_ranges_)
+	{
+		Context.get_table_context().set_print_area(*attlist_.table_print_ranges_);
+	}
 	table_columns_and_groups_.xlsx_convert(Context);
 
 // check last rows for equal style and empties - collapsed
@@ -468,9 +472,9 @@ void table_columns_and_groups::xlsx_convert(oox::xlsx_conversion_context & Conte
 
 void table_table_header_columns::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
-  	for (size_t i = 0; i < table_table_column_.size(); i++)
+  	for (size_t i = 0; i < content_.size(); i++)
     {
-        table_table_column_[i]->xlsx_convert(Context);
+		content_[i]->xlsx_convert(Context);
     }    
 }
 
@@ -503,7 +507,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 
     int cMin = 0, cMax = 0;
-    Context.start_table_column(columnsRepeated, defaultCellStyleName, cMin, cMax);
+    Context.start_table_column(columnsRepeated, defaultCellStyleName, cMin, cMax, bHeader);
 
 	if ( cMin > 16384 ) return;
 	if ( cMax > 16384 ) return;

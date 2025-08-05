@@ -372,6 +372,8 @@ namespace OOX
 				worksheetPtr->m_SORTANDFILTER = XLS::BaseObjectPtr(sortData);
 				if(m_oSortState.IsInit())
 					m_oSortState->toXLS(worksheetPtr->m_SORTANDFILTER);
+				if(m_oAutofilter.IsInit())
+					m_oAutofilter->toXLS(worksheetPtr->m_SORTANDFILTER);
 			}
 			if(m_oDimension.IsInit())
 				worksheetPtr->m_Dimensions = m_oDimension->toXLS();

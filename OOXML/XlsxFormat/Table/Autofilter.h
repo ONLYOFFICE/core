@@ -198,6 +198,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
 
 			virtual EElementType getType () const;
 
@@ -255,6 +256,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
 
 			virtual EElementType getType () const;
 
@@ -376,6 +378,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 			void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 
 			virtual EElementType getType () const;
 
@@ -409,6 +412,7 @@ namespace OOX
 			virtual void toXML(NSStringUtils::CStringBuilder& writer) const;
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
 
+			void toXLS(XLS::BaseObjectPtr autoFilterPtr);
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			void fromBin(XLS::BaseObjectPtr& obj);

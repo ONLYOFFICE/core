@@ -151,7 +151,7 @@ const bool AUTOFILTER::saveContent(BinProcessor& proc)
 						ContinueFrt12 continueRecord;
 						CFRecord tempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
 						j->save(tempRecord);
-						continueRecord.rgb.reserve(tempRecord.getRdPtr());
+						continueRecord.rgb.resize(tempRecord.getRdPtr());
 						memcpy(continueRecord.rgb.data(), tempRecord.getCurStaticData<char>(), tempRecord.getRdPtr());
 						proc.mandatory(continueRecord);
 					}

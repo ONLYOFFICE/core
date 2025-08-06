@@ -903,6 +903,7 @@ namespace OOX
 					ptr->str = m_oVal.get();
 					ptr->doper.vtValueStr.cch = m_oVal->size();
 					ptr->doper.vtValueStr.m_bAutoFilter = false;
+					ptr->doper.m_bAutoFilter = false;
 				}
 				return XLS::BiffStructurePtr(ptr);
 			}
@@ -1113,6 +1114,7 @@ namespace OOX
 				{
 					ptr->str = m_oVal.get();
 					ptr->doper.vtValueStr.cch = m_oVal->size();
+					ptr->doper.m_bAutoFilter = false;
 					ptr->doper.vtValueStr.m_bAutoFilter = false;
 				}
 				return XLS::BiffStructurePtr(ptr);

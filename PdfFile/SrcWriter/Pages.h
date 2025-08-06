@@ -169,11 +169,13 @@ namespace PdfWriter
 		void      ShowText(const BYTE* sText, unsigned int unLen);
 		void      DrawText(double dX, double dY, const BYTE* sText, unsigned int unLen);
 		void      SetCharSpace(double dValue);
+		void      SetWordSpace(double dValue);
 		void      SetHorizontalScalling(double dValue);
 		void      SetFontAndSize(CFontDict* pFont, double dSize);
 		void      SetTextRenderingMode(ETextRenderingMode eMode);
 		void      SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      DrawTextLine(const CTextLine* pTextLine);
+		void      SetTextRise(double dS);
 
 		void      ExecuteXObject(CXObject* pXObject);
 		void      DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight);

@@ -117,8 +117,8 @@ namespace PdfWriter
 		virtual void updateHorizScaling(GfxState *pGState) override;
 		virtual void updateTextPos(GfxState *pGState) override;
 		virtual void updateTextShift(GfxState *pGState, double shift) override;
-		virtual void saveTextPos(GfxState *pGState) override;
-		virtual void restoreTextPos(GfxState *pGState) override;
+		// saveTextPos
+		// restoreTextPos
 		//----- path painting
 		virtual void stroke(GfxState *pGState) override;
 		virtual void fill(GfxState *pGState) override;

@@ -32,6 +32,10 @@
 
 #include "RedactOutputDev.h"
 
+#include "Streams.h"
+
+#include "../lib/xpdf/GfxFont.h"
+
 namespace PdfWriter
 {
 //----- constructor/destructor
@@ -206,46 +210,98 @@ void RedactOutputDev::updateRenderingIntent(GfxState *pGState)
 //----- update text state
 void RedactOutputDev::updateFont(GfxState *pGState)
 {
-
+	// TODO здесь текст не устанавливать, только флаг, что шрифт обновился. А реально выставлять перед записью глифов если они не попадают под Redact
+	GfxFont* pFont = pGState->getFont();
+	CStream* pStream = m_pPage->GetStream();
+	pStream->WriteEscapeName(pFont->getTag()->getCString());
+	pStream->WriteChar(' ');
+	pStream->WriteReal(pGState->getFontSize());
+	pStream->WriteStr(" Tf\012");
 }
 void RedactOutputDev::updateTextMat(GfxState *pGState)
 {
-
+	double* dTM = pGState->getTextMat();
+	m_pPage->SetTextMatrix(dTM[0], dTM[1], dTM[2], dTM[3], dTM[4], dTM[5]);
 }
 void RedactOutputDev::updateCharSpace(GfxState *pGState)
 {
-
+	m_pPage->SetCharSpace(pGState->getCharSpace());
 }
 void RedactOutputDev::updateRender(GfxState *pGState)
 {
-
+	int nRender = pGState->getRender();
+	switch (nRender)
+	{
+	default:
+	case 0:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Fill);
+		break;
+	case 1:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Stroke);
+		break;
+	case 2:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillThenStroke);
+		break;
+	case 3:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Invisible);
+		break;
+	case 4:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillClipping);
+		break;
+	case 5:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_StrokeClipping);
+		break;
+	case 6:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillStrokeClipping);
+		break;
+	case 7:
+		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Clipping);
+		break;
+	}
 }
 void RedactOutputDev::updateRise(GfxState *pGState)
 {
-
+	m_pPage->SetTextRise(pGState->getRise());
 }
 void RedactOutputDev::updateWordSpace(GfxState *pGState)
 {
-
+	m_pPage->SetWordSpace(pGState->getWordSpace());
 }
 void RedactOutputDev::updateHorizScaling(GfxState *pGState)
 {
-
+	m_pPage->SetHorizontalScalling(pGState->getHorizScaling());
 }
 void RedactOutputDev::updateTextPos(GfxState *pGState)
 {
-
+	// TODO Это Td, но опять таки нужно смещать к реальному тексту который не попадает под Redact
 }
 void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
 {
-
+	// TODO Смещение между строками в TJ, т.е. ~ TL межстрочный интервал
 }
-void RedactOutputDev::saveTextPos(GfxState *pGState)
+//----- path painting
+void RedactOutputDev::stroke(GfxState *pGState)
 {
-
+	GfxPath* pPath = pGState->getPath();
+	GfxSubpath* pSubPath = pPath->getSubpath(0);
+	m_pPage->MoveTo(0,0);
+	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать stroke
 }
-void RedactOutputDev::restoreTextPos(GfxState *pGState)
+void RedactOutputDev::fill(GfxState *pGState)
 {
-
+	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать fill
+}
+void RedactOutputDev::eoFill(GfxState *pGState)
+{
+	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать eoFill
+}
+void RedactOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pStream, int nPaintType, int nTilingType, Dict *pResourcesDict,
+										double *pMatrix, double *pBBox, int nX0, int nY0, int nX1, int nY1, double dXStep, double dYStep)
+{
+	// TODO Нужно как-то пересечь области заливки паттерном
+}
+GBool RedactOutputDev::shadedFill(GfxState* pGState, GfxShading* shading)
+{
+	// TODO Нужно как-то пересечь области градиентой заливки
 }
 }

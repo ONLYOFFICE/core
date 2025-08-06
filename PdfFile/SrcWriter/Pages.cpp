@@ -1368,7 +1368,16 @@ namespace PdfWriter
 			m_pStream->WriteStr("]TJ\012");
 		}
 	}
-    void CPage::SetCharSpace(double dValue)
+	void CPage::SetTextRise(double dS)
+	{
+		// Operator   : Ts
+		// Description: Устанавливаем подъём текста
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dS);
+		m_pStream->WriteStr(" Ts\012");
+	}
+	void CPage::SetCharSpace(double dValue)
 	{
 		// Operator   : Tc
 		// Description: Устанавливаем расстояние между буквами
@@ -1377,6 +1386,15 @@ namespace PdfWriter
         dValue = std::min((double)MAX_CHARSPACE, std::max((double)MIN_CHARSPACE, dValue));
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tc\012");
+	}
+	void CPage::SetWordSpace(double dValue)
+	{
+		// Operator   : Tw
+		// Description: Устанавливаем расстояние между словами
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dValue);
+		m_pStream->WriteStr(" Tw\012");
 	}
     void CPage::SetHorizontalScalling(double dValue)
 	{
@@ -1391,7 +1409,7 @@ namespace PdfWriter
     void CPage::SetFontAndSize(CFontDict* pFont, double dSize)
 	{
 		// Operator   : Tf
-		// Description: Устанавливаем фонт и размер фонта
+		// Description: Устанавливаем шрифт и размер шрифта
 
         dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
 		CResourcesDict* pResources = GetResourcesItem();

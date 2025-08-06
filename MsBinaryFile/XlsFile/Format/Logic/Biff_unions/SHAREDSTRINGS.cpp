@@ -96,7 +96,8 @@ const bool SHAREDSTRINGS::saveContent(BinProcessor& proc)
             }
             continueRecord.m_iDataSize = tempRecord->getRdPtr();
             continueRecord.m_pData = new char[continueRecord.m_iDataSize];
-            memcpy(continueRecord.m_pData, tempRecord->getCurStaticData<char>(), continueRecord.m_iDataSize);
+            auto copyData = tempRecord->getCurStaticData<char>() - continueRecord.m_iDataSize;
+            memcpy(continueRecord.m_pData, copyData, continueRecord.m_iDataSize);
             proc.mandatory(continueRecord);
         }
 

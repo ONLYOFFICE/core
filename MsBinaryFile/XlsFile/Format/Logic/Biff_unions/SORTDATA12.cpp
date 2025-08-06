@@ -80,8 +80,8 @@ const bool SORTDATA12::saveContent(BinProcessor& proc)
 		i->save(binDataRec);
 		ContinueFrt12 tempRecord;
 		tempRecord.rgb.resize(binDataRec.getRdPtr());
-		auto copyngData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
-		memcpy(tempRecord.rgb.data(), copyngData, binDataRec.getRdPtr());
+		auto copyData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
+		memcpy(tempRecord.rgb.data(), copyData, binDataRec.getRdPtr());
 		proc.mandatory(tempRecord);
 	}
     return true;

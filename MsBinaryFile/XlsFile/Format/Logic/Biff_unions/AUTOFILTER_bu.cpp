@@ -154,8 +154,8 @@ const bool AUTOFILTER::saveContent(BinProcessor& proc)
 						tempRecord.frtHeader.grbitFrt.fFrtRef = castedPtr->frtRefHeader.grbitFrt.fFrtRef;
 						tempRecord.frtHeader.ref8 = castedPtr->frtRefHeader.ref8;
 						tempRecord.rgb.resize(binDataRec.getRdPtr());
-						auto copyngData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
-						memcpy(tempRecord.rgb.data(), copyngData, binDataRec.getRdPtr());
+						auto copyData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
+						memcpy(tempRecord.rgb.data(), copyData, binDataRec.getRdPtr());
 						proc.mandatory(tempRecord);
 					}
 				}

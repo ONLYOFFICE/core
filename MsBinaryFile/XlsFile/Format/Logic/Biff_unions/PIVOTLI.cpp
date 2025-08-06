@@ -95,7 +95,8 @@ const bool PIVOTLI::saveContent(BinProcessor& proc)
         Continue continueRecord;
         continueRecord.m_iDataSize = tempRecord.getRdPtr();
         continueRecord.m_pData = new char[continueRecord.m_iDataSize];
-        memcpy(continueRecord.m_pData, tempRecord.getCurStaticData<char>(), continueRecord.m_iDataSize);
+		auto CopyData =  tempRecord.getCurStaticData<char>() - tempRecord.getRdPtr();
+        memcpy(continueRecord.m_pData, CopyData, continueRecord.m_iDataSize);
         proc.mandatory(continueRecord);
     }
 }

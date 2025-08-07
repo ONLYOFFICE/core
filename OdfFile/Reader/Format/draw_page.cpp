@@ -185,17 +185,17 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 				}
 
 	////////////////////////////////////////////////
-				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
-					Context.get_slide_context().set_footer();
+				if (properties->content().presentation_display_footer_)
+					Context.get_slide_context().set_footer(*properties->content().presentation_display_footer_);
 					
-				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
-					Context.get_slide_context().set_header();			
+				if (properties->content().presentation_display_header_)
+					Context.get_slide_context().set_header(*properties->content().presentation_display_header_);
 				
-				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
-					Context.get_slide_context().set_page_number();
+				if (properties->content().presentation_display_page_number_)
+					Context.get_slide_context().set_page_number(*properties->content().presentation_display_page_number_);
 				
-				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
-					Context.get_slide_context().set_date_time();			
+				if (properties->content().presentation_display_date_time_)
+					Context.get_slide_context().set_date_time(*properties->content().presentation_display_date_time_);
 			}
 		}
 	}
@@ -206,12 +206,12 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 		content_[i]->pptx_convert(Context);
 	}
 
-	if (attlist_.use_footer_name_)//from master_page
+	if (attlist_.use_footer_name_ && Context.get_slide_context().get_footer())//from master_page
 	{
 		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::footer);
 	}
-	if (attlist_.use_date_time_name_)//from master_page
+	if (attlist_.use_date_time_name_ && Context.get_slide_context().get_date_time())//from master_page
 	{
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);
@@ -364,17 +364,17 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 				Context.get_slide_context().add_background(fill);
 			
 	////////////////////////////////////////////////
-				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
-					Context.get_slide_context().set_footer();
+				if (properties->content().presentation_display_footer_)
+					Context.get_slide_context().set_footer(*properties->content().presentation_display_footer_);
 					
-				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
-					Context.get_slide_context().set_header();			
+				if (properties->content().presentation_display_header_)
+					Context.get_slide_context().set_header(*properties->content().presentation_display_header_);
 				
-				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
-					Context.get_slide_context().set_page_number();
+				if (properties->content().presentation_display_page_number_)
+					Context.get_slide_context().set_page_number(*properties->content().presentation_display_page_number_);
 				
-				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
-					Context.get_slide_context().set_date_time();			
+				if (properties->content().presentation_display_date_time_)
+					Context.get_slide_context().set_date_time(*properties->content().presentation_display_date_time_);
 			}
 		}
 	}
@@ -385,12 +385,12 @@ void presentation_notes::pptx_convert(oox::pptx_conversion_context & Context)
 		content_[i]->pptx_convert(Context);
 	}
 
-	if (attlist_.use_footer_name_)//from master_page_notes
+	if (attlist_.use_footer_name_ && Context.get_slide_context().get_footer())//from master_page_notes
 	{
 		std::wstring name = L"footer:" + *attlist_.use_footer_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::footer);
 	}
-	if (attlist_.use_date_time_name_)//from master_page_notes
+	if (attlist_.use_date_time_name_ && Context.get_slide_context().get_date_time())//from master_page_notes
 	{
 		std::wstring name = L"datetime:" + *attlist_.use_date_time_name_;
 		pptx_convert_placeHolder(Context, name, presentation_class::date_time);

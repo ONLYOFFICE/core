@@ -75,6 +75,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/WINDOW.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PROTECTION_COMMON.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/DCON.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Window2.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Dimensions.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Protect.h"
@@ -91,6 +92,9 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/GridSet.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Header.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Footer.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DCon.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DConName.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DConRef.h"
 
 namespace OOX
 {
@@ -4454,6 +4458,25 @@ namespace OOX
             }
             writer->storeNextRecord(record);
         }
+		XLS::BaseObjectPtr CDataRef::toXLS()
+		{
+			XLS::BaseObjectPtr objPtr = nullptr;
+			if(m_oName.IsInit())
+			{
+				auto ptr = new XLS::DConName;
+				ptr->stName = m_oName.get();
+				objPtr = XLS::BaseObjectPtr(ptr);
+			}
+			else if(m_oRef.IsInit())
+			{
+				auto ptr = new XLS::DConRef;
+				ptr->ref = m_oRef.get();
+				if(m_oSheet.IsInit())
+					ptr->sheet_name = m_oSheet.get();
+				objPtr = XLS::BaseObjectPtr(ptr);
+			}
+			return objPtr;
+		}
 		EElementType CDataRef::getType() const
 		{
 			return et_x_DataRef;
@@ -4680,6 +4703,32 @@ namespace OOX
                 writer->storeNextRecord(end);
             }
         }
+		XLS::BaseObjectPtr CDataConsolidate::toXLS()
+		{
+			auto UnionPtr = new XLS::DCON;
+			auto ptr = new XLS::DCon;
+			UnionPtr->m_DCon = XLS::BaseObjectPtr(ptr);
+
+			if(m_oFunction.IsInit())
+				ptr->iiftab = m_oFunction->GetValue();
+			if(m_oLink.IsInit())
+				ptr->fLinkConsole = m_oLink->GetValue();
+			if(m_oStartLabels.IsInit())
+				ptr->fLeftCat = m_oStartLabels->GetValue();
+			if(m_oTopLabels.IsInit())
+				ptr->fTopCat = m_oTopLabels->GetValue();
+			if(m_oDataRefs.IsInit())
+			{
+				for(auto i : m_oDataRefs->m_arrItems)
+				{
+					auto tempElem = i->toXLS();
+					if(tempElem != nullptr)
+						UnionPtr->m_arDCon.push_back(tempElem);
+				}
+			}
+
+			return XLS::BaseObjectPtr(UnionPtr);
+		}
 		void CDataConsolidate::fromBin(XLS::BaseObjectPtr& obj)
 		{
 			auto ptr = static_cast<XLSB::DCON*>(obj.get());

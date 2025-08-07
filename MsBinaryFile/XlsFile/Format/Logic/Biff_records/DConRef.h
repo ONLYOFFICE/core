@@ -55,8 +55,8 @@ public:
 	static const ElementType type = typeDConRef;
 
 	RefU					ref;
-	unsigned short			cchFile;
-	std::wstring			stFile;
+	unsigned short			cchFile = 0;
+	std::wstring			stFile = L"";
 
 	std::vector<std::wstring>	path;
 	std::wstring				file_name;

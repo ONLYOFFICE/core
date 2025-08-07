@@ -403,6 +403,8 @@ namespace OOX
 
 			if(m_oSheetData.IsInit())
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
+			if(m_oDataConsolidate.IsInit())
+				worksheetPtr->m_DCON = m_oDataConsolidate->toXLS();
 
 			return sheetPtr;
 		}

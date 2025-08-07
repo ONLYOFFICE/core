@@ -459,7 +459,7 @@ namespace cpdoccore {
 		const std::wstring& pageMasterName)
 	{
 		create_new_slide(pageName);
-		get_slide_context().start_slide();//pageName, pageStyleName);
+		get_slide_context().start_slide();
 		get_slide_context().get_animation_context().clear();
 
 		current_master_page_name_ = pageMasterName;

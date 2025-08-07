@@ -140,11 +140,15 @@ public:
         std::wstring const & ref,
         _rels_type type);
 
-	void set_footer();
-	void set_header();
-	
-	void set_page_number();
-	void set_date_time();
+	void set_footer(bool val);
+	void set_header(bool val);	
+	void set_page_number(bool val);
+	void set_date_time(bool val);
+
+	bool get_footer();
+	bool get_header();
+	bool get_page_number();
+	bool get_date_time();
 
 	pptx_animation_context &	get_animation_context() { return pptx_animation_context_; }
 	void						generate_id(const std::wstring& id);

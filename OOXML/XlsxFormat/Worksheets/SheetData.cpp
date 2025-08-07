@@ -2808,6 +2808,20 @@ namespace OOX
 				if(m_oValue.IsInit())
 					m_oType->SetValue(processCellType(m_oValue.get().m_sText, isReal, realCache));
 			}
+			else
+			{
+				if(m_oType->GetValue() == SimpleTypes::Spreadsheet::celltypeNumber && m_oValue.IsInit())
+				{
+					wchar_t *tail;
+					double tempVal = std::wcstod(m_oValue->m_sText.c_str(), &tail);
+					if(*tail == L'\0')
+					{
+						realCache = tempVal;
+						tempVal -= (int)tempVal;
+						isReal =  tempVal > 0;
+					}
+				}
+			}
 			auto cellType = m_oType->GetValue();
 			if(SharedFormulasRef::ArrayRefsLocations && SharedFormulasRef::ArrayRefsLocations->size())
 			{

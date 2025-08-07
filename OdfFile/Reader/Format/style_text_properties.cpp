@@ -352,11 +352,12 @@ void text_format_properties::drawing_serialize(std::wostream & strm, std::wstrin
 			
 			if ((style_text_position_) && (style_text_position_->has_font_size()))
 			{
-				mul = style_text_position_->font_size().get_value() / 100.0;
+				mul = style_text_position_->font_size().get_value() / 100.;
+				mul *= 1.725;	//ms 100% - 1.725
 			}
 			if (fontSizeVal > 0)
 			{
-				CP_XML_ATTR(L"sz", (int)(fontSizeVal/2. * mul *100 + 0.5));//in pt *100 
+				CP_XML_ATTR(L"sz", (int)(fontSizeVal/2. * mul * 100 + 0.5)); //in pt *100 
 			}
 			if (fo_font_variant_)
 			{

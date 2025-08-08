@@ -275,6 +275,8 @@ namespace OOX
 			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
+			if(m_oColors.IsInit())
+				FormatPtr->m_Palette = m_oColors->toXLS();
 
 		}
 		void CStyles::read(const CPath& oPath)

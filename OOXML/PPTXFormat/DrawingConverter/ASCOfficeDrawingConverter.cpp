@@ -4920,6 +4920,7 @@ void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 			oMod.val = nA;
 			pEffectLst->outerShdw->Color.Color->Modifiers.push_back(oMod);
 		}
+
 		double offsetX = oOffset.IsXinPoints() ? oOffset.GetX() : 0;
 		double offsetY = oOffset.IsYinPoints() ? oOffset.GetY() : 0;
 
@@ -4928,9 +4929,25 @@ void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		if (offsetX < 0) dir += 180;
 		if (dir < 0) dir += 360;
 
-		pEffectLst->outerShdw->dist = dist * (635 * 20);
-		pEffectLst->outerShdw->dir = (int)(dir * 60000);
+		if (dist > 0 && dir > 0)
+		{
+			pEffectLst->outerShdw->dist = dist * (635 * 20);
+			pEffectLst->outerShdw->dir = (int)(dir * 60000);
+		}
+
 		pEffectLst->outerShdw->rotWithShape = false;
+
+		if (oMatrix.IsInit())
+		{
+			if (oMatrix->m_dSxx > 1.001 || oMatrix->m_dSxx < 0.999)
+				pEffectLst->outerShdw->sx = (int)(oMatrix->m_dSxx / 65535. * 100000);
+			if (oMatrix->m_dSyy > 1.001 || oMatrix->m_dSyy < 0.999)
+				pEffectLst->outerShdw->sy = (int)(oMatrix->m_dSyy / 65535. * 100000);
+			if (oMatrix->m_dSxy > 0.001 || oMatrix->m_dSxy < 0)
+				pEffectLst->outerShdw->ky = (int)(oMatrix->m_dSxy / 65535. * 100000);
+			if (oMatrix->m_dSyx > 0.001 || oMatrix->m_dSyx < 0)
+				pEffectLst->outerShdw->kx = (int)(oMatrix->m_dSyx / 65535. * 100000);
+		}
 	}
 
 }

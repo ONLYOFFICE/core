@@ -255,13 +255,43 @@ namespace OOX
                 stylesStream->m_FRTSTYLESHEET = m_oExtLst->toBinStyles();
 			return objectPtr;
 		}
-		void CStyles::toXLS(XLS::BaseObjectPtr globalsStreamPtr) const
+		_UINT16 GetClrIndex(const OOX::Spreadsheet::CColors &colors, const SimpleTypes::Spreadsheet::CHexColor & rgba)
+		{
+			_UINT16 result = 0;
+			if(!colors.m_oIndexedColors.IsInit())
+				return result;
+			for(auto i = 0; i < colors.m_oIndexedColors->m_arrItems.size(); i++)
+				if(colors.m_oIndexedColors->m_arrItems[i]->m_oRgb ==  rgba)
+				{
+					result = i +8;
+					return result;
+				}
+			return result;
+		}
+		void CStyles::toXLS(XLS::BaseObjectPtr globalsStreamPtr)
 		{
 			auto workbookPtr = static_cast<XLS::GlobalsSubstream*>(globalsStreamPtr.get());
 			auto FormatPtr = new XLS::FORMATTING;
 			workbookPtr->m_Formating = XLS::BaseObjectPtr(FormatPtr);
+			if(m_oColors.IsInit())
+				FormatPtr->m_Palette = m_oColors->toXLS();
+			else
+			{
+				m_oColors = OOX::Spreadsheet::CColors();
+				m_oColors->initXLSColors();
+			}
+
 			if (m_oFonts.IsInit())
+			{
+				for(auto i : m_oFonts->m_arrItems)
+				{
+					if(i->m_oColor.IsInit() && i->m_oColor->m_oRgb.IsInit())
+					{
+						i->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oColor->m_oRgb.get());
+					}
+				}
 				FormatPtr->m_arFonts = m_oFonts->toXLS();
+			}
 			if (m_oNumFmts.IsInit())
 				FormatPtr->m_arFormats = m_oNumFmts->toXLS();
 			if(m_oCellStyleXfs.IsInit() || m_oCellXfs.IsInit())
@@ -275,8 +305,6 @@ namespace OOX
 			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
-			if(m_oColors.IsInit())
-				FormatPtr->m_Palette = m_oColors->toXLS();
 
 		}
 		void CStyles::read(const CPath& oPath)

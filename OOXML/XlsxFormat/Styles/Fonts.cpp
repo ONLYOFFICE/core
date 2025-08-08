@@ -312,9 +312,9 @@ namespace OOX
 			if(m_oExtend.IsInit())
 				ptr->fExtend = m_oExtend->ToBool();
 
-			if(m_oColor.IsInit())
+			if(m_oColor.IsInit() && m_oColor->m_oIndexed.IsInit())
 			{
-				//todo add icv color conversion
+				ptr->icv = m_oColor->m_oIndexed->GetValue();
 			}
 
 			if(m_oBold.IsInit() && m_oBold->ToBool())

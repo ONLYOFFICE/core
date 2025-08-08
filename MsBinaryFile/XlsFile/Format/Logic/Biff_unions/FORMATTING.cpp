@@ -157,8 +157,11 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 const bool FORMATTING::saveContent(BinProcessor& proc)
 {
 
-	if(m_arFonts.empty())
-		proc.mandatory<Font>();
+
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
+	proc.mandatory<Font>();
 	for(auto i : m_arFonts)
 		if(i != nullptr)
 			proc.mandatory(*i);

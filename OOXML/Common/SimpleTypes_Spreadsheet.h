@@ -208,6 +208,7 @@ namespace SimpleTypes
 
 			CHexColor(const std::wstring& wsStr);
 			const CHexColor &operator =(const std::wstring& wsStr);
+			const bool operator ==(const CHexColor& clr);
 			virtual std::wstring   ToString  () const;
 			void Set_R(unsigned char R);
 			void Set_G(unsigned char G);

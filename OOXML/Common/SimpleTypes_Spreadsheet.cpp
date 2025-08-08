@@ -522,7 +522,10 @@ namespace SimpleTypes
 			bResult = false;
 			return 0;
 		}
-
+		const bool CHexColor::operator ==(const CHexColor& clr)
+		{
+			return (m_unA == clr.m_unA && m_unR == clr.m_unR && m_unG == clr.m_unG && m_unB == clr.m_unB);
+		}
 		EFontFamily CFontFamily::FromString(const std::wstring &sValue)
 		{
 			std::wstring oldValue = XmlUtils::GetLower(sValue);

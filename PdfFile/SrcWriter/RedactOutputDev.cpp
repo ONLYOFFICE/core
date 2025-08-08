@@ -63,9 +63,6 @@ void RedactOutputDev::startPage(int nPageIndex, GfxState *pGState)
 	m_pPage = m_pDoc->GetEditPage(nPageIndex);
 	m_pRenderer->EditPage(m_pPage);
 	m_pDoc->SetCurPage(m_pPage);
-	// TODO опасная операция. Удаляет из xref прошлые объекты Contents, но не проверяет всевозможные CProxyObject которые могут ссылаться на удаленные объекты
-	// Однако предполагается, что ссылка на стримы страниц есть только в Contents одной конкретной страницы
-	// И всё же требуется доработка для безопасного удаления
 	m_pDoc->ClearPageFull();
 }
 void RedactOutputDev::endPage()
@@ -284,7 +281,6 @@ void RedactOutputDev::stroke(GfxState *pGState)
 {
 	GfxPath* pPath = pGState->getPath();
 	GfxSubpath* pSubPath = pPath->getSubpath(0);
-	m_pPage->MoveTo(0,0);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать stroke
 }
 void RedactOutputDev::fill(GfxState *pGState)
@@ -303,5 +299,144 @@ void RedactOutputDev::tilingPatternFill(GfxState *pGState, Gfx *gfx, Object *pSt
 GBool RedactOutputDev::shadedFill(GfxState* pGState, GfxShading* shading)
 {
 	// TODO Нужно как-то пересечь области градиентой заливки
+	return gFalse;
+}
+//----- path clipping
+void RedactOutputDev::clip(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::eoClip(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::clipToStrokePath(GfxState *pGState)
+{
+
+}
+//----- text drawing
+void RedactOutputDev::beginStringOp(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::endStringOp(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::beginString(GfxState *pGState, GString *s)
+{
+
+}
+void RedactOutputDev::endString(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
+							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
+{
+
+}
+void RedactOutputDev::drawString(GfxState *pGState, GString *seString)
+{
+
+}
+GBool RedactOutputDev::beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
+{
+	return gFalse;
+}
+void RedactOutputDev::endType3Char(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::endTextObject(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::beginActualText(GfxState *state, Unicode *u, int uLen)
+{
+
+}
+void RedactOutputDev::endActualText(GfxState *state)
+{
+
+}
+//----- additional
+GBool RedactOutputDev::beginMarkedContent(GfxState *pGState, GString *s)
+{
+	return gFalse;
+}
+GBool RedactOutputDev::beginMCOShapes(GfxState *pGState, GString *s, Object *ref)
+{
+	return gFalse;
+}
+void RedactOutputDev::endMarkedContent(GfxState *pGState)
+{
+
+}
+GBool RedactOutputDev::useExtGState()
+{
+	return gFalse;
+}
+void RedactOutputDev::setExtGState(Object* pDict)
+{
+
+}
+//----- image drawing
+void RedactOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+{
+
+}
+void RedactOutputDev::setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
+{
+
+}
+void RedactOutputDev::drawImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap, int *pMaskColors, GBool bInlineImg, GBool interpolate)
+{
+
+}
+void RedactOutputDev::drawMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+							 Object* pMaskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GBool bMaskInvert, GBool interpolate)
+{
+
+}
+void RedactOutputDev::drawSoftMaskedImage(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GfxImageColorMap *pColorMap,
+								 Object *maskRef, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GfxImageColorMap *pMaskColorMap, double *pMatte, GBool interpolate)
+{
+
+}
+//----- Type 3 font operators
+void RedactOutputDev::type3D0(GfxState *pGState, double wx, double wy)
+{
+
+}
+void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury)
+{
+
+}
+//----- form XObjects
+void RedactOutputDev::drawForm(Ref id)
+{
+
+}
+//----- transparency groups and soft masks
+void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
+{
+
+}
+void RedactOutputDev::endTransparencyGroup(GfxState *pGState)
+{
+
+}
+void RedactOutputDev::paintTransparencyGroup(GfxState *pGState, double *pBBox)
+{
+
+}
+void RedactOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha, Function *pTransferFunc, GfxColor *pBackdropColor)
+{
+
+}
+void RedactOutputDev::clearSoftMask(GfxState *pGState)
+{
+
 }
 }

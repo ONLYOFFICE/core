@@ -83,6 +83,14 @@ namespace PdfWriter
 	{
 		m_unFlags |= FLAG_HIDDEN;
 	}
+	void CObjectBase::SetXrefEntry(TXrefEntry* pEntry)
+	{
+		m_pXrefEntry = pEntry;
+	}
+	TXrefEntry* CObjectBase::GetXrefEntry()
+	{
+		return m_pXrefEntry;
+	}
 	void CObjectBase::WriteValue(CStream* pStream, CEncrypt* pEncrypt)
 	{
 
@@ -106,11 +114,13 @@ namespace PdfWriter
 
 		if (object_type_PROXY == GetType())
 		{
+			CObjectBase* pObject = ((CProxyObject*)this)->Get();
+			if (!pObject)
+				return;
+
 			char sBuf[SHORT_BUFFER_SIZE];
 			char *pBuf = sBuf;
 			char *pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
-
-			CObjectBase* pObject = ((CProxyObject*)this)->Get();
 
 			pBuf = ItoA(pBuf, pObject->m_unObjId & 0x00FFFFFF, pEndPtr);
 			*pBuf++ = ' ';
@@ -212,11 +222,23 @@ namespace PdfWriter
 	{
 		m_pObject = pObject;
 		m_bClear = bClear;
+		TXrefEntry* pXrefEntry = m_pObject->GetXrefEntry();
+		if (pXrefEntry)
+			pXrefEntry->pRefObj.push_back(this);
 	}
 	CProxyObject::~CProxyObject()
 	{
 		if (m_bClear)
 			RELEASE_OBJECT(m_pObject);
+	}
+	void CProxyObject::Clear()
+	{
+		if (m_bClear)
+		{
+			RELEASE_OBJECT(m_pObject);
+		}
+		else
+			m_pObject = NULL;
 	}
 	//----------------------------------------------------------------------------------------
 	// CArrayObject
@@ -854,6 +876,7 @@ namespace PdfWriter
 		pEntry->pObject      = pObject;
 		pObject->SetRef(0, pEntry->unGenNo);
 		pObject->SetIndirect();
+		pObject->SetXrefEntry(pEntry);
 	}
 	void CXref::Remove(CObjectBase* pObject)
 	{
@@ -862,6 +885,13 @@ namespace PdfWriter
 			TXrefEntry* pEntry = m_arrEntries.at(unIndex);
 			if (pEntry->pObject == pObject)
 			{
+				for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+					pEntry->pRefObj[i]->Clear();
+
+				CObjectBase* pObject = pEntry->pObject;
+				if (pObject)
+					delete pObject;
+
 				m_arrEntries.erase(m_arrEntries.begin() + unIndex);
 				delete pEntry;
 				break;

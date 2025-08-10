@@ -153,6 +153,17 @@ std::wstring EncodeXmlString(const std::wstring& s)
 	return sRes;
 }
 
+enum class EParagraphPropertie
+{
+	Sup,
+	Sub,
+	Strikethrough,
+	Emphasis,
+	Strong
+};
+
+typedef std::vector<EParagraphPropertie> ParagraphProperties;
+
 class CFb2File_Private
 {
 public:
@@ -174,6 +185,8 @@ private:
 	bool m_bInP;
 	bool m_bInNote;
 	bool m_bInTable;
+
+	ParagraphProperties m_arParagraphProperties;
 
 	// STitleInfo* m_pSrcTitleInfo;  // Данные об исходнике книги
 	// SPublishInfo* m_pPublishInfo; // Сведения об издании книги
@@ -219,6 +232,58 @@ public:
 	bool isFictionBook()
 	{
 		return m_oLightReader.ReadNextNode() && m_oLightReader.GetName() == L"FictionBook";
+	}
+
+	void OpenP(NSStringUtils::CStringBuilder& oBuilder)
+	{
+		if (m_bInP || m_bInTable)
+			return;
+
+		oBuilder.WriteString(L"<p>");
+		m_bInP = true;
+	}
+
+	void CloseP(NSStringUtils::CStringBuilder& oBuilder)
+	{
+		if (!m_bInP || m_bInTable)
+			return;
+
+		oBuilder.WriteString(L"</p>");
+		m_bInP = false;
+	}
+
+	void WriteText(NSStringUtils::CStringBuilder& oBuilder, const std::wstring& wsText, const std::vector<EParagraphPropertie>& arPProperties)
+	{
+		if (wsText.end() == std::find_if_not(wsText.begin(), wsText.end(), [](wchar_t wchChar){ return iswspace(wchChar) && 0xa0 != wchChar;}))
+			return;
+
+		OpenP(oBuilder);
+
+		for (const EParagraphPropertie ePropertie : arPProperties)
+		{
+			switch(ePropertie)
+			{
+				case EParagraphPropertie::Sup: oBuilder.WriteString(L"<sup>"); break;
+				case EParagraphPropertie::Sub: oBuilder.WriteString(L"<sub>"); break;
+				case EParagraphPropertie::Strikethrough: oBuilder.WriteString(L"<strikethrough>"); break;
+				case EParagraphPropertie::Emphasis: oBuilder.WriteString(L"<emphasis>"); break;
+				case EParagraphPropertie::Strong: oBuilder.WriteString(L"<strong>"); break;
+			}
+		}
+
+		oBuilder.WriteEncodeXmlString(wsText);
+
+		for (ParagraphProperties::const_reverse_iterator itPropertie = arPProperties.crbegin(); itPropertie != arPProperties.crend(); ++itPropertie)
+		{
+			switch(*itPropertie)
+			{
+				case EParagraphPropertie::Sup: oBuilder.WriteString(L"</sup>"); break;
+				case EParagraphPropertie::Sub: oBuilder.WriteString(L"</sub>"); break;
+				case EParagraphPropertie::Strikethrough: oBuilder.WriteString(L"</strikethrough>"); break;
+				case EParagraphPropertie::Emphasis: oBuilder.WriteString(L"</emphasis>"); break;
+				case EParagraphPropertie::Strong: oBuilder.WriteString(L"</strong>"); break;
+			}
+		}
 	}
 
 	// Читает image
@@ -1449,7 +1514,7 @@ public:
 
 	// html -> fb2
 
-	void readStream(NSStringUtils::CStringBuilder& oXml)
+	void readStream(NSStringUtils::CStringBuilder& oXml, ParagraphProperties& arPProperties)
 	{
 		int nDepth = m_oLightReader.GetDepth();
 		if (m_oLightReader.IsEmptyNode() || !m_oLightReader.ReadNextSiblingNode2(nDepth))
@@ -1458,7 +1523,7 @@ public:
 		{
 			std::wstring sName = m_oLightReader.GetName();
 			if (sName == L"#text")
-				oXml.WriteEncodeXmlString(m_oLightReader.GetText());
+				WriteText(oXml, m_oLightReader.GetText(), arPProperties);
 			else if (sName == L"br" && !m_bInTable)
 			{
 				bool bPBB = false, bCBB = false;
@@ -1501,26 +1566,18 @@ public:
 				m_oLightReader.MoveToElement();
 				if (m_bFootnote && !sFootnoteName.empty())
 				{
-					readStream(oFootnote);
+					readStream(oFootnote, arPProperties);
 					m_mFootnotes.insert(std::make_pair(sFootnoteName, oFootnote.GetData()));
 					m_bFootnote = false;
 				}
 				else
-					readStream(oXml);
+					readStream(oXml, arPProperties);
 			}
 			else if (sName == L"p")
 			{
-				if (!m_bInTable && !m_bInP)
-				{
-					oXml.WriteString(L"<p>");
-					m_bInP = true;
-				}
-				readStream(oXml);
-				if (!m_bInTable && m_bInP)
-				{
-					oXml.WriteString(L"</p>");
-					m_bInP = false;
-				}
+				OpenP(oXml);
+				readStream(oXml, arPProperties);
+				CloseP(oXml);
 			}
 			else if (sName == L"title")
 			{
@@ -1564,7 +1621,7 @@ public:
 					bInH = true;
 					m_bInP = true;
 				}
-				readStream(oXml);
+				readStream(oXml, arPProperties);
 				if (bInH)
 				{
 					oXml.WriteString(L"</p></title>");
@@ -1590,52 +1647,55 @@ public:
 					sAlign = sStyle.substr(nAlign + 1, (nAlignEnd < sStyle.length() ? nAlignEnd : sStyle.length()) - nAlign);
 					if (sAlign == L"super")
 					{
-						oXml.WriteString(L"<sup>");
-						readStream(oXml);
-						oXml.WriteString(L"</sup>");
+						arPProperties.push_back(EParagraphPropertie::Sup);
+						readStream(oXml, arPProperties);
+						arPProperties.pop_back();
 					}
 					else if (sAlign == L"sub")
 					{
-						oXml.WriteString(L"<sub>");
-						readStream(oXml);
-						oXml.WriteString(L"</sub>");
+						arPProperties.push_back(EParagraphPropertie::Sub);
+						readStream(oXml, arPProperties);
+						arPProperties.pop_back();
 					}
 					else
-						readStream(oXml);
+						readStream(oXml, arPProperties);
 				}
 				else
-					readStream(oXml);
+					readStream(oXml, arPProperties);
 			}
 			else if (sName == L"s")
 			{
-				oXml.WriteString(L"<strikethrough>");
-				readStream(oXml);
-				oXml.WriteString(L"</strikethrough>");
+				arPProperties.push_back(EParagraphPropertie::Strikethrough);
+				readStream(oXml, arPProperties);
+				arPProperties.pop_back();
 			}
 			else if (sName == L"i")
 			{
-				oXml.WriteString(L"<emphasis>");
-				readStream(oXml);
-				oXml.WriteString(L"</emphasis>");
+				arPProperties.push_back(EParagraphPropertie::Emphasis);
+				readStream(oXml, arPProperties);
+				arPProperties.pop_back();
 			}
 			else if (sName == L"b")
 			{
-				oXml.WriteString(L"<strong>");
-				readStream(oXml);
-				oXml.WriteString(L"</strong>");
+				arPProperties.push_back(EParagraphPropertie::Strong);
+				readStream(oXml, arPProperties);
+				arPProperties.pop_back();
 			}
 			else if (sName == L"table")
 			{
 				oXml.WriteString(L"<table>");
 				m_bInTable = true;
-				readStream(oXml);
+
+				ParagraphProperties arTableProperties;
+				readStream(oXml, arTableProperties);
+
 				oXml.WriteString(L"</table>");
 				m_bInTable = false;
 			}
 			else if (sName == L"tr")
 			{
 				oXml.WriteString(L"<tr>");
-				readStream(oXml);
+				readStream(oXml, arPProperties);
 				oXml.WriteString(L"</tr>");
 			}
 			else if (sName == L"td" || sName == L"th")
@@ -1650,7 +1710,7 @@ public:
 				}
 				m_oLightReader.MoveToElement();
 				oXml.WriteString(L">");
-				readStream(oXml);
+				readStream(oXml, arPProperties);
 				oXml.WriteString(L"</td>");
 			}
 			else if (sName == L"a")
@@ -1690,13 +1750,13 @@ public:
 				m_oLightReader.MoveToElement();
 				oXml.WriteString(L">");
 
-				readStream(oXml);
+				readStream(oXml, arPProperties);
 				oXml.WriteString(L"</a>");
 			}
 			else if (sName == L"ul")
-				readLi(oXml, true);
+				readLi(oXml, true, arPProperties);
 			else if (sName == L"ol")
-				readLi(oXml, false);
+				readLi(oXml, false, arPProperties);
 			else if (sName == L"img")
 			{
 				std::wstring sId, sBinary;
@@ -1716,11 +1776,11 @@ public:
 				oXml.WriteString(L"<image l:href=\"#img" + sId + L".png\"/>");
 			}
 			else
-				readStream(oXml);
+				readStream(oXml, arPProperties);
 		} while (m_oLightReader.ReadNextSiblingNode2(nDepth));
 	}
 
-	void readLi(NSStringUtils::CStringBuilder& oXml, bool bUl)
+	void readLi(NSStringUtils::CStringBuilder& oXml, bool bUl, ParagraphProperties& arProperties)
 	{
 		int nNum = 1;
 		while (m_oLightReader.MoveToNextAttribute())
@@ -1734,9 +1794,8 @@ public:
 		{
 			if (m_oLightReader.GetName() == L"li")
 			{
-				if (!m_bInP)
-					oXml.WriteString(L"<p>");
-				m_bInP = true;
+				OpenP(oXml);
+
 				if (bUl)
 					oXml.AddCharSafe(183);
 				else
@@ -1773,10 +1832,9 @@ public:
 					oXml.WriteString(sPoint);
 				}
 				oXml.WriteString(L" ");
-				readStream(oXml);
-				if (m_bInP)
-					oXml.WriteString(L"</p>");
-				m_bInP = false;
+				readStream(oXml, arProperties);
+
+				CloseP(oXml);
 			}
 		} while (m_oLightReader.ReadNextSiblingNode2(nDeath));
 	}
@@ -2113,6 +2171,7 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
 
 	//XmlUtils::CXmlLiteReader oIndexHtml;
 	std::wstring xhtml = htmlToXhtml(sContent, bNeedConvert);
+
 	if (!m_internal->m_oLightReader.FromString(xhtml))
 		return S_FALSE;
 
@@ -2123,7 +2182,8 @@ HRESULT CFb2File::FromHtml(const std::wstring& sHtmlFile, const std::wstring& sD
 
 	//std::vector<std::wstring> arrBinary;
 	NSStringUtils::CStringBuilder oDocument;
-	m_internal->readStream(oDocument);
+	ParagraphProperties arProperties;
+	m_internal->readStream(oDocument, arProperties);
 
 	NSStringUtils::CStringBuilder oRes;
 	oRes.WriteString(L"<?xml version=\"1.0\" encoding=\"UTF-8\"?><FictionBook xmlns=\"http://www.gribuser.ru/xml/fictionbook/2.0\" xmlns:l=\"http://www.w3.org/1999/xlink\">");

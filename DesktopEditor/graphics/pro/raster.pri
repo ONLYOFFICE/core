@@ -1,6 +1,4 @@
 LIB_GRAPHICS_PRI_PATH=$$PWD/../..
-LIB_3DPARTY_PRI_PATH=$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/lib/Debug
-!core_debug:LIB_3DPARTY_PRI_PATH=$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/lib/Release
 
 DEFINES -= UNICODE
 DEFINES -= _UNICODE
@@ -14,24 +12,17 @@ DEFINES += \
 	MNG_SUPPORT_WRITE \
 	MNG_ACCESS_CHUNKS \
 	MNG_STORE_CHUNKS\
-	MNG_ERROR_TELLTALE\
-	LIBHEIF_STATIC_BUILD
+	MNG_ERROR_TELLTALE
+
+include($$CORE_ROOT_DIR/Common/3dParty/libheif/heif.pri)
 
 core_linux {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 	QMAKE_CXXFLAGS += -Wno-narrowing
-	LIBS += -L$$LIB_3DPARTY_PRI_PATH \
-			-lheif \
-			-lde265 \
-			-lx265
 }
 
 core_linux_clang {
 	QMAKE_CFLAGS += -Wno-incompatible-function-pointer-types
-	LIBS += -L$$LIB_3DPARTY_PRI_PATH \
-			-lheif \
-			-lde265 \
-			-lx265
 }
 
 core_mac {
@@ -41,10 +32,6 @@ core_mac {
 core_windows {
 	DEFINES += JAS_WIN_MSVC_BUILD NOMINMAX
 	LIBS += -lUser32
-	LIBS += -L$$LIB_3DPARTY_PRI_PATH \
-			-lheif \
-			-llibde265 \
-			-lx265-static
 }
 
 core_android {
@@ -54,8 +41,7 @@ core_android {
 INCLUDEPATH += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/include \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jpeg \
-	$$LIB_GRAPHICS_PRI_PATH/cximage/png \
-	$$LIB_GRAPHICS_PRI_PATH/../Common/3dParty/heif/libheif/libheif/api \
+	$$LIB_GRAPHICS_PRI_PATH/cximage/png
 
 HEADERS += \
 	$$PWD/../../graphics/Image.h \

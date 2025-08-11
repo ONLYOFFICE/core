@@ -473,6 +473,8 @@ namespace OOX
 
 			if (m_oXfId.IsInit())
 				ptr->ixfParent = m_oXfId->GetValue();
+			else
+				ptr->ixfParent = 0xFFF;
 
 			if(m_oAligment.IsInit())
 			{

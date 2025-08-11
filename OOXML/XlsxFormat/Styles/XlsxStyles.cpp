@@ -67,6 +67,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FORMATTING.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/XFS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/XF.h"
 
 namespace OOX
 {
@@ -301,11 +302,91 @@ namespace OOX
 				if(m_oCellStyleXfs.IsInit())
 					m_oCellStyleXfs->toXLS(FormatPtr->m_XFS);
 				if(m_oCellXfs.IsInit())
+				{
+
 					m_oCellXfs->toXLS(FormatPtr->m_XFS);
+				}
+				SetFillXLS(FormatPtr->m_XFS);
 			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
 
+		}
+		void CStyles::SetFillXLS(XLS::BaseObjectPtr XFSPtr)
+		{
+			if(!m_oFills.IsInit())
+				return;
+			//preparing clr indexes
+			for(auto i : m_oFills->m_arrItems)
+			{
+				if(i->m_oPatternFill.IsInit())
+				{
+					auto pattern = &i->m_oPatternFill;
+					if((*pattern)->m_oBgColor.IsInit() && !(*pattern)->m_oBgColor->m_oIndexed.IsInit() && (*pattern)->m_oBgColor->m_oRgb.IsInit())
+						(*pattern)->m_oBgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oBgColor->m_oRgb.get());
+					if((*pattern)->m_oFgColor.IsInit() && !(*pattern)->m_oFgColor->m_oIndexed.IsInit() && (*pattern)->m_oFgColor->m_oRgb.IsInit())
+						(*pattern)->m_oFgColor->m_oIndexed = GetClrIndex(m_oColors.get(), (*pattern)->m_oFgColor->m_oRgb.get());
+				}
+			}
+
+			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
+			if(m_oCellStyleXfs.IsInit())
+			{
+				for(auto i = 0; i < m_oCellStyleXfs->m_arrItems.size(); i++)
+				{
+					if(CastedPtr->m_arCellStyles.size() > i)
+					{
+						if(m_oCellStyleXfs->m_arrItems[i]->m_oFillId.IsInit() &&
+							m_oFills->m_arrItems.size() > m_oCellStyleXfs->m_arrItems[i]->m_oFillId->GetValue())
+						{
+							auto xf = static_cast<XLS::XF*>(CastedPtr->m_arCellStyles[i].get());
+							auto xfFill = m_oFills->m_arrItems[m_oCellStyleXfs->m_arrItems[i]->m_oFillId->GetValue()];
+							if(xfFill->m_oPatternFill.IsInit())
+							{
+								if(xfFill->m_oPatternFill->m_oBgColor.IsInit())
+								{
+								if(xfFill->m_oPatternFill->m_oBgColor->m_oIndexed.IsInit())
+									xf->fill.icvBack = xfFill->m_oPatternFill->m_oBgColor->m_oIndexed->GetValue();
+								if(xfFill->m_oPatternFill->m_oFgColor->m_oIndexed.IsInit())
+									xf->fill.icvFore = xfFill->m_oPatternFill->m_oFgColor->m_oIndexed->GetValue();
+								}
+							}
+						}
+					}
+				}
+				for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)
+				{
+					if(CastedPtr->m_arCellXFs.size() > i)
+					{
+						if(m_oCellXfs->m_arrItems[i]->m_oFillId.IsInit() &&
+							m_oFills->m_arrItems.size() > m_oCellXfs->m_arrItems[i]->m_oFillId->GetValue())
+						{
+							auto xf = static_cast<XLS::XF*>(CastedPtr->m_arCellXFs[i].get());
+							auto xfFill = m_oFills->m_arrItems[m_oCellXfs->m_arrItems[i]->m_oFillId->GetValue()];
+							if(xfFill->m_oPatternFill.IsInit())
+							{
+								if(xfFill->m_oPatternFill->m_oBgColor.IsInit() && xfFill->m_oPatternFill->m_oBgColor->m_oIndexed.IsInit())
+									xf->fill.icvBack = xfFill->m_oPatternFill->m_oBgColor->m_oIndexed->GetValue();
+								if(xfFill->m_oPatternFill->m_oFgColor.IsInit() && xfFill->m_oPatternFill->m_oFgColor->m_oIndexed.IsInit())
+									xf->fill.icvFore = xfFill->m_oPatternFill->m_oFgColor->m_oIndexed->GetValue();
+								if(xfFill->m_oPatternFill->m_oPatternType.IsInit())
+								{
+									if(xfFill->m_oPatternFill->m_oPatternType->m_eValue == SimpleTypes::Spreadsheet::EPatternType::patterntypeSolid)
+										xf->fill.fls = 1;
+									else if(xfFill->m_oPatternFill->m_oPatternType->m_eValue == SimpleTypes::Spreadsheet::EPatternType::patterntypeGray0625)
+										xf->fill.fls =  12;
+									else if(xfFill->m_oPatternFill->m_oPatternType->m_eValue == SimpleTypes::Spreadsheet::EPatternType::patterntypeGray125)
+										xf->fill.fls =  11;
+									else if(xfFill->m_oPatternFill->m_oPatternType->m_eValue == SimpleTypes::Spreadsheet::EPatternType::patterntypeDarkGray)
+										xf->fill.fls =  3;
+									else if(xfFill->m_oPatternFill->m_oPatternType->m_eValue == SimpleTypes::Spreadsheet::EPatternType::patterntypeNone)
+										xf->fill.fls =  0;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		void CStyles::read(const CPath& oPath)
 		{

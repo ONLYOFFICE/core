@@ -144,6 +144,8 @@ namespace OOX
 			std::map<std::wstring, size_t>	m_mapStyles2003;
 			std::map<unsigned int, bool>	m_mapStylesContinues2003;
 			size_t							m_nStyleNormal2003 = 0xffffffff;
+		private:
+			void SetFillXLS(XLS::BaseObjectPtr XFSPtr);
 		};
 	} //Spreadsheet
 } // namespace OOX

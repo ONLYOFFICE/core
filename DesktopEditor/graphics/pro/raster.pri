@@ -14,7 +14,7 @@ DEFINES += \
 	MNG_STORE_CHUNKS\
 	MNG_ERROR_TELLTALE
 
-include($$CORE_ROOT_DIR/Common/3dParty/libheif/heif.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/heif/heif.pri)
 
 core_linux {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H

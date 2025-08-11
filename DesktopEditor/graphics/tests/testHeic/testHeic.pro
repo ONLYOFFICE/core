@@ -1,9 +1,10 @@
 QT       -= core
-
 QT       -= gui
 
-TARGET = test
+TARGET	  = test
 CONFIG   += console
+CONFIG 	 -= app_bundle
+
 TEMPLATE = app
 
 CORE_ROOT_DIR = $$PWD/../../../..

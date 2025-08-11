@@ -3508,6 +3508,10 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 }
 void CPdfEditor::Redact(CRedact* pCommand)
 {
+	Redact(pCommand->GetQuadPoints());
+}
+void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
+{
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
 	int nOriginIndex = m_nEditPage;
 	if (m_nMode == Mode::WriteNew)

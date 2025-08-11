@@ -54,6 +54,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CShading;
 	class CExtGrState;
+	class RedactOutputDev;
 }
 
 namespace Aggplus
@@ -286,6 +287,8 @@ private:
 
 	bool                         m_bValid;
 	bool                         m_bSplit;
+
+	friend class PdfWriter::RedactOutputDev;
 };
 
 #endif // _PDF_WRITER_H

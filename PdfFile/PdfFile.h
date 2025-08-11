@@ -303,6 +303,9 @@ public:
 	virtual HRESULT IsSupportAdvancedCommand(const IAdvancedCommand::AdvancedCommandType& type);
 	virtual HRESULT AdvancedCommand(IAdvancedCommand* command);
 
+	// TEST
+	void Redact(const std::vector<double>& arrQuadPoints);
+
 private:
 	CPdfFile_Private* m_pInternal;
 };

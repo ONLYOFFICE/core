@@ -429,11 +429,32 @@ public:
             }
         }
     }
-    inline double*GetDashPattern(LONG& lSize)
+	inline double* GetDashPattern(LONG& lSize)
     {
         lSize = m_lDashPatternSize;
         return m_pDashPattern;
     }
+	inline double GetFlatness()
+	{
+		return m_dFlatness;
+	}
+	inline void   SetFlatness(const double& dF)
+	{
+		m_dFlatness = dF;
+	}
+	inline double* GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline void SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
 
     void Reset()
     {
@@ -449,12 +470,14 @@ public:
 
         m_lAlign = 0;
         m_dMiter = 3.527778;
+		m_dFlatness = 0;
 
         m_nDashStyle       = Aggplus::DashStyleSolid;
         m_lDashPatternSize = 0;
         m_pDashPattern     = NULL;
+		m_dDashOffset      = 0;
 
-        m_dDashOffset = 0;
+		m_nColor2Size = 0;
     }
 
 private:
@@ -468,12 +491,15 @@ private:
 
     LONG   m_lAlign;
     double m_dMiter;
+	double m_dFlatness;
 
     BYTE   m_nDashStyle;
     double m_dDashOffset;
     double*m_pDashPattern;
     LONG   m_lDashPatternSize;
 
+	double m_dColor2[4];
+	int m_nColor2Size;
 };
 class CBrushState
 {
@@ -981,6 +1007,20 @@ public:
         lCount  = m_lShadingPointsCount;
     }
 
+	inline double* GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline void SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
+
 private:
 
     LONG         m_lType;
@@ -998,6 +1038,9 @@ private:
     double*      m_pShadingPoints;
     LONG         m_lShadingPointsCount;
     double       m_pShadingPattern[6]; // У линейного градиента x0, y0, x1, y1 (2 не используются), у радиального x0, y0, r0, x1, y1, r1
+
+	double m_dColor2[4];
+	int m_nColor2Size;
 };
 class CFontState
 {

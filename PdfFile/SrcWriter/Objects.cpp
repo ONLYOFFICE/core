@@ -228,6 +228,13 @@ namespace PdfWriter
 	}
 	CProxyObject::~CProxyObject()
 	{
+		TXrefEntry* pXrefEntry = m_pObject ? m_pObject->GetXrefEntry() : NULL;
+		if (pXrefEntry)
+		{
+			std::vector<CProxyObject*>::iterator it = std::find(pXrefEntry->pRefObj.begin(), pXrefEntry->pRefObj.end(), this);
+			if (it != pXrefEntry->pRefObj.end())
+				pXrefEntry->pRefObj.erase(it);
+		}
 		if (m_bClear)
 			RELEASE_OBJECT(m_pObject);
 	}

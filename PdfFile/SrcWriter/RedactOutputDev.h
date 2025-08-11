@@ -39,6 +39,8 @@
 //#include "../../DesktopEditor/graphics/TemporaryCS.h"
 //#include "../../DesktopEditor/graphics/structures.h"
 
+#include "../SrcReader/GfxClip.h"
+
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/OutputDev.h"
 
@@ -49,6 +51,9 @@ namespace PdfWriter
 	public:
 		RedactOutputDev(CPdfWriter* pRenderer);
 		virtual ~RedactOutputDev();
+
+		void SetRedact(const std::vector<double>& arrQuadPoints);
+
 		//----- get info about output device
 		virtual GBool upsideDown() override
 		{
@@ -135,7 +140,7 @@ namespace PdfWriter
 		virtual void beginString(GfxState *pGState, GString *s) override;
 		virtual void endString(GfxState *pGState) override;
 		virtual void drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen) override;
-		virtual void drawString(GfxState *pGState, GString *seString) override;
+		// drawString
 		virtual GBool beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen) override;
 		virtual void endType3Char(GfxState *pGState) override;
 		virtual void endTextObject(GfxState *pGState) override;
@@ -168,10 +173,21 @@ namespace PdfWriter
 		virtual void clearSoftMask(GfxState *pGState) override;
 
 	private:
+		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2 = NULL);
+		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText = false);
+		void DrawPath(const LONG& lType);
+		void UpdateTransform();
+		void UpdatePen();
+		void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
+
+		std::vector<double> m_arrQuadPoints;
+
 		CPdfWriter* m_pRenderer;
 		CDocument*  m_pDoc;
 		CPage*      m_pPage;
 		double      m_arrMatrix[6];
+
+		BYTE m_nRI;
 	};
 }
 

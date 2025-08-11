@@ -1345,3 +1345,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	}
 	return S_FALSE;
 }
+void CPdfFile::Redact(const std::vector<double>& arrQuadPoints)
+{
+	m_pInternal->pEditor->Redact(arrQuadPoints);
+}

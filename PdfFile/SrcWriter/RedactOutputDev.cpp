@@ -44,12 +44,18 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer)
 	m_pRenderer = pRenderer;
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
+
+	m_nRI = -1;
 }
 RedactOutputDev::~RedactOutputDev()
 {
 	m_pRenderer = NULL;
 	m_pDoc = NULL;
 	m_pPage = NULL;
+}
+void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
+{
+	m_arrQuadPoints = arrQuadPoints;
 }
 //----- initialization and control
 void RedactOutputDev::setDefaultCTM(double *ctm)
@@ -60,7 +66,7 @@ void RedactOutputDev::setDefaultCTM(double *ctm)
 }
 void RedactOutputDev::startPage(int nPageIndex, GfxState *pGState)
 {
-	m_pPage = m_pDoc->GetEditPage(nPageIndex);
+	m_pPage = m_pDoc->GetEditPage(nPageIndex - 1);
 	m_pRenderer->EditPage(m_pPage);
 	m_pDoc->SetCurPage(m_pPage);
 	m_pDoc->ClearPageFull();
@@ -84,7 +90,8 @@ void RedactOutputDev::updateAll(GfxState *pGState)
 }
 void RedactOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 {
-	m_pPage->Concat(dMatrix11, dMatrix12, dMatrix21, dMatrix22, dMatrix31, dMatrix32);
+	// TODO применять только непосредственно при записи
+	//m_pPage->Concat(dMatrix11, dMatrix12, dMatrix21, dMatrix22, dMatrix31, dMatrix32);
 }
 void RedactOutputDev::updateLineDash(GfxState *pGState)
 {
@@ -92,39 +99,32 @@ void RedactOutputDev::updateLineDash(GfxState *pGState)
 	int     nSize  = 0;
 	double  dStart = 0;
 	pGState->getLineDash(&pDash, &nSize, &dStart);
-	m_pPage->SetDash(pDash, nSize, dStart);
+
+	m_pRenderer->m_oPen.SetDashPattern(pDash, nSize);
+	m_pRenderer->m_oPen.SetDashOffset(dStart);
+	m_pRenderer->m_oPen.SetDashStyle(Aggplus::DashStyleCustom);
 }
 void RedactOutputDev::updateFlatness(GfxState *pGState)
 {
-	m_pPage->SetFlat(pGState->getFlatness());
+	m_pRenderer->m_oPen.SetFlatness(pGState->getFlatness());
 }
 void RedactOutputDev::updateLineJoin(GfxState *pGState)
 {
 	int nLineJoin = pGState->getLineJoin();
-	if (nLineJoin == 0)
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Miter);
-	else if (nLineJoin == 1)
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Round);
-	else if (nLineJoin == 2)
-		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Bevel);
+	m_pRenderer->m_oPen.SetJoinStyle(nLineJoin);
 }
 void RedactOutputDev::updateLineCap(GfxState *pGState)
 {
 	int nLineCap = pGState->getLineCap();
-	if (nLineCap == 0)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_Butt);
-	else if (nLineCap == 1)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_Round);
-	else if (nLineCap == 2)
-		m_pPage->SetLineCap(ELineCapStyle::linecap_ProjectingSquare);
+	m_pRenderer->m_oPen.SetStartCapStyle(nLineCap);
 }
 void RedactOutputDev::updateMiterLimit(GfxState *pGState)
 {
-	m_pPage->SetMiterLimit(pGState->getMiterLimit());
+	m_pRenderer->m_oPen.SetMiter(pGState->getMiterLimit());
 }
 void RedactOutputDev::updateLineWidth(GfxState *pGState)
 {
-	m_pPage->SetLineWidth(pGState->getLineWidth());
+	m_pRenderer->m_oPen.SetSize(pGState->getLineWidth());
 }
 void RedactOutputDev::updateFillColorSpace(GfxState *pGState)
 {
@@ -142,17 +142,17 @@ void RedactOutputDev::updateFillColor(GfxState *pGState)
 	switch (eMode) {
 	case csDeviceGray:
 	{
-		m_pPage->SetFillG(colToDbl(pColor->c[0]));
+		m_pRenderer->m_oBrush.SetDColor2(1, colToDbl(pColor->c[0]));
 		break;
 	}
 	case csDeviceRGB:
 	{
-		m_pPage->SetFillRGB(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		m_pRenderer->m_oBrush.SetDColor2(3, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
 		break;
 	}
 	case csDeviceCMYK:
 	{
-		m_pPage->SetFillCMYK(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		m_pRenderer->m_oBrush.SetDColor2(4, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
 		break;
 	}
 	default:
@@ -167,17 +167,17 @@ void RedactOutputDev::updateStrokeColor(GfxState *pGState)
 	switch (eMode) {
 	case csDeviceGray:
 	{
-		m_pPage->SetStrokeG(colToDbl(pColor->c[0]));
+		m_pRenderer->m_oPen.SetDColor2(1, colToDbl(pColor->c[0]));
 		break;
 	}
 	case csDeviceRGB:
 	{
-		m_pPage->SetStrokeRGB(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
+		m_pRenderer->m_oPen.SetDColor2(3, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]));
 		break;
 	}
 	case csDeviceCMYK:
 	{
-		m_pPage->SetStrokeCMYK(colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
+		m_pRenderer->m_oPen.SetDColor2(4, colToDbl(pColor->c[0]), colToDbl(pColor->c[1]), colToDbl(pColor->c[2]), colToDbl(pColor->c[3]));
 		break;
 	}
 	default:
@@ -279,12 +279,14 @@ void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
 //----- path painting
 void RedactOutputDev::stroke(GfxState *pGState)
 {
-	GfxPath* pPath = pGState->getPath();
-	GfxSubpath* pSubPath = pPath->getSubpath(0);
+	DoPath(pGState, pGState->getPath(), pGState->getCTM());
+	DrawPath(c_nStroke);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать stroke
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
+	DoPath(pGState, pGState->getPath(), pGState->getCTM());
+	DrawPath(c_nWindingFillMode);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать fill
 }
 void RedactOutputDev::eoFill(GfxState *pGState)
@@ -334,11 +336,10 @@ void RedactOutputDev::endString(GfxState *pGState)
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 {
-
-}
-void RedactOutputDev::drawString(GfxState *pGState, GString *seString)
-{
-
+	// TODO если символ попадает в Redact то return
+	BYTE* pCodes = new BYTE[nBytesCount];
+	for (int i = 0; i < nBytesCount; ++i)
+		pCodes[i] = (nCode >> (nBytesCount - 1 - i * 8)) & 0xFF;
 }
 GBool RedactOutputDev::beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
 {
@@ -438,5 +439,420 @@ void RedactOutputDev::setSoftMask(GfxState *pGState, double *pBBox, GBool bAlpha
 void RedactOutputDev::clearSoftMask(GfxState *pGState)
 {
 
+}
+
+void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2)
+{
+	double arrMatrix[6];
+	if (pCTM2)
+	{
+		arrMatrix[0] = pCTM2->dA;
+		arrMatrix[1] = pCTM2->dB;
+		arrMatrix[2] = pCTM2->dC;
+		arrMatrix[3] = pCTM2->dD;
+		arrMatrix[4] = pCTM2->dE;
+		arrMatrix[5] = pCTM2->dF;
+	}
+	else
+	{
+		arrMatrix[0] = pCTM[0];
+		arrMatrix[1] = pCTM[1];
+		arrMatrix[2] = pCTM[2];
+		arrMatrix[3] = pCTM[3];
+		arrMatrix[4] = pCTM[4];
+		arrMatrix[5] = pCTM[5];
+	}
+
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY);
+
+	m_pRenderer->PathCommandEnd();
+
+	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+	{
+		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
+		int nPointsCount = pSubpath->getNumPoints();
+
+		m_pRenderer->PathCommandMoveTo(pSubpath->getX(0) + dShiftX, pSubpath->getY(0) + dShiftY);
+
+		int nCurPointIndex = 1;
+		while (nCurPointIndex < nPointsCount)
+		{
+			if (pSubpath->getCurve(nCurPointIndex))
+			{
+				m_pRenderer->PathCommandCurveTo(pSubpath->getX(nCurPointIndex)     + dShiftX, pSubpath->getY(nCurPointIndex)     + dShiftY,
+												pSubpath->getX(nCurPointIndex + 1) + dShiftX, pSubpath->getY(nCurPointIndex + 1) + dShiftY,
+												pSubpath->getX(nCurPointIndex + 2) + dShiftX, pSubpath->getY(nCurPointIndex + 2) + dShiftY);
+				nCurPointIndex += 3;
+			}
+			else
+			{
+				m_pRenderer->PathCommandLineTo(pSubpath->getX(nCurPointIndex) + dShiftX, pSubpath->getY(nCurPointIndex) + dShiftY);
+				++nCurPointIndex;
+			}
+		}
+		if (pSubpath->isClosed())
+		{
+			m_pRenderer->PathCommandClose();
+		}
+	}
+}
+void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText)
+{
+	if (1 == pMatrix[0] && 0 == pMatrix[1] && 0 == pMatrix[2] && 1 == pMatrix[3] && !bText)
+	{
+		if (pMatrix[4] || pMatrix[5])
+		{
+			*pdShiftX = pMatrix[4];
+			*pdShiftY = pMatrix[5];
+		}
+		m_pRenderer->ResetTransform();
+		m_arrMatrix[0] = 1; m_arrMatrix[1] = 0;
+		m_arrMatrix[2] = 0; m_arrMatrix[3] = 1;
+		m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
+	}
+	else if (m_arrMatrix[0] == pMatrix[0] && m_arrMatrix[1] == pMatrix[1] && m_arrMatrix[2] == pMatrix[2] && m_arrMatrix[3] == pMatrix[3]
+			 && m_arrMatrix[4] == pMatrix[4] && m_arrMatrix[5] == pMatrix[5] && !bText)
+	{
+		double dIDet = 1 / (pMatrix[0] * pMatrix[3] - pMatrix[1] * pMatrix[2]);
+		*pdShiftX = ((pMatrix[4] - m_arrMatrix[4]) * m_arrMatrix[3] - (pMatrix[5] - m_arrMatrix[5]) * m_arrMatrix[1]) * dIDet;
+		*pdShiftY = ((pMatrix[5] - m_arrMatrix[5]) * m_arrMatrix[0] - (pMatrix[4] - m_arrMatrix[4]) * m_arrMatrix[2]) * dIDet;
+	}
+	else
+	{
+		m_pRenderer->SetTransform(pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], pMatrix[4], pMatrix[5]);
+		m_arrMatrix[0] = pMatrix[0]; m_arrMatrix[1] = pMatrix[1];
+		m_arrMatrix[2] = pMatrix[2]; m_arrMatrix[3] = pMatrix[3];
+		m_arrMatrix[4] = pMatrix[4]; m_arrMatrix[5] = pMatrix[5];
+	}
+}
+void RedactOutputDev::DrawPath(const LONG& lType)
+{
+	m_pRenderer->m_oCommandManager.Flush();
+
+	bool bStroke = lType & c_nStroke;
+	bool bFill   = lType & c_nWindingFillMode;
+	bool bEoFill = lType & c_nEvenOddFillMode;
+
+	m_pPage->GrSave();
+	UpdateTransform();
+
+	if (bStroke)
+		UpdatePen();
+
+	std::wstring sTextureOldPath = L"";
+	std::wstring sTextureTmpPath = L"";
+
+	if (bFill || bEoFill)
+	{
+		if (c_BrushTypeTexture == m_pRenderer->m_oBrush.GetType())
+		{
+			sTextureOldPath = m_pRenderer->m_oBrush.GetTexturePath();
+			//sTextureTmpPath = GetDownloadFile(sTextureOldPath, wsTempDirectory);
+
+			if (!sTextureTmpPath.empty())
+				m_pRenderer->m_oBrush.SetTexturePath(sTextureTmpPath);
+		}
+
+		UpdateBrush(NULL, L"");
+	}
+
+	if (!m_pRenderer->m_pShading)
+	{
+		m_pRenderer->m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
+	}
+	else
+	{
+		if (bFill || bEoFill)
+		{
+			m_pPage->GrSave();
+			m_pRenderer->m_oPath.Clip(m_pPage, bEoFill);
+
+			if (NULL != m_pRenderer->m_pShadingExtGrState)
+				m_pPage->SetExtGrState(m_pRenderer->m_pShadingExtGrState);
+
+			m_pPage->DrawShading(m_pRenderer->m_pShading);
+			m_pPage->GrRestore();
+		}
+
+		if (bStroke)
+			m_pRenderer->m_oPath.Draw(m_pPage, bStroke, false, false);
+	}
+
+	m_pPage->GrRestore();
+
+	if (!sTextureTmpPath.empty())
+		m_pRenderer->m_oBrush.SetTexturePath(sTextureOldPath);
+}
+void RedactOutputDev::UpdateTransform()
+{
+	m_pPage->SetTransform(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+}
+void RedactOutputDev::UpdatePen()
+{
+	int nSize = -1;
+	double* dColor = m_pRenderer->m_oPen.GetDColor2(nSize);
+	if (nSize == 1)
+		m_pPage->SetStrokeG(dColor[0]);
+	else if (nSize == 3)
+		m_pPage->SetStrokeRGB(dColor[0], dColor[1], dColor[2]);
+	else if (nSize == 4)
+		m_pPage->SetStrokeCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
+
+	// TODO ExtGState
+	//m_pPage->SetStrokeAlpha((unsigned char)m_pRenderer->m_oPen.GetAlpha());
+	m_pPage->SetLineWidth(m_pRenderer->m_oPen.GetSize());
+
+	LONG lDashStyle = m_pRenderer->m_oPen.GetDashStyle();
+	if (Aggplus::DashStyleSolid == lDashStyle)
+	{
+		// Ничего не делаем
+	}
+	else if (Aggplus::DashStyleCustom == lDashStyle)
+	{
+		LONG lDashCount = 0;
+		double* pDashPattern = m_pRenderer->m_oPen.GetDashPattern(lDashCount);
+		m_pPage->SetDash(pDashPattern, lDashCount, m_pRenderer->m_oPen.GetDashOffset());
+	}
+
+	BYTE nLineCap = m_pRenderer->m_oPen.GetStartCapStyle();
+	if (nLineCap == 0)
+		m_pPage->SetLineCap(ELineCapStyle::linecap_Butt);
+	else if (nLineCap == 1)
+		m_pPage->SetLineCap(ELineCapStyle::linecap_Round);
+	else if (nLineCap == 2)
+		m_pPage->SetLineCap(ELineCapStyle::linecap_ProjectingSquare);
+
+	BYTE nLineJoin = m_pRenderer->m_oPen.GetJoinStyle();
+	if (nLineJoin == 0)
+	{
+		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Miter);
+		m_pPage->SetMiterLimit(m_pRenderer->m_oPen.GetMiter());
+	}
+	else if (nLineJoin == 1)
+		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Round);
+	else if (nLineJoin == 2)
+		m_pPage->SetLineJoin(ELineJoinStyle::linejoin_Bevel);
+
+	double dFlatness = m_pRenderer->m_oPen.GetFlatness();
+	if (dFlatness > 0.0001)
+		m_pPage->SetFlat(dFlatness);
+}
+void RedactOutputDev::UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory)
+{
+	m_pRenderer->m_pShading = NULL;
+	m_pRenderer->m_pShadingExtGrState = NULL;
+
+	LONG lBrushType = m_pRenderer->m_oBrush.GetType();
+	/*
+	if (c_BrushTypeTexture == lBrushType)
+	{
+		std::wstring wsTexturePath = m_oBrush.GetTexturePath();
+		BYTE nAlpha = m_oBrush.GetTextureAlpha();
+		CImageFileFormatChecker oImageFormat(wsTexturePath);
+
+		PdfWriter::CImageDict* pImage = NULL;
+		int nImageW = 0;
+		int nImageH = 0;
+		bool bHasImage = false;
+		if (m_pDocument->HasImage(wsTexturePath, nAlpha))
+		{
+			pImage = m_pDocument->GetImage(wsTexturePath, nAlpha);
+			nImageH = pImage->GetHeight();
+			nImageW = pImage->GetWidth();
+			bHasImage = true;
+		}
+		else if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType || _CXIMAGE_FORMAT_JP2 == oImageFormat.eFileType)
+		{
+			pImage = m_pDocument->CreateImage();
+			CBgraFrame oFrame;
+			oFrame.OpenFile(wsTexturePath);
+			nImageH = oFrame.get_Height();
+			nImageW = oFrame.get_Width();
+
+			if (pImage)
+			{
+				if (_CXIMAGE_FORMAT_JPG == oImageFormat.eFileType)
+					pImage->LoadJpeg(wsTexturePath.c_str(), nImageW, nImageH, oFrame.IsGrayScale());
+				else
+					pImage->LoadJpx(wsTexturePath.c_str(), nImageW, nImageH);
+
+				m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
+			}
+		}
+		else if (_CXIMAGE_FORMAT_WMF == oImageFormat.eFileType ||
+				 _CXIMAGE_FORMAT_EMF == oImageFormat.eFileType ||
+				 _CXIMAGE_FORMAT_SVM == oImageFormat.eFileType ||
+				 _CXIMAGE_FORMAT_SVG == oImageFormat.eFileType)
+		{
+			// TODO: Реализовать отрисовку метафайлов по-нормальному
+			MetaFile::IMetaFile* pMeta = MetaFile::Create(pAppFonts);
+			pMeta->LoadFromFile(wsTexturePath.c_str());
+
+			double dL, dR, dT, dB;
+			m_oPath.GetBounds(dL, dT, dR, dB);
+
+			double dW = 300.0 * (dR - dL) / 72;
+			if (dW < 0) dW = -dW;
+			double dH = 300.0 * (dB - dT) / 72;
+			if (dH < 0) dH = -dH;
+
+			if (dW < 1) dW = 1;
+			if (dH < 1) dH = 1;
+
+			double dMax = 2000;
+			double dMin = 10;
+			if (dW > dMax || dH > dMax)
+			{
+				double dMaxSrc = (dW > dH) ? dW : dH;
+				dW *= (dMax / dMaxSrc);
+				dH *= (dMax / dMaxSrc);
+			}
+
+			if (dW < dMin) dW = dMin;
+			if (dH < dMin) dH = dMin;
+
+			std::wstring wsTempFile = GetTempFile(wsTempDirectory);
+			pMeta->ConvertToRaster(wsTempFile.c_str(), _CXIMAGE_FORMAT_PNG, (int)dW, (int)dH);
+
+			RELEASEOBJECT(pMeta);
+
+			Aggplus::CImage oImage(wsTempFile);
+			nImageW = abs((int)oImage.GetWidth());
+			nImageH = abs((int)oImage.GetHeight());
+			pImage = LoadImage(&oImage, 255);
+			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
+		}
+		else
+		{
+			Aggplus::CImage oImage(wsTexturePath);
+			nImageW = abs((int)oImage.GetWidth());
+			nImageH = abs((int)oImage.GetHeight());
+			pImage = LoadImage(&oImage, 255);
+			m_pDocument->AddImage(wsTexturePath, nAlpha, pImage);
+		}
+
+		if (pImage)
+		{
+			if (0xFF != nAlpha && !bHasImage)
+				pImage->AddTransparency(nAlpha);
+
+			LONG lTextureMode = m_oBrush.GetTextureMode();
+
+			double dW = 10;
+			double dH = 10;
+
+			double dL, dR, dT, dB;
+			CBrushState::TBrushRect& oRect = m_oBrush.GetBrushRect();
+			if (!oRect.bUse)
+			{
+				m_oPath.GetBounds(dL, dT, dR, dB);
+			}
+			else
+			{
+				dL = MM_2_PT(oRect.dLeft);
+				dB = MM_2_PT(m_dPageHeight - oRect.dTop);
+				dR = MM_2_PT(oRect.dLeft + oRect.dWidth);
+				dT = MM_2_PT(m_dPageHeight - oRect.dTop - oRect.dHeight);
+			}
+
+			double dXStepSpacing = 0, dYStepSpacing = 0;
+			if (c_BrushTextureModeStretch == lTextureMode)
+			{
+				// Растягиваем картинку по размерам пата
+				dW = std::max(10.0, dR - dL);
+				dH = std::max(10.0, dB - dT);
+
+				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски или обрезание картинки,
+				// удвоим расстрояние между соседними тайлами. Плохого тут нет, т.к. нам нужен всего 1 тайл
+				dXStepSpacing = dW;
+				dYStepSpacing = dH;
+			}
+			else
+			{
+				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
+				dW = (double)nImageW * 72.0 / 96.0;
+				dH = (double)nImageH * 72.0 / 96.0;
+
+				dT = dB;
+			}
+
+			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
+			PdfWriter::CMatrix* pMatrix = m_pPage->GetTransform();
+			pMatrix->Apply(dL, dT);
+			PdfWriter::CMatrix oPatternMatrix = *pMatrix;
+			oPatternMatrix.x = dL;
+			oPatternMatrix.y = dT;
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix, PdfWriter::imagetilepatterntype_Default, dXStepSpacing, dYStepSpacing));
+		}
+	}
+	else if (c_BrushTypeHatch1 == lBrushType)
+	{
+		std::wstring wsHatchType = m_oBrush.GetTexturePath();
+
+		double dW = 8 * 72 / 96;
+		double dH = 8 * 72 / 96;
+
+		TColor oColor1 = m_oBrush.GetTColor1();
+		TColor oColor2 = m_oBrush.GetTColor2();
+		BYTE nAlpha1 = (BYTE)m_oBrush.GetAlpha1();
+		BYTE nAlpha2 = (BYTE)m_oBrush.GetAlpha2();
+
+		m_pPage->SetPatternColorSpace(m_pDocument->CreateHatchPattern(dW, dH, oColor1.r, oColor1.g, oColor1.b, nAlpha1, oColor2.r, oColor2.g, oColor2.b, nAlpha2, wsHatchType));
+	}
+	else if (c_BrushTypeRadialGradient == lBrushType || c_BrushTypeLinearGradient == lBrushType)
+	{
+		TColor* pGradientColors;
+		double* pPoints;
+		LONG lCount;
+
+		m_oBrush.GetGradientColors(pGradientColors, pPoints, lCount);
+
+		if (lCount > 0)
+		{
+			unsigned char* pColors = new unsigned char[3 * lCount];
+			unsigned char* pAlphas = new unsigned char[lCount];
+			if (pColors)
+			{
+				for (LONG lIndex = 0; lIndex < lCount; lIndex++)
+				{
+					pColors[3 * lIndex + 0] = pGradientColors[lIndex].r;
+					pColors[3 * lIndex + 1] = pGradientColors[lIndex].g;
+					pColors[3 * lIndex + 2] = pGradientColors[lIndex].b;
+					pAlphas[lIndex]         = pGradientColors[lIndex].a;
+				}
+
+				if (c_BrushTypeLinearGradient == lBrushType)
+				{
+					double dX0, dY0, dX1, dY1;
+					m_oBrush.GetLinearGradientPattern(dX0, dY0, dX1, dY1);
+					m_pShading = m_pDocument->CreateAxialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
+				}
+				else //if (c_BrushTypeRadialGradient == lBrushType)
+				{
+					double dX0, dY0, dR0, dX1, dY1, dR1;
+					m_oBrush.GetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
+					m_pShading = m_pDocument->CreateRadialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dR0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), MM_2_PT(dR1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
+				}
+				delete[] pColors;
+				delete[] pAlphas;
+			}
+		}
+	}
+	*/
+	// else// if (c_BrushTypeSolid == lBrushType)
+	{
+		int nSize = -1;
+		double* dColor = m_pRenderer->m_oBrush.GetDColor2(nSize);
+		if (nSize == 1)
+			m_pPage->SetFillG(dColor[0]);
+		else if (nSize == 3)
+			m_pPage->SetFillRGB(dColor[0], dColor[1], dColor[2]);
+		else if (nSize == 4)
+			m_pPage->SetFillCMYK(dColor[0], dColor[1], dColor[2], dColor[3]);
+
+		// TODO ExtGState
+		// m_pPage->SetFillAlpha((unsigned char)m_pRenderer->m_oBrush.GetAlpha1());
+	}
 }
 }

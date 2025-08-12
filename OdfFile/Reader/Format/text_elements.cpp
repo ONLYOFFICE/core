@@ -364,9 +364,8 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context, _CP_OPT(std
 
 	if (!Context.process_headers_footers_ && (next_section_ || next_end_section_)) // remove in text::section  - GreekSynopsis.odt
 	{
-        if( !flag_for_emplicit_end ) // Если параграф не последний (т.е flag_for_emplicit_end = false )
+		if( !flag_for_emplicit_end )
         {
-            // То возможно в нем явно указан разрыв, потому мы устанавливаем флаг is_dump = true
             Context.get_section_context().get_last().is_dump_ = true;
             is_empty = false;
         }

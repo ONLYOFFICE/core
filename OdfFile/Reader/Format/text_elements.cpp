@@ -852,7 +852,6 @@ void section::docx_convert(oox::docx_conversion_context & Context)
 				}
 			}
         }
-        // Это функция в которой записываются параграфы
         if(i == content_.size() - 1)
         {
             Context.set_implicit_end(true);

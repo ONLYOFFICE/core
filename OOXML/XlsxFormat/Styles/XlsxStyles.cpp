@@ -302,11 +302,9 @@ namespace OOX
 				if(m_oCellStyleXfs.IsInit())
 					m_oCellStyleXfs->toXLS(FormatPtr->m_XFS);
 				if(m_oCellXfs.IsInit())
-				{
-
 					m_oCellXfs->toXLS(FormatPtr->m_XFS);
-				}
 				SetFillXLS(FormatPtr->m_XFS);
+				SetBordersXLS(FormatPtr->m_XFS);
 			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
@@ -354,6 +352,9 @@ namespace OOX
 						}
 					}
 				}
+			}
+			if(m_oCellXfs.IsInit())
+			{
 				for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)
 				{
 					if(CastedPtr->m_arCellXFs.size() > i)
@@ -383,6 +384,152 @@ namespace OOX
 										xf->fill.fls =  0;
 								}
 							}
+						}
+					}
+				}
+			}
+		}
+		void ProcessBorderProp(CBorderProp* prop, unsigned char& DgPtr, unsigned char& icvPtr)
+		{
+			if(prop->m_oStyle.IsInit())
+			{
+				switch(prop->m_oStyle->GetValue())
+				{
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone:
+					{
+						DgPtr = 0;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin:
+					{
+						DgPtr = 1;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium:
+					{
+						DgPtr = 2;
+						break;
+					}
+
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed:
+					{
+						DgPtr = 3;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted:
+					{
+						DgPtr = 4;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick:
+					{
+						DgPtr = 5;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble:
+					{
+						DgPtr = 6;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair:
+					{
+						DgPtr = 7;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed:
+					{
+						DgPtr = 8;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot:
+					{
+						DgPtr = 9;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot:
+					{
+						DgPtr = 10;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot:
+					{
+						DgPtr = 11;
+						break;
+					}
+					case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot:
+					{
+						DgPtr = 13;
+						break;
+					}
+					default:
+						break;
+				}
+			}
+			if(prop->m_oColor.IsInit() && prop->m_oColor->m_oIndexed.IsInit())
+				icvPtr = prop->m_oColor->m_oIndexed->GetValue();
+		}
+		void CStyles::SetBordersXLS(XLS::BaseObjectPtr XFSPtr)
+		{
+			if(!m_oBorders.IsInit())
+				return;
+			for(auto i : m_oBorders->m_arrItems)
+			{
+				if(i->m_oTop.IsInit() && i->m_oTop->m_oColor.IsInit() &&
+					!i->m_oTop->m_oColor->m_oIndexed.IsInit() &&  i->m_oTop->m_oColor->m_oRgb.IsInit())
+				{
+					i->m_oTop->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oTop->m_oColor->m_oRgb.get());
+				}
+				if(i->m_oBottom.IsInit() && i->m_oBottom->m_oColor.IsInit() &&
+					!i->m_oBottom->m_oColor->m_oIndexed.IsInit() &&  i->m_oBottom->m_oColor->m_oRgb.IsInit())
+				{
+					i->m_oBottom->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oBottom->m_oColor->m_oRgb.get());
+				}
+				if(i->m_oStart.IsInit() && i->m_oStart->m_oColor.IsInit() &&
+					!i->m_oStart->m_oColor->m_oIndexed.IsInit() &&  i->m_oStart->m_oColor->m_oRgb.IsInit())
+				{
+					i->m_oStart->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oStart->m_oColor->m_oRgb.get());
+				}
+				if(i->m_oEnd.IsInit() && i->m_oEnd->m_oColor.IsInit() &&
+					!i->m_oEnd->m_oColor->m_oIndexed.IsInit() &&  i->m_oEnd->m_oColor->m_oRgb.IsInit())
+				{
+					i->m_oEnd->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oEnd->m_oColor->m_oRgb.get());
+				}
+				if(i->m_oDiagonal.IsInit() && i->m_oDiagonal->m_oColor.IsInit() &&
+					!i->m_oDiagonal->m_oColor->m_oIndexed.IsInit() &&  i->m_oDiagonal->m_oColor->m_oRgb.IsInit())
+				{
+					i->m_oDiagonal->m_oColor->m_oIndexed = GetClrIndex(m_oColors.get(), i->m_oDiagonal->m_oColor->m_oRgb.get());
+				}
+
+			}
+			auto CastedPtr = static_cast<XLS::XFS*>(XFSPtr.get());
+			for(auto i = 0; i < m_oCellXfs->m_arrItems.size(); i++)
+			{
+				if(CastedPtr->m_arCellXFs.size() > i)
+				{
+					if(m_oCellXfs->m_arrItems[i]->m_oBorderId.IsInit() &&
+						m_oBorders->m_arrItems.size() > m_oCellXfs->m_arrItems[i]->m_oBorderId->GetValue())
+					{
+						auto xf = static_cast<XLS::XF*>(CastedPtr->m_arCellXFs[i].get());
+						auto xfBorder = m_oBorders->m_arrItems[m_oCellXfs->m_arrItems[i]->m_oBorderId->GetValue()];
+						if(xfBorder->m_oBottom.IsInit())
+						{
+							ProcessBorderProp(xfBorder->m_oBottom.GetPointer(), xf->border.dgBottom, xf->border.icvBottom);
+						}
+						if(xfBorder->m_oTop.IsInit())
+						{
+							ProcessBorderProp(xfBorder->m_oTop.GetPointer(), xf->border.dgTop, xf->border.icvTop);
+						}
+						if(xfBorder->m_oStart.IsInit())
+						{
+							ProcessBorderProp(xfBorder->m_oStart.GetPointer(), xf->border.dgLeft, xf->border.icvLeft);
+						}
+						if(xfBorder->m_oEnd.IsInit())
+						{
+							ProcessBorderProp(xfBorder->m_oEnd.GetPointer(), xf->border.dgRight, xf->border.icvRight);
+						}
+						if(xfBorder->m_oDiagonal.IsInit())
+						{
+							ProcessBorderProp(xfBorder->m_oDiagonal.GetPointer(), xf->border.dgDiag, xf->border.icvDiag);
 						}
 					}
 				}

@@ -146,6 +146,7 @@ namespace OOX
 			size_t							m_nStyleNormal2003 = 0xffffffff;
 		private:
 			void SetFillXLS(XLS::BaseObjectPtr XFSPtr);
+			void SetBordersXLS(XLS::BaseObjectPtr XFSPtr);
 		};
 	} //Spreadsheet
 } // namespace OOX

@@ -260,6 +260,8 @@ namespace SVG
 		{
 			oSecondPoint = Point{arValues[arValues.size() - 2], arValues[arValues.size() - 1]};
 
+			arValues.erase(arValues.end() - 2, arValues.end());
+
 			return new CLineElement(oSecondPoint + oTranslatePoint);
 		}
 

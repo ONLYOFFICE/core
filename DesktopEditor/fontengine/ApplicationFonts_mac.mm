@@ -29,52 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
+#include "ApplicationFonts.h"
+#include "../common/File.h"
+#import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
-#include "BiffRecord.h"
-#include "../Biff_structures/FrtHeaderOld.h"
-#include "../Biff_structures/PBT.h"
-
-namespace XLS
+std::set<std::wstring> CApplicationFonts::GetInstalledFontsMac()
 {
+	std::set<std::wstring> paths;
 
-class DBQueryExt: public BiffRecord
-{
-	BIFF_RECORD_DEFINE_TYPE_INFO(DBQueryExt)
-	BASE_OBJECT_DEFINE_CLASS_NAME(DBQueryExt)
-public:
-	DBQueryExt();
-	~DBQueryExt();
+	CFArrayRef fontURLs = CTFontManagerCopyAvailableFontURLs();
+	if (!fontURLs)
+		return paths;
 
-	BaseObjectPtr clone();
-	
-	void readFields(CFRecord& record);
-	void writeFields(CFRecord& record);
+	NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding (kCFStringEncodingUTF32LE);
 
-	static const ElementType type = typeDBQueryExt;
+	CFIndex count = CFArrayGetCount(fontURLs);
+	for (CFIndex i = 0; i < count; ++i)
+	{
+		CFURLRef url = (CFURLRef)CFArrayGetValueAtIndex(fontURLs, i);
+		if (!url)
+			continue;
 
-	FrtHeaderOld		frtHeaderOld;
-	unsigned short		dbt = 0;			//enum DataSourceType
-	bool				fMaintain = false;
-	bool				fNewQuery = false;
-	bool				fImportXmlSource = false;
-	bool				fSPListSrc = false;
-	bool				fSPListReinitCache = false;
-	bool				fSrcIsXml = false;
-	BiffStructurePtr	grbitDbt;
-	bool				fTxtWiz = false;
-	bool				fTableNames;
-	unsigned char		bVerDbqueryEdit = 0;	//DataFunctionalityLevel
-	unsigned char		bVerDbqueryRefreshed = 0;
-	unsigned char		bVerDbqueryRefreshableMin = 0;
-	unsigned short		coledb = 0;
-	unsigned short		cstFuture = 0;
-	unsigned short		wRefreshInterval = 0;
-	unsigned short		wHtmlFmt = 0;
-	unsigned short		cwParamFlags;
-	std::vector<PBT>	rgPbt;
-	std::string			rgbFutureBytes;
-};
+		NSString* nsPath = [(__bridge NSURL *)url path];
+		if (!nsPath)
+			continue;
 
-} // namespace XLS
+		NSData* pSData = [nsPath dataUsingEncoding: encode];
+		paths.emplace(std::wstring((wchar_t*)[pSData bytes], [pSData length] / sizeof (wchar_t)));
+	}
 
+	CFRelease(fontURLs);
+	return paths;
+}

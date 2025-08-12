@@ -211,7 +211,7 @@ namespace NSBinPptxRW
 				nCountSlides = m_oReader.GetLong();
 			}
 
-			if (/*0 == nCountThemes || */0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/) //rev 60054 - презентация без слайдов
+			if (0 == nCountMasters ) 
 			{
 				return;
 			}

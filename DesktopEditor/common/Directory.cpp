@@ -506,7 +506,7 @@ namespace NSDirectory
 		rmdir((char*)pUtf8);
 		delete [] pUtf8;
 
-		if (deleteRoot = false)CreateDirectory(strDirectory);
+		if (deleteRoot == false)CreateDirectory(strDirectory);
 #elif MAC
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
@@ -514,7 +514,7 @@ namespace NSDirectory
 		rmdir((char*)pUtf8);
 		delete [] pUtf8;
 
-		if (deleteRoot = false)CreateDirectory(strDirectory);
+		if (deleteRoot == false)CreateDirectory(strDirectory);
 #endif
 	}
 	std::wstring GetFolderPath(const std::wstring& wsFolderPath)

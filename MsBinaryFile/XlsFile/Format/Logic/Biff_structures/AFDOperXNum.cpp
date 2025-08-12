@@ -31,7 +31,7 @@
  */
 
 #include "AFDOperXNum.h"
-#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/Xnum.h"
+#include "Xnum.h"
 
 namespace XLS
 {

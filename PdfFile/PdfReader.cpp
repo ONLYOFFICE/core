@@ -1258,25 +1258,11 @@ BYTE* CPdfReader::GetWidgets()
 			const std::vector<PdfReader::CAnnotWidget*>& arrAnnots = pAnnots->GetAnnots();
 			for (int i = 0; i < arrAnnots.size(); ++i)
 			{
-				const std::string& sFullName = arrAnnots[i]->GetFullName();
-				std::map<std::string, std::string>::iterator it = mForms.find(sFullName);
-				if (it == mForms.end())
-					mForms[sFullName] = arrAnnots[i]->GetType();
-				else if (mForms[sFullName] != arrAnnots[i]->GetType())
-				{
-					if (iPDF == 0)
-					{
-						// error
-						// throw "Same full names for forms of different types within the same file";
-					}
-					else
-					{
-						int nPrefix = 0;
-						std::string sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(nPrefix);
-						while (!pAnnots->ChangeFullNameAnnot(i, sPrefix))
-							sPrefix = m_vPDFContext[iPDF]->m_sPrefixForm + "_" + std::to_string(++nPrefix);
-					}
-				}
+				if (m_vPDFContext[iPDF]->m_sPrefixForm.empty())
+					continue;
+
+				std::string sPrefix = "_" + m_vPDFContext[iPDF]->m_sPrefixForm;
+				pAnnots->ChangeFullNameAnnot(i, sPrefix);
 			}
 
 			pAnnots->ToWASM(oRes);
@@ -1984,6 +1970,12 @@ int GetPageAnnots(PDFDoc* pdfDoc, NSFonts::IFontManager* pFontManager, PdfReader
 		else if (sType == "Ink")
 		{
 			pAnnot = new PdfReader::CAnnotInk(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
+		}
+		else if (sType == "Redact")
+		{
+			PdfReader::CAnnotRedact* pRedact = new PdfReader::CAnnotRedact(pdfDoc, &oAnnotRef, nPageIndex, nStartRefID);
+			pRedact->SetFont(pdfDoc, pFontManager, pFontList, &oAnnotRef);
+			pAnnot = pRedact;
 		}
 		// else if (sType == "FileAttachment")
 		// {

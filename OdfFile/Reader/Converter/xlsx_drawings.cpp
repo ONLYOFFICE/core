@@ -263,6 +263,8 @@ public:
 				drawing_rels_[i].type == typeHyperlink  )
 			{
 
+				if (drawing_rels_[i].ref.empty() && drawing_rels_[i].type == typeImage) continue;
+
 				Rels.add(relationship( drawing_rels_[i].rid,
 							mediaitems::get_rel_type(drawing_rels_[i].type),
 							(drawing_rels_[i].is_internal ? std::wstring(L"../") + drawing_rels_[i].ref : drawing_rels_[i].ref),

@@ -69,6 +69,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Row.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Number.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/RK.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Blank.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/BoolErr.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/LabelSst.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Formula.h"
@@ -2933,6 +2934,17 @@ namespace OOX
 							CellSst->isst = isst;
 							castedPtr->cellContent = XLS::BaseObjectPtr(CellSst);
 						}
+						break;
+					}
+					case SimpleTypes::Spreadsheet::celltypeStr:
+					{
+
+							auto CellBlank = new XLS::Blank;
+							CellBlank->cell.rw = CellReference.row;
+							CellBlank->cell.col = CellReference.column;
+							if(m_oStyle.IsInit())
+									CellBlank->cell.ixfe = m_oStyle.get();
+							castedPtr->cellContent = XLS::BaseObjectPtr(CellBlank);
 						break;
 					}
 

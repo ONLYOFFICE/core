@@ -1613,7 +1613,6 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
     if ( is_next_dump_page_properties() || get_section_context().get_last().is_dump_ )
     {
-        _CP_LOG << L"I`m inside!\n";
         std::wstring pageProperties = get_page_properties();
 		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
 

@@ -4,7 +4,7 @@
 namespace StarMath
 {
 //class OOXml2Odf
-	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_uiBaseSize(0),m_bStretchyAcc(false),m_bHeight(false)
+	COOXml2Odf::COOXml2Odf():m_wsBaseColor(L""),m_wsHashAnnotation(L""),m_uiBaseSize(0),m_bStretchyAcc(false),m_bHeight(false)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 	}
@@ -33,6 +33,7 @@ namespace StarMath
 		m_pXmlWrite->WriteNodeEnd(L"w",true,false);
 		m_pXmlWrite->WriteString(m_wsAnnotationStarMath);
 		EndOdf();
+		m_wsHashAnnotation = COOXml2Odf::HashingAnnotation(m_wsAnnotationStarMath);
 	}
 	void COOXml2Odf::NodeDefinition(OOX::WritingElement *pNode,const bool& bMatrix)
 	{
@@ -1863,6 +1864,37 @@ namespace StarMath
 				wsText16.push_back(oString32[i]);
 		}
 		return wsText16;
+	}
+	std::wstring COOXml2Odf::HashingAnnotation(const std::wstring &wsAnnotation)
+	{
+		std::string sAnnotation = U_TO_UTF8(wsAnnotation),sResult;
+		std::wstring wsResult;
+		CryptoPP::SHA256 hash;
+		CryptoPP::StringSource oStringSourse(sAnnotation,true, new CryptoPP::HashFilter(hash,new CryptoPP::HexEncoder(new CryptoPP::StringSink(sResult))));
+		wsResult = UTF8_TO_U(sResult);
+		return wsResult;
+	}
+	bool COOXml2Odf::HashComparison(const std::wstring &wsHashFirst, const std::wstring &wsHashSecond)
+	{
+		if(wsHashFirst.length() != wsHashSecond.length())
+			return false;
+
+		std::string sFirstHash = U_TO_UTF8(wsHashFirst),sSecondHash = U_TO_UTF8(wsHashSecond);
+
+		const char* cFirst = sFirstHash.c_str();
+		const char* cSecond = sSecondHash.c_str();
+
+		size_t sizeLen = wsHashFirst.length();
+		for(size_t i = 0; i< sizeLen;i++)
+		{
+			if((cFirst[i]^cSecond[i]) != 0)
+				return false;
+		}
+		return true;
+	}
+	std::wstring COOXml2Odf::GetHashAnnotation()
+	{
+		return m_wsHashAnnotation;
 	}
 //class COneElement
 	COneElement::COneElement():m_stAttribute(nullptr),m_iStyle(0)

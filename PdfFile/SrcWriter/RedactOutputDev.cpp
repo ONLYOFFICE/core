@@ -415,9 +415,11 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 
 }
 //----- form XObjects
-void RedactOutputDev::drawForm(Ref id)
+void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
-
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY);
+	m_pPage->ExecuteXObject(NULL);
 }
 //----- transparency groups and soft masks
 void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
@@ -466,34 +468,34 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY);
 
-	m_pRenderer->PathCommandEnd();
+	m_pRenderer->m_oPath.Clear();
 
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 	{
 		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
 		int nPointsCount = pSubpath->getNumPoints();
 
-		m_pRenderer->PathCommandMoveTo(pSubpath->getX(0) + dShiftX, pSubpath->getY(0) + dShiftY);
+		m_pRenderer->m_oPath.MoveTo(pSubpath->getX(0) + dShiftX, pSubpath->getY(0) + dShiftY);
 
 		int nCurPointIndex = 1;
 		while (nCurPointIndex < nPointsCount)
 		{
 			if (pSubpath->getCurve(nCurPointIndex))
 			{
-				m_pRenderer->PathCommandCurveTo(pSubpath->getX(nCurPointIndex)     + dShiftX, pSubpath->getY(nCurPointIndex)     + dShiftY,
-												pSubpath->getX(nCurPointIndex + 1) + dShiftX, pSubpath->getY(nCurPointIndex + 1) + dShiftY,
-												pSubpath->getX(nCurPointIndex + 2) + dShiftX, pSubpath->getY(nCurPointIndex + 2) + dShiftY);
+				m_pRenderer->m_oPath.CurveTo(pSubpath->getX(nCurPointIndex)     + dShiftX, pSubpath->getY(nCurPointIndex)     + dShiftY,
+											 pSubpath->getX(nCurPointIndex + 1) + dShiftX, pSubpath->getY(nCurPointIndex + 1) + dShiftY,
+											 pSubpath->getX(nCurPointIndex + 2) + dShiftX, pSubpath->getY(nCurPointIndex + 2) + dShiftY);
 				nCurPointIndex += 3;
 			}
 			else
 			{
-				m_pRenderer->PathCommandLineTo(pSubpath->getX(nCurPointIndex) + dShiftX, pSubpath->getY(nCurPointIndex) + dShiftY);
+				m_pRenderer->m_oPath.LineTo(pSubpath->getX(nCurPointIndex) + dShiftX, pSubpath->getY(nCurPointIndex) + dShiftY);
 				++nCurPointIndex;
 			}
 		}
 		if (pSubpath->isClosed())
 		{
-			m_pRenderer->PathCommandClose();
+			m_pRenderer->m_oPath.Close();
 		}
 	}
 }

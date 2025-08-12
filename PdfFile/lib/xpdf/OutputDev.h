@@ -230,7 +230,7 @@ public:
 		       double llx, double lly, double urx, double ury) {}
 
   //----- form XObjects
-  virtual void drawForm(Ref id) {}
+  virtual void drawForm(GfxState *state, Ref id, const char *name = nullptr) {}
 
   //----- PostScript XObjects
   virtual void psXObject(Stream *psStream, Stream *level1Stream) {}

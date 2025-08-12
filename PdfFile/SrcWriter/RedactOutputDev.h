@@ -164,7 +164,7 @@ namespace PdfWriter
 		virtual void type3D0(GfxState *pGState, double wx, double wy) override;
 		virtual void type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury) override;
 		//----- form XObjects
-		virtual void drawForm(Ref id) override;
+		virtual void drawForm(GfxState *pGState, Ref id, const char *name = NULL) override;
 		//----- transparency groups and soft masks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
 		virtual void endTransparencyGroup(GfxState *pGState) override;

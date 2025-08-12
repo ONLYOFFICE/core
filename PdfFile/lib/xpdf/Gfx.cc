@@ -4089,7 +4089,7 @@ void Gfx::opXObject(Object args[], int numArgs) {
       res->lookupXObjectNF(name, &refObj);
       if (out->useDrawForm() && refObj.isRef()) {
 	if (ocState) {
-	  out->drawForm(refObj.getRef());
+	  out->drawForm(state, refObj.getRef(), name);
 	}
       } else {
 	doForm(&refObj, &obj1);

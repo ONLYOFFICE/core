@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -47,6 +47,8 @@
 #include <boost/algorithm/string.hpp>
 
 #include "../../XlsbFormat/Biff12_unions/DXFS.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/DXF.h"
 
 namespace OOX
 {
@@ -216,6 +218,22 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CDxf::toXLS()
+		{
+			auto ptr = new XLS::DXF;
+			XLS::BaseObjectPtr objectPtr(ptr);
+
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			XmlUtils::CXmlLiteReader oReader;
+			auto stringData = writer.GetData();
+
+			if ( !oReader.FromString(stringData))
+						return objectPtr;
+			ptr->deserialize(oReader);
+
+			return objectPtr;
+		}
 		EElementType CDxf::getType () const
 		{
 			return et_x_Dxf;
@@ -334,6 +352,16 @@ namespace OOX
 			}
 			ptr1->cdxfs = ptr->m_aruDXF.size();
 			return objectPtr;
+		}
+		std::vector<XLS::BaseObjectPtr> CDxfs::toXLS()
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			for(auto i : m_arrItems)
+			{
+				objectVector.push_back(i->toXLS());
+			}
+
+			return objectVector;
 		}
 		void CDxfs::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 		{

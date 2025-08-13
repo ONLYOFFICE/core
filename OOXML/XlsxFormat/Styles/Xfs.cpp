@@ -458,10 +458,6 @@ namespace OOX
 			size_t id = 0;
 			auto ptr = new XLS::XF(id, id);
 			XLS::BaseObjectPtr objectPtr(ptr);
-			if(m_oBorderId.IsInit())
-				ptr->ixBorder = m_oBorderId->GetValue();
-			if(m_oFillId.IsInit())
-				ptr->iFill = m_oFillId->GetValue();
 			if(m_oFontId.IsInit())
 				ptr->font_index = m_oFontId->GetValue();
 			if(m_oNumFmtId.IsInit())

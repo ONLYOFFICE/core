@@ -174,6 +174,9 @@ const bool FORMATTING::saveContent(BinProcessor& proc)
 		proc.mandatory(*m_XFS);
 	else
 		proc.mandatory<XFS>();
+	for(auto i : m_arDXF)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	if(m_Styles != nullptr)
 		proc.mandatory(*m_Styles);
 	else

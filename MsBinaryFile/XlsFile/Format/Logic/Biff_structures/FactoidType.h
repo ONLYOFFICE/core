@@ -49,9 +49,10 @@ public:
 	static const XLS::ElementType	type = XLS::typeFactoidType;
 
 	virtual void load(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 
-	_UINT32	 id;
+	_UINT32	 id = 0;
 	PBString rgbUri;
 	PBString rgbTag;
 	PBString rgbDownLoadURL;

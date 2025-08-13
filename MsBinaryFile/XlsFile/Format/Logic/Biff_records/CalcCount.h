@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCalcCount;
 
 //-----------------------------
-	_INT16 cIter;
+    _INT16 cIter = 100;
 };
 
 } // namespace XLS

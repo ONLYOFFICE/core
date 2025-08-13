@@ -56,7 +56,11 @@ void AxisParent::readFields(CFRecord& record)
 	record.skipNunBytes(16); // unused
 }
 
-
+void AxisParent::writeFields(CFRecord& record)
+{
+    record << iax;
+    record.reserveNunBytes(16);
+}
 
 } // namespace XLS
 

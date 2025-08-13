@@ -185,6 +185,7 @@ public:
 		int  GetFlag()      const;
 		int  GetFlags()     const;
 		int  GetParentID()  const;
+		int  GetMEOptions() const;
 		int  GetFontStyle() const;
 		double GetFontSize()   const;
 		double GetFontSizeAP() const;
@@ -194,7 +195,6 @@ public:
 		const std::wstring& GetT();
 		const std::wstring& GetFontName();
 		const std::wstring& GetFontKey();
-		const std::wstring& GetOMetadata();
 		const std::vector<double>& GetTC();
 		const std::vector<double>& GetBC();
 		const std::vector<double>& GetBG();
@@ -215,6 +215,7 @@ public:
 		int m_nFlag;
 		int m_nFlags;
 		int m_nParentID;
+		int m_nMEOptions;
 		int m_nFontStyle;
 		double m_dFS;
 		double m_dFSAP;
@@ -224,7 +225,6 @@ public:
 		std::wstring m_wsT;
 		std::wstring m_wsFN;
 		std::wstring m_wsFK;
-		std::wstring m_wsOMetadata;
 		std::vector<double> m_arrTC;
 		std::vector<double> m_arrBC;
 		std::vector<double> m_arrBG;
@@ -471,6 +471,7 @@ public:
 	const std::wstring& GetNM();
 	const std::wstring& GetLM();
 	const std::wstring& GetOUserID();
+	const std::wstring& GetOMetadata();
 	const std::wstring& GetContents();
 	const std::vector<double>& GetC();
 
@@ -527,6 +528,7 @@ private:
 	std::wstring m_wsNM;
 	std::wstring m_wsLM;
 	std::wstring m_wsOUserID;
+	std::wstring m_wsOMetadata;
 	std::wstring m_wsContents;
 	std::pair<BYTE, double> m_pBE;
 	std::vector<double> m_arrC;
@@ -571,10 +573,12 @@ public:
 		int nFlags;
 		int nMaxLen;
 		int nParentID;
+		int nMEOptions;
 		int nFieldFlag;
 		std::wstring sName;
 		std::wstring sV;
 		std::wstring sDV;
+		std::wstring sTU;
 		std::vector<int> arrI;
 		std::vector<std::wstring> arrV;
 		std::vector<CAnnotFieldInfo::CWidgetAnnotPr::CActionWidget*> arrAction;

@@ -40,12 +40,17 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
-CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
-	: CCtrl(sCtrlID)
+CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+	: CCtrl(sCtrlID), m_eColLineStyle(ELineStyle2::SOLID)
 {
-	m_eColLineStyle = ELineStyle2::SOLID;
-	m_shColCount = oNode.GetAttributeInt(L"colCount");
-	m_bSameSz = oNode.GetAttributeBool(L"sameSz");
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("colCount" == sAttributeName)
+			m_shColCount = oReader.GetInt();
+		else if ("sameSz" == sAttributeName)
+			m_bSameSz = oReader.GetBool();
+	}
+	END_READ_ATTRIBUTES(oReader)
 
 	if (!m_bSameSz)
 	{
@@ -55,20 +60,34 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLNode& oNode, int n
 
 	unsigned int unColSzIndex = 0;
 
-	for (CXMLNode& oChild : oNode.GetChilds())
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if (L"hp:colLine" == oChild.GetName())
+		if ("hp:colLine" == sNodeName)
 		{
-			m_eColLineStyle = GetLineStyle2(oChild.GetAttribute(L"type"));
-			m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oChild.GetAttribute(L"width"));
-			m_nColLineColor = oChild.GetAttributeColor(L"color");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("type" == sAttributeName)
+					m_eColLineStyle = GetLineStyle2(oReader.GetText());
+				else if ("width" == sAttributeName)
+					m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
+				else if ("color" == sAttributeName)
+					m_nColLineColor = oReader.GetColor();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
-		else if (L"hp:colSz" == oChild.GetName())
+		else if ("hp:colSz" == sNodeName)
 		{
-			m_arColSzWidths[unColSzIndex] = oChild.GetAttributeInt(L"width");
-			m_arColSzGaps[unColSzIndex++] = oChild.GetAttributeInt(L"gap");
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if ("width" == sAttributeName)
+					m_arColSzWidths[unColSzIndex] = oReader.GetInt();
+				else if ("gap" == sAttributeName)
+					m_arColSzGaps[unColSzIndex++] =  oReader.GetInt();
+			}
+			END_READ_ATTRIBUTES(oReader)
 		}
 	}
+	END_WHILE
 
 	m_bFullFilled = true;
 }

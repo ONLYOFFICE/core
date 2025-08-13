@@ -67,6 +67,25 @@ void DXFN12::load(CFRecord& record)
 	}
 }
 
+void DXFN12::save(CFRecord& record)
+{
+    record.reserveNunBytes(4);
+    auto StartDataPose = record.getRdPtr();
+    if(dxfn)
+    {
+        record >> *dxfn;
+
+        if(dxfn->xfext != nullptr)
+            record << *dxfn->xfext;
+        cbDxf = record.getRdPtr() - StartDataPose;
+        record.RollRdPtrBack(cbDxf+4);
+        record << cbDxf;
+        record.skipNunBytes(cbDxf);
+    }
+    else
+        record.reserveNunBytes(2);
+}
+
 int DXFN12::serialize(std::wostream & stream)
 {
 	if (!dxfn) return -1;

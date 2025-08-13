@@ -38,6 +38,7 @@ namespace XLS
 
 Selection::Selection()
 {
+	pnn.value() = 0x3;
 }
 
 

@@ -47,21 +47,22 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeWsBool;
 
 //-----------------------------
-	bool	fShowAutoBreaks;
-	bool&	fDialog;
-	bool	fApplyStyles;
-	bool	fRowSumsBelow;
-	bool	fColSumsRight;
-	bool	fFitToPage;
-	bool	fDspGuts;
-	bool	fSyncHoriz;
-	bool	fSyncVert;
-	bool	fAltExprEval;
-	bool	fAltFormulaEntry;
+    bool	fShowAutoBreaks = true;
+    bool&	fDialog;
+    bool	fApplyStyles = false;
+    bool	fRowSumsBelow = true;
+    bool	fColSumsRight = true;
+    bool	fFitToPage = false;
+    bool	fDspGuts = true;
+    bool	fSyncHoriz = false;
+    bool	fSyncVert = false;
+    bool	fAltExprEval = false;
+    bool	fAltFormulaEntry = false;
 
 
 };

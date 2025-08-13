@@ -60,6 +60,13 @@ void BopPop::readFields(CFRecord& record)
 	fHasShadow = GETBIT(flags, 0);
 }
 
+void BopPop::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fHasShadow);
+    record << pst << fAutoSplit << split << iSplitPos << pcSplitPercent << pcPie2Size << pcGap << numSplitValue << flags;
+}
+
 int BopPop::serialize(std::wostream & _stream)
 {
  	CP_XML_WRITER(_stream)    

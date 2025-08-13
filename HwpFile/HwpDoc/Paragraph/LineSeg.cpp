@@ -20,11 +20,18 @@ CLineSeg::CLineSeg(int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int 
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CLineSeg::CLineSeg(CXMLNode& oNode, int nVersion)
+CLineSeg::CLineSeg(CXMLReader& oReader, int nVersion)
 {
 	//TODO:: реализовать
-	m_nLineSpacing = oNode.GetAttributeInt(L"spacing");
-	m_nTextHeight = oNode.GetAttributeInt(L"textheight");
+
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("spacing" == sAttributeName)
+			m_nLineSpacing = oReader.GetInt();
+		else if ("textheight" == sAttributeName)
+			m_nTextHeight = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 int CLineSeg::GetLineSpacing() const

@@ -85,7 +85,10 @@ void Cell::load(CFRecord& record)
 		record >> ixfe;
 	}
 }
-
+void Cell::save(CFRecord& record)
+{
+    record << rw << col << ixfe;
+}
 
 const CellRef Cell::getLocation() const
 {

@@ -70,6 +70,14 @@ const bool DREF::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DREF::saveContent(BinProcessor& proc)
+{
+    if(m_DCon == nullptr)
+        return false;
+    proc.mandatory(*m_DCon);
+    return true;
+}
+
 int DREF::serialize(std::wostream & strm)
 {
 	if (!m_DCon)return 0;

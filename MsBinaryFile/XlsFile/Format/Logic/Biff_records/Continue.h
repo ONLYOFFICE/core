@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeContinue;
 
-	char*	m_pData;
-	int		m_iDataSize;
+    char*	m_pData = NULL;
+    int		m_iDataSize = 0;
 };
 
 } // namespace XLS

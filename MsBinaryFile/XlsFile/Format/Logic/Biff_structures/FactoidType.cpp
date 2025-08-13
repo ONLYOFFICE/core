@@ -48,6 +48,18 @@ void FactoidType::load(XLS::CFRecord& record)
 	record >> cbFactoid >> id >> rgbUri >> rgbTag >> rgbDownLoadURL;
 }
 
+void FactoidType::save(XLS::CFRecord& record)
+{
+	_UINT32 cbFactoid = 0;
+	auto structStartPos = record.getRdPtr();
+	record << cbFactoid << id << rgbUri << rgbTag << rgbDownLoadURL;
+	cbFactoid = record.getRdPtr() - structStartPos;
+	record.RollRdPtrBack(cbFactoid);
+	cbFactoid -= 4;
+	record << cbFactoid;
+	record.skipNunBytes(cbFactoid);
+}
+
 
 } // namespace OSHARED
 

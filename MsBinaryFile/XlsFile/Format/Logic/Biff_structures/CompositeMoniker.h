@@ -48,6 +48,7 @@ public:
 	static const XLS::ElementType	type = XLS::typeCompositeMoniker;
 	
 	virtual void load(XLS::CFRecord& record);
+    virtual void save(XLS::CFRecord& record);
 
 
 	std::vector<HyperlinkMoniker> monikerArray;

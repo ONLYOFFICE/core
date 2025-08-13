@@ -59,6 +59,15 @@ void DConnParamBindingValType::load(CFRecord& record)
 		rgbBindingValue->load(record);
 	}
 }
+void DConnParamBindingValType::save(CFRecord& record)
+{
+	record 	<< wBindingValueGrbit;
+	if(wBindingValueGrbit == 0x0002 && rgbBindingValue != nullptr)
+		record.reserveNunBytes(8);
+	if(rgbBindingValue != nullptr)
+		rgbBindingValue->save(record);
+}
+
 //-----------------------------------------------------------------------------------
 BiffStructurePtr DConnParamBindingValByte::clone()
 {
@@ -73,6 +82,12 @@ void DConnParamBindingValByte::load(CFRecord& record)
 	record 	>> fVal >> reserved1 >> reserved2 >> reserved3;
 
 }
+void DConnParamBindingValByte::save(CFRecord& record)
+{
+	record << fVal;
+	record.reserveNunBytes(7);
+}
+
 //-----------------------------------------------------------------------------------
 BiffStructurePtr DConnParamBindingValInt::clone()
 {
@@ -85,6 +100,11 @@ void DConnParamBindingValInt::load(CFRecord& record)
 
 	record 	>> val >> reserved;
 
+}
+void DConnParamBindingValInt::save(CFRecord& record)
+{
+	record 	<< val;
+	record.reserveNunBytes(4);
 }
 } // namespace XLS
 

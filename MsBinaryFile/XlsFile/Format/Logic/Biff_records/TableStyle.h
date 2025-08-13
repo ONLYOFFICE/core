@@ -55,11 +55,11 @@ public:
 	static const ElementType	type = typeTableStyle;
 
 //-----------------------------
-	bool				fIsPivot;
-	bool				fIsTable;
-	_UINT32				ctse;
+    bool				fIsPivot = false;
+    bool				fIsTable = false;
+    _UINT32				ctse = 0;
     //LPWideStringNoCch	rgchName;
-    std::wstring    	rgchName; //strName in biff12
+    std::wstring    	rgchName = L""; //strName in biff12
 	FrtHeader			frtHeader;
 };
 

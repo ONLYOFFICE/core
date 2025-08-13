@@ -50,14 +50,15 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	const CellRef getLocation() const;
 
 	static const ElementType	type = typeCell;
 
-	Rw rw;
-	Col col;
-	IXFCell ixfe;
+    Rw rw = 0;
+    Col col = 0;
+    IXFCell ixfe = 0;
 };
 
 typedef boost::shared_ptr<Cell> CellPtr;

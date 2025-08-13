@@ -68,6 +68,14 @@ void MulRk::readFields(CFRecord& record)
 	record.skipNunBytes(sizeof(unsigned short));
 }
 
+void MulRk::writeFields(CFRecord& record)
+{
+    record << rw << colFirst;
+    for(auto i:rgrkrec)
+        record << i;
+    record << colLast;
+}
+
 const int MulRk::GetRow() const
 {
 	return static_cast<unsigned short>(rw);

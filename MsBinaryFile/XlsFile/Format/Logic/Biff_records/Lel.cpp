@@ -57,5 +57,10 @@ void Lel::readFields(CFRecord& record)
 	record >> stFormulaName;
 }
 
+void Lel::writeFields(CFRecord& record)
+{
+	record << stFormulaName;
+}
+
 } // namespace XLS
 

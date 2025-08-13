@@ -55,5 +55,10 @@ void CodePage::readFields(CFRecord& record)
 	record >> cv;
 }
 
+void CodePage::writeFields(CFRecord& record)
+{
+    record << cv;
+}
+
 } // namespace XLS
 

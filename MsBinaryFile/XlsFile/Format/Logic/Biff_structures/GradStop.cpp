@@ -48,5 +48,11 @@ void GradStop::load(CFRecord& record)
 	record >> numPosition >> numTint;
 }
 
+void GradStop::save(CFRecord& record)
+{
+    record << xclrType << xclrValue;
+
+    record << numPosition << numTint;
+}
 
 } // namespace XLS

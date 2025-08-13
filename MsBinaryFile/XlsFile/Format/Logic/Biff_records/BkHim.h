@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeBkHim;
 
-	_UINT16 cf;
-	_UINT32 lcb;
+    _UINT16 cf = 0x0009;
+    _UINT32 lcb = 0;
 
 	boost::shared_array<char> pData;
 };

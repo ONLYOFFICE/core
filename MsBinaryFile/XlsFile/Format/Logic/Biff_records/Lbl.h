@@ -56,22 +56,22 @@ public:
 
 	static const ElementType	type = typeLbl;
 
-	bool fHidden;
-	bool fFunc;
-	bool fOB;
-	bool fProc;
-	bool fCalcExp;
-	bool fBuiltin;
+    bool fHidden = false;
+    bool fFunc = false;
+    bool fOB = false;
+    bool fProc = false;
+    bool fCalcExp = false;
+    bool fBuiltin = false;
     //unsigned char	fGrp;
-    unsigned short	fGrp;
-	bool fPublished;
-	bool fWorkbookParam;
+    unsigned short	fGrp = 0;
+    bool fPublished = false;
+    bool fWorkbookParam = false;
 
-    bool fFutureFunction; //biff12
+    bool fFutureFunction = false; //biff12
 	
-    unsigned char   chKey;
+    unsigned char   chKey = 0;
     //_UINT16					itab;
-    _UINT32 itab;
+    _UINT32 itab = 0;
     XLUnicodeStringNoCch        Name_bin;
     std::wstring                Name;
     XLSB::XLNameWideString      name; //biff12

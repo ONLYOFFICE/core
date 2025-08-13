@@ -47,10 +47,10 @@ public:
 	static const ElementType	type = typeBookExt_Conditional12;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-
-	bool fPublishedBookItems;
-	bool fShowPivotChartFilter;
+	bool fPublishedBookItems = false;
+	bool fShowPivotChartFilter = false;
 };
 
 } // namespace XLS

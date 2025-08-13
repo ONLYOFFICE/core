@@ -43,6 +43,10 @@ namespace XLS
 	{
 		record >> col >> rowStart >> rowEnd;
 	}
+    void VertBrk::save(CFRecord& record)
+    {
+        record << col << rowStart << rowEnd;
+    }
 	int VertBrk::serialize(std::wostream & stream)
 	{
 		CP_XML_WRITER(stream)

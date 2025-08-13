@@ -65,5 +65,16 @@ void HLinkTooltip::readFields(CFRecord& record)
 	wzTooltip = std::wstring (wzTooltip_prep.c_str());
 }
 
+void HLinkTooltip::writeFields(CFRecord& record)
+{
+    FrtRefHeaderNoGrbit frtRefHeaderNoGrbit(rt_HLinkTooltip);
+    frtRefHeaderNoGrbit.ref8 = ref_;
+    record << frtRefHeaderNoGrbit;
+    if(wzTooltip.empty() || wzTooltip.at(wzTooltip.size() -1) != L'\0')
+        wzTooltip += L'\0';
+    for(auto i : wzTooltip)
+        record << i;
+}
+
 } // namespace XLS
 

@@ -963,23 +963,38 @@ void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, st
 	impl_->add_additional_rels(isInternal, rid, ref, type);
 }
 
-void pptx_slide_context::set_footer()
+void pptx_slide_context::set_footer(bool val)
 {
 	impl_->footer = true;
 }
-void pptx_slide_context::set_header()
+void pptx_slide_context::set_header(bool val)
 {
-	impl_->header = true;
+	impl_->header = val;
 }
-void pptx_slide_context::set_page_number()
+void pptx_slide_context::set_page_number(bool val)
 {
-	impl_->date_time = true;
+	impl_->slideNum = val;
 }
-void pptx_slide_context::set_date_time()
+void pptx_slide_context::set_date_time(bool val)
 {
-	impl_->slideNum = true;
+	impl_->date_time = val;
 }
-
+bool pptx_slide_context::get_date_time()
+{
+	return impl_->date_time;
+}
+bool pptx_slide_context::get_page_number()
+{
+	return impl_->slideNum;
+}
+bool pptx_slide_context::get_header()
+{
+	return impl_->header;
+}
+bool pptx_slide_context::get_footer()
+{
+	return impl_->footer;
+}
 void pptx_slide_context::generate_id(const std::wstring& id)
 {
 	impl_->generate_id(id);

@@ -292,6 +292,11 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsLM);
 		Add("OUserID", new CStringObject(sValue.c_str()));
 	}
+	void CAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
+	{
+		std::string sValue = U_TO_UTF8(wsOMetadata);
+		Add("OMetadata", new CStringObject(sValue.c_str(), true));
+	}
 	void CAnnotation::SetC(const std::vector<double>& arrC)
 	{
 		AddToVectorD(this, "C", arrC);
@@ -823,6 +828,9 @@ namespace PdfWriter
 	}
 	void CFreeTextAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const std::vector<double>& arrC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1229,6 +1237,9 @@ namespace PdfWriter
 	}
 	void CWidgetAnnotation::SetDA(CFontDict* pFont, const double& dFontSize, const double& dFontSizeAP, const std::vector<double>& arrTC)
 	{
+		if (!pFont)
+			return;
+
 		CResourcesDict* pFieldsResources = m_pDocument->GetFieldsResources();
 		const char* sFontName = pFieldsResources->GetFontName(pFont);
 
@@ -1361,6 +1372,10 @@ namespace PdfWriter
 	{
 		m_nParentID = nParentID;
 	}
+	void CWidgetAnnotation::SetMEOptions(const int& nMEOptions)
+	{
+		Add("MEOptions", nMEOptions);
+	}
 	void CWidgetAnnotation::SetTU(const std::wstring& wsTU)
 	{
 		std::string sValue = U_TO_UTF8(wsTU);
@@ -1393,16 +1408,6 @@ namespace PdfWriter
 		{
 			pOwner = this;
 			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
-		}
-	}
-	void CWidgetAnnotation::SetOMetadata(const std::wstring& wsOMetadata)
-	{
-		std::string sValue = U_TO_UTF8(wsOMetadata);
-		CDictObject* pOwner = GetObjOwnValue("OMetadata");
-		if (!pOwner)
-		{
-			pOwner = this;
-			pOwner->Add("OMetadata", new CStringObject(sValue.c_str(), true));
 		}
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
@@ -1711,7 +1716,7 @@ namespace PdfWriter
 		m_pMK->Add("AC", new CStringObject(sValue.c_str(), true));
 		m_wsAC = wsAC;
 	}
-	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts)
+	void CPushButtonWidget::SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts, bool bNoAP)
 	{
 		if (!pForm && !pCodes)
 		{
@@ -1761,6 +1766,22 @@ namespace PdfWriter
 					m_pAppearance->Add("R", pNewAPi);
 				}
 			}
+		}
+
+		if (bNoAP)
+		{
+			if (pForm)
+			{
+				CheckMK();
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Add(sAP, pForm);
+			}
+			else if (m_pMK)
+			{
+				std::string sAP = nAP == 0 ? "I" : (nAP == 1 ? "RI" : "IX");
+				m_pMK->Remove(sAP);
+			}
+			return;
 		}
 
 		CAnnotAppearanceObject* pAppearance = NULL;

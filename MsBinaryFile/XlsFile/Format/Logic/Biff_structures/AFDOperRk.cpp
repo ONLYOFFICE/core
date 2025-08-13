@@ -50,6 +50,12 @@ void AFDOperRk::load(CFRecord& record)
 	record.skipNunBytes(4);
 }
 
+void AFDOperRk::save(CFRecord& record)
+{
+    record << rk;
+    record.reserveNunBytes(4);
+}
+
 
 } // namespace XLS
 

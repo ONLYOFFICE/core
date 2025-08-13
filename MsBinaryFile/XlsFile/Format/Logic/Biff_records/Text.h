@@ -50,38 +50,39 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeText;
 
 	int serialize(std::wostream & _stream);
 
-	unsigned char	at;
-	unsigned char	vat;
+	unsigned char	at = 0;
+	unsigned char	vat = 0;
 
-	_UINT16			wBkgMode;
+	_UINT16			wBkgMode = 0;
 	LongRGB			rgbText;
 
-	_INT32			x;
-	_INT32			y;
-	_INT32			dx;
-	_INT32			dy;
+	_INT32			x = 0;
+	_INT32			y = 0;
+	_INT32			dx = 0;
+	_INT32			dy = 0;
 
-	bool fAutoColor;
-	bool fShowKey;
-	bool fShowValue;
-	bool fAutoText;
-	bool fGenerated;
-	bool fDeleted;
-	bool fAutoMode;
-	bool fShowLabelAndPerc;
-	bool fShowPercent;
-	bool fShowBubbleSizes;
-	bool fShowLabel;
+	bool fAutoColor = false;
+	bool fShowKey = false;
+	bool fShowValue = false;
+	bool fAutoText = false;
+	bool fGenerated = false;
+	bool fDeleted = false;
+	bool fAutoMode = false;
+	bool fShowLabelAndPerc = false;
+	bool fShowPercent = false;
+	bool fShowBubbleSizes = false;
+	bool fShowLabel = false;
 
-	Icv				icvText;
-	unsigned char	dlp;
-	unsigned char	iReadingOrder;
-	_UINT16			trot;
+	Icv				icvText = 0;
+	unsigned char	dlp = 0;
+	unsigned char	iReadingOrder = 0;
+	_UINT16			trot = 0;
 
 //-----------------------------
 	bool is_area;

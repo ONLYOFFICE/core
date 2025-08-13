@@ -55,5 +55,10 @@ void UsesELFs::readFields(CFRecord& record)
 	record >> useselfs;
 }
 
+void UsesELFs::writeFields(CFRecord& record)
+{
+    record << useselfs;
+}
+
 } // namespace XLS
 

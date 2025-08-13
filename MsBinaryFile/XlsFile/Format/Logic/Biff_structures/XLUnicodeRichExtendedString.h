@@ -59,6 +59,7 @@ public:
 	void set_code_page(short cp) ;
 	
 	virtual void load	(CFRecord& record);
+    virtual void save	(CFRecord& record);
 
 	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr;
 
@@ -71,17 +72,17 @@ public:
 
 	std::wstring  str_;
 
-	bool fHighByte;
-	bool fExtSt;
-	bool fRichSt;
+    bool fHighByte = true;
+    bool fExtSt = false;
+    bool fRichSt = false;
 	
 	std::vector<FormatRun> rgRun;
 	
 	ExtRst extRst;
 	std::list<CFRecordPtr>& cont_recs_;
-	bool mark_set_start;
+    bool mark_set_start = false;
 
-	unsigned short code_page_ ;
+    unsigned short code_page_ = 0 ;
 };
 
 typedef boost::shared_ptr<XLUnicodeRichExtendedString> XLUnicodeRichExtendedStringPtr;

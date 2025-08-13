@@ -114,12 +114,14 @@ public:
 	CCtrlCommon(const HWP_STRING& sCtrlID);
 	CCtrlCommon(const CCtrlCommon& oCtrlCommon);
 	CCtrlCommon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 	virtual ~CCtrlCommon();
 
 	ECtrlObjectType GetCtrlType() const override;
 
 	void SetTextVerAlign(EVertAlign eVertAlign);
+
+	void ParseChildren(CXMLReader& oReader, int nVersion);
 
 	void AddParagraph(CHWPPargraph* pParagraph);
 	void AddCaption(CCapParagraph* pCapPara);

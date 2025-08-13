@@ -1002,7 +1002,13 @@ public:
 
 	void		add_jsaProject(const std::string &content);
 
+    void set_implicit_end( bool _flag );
+
+    bool get_implicit_end() const;
+
 private:
+
+    bool flag_implicit_end = false;
 
 	struct _context_state
 	{

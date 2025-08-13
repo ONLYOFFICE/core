@@ -51,14 +51,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSST;
 
 	int serialize(std::wostream & stream);
 
 //-----------------------------
-	_INT32	cstTotal;
-	_INT32	cstUnique;
+    _INT32	cstTotal = 0;
+    _INT32	cstUnique = 0;
 	BiffStructurePtrVector rgb;
 
 //-----------------------------

@@ -52,6 +52,19 @@ void CFVO::load(CFRecord& record)
 	}
 }
 
+void CFVO::save(CFRecord& record)
+{
+    record << cfvoType;
+    if(!fmla.rgce.sequence.empty())
+    {
+        fmla.save(record);
+    }
+    else if(cfvoType != 2 && cfvoType != 3)
+    {
+        record << numValue;
+    }
+}
+
 
 } // namespace XLS
 

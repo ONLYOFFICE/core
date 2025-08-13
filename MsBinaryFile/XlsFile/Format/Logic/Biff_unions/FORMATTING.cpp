@@ -154,6 +154,36 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool FORMATTING::saveContent(BinProcessor& proc)
+{
+	global_info = proc.getGlobalWorkbookInfo();
+	for(auto i:global_info->m_arFonts)
+		proc.mandatory(*i);
+	if(global_info->m_arFonts.empty())
+		proc.mandatory<Font>();
+	for(auto i:global_info->m_mapNumFormats)
+		proc.mandatory(*i.second);
+	if(global_info->m_mapNumFormats.empty())
+	{
+		proc.mandatory<Format>();
+	}
+	if(m_XFS != nullptr)
+		proc.mandatory(*m_XFS);
+	else
+		proc.mandatory<XFS>();
+	if(m_Styles != nullptr)
+		proc.mandatory(*m_Styles);
+	else
+		proc.mandatory<STYLES>();
+	if(m_TABLESTYLES != nullptr)
+		proc.mandatory(*m_TABLESTYLES);
+	if(m_Palette != nullptr)
+		proc.mandatory(*m_Palette);
+	if(m_ClrtClient != nullptr)
+		proc.mandatory(*m_ClrtClient);
+	return true;
+}
+
 void FORMATTING::update_xfs()
 {
 	STYLES * st = dynamic_cast<STYLES*>(m_Styles.get());

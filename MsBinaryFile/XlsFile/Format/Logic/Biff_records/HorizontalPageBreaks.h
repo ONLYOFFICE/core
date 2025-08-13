@@ -48,12 +48,13 @@ namespace XLS
 		BaseObjectPtr clone();
 
 		void readFields(CFRecord& record);
+        void writeFields(CFRecord& record);
 
 		static const ElementType type = typeHorizontalPageBreaks;
 
 		virtual int serialize(std::wostream & stream);
 //-----------------------------
-		_UINT16 cbrk;
+        _UINT16 cbrk = 0;
 		BiffStructurePtrVector rgbrk;
 	};
 } // namespace XLS

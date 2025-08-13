@@ -92,7 +92,7 @@ void TableStyle::writeFields(CFRecord& record)
 	{
 		SETBIT(flags, 1, fIsPivot)
 		SETBIT(flags, 2, fIsTable)
-
+        frtHeader.rt = 0x088F;
 		record << frtHeader << flags;
 
 		_UINT16 cchName;

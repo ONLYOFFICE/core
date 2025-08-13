@@ -48,10 +48,11 @@ public:
 	static const ElementType	type = typeFormatRun;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	unsigned short	ich;
-	FontIndex		ifnt;
+    unsigned short	ich = 0;
+    FontIndex		ifnt;
 };
 
 typedef boost::shared_ptr<FormatRun> FormatRunPtr;

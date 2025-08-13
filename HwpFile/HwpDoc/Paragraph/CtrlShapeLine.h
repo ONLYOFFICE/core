@@ -17,7 +17,7 @@ public:
 	CCtrlShapeLine(const HWP_STRING& sCtrlID);
 	CCtrlShapeLine(const CCtrlGeneralShape& oShape);
 	CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

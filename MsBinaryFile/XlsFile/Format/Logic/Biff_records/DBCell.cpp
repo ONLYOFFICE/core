@@ -60,6 +60,14 @@ void DBCell::readFields(CFRecord& record)
 		rgdb.push_back(element);
 	}
 }
+void DBCell::writeFields(CFRecord& record)
+{
+    record << dbRtrw;
+    for(auto i : rgdb)
+    {
+        record << i;
+    }
+}
 
 } // namespace XLS
 

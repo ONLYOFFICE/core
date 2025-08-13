@@ -222,6 +222,7 @@ public:
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
 	void SetNeedAddHelvetica(bool bNeedAddHelvetica);
+	void SetSplit(bool bSplit) { m_bSplit = bSplit; }
 
 private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, BYTE nAlpha);
@@ -284,6 +285,7 @@ private:
 	CMultiLineTextManager        m_oLinesManager;
 
 	bool                         m_bValid;
+	bool                         m_bSplit;
 };
 
 #endif // _PDF_WRITER_H

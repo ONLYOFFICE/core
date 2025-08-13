@@ -47,10 +47,11 @@ public:
 	static const ElementType	type = typeISSTInf;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	_UINT32 ib;
-	_UINT16 cbOffset;
+    _UINT32 ib = 0;
+    _UINT16 cbOffset = 0;
 };
 
 typedef boost::shared_ptr<ISSTInf> ISSTInfPtr;

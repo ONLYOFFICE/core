@@ -258,6 +258,46 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	}
 }
 
+void XLUnicodeRichExtendedString::save(CFRecord& record)
+{
+    if(!rgRun.empty())
+        fRichSt = true;
+    unsigned short cch = str_.size();
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fHighByte)
+    SETBIT(flags, 2, fExtSt)
+    SETBIT(flags, 3, fRichSt)
+    record << cch << flags;
+    if(fRichSt)
+    {
+       unsigned short cRun = rgRun.size();
+       record << cRun;
+    }
+    auto cbExtPos = record.getRdPtr();
+    if(fExtSt)
+    {
+        record.reserveNunBytes(4);
+    }
+    for(auto i: str_)
+        record << i;
+    if(fRichSt)
+    {
+        for(auto i : rgRun)
+            record << i;
+    }
+    if(fExtSt)
+    {
+        auto rstBegin = record.getRdPtr();
+        record << extRst;
+        auto rstend = record.getRdPtr();
+        record.RollRdPtrBack(rstend - cbExtPos);
+        int cbExtRst  = rstBegin -  rstend;
+        record << cbExtRst;
+        record.skipNunBytes(rstend  - record.getRdPtr());
+    }
+
+}
+
 void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch, const bool is_wide)
 {
 	size_t raw_length = cch << (is_wide ? 1 : 0);

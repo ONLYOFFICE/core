@@ -37,6 +37,7 @@ namespace XLS
 
 RightMargin::RightMargin()
 {
+	num.data.value = 0.7;
 }
 
 
@@ -53,6 +54,11 @@ BaseObjectPtr RightMargin::clone()
 void RightMargin::readFields(CFRecord& record)
 {
 	record >> num;
+}
+
+void RightMargin::writeFields(CFRecord& record)
+{
+	record << num;
 }
 
 } // namespace XLS

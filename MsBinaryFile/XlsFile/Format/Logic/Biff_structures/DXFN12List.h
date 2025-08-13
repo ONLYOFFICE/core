@@ -51,6 +51,7 @@ public:
 	static const ElementType type = typeDXFN12List;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	DXFN			dxfn;
 //-----------------------------------------------------------------

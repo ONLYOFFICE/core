@@ -100,9 +100,29 @@ void BookExt::readFields(CFRecord& record)
         }
 
     }
+}
 
+void BookExt::writeFields(CFRecord& record)
+{
+	FrtHeader header(rt_BookExt);
+	record << header << cb;
+	 _UINT32 flags = 0;
 
+	SETBIT(flags, 0, fDontAutoRecover)
+	SETBIT(flags, 1, fHidePivotList)
+	SETBIT(flags, 2, fFilterPrivacy)
+	SETBIT(flags, 3, fEmbedFactoids)
+	SETBITS(flags, 4, 5, mdFactoidDisplay)
+	SETBIT(flags, 6, fSavedDuringRecovery)
+	SETBIT(flags, 7, fCreatedViaMinimalSave)
+	SETBIT(flags, 8, fOpenedViaDataRecovery)
+	SETBIT(flags, 9, fOpenedViaSafeLoad)
+	record << flags;
 
+	if(cb > 20)
+		record << grbit1;
+	if(cb > 21)
+		record << grbit2;
 }
 
 } // namespace XLS

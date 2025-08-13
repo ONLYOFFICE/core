@@ -55,5 +55,10 @@ void DCon::readFields(CFRecord& record)
 	record >> iiftab >> fLeftCat >> fTopCat >> fLinkConsole;
 }
 
+void DCon::writeFields(CFRecord& record)
+{
+    record << iiftab << fLeftCat << fTopCat << fLinkConsole;
+}
+
 } // namespace XLS
 

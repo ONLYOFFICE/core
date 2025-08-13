@@ -48,32 +48,33 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXVDEx;
 	
-	bool					fShowAllItems;
-	bool					fDragToRow;
-	bool					fDragToColumn;
-	bool					fDragToPage;
-	bool					fDragToHide;
-	bool					fNotDragToData;
-	bool					fServerBased;
-	bool					fAutoSort;
-	bool					fAscendSort;
-	bool					fAutoShow;
-	bool					fTopAutoShow;
-	bool					fCalculatedField;
-	bool					fPageBreaksBetweenItems;
-	bool					fHideNewItems;
-	bool					fOutline;
-	bool					fInsertBlankRow;
-	bool					fSubtotalAtTop;
+    bool					fShowAllItems = false;
+    bool					fDragToRow = false;
+    bool					fDragToColumn = false;
+    bool					fDragToPage = false;
+    bool					fDragToHide = false;
+    bool					fNotDragToData = false;
+    bool					fServerBased = false;
+    bool					fAutoSort = false;
+    bool					fAscendSort = false;
+    bool					fAutoShow = false;
+    bool					fTopAutoShow = false;
+    bool					fCalculatedField = false;
+    bool					fPageBreaksBetweenItems = false;
+    bool					fHideNewItems = false;
+    bool					fOutline = false;
+    bool					fInsertBlankRow = false;
+    bool					fSubtotalAtTop = false;
 
-	unsigned char			citmAutoShow;
-	short					isxdiAutoSort;
-	short					isxdiAutoShow;
-	unsigned short			ifmt;
-	unsigned short			cchSubName;
+    unsigned char			citmAutoShow = 0;
+    short					isxdiAutoSort = 0;
+    short					isxdiAutoShow = 0;
+    unsigned short			ifmt = 0;
+    unsigned short			cchSubName = 0;
 	XLUnicodeStringNoCch	stSubName;
 
 };

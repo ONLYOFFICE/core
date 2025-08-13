@@ -50,13 +50,14 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSerFmt;
 
 //-----------------------------
-	bool fSmoothedLine;
-	bool f3DBubbles;
-	bool fArShadow;
+	bool fSmoothedLine = false;
+	bool f3DBubbles = false;
+	bool fArShadow = false;
 };
 
 } // namespace XLS

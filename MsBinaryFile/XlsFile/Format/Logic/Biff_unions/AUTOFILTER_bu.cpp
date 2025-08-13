@@ -132,6 +132,38 @@ const bool AUTOFILTER::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool AUTOFILTER::saveContent(BinProcessor& proc)
+{
+    if(m_AutoFilterInfo == nullptr)
+        return  false;
+    proc.mandatory(*m_AutoFilterInfo);
+    for(auto i : m_arFilters)
+        if(i!= nullptr)
+		{
+            proc.mandatory(*i);
+			if(i->get_type() == typeAutoFilter12)
+			{
+				auto castedPtr = static_cast<AutoFilter12*>(i.get());
+				if(castedPtr->cCriteria > 0 && castedPtr->ft == 0)
+				{
+					for(auto j : castedPtr->arAF12Criteries)
+					{
+						ContinueFrt12 continueRecord;
+						CFRecord tempRecord(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+						j->save(tempRecord);
+						continueRecord.rgb.reserve(tempRecord.getRdPtr());
+						memcpy(continueRecord.rgb.data(), tempRecord.getCurStaticData<char>(), tempRecord.getRdPtr());
+						proc.mandatory(continueRecord);
+					}
+				}
+			}
+		}
+    for(auto i : m_arSORTDATA12)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    return true;
+}
+
 int AUTOFILTER::serialize(std::wostream & stream)
 {
 	if (m_AutoFilterInfo == NULL) return 0;

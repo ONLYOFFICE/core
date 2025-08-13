@@ -46,11 +46,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeCalcPrecision;
 
 //-----------------------------
-	Boolean<unsigned short> fFullPrec;
+    Boolean<unsigned short> fFullPrec = true;
 };
 
 } // namespace XLS

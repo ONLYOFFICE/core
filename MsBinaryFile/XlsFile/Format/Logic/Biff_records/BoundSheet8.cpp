@@ -98,5 +98,25 @@ void BoundSheet8::readFields(CFRecord& record)
 	dt = GETBITS(flags, 8, 15);
 }
 
+void BoundSheet8::writeFields(CFRecord& record)
+{
+    record << lbPlyPos;
+    unsigned short flags = 0;
+    if( hsState == L"hidden")
+    {
+        SETBITS(flags, 0, 1, 1)
+    }
+    else if( hsState == L"veryHidden")
+    {
+        SETBITS(flags, 0, 1, 2)
+    }
+    SETBITS(flags, 8, 15, dt)
+    record << flags;
+
+    ShortXLUnicodeString stName;
+    stName = name_;
+    record << stName;
+}
+
 } // namespace XLS
 

@@ -44,6 +44,8 @@ public:
 
 	virtual void load(CFRecord& record);
 
+	virtual void save(CFRecord& record);
+
 
 	static const ElementType	type = typeRGISeriesListSpecial;
 
@@ -67,6 +69,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSeriesList;
 

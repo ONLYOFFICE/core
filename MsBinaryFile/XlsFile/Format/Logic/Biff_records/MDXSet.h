@@ -49,12 +49,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 //-----------------------------
-	_INT32					istrConnName;
-	unsigned char			tfnSrc;
-	unsigned char			sso;
-	_UINT32					istrSetDef;
-	_INT32					cistr;
+	_INT32					istrConnName = 0;
+	unsigned char			tfnSrc = 0;
+	unsigned char			sso = 0;
+	_UINT32					istrSetDef = 0;
+	_INT32					cistr = 0;
 	BiffStructurePtrVector	rgistr;
 	FrtHeader				frtHeader;
 };

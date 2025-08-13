@@ -15,8 +15,8 @@ namespace NSHeif {
 		static bool Save(const BYTE* source, int width, int height, int sourceStride, const std::wstring& dstPath);
 
 	private:
-		static inline bool IsError(heif_error err);
-		static inline bool Decode(heif_context* ctx, CBgraFrame* frame);
-		static inline NSUnicodeConverter::CUnicodeConverter m_oConverter{};
+		static bool IsError(heif_error err);
+		static bool Decode(heif_context* ctx, CBgraFrame* frame);
+		static NSUnicodeConverter::CUnicodeConverter m_oConverter;
 	};
 }

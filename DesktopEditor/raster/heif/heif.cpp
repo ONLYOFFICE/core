@@ -15,6 +15,8 @@ public:
 };
 
 namespace NSHeif {
+	NSUnicodeConverter::CUnicodeConverter CHeifFile::m_oConverter{};
+
 	bool CHeifFile::isHeif(const std::wstring& fileName)
 	{
 		heif_context* ctx = heif_context_alloc();

@@ -109,6 +109,10 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
 	CONFIG += core_win_32
 }
 
+win32-arm64-msvc2017 {
+    CONFIG += core_win_arm64
+}
+
 linux-clang-libc++ {
     CONFIG += core_linux
 	CONFIG += core_linux_64
@@ -284,6 +288,9 @@ core_win_32 {
 }
 core_win_64 {
 	CORE_BUILDS_PLATFORM_PREFIX = win_64
+}
+core_win_arm64 {
+    CORE_BUILDS_PLATFORM_PREFIX = win_arm64
 }
 core_linux_32 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_32

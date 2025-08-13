@@ -20,9 +20,12 @@ core_windows {
 }
 
 core_linux {
+	# we need to wrap x265 and de265 libraries in `whole-archive` flags to avoid "undefined symbol" errors when later linking with binary
 	LIBS += \
+		-Wl,--whole-archive \
 		-L$$PWD/x265_git/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX -lx265 \
 		-L$$PWD/libde265/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/libde265 -lde265 \
+		-Wl,--no-whole-archive \
 		-L$$HEIF_BUILD_PATH/libheif -lheif
 }
 

@@ -802,6 +802,12 @@ namespace PdfWriter
 					delete pObject;
 			}
 
+			for (int i = 0; i < pEntry->pRefObj.size(); ++i)
+			{
+				CProxyObject* pProxy = pEntry->pRefObj[i];
+				pProxy->Clear();
+			}
+
 			delete pEntry;
 		}
 

@@ -174,7 +174,7 @@ namespace PdfWriter
 
 	private:
 		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2 = NULL);
-		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText = false);
+		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
 		void UpdatePen();

@@ -1274,7 +1274,7 @@ namespace PdfWriter
 	}
     void CPage::WriteText(const BYTE* sText, unsigned int unLen)
 	{
-		EFontType eType = m_pFont->GetFontType();
+		EFontType eType = m_pFont ? m_pFont->GetFontType() : fontType1;
 		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
 		{
 			m_pStream->WriteChar('<');
@@ -1396,7 +1396,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tw\012");
 	}
-    void CPage::SetHorizontalScalling(double dValue)
+	void CPage::SetHorizontalScaling(double dValue)
 	{
 		// Operator   : Tz
 		// Description: Устанавливаем горизонтальное растяжение/сжатие
@@ -1426,6 +1426,20 @@ namespace PdfWriter
 		m_pStream->WriteStr(" Tf\012");
 
 		m_pFont = pFont;
+	}
+	void CPage::SetFontKeyAndSize(const char* sKey, double dSize)
+	{
+		// Operator   : Tf
+		// Description: Устанавливаем шрифт и размер шрифта
+
+		dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
+		if (!sKey)
+			return;
+
+		m_pStream->WriteEscapeName(sKey);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dSize);
+		m_pStream->WriteStr(" Tf\012");
 	}
     void CPage::SetTextRenderingMode(ETextRenderingMode eMode)
 	{
@@ -1469,9 +1483,12 @@ namespace PdfWriter
 			return;
 
 		const char* sXObjectName = pResources->GetXObjectName(pXObject);
+		ExecuteXObject(sXObjectName);
+	}
+	void CPage::ExecuteXObject(const char* sXObjectName)
+	{
 		if (!sXObjectName)
 			return;
-
 		m_pStream->WriteEscapeName(sXObjectName);
 		m_pStream->WriteStr(" Do\012");
 	}
@@ -1682,9 +1699,8 @@ namespace PdfWriter
 		// Operator   : ri
 		// Description: Способы рендеринга/цветопередачи
 
-		m_pStream->WriteStr("ri ");
 		m_pStream->WriteEscapeName(c_sRenderingIntent[(int)eRenderingIntent]);
-		m_pStream->WriteStr("\012");
+		m_pStream->WriteStr(" ri\012");
 	}
 
 	CFakePage::CFakePage(int nOriginIndex) : m_nOriginIndex(nOriginIndex)

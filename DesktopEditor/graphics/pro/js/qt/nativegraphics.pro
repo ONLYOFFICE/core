@@ -640,7 +640,6 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcReader/Adaptors.cpp \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.cpp \
 	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.cpp \
-	$$PDF_ROOT_DIR/SrcReader/RedactOutputDev.cpp \
 	$$PDF_ROOT_DIR/Resources/BaseFonts.cpp \
 	$$PDF_ROOT_DIR/Resources/CMapMemory/cmap_memory.cpp
 
@@ -666,8 +665,7 @@ HEADERS +=\
 	$$PDF_ROOT_DIR/SrcReader/MemoryUtils.h \
 	$$PDF_ROOT_DIR/SrcReader/GfxClip.h \
 	$$PDF_ROOT_DIR/SrcReader/FontsWasm.h \
-	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h \
-	$$PDF_ROOT_DIR/SrcReader/RedactOutputDev.h
+	$$PDF_ROOT_DIR/SrcReader/PdfAnnot.h
 
 DEFINES += CRYPTOPP_DISABLE_ASM
 LIBS += -L$$CORE_BUILDS_LIBRARIES_PATH -lCryptoPPLib
@@ -703,7 +701,8 @@ HEADERS += \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.h \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.h \
 	$$PDF_ROOT_DIR/SrcWriter/ICCProfile.h \
-	$$PDF_ROOT_DIR/SrcWriter/States.h
+	$$PDF_ROOT_DIR/SrcWriter/States.h \
+	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.h
 
 SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/AcroForm.cpp \
@@ -732,7 +731,8 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/Streams.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.cpp \
-	$$PDF_ROOT_DIR/SrcWriter/States.cpp
+	$$PDF_ROOT_DIR/SrcWriter/States.cpp \
+	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.cpp
 
 # PdfFile
 

@@ -1849,7 +1849,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 			pPage->BeginText();
 			pPage->SetCharSpace(0);
 			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-			pPage->SetHorizontalScalling(100);
+			pPage->SetHorizontalScaling(100);
 			pPage->EndText();
 		}
 		return true;
@@ -2059,7 +2059,7 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 		pPage->BeginText();
 		pPage->SetCharSpace(0);
 		pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-		pPage->SetHorizontalScalling(100);
+		pPage->SetHorizontalScaling(100);
 		pPage->EndText();
 		return true;
 	}
@@ -2267,7 +2267,7 @@ bool CPdfEditor::SplitPages(const int* arrPageIndex, unsigned int unLength, PDFD
 			pPage->BeginText();
 			pPage->SetCharSpace(0);
 			pPage->SetTextRenderingMode(PdfWriter::textrenderingmode_Fill);
-			pPage->SetHorizontalScalling(100);
+			pPage->SetHorizontalScaling(100);
 			pPage->EndText();
 		}
 		else

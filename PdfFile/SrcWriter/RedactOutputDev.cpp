@@ -45,7 +45,7 @@ RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer)
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
 
-	m_nRI = -1;
+	m_nRI = 1;
 }
 RedactOutputDev::~RedactOutputDev()
 {
@@ -73,20 +73,37 @@ void RedactOutputDev::startPage(int nPageIndex, GfxState *pGState)
 }
 void RedactOutputDev::endPage()
 {
+	m_pRenderer->m_oCommandManager.Flush();
 	m_pPage = NULL;
 }
 //----- save/restore graphics state
 void RedactOutputDev::saveState(GfxState *pGState)
 {
-	m_pPage->GrSave();
+	updateAll(pGState);
 }
 void RedactOutputDev::restoreState(GfxState *pGState)
 {
-	m_pPage->GrRestore();
+	updateAll(pGState);
 }
 //----- update graphics state
 void RedactOutputDev::updateAll(GfxState *pGState)
 {
+	updateLineDash(pGState);
+	updateFlatness(pGState);
+	updateLineJoin(pGState);
+	updateLineCap(pGState);
+	updateMiterLimit(pGState);
+	updateLineWidth(pGState);
+	updateStrokeAdjust(pGState);
+	updateFillColorSpace(pGState);
+	updateFillColor(pGState);
+	updateStrokeColorSpace(pGState);
+	updateStrokeColor(pGState);
+	updateRenderingIntent(pGState);
+	// updateBlendMode(pGState);
+	// updateFillOpacity(pGState);
+	// updateStrokeOpacity(pGState);
+	updateFont(pGState);
 }
 void RedactOutputDev::updateCTM(GfxState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32)
 {
@@ -100,9 +117,17 @@ void RedactOutputDev::updateLineDash(GfxState *pGState)
 	double  dStart = 0;
 	pGState->getLineDash(&pDash, &nSize, &dStart);
 
-	m_pRenderer->m_oPen.SetDashPattern(pDash, nSize);
-	m_pRenderer->m_oPen.SetDashOffset(dStart);
-	m_pRenderer->m_oPen.SetDashStyle(Aggplus::DashStyleCustom);
+	if (0 == nSize) // Solid
+	{
+		m_pRenderer->put_PenDashOffset(0);
+		m_pRenderer->put_PenDashStyle(Aggplus::DashStyleSolid);
+	}
+	else
+	{
+		m_pRenderer->m_oPen.SetDashPattern(pDash, nSize);
+		m_pRenderer->m_oPen.SetDashOffset(dStart);
+		m_pRenderer->m_oPen.SetDashStyle(Aggplus::DashStyleCustom);
+	}
 }
 void RedactOutputDev::updateFlatness(GfxState *pGState)
 {
@@ -187,86 +212,65 @@ void RedactOutputDev::updateStrokeColor(GfxState *pGState)
 void RedactOutputDev::updateRenderingIntent(GfxState *pGState)
 {
 	GfxRenderingIntent eRI = pGState->getRenderingIntent();
-	switch (eRI)
+	if (eRI != m_nRI)
 	{
-	case GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric:
-		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_AbsoluteColorimetric);
-		break;
-	case GfxRenderingIntent::gfxRenderingIntentRelativeColorimetric:
-		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_RelativeColorimetric);
-		break;
-	case GfxRenderingIntent::gfxRenderingIntentSaturation:
-		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Saturation);
-		break;
-	case GfxRenderingIntent::gfxRenderingIntentPerceptual:
-	default:
-		m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Perceptual);
-		break;
+		m_nRI = eRI;
+		switch (eRI)
+		{
+		case GfxRenderingIntent::gfxRenderingIntentAbsoluteColorimetric:
+			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_AbsoluteColorimetric);
+			break;
+		case GfxRenderingIntent::gfxRenderingIntentRelativeColorimetric:
+			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_RelativeColorimetric);
+			break;
+		case GfxRenderingIntent::gfxRenderingIntentSaturation:
+			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Saturation);
+			break;
+		case GfxRenderingIntent::gfxRenderingIntentPerceptual:
+		default:
+			m_pPage->SetRenderingIntent(ERenderingIntent::RenderingIntent_Perceptual);
+			break;
+		}
 	}
 }
 //----- update text state
 void RedactOutputDev::updateFont(GfxState *pGState)
 {
-	// TODO здесь текст не устанавливать, только флаг, что шрифт обновился. А реально выставлять перед записью глифов если они не попадают под Redact
 	GfxFont* pFont = pGState->getFont();
-	CStream* pStream = m_pPage->GetStream();
-	pStream->WriteEscapeName(pFont->getTag()->getCString());
-	pStream->WriteChar(' ');
-	pStream->WriteReal(pGState->getFontSize());
-	pStream->WriteStr(" Tf\012");
+	if (pFont)
+	{
+		m_pRenderer->m_oFont.SetSize(pGState->getFontSize());
+		m_pRenderer->put_FontName(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pFont->getTag()->getCString(), pFont->getTag()->getLength()));
+	}
+	else
+		m_pRenderer->put_FontName(L"");
 }
 void RedactOutputDev::updateTextMat(GfxState *pGState)
 {
-	double* dTM = pGState->getTextMat();
-	m_pPage->SetTextMatrix(dTM[0], dTM[1], dTM[2], dTM[3], dTM[4], dTM[5]);
+	//double* dTM = pGState->getTextMat();
+	// TODO
+	//m_pPage->SetTextMatrix(dTM[0], dTM[1], dTM[2], dTM[3], dTM[4], dTM[5]);
 }
 void RedactOutputDev::updateCharSpace(GfxState *pGState)
 {
-	m_pPage->SetCharSpace(pGState->getCharSpace());
+	m_pRenderer->m_oFont.SetCharSpace(pGState->getCharSpace());
 }
 void RedactOutputDev::updateRender(GfxState *pGState)
 {
 	int nRender = pGState->getRender();
-	switch (nRender)
-	{
-	default:
-	case 0:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Fill);
-		break;
-	case 1:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Stroke);
-		break;
-	case 2:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillThenStroke);
-		break;
-	case 3:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Invisible);
-		break;
-	case 4:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillClipping);
-		break;
-	case 5:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_StrokeClipping);
-		break;
-	case 6:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_FillStrokeClipping);
-		break;
-	case 7:
-		m_pPage->SetTextRenderingMode(ETextRenderingMode::textrenderingmode_Clipping);
-		break;
-	}
+	m_pRenderer->m_oFont.SetRenderMode(nRender);
 }
 void RedactOutputDev::updateRise(GfxState *pGState)
 {
-	m_pPage->SetTextRise(pGState->getRise());
+	m_pRenderer->m_oFont.SetRise(pGState->getRise());
 }
 void RedactOutputDev::updateWordSpace(GfxState *pGState)
 {
-	m_pPage->SetWordSpace(pGState->getWordSpace());
+	m_pRenderer->m_oFont.SetWordSpace(pGState->getWordSpace());
 }
 void RedactOutputDev::updateHorizScaling(GfxState *pGState)
 {
-	m_pPage->SetHorizontalScalling(pGState->getHorizScaling());
+	m_pRenderer->m_oFont.SetHorizontalScaling(pGState->getHorizScaling());
 }
 void RedactOutputDev::updateTextPos(GfxState *pGState)
 {
@@ -306,7 +310,6 @@ GBool RedactOutputDev::shadedFill(GfxState* pGState, GfxShading* shading)
 //----- path clipping
 void RedactOutputDev::clip(GfxState *pGState)
 {
-
 }
 void RedactOutputDev::eoClip(GfxState *pGState)
 {
@@ -336,10 +339,45 @@ void RedactOutputDev::endString(GfxState *pGState)
 void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY,
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 {
+	double* pCTM = pGState->getCTM();
+	double* pTm = pGState->getTextMat();
+	double arrMatrix[6];
+
+	arrMatrix[0] = pTm[0] * pCTM[0] + pTm[1] * pCTM[2];
+	arrMatrix[1] = pTm[0] * pCTM[1] + pTm[1] * pCTM[3];
+	arrMatrix[2] = pTm[2] * pCTM[0] + pTm[3] * pCTM[2];
+	arrMatrix[3] = pTm[2] * pCTM[1] + pTm[3] * pCTM[3];
+	arrMatrix[4] = pTm[4] * pCTM[0] + pTm[5] * pCTM[2] + pCTM[4];
+	arrMatrix[5] = pTm[4] * pCTM[1] + pTm[5] * pCTM[3] + pCTM[5];
+
+	if (arrMatrix[0] != m_arrMatrix[0] || arrMatrix[1] != m_arrMatrix[1] || arrMatrix[2] != m_arrMatrix[2] ||
+		arrMatrix[3] != m_arrMatrix[3] || arrMatrix[4] != m_arrMatrix[4] || arrMatrix[5] != m_arrMatrix[5])
+	{
+		double dShiftX = 0, dShiftY = 0;
+		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+	}
+
 	// TODO если символ попадает в Redact то return
-	BYTE* pCodes = new BYTE[nBytesCount];
-	for (int i = 0; i < nBytesCount; ++i)
-		pCodes[i] = (nCode >> (nBytesCount - 1 - i * 8)) & 0xFF;
+
+	BYTE* pCodes = new BYTE[2];
+	pCodes[0] = (nCode >> 8) & 0xFF;
+	pCodes[1] = nCode & 0xFF;
+
+	m_pRenderer->m_oCommandManager.SetTransform(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+
+	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dX, dY);
+	pText->SetName(m_pRenderer->m_oFont.GetName());
+	pText->SetSize(m_pRenderer->m_oFont.GetSize());
+	int nDColor2Size;
+	double* dColor2 = m_pRenderer->m_oBrush.GetDColor2(nDColor2Size);
+	pText->SetDColor2(nDColor2Size, dColor2[0], dColor2[1], dColor2[2], dColor2[3]);
+	pText->SetAlpha((BYTE)m_pRenderer->m_oBrush.GetAlpha1()); // TODO
+	pText->SetCharSpace(m_pRenderer->m_oFont.GetCharSpace());
+	pText->SetMode(m_pRenderer->m_oFont.GetRenderMode());
+	pText->SetRise(m_pRenderer->m_oFont.GetRise());
+	pText->SetWordSpace(m_pRenderer->m_oFont.GetWordSpace());
+	pText->SetHorScaling(m_pRenderer->m_oFont.GetHorizontalScaling());
+	pText->SetWidth(dDx);
 }
 GBool RedactOutputDev::beginType3Char(GfxState *pGState, double x, double y, double dx, double dy, CharCode code, Unicode *u, int uLen)
 {
@@ -417,9 +455,14 @@ void RedactOutputDev::type3D1(GfxState *pGState, double wx, double wy, double ll
 //----- form XObjects
 void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
+	m_pRenderer->m_oCommandManager.Flush();
+
+	m_pPage->GrSave();
 	double dShiftX = 0, dShiftY = 0;
-	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY);
-	m_pPage->ExecuteXObject(NULL);
+	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
+	UpdateTransform();
+	m_pPage->ExecuteXObject(name);
+	m_pPage->GrRestore();
 }
 //----- transparency groups and soft masks
 void RedactOutputDev::beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask)
@@ -466,7 +509,7 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	}
 
 	double dShiftX = 0, dShiftY = 0;
-	DoTransform(arrMatrix, &dShiftX, &dShiftY);
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
 	m_pRenderer->m_oPath.Clear();
 
@@ -475,21 +518,21 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
 		int nPointsCount = pSubpath->getNumPoints();
 
-		m_pRenderer->m_oPath.MoveTo(pSubpath->getX(0) + dShiftX, pSubpath->getY(0) + dShiftY);
+		m_pRenderer->m_oPath.MoveTo(pSubpath->getX(0), pSubpath->getY(0));
 
 		int nCurPointIndex = 1;
 		while (nCurPointIndex < nPointsCount)
 		{
 			if (pSubpath->getCurve(nCurPointIndex))
 			{
-				m_pRenderer->m_oPath.CurveTo(pSubpath->getX(nCurPointIndex)     + dShiftX, pSubpath->getY(nCurPointIndex)     + dShiftY,
-											 pSubpath->getX(nCurPointIndex + 1) + dShiftX, pSubpath->getY(nCurPointIndex + 1) + dShiftY,
-											 pSubpath->getX(nCurPointIndex + 2) + dShiftX, pSubpath->getY(nCurPointIndex + 2) + dShiftY);
+				m_pRenderer->m_oPath.CurveTo(pSubpath->getX(nCurPointIndex)    , pSubpath->getY(nCurPointIndex)    ,
+											 pSubpath->getX(nCurPointIndex + 1), pSubpath->getY(nCurPointIndex + 1),
+											 pSubpath->getX(nCurPointIndex + 2), pSubpath->getY(nCurPointIndex + 2));
 				nCurPointIndex += 3;
 			}
 			else
 			{
-				m_pRenderer->m_oPath.LineTo(pSubpath->getX(nCurPointIndex) + dShiftX, pSubpath->getY(nCurPointIndex) + dShiftY);
+				m_pRenderer->m_oPath.LineTo(pSubpath->getX(nCurPointIndex), pSubpath->getY(nCurPointIndex));
 				++nCurPointIndex;
 			}
 		}
@@ -499,9 +542,9 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		}
 	}
 }
-void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bText)
+void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual)
 {
-	if (1 == pMatrix[0] && 0 == pMatrix[1] && 0 == pMatrix[2] && 1 == pMatrix[3] && !bText)
+	if (1 == pMatrix[0] && 0 == pMatrix[1] && 0 == pMatrix[2] && 1 == pMatrix[3] && !bActual)
 	{
 		if (pMatrix[4] || pMatrix[5])
 		{
@@ -514,7 +557,7 @@ void RedactOutputDev::DoTransform(double* pMatrix, double* pdShiftX, double* pdS
 		m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
 	}
 	else if (m_arrMatrix[0] == pMatrix[0] && m_arrMatrix[1] == pMatrix[1] && m_arrMatrix[2] == pMatrix[2] && m_arrMatrix[3] == pMatrix[3]
-			 && m_arrMatrix[4] == pMatrix[4] && m_arrMatrix[5] == pMatrix[5] && !bText)
+			 && m_arrMatrix[4] == pMatrix[4] && m_arrMatrix[5] == pMatrix[5] && !bActual)
 	{
 		double dIDet = 1 / (pMatrix[0] * pMatrix[3] - pMatrix[1] * pMatrix[2]);
 		*pdShiftX = ((pMatrix[4] - m_arrMatrix[4]) * m_arrMatrix[3] - (pMatrix[5] - m_arrMatrix[5]) * m_arrMatrix[1]) * dIDet;

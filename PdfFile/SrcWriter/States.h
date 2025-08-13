@@ -77,6 +77,11 @@ public:
         m_dCharSpace  = 0;
         m_dHorScaling = 100;
         m_nMode       = (int)PdfWriter::textrenderingmode_Fill;
+		m_nColor2Size = 1;
+		m_dColor2[0]  = 0;
+		m_dRise       = 0;
+		m_dWordSpace  = 0;
+		m_dWidth      = -1;
 
         m_bNeedDoItalic = false;
         m_bNeedDoBold   = false;
@@ -147,6 +152,30 @@ public:
 	{
 		m_sPUA = sPUA;
 	}
+	inline void           SetDColor2(int nSize, double d1 = 0, double d2 = 0, double d3 = 0, double d4 = 0)
+	{
+		m_nColor2Size = nSize;
+		m_dColor2[0] = d1;
+		m_dColor2[1] = d2;
+		m_dColor2[2] = d3;
+		m_dColor2[3] = d4;
+	}
+	inline void           SetRise(const double& dRise)
+	{
+		m_dRise = dRise;
+	}
+	inline void           SetWordSpace(const double& dWordSpace)
+	{
+		m_dWordSpace = dWordSpace;
+	}
+	inline void           SetName(const std::wstring& sName)
+	{
+		m_sName = sName;
+	}
+	inline void           SetWidth(const double& dWidth)
+	{
+		m_dWidth = dWidth;
+	}
     inline PdfWriter::CFontDict*     GetFont() const
     {
         return m_pFont;
@@ -187,6 +216,27 @@ public:
 	{
 		return m_sPUA;
 	}
+	inline double*        GetDColor2(int& nSize)
+	{
+		nSize = m_nColor2Size;
+		return m_dColor2;
+	}
+	inline double         GetRise()
+	{
+		return m_dRise;
+	}
+	inline double         GetWordSpace()
+	{
+		return m_dWordSpace;
+	}
+	inline std::wstring   GetName()
+	{
+		return m_sName;
+	}
+	inline double         GetWidth()
+	{
+		return m_dWidth;
+	}
 
 private:
 
@@ -205,6 +255,12 @@ private:
     int            m_nMode;
     double         m_dHorScaling;
 	std::string    m_sPUA;
+	double         m_dColor2[4];
+	int            m_nColor2Size;
+	double         m_dRise;
+	double         m_dWordSpace;
+	std::wstring   m_sName;
+	double         m_dWidth;
 };
 struct TFontInfo
 {
@@ -1046,8 +1102,8 @@ class CFontState
 {
 public:
 
-    CFontState() : m_wsName(L"Arial"), m_wsPath(L""), m_dSize(10), m_bGid(false), m_lFaceIndex(0), m_lStyle(0),
-        m_bBold(false), m_bItalic(false), m_dCharSpace(0), m_bNeedDoItalic(false), m_bNeedDoBold(false)
+	CFontState() : m_wsName(L"Arial"), m_wsPath(L""), m_dSize(10), m_bGid(false), m_lFaceIndex(0), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), m_bNeedDoItalic(false),
+		m_bNeedDoBold(false), m_nRenderMode(0), m_dRise(0), m_dWordSpace(0), m_dHorizontalScaling(100)
     {
     }
 
@@ -1062,6 +1118,10 @@ public:
         m_bBold      = false;
         m_bItalic    = false;
         m_dCharSpace = 0;
+		m_nRenderMode = 0;
+		m_dRise      = 0;
+		m_dWordSpace = 0;
+		m_dHorizontalScaling = 100;
 
         m_bNeedDoItalic = false;
         m_bNeedDoBold   = false;
@@ -1149,6 +1209,39 @@ public:
     {
         return m_bNeedDoBold;
     }
+	inline void         SetRenderMode(BYTE nMode)
+	{
+		m_nRenderMode = nMode;
+	}
+	inline BYTE         GetRenderMode()
+	{
+		return m_nRenderMode;
+	}
+	inline void         SetRise(double dRise)
+	{
+		m_dRise = dRise;
+	}
+	inline double       GetRise()
+	{
+		return m_dRise;
+	}
+	inline void         SetWordSpace(double dWordSpace)
+	{
+		m_dWordSpace = dWordSpace;
+	}
+	inline double       GetWordSpace()
+	{
+		return m_dWordSpace;
+	}
+	inline void         SetHorizontalScaling(double dHS)
+	{
+		m_dHorizontalScaling = dHS;
+	}
+	inline double       GetHorizontalScaling()
+	{
+		return m_dHorizontalScaling;
+	}
+
 
 private:
 
@@ -1163,6 +1256,10 @@ private:
     double       m_dCharSpace;
     bool         m_bNeedDoItalic;
     bool         m_bNeedDoBold;
+	BYTE         m_nRenderMode;
+	double       m_dRise;
+	double       m_dWordSpace;
+	double m_dHorizontalScaling;
 };
 class CPath
 {

@@ -7,7 +7,16 @@ INCLUDEPATH += \
 	$$HEIF_BUILD_PATH				# for heif_version.h
 
 core_windows {
-	# TODO
+	core_debug {
+		BUILD_TYPE = Debug
+	} else {
+		BUILD_TYPE = Release
+	}
+
+	LIBS += \
+		-L$$PWD/x265_git/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/$$BUILD_TYPE -lx265-static \
+		-L$$PWD/libde265/build/$$CORE_BUILDS_PLATFORM_PREFIX/$$CORE_BUILDS_CONFIGURATION_PREFIX/libde265/$$BUILD_TYPE -llibde265 \
+		-L$$HEIF_BUILD_PATH/libheif/$$BUILD_TYPE -lheif
 }
 
 core_linux {

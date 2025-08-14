@@ -486,6 +486,8 @@ namespace StarMath
 		void ConversionToOOXML(XmlUtils::CXmlWriter* pXmlWrite) override;
 		void ConversionMatrixEQN(XmlUtils::CXmlWriter* pXmlWriter);
 		void DimensionCalculation();
+		unsigned int CalculatingTheNumberOfColumns(const std::vector<CElement*>& arElements);
+		void FillingInColumns(XmlUtils::CXmlWriter* pXmlWriter,const unsigned int& i_ActualNumberColumns, unsigned int& i_NumberColumns);
 		TFormulaSize GetSize() override;
 		CElement* m_pFirstArgument;
 		CElement* m_pSecondArgument;

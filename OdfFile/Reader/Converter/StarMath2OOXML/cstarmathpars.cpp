@@ -1558,8 +1558,11 @@ namespace StarMath
 				return L"\u2016";
 			case TypeElement::none:
 				return L"none";
-			default:
+			case TypeElement::round:
+			case TypeElement::rround:
 				return L"";
+			default:
+				return  m_bEQN ? L"none" : L"";
 		}
 	}
 	TFormulaSize CElementBracket::GetSize()
@@ -4317,7 +4320,7 @@ namespace StarMath
 				m_itStart++;
 				break;
 			}
-			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart) ||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart || L'(' == m_wsElement.back() || L')' == m_wsElement.back()  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||( L'+' == m_wsElement.back() && L'-' != *m_itStart ) || (L'-' == *m_itStart && L'+' != m_wsElement.back()) || (L'-' == m_wsElement.back() && L'+' != *m_itStart && L'>' != *m_itStart) || (L'+' == *m_itStart && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back())|| (iswdigit(m_wsElement.back()) && !iswdigit(*m_itStart))  || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
+			else if(!m_wsElement.empty() && (CheckTokenForGetElement(*m_itStart)|| (m_bEQN && L'&' == *m_itStart) ||(m_wsElement.back() == L'<' && (L'-' != *m_itStart && L'?' != *m_itStart && L'=' != *m_itStart && L'<' != *m_itStart && L'>' != *m_itStart)) ||  *m_itStart == L'(' || L')' == *m_itStart || L'(' == m_wsElement.back() || L')' == m_wsElement.back()  || L'%' == *m_itStart||(L'#' == *m_itStart && L'#' != m_wsElement.back()) ||( L'+' == m_wsElement.back() && L'-' != *m_itStart ) || (L'-' == *m_itStart && L'+' != m_wsElement.back()) || (L'-' == m_wsElement.back() && L'+' != *m_itStart && L'>' != *m_itStart) || (L'+' == *m_itStart && L'-' != m_wsElement.back()) || (L'.' == *m_itStart && !iswdigit(m_wsElement.back())) || (iswdigit(*m_itStart) && !iswdigit(m_wsElement.back()) && L'.' != m_wsElement.back())|| (iswdigit(m_wsElement.back()) && !iswdigit(*m_itStart))  || ((m_wsElement.back() != L'<' && m_wsElement.back() != L'>') && (L'<' == *m_itStart || (L'>' == *m_itStart && L'-' !=m_wsElement.back() && L'?' != m_wsElement.back()) || L'=' == *m_itStart))))
 				return m_wsElement;
 			else if((( CheckTokenForGetElement(*m_itStart) || L'=' == *m_itStart) && m_wsElement.empty()) || (!m_wsElement.empty() && ((m_bEQN && ((m_wsElement == L"<<" && L'<' == *m_itStart) || (m_wsElement == L">>" && L'>' == *m_itStart))) || (L'#' == m_wsElement.back() && L'#' == *m_itStart)  || (L'-' == *m_itStart  && L'+' == m_wsElement.back()) || ((L'+' == *m_itStart || L'>' == *m_itStart) && L'-' == m_wsElement.back()) || (m_wsElement.back() == L'<' && (L'=' == *m_itStart || L'<' == *m_itStart || L'>' == *m_itStart || L'-' == *m_itStart)) ||(L'?' == m_wsElement.back() && L'>' == *m_itStart) || (m_wsElement.back() == L'>' && (L'>' == *m_itStart || L'=' == *m_itStart ))  ) ) )
 			{
@@ -4823,6 +4826,7 @@ namespace StarMath
 		CConversionSMtoOOXML::PropertiesMPr(pXmlWrite,m_enTypeMatrix,GetAttribute(),GetTypeConversion(),m_iDimension);
 		pXmlWrite->WriteNodeBegin(L"m:mr",false);
 		bool bNormal(false);
+		unsigned int i_ActualNumberColumns(0),i_NumberColumns(0);
 		switch(m_enTypeMatrix)
 		{
 			case TypeElement::matrix:
@@ -4835,6 +4839,7 @@ namespace StarMath
 				{
 					CElementBracket* pTempBracket = dynamic_cast<CElementBracket*>(m_pFirstArgument);
 					std::vector<CElement*> pTempValue = pTempBracket->GetBracketValue();
+					i_ActualNumberColumns = CalculatingTheNumberOfColumns(pTempValue);
 					pXmlWrite->WriteNodeBegin(L"m:e",false);
 					for(CElement* pOneElement:pTempValue)
 					{
@@ -4845,6 +4850,8 @@ namespace StarMath
 							CElementSpecialSymbol* pTempSpecial = dynamic_cast<CElementSpecialSymbol*>(pOneElement);
 							if(pTempSpecial->GetType() == TypeElement::transition && m_enTypeMatrix == TypeElement::matrix)
 							{
+								FillingInColumns(pXmlWrite,i_ActualNumberColumns,i_NumberColumns);
+								i_NumberColumns = 0;
 								pXmlWrite->WriteNodeEnd(L"m:e",false,false);
 								pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
 								pXmlWrite->WriteNodeBegin(L"m:mr",false);
@@ -4867,6 +4874,7 @@ namespace StarMath
 								{
 									pXmlWrite->WriteNodeEnd(L"m:e",false,false);
 									pXmlWrite->WriteNodeBegin(L"m:e",false);
+									i_NumberColumns++;
 									break;
 								}
 								default:
@@ -4926,7 +4934,11 @@ namespace StarMath
 			}
 		}
 		if(bNormal)
+		{
+			if(m_enTypeMatrix == TypeElement::matrix)
+				FillingInColumns(pXmlWrite,i_ActualNumberColumns,i_NumberColumns);
 			pXmlWrite->WriteNodeEnd(L"m:e",false,false);
+		}
 		pXmlWrite->WriteNodeEnd(L"m:mr",false,false);
 		pXmlWrite->WriteNodeEnd(L"m:m",false,false);
 	}
@@ -5010,6 +5022,40 @@ namespace StarMath
 						return;
 				}
 			}
+		}
+	}
+	unsigned int CElementMatrix::CalculatingTheNumberOfColumns(const std::vector<CElement*>& arElements)
+	{
+		unsigned int i_ActualNumberColumns(0),i_Temp(0);
+		for(CElement* pOneElement:arElements)
+		{
+			if(pOneElement->GetBaseType() == TypeElement::SpecialSymbol)
+			{
+				CElementSpecialSymbol* pSpecial = dynamic_cast<CElementSpecialSymbol*>(pOneElement);
+				if(pSpecial->GetType() == TypeElement::grid)
+					i_Temp++;
+				if(pSpecial->GetType() == TypeElement::transition)
+				{
+					i_Temp++;
+					if(i_Temp > i_ActualNumberColumns)
+						i_ActualNumberColumns = i_Temp;
+					i_Temp = 0;
+				}
+			}
+		}
+		i_Temp++;
+		if(i_Temp > i_ActualNumberColumns)
+			i_ActualNumberColumns = i_Temp;
+		return i_ActualNumberColumns;
+	}
+	void CElementMatrix::FillingInColumns(XmlUtils::CXmlWriter* pXmlWriter, const unsigned int &i_ActualNumberColumns, unsigned int &i_NumberColumns)
+	{
+		i_NumberColumns++;
+		unsigned int i_Temp(0);
+		for(i_Temp; i_Temp < i_ActualNumberColumns - i_NumberColumns;i_Temp++)
+		{
+			pXmlWriter->WriteNodeEnd(L"m:e",false,false);
+			pXmlWriter->WriteNodeBegin(L"m:e",false);
 		}
 	}
 //class CElementDiacriticalMark

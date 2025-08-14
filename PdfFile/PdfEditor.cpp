@@ -3530,6 +3530,7 @@ void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
 		return;
 
 	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+	oRedactOut.NewPDF(pPDFDocument->getXRef());
 	oRedactOut.SetRedact(arrQuadPoints);
 	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
 }

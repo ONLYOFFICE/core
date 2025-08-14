@@ -53,6 +53,7 @@ namespace PdfWriter
 		virtual ~RedactOutputDev();
 
 		void SetRedact(const std::vector<double>& arrQuadPoints);
+		void NewPDF(XRef* pXref);
 
 		//----- get info about output device
 		virtual GBool upsideDown() override
@@ -180,6 +181,7 @@ namespace PdfWriter
 		void UpdatePen();
 		void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
 
+		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;
 
 		CPdfWriter* m_pRenderer;

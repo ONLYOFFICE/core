@@ -35,12 +35,21 @@
 #include "Streams.h"
 
 #include "../lib/xpdf/GfxFont.h"
+#include "../lib/xpdf/XRef.h"
 
 namespace PdfWriter
 {
+void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
+{
+	*pdDeviceX = dUserX * pMatrix[0] + dUserY * pMatrix[2] + pMatrix[4];
+	*pdDeviceY = dUserX * pMatrix[1] + dUserY * pMatrix[3] + pMatrix[5];
+}
+
 //----- constructor/destructor
 RedactOutputDev::RedactOutputDev(CPdfWriter* pRenderer)
 {
+	m_pXref = NULL;
+
 	m_pRenderer = pRenderer;
 	m_pDoc = m_pRenderer->GetDocument();
 	m_pPage = NULL;
@@ -56,6 +65,10 @@ RedactOutputDev::~RedactOutputDev()
 void RedactOutputDev::SetRedact(const std::vector<double>& arrQuadPoints)
 {
 	m_arrQuadPoints = arrQuadPoints;
+}
+void RedactOutputDev::NewPDF(XRef* pXref)
+{
+	m_pXref = pXref;
 }
 //----- initialization and control
 void RedactOutputDev::setDefaultCTM(double *ctm)
@@ -357,7 +370,6 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 	}
 
-	// TODO если символ попадает в Redact то return
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
 		// TODO нужно учитывать m_arrMatrix, так ведь?
@@ -468,9 +480,75 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 {
 	m_pRenderer->m_oCommandManager.Flush();
 
-	m_pPage->GrSave();
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(pGState->getCTM(), &dShiftX, &dShiftY, true);
+
+	// TODO пока что исключается всё изображение
+	Object oForm;
+	if (!m_pXref->fetch(id.num, id.gen, &oForm)->isStream())
+	{
+		oForm.free();
+		return;
+	}
+
+	// TODO нужно учитывать Matrix у формы
+	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 0, dX3 = 0, dY3 = 0, dX4 = 0, dY4 = 0;
+	Object oBBox;
+	if (oForm.streamGetDict()->lookup("BBox", &oBBox)->isArray() && oBBox.arrayGetLength() == 4)
+	{
+		Object oNum;
+		if (oBBox.arrayGet(0, &oNum)->isNum())
+		{
+			dX1 = oNum.getNum();
+			dX2 = dX1;
+		}
+		oNum.free();
+		if (oBBox.arrayGet(1, &oNum)->isNum())
+		{
+			dY1 = oNum.getNum();
+			dY4 = dY1;
+		}
+		oNum.free();
+		if (oBBox.arrayGet(2, &oNum)->isNum())
+		{
+			dX3 = oNum.getNum();
+			dX4 = dX3;
+		}
+		oNum.free();
+		if (oBBox.arrayGet(3, &oNum)->isNum())
+		{
+			dY2 = oNum.getNum();
+			dY3 = dY2;
+		}
+		oNum.free();
+
+		Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
+		Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
+		Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
+		Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
+	}
+	oBBox.free();
+
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	{
+		// TODO нужно учитывать m_arrMatrix, так ведь?
+		double xMin = m_arrQuadPoints[0];
+		double yMin = m_arrQuadPoints[1];
+		double xMax = m_arrQuadPoints[4];
+		double yMax = m_arrQuadPoints[5];
+
+		if (xMin < dX1 && dX1 < xMax && yMin < dY1 && dY1 < yMax)
+			return;
+		if (xMin < dX2 && dX2 < xMax && yMin < dY2 && dY2 < yMax)
+			return;
+		if (xMin < dX3 && dX3 < xMax && yMin < dY3 && dY3 < yMax)
+			return;
+		if (xMin < dX4 && dX4 < xMax && yMin < dY4 && dY4 < yMax)
+			return;
+	}
+	oForm.free();
+
+	m_pPage->GrSave();
 	UpdateTransform();
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();

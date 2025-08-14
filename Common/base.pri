@@ -110,6 +110,7 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
 }
 
 win32-arm64-msvc2017 {
+    CONFIG -= core_win_32
     CONFIG += core_win_arm64
 }
 

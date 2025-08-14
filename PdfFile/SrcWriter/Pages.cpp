@@ -1651,6 +1651,9 @@ namespace PdfWriter
 		m_pContents = new CArrayObject();
 		Add("Contents", m_pContents);
 		AddContents(pXref);
+#ifndef FILTER_FLATE_DECODE_DISABLED
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
+#endif
 	}
 	void CPage::ClearContentFull(CXref* pXref)
 	{
@@ -1659,6 +1662,11 @@ namespace PdfWriter
 			for (int i = 0; i < m_pContents->GetCount(); ++i)
 			{
 				CObjectBase* pObj = m_pContents->Get(i);
+				if (pObj->GetType() == object_type_DICT)
+				{
+					CObjectBase* pLength = ((CDictObject*)pObj)->Get("Length");
+					pXref->Remove(pLength);
+				}
 				pXref->Remove(pObj);
 			}
 		}

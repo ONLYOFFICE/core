@@ -893,6 +893,9 @@ namespace PdfWriter
 	}
 	void CXref::Remove(CObjectBase* pObject)
 	{
+		if (!pObject)
+			return;
+
 		for (unsigned int unIndex = 0, unCount = m_arrEntries.size(); unIndex < unCount; ++unIndex)
 		{
 			TXrefEntry* pEntry = m_arrEntries.at(unIndex);

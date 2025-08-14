@@ -482,7 +482,7 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	RELEASEARRAYOBJECTS(pBuffer);
 	RELEASEARRAYOBJECTS(pFileContent);
 
-	pdfFile->Redact({});
+	pdfFile->Redact({ 136.145, 6.82016, 136.145, 293.838, 250.691, 293.838, 250.691, 6.82016 });
 
 	pdfFile->Close();
 }

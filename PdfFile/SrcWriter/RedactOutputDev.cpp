@@ -358,6 +358,17 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	}
 
 	// TODO если символ попадает в Redact то return
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	{
+		// TODO нужно учитывать m_arrMatrix, так ведь?
+		double xMin = m_arrQuadPoints[0];
+		double yMin = m_arrQuadPoints[1];
+		double xMax = m_arrQuadPoints[4];
+		double yMax = m_arrQuadPoints[5];
+
+		if (xMin < dX && dX < xMax && yMin < dY && dY < yMax)
+			return;
+	}
 
 	BYTE* pCodes = new BYTE[2];
 	pCodes[0] = (nCode >> 8) & 0xFF;

@@ -72,7 +72,7 @@ public:
 
 	CFParsedFormula			fmlaActive;
     _UINT16					ipriority = 0;
-    _UINT16					icfTemplate = 0;
+	_UINT16					icfTemplate = 1;
 	CFExTemplateParams		rgbTemplateParms;
 
 	BiffStructurePtr		rgbCT;

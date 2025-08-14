@@ -81,6 +81,11 @@
 
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CF12.h"
+
 using namespace XLS;
 
 namespace OOX
@@ -3140,6 +3145,52 @@ XLS::BaseObjectPtr CConditionalFormattingRule::WriteAttributes14(const  XLS::Cel
     return objPtr;
 }
 
+XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRef)
+{
+	auto ptr = new XLS::CF12(cellRef);
+	if(!m_oType.IsInit())
+		m_oType = SimpleTypes::Spreadsheet::ECfType::expression;
+	ptr->icfTemplate = 1;
+	ptr->ct = 2;
+	if(m_oType->GetValue() == SimpleTypes::Spreadsheet::ECfType::cellIs)
+	{
+		ptr->ct = 1;
+		ptr->icfTemplate = 0;
+		if(m_oOperator.IsInit())
+		{
+			if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_between)
+				ptr->cp = XLSB::CFOper::CF_OPER_BN;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_notBetween)
+				ptr->cp = XLSB::CFOper::CF_OPER_NB;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_equal)
+				ptr->cp  = XLSB::CFOper::CF_OPER_EQ;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_notEqual)
+				ptr->cp  = XLSB::CFOper::CF_OPER_NE;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThan)
+				ptr->cp  = XLSB::CFOper::CF_OPER_GT;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThan)
+				ptr->cp  = XLSB::CFOper::CF_OPER_LT;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_greaterThanOrEqual)
+				ptr->cp  = XLSB::CFOper::CF_OPER_GE;
+			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual)
+				ptr->cp  = XLSB::CFOper::CF_OPER_LE;
+		   }
+	}
+	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
+	{
+		//todo get and add dxf from styles by id
+	}
+	if(m_oStopIfTrue.IsInit())
+		ptr->fStopIfTrue = m_oStopIfTrue->GetValue();
+	if(m_oPriority.IsInit())
+		ptr->ipriority = m_oPriority->GetValue();
+	if(m_arrFormula.size() > 0)
+		ptr->rgce1.parseStringFormula(m_arrFormula[0].get().m_sText, L"");
+	if(m_arrFormula.size() > 1)
+		ptr->rgce2.parseStringFormula(m_arrFormula[1].get().m_sText, L"");
+	return XLS::BaseObjectPtr(ptr);
+}
+
 template<typename Type>
 nullable<Type> CConditionalFormattingRule::Merge(const nullable<Type> &oPrev, const nullable<Type> &oCurrent)
 {
@@ -3901,6 +3952,30 @@ XLS::BaseObjectPtr CConditionalFormatting::toBin14()
         ptr->m_arCFRULE14.push_back(i->toBin14(formatingfirstCell));
     }
     return objectPtr;
+}
+
+void CConditionalFormatting::toXLS(XLS::BaseObjectPtr fmtsPtr)
+{
+	auto fmtsArray = static_cast<XLS::CONDFMTS*>(fmtsPtr.get());
+	auto UnionPtr = new XLS::CONDFMT12;
+	auto ptr = new XLS::CondFmt12;
+	UnionPtr->m_CondFmt12 = XLS::BaseObjectPtr(ptr);
+	XLS::CellRef formatingfirstCell;
+
+	if(m_oSqRef.IsInit())
+	{
+		ptr->frtRefHeaderU.ref8 = m_oSqRef.get();
+		ptr->mainCF.refBound = m_oSqRef.get();
+		ptr->mainCF.sqref.strValue = m_oSqRef.get();
+		formatingfirstCell = ptr->mainCF.sqref.getLocationFirstCell();
+	}
+	ptr->mainCF.ccf = m_arrItems.size();
+	for(auto i : m_arrItems)
+	{
+		UnionPtr->m_arCF12.push_back(i->toXLS(formatingfirstCell));
+	}
+
+	fmtsArray->m_arCONDFMT.push_back(XLS::BaseObjectPtr(UnionPtr));
 }
 
 bool CConditionalFormatting::IsUsage()

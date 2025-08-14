@@ -54,6 +54,9 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/WorksheetSubstream.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PAGESETUP.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 
 namespace OOX
 {
@@ -398,6 +401,20 @@ namespace OOX
 				m_oHeaderFooter->toXLS(worksheetPtr->m_PAGESETUP);
 			if(m_oSheetProtection.IsInit())
 				worksheetPtr->m_PROTECTION = m_oSheetProtection->toXLS();
+			if(!m_arrConditionalFormatting.empty())
+			{
+				auto condFmts = new XLS::CONDFMTS;
+				worksheetPtr->m_CONDFMTS = XLS::BaseObjectPtr(condFmts);
+				auto condFmtId = 0;
+				for(auto i : m_arrConditionalFormatting)
+					{
+						i->toXLS(worksheetPtr->m_CONDFMTS);
+						auto lastCondFmt = static_cast<XLS::CONDFMT12*>(condFmts->m_arCONDFMT.back().get());
+						auto fmtRecord = static_cast<XLS::CondFmt12*>(lastCondFmt->m_CondFmt12.get());
+						fmtRecord->mainCF.nID = condFmtId;
+						condFmtId++;
+					}
+			}
 			if(m_oHyperlinks.IsInit())
 				worksheetPtr->m_arHLINK = m_oHyperlinks->toXLS();
 

@@ -311,6 +311,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin(const  XLS::CellRef &cellRef);
             void toBin(XLS::StreamCacheWriterPtr& writer, const  XLS::CellRef &cellRef);
             XLS::BaseObjectPtr toBin14(const  XLS::CellRef &cellRef);
+			XLS::BaseObjectPtr toXLS(const  XLS::CellRef &cellRef);
 
 			virtual EElementType getType () const;
 			bool isValid () const;
@@ -375,6 +376,7 @@ namespace OOX
 			XLS::BaseObjectPtr toBin();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
+			void toXLS(XLS::BaseObjectPtr fmtsPtr);
 
 
 			virtual EElementType getType () const;

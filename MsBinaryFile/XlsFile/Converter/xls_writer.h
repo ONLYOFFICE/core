@@ -45,6 +45,8 @@ public:
 	bool Open(const std::wstring &fileName);
 	bool WriteWorkbook(XLS::BaseObjectPtr streamObject);
 	bool WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject);
+
+	boost::shared_ptr<XLS::GlobalWorkbookInfo> globalInfoPtr;
 private:
     std::wstring fileName_ = L"";
 

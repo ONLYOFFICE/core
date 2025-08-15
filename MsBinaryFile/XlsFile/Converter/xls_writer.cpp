@@ -45,18 +45,19 @@ bool XlsWriter::Open(const std::wstring &fileName)
 bool XlsWriter::WriteWorkbook(XLS::BaseObjectPtr streamObject)
 {
 	auto WokrkbokStreamName = L"Workbook";
-	auto xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
+	if(globalInfoPtr == nullptr)
+		globalInfoPtr = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
 	auto BookStream = xls_file->createNamedStream(WokrkbokStreamName);
 	if(BookStream == nullptr)
 		return false;
-	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(BookStream, xls_global_info));
+	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(BookStream, globalInfoPtr));
 	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
 	stream_proc.mandatory(*streamObject);
 
 	//writing fileptrs
 	{
 		auto filePos = BookStream->getStreamPointer();
-		for(auto sheet : xls_global_info->sheets_info)
+		for(auto sheet : globalInfoPtr->sheets_info)
 		{
 			//bof of worksheet
 			BookStream->seekFromBegin(sheet.BoundSheetPos);
@@ -69,8 +70,9 @@ bool XlsWriter::WriteWorkbook(XLS::BaseObjectPtr streamObject)
 }
 bool XlsWriter::WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject)
 {
-	auto xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
-	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(xls_file->createNamedStream(streamName), xls_global_info));
+	if(globalInfoPtr == nullptr)
+		globalInfoPtr = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
+	XLS::StreamCacheWriterPtr cacheWriter(new XLS::CFStreamCacheWriter(xls_file->createNamedStream(streamName), globalInfoPtr));
 
 	XLS::BinWriterProcessor stream_proc(cacheWriter, nullptr);
 	stream_proc.mandatory(*streamObject);

@@ -60,6 +60,7 @@
 
 #include "../../MsBinaryFile/XlsFile/Converter/xls_writer.h"
 #include "../../MsBinaryFile/XlsFile/Format/Logic/WorkbookStreamObject.h"
+#include "../../MsBinaryFile/XlsFile/Format/Logic/GlobalsSubstream.h"
 
 OOX::Spreadsheet::CXlsx::CXlsx() : OOX::IFileContainer(dynamic_cast<OOX::Document*>(this))
 {
@@ -198,7 +199,10 @@ bool OOX::Spreadsheet::CXlsx::WriteXLS(const CPath& oFilePath)
 	auto workbookStream = new XLS::WorkbookStreamObject;
 	auto workbookPtr = XLS::BaseObjectPtr(workbookStream);
 	XlsWriter writer;
+	writer.globalInfoPtr.reset(new XLS::GlobalWorkbookInfo(XLS::WorkbookStreamObject::DefaultCodePage, nullptr));
 	workbookStream->m_GlobalsSubstream = m_pWorkbook->toXLS();
+	auto CastedGlobalsStram = static_cast<XLS::GlobalsSubstream*>(workbookStream->m_GlobalsSubstream.get());
+	CastedGlobalsStram->global_info_ = writer.globalInfoPtr;
 	//todo substreams conversion
 	for(auto i : m_arWorksheets)
 		workbookStream->m_arWorksheetSubstream.push_back(i->toXLS());

@@ -307,7 +307,16 @@ namespace OOX
 				SetBordersXLS(FormatPtr->m_XFS);
 			}
 			if(m_oDxfs.IsInit())
-				FormatPtr->m_arDXF = m_oDxfs->toXLS();
+			{
+				//FormatPtr->m_arDXF = m_oDxfs->toXLS();
+				auto globalInfo = workbookPtr->global_info_;
+				if(globalInfo != nullptr)
+				{
+					for(auto i : m_oDxfs->m_arrItems)
+					 if(i != nullptr)
+						globalInfo->arrUserDxfs.push_back(i->toXML());
+				}
+			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
 

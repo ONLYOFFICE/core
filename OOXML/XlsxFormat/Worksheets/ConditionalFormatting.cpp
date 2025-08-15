@@ -3178,6 +3178,7 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 	}
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{
+		ptr->dxf.dxfn.reset(new XLS::DXFN);
 		//todo get and add dxf from styles by id
 	}
 	if(m_oStopIfTrue.IsInit())

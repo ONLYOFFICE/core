@@ -73,7 +73,7 @@ void DXFN12::save(CFRecord& record)
     auto StartDataPose = record.getRdPtr();
     if(dxfn)
     {
-        record >> *dxfn;
+		record << *dxfn;
 
         if(dxfn->xfext != nullptr)
             record << *dxfn->xfext;

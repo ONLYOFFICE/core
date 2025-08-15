@@ -31,11 +31,12 @@
  */
 
 #include "RedactOutputDev.h"
-
-#include "Streams.h"
+#include "Types.h"
 
 #include "../lib/xpdf/GfxFont.h"
 #include "../lib/xpdf/XRef.h"
+#include "../lib/pathkit/include/core/SkPath.h"
+#include "../lib/pathkit/include/pathops/SkPathOps.h"
 
 namespace PdfWriter
 {
@@ -437,9 +438,9 @@ void RedactOutputDev::endMarkedContent(GfxState *pGState)
 }
 GBool RedactOutputDev::useExtGState()
 {
-	return gFalse;
+	return gTrue;
 }
-void RedactOutputDev::setExtGState(Object* pDict)
+void RedactOutputDev::setExtGState(GfxState *pGState, Object *pDict, const char* name)
 {
 
 }
@@ -575,6 +576,38 @@ void RedactOutputDev::clearSoftMask(GfxState *pGState)
 
 }
 
+// Конвертирует conic в массив квадратичных Безье (минимум 1 сегмент)
+void ConvertConicToQuads(const pk::SkPoint& p0, const pk::SkPoint& p1, const pk::SkPoint& p2, pk::SkScalar w, pk::SkPoint pts[], int pow2) {
+	const pk::SkScalar k = 0.5f; // Фактор дробления (можно адаптировать)
+
+	pk::SkPoint q0 = p0;
+	pk::SkPoint q2 = p2;
+	pk::SkPoint q1 = pk::SkPoint::Make(
+		(p0.x() + w * p1.x() + p2.x()) / (2 + w),
+		(p0.y() + w * p1.y() + p2.y()) / (2 + w)
+	);
+
+	if (pow2 == 1) {
+		pts[0] = q0;
+		pts[1] = q1;
+		pts[2] = q2;
+		return;
+	}
+
+	// Рекурсивное дробление
+	pk::SkPoint left[3], right[3];
+	pk::SkPoint mid = pk::SkPoint::Make(
+		(q0.x() + q2.x() + 2 * w * q1.x()) / (2 + 2 * w),
+		(q0.y() + q2.y() + 2 * w * q1.y()) / (2 + 2 * w)
+	);
+
+	ConvertConicToQuads(q0, q1, mid, w, left, pow2 - 1);
+	ConvertConicToQuads(mid, q1, q2, w, right, pow2 - 1);
+
+	// Слияние результатов
+	std::copy(left, left + 3, pts);
+	std::copy(right + 1, right + 3, pts + 3);
+}
 void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2)
 {
 	double arrMatrix[6];
@@ -600,34 +633,168 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
-	m_pRenderer->m_oPath.Clear();
+	pk::SkPath skPath, skPathRedact, skPathRes;
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	{
+		skPathRedact.moveTo(m_arrQuadPoints[0], m_arrQuadPoints[1]);
+		skPathRedact.lineTo(m_arrQuadPoints[2], m_arrQuadPoints[3]);
+		skPathRedact.lineTo(m_arrQuadPoints[4], m_arrQuadPoints[5]);
+		skPathRedact.lineTo(m_arrQuadPoints[6], m_arrQuadPoints[7]);
+		skPathRedact.close();
+	}
+
+	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+	CMatrix oInverse = oMatrix.Inverse();
 
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 	{
 		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
 		int nPointsCount = pSubpath->getNumPoints();
 
-		m_pRenderer->m_oPath.MoveTo(pSubpath->getX(0), pSubpath->getY(0));
+		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
+		oInverse.Apply(dX, dY);
+		skPath.moveTo(dX, dY);
 
 		int nCurPointIndex = 1;
 		while (nCurPointIndex < nPointsCount)
 		{
 			if (pSubpath->getCurve(nCurPointIndex))
 			{
-				m_pRenderer->m_oPath.CurveTo(pSubpath->getX(nCurPointIndex)    , pSubpath->getY(nCurPointIndex)    ,
-											 pSubpath->getX(nCurPointIndex + 1), pSubpath->getY(nCurPointIndex + 1),
-											 pSubpath->getX(nCurPointIndex + 2), pSubpath->getY(nCurPointIndex + 2));
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oInverse.Apply(dX, dY);
+				double dX2 = pSubpath->getX(nCurPointIndex + 1);
+				double dY2 = pSubpath->getY(nCurPointIndex + 1);
+				oInverse.Apply(dX2, dY2);
+				double dX3 = pSubpath->getX(nCurPointIndex + 2);
+				double dY3 = pSubpath->getY(nCurPointIndex + 2);
+				oInverse.Apply(dX3, dY3);
+				skPath.cubicTo(dX, dY, dX2, dY2, dX3, dY3);
 				nCurPointIndex += 3;
 			}
 			else
 			{
-				m_pRenderer->m_oPath.LineTo(pSubpath->getX(nCurPointIndex), pSubpath->getY(nCurPointIndex));
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oInverse.Apply(dX, dY);
+				skPath.lineTo(dX, dY);
 				++nCurPointIndex;
 			}
 		}
 		if (pSubpath->isClosed())
+			skPath.close();
+	}
+
+	pk::Op(skPath, skPathRedact, pk::SkPathOp::kDifference_SkPathOp, &skPathRes);
+
+	pk::SkPath::Iter iter(skPathRes, false); // false - не сохранять контуры
+	pk::SkPoint pts[4];
+	pk::SkPath::Verb verb;
+
+	m_pRenderer->m_oPath.Clear();
+
+	while ((verb = iter.next(pts)) != pk::SkPath::kDone_Verb)
+	{
+		switch (verb)
+		{
+		case pk::SkPath::kMove_Verb:
+		{
+			double dX = pts[0].x(), dY = pts[0].y();
+			oMatrix.Apply(dX, dY);
+			m_pRenderer->m_oPath.MoveTo(dX, dY);
+			break;
+		}
+		case pk::SkPath::kLine_Verb:
+		{
+			double dX = pts[1].x(), dY = pts[1].y();
+			oMatrix.Apply(dX, dY);
+			m_pRenderer->m_oPath.LineTo(dX, dY);
+			break;
+		}
+		case pk::SkPath::kQuad_Verb:
+		{
+			// Конвертация квадратичной в кубическую кривую
+			pk::SkPoint cubic[4];
+			cubic[0] = pts[0];  // Начальная точка
+			cubic[1] = {
+				pts[0].x() + (2.0f/3.0f) * (pts[1].x() - pts[0].x()),
+				pts[0].y() + (2.0f/3.0f) * (pts[1].y() - pts[0].y())
+			};  // Первая контрольная точка
+			cubic[2] = {
+				pts[1].x() + (2.0f/3.0f) * (pts[2].x() - pts[1].x()),
+				pts[1].y() + (2.0f/3.0f) * (pts[2].y() - pts[1].y())
+			};  // Вторая контрольная точка
+			cubic[3] = pts[2];  // Конечная точка
+
+			double dX = cubic[1].x();
+			double dY = cubic[1].y();
+			oMatrix.Apply(dX, dY);
+			double dX2 = cubic[2].x();
+			double dY2 = cubic[2].y();
+			oMatrix.Apply(dX2, dY2);
+			double dX3 = cubic[3].x();
+			double dY3 = cubic[3].y();
+			oMatrix.Apply(dX3, dY3);
+			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+			break;
+		}
+		case pk::SkPath::kCubic_Verb:
+		{
+			double dX = pts[1].x();
+			double dY = pts[1].y();
+			oMatrix.Apply(dX, dY);
+			double dX2 = pts[2].x();
+			double dY2 = pts[2].y();
+			oMatrix.Apply(dX2, dY2);
+			double dX3 = pts[3].x();
+			double dY3 = pts[3].y();
+			oMatrix.Apply(dX3, dY3);
+			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+			break;
+		}
+		case pk::SkPath::kConic_Verb:
+		{
+			const int pow2 = 1; // Кол-во сегментов (2^pow2). Для PDF обычно хватает 1.
+			pk::SkPoint quadPts[1 + 2 * (1 << pow2)]; // Массив для квадратичных кривых
+			ConvertConicToQuads(pts[0], pts[1], pts[2], iter.conicWeight(), quadPts, pow2);
+
+			// Добавляем каждую квадратичную кривую как отдельный сегмент
+			for (int i = 0; i < (1 << pow2); ++i)
+			{
+				// Конвертация квадратичной в кубическую кривую
+				pk::SkPoint cubic[4];
+				cubic[0] = quadPts[0 + 2*i];  // Начальная точка
+				cubic[1] = {
+					quadPts[0 + 2*i].x() + (2.0f/3.0f) * (quadPts[1 + 2*i].x() - quadPts[0 + 2*i].x()),
+					quadPts[0 + 2*i].y() + (2.0f/3.0f) * (quadPts[1 + 2*i].y() - quadPts[0 + 2*i].y())
+				};  // Первая контрольная точка
+				cubic[2] = {
+					quadPts[1 + 2*i].x() + (2.0f/3.0f) * (quadPts[2 + 2*i].x() - quadPts[1 + 2*i].x()),
+					quadPts[1 + 2*i].y() + (2.0f/3.0f) * (quadPts[2 + 2*i].y() - quadPts[1 + 2*i].y())
+				};  // Вторая контрольная точка
+				cubic[3] = quadPts[2 + 2*i];  // Конечная точка
+
+				double dX = cubic[1].x();
+				double dY = cubic[1].y();
+				oMatrix.Apply(dX, dY);
+				double dX2 = cubic[2].x();
+				double dY2 = cubic[2].y();
+				oMatrix.Apply(dX2, dY2);
+				double dX3 = cubic[3].x();
+				double dY3 = cubic[3].y();
+				oMatrix.Apply(dX3, dY3);
+
+				m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+			}
+			break;
+		}
+		case pk::SkPath::kClose_Verb:
 		{
 			m_pRenderer->m_oPath.Close();
+			break;
+		}
+		case pk::SkPath::kDone_Verb:
+			break;
 		}
 	}
 }

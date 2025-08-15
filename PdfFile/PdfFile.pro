@@ -38,10 +38,12 @@ INCLUDEPATH += \
     lib/goo \
     lib/fofi \
     lib/splash \
+    lib/pathkit \
     lib
 
 HEADERS += $$files(lib/*.h, true)
 SOURCES += $$files(lib/*.c, true)
+SOURCES += $$files(lib/*.cpp, true)
 SOURCES += $$files(lib/*.cc, true)
 
 SOURCES -= \

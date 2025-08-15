@@ -51,6 +51,7 @@
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Outline.h"
 #include "SrcWriter/RedactOutputDev.h"
+#include "SrcWriter/GState.h"
 
 #define AddToObject(oVal)\
 {\
@@ -292,6 +293,11 @@ PdfWriter::CAnnotation* CreateAnnot(Object* oAnnot, Object* oType, PdfWriter::CX
 	}
 	return pAnnot;
 }
+PdfWriter::CExtGrState* CreateExtGState(Object* oState)
+{
+	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
+	return pState;
+}
 PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
@@ -379,6 +385,17 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 			}
 		}
 		oType.free(); oSubtype.free();
+
+		if (obj->dictLookup("Type", &oType)->isName("ExtGState"))
+		{
+			PdfWriter::CExtGrState* pState = CreateExtGState(obj);
+			if (pState)
+			{
+				pDoc->AddExtGState(pState);
+				pDict = pState;
+			}
+		}
+		oType.free();
 
 		if (!pDict)
 			pDict = new PdfWriter::CDictObject();

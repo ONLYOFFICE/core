@@ -152,7 +152,7 @@ namespace PdfWriter
 		virtual GBool beginMCOShapes(GfxState *pGState, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *pGState) override;
 		virtual GBool useExtGState() override;
-		virtual void setExtGState(Object* pDict) override;
+		virtual void setExtGState(GfxState *pGState, Object *pDict, const char* name) override;
 		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;

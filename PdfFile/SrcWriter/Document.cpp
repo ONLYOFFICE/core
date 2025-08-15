@@ -558,6 +558,10 @@ namespace PdfWriter
 
 		return NULL;
 	}
+	void CDocument::AddExtGState(CExtGrState* pState)
+	{
+		m_vExtGrStates.push_back(pState);
+	}
     CExtGrState* CDocument::GetExtGState(double dAlphaStroke, double dAlphaFill, EBlendMode eMode, int nStrokeAdjustment)
 	{
 		CExtGrState* pExtGrState = FindExtGrState(dAlphaStroke, dAlphaFill, eMode, nStrokeAdjustment);

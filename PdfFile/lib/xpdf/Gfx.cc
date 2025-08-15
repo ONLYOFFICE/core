@@ -1008,7 +1008,7 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
 
   if (out->useExtGState())
   {
-	out->setExtGState(&obj1);
+	out->setExtGState(state, &obj1, args[0].getName());
 	obj1.free();
 	return;
   }

@@ -191,7 +191,7 @@ public:
   virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
   virtual GBool useExtGState() { return gFalse; }
-  virtual void setExtGState(Object* pDict) {}
+  virtual void setExtGState(GfxState *state, Object *obj, const char* name) {}
 
   //----- image drawing
   virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,

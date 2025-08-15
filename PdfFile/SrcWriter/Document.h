@@ -133,7 +133,8 @@ namespace PdfWriter
 		COutline*         GetOutlines() { return m_pOutlines; }
 		CDestination*     CreateDestination(CObjectBase* pPage, bool bInline = false);
 		bool              AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
-					      
+
+		void              AddExtGState(CExtGrState* pState);
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		CExtGrState*      GetStrokeAlpha(double dAlpha);
 		CExtGrState*      GetFillAlpha(double dAlpha);

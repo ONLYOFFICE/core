@@ -43,6 +43,8 @@
 #include "../../../OOXML/SystemUtility/SystemUtility.h"
 #include "../../../Common/3dParty/cryptopp/osrng.h"
 
+#include <regex>
+
 namespace cpdoccore 
 {
 namespace odf_writer
@@ -614,6 +616,39 @@ namespace odf_writer
 
 						if ((content_) && (content_->styles_.rdbuf()->in_avail() != 0))
 						{
+							std::wstring str_styles = content_->styles_.str();
+
+							if( str_styles.find(L"text:dont-balance-text-columns=\"true\"") == std::string::npos )
+							{
+								std::size_t style_pos = str_styles.find(L"style:section-properties");
+
+								if( style_pos != std::string::npos )
+								{
+									std::size_t end_pos = str_styles.find(L">", style_pos);
+
+									if( end_pos != std::string::npos )
+									{
+										std::wregex break_regex(L"fo:break-before\\s*=\\s*\"column\"");
+
+										bool have_fo_break_before_column = std::regex_search( str_styles, break_regex );
+										if( !have_fo_break_before_column )
+										{
+											str_styles.insert(end_pos,L" text:dont-balance-text-columns=\"true\" style:editable=\"false\"");
+										}
+										else
+										{
+											std::wregex pattern(L"fo:break-before\\s*=\\s*\"column\"");
+											str_styles.insert(end_pos,L" text:dont-balance-text-columns=\"false\" style:editable=\"false\"");
+											str_styles = std::regex_replace( str_styles, pattern , L"");
+										}
+
+										content_->styles_.str(L"");
+										content_->styles_.clear();
+										content_->styles_ << str_styles;
+									}
+								}
+							}
+
 							content_->styles_.flush();
 							CP_XML_STREAM() << content_->styles_.rdbuf();
 							content_->styles_.clear();

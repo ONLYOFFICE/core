@@ -80,7 +80,7 @@ public:
 //-----------------------------
     bool					fStopIfTrue = 0;
     int						ipriority_ = 0;
-    int						dxfId_ = 0;
+	int						dxfId_ = -1;
 
 	BaseObjectPtr			m_CFEx;
 	BaseObjectPtr			m_CF12_2;

@@ -65,7 +65,9 @@ namespace OOX
 		}
 		std::wstring CDxf::toXML() const
 		{
-			return _T("");
+			NSStringUtils::CStringBuilder writer;
+			toXML(writer);
+			return writer.GetData();
 		}
 		void CDxf::toXML(NSStringUtils::CStringBuilder& writer) const
 		{

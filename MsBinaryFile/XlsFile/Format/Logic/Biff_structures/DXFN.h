@@ -61,31 +61,31 @@ public:
 
 	int serialize(std::wostream & stream);
 
-	bool alchNinch = false;
-	bool alcvNinch = false;
+	bool alchNinch = true;
+	bool alcvNinch = true;
 	
-	bool wrapNinch = false;
-	bool trotNinch = false;
-	bool kintoNinch = false;
-	bool cIndentNinch = false;
-	bool fShrinkNinch = false;
-	bool fMergeCellNinch = false;
+	bool wrapNinch = true;
+	bool trotNinch = true;
+	bool kintoNinch = true;
+	bool cIndentNinch = true;
+	bool fShrinkNinch = true;
+	bool fMergeCellNinch = true;
 	
-	bool lockedNinch = false;
-	bool hiddenNinch;
+	bool lockedNinch = true;
+	bool hiddenNinch = true;
 	
-	bool glLeftNinch = false;
-	bool glRightNinch = false;
-	bool glTopNinch = false;
-	bool glBottomNinch = false;
-	bool glDiagDownNinch = false;
-	bool glDiagUpNinch = false;
+	bool glLeftNinch = true;
+	bool glRightNinch = true;
+	bool glTopNinch = true;
+	bool glBottomNinch = true;
+	bool glDiagDownNinch = true;
+	bool glDiagUpNinch = true;
 	
-	bool flsNinch = false;
-	bool icvFNinch = false;
-	bool icvBNinch = false;
-	bool ifmtNinch = false;
-	bool fIfntNinch = false;
+	bool flsNinch = true;
+	bool icvFNinch = true;
+	bool icvBNinch = true;
+	bool ifmtNinch = true;
+	bool fIfntNinch = true;
 	
 	bool ibitAtrNum = false;
 	bool ibitAtrFnt = false;
@@ -94,7 +94,7 @@ public:
 	bool ibitAtrPat = false;
 	bool ibitAtrProt = false;
 	
-	bool iReadingOrderNinch = false;
+	bool iReadingOrderNinch = true;
 	bool fIfmtUser = false;
 	bool fNewBorder = false;
 	bool fZeroInited = false;

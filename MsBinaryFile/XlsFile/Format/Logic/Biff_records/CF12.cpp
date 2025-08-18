@@ -36,6 +36,14 @@
 #include "../Biff_structures/CFMultistate.h"
 #include "../Biff_structures/CFDatabar.h"
 #include "../Biff_structures/CFGradient.h"
+
+#include "../../../../../OOXML/XlsxFormat/ComplexTypes_Spreadsheet.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/dxf.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/Xfs.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/NumFmts.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/Fonts.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/Fills.h"
+#include "../../../../../OOXML/XlsxFormat/Styles/Borders.h"
 #include "../../../../../OOXML/Base/Unit.h"
 
 namespace XLS
@@ -118,12 +126,45 @@ void CF12::readFields(CFRecord& record)
 	dxfId_ = global_info->RegistrDxfn(strm.str());
 }
 void CF12::writeFields(CFRecord& record)
-{   frtRefHeader.rt = 0x087A;
+{
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	frtRefHeader.rt = 0x087A;
     record << frtRefHeader;
     record << ct << cp;
 
     record.reserveNunBytes(4);
     auto ccePos = record.getRdPtr();
+	{
+		//todo dxf conversion from global info
+		if(dxfId_ >= 0 && global_info->arrUserDxfs.size() > dxfId_)
+		{
+			OOX::Spreadsheet::CDxf dxfObj;
+			XmlUtils::CXmlLiteReader oReader;
+			if(oReader.FromString(global_info->arrUserDxfs.at(dxfId_)))
+			{
+				if(oReader.ReadNextNode())
+				{
+					dxfObj.fromXML(oReader);
+					if(dxfObj.m_oFill.IsInit() && dxfObj.m_oFill->m_oPatternFill.IsInit())
+					{
+						dxf.dxfn->flsNinch = false;
+						dxf.dxfn->ibitAtrPat = true;
+						dxf.dxfn->dxfpat.fls  = 1;
+						if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor.IsInit() && dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oIndexed.IsInit())
+						{
+							dxf.dxfn->icvFNinch = false;
+							dxf.dxfn->dxfpat.icvForeground = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oIndexed->GetValue();
+						}
+						if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor.IsInit() && dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed.IsInit())
+						{
+							dxf.dxfn->icvBNinch = false;
+							dxf.dxfn->dxfpat.icvBackground = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed->GetValue();
+						}
+					}
+				}
+			}
+		}
+	}
     record << dxf;
     auto rgce1pos = record.getRdPtr();
     auto dxfSize = rgce1pos - ccePos;

@@ -153,6 +153,7 @@ namespace PdfWriter
 		void      StartTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 		void      SetExtGrState(CExtGrState* pExtGrState);
+		void      SetExtGrStateKey(const char* sKey);
 		void      AddAnnotation(CDictObject* pAnnot);
 		bool      DeleteAnnotation(unsigned int nID);
 		void      DrawShading(CShading* pShading);

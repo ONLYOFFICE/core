@@ -44,6 +44,8 @@
 #include "../lib/xpdf/Gfx.h"
 #include "../lib/xpdf/OutputDev.h"
 
+#include <stack>
+
 namespace PdfWriter
 {
 	class RedactOutputDev : public OutputDev
@@ -174,7 +176,12 @@ namespace PdfWriter
 		virtual void clearSoftMask(GfxState *pGState) override;
 
 	private:
-		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2 = NULL);
+		struct GfxRedactState
+		{
+			std::vector<std::string> m_arrExtGState;
+		};
+
+		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2 = NULL, bool bStroke = false);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
@@ -190,6 +197,7 @@ namespace PdfWriter
 		double      m_arrMatrix[6];
 
 		BYTE m_nRI;
+		std::deque<GfxRedactState> m_sStates;
 	};
 }
 

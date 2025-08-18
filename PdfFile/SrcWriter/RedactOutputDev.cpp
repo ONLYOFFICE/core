@@ -93,11 +93,16 @@ void RedactOutputDev::endPage()
 //----- save/restore graphics state
 void RedactOutputDev::saveState(GfxState *pGState)
 {
+	m_sStates.push_back(GfxRedactState());
 	updateAll(pGState);
 }
 void RedactOutputDev::restoreState(GfxState *pGState)
 {
 	updateAll(pGState);
+
+	if (m_sStates.empty())
+		return; // Несбалансированный q/Q - сломанный файл
+	m_sStates.pop_back();
 }
 //----- update graphics state
 void RedactOutputDev::updateAll(GfxState *pGState)
@@ -149,13 +154,11 @@ void RedactOutputDev::updateFlatness(GfxState *pGState)
 }
 void RedactOutputDev::updateLineJoin(GfxState *pGState)
 {
-	int nLineJoin = pGState->getLineJoin();
-	m_pRenderer->m_oPen.SetJoinStyle(nLineJoin);
+	m_pRenderer->m_oPen.SetJoinStyle(pGState->getLineJoin());
 }
 void RedactOutputDev::updateLineCap(GfxState *pGState)
 {
-	int nLineCap = pGState->getLineCap();
-	m_pRenderer->m_oPen.SetStartCapStyle(nLineCap);
+	m_pRenderer->m_oPen.SetStartCapStyle(pGState->getLineCap());
 }
 void RedactOutputDev::updateMiterLimit(GfxState *pGState)
 {
@@ -297,7 +300,7 @@ void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
 //----- path painting
 void RedactOutputDev::stroke(GfxState *pGState)
 {
-	DoPath(pGState, pGState->getPath(), pGState->getCTM());
+	DoPath(pGState, pGState->getPath(), pGState->getCTM(), NULL, true);
 	DrawPath(c_nStroke);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать stroke
 }
@@ -442,7 +445,9 @@ GBool RedactOutputDev::useExtGState()
 }
 void RedactOutputDev::setExtGState(GfxState *pGState, Object *pDict, const char* name)
 {
-
+	if (m_sStates.empty())
+		return;
+	m_sStates.back().m_arrExtGState.push_back(name);
 }
 //----- image drawing
 void RedactOutputDev::drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate)
@@ -493,64 +498,50 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	}
 
 	// TODO нужно учитывать Matrix у формы
-	double dX1 = 0, dY1 = 0, dX2 = 0, dY2 = 0, dX3 = 0, dY3 = 0, dX4 = 0, dY4 = 0;
+	double dXmin = 0, dYmin = 0, dXmax = 0, dYmax = 0;
 	Object oBBox;
 	if (oForm.streamGetDict()->lookup("BBox", &oBBox)->isArray() && oBBox.arrayGetLength() == 4)
 	{
 		Object oNum;
 		if (oBBox.arrayGet(0, &oNum)->isNum())
-		{
-			dX1 = oNum.getNum();
-			dX2 = dX1;
-		}
+			dXmin = oNum.getNum();
 		oNum.free();
 		if (oBBox.arrayGet(1, &oNum)->isNum())
-		{
-			dY1 = oNum.getNum();
-			dY4 = dY1;
-		}
+			dYmin = oNum.getNum();
 		oNum.free();
 		if (oBBox.arrayGet(2, &oNum)->isNum())
-		{
-			dX3 = oNum.getNum();
-			dX4 = dX3;
-		}
+			dXmax = oNum.getNum();
 		oNum.free();
 		if (oBBox.arrayGet(3, &oNum)->isNum())
-		{
-			dY2 = oNum.getNum();
-			dY3 = dY2;
-		}
+			dYmax = oNum.getNum();
 		oNum.free();
 
-		Transform(m_arrMatrix, dX1, dY1, &dX1, &dY1);
-		Transform(m_arrMatrix, dX2, dY2, &dX2, &dY2);
-		Transform(m_arrMatrix, dX3, dY3, &dX3, &dY3);
-		Transform(m_arrMatrix, dX4, dY4, &dX4, &dY4);
+		Transform(m_arrMatrix, dXmin, dYmin, &dXmin, &dYmin);
+		Transform(m_arrMatrix, dXmax, dYmax, &dXmax, &dYmax);
 	}
 	oBBox.free();
 
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
-		// TODO нужно учитывать m_arrMatrix, так ведь?
-		double xMin = m_arrQuadPoints[0];
-		double yMin = m_arrQuadPoints[1];
-		double xMax = m_arrQuadPoints[4];
-		double yMax = m_arrQuadPoints[5];
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 4];
+		double yMax = m_arrQuadPoints[i + 5];
 
-		if (xMin < dX1 && dX1 < xMax && yMin < dY1 && dY1 < yMax)
-			return;
-		if (xMin < dX2 && dX2 < xMax && yMin < dY2 && dY2 < yMax)
-			return;
-		if (xMin < dX3 && dX3 < xMax && yMin < dY3 && dY3 < yMax)
-			return;
-		if (xMin < dX4 && dX4 < xMax && yMin < dY4 && dY4 < yMax)
+		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
 	}
 	oForm.free();
 
 	m_pPage->GrSave();
 	UpdateTransform();
+	for (int i = 0; i < m_sStates.size(); ++i)
+	{
+		for (int j = 0; j < m_sStates[i].m_arrExtGState.size(); ++j)
+		{
+			m_pPage->SetExtGrStateKey(m_sStates[i].m_arrExtGState[j].c_str());
+		}
+	}
 	m_pPage->ExecuteXObject(name);
 	m_pPage->GrRestore();
 }
@@ -608,7 +599,7 @@ void ConvertConicToQuads(const pk::SkPoint& p0, const pk::SkPoint& p1, const pk:
 	std::copy(left, left + 3, pts);
 	std::copy(right + 1, right + 3, pts + 3);
 }
-void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2)
+void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2, bool bStroke)
 {
 	double arrMatrix[6];
 	if (pCTM2)
@@ -636,10 +627,10 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	pk::SkPath skPath, skPathRedact, skPathRes;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
-		skPathRedact.moveTo(m_arrQuadPoints[0], m_arrQuadPoints[1]);
-		skPathRedact.lineTo(m_arrQuadPoints[2], m_arrQuadPoints[3]);
-		skPathRedact.lineTo(m_arrQuadPoints[4], m_arrQuadPoints[5]);
-		skPathRedact.lineTo(m_arrQuadPoints[6], m_arrQuadPoints[7]);
+		skPathRedact.moveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		skPathRedact.close();
 	}
 
@@ -652,7 +643,7 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		int nPointsCount = pSubpath->getNumPoints();
 
 		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
-		oInverse.Apply(dX, dY);
+		oMatrix.Apply(dX, dY);
 		skPath.moveTo(dX, dY);
 
 		int nCurPointIndex = 1;
@@ -662,13 +653,13 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 			{
 				dX = pSubpath->getX(nCurPointIndex);
 				dY = pSubpath->getY(nCurPointIndex);
-				oInverse.Apply(dX, dY);
+				oMatrix.Apply(dX, dY);
 				double dX2 = pSubpath->getX(nCurPointIndex + 1);
 				double dY2 = pSubpath->getY(nCurPointIndex + 1);
-				oInverse.Apply(dX2, dY2);
+				oMatrix.Apply(dX2, dY2);
 				double dX3 = pSubpath->getX(nCurPointIndex + 2);
 				double dY3 = pSubpath->getY(nCurPointIndex + 2);
-				oInverse.Apply(dX3, dY3);
+				oMatrix.Apply(dX3, dY3);
 				skPath.cubicTo(dX, dY, dX2, dY2, dX3, dY3);
 				nCurPointIndex += 3;
 			}
@@ -676,7 +667,7 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 			{
 				dX = pSubpath->getX(nCurPointIndex);
 				dY = pSubpath->getY(nCurPointIndex);
-				oInverse.Apply(dX, dY);
+				oMatrix.Apply(dX, dY);
 				skPath.lineTo(dX, dY);
 				++nCurPointIndex;
 			}
@@ -700,14 +691,14 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		case pk::SkPath::kMove_Verb:
 		{
 			double dX = pts[0].x(), dY = pts[0].y();
-			oMatrix.Apply(dX, dY);
+			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.MoveTo(dX, dY);
 			break;
 		}
 		case pk::SkPath::kLine_Verb:
 		{
 			double dX = pts[1].x(), dY = pts[1].y();
-			oMatrix.Apply(dX, dY);
+			oInverse.Apply(dX, dY);
 			m_pRenderer->m_oPath.LineTo(dX, dY);
 			break;
 		}
@@ -728,13 +719,13 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 
 			double dX = cubic[1].x();
 			double dY = cubic[1].y();
-			oMatrix.Apply(dX, dY);
+			oInverse.Apply(dX, dY);
 			double dX2 = cubic[2].x();
 			double dY2 = cubic[2].y();
-			oMatrix.Apply(dX2, dY2);
+			oInverse.Apply(dX2, dY2);
 			double dX3 = cubic[3].x();
 			double dY3 = cubic[3].y();
-			oMatrix.Apply(dX3, dY3);
+			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			break;
 		}
@@ -742,13 +733,13 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		{
 			double dX = pts[1].x();
 			double dY = pts[1].y();
-			oMatrix.Apply(dX, dY);
+			oInverse.Apply(dX, dY);
 			double dX2 = pts[2].x();
 			double dY2 = pts[2].y();
-			oMatrix.Apply(dX2, dY2);
+			oInverse.Apply(dX2, dY2);
 			double dX3 = pts[3].x();
 			double dY3 = pts[3].y();
-			oMatrix.Apply(dX3, dY3);
+			oInverse.Apply(dX3, dY3);
 			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			break;
 		}
@@ -776,13 +767,13 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 
 				double dX = cubic[1].x();
 				double dY = cubic[1].y();
-				oMatrix.Apply(dX, dY);
+				oInverse.Apply(dX, dY);
 				double dX2 = cubic[2].x();
 				double dY2 = cubic[2].y();
-				oMatrix.Apply(dX2, dY2);
+				oInverse.Apply(dX2, dY2);
 				double dX3 = cubic[3].x();
 				double dY3 = cubic[3].y();
-				oMatrix.Apply(dX3, dY3);
+				oInverse.Apply(dX3, dY3);
 
 				m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
 			}
@@ -840,6 +831,14 @@ void RedactOutputDev::DrawPath(const LONG& lType)
 
 	if (bStroke)
 		UpdatePen();
+
+	for (int i = 0; i < m_sStates.size(); ++i)
+	{
+		for (int j = 0; j < m_sStates[i].m_arrExtGState.size(); ++j)
+		{
+			m_pPage->SetExtGrStateKey(m_sStates[i].m_arrExtGState[j].c_str());
+		}
+	}
 
 	std::wstring sTextureOldPath = L"";
 	std::wstring sTextureTmpPath = L"";

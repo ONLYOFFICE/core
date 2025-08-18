@@ -1192,10 +1192,17 @@ namespace PdfWriter
 			return;
 
 		const char* sGsName = pResources->GetExtGrStateName(pState);
-		if (!sGsName)
+		SetExtGrStateKey(sGsName);
+	}
+	void CPage::SetExtGrStateKey(const char* sKey)
+	{
+		// Operator   : gs
+		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
+
+		if (!sKey)
 			return;
 
-		m_pStream->WriteEscapeName(sGsName);
+		m_pStream->WriteEscapeName(sKey);
 		m_pStream->WriteStr(" gs\012");
 	}
 	void CPage::AddAnnotation(CDictObject* pAnnot)

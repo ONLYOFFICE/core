@@ -1,4 +1,4 @@
-ICU_MAJOR_VER = 74
+ICU_MAJOR_VER = 58
 
 core_windows {
     exists($$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu) {

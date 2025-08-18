@@ -161,6 +161,40 @@ void CF12::writeFields(CFRecord& record)
 							dxf.dxfn->dxfpat.icvBackground = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed->GetValue();
 						}
 					}
+					if(dxfObj.m_oFont.IsInit())
+					{
+						dxf.dxfn->ibitAtrFnt = true;
+						if(dxfObj.m_oFont->m_oBold.IsInit() && dxfObj.m_oFont->m_oBold->m_oVal.GetValue())
+						{	dxf.dxfn->dxffntd.fBlsNinch = false;
+							dxf.dxfn->dxffntd.stxp.bls = 0x02BC;
+						}
+						if(dxfObj.m_oFont->m_oStrike.IsInit() && dxfObj.m_oFont->m_oStrike->m_oVal.GetValue())
+						{
+							dxf.dxfn->dxffntd.stxp.ts.ftsStrikeout = true;
+							dxf.dxfn->dxffntd.tsNinch.ftsStrikeout = false;
+						}
+						if(dxfObj.m_oFont->m_oItalic.IsInit() && dxfObj.m_oFont->m_oItalic->m_oVal.GetValue())
+						{
+							dxf.dxfn->dxffntd.stxp.ts.ftsItalic = true;
+							dxf.dxfn->dxffntd.tsNinch.ftsItalic = false;
+						}
+						if(dxfObj.m_oFont->m_oSz.IsInit())
+							dxf.dxfn->dxffntd.stxp.twpHeight = dxfObj.m_oFont->m_oSz->m_oVal->GetValue() * 20;
+						if(dxfObj.m_oFont->m_oUnderline.IsInit())
+						{
+							dxf.dxfn->dxffntd.fUlsNinch = false;
+							if(dxfObj.m_oFont->m_oUnderline->m_oUnderline->GetValue() == SimpleTypes::Spreadsheet::EUnderline::underlineSingle)
+								dxf.dxfn->dxffntd.stxp.uls = 1;
+							else if(dxfObj.m_oFont->m_oUnderline->m_oUnderline->GetValue() == SimpleTypes::Spreadsheet::EUnderline::underlineDouble)
+								dxf.dxfn->dxffntd.stxp.uls = 2;
+							else if(dxfObj.m_oFont->m_oUnderline->m_oUnderline->GetValue() == SimpleTypes::Spreadsheet::EUnderline::underlineSingleAccounting)
+								dxf.dxfn->dxffntd.stxp.uls = 0x21;
+							else if(dxfObj.m_oFont->m_oUnderline->m_oUnderline->GetValue() == SimpleTypes::Spreadsheet::EUnderline::underlineDoubleAccounting)
+								dxf.dxfn->dxffntd.stxp.uls = 0x22;
+						}
+						if(dxfObj.m_oFont->m_oColor.IsInit() && dxfObj.m_oFont->m_oColor->m_oIndexed.IsInit())
+							dxf.dxfn->dxffntd.icvFore = dxfObj.m_oFont->m_oColor->m_oIndexed->GetValue();
+					}
 				}
 			}
 		}

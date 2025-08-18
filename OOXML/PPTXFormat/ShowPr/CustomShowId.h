@@ -37,16 +37,19 @@ namespace PPTX
 {
 	namespace nsPresentation
 	{
-		class EmbeddedFontDataId : public WrapperWritingElement
+		class CustomShowId : public WrapperWritingElement
 		{
 		public:
-			PPTX_LOGIC_BASE(EmbeddedFontDataId)
+			PPTX_LOGIC_BASE(CustomShowId)
 
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
-			std::wstring rid;
-			std::wstring m_name;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			nullable_int id;
 
 		protected:
 			virtual void FillParentPointersForChilds();

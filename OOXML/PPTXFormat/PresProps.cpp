@@ -34,7 +34,6 @@
 
 #include "ShowPr/PresentationPr.h"
 #include "ShowPr/Browse.h"
-#include "ShowPr/CustShow.h"
 #include "ShowPr/Kiosk.h"
 #include "ShowPr/Present.h"
 #include "ShowPr/SldAll.h"
@@ -55,7 +54,7 @@ namespace PPTX
 	void PresProps::read(const OOX::CPath& filename, FileMap& map)
 	{
 		XmlUtils::CXmlNode oNode;
-		oNode.FromXmlFile(filename.m_strFilename);
+		oNode.FromXmlFile(filename.m_strFilename); // 
 
 		ClrMru.clear();
 		XmlUtils::CXmlNode oNodeClr;
@@ -141,12 +140,12 @@ namespace PPTX
 				}break;
 				case 1:
 				{
-					showPr = new nsPresentationPr::ShowPr();
+					showPr = new nsPresentation::ShowPr();
 					showPr->fromPPTY(pReader);					
 				}break;
 				case 2:
 				{
-					printPr = new nsPresentationPr::PrintPr();
+					printPr = new nsPresentation::PrintPr();
 					printPr->fromPPTY(pReader);
 				}break;
 				default:

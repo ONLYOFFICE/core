@@ -74,8 +74,7 @@
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/SplitTransition.h"
 #include "../../../OOXML/PPTXFormat/Logic/Transitions/ZoomTransition.h"
 
-#include "../../../OOXML/PPTXFormat/Presentation/SldSz.h"
-#include "../../../OOXML/PPTXFormat/Presentation/NotesSz.h"
+#include "../../../OOXML/PPTXFormat/Presentation/PresentationChildElements.h"
 #include "../../../OOXML/DocxFormat/Core.h"
 #include "../../../OOXML/DocxFormat/App.h"
 

@@ -703,46 +703,6 @@ namespace NSBinPptxRW
 				SetRequiredDefaultsCore();
 			}
 
-			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::CustomProperties);
-			if (m_mainTables.end() != pPair)
-			{
-				m_oReader.Seek(pPair->second);
-				try
-				{
-					m_oCustomProperties = new PPTX::CustomProperties(&m_oDocument);
-					m_oCustomProperties->fromPPTY(&m_oReader);
-				}
-				catch (...)
-				{
-				}
-			}
-	// customs
-			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Customs);
-			if (m_mainTables.end() != pPair)
-			{
-				OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("customXml");
-				OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
-
-				NSDirectory::CreateDirectory(pathFolder.GetPath());
-				NSDirectory::CreateDirectory(pathFolderRels.GetPath());
-
-				m_oReader.Seek(pPair->second);
-				int nCountCustoms = m_oReader.GetLong();
-
-				for (int i = 0; i < nCountCustoms; ++i)
-				{
-					smart_ptr<OOX::CCustomXML> pCustomXml = new OOX::CCustomXML(NULL, false);
-
-					pCustomXml->fromPPTY(&m_oReader);
-
-					//smart_ptr<OOX::File> pCustomXmlFile = pCustomXml.smart_dynamic_cast<OOX::File>();
-					//m_oPresentation.Add(pCustomXmlFile);
-					OOX::CPath filename(L"item" + std::to_wstring(i + 1) + L".xml");
-					pCustomXml->write(pathFolder / filename, OOX::CPath(m_strDstFolder), *m_oImageManager.m_pContentTypes);
-				}
-				m_oReader.m_pRels->WriteCustoms(nCountCustoms);
-			}
-
 	// presProps
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::PresProps);
 			if (m_mainTables.end() != pPair)
@@ -836,6 +796,45 @@ namespace NSBinPptxRW
 			m_oReader.m_pRels->Clear();
 			m_oReader.m_pRels->StartRels();
 
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::CustomProperties);
+			if (m_mainTables.end() != pPair)
+			{
+				m_oReader.Seek(pPair->second);
+				try
+				{
+					m_oCustomProperties = new PPTX::CustomProperties(&m_oDocument);
+					m_oCustomProperties->fromPPTY(&m_oReader);
+				}
+				catch (...)
+				{
+				}
+			}
+	// customs
+			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Customs);
+			if (m_mainTables.end() != pPair)
+			{
+				OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("customXml");
+				OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
+
+				NSDirectory::CreateDirectory(pathFolder.GetPath());
+				NSDirectory::CreateDirectory(pathFolderRels.GetPath());
+
+				m_oReader.Seek(pPair->second);
+				int nCountCustoms = m_oReader.GetLong();
+
+				for (int i = 0; i < nCountCustoms; ++i)
+				{
+					smart_ptr<OOX::CCustomXML> pCustomXml = new OOX::CCustomXML(NULL, false);
+
+					pCustomXml->fromPPTY(&m_oReader);
+
+					OOX::CPath filename(L"item" + std::to_wstring(i + 1) + L".xml");
+					pCustomXml->write(pathFolder / filename, OOX::CPath(m_strDstFolder), *m_oImageManager.m_pContentTypes);
+					
+					std::wstring rid = m_oReader.m_pRels->WriteCustom(filename.GetPath());
+					m_oPresentation.custDataLst.push_back(rid);
+				}
+			}
 	// tablestyles
 			oXmlWriter.ClearNoAttack();
 			m_oTableStyles.toXmlWriter(&oXmlWriter);
@@ -869,15 +868,13 @@ namespace NSBinPptxRW
 
 					std::wstring sId = std::to_wstring((_UINT64)(0x80000000 + (_UINT64)nCountLayouts));
 
+					std::wstring rid = m_oReader.m_pRels->WriteMaster(i + 1);
 					m_oPresentation.sldMasterIdLst[i].id = sId;
-					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
+					m_oPresentation.sldMasterIdLst[i].rid = rid;
 					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.size() + 1);
 				}
 
-				m_oReader.m_pRels->WriteMasters(nCountMasters);
 				m_oReader.m_pRels->WriteThemes(nCountThemes);
-
-				unsigned int nCurrentRels = m_oReader.m_pRels->m_lNextRelsID;
 
 				m_oPresentation.sldIdLst.clear();
 				for (LONG i = 0; i < nCountSlides; ++i)
@@ -887,9 +884,8 @@ namespace NSBinPptxRW
 					std::wstring sId = std::to_wstring(256 + i);
 
 					m_oPresentation.sldIdLst[i].id = sId;
-					m_oPresentation.sldIdLst[i].rid = nCurrentRels++;
+					m_oPresentation.sldIdLst[i].rid = m_oReader.m_pRels->WriteSlide(i + 1);
 				}
-				m_oReader.m_pRels->WriteSlides(nCountSlides);
 
 				m_oPresentation.notesMasterIdLst.clear();
 				if (bNotesMasterPresent)

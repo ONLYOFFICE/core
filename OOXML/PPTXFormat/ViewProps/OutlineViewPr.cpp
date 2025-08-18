@@ -36,6 +36,70 @@ namespace PPTX
 {
 	namespace nsViewProps
 	{
+		void Sld::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"id", id);
+			XmlMacroReadAttributeBase(node, L"collapse", collapse);
+		}
+		std::wstring Sld::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(_T("id"), id);
+			oAttr.Write(_T("collapse"), collapse);
+
+			return XmlUtils::CreateNode(_T("p:sld"), oAttr);
+		}
+		void Sld::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+
+			pWriter->WriteString2(0, id);
+			pWriter->WriteBool2(1, collapse);
+
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void Sld::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+				{
+					id = pReader->GetString2();
+				}break;
+				case 1:
+				{
+					collapse = pReader->GetBool();
+				}break;
+				default:
+					break;
+				}
+			}
+			pReader->Seek(_end_rec);
+		}
+		void Sld::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p:sld"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("id"), id);
+			pWriter->WriteAttribute(_T("collapse"), collapse);
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(_T("p:sld"));
+		}
+		void Sld::FillParentPointersForChilds()
+		{
+		}
+//-----------------------------------------------------------------------------------------------------------------------------
 		OutlineViewPr& OutlineViewPr::operator=(const OutlineViewPr& oSrc)
 		{
 			parentFile		= oSrc.parentFile;

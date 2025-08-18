@@ -166,12 +166,12 @@ docx_conversion_context::~docx_conversion_context()
 {
 }
 
-void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt with break columns
+void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt. Bug with break columns
 {
     flag_implicit_end = _flag;
 }
 
-bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt with break columns
+bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt. Bug with break columns
 {
     return flag_implicit_end;
 }

@@ -1185,9 +1185,16 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		else
 			charProps->m_eUnderStyle = RtfCharProperty::uls_Single;
 	}
+    else if ( "uld" == sCommand )
+    {
+        if ( hasParameter && 0 == parameter)
+            charProps->m_eUnderStyle = RtfCharProperty::uls_none;
+        else
+            charProps->m_eUnderStyle = RtfCharProperty::uls_Dotted;
+    }
 	//COMMAND_RTF_BOOL( "ul", charProps->m_bUnderline, sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT ( "ulc",		charProps->m_nUnderlineColor, sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT ( "uld",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
+    //COMMAND_RTF_INT ( "uld",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dotted)
 	COMMAND_RTF_INT ( "uldash",		charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dashed)
 	COMMAND_RTF_INT ( "uldashd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dotted)
 	COMMAND_RTF_INT ( "uldashdd",	charProps->m_eUnderStyle,	sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)

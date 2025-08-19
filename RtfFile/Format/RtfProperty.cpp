@@ -2432,7 +2432,15 @@ std::wstring RtfListOverrideProperty::ListOverrideLevels::RenderToOOX(RenderPara
 		sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(index) + L"\">";
 		if ( PROP_DEF != OverrideLevel.m_nStart )
 			sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
-		sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        }
+        else
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, index);
+        }
+        //sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
 		sResult += L"</w:lvlOverride>";
 
 		index_prev = index;

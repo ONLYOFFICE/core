@@ -38,6 +38,8 @@
 #include "../lib/pathkit/include/core/SkPath.h"
 #include "../lib/pathkit/include/pathops/SkPathOps.h"
 
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
+
 namespace PdfWriter
 {
 void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
@@ -624,6 +626,128 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
+	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+	CMatrix oInverse = oMatrix.Inverse();
+
+	/*
+	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	{
+		oPathRedact.StartFigure();
+		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]);
+		oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
+		oPathRedact.CloseFigure();
+	}
+	size_t length2 = oPathRedact.GetPointCount(), compound2 = oPathRedact.GetCloseCount();
+	std::vector<Aggplus::PointD> points2 = oPathRedact.GetPoints(0, length2 + compound2);
+	std::cout << "Path2:" <<std::endl;
+	for (int i = 0; i < points2.size(); ++i)
+	{
+		std::cout << "( " << points2[i].X << ", " << points2[i].Y << " ); ";
+	}
+	std::cout <<std::endl;
+
+	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+	{
+		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
+		int nPointsCount = pSubpath->getNumPoints();
+
+		oPath.StartFigure();
+
+		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
+		oMatrix.Apply(dX, dY);
+		oPath.MoveTo(dX, dY);
+
+		int nCurPointIndex = 1;
+		while (nCurPointIndex < nPointsCount)
+		{
+			if (pSubpath->getCurve(nCurPointIndex))
+			{
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oMatrix.Apply(dX, dY);
+				double dX2 = pSubpath->getX(nCurPointIndex + 1);
+				double dY2 = pSubpath->getY(nCurPointIndex + 1);
+				oMatrix.Apply(dX2, dY2);
+				double dX3 = pSubpath->getX(nCurPointIndex + 2);
+				double dY3 = pSubpath->getY(nCurPointIndex + 2);
+				oMatrix.Apply(dX3, dY3);
+				oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+				nCurPointIndex += 3;
+			}
+			else
+			{
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oMatrix.Apply(dX, dY);
+				oPath.LineTo(dX, dY);
+				++nCurPointIndex;
+			}
+		}
+		if (pSubpath->isClosed())
+			oPath.CloseFigure();
+	}
+
+	size_t length1 = oPath.GetPointCount(), compound1 = oPath.GetCloseCount();
+	std::vector<Aggplus::PointD> points1 = oPath.GetPoints(0, length1 + compound1);
+	std::cout << "Path1:" <<std::endl;
+	for (int i = 0; i < points1.size(); ++i)
+	{
+		std::cout << "( " << points1[i].X << ", " << points1[i].Y << " ); ";
+	}
+	std::cout <<std::endl;
+
+	oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
+
+	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
+	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
+	std::cout << "PathRES:" <<std::endl;
+	for (int i = 0; i < points.size(); ++i)
+	{
+		std::cout << "( " << points[i].X << ", " << points[i].Y << " ); ";
+	}
+	std::cout <<std::endl;
+
+	m_pRenderer->m_oPath.Clear();
+
+	for (size_t i = 0; i < length + compound; i++)
+	{
+		if (oPathResult.IsCurvePoint(i))
+		{
+			double dX = points[i].X;
+			double dY = points[i].Y;
+			oInverse.Apply(dX, dY);
+			double dX2 = points[i + 1].X;
+			double dY2 = points[i + 1].Y;
+			oInverse.Apply(dX2, dY2);
+			double dX3 = points[i + 2].X;
+			double dY3 = points[i + 2].Y;
+			oInverse.Apply(dX3, dY3);
+			m_pRenderer->m_oPath.CurveTo(dX, dY, dX2, dY2, dX3, dY3);
+
+			i += 2;
+		}
+		else if (oPathResult.IsMovePoint(i))
+		{
+			double dX = points[i].X, dY = points[i].Y;
+			oInverse.Apply(dX, dY);
+			m_pRenderer->m_oPath.MoveTo(dX, dY);
+		}
+		else if (oPathResult.IsLinePoint(i))
+		{
+			double dX = points[i].X, dY = points[i].Y;
+			oInverse.Apply(dX, dY);
+			m_pRenderer->m_oPath.LineTo(dX, dY);
+		}
+		else if (oPathResult.IsClosePoint(i))
+			m_pRenderer->m_oPath.Close();
+	}
+
+	return;
+	*/
+
 	pk::SkPath skPath, skPathRedact, skPathRes;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
 	{
@@ -633,9 +757,6 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		skPathRedact.lineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		skPathRedact.close();
 	}
-
-	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
-	CMatrix oInverse = oMatrix.Inverse();
 
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 	{

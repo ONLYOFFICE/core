@@ -3525,7 +3525,53 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 }
 void CPdfEditor::Redact(CRedact* pCommand)
 {
-	Redact(pCommand->GetQuadPoints());
+	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+	int nOriginIndex = m_nEditPage;
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
+		PdfWriter::CFakePage* pFakePage = NULL;
+		if (pObj)
+			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
+		if (pFakePage)
+			nOriginIndex = pFakePage->GetOriginIndex();
+	}
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return;
+
+	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+	oRedactOut.NewPDF(pPDFDocument->getXRef());
+	oRedactOut.SetRedact(pCommand->GetQuadPoints());
+	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
+
+	int nFlags = pCommand->GetFlag();
+	if (nFlags & (1 << 0))
+	{
+		PdfWriter::CPage* pCurPage = m_pWriter->GetPage();
+		pDoc->FixEditPage(pCurPage);
+		PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
+		m_pWriter->SetPage(pFakePage);
+		pDoc->SetCurPage(pFakePage);
+
+		// TODO Нужно нивелировать текущую матрицу до единичной, а потом сместить ещё на CropBox
+
+		pFakePage->SetStream(pCurPage->GetStream());
+		pFakePage->Add("Resources", pCurPage->Get("Resources"));
+
+		LONG nLenRender = 0;
+		BYTE* pRender = pCommand->GetRender(nLenRender);
+
+		IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pWriter->GetRenderer());
+		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+		RELEASEOBJECT(pCorrector);
+
+		m_pWriter->SetPage(pCurPage);
+		pDoc->SetCurPage(pCurPage);
+		RELEASEOBJECT(pFakePage);
+	}
 }
 void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
 {

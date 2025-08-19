@@ -52,6 +52,17 @@ struct CPdfReaderContext
 	~CPdfReaderContext();
 };
 
+struct CPdfRedact
+{
+	int m_nPageIndex;
+	BYTE* m_pChanges;
+	int m_nChangeLength;
+	std::vector<double> m_arrRedactBox;
+
+	CPdfRedact() : m_nPageIndex(-1), m_pChanges(NULL), m_nChangeLength(0) {}
+	~CPdfRedact();
+};
+
 class CPdfReader
 {
 public:
@@ -82,6 +93,7 @@ public:
 	bool MergePages(BYTE* pData, DWORD nLength, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool MergePages(const std::wstring& wsFile, const std::wstring& wsPassword = L"", int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength);
 	void GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	std::wstring GetInfo();
@@ -117,6 +129,7 @@ private:
 	DWORD                  m_nFileLength;
 	int                    m_eError;
 	std::vector<CPdfReaderContext*> m_vPDFContext;
+	std::vector<CPdfRedact*> m_vRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
 };
 

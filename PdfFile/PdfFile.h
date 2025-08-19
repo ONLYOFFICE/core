@@ -130,6 +130,7 @@ public:
 	// Захватывает полученную память malloc data
 	bool MergePages(BYTE* data, DWORD length, int nMaxID = 0, const std::string& sPrefixForm = "");
 	bool UnmergePages();
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges = NULL, int nLength = 0);
 	int GetRotate(int nPageIndex);
 	int GetMaxRefID();
 	BYTE* GetWidgets();

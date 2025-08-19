@@ -354,6 +354,15 @@ bool CPdfFile::UnmergePages()
 		return false;
 	return m_pInternal->pReader->UnmergePages();
 }
+bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength)
+{
+	if (!m_pInternal->pReader)
+	{
+		free(pChanges);
+		return false;
+	}
+	return m_pInternal->pReader->RedactPage(nPageIndex, arrRedactBox, nLengthX4, pChanges, nLength);
+}
 int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

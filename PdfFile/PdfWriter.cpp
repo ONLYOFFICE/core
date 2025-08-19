@@ -3048,6 +3048,15 @@ HRESULT CPdfWriter::EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWi
 }
 PdfWriter::CDocument* CPdfWriter::GetDocument() { return m_pDocument; }
 PdfWriter::CPage* CPdfWriter::GetPage() { return m_pPage; }
+IRenderer* CPdfWriter::GetRenderer() { return m_pRenderer; }
+void CPdfWriter::SetPage(PdfWriter::CPage* pPage)
+{
+	if (!IsValid())
+		return;
+	m_oCommandManager.Flush();
+
+	m_pPage = pPage;
+}
 bool CPdfWriter::EditPage(PdfWriter::CPage* pNewPage)
 {
 	if (!IsValid())

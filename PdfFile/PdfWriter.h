@@ -213,6 +213,7 @@ public:
 	// Дополнительные функции для дозаписи Pdf
 	//----------------------------------------------------------------------------------------
 	HRESULT EditWidgetParents(NSFonts::IApplicationFonts* pAppFonts, CWidgetsInfo* pFieldInfo, const std::wstring& wsTempDirectory);
+	void SetPage(PdfWriter::CPage* pPage);
 	bool EditPage(PdfWriter::CPage* pNewPage);
 	bool AddPage(int nPageIndex);
 	bool EditClose();
@@ -220,6 +221,7 @@ public:
 	void Sign(const double& dX, const double& dY, const double& dW, const double& dH, const std::wstring& wsPicturePath, ICertificate* pCertificate);
 	PdfWriter::CDocument* GetDocument();
 	PdfWriter::CPage*     GetPage();
+	IRenderer*            GetRenderer();
 	void AddFont(const std::wstring& wsFontName, const bool& bBold, const bool& bItalic, const std::wstring& wsFontPath, const LONG& lFaceIndex);
 	void SetHeadings(CHeadings* pCommand);
 	void SetNeedAddHelvetica(bool bNeedAddHelvetica);

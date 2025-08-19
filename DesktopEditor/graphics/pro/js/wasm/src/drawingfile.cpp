@@ -178,6 +178,10 @@ WASM_EXPORT int UnmergePages(CDrawingFile* pFile)
 {
 	return pFile->UnmergePages() ? 1 : 0;
 }
+WASM_EXPORT int RedactPage(CDrawingFile* pFile, int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* data, int size)
+{
+	return pFile->RedactPage(nPageIndex, arrRedactBox, nLengthX4, data, size) ? 1 : 0;
+}
 
 WASM_EXPORT void* GetImageBase64(CDrawingFile* pFile, int rId)
 {

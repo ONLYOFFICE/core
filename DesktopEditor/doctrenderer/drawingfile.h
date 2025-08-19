@@ -311,6 +311,22 @@ public:
 			return ((CPdfFile*)m_pFile)->UnmergePages();
 		return false;
 	}
+	bool RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* data, int size, bool bCopy = false)
+	{
+		if (m_nType == 0)
+		{
+			// Память из CDrawingFileEmbed освобождается сразу после вызова функции, поэтому копируем
+			if (bCopy)
+			{
+				BYTE* pCopy = (BYTE*)malloc(size);
+				memcpy(pCopy, data, size);
+				data = pCopy;
+			}
+			// Захватывает полученную память data
+			return ((CPdfFile*)m_pFile)->RedactPage(nPageIndex, arrRedactBox, nLengthX4, data, size);
+		}
+		return false;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{

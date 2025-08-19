@@ -205,6 +205,10 @@ CPdfReaderContext::~CPdfReaderContext()
 	}
 	RELEASEOBJECT(m_pDocument);
 }
+CPdfRedact::~CPdfRedact()
+{
+	RELEASEMEM(m_pChanges);
+}
 
 CPdfReader::CPdfReader(NSFonts::IApplicationFonts* pAppFonts)
 {
@@ -243,6 +247,10 @@ void CPdfReader::Clear()
 	for (CPdfReaderContext* pPDFContext : m_vPDFContext)
 		delete pPDFContext;
 	m_vPDFContext.clear();
+
+	for (CPdfRedact* pRedact : m_vRedact)
+		delete pRedact;
+	m_vRedact.clear();
 }
 void CPdfReader::CleanUp()
 {
@@ -744,6 +752,29 @@ bool CPdfReader::UnmergePages()
 	CPdfReaderContext* pPDFContext = m_vPDFContext.back();
 	delete pPDFContext;
 	m_vPDFContext.pop_back();
+	return true;
+}
+bool CPdfReader::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, BYTE* pChanges, int nLength)
+{
+	if (m_eError)
+	{
+		free(pChanges);
+		return false;
+	}
+
+	CPdfRedact* pRedact = new CPdfRedact();
+	pRedact->m_nPageIndex = nPageIndex;
+	for (int i = 0; i < nLengthX4; ++i)
+	{
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 1]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 2]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 3]);
+	}
+	pRedact->m_pChanges = pChanges;
+	pRedact->m_nChangeLength = nLength;
+	m_vRedact.push_back(pRedact);
+
 	return true;
 }
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)

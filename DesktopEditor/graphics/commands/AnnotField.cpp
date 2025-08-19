@@ -1225,6 +1225,13 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 
 CRedact::CRedact() : IAdvancedCommand(AdvancedCommandType::Redact) {}
 CRedact::~CRedact() {}
+void CRedact::GetBounds(double& dX1, double& dY1, double& dX2, double& dY2)
+{
+	dX1 = m_dX1;
+	dY1 = m_dY1;
+	dX2 = m_dX2;
+	dY2 = m_dY2;
+}
 const std::vector<double>& CRedact::GetQuadPoints() { return m_arrQuadPoints; }
 bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
@@ -1235,5 +1242,19 @@ bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRe
 		for (int j = 0; j < 8; ++j)
 			m_arrQuadPoints.push_back(pReader->ReadDouble());
 	}
+
+	m_nFlag = pReader->ReadInt();
+	if (m_nFlag & (1 << 0))
+	{
+		m_dX1 = pReader->ReadDouble();
+		m_dY1 = pReader->ReadDouble();
+		m_dX2 = pReader->ReadDouble();
+		m_dY2 = pReader->ReadDouble();
+
+		m_nRenderLen = pReader->ReadInt() - 4;
+		m_pRender = pReader->GetCurrentBuffer();
+		pReader->Skip(m_nRenderLen);
+	}
+
 	return true;
 }

@@ -1647,13 +1647,13 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	int nFinalWidth  = pCtrlShape->GetCurWidth();
-	int nFinalHeight = pCtrlShape->GetCurHeight();
+	int nFinalWidth  = std::abs(pCtrlShape->GetWidth());
+	int nFinalHeight = std::abs(pCtrlShape->GetHeight());
 
 	if (0 == nFinalWidth || 0 == nFinalHeight)
 	{
-		nFinalWidth = std::abs(pCtrlShape->GetWidth());
-		nFinalHeight = std::abs(pCtrlShape->GetHeight());
+		nFinalWidth = pCtrlShape->GetCurWidth();
+		nFinalHeight = pCtrlShape->GetCurHeight();
 	}
 
 	if (nullptr != pWidth)

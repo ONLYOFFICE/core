@@ -125,6 +125,86 @@ void CF12::readFields(CFRecord& record)
 	
 	dxfId_ = global_info->RegistrDxfn(strm.str());
 }
+void ProcessBorderProp( OOX::Spreadsheet::CBorderProp* prop, unsigned char& DgPtr, unsigned char& icvPtr)
+{
+	if(prop->m_oStyle.IsInit())
+	{
+		switch(prop->m_oStyle->GetValue())
+		{
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleNone:
+			{
+				DgPtr = 0;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThin:
+			{
+				DgPtr = 1;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMedium:
+			{
+				DgPtr = 2;
+				break;
+			}
+
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashed:
+			{
+				DgPtr = 3;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDotted:
+			{
+				DgPtr = 4;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleThick:
+			{
+				DgPtr = 5;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDouble:
+			{
+				DgPtr = 6;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleHair:
+			{
+				DgPtr = 7;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashed:
+			{
+				DgPtr = 8;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDot:
+			{
+				DgPtr = 9;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleMediumDashDot:
+			{
+				DgPtr = 10;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleDashDotDot:
+			{
+				DgPtr = 11;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EBorderStyle::borderstyleSlantDashDot:
+			{
+				DgPtr = 13;
+				break;
+			}
+			default:
+				break;
+		}
+	}
+	if(prop->m_oColor.IsInit() && prop->m_oColor->m_oIndexed.IsInit())
+		icvPtr = prop->m_oColor->m_oIndexed->GetValue();
+}
+
 void CF12::writeFields(CFRecord& record)
 {
 	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
@@ -194,6 +274,40 @@ void CF12::writeFields(CFRecord& record)
 						}
 						if(dxfObj.m_oFont->m_oColor.IsInit() && dxfObj.m_oFont->m_oColor->m_oIndexed.IsInit())
 							dxf.dxfn->dxffntd.icvFore = dxfObj.m_oFont->m_oColor->m_oIndexed->GetValue();
+					}
+					if(dxfObj.m_oBorder.IsInit())
+					{
+						dxf.dxfn->ibitAtrBdr = true;
+						if(dxfObj.m_oBorder->m_oBottom.IsInit())
+						{
+							dxf.dxfn->glBottomNinch = false;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oBottom.GetPointer(), dxf.dxfn->dxfbdr.dgBottom, dxf.dxfn->dxfbdr.icvBottom);
+						}
+						if(dxfObj.m_oBorder->m_oTop.IsInit())
+						{
+							dxf.dxfn->glTopNinch = false;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oTop.GetPointer(), dxf.dxfn->dxfbdr.dgTop, dxf.dxfn->dxfbdr.icvTop);
+						}
+						if(dxfObj.m_oBorder->m_oStart.IsInit())
+						{
+							dxf.dxfn->glLeftNinch  = false;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oStart.GetPointer(), dxf.dxfn->dxfbdr.dgLeft, dxf.dxfn->dxfbdr.icvLeft);
+						}
+						if(dxfObj.m_oBorder->m_oEnd.IsInit())
+						{
+							dxf.dxfn->glRightNinch  = false;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oEnd.GetPointer(), dxf.dxfn->dxfbdr.dgRight, dxf.dxfn->dxfbdr.icvRight);
+						}
+						if(dxfObj.m_oBorder->m_oDiagonal.IsInit())
+						{
+							dxf.dxfn->glDiagDownNinch  = false;
+							dxf.dxfn->glDiagUpNinch = false;
+							if(dxfObj.m_oBorder->m_oDiagonalDown.IsInit() && dxfObj.m_oBorder->m_oDiagonalDown->GetValue())
+								dxf.dxfn->dxfbdr.bitDiagDown = true;
+							if(dxfObj.m_oBorder->m_oDiagonalUp.IsInit() && dxfObj.m_oBorder->m_oDiagonalUp->GetValue())
+								dxf.dxfn->dxfbdr.bitDiagUp = true;
+							ProcessBorderProp(dxfObj.m_oBorder->m_oDiagonal.GetPointer(), dxf.dxfn->dxfbdr.dgDiag, dxf.dxfn->dxfbdr.icvDiag);
+						}
 					}
 				}
 			}

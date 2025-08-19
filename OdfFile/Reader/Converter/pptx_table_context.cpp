@@ -374,20 +374,25 @@ void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::styl
 				odf_reader::style_table_cell_properties_attlist style_cell_attlist = odf_reader::calc_table_cell_properties(instances);
 				odf_reader::graphic_format_properties_ptr graphic_props = odf_reader::calc_graphic_properties_content(instances);
 
-				if (style_cell_attlist.style_vertical_align_)
+				if (style_cell_attlist.style_vertical_align_ || (graphic_props && graphic_props->draw_textarea_vertical_align_))
 				{
+					odf_types::vertical_align::type algn = style_cell_attlist.style_vertical_align_ ? style_cell_attlist.style_vertical_align_->get_type() :
+						graphic_props->draw_textarea_vertical_align_->get_type();
+					
 					std::wstring vAlign;
-					switch(style_cell_attlist.style_vertical_align_->get_type())
+					switch(algn)
 					{
-					case odf_types::vertical_align::Baseline: 
-					case odf_types::vertical_align::Top:      vAlign = L"t"; break;
-					case odf_types::vertical_align::Middle:   vAlign = L"ctr"; break;
-					case odf_types::vertical_align::Bottom:   vAlign = L"b"; break;
-					case odf_types::vertical_align::Auto:  break;
+						case odf_types::vertical_align::Baseline: 
+						case odf_types::vertical_align::Top:      vAlign = L"t"; break;
+						case odf_types::vertical_align::Middle:   vAlign = L"ctr"; break;
+						case odf_types::vertical_align::Bottom:   vAlign = L"b"; break;
+						case odf_types::vertical_align::Auto: 
+							break;
 					}
-					if (!vAlign.empty())
+					if (false == vAlign.empty())
 						CP_XML_ATTR(L"anchor",  vAlign );      
 				}
+
 				double padding_common = -1;
 				if (style_cell_attlist.common_padding_attlist_.fo_padding_)
 				{

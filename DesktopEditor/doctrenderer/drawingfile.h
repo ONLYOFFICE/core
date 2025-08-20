@@ -327,6 +327,12 @@ public:
 		}
 		return false;
 	}
+	bool UndoRedact()
+	{
+		if (m_nType == 0)
+			return ((CPdfFile*)m_pFile)->UndoRedact();
+		return false;
+	}
 
 	BYTE* GetGlyphs(int nPageIndex)
 	{

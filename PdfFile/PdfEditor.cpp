@@ -32,6 +32,7 @@
 #include "PdfEditor.h"
 
 #include "../DesktopEditor/common/Path.h"
+#include "../DesktopEditor/graphics/commands/AnnotField.h"
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
@@ -50,8 +51,10 @@
 #include "SrcWriter/Streams.h"
 #include "SrcWriter/Destination.h"
 #include "SrcWriter/Outline.h"
-#include "SrcWriter/RedactOutputDev.h"
 #include "SrcWriter/GState.h"
+#ifndef BUILDING_WASM_MODULE
+#include "SrcWriter/RedactOutputDev.h"
+#endif
 
 #define AddToObject(oVal)\
 {\
@@ -3523,29 +3526,11 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 		return true;
 	return false;
 }
-void CPdfEditor::Redact(CRedact* pCommand)
+void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
+	CRedact* pCommand = (CRedact*)_pCommand;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	int nOriginIndex = m_nEditPage;
-	if (m_nMode == Mode::WriteNew)
-	{
-		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
-		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
-		PdfWriter::CFakePage* pFakePage = NULL;
-		if (pObj)
-			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
-		if (pFakePage)
-			nOriginIndex = pFakePage->GetOriginIndex();
-	}
-	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
-	if (nPageIndex < 0 || !pPDFDocument)
-		return;
-
-	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
-	oRedactOut.NewPDF(pPDFDocument->getXRef());
-	oRedactOut.SetRedact(pCommand->GetQuadPoints());
-	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
+	Redact(pCommand->GetQuadPoints());
 
 	int nFlags = pCommand->GetFlag();
 	if (nFlags & (1 << 0))
@@ -3592,8 +3577,10 @@ void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
 	if (nPageIndex < 0 || !pPDFDocument)
 		return;
 
+#ifndef BUILDING_WASM_MODULE
 	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
 	oRedactOut.NewPDF(pPDFDocument->getXRef());
 	oRedactOut.SetRedact(arrQuadPoints);
 	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
+#endif
 }

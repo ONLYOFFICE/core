@@ -376,13 +376,13 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 	}
 
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		// TODO нужно учитывать m_arrMatrix, так ведь?
-		double xMin = m_arrQuadPoints[0];
-		double yMin = m_arrQuadPoints[1];
-		double xMax = m_arrQuadPoints[4];
-		double yMax = m_arrQuadPoints[5];
+		double xMin = m_arrQuadPoints[i + 0];
+		double yMin = m_arrQuadPoints[i + 1];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
 
 		if (xMin < dX && dX < xMax && yMin < dY && dY < yMax)
 			return;
@@ -523,12 +523,12 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 	}
 	oBBox.free();
 
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		double xMin = m_arrQuadPoints[i + 0];
 		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 4];
-		double yMax = m_arrQuadPoints[i + 5];
+		double xMax = m_arrQuadPoints[i + 2];
+		double yMax = m_arrQuadPoints[i + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
@@ -749,12 +749,12 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 	*/
 
 	pk::SkPath skPath, skPathRedact, skPathRes;
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		skPathRedact.moveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
 		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		skPathRedact.lineTo(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]);
-		skPathRedact.lineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
+		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
 		skPathRedact.close();
 	}
 

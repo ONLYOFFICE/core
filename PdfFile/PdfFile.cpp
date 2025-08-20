@@ -363,6 +363,12 @@ bool CPdfFile::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4, B
 	}
 	return m_pInternal->pReader->RedactPage(nPageIndex, arrRedactBox, nLengthX4, pChanges, nLength);
 }
+bool CPdfFile::UndoRedact()
+{
+	if (!m_pInternal->pReader)
+		return false;
+	return m_pInternal->pReader->UndoRedact();
+}
 int CPdfFile::GetRotate(int nPageIndex)
 {
 	if (!m_pInternal->pReader)

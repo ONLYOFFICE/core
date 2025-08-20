@@ -100,7 +100,7 @@ public:
 	void AddShapeXML(const std::string& sXML);
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
-	void Redact(CRedact* pCommand);
+	void Redact(IAdvancedCommand* pCommand);
 	void Redact(const std::vector<double>& arrQuadPoints);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);

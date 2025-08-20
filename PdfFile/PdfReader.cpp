@@ -38,6 +38,7 @@
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringExt.h"
 #include "../DesktopEditor/graphics/pro/js/wasm/src/serialize.h"
+#include "../DesktopEditor/graphics/MetafileToRenderer.h"
 
 #include "SrcReader/Adaptors.h"
 #include "SrcReader/PdfAnnot.h"
@@ -777,6 +778,15 @@ bool CPdfReader::RedactPage(int nPageIndex, double* arrRedactBox, int nLengthX4,
 
 	return true;
 }
+bool CPdfReader::UndoRedact()
+{
+	if (m_vRedact.empty())
+		return false;
+	CPdfRedact* pRedact = m_vRedact.back();
+	delete pRedact;
+	m_vRedact.pop_back();
+	return true;
+}
 void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 {
 	PDFDoc* pDoc = NULL;
@@ -784,6 +794,12 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	int nPageIndex = GetPageIndex(_nPageIndex, &pDoc, &pFontList);
 	if (nPageIndex < 0 || !pDoc || !pFontList)
 		return;
+
+	for (int i = 0 ; i < m_vRedact.size(); ++i)
+	{
+		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
+			((GlobalParamsAdaptor*)globalParams)->AddRedact(m_vRedact[i]->m_arrRedactBox);
+	}
 
 	PdfReader::RendererOutputDev oRendererOut(pRenderer, m_pFontManager, pFontList);
 	oRendererOut.NewPDF(pDoc->getXRef());
@@ -793,6 +809,18 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	nRotate = -pDoc->getPageRotate(nPageIndex);
 #endif
 	pDoc->displayPage(&oRendererOut, nPageIndex, 72.0, 72.0, nRotate, gFalse, gTrue, gFalse);
+
+	((GlobalParamsAdaptor*)globalParams)->ClearRedact();
+
+	for (int i = 0 ; i < m_vRedact.size(); ++i)
+	{
+		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
+		{
+			IMetafileToRenderter* pCorrector = new IMetafileToRenderter(pRenderer);
+			NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(m_vRedact[i]->m_pChanges, m_vRedact[i]->m_nChangeLength, pCorrector);
+			RELEASEOBJECT(pCorrector);
+		}
+	}
 }
 void CPdfReader::SetTempDirectory(const std::wstring& wsTempFolder)
 {

@@ -701,8 +701,7 @@ HEADERS += \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.h \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.h \
 	$$PDF_ROOT_DIR/SrcWriter/ICCProfile.h \
-	$$PDF_ROOT_DIR/SrcWriter/States.h \
-	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.h
+	$$PDF_ROOT_DIR/SrcWriter/States.h
 
 SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/AcroForm.cpp \
@@ -731,8 +730,7 @@ SOURCES += \
 	$$PDF_ROOT_DIR/SrcWriter/Streams.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Utils.cpp \
 	$$PDF_ROOT_DIR/SrcWriter/Metadata.cpp \
-	$$PDF_ROOT_DIR/SrcWriter/States.cpp \
-	$$PDF_ROOT_DIR/SrcWriter/RedactOutputDev.cpp
+	$$PDF_ROOT_DIR/SrcWriter/States.cpp
 
 # PdfFile
 

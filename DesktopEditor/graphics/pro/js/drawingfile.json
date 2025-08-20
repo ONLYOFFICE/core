@@ -54,6 +54,8 @@
 		"_SplitPages",
 		"_MergePages",
 		"_UnmergePages",
+		"_RedactPage",
+		"_UndoRedact",
 		"_GetImageBase64",
 		"_GetImageBase64Len",
 		"_GetImageBase64Ptr",

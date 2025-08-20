@@ -1,7 +1,5 @@
 #!/bin/bash
 
-ICU_VERSION="58"
-
 ICU_DIR="$PWD/icu"
 
 ICU_SOURCE="${ICU_DIR}/source"
@@ -46,8 +44,6 @@ defines_utypes=(
 )
 
 function prebuild() {
-
-    svn export http://source.icu-project.org/repos/icu/tags/release-${ICU_VERSION}/icu4c/ ${ICU_DIR} --native-eol LF
 
     echo "===== REMOVING data from bundle ====="
 

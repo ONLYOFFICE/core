@@ -109,6 +109,11 @@ win32:!contains(QMAKE_TARGET.arch, x86_64): {
 	CONFIG += core_win_32
 }
 
+win32-arm64-msvc2017 {
+    CONFIG -= core_win_32
+    CONFIG += core_win_arm64
+}
+
 linux-clang-libc++ {
     CONFIG += core_linux
 	CONFIG += core_linux_64
@@ -284,6 +289,9 @@ core_win_32 {
 }
 core_win_64 {
 	CORE_BUILDS_PLATFORM_PREFIX = win_64
+}
+core_win_arm64 {
+    CORE_BUILDS_PLATFORM_PREFIX = win_arm64
 }
 core_linux_32 {
 	CORE_BUILDS_PLATFORM_PREFIX = linux_32
@@ -572,42 +580,45 @@ core_windows {
 DEFINES += CRYPTOPP_DISABLE_ASM
 }
 
-core_ios:CONFIG+=support_bundle_dylibs
+core_ios|core_mac {
+	CONFIG += support_bundle_dylibs
+}
 
 !support_bundle_dylibs:CONFIG-=bundle_dylibs
 
-core_ios {
-	bundle_dylibs {
-		plugin {
-			CONFIG -= plugin
-			CONFIG += lib_bundle
+bundle_dylibs {
+	plugin {
+		CONFIG -= plugin
+		CONFIG += lib_bundle
 
-			QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
-			#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
-			#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
+		QMAKE_LFLAGS_SONAME = -Wl,-install_name,@rpath/
+		#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @executable_path/Frameworks
+		#QMAKE_LFLAGS += -Xlinker -rpath -Xlinker @loader_path/Frameworks
 
-			# correct version to < 256
-			VERSIONS = $$split(VERSION, ".")
-			VERSION_1 = $$member(VERSIONS, 0)
-			VERSION_2 = $$member(VERSIONS, 1)
-			VERSION_3 = $$member(VERSIONS, 2)
-			VERSION_4 = $$member(VERSIONS, 3)
+		# correct version to < 256
+		VERSIONS = $$split(VERSION, ".")
+		VERSION_1 = $$member(VERSIONS, 0)
+		VERSION_2 = $$member(VERSIONS, 1)
+		VERSION_3 = $$member(VERSIONS, 2)
+		VERSION_4 = $$member(VERSIONS, 3)
 
-			greaterThan(VERSION_1, 255): VERSION_1 = 255
-			greaterThan(VERSION_2, 255): VERSION_2 = 255
-			greaterThan(VERSION_3, 255): VERSION_3 = 255
-			greaterThan(VERSION_4, 255): VERSION_4 = 255
+		greaterThan(VERSION_1, 255): VERSION_1 = 255
+		greaterThan(VERSION_2, 255): VERSION_2 = 255
+		greaterThan(VERSION_3, 255): VERSION_3 = 255
+		greaterThan(VERSION_4, 255): VERSION_4 = 255
 
-			VERSION_CORRECT = $$VERSION_1
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
-			VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
+		VERSION_CORRECT = $$VERSION_1
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_2)
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_3)
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", ".")
+		VERSION_CORRECT = $$join(VERSION_CORRECT, "", "", $$VERSION_4)
 
-			VERSION = $$VERSION_CORRECT
-		}
+		VERSION = $$VERSION_CORRECT
+		MAJOR_VERSION = $$VERSION_1
+		# set framework version as A
+		QMAKE_FRAMEWORK_VERSION = A
 	}
 }
 

@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <cfloat>
 #include <cctype>
+#include <cmath>
 
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../DesktopEditor/common/ProcessEnv.h"
@@ -169,7 +170,7 @@ inline bool CanUseThisPath(const std::wstring& wsPath, const std::wstring& wsRoo
 
 inline bool IsZeroValue(const double& dValue)
 {
-	return DBL_EPSILON > std::abs(dValue);
+	return DBL_EPSILON > std::fabs(dValue);
 }
 }
 #endif // UTILS_H

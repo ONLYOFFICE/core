@@ -175,6 +175,10 @@ linux-g++-32 {
 	CONFIG += core_linux_32
 }
 
+linux_arm64 {
+    CONFIG += core_linux # if building with qt in tools/arm folder
+}
+
 
 mac {
 	!core_ios {

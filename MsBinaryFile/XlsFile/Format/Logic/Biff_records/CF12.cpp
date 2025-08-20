@@ -334,6 +334,92 @@ void CF12::writeFields(CFRecord& record)
 						if(dxfObj.m_oProtection->m_oLocked.IsInit() && dxfObj.m_oProtection->m_oLocked->GetValue())
 							dxf.dxfn->dxfprot.fLocked = true;
 					}
+					if(dxfObj.m_oAlignment.IsInit())
+					{
+						dxf.dxfn->ibitAtrAlc = true;
+						if(dxfObj.m_oAlignment->m_oHorizontal.IsInit())
+						{
+							dxf.dxfn->alchNinch = false;
+							if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentGeneral)
+								dxf.dxfn->dxfalc.alc = 0;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentLeft)
+								dxf.dxfn->dxfalc.alc = 1;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenter)
+								dxf.dxfn->dxfalc.alc = 2;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentRight)
+								dxf.dxfn->dxfalc.alc = 3;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentFill)
+								dxf.dxfn->dxfalc.alc = 4;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentJustify)
+								dxf.dxfn->dxfalc.alc = 5;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentCenterContinuous)
+								dxf.dxfn->dxfalc.alc = 6;
+							else if(dxfObj.m_oAlignment->m_oHorizontal->GetValue()
+								== SimpleTypes::Spreadsheet::EHorizontalAlignment::horizontalalignmentDistributed)
+								dxf.dxfn->dxfalc.alc = 7;
+						}
+						if(dxfObj.m_oAlignment->m_oWrapText.IsInit())
+						{
+							dxf.dxfn->wrapNinch = false;
+							dxf.dxfn->dxfalc.fWrap = dxfObj.m_oAlignment->m_oWrapText->GetValue();
+						}
+						if(dxfObj.m_oAlignment->m_oVertical.IsInit())
+						{
+							dxf.dxfn->alcvNinch = false;
+							if(dxfObj.m_oAlignment->m_oVertical->GetValue()
+								== SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentTop)
+							dxf.dxfn->dxfalc.alcv = 0;
+							else if(dxfObj.m_oAlignment->m_oVertical->GetValue()
+								== SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentCenter)
+							dxf.dxfn->dxfalc.alcv = 1;
+							else if(dxfObj.m_oAlignment->m_oVertical->GetValue()
+								== SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentBottom)
+							dxf.dxfn->dxfalc.alcv = 2;
+							else if(dxfObj.m_oAlignment->m_oVertical->GetValue()
+								== SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentJustify)
+							dxf.dxfn->dxfalc.alcv = 3;
+							else if(dxfObj.m_oAlignment->m_oVertical->GetValue()
+								== SimpleTypes::Spreadsheet::EVerticalAlignment::verticalalignmentDistributed)
+							dxf.dxfn->dxfalc.alcv = 4;
+						}
+						if(dxfObj.m_oAlignment->m_oJustifyLastLine.IsInit())
+						{
+							dxf.dxfn->kintoNinch = false;
+							dxf.dxfn->dxfalc.fJustLast = dxfObj.m_oAlignment->m_oJustifyLastLine->GetValue();
+						}
+						if(dxfObj.m_oAlignment->m_oTextRotation.IsInit())
+						{
+							dxf.dxfn->trotNinch  = false;
+							dxf.dxfn->dxfalc.trot = dxfObj.m_oAlignment->m_oTextRotation.get();
+						}
+						if(dxfObj.m_oAlignment->m_oIndent.IsInit())
+						{
+							dxf.dxfn->cIndentNinch  = false;
+							dxf.dxfn->dxfalc.cIndent = dxfObj.m_oAlignment->m_oIndent.get();
+						}
+						if(dxfObj.m_oAlignment->m_oRelativeIndent.IsInit())
+						{
+							dxf.dxfn->cIndentNinch  = false;
+							dxf.dxfn->dxfalc.iIndent = dxfObj.m_oAlignment->m_oRelativeIndent.get();
+						}
+						if(dxfObj.m_oAlignment->m_oShrinkToFit.IsInit())
+						{
+							dxf.dxfn->fShrinkNinch   = false;
+							dxf.dxfn->dxfalc.fShrinkToFit = dxfObj.m_oAlignment->m_oShrinkToFit->GetValue();
+						}
+						if(dxfObj.m_oAlignment->m_oReadingOrder.IsInit())
+						{
+							dxf.dxfn->iReadingOrderNinch = false;
+							dxf.dxfn->dxfalc.iReadingOrder = dxfObj.m_oAlignment->m_oReadingOrder.get();
+						}
+					}
 				}
 			}
 		}

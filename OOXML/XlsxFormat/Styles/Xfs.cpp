@@ -300,6 +300,14 @@ namespace OOX
 			else
 				ptr->fLocked = true;
 		}
+		void CProtection::toXLS(XLS::BaseObjectPtr& obj)
+		{
+			auto ptr = static_cast<XLS::XF*>(obj.get());
+			if(m_oHidden.IsInit())
+				ptr->fHidden = m_oHidden->GetValue();
+			if(m_oLocked.IsInit())
+				ptr->fLocked = m_oLocked->GetValue();
+		}
 		EElementType CProtection::getType () const
 		{
 			return et_x_Protection;
@@ -481,9 +489,9 @@ namespace OOX
 				ptr->alc = 0;
 				ptr->alcV = 2;
 			}
-			if(!m_oProtection.IsInit())
-				m_oProtection.Init();
-			m_oProtection->toBin(objectPtr);
+			if(m_oProtection.IsInit())
+				m_oProtection->toXLS(objectPtr);
+
 
 			if(m_oApplyAlignment.IsInit())
 				ptr->fAtrAlc = m_oApplyAlignment->GetValue();

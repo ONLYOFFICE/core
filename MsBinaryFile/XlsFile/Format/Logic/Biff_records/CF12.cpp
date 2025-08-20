@@ -324,6 +324,16 @@ void CF12::writeFields(CFRecord& record)
 							dxf.dxfn->dxfnum.user_defined.fmt = dxfObj.m_oNumFmt->m_oFormatCode.get();
 						}
 					}
+					if(dxfObj.m_oProtection.IsInit())
+					{
+						dxf.dxfn->ibitAtrProt = true;
+						dxf.dxfn->lockedNinch = false;
+						dxf.dxfn->hiddenNinch = false;
+						if(dxfObj.m_oProtection->m_oHidden.IsInit() && dxfObj.m_oProtection->m_oHidden->GetValue())
+							dxf.dxfn->dxfprot.fHidden = true;
+						if(dxfObj.m_oProtection->m_oLocked.IsInit() && dxfObj.m_oProtection->m_oLocked->GetValue())
+							dxf.dxfn->dxfprot.fLocked = true;
+					}
 				}
 			}
 		}

@@ -309,6 +309,21 @@ void CF12::writeFields(CFRecord& record)
 							ProcessBorderProp(dxfObj.m_oBorder->m_oDiagonal.GetPointer(), dxf.dxfn->dxfbdr.dgDiag, dxf.dxfn->dxfbdr.icvDiag);
 						}
 					}
+					if(dxfObj.m_oNumFmt.IsInit())
+					{
+						dxf.dxfn->ibitAtrNum = true;
+						if(dxfObj.m_oNumFmt->m_oNumFmtId.IsInit())
+						{
+							dxf.dxfn->fIfmtUser = false;
+							dxf.dxfn->ifmtNinch = false;
+							dxf.dxfn->dxfnum.fmt_id.ifmt = dxfObj.m_oNumFmt->m_oNumFmtId->m_eValue;
+						}
+						else if (dxfObj.m_oNumFmt->m_oFormatCode.IsInit())
+						{
+							dxf.dxfn->fIfmtUser = true;
+							dxf.dxfn->dxfnum.user_defined.fmt = dxfObj.m_oNumFmt->m_oFormatCode.get();
+						}
+					}
 				}
 			}
 		}

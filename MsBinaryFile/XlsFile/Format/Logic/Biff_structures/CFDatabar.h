@@ -54,8 +54,8 @@ public:
 	unsigned char iPercentMin;
 	unsigned char iPercentMax;
 
-	bool fShowValue;
-	bool fRightToLeft;
+	bool fShowValue = true;
+	bool fRightToLeft = false;
 
 	CFColor color;
 

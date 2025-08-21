@@ -108,7 +108,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin(const bool isIcon = false);
-			void toXLS(XLS::BiffStructurePtr structure, const bool isIcon = false);
+			XLS::BiffStructurePtr toXLS(const bool isIcon = false);
             void toBin(XLS::StreamCacheWriterPtr& writer, const bool isIcon = false);
             XLS::BaseObjectPtr toBin14(const bool isIcon = false);
 
@@ -209,6 +209,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BiffStructurePtr toXLS();
             void toBin(XLS::StreamCacheWriterPtr& writer);
 			XLS::BaseObjectPtr toBin14();
 

@@ -86,6 +86,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CF12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFGradient.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFDatabar.h"
 
 using namespace XLS;
 
@@ -379,9 +380,9 @@ void CConditionalFormatValueObject::toBin(XLS::StreamCacheWriterPtr& writer, con
     }
     cfvo.write(writer, nullptr);
 }
-void CConditionalFormatValueObject::toXLS(XLS::BiffStructurePtr structure, const bool isIcon)
+XLS::BiffStructurePtr CConditionalFormatValueObject::toXLS(const bool isIcon)
 {
-	auto ptr = static_cast<XLS::CFGradientInterpItem*>(structure.get());
+	auto ptr = new XLS::CFVO;
 	if(!m_oType.IsInit())
 		m_oType = SimpleTypes::Spreadsheet::ECfvoType::Number;
 	double numVal = 0;
@@ -399,47 +400,48 @@ void CConditionalFormatValueObject::toXLS(XLS::BiffStructurePtr structure, const
 	{
 		case SimpleTypes::Spreadsheet::ECfvoType::Number:
 		{
-			ptr->cfvo.cfvoType = 1;
-			ptr->cfvo.numValue = numVal;
+			ptr->cfvoType = 1;
+			ptr->numValue = numVal;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Minimum:
 		{
-			ptr->cfvo.cfvoType = 2;
+			ptr->cfvoType = 2;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Maximum:
 		{
-			ptr->cfvo.cfvoType = 3;
+			ptr->cfvoType = 3;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Percent:
 		{
-			ptr->cfvo.cfvoType = 4;
-			ptr->cfvo.numValue = numVal;
+			ptr->cfvoType = 4;
+			ptr->numValue = numVal;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Percentile:
 		{
-			ptr->cfvo.cfvoType = 5;
-			ptr->cfvo.numValue = numVal;
+			ptr->cfvoType = 5;
+			ptr->numValue = numVal;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Formula:
 		{
-			ptr->cfvo.cfvoType = 7;
+			ptr->cfvoType = 7;
 			if(m_oFormula.IsInit())
-			ptr->cfvo.fmla.parseStringFormula(m_oFormula->m_sText, L"");
-			ptr->cfvo.numValue = numVal;
+			ptr->fmla.parseStringFormula(m_oFormula->m_sText, L"");
+			ptr->numValue = numVal;
 			break;
 		}
 		default:
 		{
-			ptr->cfvo.cfvoType = 1;
-			ptr->cfvo.numValue = numVal;
+			ptr->cfvoType = 1;
+			ptr->numValue = numVal;
 			break;
 		}
 	}
+	return XLS::BiffStructurePtr(ptr);
 }
 XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
 {
@@ -904,7 +906,7 @@ XLS::BiffStructurePtr CColorScale::toXLS()
 	for(auto i : m_arrValues)
 	{
 		auto valPtr = XLS::CFGradientInterpItemPtr(new XLS::CFGradientInterpItem);
-		i->toXLS(static_cast<XLS::BiffStructurePtr>(valPtr));
+		valPtr->cfvo =  *static_cast<XLS::CFVO*>(i->toXLS().get());
 		gradientPtr->rgInterp.push_back(valPtr);
 		valPtr->numDomain += numDomain;
 		if(m_arrValues.size() == 3)
@@ -1213,6 +1215,51 @@ XLS::BaseObjectPtr CDataBar::toBin()
         ptr->m_BrtColor = m_oColor->toBin();
 
     return objectPtr;
+}
+XLS::BiffStructurePtr CDataBar::toXLS()
+{
+	auto ptr = new XLS::CFDatabar;
+	if(m_oMinLength.IsInit())
+		ptr->iPercentMin = m_oMinLength->GetValue();
+	if(m_oMaxLength.IsInit())
+		ptr->iPercentMax = m_oMaxLength->GetValue();
+	if(m_oDirection.IsInit() && m_oDirection->GetValue() == SimpleTypes::Spreadsheet::EDataBarDirection::rightToLeft)
+		ptr->fRightToLeft = true;
+	if(m_oShowValue.IsInit())
+		ptr->fShowValue = m_oShowValue->GetValue();
+	if(m_oColor.IsInit())
+	{
+
+		ptr->color.xclrType.type = XLS::XColorType::XCLRAUTO;
+		if(m_oColor->m_oIndexed.IsInit())
+		{
+			ptr->color.xclrType.type = XLS::XColorType::XCLRINDEXED;
+			ptr->color.icv = m_oColor->m_oIndexed->GetValue();
+		}
+		else if(m_oColor->m_oThemeColor.IsInit())
+		{
+			ptr->color.xclrType.type = XLS::XColorType::XCLRTHEMED;
+			ptr->color.theme = m_oColor->m_oThemeColor->GetValue();
+		}
+		else if (m_oColor->m_oRgb.IsInit())
+		{
+			ptr->color.xclrType.type = XLS::XColorType::XCLRRGB;
+			ptr->color.rgb.alpha = m_oColor->m_oRgb->Get_A();
+			ptr->color.rgb.blue = m_oColor->m_oRgb->Get_B();
+			ptr->color.rgb.red =m_oColor->m_oRgb->Get_R();
+			ptr->color.rgb.green = m_oColor->m_oRgb->Get_G();
+		}
+	}
+	if(m_arrValues.size() > 0)
+	{
+		ptr->cfvoDB1 = *static_cast<XLS::CFVO*>(m_arrValues[0]->toXLS().get());
+	}
+	if(m_arrValues.size() > 0)
+	{
+		ptr->cfvoDB2 = *static_cast<XLS::CFVO*>(m_arrValues[1]->toXLS().get());
+	}
+
+	return XLS::BiffStructurePtr(ptr);
 }
 void CDataBar::toBin(XLS::StreamCacheWriterPtr& writer)
 {
@@ -3293,6 +3340,12 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 		ptr->ct = 3;
 		ptr->icfTemplate = 2;
 		ptr->rgbCT = m_oColorScale->toXLS();
+	}
+	else if(m_oType->GetValue() == SimpleTypes::Spreadsheet::ECfType::dataBar && m_oDataBar.IsInit())
+	{
+		ptr->ct = 4;
+		ptr->icfTemplate = 3;
+		ptr->rgbCT = m_oDataBar->toXLS();
 	}
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{

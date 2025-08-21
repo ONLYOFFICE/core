@@ -166,12 +166,12 @@ docx_conversion_context::~docx_conversion_context()
 {
 }
 
-void docx_conversion_context::set_implicit_end( bool _flag ) // for bug convert from docx to odt with break columns
+void docx_conversion_context::set_implicit_end( bool _flag ) // сеттер для флага в одном файле ( где 5й параграф создается )
 {
     flag_implicit_end = _flag;
 }
 
-bool docx_conversion_context::get_implicit_end() const // for bug convert from docx to odt with break columns
+bool docx_conversion_context::get_implicit_end() const // геттер для флага в другом файле ( где после создания 5го параграфа _is_dump = true )
 {
     return flag_implicit_end;
 }

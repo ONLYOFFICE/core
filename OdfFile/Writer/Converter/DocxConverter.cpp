@@ -309,7 +309,7 @@ void DocxConverter::convert_document()
 	{
 		current_section_properties = &sections[sect];
 
-        for (size_t i = sections[sect].start_para; i < sections[sect].end_para; ++i)
+		for (size_t i = sections[sect].start_para; i < sections[sect].end_para; ++i)
 		{
 			convert(doc->m_arrItems[i]);
 		}
@@ -875,6 +875,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 			}
 			
 			if(oox_paragraph->m_oParagraphProperty)
+
 				convert(oox_paragraph->m_oParagraphProperty->m_oRPr.GetPointer(), text_properties);
 		}
 		if (odt_context->in_drop_cap())
@@ -947,7 +948,7 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 	}
 
 //---------------------------------------------------------------------------------------------------------------------
-    for (size_t i = 0; i < oox_paragraph->m_arrItems.size(); ++i)
+	for (size_t i = 0; i < oox_paragraph->m_arrItems.size(); ++i)
 	{
 		//те элементы которые тока для Paragraph - здесь - остальные в общей куче		
 		switch(oox_paragraph->m_arrItems[i]->getType())
@@ -1046,12 +1047,18 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
 				if (pBr)
 				{
-					int type = pBr->m_oType.GetValue();
-					
-					bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
+					if( !odt_context->pendingBreakType ) // for bug when we have text and after conversion we have early break column (check bug 73365)
+					{
+						odt_context->pendingBreakType = true;
+						odt_context->m_pendingBreakType = pBr->m_oType.GetValue();
+					}
 
-					if (need_restart_para)
-						odt_context->add_paragraph_break(type);
+					// int type = pBr->m_oType.GetValue();
+					
+					// bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
+
+					// if (need_restart_para)
+					// 	odt_context->add_paragraph_break(type);
 				}
 			}break;
 			case OOX::et_w_t:
@@ -2241,8 +2248,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 	{
 		odt_context->add_section(continuous);
 	}
-	
-	if (bSection && oox_section_pr->m_oCols.IsInit())
+	if ( oox_section_pr->m_oCols.IsInit() )
 	{
 		int num_columns = oox_section_pr->m_oCols->m_oNum.IsInit() ? oox_section_pr->m_oCols->m_oNum->GetValue() : 1;
 		
@@ -2254,10 +2260,21 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 		
 		bool separator = oox_section_pr->m_oCols->m_oSep.IsInit() && oox_section_pr->m_oCols->m_oSep->ToBool();
 		
-		odt_context->add_section_columns(num_columns, 
-			oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt , separator );
+		bool flag;
+		if( oox_section_pr->m_oCols->m_oEqualWidth.IsInit() )
+		{
+			flag = true;
+		}
+		else
+		{
+			flag = false;
+		}
 
-		if (num_columns > 1) //
+		odt_context->add_section_columns(num_columns, 
+		    oox_section_pr->m_oCols->m_arrColumns.size() > 0 ? -1 : default_space_pt ,
+		                                 separator, flag );
+
+		if (num_columns > 1)
 		{
 			std::vector<std::pair<double,double>> width_space;
 			

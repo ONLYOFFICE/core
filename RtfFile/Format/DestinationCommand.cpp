@@ -1139,7 +1139,7 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
         if (true == hasParameter)
             charProps->m_nCharStyle = parameter;
 #ifdef USE_STYLE_COLOR
-        if (charProps->m_nForeColor = PROP_DEF)
+        if (charProps->m_nForeColor == PROP_DEF)
             charProps->m_nForeColor = 0;
 #endif
     }

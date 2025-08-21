@@ -1130,10 +1130,20 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	COMMAND_RTF_BOOL( "b"			,	charProps->m_bBold,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "caps"		,	charProps->m_bCaps,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "charscalex"	,	charProps->m_nScalex,			sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT	( "cs"			,	charProps->m_nCharStyle,		sCommand, hasParameter, parameter)
+    //COMMAND_RTF_INT	( "cs"			,	charProps->m_nCharStyle,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "down"		,	charProps->m_nDown,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_BOOL( "embo"		,	charProps->m_bEmbo,				sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "expndtw"		,	charProps->m_nCharacterSpacing,	sCommand, hasParameter, parameter)
+    else if ("cs" == sCommand)
+    {
+        if (true == hasParameter)
+            charProps->m_nCharStyle = parameter;
+#ifdef USE_STYLE_COLOR
+        if (charProps->m_nForeColor == PROP_DEF)
+            charProps->m_nForeColor = 0;
+#endif
+    }
+
 	else if ( "expnd" == sCommand )
 	{
 		if ( hasParameter )
@@ -1244,6 +1254,12 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 	{
 		charProps->m_nCharacterSpacing  = PROP_DEF;
 	}
+#ifdef USE_STYLE_COLOR
+    else if (("sbasedon" == sCommand) && (charProps->m_bBold == PROP_DEF))
+    {
+        charProps->m_bBold = 0;
+    }
+#endif
 	else
 	{
 		if (RtfShadingCharCommand::ExecuteCommand( oDocument, oReader,sCommand, hasParameter, parameter, charProps->m_poShading))
@@ -5062,7 +5078,15 @@ bool RtfStyleTableReader::RtfStyleReader::ExecuteCommand(RtfDocument& oDocument,
 			m_oCurStyle->m_nID = parameter;
 		}
 	}
-	COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
+#ifdef USE_STYLE_COLOR
+    COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter );
+    if (m_oCurStyle->m_nBasedOn != PROP_DEF)
+    {
+        RtfCharPropsCommand::ExecuteCommand( oDocument, oReader, sCommand, hasParameter, parameter, &oReader.m_oState->m_oCharProp );
+    }
+#else
+    COMMAND_RTF_INT( "sbasedon",	m_oCurStyle->m_nBasedOn,			sCommand, hasParameter, parameter )
+#endif
 	COMMAND_RTF_INT( "snext",		m_oCurStyle->m_nNext,				sCommand, hasParameter, parameter )
 	COMMAND_RTF_INT( "slink",		m_oCurStyle->m_nLink,				sCommand, hasParameter, parameter )
 	COMMAND_RTF_BOOL( "sqformat",	m_oCurStyle->m_bQFormat,			sCommand, hasParameter, parameter )

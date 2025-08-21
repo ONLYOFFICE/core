@@ -181,7 +181,8 @@ namespace PdfWriter
 			std::vector<std::string> m_arrExtGState;
 		};
 
-		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2 = NULL, bool bStroke = false);
+		void DoPathFill  (GfxState* pGState, GfxPath* pPath, double* pCTM);
+		void DoPathStroke(GfxState* pGState, GfxPath* pPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();

@@ -191,6 +191,7 @@ SOURCES += \
     SrcWriter/ResourcesDictionary.cpp \
     SrcWriter/Shading.cpp \
     SrcWriter/Streams.cpp \
+	SrcWriter/Types.cpp \
     SrcWriter/Utils.cpp \
     SrcWriter/Metadata.cpp \
 	SrcWriter/States.cpp \

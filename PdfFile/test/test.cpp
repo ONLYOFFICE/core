@@ -482,9 +482,9 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	RELEASEARRAYOBJECTS(pBuffer);
 	RELEASEARRAYOBJECTS(pFileContent);
 
-	// pdfFile->Redact({ 136.145, 6.82016, 136.145, 293.838, 250.691, 293.838, 250.691, 6.82016 }); test1
-	pdfFile->Redact({ 383.565, 343.134, 383.565, 773.827, 397.965, 773.827, 397.965, 343.134,
-					   88.364, 316.298,  88.364, 773.827, 214.037, 773.827, 214.037, 316.298 });
+	// pdfFile->Redact({ 136.145, 6.82016, 250.691, 293.838 }); test1
+	pdfFile->Redact({ 383.565, 343.134, 397.965, 773.827,
+					   88.364, 316.298, 214.037, 773.827 });
 
 	pdfFile->Close();
 }

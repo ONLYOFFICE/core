@@ -302,13 +302,13 @@ void RedactOutputDev::updateTextShift(GfxState *pGState, double shift)
 //----- path painting
 void RedactOutputDev::stroke(GfxState *pGState)
 {
-	DoPath(pGState, pGState->getPath(), pGState->getCTM(), NULL, true);
+	DoPathStroke(pGState, pGState->getPath(), pGState->getCTM());
 	DrawPath(c_nStroke);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать stroke
 }
 void RedactOutputDev::fill(GfxState *pGState)
 {
-	DoPath(pGState, pGState->getPath(), pGState->getCTM());
+	DoPathFill(pGState, pGState->getPath(), pGState->getCTM());
 	DrawPath(c_nWindingFillMode);
 	// TODO Нужно пересечь путь с областями Redact, результат записать и сделать fill
 }
@@ -601,27 +601,15 @@ void ConvertConicToQuads(const pk::SkPoint& p0, const pk::SkPoint& p1, const pk:
 	std::copy(left, left + 3, pts);
 	std::copy(right + 1, right + 3, pts + 3);
 }
-void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, GfxClipMatrix* pCTM2, bool bStroke)
+void RedactOutputDev::DoPathFill(GfxState* pGState, GfxPath* pPath, double* pCTM)
 {
 	double arrMatrix[6];
-	if (pCTM2)
-	{
-		arrMatrix[0] = pCTM2->dA;
-		arrMatrix[1] = pCTM2->dB;
-		arrMatrix[2] = pCTM2->dC;
-		arrMatrix[3] = pCTM2->dD;
-		arrMatrix[4] = pCTM2->dE;
-		arrMatrix[5] = pCTM2->dF;
-	}
-	else
-	{
-		arrMatrix[0] = pCTM[0];
-		arrMatrix[1] = pCTM[1];
-		arrMatrix[2] = pCTM[2];
-		arrMatrix[3] = pCTM[3];
-		arrMatrix[4] = pCTM[4];
-		arrMatrix[5] = pCTM[5];
-	}
+	arrMatrix[0] = pCTM[0];
+	arrMatrix[1] = pCTM[1];
+	arrMatrix[2] = pCTM[2];
+	arrMatrix[3] = pCTM[3];
+	arrMatrix[4] = pCTM[4];
+	arrMatrix[5] = pCTM[5];
 
 	double dShiftX = 0, dShiftY = 0;
 	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
@@ -640,14 +628,6 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
 		oPathRedact.CloseFigure();
 	}
-	size_t length2 = oPathRedact.GetPointCount(), compound2 = oPathRedact.GetCloseCount();
-	std::vector<Aggplus::PointD> points2 = oPathRedact.GetPoints(0, length2 + compound2);
-	std::cout << "Path2:" <<std::endl;
-	for (int i = 0; i < points2.size(); ++i)
-	{
-		std::cout << "( " << points2[i].X << ", " << points2[i].Y << " ); ";
-	}
-	std::cout <<std::endl;
 
 	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
 	{
@@ -907,6 +887,158 @@ void RedactOutputDev::DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM, Gf
 		}
 		case pk::SkPath::kDone_Verb:
 			break;
+		}
+	}
+}
+void ToPath(CMatrix* pMatrix, const std::vector<CSegment>& oSegment, CPath* pPath, double& dXCur, double& dYCur)
+{
+	for (int i = 0; i < oSegment.size(); ++i)
+	{
+		double dX = oSegment[i].start.x;
+		double dY = oSegment[i].start.y;
+		pMatrix->Apply(dX, dY);
+		double dX2 = oSegment[i].end.x;
+		double dY2 = oSegment[i].end.y;
+		dXCur = dX, dYCur = dY;
+		pMatrix->Apply(dX2, dY2);
+
+		pPath->MoveTo(dX, dY);
+		pPath->LineTo(dX, dY);
+	}
+}
+void ToPath(CMatrix* pMatrix, const std::vector<CCubicBezier>& oBezier, CPath* pPath, double& dXCur, double& dYCur)
+{
+	for (int i = 0; i < oBezier.size(); ++i)
+	{
+		double dX = oBezier[i].p0.x;
+		double dY = oBezier[i].p0.y;
+		pMatrix->Apply(dX, dY);
+		double dX1 = oBezier[i].p1.x;
+		double dY1 = oBezier[i].p1.y;
+		pMatrix->Apply(dX1, dY1);
+		double dX2 = oBezier[i].p2.x;
+		double dY2 = oBezier[i].p2.y;
+		pMatrix->Apply(dX2, dY2);
+		double dX3 = oBezier[i].p3.x;
+		double dY3 = oBezier[i].p3.y;
+		dXCur = dX3, dYCur = dY3;
+		pMatrix->Apply(dX3, dY3);
+
+		pPath->MoveTo(dX, dY);
+		pPath->CurveTo(dX1, dY1, dX2, dY2, dX3, dY3);
+	}
+}
+void RedactOutputDev::DoPathStroke(GfxState* pGState, GfxPath* pPath, double* pCTM)
+{
+	double arrMatrix[6];
+	arrMatrix[0] = pCTM[0];
+	arrMatrix[1] = pCTM[1];
+	arrMatrix[2] = pCTM[2];
+	arrMatrix[3] = pCTM[3];
+	arrMatrix[4] = pCTM[4];
+	arrMatrix[5] = pCTM[5];
+
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+
+	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
+	CMatrix oInverse = oMatrix.Inverse();
+
+	m_pRenderer->m_oPath.Clear();
+	for (int nSubPathIndex = 0, nSubPathCount = pPath->getNumSubpaths(); nSubPathIndex < nSubPathCount; ++nSubPathIndex)
+	{
+		GfxSubpath* pSubpath = pPath->getSubpath(nSubPathIndex);
+		int nPointsCount = pSubpath->getNumPoints();
+
+		double dX = pSubpath->getX(0), dY = pSubpath->getY(0);
+		oMatrix.Apply(dX, dY);
+		double dXCur = dX, dYCur = dY;
+		double dXStart = dX, dYStart = dY;
+
+		int nCurPointIndex = 1;
+		while (nCurPointIndex < nPointsCount)
+		{
+			if (pSubpath->getCurve(nCurPointIndex))
+			{
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oMatrix.Apply(dX, dY);
+				double dX2 = pSubpath->getX(nCurPointIndex + 1);
+				double dY2 = pSubpath->getY(nCurPointIndex + 1);
+				oMatrix.Apply(dX2, dY2);
+				double dX3 = pSubpath->getX(nCurPointIndex + 2);
+				double dY3 = pSubpath->getY(nCurPointIndex + 2);
+				oMatrix.Apply(dX3, dY3);
+				nCurPointIndex += 3;
+
+				std::vector<CCubicBezier> oResBezier = { CCubicBezier(CPoint(dXCur, dYCur), CPoint(dX, dY), CPoint(dX2, dY2), CPoint(dX3, dY3)) };
+
+				for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+				{
+					std::vector<CCubicBezier> oResBezier2;
+					for (int iBezier = 0; iBezier < oResBezier.size(); ++iBezier)
+					{
+						std::vector<CCubicBezier> oResBezier3 = cutBezierWithRectangle(
+							oResBezier[iBezier].p0.x, oResBezier[iBezier].p0.y, oResBezier[iBezier].p1.x, oResBezier[iBezier].p1.y,
+							oResBezier[iBezier].p2.x, oResBezier[iBezier].p2.y, oResBezier[iBezier].p3.x, oResBezier[iBezier].p3.y,
+							m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1], m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+						oResBezier2.insert(oResBezier2.end(), oResBezier3.begin(), oResBezier3.end());
+					}
+					oResBezier = oResBezier2;
+				}
+
+				if (oResBezier.empty())
+					dXCur = dX3, dYCur = dY3;
+				else
+					ToPath(&oInverse, oResBezier, &m_pRenderer->m_oPath, dXCur, dYCur);
+			}
+			else
+			{
+				dX = pSubpath->getX(nCurPointIndex);
+				dY = pSubpath->getY(nCurPointIndex);
+				oMatrix.Apply(dX, dY);
+				++nCurPointIndex;
+
+				std::vector<CSegment> oResSegment = { CSegment(CPoint(dXCur, dYCur), CPoint(dX, dY)) };
+
+				for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+				{
+					std::vector<CSegment> oResSegment2;
+					for (int iSegment = 0; iSegment < oResSegment.size(); ++iSegment)
+					{
+						std::vector<CSegment> oResSegment3 = cutLineWithRectangle(
+							oResSegment[iSegment].start.x, oResSegment[iSegment].start.y, oResSegment[iSegment].end.x, oResSegment[iSegment].end.y,
+							m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1], m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+						oResSegment2.insert(oResSegment2.end(), oResSegment3.begin(), oResSegment3.end());
+					}
+					oResSegment = oResSegment2;
+				}
+
+				if (oResSegment.empty())
+					dXCur = dX, dYCur = dY;
+				else
+					ToPath(&oInverse, oResSegment, &m_pRenderer->m_oPath, dXCur, dYCur);
+			}
+		}
+		if (pSubpath->isClosed() && dXCur != dXStart && dYCur != dYStart)
+		{
+			std::vector<CSegment> oResSegment = { CSegment(CPoint(dXCur, dYCur), CPoint(dXStart, dYStart)) };
+
+			for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
+			{
+				std::vector<CSegment> oResSegment2;
+				for (int iSegment = 0; iSegment < oResSegment.size(); ++iSegment)
+				{
+					std::vector<CSegment> oResSegment3 = cutLineWithRectangle(
+						oResSegment[iSegment].start.x, oResSegment[iSegment].start.y, oResSegment[iSegment].end.x, oResSegment[iSegment].end.y,
+						m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1], m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
+					oResSegment2.insert(oResSegment2.end(), oResSegment3.begin(), oResSegment3.end());
+				}
+				oResSegment = oResSegment2;
+			}
+
+			if (!oResSegment.empty())
+				ToPath(&oInverse, oResSegment, &m_pRenderer->m_oPath, dXCur, dYCur);
 		}
 	}
 }

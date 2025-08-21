@@ -46,6 +46,7 @@
 #include <string>
 #include <algorithm>
 #include <math.h>
+#include <vector>
 
 #ifdef __linux__
 #include <string.h>
@@ -53,6 +54,7 @@
 
 namespace PdfWriter
 {
+	const double EPS = 1e-10;
 	struct TRect
 	{
 		TRect()
@@ -76,7 +78,7 @@ namespace PdfWriter
 		double fTop;
 	};
 	typedef TRect TBox;
-	class CMatrix	
+	class CMatrix
 	{
 	public:
 
@@ -356,11 +358,16 @@ namespace PdfWriter
 	class CPoint
 	{
 	public:
-
 		CPoint()
 		{
 			x = 0;
 			y = 0;
+		}
+		CPoint(double dX, double dY) : x(dX), y(dY) {}
+		CPoint(const CPoint& oPoint)
+		{
+			x = oPoint.x;
+			y = oPoint.y;
 		}
 		void Set(double dX, double dY)
 		{
@@ -378,11 +385,49 @@ namespace PdfWriter
 			y = oPoint.y;
 			return *this;
 		}
+		bool operator==(const CPoint& oPoint) const
+		{
+			return std::abs(x - oPoint.x) < EPS && std::abs(y - oPoint.y) < EPS;
+		}
+		CPoint operator+(const CPoint& other) const
+		{
+			return CPoint(x + other.x, y + other.y);
+		}
+		CPoint operator-(const CPoint& other) const
+		{
+			return CPoint(x - other.x, y - other.y);
+		}
+		CPoint operator*(double scalar) const
+		{
+			return CPoint(x * scalar, y * scalar);
+		}
+		CPoint operator/(double scalar) const
+		{
+			return CPoint(x / scalar, y / scalar);
+		}
 
 	public:
-
 		double x;
 		double y;
+	};
+	struct CSegment
+	{
+		CPoint start;
+		CPoint end;
+		CSegment(const CPoint& s, const CPoint& e) : start(s), end(e) {}
+	};
+	struct CCubicBezier
+	{
+		CPoint p0, p1, p2, p3;
+
+		CCubicBezier(const CPoint& p0, const CPoint& p1, const CPoint& p2, const CPoint& p3)
+			: p0(p0), p1(p1), p2(p2), p3(p3) {}
+
+		CPoint evaluate(double t) const;
+		// Разделение кривой в точке t
+		CCubicBezier split(double t) const;
+		// Получение сегмента кривой от t0 до t1
+		CCubicBezier getSegment(double t0, double t1) const;
 	};
 	enum EGrMode
 	{
@@ -464,6 +509,8 @@ namespace PdfWriter
 		RenderingIntent_Saturation,
 		RenderingIntent_Perceptual
 	};
+	std::vector<CSegment> cutLineWithRectangle(double dX1, double dY1, double dX2, double dY2, double dL, double dB, double dR, double dT);
+	std::vector<CCubicBezier> cutBezierWithRectangle( double p0x, double p0y, double p1x, double p1y, double p2x, double p2y, double p3x, double p3y, double dL, double dB, double dR, double dT);
 }
 
 #endif // _PDF_WRITER_SRC_TYPES_H

@@ -192,13 +192,13 @@ CFile.prototype._UndoMergePages = function()
 	return Module["_UnmergePages"](this.nativeFile) == 1;
 };
 
-CFile.prototype._RedactPage = function(pageIndex, arrRedactBox, arrayBufferChanges)
+CFile.prototype._RedactPage = function(pageIndex, arrRedactBox, arrayBufferFiller)
 {
 	let changesPtr = 0;
 	let changesLen = 0;
-	if (arrayBufferChanges)
+	if (arrayBufferFiller)
 	{
-		let changes = new Uint8Array(arrayBufferChanges);
+		let changes = new Uint8Array(arrayBufferFiller);
 		changesLen = changes.length;
 		changesPtr = Module["_malloc"](changesLen);
 		Module["HEAP8"].set(changes, changesPtr);

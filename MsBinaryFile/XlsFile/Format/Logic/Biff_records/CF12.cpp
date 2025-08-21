@@ -214,6 +214,7 @@ void CF12::writeFields(CFRecord& record)
 
     record.reserveNunBytes(4);
     auto ccePos = record.getRdPtr();
+	if(dxf.dxfn != nullptr)
 	{
 		//todo dxf conversion from global info
 		if(dxfId_ >= 0 && global_info->arrUserDxfs.size() > dxfId_)

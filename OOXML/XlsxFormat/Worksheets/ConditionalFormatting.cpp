@@ -85,6 +85,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CF12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFGradient.h"
 
 using namespace XLS;
 
@@ -377,6 +378,68 @@ void CConditionalFormatValueObject::toBin(XLS::StreamCacheWriterPtr& writer, con
         cfvo.cbFmla = 0;
     }
     cfvo.write(writer, nullptr);
+}
+void CConditionalFormatValueObject::toXLS(XLS::BiffStructurePtr structure, const bool isIcon)
+{
+	auto ptr = static_cast<XLS::CFGradientInterpItem*>(structure.get());
+	if(!m_oType.IsInit())
+		m_oType = SimpleTypes::Spreadsheet::ECfvoType::Number;
+	double numVal = 0;
+	if(m_oVal.IsInit())
+	{
+		try
+		{
+		numVal = stod(m_oVal.get());
+
+		}  catch (std::exception)
+		{
+		}
+	}
+	switch(m_oType->GetValue())
+	{
+		case SimpleTypes::Spreadsheet::ECfvoType::Number:
+		{
+			ptr->cfvo.cfvoType = 1;
+			ptr->cfvo.numValue = numVal;
+			break;
+		}
+		case SimpleTypes::Spreadsheet::ECfvoType::Minimum:
+		{
+			ptr->cfvo.cfvoType = 2;
+			break;
+		}
+		case SimpleTypes::Spreadsheet::ECfvoType::Maximum:
+		{
+			ptr->cfvo.cfvoType = 3;
+			break;
+		}
+		case SimpleTypes::Spreadsheet::ECfvoType::Percent:
+		{
+			ptr->cfvo.cfvoType = 4;
+			ptr->cfvo.numValue = numVal;
+			break;
+		}
+		case SimpleTypes::Spreadsheet::ECfvoType::Percentile:
+		{
+			ptr->cfvo.cfvoType = 5;
+			ptr->cfvo.numValue = numVal;
+			break;
+		}
+		case SimpleTypes::Spreadsheet::ECfvoType::Formula:
+		{
+			ptr->cfvo.cfvoType = 7;
+			if(m_oFormula.IsInit())
+			ptr->cfvo.fmla.parseStringFormula(m_oFormula->m_sText, L"");
+			ptr->cfvo.numValue = numVal;
+			break;
+		}
+		default:
+		{
+			ptr->cfvo.cfvoType = 1;
+			ptr->cfvo.numValue = numVal;
+			break;
+		}
+	}
 }
 XLS::BaseObjectPtr CConditionalFormatValueObject::toBin14(bool isIcon)
 {
@@ -831,6 +894,55 @@ XLS::BaseObjectPtr CColorScale::toBin()
     for(auto i:m_arrColors)
         ptr->m_arBrtColor.push_back(i->toBin());
     return objectPtr;
+}
+XLS::BiffStructurePtr CColorScale::toXLS()
+{
+	auto gradientPtr = new XLS::CFGradient;
+	gradientPtr->cInterpCurve = m_arrValues.size();
+	gradientPtr->cGradientCurve = m_arrColors.size();
+	double numDomain = 0;
+	for(auto i : m_arrValues)
+	{
+		auto valPtr = XLS::CFGradientInterpItemPtr(new XLS::CFGradientInterpItem);
+		i->toXLS(static_cast<XLS::BiffStructurePtr>(valPtr));
+		gradientPtr->rgInterp.push_back(valPtr);
+		valPtr->numDomain += numDomain;
+		if(m_arrValues.size() == 3)
+			numDomain += 0.5;
+		else
+			numDomain += 1;
+	}
+	numDomain = 0;
+	for(auto i : m_arrColors)
+	{
+		auto tempColor = XLS::CFGradientItemPtr(new XLS::CFGradientItem);
+		tempColor->numGrange.data.value = numDomain;
+		if(m_arrColors.size() == 3)
+			numDomain += 0.5;
+		else
+			numDomain += 1;
+		tempColor->color.xclrType.type = XLS::XColorType::XCLRAUTO;
+		if(i->m_oIndexed.IsInit())
+		{
+			tempColor->color.xclrType.type = XLS::XColorType::XCLRINDEXED;
+			tempColor->color.icv = i->m_oIndexed->GetValue();
+		}
+		else if(i->m_oThemeColor.IsInit())
+		{
+			tempColor->color.xclrType.type = XLS::XColorType::XCLRTHEMED;
+			tempColor->color.theme = i->m_oThemeColor->GetValue();
+		}
+		else if (i->m_oRgb.IsInit())
+		{
+			tempColor->color.xclrType.type = XLS::XColorType::XCLRRGB;
+			tempColor->color.rgb.alpha = i->m_oRgb->Get_A();
+			tempColor->color.rgb.blue = i->m_oRgb->Get_B();
+			tempColor->color.rgb.red = i->m_oRgb->Get_R();
+			tempColor->color.rgb.green = i->m_oRgb->Get_G();
+		}
+		gradientPtr->rgCurve.push_back(tempColor);
+	}
+	return XLS::BiffStructurePtr(gradientPtr);
 }
 void CColorScale::toBin(XLS::StreamCacheWriterPtr& writer)
 {
@@ -3175,6 +3287,12 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 			else if (m_oOperator->GetValue() == SimpleTypes::Spreadsheet::ECfOperator::Operator_lessThanOrEqual)
 				ptr->cp  = XLSB::CFOper::CF_OPER_LE;
 		   }
+	}
+	else if(m_oType->GetValue() == SimpleTypes::Spreadsheet::ECfType::colorScale && m_oColorScale.IsInit())
+	{
+		ptr->ct = 3;
+		ptr->icfTemplate = 2;
+		ptr->rgbCT = m_oColorScale->toXLS();
 	}
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{

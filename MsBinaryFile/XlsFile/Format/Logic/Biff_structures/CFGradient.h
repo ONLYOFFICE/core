@@ -88,8 +88,8 @@ public:
     unsigned char						cInterpCurve = 0x2;		//MUST be 0x2 or 0x3.
     unsigned char						cGradientCurve = 0x2;		// == cInterpCurve
 
-    bool								fClamp = 0;
-    bool								fBackground = 0;
+	bool								fClamp = 1;
+	bool								fBackground = 1;
 
 	std::vector<CFGradientInterpItemPtr>rgInterp;
 	std::vector<CFGradientItemPtr>		rgCurve;

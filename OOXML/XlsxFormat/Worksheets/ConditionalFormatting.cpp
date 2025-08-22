@@ -405,11 +405,13 @@ XLS::BiffStructurePtr CConditionalFormatValueObject::toXLS(const bool isIcon)
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Minimum:
+		case SimpleTypes::Spreadsheet::ECfvoType::autoMin:
 		{
 			ptr->cfvoType = 2;
 			break;
 		}
 		case SimpleTypes::Spreadsheet::ECfvoType::Maximum:
+		case SimpleTypes::Spreadsheet::ECfvoType::autoMax:
 		{
 			ptr->cfvoType = 3;
 			break;

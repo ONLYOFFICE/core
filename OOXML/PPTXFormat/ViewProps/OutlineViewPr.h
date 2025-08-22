@@ -33,12 +33,30 @@
 
 #include "./../WrapperWritingElement.h"
 #include "CViewPr.h"
-#include "Sld.h"
 
 namespace PPTX
 {
 	namespace nsViewProps
 	{
+		class Sld : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(Sld)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			nullable_string		id;
+			nullable_bool		collapse;
+
+		protected:
+			virtual void FillParentPointersForChilds();
+		};
+
 		class OutlineViewPr : public WrapperWritingElement
 		{
 		public:

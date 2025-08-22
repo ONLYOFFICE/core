@@ -47,7 +47,7 @@ namespace XLS
 		BaseObjectPtr clone();
 
 		void readFields(CFRecord& record);
-
+        void writeFields(CFRecord& record);
 		static const ElementType	type = typeVerticalPageBreaks;
 
 		virtual int serialize(std::wostream & stream);

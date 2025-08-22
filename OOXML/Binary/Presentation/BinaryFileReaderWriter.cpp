@@ -358,6 +358,12 @@ namespace NSBinPptxRW
 			}
 			addit.push_back(std::make_pair(strAdditional, typeAdditional));
 		}
+		
+		if (pPair != m_mapImages.end())
+		{
+			return pPair->second;
+		}
+
 		if (false == strExts.empty())
 		{
 			m_pContentTypes->AddDefault(strExts.substr(1));
@@ -1637,15 +1643,15 @@ namespace NSBinPptxRW
 
 		m_lNextRelsID = 3;
 	}
-	void CRelsGenerator::WriteMasters(int nCount)
+	std::wstring CRelsGenerator::WriteMaster(int nIndex)
 	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" + 
-                std::to_wstring(i + 1) + L".xml\"/>";
-			m_pWriter->WriteString(strRels);
-		}
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster\" Target=\"slideMasters/slideMaster" 
+			+ std::to_wstring(nIndex) + L".xml\"/>";
+		m_pWriter->WriteString(strRels);
+
+		return rid;
 	}
 	void CRelsGenerator::WriteThemes(int nCount)
 	{
@@ -1657,23 +1663,26 @@ namespace NSBinPptxRW
 			m_pWriter->WriteString(strRels);
 		}
 	}
-	void CRelsGenerator::WriteSlides(int nCount)
+	std::wstring CRelsGenerator::WriteSlide(int nIndex)
 	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" + 
-				std::to_wstring(i + 1) + L".xml\"/>";
-			m_pWriter->WriteString(strRels);
-		}
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
+			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"slides/slide" +
+			std::to_wstring(nIndex) + L".xml\"/>";
+		m_pWriter->WriteString(strRels);
+		
+		return rid;
 	}
-	void CRelsGenerator::WriteSlideComments(int nComment)
+	std::wstring  CRelsGenerator::WriteSlideComments(int nIndexComment)
 	{
-		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) + 
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
 			L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments\" Target=\"../comments/comment" + 
-			std::to_wstring(nComment) + L".xml\"/>";
+			std::to_wstring(nIndexComment) + L".xml\"/>";
 
 		m_pWriter->WriteString(strRels);
+		return rid;
 	}
 	void CRelsGenerator::WriteNotesMaster()
 	{
@@ -1681,23 +1690,23 @@ namespace NSBinPptxRW
 				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/notesMaster\" Target=\"notesMasters/notesMaster1.xml\"/>";
 		m_pWriter->WriteString(strRels0);			
 	}
-	void CRelsGenerator::WritePresentationComments(int nComment)
+	std::wstring  CRelsGenerator::WritePresentationComments(int nIndexComment)
 	{
-		std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring( m_lNextRelsID++ ) +
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+		std::wstring strRels = L"<Relationship Id=\"" + rid +
 			L"\" Type=\"http://schemas.onlyoffice.com/comments\" Target=\"comments/comment" +
-			std::to_wstring(nComment) + L".xml\"/>";
+			std::to_wstring(nIndexComment) + L".xml\"/>";
 
 		m_pWriter->WriteString(strRels);
+		return rid;
 	}
-	void CRelsGenerator::WriteCustoms(int nCount)
+	std::wstring CRelsGenerator::WriteCustom(const std::wstring & file_name)
 	{
-		for (int i = 0; i < nCount; ++i)
-		{
-			std::wstring strRels = L"<Relationship Id=\"rId" + std::to_wstring(m_lNextRelsID++) +
-				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/item" +
-				std::to_wstring(i + 1) + L".xml\"/>";
+		std::wstring rid = L"rId" + std::to_wstring(m_lNextRelsID++);
+			std::wstring strRels = L"<Relationship Id=\"" + rid +
+				L"\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/customXml\" Target=\"../customXml/" + file_name + L"\"/>";
 			m_pWriter->WriteString(strRels);
-		}
+		return rid;
 	}
 	void CRelsGenerator::EndPresentationRels(bool bIsCommentsAuthors, bool bIsVbaProject, bool bIsJsaProject)
 	{

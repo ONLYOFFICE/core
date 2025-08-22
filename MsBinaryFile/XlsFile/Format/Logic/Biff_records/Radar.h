@@ -50,14 +50,15 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeRadar;
 
 	int serialize(std::wostream & _stream);
 
 //-----------------------------
-	bool fRdrAxLab;
-	bool fHasShadow;
+    bool fRdrAxLab = false;
+    bool fHasShadow = false;
 };
 
 } // namespace XLS

@@ -46,6 +46,10 @@ void MDXStrIndex::load(CFRecord& record)
 	record >> index;
 }
 
+void MDXStrIndex::save(CFRecord& record)
+{
+	record << index;
+}
 
 } // namespace XLS
 

@@ -48,11 +48,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeProtect;
 
 //-----------------------------
-	Boolean<unsigned short> fLock;
+    Boolean<unsigned short> fLock = 0;
 };
 
 } // namespace XLS

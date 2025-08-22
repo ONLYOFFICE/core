@@ -54,6 +54,7 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeCF12;
 
@@ -61,8 +62,8 @@ public:
 
 	FrtRefHeader			frtRefHeader;
 
-	unsigned char			ct;
-	unsigned char			cp;
+    unsigned char			ct = 0;
+    unsigned char			cp = 0;
 
 	DXFN12					dxf;
 
@@ -70,16 +71,16 @@ public:
 	CFParsedFormulaNoCCE	rgce2;
 
 	CFParsedFormula			fmlaActive;
-	_UINT16					ipriority;
-	_UINT16					icfTemplate;
+    _UINT16					ipriority = 0;
+    _UINT16					icfTemplate = 0;
 	CFExTemplateParams		rgbTemplateParms;
 
 	BiffStructurePtr		rgbCT;
 
 //-----------------------------
-	bool					fStopIfTrue;
-	int						ipriority_;
-	int						dxfId_;
+    bool					fStopIfTrue = 0;
+    int						ipriority_ = 0;
+    int						dxfId_ = 0;
 
 	BaseObjectPtr			m_CFEx;
 	BaseObjectPtr			m_CF12_2;

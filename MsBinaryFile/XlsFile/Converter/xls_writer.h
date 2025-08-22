@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,27 +29,24 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
 #pragma once
-
-#include "./../WrapperWritingElement.h"
-
-namespace PPTX
+#include <string>
+#include <boost/shared_ptr.hpp>
+#include "../Format/Logic/CompositeObject.h"
+namespace XLS
 {
-	namespace nsPresentation
-	{
-		class EmbeddedFontDataId : public WrapperWritingElement
-		{
-		public:
-			PPTX_LOGIC_BASE(EmbeddedFontDataId)
+    class CompoundFile;
+	typedef boost::shared_ptr<CompoundFile> CompoundFilePtr;
+}
+class XlsWriter
+{
+public:
+	bool Open(const std::wstring &fileName);
+	bool WriteWorkbook(XLS::BaseObjectPtr streamObject);
+	bool WriteStreamObject(std::wstring &streamName, XLS::BaseObjectPtr streamObject);
+private:
+    std::wstring fileName_ = L"";
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
-
-			std::wstring rid;
-			std::wstring m_name;
-
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsPresentation
-} // namespace PPTX
+    XLS::CompoundFilePtr			xls_file;
+};

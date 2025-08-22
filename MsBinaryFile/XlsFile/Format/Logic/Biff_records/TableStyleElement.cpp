@@ -62,6 +62,7 @@ void TableStyleElement::writeFields(CFRecord& record)
 {
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{
+        frtHeader.rt = 0x0890;
 		record << frtHeader;
 	}
 

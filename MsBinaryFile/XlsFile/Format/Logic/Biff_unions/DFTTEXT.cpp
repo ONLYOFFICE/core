@@ -97,5 +97,22 @@ const bool DFTTEXT::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DFTTEXT::saveContent(BinProcessor& proc)
+{
+	if(m_DefaultText == nullptr)
+		return false;
+	if(m_DataLabExt != nullptr)
+	{
+		proc.mandatory(*m_DataLabExt);
+		proc.mandatory<StartObject>();
+	}
+	proc.mandatory(*m_DefaultText);
+	if(m_ATTACHEDLABEL != nullptr)
+		proc.mandatory(*m_ATTACHEDLABEL);
+	if(m_DataLabExt != nullptr)
+		proc.mandatory<EndObject>();
+	return true;
+}
+
 } // namespace XLS
 

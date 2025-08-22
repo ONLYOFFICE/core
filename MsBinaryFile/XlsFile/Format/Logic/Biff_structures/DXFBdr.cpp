@@ -66,6 +66,31 @@ void DXFBdr::load(CFRecord& record)
 
 }
 
+void DXFBdr::save(CFRecord& record)
+{
+    _UINT32 flags = 0;
+    SETBITS(flags, 0, 3, dgLeft)
+    SETBITS(flags, 4, 7, dgRight)
+    SETBITS(flags, 8, 11, dgTop)
+    SETBITS(flags, 12, 15, dgBottom)
+
+    SETBITS(flags, 16, 22, icvLeft)
+    SETBITS(flags, 23, 29, icvRight)
+
+    SETBIT(flags, 30, bitDiagDown);
+    SETBIT(flags, 31, bitDiagUp);
+
+    record << flags;
+    flags = 0;
+
+    SETBITS(flags, 0, 6, icvTop)
+    SETBITS(flags, 7, 13, icvBottom)
+    SETBITS(flags, 14, 20, icvDiag)
+    SETBITS(flags, 21, 24, dgDiag)
+
+    record << flags;
+}
+
 void serialize_one(std::wostream & stream, const std::wstring & name, unsigned char type,  unsigned char color, FullColorExt* colorExt)
 {
 	CP_XML_WRITER(stream)    

@@ -64,14 +64,15 @@ public:
 	CFStreamPtr getNamedStream		(const std::wstring& name);
 
 	POLE::Storage *storage_;
+
+	CFStreamPtr createNamedStream	(const std::wstring& name);
+	void		closeNamedStream	(const std::wstring& name);
 private:
 	void copy_stream(std::wstring streamNameOpen, std::wstring streamNameCreate, POLE::Storage * storageOut, bool bWithRoot = true);
 	
 	POLE::Stream* openStream		(const std::wstring & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
 	POLE::Stream* createStream		(const std::wstring & stream_name); // Creates a new stream in the storage
 
-	CFStreamPtr createNamedStream	(const std::wstring& name);
-	void		closeNamedStream	(const std::wstring& name);
 
 	std::map<std::wstring, CFStreamPtr>	streams;
 	ReadWriteMode						rwMode;

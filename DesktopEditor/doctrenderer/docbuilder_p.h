@@ -547,6 +547,7 @@ namespace NSDoctRenderer
 			CApplicationFontsWorker oWorker;
 			oWorker.m_bIsUseSystemFonts = m_oParams.m_bIsSystemFonts;
 			oWorker.m_arAdditionalFolders = m_oParams.m_arFontDirs;
+			oWorker.m_arAdditionalFolders.push_back(NSFile::GetProcessDirectory() + L"/fonts");
 			oWorker.m_bIsNeedThumbnails = false;
 			oWorker.m_sDirectory = sDirectory;
 			// это не рабочая папка, где только шрифты
@@ -927,7 +928,7 @@ namespace NSDoctRenderer
 
 			COfficeFileFormatChecker oChecker;
 			if (!oChecker.isOfficeFile(sFileCopy))
-				return false;
+				return 1;
 
 			if (oChecker.nFileType & AVS_OFFICESTUDIO_FILE_DOCUMENT)
 				m_nFileType = 0;

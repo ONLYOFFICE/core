@@ -1853,6 +1853,16 @@ std::vector<std::wstring> CApplicationFonts::GetSetupFontFiles(const bool& bIsUs
 #if defined(_MAC) && !defined(_IOS)
 	std::vector<std::wstring> _array = NSDirectory::GetFiles(L"/Library/Fonts", true);
 	NSDirectory::GetFiles2(L"/System/Library/Fonts", _array, true);
+
+	std::set<std::wstring> installedList = GetInstalledFontsMac();
+	for (const auto& sysPath : installedList) {
+		if (0 == sysPath.find(L"/System/Library/Fonts/"))
+			continue;
+		if (0 == sysPath.find(L"/Library/Fonts/"))
+			continue;
+		_array.push_back(sysPath);
+	}
+
 	return _array;
 #endif
 
@@ -1958,6 +1968,10 @@ namespace NSFonts
 		if (FT_Open_Face(m_internal->m_library, &oOpenArgs, nFaceIndex, &pFace))
 			return;
 
+		bool bIsASC = false;
+		if (pFace->family_name && (0 == strcmp(pFace->family_name, "ASCW3")))
+			bIsASC = true;
+
 		for (int nCharMap = 0; nCharMap < pFace->num_charmaps; nCharMap++)
 		{
 			FT_Set_Charmap(pFace, pFace->charmaps[nCharMap]);
@@ -1967,7 +1981,8 @@ namespace NSFonts
 
 			while (indexG)
 			{
-				pChecker->Check((int)character, indexG);
+				if (!bIsASC || (character < 35 || character > 255))
+					pChecker->Check((int)character, indexG);
 				character = FT_Get_Next_Char(pFace, character, &indexG);
 			}
 		}

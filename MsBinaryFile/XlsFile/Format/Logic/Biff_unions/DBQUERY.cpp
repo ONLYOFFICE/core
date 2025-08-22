@@ -195,6 +195,58 @@ const bool DBQUERY::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool DBQUERY::saveContent(BinProcessor& proc)
+{
+    if(m_DbQry == nullptr)
+        return false;
+    auto cstSQLSav = 0;
+    {
+        auto castedPtr = static_cast<DbOrParamQry*>(m_DbQry.get());
+        castedPtr->typeRecord = 2;
+        cstSQLSav = castedPtr->query.cstSQLSav;
+    }
+    proc.mandatory(*m_DbQry);
+    for(auto i = 0; i < m_arSXString.size(); i++)
+    {
+        if(i== m_arSXString.size() -1 - cstSQLSav)
+            break;
+        SXString str;
+        str.segment = m_arSXString.at(i);
+        str.cch = m_arSXString.at(i).size();
+        proc.mandatory(str);
+    }
+    if(m_DbParam != nullptr)
+    {
+        {
+            auto castedPtr = static_cast<DbOrParamQry*>(m_DbParam.get());
+            castedPtr->typeRecord = 1;
+        }
+        proc.mandatory(*m_DbParam);
+        for(auto i : m_arParams)
+        {
+             SXString str;
+            str.segment = i.string;
+            str.cch = i.string.size();
+            proc.mandatory(str);
+
+            auto castedPtr = static_cast<DbOrParamQry*>(i.param.get());
+            castedPtr->typeRecord = 1;
+            proc.mandatory(*i.param);
+        }
+
+    }
+    for(auto i = (m_arSXString.size() -1 - cstSQLSav); i < m_arSXString.size(); i++)
+    {
+        if(i < 0)
+            break;
+        SXString str;
+        str.segment = m_arSXString.at(i);
+        str.cch = m_arSXString.at(i).size();
+        proc.mandatory(str);
+    }
+    return true;
+}
+
 int DBQUERY::serialize(std::wostream & strm)
 {
 	std::wstring name;

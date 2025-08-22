@@ -52,14 +52,15 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeBRAI;
 
 //-----------------------------
-	unsigned char	id;
-	unsigned char	rt;
-	bool			fUnlinkedIfmt;
-	unsigned short	ifmt;
+	unsigned char	id = 0;
+	unsigned char	rt = 0;
+	bool			fUnlinkedIfmt = 0;
+	unsigned short	ifmt = 0;
 	
 	ChartParsedFormula	formula; //набор диапазонов и ячеек
 };

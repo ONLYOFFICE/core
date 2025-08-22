@@ -52,33 +52,33 @@ public:
 
 	static const ElementType type = typeQsi;
 
-	bool			fTitles;
-	bool			fRowNums;
-	bool			fDisableRefresh;
-	bool			fAsync;
-	bool			fNewAsync;
-	bool			fAutoRefresh;
-	bool			fShrink;
-	bool			fFill;
-	bool			fAutoFormat;
-	bool			fSaveData;
-	bool			fDisableEdit;
-	bool			fOverwrite;
-	unsigned short	itblAutoFmt;		//AutoFmt8
-	bool			fibitAtrNum;
-	bool			fibitAtrFnt;
-	bool			fibitAtrAlc;
-	bool			fibitAtrBdr;
-	bool			fibitAtrPat;
-	bool			fibitAtrProt;
+	bool			fTitles = false;
+	bool			fRowNums = false;
+	bool			fDisableRefresh = false;
+	bool			fAsync = false;
+	bool			fNewAsync = false;
+	bool			fAutoRefresh = false;
+	bool			fShrink = false;
+	bool			fFill = false;
+	bool			fAutoFormat = false;
+	bool			fSaveData = false;
+	bool			fDisableEdit = false;
+	bool			fOverwrite = false;
+	unsigned short	itblAutoFmt = 0;		//AutoFmt8
+	bool			fibitAtrNum = false;
+	bool			fibitAtrFnt = false;
+	bool			fibitAtrAlc = false;
+	bool			fibitAtrBdr = false;
+	bool			fibitAtrPat = false;
+	bool			fibitAtrProt = false;
 
     //biff12
-    _UINT32         dwConnID;
-    bool            fDummyList;
-    bool            fAutoFit;
-    bool            fPreserveFmt;
+	_UINT32         dwConnID = 0;
+	bool            fDummyList = false;
+	bool            fAutoFit = false;
+	bool            fPreserveFmt = false;
 
-    std::wstring	name;
+	std::wstring	name = L"";
 };
 
 } // namespace XLS

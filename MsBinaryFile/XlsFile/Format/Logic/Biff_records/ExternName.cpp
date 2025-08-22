@@ -107,5 +107,19 @@ void ExternName::readFields(CFRecord& record)
 	}
 }
 
+void ExternName::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fBuiltIn)
+    SETBIT(flags, 1, fWantAdvise)
+    SETBIT(flags, 2, fWantPict)
+    SETBIT(flags, 3, fOle)
+    SETBIT(flags, 4, fOleLink)
+    SETBITS(flags, 5, 14, cf)
+    SETBIT(flags, 15, fIcon)
+    record << flags;
+    record << body;
+}
+
 } // namespace XLS
 

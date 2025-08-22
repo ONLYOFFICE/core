@@ -104,5 +104,60 @@ void UserSViewBegin::readFields(CFRecord& record)
     pane_top_left_cell = CellRef(fSplitH ? (int)rwBPane : 0 , fSplitV ? (int)colRPane : 0, true, true).toString();
 }
 
+void UserSViewBegin::writeFields(CFRecord& record)
+{
+    _GUID_ guid_num;
+    STR::bstr2guid(guid, guid_num);
+    record << guid_num << iTabid;
+    record.reserveNunBytes(2);
+    record << wScale << icvHdr;
+    record.reserveNunBytes(2);
+    record << pnnSel;
+    record.reserveNunBytes(3);
+    unsigned short flags = 0;
+
+    SETBIT(flags, 0, fShowBrks)
+    SETBIT(flags, 1, fDspFmlaSv)
+    SETBIT(flags, 2, fDspGridSv)
+    SETBIT(flags, 3, fDspRwColSv)
+    SETBIT(flags, 4, fDspGutsSv)
+    SETBIT(flags, 5, fDspZerosSv)
+    SETBIT(flags, 6, fHorizontal)
+    SETBIT(flags, 7, fVertical)
+    SETBIT(flags, 8, fPrintRwCol)
+    SETBIT(flags, 9, fPrintGrid)
+    SETBIT(flags, 10, fFitToPage)
+    SETBIT(flags, 11, fPrintArea)
+    SETBIT(flags, 12, fOnePrintArea)
+    SETBIT(flags, 13, fFilterMode)
+    SETBIT(flags, 14, fEzFilter)
+    SETBIT(flags, 15, fFrozen)
+    record << flags;
+
+    Ref8U top_left;
+    top_left.fromString(ref8TopLeft);
+    record << top_left;
+    flags = 0;
+    SETBIT(flags, 0, fFrozenNoSplit)
+    SETBIT(flags, 1, fSplitV)
+    SETBIT(flags, 2, fSplitH)
+    SETBIT(flags, 3, fHiddenRw)
+    SETBIT(flags, 5, fHiddenCol)
+    SETBIT(flags, 9, fFilterUnique)
+    SETBIT(flags, 10, fSheetLayoutView)
+    SETBIT(flags, 11, fPageLayoutView)
+    SETBIT(flags, 13, fRuler)
+    record << flags;
+    if(!pane_top_left_cell.empty())
+    {
+        CellRef paneRef;
+        paneRef.fromString(pane_top_left_cell);
+        colRPane = paneRef.column;
+        rwBPane = paneRef.row;
+    }
+    record << operNumX << operNumY << colRPane << rwBPane;
+
+}
+
 } // namespace XLS
 

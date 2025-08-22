@@ -137,6 +137,14 @@ const bool PIVOTVIEW::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool PIVOTVIEW::saveContent(BinProcessor& proc)
+{
+    if(m_PIVOTCORE == nullptr)
+        return false;
+    proc.mandatory(*m_PIVOTCORE);
+    return true;
+}
+
 int PIVOTVIEW::serialize(std::wostream & strm)
 {
 	PIVOTCORE* core = dynamic_cast<PIVOTCORE*>(m_PIVOTCORE.get());

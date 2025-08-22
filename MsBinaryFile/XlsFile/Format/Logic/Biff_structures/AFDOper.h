@@ -52,11 +52,12 @@ public:
 	~AFDOper();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType	type = typeAFDOper;
 
-	unsigned char	vt;
-	unsigned char	grbitSign;
+    unsigned char	vt = 0;
+    unsigned char	grbitSign = 0;
 	
 	AFDOperStr		vtValueStr;
 	AFDOperBoolErr	vtValueBool;

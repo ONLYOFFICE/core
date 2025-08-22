@@ -1,6 +1,4 @@
 #include "CtrlField.h"
-#include <iostream>
-#include <ostream>
 
 namespace HWP
 {
@@ -33,37 +31,50 @@ void CCtrlField::UpdateType(const HWP_STRING& sCtrlID)
 		m_eType = EFieldType::BookmarkClosing;
 }
 
-CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion)
+CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
 	: CCtrl(sCtrlID), m_eType(EFieldType::Unknown)
 {
-	if (L"hp:fieldBegin" == oNode.GetName())
+	const std::string sNodeName{oReader.GetName()};
+	HWP_STRING wsName;
+
+	if ("hp:fieldBegin" == sNodeName)
 	{
-		HWP_STRING sType = oNode.GetAttribute(L"type");
-
-		if (L"HYPERLINK" == sType)
-			m_eType = EFieldType::Hyperlink;
-		else if (L"BOOKMARK" == sType)
-			m_eType = EFieldType::Bookmark;
-
-		m_nInstanceID = oNode.GetAttributeInt(L"fieldid");
-
-		HWP_STRING sName = oNode.GetAttribute(L"name");
-
-		if (!sName.empty() && EFieldType::Bookmark == m_eType)
-			AddStringParam(L"bookmarkname", sName);
-
-		for (CXMLNode& oChild : oNode.GetChild(L"hp:parameters").GetChilds())
+		START_READ_ATTRIBUTES(oReader)
 		{
-			if (L"hp:stringParam" == oChild.GetName())
-				AddStringParam(oChild.GetAttribute(L"name"), oChild.GetText());
-			else if (L"hp:integerParam" == oChild.GetName())
-				AddIntegerParam(oChild.GetAttribute(L"name"), std::stoi(oChild.GetText()));
+			if ("type" == sAttributeName)
+			{
+				const std::string sType{oReader.GetTextA()};
+
+				if ("HYPERLINK" == sType)
+					m_eType = EFieldType::Hyperlink;
+				else if ("BOOKMARK" == sType)
+					m_eType = EFieldType::Bookmark;
+			}
+			else if ("fieldid" == sAttributeName)
+				m_nInstanceID = oReader.GetInt();
+			else if ("name" == sAttributeName)
+				wsName = oReader.GetText();
 		}
+		END_READ_ATTRIBUTES(oReader)
+
+		if (!wsName.empty() && EFieldType::Bookmark == m_eType)
+			AddStringParam(L"bookmarkname", wsName);
+
+		WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:parameters")
+		{
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+			{
+				if ("hp:stringParam" == sNodeChildName)
+					AddStringParam(oReader.GetAttribute("name"), oReader.GetText());
+				else if ("hp:integerParam" == sNodeChildName)
+					AddIntegerParam(oReader.GetAttribute("name"), oReader.GetInt());
+			}
+			END_WHILE
+		}
+		END_WHILE
 	}
-	else if (L"hp:fieldEnd" == oNode.GetName())
-	{
-		m_nInstanceID = oNode.GetAttributeInt(L"fieldid");
-	}
+	else if ("hp:fieldEnd" == sNodeName)
+		m_nInstanceID = oReader.GetAttributeInt("fieldid");
 }
 
 ECtrlObjectType CCtrlField::GetCtrlType() const

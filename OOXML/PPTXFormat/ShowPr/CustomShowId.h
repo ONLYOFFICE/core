@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,3 +29,30 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#pragma once
+
+#include "./../WrapperWritingElement.h"
+
+namespace PPTX
+{
+	namespace nsPresentation
+	{
+		class CustomShowId : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CustomShowId)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			nullable_int id;
+
+		protected:
+			virtual void FillParentPointersForChilds();
+		};
+	} // namespace nsPresentation
+} // namespace PPTX

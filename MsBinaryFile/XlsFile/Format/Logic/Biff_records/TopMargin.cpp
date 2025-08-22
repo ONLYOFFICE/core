@@ -37,6 +37,7 @@ namespace XLS
 
 TopMargin::TopMargin()
 {
+	num.data.value = 0.75;
 }
 
 
@@ -53,6 +54,11 @@ BaseObjectPtr TopMargin::clone()
 void TopMargin::readFields(CFRecord& record)
 {
 	record >> num;
+}
+
+void TopMargin::writeFields(CFRecord& record)
+{
+	record << num;
 }
 
 } // namespace XLS

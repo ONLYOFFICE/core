@@ -56,5 +56,10 @@ void SXTBRGIITM::readFields(CFRecord& record)
 	record >> cItems;
 }
 
+void SXTBRGIITM::writeFields(CFRecord& record)
+{
+    record << cItems;
+}
+
 } // namespace XLS
 

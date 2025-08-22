@@ -75,6 +75,29 @@ void EnhancedProtection::load(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void EnhancedProtection::save(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBIT(flags, 0, iprotObjects)
+	SETBIT(flags, 1, iprotScenarios)
+	SETBIT(flags, 2, iprotFormatCells)
+	SETBIT(flags, 3, iprotFormatColumns)
+	SETBIT(flags, 4, iprotFormatRows)
+	SETBIT(flags, 5, iprotInsertColumns)
+	SETBIT(flags, 6, iprotInsertRows)
+	SETBIT(flags, 7, iprotInsertHyperlinks)
+	SETBIT(flags, 8, iprotDeleteColumns)
+	SETBIT(flags, 9, iprotDeleteRows)
+	SETBIT(flags, 10, iprotSelLockedCells)
+	SETBIT(flags, 11, iprotSort)
+	SETBIT(flags, 12, iprotAutoFilter)
+	SETBIT(flags, 13, iprotPivotTables)
+	SETBIT(flags, 14, iprotSelUnlockedCells)
+
+	record << flags;
+	record.reserveNunBytes(2);
+}
 
 } // namespace XLS
 

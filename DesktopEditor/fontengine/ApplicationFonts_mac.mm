@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,64 +29,36 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+#include "ApplicationFonts.h"
+#include "../common/File.h"
+#import <Foundation/Foundation.h>
+#import <CoreText/CoreText.h>
 
-#include "CustShow.h"
-
-namespace PPTX
+std::set<std::wstring> CApplicationFonts::GetInstalledFontsMac()
 {
-	namespace nsPresentationPr
+	std::set<std::wstring> paths;
+
+	CFArrayRef fontURLs = CTFontManagerCopyAvailableFontURLs();
+	if (!fontURLs)
+		return paths;
+
+	NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding (kCFStringEncodingUTF32LE);
+
+	CFIndex count = CFArrayGetCount(fontURLs);
+	for (CFIndex i = 0; i < count; ++i)
 	{
-		void CustShow::fromXML(XmlUtils::CXmlNode& node)
-		{
-			XmlMacroReadAttributeBase(node, _T("id"), id);
-		}
-		std::wstring CustShow::toXML() const
-		{
-			XmlUtils::CAttribute oAttr;
-			oAttr.Write(_T("id"), id);
+		CFURLRef url = (CFURLRef)CFArrayGetValueAtIndex(fontURLs, i);
+		if (!url)
+			continue;
 
-			return XmlUtils::CreateNode(_T("p:custShow"), oAttr);
-		}
-		void CustShow::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
-		{
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-			pWriter->WriteInt2(0, id);
-			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-		}
-		void CustShow::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-		{
-			pWriter->StartNode(_T("p:custShow"));
+		NSString* nsPath = [(__bridge NSURL *)url path];
+		if (!nsPath)
+			continue;
 
-			pWriter->StartAttributes();
+		NSData* pSData = [nsPath dataUsingEncoding: encode];
+		paths.emplace(std::wstring((wchar_t*)[pSData bytes], [pSData length] / sizeof (wchar_t)));
+	}
 
-			pWriter->WriteAttribute(_T("id"), id);
-
-			pWriter->EndAttributes();
-
-			pWriter->EndNode(_T("p:custShow"));
-		}
-		void CustShow::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
-		{
-			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
-
-			pReader->Skip(1); // start attributes
-
-			while (true)
-			{
-				BYTE _at = pReader->GetUChar_TypeNode();
-				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-					break;
-
-				if (0 == _at)
-					id = pReader->GetLong();
-				else
-					break;
-			}
-
-			pReader->Seek(_end_rec);
-		}
-		void CustShow::FillParentPointersForChilds()
-		{
-		}
-	} // namespace nsPresentationPr
-} // namespace PPTX
+	CFRelease(fontURLs);
+	return paths;
+}

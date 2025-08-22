@@ -61,7 +61,7 @@ namespace PPTX
 			nullable<RunProperties> rPr;
 
 		private:
-			nullable_string			text;
+			nullable_string text;
 
 		protected:
 			virtual void FillParentPointersForChilds();

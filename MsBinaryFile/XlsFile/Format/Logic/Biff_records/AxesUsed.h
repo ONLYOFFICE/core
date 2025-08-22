@@ -50,11 +50,12 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeAxesUsed;
 
 //-----------------------------
-	_UINT16 cAxes;
+    _UINT16 cAxes = 1;
 
 };
 

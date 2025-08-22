@@ -50,12 +50,13 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeProt4RevPass;
 
 //-----------------------------
-	unsigned short	protPwdRev_num;
-	std::wstring	protPwdRev;
+    unsigned short	protPwdRev_num = 0;
+    std::wstring	protPwdRev = L"";
 
 };
 

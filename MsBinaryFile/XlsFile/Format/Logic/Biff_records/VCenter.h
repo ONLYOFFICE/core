@@ -47,11 +47,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeVCenter;
 
 //-----------------------------
-	Boolean<unsigned short> vcenter;
+    Boolean<unsigned short> vcenter = 0;
 
 };
 

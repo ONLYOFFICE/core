@@ -56,6 +56,11 @@ void BoolErr::readFields(CFRecord& record)
 	record >> cell >> bes;
 }
 
+void BoolErr::writeFields(CFRecord& record)
+{
+    record << cell << bes;
+}
+
 const CellRef BoolErr::getLocation() const
 {
 	return cell.getLocation();
@@ -71,7 +76,10 @@ int BoolErr::serialize(std::wostream & stream)
 		CP_XML_NODE(L"c")
 		{
 			CP_XML_ATTR(L"r", ref);
-			CP_XML_ATTR(L"t", L"b");
+			if (bes.fError)
+				CP_XML_ATTR(L"t", L"e");
+			else
+				CP_XML_ATTR(L"t", L"b");
 
 			if (cell.ixfe - global_info_->cellStyleXfs_count > 0)
 			{

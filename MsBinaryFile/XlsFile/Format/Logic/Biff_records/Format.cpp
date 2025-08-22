@@ -87,6 +87,14 @@ void Format::readFields(CFRecord& record)
 		stFormat = XmlUtils::EncodeXmlString(format.value(), true);
 	}
 }
+
+void Format::writeFields(CFRecord& record)
+{
+    XLUnicodeString format;
+    format = stFormat;
+    record << ifmt << format;
+}
+
 int Format::serialize(std::wostream & stream)
 {
 	if (ifmt < 5 || (ifmt > 8 && ifmt < 23) || (ifmt > 36 && ifmt < 41) || (ifmt > 44 && ifmt < 50)) return 0;

@@ -49,27 +49,28 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeDBQueryExt;
 
 	FrtHeaderOld		frtHeaderOld;
-	unsigned short		dbt;			//enum DataSourceType
-	bool				fMaintain;
-	bool				fNewQuery;
-	bool				fImportXmlSource;
-	bool				fSPListSrc;
-	bool				fSPListReinitCache;
-	bool				fSrcIsXml;
+	unsigned short		dbt = 0;			//enum DataSourceType
+	bool				fMaintain = false;
+	bool				fNewQuery = false;
+	bool				fImportXmlSource = false;
+	bool				fSPListSrc = false;
+	bool				fSPListReinitCache = false;
+	bool				fSrcIsXml = false;
 	BiffStructurePtr	grbitDbt;
-	bool				fTxtWiz;
+	bool				fTxtWiz = false;
 	bool				fTableNames;
-	unsigned char		bVerDbqueryEdit;	//DataFunctionalityLevel	
-	unsigned char		bVerDbqueryRefreshed;
-	unsigned char		bVerDbqueryRefreshableMin;
-	unsigned short		coledb;
-	unsigned short		cstFuture;
-	unsigned short		wRefreshInterval;
-	unsigned short		wHtmlFmt;
+	unsigned char		bVerDbqueryEdit = 0;	//DataFunctionalityLevel
+	unsigned char		bVerDbqueryRefreshed = 0;
+	unsigned char		bVerDbqueryRefreshableMin = 0;
+	unsigned short		coledb = 0;
+	unsigned short		cstFuture = 0;
+	unsigned short		wRefreshInterval = 0;
+	unsigned short		wHtmlFmt = 0;
 	unsigned short		cwParamFlags;
 	std::vector<PBT>	rgPbt;
 	std::string			rgbFutureBytes;

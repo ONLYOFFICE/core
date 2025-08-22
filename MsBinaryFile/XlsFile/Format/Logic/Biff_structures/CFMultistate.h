@@ -46,11 +46,12 @@ public:
 	static const ElementType type = typeCFMultistate;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	virtual int serialize(std::wostream & _stream);
 
-	unsigned char cStates;
-	unsigned char iIconSet;
+    unsigned char cStates = 0;
+    unsigned char iIconSet = 0;
 
 	bool fIconOnly;
 	bool fReverse;

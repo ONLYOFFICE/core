@@ -48,11 +48,12 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXViewLink;
 
-	unsigned short			rt;
-	unsigned char			cch;
+    unsigned short			rt = 0x0858;
+    unsigned char			cch = 0;
 	XLUnicodeStringNoCch	stPivotTable;
 
 };

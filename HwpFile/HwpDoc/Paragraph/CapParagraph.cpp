@@ -6,8 +6,8 @@ CCapParagraph::CCapParagraph()
 	: CHWPPargraph()
 {}
 
-CCapParagraph::CCapParagraph(CXMLNode& oNode, int nVersion)
-	: CHWPPargraph(oNode, nVersion)
+CCapParagraph::CCapParagraph(CXMLReader& oReader, int nVersion)
+    : CHWPPargraph(oReader, nVersion)
 {}
 
 EParagraphType CCapParagraph::GetType() const

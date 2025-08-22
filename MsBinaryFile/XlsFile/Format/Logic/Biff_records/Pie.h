@@ -50,16 +50,17 @@ public:
 
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typePie;
 
 	int	serialize(std::wostream & _stream);
 
 //-----------------------------
-	_UINT16 anStart;
-	_UINT16 pcDonut;
-	bool fHasShadow;
-	bool fShowLdrLines;
+    _UINT16 anStart = 0;
+    _UINT16 pcDonut = 0;
+    bool fHasShadow = false;
+    bool fShowLdrLines = false;
 };
 
 } // namespace XLS

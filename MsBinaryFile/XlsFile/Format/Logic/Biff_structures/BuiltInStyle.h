@@ -47,10 +47,11 @@ public:
 	static const ElementType	type = typeBuiltInStyle;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
-	unsigned char istyBuiltIn;
-	unsigned char iLevel;
+    unsigned char istyBuiltIn = 0;
+    unsigned char iLevel = 0xFF;
 };
 //#pragma pack() // restore
 

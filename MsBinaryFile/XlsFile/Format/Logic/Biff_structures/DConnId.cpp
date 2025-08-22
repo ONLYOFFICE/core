@@ -58,6 +58,16 @@ void DConnId::load(CFRecord& record)
 	}
 }
 
+void DConnId::save(CFRecord& record)
+{
+	record 	<< bType;
+	switch(bType)
+	{
+		case 1:	record << string;				break;
+		case 2:	sxStreamID.writeFields(record);	break;
+		default: break;
+	}
+}
 
 } // namespace XLS
 

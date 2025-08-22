@@ -49,6 +49,7 @@ public:
 	static const ElementType	type = typeDXFNum;
 	
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 

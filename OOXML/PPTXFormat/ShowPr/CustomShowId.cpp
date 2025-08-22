@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,33 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "./../WrapperWritingElement.h"
-#include "./../Limit/Orient.h"
+#include "CustomShowId.h"
 
 namespace PPTX
 {
-	namespace nsViewProps
+	namespace nsPresentation
 	{
-		class Sld : public WrapperWritingElement
+		void CustomShowId::fromXML(XmlUtils::CXmlNode& node)
 		{
-		public:
-			PPTX_LOGIC_BASE(Sld)
+			XmlMacroReadAttributeBase(node, L"id", id);
+		}
+		std::wstring CustomShowId::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"id", id);
 
-			virtual void fromXML(XmlUtils::CXmlNode& node);
-			virtual std::wstring toXML() const;
+			return XmlUtils::CreateNode(L"p:custShow", oAttr);
+		}
+		void CustomShowId::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt2(0, id);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void CustomShowId::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"p:custShow");
 
-			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
-			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			pWriter->StartAttributes();
 
-			nullable_string		id;
-			nullable_bool		collapse;
+			pWriter->WriteAttribute(L"id", id);
 
-		protected:
-			virtual void FillParentPointersForChilds();
-		};
-	} // namespace nsViewProps
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(L"p:custShow");
+		}
+		void CustomShowId::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				if (0 == _at)
+					id = pReader->GetLong();
+				else
+					break;
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void CustomShowId::FillParentPointersForChilds()
+		{
+		}
+	} // namespace nsPresentation
 } // namespace PPTX
-

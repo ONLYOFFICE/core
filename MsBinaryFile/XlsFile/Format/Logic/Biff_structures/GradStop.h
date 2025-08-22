@@ -46,13 +46,14 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 	static const ElementType type = typeGradStop;
 
-	_UINT16		xclrType;
-	_UINT32		xclrValue;
+    _UINT16		xclrType = 0;
+    _UINT32		xclrValue = 0;
 	
-	Xnum		numPosition;
+    Xnum		numPosition;
 	Xnum		numTint;
 };
 

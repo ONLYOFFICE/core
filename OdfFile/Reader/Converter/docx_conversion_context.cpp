@@ -165,6 +165,17 @@ docx_conversion_context::docx_conversion_context(odf_reader::odf_document * _odf
 docx_conversion_context::~docx_conversion_context()
 {
 }
+
+void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt. Bug with break columns
+{
+    flag_implicit_end = _flag;
+}
+
+bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt. Bug with break columns
+{
+    return flag_implicit_end;
+}
+
 void docx_conversion_context::set_output_document(package::docx_document * document)
 {
 	output_document_ = document;
@@ -282,6 +293,7 @@ void docx_conversion_context::finish_paragraph()
 				get_comments_context().ref_end_.clear();	
 		}	
 		output_stream() << L"</w:p>";
+
 		end_changes(false);
 	}
 	
@@ -1599,7 +1611,7 @@ void docx_conversion_context::process_section(std::wostream & strm, odf_reader::
 }
 bool docx_conversion_context::process_page_properties(std::wostream & strm)
 {
-    if (is_next_dump_page_properties() || get_section_context().get_last().is_dump_)
+    if ( is_next_dump_page_properties() || get_section_context().get_last().is_dump_ )
     {
         std::wstring pageProperties = get_page_properties();
 		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
@@ -1617,7 +1629,7 @@ bool docx_conversion_context::process_page_properties(std::wostream & strm)
 					process_section( CP_XML_STREAM(), NULL);
 
 					CP_XML_NODE(L"w:type")
-					{				
+                    {
 						CP_XML_ATTR(L"w:val", L"continuous");
 					}
 				}
@@ -1877,7 +1889,9 @@ static _CP_PTR(odf_reader::text_list_style) create_restarted_list_style(docx_con
 	odf_reader::list_style_container& lists = context.root()->odf_context().listStyleContainer();
 
 	odf_reader::text_list_style* curStyle = lists.list_style_by_name(curStyleName);
-	_CP_PTR(odf_reader::text_list_style) newStyle = boost::make_shared<odf_reader::text_list_style>(*curStyle);
+
+	_CP_PTR(odf_reader::text_list_style) newStyle = curStyle ?	boost::make_shared<odf_reader::text_list_style>(*curStyle) : 
+																boost::make_shared<odf_reader::text_list_style>();
 
 	newStyle->attr_.style_name_ = newStyleName;
 

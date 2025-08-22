@@ -37,6 +37,7 @@ namespace XLS
 
 Footer::Footer()
 {
+    ast = L"";
 }
 
 
@@ -66,6 +67,12 @@ void Footer::readFields(CFRecord& record)
 			record >> ast;
 		}
 	}
+}
+
+void Footer::writeFields(CFRecord& record)
+{
+    if(ast.getSize())
+        record << ast;
 }
 
 } // namespace XLS

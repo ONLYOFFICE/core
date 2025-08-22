@@ -89,6 +89,55 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 	}
 }
 
+void HyperlinkObject::save(XLS::CFRecord& record)
+{
+    record << streamVersion;
+    {
+        _UINT32 flags = 0;
+        SETBIT(flags, 0, hlstmfHasMoniker);
+        SETBIT(flags, 1, hlstmfIsAbsolute);
+        SETBIT(flags, 2, hlstmfIsAbsolute);
+        SETBIT(flags, 3, hlstmfHasLocationStr);
+        SETBIT(flags, 4, hlstmfHasDisplayName);
+        SETBIT(flags, 5, hlstmfHasGUID);
+        SETBIT(flags, 6, hlstmfHasCreationTime);
+        SETBIT(flags, 7, hlstmfHasFrameName);
+        SETBIT(flags, 8, hlstmfMonikerSavedAsStr);
+        SETBIT(flags, 9, hlstmfAbsFromGetdataRel);
+        record << flags;
+    }
+    if(hlstmfHasDisplayName)
+    {
+       saveHyperlinkString(record,  displayName);
+    }
+    if(hlstmfHasFrameName)
+    {
+        saveHyperlinkString(record, targetFrameName);
+    }
+    if(hlstmfHasMoniker && hlstmfMonikerSavedAsStr)
+    {
+        saveHyperlinkString(record, moniker);
+    }
+    if(hlstmfHasMoniker && !hlstmfMonikerSavedAsStr)
+    {
+        record << oleMoniker;
+    }
+    if(hlstmfHasLocationStr)
+    {
+        saveHyperlinkString(record, location);
+    }
+    if(hlstmfHasGUID)
+    {
+        _GUID_ guid_num;
+        STR::bstr2guid(guid, guid_num);
+        record << guid_num;
+    }
+    if(hlstmfHasCreationTime)
+    {
+        record.storeAnyData(fileTime);
+    }
+}
+
 std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 {
 	std::wstring result;
@@ -111,6 +160,16 @@ std::wstring HyperlinkObject::loadHyperlinkString(XLS::CFRecord& record)
 
 	return result;
 }
+void HyperlinkObject::saveHyperlinkString(XLS::CFRecord& record, std::wstring hlinkString)
+{
+    _INT32 size = hlinkString.size();
+    record << size;
+    for(auto i : hlinkString)
+    {
+        record << i;
+    }
+}
+
 std::wstring HyperlinkObject::loadHyperlinkString(IBinaryReader* reader)
 {
 	std::wstring result;
@@ -187,7 +246,6 @@ void HyperlinkObject::load(IBinaryReader* reader)
 		fileTime.dwHighDateTime = reader->ReadUInt32();
 	}
 }
-
 
 } // namespace OSHARED
 

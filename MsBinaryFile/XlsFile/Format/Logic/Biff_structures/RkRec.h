@@ -46,6 +46,7 @@ public:
 	BiffStructurePtr clone();
 
 	virtual void load(CFRecord& record);
+    virtual void save(CFRecord& record);
 
 
 	static const ElementType	type = typeRkRec;
@@ -53,7 +54,7 @@ public:
 	const unsigned short get_ixfe() const;
 
 	GlobalWorkbookInfoPtr	global_info_;
-	unsigned short			ixfe;
+	unsigned short			ixfe = 0;
 	RkNumber				RK_;
 };
 

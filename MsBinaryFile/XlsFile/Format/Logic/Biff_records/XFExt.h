@@ -49,12 +49,13 @@ public:
 	BaseObjectPtr clone();
 
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeXFExt;
 
 //-----------------------------
-	_UINT16					ixfe;
-	_UINT16					cexts;
+    _UINT16					ixfe = 0;
+    _UINT16					cexts = 0;
 	BiffStructurePtrVector	rgExt;
 	FrtHeader				frtHeader;
 };

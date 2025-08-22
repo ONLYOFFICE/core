@@ -39,7 +39,7 @@ int main(int argc, char** argv)
 	std::wstring wsep = FILE_SEPARATOR_STR;
 
 	std::wstring filename_in  = curr_dir + wsep + L"123.docx";
-	std::wstring filename_out = curr_dir + wsep + L"123.pdf";
+	std::wstring filename_out = curr_dir + wsep + L"123.odt";
 	std::wstring fonts_dir    = curr_dir + wsep + L"fonts";
 	std::wstring xml          = curr_dir + wsep + L"params.xml";
 

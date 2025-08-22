@@ -191,6 +191,7 @@ namespace PdfWriter
 		void SetNM(const std::wstring& wsNM);
 		void SetLM(const std::wstring& wsLM);
 		void SetOUserID(const std::wstring& wsOUserID);
+		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetC(const std::vector<double>& arrC);
 
 		void APFromFakePage();
@@ -459,11 +460,11 @@ namespace PdfWriter
 		virtual void SetFlag (const int& nFlag);
 		void SetParent(CDictObject* pParent);
 		void SetParentID(int nParentID);
+		void SetMEOptions(const int& nMEOptions);
 		void SetTU(const std::wstring& wsTU);
 		void SetDS(const std::wstring& wsDS);
 		void SetDV(const std::wstring& wsDV);
 		void SetT (const std::wstring& wsT);
-		void SetOMetadata(const std::wstring& wsOMetadata);
 		void SetBC(const std::vector<double>& arrBC);
 		void SetBG(const std::vector<double>& arrBG);
 		void AddAction(CAction* pAction);
@@ -521,7 +522,7 @@ namespace PdfWriter
 		void SetRC(const std::wstring& wsRC);
 		void SetAC(const std::wstring& wsAC);
 
-		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts);
+		void SetAP(CXObject* pForm, BYTE nAP, unsigned short* pCodes, unsigned int unCount, double dX, double dY, double dLineW, double dLineH, CFontCidTrueType** ppFonts, bool bNoAP = false);
 		const std::wstring& GetCA() { return m_wsCA; }
 		const std::wstring& GetRC() { return m_wsRC; }
 		const std::wstring& GetAC() { return m_wsAC; }

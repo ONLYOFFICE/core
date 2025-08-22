@@ -60,5 +60,14 @@ void CatSerRange::readFields(CFRecord& record)
 	fReversed = GETBIT(flags, 2);
 }
 
+void CatSerRange::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fBetween)
+	SETBIT(flags, 1, fMaxCross)
+	SETBIT(flags, 2, fReversed)
+	record << catCross << catLabel << catMark << flags;
+}
+
 } // namespace XLS
 

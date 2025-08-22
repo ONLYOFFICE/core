@@ -55,5 +55,10 @@ void SerToCrt::readFields(CFRecord& record)
 	record >> id;
 }
 
+void SerToCrt::writeFields(CFRecord& record)
+{
+	record << id;
+}
+
 } // namespace XLS
 

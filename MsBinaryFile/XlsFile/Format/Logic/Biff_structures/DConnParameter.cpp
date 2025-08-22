@@ -68,6 +68,17 @@ void DConnParameter::load(CFRecord& record)
 	}
 }
 
+void DConnParameter::save(CFRecord& record)
+{
+	unsigned short flags1 = 0, flags2 = 0;
+	SETBITS(flags1, 0, 2, pbt)
+	SETBIT(flags2, 0, fDefaultName)
+	record 	<< rgchName << flags1 << wTypeSql << flags2;
+	if (paramBinding != nullptr)
+	{
+		record << *paramBinding;
+	}
+}
 
 } // namespace XLS
 

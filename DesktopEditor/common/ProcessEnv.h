@@ -46,6 +46,7 @@ namespace NSProcessEnv
 		static const char* gc_proxy               = "proxy";
 		static const char* gc_proxyUser           = "proxyUser";
 		static const char* gc_proxyHeader         = "proxyHeader";
+		static const char* gc_oformAsPdf          = "oformAsPdf";
 	}
 
 	// serialize

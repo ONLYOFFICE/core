@@ -56,5 +56,10 @@ void DSF::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
+void DSF::writeFields(CFRecord& record)
+{
+	record.reserveNunBytes(2);
+}
+
 } // namespace XLS
 

@@ -38,9 +38,8 @@ namespace XLS
 {
 
 Setup::Setup(bool isChart)
-: _isChart(isChart), iPaperSize(0), iScale(255), iRes(0), iVRes(0), iCopies(0), fNoOrient(false), fPortrait(false), iPageStart(1), iErrors(0)
 {
-	numHdr.data.value = numFtr.data.value = 0.5;
+	numHdr.data.value = numFtr.data.value = 0.7875;
 }
 Setup::~Setup()
 {}
@@ -135,7 +134,7 @@ void Setup::readFields(CFRecord& record)
 
 void Setup::writeFields(CFRecord& record)
 {
-	_UINT16 flags;
+    _UINT16 flags = 0;
 
 	if (record.getGlobalWorkbookInfo()->Version < 0x0800)
 	{

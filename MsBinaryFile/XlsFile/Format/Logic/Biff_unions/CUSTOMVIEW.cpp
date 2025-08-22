@@ -133,6 +133,24 @@ const bool CUSTOMVIEW::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool CUSTOMVIEW::saveContent(BinProcessor& proc)
+{
+    if(m_UserSView == nullptr)
+        return false;
+    proc.mandatory(*m_UserSView);
+    for(auto i : m_arSelection)
+        if(i != nullptr)
+            proc.mandatory(*i);
+    if(m_HorizontalPageBreaks != nullptr)
+        proc.mandatory(*m_HorizontalPageBreaks);
+    if(m_VerticalPageBreaks != nullptr)
+        proc.mandatory(*m_VerticalPageBreaks);
+    if(m_AUTOFILTER != nullptr)
+        proc.mandatory(*m_AUTOFILTER);
+    proc.mandatory<UserSViewEnd>();
+    return true;
+}
+
 int CUSTOMVIEW::serialize(std::wostream & stream)
 {
 	if (m_UserSView == NULL) return 0;

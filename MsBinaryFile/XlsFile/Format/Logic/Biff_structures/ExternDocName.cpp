@@ -51,6 +51,13 @@ void ExternDocName::load(CFRecord& record)
 	nameDefinition.load(record);
 }
 
+void ExternDocName::save(CFRecord& record)
+{
+    record << ixals;
+    record.reserveNunBytes(2);
+    record << extName;
+    nameDefinition.save(record);
+}
 
 } // namespace XLS
 

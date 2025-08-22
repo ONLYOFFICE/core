@@ -15,7 +15,7 @@ public:
 	CCtrlShapePolygon(const HWP_STRING& sCtrlID);
 	CCtrlShapePolygon(const CCtrlGeneralShape& oShape);
 	CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLNode& oNode, int nVersion);
+	CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
 
 	EShapeType GetShapeType() const override;
 

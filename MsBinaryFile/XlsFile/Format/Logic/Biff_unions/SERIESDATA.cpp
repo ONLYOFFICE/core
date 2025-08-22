@@ -141,5 +141,24 @@ const bool SERIESDATA::loadContent(BinProcessor& proc)
 	return result;
 }
 
+const bool SERIESDATA::saveContent(BinProcessor& proc)
+{
+    if(m_Dimensions == nullptr)
+        return false;
+    proc.mandatory(*m_Dimensions);
+    for(auto i : m_arSIIndex)
+    {   if(i != nullptr)
+        {
+            proc.mandatory(*i);
+            auto castedPtr = static_cast<SIIndex*>(i.get());
+            for(auto j : castedPtr->m_arData)
+                if(j != nullptr)
+                    proc.mandatory(*j);
+        }
+    }
+
+    return true;
+}
+
 } // namespace XLS
 

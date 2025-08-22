@@ -102,6 +102,7 @@ namespace DocFileFormat
 		bDocumentCodePage	= false;
 		nDocumentCodePage	= ENCODING_WINDOWS_1250;
 		nFontsCodePage		= ENCODING_WINDOWS_1250;
+		nDocumentCodePageInfo = 0;
 	}
 
 	WordDocument::~WordDocument()
@@ -147,7 +148,7 @@ namespace DocFileFormat
 //-------------------------------------------------------------------------------------------------------------------
 		FIB	 =	new FileInformationBlock(VirtualStreamReader(WordDocumentStream, 0, false ));
 
-		if (FIB->m_FibBase.nFib)
+		if (FIB->m_FibBase.nFib > 0)
 		{
             if (FIB->m_FibBase.nFib <= Fib1995)
 			{
@@ -171,6 +172,12 @@ namespace DocFileFormat
 				}
 			}
 		}
+
+		if (FIB->m_FibBase.nFibBack != 0x00BF && FIB->m_FibBase.nFibBack != 0x00C1)
+		{
+			bErrorFile = true;
+		}
+
 		bool res = false;
 
 		if (FIB->m_FibBase.fWhichTblStm)
@@ -256,7 +263,7 @@ namespace DocFileFormat
 			
 			if (document_code_page1 > 0)
 			{
-				nDocumentCodePage = document_code_page1;		
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page1;
 				bDocumentCodePage = true;
 			}
 		}
@@ -269,18 +276,25 @@ namespace DocFileFormat
 
 			if (document_code_page2 > 0)
 			{
-				nDocumentCodePage = document_code_page2;
+				nDocumentCodePageInfo = nDocumentCodePage = document_code_page2;
 				bDocumentCodePage = true;
 			}
 		}
-		if (nWordVersion == 0)
+		if (TableStream)
+		{
+			DocProperties = new WordDocumentProperties(FIB, TableStream);
+			if (DocProperties && DocProperties->cpgText > 0)
+			{
+				FIB->m_CodePageSaved = DocProperties->cpgText;
+			}
+		}
+		if (nWordVersion == 0 && !bErrorFile)
 		{
 			nDocumentCodePage = ENCODING_UTF16;
 			bDocumentCodePage = true;
 		}
-
+		
 		FIB->m_CodePage =  nDocumentCodePage;
-
 		if (!bDocumentCodePage && m_nUserLCID > 0)
 		{
 			int user_codepage = m_lcidConverter.get_codepage(m_nUserLCID);
@@ -440,7 +454,6 @@ namespace DocFileFormat
 // Read custom tables
 		if (TableStream)
 		{
-			DocProperties			=	new WordDocumentProperties	(FIB, TableStream);
 			Styles					=	new StyleSheet				(FIB, TableStream, DataStream);
 			listTable				=	new ListTable				(FIB, TableStream);
 			listFormatOverrideTable	=	new ListFormatOverrideTable	(FIB, TableStream);
@@ -480,8 +493,8 @@ namespace DocFileFormat
 		{
 			FIB->m_FibBase.fComplex = true;
 			// Parse the piece table and construct a list that contains all chars
-			m_PieceTable	= new PieceTable (FIB, TableStream, WordDocumentStream );
-			Text			= m_PieceTable->GetAllEncodingText (WordDocumentStream);
+			m_PieceTable = new PieceTable (FIB, TableStream, WordDocumentStream );
+			Text = m_PieceTable->GetAllEncodingText (WordDocumentStream);
 		}
 		
         if (FIB->m_FibWord97.lcbClx < 1 || ((Text) && (Text->empty())))
@@ -1033,7 +1046,7 @@ namespace DocFileFormat
 			return encodingChars;
 		}
 	}
-	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color, int base_color)
+	void WordDocument::CorrectColor(ODRAW::OfficeArtCOLORREF & color, int base_color, int type)
 	{
 		struct _color
 		{
@@ -1075,12 +1088,39 @@ namespace DocFileFormat
 			unsigned short nColorIndex = (unsigned short)(nColorCode & 0x00ff);
 			unsigned short nPropColor = 0;
 
-			_UINT32 systemColors[25] =
+			_UINT32 systemColors[35] =
 			{
-				0xc0c0c0, 0x008080, 0x000080, 0x808080, 0xc0c0c0, 0xffffff, 0x000000,
-				0x000000, 0x000000, 0xffffff, 0xc0c0c0, 0xc0c0c0, 0x808080, 0x000080,
-				0xffffff, 0xc0c0c0, 0x808080, 0x808080, 0x000000, 0xc0c0c0, 0xffffff,
-				0x000000, 0xc0c0c0, 0x000000, 0xffffc0
+				0xc0c0c0, //COLOR_SCROLLBAR
+				0x008080, //COLOR_BACKGROUND
+				0x000080, //COLOR_ACTIVECAPTION
+				0x808080, //COLOR_INACTIVECAPTION
+				0xc0c0c0, //COLOR_MENU
+				0xffffff, //COLOR_WINDOW
+				0x000000, //COLOR_WINDOWFRAME
+				0x000000, //COLOR_MENUTEXT 
+				0x000000, //COLOR_WINDOWTEXT
+				0xffffff, //COLOR_CAPTIONTEXT
+				0xc0c0c0, //COLOR_ACTIVEBORDER
+				0xc0c0c0, //COLOR_INACTIVEBORDER
+				0x808080, //COLOR_APPWORKSPACE
+				0x000080, //COLOR_HIGHLIGHT
+				0xffffff, //COLOR_HIGHLIGHTTEXT
+				0xc0c0c0, //COLOR_3DFACE
+				0x808080, //COLOR_3DSHADOW
+				0x808080, //COLOR_GRAYTEXT 
+				0x000000, //COLOR_BTNTEXT
+				0xc0c0c0, //COLOR_INACTIVECAPTIONTEXT
+				0xffffff, //COLOR_3DHIGHLIGHT
+				0x000000, //COLOR_3DDKSHADOW
+				0xc0c0c0, //COLOR_3DLIGHT
+				0xffffff, //COLOR_INFOTEXT
+				0xffffc0, //COLOR_INFOBK
+				0xb8b4b8, //COLOR_ALTERNATEBTNFACE 
+				0x0000ff, //COLOR_HOTLIGHT
+				0x1020d0, //COLOR_GRADIENTACTIVECAPTION
+				0xb8b4b8, //COLOR_GRADIENTINACTIVECAPTION
+				0x000000, //COLOR_MENUHILIGHT
+				0x000000 //COLOR_MENUBAR
 			};
 			if (nColorIndex == 0xf0)
 			{
@@ -1088,6 +1128,9 @@ namespace DocFileFormat
 			}
 			else if (nColorIndex < 25)
 			{
+				if (type != 4 && (nColorIndex == 7 || nColorIndex == 8 || nColorIndex == 9 || nColorIndex == 14 || 
+					nColorIndex == 17 || nColorIndex == 18 || nColorIndex == 19 || nColorIndex == 23)) return;
+
 				sys_color.SetRGB((unsigned char)(systemColors[nColorIndex] >> 16), (unsigned char)(systemColors[nColorIndex] >> 8), (unsigned char)(systemColors[nColorIndex]));
 			}
 			else return;

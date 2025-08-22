@@ -37,6 +37,7 @@ namespace XLS
 
 Header::Header()
 {
+    ast = L"";
 }
 
 
@@ -66,6 +67,12 @@ void Header::readFields(CFRecord& record)
 			record >> ast;
 		}
 	}
+}
+
+void Header::writeFields(CFRecord& record)
+{
+    if(ast.getSize() > 0)
+        record << ast;
 }
 
 } // namespace XLS

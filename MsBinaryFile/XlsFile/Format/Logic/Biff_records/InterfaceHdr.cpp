@@ -56,4 +56,9 @@ void InterfaceHdr::readFields(CFRecord& record)
 	record >> codePage;
 }
 
+void InterfaceHdr::writeFields(CFRecord& record)
+{
+    record << codePage;
+}
+
 } // namespace XLS

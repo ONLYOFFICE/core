@@ -49,6 +49,7 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 
@@ -59,7 +60,7 @@ public:
 	
 	CellOffsetResender		resender;
 	Cell					cell;
-	_UINT32					isst;
+    _UINT32					isst = 0;
 
 };
 

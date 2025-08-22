@@ -97,6 +97,18 @@ void ChartParsedFormula::load(CFRecord& record)
 	}
 }
 
+void ChartParsedFormula::save(CFRecord& record)
+{
+	unsigned short cce = 0;
+	record.reserveNunBytes(2);//cce
+	auto rgceBeginPos = record.getRdPtr();
+	rgce.save(record);
+	cce = record.getRdPtr() - rgceBeginPos;
+	record.RollRdPtrBack(cce+2);
+	record << cce;
+	record.skipNunBytes(cce);
+}
+
 bool ChartParsedFormula::inRange(const CellRef & ref)
 {
 	for (size_t i = 0 ; i < cell_ranges.size(); i++)

@@ -56,13 +56,16 @@ public:
 		{
 			oox_ref = converter.convert_named_ref(ref);
 		}
-        content_.push_back(name_and_ref());
-		
-		content_.back().name	= name;
-		content_.back().ref		= oox_ref;
-		content_.back().tableId	= tableId;
+		add(name, oox_ref, tableId);
     }
+	void add(std::wstring const& name, std::wstring const& oox_ref, int tableId)
+	{
+		content_.emplace_back();
 
+		content_.back().name = name;
+		content_.back().ref = oox_ref;
+		content_.back().tableId = tableId;
+	}
     void xlsx_serialize(std::wostream & _Wostream)
     {
         if (content_.empty()) return;
@@ -120,7 +123,10 @@ void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref
 {
     return impl_->add(name, ref, formula, tableId);        
 }
-
+void xlsx_defined_names::add(std::wstring const& name, std::wstring const& oox_ref, int tableId)
+{
+	return impl_->add(name, oox_ref, tableId);
+}
 void xlsx_defined_names::xlsx_serialize(std::wostream & _Wostream)
 {
     return impl_->xlsx_serialize(_Wostream);

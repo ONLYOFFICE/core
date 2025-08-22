@@ -463,13 +463,16 @@ std::wstring RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 std::wstring RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 {
     std::wstring sResult;
+
+	oRenderParameter.sValue = ToHexColor();
+
 	if( RENDER_TO_OOX_PARAM_COLOR_VALUE == oRenderParameter.nType )
 	{
-		sResult +=  ToHexColor();
+		sResult += oRenderParameter.sValue;
 	}
 	else if( RENDER_TO_OOX_PARAM_COLOR_ATTRIBUTE == oRenderParameter.nType )
 	{
-		sResult +=  oRenderParameter.sValue;
+		sResult += L"w:color=\"" + oRenderParameter.sValue + L"\"";
 	}
 	else if( RENDER_TO_OOX_PARAM_COLOR_TAG == oRenderParameter.nType )
 	{
@@ -481,7 +484,7 @@ std::wstring RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	else
 	{
-        sResult += L"<w:color w:val=\"" + ToHexColor() + L"\"/>";
+        sResult += L"<w:color w:val=\"" + oRenderParameter.sValue + L"\"/>";
 	}
 	return sResult;
 }
@@ -1755,7 +1758,7 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if(  PROP_DEF != m_nUnderlineColor  )
 	{
 		RtfColor oCurColor;
-		if( true == poRtfDocument->m_oColorTable.GetColor( m_nUnderlineColor, oCurColor ) )
+		if ( true == poRtfDocument->m_oColorTable.GetColor( m_nUnderlineColor, oCurColor ) )
 		{
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_COLOR_ATTRIBUTE;
@@ -2429,7 +2432,15 @@ std::wstring RtfListOverrideProperty::ListOverrideLevels::RenderToOOX(RenderPara
 		sResult += L"<w:lvlOverride w:ilvl=\"" + std::to_wstring(index) + L"\">";
 		if ( PROP_DEF != OverrideLevel.m_nStart )
 			sResult += L"<w:startOverride w:val=\"" + std::to_wstring(OverrideLevel.m_nStart) + L"\"/>";
-		sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        if ( PROP_DEF != OverrideLevel.m_nLevelIndex )
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
+        }
+        else
+        {
+            sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, index);
+        }
+        //sResult += OverrideLevel.m_oLevel.RenderToOOX2(oRenderParameter, OverrideLevel.m_nLevelIndex);
 		sResult += L"</w:lvlOverride>";
 
 		index_prev = index;

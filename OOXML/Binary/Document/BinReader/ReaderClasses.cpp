@@ -1253,13 +1253,14 @@ allowOverlap=\"1\">";
 
 	bool CWiterTblPr::IsEmpty()
 	{
-		return Props.empty() && tblPrChange.empty() && Caption.empty() && Description.empty();
+		return Style.empty() && Props.empty() && tblPrChange.empty() && Caption.empty() && Description.empty();
 	}
 	std::wstring CWiterTblPr::Write()
 	{
 		std::wstring sRes;
 		sRes += L"<w:tblPr>";
 		
+		sRes += Style; // first
 		sRes += Props;
 
 		if (!Caption.empty())

@@ -47,7 +47,7 @@ public:
 	static const ElementType	type = typeDXFProt;
 	
 	virtual void load(CFRecord& record);
-
+    virtual void save(CFRecord& record);
 
 	int serialize(std::wostream & stream);
 

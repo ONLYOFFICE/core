@@ -59,6 +59,14 @@ void Pie::readFields(CFRecord& record)
 	fShowLdrLines = GETBIT(flags, 1);
 }
 
+void Pie::writeFields(CFRecord& record)
+{
+    unsigned short flags = 0;
+    SETBIT(flags, 0, fHasShadow)
+    SETBIT(flags, 1, fShowLdrLines)
+    record << anStart << pcDonut << flags;
+}
+
 int	Pie::serialize(std::wostream & _stream)
 {
 	CP_XML_WRITER(_stream)    

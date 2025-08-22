@@ -50,22 +50,23 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeSort;
 
 //-----------------------------
 
-	bool fCol;
-	bool fKey1Dsc;
-	bool fKey2Dsc;
-	bool fKey3Dsc;
-	bool fCaseSensitive;
-	_INT16 iOrder;
-	bool fAltMethod;
+    bool fCol = false;
+    bool fKey1Dsc = false;
+    bool fKey2Dsc = false;
+    bool fKey3Dsc = false;
+    bool fCaseSensitive = false;
+    _INT16 iOrder = 0;
+    bool fAltMethod = false;
 
-	std::wstring stKey1;
-	std::wstring stKey2;
-	std::wstring stKey3;
+    std::wstring stKey1 = L"";
+    std::wstring stKey2 = L"";
+    std::wstring stKey3 = L"";
 };
 
 } // namespace XLS

@@ -128,6 +128,7 @@ core_windows {
     DEFINES -= _UNICODE
 }
 
+include($$PWD/../Common/3dParty/brotli/brotli.pri)
 include($$PWD/../DesktopEditor/graphics/pro/freetype.pri)
 
 HEADERS += \
@@ -176,6 +177,7 @@ SOURCES += \
     SrcWriter/FontCidTT.cpp \
     SrcWriter/FontTT.cpp \
     SrcWriter/FontTTWriter.cpp \
+    SrcWriter/FontOTWriter.cpp \
     SrcWriter/GState.cpp \
     SrcWriter/Image.cpp \
     SrcWriter/Info.cpp \

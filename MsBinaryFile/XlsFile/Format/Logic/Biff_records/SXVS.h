@@ -47,10 +47,11 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+    void writeFields(CFRecord& record);
 	
 	static const ElementType type = typeSXVS;
 
-	short sxvs;
+    short sxvs = 1;
 
 //enum
 //SHEET			0x0001

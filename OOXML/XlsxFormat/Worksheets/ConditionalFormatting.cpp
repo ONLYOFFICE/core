@@ -87,6 +87,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CF12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFGradient.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFDatabar.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFMultistate.h"
 
 using namespace XLS;
 
@@ -1228,7 +1229,7 @@ XLS::BiffStructurePtr CDataBar::toXLS()
 	if(m_oDirection.IsInit() && m_oDirection->GetValue() == SimpleTypes::Spreadsheet::EDataBarDirection::rightToLeft)
 		ptr->fRightToLeft = true;
 	if(m_oShowValue.IsInit())
-		ptr->fShowValue = m_oShowValue->GetValue();
+		ptr->fShowValue = !m_oShowValue->GetValue();
 	if(m_oColor.IsInit())
 	{
 
@@ -1706,6 +1707,122 @@ XLS::BaseObjectPtr CIconSet::toBin()
     for(auto i:m_arrValues)
         ptr->m_arCFVO.push_back(i->toBin(true));
     return objectPtr;
+}
+XLS::BiffStructurePtr CIconSet::toXLS()
+{
+	auto ptr = new XLS::CFMultistate;
+	ptr->cStates = m_arrValues.size();
+
+	if(m_oIconSet.IsInit())
+	{
+		switch (m_oIconSet->GetValue())
+		{
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows3:
+			{
+				ptr->iIconSet = KPISets::KPI3ARROWS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows3Gray:
+			{
+				ptr->iIconSet = KPISets::KPI3ARROWSGRAY;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Flags3:
+			{
+				ptr->iIconSet = KPISets::KPI3FLAGS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights1:
+			{
+				ptr->iIconSet = KPISets::KPI3TRAFFICLIGHTS1;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Traffic3Lights2:
+			{
+				ptr->iIconSet = KPISets::KPI3TRAFFICLIGHTS2;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Signs3:
+			{
+				ptr->iIconSet = KPISets::KPI3SIGNS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Symbols3:
+			{
+				ptr->iIconSet = KPISets::KPI3SYMBOLS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Symbols3_2:
+			{
+				ptr->iIconSet = KPISets::KPI3SYMBOLS2;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows4:
+			{
+				ptr->iIconSet = KPISets::KPI4ARROWS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows4Gray:
+			{
+				ptr->iIconSet = KPISets::KPI4ARROWSGRAY;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::RedToBlack4:
+			{
+				ptr->iIconSet = KPISets::KPI4REDTOBLACK;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Rating4:
+			{
+				ptr->iIconSet = KPISets::KPI4RATING;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Traffic4Lights:
+			{
+				ptr->iIconSet = KPISets::KPI4TRAFFICLIGHTS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows5:
+			{
+				ptr->iIconSet = KPISets::KPI5ARROWS;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Arrows5Gray:
+			{
+				ptr->iIconSet = KPISets::KPI5ARROWSGRAY;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Rating5:
+			{
+				ptr->iIconSet = KPISets::KPI5RATING;
+				break;
+			}
+			case SimpleTypes::Spreadsheet::EIconSetType::Quarters5:
+			{
+				ptr->iIconSet = KPISets::KPI3TRAFFICLIGHTS1;
+				break;
+			}
+			default:
+			{
+				ptr->iIconSet = 0;
+				break;
+			}
+		}
+	}
+	else
+		ptr->iIconSet = KPISets::KPI3TRAFFICLIGHTS1;
+	if(m_oShowValue.IsInit())
+		ptr->fIconOnly = !m_oShowValue->GetValue();
+	if(m_oReverse.IsInit())
+		ptr->fReverse = m_oReverse->GetValue();
+	for(auto i : m_arrValues)
+	{
+		auto tempVal = CFMStateItemPtr(new XLS::CFMStateItem);
+		tempVal->cfvo = *static_cast<XLS::CFVO*>(i->toXLS().get());
+		ptr->rgStates.push_back(tempVal);
+	}
+
+	return XLS::BiffStructurePtr(ptr);
 }
 void CIconSet::toBin(XLS::StreamCacheWriterPtr& writer)
 {
@@ -3348,6 +3465,12 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 		ptr->ct = 4;
 		ptr->icfTemplate = 3;
 		ptr->rgbCT = m_oDataBar->toXLS();
+	}
+	else if(m_oType->GetValue() == SimpleTypes::Spreadsheet::ECfType::iconSet && m_oIconSet.IsInit())
+	{
+		ptr->ct = 6;
+		ptr->icfTemplate = 4;
+		ptr->rgbCT = m_oIconSet->toXLS();
 	}
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{

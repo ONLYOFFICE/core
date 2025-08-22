@@ -1006,9 +1006,9 @@ void Gfx::opSetExtGState(Object args[], int numArgs) {
     printf("\n");
   }
 
-  if (out->useExtGState())
+  if (out->useNameOp())
   {
-	out->setExtGState(state, &obj1, args[0].getName());
+	out->setExtGState(args[0].getName());
 	obj1.free();
 	return;
   }
@@ -1453,6 +1453,11 @@ void Gfx::opSetFillColorSpace(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setFillColorSpace(args[0].getName());
+	return;
+  }
   state->setFillPattern(NULL);
   res->lookupColorSpace(args[0].getName(), &obj);
   if (obj.isNull()) {
@@ -1465,7 +1470,7 @@ void Gfx::opSetFillColorSpace(Object args[], int numArgs) {
   obj.free();
   if (colorSpace) {
     state->setFillColorSpace(colorSpace);
-    out->updateFillColorSpace(state);
+	out->updateFillColorSpace(state);
     colorSpace->getDefaultColor(&color);
     state->setFillColor(&color);
     out->updateFillColor(state);
@@ -1562,6 +1567,11 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
 	  " in uncolored Type 3 char or tiling pattern");
     return;
   }
+  if (out->useNameOp())
+  {
+	out->setFillColorN(args[numArgs-1].getName());
+	return;
+  }
   if (state->getFillColorSpace()->getMode() == csPattern) {
     if (numArgs == 0 || !args[numArgs-1].isName()) {
       error(errSyntaxError, getPos(),
@@ -1588,7 +1598,6 @@ void Gfx::opSetFillColorN(Object args[], int numArgs) {
 				      ))) {
       state->setFillPattern(pattern);
     }
-
   } else {
     if (numArgs != state->getFillColorSpace()->getNComps()) {
       error(errSyntaxError, getPos(),
@@ -4082,7 +4091,10 @@ void Gfx::opXObject(Object args[], int numArgs) {
     if (obj2.isName("Image")) {
       if (out->needNonText()) {
 	res->lookupXObjectNF(name, &refObj);
-	doImage(&refObj, obj1.getStream(), gFalse);
+	if (out->useNameOp() && refObj.isRef())
+		out->drawImage(state, refObj.getRef(), name);
+	else
+		doImage(&refObj, obj1.getStream(), gFalse);
 	refObj.free();
       }
     } else if (obj2.isName("Form")) {

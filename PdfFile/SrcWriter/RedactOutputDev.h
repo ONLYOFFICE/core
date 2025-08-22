@@ -153,8 +153,10 @@ namespace PdfWriter
 		virtual GBool beginMarkedContent(GfxState *pGState, GString *s) override;
 		virtual GBool beginMCOShapes(GfxState *pGState, GString *s, Object *ref) override;
 		virtual void endMarkedContent(GfxState *pGState) override;
-		virtual GBool useExtGState() override;
-		virtual void setExtGState(GfxState *pGState, Object *pDict, const char* name) override;
+		virtual GBool useNameOp() override;
+		virtual void setExtGState(const char* name) override;
+		virtual void setFillColorSpace(const char* name) override;
+		virtual void setFillColorN(const char* name) override;
 		//----- image drawing
 		virtual void drawImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
 		virtual void setSoftMaskFromImageMask(GfxState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GBool bInvert, GBool bInlineImage, GBool interpolate) override;
@@ -168,6 +170,7 @@ namespace PdfWriter
 		virtual void type3D1(GfxState *pGState, double wx, double wy, double llx, double lly, double urx, double ury) override;
 		//----- form XObjects
 		virtual void drawForm(GfxState *pGState, Ref id, const char *name = NULL) override;
+		virtual void drawImage(GfxState *pGState, Ref id, const char* name = NULL) override;
 		//----- transparency groups and soft masks
 		virtual void beginTransparencyGroup(GfxState *pGState, double *pBBox, GfxColorSpace *pBlendingColorSpace, GBool bIsolated, GBool bKnockout, GBool bForSoftMask) override;
 		virtual void endTransparencyGroup(GfxState *pGState) override;
@@ -178,16 +181,25 @@ namespace PdfWriter
 	private:
 		struct GfxRedactState
 		{
-			std::vector<std::string> m_arrExtGState;
+			GfxClip* m_pClip;
+			std::vector< std::pair<std::string, std::string> > m_arrOp;
+
+			GfxRedactState() : m_pClip(NULL) {}
+			~GfxRedactState()
+			{
+				RELEASEOBJECT(m_pClip);
+			}
 		};
 
-		void DoPathFill  (GfxState* pGState, GfxPath* pPath, double* pCTM);
-		void DoPathStroke(GfxState* pGState, GfxPath* pPath, double* pCTM);
+		void DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pCTM, bool bStroke = false, bool bEoFill = false);
+		void DoPath(GfxState* pGState, GfxPath* pPath, double* pCTM);
 		void DoTransform(double* pMatrix, double* pdShiftX, double* pdShiftY, bool bActual = false);
 		void DrawPath(const LONG& lType);
 		void UpdateTransform();
 		void UpdatePen();
 		void UpdateBrush(NSFonts::IApplicationFonts* pAppFonts, const std::wstring& wsTempDirectory);
+		void UpdateAllClip(GfxState *pGState);
+		void AddClip(GfxState* pGState, GfxRedactState* pState, int nIndex);
 
 		XRef* m_pXref;
 		std::vector<double> m_arrQuadPoints;

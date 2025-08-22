@@ -1281,7 +1281,7 @@ namespace PdfWriter
 	}
     void CPage::WriteText(const BYTE* sText, unsigned int unLen)
 	{
-		EFontType eType = m_pFont ? m_pFont->GetFontType() : fontType1;
+		EFontType eType = m_pFont ? m_pFont->GetFontType() : fontCIDType0;
 		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
 		{
 			m_pStream->WriteChar('<');

@@ -190,8 +190,10 @@ public:
   virtual GBool beginMarkedContent(GfxState *state, GString *s) { return gFalse; }
   virtual GBool beginMCOShapes(GfxState *state, GString *s, Object *ref) { return gFalse; }
   virtual void endMarkedContent(GfxState *state) {}
-  virtual GBool useExtGState() { return gFalse; }
-  virtual void setExtGState(GfxState *state, Object *obj, const char* name) {}
+  virtual GBool useNameOp() { return gFalse; }
+  virtual void setExtGState(const char* name) {}
+  virtual void setFillColorSpace(const char* name) {}
+  virtual void setFillColorN(const char* name) {}
 
   //----- image drawing
   virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,
@@ -231,6 +233,7 @@ public:
 
   //----- form XObjects
   virtual void drawForm(GfxState *state, Ref id, const char *name = nullptr) {}
+  virtual void drawImage(GfxState *pGState, Ref id, const char* name = nullptr) {}
 
   //----- PostScript XObjects
   virtual void psXObject(Stream *psStream, Stream *level1Stream) {}

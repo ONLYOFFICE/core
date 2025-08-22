@@ -628,6 +628,7 @@ SOURCES +=  \
 	$$LOGIC_DIR/Biff_structures/PBT.cpp \
 	$$LOGIC_DIR/Biff_structures/FontInfo.cpp \
 	$$LOGIC_DIR/Biff_structures/CFDatabar.cpp \
+	$$LOGIC_DIR/Biff_structures/CFFilter.cpp \
 	$$LOGIC_DIR/Biff_structures/CFGradient.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/ColSpan.cpp \
         $$LOGIC_DIR/Biff_structures/BIFF12/Color.cpp \
@@ -1426,6 +1427,7 @@ HEADERS +=  \
 	$$LOGIC_DIR/Biff_structures/AFDOperBoolErr.h \
 	$$LOGIC_DIR/Biff_structures/AFDOperXNum.h \
 	$$LOGIC_DIR/Biff_structures/CFDatabar.h \
+	$$LOGIC_DIR/Biff_structures/CFFilter.h \
 	$$LOGIC_DIR/Biff_structures/CFGradient.h \
 	$$LOGIC_DIR/Biff_structures/SharedProperty.h \
 	\

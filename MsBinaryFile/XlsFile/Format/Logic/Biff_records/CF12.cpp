@@ -36,6 +36,7 @@
 #include "../Biff_structures/CFMultistate.h"
 #include "../Biff_structures/CFDatabar.h"
 #include "../Biff_structures/CFGradient.h"
+#include "../Biff_structures/CFFilter.h"
 
 #include "../../../../../OOXML/XlsxFormat/ComplexTypes_Spreadsheet.h"
 #include "../../../../../OOXML/XlsxFormat/Styles/dxf.h"
@@ -108,9 +109,8 @@ void CF12::readFields(CFRecord& record)
 			rgbCT->load(record);
 			break;
 		case 0x05:
-			//todooo
-			//rgbCT = BiffStructurePtr(new CFFilter);
-			//rgbCT->load(record);
+			rgbCT = BiffStructurePtr(new CFFilter);
+			rgbCT->load(record);
 			break;
 		case 0x06:
 			rgbCT = BiffStructurePtr(new CFMultistate);

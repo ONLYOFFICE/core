@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -29,102 +29,47 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include "BiffStructure.h"
+#include "CFFilter.h"
+#include "../../../../Common/Utils/simple_xml_writer.h"
 
 namespace XLS
 {
 
-#pragma pack(1)
 
-struct CFExFilterParams
+BiffStructurePtr CFFilter::clone()
 {
-	bool fTop : 1;
-	bool fPercent : 1;
-	unsigned short iParam;
+	return BiffStructurePtr(new CFFilter(*this));
+}
 
-private:
-	unsigned char reserved2_1;
-	_UINT32 reserved2_2;
-	_UINT32 reserved2_3;
-	_UINT32 reserved2_4;
-};
-
-
-struct CFExTextTemplateParams
+void CFFilter::load(CFRecord& record)
 {
-private:
-	unsigned short ctp;
+	record.skipNunBytes(3); // unused
+	
+	unsigned char flags;
+	record >> flags;
 
-private:
-	_UINT16 reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
+	fTop = GETBIT(flags, 0);
+	fPercent = GETBIT(flags, 1);
+	record >> iParam;
+}
 
-
-struct CFExDateTemplateParams
+void CFFilter::save(CFRecord& record)
 {
-private:
-	unsigned short dateOp;
+	unsigned short cbFilter = 4;
+	record << cbFilter;
+	record.reserveNunBytes(1);
+    unsigned char flags = 0;
+    SETBIT(flags, 0, fTop);
+	SETBIT(flags, 1, fPercent);
+    record << flags << iParam;
+}
 
-private:
-	_UINT16 reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
-
-
-struct CFExAveragesTemplateParams
+int CFFilter::serialize(std::wostream & stream)
 {
-private:
-	unsigned short iParam = 0;
-
-private:
-	unsigned short reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
-
-
-struct CFExDefaultTemplateParams
-{
-private:
-	_UINT32 unused1 = 0;
-	_UINT32 unused2 = 0;
-	_UINT32 unused3 = 0;
-	_UINT32 unused4 = 0;
-};
-
-
-class CFExTemplateParams : public BiffStructure
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExTemplateParams)
-
-public:
-	CFExTemplateParams();
-	BiffStructurePtr clone();
-
-	virtual void load(CFRecord& record);
-    virtual void save(CFRecord& record);
-
-
-	static const ElementType	type = typeCFExTemplateParams;
-
-	union
-	{
-		CFExFilterParams filter;
-		CFExTextTemplateParams text;
-		CFExDateTemplateParams date;
-		CFExAveragesTemplateParams averages;
-		CFExDefaultTemplateParams defaults;
-	} data;
-};
-#pragma pack()
+	//todo
+	return 0;
+}
 
 } // namespace XLS
 

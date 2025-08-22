@@ -1,5 +1,5 @@
 ﻿/*
- * (c) Copyright Ascensio System SIA 2010-2023
+ * (c) Copyright Ascensio System SIA 2010-2025
  *
  * This program is a free software product. You can redistribute it and/or
  * modify it under the terms of the GNU Affero General Public License (AGPL)
@@ -36,95 +36,23 @@
 namespace XLS
 {
 
-#pragma pack(1)
-
-struct CFExFilterParams
+class CFFilter : public BiffStructure
 {
-	bool fTop : 1;
-	bool fPercent : 1;
-	unsigned short iParam;
-
-private:
-	unsigned char reserved2_1;
-	_UINT32 reserved2_2;
-	_UINT32 reserved2_3;
-	_UINT32 reserved2_4;
-};
-
-
-struct CFExTextTemplateParams
-{
-private:
-	unsigned short ctp;
-
-private:
-	_UINT16 reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
-
-
-struct CFExDateTemplateParams
-{
-private:
-	unsigned short dateOp;
-
-private:
-	_UINT16 reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
-
-
-struct CFExAveragesTemplateParams
-{
-private:
-	unsigned short iParam = 0;
-
-private:
-	unsigned short reserved_1 = 0;
-	_UINT32 reserved_2 = 0;
-	_UINT32 reserved_3 = 0;
-	_UINT32 reserved_4 = 0;
-};
-
-
-struct CFExDefaultTemplateParams
-{
-private:
-	_UINT32 unused1 = 0;
-	_UINT32 unused2 = 0;
-	_UINT32 unused3 = 0;
-	_UINT32 unused4 = 0;
-};
-
-
-class CFExTemplateParams : public BiffStructure
-{
-	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExTemplateParams)
-
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFFilter)
 public:
-	CFExTemplateParams();
 	BiffStructurePtr clone();
-
+	static const ElementType type = typeCFFilter;
+	
 	virtual void load(CFRecord& record);
     virtual void save(CFRecord& record);
 
+	virtual int serialize(std::wostream & _stream);
 
-	static const ElementType	type = typeCFExTemplateParams;
+	unsigned short iParam  = 10;
 
-	union
-	{
-		CFExFilterParams filter;
-		CFExTextTemplateParams text;
-		CFExDateTemplateParams date;
-		CFExAveragesTemplateParams averages;
-		CFExDefaultTemplateParams defaults;
-	} data;
+	bool fTop  = true;
+	bool fPercent  = false;
 };
-#pragma pack()
 
 } // namespace XLS
 

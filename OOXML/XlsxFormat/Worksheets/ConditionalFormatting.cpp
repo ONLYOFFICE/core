@@ -88,6 +88,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFGradient.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFDatabar.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFMultistate.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/CFFilter.h"
 
 using namespace XLS;
 
@@ -3471,6 +3472,28 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 		ptr->ct = 6;
 		ptr->icfTemplate = 4;
 		ptr->rgbCT = m_oIconSet->toXLS();
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::top10)
+	{
+		ptr->ct = 5;
+		ptr->icfTemplate = 5;
+		if(m_oBottom.IsInit() && m_oBottom->GetValue())
+			ptr->rgbTemplateParms.data.filter.fTop = false;
+		else
+			ptr->rgbTemplateParms.data.filter.fTop = true;
+		if(m_oPercent.IsInit())
+			ptr->rgbTemplateParms.data.filter.fPercent = m_oPercent->GetValue();
+		else
+			ptr->rgbTemplateParms.data.filter.fPercent = false;
+		if(m_oRank.IsInit())
+			ptr->rgbTemplateParms.data.filter.iParam = m_oRank->GetValue();
+		else
+			ptr->rgbTemplateParms.data.filter.iParam = 10;
+		auto filterPtr = new XLS::CFFilter;
+		filterPtr->fPercent = ptr->rgbTemplateParms.data.filter.fPercent;
+		filterPtr->fTop = ptr->rgbTemplateParms.data.filter.fTop;
+		filterPtr->iParam = ptr->rgbTemplateParms.data.filter.iParam;
+		ptr->rgbCT = XLS::BiffStructurePtr(filterPtr);
 	}
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{

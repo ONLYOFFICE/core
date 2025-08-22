@@ -44,6 +44,10 @@
 #include "PICT/PICFile.h"
 #endif
 
+#if CXIMAGE_SUPPORT_HEIF
+#include "heif/heif.h"
+#endif
+
 #include <cmath>
 #define BGRA_FRAME_CXIMAGE_MAX_MEMORY 67108864 // 256Mb (*4 channel)
 
@@ -444,11 +448,18 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 #endif
 
 #if CXIMAGE_SUPPORT_PIC
-    if (CXIMAGE_FORMAR_PIC == m_nFileType)
-    {
-        PICT::CPictFile PIC;
-        return PIC.Open(this, strFileName, !m_bIsRGBA);
-    }
+	if (CXIMAGE_FORMAR_PIC == m_nFileType)
+	{
+		PICT::CPictFile PIC;
+		return PIC.Open(this, strFileName, !m_bIsRGBA);
+	}
+#endif
+
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this,	strFileName);
+	}
 #endif
 
 	NSFile::CFileBinary oFile;
@@ -534,6 +545,13 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
     }
 #endif
 
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == m_nFileType)
+	{
+		return NSHeif::CHeifFile::Open(this, pBuffer, nSize);
+	}
+#endif
+
 	CxImage img;
 
 	if (!img.Decode(pBuffer, nSize, m_nFileType))
@@ -562,28 +580,32 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 		return res;
 	}
-	else
 #endif
+#if CXIMAGE_SUPPORT_HEIF
+	if (CXIMAGE_FORMAT_HEIF == nFileType)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.CreateFileW(strFileName))
-			return false;
-		
-		CxImage img;
-
-		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
-			return false;
-
-		if (m_pPalette)
-		{
-			img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
-		}
-
-		if (!img.Encode(oFile.GetFileNative(), nFileType))
-			return false;
-
-		oFile.CloseFile();
+		return NSHeif::CHeifFile::Save(m_pData, m_lWidth, m_lHeight, m_lStride, strFileName);
 	}
+#endif
+
+	NSFile::CFileBinary oFile;
+	if (!oFile.CreateFileW(strFileName))
+		return false;
+		
+	CxImage img;
+
+	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false, !m_bIsRGBA))
+		return false;
+
+	if (m_pPalette)
+	{
+		img.SetPalette((RGBQUAD*)m_pPalette, m_lPaletteColors);
+	}
+
+	if (!img.Encode(oFile.GetFileNative(), nFileType))
+		return false;
+
+	oFile.CloseFile();
 	return true;
 }
 bool CBgraFrame::Encode(BYTE*& pBuffer, int& nSize, unsigned int nFileType)

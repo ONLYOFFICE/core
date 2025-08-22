@@ -32,6 +32,7 @@
 #include "ImageFileFormatChecker.h"
 #include "../common/File.h"
 #include "../cximage/CxImage/ximacfg.h"
+#include "heif/heif.h"
 
 #ifndef IMAGE_CHECKER_DISABLE_XML
 #include "../xml/include/xmlutils.h"
@@ -432,6 +433,11 @@ bool CImageFileFormatChecker::isPicFile(BYTE *pBuffer, DWORD dwBytes)
 
     return false;
 }
+
+bool CImageFileFormatChecker::isHeifFile(BYTE* pBuffer, DWORD dwBytes)
+{
+	return NSHeif::CHeifFile::isHeif(pBuffer, dwBytes);
+}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
 {
@@ -554,6 +560,10 @@ bool CImageFileFormatChecker::isImageFile(const std::wstring& fileName)
     {
         eFileType = _CXIMAGE_FORMAT_PIC;
     }
+	else if (isHeifFile(fileName))
+	{
+		eFileType = _CXIMAGE_FORMAT_HEIF;
+	}
 	///////////////////////////////////////////////////////////////////////
 	delete [] buffer;
 
@@ -669,6 +679,10 @@ bool CImageFileFormatChecker::isImageFile(BYTE* buffer, DWORD sizeRead)
     {
         eFileType = _CXIMAGE_FORMAT_PIC;
     }
+	if (isHeifFile(buffer, sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_HEIF;
+	}
     ///////////////////////////////////////////////////////////////////////
 	if (eFileType) return true;
 	return false;
@@ -785,6 +799,10 @@ bool CImageFileFormatChecker::isSvgFile(const std::wstring& fileName)
 	delete [] buffer;
 	return bFind;
 #endif
+}
+bool CImageFileFormatChecker::isHeifFile(const std::wstring& fileName)
+{
+	return NSHeif::CHeifFile::isHeif(fileName);
 }
 
 std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSize)

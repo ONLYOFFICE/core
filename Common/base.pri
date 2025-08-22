@@ -255,8 +255,8 @@ core_linux_clang {
 # PREFIXES
 core_windows {
 	CONFIG -= debug_and_release debug_and_release_target
-	QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
-	QMAKE_CXXFLAGS -= -Zc:strictStrings
+	QMAKE_CXXFLAGS_RELEASE += /Zc:strictStrings-
+	QMAKE_CXXFLAGS += /Zc:strictStrings-
 	QMAKE_CXXFLAGS += /MP
 
 	MSVC_VERSION_DETECT = $$(VisualStudioVersion)

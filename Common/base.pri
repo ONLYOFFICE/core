@@ -207,6 +207,25 @@ core_win_64 {
 
 core_linux {
 	DEFINES += LINUX _LINUX
+
+    QMAKE_CUSTOM_SYSROOT = $$(QMAKE_CUSTOM_SYSROOT)
+	QMAKE_CUSTOM_SYSROOT_BIN = $$(QMAKE_CUSTOM_SYSROOT)/usr/bin/
+
+    core_linux_64 {
+	    !linux_arm64 { # x86_64
+		    QMAKE_CUSTOM_SYSROOT_LIB = $$(QMAKE_CUSTOM_SYSROOT)/usr/lib/x86_64-linux-gnu
+			!isEmpty(QMAKE_CUSTOM_SYSROOT) {
+			    message("using custom sysroot $$QMAKE_CUSTOM_SYSROOT")
+				QMAKE_CC          = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "gcc")
+				QMAKE_CXX         = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+				QMAKE_LINK        = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+				QMAKE_LINK_SHLIB  = $$join(QMAKE_CUSTOM_SYSROOT_BIN, , , "g++")
+
+                QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
+			}
+		}
+	}
 }
 core_linux_host_arm64 {
 	message("build on arm64")
@@ -322,8 +341,8 @@ linux_arm64 {
 
 	!isEmpty(ARM64_TOOLCHAIN_BIN){
 		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
-
 			ARM64_TOOLCHAIN_BIN_FULL = $$ARM64_TOOLCHAIN_BIN/$$ARM64_TOOLCHAIN_BIN_PREFIX
+			message("using arm64 toolchain $$ARM64_TOOLCHAIN_BIN")
 
 			QMAKE_CC          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "gcc")
 			QMAKE_CXX         = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "g++")

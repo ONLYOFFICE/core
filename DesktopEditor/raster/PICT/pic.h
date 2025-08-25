@@ -340,6 +340,26 @@ typedef struct
     double index;
 } PixelInfo;
 
+template<typename T>
+struct Point {
+	T X;
+	T Y;
+	Point(T x, T y) : X(x), Y(y) {}
+};
+
+template<typename T>
+struct Polygon
+{
+	size_t Size;
+	Point<T>* Points;
+	Polygon() {}
+	~Polygon()
+	{
+		if (Points)
+			free(Points);
+	}
+};
+
 typedef struct
 {
     ClassType storage_class;
@@ -384,8 +404,8 @@ typedef struct
     char error[256];
 }ImagePICT;
 
-int DecodePICT(FILE* hFile, ImagePICT* image);
+bool DecodePICT(FILE* hFile, ImagePICT* image);
 void AquireImage(ImagePICT* image);
-ImagePICT* DestroyImage(ImagePICT* image);
+void DestroyImage(ImagePICT* image);
 
 #endif // PIC_H

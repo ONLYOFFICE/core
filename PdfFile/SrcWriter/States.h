@@ -176,7 +176,7 @@ public:
 	{
 		m_dWidth = dWidth;
 	}
-    inline PdfWriter::CFontDict*     GetFont() const
+	inline PdfWriter::CFontDict* GetFont() const
     {
         return m_pFont;
     }

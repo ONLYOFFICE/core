@@ -109,10 +109,10 @@ void RedactOutputDev::restoreState(GfxState *pGState)
 		return; // Несбалансированный q/Q - сломанный файл
 	}
 
-	if (m_sStates.back().m_pClip)
-		UpdateAllClip(pGState);
-
+	bool bClipChanged = m_sStates.back().m_pClip;
 	m_sStates.pop_back();
+	if (bClipChanged)
+		UpdateAllClip(pGState);
 }
 //----- update graphics state
 void RedactOutputDev::updateAll(GfxState *pGState)
@@ -388,9 +388,6 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 							   CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 {
 	double* pCTM = pGState->getCTM();
-	double dShiftX = 0, dShiftY = 0;
-	DoTransform(pCTM, &dShiftX, &dShiftY, true);
-	/*
 	double* pTm = pGState->getTextMat();
 	double arrMatrix[6];
 
@@ -407,8 +404,8 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 	}
-	*/
 
+	double dDiff = dX + dDx / 2.0;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		double xMin = m_arrQuadPoints[i + 0];
@@ -416,7 +413,7 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 		double xMax = m_arrQuadPoints[i + 2];
 		double yMax = m_arrQuadPoints[i + 3];
 
-		if (xMin < dX && dX < xMax && yMin < dY && dY < yMax)
+		if (xMin < dDiff && dDiff < xMax && yMin < dY && dY < yMax)
 			return;
 	}
 
@@ -426,7 +423,7 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 
 	m_pRenderer->m_oCommandManager.SetTransform(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 
-	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dX, dY);
+	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dOriginX, dOriginY);
 	pText->SetName(m_pRenderer->m_oFont.GetName());
 	pText->SetSize(m_pRenderer->m_oFont.GetSize());
 	int nDColor2Size;

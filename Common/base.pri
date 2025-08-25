@@ -198,6 +198,8 @@ core_windows {
 	DEFINES += WIN32 _WIN32
 	DEFINES += NOMINMAX
 
+	DEFINES += WIN32_LEAN_AND_MEAN
+
 	# use default _ITERATOR_DEBUG_LEVEL value
 	#core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }

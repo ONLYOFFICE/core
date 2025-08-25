@@ -3495,6 +3495,110 @@ XLS::BaseObjectPtr CConditionalFormattingRule::toXLS(const  XLS::CellRef &cellRe
 		filterPtr->iParam = ptr->rgbTemplateParms.data.filter.iParam;
 		ptr->rgbCT = XLS::BiffStructurePtr(filterPtr);
 	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::uniqueValues)
+	{
+	   ptr->icfTemplate  = XLSB::CFTemp::CF_TEMPLATE_UNIQUEVALUES;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::duplicateValues)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_DUPLICATEVALUES;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::containsText)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT;
+		ptr->rgbTemplateParms.data.text.ctp = XLSB::CFTextOper::CF_TEXTOPER_CONTAINS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::notContainsText)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT;
+		ptr->rgbTemplateParms.data.text.ctp = XLSB::CFTextOper::CF_TEXTOPER_NOTCONTAINS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::beginsWith)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT;
+		ptr->rgbTemplateParms.data.text.ctp = XLSB::CFTextOper::CF_TEXTOPER_BEGINSWITH;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::endsWith)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSTEXT;
+		ptr->rgbTemplateParms.data.text.ctp = XLSB::CFTextOper::CF_TEXTOPER_ENDSWITH;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::aboveAverage)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_ABOVEAVERAGE;
+		if(m_oStdDev.IsInit())
+			ptr->rgbTemplateParms.data.averages.iParam =  m_oStdDev->GetValue();
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::containsBlanks)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSBLANKS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::notContainsBlanks)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOBLANKS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::containsErrors)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSERRORS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::notContainsErrors)
+	{
+		ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_CONTAINSNOERRORS;
+	}
+	else if (m_oType == SimpleTypes::Spreadsheet::ECfType::timePeriod)
+	{
+		if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::today)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTODAY;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_TODAY;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::tomorrow)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTOMORROW;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_TOMORROW;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::yesterday)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODYESTERDAY;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_YESTERDAY;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::last7Days)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLAST7DAYS;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_LAST7DAYS;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::lastMonth)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTMONTH;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_LASTMONTH;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::nextMonth)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTMONTH;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_NEXTMONTH;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::thisWeek)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISWEEK;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_THISWEEK;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::nextWeek)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODNEXTWEEK;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_NEXTWEEK;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::lastWeek)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODLASTWEEK;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_LASTWEEK;
+		}
+		else if (m_oTimePeriod == SimpleTypes::Spreadsheet::ETimePeriod::thisMonth)
+		{
+			ptr->icfTemplate = XLSB::CFTemp::CF_TEMPLATE_TIMEPERIODTHISMONTH;
+			ptr->rgbTemplateParms.data.date.dateOp = XLSB::CFDateOper::CF_TIMEPERIOD_THISMONTH;
+		}
+	}
+
 	if(!m_oColorScale.IsInit() && !m_oDataBar.IsInit() && !m_oIconSet.IsInit() && m_oDxfId.IsInit())
 	{
 		ptr->dxf.dxfn.reset(new XLS::DXFN);

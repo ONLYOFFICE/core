@@ -54,7 +54,6 @@ private:
 
 struct CFExTextTemplateParams
 {
-private:
 	unsigned short ctp;
 
 private:
@@ -67,7 +66,6 @@ private:
 
 struct CFExDateTemplateParams
 {
-private:
 	unsigned short dateOp;
 
 private:
@@ -80,7 +78,6 @@ private:
 
 struct CFExAveragesTemplateParams
 {
-private:
 	unsigned short iParam = 0;
 
 private:

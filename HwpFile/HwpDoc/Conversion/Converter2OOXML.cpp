@@ -5,10 +5,9 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/SystemUtils.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
 #include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
+#include "../../../DesktopEditor/graphics/pro/Image.h"
 
 #include "../Paragraph/ParaText.h"
 #include "../Paragraph/CtrlTable.h"

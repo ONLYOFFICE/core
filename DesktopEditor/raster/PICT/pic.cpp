@@ -2144,7 +2144,7 @@ unsigned char *DecodeImage(FILE *blob,ImagePICT *image, size_t bytes_per_line, c
 	return pixels;
 }
 
-size_t ReadPolygon(FILE* file, Polygon<short>& poly)
+void ReadPolygon(FILE* file, Polygon<short>& poly)
 {
 	size_t size = static_cast<size_t>(ReadShortValue(file));
 	ReadShortValue(file);
@@ -2152,7 +2152,6 @@ size_t ReadPolygon(FILE* file, Polygon<short>& poly)
 	ReadShortValue(file);
 	ReadShortValue(file);
 
-	const size_t data_size = size;
 	size = (size - 10) / 4;
 	const size_t max_possible_points = GetSize(file) - ftell(file);
 	if (size > max_possible_points)
@@ -2172,8 +2171,132 @@ size_t ReadPolygon(FILE* file, Polygon<short>& poly)
 			break;
 		}
 	}
+}
 
-	return data_size;
+PICTrectangle ContractRect(const PICTrectangle& rect, int penSize, bool isFrame)
+{
+	if (!isFrame)
+		return rect;
+
+	if (penSize * 2 > rect.right - rect.left)
+		penSize = (rect.right - rect.left + 1) / 2;
+	if (penSize * 2 > rect.bottom - rect.top)
+		penSize = (rect.bottom - rect.top + 1) / 2;
+
+	const long X[2] = {rect.left + penSize / 2, rect.right - (penSize + 1) / 2};
+	const long Y[2] = {rect.top + penSize / 2, rect.bottom - (penSize + 1) / 2};
+
+	return PICTrectangle(Y[0], X[0], Y[1], X[1]);
+}
+
+void DrawRect(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& rect, size_t penWidth, size_t penHeight, bool isFrame)
+{
+	int pen_size = (penWidth + penHeight) / 2;
+	PICTrectangle new_rect = ContractRect(rect, pen_size, isFrame);
+	const long X[2] = {new_rect.left, new_rect.right};
+	const long Y[2] = {new_rect.top, new_rect.bottom};
+
+	renderer->PathCommandStart();
+	renderer->BeginCommand(c_nPathType);
+	Aggplus::CGraphicsPath path;
+	path.AddRectangle(X[0], Y[0], X[1] - X[0], Y[1] - Y[0]);
+	size_t points_count = path.GetPointCount();
+
+	Aggplus::PointF* points = new Aggplus::PointF[points_count];
+	path.GetPathPoints(points, points_count);
+
+	renderer->PathCommandMoveTo(points[0].X, points[0].Y);
+
+	for (size_t i = 1; i < points_count; i += 3)
+		renderer->PathCommandCurveTo(points[i].X, points[i].Y,
+									 points[i + 1].X, points[i + 1].Y,
+									 points[i + 2].X, points[i + 2].Y);
+
+	if (!isFrame)
+		renderer->Fill();
+
+	renderer->DrawPath(c_nStroke);
+	renderer->EndCommand(c_nPathType);
+	renderer->PathCommandClose();
+
+	delete[] points;
+}
+
+void DrawRoundRect(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& roundRect, size_t penWidth, size_t penHeight, bool isFrame)
+{
+	int pen_size = (penWidth + penHeight) / 2;
+
+	PICTrectangle oval = ContractRect(roundRect, pen_size, isFrame);
+	int ovalW = penWidth;
+	int ovalH = penHeight;
+	const long X[2] = {oval.left, oval.right};
+	const long Y[2] = {oval.top, oval.bottom};
+	long width = X[1] - X[0];
+	long height = Y[1] - Y[0];
+
+	if (ovalW > width)
+		ovalW = static_cast<int>(width);
+	if (ovalH > height)
+		ovalH = static_cast<int>(height);
+
+	renderer->PathCommandStart();
+	renderer->BeginCommand(c_nPathType);
+	Aggplus::CGraphicsPath path;
+	path.AddRoundRectangle(X[0], Y[0], X[1] - X[0], Y[1] - Y[0], width == 0.0 ? 0.0 : ovalW / width, height == 0.0 ? 0.0 : ovalH / height);
+	size_t points_count = path.GetPointCount();
+
+	Aggplus::PointF* points = new Aggplus::PointF[points_count];
+	path.GetPathPoints(points, points_count);
+
+	renderer->PathCommandMoveTo(points[0].X, points[0].Y);
+
+	for (size_t i = 1; i < points_count; i += 3)
+		renderer->PathCommandCurveTo(points[i].X, points[i].Y,
+									 points[i + 1].X, points[i + 1].Y,
+									 points[i + 2].X, points[i + 2].Y);
+
+	if (!isFrame)
+		renderer->Fill();
+
+	renderer->DrawPath(c_nStroke);
+	renderer->EndCommand(c_nPathType);
+	renderer->PathCommandClose();
+
+	delete[] points;
+}
+
+void DrawOval(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& oval, size_t penWidth, size_t penHeight, bool isFrame)
+{
+	int pen_size = (penWidth + penHeight) / 2;
+
+	PICTrectangle rect = ContractRect(oval, pen_size, isFrame);
+	const long X[2] = {rect.left, rect.right};
+	const long Y[2] = {rect.top, rect.bottom};
+
+	renderer->PathCommandStart();
+	renderer->BeginCommand(c_nPathType);
+	Aggplus::CGraphicsPath path;
+	path.AddEllipse(X[0], Y[0], X[1] - X[0], Y[1] - Y[0]);
+	size_t points_count = path.GetPointCount();
+
+	Aggplus::PointF* points = new Aggplus::PointF[points_count];
+	path.GetPathPoints(points, points_count);
+
+	renderer->PathCommandMoveTo(points[0].X, points[0].Y);
+
+	for (size_t i = 1; i < points_count; i += 3)
+		renderer->PathCommandCurveTo(points[i].X, points[i].Y,
+									 points[i + 1].X, points[i + 1].Y,
+									 points[i + 2].X, points[i + 2].Y);
+
+	if (!isFrame)
+		renderer->Fill();
+
+	renderer->DrawPath(c_nStroke);
+	renderer->EndCommand(c_nPathType);
+	renderer->PathCommandClose();
+
+	delete[] points;
 }
 
 void DrawPolygon(NSGraphics::IGraphicsRenderer* renderer, const Polygon<short>& poly, size_t penWidth, size_t penHeight, bool isFrame)
@@ -2230,14 +2353,6 @@ void DrawPolygon(NSGraphics::IGraphicsRenderer* renderer, const Polygon<short>& 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
 	renderer->PathCommandClose();
-}
-
-size_t ReadAndDrawPolygon(NSGraphics::IGraphicsRenderer* renderer, FILE* file, short penWidth, short penHeight, bool isFrame)
-{
-	Polygon<short> poly;
-	size_t data_size = ReadPolygon(file, poly);
-	DrawPolygon(renderer, poly, penWidth, penHeight, isFrame);
-	return data_size;
 }
 
 bool DecodePICT(FILE* hFile, ImagePICT* image)
@@ -2534,11 +2649,15 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x33:
 			case 0x34:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				// TODO: Read and draw Rect
+				PICTrectangle rect;
+				if (!ReadRectangle(hFile, &rect))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				DrawRect(renderer, rect, pen_width, pen_height, code == 0x30);
 				break;
 			}
 			case 0x38:
@@ -2556,11 +2675,15 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x43:
 			case 0x44:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				// TODO: Read and draw Roundrect
+				PICTrectangle round_rect;
+				if (!ReadRectangle(hFile, &round_rect))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				DrawRoundRect(renderer, round_rect, pen_width, pen_height, code == 0x40);
 				break;
 			}
 			case 0x48:
@@ -2578,11 +2701,15 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x53:
 			case 0x54:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				// TODO: Read and draw Oval
+				PICTrectangle oval;
+				if (!ReadRectangle(hFile, &oval))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				DrawOval(renderer, oval, pen_width, pen_height, code == 0x50);
 				break;
 			}
 			case 0x58:
@@ -2627,7 +2754,9 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
             case 0x73:
             case 0x74:
 			{
-				ReadAndDrawPolygon(renderer, hFile, pen_width, pen_height, code == 0x70);
+				Polygon<short> poly;
+				ReadPolygon(hFile, poly);
+				DrawPolygon(renderer, poly, pen_width, pen_height, code == 0x70);
 				break;
 			}
             case 0x75:

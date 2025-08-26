@@ -265,6 +265,24 @@ namespace Aggplus
 		m_internal->m_agg_ps.close_polygon();
 		return Ok;
 	}
+	Status CGraphicsPath::AddRoundRectangle(double x, double y, double width, double height, double cx, double cy)
+	{
+		m_internal->m_agg_ps.move_to(x + cx, y);
+		m_internal->m_agg_ps.line_to(x + width - cx, y);
+		agg::bezier_arc arc1(x + width - cx, y + cy, cx, cy, -agg::pi / 2.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc1, 0);
+		m_internal->m_agg_ps.line_to(x + width, y + height - cy);
+		agg::bezier_arc arc2(x + width - cx, y + height - cy, cx, cy, 0.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc2, 0);
+		m_internal->m_agg_ps.line_to(x + cx, y + height);
+		agg::bezier_arc arc3(x + cx, y + height - cy, cx, cy, agg::pi / 2.0, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc3, 0);
+		m_internal->m_agg_ps.line_to(x, y + cy);
+		agg::bezier_arc arc4(x + cx, y + cy, cx, cy, agg::pi, agg::pi / 2.0);
+		m_internal->m_agg_ps.join_path(arc4, 0);
+		m_internal->m_agg_ps.close_polygon();
+		return Ok;
+	}
 	Status CGraphicsPath::AddPolygon(double* pPoints, int nCount)
 	{
 		if (2 > nCount)

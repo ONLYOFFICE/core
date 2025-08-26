@@ -122,12 +122,15 @@ typedef struct _PICTCode
     const char* description;
 } PICTCode;
 
-typedef struct
+typedef struct _PICTrectangle
 {
-    short top;
-    short left;
-    short bottom;
-    short right;
+	short top{0};
+	short left{0};
+	short bottom{0};
+	short right{0};
+	_PICTrectangle() {}
+	_PICTrectangle(short _top, short _left, short _bottom, short _right) :
+		top(_top), left(_left), bottom(_bottom), right(_right) {}
 } PICTrectangle;
 
 typedef struct

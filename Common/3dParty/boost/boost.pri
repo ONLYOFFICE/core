@@ -39,6 +39,8 @@ core_windows {
     core_win_arm64:VS_ARCH=a64
     vs2019:VS_VERSION=142
 
+    DEFINES += BOOST_USE_WINDOWS_H BOOST_WINAPI_NO_REDECLARATIONS
+
     BOOST_POSTFIX = -vc$${VS_VERSION}-mt-$${VS_DEBUG}$${VS_ARCH}-1_72
 
     core_boost_libs:LIBS += -L$$CORE_BOOST_LIBS -llibboost_system$$BOOST_POSTFIX -llibboost_filesystem$$BOOST_POSTFIX

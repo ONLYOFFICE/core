@@ -2207,17 +2207,15 @@ void DrawRect(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& rect
 
 	renderer->PathCommandMoveTo(points[0].X, points[0].Y);
 
-	for (size_t i = 1; i < points_count; i += 3)
-		renderer->PathCommandCurveTo(points[i].X, points[i].Y,
-									 points[i + 1].X, points[i + 1].Y,
-									 points[i + 2].X, points[i + 2].Y);
+	for (size_t i = 1; i < points_count; i++)
+		renderer->PathCommandLineTo(points[i].X, points[i].Y);
 
 	if (!isFrame)
 		renderer->Fill();
 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
-	renderer->PathCommandClose();
+	renderer->PathCommandEnd();
 
 	delete[] points;
 }
@@ -2260,7 +2258,7 @@ void DrawRoundRect(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle&
 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
-	renderer->PathCommandClose();
+	renderer->PathCommandEnd();
 
 	delete[] points;
 }
@@ -2294,7 +2292,7 @@ void DrawOval(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& oval
 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
-	renderer->PathCommandClose();
+	renderer->PathCommandEnd();
 
 	delete[] points;
 }
@@ -2352,7 +2350,7 @@ void DrawPolygon(NSGraphics::IGraphicsRenderer* renderer, const Polygon<short>& 
 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
-	renderer->PathCommandClose();
+	renderer->PathCommandEnd();
 }
 
 bool DecodePICT(FILE* hFile, ImagePICT* image)
@@ -2382,6 +2380,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 	NSFonts::IFontManager* fmp = NSFonts::NSFontManager::Create();
 	renderer->SetFontManager(fmp);
 
+	bool  is_pix_data = false;
 	BYTE* data = new BYTE[4 * image->m_nWidth * image->m_nHeight];
 
 	CBgraFrame frame;
@@ -2391,7 +2390,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 	frame.put_Stride(4 * image->m_nWidth);
 
 	renderer->CreateFromBgraFrame(&frame);
-	renderer->SetSwapRGB(true);
+	renderer->SetSwapRGB(false);
 	renderer->put_Width(image->m_nWidth);
 	renderer->put_Height(image->m_nHeight);
 	renderer->put_PenColor(0x000000);
@@ -2456,42 +2455,29 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 				pen_width = ReadShortValue(hFile);
 				break;
 			}
-			// case 0x0e:
-			// {
-			// 	long color = ReadLongValue(hFile);
+			case 0x0e:
+			{
+				long color = ReadLongValue(hFile);
 
-			// 	switch(color)
-			// 	{
-			// 	case 33: renderer->put_PenColor(0x000000); break;
-			// 	case 30: renderer->put_PenColor(0xFFFFFF); break;
-			// 	case 205: renderer->put_PenColor(0xFF8080); break; //lightred
-			// 	case 341: renderer->put_PenColor(0x90EE90); break; //lightgreen
-			// 	case 409: renderer->put_PenColor(0xADD8E6); break; //lightblue
-			// 	case 273: renderer->put_PenColor(0xE0FFFF); break; //lightcyan
-			// 	case 137: renderer->put_PenColor(0xFF80FF); break; //lightmagenta
-			// 	case 69: renderer->put_PenColor(0xFFFF00); break; //yellow
-			// 	default: renderer->put_PenColor(0xD3D3D3); break; //lightgray
-			// 	}
-			// 	break;
-			// }
-			// case 0x0f:
-			// {
-			// 	long color = ReadLongValue(hFile);
-
-			// 	switch(color)
-			// 	{
-			// 	case 33: renderer->put_PenColor(0x000000); break;
-			// 	case 30: renderer->put_PenColor(0xFFFFFF); break;
-			// 	case 205: renderer->put_PenColor(0xFF8080); break; //lightred
-			// 	case 341: renderer->put_PenColor(0x90EE90); break; //lightgreen
-			// 	case 409: renderer->put_PenColor(0xADD8E6); break; //lightblue
-			// 	case 273: renderer->put_PenColor(0xE0FFFF); break; //lightcyan
-			// 	case 137: renderer->put_PenColor(0xFF80FF); break; //lightmagenta
-			// 	case 69: renderer->put_PenColor(0xFFFF00); break; //yellow
-			// 	default: renderer->put_PenColor(0xD3D3D3); break; //lightgray
-			// 	}
-			// 	break;
-			// }
+				switch(color)
+				{
+				case 33: renderer->put_BrushColor1(0x000000); break;
+				case 30: renderer->put_BrushColor1(0xFFFFFF); break;
+				case 205: renderer->put_BrushColor1(0xFF8080); break; //lightred
+				case 341: renderer->put_BrushColor1(0x90EE90); break; //lightgreen
+				case 409: renderer->put_BrushColor1(0xADD8E6); break; //lightblue
+				case 273: renderer->put_BrushColor1(0xE0FFFF); break; //lightcyan
+				case 137: renderer->put_BrushColor1(0xFF80FF); break; //lightmagenta
+				case 69: renderer->put_BrushColor1(0xFFFF00); break; //yellow
+				default: renderer->put_BrushColor1(0xD3D3D3); break; //lightgray
+				}
+				break;
+			}
+			case 0x0f:
+			{
+				ReadLongValue(hFile);
+				break;
+			}
 			case 0x12:
 			case 0x13:
 			case 0x14:
@@ -2813,6 +2799,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x9a:
 			case 0x9b:
 			{
+				 is_pix_data = true;
 				PICTrectangle source, destination;
 
 				unsigned char *p;
@@ -3198,6 +3185,9 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			continue;
 		}
 	}
+
+	if (data && !is_pix_data)
+		memcpy(image->ppixels, data, 4 * image->m_nWidth * image->m_nHeight * sizeof(unsigned char));
 
 
 	RELEASEINTERFACE(fmp);

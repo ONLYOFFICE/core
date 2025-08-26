@@ -816,9 +816,30 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	{
 		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
 		{
-			IMetafileToRenderter* pCorrector = new IMetafileToRenderter(pRenderer);
-			NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(m_vRedact[i]->m_pChanges, m_vRedact[i]->m_nChangeLength, pCorrector);
-			RELEASEOBJECT(pCorrector);
+			// TODO нужно сбросить все матрицы и т.п.
+			BYTE* pMemory = m_vRedact[i]->m_pChanges;
+			int ret = *((int*)pMemory);
+			pMemory += 4;
+			double R = ret / 100000.0;
+			ret = *((int*)pMemory);
+			pMemory += 4;
+			double G = ret / 100000.0;
+			ret = *((int*)pMemory);
+			double B = ret / 100000.0;
+			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
+			pRenderer->PathCommandClose();
+			pRenderer->put_BrushColor1(lColor);
+			pRenderer->PathCommandMoveTo(m_vRedact[i]->m_arrRedactBox[0], m_vRedact[i]->m_arrRedactBox[1]);
+			pRenderer->PathCommandLineTo(m_vRedact[i]->m_arrRedactBox[0], m_vRedact[i]->m_arrRedactBox[3]);
+			pRenderer->PathCommandLineTo(m_vRedact[i]->m_arrRedactBox[2], m_vRedact[i]->m_arrRedactBox[3]);
+			pRenderer->PathCommandLineTo(m_vRedact[i]->m_arrRedactBox[2], m_vRedact[i]->m_arrRedactBox[1]);
+			pRenderer->PathCommandClose();
+			pRenderer->DrawPath(c_nWindingFillMode);
+			pRenderer->PathCommandEnd();
+
+			// IMetafileToRenderter* pCorrector = new IMetafileToRenderter(pRenderer);
+			// NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(m_vRedact[i]->m_pChanges, m_vRedact[i]->m_nChangeLength, pCorrector);
+			// RELEASEOBJECT(pCorrector);
 		}
 	}
 }

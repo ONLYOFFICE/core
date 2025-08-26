@@ -1141,6 +1141,8 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 #ifdef USE_STYLE_COLOR
         if (charProps->m_nForeColor == PROP_DEF)
             charProps->m_nForeColor = 0;
+        charProps->m_eUnderStyle = RtfCharProperty::uls_none;
+        charProps->m_bBold = 0;
 #endif
     }
 

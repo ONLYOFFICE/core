@@ -1791,7 +1791,11 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 			default:
 				break;
 		}
-	}
+    }
+    else
+    {
+        sResult += L"<w:u w:val=\"none\"/>";
+    }
 
 	RENDER_OOX_INT( m_nUp, sResult, L"w:position" )
 	

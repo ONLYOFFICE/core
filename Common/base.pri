@@ -323,7 +323,6 @@ linux_arm64 {
 
 	ARM64_TOOLCHAIN_BIN = $$(ARM64_TOOLCHAIN_BIN)
 	ARM64_TOOLCHAIN_BIN_PREFIX = $$(ARM64_TOOLCHAIN_BIN_PREFIX)
-	ARM64_SYSROOT = $$(ARM64_SYSROOT)
 
 	!isEmpty(ARM64_TOOLCHAIN_BIN){
 		!isEmpty(ARM64_TOOLCHAIN_BIN_PREFIX){
@@ -339,11 +338,6 @@ linux_arm64 {
 			QMAKE_OBJCOPY     = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "objcopy")
 			QMAKE_NM          = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "nm -P")
 			QMAKE_STRIP       = $$join(ARM64_TOOLCHAIN_BIN_FULL, , , "strip")
-		}
-		!isEmpty(ARM64_SYSROOT) {
-		    LIBS += -L$$(ARM64_SYSROOT)/lib
-			LIBS += -L$$(ARM64_SYSROOT)/usr/lib
-			QT_CONFIG += no-pkg-config
 		}
 	}
 }

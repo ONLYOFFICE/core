@@ -32,173 +32,6 @@
 #include "pic.h"
 #include "../pro/Graphics.h"
 
-static const PICTCode
-	codes[] =
-	{
-		/* 0x00 */ { "NOP", 0, "nop" },
-		/* 0x01 */ { "ClipRgn", 0, "clip" },
-		/* 0x02 */ { "BkPat", 8, "background pattern" },
-		/* 0x03 */ { "TxFont", 2, "text font (word)" },
-		/* 0x04 */ { "TxFace", 1, "text face (byte)" },
-		/* 0x05 */ { "TxMode", 2, "text mode (word)" },
-		/* 0x06 */ { "SpExtra", 4, "space extra (fixed point)" },
-		/* 0x07 */ { "PnSize", 4, "pen size (point)" },
-		/* 0x08 */ { "PnMode", 2, "pen mode (word)" },
-		/* 0x09 */ { "PnPat", 8, "pen pattern" },
-		/* 0x0a */ { "FillPat", 8, "fill pattern" },
-		/* 0x0b */ { "OvSize", 4, "oval size (point)" },
-		/* 0x0c */ { "Origin", 4, "dh, dv (word)" },
-		/* 0x0d */ { "TxSize", 2, "text size (word)" },
-		/* 0x0e */ { "FgColor", 4, "foreground color (long longword)" },
-		/* 0x0f */ { "BkColor", 4, "background color (long longword)" },
-		/* 0x10 */ { "TxRatio", 8, "numerator (point), denominator (point)" },
-		/* 0x11 */ { "Version", 1, "version (byte)" },
-		/* 0x12 */ { "BkPixPat", 0, "color background pattern" },
-		/* 0x13 */ { "PnPixPat", 0, "color pen pattern" },
-		/* 0x14 */ { "FillPixPat", 0, "color fill pattern" },
-		/* 0x15 */ { "PnLocHFrac", 2, "fractional pen position" },
-		/* 0x16 */ { "ChExtra", 2, "extra for each character" },
-		/* 0x17 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x18 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x19 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x1a */ { "RGBFgCol", 6, "RGB foreColor" },
-		/* 0x1b */ { "RGBBkCol", 6, "RGB backColor" },
-		/* 0x1c */ { "HiliteMode", 0, "hilite mode flag" },
-		/* 0x1d */ { "HiliteColor", 6, "RGB hilite color" },
-		/* 0x1e */ { "DefHilite", 0, "Use default hilite color" },
-		/* 0x1f */ { "OpColor", 6, "RGB OpColor for arithmetic modes" },
-		/* 0x20 */ { "Line", 8, "pnLoc (point), newPt (point)" },
-		/* 0x21 */ { "LineFrom", 4, "newPt (point)" },
-		/* 0x22 */ { "ShortLine", 6, "pnLoc (point, dh, dv (-128 .. 127))" },
-		/* 0x23 */ { "ShortLineFrom", 2, "dh, dv (-128 .. 127)" },
-		/* 0x24 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x25 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x26 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x27 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x28 */ { "LongText", 0, "txLoc (point), count (0..255), text" },
-		/* 0x29 */ { "DHText", 0, "dh (0..255), count (0..255), text" },
-		/* 0x2a */ { "DVText", 0, "dv (0..255), count (0..255), text" },
-		/* 0x2b */ { "DHDVText", 0, "dh, dv (0..255), count (0..255), text" },
-		/* 0x2c */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x2d */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x2e */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x2f */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x30 */ { "frameRect", 8, "rect" },
-		/* 0x31 */ { "paintRect", 8, "rect" },
-		/* 0x32 */ { "eraseRect", 8, "rect" },
-		/* 0x33 */ { "invertRect", 8, "rect" },
-		/* 0x34 */ { "fillRect", 8, "rect" },
-		/* 0x35 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x36 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x37 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x38 */ { "frameSameRect", 0, "rect" },
-		/* 0x39 */ { "paintSameRect", 0, "rect" },
-		/* 0x3a */ { "eraseSameRect", 0, "rect" },
-		/* 0x3b */ { "invertSameRect", 0, "rect" },
-		/* 0x3c */ { "fillSameRect", 0, "rect" },
-		/* 0x3d */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x3e */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x3f */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x40 */ { "frameRRect", 8, "rect" },
-		/* 0x41 */ { "paintRRect", 8, "rect" },
-		/* 0x42 */ { "eraseRRect", 8, "rect" },
-		/* 0x43 */ { "invertRRect", 8, "rect" },
-		/* 0x44 */ { "fillRRrect", 8, "rect" },
-		/* 0x45 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x46 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x47 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x48 */ { "frameSameRRect", 0, "rect" },
-		/* 0x49 */ { "paintSameRRect", 0, "rect" },
-		/* 0x4a */ { "eraseSameRRect", 0, "rect" },
-		/* 0x4b */ { "invertSameRRect", 0, "rect" },
-		/* 0x4c */ { "fillSameRRect", 0, "rect" },
-		/* 0x4d */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x4e */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x4f */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x50 */ { "frameOval", 8, "rect" },
-		/* 0x51 */ { "paintOval", 8, "rect" },
-		/* 0x52 */ { "eraseOval", 8, "rect" },
-		/* 0x53 */ { "invertOval", 8, "rect" },
-		/* 0x54 */ { "fillOval", 8, "rect" },
-		/* 0x55 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x56 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x57 */ { "reserved", 8, "reserved for Apple use" },
-		/* 0x58 */ { "frameSameOval", 0, "rect" },
-		/* 0x59 */ { "paintSameOval", 0, "rect" },
-		/* 0x5a */ { "eraseSameOval", 0, "rect" },
-		/* 0x5b */ { "invertSameOval", 0, "rect" },
-		/* 0x5c */ { "fillSameOval", 0, "rect" },
-		/* 0x5d */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x5e */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x5f */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x60 */ { "frameArc", 12, "rect, startAngle, arcAngle" },
-		/* 0x61 */ { "paintArc", 12, "rect, startAngle, arcAngle" },
-		/* 0x62 */ { "eraseArc", 12, "rect, startAngle, arcAngle" },
-		/* 0x63 */ { "invertArc", 12, "rect, startAngle, arcAngle" },
-		/* 0x64 */ { "fillArc", 12, "rect, startAngle, arcAngle" },
-		/* 0x65 */ { "reserved", 12, "reserved for Apple use" },
-		/* 0x66 */ { "reserved", 12, "reserved for Apple use" },
-		/* 0x67 */ { "reserved", 12, "reserved for Apple use" },
-		/* 0x68 */ { "frameSameArc", 4, "rect, startAngle, arcAngle" },
-		/* 0x69 */ { "paintSameArc", 4, "rect, startAngle, arcAngle" },
-		/* 0x6a */ { "eraseSameArc", 4, "rect, startAngle, arcAngle" },
-		/* 0x6b */ { "invertSameArc", 4, "rect, startAngle, arcAngle" },
-		/* 0x6c */ { "fillSameArc", 4, "rect, startAngle, arcAngle" },
-		/* 0x6d */ { "reserved", 4, "reserved for Apple use" },
-		/* 0x6e */ { "reserved", 4, "reserved for Apple use" },
-		/* 0x6f */ { "reserved", 4, "reserved for Apple use" },
-		/* 0x70 */ { "framePoly", 0, "poly" },
-		/* 0x71 */ { "paintPoly", 0, "poly" },
-		/* 0x72 */ { "erasePoly", 0, "poly" },
-		/* 0x73 */ { "invertPoly", 0, "poly" },
-		/* 0x74 */ { "fillPoly", 0, "poly" },
-		/* 0x75 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x76 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x77 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x78 */ { "frameSamePoly", 0, "poly (NYI)" },
-		/* 0x79 */ { "paintSamePoly", 0, "poly (NYI)" },
-		/* 0x7a */ { "eraseSamePoly", 0, "poly (NYI)" },
-		/* 0x7b */ { "invertSamePoly", 0, "poly (NYI)" },
-		/* 0x7c */ { "fillSamePoly", 0, "poly (NYI)" },
-		/* 0x7d */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x7e */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x7f */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x80 */ { "frameRgn", 2, "region" },
-		/* 0x81 */ { "paintRgn", 2, "region" },
-		/* 0x82 */ { "eraseRgn", 2, "region" },
-		/* 0x83 */ { "invertRgn", 2, "region" },
-		/* 0x84 */ { "fillRgn", 2, "region" },
-		/* 0x85 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x86 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x87 */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x88 */ { "frameSameRgn", 0, "region (NYI)" },
-		/* 0x89 */ { "paintSameRgn", 0, "region (NYI)" },
-		/* 0x8a */ { "eraseSameRgn", 0, "region (NYI)" },
-		/* 0x8b */ { "invertSameRgn", 0, "region (NYI)" },
-		/* 0x8c */ { "fillSameRgn", 0, "region (NYI)" },
-		/* 0x8d */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x8e */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x8f */ { "reserved", 0, "reserved for Apple use" },
-		/* 0x90 */ { "BitsRect", 0, "copybits, rect clipped" },
-		/* 0x91 */ { "BitsRgn", 0, "copybits, rgn clipped" },
-		/* 0x92 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x93 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x94 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x95 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x96 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x97 */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x98 */ { "PackBitsRect", 0, "packed copybits, rect clipped" },
-		/* 0x99 */ { "PackBitsRgn", 0, "packed copybits, rgn clipped" },
-		/* 0x9a */ { "DirectBitsRect", 0, "PixMap, srcRect, dstRect, mode, PixData" },
-		/* 0x9b */ { "DirectBitsRgn", 0, "PixMap, srcRect, dstRect, mode, maskRgn, PixData" },
-		/* 0x9c */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x9d */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x9e */ { "reserved", -1, "reserved for Apple use" },
-		/* 0x9f */ { "reserved", -1, "reserved for Apple use" },
-		/* 0xa0 */ { "ShortComment", 2, "kind (word)" },
-		/* 0xa1 */ { "LongComment", 0, "kind (word), size (word), data" }
-	};
-
 #define BackgroundColorRGBA  255,255,255,255
 #define TransparentAlpha ((unsigned char) 0)
 
@@ -219,21 +52,11 @@ int LocaleCompare(const char *p, const char *q)
 	}
 	if (q == (char *) nullptr)
 		return 1;
-	// {
-	// 	const unsigned char
-	// 	*r = (const unsigned char *) p,
-	// 	*s = (const unsigned char *) q;
-	// 	for ( ; (*r != '\0') && (*s != '\0') && ((*r == *s) ||
-	// 		(LocaleToLowercase((int) *r) == LocaleToLowercase((int) *s))); r++, s++);
-	// 	return(LocaleToLowercase((int) *r)-LocaleToLowercase((int) *s));
-	// }
-}
-
-void LocaleLower(char *string)
-{
-	char *q;
-	for (q=string; *q != '\0'; q++)
-		*q=(char) LocaleToLowercase((int) *q);
+	const unsigned char
+	*r = (const unsigned char *) p,
+	*s = (const unsigned char *) q;
+	for ( ; (*r != '\0') && (*s != '\0') && ((*r == *s) || (LocaleToLowercase((int) *r) == LocaleToLowercase((int) *s))); r++, s++);
+	return(LocaleToLowercase((int) *r)-LocaleToLowercase((int) *s));
 }
 
 int LocaleNCompare(const char *p, const char *q, const size_t length)
@@ -248,16 +71,14 @@ int LocaleNCompare(const char *p, const char *q, const size_t length)
 		return 1;
 	if (length == 0)
 		return 0;
-	// {
-	//   const unsigned char
-	// 	*s = (const unsigned char *) p,
-	// 	*t = (const unsigned char *) q;
-	//   size_t
-	// 	n = length;
-	//   for (n--; (*s != '\0') && (*t != '\0') && (n != 0) && ((*s == *t) ||
-	// 	(LocaleToLowercase((int) *s) == LocaleToLowercase((int) *t))); s++, t++, n--);
-	//   return(LocaleToLowercase((int) *s)-LocaleToLowercase((int) *t));
-	// }
+
+	const unsigned char
+		*s = (const unsigned char *) p,
+		*t = (const unsigned char *) q;
+	size_t n = length;
+	for (n--; (*s != '\0') && (*t != '\0') && (n != 0) && ((*s == *t) || (LocaleToLowercase((int) *s) == LocaleToLowercase((int) *t))); s++, t++, n--);
+	return(LocaleToLowercase((int) *s)-LocaleToLowercase((int) *t));
+
 }
 
 char *ConstantString(const char *source)
@@ -404,35 +225,6 @@ void DestroyStringInfo(StringInfo *string_info)
 	free(string_info);
 }
 
-StringInfo *BlobToStringInfo(const void *blob, const size_t length)
-{
-	if (~length < 4096)
-		return nullptr;
-
-	StringInfo *string_info = (StringInfo *) malloc(sizeof(*string_info));
-	(void) memset(string_info, 0, sizeof(*string_info));
-	string_info->signature = 0xabacadabUL;
-
-	if (string_info == nullptr)
-	  return nullptr;
-
-	string_info->length=length;
-	string_info->datum=(unsigned char *) malloc(length + 4096 * sizeof(*string_info->datum));
-	if (string_info->datum == (unsigned char *) nullptr)
-	{
-		DestroyStringInfo(string_info);
-		return nullptr;
-	}
-
-	if (blob != nullptr)
-		(void) memcpy(string_info->datum,blob,length);
-	else
-		(void) memset(string_info->datum, 0, length * sizeof(*string_info->datum));
-
-	(void) memset(string_info->datum+length, 0, 4096 * sizeof(*string_info->datum));
-	return string_info;
-}
-
 void DeletePixelsMemory(ImagePICT* image)
 {
 	if (image->ppixels != nullptr)
@@ -562,12 +354,6 @@ unsigned char* GetPixels(ImagePICT* image, const long long& x, const long long& 
 		return nullptr;
 
     return pixels;
-}
-
-inline float PerceptibleReciprocal(const float x)
-{
-	float sign = x < 0.0f ? -1.0f : 1.0f;
-	return((sign*x) >= 1.0e-12 ? 1.0f / x : sign * ((float) (1.0f / 1.0e-12)));
 }
 
 inline unsigned char GetPixelChannel(const ImagePICT *image, const PixelChannel& channel, const unsigned char *pixel)
@@ -784,21 +570,6 @@ int SetImageColorspace(ImagePICT *image, const ColorspaceType& colorspace)
 	return 1;
 }
 
-long long CastDoubleToLong(const double x)
-{
-	if (floor(x) > ((double) LLONG_MAX - 1))
-	{
-		return (long long) LLONG_MAX;
-	}
-
-	if (ceil(x) < ((double) LLONG_MIN + 1))
-	{
-		return (long long) LLONG_MIN;
-	}
-
-	return (long long) x;
-}
-
 inline unsigned char ClampPixel(const double& pixel)
 {
 	if (pixel < 0.0)
@@ -826,32 +597,6 @@ int Clamp(const double& x, const double& min, const double& max) {
 		return x;
 }
 
-inline bool CopyPixel(const ImagePICT *image, const unsigned char *source, unsigned char *destination)
-{
-	if (source == (const unsigned char *) nullptr)
-	{
-		destination[RedPixelChannel]=(unsigned char) (Clamp(image->background_color.red, 0.0f, 255.0f) + 0.5f);
-		destination[GreenPixelChannel]=(unsigned char) (Clamp(image->background_color.green, 0.0f, 255.0f) + 0.5f);
-		destination[BluePixelChannel]=(unsigned char) (Clamp(image->background_color.blue, 0.0f, 255.0f) + 0.5f);
-		destination[BlackPixelChannel]=(unsigned char) (Clamp(image->background_color.black, 0.0f, 255.0f) + 0.5f);
-		destination[AlphaPixelChannel]=(unsigned char) (Clamp(image->background_color.alpha, 0.0f, 255.0f) + 0.5f);
-		return false;
-	}
-	for (size_t i = 0; i < 4; i++)
-	{
-		PixelChannel channel = GetPixelChannelChannel(image,i);
-		destination[channel] = source[i];
-	}
-	return true;
-}
-
-inline bool GetOneVirtualPixel(ImagePICT *image,const long long x,const long long y,unsigned char *pixel)
-{
-	(void) memset(pixel, 0, 64 * sizeof(*pixel));
-	const unsigned char* p = GetPixels(image, x, y, 1UL, 1UL);
-	return CopyPixel(image, p, pixel);
-}
-
 void AquireImage(ImagePICT* image)
 {
 	image->storage_class = DirectClass;
@@ -874,7 +619,6 @@ void AquireImage(ImagePICT* image)
 	image->m_nWidth = 0;
 	image->m_ndepth = 8;
 	image->colors = 0;
-	image->profiles = nullptr;
 	image->artifacts = nullptr;
 	image->fuzz = 0.0;
 	image->resolutionX = 0.0;
@@ -895,11 +639,18 @@ size_t GetSize(FILE* file)
 {
 	struct stat st;
 
-	long long file_discription = fileno(file);
+	long long file_discription = _fileno(file);
 	if (fstat(file_discription, &st) == 0)
 		return st.st_size;
 
 	return 0;
+}
+
+void Skip(FILE* file, size_t size)
+{
+	if(!file)
+		return;
+	fread(nullptr, 1, size, file);
 }
 
 int Read(FILE* file, const int length, void* data)
@@ -1390,13 +1141,6 @@ SplayTreeInfo *CloneSplayTree(SplayTreeInfo *splay_tree, void *(*clone_key)(void
 	return clone_tree;
 }
 
-int CompareSplayTreeString(const void *target, const void *source)
-{
-	const char* p = (const char *) target;
-	const char* q = (const char *) source;
-	return LocaleCompare(p,q);
-}
-
 const void *GetValueFromSplayTree(SplayTreeInfo *splay_tree, const void *key)
 {
 	int compare;
@@ -1422,139 +1166,6 @@ const void *GetRootValueFromSplayTree(SplayTreeInfo *splay_tree)
 		value = splay_tree->root->value;
 
 	return value;
-}
-
-const unsigned char *ReadResourceShort(const unsigned char *p, unsigned short *Quantum)
-{
-	*Quantum = (unsigned short) (*p++) << 8;
-	*Quantum |= (unsigned short) (*p++);
-	return p;
-}
-
-const unsigned char *ReadResourceByte(const unsigned char *p, unsigned char *Quantum)
-{
-	*Quantum = (*p++);
-	return p;
-}
-
-const unsigned char *ReadResourceLong(const unsigned char *p, unsigned int *Quantum)
-{
-	*Quantum = (unsigned int) (*p++) << 24;
-	*Quantum |= (unsigned int) (*p++) << 16;
-	*Quantum |= (unsigned int) (*p++) << 8;
-	*Quantum |= (unsigned int) (*p++);
-	return p;
-}
-
-void WriteResourceLong(unsigned char *p, const unsigned int Quantum)
-{
-	unsigned char buffer[4];
-
-	buffer[0]=(unsigned char) (Quantum >> 24);
-	buffer[1]=(unsigned char) (Quantum >> 16);
-	buffer[2]=(unsigned char) (Quantum >> 8);
-	buffer[3]=(unsigned char) Quantum;
-
-	memcpy(p,buffer,4);
-}
-
-void WriteTo8BimProfile(ImagePICT *image,const char *name, const StringInfo *profile)
-{
-	unsigned short profile_id;
-
-	if (LocaleCompare(name,"icc") == 0)
-		profile_id=0x040f;
-	else if (LocaleCompare(name,"iptc") == 0)
-		profile_id=0x0404;
-	else if (LocaleCompare(name,"xmp") == 0)
-		profile_id=0x0424;
-	else
-		return;
-
-	StringInfo* profile_8bim = (StringInfo *) GetValueFromSplayTree((SplayTreeInfo *) image->profiles,"8bim");
-
-	if (profile_8bim == nullptr)
-		return;
-
-	const unsigned char* datum = profile_8bim->datum;
-	size_t length = profile_8bim->length;
-
-	for (const unsigned char* p = datum; p < (datum + length - 16); )
-	{
-		unsigned short id;
-		unsigned char length_byte;
-		const unsigned char* q = p;
-		if (LocaleNCompare((char *) p,"8BIM",4) != 0)
-			break;
-
-		p += 4;
-		p = ReadResourceShort(p, &id);
-		p = ReadResourceByte(p, &length_byte);
-		p += length_byte;
-
-		if (((length_byte + 1) & 0x01) != 0)
-			p++;
-		if (p > (datum+length - 4))
-			break;
-
-		unsigned int value;
-		p = ReadResourceLong(p, &value);
-		long long count = (long long) value;
-
-		if ((count & 0x01) != 0)
-			count++;
-		if ((count < 0) || (p > (datum + length - count)) || (count > (long long) length))
-			break;
-		if (id != profile_id)
-			p += count;
-		else
-		{
-			size_t offset;
-
-			StringInfo *extract_profile;
-
-			long long extract_extent = 0;
-			size_t extent = (size_t) ((datum + length) - (p + count));
-			if (profile == nullptr)
-			{
-				offset = (size_t) (q - datum);
-				extract_profile = AcquireStringInfo(offset + extent);
-				memcpy(extract_profile->datum, datum, offset);
-			}
-			else
-			{
-				offset = (size_t) (p - datum);
-				extract_extent = (long long) profile->length;
-				if ((extract_extent & 0x01) != 0)
-					extract_extent++;
-				extract_profile = AcquireStringInfo(offset + (size_t) extract_extent + extent);
-				memcpy(extract_profile->datum, datum, offset - 4);
-				WriteResourceLong(extract_profile->datum + offset - 4, (unsigned int)profile->length);
-				memcpy(extract_profile->datum+offset, profile->datum,profile->length);
-			}
-
-			memcpy(extract_profile->datum + offset + extract_extent, p + count,extent);
-			AddValueToSplayTree((SplayTreeInfo *) image->profiles, ConstantString("8bim"),CloneStringInfo(extract_profile));
-			DestroyStringInfo(extract_profile);
-			break;
-		}
-	}
-}
-
-bool SetImageProfileInternal(ImagePICT *image, const char *name, const StringInfo *profile, const int recursive)
-{
-	char key[4096];
-
-	StringInfo* clone_profile = CloneStringInfo(profile);
-	if (image->profiles == (SplayTreeInfo *) nullptr)
-		image->profiles = NewSplayTree(CompareSplayTreeString);
-	CopyMagickString(key, name, 4096);
-	LocaleLower(key);
-	bool status=AddValueToSplayTree((SplayTreeInfo *) image->profiles,ConstantString(key), clone_profile);
-	if (status)
-		WriteTo8BimProfile(image, name, clone_profile);
-
-	return status;
 }
 
 const char *GetImageArtifact(const ImagePICT *image,const char *artifact)
@@ -1625,10 +1236,8 @@ ImagePICT* CloneImage(const ImagePICT* image, const size_t colums, const size_t 
     {
         clone_image->channel_map = (PixelChannelMap*) malloc(65 * sizeof (image->channel_map));
         memcpy(clone_image->channel_map, image->channel_map, 65 * sizeof (image->channel_map));
-    }
+	}
 
-	if (image->profiles != nullptr)
-        clone_image->profiles = CloneSplayTree(image->profiles, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
 	if (image->artifacts != nullptr)
         clone_image->artifacts = CloneSplayTree(image->artifacts, (void *(*)(void *)) ConstantString,(void *(*)(void *)) CloneStringInfo);
 
@@ -1659,7 +1268,7 @@ bool CompositeImage(ImagePICT *image, const ImagePICT *composite, const int clip
 	ImagePICT* source_image = CloneImage(composite, 0, 0);
 	if (!AquirePixelsMemory(source_image))
 	{
-		free(source_image);
+		DestroyImage(source_image);
 		return status;
 	}
 
@@ -2189,6 +1798,146 @@ PICTrectangle ContractRect(const PICTrectangle& rect, int penSize, bool isFrame)
 	return PICTrectangle(Y[0], X[0], Y[1], X[1]);
 }
 
+void DrawPolygon(NSGraphics::IGraphicsRenderer* renderer, const Polygon<short>& poly, size_t penWidth, size_t penHeight, bool isFrame)
+{
+	size_t pen_size = (penWidth + penHeight) / 2;
+	long deca1TL[2] = {0, 0}, deca1BR[2] = {static_cast<long>(penWidth), static_cast<long>(penHeight)};
+
+	if (isFrame)
+	{
+		deca1TL[0] += pen_size / 2;
+		deca1TL[1] += pen_size / 2;
+		deca1BR[0] -= (pen_size + 1) / 2;
+		deca1BR[1] -= (pen_size + 1) / 2;
+	}
+	else
+		deca1BR[0] = deca1BR[1] = 0;
+
+	size_t points_count = poly.Size;
+	if (points_count < 1)
+		return;
+
+	double bary[2] = {0.0, 0.0};
+	for (int i = 0; i < points_count; i++)
+	{
+		const Point<short>& pt = poly.Points[i];
+		bary[0] += double(pt.X);
+		bary[1] += double(pt.Y);
+	}
+	bary[0] /= double(points_count);
+	bary[1] /= double(points_count);
+
+
+	Polygon<double> B2Dpoly;
+	B2Dpoly.Points = (Point<double>*) malloc(points_count * sizeof(Point<double>));
+	for (int i = 0; i < points_count; i++)
+	{
+		const Point<short>& pt = poly.Points[i];
+		double x = (double(pt.X) < bary[0]) ? pt.X + deca1TL[0] : pt.X + deca1BR[0];
+		double y = (double(pt.Y) < bary[1]) ? pt.Y + deca1TL[1] : pt.Y + deca1BR[1];
+		B2Dpoly.Points[i] = Point(x, y);
+	}
+
+	renderer->PathCommandStart();
+	renderer->BeginCommand(c_nPathType);
+	renderer->PathCommandMoveTo(B2Dpoly.Points[0].X, B2Dpoly.Points[0].Y);
+
+	for (int i = 1; i < points_count; i++)
+		renderer->PathCommandLineTo(B2Dpoly.Points[i].X, B2Dpoly.Points[i].Y);
+
+
+	if (!isFrame)
+		renderer->Fill();
+
+	renderer->DrawPath(c_nStroke);
+	renderer->EndCommand(c_nPathType);
+	renderer->PathCommandEnd();
+}
+
+void DrawLine(NSGraphics::IGraphicsRenderer* renderer, const Point<short>& p1, const Point<short>& p2, size_t penWidth, size_t penHeight)
+{
+	long dir[2] = {p2.X - p1.X, p2.Y - p1.Y};
+	long X[2] = {p1.X, p2.X};
+	long Y[2] = {p1.Y, p2.Y};
+
+	if (dir[0] == 0)
+	{
+		if (X[0] < X[1])
+			X[1] += penWidth;
+		else
+			X[0] += penWidth;
+		Y[1] += penHeight;
+
+		Polygon<short> poly;
+		poly.Size = 5;
+		poly.Points = (Point<short>*) malloc(5 * sizeof(Point<short>));
+		poly.Points[0] = Point<short>(X[0], Y[0]);
+		poly.Points[1] = Point<short>(X[1], Y[0]);
+		poly.Points[2] = Point<short>(X[1], Y[1]);
+		poly.Points[3] = Point<short>(X[0], Y[1]);
+		poly.Points[4] = Point<short>(X[0], Y[0]);
+		DrawPolygon(renderer, poly, penWidth, penHeight, false);
+	}
+	else if (dir[1] == 0)
+	{
+		if (Y[0] < Y[1])
+			Y[1] += penHeight;
+		else
+			Y[0] += penHeight;
+		X[1] += penWidth;
+
+		Polygon<short> poly;
+		poly.Size = 5;
+		poly.Points = (Point<short>*) malloc(5 * sizeof(Point<short>));
+		poly.Points[0] = Point<short>(X[0], Y[0]);
+		poly.Points[1] = Point<short>(X[1], Y[0]);
+		poly.Points[2] = Point<short>(X[1], Y[1]);
+		poly.Points[3] = Point<short>(X[0], Y[1]);
+		poly.Points[4] = Point<short>(X[0], Y[0]);
+		DrawPolygon(renderer, poly, penWidth, penHeight, false);
+	}
+	else if (dir[0] * dir[0] + dir[1] * dir[1] < 25)
+	{
+		long orig_pt[4][2] = {{p1.X, p1.Y},
+							 {p1.X + static_cast<long>(penWidth), p1.Y},
+							 {p1.X + static_cast<long>(penWidth), p1.Y + static_cast<long>(penHeight)},
+							 {p1.X, p1.Y + static_cast<long>(penHeight)}};
+		int orig_avoid = dir[0] > 0 ? (dir[1] > 0 ? 2 : 1) : (dir[1] > 0 ? 3 : 0);
+		long dest_pt[4][2] = {{p2.X, p2.Y},
+							 {p2.X + static_cast<long>(penWidth), p2.Y},
+							 {p2.X + static_cast<long>(penWidth), p2.Y + static_cast<long>(penHeight)},
+							 {p2.X, p2.Y + static_cast<long>(penHeight)}};
+		Polygon<short> poly;
+		poly.Size = 7;
+		poly.Points	= (Point<short>*) malloc(7 * sizeof(Point<short>));
+		for (int w = 1; w <	4; w++)
+		{
+			int wh = (w + orig_avoid) % 4;
+			poly.Points[w - 1] = Point<short>(orig_pt[wh][0], orig_pt[wh][1]);
+		}
+
+		for (int w = 3; w < 6; w++)
+		{
+			int wh = (w + orig_avoid) % 4;
+			poly.Points[w] = Point<short>(dest_pt[wh][0], dest_pt[wh][1]);
+		}
+
+		int wh = (orig_avoid + 1) % 4;
+		poly.Points[6] = Point<short>(orig_pt[wh][0], orig_pt[wh][1]);
+		DrawPolygon(renderer, poly, penWidth, penHeight, false);
+	}
+	else
+	{
+		long decal[2] = {static_cast<long>(penWidth / 2), static_cast<long>(penHeight / 2)};
+		Polygon<short> poly;
+		poly.Size = 2;
+		poly.Points = (Point<short>*) malloc(2 + sizeof(Point<short>));
+		poly.Points[0] = Point<short>(p1.X + decal[0], p1.Y + decal[1]);
+		poly.Points[1] = Point<short>(p2.X + decal[0], p2.Y + decal[1]);
+		DrawPolygon(renderer, poly, penWidth, penHeight, true);
+	}
+}
+
 void DrawRect(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& rect, size_t penWidth, size_t penHeight, bool isFrame)
 {
 	int pen_size = (penWidth + penHeight) / 2;
@@ -2297,60 +2046,69 @@ void DrawOval(NSGraphics::IGraphicsRenderer* renderer, const PICTrectangle& oval
 	delete[] points;
 }
 
-void DrawPolygon(NSGraphics::IGraphicsRenderer* renderer, const Polygon<short>& poly, size_t penWidth, size_t penHeight, bool isFrame)
+void DrawArc(NSGraphics::IGraphicsRenderer* renderer, FILE* file, PICTrectangle arc, size_t penWidth, size_t penHeight)
 {
-	size_t pen_size = (penWidth + penHeight) / 2;
-	long deca1TL[2] = {0, 0}, deca1BR[2] = {static_cast<long>(penWidth), static_cast<long>(penHeight)};
-
-	if (isFrame)
-	{
-		deca1TL[0] += pen_size / 2;
-		deca1TL[1] += pen_size / 2;
-		deca1BR[0] -= (pen_size + 1) / 2;
-		deca1BR[1] -= (pen_size + 1) / 2;
-	}
-	else
-		deca1BR[0] = deca1BR[1] = 0;
-
-	size_t points_count = poly.Size;
-	if (points_count < 1)
+	short start_angle = ReadShortValue(file);
+	short angle = ReadShortValue(file);
+	if (feof(file) || (penWidth == 0 && penHeight == 0))
 		return;
 
-	double bary[2] = {0.0, 0.0};
-	for (int i = 0; i < points_count; i++)
+	if (angle < 0)
 	{
-		const Point<short>& pt = poly.Points[i];
-		bary[0] += double(pt.X);
-		bary[1] += double(pt.Y);
+		start_angle = start_angle + angle;
+		angle = -angle;
 	}
-	bary[0] /= double(points_count);
-	bary[1] /= double(points_count);
 
-
-	Polygon<double> B2Dpoly;
-	B2Dpoly.Points = (Point<double>*) malloc(points_count * sizeof(Point<double>));
-	for (int i = 0; i < points_count; i++)
-	{
-		const Point<short>& pt = poly.Points[i];
-		double x = (double(pt.X) < bary[0]) ? pt.X + deca1TL[0] : pt.X + deca1BR[0];
-		double y = (double(pt.Y) < bary[1]) ? pt.Y + deca1TL[1] : pt.Y + deca1BR[1];
-		B2Dpoly.Points[i] = Point(x, y);
-	}
+	double ang1 = agg::deg2rad(start_angle);
+	double ang2 = agg::deg2rad(angle);
 
 	renderer->PathCommandStart();
 	renderer->BeginCommand(c_nPathType);
-	renderer->PathCommandMoveTo(B2Dpoly.Points[0].X, B2Dpoly.Points[0].Y);
+	Aggplus::CGraphicsPath path;
+	path.AddArc(arc.left, arc.top, arc.right - arc.left, arc.bottom - arc.top, ang1, ang2);
 
-	for (int i = 1; i < points_count; i++)
-		renderer->PathCommandLineTo(B2Dpoly.Points[i].X, B2Dpoly.Points[i].Y);
+	size_t points_count = path.GetPointCount();
 
+	Aggplus::PointF* points = new Aggplus::PointF[points_count];
+	path.GetPathPoints(points, points_count);
 
-	if (!isFrame)
-		renderer->Fill();
+	renderer->PathCommandMoveTo(points[0].X, points[0].Y);
+
+	for (size_t i = 1; i < points_count; i += 3)
+		renderer->PathCommandCurveTo(points[i].X, points[i].Y,
+									 points[i + 1].X, points[i + 1].Y,
+									 points[i + 2].X, points[i + 2].Y);
 
 	renderer->DrawPath(c_nStroke);
 	renderer->EndCommand(c_nPathType);
 	renderer->PathCommandEnd();
+
+	delete[] points;
+}
+
+void ReadAndDrawText(NSGraphics::IGraphicsRenderer* renderer, FILE* hFile, size_t penWidth, size_t penHeight, const std::wstring& fontName, short fontSize, const long& fontStyle, short x, short y)
+{
+	char text[256];
+	char byte_len = ReadByte(hFile);
+	unsigned long len = static_cast<unsigned long>(byte_len) & 0x000000ff;
+	len = Read(hFile, len, &text);
+
+	if (penWidth == 0 && penHeight == 0)
+		return;
+
+	while (len > 0 && static_cast<unsigned char>(text[len - 1]) < 32)
+		len--;
+	text[len] = 0;
+	renderer->put_FontName(fontName);
+	renderer->put_FontSize(fontSize);
+	renderer->put_FontStyle(fontStyle);
+
+	std::wstring ws_text(len, L'\0');
+	std::mbstowcs(&ws_text[0], text, len);
+
+	renderer->BeginCommand(c_nTextGraphicType);
+	renderer->CommandDrawText(ws_text, x, y, 0.0, 0.0);
+	renderer->EndCommand(c_nTextGraphicType);
 }
 
 bool DecodePICT(FILE* hFile, ImagePICT* image)
@@ -2397,6 +2155,18 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 
 	short pen_width = 0;
 	short pen_height = 0;
+
+	Point<short> pen_point;
+	Point<short> text_point;
+	std::wstring font_name;
+	short font_size = 0;
+	long font_style = 0;
+
+	PICTrectangle last_rect;
+	PICTrectangle last_round_rect;
+	PICTrectangle last_oval;
+	PICTrectangle last_arc;
+	Polygon<short> last_polygon;
 
 	for (int code = 0; feof(hFile) == 0; )
 	{
@@ -2449,10 +2219,154 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 				}
 				break;
 			}
+			case 0x11:
+			{
+				fseek(hFile, 1, SEEK_CUR);
+				break;
+			}
+			case 0x03:
+			case 0x05:
+			case 0x08:
+			case 0x15:
+			case 0x16:
+			case 0xa0:
+			{
+				fseek(hFile, 2, SEEK_CUR);
+				break;
+			}
+			case 0x1d:
+			case 0x1f:
+			{
+				fseek(hFile, 3, SEEK_CUR);
+				break;
+			}
+			case 0x06:
+			case 0x0b:
+			case 0x0c:
+			case 0x0f:
+			case 0x6d:
+			case 0x6e:
+			case 0x6f:
+			{
+				fseek(hFile, 4, SEEK_CUR);
+				break;
+			}
+			case 0x02:
+			case 0x09:
+			case 0x0a:
+			case 0x10:
+			case 0x35:
+			case 0x36:
+			case 0x37:
+			case 0x45:
+			case 0x46:
+			case 0x47:
+			case 0x55:
+			case 0x56:
+			case 0x57:
+			{
+				fseek(hFile, 8, SEEK_CUR);
+				break;
+			}
+			case 0x2d:
+			{
+				fseek(hFile, 10, SEEK_CUR);
+				break;
+			}
+			case 0x65:
+			case 0x66:
+			case 0x67:
+			{
+				fseek(hFile, 12, SEEK_CUR);
+				break;
+			}
+			case 0xa1:
+			{
+				fseek(hFile, 2, SEEK_CUR);
+				short length = ReadShortValue(hFile);
+				if (length > GetSize(hFile))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				fseek(hFile, length, SEEK_CUR);
+				break;
+			}
+			case 0x24:
+			case 0x25:
+			case 0x26:
+			case 0x27:
+			case 0x2e:
+			case 0x2f:
+			case 0x75:
+			case 0x76:
+			case 0x77:
+			case 0x80:
+			case 0x81:
+			case 0x82:
+			case 0x83:
+			case 0x84:
+			case 0x92:
+			case 0x93:
+			case 0x94:
+			case 0x95:
+			case 0x96:
+			case 0x97:
+			case 0x9c:
+			case 0x9d:
+			case 0x9e:
+			case 0x9f:
+			{
+				short length = ReadShortValue(hFile);
+				if (length > GetSize(hFile))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				fseek(hFile, length - 2, SEEK_CUR);
+				break;
+			}
+			case 0x85:
+			case 0x86:
+			case 0x87:
+			{
+				short length = ReadShortValue(hFile);
+				if (length > GetSize(hFile))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				fseek(hFile, length - 4, SEEK_CUR);
+				break;
+			}
+			case 0x04:
+			{
+				char c = ReadByte(hFile);
+				if ((c & 0x01) != 0)
+					font_style |= 0x01;
+				if ((c & 0x02) != 0)
+					font_style |= 0x02;
+				if ((c & 0x04) != 0)
+					font_style |= 0x7c >> 2;
+				if ((c & 0x08) != 0)
+					font_style |= 0x0180 >> 7;
+				break;
+			}
 			case 0x07:
 			{
 				pen_height = ReadShortValue(hFile);
 				pen_width = ReadShortValue(hFile);
+				break;
+			}
+			case 0x0d:
+			{
+				font_size = ReadShortValue(hFile);
 				break;
 			}
 			case 0x0e:
@@ -2471,11 +2385,6 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 				case 69: renderer->put_BrushColor1(0xFFFF00); break; //yellow
 				default: renderer->put_BrushColor1(0xD3D3D3); break; //lightgray
 				}
-				break;
-			}
-			case 0x0f:
-			{
-				ReadLongValue(hFile);
 				break;
 			}
 			case 0x12:
@@ -2604,29 +2513,95 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			}
 			case 0x20:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
+				short y1 = ReadShortValue(hFile);
+				short x1 = ReadShortValue(hFile);
+				short y2 = ReadShortValue(hFile);
+				short x2 = ReadShortValue(hFile);
+
+				pen_point = Point<short>(x2, y2);
+
+				if (pen_height == 0 && pen_width == 0)
+					break;
+
+				DrawLine(renderer, Point<short>(x1, y1), Point<short>(x2, y2), pen_width, pen_height);
 				break;
 			}
 			case 0x21:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
+				short y1 = ReadShortValue(hFile);
+				short x1 = ReadShortValue(hFile);
+
+				if (feof(hFile))
+					break;
+
+				if (pen_height == 0 && pen_width == 0)
+					break;
+
+				DrawLine(renderer, Point<short>(x1, y1), pen_point, pen_width, pen_height);
 				break;
 			}
 			case 0x22:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
+				short y1 = ReadShortValue(hFile);
+				short x1 = ReadShortValue(hFile);
+				short y2 = static_cast<short>(y1 + ReadByte(hFile));
+				short x2 = static_cast<short>(x1 + ReadByte(hFile));
+
+				if (pen_height == 0 && pen_width == 0)
+					break;
+
+				DrawLine(renderer, Point<short>(x1, y1), Point<short>(x2, y2), pen_width, pen_height);
 				break;
 			}
 			case 0x23:
 			{
-				ReadShortValue(hFile);
-				// TODO: Read and draw Line
+				short y2 = static_cast<short>(pen_point.Y + ReadByte(hFile));
+				short x2 = static_cast<short>(pen_point.X + ReadByte(hFile));
+
+				if (pen_height == 0 && pen_width == 0)
+					break;
+
+				DrawLine(renderer, pen_point, Point<short>(x2, y2), pen_width, pen_height);
+				break;
+			}
+			case 0x28:
+			{
+				short y = ReadShortValue(hFile);
+				short x = ReadShortValue(hFile);
+
+				text_point = Point<short>(x, y);
+				ReadAndDrawText(renderer, hFile, pen_width, pen_height, font_name, font_size, font_style, x, y);
+				break;
+			}
+			case 0x29:
+			{
+				unsigned char h = static_cast<unsigned char>(ReadByte(hFile));
+				ReadAndDrawText(renderer, hFile, pen_width, pen_height, font_name, font_size, font_style, text_point.X + h, text_point.Y);
+				break;
+			}
+			case 0x2a:
+			{
+				unsigned char v = static_cast<unsigned char>(ReadByte(hFile));
+				ReadAndDrawText(renderer, hFile, pen_width, pen_height, font_name, font_size, font_style, text_point.X, text_point.Y + v);
+				break;
+			}
+			case 0x2b:
+			{
+				unsigned char h = static_cast<unsigned char>(ReadByte(hFile));
+				unsigned char v = static_cast<unsigned char>(ReadByte(hFile));
+				ReadAndDrawText(renderer, hFile, pen_width, pen_height, font_name, font_size, font_style, text_point.X + h, text_point.Y + v);
+				break;
+			}
+			case 0x2c:
+			{
+				fseek(hFile, 4, SEEK_CUR);
+				char byte_len = ReadByte(hFile);
+				unsigned short len = static_cast<unsigned short>(byte_len) & 0x00ff;
+				char f_name[256];
+				Read(hFile, len, f_name);
+				f_name[len] = 0;
+				font_name = std::wstring(len, L'\0');
+				std::mbstowcs(&font_name[0], f_name, len);
 				break;
 			}
 			case 0x30:
@@ -2643,6 +2618,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 					DeletePixelsMemory(image);
 					return false;
 				}
+				last_rect = rect;
 				DrawRect(renderer, rect, pen_width, pen_height, code == 0x30);
 				break;
 			}
@@ -2652,7 +2628,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x3b:
 			case 0x3c:
 			{
-				// TODO: Read and draw same Rect
+				DrawRect(renderer, last_rect, pen_width, pen_height, code == 0x38);
 				break;
 			}
 			case 0x40:
@@ -2669,6 +2645,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 					DeletePixelsMemory(image);
 					return false;
 				}
+				last_round_rect = round_rect;
 				DrawRoundRect(renderer, round_rect, pen_width, pen_height, code == 0x40);
 				break;
 			}
@@ -2678,7 +2655,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x4b:
 			case 0x4c:
 			{
-				// TODO: Read and draw same Roundrect
+				DrawRoundRect(renderer, last_round_rect, pen_width, pen_height, code == 0x48);
 				break;
 			}
 			case 0x50:
@@ -2695,6 +2672,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 					DeletePixelsMemory(image);
 					return false;
 				}
+				last_oval = oval;
 				DrawOval(renderer, oval, pen_width, pen_height, code == 0x50);
 				break;
 			}
@@ -2704,7 +2682,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x5b:
 			case 0x5c:
 			{
-				// TODO: Read and draw same Oval
+				DrawOval(renderer, last_oval, pen_width, pen_height, code == 0x58);
 				break;
 			}
 			case 0x60:
@@ -2713,13 +2691,16 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x63:
 			case 0x64:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				// TODO: Read and draw Arc
+				PICTrectangle arc;
+				if (!ReadRectangle(hFile, &arc))
+				{
+					RELEASEINTERFACE(fmp);
+					RELEASEINTERFACE(renderer);
+					DeletePixelsMemory(image);
+					return false;
+				}
+				last_arc = arc;
+				DrawArc(renderer, hFile, arc, pen_width, pen_height);
 				break;
 			}
 			case 0x68:
@@ -2728,12 +2709,9 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x6b:
 			case 0x6c:
 			{
-				ReadShortValue(hFile);
-				ReadShortValue(hFile);
-				// TODO: Read and draw same Arc
+				DrawArc(renderer, hFile, last_arc, pen_width, pen_height);
 				break;
 			}
-
             case 0x70:
             case 0x71:
             case 0x72:
@@ -2742,24 +2720,10 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			{
 				Polygon<short> poly;
 				ReadPolygon(hFile, poly);
+				last_polygon.Size = poly.Size;
+				last_polygon.Points = (Point<short>*) malloc(poly.Size * sizeof(Point<short>));
+				memcpy(last_polygon.Points, poly.Points, poly.Size);
 				DrawPolygon(renderer, poly, pen_width, pen_height, code == 0x70);
-				break;
-			}
-            case 0x75:
-            case 0x76:
-            case 0x77:
-			{
-				size_t length = (size_t) ReadShortValue(hFile);
-				if (length > GetSize(hFile))
-				{
-					RELEASEINTERFACE(fmp);
-					RELEASEINTERFACE(renderer);
-					DeletePixelsMemory(image);
-					return false;
-				}
-				for (size_t i = 0; i < (length - 2); i++)
-					if (ReadByte(hFile) == EOF)
-						break;
 				break;
 			}
 			case 0x78:
@@ -2768,28 +2732,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x7b:
 			case 0x7c:
 			{
-				// TODO: Read and draw same Poly
-				break;
-			}
-			case 0x80:
-			case 0x81:
-			case 0x82:
-			case 0x83:
-			case 0x84:
-			{
-				// TODO: Read and draw Rgn
-				short size = ReadShortValue(hFile);
-				for (int i = 0; i < size - 2; i++)
-					ReadByte(hFile);
-				break;
-			}
-			case 0x88:
-			case 0x89:
-			case 0x8a:
-			case 0x8b:
-			case 0x8c:
-			{
-				// TODO: Read and draw same Rgn
+				DrawPolygon(renderer, last_polygon, pen_width, pen_height, code == 0x78);
 				break;
 			}
 			case 0x90:
@@ -2799,7 +2742,7 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 			case 0x9a:
 			case 0x9b:
 			{
-				 is_pix_data = true;
+				is_pix_data = true;
 				PICTrectangle source, destination;
 
 				unsigned char *p;
@@ -3062,85 +3005,8 @@ bool DecodePICT(FILE* hFile, ImagePICT* image)
 				DestroyImage(tile_image);
 				break;
 			}
-			case 0xa1:
-			{
-				unsigned char *info;
-				size_t type;
-
-				type = ReadShortValue(hFile);
-				size_t length = (size_t) ReadShortValue(hFile);
-				if ((size_t) length > GetSize(hFile))
-				{
-					RELEASEINTERFACE(fmp);
-					RELEASEINTERFACE(renderer);
-					DeletePixelsMemory(image);
-					return false;
-				}
-				if (length == 0)
-					break;
-				info = (unsigned char*) malloc(length * sizeof (*info));
-				if (info == (unsigned char*) nullptr)
-					break;
-				int count = Read(hFile, length, info);
-				if (count != length)
-				{
-					RELEASEINTERFACE(fmp);
-					RELEASEINTERFACE(renderer);
-					free(info);
-					DeletePixelsMemory(image);
-					return false;
-				}
-				switch (type)
-				{
-				case 0xe0:
-				{
-					StringInfo* profile = BlobToStringInfo(nullptr, length);
-					if (profile->length != 0)
-						memcpy(profile->datum,info,profile->length);
-
-					if (!SetImageProfileInternal(image, "icc", profile, 0))
-					{
-						RELEASEINTERFACE(fmp);
-						RELEASEINTERFACE(renderer);
-						free(info);
-						DeletePixelsMemory(image);
-						DestroyStringInfo(profile);
-						return false;
-					}
-					DestroyStringInfo(profile);
-					break;
-				}
-				case 0x1f2:
-				{
-					StringInfo* profile	= BlobToStringInfo(nullptr,length);
-					if (profile->length != 0)
-						memcpy(profile->datum,info,profile->length);
-
-					if (!SetImageProfileInternal(image,"iptc",profile,0))
-					{
-						RELEASEINTERFACE(fmp);
-						RELEASEINTERFACE(renderer);
-						free(info);
-						DeletePixelsMemory(image);
-						DestroyStringInfo(profile);
-						return false;
-					}
-					DestroyStringInfo(profile);
-					break;
-				}
-				default:
-					break;
-				}
-				free(info);
-				break;
-			}
 			default:
-				if (codes[code].length == -1)
-					ReadShortValue(hFile);
-				else
-					for (size_t i=0; i < codes[code].length; i++)
-						if (ReadByte(hFile) == EOF)
-							break;
+				break;
 			}
 		}
 		if (code == 0xc00)

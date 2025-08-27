@@ -345,8 +345,9 @@ typedef struct
 
 template<typename T>
 struct Point {
-	T X;
-	T Y;
+	T X{0};
+	T Y{0};
+	Point() {}
 	Point(T x, T y) : X(x), Y(y) {}
 };
 
@@ -376,7 +377,6 @@ typedef struct
     size_t m_nPixelsSize;
     size_t colors;
 
-    SplayTreeInfo* profiles;
     SplayTreeInfo* artifacts;
 
     double fuzz;

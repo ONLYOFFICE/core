@@ -2381,7 +2381,7 @@ namespace PdfReader
 			return;
 		}
 
-		if (((GlobalParamsAdaptor*)globalParams)->InRedact(dX, dY))
+		if (((GlobalParamsAdaptor*)globalParams)->InRedact(dX + dDx / 2.0, dY))
 			return;
 
 		double* pCTM   = pGState->getCTM();

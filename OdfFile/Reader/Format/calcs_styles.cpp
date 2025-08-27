@@ -215,7 +215,21 @@ void calc_tab_stops(const style_instance * styleInstance, oox::tabs_context & co
 			context.reset();
 			for (size_t j = 0; j < tab_stops->content_.size(); j++)
 			{
-				context.add(tab_stops->content_[j], margin_left);
+                odf_reader::style_tab_stop *tab = dynamic_cast<odf_reader::style_tab_stop*>(tab_stops->content_[j].get());
+
+                if( tab )
+                {
+                    auto type = tab->style_type_ ? tab->style_type_->get_type() : odf_types::style_type::Left;
+
+                    if( type == odf_types::style_type::Right )
+                    {
+                        context.add(tab_stops->content_[j], 0);
+                    }
+                    else
+                    {
+                        context.add(tab_stops->content_[j], margin_left);
+                    }
+                }
 			}
 		}
 	}

@@ -29,3 +29,64 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
+
+#include "CustomShowId.h"
+
+namespace PPTX
+{
+	namespace nsPresentation
+	{
+		void CustomShowId::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"id", id);
+		}
+		std::wstring CustomShowId::toXML() const
+		{
+			XmlUtils::CAttribute oAttr;
+			oAttr.Write(L"id", id);
+
+			return XmlUtils::CreateNode(L"p:custShow", oAttr);
+		}
+		void CustomShowId::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt2(0, id);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		}
+		void CustomShowId::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"p:custShow");
+
+			pWriter->StartAttributes();
+
+			pWriter->WriteAttribute(L"id", id);
+
+			pWriter->EndAttributes();
+
+			pWriter->EndNode(L"p:custShow");
+		}
+		void CustomShowId::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				if (0 == _at)
+					id = pReader->GetLong();
+				else
+					break;
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void CustomShowId::FillParentPointersForChilds()
+		{
+		}
+	} // namespace nsPresentation
+} // namespace PPTX

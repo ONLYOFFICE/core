@@ -500,16 +500,16 @@ namespace NSBinPptxRW
 		void StartNotes	(int nIndexSlide);
 		void StartThemeNotesMaster(int nIndexTheme);
 		
-		void WriteMasters (int nCount);
 		void WriteThemes (int nCount);
-		void WriteSlides (int nCount);
 		void WriteNotesMaster();
 
-		void WriteSlideComments	(int nComment);
-		void WritePresentationComments	(int nComment);
+		std::wstring WriteSlideComments(int nIndexComment);
+		std::wstring WritePresentationComments(int nIndexComment);
 
-		void WriteCustoms(int nCount);
-		
+		std::wstring WriteCustom(const std::wstring& file_name);
+		std::wstring WriteMaster(int nIndex);
+		std::wstring WriteSlide(int nIndex);
+
 		unsigned int WriteRels (const std::wstring& bsType, const std::wstring& bsTarget, const std::wstring& bsTargetMode);
 		unsigned int WriteHyperlink	(const std::wstring& strLink, const bool& bIsActionInit);		
 	

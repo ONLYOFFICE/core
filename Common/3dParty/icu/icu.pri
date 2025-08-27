@@ -1,4 +1,4 @@
-ICU_MAJOR_VER = 58
+ICU_MAJOR_VER = 74
 
 core_windows {
     exists($$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/icu) {
@@ -20,8 +20,15 @@ core_linux {
 core_mac {
     INCLUDEPATH += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/include
 
-    LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicuuc.$${ICU_MAJOR_VER}.dylib
-    LIBS        += $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build/libicudata.$${ICU_MAJOR_VER}.dylib
+	ICU_LIBS_PATH_MAC = $$PWD/$$CORE_BUILDS_PLATFORM_PREFIX/build
+	bundle_dylibs {
+		LIBS	+= $$ICU_LIBS_PATH_MAC/libicudata.a
+		LIBS	+= $$ICU_LIBS_PATH_MAC/libicui18n.a
+		LIBS	+= $$ICU_LIBS_PATH_MAC/libicuuc.a
+	} else {
+		LIBS	+= $$ICU_LIBS_PATH_MAC/libicuuc.$${ICU_MAJOR_VER}.dylib
+		LIBS	+= $$ICU_LIBS_PATH_MAC/libicudata.$${ICU_MAJOR_VER}.dylib
+	}
 }
 
 core_ios {

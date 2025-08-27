@@ -176,8 +176,8 @@ RtfToken RtfLex::NextToken()
 
 	c = m_oStream.getc( );
 
-	while ( c >= 0 && c <= 0x1f )
-		c = m_oStream.getc( );
+    while ((c >= 0 && c <= 8) || (c >= 10 && c <= 0x1f))
+        c = m_oStream.getc( );
 
 	if (c != EOF)
 	{
@@ -240,7 +240,7 @@ void RtfLex::parseKeyword(RtfToken& token)
 				token.Type = RtfToken::Keyword;
 				token.Key = std::string("tab");
 			}
-			else if( c == '\n' )
+            else if( c == '\n'|| c == '\r' )
 			{
 				token.Type = RtfToken::Keyword;
 				token.Key = std::string("par");

@@ -129,18 +129,26 @@ namespace utils//////////////////////////////////////////// ОБЩАЯ хрен�
 	}
 	std::wstring convert_date_time(const std::wstring & oox_time, office_value_type::type & type)
 	{
-		double dDateTime = 0;
+		double dDateTime = 0, dTime = 0;
+		int nDate = 0;
 
-		try
+		if (std::wstring::npos != oox_time.find(L"."))
 		{
-			dDateTime = boost::lexical_cast<double>(oox_time);
+			try
+			{
+				dDateTime = boost::lexical_cast<double>(oox_time);
+			}
+			catch (...)
+			{
+				return oox_time;
+			}
+			nDate = (int)dDateTime;
+			dTime = (dDateTime - nDate);
 		}
-		catch (...)
+		else
 		{
-			return oox_time;
+			nDate = boost::lexical_cast<int>(oox_time);
 		}
-		int nDate = (int)dDateTime;
-		double dTime = (dDateTime - nDate);
 
 		std::wstring sDate, sTime;
 		if (dTime > 0)
@@ -1345,20 +1353,10 @@ void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 			cell->attlist_.common_value_and_type_attlist_->office_boolean_value_ = value;
 			break;
 		case office_value_type::Date:
-		{
-			std::wstring date = utils::convert_date(value);
-			cell->attlist_.common_value_and_type_attlist_->office_date_value_ = date;
-			//cell->attlist_.common_value_and_type_attlist_->office_value_ = date;
-		}break;
 		case office_value_type::Time:
-		{
-			cell->attlist_.common_value_and_type_attlist_->office_time_value_ = utils::convert_time(value);
-		}break;
-		case office_value_type::DateTime:
+		case office_value_type::DateTime:	
 		{
 			std::wstring sVal = utils::convert_date_time(value, type);
-			
-			//cell->attlist_.common_value_and_type_attlist_->office_value_ = sVal;
 			
 			if (type == office_value_type::Date)
 				cell->attlist_.common_value_and_type_attlist_->office_date_value_ = sVal;

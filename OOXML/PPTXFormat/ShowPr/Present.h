@@ -35,7 +35,7 @@
 
 namespace PPTX
 {
-	namespace nsPresentationPr
+	namespace nsPresentation
 	{
 		class Present : public WrapperWritingElement
 		{
@@ -51,5 +51,5 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds();
 		};
-	} // namespace nsPresentationPr
+	} // namespace nsPresentation
 } // namespace PPTX

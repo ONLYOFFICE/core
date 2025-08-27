@@ -1171,8 +1171,18 @@ bool RtfCharPropsCommand::ExecuteCommand(RtfDocument& oDocument, RtfReader& oRea
 		else
 			charProps->m_bRightToLeft  = 1;
 	}
-	COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
-	COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
+    else if ("rtlch" == sCommand)
+    {
+        if ( false == hasParameter || 0 != parameter )
+        {
+            charProps->m_bRightToLeft  = 1;
+            charProps->m_nComplexScript = 1;
+        }
+        else
+            charProps->m_bRightToLeft  = 0;
+    }
+    //COMMAND_RTF_BOOL( "rtlch",		charProps->m_bRightToLeft,	sCommand, hasParameter, parameter)
+    COMMAND_RTF_INT	( "lang",		charProps->m_nLanguage,		sCommand, hasParameter, parameter)
 	COMMAND_RTF_INT	( "langfe",		charProps->m_nLanguageAsian,sCommand, hasParameter, parameter)
 	
 	COMMAND_RTF_BOOL( "outl",		charProps->m_bOutline,		sCommand, hasParameter, parameter)

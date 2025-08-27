@@ -240,7 +240,11 @@ core_mac {
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
 	# xcode15 add new linker
-	QMAKE_LFLAGS += -Wl,-ld_classic
+	greaterThan(QMAKE_XCODE_VERSION, 1499) {
+		QMAKE_LFLAGS += -Wl,-ld_classic
+	} else {
+		CONFIG += c++14
+	}
 
 	QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 

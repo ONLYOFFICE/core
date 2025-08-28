@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -33,13 +33,17 @@
 
 namespace NSDocxRenderer
 {
+	/**
+	 * @enum TextAssociationType
+	 * @brief Specifies how extracted text is associated with layout elements.
+	 */
 	enum class TextAssociationType
 	{
-		tatBlockChar        = 0, // Каждый символ во фрейме
-		tatBlockLine        = 1, // Каждая линия - параграф во фрейме. Линии могут объединяться в рамках одного блока.
-		tatPlainLine        = 2, // Каждая линия - параграф обычный
-		tatShapeLine        = 3, // Каждая линия - параграф в шейпе. Линии могут объединяться в рамках одного блока.
-		tatPlainParagraph   = 4, // Все линии объединяются в параграфы
-		tatParagraphToShape = 5  // Параграфы записываем в шейпы
+		tatBlockChar        = 0, ///< Each character is placed in a frame.
+		tatBlockLine        = 1, ///< Each line becomes a paragraph in a frame; lines may merge within one block.
+		tatPlainLine        = 2, ///< Each line becomes a regular paragraph.
+		tatShapeLine        = 3, ///< Each line becomes a paragraph in a shape; lines may merge within one block.
+		tatPlainParagraph   = 4, ///< All lines are grouped into paragraphs.
+		tatParagraphToShape = 5  ///< Paragraphs are written into shapes.
 	};
 }

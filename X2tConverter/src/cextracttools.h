@@ -255,20 +255,60 @@ namespace NExtractTools
 
 	bool copyOrigin(const std::wstring& sFileFrom, const std::wstring& sFileTo);
 
+	/**
+	 * @brief Mail merge related parameters.
+	 * @details Parsed from the <m_oMailMergeSend> section in the input XML.
+	 */
 	class InputParamsMailMerge
 	{
 	public:
+		/**
+		 * @brief File name.
+		 */
 		std::wstring* fileName;
+		/**
+		 * @brief Sender's email address.
+		 */
 		std::wstring* from;
+		/**
+		 * @brief [Deprecated].
+		 */
 		std::wstring* jsonKey;
+		/**
+		 * @brief Attachment format docx, pdf, html (see \ref AVS_OFFICESTUDIO_FILE_DOCUMENT).
+		 */
 		int* mailFormat;
+		/**
+		 * @brief Email body.
+		 */
 		std::wstring* message;
+		/**
+		 * @brief Number of records.
+		 */
 		int* recordCount;
+		/**
+		 * @brief Starting record index.
+		 */
 		int* recordFrom;
+		/**
+		 * @brief Ending record index.
+		 */
 		int* recordTo;
+		/**
+		 * @brief Email subject.
+		 */
 		std::wstring* subject;
+		/**
+		 * @brief Recipient's email address.
+		 */
 		std::wstring* to;
+		/**
+		 * @brief URL.
+		 */
 		std::wstring* url;
+		/**
+		 * @brief User ID.
+		 */
 		std::wstring* userid;
 		InputParamsMailMerge()
 		{
@@ -348,14 +388,25 @@ namespace NExtractTools
 		}
 	};
 
+	/**
+	 * @brief Thumbnail generation parameters.
+	 * @details Parsed from the <m_oThumbnail> element in the input XML.
+	 *          Members map to child nodes: format, aspect, first, zip, width, height.
+	 */
 	class InputParamsThumbnail
 	{
 	public:
+		/** @brief Output image format for thumbnails (bmp = 1, gif = 2, jpg = 3, png = 4). */
 		int* format;
+		/** @brief Fit mode: 0=stretch to width/height; 1=keep aspect; 2=use page metrics at 96 dpi (default). */
 		int* aspect;
+		/** @brief If true, generate a thumbnail for the first page only (default). If false, generate for all pages. */
 		bool* first;
+		/** @brief When generating thumbnails for all pages (first=false), output a ZIP archive with per-page images. */
 		bool* zip;
+		/** @brief Thumbnail width in pixels (default: 100). */
 		int* width;
+		/** @brief Thumbnail height in pixels (default: 100). */
 		int* height;
 		InputParamsThumbnail()
 		{
@@ -410,9 +461,14 @@ namespace NExtractTools
 		}
 	};
 
+	/**
+	 * @brief Text-conversion related parameters.
+	 * @details Parsed from the <m_oTextParams> element in the input XML.
+	 */
 	class InputParamsText
 	{
 	public:
+		/** @brief [Optional] Text association type (see \ref NSDocxRenderer::TextAssociationType). XML: <m_nTextAssociationType>. */
 		int* m_nTextAssociationType;
 		InputParamsText()
 		{
@@ -448,11 +504,18 @@ namespace NExtractTools
 		}
 	};
 
+	/**
+	 * @brief Input constraints for particular input file types.
+	 * @details Used for ZIP entries: compressed/uncompressed sizes and a name template.
+	 */
 	class InputLimit
 	{
 	public:
+		/** @brief [Optional] Defines the total compressed file size for text documents/spreadsheets/presentations. */
 		ULONG64 compressed;
+		/** @brief [Optional] Defines the total uncompressed file size for text documents/spreadsheets/presentations. */
 		ULONG64 uncompressed;
+		/** @brief [Optional] Defines the name template for files which sizes are counted.(Example: "*.xml") */
 		std::wstring pattern;
 		InputLimit()
 		{
@@ -490,38 +553,115 @@ namespace NExtractTools
 		std::wstring m_sPdfOformMetaData;
 	};
 
+	/**
+	 * @brief Container for all input parameters parsed from XML.
+	 * @details Holds file paths, formats, CSV/TXT options, mail merge, thumbnail and
+	 *          text parameters, passwords, temporary paths, input limits, and flags
+	 *          controlling conversion behavior.
+	 */
 	class InputParams
 	{
 	public:
+		/// \name File paths and metadata
+		/// @{
+		/** @brief [Optional] Contains the document ID. For debugging purposes only. XML: <m_sKey>. */
 		std::wstring* m_sKey;
+		/** @brief [Required] Source file path. XML: <m_sFileFrom>. */
 		std::wstring* m_sFileFrom;
+		/** @brief [Required] Destination file path. XML: <m_sFileTo>. */
 		std::wstring* m_sFileTo;
+		/** @brief [Optional] Document title. Used for metadata in some output formats. XML: <m_sTitle>. */
 		std::wstring* m_sTitle;
+		/// @}
+
+		/// \name Formats
+		/// @{
+		/** @brief [Optional] Source format code. See \ref AVS_OFFICESTUDIO_FILE_DOCUMENT and related macros. Inferred from the file body or name when not specified. XML: <m_nFormatFrom>. */
 		int* m_nFormatFrom;
+		/** @brief [Required] Destination format code. See \ref AVS_OFFICESTUDIO_FILE_DOCUMENT and related macros. XML: <m_nFormatTo>. */
 		int* m_nFormatTo;
+		/// @}
+
+		/// \name CSV/TXT options
+		/// @{
+		/** @brief [Optional] Character encoding (code page) for CSV/TXT (see \ref NSUnicodeConverter::Encodings "Encodings table"). XML: <m_nCsvTxtEncoding>. */
 		int* m_nCsvTxtEncoding;
+		/** @brief [Optional] CSV delimiter type (see \ref TCsvDelimiter). XML: <m_nCsvDelimiter>. */
 		int* m_nCsvDelimiter;
+		/** @brief [Optional] Custom delimiter character(s); overrides m_nCsvDelimiter. XML: <m_nCsvDelimiterChar>. */
 		std::wstring* m_sCsvDelimiterChar;
+		/** @brief [Optional] Locale identifier (LCID) used in DOC and RTF to interpret strings when not specified in the file. XML: <m_nLcid>. */
 		int* m_nLcid;
+		/// @}
+
+		/// \name Processing flags
+		/// @{
+		/** @brief [Deprecated] Paid conversion flag. XML: <m_bPaid>. */
 		bool* m_bPaid;
+		/** @brief [Optional] Apply changes from the "changes" subfolder if present. XML: <m_bFromChanges>. */
 		bool* m_bFromChanges;
+		/** @brief [Optional] Suppress saving additional artifacts (such as the original file and changes.zip). XML: <m_bDontSaveAdditional>. */
 		bool* m_bDontSaveAdditional;
+		/// @}
+
+		/// \name Fonts and themes
+		/// @{
+		/** @brief [Deprecated] Path to AllFonts.js. XML: <m_sAllFontsPath>. */
 		std::wstring* m_sAllFontsPath;
+		/** @brief [Optional] Path to the directory containing font_selection.bin. XML: <m_sFontDir>. */
 		std::wstring* m_sFontDir;
+		/** @brief [Optional] Built-in themes directory path. XML: <m_sThemeDir>. */
 		std::wstring* m_sThemeDir;
+		/// @}
+
+		/// \name Nested parameter objects
+		/// @{
+		/** @brief [Optional] Mail merge configuration. XML: <m_oMailMergeSend>. See \ref InputParamsMailMerge. */
 		InputParamsMailMerge* m_oMailMergeSend;
+		/** @brief [Optional] Thumbnail configuration. XML: <m_oThumbnail>. See \ref InputParamsThumbnail. */
 		InputParamsThumbnail* m_oThumbnail;
+		/** @brief [Optional] Text configuration. XML: <m_oTextParams>. See \ref InputParamsText. */
 		InputParamsText* m_oTextParams;
+		/// @}
+
+		/// \name Additional input options
+		/// @{
+		/** @brief [Optional] JSON renderer options; supports keys like documentLayout, spreadsheetLayout, and watermark. See https://api.onlyoffice.com/docs/docs-api/additional-api/conversion-api/request/. XML: <m_sJsonParams>. */
 		std::wstring* m_sJsonParams;
+		/// @}
+
+		/// \name Security and identifiers
+		/// @{
+		/** @brief [Optional] Source file open password. XML: <m_sPassword>. */
 		std::wstring* m_sPassword;
+		/** @brief [Optional] Destination file save password. XML: <m_sSavePassword>. */
 		std::wstring* m_sSavePassword;
+		/** @brief [Optional] Document identifier. XML: <m_sDocumentID>. */
 		std::wstring* m_sDocumentID;
+		/// @}
+
+		/// \name Temp and encoding
+		/// @{
+		/** @brief [Optional] Explicit temp directory. XML: <m_sTempDir>. */
 		std::wstring* m_sTempDir;
+		/** @brief [Optional] Treat Editor.bin as not Base64-encoded when true (default when absent). XML: <m_bIsNoBase64>. */
 		bool* m_bIsNoBase64;
+		/// @}
+
+		/// \name Input constraints
+		/// @{
+		/** @brief [Optional] Defines the OOXML file types for which the limits are specified (text documents/spreadsheets/presentations). This does not include other objects, like images. XML: <m_oInputLimits>; values are \ref InputLimit. */
 		boost::unordered_map<int, std::vector<InputLimit>> m_mapInputLimits;
+		/// @}
+
+		/// \name Output preferences
+		/// @{
+		/** @brief [Optional] Request PDF/A output when applicable. XML: <m_bIsPDFA>. */
 		bool* m_bIsPDFA;
+		/** @brief [Optional] List of extensions to also produce in the original format (Open in browser). XML: <m_sConvertToOrigin>. */
 		std::wstring* m_sConvertToOrigin;
-		// output params
+		/// @}
+
 		mutable bool m_bOutputConvertCorrupted;
 		mutable bool m_bMacro;
 

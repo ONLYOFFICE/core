@@ -1,0 +1,44 @@
+# Minimal Doxyfile for ONLYOFFICE Core - X2tConverter
+# Generated to build HTML docs for C++ headers/sources in X2tConverter/src
+
+# Project
+PROJECT_NAME           = "ONLYOFFICE Core - X2tConverter"
+PROJECT_BRIEF          = "Doxygen documentation for X2tConverter C++ sources"
+OUTPUT_DIRECTORY       = .
+
+# Outputs
+GENERATE_HTML          = YES
+HTML_OUTPUT            = html
+GENERATE_LATEX         = NO
+
+# Input
+INPUT                  = ../src \
+                         ../../Common/OfficeFileFormats.h \
+                         ../../UnicodeConverter/UnicodeConverter_Encodings.h \
+                         ../../DocxRenderer/convert_params.h
+FILE_PATTERNS          = *.h \
+                         *.hpp \
+                         *.cpp
+RECURSIVE              = YES
+
+# Parsing/formatting
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+EXTRACT_STATIC         = YES
+FULL_PATH_NAMES        = NO
+STRIP_FROM_PATH        = ../..
+JAVADOC_AUTOBRIEF      = NO
+MULTILINE_CPP_IS_BRIEF = NO
+MARKDOWN_SUPPORT       = YES
+
+# UI
+GENERATE_TREEVIEW      = YES
+SEARCHENGINE           = YES
+
+# Diagrams (disable Graphviz dependency by default)
+HAVE_DOT               = NO
+
+# Warnings
+QUIET                  = NO
+WARN_IF_UNDOCUMENTED   = NO
+WARN_IF_DOC_ERROR      = YES

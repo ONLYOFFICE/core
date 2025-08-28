@@ -152,6 +152,7 @@ namespace NSOnlineOfficeBinToPdf
 		WidgetInfo = 3,
 		MovePage   = 4,
 		MergePages = 5,
+		SetType    = 6,
 		Undefined  = 255
 	};
 
@@ -176,7 +177,7 @@ namespace NSOnlineOfficeBinToPdf
 			int nLen = oReader.ReadInt();
 			AddCommandType CommandType = (AddCommandType)oReader.ReadByte();
 			int nPageNum = 0;
-			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages)
+			if (CommandType != AddCommandType::WidgetInfo && CommandType != AddCommandType::MergePages && CommandType != AddCommandType::SetType)
 				nPageNum = oReader.ReadInt();
 
 			if (nPageNum < 0)
@@ -242,6 +243,12 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(oReader.GetCurrentBuffer(), (LONG)(nLen - 5) , &oCorrector);
 				oReader.Skip(nLen - 5);
+				break;
+			}
+			case AddCommandType::SetType:
+			{
+				int nType = oReader.ReadInt();
+				pPdf->SetEditType(nType);
 				break;
 			}
 			default:

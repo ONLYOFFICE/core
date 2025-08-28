@@ -1,7 +1,7 @@
 #include "Annotation.h"
 #include "Utils/Utils.h"
 
-#include "../../../Common/File.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace OFD
 {

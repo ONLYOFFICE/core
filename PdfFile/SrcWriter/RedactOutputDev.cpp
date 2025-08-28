@@ -39,8 +39,6 @@
 #include "../lib/pathkit/include/core/SkPath.h"
 #include "../lib/pathkit/include/pathops/SkPathOps.h"
 
-#include "../../DesktopEditor/graphics/GraphicsPath.h"
-
 namespace PdfWriter
 {
 void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
@@ -389,21 +387,61 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 {
 	double* pCTM = pGState->getCTM();
 	double* pTm = pGState->getTextMat();
-	double arrMatrix[6];
+	double pNewTm[6], arrMatrix[6];
 
-	arrMatrix[0] = pTm[0] * pCTM[0] + pTm[1] * pCTM[2];
-	arrMatrix[1] = pTm[0] * pCTM[1] + pTm[1] * pCTM[3];
-	arrMatrix[2] = pTm[2] * pCTM[0] + pTm[3] * pCTM[2];
-	arrMatrix[3] = pTm[2] * pCTM[1] + pTm[3] * pCTM[3];
-	arrMatrix[4] = pTm[4] * pCTM[0] + pTm[5] * pCTM[2] + pCTM[4];
-	arrMatrix[5] = pTm[4] * pCTM[1] + pTm[5] * pCTM[3] + pCTM[5];
-
-	if (arrMatrix[0] != m_arrMatrix[0] || arrMatrix[1] != m_arrMatrix[1] || arrMatrix[2] != m_arrMatrix[2] ||
-		arrMatrix[3] != m_arrMatrix[3] || arrMatrix[4] != m_arrMatrix[4] || arrMatrix[5] != m_arrMatrix[5])
+	double dTextScale = std::min(sqrt(pTm[2] * pTm[2] + pTm[3] * pTm[3]), sqrt(pTm[0] * pTm[0] + pTm[1] * pTm[1]));
+	double dITextScale = 1 / dTextScale;
+	double dOldSize = 10.0;
+	m_pRenderer->get_FontSize(&dOldSize);
+	if (dOldSize * dTextScale > 0)
 	{
-		double dShiftX = 0, dShiftY = 0;
-		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
+		m_pRenderer->put_FontSize(dOldSize * dTextScale);
+
+		pNewTm[0] =  pTm[0] * dITextScale * pGState->getHorizScaling();
+		pNewTm[1] =  pTm[1] * dITextScale * pGState->getHorizScaling();
+		pNewTm[2] =  pTm[2] * dITextScale;
+		pNewTm[3] =  pTm[3] * dITextScale;
+		pNewTm[4] =  dX - dOriginX;
+		pNewTm[5] =  dY - dOriginY;
 	}
+	else
+	{
+		m_pRenderer->put_FontSize(-dOldSize * dTextScale);
+
+		pNewTm[0] = pTm[0] * dITextScale * pGState->getHorizScaling();
+		pNewTm[1] = pTm[1] * dITextScale * pGState->getHorizScaling();
+		pNewTm[2] = pTm[2] * dITextScale;
+		pNewTm[3] = pTm[3] * dITextScale;
+		pNewTm[4] = dX;
+		pNewTm[5] = dY;
+	}
+
+	arrMatrix[0] = pNewTm[0] * pCTM[0] + pNewTm[1] * pCTM[2];
+	arrMatrix[1] = pNewTm[0] * pCTM[1] + pNewTm[1] * pCTM[3];
+	arrMatrix[2] = pNewTm[2] * pCTM[0] + pNewTm[3] * pCTM[2];
+	arrMatrix[3] = pNewTm[2] * pCTM[1] + pNewTm[3] * pCTM[3];
+	arrMatrix[4] = pNewTm[4] * pCTM[0] + pNewTm[5] * pCTM[2] + pCTM[4];
+	arrMatrix[5] = pNewTm[4] * pCTM[1] + pNewTm[5] * pCTM[3] + pCTM[5];
+
+	double dSize = 1;
+	if (true)
+	{
+		double dNorma = std::min(sqrt(arrMatrix[0] * arrMatrix[0] + arrMatrix[1] * arrMatrix[1]), sqrt(arrMatrix[2] * arrMatrix[2] + arrMatrix[3] * arrMatrix[3]));
+		if (dNorma > 0 && dNorma != 1)
+		{
+			arrMatrix[0] /= dNorma;
+			arrMatrix[1] /= dNorma;
+			arrMatrix[2] /= dNorma;
+			arrMatrix[3] /= dNorma;
+
+			m_pRenderer->get_FontSize(&dSize);
+			dSize *= dNorma;
+			m_pRenderer->put_FontSize(dSize);
+		}
+	}
+
+	double dShiftX = 0, dShiftY = 0;
+	DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
 	double dDiff = dX + dDx / 2.0;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
@@ -423,7 +461,7 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 
 	m_pRenderer->m_oCommandManager.SetTransform(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 
-	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dOriginX, dOriginY);
+	CRendererTextCommand* pText = m_pRenderer->m_oCommandManager.AddText(pCodes, 2, dShiftX, dShiftY);
 	pText->SetName(m_pRenderer->m_oFont.GetName());
 	pText->SetSize(m_pRenderer->m_oFont.GetSize());
 	int nDColor2Size;

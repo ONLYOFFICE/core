@@ -247,8 +247,7 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case AddCommandType::SetType:
 			{
-				int nType = oReader.ReadInt();
-				pPdf->SetEditType(nType);
+				pPdf->SetEditType(1);
 				break;
 			}
 			default:

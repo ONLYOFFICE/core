@@ -3528,13 +3528,70 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 }
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
-	CRedact* pCommand = (CRedact*)_pCommand;
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	Redact(pCommand->GetQuadPoints());
+	int nOriginIndex = m_nEditPage;
+	if (m_nMode == Mode::WriteNew)
+	{
+		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
+		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
+		PdfWriter::CFakePage* pFakePage = NULL;
+		if (pObj)
+			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
+		if (pFakePage)
+			nOriginIndex = pFakePage->GetOriginIndex();
+	}
+	PDFDoc* pPDFDocument = NULL;
+	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
+	if (nPageIndex < 0 || !pPDFDocument)
+		return;
+	Page* pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+	PDFRectangle* cropBox = pPage->getCropBox();
+
+	CRedact* pCommand = (CRedact*)_pCommand;
+	std::vector<double> arrQuads = pCommand->GetQuadPoints();
+	for (int i = 0; i < arrQuads.size() / 4; ++i)
+	{
+		arrQuads[i * 4 + 0] += cropBox->x1;
+		double dQ = arrQuads[i * 4 + 1];
+		arrQuads[i * 4 + 1] = cropBox->y2 - arrQuads[i * 4 + 3];
+		arrQuads[i * 4 + 2] += cropBox->x1;
+		arrQuads[i * 4 + 3] = cropBox->y2 - dQ;
+	}
+
+	Redact(arrQuads);
 
 	int nFlags = pCommand->GetFlag();
 	if (nFlags & (1 << 0))
 	{
+		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
+		LONG nLenRender = 0;
+		BYTE* pRender = pCommand->GetRender(nLenRender);
+
+		BYTE* pMemory = pRender;
+		int ret = *((int*)pMemory);
+		pMemory += 4;
+		double R = ret / 100000.0;
+		ret = *((int*)pMemory);
+		pMemory += 4;
+		double G = ret / 100000.0;
+		ret = *((int*)pMemory);
+		double B = ret / 100000.0;
+		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
+
+		for (int i = 0; i < arrQuads.size() / 4; ++i)
+		{
+			m_pWriter->PathCommandEnd();
+			m_pWriter->put_BrushColor1(lColor);
+			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(arrQuads[i * 4 + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - arrQuads[i * 4 + 1]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(arrQuads[i * 4 + 0] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - arrQuads[i * 4 + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(arrQuads[i * 4 + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - arrQuads[i * 4 + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(arrQuads[i * 4 + 2] - cropBox->x1), PdfReader::PDFCoordsToMM(cropBox->y2 - arrQuads[i * 4 + 1]));
+			m_pWriter->PathCommandClose();
+			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+			m_pWriter->PathCommandEnd();
+		}
+
+		/*
 		PdfWriter::CPage* pCurPage = m_pWriter->GetPage();
 		pDoc->FixEditPage(pCurPage);
 		PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
@@ -3546,9 +3603,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		pFakePage->SetStream(pCurPage->GetStream());
 		pFakePage->Add("Resources", pCurPage->Get("Resources"));
 
-		LONG nLenRender = 0;
-		BYTE* pRender = pCommand->GetRender(nLenRender);
-
 		IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pWriter->GetRenderer());
 		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
 		RELEASEOBJECT(pCorrector);
@@ -3556,6 +3610,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		m_pWriter->SetPage(pCurPage);
 		pDoc->SetCurPage(pCurPage);
 		RELEASEOBJECT(pFakePage);
+		*/
 	}
 }
 void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
@@ -3578,9 +3633,15 @@ void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
 		return;
 
 #ifndef BUILDING_WASM_MODULE
+	globalParams->setDrawFormFields(gFalse);
+	globalParams->setDrawAnnotations(gFalse);
+
 	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
 	oRedactOut.NewPDF(pPDFDocument->getXRef());
 	oRedactOut.SetRedact(arrQuadPoints);
 	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
+
+	globalParams->setDrawFormFields(gTrue);
+	globalParams->setDrawAnnotations(gTrue);
 #endif
 }

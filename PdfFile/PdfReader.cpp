@@ -775,10 +775,10 @@ bool CPdfReader::RedactPage(int _nPageIndex, double* arrRedactBox, int nLengthX4
 	pRedact->m_nPageIndex = _nPageIndex;
 	for (int i = 0; i < nLengthX4; ++i)
 	{
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 0] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 3]);
-		pRedact->m_arrRedactBox.push_back(arrRedactBox[i + 2] + cropBox->x1);
-		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i + 1]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i * 4 + 0] + cropBox->x1);
+		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i * 4 + 3]);
+		pRedact->m_arrRedactBox.push_back(arrRedactBox[i * 4 + 2] + cropBox->x1);
+		pRedact->m_arrRedactBox.push_back(cropBox->y2 - arrRedactBox[i * 4 + 1]);
 	}
 	pRedact->m_pChanges = pChanges;
 	pRedact->m_nChangeLength = nLength;
@@ -827,7 +827,6 @@ void CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool*
 	{
 		if (m_vRedact[i]->m_nPageIndex == _nPageIndex)
 		{
-			// TODO нужно сбросить все матрицы и т.п.
 			BYTE* pMemory = m_vRedact[i]->m_pChanges;
 			int ret = *((int*)pMemory);
 			pMemory += 4;

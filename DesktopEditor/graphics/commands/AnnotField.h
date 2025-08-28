@@ -638,7 +638,6 @@ public:
 	virtual ~CRedact();
 
 	int GetFlag() const;
-	void GetBounds(double& dX1, double& dY1, double& dX2, double& dY2);
 	const std::vector<double>& GetQuadPoints();
 	BYTE* GetRender(LONG& nLen);
 
@@ -646,10 +645,6 @@ public:
 
 private:
 	int    m_nFlag;
-	double m_dX1;
-	double m_dY1;
-	double m_dX2;
-	double m_dY2;
 	LONG   m_nRenderLen;
 	BYTE*  m_pRender;
 	std::vector<double> m_arrQuadPoints;

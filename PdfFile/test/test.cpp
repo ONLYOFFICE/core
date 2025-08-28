@@ -449,6 +449,8 @@ TEST_F(CPdfFileTest, EditPdfFromBase64)
 	LoadFromFile();
 	ASSERT_TRUE(pdfFile->EditPdf(wsDstFile));
 
+	pdfFile->SetEditType(1);
+
 	// чтение и конвертации бинарника
 	NSFile::CFileBinary oFile;
 	ASSERT_TRUE(oFile.OpenFile(NSFile::GetProcessDirectory() + L"/base64.txt"));

@@ -741,6 +741,7 @@ namespace PdfWriter
 	}
 	void CDocument::AddAnnotation(const int& nID, CAnnotation* pAnnot)
 	{
+		pAnnot->SetXref(m_pXref);
 		m_mAnnotations[nID] = pAnnot;
 	}
     CImageDict* CDocument::CreateImage()

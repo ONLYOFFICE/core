@@ -112,19 +112,8 @@ void tabs_context::add(const odf_reader::office_element_ptr & element, double ma
 	if (tab_stop)
 	{
 		tab_stop->margin_left = margin_left;
-
-		auto type = tab_stop->style_type_ ? tab_stop->style_type_->get_type() : odf_types::style_type::Left;
-
-		double pos;
-
-		if( type == odf_types::style_type::Right )
-		{
-			pos = tab_stop->style_position_.get_value_unit(odf_types::length::pt);
-		}
-		else
-		{
-			pos = margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
-		}
+		
+		double pos = margin_left + tab_stop->style_position_.get_value_unit(odf_types::length::pt);
 
 		std::map<int, odf_reader::office_element_ptr>::iterator pFind = clear_tabs.find((int)pos);
 

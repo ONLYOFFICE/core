@@ -1299,6 +1299,11 @@ public:
     std::wstring RenderToOOX(RenderParameter oRenderParameter);
 };
 
+namespace DefaultStyle
+{
+const std::wstring FontName = L"Times New Roman";
+const int FontSize = 24;
+}
 //typedef boost::shared_ptr<RtfTableStyleProperty>	RtfTableStylePropertyPtr;
 typedef boost::shared_ptr<RtfCharStyle>				RtfCharStylePtr;
 typedef boost::shared_ptr<RtfParagraphStyle>		RtfParagraphStylePtr;

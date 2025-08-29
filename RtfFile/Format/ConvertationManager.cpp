@@ -95,7 +95,10 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
     m_poOOXWriter = &oWriter;
 
     if (false == oReader.Load( )) return AVS_FILEUTILS_ERROR_CONVERT;
-
+    if (!m_sDefaultFontName.empty())
+        oDocument.m_oProperty.m_sDefFontName = m_sDefaultFontName;
+    if (m_nDefaultFontSize != NULL)
+        oDocument.m_oProperty.m_nDefFontSize = m_nDefaultFontSize;
 	oWriter.Save();
 
     NSDirectory::DeleteDirectory(oReader.m_sTempFolder);

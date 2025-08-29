@@ -55,6 +55,8 @@ void RtfDocumentProperty::SetDefaultOOX()
 }
 void RtfDocumentProperty::SetDefault()
 {
+    m_sDefFontName              = L"";
+    m_nDefFontSize              = PROP_DEF;
 	m_eCodePage					= cp_ansi;
 	m_nTabWidth					= 720; //todo -1
 	m_nDefFont					= PROP_DEF;

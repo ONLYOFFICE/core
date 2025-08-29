@@ -45,7 +45,16 @@ namespace NExtractTools
 
 		rtfConvert.m_sTempFolder = convertParams.m_sTempDir;
 		rtfConvert.m_nUserLCID = (NULL != params.m_nLcid) ? *params.m_nLcid : -1;
-
+        if (params.m_sDefaultFontName != NULL)
+            rtfConvert.m_sDefaultFontName = *params.m_sDefaultFontName;
+        if (params.m_nDefaultFontSize != NULL)
+        {
+            rtfConvert.m_nDefaultFontSize = *params.m_nDefaultFontSize;
+        }
+        else
+        {
+            rtfConvert.m_nDefaultFontSize = NULL;
+        }
 		return 0 == rtfConvert.ConvertRtfToOOX(sFrom, sTo) ? 0 : AVS_FILEUTILS_ERROR_CONVERT;
 	}
 	_UINT32 docx_dir2rtf(const std::wstring& sFrom, const std::wstring& sTo, InputParams& params, ConvertParams& convertParams)

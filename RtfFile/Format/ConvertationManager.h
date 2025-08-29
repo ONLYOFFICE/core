@@ -46,7 +46,8 @@ class RtfConvertationManager
 public:
     std::wstring m_sTempFolder;
 	int m_nUserLCID;
-
+    std::wstring m_sDefaultFontName;
+    int m_nDefaultFontSize;
 	RtfConvertationManager();
 
     _UINT32 ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath);

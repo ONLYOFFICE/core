@@ -869,6 +869,8 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 
 	bool set_shape = false;
 
+	std::wstring wsH(L"0"),wsW(L"0"),wsLeft(L"0"),wsTop(L"0");
+
 	if (attlist_.draw_mirror_horizontal_)
 	{
 		props.push_back(_property(L"flipH", *attlist_.draw_mirror_horizontal_));
@@ -893,6 +895,60 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		owner_shape->sub_type_ = sub_type_.get();
 		set_shape = true;
 	}
+
+	if (attlist_.drawooo_sub_view_size_)
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+		if (splitted.size() == 2)
+		{
+			int w = boost::lexical_cast<int>(splitted[0]);
+			int h = boost::lexical_cast<int>(splitted[1]);
+
+			props.push_back(odf_reader::_property(L"custom_path_w", w));
+			props.push_back(odf_reader::_property(L"custom_path_h", h));
+		}
+		else if (splitted.size() == 4)
+		{///???? rect ???
+			int l = boost::lexical_cast<int>(splitted[0]);
+			int t = boost::lexical_cast<int>(splitted[1]);
+			int r = boost::lexical_cast<int>(splitted[2]);
+			int b = boost::lexical_cast<int>(splitted[3]);
+
+		}
+
+		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
+		//{
+		//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
+		//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
+		//}
+		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
+		//{
+		//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
+		//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
+		//}
+	}
+	else if (svg_viewbox_)
+	{
+		std::vector< std::wstring > splitted;
+		boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
+
+		if (splitted.size() == 4)
+		{
+			int w = boost::lexical_cast<int>(splitted[2]);
+			int h = boost::lexical_cast<int>(splitted[3]);
+
+			wsLeft = std::to_wstring(boost::lexical_cast<int>(splitted[0]));
+			wsTop =	std::to_wstring(boost::lexical_cast<int>(splitted[1]));
+			wsH = std::to_wstring(h);
+			wsW = std::to_wstring(w);
+
+			props.push_back(odf_reader::_property(L"custom_path_w", w));
+			props.push_back(odf_reader::_property(L"custom_path_h", h));
+		}
+	}
+
 	std::vector<std::wstring> equation_names;
 	if (false == draw_equations_.empty() && !draw_type_oox_index_)
 	{
@@ -908,7 +964,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 
 				XmlUtils::replace_all(name, L"f", L"gd");
 
-				oox_formulas += OdfCustomShape::convert_formula(value, name);
+				oox_formulas += OdfCustomShape::convert_formula(value, name,wsLeft,wsTop,wsW,wsH);
 				equation_names.push_back(name);
 			}
 		}
@@ -922,6 +978,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 	if (!odf_path_.empty())
 	{
 		bool bCPathWithArgs = (std::wstring::npos != odf_path_.find(L"?"));
+		std::wstring wsNewFormula;
 		if (bOoxType_ || (bCPathWithArgs && false == equation_names.empty()))
 		{
 			std::vector<::svg_path::_polylineS> o_Polyline;
@@ -931,12 +988,15 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 
 			try
 			{
-				res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked);
+				res = ::svg_path::parseSvgS(o_Polyline, odf_path_, true, bClosed, bStroked,wsNewFormula,wsH,wsW);
 			}
 			catch (...)
 			{
 				res = false;
 			}
+
+			if(!props.empty() && props.back().name_ == L"custom_equations")
+				boost::get<std::wstring>(props.back().val_) += wsNewFormula;
 
 			if (!o_Polyline.empty() && res)
 			{
@@ -989,53 +1049,6 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 		}
 	}
 
-	if (attlist_.drawooo_sub_view_size_)
-	{
-		std::vector< std::wstring > splitted;
-		boost::algorithm::split(splitted, *attlist_.drawooo_sub_view_size_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-
-		if (splitted.size() == 2)
-		{
-			int w = boost::lexical_cast<int>(splitted[0]);
-			int h = boost::lexical_cast<int>(splitted[1]);
-
-			props.push_back(odf_reader::_property(L"custom_path_w", w));
-			props.push_back(odf_reader::_property(L"custom_path_h", h));
-		}
-		else if (splitted.size() == 4)
-		{///???? rect ???
-			int l = boost::lexical_cast<int>(splitted[0]);
-			int t = boost::lexical_cast<int>(splitted[1]);
-			int r = boost::lexical_cast<int>(splitted[2]);
-			int b = boost::lexical_cast<int>(splitted[3]);
-
-		}
-
-		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_)
-		//{
-		//	int w_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_->get_value();
-		//	if (w_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_ = length(1, length::pt);
-		//}
-		//if (shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_)
-		//{
-		//	int h_shape = shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_->get_value();
-		//	if (h_shape < 1) shape->common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_height_ = length(1, length::pt);
-		//}
-	}
-	else if (svg_viewbox_)
-	{
-		std::vector< std::wstring > splitted;
-		boost::algorithm::split(splitted, *svg_viewbox_, boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
-
-		if (splitted.size() == 4)
-		{
-			int w = boost::lexical_cast<int>(splitted[2]);
-			int h = boost::lexical_cast<int>(splitted[3]);
-
-			props.push_back(odf_reader::_property(L"custom_path_w", w));
-			props.push_back(odf_reader::_property(L"custom_path_h", h));
-		}
-	}
 	if (attlist_.draw_modifiers_ && ((set_shape && bOoxType_ && !draw_type_oox_index_) || (false == equation_names.empty())))
 	{
 		props.push_back(_property(L"oox-draw-modifiers", attlist_.draw_modifiers_.get()));

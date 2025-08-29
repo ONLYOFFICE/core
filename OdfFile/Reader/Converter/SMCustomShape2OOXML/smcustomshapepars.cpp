@@ -40,9 +40,9 @@ namespace OdfCustomShape
 		for(CElement* pElement:m_arVecElements)
 			delete pElement;
 	}
-	void SMCustomShapePars::StartParsSMCustomShape(const std::wstring & wsFormula)
+	void SMCustomShapePars::StartParsSMCustomShape(const std::wstring & wsFormula, const std::wstring& wsLeft,const std::wstring& wsTop,const std::wstring& wsRight,const std::wstring& wsBottom)
 	{
-		CSMReader* pReader = new CSMReader(wsFormula);
+		CSMReader* pReader = new CSMReader(wsFormula,wsLeft,wsTop,wsRight,wsBottom);
 		SMCustomShapePars::ParsString(pReader, m_arVecElements);
 		return;
 	}
@@ -143,12 +143,19 @@ namespace OdfCustomShape
 	{
 		if(!pReader->GetElement().empty())
 			pReader->ClearElement();
-		if(m_wsNumber == L"width" || m_wsNumber == L"top")
-			m_wsNumber = L"w";
-		else if(m_wsNumber == L"height" || m_wsNumber == L"bottom")
+		if(m_wsNumber == L"left")
+			m_wsNumber = pReader->GetLeft();
+		else if(m_wsNumber == L"top")
+			m_wsNumber = pReader->GetTop();
+		else if(m_wsNumber == L"right")
+			m_wsNumber = pReader->GetRight();
+		else if(m_wsNumber == L"bottom")
+			m_wsNumber = pReader->GetBottom();
+		/*The height and width may be different*/
+		else if(m_wsNumber == L"height")
 			m_wsNumber = L"h";
-		else if(m_wsNumber == L"right" || m_wsNumber == L"left")
-			m_wsNumber = L"0";
+		else if(m_wsNumber == L"width")
+			m_wsNumber = L"w";
 	}
 	bool CElementNumber::CheckNumber(const std::wstring& wsNumber)
 	{
@@ -454,7 +461,7 @@ namespace OdfCustomShape
 			pXmlWriter->WriteString(L"1 ");
 	}
 //CSMReader
-	CSMReader::CSMReader(const std::wstring& wsFormula) : m_Formula (wsFormula), m_pElement(nullptr), m_bDoubleSign(false)
+	CSMReader::CSMReader(const std::wstring& wsFormula, const std::wstring &wsLeft, const std::wstring &wsTop, const std::wstring &wsRight, const std::wstring &wsBottom) : m_Formula (wsFormula), m_pElement(nullptr), m_bDoubleSign(false),m_wsLeft(wsLeft),m_wsTop(wsTop),m_wsRight(wsRight),m_wsBottom(wsBottom)
 	{
 		m_itStart = m_Formula.begin();
 		m_itEnd = m_Formula.end();
@@ -572,6 +579,22 @@ namespace OdfCustomShape
 	bool CSMReader::GetDoubleSign()
 	{
 		return m_bDoubleSign;
+	}
+	std::wstring CSMReader::GetLeft()
+	{
+		return m_wsLeft;
+	}
+	std::wstring CSMReader::GetTop()
+	{
+		return m_wsTop;
+	}
+	std::wstring CSMReader::GetRight()
+	{
+		return m_wsRight;
+	}
+	std::wstring CSMReader::GetBottom()
+	{
+		return m_wsBottom;
 	}
 //CElementBracket
 	CElementBracket::CElementBracket()

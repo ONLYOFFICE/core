@@ -72,7 +72,7 @@ static std::wstring htmlToXhtml(std::string& sFileContent, bool bNeedConvert)
 {
 	if (bNeedConvert)
 	{ // Определение кодировки
-		std::string sEncoding = NSStringFinder::FindProperty(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\""}).m_sValue;
+		std::string sEncoding = NSStringFinder::FindProperty(sFileContent, "charset", {"="}, {";", "\\n", "\\r", " ", "\"", "'"}).m_sValue;
 
 		if (sEncoding.empty())
 			sEncoding = NSStringFinder::FindProperty(sFileContent, "encoding", {"="}, {";", "\\n", "\\r", " "}).m_sValue;

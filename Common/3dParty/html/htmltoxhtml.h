@@ -15,6 +15,10 @@
 #include "../../../UnicodeConverter/UnicodeConverter.h"
 #include "../../../HtmlFile2/src/StringFinder.h"
 
+#if defined(CreateDirectory)
+#undef CreateDirectory
+#endif
+
 static std::string nonbreaking_inline  = "|a|abbr|acronym|b|bdo|big|cite|code|dfn|em|font|i|img|kbd|nobr|s|small|span|strike|strong|sub|sup|tt|";
 static std::string empty_tags          = "|area|base|basefont|bgsound|br|command|col|embed|event-source|frame|hr|image|img|input|keygen|link|menuitem|meta|param|source|spacer|track|wbr|";
 static std::string preserve_whitespace = "|pre|textarea|script|style|";

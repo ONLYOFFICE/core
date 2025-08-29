@@ -1471,10 +1471,8 @@ namespace PdfWriter
 		std::string sValue = U_TO_UTF8(wsT);
 		CDictObject* pOwner = GetObjOwnValue("T");
 		if (!pOwner)
-		{
 			pOwner = this;
-			pOwner->Add("T", new CStringObject(sValue.c_str(), true));
-		}
+		pOwner->Add("T", new CStringObject(sValue.c_str(), true));
 	}
 	void CWidgetAnnotation::SetBC(const std::vector<double>& arrBC)
 	{

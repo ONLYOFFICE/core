@@ -198,6 +198,8 @@ core_windows {
 	DEFINES += WIN32 _WIN32
 	DEFINES += NOMINMAX
 
+	#DEFINES += WIN32_LEAN_AND_MEAN
+
 	# use default _ITERATOR_DEBUG_LEVEL value
 	#core_debug:DEFINES += "_ITERATOR_DEBUG_LEVEL=0"
 }
@@ -238,7 +240,11 @@ core_mac {
 	QMAKE_LFLAGS += -isysroot $$QMAKE_MAC_SDK_PATH
 
 	# xcode15 add new linker
-	QMAKE_LFLAGS += -Wl,-ld_classic
+	greaterThan(QMAKE_XCODE_VERSION, 1499) {
+		QMAKE_LFLAGS += -Wl,-ld_classic
+	} else {
+		CONFIG += c++14
+	}
 
 	QMAKE_CFLAGS += "-Wno-implicit-function-declaration"
 

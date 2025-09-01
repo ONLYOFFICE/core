@@ -6307,6 +6307,108 @@ void CDrawingConverter::ConvertGroupVML(PPTX::Logic::SpTreeElem& oElem, const st
 		oGroup.toXmlWriterVML(&oWriter, *m_pTheme, *m_pClrMap, rels);
 	}
 }
+void CDrawingConverter::ConvertParaVML(XmlUtils::CXmlNode& node, PPTX::Logic::Paragraph *p)
+{
+	if (!p) return;
+
+	std::wstring strStyle = node.GetAttribute(L"style");
+	PPTX::CCSS oCSSParser;
+	oCSSParser.LoadFromString2(strStyle);
+
+	//todooo oCSSParser->pPr
+
+	std::vector<XmlUtils::CXmlNode> nodesDiv1 = node.GetNodes(L"*");
+	for (auto node1 : nodesDiv1)
+	{
+		if (node1.IsValid())
+		{
+			PPTX::Logic::Run* run = new PPTX::Logic::Run();
+
+			std::wstring name = node1.GetName();
+			if (name == L"p" || name == L"div")
+			{
+				ConvertParaVML(node1, p);
+			}
+			else if (name == L"font")
+			{
+				run->rPr = new PPTX::Logic::RunProperties();
+
+				std::wstring text = node1.GetText();
+
+				if (true == text.empty())
+				{
+					std::vector<XmlUtils::CXmlNode> nodesDiv2 = node1.GetNodes(L"*");
+					for (auto node2 : nodesDiv2)
+					{
+						name = node2.GetName();
+						std::wstring text2 = node2.GetText();
+
+						if (name == L"b")
+							run->rPr->b = true;
+						else if (name == L"i")
+							run->rPr->i = true;
+
+						if (false == text2.empty())
+						{
+							text += text2;
+						}
+
+						std::vector<XmlUtils::CXmlNode> nodesDiv3 = node2.GetNodes(L"*");
+						for (auto node3 : nodesDiv3)
+						{
+							name = node3.GetName();
+
+							if (name == L"b")
+								run->rPr->b = true;
+							else if (name == L"i")
+								run->rPr->i = true;
+
+							text += node3.GetText();
+						}
+					}
+				}
+				run->SetText(text);
+
+				std::vector<std::wstring > attNames, attValues;
+				node1.GetAllAttributes(attNames, attValues);
+
+				if (attNames.size() > 0)
+				{
+					for (size_t r = 0; r < attNames.size(); r++)
+					{
+						if (attNames[r] == L"color" && attValues[r].length() == 7)
+						{
+							XmlUtils::replace_all(attValues[r], L"#", L"");
+
+							PPTX::Logic::SolidFill* fill = new PPTX::Logic::SolidFill();
+							PPTX::Logic::SrgbClr* color = new PPTX::Logic::SrgbClr();
+
+							color->SetHexString(attValues[r]);
+							fill->Color.Color = color;
+
+							run->rPr->Fill.Fill = fill;
+							run->rPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
+						}
+						else if (attNames[r] == L"size")
+						{
+							run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
+						}
+						else if (attNames[r] == L"face")
+						{
+							run->rPr->latin = new PPTX::Logic::TextFont();
+							run->rPr->latin->typeface = attValues[r];
+							run->rPr->latin->m_name = L"a:latin";
+						}
+					}
+				}
+				PPTX::Logic::RunElem elm;
+				p->RunElems.push_back(elm);
+
+				p->RunElems.back().InitRun(run);
+			}
+		}
+	}
+}
 void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Logic::Shape* pShape)
 {
 	if (pShape->txBody.IsInit() == false)
@@ -6326,100 +6428,9 @@ void CDrawingConverter::ConvertTextVML(XmlUtils::CXmlNode &nodeTextBox, PPTX::Lo
 			{
 				PPTX::Logic::Paragraph p;
 
-                std::wstring strStyle = node.GetAttribute(L"style");
-				PPTX::CCSS oCSSParser;
-				oCSSParser.LoadFromString2(strStyle);
+				ConvertParaVML(node, &p);
 
-				//todooo oCSSParser->pPr
-
-                std::vector<XmlUtils::CXmlNode> nodesDiv1 = node.GetNodes(L"*");
-				for (auto node1 : nodesDiv1)
-				{
-					if (node1.IsValid())
-					{
-						PPTX::Logic::Run* run = new PPTX::Logic::Run();
-						
-						name = node1.GetName();
-                        if (name == L"font")
-						{
-							run->rPr = new PPTX::Logic::RunProperties();
-
-							std::wstring text = node1.GetText();
-
-							if (true == text.empty())
-							{
-								std::vector<XmlUtils::CXmlNode> nodesDiv2 = node1.GetNodes(L"*");
-								for (auto node2 : nodesDiv2)
-								{
-									name = node2.GetName();
-									std::wstring text2 = node2.GetText();
-
-									if (name == L"b") 
-										run->rPr->b = true;
-									else if (name == L"i")
-										run->rPr->i = true;
-
-									if (false == text2.empty())
-									{
-										text += text2;
-									}
-
-									std::vector<XmlUtils::CXmlNode> nodesDiv3 = node2.GetNodes(L"*");
-									for (auto node3 : nodesDiv3)
-									{
-										name = node3.GetName();
-
-										if (name == L"b") 
-											run->rPr->b = true;
-										else if (name == L"i")
-											run->rPr->i = true;
-
-										text += node3.GetText();
-									}
-								}
-							}
-							run->SetText(text);
-
-							std::vector<std::wstring > attNames, attValues;
-                            node1.GetAllAttributes(attNames,attValues);
-
-							if (attNames.size() > 0)
-							{
-								for (size_t r = 0; r < attNames.size(); r++)
-								{
-									if (attNames[r] == L"color" && attValues[r].length() == 7)
-									{
-										XmlUtils::replace_all(attValues[r], L"#", L"");
-
-										PPTX::Logic::SolidFill* fill = new PPTX::Logic::SolidFill();
-										PPTX::Logic::SrgbClr* color = new PPTX::Logic::SrgbClr();
-
-										color->SetHexString(attValues[r]);
-										fill->Color.Color = color;
-
-										run->rPr->Fill.Fill = fill;
-										run->rPr->Fill.m_type = PPTX::Logic::UniFill::solidFill;
-									}
-									else if (attNames[r] == L"size")
-									{
-										run->rPr->sz = XmlUtils::GetInteger(attValues[r]) * 5;
-									}
-									else if (attNames[r] == L"face")
-									{
-										run->rPr->latin = new PPTX::Logic::TextFont();
-										run->rPr->latin->typeface = attValues[r];
-										run->rPr->latin->m_name = L"a:latin";
-									}
-								}
-							}
-							PPTX::Logic::RunElem elm;
-							p.RunElems.push_back(elm);
-							
-							p.RunElems.back().InitRun(run);
-						}
-					}
-				}
-				pShape->txBody->Paragrs.push_back(p);
+			pShape->txBody->Paragrs.push_back(p);
 			}
 		}
 	}

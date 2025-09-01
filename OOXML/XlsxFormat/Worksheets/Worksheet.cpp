@@ -417,7 +417,8 @@ namespace OOX
 			}
 			if(m_oHyperlinks.IsInit())
 				worksheetPtr->m_arHLINK = m_oHyperlinks->toXLS();
-
+			if(m_oDataValidations.IsInit())
+				worksheetPtr->m_DVAL = m_oDataValidations->toXLS();
 			if(m_oSheetData.IsInit())
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
 			if(m_oDataConsolidate.IsInit())

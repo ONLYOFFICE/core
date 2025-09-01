@@ -346,8 +346,12 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 			{
 				spaceBeforeTwip += list_properties->text_min_label_width_->get_value_unit(odf_types::length::pt);
 			}
-			if (spaceBeforeTwip>0)
-				propertiesOut.fo_margin_left_ = odf_types::length(spaceBeforeTwip,odf_types::length::pt);
+			if (spaceBeforeTwip > 0)
+				propertiesOut.fo_margin_top_ = odf_types::length(spaceBeforeTwip, odf_types::length::pt);
+		}
+		if (list_properties->fo_width_)
+		{
+
 		}
 	}
 	

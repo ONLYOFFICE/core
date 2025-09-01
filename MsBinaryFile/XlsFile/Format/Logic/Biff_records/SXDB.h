@@ -48,23 +48,24 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeSXDB;
 
-	_INT32			crdbdb;
-	unsigned short	idstm;
-	bool			fSaveData;
-	bool			fInvalid;
-	bool			fRefreshOnLoad;
-	bool			fOptimizeCache;
-	bool			fBackgroundQuery;
-	bool			fEnableRefresh;
+	_INT32			crdbdb = 0;
+	unsigned short	idstm = 0;
+	bool			fSaveData = false;
+	bool			fInvalid = false;
+	bool			fRefreshOnLoad = false;
+	bool			fOptimizeCache = false;
+	bool			fBackgroundQuery = false;
+	bool			fEnableRefresh = false;
 
-	short					cfdbdb;
-	short					cfdbTot;
-	unsigned short			crdbUsed;
-	short					vsType;
-	unsigned short			cchWho;
+	short					cfdbdb = 0;
+	short					cfdbTot = 0;
+	unsigned short			crdbUsed = 0;
+	short					vsType = 0;
+	unsigned short			cchWho = 0;
 	XLUnicodeStringNoCch	rgb;
 
 };

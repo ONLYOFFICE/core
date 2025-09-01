@@ -4878,9 +4878,9 @@ void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 		nullable<SimpleTypes::CColorType> oColor2;
 		nullable_string											oId;
 		nullable<SimpleTypes::Vml::CVml_Matrix>					oMatrix;
-		SimpleTypes::CTrueFalse									oObscured;
-		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset;
-		SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage		oOffset2;
+		nullable<SimpleTypes::CTrueFalse>						oObscured;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage> oOffset;
+		nullable<SimpleTypes::Vml::CVml_Vector2D_Units_Or_Percentage> oOffset2;
 		nullable<SimpleTypes::Vml::CVml_1_65536>				oOpacity;
 		nullable<SimpleTypes::Vml::CVml_Vector2D_Percentage>	oOrigin;
 		SimpleTypes::CShadowType								oType;
@@ -4921,16 +4921,16 @@ void CDrawingConverter::CheckEffectShape(PPTX::Logic::SpTreeElem* oElem, XmlUtil
 			pEffectLst->outerShdw->Color.Color->Modifiers.push_back(oMod);
 		}
 
-		double offsetX = oOffset.IsXinPoints() ? oOffset.GetX() : 0;
-		double offsetY = oOffset.IsYinPoints() ? oOffset.GetY() : 0;
-
-		double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
-		double dir = (offsetX != 0) ? atan(offsetY / offsetX) * 180. / 3.1415926 : 0;
-		if (offsetX < 0) dir += 180;
-		if (dir < 0) dir += 360;
-
-		if (dist > 0 && dir > 0)
+		if (oOffset.IsInit())
 		{
+			double offsetX = oOffset->IsXinPoints() ? oOffset->GetX() : 0;
+			double offsetY = oOffset->IsYinPoints() ? oOffset->GetY() : 0;
+
+			double dist = sqrt(offsetX * offsetX + offsetY * offsetY);
+			double dir = ((offsetX != 0) ? atan(offsetY / offsetX) : 1) * 180. / 3.1415926;
+			if (offsetX < 0) dir += 180;
+			if (dir < 0) dir += 360;
+
 			pEffectLst->outerShdw->dist = dist * (635 * 20);
 			pEffectLst->outerShdw->dir = (int)(dir * 60000);
 		}

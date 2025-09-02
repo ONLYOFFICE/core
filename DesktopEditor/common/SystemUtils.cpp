@@ -44,10 +44,11 @@
 #endif
 
 #if defined(_MAC) && !defined(_IOS)
-#include <CoreFoundation/CoreFoundation.h>
 #include <pwd.h>
 #include <unistd.h>
 
+#if 0
+#include <CoreFoundation/CoreFoundation.h>
 std::wstring getDirectoryPathMac(const NSSystemUtils::SystemDirectoryType& type)
 {
 	// Определяем тип директории
@@ -66,7 +67,7 @@ std::wstring getDirectoryPathMac(const NSSystemUtils::SystemDirectoryType& type)
 	// Получаем массив путей
 	CFArrayRef pathsArray = CFCopySearchPathForDirectoriesInDomains(searchPath, kCFUserDomainMask, true);
 
-	std::wstring result = "";
+	std::wstring result = L"";
 	if (pathsArray && CFArrayGetCount(pathsArray) > 0)
 	{
 		CFStringRef pathString = (CFStringRef)CFArrayGetValueAtIndex(pathsArray, 0);
@@ -89,6 +90,7 @@ std::wstring getDirectoryPathMac(const NSSystemUtils::SystemDirectoryType& type)
 
 	return result;
 }
+#endif
 
 #endif
 
@@ -232,7 +234,9 @@ namespace NSSystemUtils
 
 #if defined(_MAC) && !defined(_IOS)
 
+#if 0
 		result = getDirectoryPathMac(type);
+#endif
 		if (!result.empty())
 			return result;
 

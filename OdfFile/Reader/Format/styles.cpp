@@ -1659,7 +1659,7 @@ void style_page_layout_properties::docx_serialize(std::wostream & strm, oox::doc
 			
 			CP_XML_NODE(L"w:type")
 			{				
-				if (change_page_layout)
+				if (change_page_layout && Context.get_page_break()) // check bug 76397
 				{
 					CP_XML_ATTR(L"w:val", L"nextPage");
 				}

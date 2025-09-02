@@ -52,6 +52,11 @@ void SXDtr::readFields(CFRecord& record)
 {
 	record >> yr >> mon >> dom >> hr >> min >> sec;
 }
+
+void SXDtr::writeFields(CFRecord& record)
+{
+	record << yr << mon << dom << hr << min << sec;
+}
 	
 std::wstring SXDtr::value()
 {

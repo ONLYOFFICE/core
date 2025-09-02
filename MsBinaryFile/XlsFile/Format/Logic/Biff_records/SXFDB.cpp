@@ -76,5 +76,28 @@ void SXFDB::readFields(CFRecord& record)
 	global_info->arPivotCacheFields.push_back(fAllAtoms);
 }
 
+void SXFDB::writeFields(CFRecord& record)
+{
+	unsigned short	flags = 0;
+
+	SETBIT(flags, 0, fAllAtoms)
+	SETBIT(flags, 1, fSomeUnhashed)
+	SETBIT(flags, 2, fUsed)
+	SETBIT(flags, 3, fHasParent)
+	SETBIT(flags, 4, fRangeGroup)
+	SETBIT(flags, 5, fNumField)
+	SETBIT(flags, 7, fTextEtcField)
+	SETBIT(flags, 8, fnumMinMaxValid)
+	SETBIT(flags, 9, fShortIitms)
+	SETBIT(flags, 10, fNonDates)
+	SETBIT(flags, 11, fDateInField)
+	SETBIT(flags, 13, fServerBased)
+	SETBIT(flags, 14, fCantGetUniqueItems)
+	SETBIT(flags, 15, fCalculatedField)
+
+	record << flags << ifdbParent << ifdbBase << citmUnq << csxoper << cisxoper << catm;
+	record << stFieldName;
+}
+
 } // namespace XLS
 

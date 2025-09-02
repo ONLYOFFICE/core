@@ -133,6 +133,29 @@ const bool SXOPER::loadContent(BinProcessor& proc)
 
 	return true;
 }
+const bool SXOPER::saveContent(BinProcessor& proc)
+{
+	if(bNumber)
+	{
+		SXNum number;
+		number.num.data.value = std::stod(value);
+		proc.mandatory(number);
+	}
+	else if(bString)
+	{
+		SXString string;
+		string.segment = value;
+		proc.mandatory(string);
+	}
+	else if(bDate)
+	{
+		//todo date parsing
+	}
+	else
+		proc.mandatory<SxNil>();
+	return true;
+}
+
 int SXOPER::serialize(std::wostream & strm)
 {
 	if (!m_element) return 0;

@@ -46,6 +46,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 
 	int serialize(std::wostream & strm);
 	int serialize_record(std::wostream & strm);
@@ -54,17 +55,17 @@ public:
 
 	BaseObjectPtr	m_element;	
 
-	bool	bFormula;
+	bool	bFormula = false;
 
-	bool	bString;
-	bool	bDate;
-	bool	bNumber;
-	bool	bEmpty;
-	bool	bInteger;
-	bool	bBool;
+	bool	bString = false;
+	bool	bDate = false;
+	bool	bNumber = false;
+	bool	bEmpty = false;
+	bool	bInteger = false;
+	bool	bBool = false;
 
-	std::wstring value;
-	std::wstring node;
+	std::wstring value = L"";
+	std::wstring node = L"";
 };
 
 } // namespace XLS

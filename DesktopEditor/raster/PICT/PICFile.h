@@ -32,14 +32,204 @@
 #ifndef PICFILE_H
 #define PICFILE_H
 
-#include "../BgraFrame.h"
+#include "../pro/Graphics.h"
 
-namespace PICT {
-    class GRAPHICS_DECL CPictFile {
-    public:
-        bool Open(CBgraFrame* pFrame, const std::wstring& strFileName, bool isRGBA);
-        bool Open(CBgraFrame* pFrame, BYTE* pBuffer, int nSize, bool isRGBA);
-    };
-}
+enum PixelTrait
+{
+	UndefinedPixelTrait = 0x000000,
+	CopyPixelTrait = 0x000001,
+	UpdatePixelTrait = 0x000002,
+	BlendPixelTrait = 0x000004
+};
+
+enum ClassType
+{
+	UndefinedClass,
+	DirectClass,
+	PseudoClass
+};
+
+enum PixelChannel
+{
+	UndefinedPixelChannel = 0,
+	RedPixelChannel = 0,
+	CyanPixelChannel = 0,
+	GrayPixelChannel = 0,
+	LPixelChannel = 0,
+	LabelPixelChannel = 0,
+	YPixelChannel = 0,
+	aPixelChannel = 1,
+	GreenPixelChannel = 1,
+	MagentaPixelChannel = 1,
+	CbPixelChannel = 1,
+	bPixelChannel = 2,
+	BluePixelChannel = 2,
+	YellowPixelChannel = 2,
+	CrPixelChannel = 2,
+	BlackPixelChannel = 3,
+	AlphaPixelChannel = 4,
+	IndexPixelChannel = 5,
+	ReadMaskPixelChannel = 6,
+	WriteMaskPixelChannel = 7,
+	MetaPixelChannel = 8, /* deprecated */
+	CompositeMaskPixelChannel = 9,
+	MetaPixelChannels = 10,
+	IntensityPixelChannel = 64,  /* ???? */
+	CompositePixelChannel = 64,  /* ???? */
+	SyncPixelChannel = 65      /* not a real channel */
+};
+
+struct PixelChannelMap
+{
+	PixelChannel channel{UndefinedPixelChannel};
+	PixelTrait	 traits{UndefinedPixelTrait};
+	size_t		 offset{0};
+};
+
+struct PixelInfo
+{
+	ClassType storage_class{DirectClass};
+
+	PixelTrait alpha_trait{UndefinedPixelTrait};
+
+	double red{0.0};
+	double green{0.0};
+	double blue{0.0};
+	double alpha{0.0};
+	double index{0.0};
+};
+
+struct Image
+{
+	ClassType m_eStorageClass{DirectClass};
+	PixelTrait m_eAlphaTrait{UndefinedPixelTrait};
+
+	PixelInfo* m_pColormap{nullptr};
+	PixelChannelMap* m_pChannelMap{nullptr};
+
+	size_t m_nColors{0};
+	size_t m_nHeight{0};
+	size_t m_nWidth{0};
+	BYTE* m_pPixelData{nullptr};
+
+	Image()
+	{
+		m_pChannelMap = new PixelChannelMap[65];
+		for (size_t i=0; i <= 64; i++)
+			m_pChannelMap[i].channel=(PixelChannel) i;
+
+		m_pChannelMap[RedPixelChannel].offset = 0;
+		m_pChannelMap[GreenPixelChannel].offset = 1;
+		m_pChannelMap[BluePixelChannel].offset = 2;
+		m_pChannelMap[AlphaPixelChannel].offset = 3;
+		m_pChannelMap[IndexPixelChannel].offset = 5;
+	}
+
+	Image(const Image& other) : Image()
+	{
+		*this = other;
+	}
+
+	~Image()
+	{
+		if (m_pChannelMap)
+			delete[] m_pChannelMap;
+
+		if (m_pColormap)
+			delete[] m_pColormap;
+
+		if (m_pPixelData)
+			delete[] m_pPixelData;
+	}
+
+	Image& operator=(const Image& other)
+	{
+		if (this == &other)
+			return *this;
+
+		m_eStorageClass	= other.m_eStorageClass;
+		m_eAlphaTrait	= other.m_eAlphaTrait;
+
+		m_nColors	= other.m_nColors;
+		m_nWidth	= other.m_nWidth;
+		m_nHeight	= other.m_nHeight;
+
+		if (other.m_pColormap)
+		{
+			m_pColormap = new PixelInfo[m_nColors + 1];
+			memcpy(m_pColormap, other.m_pColormap, m_nColors + 1);
+		}
+
+		memcpy(m_pChannelMap, other.m_pChannelMap, 65);
+		return *this;
+	}
+};
+
+class CPictFile
+{
+public:
+	CPictFile();
+	~CPictFile();
+
+	bool Open(CBgraFrame* frame, const std::wstring& fileName);
+	bool Open(CBgraFrame* frame, BYTE* buffer, const size_t& size);
+private:
+	bool Decode();
+	bool DecodeHeader();
+	bool DecodeData();
+
+	size_t GetFileSize() const;
+
+	size_t Read(const size_t& length, void* data);
+	const void* ReadBlobStream(const size_t& length, void* data, size_t* count);
+	unsigned short ReadShortValue();
+	signed short ReadSignedShortValue();
+	unsigned int ReadLongValue();
+	bool ReadRectangle(Aggplus::Rect* rect);
+
+	void SetImageAlpha(Image* img, const BYTE alpha);
+	BYTE* DecodeImage(const Image& img, size_t bytesPerLine, size_t bitsPerPixel, size_t* extent);
+	const BYTE* UnpackScanline(const BYTE* pixels, const size_t& bitsPerPixel, BYTE* scanline, size_t* bytesPerLine);
+
+	void ReadPolygon();
+	Aggplus::Rect ContractRect(const Aggplus::Rect& rect, bool isFrame);
+	void DrawPolygon(bool isFrame);
+	void DrawLine(const Aggplus::Point& p1, const Aggplus::Point& p2);
+	void DrawRect(bool isFrame);
+	void DrawRoundRect(bool isFrame);
+	void DrawOval(bool isFrame);
+	void DrawArc();
+	void ReadAndDrawText(int x, int y);
+
+	void InitializeRenderer();
+
+private:
+	int m_nVersion{0};
+
+	FILE* m_pFile{nullptr};
+	Image m_oImgData{};
+	CBgraFrame m_oFrame{};
+	BYTE* m_pFrameData{nullptr};
+
+	size_t m_nPenHeight{0};
+	size_t m_nPenWidth{0};
+
+	int m_nFontStyle{0};
+	int m_nFontSize{0};
+
+	std::wstring m_wsFontName{};
+
+	Aggplus::Point m_oPenPoint{};
+	Aggplus::Point m_oTextPoint{};
+
+	Aggplus::Rect m_oLastRect{};
+	Aggplus::Rect m_oLastRoundRect{};
+	Aggplus::Rect m_oLastOval{};
+	Aggplus::Rect m_oLastArc{};
+	std::vector<Aggplus::Point> m_arLastPolygon{};
+
+	NSGraphics::IGraphicsRenderer* m_pRenderer{nullptr};
+	NSFonts::IFontManager* m_pFontManager{nullptr};
+};
 
 #endif // PICFILE_H

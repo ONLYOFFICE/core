@@ -444,11 +444,11 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 #endif
 
 #if CXIMAGE_SUPPORT_PIC
-    if (CXIMAGE_FORMAR_PIC == m_nFileType)
-    {
-        PICT::CPictFile PIC;
-        return PIC.Open(this, strFileName, !m_bIsRGBA);
-    }
+	if (CXIMAGE_FORMAR_PIC == m_nFileType)
+	{
+		CPictFile pict_file;
+		return pict_file.Open(this, strFileName);
+	}
 #endif
 
 	NSFile::CFileBinary oFile;
@@ -529,8 +529,8 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
 #if CXIMAGE_SUPPORT_PIC
     if (CXIMAGE_FORMAR_PIC == m_nFileType)
     {
-        PICT::CPictFile PIC;
-        return PIC.Open(this, pBuffer, nSize, !m_bIsRGBA);
+		CPictFile pict_file;
+		return pict_file.Open(this, pBuffer, nSize);
     }
 #endif
 

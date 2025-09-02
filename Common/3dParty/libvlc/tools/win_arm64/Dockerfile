@@ -2,7 +2,7 @@ FROM registry.videolan.org/vlc-debian-llvm-ucrt:20221012005047
 
 CMD cd /vlc && \
     (patch -p1 --forward src/modules/bank.c ignore-cache-time.patch || :) && \
-    (patch -p1 --forward extras/package/win32/build.sh build.patch || :) && \
+    (patch -p1 --forward extras/package/win32/build.sh build-win.patch || :) && \
     mkdir -p build && \
     cd build && \
     export CONTRIBFLAGS="--disable-disc --disable-net --disable-sout --disable-asdcplib --disable-chromaprint --disable-gcrypt --disable-gme --disable-goom --disable-jpeg --disable-libarchive --disable-nfs --disable-png --disable-postproc --disable-sidplay2 --disable-SDL_image --disable-caca --disable-lua --disable-luac --disable-modplug --disable-mpcdec --disable-openjpeg --disable-projectM --disable-tiff --disable-zlib --disable-zvbi --disable-fluidlite --disable-aribb24 --disable-aribb25" && \

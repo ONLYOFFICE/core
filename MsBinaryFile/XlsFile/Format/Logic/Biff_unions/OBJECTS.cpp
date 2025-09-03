@@ -173,7 +173,16 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	return count_1 > 0 || count_4 > 0;
 }
 
-
+const bool OBJECTS::saveContent(BinProcessor& proc)
+{
+	if(m_MsoDrawing == nullptr)
+		return false;
+	proc.mandatory(*m_MsoDrawing);
+	for(auto i : m_arrObject)
+		if(i != nullptr)
+			proc.mandatory(*i);
+	return true;
+}
 
 
 

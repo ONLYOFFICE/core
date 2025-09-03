@@ -767,6 +767,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	if(m_CELLTABLE != nullptr)
 		proc.mandatory(*m_CELLTABLE);
 
+	if(m_OBJECTS != nullptr)
+		proc.mandatory(*m_OBJECTS);
+
 	for(auto i : m_arHFPicture)
 		if( i!= nullptr)
 			proc.mandatory(*i);

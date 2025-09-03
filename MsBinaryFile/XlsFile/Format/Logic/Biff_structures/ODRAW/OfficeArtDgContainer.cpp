@@ -145,4 +145,9 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 
 }
 
+void OfficeArtDgContainer::saveFields(XLS::CFRecord& record)
+{
+	//todo writing
+}
+
 } // namespace ODRAW

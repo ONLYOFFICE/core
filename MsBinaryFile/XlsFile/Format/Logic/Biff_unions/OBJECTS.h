@@ -49,6 +49,7 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	virtual const bool saveContent(BinProcessor& proc);
 
 	virtual const bool loadContentRead(BinReaderProcessor& proc);
 
@@ -56,6 +57,8 @@ public:
 
 	bool is_inside_chart_sheet_;
 
+
+	std::vector<BaseObjectPtr> m_arrObject;
 	MsoDrawingPtr m_MsoDrawing;	
 };
 

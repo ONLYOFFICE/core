@@ -41,6 +41,9 @@
 #ifdef CreateFile
 #undef CreateFile
 #endif
+#ifdef GetSystemDirectory
+#undef GetSystemDirectory
+#endif
 #endif
 
 #if defined(_MAC) && !defined(_IOS)

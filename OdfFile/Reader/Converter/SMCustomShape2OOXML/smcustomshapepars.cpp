@@ -144,13 +144,13 @@ namespace OdfCustomShape
 		if(!pReader->GetElement().empty())
 			pReader->ClearElement();
 		if(m_wsNumber == L"left")
-			m_wsNumber = pReader->GetLeft();
+			m_wsNumber = pReader->GetLeft() != L"" ? pReader->GetLeft():L"l";
 		else if(m_wsNumber == L"top")
-			m_wsNumber = pReader->GetTop();
+			m_wsNumber = pReader->GetTop() != L"" ? pReader->GetTop():L"t";
 		else if(m_wsNumber == L"right")
-			m_wsNumber = pReader->GetRight();
+			m_wsNumber = pReader->GetRight() != L"" ? pReader->GetRight():L"r";
 		else if(m_wsNumber == L"bottom")
-			m_wsNumber = pReader->GetBottom();
+			m_wsNumber = pReader->GetBottom() != L"" ? pReader->GetBottom():L"b";
 		/*The height and width may be different*/
 		else if(m_wsNumber == L"height")
 			m_wsNumber = L"h";

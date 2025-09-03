@@ -1195,8 +1195,6 @@ namespace svg_path
 
 					std::wstring wsKoefHeight{L"af" + std::to_wstring(iCountFormul++)},
 								wsKoefWidth{L"af" + std::to_wstring(iCountFormul++)},
-								wsTempHeight{L"af" + std::to_wstring(iCountFormul++)},
-								wsTempWidth{L"af" + std::to_wstring(iCountFormul++)},
 								wsHeight{L"af" + std::to_wstring(iCountFormul++)},
 								wsWidth{L"af" + std::to_wstring(iCountFormul++)},
 								wsNewFirstAngleX{L"af" + std::to_wstring(iCountFormul++)},
@@ -1221,23 +1219,16 @@ namespace svg_path
 
 					/* implemented without taking into account the left offset*/
 					if(wsH.empty())
-						wsH = L"0";
+						wsH = L"h";
 					if(wsW.empty())
-						wsW = L"0";
-					if(wsH == L"0" || wsW == L"0")
-					{
-						wsNewFormula += L"<a:gd name=\""+ wsKoefHeight + L"\" fmla=\"*/ h 1 21600\"/>";
-						wsNewFormula += L"<a:gd name=\""+ wsKoefWidth + L"\" fmla=\"*/ w 1 21600\"/>";
-					}
-					else
-					{
-						wsNewFormula += L"<a:gd name=\""+ wsKoefHeight + L"\" fmla=\"*/ h 1 " + wsH + L"\"/>";
-						wsNewFormula += L"<a:gd name=\""+ wsKoefWidth + L"\" fmla=\"*/ w 1 " + wsH + L"\"/>";
-					}
-					wsNewFormula += L"<a:gd name=\""+ wsTempHeight + L"\" fmla=\"*/ vc " + wsH + L" h\"/>";
-					wsNewFormula += L"<a:gd name=\""+ wsTempWidth + L"\" fmla=\"*/ wd2 " + wsW + L" w\"/>";
-					wsNewFormula += L"<a:gd name=\""+ wsHeight +L"\" fmla=\"?: " + wsTempHeight + L" " + wsTempHeight + L" vc\"/>";
-					wsNewFormula += L"<a:gd name=\""+ wsWidth +L"\" fmla=\"?: " + wsTempWidth + L" " + wsTempWidth + L" wd2\"/>";
+						wsW = L"w";
+
+					wsNewFormula += L"<a:gd name=\""+ wsKoefHeight + L"\" fmla=\"*/ h 1 " + wsH + L"\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsKoefWidth + L"\" fmla=\"*/ w 1 " + wsW + L"\"/>";
+					// }
+					wsNewFormula += L"<a:gd name=\""+ wsHeight + L"\" fmla=\"*/ vc " + wsH + L" h\"/>";
+					wsNewFormula += L"<a:gd name=\""+ wsWidth + L"\" fmla=\"*/ wd2 " + wsW + L" w\"/>";
+
 
 					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleX + L"\" fmla=\"*/ "+ wsAngleStartX +L" " + wsKoefWidth + L" 1\"/>";
 					wsNewFormula += L"<a:gd name=\""+ wsNewFirstAngleY + L"\" fmla=\"*/ "+ wsAngleStartY +L" " + wsKoefHeight + L" 1\"/>";

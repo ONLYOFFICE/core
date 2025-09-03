@@ -869,7 +869,7 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 
 	bool set_shape = false;
 
-	std::wstring wsH(L"0"),wsW(L"0"),wsLeft(L"0"),wsTop(L"0");
+	std::wstring wsH(L""),wsW(L""),wsLeft(L""),wsTop(L"");
 
 	if (attlist_.draw_mirror_horizontal_)
 	{
@@ -995,8 +995,13 @@ bool draw_enhanced_geometry::oox_convert(std::vector<odf_reader::_property>& pro
 				res = false;
 			}
 
-			if(!props.empty() && props.back().name_ == L"custom_equations")
-				boost::get<std::wstring>(props.back().val_) += wsNewFormula;
+			if(!props.empty() && !wsNewFormula.empty())
+				for(odf_reader::_property& stTempProps:props)
+					if(stTempProps.name_ == L"custom_equations")
+					{
+						boost::get<std::wstring>(stTempProps.val_) += wsNewFormula;
+						wsNewFormula.clear();
+					}
 
 			if (!o_Polyline.empty() && res)
 			{

@@ -83,7 +83,6 @@ android {
 
     packaging {
         jniLibs {
-            useLegacyPackaging = true
             pickFirsts.add("lib/armeabi-v7a/libc++_shared.so")
             pickFirsts.add("lib/x86/libc++_shared.so")
             pickFirsts.add("lib/arm64-v8a/libc++_shared.so")
@@ -121,7 +120,7 @@ fun getProjectPath(path: String, isRelativeCreate: Boolean = true): String {
     throw GradleException("getProjectPath($path) - path doesn't exist...")
 }
 
-tasks.create("copyIcuDatFiles") {
+tasks.register("copyIcuDatFiles") {
     doLast {
 
         println()

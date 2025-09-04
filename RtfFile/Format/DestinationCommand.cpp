@@ -2957,12 +2957,12 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			int x = 0, y = 0;
 			try
 			{
-				x = XmlUtils::GetInteger(splitted[i].substr(0, pos));
+                x = XmlUtils::GetInteger(splitted[i].substr(0, pos)) - m_oShape.m_nRelLeft;
 			}
 			catch(...){}
 			try
 			{
-				y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1));
+                y = XmlUtils::GetInteger(splitted[i].substr(pos + 1, splitted[i].length() - 1)) - m_oShape.m_nRelTop;
 			}
 			catch(...){}
 
@@ -2986,10 +2986,10 @@ void RtfShapeReader::ShapePropertyReader::ShapePropertyValueReader::PopState( Rt
 			m_oShape.m_aPSegmentInfo.push_back( val );
 		}
 	}
-	else if ( L"geoBottom"		== m_sPropName ) m_oShape.m_nGeoBottom		= nValue;
-	else if ( L"geoLeft"		== m_sPropName ) m_oShape.m_nGeoLeft		= nValue;
-	else if ( L"geoRight"		== m_sPropName ) m_oShape.m_nGeoRight		= nValue;
-	else if ( L"geoTop"			== m_sPropName ) m_oShape.m_nGeoTop			= nValue;
+    else if ( L"geoBottom"		== m_sPropName ) m_oShape.m_nGeoBottom		= nValue - m_oShape.m_nRelTop;
+    else if ( L"geoLeft"		== m_sPropName ) m_oShape.m_nGeoLeft		= nValue - m_oShape.m_nRelLeft;
+    else if ( L"geoRight"		== m_sPropName ) m_oShape.m_nGeoRight		= nValue - m_oShape.m_nRelLeft;
+    else if ( L"geoTop"			== m_sPropName ) m_oShape.m_nGeoTop			= nValue - m_oShape.m_nRelTop;
 	//
 	else if ( L"dxWrapDistLeft"	== m_sPropName ) m_oShape.m_nWrapDistLeft	= RtfUtility::Emu2Twips( nValue );
 	else if ( L"dyWrapDistTop"	== m_sPropName ) m_oShape.m_nWrapDistTop	= RtfUtility::Emu2Twips( nValue );

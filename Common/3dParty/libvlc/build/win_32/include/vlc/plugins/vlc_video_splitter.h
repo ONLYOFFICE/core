@@ -2,7 +2,7 @@
  * vlc_video_splitter.h: "video splitter" related structures and functions
  *****************************************************************************
  * Copyright (C) 2009 Laurent Aimar
- * $Id: a5afba5230b0fb5b42c5cff3daab70a1e527f9eb $
+ * $Id$
  *
  * Authors: Laurent Aimar <fenrir _AT_ videolan _DOT_ org>
  *

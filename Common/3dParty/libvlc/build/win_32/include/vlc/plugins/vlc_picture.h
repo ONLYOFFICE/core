@@ -2,7 +2,7 @@
  * vlc_picture.h: picture definitions
  *****************************************************************************
  * Copyright (C) 1999 - 2009 VLC authors and VideoLAN
- * $Id: 74f156fbbd6e6a4479754c0e79fbd5374a4a1e2e $
+ * $Id$
  *
  * Authors: Vincent Seguin <seguin@via.ecp.fr>
  *          Samuel Hocevar <sam@via.ecp.fr>
@@ -79,7 +79,7 @@ struct picture_t
      * These properties can be modified using the video output thread API,
      * but should never be written directly */
     /**@{*/
-    mtime_t         date;                                  /**< display date */
+    vlc_tick_t      date;                                  /**< display date */
     bool            b_force;
     /**@}*/
 

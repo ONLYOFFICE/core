@@ -145,10 +145,23 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 
 }
 
-void OfficeArtDgContainer::saveFields(XLS::CFRecord& record)
+void OfficeArtDgContainer::save(XLS::CFRecord& record)
 {
+	rh_own.recVer = 0xF;
+	rh_own.recInstance = 0;
+	rh_own.recType =  0xF002;
+	record << rh_own;
+	auto sizePos = record.getRdPtr();
 	if(m_OfficeArtFDG != nullptr)
 		m_OfficeArtFDG->save(record);
+	if(m_OfficeArtFRITContainer != nullptr)
+		m_OfficeArtFRITContainer->save(record);
+
+	//calculating size
+	rh_own.recLen = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(rh_own.recLen + 4);
+	record << rh_own.recLen;
+	record.skipNunBytes(rh_own.recLen);
 }
 
 } // namespace ODRAW

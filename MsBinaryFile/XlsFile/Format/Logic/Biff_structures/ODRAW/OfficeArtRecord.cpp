@@ -52,11 +52,6 @@ void OfficeArtRecord::load(XLS::CFRecord& record)
 	//Log::warning(STR::int2str(rh_own.recType, 16));
 }
 
-void OfficeArtRecord::save(XLS::CFRecord& record)
-{
-	m_pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
-	saveFields(record);
-}
 
 
 bool OfficeArtRecord::IsThisHeaderMine(const OfficeArtRecordHeader& rh_check)

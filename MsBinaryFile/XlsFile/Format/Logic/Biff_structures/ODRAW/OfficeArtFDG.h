@@ -50,7 +50,7 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void loadFields(XLS::CFRecord& record);
-	virtual void saveFields(XLS::CFRecord& record);
+	virtual void save(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFDG;
 

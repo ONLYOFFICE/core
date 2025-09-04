@@ -102,12 +102,7 @@ void MsoDrawing::readFields(CFRecord& record)
 
 void MsoDrawing::writeFields(CFRecord& record)
 {
-	ODRAW::OfficeArtRecordHeader rh;
-	rh.recVer = 0xF;
-	rh.recInstance = 0;
-	rh.recType =  0xF002;
-	record << rh;
-	rgChildRec.saveFields(record);
+	rgChildRec.save(record);
 }
 
 

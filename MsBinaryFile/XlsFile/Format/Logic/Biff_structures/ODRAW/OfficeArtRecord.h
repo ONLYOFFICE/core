@@ -53,14 +53,12 @@ public:
 	OfficeArtRecord(const unsigned char recVer, const unsigned short recType);
 
 	virtual void load(XLS::CFRecord& record);
-	virtual void save(XLS::CFRecord& record);
 
 	bool IsThisHeaderMine(const OfficeArtRecordHeader& rh);
 
 	// For overriding:
 	virtual const unsigned short GetInstanceToStore();
 	virtual void loadFields(XLS::CFRecord& record) = 0;
-	virtual void saveFields(XLS::CFRecord& record){};
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 	OfficeArtRecordHeader rh_own;

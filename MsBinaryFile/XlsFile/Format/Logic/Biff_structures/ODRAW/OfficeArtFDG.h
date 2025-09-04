@@ -50,11 +50,12 @@ public:
 	XLS::BiffStructurePtr clone();
 
 	virtual void loadFields(XLS::CFRecord& record);
+	virtual void saveFields(XLS::CFRecord& record);
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtFDG;
 
-	_UINT32 csp;
-	_UINT32 spidCur;
+	_UINT32 csp = 0;
+	_UINT32 spidCur = 0;
 };
 
 typedef boost::shared_ptr<OfficeArtFDG> OfficeArtFDGPtr;

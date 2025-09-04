@@ -42,7 +42,7 @@ namespace StarMath {
 			delete m_pXmlWrite;
 	}
 	//check XMLWrite(if not nullptr == delete)
-	void CConversionSMtoOOXML::StartConversion(std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
+	void CConversionSMtoOOXML::StartConversion(const std::vector<StarMath::CElement*> arPars, const unsigned int& iAlignment)
 	{
 		m_pXmlWrite = new XmlUtils::CXmlWriter;
 		if(!arPars.empty())

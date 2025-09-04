@@ -8,9 +8,11 @@ TEMPLATE = app
 CORE_ROOT_DIR = $$PWD/../../../../..
 PWD_ROOT_DIR = $$PWD
 
-CONFIG += startmath_use_only_eqn
+include($$CORE_ROOT_DIR/Common/base.pri)
+include($$CORE_ROOT_DIR/Common/3dParty/icu/icu.pri)
 
-include($$CORE_ROOT_DIR/OdfFile/Reader/Converter/StarMath2OOXML/StarMath2OOXML.pri)
+ADD_DEPENDENCY(StarMathConverter)
+
 include($$CORE_ROOT_DIR/Common/3dParty/googletest/googletest.pri)
 
 

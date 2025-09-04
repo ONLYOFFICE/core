@@ -21,7 +21,7 @@
 #include "../HWPElements/HWPRecordCharShape.h"
 
 //For EQN
-#include "../../../OdfFile/Reader/Converter/StarMath2OOXML/cconversionsmtoooxml.h"
+#include "../../../OdfFile/Reader/Converter/StarMath2OOXML/conversionmathformula.h"
 
 #include "Transform.h"
 
@@ -1180,14 +1180,9 @@ void CConverter2OOXML::WriteEqEditShape(const CCtrlEqEdit* pEqEditShape, short s
 
 	oBuilder.WriteString(L"<w:r><w:t xml:space=\"preserve\">");
 
-	StarMath::CConversionSMtoOOXML oEQNConverter;
+	StarMath::CStarMathConverter oConverterStarMath;
 
-	//TODO:: создаем временную переменную, так как ParseEQN не принимает константный указатель
-	std::wstring wsEQN{pEqEditShape->GetEqn()};
-
-	oEQNConverter.StartConversion(StarMath::CParserStarMathString().ParseEQN(wsEQN));
-
-	oBuilder.WriteString(oEQNConverter.GetOOXML());
+	oBuilder.WriteString(oConverterStarMath.ConvertEQNToOOXml(pEqEditShape->GetEqn()));
 	oBuilder.WriteString(L"</w:t></w:r>");
 }
 

@@ -43,11 +43,10 @@ namespace StarMath
 		for(CElement* pElement:m_arEquation)
 			delete pElement;
 	}
-	std::vector<CElement*> CParserStarMathString::Parse(std::wstring& wsParseString, int iTypeConversion)
+	std::vector<CElement*> CParserStarMathString::Parse(const std::wstring &wsParseString,const int& iTypeConversion)
 	{
 		TypeConversion enTypeConvers = (TypeConversion)iTypeConversion;
-		std::wstring::iterator itStart = wsParseString.begin(),itEnd = wsParseString.end();
-		CStarMathReader* pReader = new CStarMathReader(itStart,itEnd,enTypeConvers);
+		CStarMathReader* pReader = new CStarMathReader(wsParseString,enTypeConvers);
 		pReader->SetBaseAttribute(m_stBaseAttribute);
 		while(pReader->CheckIteratorPosition())
 		{
@@ -85,10 +84,9 @@ namespace StarMath
 			m_qSize.push(tSize);
 		return m_arEquation;
 	}
-	std::vector<CElement*> CParserStarMathString::ParseEQN(std::wstring &wsParseString)
+	std::vector<CElement*> CParserStarMathString::ParseEQN(const std::wstring &wsParseString)
 	{
-		std::wstring::iterator itStart = wsParseString.begin(),itEnd = wsParseString.end();
-		CStarMathReader* pReader = new CStarMathReader(itStart,itEnd,TypeConversion::docx,true);
+		CStarMathReader* pReader = new CStarMathReader(wsParseString,TypeConversion::docx,true);
 		while(pReader->CheckIteratorPosition())
 		{
 			CElement* pTempElement = ParseElementEQN(pReader);
@@ -4030,11 +4028,11 @@ namespace StarMath
 		return tSizeTo;
 	}
 // class methods CStarMathReader
-	CStarMathReader::CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd, const TypeConversion &enTypeConversion, const bool &bEQN)
-		: m_enGlobalType(TypeElement::Empty),m_enUnderType(TypeElement::Empty),m_pAttribute(nullptr),m_bMarkForUnar(true),m_enTypeCon(enTypeConversion),m_pBaseAttribute(nullptr),m_bEQN(bEQN)
+	CStarMathReader::CStarMathReader(const std::wstring &wsFormula, const TypeConversion &enTypeConversion, const bool &bEQN)
+		: m_wsFormula(wsFormula),m_enGlobalType(TypeElement::Empty),m_enUnderType(TypeElement::Empty),m_pAttribute(nullptr),m_bMarkForUnar(true),m_enTypeCon(enTypeConversion),m_pBaseAttribute(nullptr),m_bEQN(bEQN)
 	{
-		m_itStart = itStart;
-		m_itEnd = itEnd;
+		m_itStart = m_wsFormula.begin();
+		m_itEnd = m_wsFormula.end();
 	}
 	CStarMathReader::~CStarMathReader()
 	{

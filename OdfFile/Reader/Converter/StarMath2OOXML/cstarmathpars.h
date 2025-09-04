@@ -35,6 +35,7 @@
 #include "typeselements.h"
 #include "typeConversion.h"
 #include "TypeLanguage.h"
+#include "TFormulaSize.h"
 #include <iostream>
 #include <vector>
 #include <iterator>
@@ -58,18 +59,6 @@ namespace StarMath
 		bool base_font_italic;
 	};
 	
-	struct TFormulaSize
-	{
-		TFormulaSize():m_iHeight(0),m_iWidth(0) {};
-		TFormulaSize(const unsigned int& iHeight,const unsigned int& iwidth):m_iHeight(iHeight),m_iWidth(iwidth) {};
-		float m_iHeight;
-		float m_iWidth;
-		void Zeroing()
-		{
-			this->m_iHeight = 0; 
-			this->m_iWidth = 0;
-		}
-	};
 	class CAttribute
 	{
 	public:
@@ -119,7 +108,7 @@ namespace StarMath
 	class CStarMathReader
 	{
 	public:
-		CStarMathReader(std::wstring::iterator& itStart, std::wstring::iterator& itEnd,const TypeConversion &enTypeConversion,const bool& bEQN = false);
+		CStarMathReader(const std::wstring& wsFormula,const TypeConversion &enTypeConversion,const bool& bEQN = false);
 		~CStarMathReader();
 		bool GetToken();
 		//getting a subtype and setting the global type of a token to variables m_enUnderType and m_enGlobalType
@@ -158,6 +147,7 @@ namespace StarMath
 		bool CheckTokenForGetElement(const wchar_t& cToken);
 		bool CheckIsalhpaForGetElement(const wchar_t& cToken,const wchar_t& cLastToken);
 		bool m_bMarkForUnar;
+		std::wstring m_wsFormula;
 		std::wstring::iterator m_itStart,m_itEnd;
 		TypeElement m_enGlobalType,m_enUnderType;
 		std::wstring m_wsLowerCaseToken,m_wsOriginalToken;
@@ -518,8 +508,8 @@ namespace StarMath
 	public:
 		CParserStarMathString();
 		~CParserStarMathString();
-		std::vector<CElement*> Parse(std::wstring& wsParseString,int iTypeConversion = 0);
-		std::vector<CElement*> ParseEQN(std::wstring& wsParseString);
+		std::vector<CElement*> Parse(const std::wstring& wsParseString, const int &iTypeConversion = 0);
+		std::vector<CElement*> ParseEQN(const std::wstring& wsParseString);
 		static CElement* ParseElement(CStarMathReader* pReader);
 		static CElement* ParseElementEQN(CStarMathReader* pReader);
 		//Function for adding a left argument (receives the argument itself and the element to which it needs to be added as input. Works with classes:CElementBinOperator,CElementConnection,CElementSetOperation).

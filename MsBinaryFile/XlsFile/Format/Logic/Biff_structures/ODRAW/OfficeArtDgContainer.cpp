@@ -161,6 +161,8 @@ void OfficeArtDgContainer::save(XLS::CFRecord& record)
 	for(auto i : m_OfficeArtSpContainer)
 		if(i != nullptr)
 			i->save(record);
+	if(m_OfficeArtSpgrContainerFileBlock != nullptr)
+		m_OfficeArtSpgrContainerFileBlock->save(record);
 
 	//calculating size
 	rh_own.recLen = record.getRdPtr() - sizePos;

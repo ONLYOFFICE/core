@@ -57,6 +57,12 @@ void FtCf::load(CFRecord& record)
 	}
 }
 
+void FtCf::save(CFRecord& record)
+{
+	unsigned short ft =  0x0007, cb = 0x0002;
+	record << ft <<cb << cf;
+}
+
 
 } // namespace XLS
 

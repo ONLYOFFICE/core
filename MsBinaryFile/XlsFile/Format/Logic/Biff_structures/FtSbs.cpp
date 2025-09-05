@@ -64,6 +64,21 @@ void FtSbs::load(CFRecord& record)
 	fNo3d			= GETBIT(flags, 3);
 }
 
+void FtSbs::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x000C, cb = 0x0014;
+		record << ft << cb;
+		record.reserveNunBytes(4);//reserved
+	}
+	unsigned short flags = 0;
+	SETBIT(flags, 0, fDraw)
+	SETBIT(flags, 1, fDrawSliderOnly)
+	SETBIT(flags, 2, fTrackElevator)
+	SETBIT(flags, 3, fNo3d)
+	record << iVal << iMin << iMax << dInc << dPage << fHoriz << dxScroll << flags;
+}
+
 
 } // namespace XLS
 

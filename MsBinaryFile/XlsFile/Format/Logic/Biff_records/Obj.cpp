@@ -332,5 +332,18 @@ void Obj::readFields(CFRecord& record)
 
 }
 
+void Obj::writeFields(CFRecord& record)
+{
+	record << cmo;
+	if(cmo.ot == 0x08)
+		record << pictFormat << pictFlags;
+	else if((cmo.ot >= 0x10 && cmo.ot <= 0x12) || cmo.ot == 0x14)
+		record << sbs;
+	else if(cmo.ot ==  0x19)
+		record << nts;
+	record << macro;
+
+}
+
 } // namespace XLS
 

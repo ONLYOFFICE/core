@@ -342,6 +342,8 @@ void Obj::writeFields(CFRecord& record)
 	else if(cmo.ot ==  0x19)
 		record << nts;
 	record << macro;
+	if(cmo.ot == 0x08)
+		record <<pictFmla;
 
 }
 

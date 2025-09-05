@@ -120,6 +120,31 @@ void FtPictFmla::load(CFRecord& record, FtPioGrbit& pictFlags)
 	}
 }
 
+void FtPictFmla::save(CFRecord& record, FtPioGrbit& pictFlags)
+{
+	unsigned short ft = 0x0009, cb = 0;
+	record << ft;
+	record.reserveNunBytes(2);
+	auto sizePos = record.getRdPtr();
+
+	fmla.save(record);
+	if(fmla.fmla.HasPtgTbl())
+	{
+		record << lPosInCtlStm;
+	}
+	if(pictFlags.fPrstm)
+	{
+		record << cbBufInCtlStm;
+	}
+	if(pictFlags.fCtl)
+	{
+		key.save(record);
+	}
+	cb = record.getRdPtr() - sizePos;
+	record.RollRdPtrBack(cb+2);
+	record << cb;
+	record.skipNunBytes(cb);
+}
 
 } // namespace XLS
 

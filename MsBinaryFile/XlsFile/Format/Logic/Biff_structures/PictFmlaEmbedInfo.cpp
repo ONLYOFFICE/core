@@ -54,6 +54,16 @@ void PictFmlaEmbedInfo::load(CFRecord& record)
 	record >> strClass;
 }
 
+void PictFmlaEmbedInfo::save(CFRecord& record)
+{
+	unsigned char ttb = 0x03;
+	record << ttb;
+	unsigned char cbClass = strClass.getSize();
+	record << cbClass;
+	record.reserveNunBytes(1);
+	record << strClass;
+}
+
 
 } // namespace XLS
 

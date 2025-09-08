@@ -1571,10 +1571,7 @@ void CConverter2OOXML::CloseDrawingNode(const CCtrlObjElement* pCtrlShape, NSStr
 	if (pCtrlShape->GetTreatAsChar())
 		oBuilder.WriteString(L"</wp:inline>");
 	else
-	{
-		oBuilder.WriteString(L"<wp14:sizeRelH relativeFrom=\"page\"><wp14:pctWidth>0</wp14:pctWidth></wp14:sizeRelH><wp14:sizeRelV relativeFrom=\"page\"><wp14:pctHeight>0</wp14:pctHeight></wp14:sizeRelV>");
 		oBuilder.WriteString(L"</wp:anchor>");
-	}
 
 	oBuilder.WriteString(L"</w:drawing>");
 }
@@ -1646,14 +1643,14 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	int nFinalWidth  = std::abs(pCtrlShape->GetWidth());
-	int nFinalHeight = std::abs(pCtrlShape->GetHeight());
+	int nFinalWidth  = std::abs(pCtrlShape->GetCurWidth());
+	int nFinalHeight = std::abs(pCtrlShape->GetCurHeight());
 
-	if (0 == nFinalWidth || 0 == nFinalHeight)
-	{
-		nFinalWidth = pCtrlShape->GetCurWidth();
-		nFinalHeight = pCtrlShape->GetCurHeight();
-	}
+	if (0 == nFinalWidth)
+		nFinalWidth = pCtrlShape->GetWidth();
+
+	if (0 == nFinalHeight)
+		nFinalHeight = pCtrlShape->GetHeight();
 
 	if (nullptr != pWidth)
 		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);

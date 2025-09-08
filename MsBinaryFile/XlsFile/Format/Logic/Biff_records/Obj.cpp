@@ -354,6 +354,12 @@ void Obj::writeFields(CFRecord& record)
 	}
 	if(cmo.ot== 0x0B || cmo.ot == 0x0C)
 		record << checkBox;
+	if(cmo.ot == 0x0C)
+		record << radioButton;
+	else if(cmo.ot == 0x0D)
+		record << edit;
+	else if(cmo.ot == 0x12 || cmo.ot == 0x14)
+		list.save(record, cmo.ot);
 
 }
 

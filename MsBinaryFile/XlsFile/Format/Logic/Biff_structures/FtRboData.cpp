@@ -56,6 +56,15 @@ void FtRboData::load(CFRecord& record)
 	record >> idRadNext >> fFirstBtn;
 }
 
+void FtRboData::save(CFRecord& record)
+{
+	{
+		unsigned short ft = 0x0011, cb = 0x0004;
+		record << ft << cb;
+	}
+	record << idRadNext << fFirstBtn;
+}
+
 
 } // namespace XLS
 

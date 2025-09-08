@@ -343,7 +343,17 @@ void Obj::writeFields(CFRecord& record)
 		record << nts;
 	record << macro;
 	if(cmo.ot == 0x08)
-		record <<pictFmla;
+		record << pictFmla;
+	if(cmo.ot== 0x0B || cmo.ot == 0x0C || (cmo.ot >= 0x10 && cmo.ot <= 0x12) || cmo.ot == 0x14)
+	{
+		if(cmo.ot== 0x0B || cmo.ot == 0x0C)
+			linkFmla.ft =  0x0B;
+		else
+			linkFmla.ft =  0x0E;
+		record << linkFmla;
+	}
+	if(cmo.ot== 0x0B || cmo.ot == 0x0C)
+		record << checkBox;
 
 }
 

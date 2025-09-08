@@ -41,7 +41,6 @@ BiffStructurePtr ObjLinkFmla::clone()
 
 void ObjLinkFmla::load(CFRecord& record)
 {
-	unsigned short ft;
 	record >> ft;
 
 	if ( ft != 0x0014 && ft != 0x000e)
@@ -51,6 +50,14 @@ void ObjLinkFmla::load(CFRecord& record)
 	}
 	fExist = true;
 	fmla.load(record);
+}
+
+void ObjLinkFmla::save(CFRecord& record)
+{
+	if(!fExist)
+		return;
+	record << ft;
+	fmla.save(record);
 }
 
 

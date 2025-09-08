@@ -51,9 +51,11 @@ public:
 	static const ElementType	type = typeObjLinkFmla;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	ObjFmla fmla;
-	bool	fExist;
+	unsigned short ft = 0;
+	bool	fExist = false;
 };
 
 } // namespace XLS

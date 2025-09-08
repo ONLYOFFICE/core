@@ -50,10 +50,11 @@ public:
 	static const ElementType type = typeFtCblsData;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	unsigned short fChecked;
-	unsigned short accel;
-	bool fNo3d;
+	unsigned short fChecked = false;
+	unsigned short accel = 0;
+	bool fNo3d = false;
 	
 	bool fExist;
 };

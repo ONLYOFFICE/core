@@ -360,7 +360,10 @@ void Obj::writeFields(CFRecord& record)
 		record << edit;
 	else if(cmo.ot == 0x12 || cmo.ot == 0x14)
 		list.save(record, cmo.ot);
-
+	else if(cmo.ot == 0x13)
+		record << gbo;
+	if(cmo.ot != 0x12 && cmo.ot != 0x14)
+		record.reserveNunBytes(4);
 }
 
 } // namespace XLS

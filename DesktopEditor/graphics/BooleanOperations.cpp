@@ -75,7 +75,7 @@ bool Segment::IsValid(const BooleanOpType& op) const noexcept
 		else if (Id == 2 && Winding == 1)
 			return true;
 	}
-	else if (Winding == op)
+	else if (Winding && op == Intersection || !Winding && op == Union)
 		return true;
 	return false;
 }
@@ -396,18 +396,12 @@ Curve Curve::GetPart(double from, double to) const noexcept
 	if (from > 0)
 	{
 		result = Subdivide(from)[1];
-		result.Segment2.HI.X -= result.Segment2.P.X;
-		result.Segment2.HI.Y -= result.Segment2.P.Y;
-		result.Segment2.HO.X -= result.Segment2.P.X;
-		result.Segment2.HO.Y -= result.Segment2.P.Y;
+		result.Segment2.SetHandles(result.Segment2.HI, result.Segment2.HO);
 	}
 	if (to < 1)
 	{
 		result = result.Subdivide((to - from) / (1 - from))[0];
-		result.Segment2.HI.X -= result.Segment2.P.X;
-		result.Segment2.HI.Y -= result.Segment2.P.Y;
-		result.Segment2.HO.X -= result.Segment2.P.X;
-		result.Segment2.HO.Y -= result.Segment2.P.Y;
+		result.Segment2.SetHandles(result.Segment2.HI, result.Segment2.HO);
 	}
 
 	if (from > to)
@@ -688,8 +682,7 @@ void Curve::Flip() noexcept
 	PointD tmpHI = Segment2.P + Segment2.HI;
 	PointD tmpHO = Segment2.P + Segment2.HO;
 	std::swap(Segment1.P, Segment2.P);
-	Segment2.HI	= tmpHI - Segment2.P;
-	Segment2.HO	= tmpHO - Segment2.P;
+	Segment2.SetHandles(tmpHO, tmpHI);
 }
 
 bool Curve::IsStraight() const noexcept
@@ -938,7 +931,8 @@ void CBooleanOperations::TraceAllOverlap()
 	}
 	else
 	{
-		bool winding1, winding2;
+		bool winding1{false},
+			 winding2{false};
 		for (const auto& s : Segments1)
 		{
 			if (!s.Inters)
@@ -966,7 +960,7 @@ void CBooleanOperations::TraceAllOverlap()
 		{
 			if (!winding1 && !winding2)
 				TracePaths();
-			else if (!winding2)
+			else if (!winding1)
 				Result = std::move(Path1);
 			else
 				Result = std::move(Path2);
@@ -1545,9 +1539,9 @@ int CBooleanOperations::AddCurveIntersection(const Curve& curve1, const Curve& c
 
 	double	d1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[1], y2[1], false),
 			d2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x2[2], y2[2], false),
-			factor = (d1 * d2) > 0 ? 3.0 / 4.0 : 4.0 / 9.0,
-			dMin = factor * min(0, d1, d2),
-			dMax = factor * max(0, d1, d2),
+			factor = (d1 * d2) > 0.0 ? 3.0 / 4.0 : 4.0 / 9.0,
+			dMin = factor * min(0.0, d1, d2),
+			dMax = factor * max(0.0, d1, d2),
 			dp0 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[0], y1[0], false),
 			dp1 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[1], y1[1], false),
 			dp2 = getSignedDistance(x2[0], y2[0], x2[3], y2[3], x1[2], y1[2], false),

@@ -1193,7 +1193,7 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 	else if (PROP_DEF != m_nZOrder)
 	{
 		if (0 == m_nZOrderRelative) nZIndex = m_nZOrder;
-		else nZIndex = -m_nZOrder;
+        else nZIndex = -abs(m_nZOrder) - 1;
 	}
 	else if (oRenderParameter.nType !=  RENDER_TO_OOX_PARAM_SHAPE_CHILD)
 	{

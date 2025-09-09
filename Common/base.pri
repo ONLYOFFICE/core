@@ -225,6 +225,7 @@ core_linux {
 
                 QMAKE_CXXFLAGS    += --sysroot $$QMAKE_CUSTOM_SYSROOT
 				QMAKE_LFLAGS      += --sysroot $$QMAKE_CUSTOM_SYSROOT
+				CONFIG            += build_gcc_less_6
 			}
 		}
 	}

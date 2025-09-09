@@ -55,6 +55,11 @@ void Run::load(CFRecord& record)
 	record.skipNunBytes(4);	// unused1 + unused2
 }
 
+void Run::save(CFRecord& record)
+{
+	formatRun.save(record);
+	record.reserveNunBytes(4);
+}
 
 } // namespace XLS
 

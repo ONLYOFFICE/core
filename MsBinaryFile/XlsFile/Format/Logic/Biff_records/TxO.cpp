@@ -190,6 +190,31 @@ void TxO::readFields(CFRecord& record)
 	//}
 }
 
+void TxO::writeFields(CFRecord& record)
+{
+	unsigned short flags = 0;
+
+	SETBITS(flags, 1, 3, hAlignment)
+	SETBITS(flags, 4, 6, vAlignment)	// reserved2 (2 bits)
+
+	SETBIT(flags, 9, fLockText)	// reserved3 (4 bits)
+	SETBIT(flags, 14, fJustLast)
+	SETBIT(flags, 15, fSecretEdit)
+
+	record << flags << rot;
+	if(fcontrolInfoExist)
+		record << controlInfo;
+	else
+		record.reserveNunBytes(6);
+	cchText = rawText.getSize();
+	if(TxOruns.rgTxoRuns.size() > 0)
+		cbRuns = (TxOruns.rgTxoRuns.size()+1)*8 ;
+	record << cchText << cbRuns << ifntEmpty;
+	fmla.save(record);
+
+
+}
+
 int TxO::serialize_vml (std::wostream & _stream)
 {
 	std::wstring str_ = rawText.value();

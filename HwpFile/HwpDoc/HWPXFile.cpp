@@ -176,7 +176,7 @@ bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 		return false;
 
 	CHWPSection* pSection = new CHWPSection();
-	const bool bResult = pSection->Parse(oReader, nVersion);
+	const bool bResult = pSection->Parse(oReader, nVersion, EHanType::HWPX);
 
 	if (bResult)
 		m_arSections.push_back(pSection);

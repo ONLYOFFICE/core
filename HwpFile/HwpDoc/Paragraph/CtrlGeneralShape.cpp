@@ -243,7 +243,7 @@ void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader, int nVersion)
 
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
 	{
-		CHWPPargraph* pParagraph = new CHWPPargraph(oReader, nVersion);
+		CHWPPargraph* pParagraph = new CHWPPargraph(oReader, nVersion, EHanType::HWPX);
 
 		if (nullptr == pParagraph)
 			continue;

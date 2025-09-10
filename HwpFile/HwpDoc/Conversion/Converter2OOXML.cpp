@@ -1442,7 +1442,7 @@ bool CConverter2OOXML::SaveSVGFile(const HWP_STRING& sSVG, HWP_STRING& sFileName
 
 HWP_STRING CConverter2OOXML::SavePicture(const HWP_STRING& sBinItemId, TConversionState& oState)
 {
-	if (nullptr == m_pContext)
+	if (nullptr == m_pContext || sBinItemId.empty())
 		return HWP_STRING();
 
 	//TODO:: добавить поддержку устновки размеров изображения из свойств шейпа

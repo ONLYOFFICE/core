@@ -49,6 +49,7 @@ SOURCES += \
     HwpDoc/HWPElements/HWPRecordStyle.cpp \
     HwpDoc/HWPElements/HwpRecordTabDef.cpp \
     HwpDoc/HWPFile.cpp \
+    HwpDoc/HWPMLFile.cpp \
     HwpDoc/HWPSection.cpp \
     HwpDoc/HWPStream.cpp \
     HwpDoc/HWPXFile.cpp \
@@ -99,6 +100,7 @@ SOURCES += \
 HEADERS += \
     HWPFile.h \
     HwpDoc/Common/Common.h \
+    HwpDoc/Common/NodeNames.h \
     HwpDoc/Common/WriterContext.h \
     HwpDoc/Common/XMLReader.h \
     HwpDoc/Conversion/ConversionState.h \
@@ -133,6 +135,7 @@ HEADERS += \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
     HwpDoc/HWPFile.h \
+    HwpDoc/HWPMLFile.h \
     HwpDoc/HWPSection.h \
     HwpDoc/HWPStream.h \
     HwpDoc/HWPXFile.h \

@@ -24,6 +24,7 @@ public:
 
 	bool OpenHWP(const std::wstring& wsFilePath);
 	bool OpenHWPX(const std::wstring& wsFilePath);
+	bool OpenHWPML(const std::wstring& wsFilePath);
 	void Close();
 	bool ConvertToOOXML(const std::wstring& wsFilePath);
 	bool ConvertToOOXML_Dir(const std::wstring& wsDirectoryPath);

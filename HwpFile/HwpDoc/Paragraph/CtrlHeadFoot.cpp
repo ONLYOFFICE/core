@@ -47,7 +47,7 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 		END_READ_ATTRIBUTES(oReader)
 
 		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:p")
-			m_arParas.push_back(new CHWPPargraph(oReader, nVersion));
+			m_arParas.push_back(new CHWPPargraph(oReader, nVersion, EHanType::HWPX));
 		END_WHILE
 	}
 	END_WHILE

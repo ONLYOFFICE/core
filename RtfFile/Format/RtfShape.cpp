@@ -1454,7 +1454,24 @@ std::wstring RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
             sShapeNodes += L" inset=\"" + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpLeft)) + L"pt,"
                                     + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpTop)) + L"pt,"
                                     + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpRight)) + L"pt,"
-                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpBottom)) + L"pt\">";
+                                    + std::to_wstring((int)RtfUtility::Emu2Pt(m_nTexpBottom)) + L"pt\"";
+            if (m_nTxflTextFlow != PROP_DEF)
+            {
+                switch (m_nTxflTextFlow)
+                {
+                case 0:
+                    break;
+                case 1:
+                    sShapeNodes += L" style=\"mso-layout-flow-alt:vertical-ideographic\"";
+                    break;
+                case 2:
+                    sShapeNodes += L" style=\"mso-layout-flow-alt:vertical\"";
+                    break;
+                default:
+                    break;
+                }
+            }
+            sShapeNodes += L">";
 		}
 		else  
 			sShapeNodes += L">";

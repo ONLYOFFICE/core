@@ -57,8 +57,8 @@ public:
 
 	bool is_inside_chart_sheet_;
 
-
-	std::vector<BaseObjectPtr> m_arrObject;
+	// pair msoDrawing *obj/textobject
+	std::vector<std::pair<BaseObjectPtr, std::vector<BaseObjectPtr>>> m_arrObject;
 	MsoDrawingPtr m_MsoDrawing;	
 };
 

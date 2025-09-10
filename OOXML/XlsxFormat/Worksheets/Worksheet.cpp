@@ -56,6 +56,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/SORTANDFILTER.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 
 namespace OOX
@@ -423,7 +424,12 @@ namespace OOX
 				worksheetPtr->m_CELLTABLE = m_oSheetData->toXLS();
 			if(m_oDataConsolidate.IsInit())
 				worksheetPtr->m_DCON = m_oDataConsolidate->toXLS();
-
+			if(m_pComments != nullptr)
+			{
+				if(worksheetPtr->m_OBJECTS == nullptr)
+					worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(new XLS::OBJECTS(false));
+				worksheetPtr->m_arNote = m_pComments->toXLS(worksheetPtr->m_OBJECTS);
+			}
 			return sheetPtr;
 		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const

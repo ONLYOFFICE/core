@@ -52,6 +52,11 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Note.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
+
 namespace OOX
 {
 	namespace Spreadsheet
@@ -253,6 +258,23 @@ namespace OOX
 
 			return objectPtr;
 		}
+		XLS::BaseObjectPtr CComment::toXLS(XLS::BaseObjectPtr objectsPointer)
+		{
+			auto ptr = new XLS::Note;
+			if(m_oRef.IsInit())
+			{
+				XLS::Ref8 ref;
+				ref = m_oRef->GetValue();
+				ptr->note_sh.col = ref.columnFirst;
+				ptr->note_sh.row = ref.rowFirst;
+
+			}
+			auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
+			{
+				//todo put comment text  to textobject
+			}
+			return  XLS::BaseObjectPtr(ptr);
+		}
 		EElementType CComment::getType () const
 		{
 			return et_x_Comment;
@@ -412,6 +434,23 @@ namespace OOX
 				ptr->m_COMMENTLIST = m_oCommentList->toBin();
 
 			return XLS::BaseObjectPtr{commentsStream};
+		}
+		std::vector<XLS::BaseObjectPtr> CComments::toXLS(XLS::BaseObjectPtr objectsPointer) const
+		{
+			std::vector<XLS::BaseObjectPtr> objectVector;
+			if(m_oCommentList.IsInit())
+			{
+				auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
+				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
+				objectsPtr->m_arrObject.push_back(objPair);
+
+				auto drawingPtr = new XLS::MsoDrawing(false);
+				objPair.first = XLS::BaseObjectPtr(drawingPtr);
+				//todo filling drawingPtr
+				for(auto i : m_oCommentList->m_arrItems)
+					objectVector.push_back(i->toXLS(objectsPointer));
+			}
+			return objectVector;
 		}
 		void CComments::read(const CPath& oPath)
 		{

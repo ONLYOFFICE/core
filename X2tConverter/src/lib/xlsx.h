@@ -177,6 +177,7 @@ namespace NExtractTools
 		const OOX::CPath oox_path(sFrom);
 		{
 			OOX::Spreadsheet::CXlsb oXlsx;
+			oXlsx.m_bWriteToXlsb = true;
 			oXlsx.Read(oox_path);
 			oXlsx.PrepareHlinks();
 			oXlsx.PrepareRichStr();

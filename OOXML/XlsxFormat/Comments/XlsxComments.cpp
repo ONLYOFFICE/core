@@ -57,6 +57,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Note.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TxO.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
 
 namespace OOX
@@ -292,6 +293,13 @@ namespace OOX
 
 
 				//txo writing
+				auto textUnion = new XLS::TEXTOBJECT(objUnion->mso_drawing_);
+				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(textUnion));
+				auto textPtr = new XLS::TxO(objUnion->mso_drawing_);
+				textUnion->m_TxO = XLS::BaseObjectPtr(textPtr);
+				if(m_oText.IsInit())
+					textPtr->rawText = m_oText->ToString();
+
 			}
 			return  XLS::BaseObjectPtr(ptr);
 		}

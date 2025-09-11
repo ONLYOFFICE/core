@@ -209,6 +209,8 @@ void TxO::writeFields(CFRecord& record)
 	cchText = rawText.getSize();
 	if(TxOruns.rgTxoRuns.size() > 0)
 		cbRuns = (TxOruns.rgTxoRuns.size()+1)*8 ;
+	if(!ifntEmpty.value().is_initialized())
+		ifntEmpty.value() = 0;
 	record << cchText << cbRuns << ifntEmpty;
 	fmla.save(record);
 

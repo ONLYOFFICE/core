@@ -97,6 +97,7 @@ void FtCmo::save(CFRecord& record)
 	SETBIT(flags, 9, fRecalcObj)
 	SETBIT(flags, 12, fRecalcObjAlways)
 	record << flags;
+	record.reserveNunBytes(12);
 }
 
 

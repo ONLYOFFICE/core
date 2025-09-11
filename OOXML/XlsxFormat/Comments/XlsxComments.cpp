@@ -260,7 +260,7 @@ namespace OOX
 
 			return objectPtr;
 		}
-		XLS::BaseObjectPtr CComment::toXLS(XLS::BaseObjectPtr objectsPointer)
+		XLS::BaseObjectPtr CComment::toXLS(XLS::BaseObjectPtr objectsPointer, unsigned int id)
 		{
 			auto ptr = new XLS::Note;
 			if(m_oRef.IsInit())
@@ -271,13 +271,25 @@ namespace OOX
 				ptr->note_sh.row = ref.rowFirst;
 
 			}
+
+			ptr->note_sh.idObj = id;
+
 			auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
 			{
 				auto objUnion = new XLS::OBJ(boost::dynamic_pointer_cast<XLS::MsoDrawing>(objectsPtr->m_arrObject.back().first));
 				//object writing
 				auto objPtr = new XLS::Obj(objUnion->mso_drawing_);
 				objUnion->m_Obj = XLS::BaseObjectPtr(objPtr);
+
+				objPtr->cmo.ot = 0x19;
+				objPtr->cmo.id = id;
+				if(m_oUid.IsInit())
+				{
+					objPtr->nts.guid = m_oUid->ToString();
+				}
+
 				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(objUnion));
+
 
 				//txo writing
 			}
@@ -455,9 +467,12 @@ namespace OOX
 				drawingPtr->prepareComment();
 				objPair.first = XLS::BaseObjectPtr(drawingPtr);
 				objectsPtr->m_arrObject.push_back(objPair);
-
+				unsigned int id = 1;
 				for(auto i : m_oCommentList->m_arrItems)
-					objectVector.push_back(i->toXLS(objectsPointer));
+				{
+					objectVector.push_back(i->toXLS(objectsPointer, id));
+					id++;
+				}
 			}
 			return objectVector;
 		}

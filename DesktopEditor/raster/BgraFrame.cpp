@@ -447,7 +447,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 	if (CXIMAGE_FORMAR_PIC == m_nFileType)
 	{
 		CPictFile pict_file;
-		return pict_file.Open(this, strFileName);
+		return pict_file.Open(this, strFileName, m_bIsRGBA);
 	}
 #endif
 
@@ -530,7 +530,7 @@ bool CBgraFrame::Decode(BYTE* pBuffer, int nSize, unsigned int nFileType)
     if (CXIMAGE_FORMAR_PIC == m_nFileType)
     {
 		CPictFile pict_file;
-		return pict_file.Open(this, pBuffer, nSize);
+		return pict_file.Open(this, pBuffer, nSize, m_bIsRGBA);
     }
 #endif
 

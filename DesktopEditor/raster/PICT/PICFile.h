@@ -171,8 +171,8 @@ public:
 	CPictFile();
 	~CPictFile();
 
-	bool Open(CBgraFrame* frame, const std::wstring& fileName);
-	bool Open(CBgraFrame* frame, BYTE* buffer, const size_t& size);
+	bool Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGB);
+	bool Open(CBgraFrame* frame, BYTE* buffer, const size_t& size, bool isRGB);
 private:
 	bool Decode();
 	bool DecodeHeader();

@@ -47,7 +47,7 @@ CPictFile::~CPictFile()
 	RELEASEINTERFACE(m_pRenderer);
 }
 
-bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName)
+bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName, bool isRGB)
 {
 	NSFile::CFileBinary file;
 	if (!file.OpenFile(fileName))
@@ -70,9 +70,9 @@ bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName)
 		BYTE* q = m_oImgData.m_pPixelData + 4 * i * m_oImgData.m_nWidth;
 		for (size_t j = 0; j < m_oImgData.m_nWidth; j++)
 		{
-			buffer[2] = * q;
+			buffer[isRGB ? 0 : 2] = * q;
 			buffer[1] = * (q + 1);
-			buffer[0] = * (q + 2);
+			buffer[isRGB ? 2 : 0] = * (q + 2);
 			buffer[3] = *(q + 3);
 			q += 4;
 			buffer += 4;
@@ -82,7 +82,7 @@ bool CPictFile::Open(CBgraFrame* frame, const std::wstring& fileName)
 	return status;
 }
 
-bool CPictFile::Open(CBgraFrame* frame, BYTE* buffer, const size_t& size)
+bool CPictFile::Open(CBgraFrame* frame, BYTE* buffer, const size_t& size, bool isRGB)
 {
 	NSFile::CFileBinary file;
 	auto tmp_file = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"pct");
@@ -96,7 +96,7 @@ bool CPictFile::Open(CBgraFrame* frame, BYTE* buffer, const size_t& size)
 	file.WriteFile(buffer, size);
 	file.CloseFile();
 
-	return Open(frame, tmp_file);
+	return Open(frame, tmp_file, isRGB);
 }
 
 bool CPictFile::Decode()

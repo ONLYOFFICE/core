@@ -15,7 +15,7 @@ public:
 	CCtrlShapeVideo(const HWP_STRING& sCtrlID);
 	CCtrlShapeVideo(const CCtrlGeneralShape& oShape);
 	CCtrlShapeVideo(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapeVideo(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

@@ -218,6 +218,13 @@ const CHWPDocInfo* CWriterContext::GetDocInfo()
 
 			return m_pHWPXFile->GetDocInfo();
 		}
+		case EHanType::HWPML:
+		{
+			if (nullptr == m_pHWPMLFile)
+				return nullptr;
+			
+			return m_pHWPMLFile->GetDocInfo();
+		}
 		default:
 			return nullptr;
 	}

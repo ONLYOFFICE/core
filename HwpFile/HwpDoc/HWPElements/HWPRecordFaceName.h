@@ -41,7 +41,7 @@ class CHWPRecordFaceName : public CHWPRecord
 	short m_shXHeight;
 public:
 	CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	HWP_STRING GetFaceName() const;
 };

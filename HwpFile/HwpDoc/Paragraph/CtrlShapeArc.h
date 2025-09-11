@@ -20,7 +20,7 @@ public:
 	CCtrlShapeArc(const HWP_STRING& sCtrlID);
 	CCtrlShapeArc(const CCtrlGeneralShape& oShape);
 	CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

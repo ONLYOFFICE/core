@@ -1,8 +1,9 @@
 #include "HWPRecordFaceName.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
-
 EAltType GetAltType(int nValue)
 {
 	switch(static_cast<EAltType>(nValue))
@@ -53,28 +54,29 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 		oBuffer.ReadString(m_sBasicFaceName, EStringCharacter::UTF16);
 }
 
-CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_FACE_NAME, 0, 0), m_pParent(&oDocInfo)
 {
-	m_sFaceName = oReader.GetAttribute("face");
+	m_sFaceName = oReader.GetAttribute(GetAttributeName(EAttribute::FontName, eType));
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hh:substFont" == sNodeName)
+		if (GetNodeName(ENode::SubFont, eType) == sNodeName)
 		{
 			m_bSubstExists = true;
 
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("face" == sAttributeName)
+				if (GetAttributeName(EAttribute::FontName, eType) == sAttributeName)
 					m_sSubstFace = oReader.GetText();
-				else if ("type" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 				{
-					const std::string sType{oReader.GetTextA()};
+					std::string sType{oReader.GetTextA()};
+					TO_LOWER(sType);
 
-					if ("TTF" == sType)
+					if ("ttf" == sType)
 						m_eSubstType = EAltType::FFT;
-					else if ("HFT" == sType)
+					else if ("hft" == sType)
 						m_eSubstType = EAltType::HFT;
 					else
 						m_eSubstType = EAltType::UNKNOWN;
@@ -82,36 +84,36 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hh:typeInfo" == sNodeName)
+		else if (GetNodeName(ENode::TypeInfo, eType) == sNodeName)
 		{
 			m_bAttrExists = true;
 
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("familyType" == sAttributeName)
+				if (GetAttributeName(EAttribute::FamilyType, eType) == sAttributeName)
 				{
 					m_sBasicFaceName = oReader.GetText();
 
 					if (!m_sBasicFaceName.empty())
 						m_bBasicFaceExists = true;
 				}
-				else if ("serifStyle" == sAttributeName)
+				else if (GetAttributeName(EAttribute::SerifStyle, eType) == sAttributeName)
 					m_chSerifStyle = (HWP_BYTE)oReader.GetInt();
-				else if ("weight" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Weight, eType) == sAttributeName)
 					m_shWeight = oReader.GetInt();
-				else if ("proportion" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Proportion, eType) == sAttributeName)
 					m_shPropotion = oReader.GetInt();
-				else if ("contrast" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Contrast, eType) == sAttributeName)
 					m_shContrast = oReader.GetInt();
-				else if ("strokeVariation" == sAttributeName)
+				else if (GetAttributeName(EAttribute::StrokeVariation, eType) == sAttributeName)
 					m_shStrokeVariation = oReader.GetInt();
-				else if ("armStyle" == sAttributeName)
+				else if (GetAttributeName(EAttribute::ArmStyle, eType) == sAttributeName)
 					m_shArmStyle = oReader.GetInt();
-				else if ("letterform" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Letterform, eType) == sAttributeName)
 					m_shLetterform = oReader.GetInt();
-				else if ("midline" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Midline, eType) == sAttributeName)
 					m_shMidLine = oReader.GetInt();
-				else if ("xHeight" == sAttributeName)
+				else if (GetAttributeName(EAttribute::XHeight, eType) == sAttributeName)
 					m_shXHeight = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)

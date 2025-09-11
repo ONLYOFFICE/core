@@ -84,7 +84,7 @@ EShapeType CCtrlGeneralShape::GetShapeType() const
 	return EShapeType::GeneralShape;
 }
 
-void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion)
+void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanType eType)
 {
 	bool bHeadFill = false, bTailFill = false;
 
@@ -198,7 +198,7 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion)
 			m_eLineTail = ELineArrowStyle::NORMAL;
 	}
 	else if ("hc:fillBrush" == sNodeName)
-		m_pFill = new CFill(oReader);
+		m_pFill = new CFill(oReader, eType);
 	else if ("hp:drawText" == sNodeName)
 	{
 		m_nMaxTxtWidth = oReader.GetAttributeInt("lastWidth");

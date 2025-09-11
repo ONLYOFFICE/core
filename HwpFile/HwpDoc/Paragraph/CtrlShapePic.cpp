@@ -256,7 +256,7 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
@@ -357,7 +357,7 @@ CCtrlShapePic::CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

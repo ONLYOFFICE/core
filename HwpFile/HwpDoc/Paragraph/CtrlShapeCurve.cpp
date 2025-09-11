@@ -17,7 +17,7 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	// bool bReadedType
@@ -58,7 +58,7 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 			m_arPoints.push_back(oPoint1);
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 

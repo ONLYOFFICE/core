@@ -17,7 +17,7 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	m_eType = GetArcType(oReader.GetAttributeInt("type"));
@@ -58,7 +58,7 @@ CCtrlShapeArc::CCtrlShapeArc(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

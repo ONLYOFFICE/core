@@ -45,9 +45,12 @@ CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 		oBuffer.ReadChar(m_chCheckBulletChar);
 }
 
-CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordBullet::CHWPRecordBullet(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BULLET, 0, 0), m_pParent(&oDocInfo)
 {
+	if (EHanType::HWPML == eType)
+		return; // TODO:: реализовать как встретится пример
+	
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("char" == sAttributeName)

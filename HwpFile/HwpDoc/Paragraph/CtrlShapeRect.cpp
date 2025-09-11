@@ -17,7 +17,7 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	m_chCurv = (HWP_BYTE)oReader.GetAttributeInt("ratio");
@@ -45,7 +45,7 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 		else if ("hc:pt3" == sNodeName)
 			READ_POINT(3)
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

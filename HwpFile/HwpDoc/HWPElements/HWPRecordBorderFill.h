@@ -15,7 +15,7 @@ struct TBorder
 	HWP_BYTE m_chWidth;
 	int m_nColor;
 
-	void Read(CXMLReader& oReader);
+	void Read(CXMLReader& oReader, EHanType eType);
 };
 
 enum class EImageFillType
@@ -86,13 +86,13 @@ class CFill : public IRef
 
 	HWP_BYTE m_chAlpha;
 
-	void ReadWinBrush(CXMLReader& oReader);
-	void ReadGradation(CXMLReader& oReader);
-	void ReadImgBrush(CXMLReader& oReader);
+	void ReadWinBrush(CXMLReader& oReader, EHanType eType);
+	void ReadGradation(CXMLReader& oReader, EHanType eType);
+	void ReadImgBrush(CXMLReader& oReader, EHanType eType);
 public:
 	CFill();
 	CFill(CHWPStream& oBuffer, int nOff, int nSize);
-	CFill(CXMLReader& oReader);
+	CFill(CXMLReader& oReader, EHanType eType);
 
 	int GetSize() const;
 	bool NoneFill() const;
@@ -136,7 +136,7 @@ class CHWPRecordBorderFill : public CHWPRecord
 public:
 	CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize);
 	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion);
+	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
 	~CHWPRecordBorderFill();
 
 	TBorder GetLeftBorder() const;

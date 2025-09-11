@@ -17,7 +17,7 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	m_sText = oReader.GetAttribute("text");
@@ -89,7 +89,7 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			END_WHILE
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

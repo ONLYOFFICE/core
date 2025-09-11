@@ -1,5 +1,7 @@
 #include "HWPRecordStyle.h"
 
+#include "../Common/NodeNames.h"
+#include <iostream>
 namespace HWP
 {
 CHWPRecordStyle::CHWPRecordStyle(int nTagNum, int nLevel, int nSize)
@@ -20,33 +22,33 @@ CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel,
 	m_nCharShape = oBuffer.ReadShort();
 }
 
-CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordStyle::CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_STYLE, 0, 0), m_pParent(&oDocInfo)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("type" == sAttributeName)
+		if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 		{
 			const std::string sType{oReader.GetTextA()};
 
-			if ("PARA" == sType)
+			if (GetValueName(EValue::Para, eType) == sType)
 				m_chType = 0;
-			else if ("CHAR" == sType)
+			else if (GetValueName(EValue::Char, eType) == sType)
 				m_chType = 1;
 		}
-		else if ("name" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Name, eType) == sAttributeName)
 			m_sName = oReader.GetText();
-		else if ("engName" == sAttributeName)
+		else if (GetAttributeName(EAttribute::EngName, eType) == sAttributeName)
 			m_sEngName = oReader.GetText();
-		else if ("paraPrIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::ParaShape, eType) == sAttributeName)
 			m_nParaShape = oReader.GetInt();
-		else if ("charPrIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::CharShape, eType) == sAttributeName)
 			m_nCharShape = oReader.GetInt();
-		else if ("nextStyleIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::NextStyle, eType) == sAttributeName)
 			m_chNextStyle = oReader.GetInt();
-		else if ("langID" == sAttributeName)
+		else if (GetAttributeName(EAttribute::LangId, eType) == sAttributeName)
 			m_shLangID = oReader.GetInt();
-		else if ("lockForm" == sAttributeName)
+		else if (GetAttributeName(EAttribute::LockForm, eType) == sAttributeName)
 			m_bLockForm = oReader.GetBool();
 	}
 	END_READ_ATTRIBUTES(oReader)

@@ -1,6 +1,7 @@
 #include "HWPRecordBinData.h"
 
 #include "../HWPFile.h"
+#include "../Common/NodeNames.h"
 
 #include <iomanip>
 #include <regex>
@@ -27,7 +28,6 @@ EType GetType(int nValue)
 		CASE(EType::STORAGE);
 	}
 }
-
 
 EState GetState(int nValue)
 {
@@ -74,23 +74,40 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion)
+CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
 {
-	std::string sType;
 	HWP_STRING sSubPath;
 
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("id" == sAttributeName)
 			m_sItemID = oReader.GetText();
-		else if ("isEmbeded" == sAttributeName)
-			sType = oReader.GetTextA();
-		else if ("href" == sAttributeName)
+		else if (EHanType::HWPX == eType && "isEmbeded" == sAttributeName)
+		{
+			const std::string sType = oReader.GetTextA();
+
+			if ("0" == sType)
+				m_eType = EType::LINK;
+			else if ("1" == sType)
+				m_eType = EType::EMBEDDING;
+		}
+		else if (EHanType::HWPML == eType && "Type" == sAttributeName)
+		{
+			const std::string sType = oReader.GetTextA();
+
+			if ("Link" == sType)
+				m_eType = EType::LINK;
+			else if ("Embedding" == sType)
+				m_eType = EType::EMBEDDING;
+			else if ("Storage" == sType)
+				m_eType = EType::STORAGE;
+		}
+		else if (GetAttributeName(EAttribute::Href, eType) == sAttributeName)
 			m_sAPath = oReader.GetText();
-		else if ("sub-path" == sAttributeName)
+		else if (GetAttributeName(EAttribute::SubPath, eType) == sAttributeName)
 			sSubPath = oReader.GetText();
-		else if ("media-type" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MediaType, eType) == sAttributeName)
 		{
 			m_sFormat = oReader.GetText();
 
@@ -100,15 +117,10 @@ CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion)
 	}
 	END_READ_ATTRIBUTES(oReader)
 
-	if ("0" == sType)
-	{
-		m_eType = EType::LINK;
-
-		if (!sSubPath.empty())
-			m_sAPath = sSubPath;
-	}
-	else if ("1" == sType)
-		m_eType = EType::EMBEDDING;
+	if (EType::LINK != m_eType || sSubPath.empty())
+		return;
+	
+	m_sAPath = sSubPath;
 }
 
 HWP_STRING CHWPRecordBinData::GetPath() const

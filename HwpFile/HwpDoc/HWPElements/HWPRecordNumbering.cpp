@@ -1,5 +1,7 @@
 #include "HWPRecordNumbering.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -54,10 +56,10 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
     : CHWPRecord(EHWPTag::HWPTAG_NUMBERING, 0, 0), m_pParent(&oDocInfo)
 {
-	m_shStart = oReader.GetAttributeInt("start", 1);
+	m_shStart = oReader.GetAttributeInt(GetAttributeName(EAttribute::Start, eType), 1);
 
 	unsigned int unIndex = 0;
 	short shLevel = 0;
@@ -65,139 +67,142 @@ CHWPRecordNumbering::CHWPRecordNumbering(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hh:paraHead" == sNodeName ||
-		    "paraHead"    == sNodeName)
+		TO_LOWER(sNodeName);
+
+		if (GetNodeName(ENode::ParaHead, eType) != sNodeName &&
+		    (EHanType::HWPX == eType && "parahead" != sNodeName))
+			continue;
+
+		START_READ_ATTRIBUTES(oReader)
 		{
-			START_READ_ATTRIBUTES(oReader)
+			if (GetAttributeName(EAttribute::Aligment, eType) == sAttributeName)
 			{
-				if ("align" == sAttributeName)
-				{
-					const std::string sType{oReader.GetTextA()};
+				const std::string sType{oReader.GetTextA()};
 
-					if ("LEFT" == sType)
-						m_arNumbering[unIndex].m_chAlign = 0;
-					else if ("CENTER" == sType)
-						m_arNumbering[unIndex].m_chAlign = 1;
-					else if ("RIGHT" == sType)
-						m_arNumbering[unIndex].m_chAlign = 2;
-				}
-				else if ("useInstWidth" == sAttributeName)
-					m_arNumbering[unIndex].m_bUseInstWidth = oReader.GetBool();
-				else if ("autoIndent" == sAttributeName)
-					m_arNumbering[unIndex].m_bAutoIndent = oReader.GetBool();
-				else if ("widthAdjust" == sAttributeName)
-					m_arNumbering[unIndex].m_shWidthAdjust = oReader.GetInt();
-				else if ("textOffsetType" == sAttributeName)
-				{
-					const std::string sType{oReader.GetTextA()};
+				if (GetValueName(EValue::Left, eType) == sType)
+					m_arNumbering[unIndex].m_chAlign = 0;
+				else if (GetValueName(EValue::Center, eType) == sType)
+					m_arNumbering[unIndex].m_chAlign = 1;
+				else if (GetValueName(EValue::Right, eType) == sType)
+					m_arNumbering[unIndex].m_chAlign = 2;
+			}
+			else if (GetAttributeName(EAttribute::UseInstWidth, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_bUseInstWidth = oReader.GetBool();
+			else if (GetAttributeName(EAttribute::AutoIndent, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_bAutoIndent = oReader.GetBool();
+			else if (GetAttributeName(EAttribute::WidthAdjust, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_shWidthAdjust = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::TextOffsetType, eType) == sAttributeName)
+			{
+				const std::string sType{oReader.GetTextA()};
 
-					if ("PERCENT" == sType)
-						m_arNumbering[unIndex].m_chTextOffsetType = 0;
-					else if ("HWPUNIT" == sType)
-						m_arNumbering[unIndex].m_chTextOffsetType = 1;
-				}
-				else if ("textOffset" == sAttributeName)
-					m_arNumbering[unIndex].m_shTextOffset = oReader.GetInt();
-				else if ("charPrIDRef" == sAttributeName)
-					m_arNumbering[unIndex].m_nCharShape = std::abs(oReader.GetInt());
-				else if ("start" == sAttributeName)
-					m_arNumbering[unIndex].m_nStartNumber = oReader.GetInt();
-				else if ("numFormat" == sAttributeName)
-					sNumFormat = oReader.GetTextA();
-				else if ("level" == sAttributeName)
-					shLevel = oReader.GetInt();
+				if (GetValueName(EValue::Percent, eType) == sType)
+					m_arNumbering[unIndex].m_chTextOffsetType = 0;
+				else if (GetValueName(EValue::HwpUnit, eType) == sType)
+					m_arNumbering[unIndex].m_chTextOffsetType = 1;
 			}
-			END_READ_ATTRIBUTES(oReader)
-
-			if ("DIGIT" == sNumFormat)
-			{
-				if (shLevel > 0 && shLevel < 11)
-					m_arNumbering[unIndex].m_sNumFormat = L'^' + std::to_wstring(shLevel) + L'.';
-			}
-			else if ("HANGUL_SYLLABLE" == sNumFormat ||
-					 "HANGUL_JAMO"     == sNumFormat)
-			{
-				switch (shLevel)
-				{
-					case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^가."; break;
-					case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^나."; break;
-					case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^다."; break;
-					case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^라."; break;
-					case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^마."; break;
-					case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^바."; break;
-					case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^사."; break;
-					case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^아."; break;
-					case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^자."; break;
-					case 10: m_arNumbering[unIndex].m_sNumFormat = L"^차."; break;
-				}
-			}
-			else if ("CIRCLED_DIGIT" == sNumFormat)
-			{
-				switch (shLevel)
-				{
-					case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2460."; break;
-					case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2461."; break;
-					case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2462."; break;
-					case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2463."; break;
-					case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2464."; break;
-					case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2465."; break;
-					case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2466."; break;
-					case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2467."; break;
-					case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2468."; break;
-					case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u2469."; break;
-				}
-			}
-			else if ("LATIN_SMALL" == sNumFormat)
-			{
-				switch (shLevel)
-				{
-					case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^a."; break;
-					case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^b."; break;
-					case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^c."; break;
-					case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^d."; break;
-					case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^e."; break;
-					case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^f."; break;
-					case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^g."; break;
-					case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^h."; break;
-					case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^i."; break;
-					case 10: m_arNumbering[unIndex].m_sNumFormat = L"^j."; break;
-				}
-			}
-			else if ("CIRCLED_HANGUL_SYLLABLE" == sNumFormat)
-			{
-				switch (shLevel)
-				{
-					case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u326E."; break;
-					case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u326F."; break;
-					case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3270."; break;
-					case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3271."; break;
-					case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3272."; break;
-					case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3273."; break;
-					case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3274."; break;
-					case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3275."; break;
-					case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3276."; break;
-					case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u3277."; break;
-				}
-			}
-			else if ("ROMAN_SMALL" == sNumFormat)
-			{
-				switch (shLevel)
-				{
-					case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2170."; break;
-					case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2171."; break;
-					case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2172."; break;
-					case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2173."; break;
-					case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2174."; break;
-					case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2175."; break;
-					case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2176."; break;
-					case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2177."; break;
-					case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2178."; break;
-					case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u2179."; break;
-				}
-			}
-
-			++unIndex;
+			else if (GetAttributeName(EAttribute::TextOffset, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_shTextOffset = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::CharShape, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_nCharShape = std::abs(oReader.GetInt());
+			else if (GetAttributeName(EAttribute::Start, eType) == sAttributeName)
+				m_arNumbering[unIndex].m_nStartNumber = oReader.GetInt();
+			else if (GetAttributeName(EAttribute::NumFormat, eType) == sAttributeName)
+				sNumFormat = oReader.GetTextA();
+			else if (GetAttributeName(EAttribute::Level, eType) == sAttributeName)
+				shLevel = oReader.GetInt();
 		}
+		END_READ_ATTRIBUTES(oReader)
+
+		if (GetValueName(EValue::Digit, eType))
+		{
+			if (shLevel > 0 && shLevel < 11)
+				m_arNumbering[unIndex].m_sNumFormat = L'^' + std::to_wstring(shLevel) + L'.';
+		}
+		else if (GetValueName(EValue::HangulSyllable, eType) ||
+		         GetValueName(EValue::HangulJamo, eType))
+		{
+			switch (shLevel)
+			{
+				case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^가."; break;
+				case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^나."; break;
+				case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^다."; break;
+				case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^라."; break;
+				case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^마."; break;
+				case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^바."; break;
+				case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^사."; break;
+				case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^아."; break;
+				case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^자."; break;
+				case 10: m_arNumbering[unIndex].m_sNumFormat = L"^차."; break;
+			}
+		}
+		else if (GetValueName(EValue::CircledDigit, eType))
+		{
+			switch (shLevel)
+			{
+				case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2460."; break;
+				case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2461."; break;
+				case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2462."; break;
+				case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2463."; break;
+				case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2464."; break;
+				case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2465."; break;
+				case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2466."; break;
+				case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2467."; break;
+				case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2468."; break;
+				case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u2469."; break;
+			}
+		}
+		else if (GetValueName(EValue::LatinSmall, eType))
+		{
+			switch (shLevel)
+			{
+				case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^a."; break;
+				case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^b."; break;
+				case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^c."; break;
+				case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^d."; break;
+				case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^e."; break;
+				case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^f."; break;
+				case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^g."; break;
+				case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^h."; break;
+				case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^i."; break;
+				case 10: m_arNumbering[unIndex].m_sNumFormat = L"^j."; break;
+			}
+		}
+		else if (GetValueName(EValue::CircledHangulSyllable, eType) ||
+		         GetValueName(EValue::CircledHangulJamo, eType))
+		{
+			switch (shLevel)
+			{
+				case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u326E."; break;
+				case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u326F."; break;
+				case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3270."; break;
+				case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3271."; break;
+				case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3272."; break;
+				case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3273."; break;
+				case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3274."; break;
+				case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3275."; break;
+				case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u3276."; break;
+				case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u3277."; break;
+			}
+		}
+		else if (GetValueName(EValue::RomanSmall, eType))
+		{
+			switch (shLevel)
+			{
+				case 1:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2170."; break;
+				case 2:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2171."; break;
+				case 3:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2172."; break;
+				case 4:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2173."; break;
+				case 5:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2174."; break;
+				case 6:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2175."; break;
+				case 7:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2176."; break;
+				case 8:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2177."; break;
+				case 9:  m_arNumbering[unIndex].m_sNumFormat = L"^\u2178."; break;
+				case 10: m_arNumbering[unIndex].m_sNumFormat = L"^\u2179."; break;
+			}
+		}
+
+		++unIndex;
 
 		if (7 == unIndex)
 			return;

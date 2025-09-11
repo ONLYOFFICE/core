@@ -17,7 +17,7 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	m_shAttr = (short)oReader.GetAttributeBool("isReverseHV");
@@ -47,7 +47,7 @@ CCtrlShapeLine::CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

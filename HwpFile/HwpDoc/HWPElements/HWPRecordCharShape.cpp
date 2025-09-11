@@ -1,6 +1,8 @@
 #include "HWPRecordCharShape.h"
 #include "../HWPElements/HWPRecordFaceName.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 EAccent GetAccent(int nValue)
@@ -114,6 +116,8 @@ void CHWPRecordCharShape::ReadContainerData(CXMLReader& oReader, short arValues[
 
 	START_READ_ATTRIBUTES(oReader)
 	{
+		TO_LOWER(sAttributeName);
+
 		if ("hangul" == sAttributeName)
 			arValues[(int)ELang::HANGUL] = oReader.GetInt();
 		else if ("latin" == sAttributeName)
@@ -208,7 +212,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion)
+CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_HWP_CHAR_SHAPE, 0, 0), m_pParent(&oDocInfo),
       m_nHeight(1000), m_bItalic(false), m_bBold(false), m_eUnderline(EUnderline::NONE),
       m_eUnderLineShape(ELineStyle1::SOLID), m_eOutline(EOutline::NONE), m_eShadow(EShadow::NONE), m_bEmboss(false), m_bEngrave(false),
@@ -216,26 +220,26 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("height" == sAttributeName)
+		if (GetAttributeName(EAttribute::Height, eType) == sAttributeName)
 			m_nHeight = oReader.GetInt();
-		else if ("textColor" == sAttributeName)
+		else if (GetAttributeName(EAttribute::TextColor, eType)== sAttributeName)
 			m_nTextColor = oReader.GetColor();
-		else if ("shadeColor" == sAttributeName)
+		else if (GetAttributeName(EAttribute::ShadeColor, eType) == sAttributeName)
 			m_nShadeColor = oReader.GetColor(0xFFFFFFFF);
-		else if ("useFontSpace" == sAttributeName)
+		else if (GetAttributeName(EAttribute::UseFontSpace, eType) == sAttributeName)
 			m_bUseFontSpace = oReader.GetBool();
-		else if ("useKerning" == sAttributeName)
+		else if (GetAttributeName(EAttribute::Height, eType) == sAttributeName)
 			m_bUseKerning = oReader.GetBool();
-		else if ("symMark" == sAttributeName)
+		else if (GetAttributeName(EAttribute::SymMask, eType) == sAttributeName)
 			m_eSymMark = GetAccent(oReader.GetText());
-		else if ("borderFillIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::BorderFillId, eType) == sAttributeName)
 			m_shBorderFillIDRef = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hh:fontRef" == sNodeName)
+		if (GetNodeName(ENode::FontId, eType) == sNodeName)
 		{
 			if (nullptr == m_pParent)
 				continue;
@@ -251,6 +255,8 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 
 			START_READ_ATTRIBUTES(oReader)
 			{
+				TO_LOWER(sAttributeName);
+
 				if ("hangul" == sAttributeName)
 					UPDATE_FACENAME(ELang::HANGUL)
 				else if ("latin" == sAttributeName)
@@ -268,76 +274,76 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hh:ratio" == sNodeName)
+		else if (GetNodeName(ENode::Ratio, eType) == sNodeName)
 			ReadContainerData(oReader, m_arRatios, 100);
-		else if ("hh:spacing" == sNodeName)
+		else if (GetNodeName(ENode::CharSpacing, eType) == sNodeName)
 			ReadContainerData(oReader, m_arSpacings);
-		else if ("hh:relSz" == sNodeName)
+		else if (GetNodeName(ENode::RelSize, eType) == sNodeName)
 			ReadContainerData(oReader, m_arRelSizes, 100);
-		else if ("hh:offset" == sNodeName)
+		else if (GetNodeName(ENode::CharOffset, eType) == sNodeName)
 			ReadContainerData(oReader, m_arCharOffset);
-		else if ("hh:underline" == sNodeName)
+		else if (GetNodeName(ENode::Underline, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("type" == sAttributeName)
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 					m_eUnderline = GetUnderline(oReader.GetText());
-				else if ("shape" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Shape, eType) == sAttributeName)
 					m_eUnderLineShape = GetLineStyle1(oReader.GetText());
-				else if ("color" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
 					m_nUnderlineColor = oReader.GetColor();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hh:strikeout" == sNodeName)
+		else if (GetNodeName(ENode::Outline, eType) == sNodeName)
+			m_eOutline = GetOutline(oReader.GetAttribute(GetAttributeName(EAttribute::Type, eType)));
+		else if (GetNodeName(ENode::Shadow, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("shape" == sAttributeName)
-					m_eStrikeOutShape = GetLineStyle2(oReader.GetText());
-				else if ("color" == sAttributeName)
-					m_nStrikeOutColor = oReader.GetColor();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
-		else if ("hh:outline" == sNodeName)
-			m_eOutline = GetOutline(oReader.GetAttribute("type"));
-		else if ("hh:shadow" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("type" == sAttributeName)
+				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 				{
 					const std::string sType{oReader.GetTextA()};
 
-					if ("DROP" == sType)
+					if (GetValueName(EValue::Drop, eType))
 						m_eShadow = EShadow::DISCRETE;
-					else if ("CONTINUOUS" == sType)
+					else if (GetValueName(EValue::Continuous, eType))
 						m_eShadow = EShadow::CONTINUOUS;
 					else
 						m_eShadow = EShadow::NONE;
 				}
-				else if ("color" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
 					m_nShadowColor = oReader.GetColor();
-				else if ("offsetX" == sAttributeName)
+				else if (GetAttributeName(EAttribute::OffsetX, eType) == sAttributeName)
 					m_chShadowOffsetX = (HWP_BYTE)oReader.GetInt();
-				else if ("offsetY" == sAttributeName)
+				else if (GetAttributeName(EAttribute::OffsetY, eType) == sAttributeName)
 					m_chShadowOffsetY = (HWP_BYTE)oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hh:italic" == sNodeName)
+		else if (GetNodeName(ENode::Italic, eType) == sNodeName)
 			m_bItalic = true;
-		else if ("hh:bold" == sNodeName)
+		else if (GetNodeName(ENode::Bold, eType) == sNodeName)
 			m_bBold = true;
-		else if ("hh:emboss" == sNodeName)
+		else if (GetNodeName(ENode::Emboss, eType) == sNodeName)
 			m_bEmboss = true;
-		else if ("hh:engrave" == sNodeName)
+		else if (GetNodeName(ENode::Engrave, eType) == sNodeName)
 			m_bEngrave = true;
-		else if ("hh:supscript" == sNodeName)
+		else if (GetNodeName(ENode::SuperScript, eType) == sNodeName)
 			m_bSuperScript = true;
-		else if ("hh:subscript" == sNodeName)
+		else if (GetNodeName(ENode::SubScript, eType) == sNodeName)
 			m_bSubScript = true;
+		else if (EHanType::HWPX == eType && "hh:strikeout" == sNodeName)
+		{
+			START_READ_ATTRIBUTES(oReader)
+			{
+				if (GetAttributeName(EAttribute::Shape, eType) == sAttributeName)
+					m_eStrikeOutShape = GetLineStyle2(oReader.GetText());
+				else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
+					m_nStrikeOutColor = oReader.GetColor();
+			}
+			END_READ_ATTRIBUTES(oReader)
+		}
 	}
 	END_WHILE
 }

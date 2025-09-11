@@ -1,6 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <list>
@@ -44,6 +45,8 @@ typedef char HWP_BYTE;
 	for (unsigned int unIndex = 0; unIndex < array_values.size(); ++unIndex) \
 		arTempVector[unIndex] = dynamic_cast<const type*>(array_values[unIndex]); \
 	return arTempVector
+
+#define TO_LOWER(value) std::transform(value.begin(), value.end(), value.begin(), tolower)
 
 class IRef
 {

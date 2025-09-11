@@ -17,7 +17,7 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	TPoint oPoint{0, 0};
@@ -40,7 +40,7 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oRea
 			oPoint = {0, 0};
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 

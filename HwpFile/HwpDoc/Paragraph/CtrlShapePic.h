@@ -134,7 +134,7 @@ public:
 	CCtrlShapePic(const HWP_STRING& sCtrlID);
 	CCtrlShapePic(const CCtrlGeneralShape& oShape);
 	CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 	~CCtrlShapePic();
 
 	EShapeType GetShapeType() const override;

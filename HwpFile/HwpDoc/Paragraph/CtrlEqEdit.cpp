@@ -17,7 +17,7 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	START_READ_ATTRIBUTES(oReader)
@@ -49,7 +49,7 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 		if ("hp:script" == oReader.GetName())
 			m_sEqn = oReader.GetText();
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 

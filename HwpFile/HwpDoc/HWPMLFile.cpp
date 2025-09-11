@@ -6,7 +6,7 @@ namespace HWP
 {
 
 CHWPMLFile::CHWPMLFile(const HWP_STRING &wsFilePath)
-    : m_wsFilePath(wsFilePath)
+    : m_wsFilePath(wsFilePath), m_oDocInfo(this)
 {}
 
 CHWPMLFile::~CHWPMLFile()
@@ -57,12 +57,14 @@ bool CHWPMLFile::Detect() const
 void CHWPMLFile::Close()
 {}
 
+const CHWPDocInfo* CHWPMLFile::GetDocInfo() const
+{
+	return &m_oDocInfo;
+}
+
 void CHWPMLFile::ReadHead(CXMLReader &oReader)
 {
-	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
-	{
-	}
-	END_WHILE
+	m_oDocInfo.Parse(oReader);
 }
 
 void CHWPMLFile::ReadBody(CXMLReader &oReader)

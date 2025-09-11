@@ -15,7 +15,7 @@ public:
 	CCtrlShapeRect(const HWP_STRING& sCtrlID);
 	CCtrlShapeRect(const CCtrlGeneralShape& oShape);
 	CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

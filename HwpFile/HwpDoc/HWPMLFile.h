@@ -8,7 +8,8 @@ namespace HWP
 {
 class CHWPMLFile
 {
-	HWP_STRING m_wsFilePath;
+	HWP_STRING  m_wsFilePath;
+	CHWPDocInfo m_oDocInfo;
 	VECTOR<CHWPSection*> m_arSections;
 
 	void ReadHead(CXMLReader& oReader);
@@ -23,7 +24,8 @@ public:
 	bool Open();
 	bool Detect() const;
 	void Close();
-	
+
+	const CHWPDocInfo* GetDocInfo() const;
 	VECTOR<const CHWPSection*> GetSections() const;
 };
 }

@@ -17,7 +17,7 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	m_sBinDataID = oReader.GetAttribute("binaryItemIDRef");
@@ -36,7 +36,7 @@ CCtrlShapeOle::CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

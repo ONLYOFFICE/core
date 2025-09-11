@@ -20,11 +20,13 @@ enum class ECompatDoc
 
 class CHWPFile;
 class CHWPXFile;
+class CHWPMLFile;
 class CHWPDocInfo
 {
-	EHanType   m_eHanType;
-	CHWPXFile *m_pParentHWPX;
-	CHWPFile  *m_pParentHWP;
+	EHanType    m_eHanType;
+	CHWPXFile  *m_pParentHWPX;
+	CHWPFile   *m_pParentHWP;
+	CHWPMLFile *m_pParentHWPML;
 	VECTOR<CHWPRecord*> m_arRecords;
 
 	std::map<HWP_STRING, CHWPRecord*> m_mBinDatas;
@@ -42,11 +44,13 @@ public:
 	CHWPDocInfo(EHanType eHanType);
 	CHWPDocInfo(CHWPXFile* pHWPXFile);
 	CHWPDocInfo(CHWPFile* pHWPFile);
+	CHWPDocInfo(CHWPMLFile* pHWPMLFile);
 
 	~CHWPDocInfo();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
 	bool Parse(CXMLReader& oReader, int nVersion);
+	bool Parse(CXMLReader& oReader);
 	bool ReadContentHpf(CXMLReader& oReader, int nVersion);
 
 	const CHWPRecord* GetRecord(int nIndex) const;
@@ -66,6 +70,7 @@ public:
 	ECompatDoc GetCompatibleDoc() const;
 private:
 	bool ReadRefList(CXMLReader& oReader, int nVersion);
+	bool ReadRefListElement(CXMLReader& oReader, int nVersion, EHanType eType);
 };
 }
 

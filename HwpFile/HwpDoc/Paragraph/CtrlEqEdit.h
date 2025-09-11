@@ -19,7 +19,7 @@ public:
 	CCtrlEqEdit(const HWP_STRING& sCtrlID);
 	CCtrlEqEdit(const CCtrlGeneralShape& oShape);
 	CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

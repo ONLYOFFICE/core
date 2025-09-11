@@ -10,7 +10,7 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlCommon(sCtrlID, oReader, nVersion)
 {
 	START_READ_ATTRIBUTES(oReader)

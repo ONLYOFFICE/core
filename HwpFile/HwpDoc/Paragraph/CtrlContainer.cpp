@@ -25,31 +25,31 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
 		if ("hp:container" == sNodeName)
-			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion, eType));
 		else if ("hp:line" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion, eType));
 		else if ("hp:rect" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion, eType));
 		else if ("hp:ellipse" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion, eType));
 		else if ("hp:arc" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion, eType));
 		else if ("hp:polygon" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion, eType));
 		else if ("hp:curve" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion, eType));
 		else if ("hp:connectLine" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion, eType));
 		else if ("hp:pic" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion, eType));
 		else if ("hp:ole" == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion));
+			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion, eType));
 	}
 	END_WHILE
 

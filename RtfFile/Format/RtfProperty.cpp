@@ -143,12 +143,12 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 {
 	if ( IsValid() == false) return L"";
 
-    std::wstring sResult;
-	
-	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-    std::wstring sFontName = m_sName;
+	std::wstring sResult;
 
-    if( sFontName.empty() )
+	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	std::wstring sFontName = m_sName;
+
+	if( sFontName.empty() )
 	{
 		if( PROP_DEF != poRtfDocument->m_oProperty.m_nDefFont )
 		{
@@ -156,12 +156,14 @@ std::wstring RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			poRtfDocument->m_oFontTable.GetFont( poRtfDocument->m_oProperty.m_nDefFont, oDefFont );
 			sFontName = oDefFont.m_sName;
 		}
-        if( sFontName.empty())
-			sFontName = L"Arial";
+		if (sFontName.empty())
+		{
+			sFontName = poRtfDocument->m_oProperty.m_sDefFontName;
+		}
 	}
 	if( RENDER_TO_OOX_PARAM_MINOR_FONT == oRenderParameter.nType )
 	{
-        std::wstring sTag;
+		std::wstring sTag;
 		switch(m_eFontTheme)
 		{
 			case ft_flominor: 
@@ -1347,8 +1349,10 @@ void RtfCharProperty::SetDefaultRtf()
 	m_poShading.SetDefaultRtf();
 	m_poBorder.SetDefaultRtf();
 
-	if (false == m_bListLevel)
-		m_nFontSize = 24;
+    //if (false == m_bListLevel)
+    //{
+        //m_nFontSize = DefaultStyle::FontSize;
+    //}
 }
 void RtfCharProperty::SetDefaultOOX()
 {
@@ -1586,7 +1590,11 @@ std::wstring RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	
 	bool bInsert = false;
 	bool bDelete = false;
-	
+
+	if (m_nFontSize == PROP_DEF)
+	{
+		m_nFontSize = poRtfDocument->m_oProperty.m_nDefFontSize;
+	}
 	if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
 	{//w:rPr в m:ctrlPr 
 		if (m_nRevised != PROP_DEF)

@@ -189,7 +189,7 @@ namespace Aggplus
 		Exclusion      = 3
 	};
 
-	GRAPHICS_DECL CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode);
+	GRAPHICS_DECL CGraphicsPath CalcBooleanOperation(const CGraphicsPath& path1, const CGraphicsPath& path2, BooleanOpType op, long fillType = c_nWindingFillMode, bool isLuminosity = false);
 
 } // namespace Aggplus
 

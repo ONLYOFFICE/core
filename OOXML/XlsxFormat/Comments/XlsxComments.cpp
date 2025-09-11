@@ -53,6 +53,8 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJ.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/TEXTOBJECT.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Note.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
@@ -271,7 +273,13 @@ namespace OOX
 			}
 			auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
 			{
-				//todo put comment text  to textobject
+				auto objUnion = new XLS::OBJ(boost::dynamic_pointer_cast<XLS::MsoDrawing>(objectsPtr->m_arrObject.back().first));
+				//object writing
+				auto objPtr = new XLS::Obj(objUnion->mso_drawing_);
+				objUnion->m_Obj = XLS::BaseObjectPtr(objPtr);
+				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(objUnion));
+
+				//txo writing
 			}
 			return  XLS::BaseObjectPtr(ptr);
 		}
@@ -442,11 +450,12 @@ namespace OOX
 			{
 				auto objectsPtr = static_cast<XLS::OBJECTS*>(objectsPointer.get());
 				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
-				objectsPtr->m_arrObject.push_back(objPair);
 
 				auto drawingPtr = new XLS::MsoDrawing(false);
+				drawingPtr->prepareComment();
 				objPair.first = XLS::BaseObjectPtr(drawingPtr);
-				//todo filling drawingPtr
+				objectsPtr->m_arrObject.push_back(objPair);
+
 				for(auto i : m_oCommentList->m_arrItems)
 					objectVector.push_back(i->toXLS(objectsPointer));
 			}

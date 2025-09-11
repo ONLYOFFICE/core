@@ -32,6 +32,9 @@
 
 #include "MsoDrawing.h"
 #include "../Biff_structures/ODRAW/OfficeArtRecord.h"
+#include "../Biff_structures/ODRAW/OfficeArtFDG.h"
+#include "../Biff_structures/ODRAW/OfficeArtFSP.h"
+#include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 
 namespace XLS
 {
@@ -129,6 +132,24 @@ const bool MsoDrawing::isEndingRecord(CFRecord& record)
 	return ODRAW::OfficeArtDgContainer::CheckIfContainerSizeOK(record);
 }
 
+void MsoDrawing::prepareComment()
+{
+	auto fdgPtr = new ODRAW::OfficeArtFDG;
+	fdgPtr->rh_own.recInstance = 1;
+	fdgPtr->csp = 1;
+
+	auto spContainerPtr = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+
+	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
+	rgChildRec.m_OfficeArtSpContainer.push_back(ODRAW::OfficeArtRecordPtr(spContainerPtr));
+
+	auto fsprPtr = new ODRAW::OfficeArtFSP;
+	spContainerPtr->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+	fsprPtr->shape_id = 1;
+	fsprPtr->spid = 1;
+
+
+}
 
 
 } // namespace XLS

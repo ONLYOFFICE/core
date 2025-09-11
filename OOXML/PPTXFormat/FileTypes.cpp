@@ -61,6 +61,10 @@ namespace Presentation
 												L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors");
 
+		const FileType ModernComments	(L"comments", L"modernComment.xml",
+												L"application/vnd.ms-powerpoint.comments+xml",
+												L"http://schemas.microsoft.com/office/2018/10/relationships/comments");
+	
 		const FileType SlideMaster		(L"slideMasters", L"slideMaster.xml",
 												L"application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideMaster");

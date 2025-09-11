@@ -37,36 +37,359 @@ namespace PPTX
 {
 	namespace Logic
 	{
-			void Comment::fromXML(XmlUtils::CXmlNode& node)
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void DrawingElementMonikerList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"ac:deMkLst");
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"xmlns:ac", L"http://schemas.microsoft.com/office/drawing/2013/main/command");
+			pWriter->EndAttributes();
+
+			AnyMonikerList::toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"ac:deMkLst");
+		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void SlideMonikerList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"pc:sldMkLst");
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"xmlns:pc", L"http://schemas.microsoft.com/office/drawing/2013/main/command");
+			pWriter->EndAttributes();
+
+			AnyMonikerList::toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"pc:sldMkLst");
+		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void TextCharRangeMonikerList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(L"ac:txMkLst");
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(L"xmlns:ac", L"http://schemas.microsoft.com/office/drawing/2013/main/command");
+			pWriter->EndAttributes();
+
+			AnyMonikerList::toXmlWriter(pWriter);
+
+			pWriter->EndNode(L"ac:txMkLst");
+		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		AnyMonikerList::~AnyMonikerList()
+		{
+			for (auto item : m_arrItems)
 			{
-				XmlMacroReadAttributeBase(node, L"authorId", authorId);
-				XmlMacroReadAttributeBase(node, L"dt", dt);
-				XmlMacroReadAttributeBase(node, L"idx", idx);
-
-				XmlUtils::CXmlNode oNodePos = node.ReadNode(_T("p:pos"));
-				if (oNodePos.IsValid())
+				if (item)
 				{
-					XmlMacroReadAttributeBase(oNodePos, L"x", pos_x);
-					XmlMacroReadAttributeBase(oNodePos, L"y", pos_y);
+					delete item;
+					item = NULL;
 				}
+			}
+		}
+		void AnyMonikerList::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
 
-				XmlUtils::CXmlNode oNodeText = node.ReadNode(_T("p:text"));
-				if (oNodeText.IsValid())
-					text = oNodeText.GetTextExt();
+			for (size_t i = 0; i < oNodes.size(); ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+				WrapperWritingElement *pItem = NULL;
 
-				XmlUtils::CXmlNode oNodeExtLst = node.ReadNode(_T("p:extLst"));
-
-				bool bIsFound1 = false;
-				bool bIsFound2 = false;
-				if (oNodeExtLst.IsValid())
+				if (strName == L"docMk")
 				{
+				}
+				if (pItem)
+				{
+					m_arrItems.push_back(pItem);
+				}
+			}
+
+			FillParentPointersForChilds();
+		}
+		std::wstring AnyMonikerList::toXML() const
+		{
+			return L"";
+		}
+		void AnyMonikerList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			for (auto item : m_arrItems)
+			{
+				if (item)
+				{
+					item->toXmlWriter(pWriter);
+				}
+			}
+		}
+		void AnyMonikerList::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			for (auto item : m_arrItems)
+			{
+				if (item)
+				{
+					item->toPPTY(pWriter);
+				}
+			}
+		}
+		void AnyMonikerList::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				WrapperWritingElement* pItem = NULL;
+				switch (_at)
+				{
+				case 0:
+				default:
+				{
+					pReader->SkipRecord();
+					break;
+				}
+				if (pItem)
+				{
+					pItem->fromPPTY(pReader);
+					m_arrItems.push_back(pItem);
+				}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void CommentReplyList::fromXML(XmlUtils::CXmlNode& node)
+		{
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+			size_t nCount = oNodes.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (strName == L"reply")
+				{
+					m_arReply.emplace_back();
+					m_arReply.back().fromXML(oNode);
+				}
+			}
+
+			FillParentPointersForChilds();
+		}
+		std::wstring CommentReplyList::toXML() const
+		{
+			return L"";
+		}
+		void CommentReplyList::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p188:replyLst"));
+
+			pWriter->StartAttributes();
+			pWriter->EndAttributes();
+
+			if (m_arReply.size() == 0)
+				pWriter->WriteString(L"<p188:replyLst/>");
+			else
+				pWriter->WriteArray(L"p188:replyLst", m_arReply);
+
+			pWriter->EndNode(_T("p188:replyLst"));
+		}
+		void CommentReplyList::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteRecordArray(0, 1, m_arReply);
+		}
+		void CommentReplyList::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					m_arReply.emplace_back();
+					m_arReply.back().fromPPTY(pReader);
+				}break;
+				default:
+				{
+					pReader->SkipRecord();
+					break;
+				}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void CommentReplyList::FillParentPointersForChilds()
+		{
+			for (size_t i = 0; i < m_arReply.size(); ++i)
+				m_arReply[i].SetParentPointer(this);
+		}
+		void CommentReply::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"authorId", authorId);
+			XmlMacroReadAttributeBase(node, L"id", id);
+			XmlMacroReadAttributeBase(node, L"created", created);
+			XmlMacroReadAttributeBase(node, L"status", status);
+
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+
+			for (size_t i = 0; i < oNodes.size(); ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (strName == L"extLst")
+				{
+				}
+				else if (strName == L"txBody")
+				{
+					txBody = oNode;
+				}
+			}
+		}
+		std::wstring CommentReply::toXML() const
+		{
+			return _T("");
+		}
+		void CommentReply::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p188:reply"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("authorId"), authorId);
+			pWriter->WriteAttribute2(_T("status"), status);
+			pWriter->WriteAttribute(_T("id"), id);
+			pWriter->EndAttributes();
+
+			if (txBody.IsInit())
+			{
+				std::wstring textFrom = txBody->GetText();
+				pWriter->WriteString(_T("<p:text>"));
+				pWriter->WriteStringXML(textFrom);
+				pWriter->WriteString(_T("</p:text>"));
+			}
+
+			pWriter->EndNode(_T("p188:reply"));
+		}
+		void CommentReply::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt2(0, authorId);
+			pWriter->WriteString2(1, id);
+			pWriter->WriteString2(2, created);
+			pWriter->WriteString2(3, status);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+
+			pWriter->WriteRecord2(0, txBody);
+		}
+		void CommentReply::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
+			{
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
+
+				switch (_at)
+				{
+				case 0:
+					authorId = pReader->GetLong();
+					break;
+				case 1:
+					id = pReader->GetString2();
+					break;
+				case 2:
+					created = pReader->GetString2();
+					break;
+				case 3:
+					status = pReader->GetString2();
+					break;
+				default:
+					break;
+				}
+			}
+
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
+				{
+				case 0:
+				{
+					txBody.Init();
+					txBody->fromPPTY(pReader);
+				}break;
+				default:
+				{
+					pReader->SkipRecord();
+					break;
+				}
+				}
+			}
+
+			pReader->Seek(_end_rec);
+		}
+		void CommentReply::FillParentPointersForChilds()
+		{
+		}
+
+//----------------------------------------------------------------------------------------------------------------------------------------------------
+		void Comment::fromXML(XmlUtils::CXmlNode& node)
+		{
+			XmlMacroReadAttributeBase(node, L"authorId", authorId);
+			XmlMacroReadAttributeBase(node, L"dt", dt);
+			XmlMacroReadAttributeBase(node, L"idx", idx);
+
+			XmlMacroReadAttributeBase(node, L"id", id);
+			XmlMacroReadAttributeBase(node, L"created", created);
+			XmlMacroReadAttributeBase(node, L"status", status);
+			XmlMacroReadAttributeBase(node, L"title", title);
+			XmlMacroReadAttributeBase(node, L"startDate", startDate);
+			XmlMacroReadAttributeBase(node, L"dueDate", dueDate);
+			XmlMacroReadAttributeBase(node, L"assignedTo", assignedTo);
+			XmlMacroReadAttributeBase(node, L"complete", complete);
+
+			std::vector<XmlUtils::CXmlNode> oNodes;
+			node.GetNodes(L"*", oNodes);
+			size_t nCount = oNodes.size();
+			for (size_t i = 0; i < nCount; ++i)
+			{
+				XmlUtils::CXmlNode& oNode = oNodes[i];
+				std::wstring strName = XmlUtils::GetNameNoNS(oNode.GetName());
+
+				if (strName == L"pos")
+				{
+					XmlMacroReadAttributeBase(oNode, L"x", pos_x);
+					XmlMacroReadAttributeBase(oNode, L"y", pos_y);
+				}
+				else if (strName == L"text")
+				{
+					text = oNode.GetTextExt();
+				}
+				else if (strName == L"extLst")
+				{
+					bool bIsFound1 = false;
+					bool bIsFound2 = false;
+
 					std::vector<XmlUtils::CXmlNode> oNodesExt;
-					if (oNodeExtLst.GetNodes(_T("p:ext"), oNodesExt))
+					if (oNode.GetNodes(L"p:ext", oNodesExt))
 					{
 						size_t nCountExts = oNodesExt.size();
 						for (size_t nIndex = 0; nIndex < nCountExts; ++nIndex)
 						{
-							XmlUtils::CXmlNode & oNodeExt = oNodesExt[nIndex];
+							XmlUtils::CXmlNode& oNodeExt = oNodesExt[nIndex];
 
 							// parent
 							if (!bIsFound1)
@@ -99,143 +422,193 @@ namespace PPTX
 							}
 						}
 					}
-
-					XmlUtils::CXmlNode oNodeExt = oNodeExtLst.ReadNode(_T("p:ext"));
-					if (oNodeExt.IsValid())
-					{
-						XmlUtils::CXmlNode oNodeTI = oNodeExt.ReadNode(_T("p15:threadingInfo"));
-						if (oNodeTI.IsValid())
-						{
-							XmlUtils::CXmlNode oNodeParent = oNodeTI.ReadNode(_T("p15:parentCm"));
-
-							XmlMacroReadAttributeBase(oNodeParent, L"authorId", parentAuthorId);
-							XmlMacroReadAttributeBase(oNodeParent, L"idx", parentCommentId);
-						}
-					}
 				}
-				//check comment guid
-				if(!(additional_data.IsInit() && 0 == additional_data->compare(0, 13, L"teamlab_data:") && std::wstring::npos != additional_data->find(L"4;38;")))
+				else if (strName == L"txMkLst")
 				{
-					if(!additional_data.IsInit())
-					{
-						additional_data = L"teamlab_data:";
-					}
-					if(':' != additional_data->back() && ';' != additional_data->back())
-					{
-						additional_data->append(L";");
-					}
-					additional_data->append(L"4;38;{" + XmlUtils::GenerateGuid() + L"}");
+					txMkLst = oNode;
+				}
+				else if (strName == L"sldMkLst")
+				{
+					sldMkLst = oNode;
+				}
+				else if (strName == L"deMkLst")
+				{
+					deMkLst = oNode;
+				}
+				else if (strName == L"txBody")
+				{
+					txBody = oNode;
+				}
+				else if (strName == L"replyLst")
+				{
+					replyLst = oNode;
 				}
 			}
-			std::wstring Comment::toXML() const
-			{
-				return _T("");
-			}
-			void Comment::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:cm"));
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("authorId"), authorId);
-				pWriter->WriteAttribute2(_T("dt"), dt);
-				pWriter->WriteAttribute(_T("idx"), idx);
-				pWriter->EndAttributes();
-
-				if (pos_x.is_init() && pos_y.is_init())
+			//check comment guid
+			if (!(additional_data.IsInit() && 0 == additional_data->compare(0, 13, L"teamlab_data:") && std::wstring::npos != additional_data->find(L"4;38;")))
+			{
+				if (!additional_data.IsInit())
 				{
-					std::wstring sPos = L"<p:pos x=\"" + std::to_wstring(*pos_x) + L"\" y=\"" + std::to_wstring(*pos_y) + L"\"/>";
+					additional_data = L"teamlab_data:";
+				}
+				if (':' != additional_data->back() && ';' != additional_data->back())
+				{
+					additional_data->append(L";");
+				}
+				additional_data->append(L"4;38;{" + XmlUtils::GenerateGuid() + L"}");
+			}
+		}
+		std::wstring Comment::toXML() const
+		{
+			return _T("");
+		}
+		void Comment::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+		{
+			pWriter->StartNode(_T("p:cm"));
+
+			pWriter->StartAttributes();
+			pWriter->WriteAttribute(_T("authorId"), authorId);
+			pWriter->WriteAttribute2(_T("dt"), dt);
+			pWriter->WriteAttribute(_T("idx"), idx);
+			pWriter->EndAttributes();
+
+			if (pos_x.is_init() && pos_y.is_init())
+			{
+				std::wstring sPos = L"<p:pos x=\"" + std::to_wstring(*pos_x) + L"\" y=\"" + std::to_wstring(*pos_y) + L"\"/>";
+				pWriter->WriteString(sPos);
+			}
+			if (text.is_init())
+			{
+				pWriter->WriteString(_T("<p:text>"));
+				pWriter->WriteStringXML(*text);
+				pWriter->WriteString(_T("</p:text>"));
+			}
+			else if (txBody.IsInit())
+			{
+				std::wstring textFrom = txBody->GetText();
+				pWriter->WriteString(_T("<p:text>"));
+				pWriter->WriteStringXML(textFrom);
+				pWriter->WriteString(_T("</p:text>"));
+			}
+
+			bool bIsExtLst = false;
+			if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init() || additional_data.is_init())
+				bIsExtLst = true;
+
+			if (bIsExtLst)
+				pWriter->WriteString(_T("<p:extLst>"));
+
+			if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init())
+			{
+				pWriter->WriteString(_T("<p:ext uri=\"{C676402C-5697-4E1C-873F-D02D1690AC5C}\">\
+<p15:threadingInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\""));
+				if (timeZoneBias.is_init())
+				{
+					pWriter->WriteString(_T(" timeZoneBias=\""));
+					pWriter->WriteINT(timeZoneBias.get());
+					pWriter->WriteString(_T("\""));
+				}
+				pWriter->WriteString(_T(">"));
+				if (parentAuthorId.is_init() && parentCommentId.is_init())
+				{
+					std::wstring sPos = L"<p15:parentCm authorId=\"" + std::to_wstring(*parentAuthorId) + L"\" idx=\"" + std::to_wstring(*parentCommentId) + L"\"/>";
 					pWriter->WriteString(sPos);
 				}
-				if (text.is_init())
-				{
-					pWriter->WriteString(_T("<p:text>"));
-					pWriter->WriteStringXML(*text);
-					pWriter->WriteString(_T("</p:text>"));
-				}
 
-				bool bIsExtLst = false;
-				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init() || additional_data.is_init())
-					bIsExtLst = true;
+				pWriter->WriteString(_T("</p15:threadingInfo></p:ext>"));
+			}
 
-				if (bIsExtLst)
-					pWriter->WriteString(_T("<p:extLst>"));
-
-				if ((parentAuthorId.is_init() && parentCommentId.is_init()) || timeZoneBias.is_init())
-				{
-					pWriter->WriteString(_T("<p:ext uri=\"{C676402C-5697-4E1C-873F-D02D1690AC5C}\">\
-<p15:threadingInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\""));
-					if(timeZoneBias.is_init())
-					{
-						pWriter->WriteString(_T(" timeZoneBias=\""));
-						pWriter->WriteINT(timeZoneBias.get());
-						pWriter->WriteString(_T("\""));
-					}
-					pWriter->WriteString(_T(">"));
-					if(parentAuthorId.is_init() && parentCommentId.is_init())
-					{
-						std::wstring sPos = L"<p15:parentCm authorId=\"" + std::to_wstring(*parentAuthorId) + L"\" idx=\"" + std::to_wstring(*parentCommentId) + L"\"/>";
-						pWriter->WriteString(sPos);
-					}
-
-					pWriter->WriteString(_T("</p15:threadingInfo></p:ext>"));
-				}
-
-				if (additional_data.is_init())
-				{
-					pWriter->WriteString(_T("<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
+			if (additional_data.is_init())
+			{
+				pWriter->WriteString(_T("<p:ext uri=\"{19B8F6BF-5375-455C-9EA6-DF929625EA0E}\">\
 <p15:presenceInfo xmlns:p15=\"http://schemas.microsoft.com/office/powerpoint/2012/main\" userId=\""));
 
-					std::wstring strData = XmlUtils::EncodeXmlStringExtend(additional_data.get());
+				std::wstring strData = XmlUtils::EncodeXmlStringExtend(additional_data.get());
 
-					pWriter->WriteString(strData);
+				pWriter->WriteString(strData);
 
-					pWriter->WriteString(_T("\" providerId=\"AD\"/></p:ext>"));
-				}
-
-				if (bIsExtLst)
-					pWriter->WriteString(_T("</p:extLst>"));
-
-				pWriter->EndNode(_T("p:cm"));
+				pWriter->WriteString(_T("\" providerId=\"AD\"/></p:ext>"));
 			}
-			void Comment::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+
+			if (bIsExtLst)
+				pWriter->WriteString(_T("</p:extLst>"));
+
+			pWriter->EndNode(_T("p:cm"));
+		}
+		void Comment::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
+		{
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+			pWriter->WriteInt2(0, authorId);
+
+			if (dt.IsInit() && !dt->empty())
 			{
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
-				pWriter->WriteInt2(0, authorId);
 				pWriter->WriteString2(1, dt);
-				pWriter->WriteInt2(2, idx);
+			}
+			else if (created.IsInit() && !created->empty())
+			{
+				std::wstring date = *created;
+				size_t pos_point = date.rfind(L".");
+				size_t pos_sep = date.rfind(L":");
 
-				pWriter->WriteInt2(3, pos_x);
-				pWriter->WriteInt2(4, pos_y);
+				if (pos_point != std::wstring::npos && pos_point > pos_sep)
+				{
+					date = date.substr(0, pos_point);
+				}
+				if (!created->empty() && date.back() != L'Z') date += L"Z";
 
+				pWriter->WriteString1(1, date);
+			}
+			pWriter->WriteInt2(2, idx);
+
+			pWriter->WriteInt2(3, pos_x);
+			pWriter->WriteInt2(4, pos_y);
+
+			if (text.IsInit())
+			{
 				pWriter->WriteString2(5, text);
+			}
+			else if (txBody.IsInit())
+			{
+				std::wstring modern_text = txBody->GetText(true);
+				pWriter->WriteString1(5, modern_text);
+			}
+			pWriter->WriteInt2(6, parentAuthorId);
+			pWriter->WriteInt2(7, parentCommentId);
 
-				pWriter->WriteInt2(6, parentAuthorId);
-				pWriter->WriteInt2(7, parentCommentId);
+			pWriter->WriteString2(8, additional_data);
 
-				pWriter->WriteString2(8, additional_data);
+			//pWriter->WriteString2(9, id);
+			//pWriter->WriteString2(10, created);
 
-				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				pWriter->StartRecord(0);
+			pWriter->StartRecord(0);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 				pWriter->WriteInt2(9, timeZoneBias);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
-				pWriter->EndRecord();
-			}
-			void Comment::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			pWriter->EndRecord();
+
+			pWriter->WriteRecord2(1, txBody);
+			pWriter->WriteRecord2(2, replyLst);
+			pWriter->WriteRecord2(3, txMkLst);
+			pWriter->WriteRecord2(4, sldMkLst);
+			pWriter->WriteRecord2(5, deMkLst);
+		}
+		void Comment::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+		{
+			LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+			pReader->Skip(1); // start attributes
+
+			while (true)
 			{
-				LONG _end_rec = pReader->GetPos() + pReader->GetRecordSize() + 4;
+				BYTE _at = pReader->GetUChar_TypeNode();
+				if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+					break;
 
-				pReader->Skip(1); // start attributes
-
-				while (true)
+				switch (_at)
 				{
-					BYTE _at = pReader->GetUChar_TypeNode();
-					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
-						break;
-
-					switch (_at)
-					{
 					case 0:
 						authorId = pReader->GetLong();
 						break;
@@ -262,16 +635,23 @@ namespace PPTX
 						break;
 					case 8:
 						additional_data = pReader->GetString2();
+						break;
+					case 9:
+						id = pReader->GetString2();
+						break;
+					case 10:
+						created = pReader->GetString2();
+						break;
 					default:
 						break;
-					}
 				}
+			}
 
-				while (pReader->GetPos() < _end_rec)
+			while (pReader->GetPos() < _end_rec)
+			{
+				BYTE _at = pReader->GetUChar();
+				switch (_at)
 				{
-					BYTE _at = pReader->GetUChar();
-					switch (_at)
-					{
 					case 0:
 					{
 						LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -292,23 +672,47 @@ namespace PPTX
 						}
 
 						pReader->Seek(_end_rec2);
-					}
-						break;
+					}break;
+					case 1:
+					{
+						txBody.Init();
+						txBody->fromPPTY(pReader);
+					}break;
+					case 2:
+					{
+						replyLst.Init();
+						replyLst->fromPPTY(pReader);
+					}break;
+					case 3:
+					{
+						txMkLst.Init();
+						txMkLst->fromPPTY(pReader);
+					}break;
+					case 4:
+					{
+						sldMkLst.Init();
+						sldMkLst->fromPPTY(pReader);
+					}break;
+					case 5:
+					{
+						deMkLst.Init();
+						deMkLst->fromPPTY(pReader);
+					}break;
 					default:
 					{
 						pReader->SkipRecord();
 						break;
 					}
-					}
 				}
+			}
 
-				pReader->Seek(_end_rec);
-			}
-			void Comment::FillParentPointersForChilds()
-			{
-			}
+			pReader->Seek(_end_rec);
+		}
+		void Comment::FillParentPointersForChilds()
+		{
+		}
 	}
-
+//----------------------------------------------------------------------------------------------------------------------------------------------------
 	Comments::Comments(OOX::Document* pMain) : WrapperFile(pMain)
 	{
 	}
@@ -324,16 +728,27 @@ namespace PPTX
 		XmlUtils::CXmlNode oNode;
 		oNode.FromXmlFile(filename.m_strFilename);
 
+		if (XmlUtils::GetNamespace(oNode.GetName()) == L"p188")
+			bModern = true;
+
 		std::vector<XmlUtils::CXmlNode> oNodes;
-		oNode.GetNodes(_T("p:cm"), oNodes);
+		oNode.GetNodes(L"*", oNodes);
 		size_t nCount = oNodes.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			XmlUtils::CXmlNode &oCm = oNodes[i];
+			XmlUtils::CXmlNode& oCm = oNodes[i];
 
-			PPTX::Logic::Comment elm;
-			m_arComments.push_back(elm);
-			m_arComments.back().fromXML(oCm);
+			std::wstring strName = XmlUtils::GetNameNoNS(oCm.GetName());
+
+			if (strName == L"cm")
+			{
+				PPTX::Logic::Comment elm;
+
+				if (XmlUtils::GetNamespace(oCm.GetName()) == L"p188")
+					elm.bModern = true;
+				m_arComments.push_back(elm);
+				m_arComments.back().fromXML(oCm);
+			}
 		}
 	}
 	void Comments::write(const OOX::CPath& filename, const OOX::CPath& directory, OOX::CContentTypes& content)const
@@ -382,27 +797,27 @@ namespace PPTX
 
 			switch (_rec)
 			{
-				case 0:
+			case 0:
+			{
+				pReader->Skip(4); // len
+				ULONG lCount = pReader->GetULong();
+
+				for (ULONG i = 0; i < lCount; ++i)
 				{
-					pReader->Skip(4); // len
-					ULONG lCount = pReader->GetULong();
+					pReader->Skip(1);
 
-					for (ULONG i = 0; i < lCount; ++i)
-					{
-						pReader->Skip(1);
-
-						PPTX::Logic::Comment elm;
-						m_arComments.push_back(elm);
-						m_arComments.back().fromPPTY(pReader);
-					}
-
-					break;
+					PPTX::Logic::Comment elm;
+					m_arComments.push_back(elm);
+					m_arComments.back().fromPPTY(pReader);
 				}
-				default:
-				{
-					pReader->SkipRecord();
-					break;
-				}
+
+				break;
+			}
+			default:
+			{
+				pReader->SkipRecord();
+				break;
+			}
 			}
 		}
 

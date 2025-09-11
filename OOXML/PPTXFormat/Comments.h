@@ -30,18 +30,96 @@
  *
  */
 #pragma once
-#ifndef PPTX_COMMENTS_COMMENTS_H_
-#define PPTX_COMMENTS_COMMENTS_H_
 
 #include "WrapperFile.h"
 #include "FileContainer.h"
 #include "WrapperWritingElement.h"
 #include "../Base/Unit.h"
+#include "Logic/TxBody.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
+		class CommentReply : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CommentReply)
+
+			nullable_string id;
+			nullable_int authorId;
+			nullable_string status;
+			nullable_string created;
+
+			nullable<TxBody> txBody;
+			//extLst
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+		};
+
+		class CommentReplyList : public WrapperWritingElement
+		{
+		public:
+			PPTX_LOGIC_BASE(CommentReplyList)
+
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+			virtual std::wstring toXML() const;
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds();
+
+			std::vector<CommentReply> m_arReply;
+		};
+		class AnyMonikerList : public WrapperWritingElement
+		{
+		public:
+			AnyMonikerList() {}
+			virtual ~AnyMonikerList();
+
+			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader) {}
+			virtual void fromXML(XmlUtils::CXmlNode& node);
+
+			virtual std::wstring toXML() const;
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+
+			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const;
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
+
+			virtual void FillParentPointersForChilds() {}
+
+			std::vector<WrapperWritingElement*> m_arrItems;
+		};
+		class TextCharRangeMonikerList : public AnyMonikerList
+		{
+		public:
+			PPTX_LOGIC_BASE(TextCharRangeMonikerList)
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
+		class SlideMonikerList : public AnyMonikerList
+		{
+		public:
+			PPTX_LOGIC_BASE(SlideMonikerList)
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
+		class DrawingElementMonikerList : public AnyMonikerList
+		{
+		public:
+			PPTX_LOGIC_BASE(DrawingElementMonikerList)
+
+			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
+		};
 		class Comment : public WrapperWritingElement
 		{
 		public:
@@ -62,7 +140,25 @@ namespace PPTX
 			nullable_string additional_data; // teamlab editor information!!!
 
 			nullable_int timeZoneBias;
+//------------------------------------------------------------------------------------------
+//modern
+			nullable_string id;
+			nullable_string created;
+			nullable_string status;
+			nullable_string startDate;
+			nullable_string dueDate;
+			nullable_string assignedTo;
+			nullable_uint complete;
+			nullable_string title;
 
+			nullable<TxBody> txBody;
+			nullable<CommentReplyList> replyLst;
+			nullable<TextCharRangeMonikerList > txMkLst;
+			nullable<SlideMonikerList> sldMkLst;
+			nullable<DrawingElementMonikerList> deMkLst;
+
+			bool bModern = false;
+//------------------------------------------------------------------------------------------
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual std::wstring toXML() const;
 
@@ -78,6 +174,7 @@ namespace PPTX
 	{
 	public:
 		std::vector<PPTX::Logic::Comment> m_arComments;
+		bool bModern = false;
 
 		Comments(OOX::Document* pMain);
 		Comments(OOX::Document* pMain, const OOX::CPath& filename, FileMap& map);
@@ -96,5 +193,3 @@ namespace PPTX
 		virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader);
 	};
 } // namespace PPTX
-
-#endif // PPTX_COMMENTS_COMMENTS_H_

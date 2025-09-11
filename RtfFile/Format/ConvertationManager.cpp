@@ -61,6 +61,8 @@ RtfConvertationManager::RtfConvertationManager( )
 
 	m_poRtfWriter = NULL;
 	m_poRtfReader = NULL;
+
+	m_nDefaultFontSize = 0;
 }
 _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath )
 {
@@ -91,20 +93,21 @@ _UINT32 RtfConvertationManager::ConvertRtfToOOX( std::wstring sSrcFileName, std:
 		oWriter.m_sTempFolder = NSDirectory::CreateDirectoryWithUniqueName(NSDirectory::GetTempPath());
 	}
 
-    m_poRtfReader = &oReader;
-    m_poOOXWriter = &oWriter;
+	m_poRtfReader = &oReader;
+	m_poOOXWriter = &oWriter;
 
-    if (false == oReader.Load( )) return AVS_FILEUTILS_ERROR_CONVERT;
-    if (!m_sDefaultFontName.empty())
-        oDocument.m_oProperty.m_sDefFontName = m_sDefaultFontName;
-    if (m_nDefaultFontSize != NULL)
-        oDocument.m_oProperty.m_nDefFontSize = m_nDefaultFontSize;
+	if (false == oReader.Load())
+		return AVS_FILEUTILS_ERROR_CONVERT;
+	if (!m_sDefaultFontName.empty())
+		oDocument.m_oProperty.m_sDefFontName = m_sDefaultFontName;
+	if (m_nDefaultFontSize > 0)
+		oDocument.m_oProperty.m_nDefFontSize = m_nDefaultFontSize;
 	oWriter.Save();
 
-    NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
-    NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
+	NSDirectory::DeleteDirectory(oReader.m_sTempFolder);
+	NSDirectory::DeleteDirectory(oWriter.m_sTempFolder);
 
-    return S_OK;        
+	return S_OK;
 }
 _UINT32 RtfConvertationManager::ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath )
 {

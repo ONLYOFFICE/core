@@ -38,16 +38,14 @@ int main(int argc, char** argv)
 	std::wstring curr_dir = NSFile::GetProcessDirectory();
 	std::wstring wsep = FILE_SEPARATOR_STR;
 
-   // std::wstring filename_in  = curr_dir + wsep + L"Diva readme.rtf";
-    std::wstring filename_in  = curr_dir + wsep + L"CONTRACT.rtf";
-    std::wstring filename_out = curr_dir + wsep + L"123.docx";
+	std::wstring filename_in  = curr_dir + wsep + L"CONTRACT.rtf";
+	std::wstring filename_out = curr_dir + wsep + L"123.docx";
 	std::wstring fonts_dir    = curr_dir + wsep + L"fonts";
 	std::wstring xml          = curr_dir + wsep + L"params.xml";
 
 	std::wstring tmp_dir      = NSDirectory::CreateDirectoryWithUniqueName(curr_dir);
 
 	CheckFonts(fonts_dir);
-    std::wstring fontname = L"Times New Roman";
 
 	// GENERATE XML
 	NSStringUtils::CStringBuilder oBuilder;
@@ -90,13 +88,17 @@ int main(int argc, char** argv)
 	oBuilder.WriteString(fonts_dir + L"/AllFonts.js");
 	oBuilder.WriteString(L"</m_sAllFontsPath>");
 
-    oBuilder.WriteString(L"<DefaultFontName>");
-    oBuilder.WriteEncodeXmlString(fontname);
-    oBuilder.WriteString(L"</DefaultFontName>");
-    oBuilder.WriteString(L"<DefaultFontSize>");
-    oBuilder.WriteEncodeXmlString(L"24");
-    oBuilder.WriteString(L"</DefaultFontSize>");
-    // temp directory
+	if (false)
+	{
+		oBuilder.WriteString(L"<m_sDefaultFontName>");
+		oBuilder.WriteEncodeXmlString(L"Arial");
+		oBuilder.WriteString(L"</m_sDefaultFontName>");
+		oBuilder.WriteString(L"<m_nDefaultFontSize>");
+		oBuilder.WriteEncodeXmlString(L"12");
+		oBuilder.WriteString(L"</m_nDefaultFontSize>");
+	}
+
+	// temp directory
 	oBuilder.WriteString(L"<m_sTempDir>");
 	oBuilder.WriteEncodeXmlString(tmp_dir);
 	oBuilder.WriteString(L"</m_sTempDir>");

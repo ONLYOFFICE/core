@@ -44,27 +44,25 @@ namespace OOX { namespace Vml { class CShapeType; } }
 class RtfConvertationManager
 {
 public:
-    std::wstring m_sTempFolder;
+	std::wstring m_sTempFolder;
 	int m_nUserLCID;
-    std::wstring m_sDefaultFontName;
-    int m_nDefaultFontSize;
+	std::wstring m_sDefaultFontName;
+	int m_nDefaultFontSize;
 	RtfConvertationManager();
 
-    _UINT32 ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath);
+	_UINT32 ConvertRtfToOOX(std::wstring sSrcFileName, std::wstring sDstPath);
 
-    _UINT32 ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath);
+	_UINT32 ConvertOOXToRtf(std::wstring sDstFileName, std::wstring sSrcPath);
 
-    void OnCompleteItemRtf();
-    void OnCompleteItemOOX();
+	void OnCompleteItemRtf();
+	void OnCompleteItemOOX();
 
 private:
-    OOXWriter* m_poOOXWriter;
-    OOXReader* m_poOOXReader;
+	OOXWriter* m_poOOXWriter;
+	OOXReader* m_poOOXReader;
 
-    RtfWriter* m_poRtfWriter;
-    RtfReader* m_poRtfReader;
+	RtfWriter* m_poRtfWriter;
+	RtfReader* m_poRtfReader;
 
-    bool m_bParseFirstItem;
-
-
+	bool m_bParseFirstItem;
 };

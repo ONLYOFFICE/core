@@ -44,10 +44,10 @@ public:
 			cp_pc,		// pc IBM PC code page 437
 			cp_pca,		// pca IBM PC code page 850, used by IBM Personal System/2 (not implemented in version 1 of Microsoft Word for OS/2)
 	}	m_eCodePage;
-    std::wstring m_sDefFontName;
-    int m_nDefFontSize;
+	std::wstring m_sDefFontName;
+	int m_nDefFontSize;
 
-    int m_nAnsiCodePage;
+	int m_nAnsiCodePage;
 	int m_nDefFont;
 	int m_nDefMathFont;
 	int m_nDefLang;

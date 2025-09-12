@@ -111,7 +111,39 @@ def replaceInFile(path, text, textReplace):
 
 # -------------------------------------------------
 
-def get_android_args(platform, sdk_ver=21):
+SDK_VERSION = "23"
+NDK_VERSION = "28.2.13676358"
+
+def get_sdk():
+  sdk_dir = os.path.dirname(os.path.abspath(__file__)) + "/android-sdk"
+  if (is_dir(sdk_dir)):
+    return
+  create_dir(sdk_dir)
+
+  old_cur = os.getcwd()
+  os.chdir(sdk_dir)
+
+  archive_name = "commandlinetools-linux.zip"
+  cmd("wget", ["https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip", "-O", archive_name])
+
+  cmd("unzip", ["-o", archive_name, "-d", "cmdline-tools"])
+  cmd("mkdir", ["-p", "cmdline-tools/latest"])
+  subprocess.run("mv cmdline-tools/cmdline-tools/* cmdline-tools/latest/ || true", shell=True, check=False)
+
+  os.environ["ANDROID_SDK_ROOT"] = sdk_dir
+  os.environ["PATH"] = sdk_dir + "/cmdline-tools/latest/bin:" + os.environ["PATH"]
+
+  subprocess.run("yes | sdkmanager --licenses", shell=True, check=False)
+  cmd("sdkmanager", ["platforms;android-" + SDK_VERSION, "build-tools;" + SDK_VERSION + ".0.3"])
+  cmd("sdkmanager", ["ndk;" + NDK_VERSION])
+
+  os.chdir(old_cur)
+  return
+
+def get_android_args(platform):
+  abs_sdk_root = os.path.dirname(os.path.abspath(__file__)) + "/android-sdk"
+  abs_ndk_root = abs_sdk_root + "/ndk/" + NDK_VERSION
+
   gn_args = ["is_component_build=false",
              "is_clang=true",
              "is_debug=false",
@@ -123,8 +155,10 @@ def get_android_args(platform, sdk_ver=21):
              "v8_static_library=true",
              "v8_monolithic=true",
              "use_custom_libcxx=false",
-             "android_ndk_version=\\\"21.1.6352462\\\"",
-             "android_sdk_version=\\\"" + str(sdk_ver) + "\\\"",
+             "android_sdk_root=\\\"" + abs_sdk_root + "\\\"",
+             "android_ndk_root=\\\"" + abs_ndk_root + "\\\"",
+             "android_ndk_version=\\\"" + NDK_VERSION + "\\\"",
+             "android_sdk_version=\\\"" + SDK_VERSION + "\\\"",
              "clang_use_chrome_plugins=false",
              "v8_use_external_startup_data=false",
              "treat_warnings_as_errors=false"]
@@ -196,4 +230,5 @@ def make():
   os.environ.clear()
   os.environ.update(old_env)
 
+get_sdk()
 make()

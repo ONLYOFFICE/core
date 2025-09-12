@@ -53,8 +53,6 @@ public:
 		cbRuns				= 0;
 		sp_enabled			= false;
 		preserve_enabled	= false;
-		hAlignment			= 0;
-		vAlignment			= 0;
 	}
 	~TxO();
 
@@ -71,8 +69,8 @@ public:
 
 	GlobalWorkbookInfoPtr	global_info;
 
-	unsigned char			hAlignment = 0;
-	unsigned char			vAlignment = 0;
+	unsigned char			hAlignment = 1;
+	unsigned char			vAlignment = 1;
 
 	unsigned char			fLockText = 0;
 	unsigned char			fJustLast = 0;

@@ -59,6 +59,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Obj.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TxO.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/MsoDrawing.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/XLUnicodeRichExtendedString.h"
 
 namespace OOX
 {
@@ -298,7 +299,20 @@ namespace OOX
 				auto textPtr = new XLS::TxO(objUnion->mso_drawing_);
 				textUnion->m_TxO = XLS::BaseObjectPtr(textPtr);
 				if(m_oText.IsInit())
-					textPtr->rawText = m_oText->ToString();
+				{
+					auto extendedText  = m_oText->toXLS();
+					auto castedText = static_cast<XLS::XLUnicodeRichExtendedString*>(extendedText.get());
+					textPtr->rawText = castedText->str_;
+					textPtr->TxOruns.lastRun.cchText = castedText->str_.size();
+					for(auto i : castedText->rgRun)
+					{
+						XLS::RunPtr TextRun(new XLS::Run);
+						TextRun->formatRun.ich = i.ich;
+						TextRun->formatRun.ifnt = i.ifnt;
+						textPtr->TxOruns.rgTxoRuns.push_back(TextRun);
+					}
+
+				}
 
 			}
 			return  XLS::BaseObjectPtr(ptr);

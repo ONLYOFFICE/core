@@ -70,10 +70,27 @@ const bool TEXTOBJECT::saveContent(BinProcessor& proc)
 	if(m_TxO == nullptr)
 		return false;
 	proc.mandatory(*m_TxO);
+	
 	auto castedObj = static_cast<TxO*>(m_TxO.get());
 	if(castedObj->cchText > 0)
 	{
 		auto textPointer = 0;
+		{
+			auto fragmentSize = (castedObj->cchText * 2) + 1;
+			{
+				XLS::Continue continueRec;
+				if(fragmentSize > 8224)
+					fragmentSize = 8224;
+				continueRec.m_iDataSize = fragmentSize;
+				continueRec.m_pData = new char[fragmentSize];
+				continueRec.m_pData[0] = 1; // wchar byte
+				memcpy(continueRec.m_pData+1, castedObj->rawText.value().data(), fragmentSize -1);
+				proc.mandatory(continueRec);
+			}
+			textPointer+= (fragmentSize-1) / 2;
+		}
+
+		// if cchText is too large for 1 continue
 		while(textPointer < castedObj->cchText)
 		{
 			auto fragmentSize = (castedObj->cchText - textPointer)*2;
@@ -95,10 +112,10 @@ const bool TEXTOBJECT::saveContent(BinProcessor& proc)
 		while(runsCounter < castedObj->TxOruns.rgTxoRuns.size())
 		{
 			auto fragmentSize = 0;
-			if((castedObj->TxOruns.rgTxoRuns.size() - runsCounter) * 8 > 8224)
+			if((castedObj->TxOruns.rgTxoRuns.size() - runsCounter + 1) * 8 > 8224)
 				fragmentSize = 1028;
 			else
-				fragmentSize = (castedObj->TxOruns.rgTxoRuns.size() - runsCounter) * 8;
+				break;
 			XLS::Continue continueRec;
 			continueRec.m_iDataSize = fragmentSize;
 			continueRec.m_pData = new char[fragmentSize];
@@ -107,11 +124,26 @@ const bool TEXTOBJECT::saveContent(BinProcessor& proc)
 			{
 				castedObj->TxOruns.rgTxoRuns[i]->save(tempRec);
 			}
-			if(fragmentSize < 1028)
-				castedObj->TxOruns.lastRun.save(tempRec);
-			memcpy(continueRec.m_pData, tempRec.getCurStaticData<char>(), fragmentSize);
+
+			auto copyData = tempRec.getCurStaticData<char>() - tempRec.getRdPtr();
+			memcpy(continueRec.m_pData, copyData, fragmentSize);
 			proc.mandatory(continueRec);
 			runsCounter += fragmentSize/8;
+		}
+		{
+			auto fragmentSize = (castedObj->TxOruns.rgTxoRuns.size() - runsCounter +1) * 8;
+			XLS::Continue continueRec;
+			continueRec.m_iDataSize = fragmentSize;
+			continueRec.m_pData = new char[fragmentSize];
+			CFRecord tempRec(rt_Continue, proc.getGlobalWorkbookInfo());
+			for(auto i = runsCounter; i <  castedObj->TxOruns.rgTxoRuns.size(); i++)
+			{
+				castedObj->TxOruns.rgTxoRuns[i]->save(tempRec);
+			}
+			castedObj->TxOruns.lastRun.save(tempRec);
+			auto copyData = tempRec.getCurStaticData<char>() - tempRec.getRdPtr();
+			memcpy(continueRec.m_pData, copyData, fragmentSize);
+			proc.mandatory(continueRec);
 		}
 	}
 	return true;

@@ -43,6 +43,7 @@ BiffStructurePtr Run::clone()
 
 Run::Run()
 {		
+	formatRun.ifnt.value() = 0;
 }
 
 Run::~Run()

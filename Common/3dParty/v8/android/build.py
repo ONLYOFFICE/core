@@ -218,10 +218,10 @@ def make():
   cmd2("gn", ["gen", "out.gn/android/arm", "--args=\"" + " ".join(get_android_args("arm")) + "\""])
   cmd("ninja", ["-C", "out.gn/android/arm"])
 
-  cmd2("gn", ["gen", "out.gn/android/x86_64", "--args=\"" + " ".join(get_android_args("x64", 16)) + "\""])
+  cmd2("gn", ["gen", "out.gn/android/x86_64", "--args=\"" + " ".join(get_android_args("x64")) + "\""])
   cmd("ninja", ["-C", "out.gn/android/x86_64"])
 
-  cmd2("gn", ["gen", "out.gn/android/x86", "--args=\"" + " ".join(get_android_args("x86", 16)) + "\""])
+  cmd2("gn", ["gen", "out.gn/android/x86", "--args=\"" + " ".join(get_android_args("x86")) + "\""])
   cmd("ninja", ["-C", "out.gn/android/x86"])
 
   deploy_libs()

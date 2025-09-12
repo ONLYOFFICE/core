@@ -220,7 +220,8 @@ namespace NSDocxRenderer
 			            m_oCurrVectorGraphics,
 			            m_oClipVectorGraphics,
 			            m_lClipMode,
-			            lType);
+						lType,
+						m_oBrush.m_oGradientInfo.checkLuminosity());
 
 			if (new_vector_graphics.IsEmpty())
 			{

@@ -53,6 +53,8 @@ namespace Presentation
 
 		extern const FileType CommentAuthors;
 
+		extern const FileType ModernCommentAuthors;
+
 		extern const FileType SlideMaster;
 
 		extern const FileType NotesSlide;

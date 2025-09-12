@@ -53,6 +53,7 @@ namespace NSBinPptxRW
 		{
 			m_oPresentation.m_bMacroEnabled = false;
 			m_bIsDefaultNoteMaster = true;
+			m_oDocument.main = &m_oPresentation;
 		}
 		CPPTXWriter::~CPPTXWriter()
 		{

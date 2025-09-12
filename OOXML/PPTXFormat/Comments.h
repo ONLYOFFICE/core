@@ -125,7 +125,7 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(Comment)
 
-			nullable_int	authorId;
+			nullable_int	authorIdx;
 			nullable_int	idx;
 			nullable_string dt;
 
@@ -142,7 +142,8 @@ namespace PPTX
 			nullable_int timeZoneBias;
 //------------------------------------------------------------------------------------------
 //modern
-			nullable_string id;
+			nullable_string id;  //Guid
+			nullable_string	authorId; //Guid
 			nullable_string created;
 			nullable_string status;
 			nullable_string startDate;

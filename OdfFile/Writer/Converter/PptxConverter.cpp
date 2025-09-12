@@ -1610,12 +1610,12 @@ void PptxConverter::convert(PPTX::Comments *oox_comments)
 			{
 				for (size_t a = 0; a < presentation->commentAuthors->m_arAuthors.size(); a++)
 				{
-					PPTX::Logic::CommentAuthor & autor = presentation->commentAuthors->m_arAuthors[a];
+					PPTX::Logic::CommentAuthor & author = presentation->commentAuthors->m_arAuthors[a];
 
-					if (autor.id.IsInit() && autor.id.get() == oox_comment.authorId.get())
+					if (author.id.IsInit() && author.id.get() == oox_comment.authorId.get())
 					{
-						odp_context->comment_context()->set_author(autor.name.get_value_or(L""));
-						odp_context->comment_context()->set_initials(autor.initials.get_value_or(L""));
+						odp_context->comment_context()->set_author(author.name.get_value_or(L""));
+						odp_context->comment_context()->set_initials(author.initials.get_value_or(L""));
 						break;
 					}
 				}				

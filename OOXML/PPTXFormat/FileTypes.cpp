@@ -60,6 +60,10 @@ namespace Presentation
 		const FileType CommentAuthors	(L"", L"commentAuthors.xml",
 												L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors.main+xml",
 												L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/commentAuthors");
+		
+		const FileType ModernCommentAuthors(L"", L"authors.xml",
+												L"application/vnd.ms-powerpoint.authors+xml",
+												L"http://schemas.microsoft.com/office/2018/10/relationships/authors");
 
 		const FileType ModernComments	(L"comments", L"modernComment.xml",
 												L"application/vnd.ms-powerpoint.comments+xml",

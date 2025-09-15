@@ -26,6 +26,7 @@ include($$PWD/../../../Common/3dParty/boost/boost.pri)
 HEADERS += \
 	../../Source/TxtFormat/File.h \
 	../../Source/TxtFormat/TxtFile.h \
+	../../Source/TxtRenderer.h \
 	../../Source/TxtXmlFile.h \
 	../../Source/ConvertDocx2Txt.h \
 	../../Source/ConvertTxt2Docx.h
@@ -33,6 +34,7 @@ HEADERS += \
 SOURCES += \
 	../../Source/TxtFormat/File.cpp \
 	../../Source/TxtFormat/TxtFile.cpp \
+	../../Source/TxtRenderer.cpp \
 	../../Source/TxtXmlFile.cpp \
 	../../Source/ConvertDocx2Txt.cpp \
 	../../Source/ConvertTxt2Docx.cpp

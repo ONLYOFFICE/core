@@ -61,7 +61,7 @@ public:
 	virtual const	bool isEndingRecord		(CFRecord& record);
 	virtual			void useContinueRecords	(CFRecord& record);
 
-	void prepareComment	();
+	void prepareComment	(const unsigned int CommentId);
 
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;

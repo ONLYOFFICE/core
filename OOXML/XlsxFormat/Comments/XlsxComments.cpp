@@ -292,7 +292,6 @@ namespace OOX
 
 				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(objUnion));
 
-
 				//txo writing
 				auto textUnion = new XLS::TEXTOBJECT(objUnion->mso_drawing_);
 				objectsPtr->m_arrObject.back().second.push_back(XLS::BaseObjectPtr(textUnion));
@@ -486,7 +485,7 @@ namespace OOX
 				std::pair<XLS::BaseObjectPtr, std::vector<XLS::BaseObjectPtr>> objPair;
 
 				auto drawingPtr = new XLS::MsoDrawing(false);
-				drawingPtr->prepareComment();
+				drawingPtr->prepareComment(1);
 				objPair.first = XLS::BaseObjectPtr(drawingPtr);
 				objectsPtr->m_arrObject.push_back(objPair);
 				unsigned int id = 1;

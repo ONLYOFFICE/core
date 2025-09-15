@@ -34,6 +34,7 @@
 #include "../Biff_structures/ODRAW/OfficeArtRecord.h"
 #include "../Biff_structures/ODRAW/OfficeArtFDG.h"
 #include "../Biff_structures/ODRAW/OfficeArtFSP.h"
+#include "../Biff_structures/ODRAW/OfficeArtFSPGR.h"
 #include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
 
 namespace XLS
@@ -132,23 +133,43 @@ const bool MsoDrawing::isEndingRecord(CFRecord& record)
 	return ODRAW::OfficeArtDgContainer::CheckIfContainerSizeOK(record);
 }
 
-void MsoDrawing::prepareComment()
+void MsoDrawing::prepareComment(const unsigned int CommentId)
 {
+
+	auto spgrContainer = new ODRAW::OfficeArtSpgrContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+	rgChildRec.m_OfficeArtSpgrContainer = ODRAW::OfficeArtRecordPtr(spgrContainer);
+
+	{
+		auto ShapeGroup = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+		auto groupFsp = new ODRAW::OfficeArtFSP;
+		ShapeGroup->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(groupFsp);
+		groupFsp->shape_id = 0;
+		groupFsp->fGroup = true;
+		groupFsp->fPatriarch = true;
+		groupFsp->spid = CommentId;
+
+		auto groupFSPGR = new ODRAW::OfficeArtFSPGR;
+		ShapeGroup->m_OfficeArtFSPGR = ODRAW::OfficeArtRecordPtr(groupFSPGR);
+
+		spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(ShapeGroup));
+	}
+
+	auto TextboxContainer = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
+
+
 	auto fdgPtr = new ODRAW::OfficeArtFDG;
-	fdgPtr->rh_own.recInstance = 1;
-	fdgPtr->csp = 1;
-
-	auto spContainerPtr = new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet);
-
+	fdgPtr->rh_own.recInstance = CommentId;
+	fdgPtr->csp = 2;
+	fdgPtr->spidCur = CommentId+1;
 	rgChildRec.m_OfficeArtFDG = ODRAW::OfficeArtRecordPtr(fdgPtr);
-	rgChildRec.m_OfficeArtSpContainer.push_back(ODRAW::OfficeArtRecordPtr(spContainerPtr));
+	spgrContainer->m_OfficeArtSpgrContainerFileBlock.push_back(ODRAW::OfficeArtContainerPtr(TextboxContainer));
 
 	auto fsprPtr = new ODRAW::OfficeArtFSP;
-	spContainerPtr->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
-	fsprPtr->shape_id = 1;
-	fsprPtr->spid = 1;
-
-
+	TextboxContainer->m_OfficeArtFSP = ODRAW::OfficeArtRecordPtr(fsprPtr);
+	fsprPtr->shape_id = 0xCA;
+	fsprPtr->spid = CommentId+1;
+	fsprPtr->fHaveAnchor = true;
+	fsprPtr->fHaveSpt = true;
 }
 
 

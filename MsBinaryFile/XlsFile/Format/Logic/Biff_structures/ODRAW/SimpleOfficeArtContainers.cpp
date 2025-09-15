@@ -184,6 +184,8 @@ void OfficeArtSpContainer::save(XLS::CFRecord& record)
 	record << rh_own;
 	auto sizePos = record.getRdPtr();
 
+	if(m_OfficeArtFSPGR != nullptr)
+		m_OfficeArtFSPGR->save(record);
 	if(m_OfficeArtFSP != nullptr)
 		m_OfficeArtFSP->save(record);
 	if(m_OfficeArtAnchor != nullptr)

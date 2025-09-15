@@ -167,7 +167,8 @@ void OfficeArtDgContainer::save(XLS::CFRecord& record)
 	//calculating size
 	rh_own.recLen = record.getRdPtr() - sizePos;
 	record.RollRdPtrBack(rh_own.recLen + 4);
-	record << rh_own.recLen;
+	auto recLen = rh_own.recLen;
+	record << recLen;
 	record.skipNunBytes(rh_own.recLen);
 }
 

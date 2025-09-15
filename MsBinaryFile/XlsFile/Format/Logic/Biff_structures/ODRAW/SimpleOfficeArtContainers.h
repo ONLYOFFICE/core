@@ -93,6 +93,7 @@ public:
 	void loadFields(XLS::CFRecord& record)override;
 	void save(XLS::CFRecord& record) override;
 
+	OfficeArtRecordPtr m_OfficeArtFSPGR;
 	OfficeArtRecordPtr m_OfficeArtFSP;
 	OfficeArtRecordPtr m_OfficeArtAnchor;
 };

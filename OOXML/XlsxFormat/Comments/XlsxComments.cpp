@@ -262,9 +262,10 @@ namespace OOX
 
 			return objectPtr;
 		}
-		XLS::BaseObjectPtr CComment::toXLS(XLS::BaseObjectPtr objectsPointer, unsigned int id)
+		XLS::BaseObjectPtr CComment::toXLS(XLS::BaseObjectPtr objectsPointer, unsigned int id, const std::wstring &author)
 		{
 			auto ptr = new XLS::Note;
+			ptr->note_sh.stAuthor = author;
 			if(m_oRef.IsInit())
 			{
 				XLS::Ref8 ref;
@@ -491,7 +492,10 @@ namespace OOX
 				unsigned int id = 1;
 				for(auto i : m_oCommentList->m_arrItems)
 				{
-					objectVector.push_back(i->toXLS(objectsPointer, id));
+					std::wstring authorName = L"none";
+					if(i->m_oAuthorId.IsInit() && m_oAuthors.IsInit() && m_oAuthors->m_arrItems.size() > i->m_oAuthorId->GetValue())
+						authorName = m_oAuthors->m_arrItems.at(i->m_oAuthorId->GetValue());
+					objectVector.push_back(i->toXLS(objectsPointer, id, authorName));
 					id++;
 				}
 			}

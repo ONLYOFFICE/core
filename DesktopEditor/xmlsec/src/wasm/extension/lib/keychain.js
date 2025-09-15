@@ -1,157 +1,66 @@
-(function(window, undefined){
- 
-    var isWaitContentScript = true;
-    document.addEventListener("DOMContentLoaded", () => {
-        isWaitContentScript = false;
-    });
+(function (window) {
+	// 1) Ввод мастер пароля в popup
+	// 2) Генерация ключей - генерируем, генерируем соль и храним публичный, шифрованный AES-GCM приватный, соль, дата.
+	// 3) Смена мастер пароля.
+	// 4) Подпись, проверка подписи
+	// 5) Шифрование, проверка шифрования.
+	// 6) Отзыв ключа.
+	// 7) импорт/экспорт всех данных
 
-    async function waitContentScript()
-    {
-        if (!isWaitContentScript)
-            return;
+	// Написать тестовый пример. Ставим расширение. Можем вызвать попап и сгенерировать и отозвать ключ,
+	// поменять пароль, ввести пароль (первый раз), импорт, экспорт.
+	// Связка странички с расширением.
 
-        return new Promise(resolve => (function(){
-            
-            if (!isWaitContentScript)
-                resolve();
+	const pluginMessenger = window.Asc.pluginMessenger;
+	const messageTypes = {
+		CHECK_ENGINE: "CHECK_ENGINE",
+	};
+	var KeychainVersion = 1;
+	var KeychainKeyVersion = 2;
 
-            var interval = setInterval(function(){
-                if (!isWaitContentScript)
-                {
-                    clearInterval(interval);
-                    resolve();
-                }
-            });
+	var Purpose = {
+		Encode : 0,
+		Sign   : 1
+	};
 
-        })());
-    }
+	var Algorithm = {
+		ed25519 : 0,
+		x25519  : 1
+	};
 
-    var KeychainVersion = 1;
-    var KeychainKeyVersion = 2;
+	function Key()
+	{
+		this.version = KeychainKeyVersion;
 
-    var Purpose = {
-        Encode : 0,
-        Sign   : 1
-    };
+		this.privateKey = {
+			data : "",
+			salt : ""
+		};
+		this.publicKey = "";
 
-    var Algorithm = {
-        ed25519 : 0,
-        x25519  : 1
-    };
+		this.date;
+		this.valid = true;
+	}
 
-    function Key()
-    {
-        this.version = KeychainKeyVersion;
+	function Keychain()
+	{
+		this.version = KeychainVersion;
+		this.keys = [];
+	}
 
-        this.privateKey = {
-            data : "",
-            salt : ""
-        };
-        this.publicKey = "";
+	Keychain.prototype.checkExistEngine = async function()
+	{
+		let result = await pluginMessenger.postMessage({type: messageTypes.CHECK_ENGINE}, 1000);
+		return !!result;
+	};
 
-        this.date;
-        this.valid = true;        
-    }
-
-    function Keychain()
-    {
-        this.version = KeychainVersion;
-        this.keys = [];
-    }
-
-    Keychain.prototype.checkExistEngine = async function() 
-    {
-        await waitContentScript();
-        let result = await EngineWorker.isExist();
-        return !!result;
-    };
-
-    Keychain.prototype.generateEncryptKeys = async function() 
-    {
-        await waitContentScript();
-        let key = await EngineWorker.sendMessage({
-            type : "generateEncryptKeys"
-        });
-        return key;
-    };
-
-    // 1) Ввод мастер пароля в popup
-    // 2) Генерация ключей - генерируем, генерируем соль и храним публичный, шифрованный AES-GCM приватный, соль, дата.
-    // 3) Смена мастер пароля.
-    // 4) Подпись, проверка подписи
-    // 5) Шифрование, проверка шифрования.
-    // 6) Отзыв ключа.
-    // 7) импорт/экспорт всех данных
-
-    // Написать тестовый пример. Ставим расширение. Можем вызвать попап и сгенерировать и отозвать ключ,
-    // поменять пароль, ввести пароль (первый раз), импорт, экспорт.
-    // Связка странички с расширением. 
-
-    function EngineWorkerImpl()
-    {
-        this.messageCheckId = "onlyoffice-engine-check";
-        this.messagesCheck = [];
-
-        this.messageId = "onlyoffice-engine-data";
-        this.messages = [];
-
-        this.waitingCheckTime = 1000;
-        this.waitingTime = 3000;
-
-        document.addEventListener(this.messageCheckId + "-content", (event) => {
-            EngineWorker._onReceiveMessage(true, false, event.detail);
-        });
-
-        document.addEventListener(this.messageId + "-content", (event) => {
-            EngineWorker._onReceiveMessage(false, false, event.detail);
-        });
-    }
-
-    EngineWorkerImpl.prototype._onReceiveMessage = function(isCheck, isFromTimeout, data)
-    {
-        let queue = isCheck ? this.messagesCheck : this.messages;
-        if (0 === queue.length) {
-            console.log("Error: message does not work!");
-            return;
-        }
-        if (true !== isFromTimeout)
-            clearTimeout(queue[0].id);
-
-        queue[0].func(data);       
-        queue.splice(0, 1);
-    };
-
-    EngineWorkerImpl.prototype._sendMessage = function(data, resolve)
-    {
-        let isData = (undefined !== data) ? true : false;
-        let queue = isData ? this.messages : this.messagesCheck;
-        let interval = isData ? this.waitingTime : this.waitingCheckTime;
-        queue.push({
-            func: resolve,
-            id: setTimeout(function(){
-                EngineWorker._onReceiveMessage(!isData, true);
-            }, interval)
-        });
-        document.dispatchEvent(new CustomEvent((isData ? this.messageId : this.messageCheckId) + "-page", { detail: { data: data } }));
-    };
-
-    EngineWorkerImpl.prototype.isExist = async function()
-    {
-        return new Promise(resolve => (function(){
-            EngineWorker._sendMessage(undefined, resolve);
-        })());
-    };
-
-    EngineWorkerImpl.prototype.sendMessage = async function(data)
-    {
-        return new Promise(resolve => (function(){
-            EngineWorker._sendMessage(data, resolve);
-        })());
-    };
-
-    var EngineWorker = new EngineWorkerImpl();
-
-    window.Asc = window.Asc || {};
-    window.Asc.Keychain = new Keychain();
-
-})(window, undefined);
+	Keychain.prototype.generateEncryptKeys = async function()
+	{
+		let key = await pluginMessenger.postMessage({
+			type : "generateEncryptKeys"
+		});
+		return key;
+	};
+	window.Asc = window.Asc || {};
+	window.Asc.Keychain = new Keychain();
+})(window);

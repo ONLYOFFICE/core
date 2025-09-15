@@ -188,8 +188,11 @@ void OfficeArtSpContainer::save(XLS::CFRecord& record)
 		m_OfficeArtFSPGR->save(record);
 	if(m_OfficeArtFSP != nullptr)
 		m_OfficeArtFSP->save(record);
+	if(m_oOfficeArtFOPT != nullptr)
+		m_oOfficeArtFOPT->save(record);
 	if(m_OfficeArtAnchor != nullptr)
 		m_OfficeArtAnchor->save(record);
+
 
 	//calculating size
 	rh_own.recLen = record.getRdPtr() - sizePos;

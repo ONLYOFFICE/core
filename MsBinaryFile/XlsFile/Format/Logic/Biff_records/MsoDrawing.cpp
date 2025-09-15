@@ -36,6 +36,7 @@
 #include "../Biff_structures/ODRAW/OfficeArtFSP.h"
 #include "../Biff_structures/ODRAW/OfficeArtFSPGR.h"
 #include "../Biff_structures/ODRAW/SimpleOfficeArtContainers.h"
+#include "../Biff_structures/ODRAW/OfficeArtFOPT.h"
 
 namespace XLS
 {
@@ -170,6 +171,12 @@ void MsoDrawing::prepareComment(const unsigned int CommentId)
 	fsprPtr->spid = CommentId+1;
 	fsprPtr->fHaveAnchor = true;
 	fsprPtr->fHaveSpt = true;
+
+
+	{
+		//todo add mandatory optrions writing
+		//auto textboxOpt = new ODRAW::OfficeArtFOPT;
+	}
 }
 
 

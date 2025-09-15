@@ -96,6 +96,7 @@ public:
 	OfficeArtRecordPtr m_OfficeArtFSPGR;
 	OfficeArtRecordPtr m_OfficeArtFSP;
 	OfficeArtRecordPtr m_OfficeArtAnchor;
+	OfficeArtRecordPtr m_oOfficeArtFOPT;
 };
 
 class OfficeArtClientData : public OfficeArtRecord

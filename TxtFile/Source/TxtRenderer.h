@@ -40,7 +40,7 @@ constexpr double c_dMMToPix = 72.0 / 25.4;
 constexpr double c_dPixToMM = 25.4 / 72.0;
 constexpr double c_dMMToPt  = 72.0 / 25.4;
 constexpr double c_dPtToMM  = 25.4 / 72.0;
-constexpr double c_dY_PRECISION_COEF = 1;
+constexpr double c_dY_PRECISION_MM = 0.02;
 constexpr double c_dSPACE_WIDTH_COEF = 0.4;
 constexpr double c_dSPLIT_WIDTH_COEF = 2.0;
 

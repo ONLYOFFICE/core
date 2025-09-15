@@ -66,7 +66,6 @@ int main(int argc, char* argv[])
 	std::vector<std::wstring> source_files = NSDirectory::GetFiles(L"");
 	//source_files.push_back(L"");
 
-	time_t start = time(0);
 	for (const auto& souce_file : source_files)
 	{
 		std::unique_ptr<CPdfFile> pdf_reader(new CPdfFile(fonts));
@@ -80,10 +79,14 @@ int main(int argc, char* argv[])
 		std::wstring txt_file = output_dir + L"/" + filename + L".txt";
 
 		CTxtRenderer txt_renderer(fonts);
+
+		time_t start = time(0);
 		txt_renderer.Convert(pdf_reader.get(), txt_file);
+		time_t end = time(0);
+
+		std::cout << U_TO_UTF8(filename_with_ext) << " " << end - start << " sec" << std::endl;
 	}
-	time_t end = time(0);
-	std::cout << end - start << " sec" << std::endl;
+
 
 	fonts->Release();
 	return 0;

@@ -96,17 +96,6 @@ private:
 			return true;
 		}
 	};
-	struct CBaseFontInfo
-	{
-		std::wstring wsPath;
-		int nFaceIndex;
-		double dSize;
-
-		std::wstring ToString() const
-		{
-			return wsPath + std::to_wstring(nFaceIndex) + std::to_wstring(dSize);
-		}
-	};
 	std::unique_ptr<NSFonts::IFontManager> m_pManager{nullptr}; // for space width and sym height
 	std::vector<std::shared_ptr<CTextLine>> m_arCurrPageTextLines{};
 	std::vector<std::wstring> m_arTxtData{};
@@ -128,15 +117,16 @@ void CTxtRenderer::CTxtRendererImpl::EndCommand(const DWORD& lType)
 {
 	if (lType == c_nPageType)
 	{
-		for (auto&& line : m_arCurrPageTextLines)
+		for (auto& line : m_arCurrPageTextLines)
 			    if (!line->IsOnlySpaces())
 					m_arTxtData.push_back(std::move(line->wsData));
 		m_arTxtData.push_back(L" ");
-		m_arCurrPageTextLines.clear();
 	}
 }
 void CTxtRenderer::CTxtRendererImpl::NewPage()
 {
+	m_oFont.SetDefaultParams();
+	m_oTransform.Reset();
 	m_arCurrPageTextLines.clear();
 	m_pCurrLine = nullptr;
 }
@@ -175,10 +165,9 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 	double h = c_dPtToMM * (line_height * m_oFont.Size) / em_height;
 	b = t + h;
 
-	double space_width;
-	CBaseFontInfo base_font_info {m_oFont.Path, m_oFont.FaceIndex, m_oFont.Size};
-	std::wstring base_font_info_key = base_font_info.ToString();
+	double space_width = 0;
 
+	// TODO pGIds
 	m_pManager->LoadString2(L" ", 0, 0);
 	TBBox bbox = m_pManager->MeasureString2();
 	space_width = (double)(bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
@@ -194,7 +183,7 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 	const double split_distance = space_width * c_dSPLIT_WIDTH_COEF;
 	const double space_distance = space_width * c_dSPACE_WIDTH_COEF;
 	std::wstring new_text = text_utf32.ToStdWString();
-	if (m_pCurrLine != nullptr && fabs(m_pCurrLine->dBot - b) < h * c_dY_PRECISION_COEF)
+	if (m_pCurrLine != nullptr && fabs(m_pCurrLine->dBot - b) < c_dY_PRECISION_MM)
 	{
 		// some_text+more_text
 		if (fabs(m_pCurrLine->dRight - l) < split_distance && r > m_pCurrLine->dRight)
@@ -218,7 +207,6 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 	}
 	else
 	{
-		if (m_pCurrLine) m_pCurrLine->wsData.shrink_to_fit();
 		m_pCurrLine = std::make_shared<CTextLine>();
 		m_pCurrLine->dTop = t;
 		m_pCurrLine->dBot = b;

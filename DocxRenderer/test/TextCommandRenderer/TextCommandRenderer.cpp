@@ -94,7 +94,7 @@ private:
 	const std::wstring m_wsBaseSep = L"/";
 
 	size_t m_nCurrColorIndex = 0;
-	const std::array<long, 20> m_arColors = {
+	const std::array<unsigned long, 20> m_arColors = {
 	    0xFF400000, // Deep Red
 	    0xFF800000, // Dark Red
 	    0xFFFF0000, // Pure Red

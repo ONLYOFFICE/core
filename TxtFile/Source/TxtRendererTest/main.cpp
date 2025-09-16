@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
 		std::wstring filename = filename_with_ext.substr(0, filename_with_ext.size() - 1 - ext.size());
 		std::wstring txt_file = output_dir + L"/" + filename + L".txt";
 
-		CTxtRenderer txt_renderer(fonts);
+		CTxtRenderer txt_renderer;
 
 		time_t start = time(0);
 		txt_renderer.Convert(pdf_reader.get(), txt_file);

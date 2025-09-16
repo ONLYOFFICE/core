@@ -34,7 +34,6 @@
 
 #include <vector>
 
-#include "../../../DesktopEditor/graphics/pro/Graphics.h"
 #include "../../../DesktopEditor/common/Directory.h"
 #include "../../../DesktopEditor/common/StringBuilder.h"
 #include "../../../DesktopEditor/common/StringExt.h"
@@ -58,8 +57,7 @@ static inline bool IsUnicodeDiacriticalMark(unsigned int cSym)
 class CTxtRenderer::CTxtRendererImpl
 {
 public:
-	CTxtRendererImpl(NSFonts::IFontManager* pManager);
-	CTxtRendererImpl() = delete;
+	CTxtRendererImpl() = default;
 	CTxtRendererImpl(const CTxtRendererImpl& other) = delete;
 	CTxtRendererImpl(CTxtRendererImpl&& other) = delete;
 	virtual ~CTxtRendererImpl();
@@ -79,6 +77,8 @@ public:
 	double m_dDpiX = c_dDpiX;
 	double m_dDpiY = c_dDpiY;
 
+	bool m_bIsFontSizeDecrease = false;
+
 private:
 	struct CTextLine
 	{
@@ -96,16 +96,10 @@ private:
 			return true;
 		}
 	};
-	std::unique_ptr<NSFonts::IFontManager> m_pManager{nullptr}; // for space width and sym height
 	std::vector<std::shared_ptr<CTextLine>> m_arCurrPageTextLines{};
 	std::vector<std::wstring> m_arTxtData{};
 	std::shared_ptr<CTextLine> m_pCurrLine{nullptr};
 };
-
-CTxtRenderer::CTxtRendererImpl::CTxtRendererImpl(NSFonts::IFontManager* pManager) :
-    m_pManager(pManager)
-{
-}
 
 CTxtRenderer::CTxtRendererImpl::~CTxtRendererImpl()
 {
@@ -125,7 +119,6 @@ void CTxtRenderer::CTxtRendererImpl::EndCommand(const DWORD& lType)
 }
 void CTxtRenderer::CTxtRendererImpl::NewPage()
 {
-	m_oFont.SetDefaultParams();
 	m_oTransform.Reset();
 	m_arCurrPageTextLines.clear();
 	m_pCurrLine = nullptr;
@@ -149,30 +142,18 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 		return;
 
 	double l = dX;
-	double t = dY;
+	double b = dY;
+	double t = dY - dH;
 	double r = dX + dW;
-	double b = dY + dH;
 
-	m_oTransform.TransformPoint(l, t);
-	m_oTransform.TransformPoint(r, b);
+	m_oTransform.TransformPoint(l, b);
+	m_oTransform.TransformPoint(r, t);
 
-	m_pManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, m_oFont.Size, c_dDpiX, c_dDpiY);
-	m_pManager->AfterLoad();
+	// out of page
+	if (l > m_dWidth || r < 0 || b > m_dHeight || t < 0)
+		return;
 
-	double line_height = m_pManager->GetLineHeight();
-	double em_height = m_pManager->GetUnitsPerEm();
-
-	double h = c_dPtToMM * (line_height * m_oFont.Size) / em_height;
-	b = t + h;
-
-	double space_width = 0;
-
-	// TODO pGIds
-	m_pManager->LoadString2(L" ", 0, 0);
-	TBBox bbox = m_pManager->MeasureString2();
-	space_width = (double)(bbox.fMaxX - bbox.fMinX) * c_dPixToMM;
-	if (0 >= space_width)
-		space_width = 1.0;
+	double w = r - l;
 
 	NSStringUtils::CStringUTF32 text_utf32(pUnicodes, nLen);
 	if (pUnicodes != nullptr)
@@ -180,13 +161,16 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 			if (!IsUnicodeSymbol(pUnicodes[i]))
 				text_utf32[i] = ' ';
 
-	const double split_distance = space_width * c_dSPLIT_WIDTH_COEF;
-	const double space_distance = space_width * c_dSPACE_WIDTH_COEF;
+	const double split_distance = w * c_dSPLIT_WIDTH_COEF;
+	const double space_distance = w * c_dSPACE_WIDTH_COEF;
+	double y_precision = c_dY_PRECISION_MM;
+	if (m_bIsFontSizeDecrease) y_precision *= 3; // for posible super/sub script
+
 	std::wstring new_text = text_utf32.ToStdWString();
-	if (m_pCurrLine != nullptr && fabs(m_pCurrLine->dBot - b) < c_dY_PRECISION_MM)
+	if (m_pCurrLine != nullptr && fabs(m_pCurrLine->dBot - b) < y_precision)
 	{
 		// some_text+more_text
-		if (fabs(m_pCurrLine->dRight - l) < split_distance && r > m_pCurrLine->dRight)
+		if (fabs(m_pCurrLine->dRight - l) < split_distance && r - m_pCurrLine->dRight > c_dX_PRECISION_MM)
 		{
 			if (fabs(m_pCurrLine->dRight - l) > space_distance)
 				new_text = L" " + new_text;
@@ -195,7 +179,7 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 			m_pCurrLine->dRight = r;
 		}
 		// more_text+some_text
-		else if (fabs(m_pCurrLine->dLeft - r) < split_distance && l < m_pCurrLine->dLeft)
+		else if (fabs(m_pCurrLine->dLeft - r) < split_distance && m_pCurrLine->dLeft - l > c_dX_PRECISION_MM)
 		{
 			if (fabs(m_pCurrLine->dLeft - r) > space_distance)
 				new_text += L" ";
@@ -203,7 +187,6 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 			m_pCurrLine->wsData = new_text + m_pCurrLine->wsData;
 			m_pCurrLine->dLeft = l;
 		}
-		m_pCurrLine->dBot = (m_pCurrLine->dBot + b) / 2;
 	}
 	else
 	{
@@ -218,8 +201,8 @@ void CTxtRenderer::CTxtRendererImpl::AddText(const unsigned int* pUnicodes, unsi
 	}
 }
 
-CTxtRenderer::CTxtRenderer(NSFonts::IApplicationFonts* pFonts)
-    : m_pImpl(std::unique_ptr<CTxtRendererImpl>(new CTxtRendererImpl(pFonts->GenerateFontManager())))
+CTxtRenderer::CTxtRenderer()
+    : m_pImpl(std::unique_ptr<CTxtRendererImpl>(new CTxtRendererImpl()))
 {
 }
 CTxtRenderer::~CTxtRenderer()
@@ -570,6 +553,12 @@ HRESULT CTxtRenderer::get_FontSize(double* dSize)
 }
 HRESULT CTxtRenderer::put_FontSize(const double& dSize)
 {
+	if (m_pImpl->m_oFont.Size * c_dFONT_SIZE_DECREASE_COEF > dSize)
+		m_pImpl->m_bIsFontSizeDecrease = true;
+
+	if (m_pImpl->m_oFont.Size < dSize)
+		m_pImpl->m_bIsFontSizeDecrease = false;
+
 	m_pImpl->m_oFont.Size = dSize;
 	return S_OK;
 }

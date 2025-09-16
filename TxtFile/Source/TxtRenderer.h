@@ -40,9 +40,11 @@ constexpr double c_dMMToPix = 72.0 / 25.4;
 constexpr double c_dPixToMM = 25.4 / 72.0;
 constexpr double c_dMMToPt  = 72.0 / 25.4;
 constexpr double c_dPtToMM  = 25.4 / 72.0;
-constexpr double c_dY_PRECISION_MM = 0.02;
-constexpr double c_dSPACE_WIDTH_COEF = 0.4;
+constexpr double c_dY_PRECISION_MM = 1.0;
+constexpr double c_dX_PRECISION_MM = 0.05;
+constexpr double c_dSPACE_WIDTH_COEF = 0.8;
 constexpr double c_dSPLIT_WIDTH_COEF = 2.0;
+constexpr double c_dFONT_SIZE_DECREASE_COEF = 0.7;
 
 const unsigned int c_SPACE_SYM = 0x20;
 
@@ -54,8 +56,7 @@ const unsigned int c_SPACE_SYM = 0x20;
 class CTxtRenderer : public IRenderer
 {
 public:
-	CTxtRenderer(NSFonts::IApplicationFonts* pFonts);
-	CTxtRenderer() = delete;
+	CTxtRenderer();
 	CTxtRenderer(const CTxtRenderer& other) = delete;
 	CTxtRenderer(CTxtRenderer&& other) = delete;
 	virtual ~CTxtRenderer();

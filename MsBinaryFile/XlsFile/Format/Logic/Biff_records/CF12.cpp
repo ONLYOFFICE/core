@@ -236,10 +236,60 @@ void CF12::writeFields(CFRecord& record)
 							dxf.dxfn->icvFNinch = false;
 							dxf.dxfn->dxfpat.icvForeground = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oIndexed->GetValue();
 						}
+						else if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor.IsInit())
+						{
+							dxf.dxfn->icvFNinch= false;
+							ExtProp fgColor;
+							if(dxf.dxfn->xfext == nullptr)
+							{
+								auto Ext = new XFExtNoFRT;
+								dxf.dxfn->xfext = XFExtNoFRTPtr(Ext);
+							}
+							if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oThemeColor.IsInit())
+							{
+								fgColor.extType = ExtProp::ForeColor;
+								fgColor.extPropData.color.xclrType = 3;
+								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oThemeColor->GetValue();
+
+							}
+							else if(dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb.IsInit())
+							{
+								fgColor.extType = ExtProp::ForeColor;
+								fgColor.extPropData.color.xclrType = 2;
+								fgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oFgColor->m_oRgb->ToInt();
+							}
+
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::ForeColor, fgColor);
+						}
 						if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor.IsInit() && dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed.IsInit())
 						{
 							dxf.dxfn->icvBNinch = false;
 							dxf.dxfn->dxfpat.icvBackground = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oIndexed->GetValue();
+						}
+						else if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor.IsInit())
+						{
+							ExtProp bgColor;
+							dxf.dxfn->icvBNinch = false;
+							if(dxf.dxfn->xfext == nullptr)
+							{
+								auto Ext = new XFExtNoFRT;
+								dxf.dxfn->xfext = XFExtNoFRTPtr(Ext);
+							}
+							if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oThemeColor.IsInit())
+							{
+								bgColor.extType = ExtProp::BackColor;
+								bgColor.extPropData.color.xclrType = 3;
+								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oThemeColor->GetValue();
+
+							}
+							else if(dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb.IsInit())
+							{
+								bgColor.extType = ExtProp::BackColor;
+								bgColor.extPropData.color.xclrType = 2;
+								bgColor.extPropData.color.xclrValue = dxfObj.m_oFill->m_oPatternFill->m_oBgColor->m_oRgb->ToInt();
+							}
+
+							dxf.dxfn->xfext->mapRgExt.emplace(ExtProp::BackColor, bgColor);
 						}
 					}
 					if(dxfObj.m_oFont.IsInit())

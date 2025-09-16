@@ -1,7 +1,12 @@
 import {messageTypes} from "../common/message-const.ts";
-import type {Messages} from "../common/message-types.ts";
+import {isMessages} from "../common/message-types.ts";
+import browser from "webextension-polyfill";
 
-const messageHandler = (message: Messages,  ) => {
+
+const messageHandler = (message: unknown) => {
+    if (!isMessages(message)) {
+        return false;
+    }
     switch (message.type) {
         case messageTypes.CHECK_ENGINE: {
             return Promise.resolve(true);
@@ -14,7 +19,5 @@ const messageHandler = (message: Messages,  ) => {
     }
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-chrome.runtime.onMessage.addListener(messageHandler);
+browser.runtime.onMessage.addListener(messageHandler);
 export {messageHandler}

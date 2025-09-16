@@ -1,11 +1,10 @@
-import type {ContentResponseType, Messages} from "../common/message-types.ts";
+import type {Messages} from "../common/message-types.ts";
+import browser from "webextension-polyfill";
 
 const sendToBackground = async (data: Messages) => {
-
-    // @ts-ignore
-    return await chrome.runtime.sendMessage(data);
+    return await browser.runtime.sendMessage(data);
 };
-const sendToPage = (data: ContentResponseType) => {
+const sendToPage = (data: unknown) => {
     window.postMessage(data, "*");
 };
 

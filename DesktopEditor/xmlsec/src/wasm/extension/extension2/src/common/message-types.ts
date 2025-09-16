@@ -24,4 +24,8 @@ type ContentResponseType = {
     response?: BackgroundMessageAnswer;
 };
 
+const isMessages = (message: unknown): message is Messages => {
+    return !!(message && typeof message === "object" && "type" in message && typeof message.type === "string");
+};
+export {isMessages};
 export type {MessageType, Messages, BackgroundMessageAnswer, ContentResponseType};

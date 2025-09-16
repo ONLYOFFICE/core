@@ -99,6 +99,7 @@ namespace ODRAW
 
         rtFillColor			= 20,
         rtLineColor			= 21,
+        rtUnknown	  		= 22,
 
         // OOXML
         rtOOXMLMoveTo		= 0 + 100,	// 2

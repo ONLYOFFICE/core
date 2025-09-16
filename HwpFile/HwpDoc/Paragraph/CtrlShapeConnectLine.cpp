@@ -26,7 +26,7 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSiz
 {}
 
 CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
 	m_eType = GetConnectLineType(oReader.GetAttributeInt("type"));
 

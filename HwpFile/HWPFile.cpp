@@ -78,3 +78,8 @@ bool CHWPFile::IsHWPXFormat(const std::wstring& wsFilePath)
 {
 	return HWP::EHanType::HWPX == HWP::CWriterContext::DetectHancom(wsFilePath);
 }
+
+bool CHWPFile::IsHWPMLFormat(const std::wstring &wsFilePath)
+{
+	return HWP::EHanType::HWPML == HWP::CWriterContext::DetectHancom(wsFilePath);
+}

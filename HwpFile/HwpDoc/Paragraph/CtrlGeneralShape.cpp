@@ -14,6 +14,8 @@
 #include "CtrlShapeTextArt.h"
 #include "CtrlCharacter.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlGeneralShape::CCtrlGeneralShape()
@@ -62,8 +64,8 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	InitData();
 }
 
-CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlObjElement(sCtrlID, oReader, nVersion)
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+    : CCtrlObjElement(sCtrlID, oReader, nVersion, eType)
 {
 	InitData();
 }
@@ -84,118 +86,98 @@ EShapeType CCtrlGeneralShape::GetShapeType() const
 	return EShapeType::GeneralShape;
 }
 
+ELineArrowSize CheckLineSize(const std::string& sLineSzType, EHanType eType)
+{
+	if (GetValueName(EValue::SmallSmall, eType) == sLineSzType)
+		return ELineArrowSize::SMALL_SMALL;
+	else if (GetValueName(EValue::SmallMedium, eType) == sLineSzType)
+		return ELineArrowSize::SMALL_MEDIUM;
+	else if (GetValueName(EValue::SmallLarge, eType) == sLineSzType)
+		return ELineArrowSize::SMALL_LARGE;
+	else if (GetValueName(EValue::MediumSmall, eType) == sLineSzType)
+		return ELineArrowSize::MEDIUM_SMALL;
+	else if (GetValueName(EValue::MediumMedium, eType) == sLineSzType)
+		return ELineArrowSize::MEDIUM_MEDIUM;
+	else if (GetValueName(EValue::MediumLarge, eType) == sLineSzType)
+		return ELineArrowSize::MEDIUM_LARGE;
+	else if (GetValueName(EValue::LargeSmall, eType) == sLineSzType)
+		return ELineArrowSize::LARGE_SMALL;
+	else if (GetValueName(EValue::LargeMedium, eType) == sLineSzType)
+		return ELineArrowSize::LARGE_MEDIUM;
+	else if (GetValueName(EValue::LargeLarge, eType) == sLineSzType)
+		return ELineArrowSize::LARGE_LARGE;
+
+	return ELineArrowSize::MEDIUM_MEDIUM;
+}
+
+ELineArrowStyle CheckLineArrowStyle(const std::string& sLineArrowStyle, bool bHeadFill, EHanType eType)
+{
+	if (GetValueName(EValue::Arrow, eType) == sLineArrowStyle)
+		return ELineArrowStyle::ARROW;
+	else if (GetValueName(EValue::Spear, eType) == sLineArrowStyle)
+		return ELineArrowStyle::SPEAR;
+	else if (GetValueName(EValue::ConcaveArrow, eType) == sLineArrowStyle)
+		return ELineArrowStyle::CONCAVE_ARROW;
+	else if (GetValueName(EValue::EmptyDiamond, eType) == sLineArrowStyle)
+	{
+		if (EHanType::HWPX == eType)
+			return bHeadFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
+
+		return ELineArrowStyle::EMPTY_DIAMOND;
+	}
+	else if (GetValueName(EValue::EmptyCircle, eType) == sLineArrowStyle)
+	{
+		if (EHanType::HWPX == eType)
+			return bHeadFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
+
+		return ELineArrowStyle::EMPTY_CIRCLE;
+	}
+	else if (GetValueName(EValue::EmptyBox, eType) == sLineArrowStyle)
+	{
+		if (EHanType::HWPX == eType)
+			return bHeadFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
+		
+		return ELineArrowStyle::EMPTY_BOX;
+	}
+
+	return ELineArrowStyle::NORMAL;
+}
+
 void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanType eType)
 {
 	bool bHeadFill = false, bTailFill = false;
 
 	const std::string sNodeName{oReader.GetName()};
 
-	if ("hp:lineShape" == sNodeName)
+	if (GetNodeName(ENode::LineShape, eType) == sNodeName)
 	{
 		std::string sHeadStyle, sTailStyle;
 
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("color" == sAttributeName)
+			if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
 				m_nLineColor = oReader.GetInt();
-			else if ("width" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 				m_nLineThick = oReader.GetInt();
-			else if ("style" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Style, eType) == sAttributeName)
 				m_eLineStyle = GetLineStyle2(oReader.GetText());
-			else if ("headStyle" == sAttributeName)
+			else if (GetAttributeName(EAttribute::HeadStyle, eType) == sAttributeName)
 				sHeadStyle = oReader.GetTextA();
-			else if ("headfill" == sAttributeName)
+			else if (EHanType::HWPX == eType && "headfill" == sAttributeName)
 				bHeadFill = oReader.GetBool();
-			else if ("headSz" == sAttributeName)
-			{
-				const std::string sHeadSz{oReader.GetTextA()};
-
-				if ("SMALL_SMALL" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::SMALL_SMALL;
-				else if ("SMALL_MEDIUM" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::SMALL_MEDIUM;
-				else if ("SMALL_LARGE" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::SMALL_LARGE;
-				else if ("MEDIUM_SMALL" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::MEDIUM_SMALL;
-				else if ("MEDIUM_MEDIUM" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
-				else if ("MEDIUM_LARGE" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::MEDIUM_LARGE;
-				else if ("LARGE_SMALL" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::LARGE_SMALL;
-				else if ("LARGE_MEDIUM" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::LARGE_MEDIUM;
-				else if ("LARGE_LARGE" == sHeadSz)
-					m_eLineHeadSz = ELineArrowSize::LARGE_LARGE;
-				else
-					m_eLineHeadSz = ELineArrowSize::MEDIUM_MEDIUM;
-			}
-			else if ("tailStyle" == sAttributeName)
+			else if (GetAttributeName(EAttribute::HeadSize, eType) == sAttributeName)
+				m_eLineHeadSz = CheckLineSize(oReader.GetTextA(), eType);
+			else if (GetAttributeName(EAttribute::TailStyle, eType) == sAttributeName)
 				sTailStyle = oReader.GetTextA();
-			else if ("tailfill" == sAttributeName)
+			else if (EHanType::HWPX == eType && "tailfill" == sAttributeName)
 				bTailFill = oReader.GetBool();
-			else if ("tailSz" == sAttributeName)
-			{
-				const std::string sType{oReader.GetTextA()};
-
-				if ("SMALL_SMALL" == sType)
-					m_eLineTailSz = ELineArrowSize::SMALL_SMALL;
-				else if ("SMALL_MEDIUM" == sType)
-					m_eLineTailSz = ELineArrowSize::SMALL_MEDIUM;
-				else if ("SMALL_LARGE" == sType)
-					m_eLineTailSz = ELineArrowSize::SMALL_LARGE;
-				else if ("MEDIUM_SMALL" == sType)
-					m_eLineTailSz = ELineArrowSize::MEDIUM_SMALL;
-				else if ("MEDIUM_MEDIUM" == sType)
-					m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
-				else if ("MEDIUM_LARGE" == sType)
-					m_eLineTailSz = ELineArrowSize::MEDIUM_LARGE;
-				else if ("LARGE_SMALL" == sType)
-					m_eLineTailSz = ELineArrowSize::LARGE_SMALL;
-				else if ("LARGE_MEDIUM" == sType)
-					m_eLineTailSz = ELineArrowSize::LARGE_MEDIUM;
-				else if ("LARGE_LARGE" == sType)
-					m_eLineTailSz = ELineArrowSize::LARGE_LARGE;
-				else
-					m_eLineTailSz = ELineArrowSize::MEDIUM_MEDIUM;
-			}
+			else if (GetAttributeName(EAttribute::TailSize, eType) == sAttributeName)
+				m_eLineTailSz = CheckLineSize(oReader.GetTextA(), eType);
 		}
 		END_READ_ATTRIBUTES(oReader)
 
-		if (sHeadStyle.empty())
-			m_eLineHead = ELineArrowStyle::NORMAL;
-		else if ("ARROW" == sHeadStyle)
-			m_eLineHead = ELineArrowStyle::ARROW;
-		else if ("SPEAR" == sHeadStyle)
-			m_eLineHead = ELineArrowStyle::SPEAR;
-		else if ("CONCAVE_ARROW" == sHeadStyle)
-			m_eLineHead = ELineArrowStyle::CONCAVE_ARROW;
-		else if ("EMPTY_DIAMOND" == sHeadStyle)
-			m_eLineHead = bHeadFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
-		else if ("EMPTY_CIRCLE" == sHeadStyle)
-			m_eLineHead = bHeadFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
-		else if ("EMPTY_BOX" == sHeadStyle)
-			m_eLineHead = bHeadFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
-		else
-			m_eLineHead = ELineArrowStyle::NORMAL;
-
-		if (sTailStyle.empty())
-			m_eLineTail = ELineArrowStyle::NORMAL;
-		else if ("ARROW" == sTailStyle)
-			m_eLineTail = ELineArrowStyle::ARROW;
-		else if ("SPEAR" == sTailStyle)
-			m_eLineTail = ELineArrowStyle::SPEAR;
-		else if ("CONCAVE_ARROW" == sTailStyle)
-			m_eLineTail = ELineArrowStyle::CONCAVE_ARROW;
-		else if ("EMPTY_DIAMOND" == sTailStyle)
-			m_eLineTail = bTailFill ? ELineArrowStyle::DIAMOND : ELineArrowStyle::EMPTY_DIAMOND;
-		else if ("EMPTY_CIRCLE" == sTailStyle)
-			m_eLineTail = bTailFill ? ELineArrowStyle::CIRCLE : ELineArrowStyle::EMPTY_CIRCLE;
-		else if ("EMPTY_BOX" == sTailStyle)
-			m_eLineTail = bTailFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
-		else
-			m_eLineTail = ELineArrowStyle::NORMAL;
+		m_eLineHead = CheckLineArrowStyle(sHeadStyle, bHeadFill, eType);
+		m_eLineTail = CheckLineArrowStyle(sTailStyle, bTailFill, eType);
 	}
 	else if ("hc:fillBrush" == sNodeName)
 		m_pFill = new CFill(oReader, eType);
@@ -226,7 +208,7 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 		END_WHILE
 	}
 	else
-		CCtrlObjElement::ParseChildren(oReader, nVersion);
+		CCtrlObjElement::ParseChildren(oReader, nVersion, eType);
 }
 
 void CCtrlGeneralShape::InitData()

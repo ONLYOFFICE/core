@@ -18,7 +18,7 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPS
 {}
 
 CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
 	m_sText = oReader.GetAttribute("text");
 

@@ -27,6 +27,7 @@ typedef char HWP_BYTE;
 #define DEFAULT(value) case value: default: return value
 
 #define MAKE_STR(value) #value
+#define STR(value) MAKE_STR(#value)
 #define MAKE_WSTR(value) L##value
 #define WSTR(value) MAKE_WSTR(#value)
 
@@ -47,6 +48,7 @@ typedef char HWP_BYTE;
 	return arTempVector
 
 #define TO_LOWER(value) std::transform(value.begin(), value.end(), value.begin(), tolower)
+#define TO_UPPER(value) std::transform(value.begin(), value.end(), value.begin(), toupper)
 
 class IRef
 {

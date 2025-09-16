@@ -31,6 +31,7 @@ public:
 
 	static bool IsHWPFormat(const std::wstring& wsFilePath);
 	static bool IsHWPXFormat(const std::wstring& wsFilePath);
+	static bool IsHWPMLFormat(const std::wstring& wsFilePath);
 };
 
 #endif // HWPFILE_H

@@ -18,7 +18,7 @@ CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 {}
 
 CCtrlShapeCurve::CCtrlShapeCurve(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
 	// bool bReadedType
 	TPoint oPoint1{0, 0}, oPoint2{0, 0};

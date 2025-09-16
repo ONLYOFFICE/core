@@ -18,7 +18,7 @@ CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, int nSize, CHWPS
 {}
 
 CCtrlShapePolygon::CCtrlShapePolygon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion)
+    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
 	TPoint oPoint{0, 0};
 

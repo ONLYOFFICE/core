@@ -39,14 +39,18 @@ class CCtrlObjElement : public CCtrlCommon
 	int m_nYCenter;
 	short m_shMatCnt;
 	VECTOR<TMatrix> m_arMatrixs;
+
+	void ParseRotationInfo(CXMLReader& oReader, EHanType eType);
+	void ParseRenderingInfo(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
-	void ParseChildren(CXMLReader& oReader, int nVersion);
+	void ParseHWPXChildren(CXMLReader& oReader, int nVersion);
+	void ParseHWPMLElement(CXMLReader& oReader);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;

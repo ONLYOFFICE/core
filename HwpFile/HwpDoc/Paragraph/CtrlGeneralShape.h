@@ -59,7 +59,7 @@ public:
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID);
 	CCtrlGeneralShape(const CCtrlGeneralShape& oGeneralShape);
 	CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 	virtual ~CCtrlGeneralShape();
 
 	ECtrlObjectType GetCtrlType() const override;

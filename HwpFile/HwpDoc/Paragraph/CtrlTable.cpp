@@ -11,7 +11,7 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 {}
 
 CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlCommon(sCtrlID, oReader, nVersion)
+    : CCtrlCommon(sCtrlID, oReader, nVersion, eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -75,7 +75,7 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 			END_WHILE
 		}
 		else
-			CCtrlCommon::ParseChildren(oReader, nVersion);
+			CCtrlCommon::ParseChildren(oReader, nVersion, eType);
 	}
 	END_WHILE
 }

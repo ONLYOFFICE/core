@@ -1,5 +1,7 @@
 #include "CtrlObjElement.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlObjElement::CCtrlObjElement()
@@ -47,23 +49,23 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-TMatrix ReadMatrix(CXMLReader& oReader)
+TMatrix ReadMatrix(CXMLReader& oReader, EHanType eType)
 {
 	TMatrix oMatrix;
 
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("e1" == sAttributeName)
+		if (GetAttributeName(EAttribute::MatrixElement1_1, eType) == sAttributeName)
 			oMatrix.m_dM11 = oReader.GetDouble();
-		else if ("e2" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MatrixElement1_2, eType) == sAttributeName)
 			oMatrix.m_dM12 = oReader.GetDouble();
-		else if ("e3" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MatrixElementOffsetX, eType) == sAttributeName)
 			oMatrix.m_dDX = oReader.GetDouble();
-		else if ("e4" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MatrixElement2_1, eType) == sAttributeName)
 			oMatrix.m_dM21 = oReader.GetDouble();
-		else if ("e5" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MatrixElement2_2, eType) == sAttributeName)
 			oMatrix.m_dM22 = oReader.GetDouble();
-		else if ("e6" == sAttributeName)
+		else if (GetAttributeName(EAttribute::MatrixElementOffsetY, eType) == sAttributeName)
 			oMatrix.m_dDY = oReader.GetDouble();
 	}
 	END_READ_ATTRIBUTES(oReader)
@@ -71,13 +73,44 @@ TMatrix ReadMatrix(CXMLReader& oReader)
 	return oMatrix;
 }
 
-CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
-    : CCtrlCommon(sCtrlID, oReader, nVersion)
+CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+    : CCtrlCommon(sCtrlID, oReader, nVersion, eType)
 {
-	m_shNGrp = oReader.GetAttributeInt("groupLevel");
+	if (EHanType::HWPX == eType)
+		m_shNGrp = oReader.GetAttributeInt("groupLevel");
 }
 
-void CCtrlObjElement::ParseChildren(CXMLReader& oReader, int nVersion)
+void CCtrlObjElement::ParseRotationInfo(CXMLReader &oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Angle, eType) == sAttributeName)
+			m_shRotat = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterX, eType) == sAttributeName)
+			m_nXCenter = oReader.GetInt();
+		else if (GetAttributeName(EAttribute::CenterY, eType) == sAttributeName)
+			m_nYCenter = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+}
+
+void CCtrlObjElement::ParseRenderingInfo(CXMLReader &oReader, EHanType eType)
+{
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
+
+		if (GetNodeName(ENode::TransformMatrix, eType) != sNodeName &&
+		    GetNodeName(ENode::ScaleMatrix, eType)     != sNodeName &&
+		    GetNodeName(ENode::RotationMatrix, eType)  != sNodeName)
+			continue;
+
+		m_arMatrixs.push_back(ReadMatrix(oReader, eType));
+	}
+	END_WHILE
+}
+
+void CCtrlObjElement::ParseHWPXChildren(CXMLReader& oReader, int nVersion)
 {
 	const std::string sNodeName{oReader.GetName()};
 
@@ -127,35 +160,46 @@ void CCtrlObjElement::ParseChildren(CXMLReader& oReader, int nVersion)
 		END_READ_ATTRIBUTES(oReader)
 	}
 	else if ("hp:rotationInfo" == sNodeName)
-	{
-		START_READ_ATTRIBUTES(oReader)
-		{
-			if ("angle" == sAttributeName)
-				m_shRotat = oReader.GetInt();
-			else if ("centerX" == sAttributeName)
-				m_nXCenter = oReader.GetInt();
-			else if ("centerY" == sAttributeName)
-				m_nYCenter = oReader.GetInt();
-		}
-		END_READ_ATTRIBUTES(oReader)
-	}
+		ParseRotationInfo(oReader, EHanType::HWPX);
 	else if ("hp:renderingInfo" == sNodeName)
-	{
-		WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
-		{
-			// Сначала идёт 1 hc:transMatrix, а после попарно идут hc:scaMatrix с hc:rotMatrix
-
-			if ("hc:transMatrix" != sNodeChildName &&
-				"hc:scaMatrix"   != sNodeChildName &&
-				"hc:rotMatrix"   != sNodeChildName)
-				continue;
-
-			m_arMatrixs.push_back(ReadMatrix(oReader));
-		}
-		END_WHILE
-	}
+		ParseRenderingInfo(oReader, EHanType::HWPX);
 	else
-		CCtrlCommon::ParseChildren(oReader, nVersion);
+		CCtrlCommon::ParseChildren(oReader, nVersion, EHanType::HWPX);
+}
+
+void CCtrlObjElement::ParseHWPMLElement(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("XPos" == sAttributeName)
+			m_nXGrpOffset = oReader.GetInt();
+		else if ("YPos" == sAttributeName)
+			m_nYGrpOffset = oReader.GetInt();
+		else if ("GroupLevel" == sAttributeName)
+			m_shNGrp = oReader.GetInt();
+		else if ("OriWidth" == sAttributeName)
+			m_nOrgWidth = oReader.GetInt();
+		else if ("OriHeight" == sAttributeName)
+			m_nOrgHeight = oReader.GetInt();
+		else if ("CurWidth" == sAttributeName)
+			m_nCurWidth = oReader.GetInt();
+		else if ("CurHeight" == sAttributeName)
+			m_nCurHeight = oReader.GetInt();
+		else if ("HorzFlip" == sAttributeName)
+			m_bHorzFlip = oReader.GetBool();
+		else if ("VertFlip" == sAttributeName)
+			m_bVerFlip = oReader.GetBool();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+	{
+		if ("ROTATIONINFO" == sNodeName)
+			ParseRotationInfo(oReader, EHanType::HWPML);
+		else if ("RENDERINGINFO" == sNodeName)
+			ParseRenderingInfo(oReader, EHanType::HWPML);
+	}
+	END_WHILE
 }
 
 int CCtrlObjElement::GetCurWidth() const

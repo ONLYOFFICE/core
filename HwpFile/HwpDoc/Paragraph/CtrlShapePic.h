@@ -61,7 +61,7 @@ class CShadow : public CPicEffect
 	CPicColor *m_pColor;
 public:
 	CShadow(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
-	CShadow(CXMLReader& oReader, int nVersion);
+	CShadow(CXMLReader& oReader, EHanType eType);
 	~CShadow();
 };
 
@@ -72,7 +72,7 @@ class CNeon : public CPicEffect
 	CPicColor *m_pColor;
 public:
 	CNeon(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
-	CNeon(CXMLReader& oReader, int nVersion);
+	CNeon(CXMLReader& oReader, EHanType eType);
 	~CNeon();
 };
 
@@ -81,7 +81,7 @@ class CSoftEdge : public CPicEffect
 	float m_fRadius;
 public:
 	CSoftEdge(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
-	CSoftEdge(CXMLReader& oReader, int nVersion);
+	CSoftEdge(CXMLReader& oReader, EHanType eType);
 };
 
 class CReflect : public CPicEffect
@@ -102,7 +102,7 @@ class CReflect : public CPicEffect
 	float m_fOffsetDirection;
 public:
 	CReflect(int nTypeNum, CHWPStream& oBuffer, int nOff, int nSize);
-	CReflect(CXMLReader& oReader, int nVersion);
+	CReflect(CXMLReader& oReader, EHanType eType);
 };
 
 class CCtrlShapePic : public CCtrlGeneralShape
@@ -129,6 +129,12 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	int m_nIniPicWidth;
 	int m_nIniPicHeight;
 	HWP_BYTE m_chPicAlpha;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
+
+	void ReadImageClip(CXMLReader& oReader, EHanType eType);
+	void ReadEffects(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlShapePic();
 	CCtrlShapePic(const HWP_STRING& sCtrlID);

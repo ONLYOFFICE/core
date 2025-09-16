@@ -84,7 +84,21 @@ enum class ENode
 	Hyphen,
 	NbSpace,
 	FwSpace,
-
+	Size,
+	Posistion,
+	OutSideMargin,
+	InSideMargin,
+	Caption,
+	TransformMatrix,
+	ScaleMatrix,
+	RotationMatrix,
+	LineShape,
+	ShadowEffect,
+	GlowEffect,
+	SoftEdgeEffect,
+	ReflectionEffect,
+	EffectsColor,
+	
 	//Only hwpx
 	Ctrl,
 	Lineseg,
@@ -180,7 +194,21 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"hp:lineBreak",               //70
 		"hp:hyphen",
 		"hp:nbSpace",
-		"hp:fwSpace"
+		"hp:fwSpace",
+		"hp:sz",
+		"hp:pos",
+		"hp:outMargin",
+		"hp:inMargin",
+		"hp:caption",
+		"hc:transMatrix",
+		"hc:scaMatrix",
+		"hc:rotMatrix",
+		"hp:lineShape",
+		"hp:shadow",
+		"hp:glow",
+		"hp:softEdge",
+		"hp:reflection",
+		"hp:effectsColor",
 
 		"hp:ctrl",
 		"hp:lineseg",
@@ -268,6 +296,20 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"HYPHEN",
 		"NBSPACE",
 		"FWSPACE",
+		"SIZE",
+		"POSITION",
+		"OUTSIDEMARGIN",
+		"INSIDEMARGIN",
+		"CAPTION",
+		"TRANSMATRIX",
+		"SCAMATRIX",
+		"ROTMATRIX",
+		"LINESHAPE",
+		"SHADOWEFFECT",
+		"GLOW",
+		"SOFTEDGE",
+		"REFLECTION",
+		"EFFECTSCOLOR",
 
 		"",
 		"",
@@ -394,12 +436,49 @@ enum class EAttribute
 	InstId,
 	LockForm,
 	Name,
+	TextFlow,
+	TextWrap,
+	ZOrder,
+	NumberingType,
+	WidthRelTo,
+	HeightRelTo,
+	TreatAsChar,   //110
+	AffectLSpacing,
+	VertRelTo,
+	VertAlign,
+	HorzRelTo,
+	HorzAlign,
+	VertOffset,
+	HorzOffset,
+	FlowWithText,
+	AllowOverlap,
+	Top,           //120
+	Bottom,
+	Side,
+	FullSize,
+	Gap,
+	LastWidth,
+	MatrixElement1_1,
+	MatrixElement1_2,
+	MatrixElement2_1,
+	MatrixElement2_2,
+	MatrixElementOffsetX,
+	MatrixElementOffsetY,
+	HeadStyle,
+	HeadSize,
+	TailStyle,
+	TailSize,
+	Radius,
+	Direction,
+	Distance,
+	RotationStyle,
+	FadeDirection,
 
 	PageBreak,
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 110
+#define MAX_ATTRIBUTES 150
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -489,9 +568,9 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"LineWrap",
 		"eAsianEng",
 		"eAsianNum",
-		"",
-		"",
-		"",
+		"indent",
+		"top",
+		"bottom",
 		"",
 		"",
 		"",
@@ -506,9 +585,46 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"engName",
 		"nextStyleIDRef",
 		"langID",         //100
-		""
+		"id"
 		"lockForm",
 		"name",
+		"textFlow",
+		"textWrap",
+		"zOrder",
+		"numberingType",
+		"widthRelTo",
+		"heightRelTo",
+		"treatAsChar",    //110
+		"affectLSpacing",
+		"vertRelTo",
+		"vertAlign",
+		"horzRelTo",
+		"horzAlign",
+		"vertOffset",
+		"horzOffset",
+		"flowWithText",
+		"allowOverlap",
+		"top",            //120
+		"bottom",
+		"side",
+		"fullSz",
+		"gap",
+		"lastWidth",
+		"e1",
+		"e2",
+		"e4",
+		"e5",
+		"e3",
+		"e6",
+		"headStyle",
+		"headSz",
+		"tailStyle",
+		"tailSz",
+		"radius",
+		"direction",
+		"distance",
+		"rotationStyle",
+		"fadeDirection",
 
 		"pageBreak",
 		"columnBreak",
@@ -618,6 +734,43 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"InstId",
 		"LockForm",
 		"Name",
+		"TextFlow",
+		"TextWrap",
+		"ZOrder",
+		"NumberingType",
+		"WidthRelTo",
+		"HeightRelTo",
+		"TreatAsChar",
+		"AffectLSpacing",
+		"VertRelTo",
+		"VertAlign",
+		"HorzRelTo",
+		"HorzAlign",
+		"VertOffset",
+		"HorzOffset",
+		"FlowWithText",
+		"AllowOverlap",
+		"Top",
+		"Bottom",
+		"Side",
+		"FullSize",
+		"Gap",
+		"LastWidth",
+		"E1",
+		"E2",
+		"E4",
+		"E5",
+		"E3",
+		"E6",
+		"HeadStyle",
+		"HeadSize",
+		"TailStyle",
+		"TailSize",
+		"Radius",
+		"Direction",
+		"Distance",
+		"RotationStyle",
+		"FadeDirection",
 
 		"PageBreak",
 		"ColumnBreak"
@@ -634,7 +787,7 @@ inline const char* GetAttributeName(EAttribute eNode, EHanType eType)
 	}
 }
 
-#define MAX_VALUES 40
+#define MAX_VALUES 60
 
 // TODO:: пока всё в одном месте. Возможно стоит лучше разделить по соответствующим классам
 enum class EValue
@@ -662,7 +815,36 @@ enum class EValue
 	CircledHangulJamo,
 	RomanSmall,
 	Para,
-	Char
+	Char,
+	BothSides,
+	LeftOnly,
+	RightOnly,
+	LargestOnly,
+	Square,
+	TopAndBottom,          //30
+	BehindText,
+	InFrontOfText,
+	Figure,
+	Table,
+	Equation,
+	Top,
+	Bottom,
+	SmallSmall,
+	SmallMedium,
+	SmallLarge,            //40
+	MediumSmall,
+	MediumMedium,
+	MediumLarge,
+	LargeSmall,
+	LargeMedium,
+	LargeLarge,
+	Normal,
+	Arrow,
+	Spear,
+	ConcaveArrow,          //50
+	EmptyDiamond,
+	EmptyCircle,
+	EmptyBox
 };
 
 static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] = 
@@ -692,7 +874,29 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"CIRCLED_HANGUL_JAMO",
 		"ROMAN_SMALL",
 		"PARA",
-		"CHAR"
+		"CHAR",
+		"BOTH_SIDES",
+		"LEFT_ONLY",
+		"RIGHT_ONLY",
+		"LARGEST_ONLY",
+		"SQUARE",
+		"TOP_AND_BOTTOM",
+		"BEHIND_TEXT",
+		"IN_FRONT_OF_TEXT",
+		"PICTURE",
+		"TABLE",
+		"EQUATION",
+		"TOP",
+		"BOTTOM",
+		"SMALL_SMALL",
+		"SMALL_MEDIUM",
+		"SMALL_LARGE",
+		"MEDIUM_SMALL",
+		"MEDIUM_MEDIUM",
+		"MEDIUM_LARGE",
+		"LARGE_SMALL",
+		"LARGE_MEDIUM",
+		"LARGE_LARGE"
 	},
 //HWPML
 	{
@@ -719,7 +923,29 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"CircledHangulJamo",
 		"RomanSmall",
 		"Para",
-		"Char"
+		"Char",
+		"BothSides",
+		"LeftOnly",
+		"RightOnly",
+		"LargestOnly",
+		"Square",
+		"TopAndBottom",
+		"BehindText",
+		"InFrontOfText",
+		"Figure",
+		"Table",
+		"Equation",
+		"Top",
+		"Bottom",
+		"SmallSmall",
+		"SmallMedium",
+		"SmallLarge",
+		"MediumSmall",
+		"MediumMedium",
+		"MediumLarge",
+		"LargeSmall",
+		"LargeMedium",
+		"LargeLarge"
 	}
 };
 
@@ -732,6 +958,10 @@ inline const char* GetValueName(EValue eValue, EHanType eType)
 		default: return "";
 	}
 }
+
+
+#define CHECK_IF_ATTRIBUTE(type) if (GetAttributeName(EAttribute::type, eType) == sAttributeName)
+#define CHECK_ELSE_IF_ATTRIBUTE(type) else CHECK_IF_ATTRIBUTE(type)
 }
 
 #endif // NODENAMES_H

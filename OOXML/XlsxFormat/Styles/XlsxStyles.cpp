@@ -319,6 +319,8 @@ namespace OOX
 			}
 			if (m_oCellStyles.IsInit())
 				FormatPtr->m_Styles = m_oCellStyles->toXLS();
+			if(m_oTableStyles.IsInit())
+				FormatPtr->m_TABLESTYLES = m_oTableStyles->toXLS();
 
 		}
 		void CStyles::SetFillXLS(XLS::BaseObjectPtr XFSPtr)

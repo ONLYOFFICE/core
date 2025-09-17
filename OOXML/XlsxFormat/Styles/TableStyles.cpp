@@ -1,4 +1,4 @@
-/*
+﻿/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -40,6 +40,9 @@
 #include "../../XlsbFormat/Biff12_records/CommonRecords.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLES.h"
 #include "../../XlsbFormat/Biff12_unions/TABLESTYLE.h"
+
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/TABLESTYLES.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/TableStyles.h"
 
 namespace OOX
 {
@@ -457,6 +460,19 @@ namespace OOX
             else
                 ptr1->rgchDefPivotStyle = L"";
 			return objectPtr;
+		}
+		XLS::BaseObjectPtr CTableStyles::toXLS()
+		{
+			auto ptr = new XLS::TABLESTYLES;
+			auto stylesPtr = new XLS::TableStyles;
+			ptr->m_TableStyles = XLS::BaseObjectPtr(stylesPtr);
+			if(m_oDefaultTableStyle.IsInit())
+				stylesPtr->rgchDefTableStyle = m_oDefaultTableStyle.get();
+			if(m_oDefaultPivotStyle.IsInit())
+				stylesPtr->rgchDefPivotStyle = m_oDefaultPivotStyle.get();
+			stylesPtr->cts += m_arrItems.size();
+
+			return XLS::BaseObjectPtr(ptr);
 		}
 		EElementType CTableStyles::getType () const
 		{

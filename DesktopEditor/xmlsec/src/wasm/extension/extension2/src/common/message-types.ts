@@ -1,31 +1,18 @@
-import {messageTypes} from "./message-const.ts";
-import type {messageHandler} from "../background/background.ts";
+import {messageListeners, messageTypes} from "./message-const.ts";
 
-type CheckEngineMessage = {
-    type: typeof messageTypes.CHECK_ENGINE;
-};
 
-type GenerateKeysMessage = {
-    type: typeof messageTypes.GENERATE_KEYS;
-};
 
-type Messages = CheckEngineMessage | GenerateKeysMessage;
+type Messages = typeof messageTypes[keyof typeof messageTypes];
 type MessageType = {
     type?: string;
     id?: number;
-    data: Messages
+    data: Messages;
+    listener: typeof messageListeners[keyof typeof messageListeners];
 }
 
-type BackgroundMessagePromise = ReturnType<typeof messageHandler>;
-type BackgroundMessageAnswer = Awaited<BackgroundMessagePromise>;
-type ContentResponseType = {
-    type?: string;
-    id?: number;
-    response?: BackgroundMessageAnswer;
-};
 
-const isMessages = (message: unknown): message is Messages => {
+const isMessageType = (message: unknown): message is MessageType => {
     return !!(message && typeof message === "object" && "type" in message && typeof message.type === "string");
 };
-export {isMessages};
-export type {MessageType, Messages, BackgroundMessageAnswer, ContentResponseType};
+export {isMessageType};
+export type {MessageType, Messages};

@@ -1,6 +1,11 @@
 const messageTypes = {
-    CHECK_ENGINE: "CHECK_ENGINE",
     GENERATE_KEYS: "GENERATE_KEYS",
+    POPUP_IS_OPENED: "POPUP_IS_OPENED",
 } as const;
-const onlyofficeChannel = "onlyoffice-sign-extension-channel";
-export {messageTypes, onlyofficeChannel};
+const messageListeners = {
+    background: "background",
+    popup: "popup",
+} as const;
+const onlyofficeExtensionChannel = "onlyoffice-sign-extension-channel";
+const onlyofficeClientChannel = "onlyoffice-sign-client-channel";
+export {messageTypes, onlyofficeExtensionChannel, onlyofficeClientChannel, messageListeners};

@@ -1,22 +1,12 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import {crx} from "@crxjs/vite-plugin";
+import manifest from "./manifest.config.ts";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [crx({ manifest }), react()],
     build: {
-      rollupOptions: {
-          input: {
-              popup: "./src/popup/index.html",
-              background: "./src/background/background.ts",
-              content: "./src/content/content.ts",
-          },
-          output: {
-              entryFileNames: "js/[name].js",
-          },
-      },
-      minify: false,
-        cssMinify: false,
         sourcemap: 'inline'
     }
 })

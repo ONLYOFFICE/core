@@ -14,6 +14,7 @@
 	const pluginMessenger = window.Asc.pluginMessenger;
 	const messageTypes = {
 		CHECK_ENGINE: "CHECK_ENGINE",
+		GENERATE_KEYS: "GENERATE_KEYS",
 	};
 	var KeychainVersion = 1;
 	var KeychainKeyVersion = 2;
@@ -50,14 +51,15 @@
 
 	Keychain.prototype.checkExistEngine = async function()
 	{
-		let result = await pluginMessenger.postMessage({type: messageTypes.CHECK_ENGINE}, 1000);
+		let result = await pluginMessenger.isInitExtension();
+		await pluginMessenger.postMessage({isCheck: true});
 		return !!result;
 	};
 
 	Keychain.prototype.generateEncryptKeys = async function()
 	{
 		let key = await pluginMessenger.postMessage({
-			type : "generateEncryptKeys"
+			type : messageTypes.GENERATE_KEYS,
 		});
 		return key;
 	};

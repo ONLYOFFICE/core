@@ -1,4 +1,10 @@
-import type {CryptoData, DigestAlgorithm, EncryptAlgorithm, SignAlgorithm} from "./crypto-types.ts";
+import type {
+    CryptoData,
+    DigestAlgorithm,
+    EncryptAlgorithm,
+    GenerateKeyAlgorithm, GenerateKeyUsages,
+    SignAlgorithm
+} from "./crypto-types.ts";
 class CCryptoBase {
         sign(_algorithm: SignAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer> {
             return new Promise(function (_resolve, reject) {
@@ -25,6 +31,24 @@ class CCryptoBase {
                 reject("Override the method in the subclass");
             });
         };
+        generateKey(_algorithm: GenerateKeyAlgorithm, _extractable: boolean, _keyUsages: GenerateKeyUsages): Promise<CryptoKey | CryptoKeyPair> {
+            return new Promise(function (_resolve, reject) {
+                reject("Override the method in the subclass");
+            });
+        };
+        async generateCipherKeys() {
+            return await this.generateKey({ name: "X25519" }, true, ["deriveKey"]);
+        }
+        async encryptData(publicKey: CryptoKey, privateKey: CryptoKey, data: CryptoData) {
+            return new Promise(function (_resolve, reject) {
+                reject("Override the method in the subclass");
+            });
+        }
+        async decryptData(publicKey: CryptoKey, privateKey: CryptoKey, data: CryptoData) {
+            return new Promise(function (_resolve, reject) {
+                reject("Override the method in the subclass");
+            });
+        }
     }
     class CWebCrypto extends CCryptoBase {
         subtle = window.crypto.subtle;
@@ -45,6 +69,9 @@ class CCryptoBase {
         };
         override encrypt(algorithm: EncryptAlgorithm, key: CryptoKey, data: CryptoData) {
             return this.subtle.encrypt(algorithm, key, data);
+        };
+        override generateKey(algorithm: GenerateKeyAlgorithm, extractable: boolean, keyUsages: GenerateKeyUsages) {
+            return this.subtle.generateKey(algorithm, extractable, keyUsages);
         };
     }
 

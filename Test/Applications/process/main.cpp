@@ -1,4 +1,7 @@
-#include "../../../../desktop-sdk/ChromiumBasedEditors/lib/src/cefwrapper/external_process.h"
+//#include "../../../../desktop-sdk/ChromiumBasedEditors/lib/src/cefwrapper/external_process.h"
+#include "../../../../desktop-sdk/ChromiumBasedEditors/lib/src/cefwrapper/external_process_with_childs.h"
+
+#include <iostream>
 
 class CProcessRunnerCallbackWork : public NSProcesses::CProcessRunnerCallback
 {
@@ -17,6 +20,8 @@ public:
 		case NSProcesses::StreamType::StdErr:
 			type_out = "stderr";
 			break;
+		case NSProcesses::StreamType::Stop:
+			break;
 		default:
 			break;
 		}
@@ -30,9 +35,14 @@ int main()
 	CProcessRunnerCallbackWork callback;
 	NSProcesses::CProcessManager manager(&callback);
 
-	manager.Start("ping -c 4 google.com", {});
+	//manager.Start("ping -c 4 google.com", {});
+	//manager.Start("calc", {});
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	manager.Start("docker run -i --rm -e GITHUB_PERSONAL_ACCESS_TOKEN ghcr.io/github/github-mcp-server", {
+		{"GITHUB_PERSONAL_ACCESS_TOKEN", "token"}
+	});
+
+	std::this_thread::sleep_for(std::chrono::seconds(15));
 
 	manager.StopAll();
 

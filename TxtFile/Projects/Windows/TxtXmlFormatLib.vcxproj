@@ -150,6 +150,7 @@
     <ClCompile Include="..\..\Source\ConvertTxt2Docx.cpp" />
     <ClCompile Include="..\..\Source\TxtFormat\File.cpp" />
     <ClCompile Include="..\..\Source\TxtFormat\TxtFile.cpp" />
+    <ClCompile Include="..\..\Source\TxtRenderer.cpp" />
     <ClCompile Include="..\..\Source\TxtXmlFile.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="..\..\Source\ConvertTxt2Docx.h" />
     <ClInclude Include="..\..\Source\TxtFormat\File.h" />
     <ClInclude Include="..\..\Source\TxtFormat\TxtFile.h" />
+    <ClInclude Include="..\..\Source\TxtRenderer.h" />
     <ClInclude Include="..\..\Source\TxtXmlFile.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

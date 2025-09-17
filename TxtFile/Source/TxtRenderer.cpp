@@ -34,10 +34,10 @@
 
 #include <vector>
 
-#include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
-#include "../../../DesktopEditor/common/StringExt.h"
-#include "../../../DesktopEditor/common/StringUTF32.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/common/StringExt.h"
+#include "../../DesktopEditor/common/StringUTF32.h"
 
 static inline bool IsUnicodeSymbol(unsigned int cSym)
 {

@@ -50,8 +50,8 @@ const unsigned int c_SPACE_SYM = 0x20;
 
 #include <memory>
 
-#include "../../../DesktopEditor/graphics/IRenderer.h"
-#include "../../../DesktopEditor/graphics/pro/officedrawingfile.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/pro/officedrawingfile.h"
 
 class CTxtRenderer : public IRenderer
 {

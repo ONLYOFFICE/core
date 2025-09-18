@@ -14,8 +14,6 @@ DEFINES += \
 	MNG_STORE_CHUNKS\
 	MNG_ERROR_TELLTALE
 
-include($$CORE_ROOT_DIR/Common/3dParty/heif/heif.pri)
-
 core_linux {
 	DEFINES += HAVE_UNISTD_H HAVE_FCNTL_H
 	QMAKE_CXXFLAGS += -Wno-narrowing
@@ -287,8 +285,15 @@ SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/PICFile.cpp \
 	$$LIB_GRAPHICS_PRI_PATH/raster/PICT/pic.cpp
 
-SOURCES += \
-	$$LIB_GRAPHICS_PRI_PATH/raster/heif/heif.cpp
+!build_xp {
+	CONFIG += support_heif
+}
+
+support_heif {
+	DEFINES += SUPPORT_LIB_HEIF_SOURCES
+	include($$CORE_ROOT_DIR/Common/3dParty/heif/heif.pri)
+	SOURCES += $$LIB_GRAPHICS_PRI_PATH/raster/heif/heif.cpp
+}
 
 SOURCES += \
 	$$LIB_GRAPHICS_PRI_PATH/cximage/jasper/base/jas_cm.c \

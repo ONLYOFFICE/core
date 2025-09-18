@@ -43,7 +43,14 @@ CPptxTxtConverter::~CPptxTxtConverter()
 }
 int CPptxTxtConverter::Convert(const std::wstring& wsSrcPptxDir, const std::wstring& wsDstTxtFile)
 {
-	std::wstring norm_src_pptx_dir = CorrectPathW(wsSrcPptxDir);
+	std::wstring norm_src_pptx_dir = wsSrcPptxDir;
+	if (norm_src_pptx_dir.find(L"./") == 0)
+		norm_src_pptx_dir.erase(0, 2);
+
+	norm_src_pptx_dir = CorrectPathW(norm_src_pptx_dir);
+	if (norm_src_pptx_dir.find(L"\\\\?\\") == 0)
+		norm_src_pptx_dir.erase(0, 4);
+
 	if (norm_src_pptx_dir.back() != FILE_SEPARATOR_WCHAR)
 		norm_src_pptx_dir += FILE_SEPARATOR_WCHAR;
 
@@ -70,6 +77,11 @@ int CPptxTxtConverter::Convert(const std::wstring& wsSrcPptxDir, const std::wstr
 	m_pImpl->Save(wsDstTxtFile);
 	return S_OK;
 }
+
+CPptxTxtConverter::CPptxTxtConverterImpl::~CPptxTxtConverterImpl()
+{
+}
+
 void CPptxTxtConverter::CPptxTxtConverterImpl::AddSlide(const PPTX::Slide& oSlide)
 {
 	std::wstring slide_text;
@@ -78,11 +90,11 @@ void CPptxTxtConverter::CPptxTxtConverterImpl::AddSlide(const PPTX::Slide& oSlid
 	auto& sp_tree_elems = oSlide.cSld->spTree.SpTreeElems;
 	for (auto& elem : sp_tree_elems)
 	{
-		if (elem.getType() != OOX::et_p_Shape)
+		if (elem.getType() != OOX::et_a_Shape)
 			continue;
 
-		const auto& shape = *elem.GetElem().as<PPTX::Logic::Shape*>();
-		slide_text += GetTextFromShape(shape);
+		smart_ptr<PPTX::Logic::Shape> shape = elem.GetElem().smart_dynamic_cast<PPTX::Logic::Shape>();
+		slide_text += GetTextFromShape(*shape);
 	}
 	m_arTxtData.push_back(std::move(slide_text));
 }

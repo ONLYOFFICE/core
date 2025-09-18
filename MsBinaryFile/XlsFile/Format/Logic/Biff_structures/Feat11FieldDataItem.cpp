@@ -206,6 +206,13 @@ void Feat11RgSharepointIdDel::load(CFRecord& record)
 		rgId.push_back(val);
 	}
 }
+void Feat11RgSharepointIdDel::save(CFRecord& record)
+{
+	cId = rgId.size();
+	record << cId;
+	for(auto i : rgId)
+		record << i;
+}
 //---------------------------------------------------------------------------------------------------------
 BiffStructurePtr Feat11RgSharepointIdChange::clone()
 {
@@ -222,6 +229,13 @@ void Feat11RgSharepointIdChange::load(CFRecord& record)
 		rgId.push_back(val);
 	}
 }
+void Feat11RgSharepointIdChange::save(CFRecord& record)
+{
+	cId = rgId.size();
+	record << cId;
+	for(auto i : rgId)
+		record << i;
+}
 //---------------------------------------------------------------------------------------------------------
 BiffStructurePtr Feat11RgInvalidCells::clone()
 {
@@ -237,6 +251,13 @@ void Feat11RgInvalidCells::load(CFRecord& record)
 		record >> val.idxRow >> val.idxField;
 		rgCellInvalid.push_back(val);
 	}
+}
+void Feat11RgInvalidCells::save(CFRecord& record)
+{
+	cCellInvalid = rgCellInvalid.size();
+	record << cCellInvalid;
+	for(auto i : rgCellInvalid)
+		record << i.idxRow << i.idxField;
 }
 } // namespace XLS
 

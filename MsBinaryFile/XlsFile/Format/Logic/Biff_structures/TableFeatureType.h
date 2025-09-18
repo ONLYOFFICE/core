@@ -50,41 +50,42 @@ public:
 	static const ElementType type = typeTableFeatureType;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32	lt;		// SourceType
-	_UINT32	idList;
-	_UINT32	crwHeader;
-	_UINT32	crwTotals;
-	_UINT32	idFieldNext;
-	_UINT32	cbFSData;
-	_UINT16 rupBuild;
+	_UINT32	lt = 0;		// SourceType
+	_UINT32	idList = 0;
+	_UINT32	crwHeader = 0;
+	_UINT32	crwTotals = 0;
+	_UINT32	idFieldNext = 0;
+	_UINT32	cbFSData = 64;
+	_UINT16 rupBuild = 0;
 
-	bool	fAutoFilter;
-	bool	fPersistAutoFilter;
-	bool	fShowInsertRow;
-	bool	fInsertRowInsCells;
-	bool	fLoadPldwIdDeleted;
-	bool	fShownTotalRow;
-	bool	fNeedsCommit;
-	bool	fSingleCell;
-	bool	fApplyAutoFilter;
-	bool	fForceInsertToBeVis;
-	bool	fCompressedXml;
-	bool	fLoadCSPName;
-	bool	fLoadPldwIdChanged;
-	bool	fLoadEntryId;
-	bool	fLoadPllstclInvalid;
-	bool	fGoodRupBld;
-	bool	fPublished;
+	bool	fAutoFilter = false;
+	bool	fPersistAutoFilter = false;
+	bool	fShowInsertRow = false;
+	bool	fInsertRowInsCells = false;
+	bool	fLoadPldwIdDeleted = false;
+	bool	fShownTotalRow = false;
+	bool	fNeedsCommit = false;
+	bool	fSingleCell = false;
+	bool	fApplyAutoFilter = false;
+	bool	fForceInsertToBeVis = false;
+	bool	fCompressedXml = false;
+	bool	fLoadCSPName = false;
+	bool	fLoadPldwIdChanged = false;
+	bool	fLoadEntryId = false;
+	bool	fLoadPllstclInvalid = false;
+	bool	fGoodRupBld = false;
+	bool	fPublished = false;
 	
 	unsigned char	verXL;
-	_UINT32			lPosStmCache;
-	_UINT32			cbStmCache;
-	_UINT32			cchStmCache;
-	_UINT32			lem;		// LEMMode
+	_UINT32			lPosStmCache = 0;
+	_UINT32			cbStmCache = 0;
+	_UINT32			cchStmCache = 0;
+	_UINT32			lem = 0;		// LEMMode
 
 	XLUnicodeString rgbName;
-	_UINT16			cFieldData;
+	_UINT16			cFieldData = 0;
 	XLUnicodeString cSPName;
 	XLUnicodeString entryId;
 
@@ -94,8 +95,8 @@ public:
 	BiffStructurePtr		idChanged;
 	BiffStructurePtr		cellInvalid;
 //-------
-	_UINT32					cbFeatData;
-	bool					bFeature12;
+	_UINT32					cbFeatData = 0;
+	bool					bFeature12 = false;
 
 };
 

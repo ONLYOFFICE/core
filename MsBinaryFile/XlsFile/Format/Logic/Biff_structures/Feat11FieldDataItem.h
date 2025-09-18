@@ -112,8 +112,9 @@ public:
 	static const ElementType	type = typeFeat11RgSharepointIdDel;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT16					cId;
+	_UINT16					cId = 0;
 	std::vector<_UINT32>	rgId;
 };
 
@@ -128,8 +129,9 @@ public:
 	static const ElementType	type = typeFeat11RgSharepointIdChange;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT16					cId;
+	_UINT16					cId = 0;
 	std::vector<_UINT32>	rgId;
 };
 
@@ -150,6 +152,7 @@ public:
 	static const ElementType	type = typeFeat11RgInvalidCells;
 	
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
 	_UINT16							cCellInvalid;
 	std::vector<Feat11CellStruct>	rgCellInvalid;

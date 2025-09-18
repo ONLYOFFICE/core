@@ -178,12 +178,14 @@ CTextObject::~CTextObject()
 		delete pTextCode;
 }
 
-void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) const
+void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData, EPageType ePageType) const
 {
 	if (nullptr == pRenderer || m_arTextCodes.empty())
 		return;
 
-	const CFont* pFont = oCommonData.GetPublicRes()->GetFont(m_unFontID);
+	const CRes* pPublicRes{oCommonData.GetPublicRes()};
+
+	const CFont* pFont = pPublicRes->GetFont(m_unFontID);
 
 	if (nullptr == pFont)
 		return;
@@ -193,19 +195,25 @@ void CTextObject::Draw(IRenderer* pRenderer, const CCommonData& oCommonData) con
 	TMatrix oOldTransform;
 	CGraphicUnit::Apply(pRenderer, oOldTransform);
 
+	std::vector<const CDrawParam*> arDrawParams{pPublicRes->GetDrawParams()};
+
 	if (m_bFill)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 
 		if (nullptr != m_pFillColor)
 		{
-			pRenderer->put_BrushColor1(m_pFillColor->ToInt(oCommonData.GetPublicRes()));
+			pRenderer->put_BrushColor1(m_pFillColor->ToInt(pPublicRes));
 			pRenderer->put_BrushAlpha1(m_pFillColor->GetAlpha());
 		}
 		else
 		{
 			pRenderer->put_BrushColor1(0);
-			pRenderer->put_BrushAlpha1(0xff);
+
+			if (EPageType::TemplatePage == ePageType)
+				for (const CDrawParam* pDrawParam : arDrawParams)
+					if (pDrawParam->ApplyFillColor(pRenderer, pPublicRes))
+						break;
 		}
 	}
 	else
@@ -248,15 +256,14 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 	oLiteReader.MoveToElement();
 
 	const int nDepth = oLiteReader.GetDepth();
-	unsigned int unCount = 0;
 
-	while (oLiteReader.ReadNextSiblingNode(nDepth) && unCount < oCGTransform.m_unGlyphCount)
+	while (oLiteReader.ReadNextSiblingNode(nDepth))
 	{
-		if ("ofd:Glyphs" == oLiteReader.GetNameA())
-		{
-			oCGTransform.m_arGlyphs.push_back(oLiteReader.GetUInteger());
-			++unCount;
-		}
+		if ("ofd:Glyphs" != oLiteReader.GetNameA())
+			continue;
+
+		const std::vector<unsigned int> arValues{oLiteReader.GetArrayUInteger()};
+		oCGTransform.m_arGlyphs.insert(oCGTransform.m_arGlyphs.end(), arValues.begin(), arValues.end());
 	}
 
 	return oCGTransform;
@@ -264,10 +271,10 @@ TCGTransform TCGTransform::Read(CXmlReader& oLiteReader)
 
 bool TCGTransform::Draw(IRenderer* pRenderer, const LONG& lUnicode, unsigned int& unIndex, double dX, double dY) const
 {
-	if (m_unCodePosition != unIndex || 0 == m_unCodeCount || 0 == m_unGlyphCount)
+	if (m_unCodePosition + m_arGlyphs.size() > unIndex || 0 == m_unCodeCount || m_arGlyphs.empty())
 		return false;
 
-	for (unsigned int unGlyphCount = 0; unGlyphCount < m_unGlyphCount; ++unGlyphCount)
+	for (unsigned int unGlyphCount = 0; unGlyphCount < m_arGlyphs.size(); ++unGlyphCount)
 		pRenderer->CommandDrawTextExCHAR(lUnicode, m_arGlyphs[unGlyphCount], dX, dY, 0, 0);
 
 	unIndex += m_unCodeCount;

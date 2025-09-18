@@ -232,13 +232,6 @@ namespace PPTX
 					RGB = parentFileAs<Theme>().GetABGRFromScheme(str);
 				}
 			}
-			else if(parentFileIs<Presentation>())
-				RGB = parentFileAs<Presentation>().GetARGBFromMap(str);
-			//{
-			//	if(val.get() == "phClr")
-			//		RGB = rgb;
-			//	else RGB = parentFileAs<Theme>().GetARGBFromScheme(str);
-			//}
 
 			blue	= static_cast<unsigned char>(RGB & 0xFF);
 			green	= static_cast<unsigned char>((RGB & 0xFF00)>>8);

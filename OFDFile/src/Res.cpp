@@ -47,7 +47,7 @@ bool CRes::Read(const std::wstring& wsFilePath, const std::wstring& wsRootPath)
 	if (!oLiteReader.FromFile(wsFullPath) || !oLiteReader.ReadNextNode() || L"ofd:Res" != oLiteReader.GetName() || oLiteReader.IsEmptyNode())
 		return false;
 
-	std::wstring wsResRootPath;
+	std::wstring wsResRootPath{wsRootPath};
 
 	if (0 != oLiteReader.GetAttributesCount() && oLiteReader.MoveToFirstAttribute())
 	{
@@ -134,5 +134,15 @@ const CMultiMedia* CRes::GetMultiMedia(unsigned int unId) const
 const CCompositeGraphicUnit* CRes::GetCompositeGraphicUnit(unsigned int unId) const
 {
 	RETURN_ELEMENT_FROM_MAP(CCompositeGraphicUnit, m_mCCompositeGraphicUnits);
+}
+
+std::vector<const CDrawParam*> CRes::GetDrawParams() const
+{
+	std::vector<const CDrawParam*> arValues;
+
+	for (std::map<unsigned int, CDrawParam*>::const_iterator itBegin = m_mDrawParams.cbegin(); itBegin != m_mDrawParams.cend(); ++itBegin)
+		arValues.push_back(itBegin->second);
+
+	return arValues;
 }
 }

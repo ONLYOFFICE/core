@@ -38,7 +38,9 @@
 #include "../../Common/Utils/simple_xml_writer.h"
 
 #if defined(_WIN32) || defined(_WIN64)
-	#pragma comment(lib, "Ole32.lib")
+#include <Ole2.h>
+#include <ObjIdl.h>
+#pragma comment(lib, "Ole32.lib")
 #endif
 
 namespace oox {

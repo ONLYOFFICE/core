@@ -14,7 +14,6 @@
     <ClInclude Include="..\..\..\PPTXFormat\NotesMaster.h" />
     <ClInclude Include="..\..\..\PPTXFormat\NotesSlide.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PPTX.h" />
-    <ClInclude Include="..\..\..\PPTXFormat\PPTXEvent.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Presentation.h" />
     <ClInclude Include="..\..\..\PPTXFormat\PresProps.h" />
     <ClInclude Include="..\..\..\PPTXFormat\Slide.h" />
@@ -685,31 +684,13 @@
     <ClInclude Include="..\..\..\PPTXFormat\Logic\Transitions\ZoomTransition.h">
       <Filter>Logic\Transition</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\Kinsoku.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\NotesSz.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SectionLst.h">
-      <Filter>Presentation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\Presentation\SldSz.h">
+    <ClInclude Include="..\..\..\PPTXFormat\Presentation\PresentationChildElements.h">
       <Filter>Presentation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Browse.h">
       <Filter>PresentationPr</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustShow.h">
+    <ClInclude Include="..\..\..\PPTXFormat\ShowPr\CustomShowId.h">
       <Filter>PresentationPr</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\ShowPr\Kiosk.h">
@@ -776,9 +757,6 @@
       <Filter>ViewProps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Scale.h">
-      <Filter>ViewProps</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\PPTXFormat\ViewProps\Sld.h">
       <Filter>ViewProps</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.h">
@@ -2451,31 +2429,13 @@
     <ClCompile Include="..\..\..\PPTXFormat\Logic\XmlId.cpp">
       <Filter>Logic</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFont.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\EmbeddedFontDataId.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\Kinsoku.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\NotesSz.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\PhotoAlbum.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SectionLst.cpp">
-      <Filter>Presentation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\Presentation\SldSz.cpp">
+    <ClCompile Include="..\..\..\PPTXFormat\Presentation\PresentationChildElements.cpp">
       <Filter>Presentation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Browse.cpp">
       <Filter>PresentationPr</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustShow.cpp">
+    <ClCompile Include="..\..\..\PPTXFormat\ShowPr\CustomShowId.cpp">
       <Filter>PresentationPr</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\ShowPr\Kiosk.cpp">
@@ -2512,9 +2472,6 @@
       <Filter>ViewProps</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\SlideViewPr.cpp">
-      <Filter>ViewProps</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Sld.cpp">
       <Filter>ViewProps</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\PPTXFormat\ViewProps\Scale.cpp">

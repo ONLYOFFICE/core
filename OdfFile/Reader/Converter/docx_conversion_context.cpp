@@ -166,12 +166,12 @@ docx_conversion_context::~docx_conversion_context()
 {
 }
 
-void docx_conversion_context::set_implicit_end( bool _flag ) // сеттер для флага в одном файле ( где 5й параграф создается )
+void docx_conversion_context::set_implicit_end( bool _flag ) // fix bug with convert from docx to odt. Bug with break columns
 {
     flag_implicit_end = _flag;
 }
 
-bool docx_conversion_context::get_implicit_end() const // геттер для флага в другом файле ( где после создания 5го параграфа _is_dump = true )
+bool docx_conversion_context::get_implicit_end() const // fix bug with convert from docx to odt. Bug with break columns
 {
     return flag_implicit_end;
 }
@@ -2211,13 +2211,13 @@ int docx_conversion_context::process_paragraph_attr(odf_reader::text::paragraph_
 				{
 					odf_reader::list_style_container & list_styles = root()->odf_context().listStyleContainer();
 					
-					if (list_style_stack_.empty() && list_styles.outline_style() && !get_table_context().in_table())
+					if (!list_style_stack_.empty() && list_styles.outline_style() && !get_table_context().in_table())
 					{
 						output_stream() << L"<w:numPr>";
-							output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
-							output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
+						output_stream() << L"<w:ilvl w:val=\"" << *outline_level - 1  << L"\"/>";
+						output_stream() << L"<w:numId w:val=\"" << list_styles.id_outline() << L"\"/>";
 						output_stream() << L"</w:numPr>";
-					}				   
+					}
 					output_stream() << L"<w:outlineLvl w:val=\"" << *outline_level << L"\"/>";
 				}
 

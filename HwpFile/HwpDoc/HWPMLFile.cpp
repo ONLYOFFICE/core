@@ -14,9 +14,9 @@ CHWPMLFile::~CHWPMLFile()
 {
 	CLEAR_ARRAY(CHWPSection, m_arSections);
 
-	for (std::pair<unsigned int, BYTE*> oValue : m_mBinDates)
-		if (nullptr != oValue.second)
-			delete[] oValue.second;
+	for (BinMap::iterator itBegin = m_mBinDates.begin(); itBegin != m_mBinDates.end(); ++itBegin)
+		if (nullptr != itBegin->second)
+			delete itBegin->second;
 }
 
 bool CHWPMLFile::Open()
@@ -107,7 +107,7 @@ void CHWPMLFile::ReadBinData(CXMLReader &oReader)
 {
 	size_t unSize = 0;
 	std::string sEncoding;
-	unsigned int unID = 0;
+	HWP_STRING sId;
 	bool bCompress = true;
 
 	START_READ_ATTRIBUTES(oReader)
@@ -117,42 +117,39 @@ void CHWPMLFile::ReadBinData(CXMLReader &oReader)
 		else if ("Encoding" == sAttributeName)
 			sEncoding = oReader.GetTextA();
 		else if ("Id" == sAttributeName)
-			unID = oReader.GetInt();
+			sId = oReader.GetText();
 		else if ("Compress" == sAttributeName)
 			bCompress = oReader.GetBool();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
+	if (sId.empty())
+		return;
+
 	const std::wstring wsImageData{oReader.GetText()};
 
-	if (0 == unSize)
-		unSize = wsImageData.length();
+	int nImageSize = NSBase64::Base64DecodeGetRequiredLength(wsImageData.length());
 
-	int nImageSize = NSBase64::Base64DecodeGetRequiredLength(unSize);
-
-	BYTE* pBuffer = new BYTE[nImageSize];
+	BYTE* pBuffer = new(std::nothrow) BYTE[nImageSize];
 
 	if (nullptr == pBuffer)
 		return;
 
-	if (FALSE == NSBase64::Base64Decode(wsImageData.c_str(), unSize, pBuffer, &nImageSize))
+	if (FALSE == NSBase64::Base64Decode(wsImageData.c_str(), wsImageData.length(), pBuffer, &nImageSize))
 	{
 		delete[] pBuffer;
 		return;
 	}
 
-	std::map<unsigned int, BYTE*>::iterator itFound = m_mBinDates.find(unID);
+	BinMap::iterator itFound = m_mBinDates.find(sId);
 
 	if (m_mBinDates.end() != itFound)
 	{
-		if (nullptr != itFound->second)
-			delete[] itFound->second;
-
-		itFound->second = pBuffer;
-		return;
+		((CHWPStream*)itFound->second)->Clear();
+		((CHWPStream*)itFound->second)->SetStream((HWP_BYTE*)pBuffer, nImageSize, false);
 	}
-
-	m_mBinDates.insert(std::make_pair(unID, pBuffer));
+	else
+		m_mBinDates.insert(std::make_pair(sId, new CHWPStream((HWP_BYTE*)pBuffer, nImageSize, false)));
 }
 
 VECTOR<const CHWPSection*> CHWPMLFile::GetSections() const
@@ -160,13 +157,15 @@ VECTOR<const CHWPSection*> CHWPMLFile::GetSections() const
 	RETURN_VECTOR_CONST_PTR(CHWPSection, m_arSections);
 }
 
-const BYTE *HWP::CHWPMLFile::GetBinData(unsigned int unID) const
+bool CHWPMLFile::GetBinData(const HWP_STRING &sId, CHWPStream &oBuffer) const
 {
-	std::map<unsigned int, BYTE*>::const_iterator itFound = m_mBinDates.find(unID);
+	BinMap::const_iterator itFound = m_mBinDates.find(sId);
 
-	if (m_mBinDates.end() == itFound)
-		return nullptr;
+	if (m_mBinDates.cend() == itFound || nullptr == itFound->second)
+		return false;
 
-	return itFound->second;
+	oBuffer.SetStream(((CHWPStream*)(itFound->second))->GetCurPtr(), ((CHWPStream*)(itFound->second))->SizeToEnd());
+
+	return true;
 }
 }

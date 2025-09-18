@@ -60,7 +60,7 @@ enum class EAccent
 };
 
 EAccent GetAccent(int nValue);
-EAccent GetAccent(const HWP_STRING& sValue);
+EAccent GetAccent(HWP_STRING sValue);
 
 #define MAX_ELEMENTS (int)ELang::MAX
 

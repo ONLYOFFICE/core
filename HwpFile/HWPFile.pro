@@ -131,7 +131,6 @@ HEADERS += \
     HwpDoc/HWPElements/HWPRecordParaText.h \
     HwpDoc/HWPElements/HWPRecordStyle.h \
     HwpDoc/HWPElements/HWPTag.h \
-    HwpDoc/HWPElements/HWPType.h \
     HwpDoc/HWPElements/HwpRecordTabDef.h \
     HwpDoc/HWPElements/HwpRecordTypes.h \
     HwpDoc/HWPFile.h \

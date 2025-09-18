@@ -12,7 +12,7 @@ EArcType GetArcType(int nValue)
 	}
 }
 
-EArcType GetArcType(const HWP_STRING& sValue)
+EArcType GetArcType(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(PIE, sValue, EArcType);
 	ELSE_IF_STRING_IN_ENUM(CHORD, sValue, EArcType);

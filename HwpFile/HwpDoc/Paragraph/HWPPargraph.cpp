@@ -45,7 +45,7 @@ CHWPPargraph::CHWPPargraph(CXMLReader& oReader, int nVersion, EHanType eType)
 			else
 				m_chBreakType &= 0b11111011;
 		}
-		else if (GetAttributeName(EAttribute::ColumnBreak, eType) == sAttributeName)
+		else if (Equals(EAttribute::ColumnBreak, eType, sAttributeName))
 		{
 			if (oReader.GetBool())
 				m_chBreakType |= 0b00001000;
@@ -97,12 +97,6 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 
 	if (GetNodeName(ENode::SectionDef, eType) == sNodeName)
 		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader, nVersion));
-	else if (GetNodeName(ENode::Ctrl, eType) == sNodeName)
-	{
-		WHILE_READ_NEXT_NODE(oReader)
-			AddCtrl(CCtrl::GetCtrl(oReader, nVersion));
-		END_WHILE
-	}
 	else if (GetNodeName(ENode::Char, eType) == sNodeName)
 	{
 		if (oReader.IsEmptyNode())
@@ -170,6 +164,14 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 		m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oReader, nVersion, eType));
 	else if (GetNodeName(ENode::Video, eType) == sNodeName)
 		m_arP.push_back(new CCtrlShapeVideo(L"div$", oReader, nVersion, eType));
+	else if (EHanType::HWPX == eType && "hp:ctrl" == sNodeName)
+	{
+		WHILE_READ_NEXT_NODE(oReader)
+			AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPX));
+		END_WHILE
+	}
+	else if (EHanType::HWPML == eType)
+		AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPML));
 
 	if (unCurrentParaCount != m_arP.size())
 		return true;

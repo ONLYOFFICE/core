@@ -8,7 +8,7 @@ namespace HWP
 struct TCellZone
 {
 	short m_shStartRowAddr;
-	short m_shStartColAddr;;
+	short m_shStartColAddr;
 	short m_shEndRowAddr;
 	short m_shEndColAddr;
 	short m_shBorderFillIDRef;

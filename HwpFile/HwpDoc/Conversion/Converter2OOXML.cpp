@@ -596,7 +596,8 @@ void CConverter2OOXML::WriteParagraph(const CHWPPargraph* pParagraph, NSStringUt
 			}
 			case ECtrlObjectType::HeadFoot:
 			{
-				if (EHanType::HWPX == m_pContext->GetType())
+				if (EHanType::HWPX  == m_pContext->GetType() ||
+				    EHanType::HWPML == m_pContext->GetType())
 					oState.m_arCtrlsHeadFoot.push_back((const CCtrlHeadFoot*)pCtrl);
 				break;
 			}
@@ -1245,12 +1246,22 @@ void CConverter2OOXML::WriteSectionSettings(TConversionState& oState)
 	{
 		std::vector<const CCtrlHeadFoot*> arCtrlsHeadFoot;
 
-		if (EHanType::HWP == m_pContext->GetType())
-			arCtrlsHeadFoot = oState.m_pSectionDef->GetHeaderFooters();
-		else if (EHanType::HWPX == m_pContext->GetType())
+		switch (m_pContext->GetType())
 		{
-			arCtrlsHeadFoot = oState.m_arCtrlsHeadFoot;
-			oState.m_arCtrlsHeadFoot.clear();
+			case EHanType::HWP:
+			{
+				arCtrlsHeadFoot = oState.m_pSectionDef->GetHeaderFooters();
+				break;
+			}
+			case EHanType::HWPX:
+			case EHanType::HWPML:
+			{
+				arCtrlsHeadFoot = oState.m_arCtrlsHeadFoot;
+				oState.m_arCtrlsHeadFoot.clear();
+				break;
+			}
+			default:
+				return;
 		}
 
 		#define WRITE_ID(id)\
@@ -2000,7 +2011,8 @@ void CConverter2OOXML::WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStri
 
 	if (EHanType::HWP == m_pContext->GetType())
 		WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
-	else if (EHanType::HWPX == m_pContext->GetType())
+	else if (EHanType::HWPX == m_pContext->GetType() ||
+	         EHanType::HWPML == m_pContext->GetType())
 		WriteLineSettings(pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(), pCtrlPic->GetLineThick(), 1, oBuilder);
 }
 

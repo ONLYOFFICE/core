@@ -16,7 +16,7 @@ ENumType GetNumType(int nValue)
 	}
 }
 
-ENumType GetNumType(const HWP_STRING& sValue)
+ENumType GetNumType(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(FOOTNOTE, sValue, ENumType);
 	ELSE_IF_STRING_IN_ENUM(ENDNOTE, sValue, ENumType);

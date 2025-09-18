@@ -24,11 +24,22 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	oBuffer.ReadInt(m_nSerialInSec);
 }
 
-CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrl(sCtrlID)
 {
 	m_bIsHeader = L"daeh" == sCtrlID;
 
+	switch (eType)
+	{
+		case EHanType::HWPX: ReadFromHWPX(oReader, nVersion); break;
+		case EHanType::HWPML:ReadFromHWPML(oReader); break;
+	}
+
+	m_bFullFilled = true;
+}
+
+void CCtrlHeadFoot::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+{
 	m_eWhichPage = GetPageRange(oReader.GetAttributeInt("applyPageType"));
 
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:subList")
@@ -51,8 +62,36 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int
 		END_WHILE
 	}
 	END_WHILE
+}
 
-	m_bFullFilled = true;
+void CCtrlHeadFoot::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("ApplyPageType" == sAttributeName)
+		{
+			const std::string sValue{oReader.GetTextA()};
+
+			if ("Both" == sValue)
+				m_eWhichPage = EPageRange::BOTH;
+			else if ("Even" == sValue)
+				m_eWhichPage = EPageRange::EVEN;
+			else if ("Odd" == sValue)
+				m_eWhichPage = EPageRange::ODD;
+		}
+		else if ("TextHeight" == sAttributeName)
+			m_nTextHeight = oReader.GetInt();
+		else if ("TextWidth" == sAttributeName)
+			m_nTextWidth = oReader.GetInt();
+		//TODO:: Реализовать HasTextRef и HasTextRef
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "PARALIST")
+		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "P")
+			m_arParas.push_back(new CHWPPargraph(oReader, 0, EHanType::HWPML));
+		END_WHILE
+	END_WHILE
 }
 
 ECtrlObjectType CCtrlHeadFoot::GetCtrlType() const

@@ -8,11 +8,13 @@ namespace HWP
 {
 class CHWPMLFile
 {
+	using BinMap  = std::map <HWP_STRING, CHWPStream*>;
+
 	HWP_STRING           m_wsFilePath;
 	CHWPDocInfo          m_oDocInfo;
 	VECTOR<CHWPSection*> m_arSections;
-	std::map<unsigned int, BYTE*> m_mBinDates;
-	
+	BinMap m_mBinDates;
+
 	void ReadHead(CXMLReader& oReader);
 	void ReadBody(CXMLReader& oReader);
 	void ReadTail(CXMLReader& oReader);
@@ -29,7 +31,7 @@ public:
 
 	const CHWPDocInfo* GetDocInfo() const;
 	VECTOR<const CHWPSection*> GetSections() const;
-	const BYTE* GetBinData(unsigned int unID) const;
+	bool GetBinData(const HWP_STRING& sId, CHWPStream& oBuffer) const;
 };
 }
 

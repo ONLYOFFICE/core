@@ -8,6 +8,8 @@
 #include "CtrlPageNumPos.h"
 #include "CtrlField.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrl::CCtrl()
@@ -50,16 +52,16 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 	       pFirstCtrl->m_bFullFilled == pSecondCtrl->m_bFullFilled;
 }
 
-CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, int nVersion)
+CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, int nVersion, EHanType eType)
 {
 	const std::string sNodeName{oReader.GetName()};
 
 	if ("hp:colPr" == sNodeName)
 		return new CCtrlColumnDef(L"dloc", oReader, nVersion);
-	else if ("hp:header" == sNodeName)
-		return new CCtrlHeadFoot(L"daeh", oReader, nVersion);
-	else if ("hp:footer" == sNodeName)
-		return new CCtrlHeadFoot(L"toof", oReader, nVersion);
+	else if (GetNodeName(ENode::Header, eType) == sNodeName)
+		return new CCtrlHeadFoot(L"daeh", oReader, nVersion, eType);
+	else if (GetNodeName(ENode::Footer, eType) == sNodeName)
+		return new CCtrlHeadFoot(L"toof", oReader, nVersion, eType);
 	else if ("hp:footNote" == sNodeName)
 		return new CCtrlNote(L"  nf", oReader, nVersion);
 	else if ("hp:endNote" == sNodeName)

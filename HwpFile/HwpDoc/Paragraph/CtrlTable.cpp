@@ -1,5 +1,7 @@
 #include "CtrlTable.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID)
@@ -15,51 +17,51 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("rowCnt" == sAttributeName)
+		if (GetAttributeName(EAttribute::RowCount, eType) == sAttributeName)
 			m_shNRows = oReader.GetInt();
-		else if ("colCnt" == sAttributeName)
+		else if (GetAttributeName(EAttribute::ColCount, eType) == sAttributeName)
 			m_shNCols = oReader.GetInt();
-		else if ("cellSpacing" == sAttributeName)
+		else if (GetAttributeName(EAttribute::CellSpacing, eType) == sAttributeName)
 			m_shCellSpacing = oReader.GetInt();
-		else if ("borderFillIDRef" == sAttributeName)
+		else if (GetAttributeName(EAttribute::BorderFill, eType) == sAttributeName)
 			m_shBorderFillID = oReader.GetInt();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
-		if ("hp:inMargin" == sNodeName)
+		if (GetNodeName(ENode::InSideMargin, eType) == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if ("left" == sAttributeName)
+				if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
 					m_shInLSpace = oReader.GetInt();
-				else if ("right" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
 					m_shInRSpace = oReader.GetInt();
-				else if ("top" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
 					m_shInTSpace = oReader.GetInt();
-				else if ("bottom" == sAttributeName)
+				else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
 					m_shInBSpace = oReader.GetInt();
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
-		else if ("hp:cellzoneList" == sNodeName)
+		else if (GetNodeName(ENode::CellZoneList, eType) == sNodeName)
 		{
-			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:cellzone")
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::CellZone, eType))
 			{
 				TCellZone* pCellZone = new TCellZone();
 
 				START_READ_ATTRIBUTES(oReader)
 				{
-					if ("startRowAddr" == sAttributeName)
+					if (GetAttributeName(EAttribute::StartRowAddr, eType) == sAttributeName)
 						pCellZone->m_shStartRowAddr = oReader.GetInt();
-					else if ("startColAddr" == sAttributeName)
+					else if (GetAttributeName(EAttribute::StartColAddr, eType) == sAttributeName)
 						pCellZone->m_shStartColAddr = oReader.GetInt();
-					else if ("endRowAddr" == sAttributeName)
+					else if (GetAttributeName(EAttribute::EndRowAddr, eType) == sAttributeName)
 						pCellZone->m_shEndRowAddr = oReader.GetInt();
-					else if ("endColAddr" == sAttributeName)
+					else if (GetAttributeName(EAttribute::EndColAddr, eType) == sAttributeName)
 						pCellZone->m_shEndColAddr = oReader.GetInt();
-					else if ("borderFillIDRef" == sAttributeName)
+					else if (GetAttributeName(EAttribute::BorderFill, eType) == sAttributeName)
 						pCellZone->m_shBorderFillIDRef = oReader.GetInt();
 				}
 				END_READ_ATTRIBUTES(oReader)
@@ -68,10 +70,10 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 			}
 			END_WHILE
 		}
-		else if ("hp:tr" == sNodeName)
+		else if (GetNodeName(ENode::Row, eType) == sNodeName)
 		{
-			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:tc")
-				m_arCells.push_back(new CTblCell(oReader, nVersion));
+			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::Cell, eType))
+				m_arCells.push_back(new CTblCell(oReader, nVersion, eType));
 			END_WHILE
 		}
 		else

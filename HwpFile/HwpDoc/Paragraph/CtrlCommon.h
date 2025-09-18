@@ -109,6 +109,8 @@ class CCtrlCommon : public CCtrl
 	friend class CCtrlShapeVideo;
 	friend class CCtrlEqEdit;
 	friend class CCtrlTable;
+
+	void ReadAttributes(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlCommon();
 	CCtrlCommon(const HWP_STRING& sCtrlID);

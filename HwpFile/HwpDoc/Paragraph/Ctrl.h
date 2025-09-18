@@ -1,6 +1,8 @@
 #ifndef CTRL_H
 #define CTRL_H
 
+#include "../HanType.h"
+
 #include "../Common/Common.h"
 #include "../Common/XMLReader.h"
 
@@ -46,7 +48,7 @@ public:
 	void SetFullFilled();
 
 	static bool Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl);
-	static CCtrl* GetCtrl(CXMLReader& oReader, int nVersion);
+	static CCtrl* GetCtrl(CXMLReader& oReader, int nVersion, EHanType eType);
 };
 }
 

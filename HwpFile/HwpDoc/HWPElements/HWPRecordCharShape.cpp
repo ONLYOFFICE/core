@@ -19,7 +19,7 @@ EAccent GetAccent(int nValue)
 	}
 }
 
-EAccent GetAccent(const HWP_STRING& sValue)
+EAccent GetAccent(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(DOT, sValue, EAccent);
 	ELSE_IF_STRING_IN_ENUM(RING, sValue, EAccent);
@@ -59,7 +59,7 @@ EUnderline GetUnderline(int nValue)
 	}
 }
 
-EUnderline GetUnderline(const HWP_STRING& sValue)
+EUnderline GetUnderline(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(BOTTOM, sValue, EUnderline);
 	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EUnderline);
@@ -81,7 +81,7 @@ EOutline GetOutline(int nValue)
 	}
 }
 
-EOutline GetOutline(const HWP_STRING& sValue)
+EOutline GetOutline(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(SOLID, sValue, EOutline);
 	ELSE_IF_STRING_IN_ENUM(DOTTED, sValue, EOutline);
@@ -102,7 +102,7 @@ EShadow GetShadow(int nValue)
 	}
 }
 
-EShadow GetShadow(const HWP_STRING& sValue)
+EShadow GetShadow(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(DISCRETE, sValue, EShadow);
 	ELSE_IF_STRING_IN_ENUM(CONTINUOUS, sValue, EShadow);

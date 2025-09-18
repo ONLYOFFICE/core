@@ -20,7 +20,7 @@ ENumPos GetNumPos(int nValue)
 	}
 }
 
-ENumPos GetNumPos(const HWP_STRING& sValue)
+ENumPos GetNumPos(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(TOP_LEFT, sValue, ENumPos);
 	ELSE_IF_STRING_IN_ENUM(TOP_CENTER, sValue, ENumPos);

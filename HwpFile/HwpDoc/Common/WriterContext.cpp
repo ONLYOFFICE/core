@@ -336,6 +336,11 @@ bool CWriterContext::GetBinBytes(const HWP_STRING& sId, CHWPStream& oBuffer, HWP
 				sFileName = NSFile::GetFileName(pBinData->GetPath());
 				return m_pHWPXFile->GetChildStream(pBinData->GetPath(), oBuffer);
 			}
+			case EHanType::HWPML:
+			{
+				sFileName = pBinData->GetItemID() + L'.' + pBinData->GetFormat();
+				return m_pHWPMLFile->GetBinData(pBinData->GetItemID(), oBuffer);
+			}
 			default:
 				break;
 		}

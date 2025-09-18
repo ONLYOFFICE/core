@@ -81,7 +81,7 @@ CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion, EHanType
 
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("id" == sAttributeName)
+		if (GetAttributeName(EAttribute::BinData, eType) == sAttributeName)
 			m_sItemID = oReader.GetText();
 		else if (EHanType::HWPX == eType && "isEmbeded" == sAttributeName)
 		{
@@ -119,7 +119,7 @@ CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion, EHanType
 
 	if (EType::LINK != m_eType || sSubPath.empty())
 		return;
-	
+
 	m_sAPath = sSubPath;
 }
 

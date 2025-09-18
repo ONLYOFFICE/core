@@ -405,7 +405,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oR
 			m_oDiagonal.Read(oReader, eType);
 		else if (GetNodeName(ENode::FillBrush, eType) == sNodeName)
 			m_pFill = new CFill(oReader, eType);
-		else if (GetNodeName(ENode::Slash, eType) == sNodeName)
+		else if (Equals(ENode::Slash, eType, sNodeName))
 		{
 			START_READ_ATTRIBUTES(oReader)
 			{

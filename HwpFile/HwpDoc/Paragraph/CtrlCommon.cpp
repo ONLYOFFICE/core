@@ -23,8 +23,6 @@ namespace HWP
 
 	EVertAlign GetVertAlign(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(CENTER, sValue, EVertAlign);
 		ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVertAlign);
 		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EVertAlign);
@@ -44,8 +42,6 @@ namespace HWP
 
 	EVRelTo GetVRelTo(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(PARA, sValue, EVRelTo);
 		ELSE_IF_STRING_IN_ENUM(PAGE, sValue, EVRelTo);
 		ELSE_IF_STRING_IN_ENUM(PAPER, sValue, EVRelTo);
@@ -65,8 +61,6 @@ namespace HWP
 
 	EHRelTo GetHRelTo(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(PAGE, sValue, EHRelTo);
 		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EHRelTo);
 		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EHRelTo);
@@ -87,8 +81,6 @@ namespace HWP
 
 	EWidthRelTo GetWidthRelTo(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(PAGE, sValue, EWidthRelTo);
 		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EWidthRelTo);
 		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EWidthRelTo);
@@ -108,8 +100,6 @@ namespace HWP
 
 	EHeightRelTo GetHeightRelTo(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(PAGE, sValue, EHeightRelTo);
 		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EHeightRelTo);
 		ELSE_STRING_IN_ENUM(PAPER, EHeightRelTo);
@@ -129,8 +119,6 @@ namespace HWP
 
 	EHorzAlign GetHorzAlign(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(CENTER, sValue, EHorzAlign);
 		ELSE_IF_STRING_IN_ENUM(RIGHT, sValue, EHorzAlign);
 		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EHorzAlign);
@@ -151,8 +139,6 @@ namespace HWP
 
 	ETextWrap GetTextWrap(HWP_STRING sValue)
 	{
-		TO_UPPER(sValue);
-
 		IF_STRING_IN_ENUM(TOP_AND_BOTTOM, sValue, ETextWrap);
 		ELSE_IF_STRING_IN_ENUM(BEHIND_TEXT, sValue, ETextWrap);
 		ELSE_IF_STRING_IN_ENUM(IN_FRONT_OF_TEXT, sValue, ETextWrap);
@@ -268,7 +254,30 @@ namespace HWP
 	}
 
 	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-	    : CCtrl(sCtrlID), m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA), m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},  m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
+	    : CCtrl(sCtrlID), m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA),
+	      m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},
+	      m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP), m_nZOrder(0)
+	{
+		if (EHanType::HWPX == eType)
+			ReadAttributes(oReader, eType);
+	}
+
+	CCtrlCommon::~CCtrlCommon()
+	{
+		for (CHWPPargraph* pParagraph : m_arParas)
+		{
+			if (0 == pParagraph->Release())
+				pParagraph = nullptr;
+		}
+
+		for (CCapParagraph* pCapParagraph : m_arCaption)
+		{
+			if (0 == pCapParagraph->Release())
+				pCapParagraph = nullptr;
+		}
+	}
+
+	void CCtrlCommon::ReadAttributes(CXMLReader &oReader, EHanType eType)
 	{
 		std::string sType;
 
@@ -321,21 +330,6 @@ namespace HWP
 		END_READ_ATTRIBUTES(oReader)
 	}
 
-	CCtrlCommon::~CCtrlCommon()
-	{
-		for (CHWPPargraph* pParagraph : m_arParas)
-		{
-			if (0 == pParagraph->Release())
-				pParagraph = nullptr;
-		}
-
-		for (CCapParagraph* pCapParagraph : m_arCaption)
-		{
-			if (0 == pCapParagraph->Release())
-				pCapParagraph = nullptr;
-		}
-	}
-
 	ECtrlObjectType CCtrlCommon::GetCtrlType() const
 	{
 		return ECtrlObjectType::Common;
@@ -349,6 +343,17 @@ namespace HWP
 	void CCtrlCommon::ParseChildren(CXMLReader& oReader, int nVersion, EHanType eType)
 	{
 		const std::string sNodeName{oReader.GetName()};
+
+		if (EHanType::HWPML == eType && "SHAPEOBJECT" == sNodeName)
+		{
+			ReadAttributes(oReader, eType);
+
+			WHILE_READ_NEXT_NODE(oReader)
+				ParseChildren(oReader, nVersion, EHanType::HWPML);
+			END_WHILE
+
+			return;
+		}
 
 		if (GetNodeName(ENode::Size, eType) == sNodeName)
 		{

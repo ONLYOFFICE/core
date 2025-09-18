@@ -32,6 +32,7 @@ typedef char HWP_BYTE;
 #define WSTR(value) MAKE_WSTR(#value)
 
 #define IF_STRING_IN_ENUM(checked_value, value, enum_type)\
+	TO_UPPER(value);\
 	if (WSTR(checked_value) == value)\
 		return enum_type::checked_value
 #define ELSE_IF_STRING_IN_ENUM(checked_value, value, enum_type)\

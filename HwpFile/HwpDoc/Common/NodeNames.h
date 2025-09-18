@@ -90,7 +90,7 @@ enum class ENode
 	InSideMargin,
 	Caption,
 	TransformMatrix,
-	ScaleMatrix,
+	ScaleMatrix,             //80
 	RotationMatrix,
 	LineShape,
 	ShadowEffect,
@@ -98,9 +98,16 @@ enum class ENode
 	SoftEdgeEffect,
 	ReflectionEffect,
 	EffectsColor,
-	
+	DrawText,
+	TextMargin,
+	Header,                  //90
+	Footer,
+	CellZoneList,
+		CellZone,
+	Row,
+		Cell,
+
 	//Only hwpx
-	Ctrl,
 	Lineseg,
 	LinesegArray,
 	Video,
@@ -112,7 +119,7 @@ enum class ENode
 };
 
 #define MAX_TYPES 2
-#define MAX_NODES 100
+#define MAX_NODES 110
 
 static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] = 
 {
@@ -209,14 +216,23 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"hp:softEdge",
 		"hp:reflection",
 		"hp:effectsColor",
+		"hp:drawText",
+		"hp:textMargin",
+		"hp:header",
+		"hp:footer",
+		"hp:cellzoneList",
+			"hp:cellzone",
+		"hp:tr",
+			"hp:tc",
 
-		"hp:ctrl",
 		"hp:lineseg",
 		"hp:linesegarray",
 		"hp:video",
 		"hp:switch",
 		"hp:case",
-		"hp:default"
+		"hp:default",
+		"hh:slash",
+		"hh:backSlash"
 	},
 // HWPML
 	{
@@ -310,7 +326,16 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 		"SOFTEDGE",
 		"REFLECTION",
 		"EFFECTSCOLOR",
+		"DRAWTEXT",
+		"TEXTMARGIN",
+		"HEADER",
+		"FOOTER",
+		"CELLZONELIST",
+			"CELLZONE",
+		"ROW",
+			"CELL",
 
+		"",
 		"",
 		"",
 		"",
@@ -328,6 +353,16 @@ inline const char* GetNodeName(ENode eNode, EHanType eType)
 		case EHanType::HWPX:  return NODE_NAMES[0][static_cast<int>(eNode)];
 		case EHanType::HWPML: return NODE_NAMES[1][static_cast<int>(eNode)];
 		default: return "";
+	}
+}
+
+inline bool Equals(ENode eNode, EHanType eType, std::string sNodeName)
+{
+	switch (eType)
+	{
+		case EHanType::HWPX:  return NODE_NAMES[0][static_cast<int>(eNode)] == sNodeName;
+		case EHanType::HWPML: return NODE_NAMES[1][static_cast<int>(eNode)] == sNodeName;
+		default: return false;
 	}
 }
 
@@ -462,7 +497,7 @@ enum class EAttribute
 	MatrixElement1_2,
 	MatrixElement2_1,
 	MatrixElement2_2,
-	MatrixElementOffsetX,
+	MatrixElementOffsetX, // 130
 	MatrixElementOffsetY,
 	HeadStyle,
 	HeadSize,
@@ -472,13 +507,22 @@ enum class EAttribute
 	Direction,
 	Distance,
 	RotationStyle,
-	FadeDirection,
+	FadeDirection,        //140
+	BinData,
+	RepeatHeader,
+	RowCount,
+	ColCount,
+	CellSpacing,
+	StartRowAddr,
+	StartColAddr,
+	EndRowAddr,
+	EndColAddr,
 
 	PageBreak,
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 150
+#define MAX_ATTRIBUTES 160
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -569,10 +613,10 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"eAsianEng",
 		"eAsianNum",
 		"indent",
-		"top",
-		"bottom",
-		"",
-		"",
+		"left",
+		"right",
+		"prev",
+		"next",
 		"",
 		"",               //90
 		"borderFillIDRef",
@@ -585,7 +629,7 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"engName",
 		"nextStyleIDRef",
 		"langID",         //100
-		"id"
+		"id",
 		"lockForm",
 		"name",
 		"textFlow",
@@ -625,6 +669,15 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"distance",
 		"rotationStyle",
 		"fadeDirection",
+		"id",
+		"repeatHeader",
+		"rowCnt",
+		"colCnt",
+		"cellSpacing",
+		"startRowAddr",
+		"startColAddr",
+		"endRowAddr",
+		"endColAddr",
 
 		"pageBreak",
 		"columnBreak",
@@ -771,6 +824,15 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"Distance",
 		"RotationStyle",
 		"FadeDirection",
+		"BinData",
+		"RepeatHeader",
+		"RowCount",
+		"ColCount",
+		"CellSpacing",
+		"StartRowAddr",
+		"StartColAddr",
+		"EndRowAddr",
+		"EndColAddr",
 
 		"PageBreak",
 		"ColumnBreak"
@@ -784,6 +846,16 @@ inline const char* GetAttributeName(EAttribute eNode, EHanType eType)
 		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][static_cast<int>(eNode)];
 		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][static_cast<int>(eNode)];
 		default: return "";
+	}
+}
+
+inline bool Equals(EAttribute eAttribute, EHanType eType, std::string sAttributeName)
+{
+	switch (eType)
+	{
+		case EHanType::HWPX:  return ATTRUBUTE_NAMES[0][static_cast<int>(eAttribute)] == sAttributeName;
+		case EHanType::HWPML: return ATTRUBUTE_NAMES[1][static_cast<int>(eAttribute)] == sAttributeName;
+		default: return false;
 	}
 }
 
@@ -896,7 +968,14 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"MEDIUM_LARGE",
 		"LARGE_SMALL",
 		"LARGE_MEDIUM",
-		"LARGE_LARGE"
+		"LARGE_LARGE",
+		"NORMAL",
+		"ARROW",
+		"SPEAR",
+		"CONCAVE_ARROW",
+		"EMPTY_DIAMOND",
+		"EMPTY_CIRCLE",
+		"EMPTY_BOX"
 	},
 //HWPML
 	{
@@ -945,7 +1024,14 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"MediumLarge",
 		"LargeSmall",
 		"LargeMedium",
-		"LargeLarge"
+		"LargeLarge",
+		"Normal",
+		"Arrow",
+		"Spear",
+		"ConcaveArrow",
+		"EmptyDiamond",
+		"EmptyCircle",
+		"EmptyBox"
 	}
 };
 

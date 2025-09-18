@@ -50,7 +50,7 @@ inline ELineStyle1 GetLineStyle1(int nValue)
 	}
 }
 
-inline ELineStyle1 GetLineStyle1(const HWP_STRING& sValue)
+inline ELineStyle1 GetLineStyle1(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(SOLID, sValue, ELineStyle1);
 	ELSE_IF_STRING_IN_ENUM(DASH, sValue, ELineStyle1);
@@ -107,7 +107,7 @@ inline ELineStyle2 GetLineStyle2(int nValue)
 	}
 }
 
-inline ELineStyle2 GetLineStyle2(const HWP_STRING& sValue)
+inline ELineStyle2 GetLineStyle2(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(NONE, sValue, ELineStyle2);
 	ELSE_IF_STRING_IN_ENUM(SOLID, sValue, ELineStyle2);
@@ -165,7 +165,7 @@ inline ENumberShape1 GetNumberShape1(int nValue)
 	}
 }
 
-inline ENumberShape1 GetNumberShape1(const HWP_STRING& sValue)
+inline ENumberShape1 GetNumberShape1(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(DIGIT, sValue, ENumberShape1);
 	ELSE_IF_STRING_IN_ENUM(CIRCLE_DIGIT, sValue, ENumberShape1);
@@ -234,7 +234,7 @@ inline ENumberShape2 GetNumberShape2(int nValue)
 	}
 }
 
-inline ENumberShape2 GetNumberShape2(const HWP_STRING& sValue)
+inline ENumberShape2 GetNumberShape2(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(DIGIT, sValue, ENumberShape2);
 	ELSE_IF_STRING_IN_ENUM(CIRCLE_DIGIT, sValue, ENumberShape2);
@@ -290,7 +290,7 @@ inline ELineArrowStyle GetLineArrowStyle(int nNum, bool bFill)
 	}
 }
 
-inline ELineArrowStyle GetLineArrowStyle(const HWP_STRING& sValue)
+inline ELineArrowStyle GetLineArrowStyle(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(NORMAL, sValue, ELineArrowStyle);
 	ELSE_IF_STRING_IN_ENUM(ARROW, sValue, ELineArrowStyle);
@@ -334,7 +334,7 @@ inline ELineArrowSize GetLineArrowSize(int nValue)
 	}
 }
 
-inline ELineArrowSize GetLineArrowSize(const HWP_STRING& sValue)
+inline ELineArrowSize GetLineArrowSize(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(SMALL_SMALL, sValue, ELineArrowSize);
 	ELSE_IF_STRING_IN_ENUM(SMALL_MEDIUM, sValue, ELineArrowSize);

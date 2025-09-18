@@ -354,29 +354,7 @@ void CCtrlShapePic::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 		else if ("hp:effects" == sNodeName)
 			ReadEffects(oReader, EHanType::HWPX);
 		else if ("hc:img" == sNodeName)
-		{
-			START_READ_ATTRIBUTES(oReader)
-			{
-				if ("bright" == sAttributeName)
-					m_chBright = (HWP_BYTE)oReader.GetInt();
-				else if ("contrast" == sAttributeName)
-					m_chContrast = (HWP_BYTE)oReader.GetInt();
-				else if ("effect" == sAttributeName)
-				{
-					const std::string sType{oReader.GetTextA()};
-
-					if ("REAL_PIC" == sType)
-						m_chEffect = 0;
-					else if ("GRAY_SCALE" == sType)
-						m_chEffect = 1;
-					else if ("BLACK_WHITE" == sType)
-						m_chEffect = 2;
-				}
-				else if ("binaryItemIDRef" == sAttributeName)
-					m_sBinDataID = oReader.GetText();
-			}
-			END_READ_ATTRIBUTES(oReader)
-		}
+			ReadImage(oReader, EHanType::HWPX);
 		else if ("hp:imgDim" == sNodeName)
 		{
 			START_READ_ATTRIBUTES(oReader)
@@ -419,6 +397,10 @@ void CCtrlShapePic::ReadFromHWPML(CXMLReader &oReader)
 			ReadImageClip(oReader, EHanType::HWPML);
 		else if ("EFFECTS" == sNodeName)
 			ReadEffects(oReader, EHanType::HWPML);
+		else if ("IMAGE" == sNodeName)
+			ReadImage(oReader, EHanType::HWPML);
+		else
+			CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
 	}
 	END_WHILE
 }
@@ -453,6 +435,31 @@ void CCtrlShapePic::ReadEffects(CXMLReader &oReader, EHanType eType)
 			m_arPicEffect.push_back(new CReflect(oReader, eType));
 	}
 	END_WHILE
+}
+
+void CCtrlShapePic::ReadImage(CXMLReader &oReader, EHanType eType)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if (GetAttributeName(EAttribute::Bright, eType) == sAttributeName)
+			m_chBright = (HWP_BYTE)oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Contrast, eType) == sAttributeName)
+			m_chContrast = (HWP_BYTE)oReader.GetInt();
+		else if (GetAttributeName(EAttribute::Effect, eType) == sAttributeName)
+		{
+			const std::string sType{oReader.GetTextA()};
+
+			if (GetValueName(EValue::RealPic, eType) == sType)
+				m_chEffect = 0;
+			else if (GetValueName(EValue::GrayScale, eType) == sType)
+				m_chEffect = 1;
+			else if (GetValueName(EValue::BlackWhite, eType) == sType)
+				m_chEffect = 2;
+		}
+		else if (GetAttributeName(EAttribute::BinItem, eType) == sAttributeName)
+			m_sBinDataID = oReader.GetText();
+	}
+	END_READ_ATTRIBUTES(oReader)
 }
 
 EShapeType CCtrlShapePic::GetShapeType() const

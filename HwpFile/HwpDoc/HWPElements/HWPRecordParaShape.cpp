@@ -15,7 +15,7 @@ EHeadingType GetHeadingType(int nValue)
 	}
 }
 
-EHeadingType GetHeadingType(const HWP_STRING& sValue)
+EHeadingType GetHeadingType(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(OUTLINE, sValue, EHeadingType);
 	ELSE_IF_STRING_IN_ENUM(NUMBER, sValue, EHeadingType);
@@ -36,7 +36,7 @@ EHorizontalAlign GetHorizontalAlign(int nValue)
 	}
 }
 
-EHorizontalAlign GetHorizontalAlign(const HWP_STRING& sValue)
+EHorizontalAlign GetHorizontalAlign(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(RIGHT, sValue, EHorizontalAlign);
 	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EHorizontalAlign);
@@ -57,7 +57,7 @@ EVerticalAlign GetVerticalAlign(int nValue)
 	}
 }
 
-EVerticalAlign GetVerticalAlign(const HWP_STRING& sValue)
+EVerticalAlign GetVerticalAlign(HWP_STRING sValue)
 {
 	IF_STRING_IN_ENUM(CENTER, sValue, EVerticalAlign);
 	ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVerticalAlign);

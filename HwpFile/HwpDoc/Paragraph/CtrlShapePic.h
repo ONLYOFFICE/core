@@ -135,6 +135,7 @@ class CCtrlShapePic : public CCtrlGeneralShape
 
 	void ReadImageClip(CXMLReader& oReader, EHanType eType);
 	void ReadEffects(CXMLReader& oReader, EHanType eType);
+	void ReadImage(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlShapePic();
 	CCtrlShapePic(const HWP_STRING& sCtrlID);

@@ -376,6 +376,7 @@ const CHWPRecord* CHWPDocInfo::GetBinData(const HWP_STRING& sID) const
 	{
 		case EHanType::HWP:
 		case EHanType::HWPX:
+		case EHanType::HWPML:
 		{
 			std::map<HWP_STRING, CHWPRecord*>::const_iterator itFound = m_mBinDatas.find(sID);
 

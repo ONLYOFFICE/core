@@ -21,7 +21,7 @@ enum class ENumType
 };
 
 ENumType GetNumType(int nValue);
-ENumType GetNumType(const HWP_STRING& sValue);
+ENumType GetNumType(HWP_STRING sValue);
 
 class CCtrlAutoNumber : public CCtrl
 {

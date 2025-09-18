@@ -74,7 +74,7 @@ TMatrix ReadMatrix(CXMLReader& oReader, EHanType eType)
 }
 
 CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlCommon(sCtrlID, oReader, nVersion, eType)
+    : CCtrlCommon(sCtrlID, oReader, nVersion, eType), m_nCurWidth(0), m_nCurHeight(0)
 {
 	if (EHanType::HWPX == eType)
 		m_shNGrp = oReader.GetAttributeInt("groupLevel");

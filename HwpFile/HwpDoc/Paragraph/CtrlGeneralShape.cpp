@@ -88,6 +88,9 @@ EShapeType CCtrlGeneralShape::GetShapeType() const
 
 ELineArrowSize CheckLineSize(const std::string& sLineSzType, EHanType eType)
 {
+	if (sLineSzType.empty())
+		return ELineArrowSize::MEDIUM_MEDIUM;
+
 	if (GetValueName(EValue::SmallSmall, eType) == sLineSzType)
 		return ELineArrowSize::SMALL_SMALL;
 	else if (GetValueName(EValue::SmallMedium, eType) == sLineSzType)
@@ -112,6 +115,9 @@ ELineArrowSize CheckLineSize(const std::string& sLineSzType, EHanType eType)
 
 ELineArrowStyle CheckLineArrowStyle(const std::string& sLineArrowStyle, bool bHeadFill, EHanType eType)
 {
+	if (sLineArrowStyle.empty())
+		return ELineArrowStyle::NORMAL;
+
 	if (GetValueName(EValue::Arrow, eType) == sLineArrowStyle)
 		return ELineArrowStyle::ARROW;
 	else if (GetValueName(EValue::Spear, eType) == sLineArrowStyle)
@@ -136,7 +142,7 @@ ELineArrowStyle CheckLineArrowStyle(const std::string& sLineArrowStyle, bool bHe
 	{
 		if (EHanType::HWPX == eType)
 			return bHeadFill ? ELineArrowStyle::BOX : ELineArrowStyle::EMPTY_BOX;
-		
+
 		return ELineArrowStyle::EMPTY_BOX;
 	}
 
@@ -179,30 +185,30 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 		m_eLineHead = CheckLineArrowStyle(sHeadStyle, bHeadFill, eType);
 		m_eLineTail = CheckLineArrowStyle(sTailStyle, bTailFill, eType);
 	}
-	else if ("hc:fillBrush" == sNodeName)
+	else if (GetNodeName(ENode::FillBrush, eType) == sNodeName)
 		m_pFill = new CFill(oReader, eType);
-	else if ("hp:drawText" == sNodeName)
+	else if (GetNodeName(ENode::DrawText, eType) == sNodeName)
 	{
-		m_nMaxTxtWidth = oReader.GetAttributeInt("lastWidth");
+		m_nMaxTxtWidth = oReader.GetAttributeInt(GetAttributeName(EAttribute::LastWidth, eType));
 
 		WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
 		{
-			if ("hp:textMargin" == sNodeChildName)
+			if (GetNodeName(ENode::TextMargin, eType) == sNodeChildName)
 			{
 				START_READ_ATTRIBUTES(oReader)
 				{
-					if ("left" == sAttributeName)
+					if (GetAttributeName(EAttribute::Left, eType) == sAttributeName)
 						m_shLeftSpace = oReader.GetInt();
-					else if ("right" == sAttributeName)
+					else if (GetAttributeName(EAttribute::Right, eType) == sAttributeName)
 						m_shRightSpace =  oReader.GetInt();
-					else if ("top" == sAttributeName)
+					else if (GetAttributeName(EAttribute::Top, eType) == sAttributeName)
 						m_shTopSpace =  oReader.GetInt();
-					else if ("bottom" == sAttributeName)
+					else if (GetAttributeName(EAttribute::Bottom, eType) == sAttributeName)
 						m_shBottomSpace =  oReader.GetInt();
 				}
 				END_READ_ATTRIBUTES(oReader)
 			}
-			else if ("hp:subList" == sNodeChildName)
+			else if (EHanType::HWPX == eType && "hp:subList" == sNodeChildName)
 				ReadSubList(oReader, nVersion);
 		}
 		END_WHILE

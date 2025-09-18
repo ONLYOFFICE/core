@@ -5,6 +5,13 @@ import type {
     GenerateKeyAlgorithm, GenerateKeyUsages,
     SignAlgorithm
 } from "./crypto-types.ts";
+const pbkdf2Parameters = {
+  iterations: 150000,
+  hash: "SHA-256",
+};
+const aesGCMParameters = {
+    keyLength: 256
+};
 class CCryptoBase {
         sign(_algorithm: SignAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer> {
             return new Promise(function (_resolve, reject) {
@@ -73,6 +80,43 @@ class CCryptoBase {
         override generateKey(algorithm: GenerateKeyAlgorithm, extractable: boolean, keyUsages: GenerateKeyUsages) {
             return this.subtle.generateKey(algorithm, extractable, keyUsages);
         };
+        getAesCryptoKeyFromMasterPassword(masterPassword: string, salt) {
+            const encoder = new TextEncoder();
+            const pwKey = await crypto.subtle.importKey(
+                'raw',
+                encoder.encode(masterPassword),
+                { name: 'PBKDF2' },
+                false,
+                ['deriveKey']
+            );
+            const aesKey = await crypto.subtle.deriveKey(
+                {
+                    name: 'PBKDF2',
+                    salt: salt,
+                    iterations: pbkdf2Parameters.iterations,
+                    hash: pbkdf2Parameters.hash
+                },
+                pwKey,
+                { name: 'AES-GCM', length: aesGCMParameters.keyLength },
+                false,
+                ['encrypt', 'decrypt']
+            );
+            return aesKey;
+        }
+        encryptWithMasterPassword(masterPassword: string, salt, data: CryptoData) {
+
+        }
+        decryptWithMasterPassword(masterPassword: string, salt, data) {
+
+        }
     }
 
-export default CWebCrypto;
+    const initCrypto = () => {
+    return new CWebCrypto();
+}
+
+    const generateSalt = () => {
+
+    }
+
+export default initCrypto;

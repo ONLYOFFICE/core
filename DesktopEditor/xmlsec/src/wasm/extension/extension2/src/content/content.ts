@@ -1,10 +1,15 @@
 import {sendToBackground, sendToPage} from "./messenger.ts";
-import {messageListeners, onlyofficeClientChannel, onlyofficeExtensionChannel} from "../common/message-const.ts";
-import type {MessageType} from "../common/message-types.ts";
+import {messageTypes, onlyofficeChannels} from "../common/message-const.ts";
+import {
+    type DispatchEventMessageType,
+    isMessages,
+} from "../common/message-types.ts";
 
-window.addEventListener(onlyofficeExtensionChannel, (event: CustomEvent<MessageType>) => {
+window.addEventListener(onlyofficeChannels.onlyofficeExtensionChannel, (event: CustomEvent<DispatchEventMessageType>) => {
     sendToBackground(event.detail.data).then((response: unknown) => {
-        sendToPage({id: event.detail.id, response: response});
+        if (isMessages(response)) {
+            sendToPage({id: event.detail.id, data: response});
+        }
     });
 });
-window.dispatchEvent(new CustomEvent(onlyofficeClientChannel, {detail: {isInitExtension: true}}));
+window.dispatchEvent(new CustomEvent<DispatchEventMessageType>(onlyofficeChannels.onlyofficeClientChannel, {detail: {data: {type: messageTypes.ENGINE_IS_EXIST}}}));

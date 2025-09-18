@@ -1,11 +1,17 @@
-const messageTypes = {
+export const messageTypes = {
     GENERATE_KEYS: "GENERATE_KEYS",
     POPUP_IS_OPENED: "POPUP_IS_OPENED",
+    WAIT_ENTER_PASSWORD: "WAIT_ENTER_PASSWORD",
+    ENCRYPT: "ENCRYPT",
+    ENGINE_IS_EXIST: "ENGINE_IS_EXIST"
 } as const;
-const messageListeners = {
+
+export const messageListeners = {
     background: "background",
     popup: "popup",
 } as const;
-const onlyofficeExtensionChannel = "onlyoffice-sign-extension-channel";
-const onlyofficeClientChannel = "onlyoffice-sign-client-channel";
-export {messageTypes, onlyofficeExtensionChannel, onlyofficeClientChannel, messageListeners};
+
+export const onlyofficeChannels = {
+    onlyofficeExtensionChannel: "onlyoffice-sign-extension-channel",
+    onlyofficeClientChannel: "onlyoffice-sign-client-channel",
+} as const;

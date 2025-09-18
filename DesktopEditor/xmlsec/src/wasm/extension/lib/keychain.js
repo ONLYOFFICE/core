@@ -52,7 +52,6 @@
 	Keychain.prototype.checkExistEngine = async function()
 	{
 		let result = await pluginMessenger.isInitExtension();
-		await pluginMessenger.postMessage({isCheck: true});
 		return !!result;
 	};
 

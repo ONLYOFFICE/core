@@ -1,13 +1,17 @@
-import type {Messages} from "../common/message-types.ts";
+import type {BackgroundMessage, DispatchEventMessageType, MessagesType, PopupMessage} from "../common/message-types.ts";
 import browser from "webextension-polyfill";
-import {messageListeners, onlyofficeClientChannel} from "../common/message-const.ts";
+import {messageListeners, onlyofficeChannels} from "../common/message-const.ts";
 
-const sendToBackground = async (data: Messages) => {
-    const backgroundData = {...data, listener: messageListeners.background};
+export const sendToBackground = async (data: MessagesType) => {
+    const backgroundData: BackgroundMessage = {data, listener: messageListeners.background};
     return await browser.runtime.sendMessage(backgroundData);
 };
-const sendToPage = (data: unknown) => {
-    window.dispatchEvent(new CustomEvent(onlyofficeClientChannel, {detail: data}));
+
+export const sendToPopup = async (data: MessagesType) => {
+    const sendData: PopupMessage = {listener: messageListeners.popup, data};
+    return await browser.runtime.sendMessage(sendData);
 };
 
-export {sendToBackground, sendToPage};
+export const sendToPage = (data: DispatchEventMessageType) => {
+    window.dispatchEvent(new CustomEvent<DispatchEventMessageType>(onlyofficeChannels.onlyofficeClientChannel, {detail: data}));
+};

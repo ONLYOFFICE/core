@@ -28,8 +28,8 @@
 		window.addEventListener(onlyofficeClientChannel, (event) => {
 			if (event.detail && typeof event.detail.id === 'number' && this.resolvers[event.detail.id]) {
 				const resolve = this.resolvers[event.detail.id];
-				resolve(event.detail.response);
 				delete this.resolvers[event.detail.id];
+				resolve(event.detail.data);
 			}
 		});
 	};

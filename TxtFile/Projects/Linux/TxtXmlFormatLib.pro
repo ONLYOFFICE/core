@@ -24,6 +24,7 @@ DEFINES += UNICODE \
 include($$PWD/../../../Common/3dParty/boost/boost.pri)
 
 HEADERS += \
+	../../Source/PptxTxtConverter.h \
 	../../Source/TxtFormat/File.h \
 	../../Source/TxtFormat/TxtFile.h \
 	../../Source/TxtRenderer.h \
@@ -32,6 +33,7 @@ HEADERS += \
 	../../Source/ConvertTxt2Docx.h
 
 SOURCES += \
+	../../Source/PptxTxtConverter.cpp \
 	../../Source/TxtFormat/File.cpp \
 	../../Source/TxtFormat/TxtFile.cpp \
 	../../Source/TxtRenderer.cpp \

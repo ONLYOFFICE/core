@@ -153,6 +153,30 @@ const bool FEAT11::loadContent(BinProcessor& proc)
 	return true;
 }
 
+const bool FEAT11::saveContent(BinProcessor& proc)
+{
+	if(m_FeatHdr11 != nullptr)
+		proc.mandatory(*m_FeatHdr11);
+	else
+		proc.mandatory<FeatHdr11>();
+	for(auto i : m_arFEAT)
+	{
+		if(i.m_Feature != nullptr)
+			proc.mandatory(*i.m_Feature);
+		for(auto j : i.m_arList12)
+			proc.mandatory(*j);
+		if(i.m_AutoFilter12 != nullptr)
+			proc.mandatory(*i.m_AutoFilter12);
+		for(auto j : i.m_arList12_2)
+			if(j != nullptr)
+				proc.mandatory(*j);
+		if(i.m_SORTDATA12 != nullptr)
+			proc.mandatory(*i.m_SORTDATA12);
+	}
+
+	return true;
+}
+
 int FEAT11::serialize(std::wostream & strm, size_t index)
 {
 	FeatHdr11 * feature = dynamic_cast<FeatHdr11*>(m_FeatHdr11.get());

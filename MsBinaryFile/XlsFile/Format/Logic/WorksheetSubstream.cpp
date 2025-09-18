@@ -818,6 +818,9 @@ const bool WorksheetSubstream::saveContent(BinProcessor& proc)
 	for(auto i : m_arFEAT)
 		if(i != nullptr)
 			proc.mandatory(*i);
+	for(auto i : m_arFEAT11)
+		if(i != nullptr)
+			proc.mandatory(*i);
 	for(auto i : m_arRECORD12)
 		if(i != nullptr)
 			proc.mandatory(*i);

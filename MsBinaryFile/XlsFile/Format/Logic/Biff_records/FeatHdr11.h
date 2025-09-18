@@ -48,12 +48,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType	type = typeFeatHdr11;
 
 	FrtHeader	frt;
-	_UINT16		isf;
-	_UINT32		idListNext;
+	_UINT16		isf = 0x0005;
+	_UINT32		idListNext = 1;
 
 };
 

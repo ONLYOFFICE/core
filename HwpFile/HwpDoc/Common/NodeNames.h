@@ -106,6 +106,20 @@ enum class ENode
 		CellZone,
 	Row,
 		Cell,
+	AutoNum,
+		AutoNumFormat,
+	NewNum,
+	FieldBegin,
+	FieldEnd,                //100
+	PageNum,
+	FootNote,
+	EndNote,
+	ParaList,
+	ColumnDef,
+		ColumnLine,
+	Script,
+	Point,
+	Segment,
 
 	//Only hwpx
 	Lineseg,
@@ -119,7 +133,7 @@ enum class ENode
 };
 
 #define MAX_TYPES 2
-#define MAX_NODES 110
+#define MAX_NODES 120
 
 static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] = 
 {
@@ -224,6 +238,20 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 			"hp:cellzone",
 		"hp:tr",
 			"hp:tc",
+		"hp:autoNum",
+			"hp:autoNumFormat",
+		"hp:newNum",
+		"hp:fieldBegin",
+		"hp:fieldEnd",
+		"hp:pageNum",
+		"hp:footNote",
+		"hp:endNote",
+		"hp:subList",
+		"hp:colPr",
+			"hp:colLine",
+		"hp:script",
+		"hc:pt",
+		"hp:seg",
 
 		"hp:lineseg",
 		"hp:linesegarray",
@@ -334,6 +362,20 @@ static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] =
 			"CELLZONE",
 		"ROW",
 			"CELL",
+		"AUTONUM",
+			"AUTONUMFORMAT",
+		"NEWNUM",
+		"FIELDBEGIN",
+		"FIELDEND",
+		"PAGENUM",
+		"FOOTNOTE",
+		"ENDNOTE",
+		"PARALIST",
+		"COLDEF",
+			"COLUMNLINE",
+		"SCRIPT",
+		"POINT",
+		"SEGMENT",
 
 		"",
 		"",
@@ -375,7 +417,7 @@ enum class EAttribute
 	SubPath,
 	MediaType,
 	Type,
-	FontName,
+	FaceName,
 	FamilyType,
 	SerifStyle,     //10
 	Weight,
@@ -517,12 +559,37 @@ enum class EAttribute
 	StartColAddr,
 	EndRowAddr,
 	EndColAddr,
+	NumberType,           //150
+	SuperScript,
+	SubScript,
+	FieldId,
+	Pos,
+	FormatType,
+	SideChar,
+	ColumnCount,
+	SameSize,
+	SameGap,
+	Version,              //160
+	BaseLine,
+	BaseUnit,
+	LineMode,
+	X,
+	Y,
+	X1,
+	Y1,
+	X2,
+	Y2,
+	FontName,             //170
+	FontStyle,
+	FontType,
+	TextShape,
+	Spacing,
 
 	PageBreak,
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 160
+#define MAX_ATTRIBUTES 180
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -596,8 +663,8 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"numFormat",
 		"charPrIDRef",
 		"",
-		"",
-		"",
+		"align",
+		"verAlign",
 		"",               //70
 		"tabPrIDRef",
 		"breakLatinWord",
@@ -678,6 +745,31 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"startColAddr",
 		"endRowAddr",
 		"endColAddr",
+		"numType",
+		"supscript",
+		"subscript",
+		"fieldid",
+		"pos",
+		"formatType",
+		"sideChar",
+		"colCount",
+		"sameSz",
+		"sameGap",
+		"version",
+		"baseLine",
+		"baseUnit",
+		"lineMode",
+		"x",
+		"y",
+		"x1",
+		"y1",
+		"x2",
+		"y2",
+		"fontName",
+		"fontStyle",
+		"fontType",
+		"textShape",
+		"spacing",
 
 		"pageBreak",
 		"columnBreak",
@@ -833,6 +925,31 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"StartColAddr",
 		"EndRowAddr",
 		"EndColAddr",
+		"NumberType",
+		"Superscript",
+		"Subscript",
+		"InstId",
+		"Pos",
+		"FormatType",
+		"SideChar",
+		"Count",
+		"SameSize",
+		"SameGap",
+		"Version",
+		"BaseUnit",
+		"BaseLine",
+		"LineMode",
+		"X",
+		"Y",
+		"X1",
+		"Y1",
+		"X2",
+		"Y2",
+		"FontName",
+		"FontStyle",
+		"FontType",
+		"TextShape",
+		"Spacing",
 
 		"PageBreak",
 		"ColumnBreak"
@@ -858,8 +975,6 @@ inline bool Equals(EAttribute eAttribute, EHanType eType, std::string sAttribute
 		default: return false;
 	}
 }
-
-#define MAX_VALUES 60
 
 // TODO:: пока всё в одном месте. Возможно стоит лучше разделить по соответствующим классам
 enum class EValue
@@ -916,8 +1031,34 @@ enum class EValue
 	ConcaveArrow,          //50
 	EmptyDiamond,
 	EmptyCircle,
-	EmptyBox
+	EmptyBox,
+	RomanCapital,
+	LatinCapital,
+	CircledLatinCapital,
+	CircledLatinSmall,
+	HangulPhonetic,
+	Ideograph,
+	CircledIdeograph,      //60
+	DecagonCircle,
+	DecagonCircleHanja,
+	Symbol,
+	UserChar,
+	Hyperlink,
+	Bookmark,
+	Line,
+	Curve,
+	Page,
+	Footnote,              //70
+	Endnote,
+	TotalPage,
+	Inside,
+	Outside,
+	Paper,
+	Column,
+	Absolute
 };
+
+#define MAX_VALUES 80
 
 static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] = 
 {
@@ -975,7 +1116,31 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"CONCAVE_ARROW",
 		"EMPTY_DIAMOND",
 		"EMPTY_CIRCLE",
-		"EMPTY_BOX"
+		"EMPTY_BOX",
+		"ROMAN_CAPITAL",
+		"LATIN_CAPITAL",
+		"CIRCLED_LATIN_CAPITAL",
+		"CIRCLED_LATIN_SMALL",
+		"HANGUL_PHONETIC",
+		"IDEOGRAPH",
+		"CIRCLED_IDEOGRAPH",
+		"DECAGON_CIRCLE",
+		"DECAGON_CRICLE_HANGJA",
+		"SYMBOL",
+		"USER_CHAR",
+		"HYPERLINK",
+		"BOOKMARK",
+		"LINE",
+		"CURVE",
+		"PAGE",
+		"FOOTNOTE",
+		"ENDNOTE",
+		"TOTAL_PAGE",
+		"INSIDE",
+		"OUTSIDE",
+		"PAPER",
+		"COLUMN",
+		"ABSOLUTE"
 	},
 //HWPML
 	{
@@ -1031,7 +1196,31 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"ConcaveArrow",
 		"EmptyDiamond",
 		"EmptyCircle",
-		"EmptyBox"
+		"EmptyBox",
+		"RomanCapital",
+		"LatinCapital",
+		"CircledLatinCapital",
+		"CircledLatinSmall",
+		"HangulPhonetic",
+		"Ideograph",
+		"CircledIdeograph",
+		"DecagonCircle",
+		"DecagonCircleHanja",
+		"Symbol",
+		"UserChar",
+		"Hyperlink",
+		"Bookmark",
+		"Line",
+		"Curve",
+		"Page",
+		"Footnote",
+		"Endnote",
+		"TotalPage",
+		"Inside",
+		"Outside",
+		"Paper",
+		"Column",
+		"Absolute"
 	}
 };
 

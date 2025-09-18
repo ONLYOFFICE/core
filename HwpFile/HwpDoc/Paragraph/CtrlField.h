@@ -29,10 +29,11 @@ class CCtrlField : public CCtrl
 	std::map<HWP_STRING, int> m_mIntegerParam;
 
 	void UpdateType(const HWP_STRING& sCtrlID);
+	void ReadType(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlField(const HWP_STRING& sCtrlID);
 	CCtrlField(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

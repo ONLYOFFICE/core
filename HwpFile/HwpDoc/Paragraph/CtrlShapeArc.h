@@ -15,6 +15,9 @@ class CCtrlShapeArc : public CCtrlGeneralShape
 	int m_nAxixY1;
 	int m_nAxixX2;
 	int m_nAxixY2;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeArc();
 	CCtrlShapeArc(const HWP_STRING& sCtrlID);

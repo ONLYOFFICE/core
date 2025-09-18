@@ -12,6 +12,9 @@ class CCtrlShapeLine : public CCtrlGeneralShape
 	int m_nEndX;
 	int m_nEndY;
 	short m_shAttr;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeLine();
 	CCtrlShapeLine(const HWP_STRING& sCtrlID);

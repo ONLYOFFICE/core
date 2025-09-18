@@ -1,5 +1,7 @@
 #include "CtrlEqEdit.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlEqEdit::CCtrlEqEdit()
@@ -22,31 +24,41 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("version" == sAttributeName)
+		if (GetAttributeName(EAttribute::Version, eType) == sAttributeName)
 			m_sVersion = oReader.GetText();
-		else if ("baseLine" == sAttributeName)
+		else if (GetAttributeName(EAttribute::BaseLine, eType) == sAttributeName)
 			m_nBaseline = oReader.GetInt();
-		else if ("textColor" == sAttributeName)
+		else if (GetAttributeName(EAttribute::TextColor, eType) == sAttributeName)
 			m_nColor = oReader.GetColor();
-		else if ("baseUnit" == sAttributeName)
+		else if (GetAttributeName(EAttribute::BaseUnit, eType) == sAttributeName)
 			m_nCharSize = oReader.GetInt();
-		else if ("lineMode" == sAttributeName)
+		else if (GetAttributeName(EAttribute::LineMode, eType) == sAttributeName)
 		{
-			const std::string sType{oReader.GetTextA()};
+			switch(eType)
+			{
+				case EHanType::HWPX:
+				{
+					const std::string sType{oReader.GetTextA()};
 
-			if ("LINE" == sType)
-				m_nAttr = 1;
-			else if ("CHAR" == sType)
-				m_nAttr = 0;
+					if ("LINE" == sType)
+						m_nAttr = 1;
+					else if ("CHAR" == sType)
+						m_nAttr = 0;
+
+					break;
+				}
+				case EHanType::HWPML:
+					m_nAttr = oReader.GetBool();
+			}
 		}
-		else if ("font" == sAttributeName)
+		else if (EHanType::HWPX == eType && "font" == sAttributeName)
 			m_sFont = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE(oReader)
 	{
-		if ("hp:script" == oReader.GetName())
+		if (GetNodeName(ENode::Script, eType) == oReader.GetName())
 			m_sEqn = oReader.GetText();
 		else
 			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);

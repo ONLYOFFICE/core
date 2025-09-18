@@ -10,6 +10,9 @@ class CCtrlShapeRect : public CCtrlGeneralShape
 {
 	HWP_BYTE m_chCurv;
 	TPoint m_arPoints[4];
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeRect();
 	CCtrlShapeRect(const HWP_STRING& sCtrlID);

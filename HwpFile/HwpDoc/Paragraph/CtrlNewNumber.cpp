@@ -20,15 +20,17 @@ CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	m_bFullFilled = true;
 }
 
-CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlNewNumber::CCtrlNewNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrl(sCtrlID)
 {
+	//TODO:: при встрече в файле нужно проверить
+
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("num" == sAttributeName)
 			m_shNum = oReader.GetInt();
 		else if ("numType" == sAttributeName)
-			m_eNumType = ::HWP::GetNumType(oReader.GetText());
+			m_eNumType = ::HWP::GetNumType(oReader.GetTextA(), eType);
 		//TODO:: проверить данный момент
 		else if ("autoNumFormat" == sAttributeName)
 			m_eNumShape = GetNumberShape2(oReader.GetInt());

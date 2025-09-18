@@ -19,10 +19,12 @@ class CCtrlColumnDef : public CCtrl
 	ELineStyle2 m_eColLineStyle;
 	HWP_BYTE m_chColLineWidth;
 	int m_nColLineColor;
+
+	void ReadColumn(CXMLReader& oReader, EHanType eType, unsigned int& unColSzIndex);
 public:
 	CCtrlColumnDef(const HWP_STRING& sCtrlID);
 	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

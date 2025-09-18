@@ -20,6 +20,15 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+	}
+}
+
+void CCtrlShapeRect::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+{
 	m_chCurv = (HWP_BYTE)oReader.GetAttributeInt("ratio");
 
 	#define READ_POINT(point_index)\
@@ -45,8 +54,38 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 		else if ("hc:pt3" == sNodeName)
 			READ_POINT(3)
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeRect::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("Ratio" == sAttributeName)
+			m_chCurv = (HWP_BYTE)oReader.GetInt();
+		else if ("X0" == sAttributeName)
+			m_arPoints[0].m_nX = oReader.GetInt();
+		else if ("Y0" == sAttributeName)
+			m_arPoints[0].m_nX = oReader.GetInt();
+		else if ("X1" == sAttributeName)
+			m_arPoints[1].m_nX = oReader.GetInt();
+		else if ("Y1" == sAttributeName)
+			m_arPoints[1].m_nX = oReader.GetInt();
+		else if ("X2" == sAttributeName)
+			m_arPoints[2].m_nX = oReader.GetInt();
+		else if ("Y2" == sAttributeName)
+			m_arPoints[2].m_nX = oReader.GetInt();
+		else if ("X3" == sAttributeName)
+			m_arPoints[3].m_nX = oReader.GetInt();
+		else if ("Y3" == sAttributeName)
+			m_arPoints[3].m_nX = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
 	END_WHILE
 }
 

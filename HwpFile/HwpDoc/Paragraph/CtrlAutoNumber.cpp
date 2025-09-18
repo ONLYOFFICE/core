@@ -1,5 +1,7 @@
 #include "CtrlAutoNumber.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 ENumType GetNumType(int nValue)
@@ -16,15 +18,22 @@ ENumType GetNumType(int nValue)
 	}
 }
 
-ENumType GetNumType(HWP_STRING sValue)
+ENumType GetNumType(std::string sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(FOOTNOTE, sValue, ENumType);
-	ELSE_IF_STRING_IN_ENUM(ENDNOTE, sValue, ENumType);
-	ELSE_IF_STRING_IN_ENUM(FIGURE, sValue, ENumType);
-	ELSE_IF_STRING_IN_ENUM(TABLE, sValue, ENumType);
-	ELSE_IF_STRING_IN_ENUM(EQUATION, sValue, ENumType);
-	ELSE_IF_STRING_IN_ENUM(TOTAL_PAGE, sValue, ENumType);
-	ELSE_STRING_IN_ENUM(PAGE, ENumType);
+	if (sValue.empty() || GetValueName(EValue::Page, eType) == sValue)
+		return ENumType::PAGE;
+	else if (GetValueName(EValue::TotalPage, eType) == sValue)
+		return ENumType::TOTAL_PAGE;
+	else if (GetValueName(EValue::Footnote, eType) == sValue)
+		return ENumType::FOOTNOTE;
+	else if (GetValueName(EValue::Endnote, eType) == sValue)
+		return ENumType::ENDNOTE;
+	else if (GetValueName(EValue::Figure, eType) == sValue)
+		return ENumType::TABLE;
+	else if (GetValueName(EValue::Equation, eType) == sValue)
+		return ENumType::EQUATION;
+
+	return ENumType::PAGE;
 }
 
 CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID)
@@ -44,61 +53,58 @@ CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	m_bFullFilled = true;
 }
 
-CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlAutoNumber::CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrl(sCtrlID)
 {
-	m_eNumType = ::HWP::GetNumType(oReader.GetAttribute("numType"));
+	m_eNumType = ::HWP::GetNumType(oReader.GetAttributeA(GetAttributeName(EAttribute::NumberType, eType)), eType);
 
-	WHILE_READ_NEXT_NODE(oReader)
+	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, GetNodeName(ENode::AutoNumFormat, eType))
 	{
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("supscript" == sAttributeName)
+			if (GetAttributeName(EAttribute::SuperScript, eType) == sAttributeName)
 				m_bSuperscript = oReader.GetBool();
-			else if ("type" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 			{
 				const std::string sType{oReader.GetTextA()};
 
-				if ("DIGIT" == sType)
+				if (GetValueName(EValue::Digit, eType) == sType)
 					m_eNumShape = ENumberShape2::DIGIT;
-				else if ("CIRCLE_DIGIT" == sType)
+				else if (GetValueName(EValue::CircledDigit, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLE_DIGIT;
-				else if ("ROMAN_CAPITAL" == sType)
+				else if (GetValueName(EValue::RomanCapital, eType) == sType)
 					m_eNumShape = ENumberShape2::ROMAN_CAPITAL;
-				else if ("ROMAN_SMALL" == sType)
+				else if (GetValueName(EValue::RomanSmall, eType) == sType)
 					m_eNumShape = ENumberShape2::ROMAN_SMALL;
-				else if ("LATIN_CAPITAL" == sType)
+				else if (GetValueName(EValue::LatinCapital, eType) == sType)
 					m_eNumShape = ENumberShape2::LATIN_CAPITAL;
-				else if ("LATIN_SMALL" == sType)
+				else if (GetValueName(EValue::LatinSmall, eType) == sType)
 					m_eNumShape = ENumberShape2::LATIN_SMALL;
-				else if ("CIRCLED_LATIN_CAPITAL" == sType)
+				else if (GetValueName(EValue::CircledLatinCapital, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLED_LATIN_CAPITAL;
-				else if ("CIRCLED_LATIN_SMALL" == sType)
+				else if (GetValueName(EValue::CircledLatinSmall, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLED_LATIN_SMALL;
-				else if ("CIRCLED_HANGUL_SYLLABLE" == sType)
+				else if (GetValueName(EValue::CircledHangulSyllable, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLED_HANGUL_SYLLABLE;
-				else if ("HANGUL_JAMO" == sType)
+				else if (GetValueName(EValue::HangulJamo, eType) == sType)
 					m_eNumShape = ENumberShape2::HANGUL_JAMO;
-				else if ("CIRCLED_HANGUL_JAMO" == sType)
+				else if (GetValueName(EValue::CircledHangulJamo, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLED_HANGUL_JAMO;
-				else if ("HANGUL_PHONETIC" == sType)
+				else if (GetValueName(EValue::HangulPhonetic, eType) == sType)
 					m_eNumShape = ENumberShape2::HANGUL_PHONETIC;
-				else if ("IDEOGRAPH" == sType)
+				else if (GetValueName(EValue::Ideograph, eType) == sType)
 					m_eNumShape = ENumberShape2::IDEOGRAPH;
-				else if ("CIRCLED_IDEOGRAPH" == sType)
+				else if (GetValueName(EValue::CircledIdeograph, eType) == sType)
 					m_eNumShape = ENumberShape2::CIRCLED_IDEOGRAPH;
-				else if ("DECAGON_CIRCLE" == sType)
+				else if (GetValueName(EValue::DecagonCircle, eType) == sType)
 					m_eNumShape = ENumberShape2::DECAGON_CIRCLE;
-				else if ("DECAGON_CRICLE_HANGJA" == sType)
+				else if (GetValueName(EValue::DecagonCircleHanja, eType) == sType)
 					m_eNumShape = ENumberShape2::DECAGON_CRICLE_HANGJA;
-				else if ("SYMBOL" == sType)
+				else if (GetValueName(EValue::Symbol, eType) == sType)
 					m_eNumShape = ENumberShape2::SYMBOL;
-				else if ("USER_CHAR" == sType)
+				else if (GetValueName(EValue::UserChar, eType) == sType)
 					m_eNumShape = ENumberShape2::USER_HWP_CHAR;
 			}
-			else if ("hp:autoNumFormat" == sAttributeName ||
-			         "autoNumFormat" == sAttributeName)
-				m_eNumShape = GetNumberShape2(oReader.GetInt());
 		}
 		END_READ_ATTRIBUTES(oReader)
 	}

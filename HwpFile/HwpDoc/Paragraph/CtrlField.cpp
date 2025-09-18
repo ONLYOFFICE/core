@@ -1,5 +1,7 @@
 #include "CtrlField.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 CCtrlField::CCtrlField(const HWP_STRING& sCtrlID)
@@ -31,28 +33,31 @@ void CCtrlField::UpdateType(const HWP_STRING& sCtrlID)
 		m_eType = EFieldType::BookmarkClosing;
 }
 
-CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+void CCtrlField::ReadType(CXMLReader &oReader, EHanType eType)
+{
+	const std::string sType{oReader.GetTextA()};
+
+	if (GetValueName(EValue::Hyperlink, eType) == sType)
+		m_eType = EFieldType::Hyperlink;
+	else if (GetValueName(EValue::Bookmark, eType) == sType)
+		m_eType = EFieldType::Bookmark;
+}
+
+CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrl(sCtrlID), m_eType(EFieldType::Unknown)
 {
 	const std::string sNodeName{oReader.GetName()};
 	HWP_STRING wsName;
 
-	if ("hp:fieldBegin" == sNodeName)
+	if (GetNodeName(ENode::FieldBegin, eType) == sNodeName)
 	{
 		START_READ_ATTRIBUTES(oReader)
 		{
-			if ("type" == sAttributeName)
-			{
-				const std::string sType{oReader.GetTextA()};
-
-				if ("HYPERLINK" == sType)
-					m_eType = EFieldType::Hyperlink;
-				else if ("BOOKMARK" == sType)
-					m_eType = EFieldType::Bookmark;
-			}
-			else if ("fieldid" == sAttributeName)
+			if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+				ReadType(oReader, eType);
+			else if (GetAttributeName(EAttribute::FieldId, eType) == sAttributeName)
 				m_nInstanceID = oReader.GetInt();
-			else if ("name" == sAttributeName)
+			else if (GetAttributeName(EAttribute::Name, eType) == sAttributeName)
 				wsName = oReader.GetText();
 		}
 		END_READ_ATTRIBUTES(oReader)
@@ -60,21 +65,34 @@ CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 		if (!wsName.empty() && EFieldType::Bookmark == m_eType)
 			AddStringParam(L"bookmarkname", wsName);
 
-		WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:parameters")
+		// Встречется только в HWPX
+		if (EHanType::HWPX == eType)
 		{
-			WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:parameters")
 			{
-				if ("hp:stringParam" == sNodeChildName)
-					AddStringParam(oReader.GetAttribute("name"), oReader.GetText());
-				else if ("hp:integerParam" == sNodeChildName)
-					AddIntegerParam(oReader.GetAttribute("name"), oReader.GetInt());
+				WHILE_READ_NEXT_NODE_WITH_DEPTH_AND_NAME(oReader, Child)
+				{
+					if ("hp:stringParam" == sNodeChildName)
+						AddStringParam(oReader.GetAttribute("name"), oReader.GetText());
+					else if ("hp:integerParam" == sNodeChildName)
+						AddIntegerParam(oReader.GetAttribute("name"), oReader.GetInt());
+				}
+				END_WHILE
 			}
 			END_WHILE
 		}
-		END_WHILE
 	}
-	else if ("hp:fieldEnd" == sNodeName)
-		m_nInstanceID = oReader.GetAttributeInt("fieldid");
+	else if (GetNodeName(ENode::FieldEnd, eType) == sNodeName)
+	{
+		START_READ_ATTRIBUTES(oReader)
+		{
+			if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
+				ReadType(oReader, eType);
+			else if (GetAttributeName(EAttribute::FieldId, eType) == sAttributeName)
+				m_nInstanceID = oReader.GetInt();
+		}
+		END_READ_ATTRIBUTES(oReader)
+	}
 }
 
 ECtrlObjectType CCtrlField::GetCtrlType() const

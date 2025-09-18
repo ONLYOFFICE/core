@@ -161,14 +161,18 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 	else if (GetNodeName(ENode::ConnectLine, eType) == sNodeName)
 		m_arP.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion, eType));
 	else if (GetNodeName(ENode::TextArt, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oReader, nVersion, eType));
-	else if (GetNodeName(ENode::Video, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeVideo(L"div$", oReader, nVersion, eType));
-	else if (EHanType::HWPX == eType && "hp:ctrl" == sNodeName)
+			m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oReader, nVersion, eType));
+	else if (EHanType::HWPX == eType)
 	{
-		WHILE_READ_NEXT_NODE(oReader)
-			AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPX));
-		END_WHILE
+		
+		if (GetNodeName(ENode::Video, eType) == sNodeName)
+			m_arP.push_back(new CCtrlShapeVideo(L"div$", oReader, nVersion, eType));
+		else if ("hp:ctrl" == sNodeName)
+		{
+			WHILE_READ_NEXT_NODE(oReader)
+				AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPX));
+			END_WHILE
+		}
 	}
 	else if (EHanType::HWPML == eType)
 		AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPML));

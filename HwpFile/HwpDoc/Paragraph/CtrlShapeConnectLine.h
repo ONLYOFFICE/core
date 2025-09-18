@@ -31,6 +31,9 @@ class CCtrlShapeConnectLine : public CCtrlGeneralShape
 	EConnectLineType m_eType;
 	TConnectPoint m_oStartPt;
 	TConnectPoint m_oEndPt;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);

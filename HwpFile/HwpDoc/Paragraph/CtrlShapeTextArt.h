@@ -23,6 +23,11 @@ class CCtrlShapeTextArt : public CCtrlGeneralShape
 	HWP_STRING m_sAlign;
 
 	std::vector<TPoint> m_arOutline;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
+	void ReadTextArtShape(CXMLReader& oReader, EHanType eType);
+	void ReadOutlineData(CXMLReader& oReader, EHanType eType);
 public:
 	CCtrlShapeTextArt();
 	CCtrlShapeTextArt(const HWP_STRING& sCtrlID);

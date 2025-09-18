@@ -28,6 +28,15 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSiz
 CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
     : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
 {
+	switch(eType)
+	{
+		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader          ); return;
+	}
+}
+
+void CCtrlShapeConnectLine::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+{
 	m_eType = GetConnectLineType(oReader.GetAttributeInt("type"));
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
@@ -63,8 +72,39 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLRead
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
+			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
 	}
+	END_WHILE
+}
+
+void CCtrlShapeConnectLine::ReadFromHWPML(CXMLReader &oReader)
+{
+	START_READ_ATTRIBUTES(oReader)
+	{
+		if ("Type" == sAttributeName)
+			// TODO:: реализовать при встрече
+			m_eType = EConnectLineType::STRAIGHT_NOARROW;
+		else if ("StartX" == sAttributeName)
+			m_oStartPt.m_nX = oReader.GetInt();
+		else if ("StartY" == sAttributeName)
+			m_oStartPt.m_nY = oReader.GetInt();
+		else if ("EndX" == sAttributeName)
+			m_oEndPt.m_nX = oReader.GetInt();
+		else if ("EndY" == sAttributeName)
+			m_oEndPt.m_nY = oReader.GetInt();
+		else if ("StartSubjectID" == sAttributeName)
+			m_oStartPt.m_shSubjectIDRef = oReader.GetInt();
+		else if ("StartSubjectIndex" == sAttributeName)
+			m_oStartPt.m_shSubjectIdx = oReader.GetInt();
+		else if ("EndSubjectID" == sAttributeName)
+			m_oEndPt.m_shSubjectIDRef = oReader.GetInt();
+		else if ("EndSubjectIndex" == sAttributeName)
+			m_oEndPt.m_shSubjectIdx = oReader.GetInt();
+	}
+	END_READ_ATTRIBUTES(oReader)
+
+	WHILE_READ_NEXT_NODE(oReader)
+		CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
 	END_WHILE
 }
 

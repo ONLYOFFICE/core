@@ -14,6 +14,9 @@ class CCtrlShapeOle : public CCtrlGeneralShape
 	int m_nBorderColor;
 	int m_nBorderThick;
 	int m_nBorderAttr;
+
+	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeOle();
 	CCtrlShapeOle(const HWP_STRING& sCtrlID);

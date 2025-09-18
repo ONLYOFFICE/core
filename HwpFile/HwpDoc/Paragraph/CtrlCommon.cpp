@@ -21,13 +21,20 @@ namespace HWP
 		}
 	}
 
-	EVertAlign GetVertAlign(HWP_STRING sValue)
+	EVertAlign GetVertAlign(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(CENTER, sValue, EVertAlign);
-		ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVertAlign);
-		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EVertAlign);
-		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EVertAlign);
-		ELSE_STRING_IN_ENUM(TOP, EVertAlign);
+		if (sValue.empty() || GetValueName(EValue::Top, eType) == sValue)
+			return EVertAlign::TOP;
+		if (GetValueName(EValue::Center, eType) == sValue)
+			return EVertAlign::CENTER;
+		if (GetValueName(EValue::Bottom, eType) == sValue)
+			return EVertAlign::BOTTOM;
+		if (GetValueName(EValue::Inside, eType) == sValue)
+			return EVertAlign::INSIDE;
+		if (GetValueName(EValue::Outside, eType) == sValue)
+			return EVertAlign::OUTSIDE;
+
+		return EVertAlign::TOP;
 	}
 
 	EVRelTo GetVRelTo(int nValue)
@@ -40,12 +47,16 @@ namespace HWP
 		}
 	}
 
-	EVRelTo GetVRelTo(HWP_STRING sValue)
+	EVRelTo GetVRelTo(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(PARA, sValue, EVRelTo);
-		ELSE_IF_STRING_IN_ENUM(PAGE, sValue, EVRelTo);
-		ELSE_IF_STRING_IN_ENUM(PAPER, sValue, EVRelTo);
-		ELSE_STRING_IN_ENUM(PARA, EVRelTo);
+		if (sValue.empty() || GetValueName(EValue::Para, eType) == sValue)
+			return EVRelTo::PARA;
+		if (GetValueName(EValue::Page, eType) == sValue)
+			return EVRelTo::PAGE;
+		if (GetValueName(EValue::Paper, eType) == sValue)
+			return EVRelTo::PAPER;
+
+		return EVRelTo::PARA;
 	}
 
 	EHRelTo GetHRelTo(int nValue)
@@ -59,12 +70,18 @@ namespace HWP
 		}
 	}
 
-	EHRelTo GetHRelTo(HWP_STRING sValue)
+	EHRelTo GetHRelTo(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(PAGE, sValue, EHRelTo);
-		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EHRelTo);
-		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EHRelTo);
-		ELSE_STRING_IN_ENUM(PAPER, EHRelTo);
+		if (sValue.empty() || GetValueName(EValue::Para, eType) == sValue)
+			return EHRelTo::PARA;
+		if (GetValueName(EValue::Page, eType) == sValue)
+			return EHRelTo::PAGE;
+		if (GetValueName(EValue::Column, eType) == sValue)
+			return EHRelTo::COLUMN;
+		if (GetValueName(EValue::Paper, eType) == sValue)
+			return EHRelTo::PAPER;
+
+		return EHRelTo::PARA;
 	}
 
 	EWidthRelTo GetWidthRelTo(int nValue)
@@ -81,11 +98,18 @@ namespace HWP
 
 	EWidthRelTo GetWidthRelTo(HWP_STRING sValue)
 	{
-		IF_STRING_IN_ENUM(PAGE, sValue, EWidthRelTo);
-		ELSE_IF_STRING_IN_ENUM(PARA, sValue, EWidthRelTo);
-		ELSE_IF_STRING_IN_ENUM(COLUMN, sValue, EWidthRelTo);
-		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EWidthRelTo);
-		ELSE_STRING_IN_ENUM(PAPER, EWidthRelTo);
+		if (sValue.empty() || GetValueName(EValue::Para, eType) == sValue)
+			return EWidthRelTo::PARA;
+		if (GetValueName(EValue::Page, eType) == sValue)
+			return EWidthRelTo::PAGE;
+		if (GetValueName(EValue::Column, eType) == sValue)
+			return EWidthRelTo::COLUMN;
+		if (GetValueName(EValue::Paper, eType) == sValue)
+			return EWidthRelTo::PAPER;
+		if (GetValueName(EValue::Absolute, eType) == sValue)
+			return EWidthRelTo::ABSOLUTE;
+
+		return EWidthRelTo::PARA;
 	}
 
 	EHeightRelTo GetHeightRelTo(int nValue)
@@ -98,11 +122,16 @@ namespace HWP
 		}
 	}
 
-	EHeightRelTo GetHeightRelTo(HWP_STRING sValue)
+	EHeightRelTo GetHeightRelTo(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(PAGE, sValue, EHeightRelTo);
-		ELSE_IF_STRING_IN_ENUM(ABSOLUTE, sValue, EHeightRelTo);
-		ELSE_STRING_IN_ENUM(PAPER, EHeightRelTo);
+		if (sValue.empty() || GetValueName(EValue::Page, eType) == sValue)
+			return EHeightRelTo::PAGE;
+		if (GetValueName(EValue::Paper, eType) == sValue)
+			return EHeightRelTo::PAPER;
+		if (GetValueName(EValue::Absolute, eType) == sValue)
+			return EHeightRelTo::ABSOLUTE;
+
+		return EHeightRelTo::PAGE;
 	}
 
 	EHorzAlign GetHorzAlign(int nValue)
@@ -117,13 +146,20 @@ namespace HWP
 		}
 	}
 
-	EHorzAlign GetHorzAlign(HWP_STRING sValue)
+	EHorzAlign GetHorzAlign(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(CENTER, sValue, EHorzAlign);
-		ELSE_IF_STRING_IN_ENUM(RIGHT, sValue, EHorzAlign);
-		ELSE_IF_STRING_IN_ENUM(INSIDE, sValue, EHorzAlign);
-		ELSE_IF_STRING_IN_ENUM(OUTSIDE, sValue, EHorzAlign);
-		ELSE_STRING_IN_ENUM(LEFT, EHorzAlign);
+		if (sValue.empty() || GetValueName(EValue::Left, eType) == sValue)
+			return EHorzAlign::LEFT;
+		if (GetValueName(EValue::Center, eType) == sValue)
+			return EHorzAlign::CENTER;
+		if (GetValueName(EValue::Right, eType) == sValue)
+			return EHorzAlign::RIGHT;
+		if (GetValueName(EValue::Inside, eType) == sValue)
+			return EHorzAlign::INSIDE;
+		if (GetValueName(EValue::Outside, eType) == sValue)
+			return EHorzAlign::OUTSIDE;
+
+		return EHorzAlign::LEFT;
 	}
 
 	ETextWrap GetTextWrap(int nValue)

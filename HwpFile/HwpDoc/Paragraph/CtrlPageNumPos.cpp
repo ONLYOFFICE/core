@@ -1,5 +1,7 @@
 #include "CtrlPageNumPos.h"
 
+#include "../Common/NodeNames.h"
+
 namespace HWP
 {
 ENumPos GetNumPos(int nValue)
@@ -54,16 +56,16 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 }
 
-CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CCtrl(sCtrlID)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if ("pos" == sAttributeName)
+		if (GetAttributeName(EAttribute::Pos, eType) == sAttributeName)
 			m_ePos = GetNumPos(oReader.GetText());
-		else if ("formatType" == sAttributeName)
+		else if (GetAttributeName(EAttribute::FormatType, eType) == sAttributeName)
 			m_eNumShape = GetNumberShape2(oReader.GetInt());
-		else if ("sideChar" == sAttributeName)
+		else if (GetAttributeName(EAttribute::SideChar, eType) == sAttributeName)
 			m_sPostfix = oReader.GetText();
 	}
 	END_READ_ATTRIBUTES(oReader)

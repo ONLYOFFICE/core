@@ -57,7 +57,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_FACE_NAME, 0, 0), m_pParent(&oDocInfo)
 {
-	m_sFaceName = oReader.GetAttribute(GetAttributeName(EAttribute::FontName, eType));
+	m_sFaceName = oReader.GetAttribute(GetAttributeName(EAttribute::FaceName, eType));
 
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
@@ -67,7 +67,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReade
 
 			START_READ_ATTRIBUTES(oReader)
 			{
-				if (GetAttributeName(EAttribute::FontName, eType) == sAttributeName)
+				if (GetAttributeName(EAttribute::FaceName, eType) == sAttributeName)
 					m_sSubstFace = oReader.GetText();
 				else if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
 				{

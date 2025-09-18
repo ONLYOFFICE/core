@@ -109,7 +109,6 @@ namespace PPTX
 		{
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 			pWriter->WriteString2(0, attrName);
-			pWriter->WriteUInt2(1, creationId);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, bg);
@@ -131,6 +130,13 @@ namespace PPTX
 			pWriter->EndRecord();
 
 			pWriter->WriteRecord2(2, controls);
+			
+			if (creationId.IsInit())
+			{
+				pWriter->StartRecord(3);
+				pWriter->WriteULONG(*creationId);
+				pWriter->EndRecord();
+			}
 		}
 		void CSld::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -165,15 +171,18 @@ namespace PPTX
 					}
 					case 1:
 					{
-						spTree.fromPPTY(pReader);
-						break;
-					}
+						spTree.fromPPTY(pReader);						
+					}break;
 					case 2:
 					{
 						controls = new Controls(m_pMainDocument);
-						controls->fromPPTY(pReader);
-						break;
-					}
+						controls->fromPPTY(pReader);						
+					}break;
+					case 3:
+					{
+						_UINT32 sz = pReader->GetULong();
+						creationId = pReader->GetULong();
+					}break;
 					default:
 					{
 						pReader->Seek(_end_rec);

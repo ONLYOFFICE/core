@@ -235,11 +235,17 @@ namespace PPTX
 				pWriter->WriteString2(3, title);
 				pWriter->WriteString2(4, descr);
 				pWriter->WriteBool2(5, form);
-				pWriter->WriteString2(6, creationId);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, hlinkClick);
 			pWriter->WriteRecord2(1, hlinkHover);
+
+			if (creationId.IsInit()) 
+			{
+				pWriter->StartRecord(2); 
+					pWriter->WriteString(*creationId);
+				pWriter->EndRecord();
+			}
 		}
 		void CNvPr::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 		{
@@ -281,10 +287,6 @@ namespace PPTX
 					{
 						form = pReader->GetBool();
 					}break;
-					case 6:
-					{
-						creationId = pReader->GetString2();
-					}break;
 					default:
 						break;
 				}
@@ -297,15 +299,18 @@ namespace PPTX
 					case 0:
 					{
 						hlinkClick = new PPTX::Logic::Hyperlink(L"hlinkClick");
-						hlinkClick->fromPPTY(pReader);
-						break;
-					}
+						hlinkClick->fromPPTY(pReader);						
+					}break;
 					case 1:
 					{
 						hlinkHover = new PPTX::Logic::Hyperlink(L"hlinkHover");
-						hlinkHover->fromPPTY(pReader);
-						break;
-					}
+						hlinkHover->fromPPTY(pReader);						
+					}break;
+					case 2:
+					{
+						_UINT32 sz = pReader->GetULong();
+						creationId = pReader->GetString2();
+					}break;
 					default:
 					{
 						break;

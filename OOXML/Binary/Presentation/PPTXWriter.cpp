@@ -642,13 +642,12 @@ namespace NSBinPptxRW
 
 					if (m_arSlides[i].comments.is_init())
 					{
-						m_oReader.m_pRels->WriteSlideComments(nComment);
 						OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
 						if (1 == nComment)
 						{
 							NSDirectory::CreateDirectory(pathFolderCommentDir.GetPath());
 						}
-						std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
+						std::wstring strCommentFile = m_arSlides[i].comments->DefaultFileName().GetBasename() + std::to_wstring(nComment) + L".xml";
 
 						oXmlWriter.ClearNoAttack();
 						m_arSlides[i].comments->toXmlWriter(&oXmlWriter);
@@ -656,6 +655,17 @@ namespace NSBinPptxRW
 						OOX::CPath pathComment = pathFolderCommentDir + FILE_SEPARATOR_STR + strCommentFile;
 						oXmlWriter.SaveToFile(pathComment.GetPath());
 
+						m_oImageManager.m_pContentTypes->Registration(m_arSlides[i].comments->type().OverrideType(),
+							m_oPresentation.type().DefaultDirectory() / m_arSlides[i].comments->type().DefaultDirectory(),
+							strCommentFile);
+							
+						int nId = m_oReader.m_pRels->WriteRels(m_arSlides[i].comments->type().RelationType(), L"../comments/" + strCommentFile, L"");
+						
+						if (m_arSlides[i].comments->bModern)
+						{
+							m_arSlides[i].ridModernComment = L"rId" + std::to_wstring(nId);
+						}
+						
 						++nComment;
 					}
 
@@ -770,7 +780,7 @@ namespace NSBinPptxRW
 			OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
 
-			// customProperies
+	// customProperies
 			if (m_oCustomProperties.IsInit())
 			{
 				oXmlWriter.ClearNoAttack();
@@ -844,7 +854,6 @@ namespace NSBinPptxRW
 			oXmlWriter.SaveToFile(pathTableStyles.GetPath());
 
 	// presentation
-			bool bIsAuthors = false;
 			pPair = m_mainTables.find(NSBinPptxRW::NSMainTables::Presentation);
 			if (m_mainTables.end() != pPair)
 			{
@@ -898,13 +907,12 @@ namespace NSBinPptxRW
 				}
 				if (m_oPresentation.comments.is_init())
 				{
-					m_oReader.m_pRels->WritePresentationComments(nComment);
 					OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
 					if (1 == nComment)
 					{
 						NSDirectory::CreateDirectory(pathFolderCommentDir.GetPath());
 					}
-					std::wstring strCommentFile = L"comment" + std::to_wstring(nComment) + L".xml";
+					std::wstring strCommentFile = m_oPresentation.comments->DefaultFileName().GetBasename() + std::to_wstring(nComment) + L".xml";
 
 					oXmlWriter.ClearNoAttack();
 					m_oPresentation.comments->toXmlWriter(&oXmlWriter);
@@ -912,9 +920,22 @@ namespace NSBinPptxRW
 					OOX::CPath pathComment = pathFolderCommentDir + FILE_SEPARATOR_STR + strCommentFile;
 					oXmlWriter.SaveToFile(pathComment.GetPath());
 
+					m_oReader.m_pRels->WriteRels(L"http://schemas.onlyoffice.com/comments", L"comments/" + strCommentFile, L"");
+
 					++nComment;
 				}
-				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.commentAuthors.is_init(), m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
+				if (m_oPresentation.commentAuthors.IsInit())
+				{
+					oXmlWriter.ClearNoAttack();
+					m_oPresentation.commentAuthors->toXmlWriter(&oXmlWriter);
+
+					OOX::CPath pathCommentAuthors = m_oPresentation.commentAuthors->type().DefaultFileName();
+					oXmlWriter.SaveToFile((pathFolder / pathCommentAuthors).GetPath());
+
+					m_oReader.m_pRels->WriteRels(m_oPresentation.commentAuthors->type().RelationType(), pathCommentAuthors.GetPath(), L"");
+					m_oImageManager.m_pContentTypes->Registration(m_oPresentation.commentAuthors->type().OverrideType(), L"/ppt", pathCommentAuthors.GetPath());
+				}
+				m_oReader.m_pRels->EndPresentationRels(m_oPresentation.m_pVbaProject.is_init(), m_oPresentation.m_pJsaProject.is_init());
 				m_oReader.m_pRels->CloseRels();
 
 				OOX::CPath pathPresentation = pathFolder / m_oPresentation.DefaultFileName();
@@ -926,19 +947,8 @@ namespace NSBinPptxRW
 
 				oXmlWriter.SaveToFile(pathPresentation.GetPath());
 
-				OOX::CPath pathPresentationRels = pathFolderRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels");
+				OOX::CPath pathPresentationRels = pathFolderRels + FILE_SEPARATOR_STR + L"presentation.xml.rels";
 				m_oReader.m_pRels->SaveRels(pathPresentationRels.GetPath());
-
-				if (m_oPresentation.commentAuthors.is_init())
-				{
-					oXmlWriter.ClearNoAttack();
-					m_oPresentation.commentAuthors->toXmlWriter(&oXmlWriter);
-
-					OOX::CPath pathCommentAuthors = pathFolder + FILE_SEPARATOR_STR + _T("commentAuthors.xml");
-					oXmlWriter.SaveToFile(pathCommentAuthors.GetPath());
-
-					bIsAuthors = true;
-				}
 			}
 			if (!bIsNoBase64)
 			{
@@ -1003,17 +1013,6 @@ namespace NSBinPptxRW
 			for (size_t i = 0; i < m_arNotesSlides.size(); ++i)
 			{
 				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.notesSlide+xml", L"/ppt/notesSlides", L"notesSlide" + std::to_wstring((int)i + 1) + L".xml");
-			}
-
-	// slideComments
-			for (int i = 1; i < nComment; ++i)
-			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.comments+xml", L"/ppt/comments", L"comment" + std::to_wstring(i) + L".xml");
-			}
-	// comment authors
-			if (bIsAuthors)
-			{
-				pContentTypes->Registration(L"application/vnd.openxmlformats-officedocument.presentationml.commentAuthors+xml", L"/ppt", L"commentAuthors.xml");
 			}
 
 			pContentTypes->Write(m_strDstFolder);

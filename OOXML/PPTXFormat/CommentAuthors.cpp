@@ -56,16 +56,16 @@ namespace PPTX
 		}
 		void CommentAuthor::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 		{
-			pWriter->StartNode(L"p:cmAuthor");
+			pWriter->StartNode(bModern ? L"p188:author" : L"p:cmAuthor");
 
 			pWriter->StartAttributes();
-			if (idx.IsInit())
+			if (!bModern && idx.IsInit())
 			{
 				pWriter->WriteAttribute(L"id", *idx);
 			}
-			else if (id.IsInit())
+			else
 			{
-				pWriter->WriteAttribute(L"id", 1);
+				pWriter->WriteAttribute(L"id", id.IsInit() ? *id : std::to_wstring(*idx));
 			}
 			pWriter->WriteAttribute2(L"name", name);
 			pWriter->WriteAttribute(L"initials", initials);
@@ -73,7 +73,7 @@ namespace PPTX
 			{
 				pWriter->WriteAttribute(L"lastIdx", last_idx);
 			}
-			else
+			else if(!bModern)
 			{
 				pWriter->WriteAttribute(L"lastIdx", 2147483647);
 			}
@@ -81,13 +81,15 @@ namespace PPTX
 			{
 				pWriter->WriteAttribute(L"clrIdx", clr_idx);
 			}
-			else
+			else if (!bModern)
 			{
 				pWriter->WriteAttribute(L"clrIdx", 0);
 			}
+			pWriter->WriteAttribute2(L"userId", userId);
+			pWriter->WriteAttribute2(L"providerId", providerId);
 			pWriter->EndAttributes();
 
-			pWriter->EndNode(L"p:cmAuthor");
+			pWriter->EndNode(bModern ? L"p188:author" : L"p:cmAuthor");
 		}
 		void CommentAuthor::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 		{
@@ -117,10 +119,8 @@ namespace PPTX
 				switch (_at)
 				{
 				case 0:
-				{
-					int int_id = pReader->GetLong();
-					id = std::to_wstring(int_id);
-				}break;
+					idx = pReader->GetLong();
+					break;
 				case 1:
 					last_idx = pReader->GetLong();
 					break;
@@ -148,6 +148,11 @@ namespace PPTX
 			}
 
 			pReader->Seek(_end_rec);
+			
+			if (id.IsInit())
+			{
+				bModern = true;
+			}
 		}
 		void CommentAuthor::FillParentPointersForChilds()
 		{
@@ -184,10 +189,11 @@ namespace PPTX
 			if (strName == L"author")
 			{
 				m_arAuthors.emplace_back();
-				m_arAuthors.back().fromXML(oCm);
 
 				if (XmlUtils::GetNamespace(oCm.GetName()) == L"p188")
 					m_arAuthors.back().bModern = true;
+				
+				m_arAuthors.back().fromXML(oCm);
 			}
 		}
 	}
@@ -197,7 +203,8 @@ namespace PPTX
 	}
 	const OOX::FileType Authors::type() const
 	{
-		return OOX::Presentation::FileTypes::CommentAuthors;
+		if (bModern) 	return OOX::Presentation::FileTypes::ModernCommentAuthors;
+		else			return OOX::Presentation::FileTypes::CommentAuthors;
 	}
 	const OOX::CPath Authors::DefaultDirectory() const
 	{
@@ -213,17 +220,23 @@ namespace PPTX
 	}
 	void Authors::toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 	{
-		pWriter->StartNode(L"p:cmAuthorLst");
+		pWriter->StartNode(bModern ? L"p188:authorLst" : L"p:cmAuthorLst");
 
 		pWriter->StartAttributes();
 		pWriter->WriteAttribute(L"xmlns:a", PPTX::g_Namespaces.a.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:r", PPTX::g_Namespaces.r.m_strLink);
 		pWriter->WriteAttribute(L"xmlns:p", PPTX::g_Namespaces.p.m_strLink);
+		if (bModern)
+			pWriter->WriteAttribute(L"xmlns:p188", L"http://schemas.microsoft.com/office/powerpoint/2018/8/main");
 		pWriter->EndAttributes();
 
-		pWriter->WriteArray2(m_arAuthors);
+		for (auto author : m_arAuthors)
+		{
+			author.bModern = bModern;
+			author.toXmlWriter(pWriter);
+		}
 
-		pWriter->EndNode(L"p:cmAuthorLst");
+		pWriter->EndNode(bModern ? L"p188:authorLst" : L"p:cmAuthorLst");
 	}
 	void Authors::fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
 	{
@@ -244,10 +257,11 @@ namespace PPTX
 					{
 						pReader->Skip(1);
 
-						PPTX::Logic::CommentAuthor comm;
-
-						m_arAuthors.push_back(comm);
+						m_arAuthors.emplace_back();
 						m_arAuthors.back().fromPPTY(pReader);
+
+						if (m_arAuthors.back().bModern)
+							bModern = true;
 					}					
 				}break;
 				default:

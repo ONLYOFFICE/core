@@ -126,7 +126,10 @@ namespace PPTX
 						if (ext.spid.IsInit())
 						{
 							vmlSpid = ext.spid;
-							break;
+						}
+						else if (ext.creationId.IsInit())
+						{
+							creationId = ext.creationId;
 						}
 					}
 				}
@@ -212,6 +215,15 @@ namespace PPTX
 			pWriter->Write(hlinkClick);
 			pWriter->Write(hlinkHover);
 
+			if (creationId.IsInit())
+			{
+				pWriter->WriteString(L"<a:extLst>");
+				pWriter->WriteString(L"<a:ext uri=\"{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}\">\
+<a16:creationId xmlns:a16=\"http://schemas.microsoft.com/office/drawing/2014/main\" id=\"" + *creationId + L"\"/></a:ext>");
+				pWriter->WriteString(L"</a:extLst>");
+
+			}
+
 			pWriter->EndNode(strNS + L":cNvPr");
 		}
 		void CNvPr::toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -223,6 +235,7 @@ namespace PPTX
 				pWriter->WriteString2(3, title);
 				pWriter->WriteString2(4, descr);
 				pWriter->WriteBool2(5, form);
+				pWriter->WriteString2(6, creationId);
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->WriteRecord2(0, hlinkClick);
@@ -267,6 +280,10 @@ namespace PPTX
 					case 5:
 					{
 						form = pReader->GetBool();
+					}break;
+					case 6:
+					{
+						creationId = pReader->GetString2();
 					}break;
 					default:
 						break;

@@ -126,6 +126,63 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	}
 }
 
+void Feat11FieldDataItem::save(CFRecord& record)
+{
+	record << idField << lfdt << lfxidt << ilta;
+	auto cbFmtAggPos = record.getRdPtr();
+	record << cbFmtAgg << istnAgg;
+	_UINT32 flags = 0;
+
+	SETBIT(flags, 0, fAutoFilter)
+	SETBIT(flags, 1, fAutoFilterHidden)
+	SETBIT(flags, 2, fLoadXmapi)
+	SETBIT(flags, 3, fLoadFmla)
+	SETBIT(flags, 7, fLoadTotalFmla)
+	SETBIT(flags, 8, fLoadTotalArray)
+	SETBIT(flags, 9, fSaveStyleName)
+	SETBIT(flags, 10, fLoadTotalStr)
+	SETBIT(flags, 11, fAutoCreateCalcCol)
+	record << flags;
+	auto cbFmtInsertRowPos = record.getRdPtr();
+	record << cbFmtInsertRow;
+	record << istnInsertRow << strFieldName << strCaption;
+
+	{
+		auto FmtAggStart = record.getRdPtr();
+		record << dxfFmtAgg;
+		auto FmtAggEnd = record.getRdPtr();
+		cbFmtAgg = FmtAggEnd - FmtAggStart;
+		record.RollRdPtrBack(FmtAggEnd - cbFmtAggPos);
+		record << cbFmtAgg;
+		record.skipNunBytes(FmtAggEnd - record.getRdPtr());
+	}
+	{
+		auto FmtInsertRowStart = record.getRdPtr();
+		record << dxfFmtInsertRow;
+		auto FmtInsertRowEnd = record.getRdPtr();
+		istnInsertRow = FmtInsertRowEnd - FmtInsertRowStart;
+		record.RollRdPtrBack(FmtInsertRowEnd - cbFmtInsertRowPos);
+		record << istnInsertRow;
+		record.skipNunBytes(FmtInsertRowEnd - record.getRdPtr());
+	}
+	if(fAutoFilter)
+		record << AutoFilter;
+	if(fLoadXmapi)
+		record << rgXmap;
+	if(fLoadFmla)
+		record << fmla;
+	if(fLoadTotalFmla)
+		record << totalFmla;
+	if(fLoadTotalStr)
+		record << strTotal;
+	if(lt == 1)
+		record << wssInfo;
+	if(lt == 3)
+		record << qsif;
+	if(bDiskHdrCache)
+		record << dskHdrCache;
+}
+
 
 //---------------------------------------------------------------------------------------------------------
 BiffStructurePtr Feat11RgSharepointIdDel::clone()

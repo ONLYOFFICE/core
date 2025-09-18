@@ -48,6 +48,11 @@ void Feat11XMapEntry2::load(CFRecord& record)
 {
 	record >> dwMapId >> rgbXPath;
 }
+void Feat11XMapEntry2::save(CFRecord& record)
+{
+	record << dwMapId << rgbXPath;
+}
+
 //----------------------------------------------------------------------
 Feat11XMapEntry::Feat11XMapEntry()
 {
@@ -66,6 +71,15 @@ void Feat11XMapEntry::load(CFRecord& record)
 	fLoadXMap		= GETBIT(flags, 1);
 	fCanBeSingle	= GETBIT(flags, 2);
 }
+
+void Feat11XMapEntry::save(CFRecord& record)
+{
+	_UINT32 flags = 0;
+	SETBIT(flags, 1, fLoadXMap)
+	SETBIT(flags, 2, fCanBeSingle)
+	record << flags << entry;
+}
+
 //----------------------------------------------------------------------
 Feat11XMap::Feat11XMap()
 {
@@ -89,6 +103,14 @@ void Feat11XMap::load(CFRecord& record)
 		rgXmap.push_back(entry);
 
 	}
+}
+
+void Feat11XMap::save(CFRecord& record)
+{
+	_UINT16 iXmapMac = rgXmap.size();
+	record << iXmapMac;
+	for(auto i : rgXmap)
+		i.save(record);
 }
 
 

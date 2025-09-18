@@ -60,6 +60,18 @@ void Feat11Fmla::load(CFRecord& record)
 	}
 }
 
+void Feat11Fmla::save(CFRecord& record)
+{
+	unsigned short cbFmla = 0;
+	record.reserveNunBytes(2);
+	auto fmlaPos = record.getRdPtr();
+	fmla.save(record);
+	cbFmla = record.getRdPtr() - fmlaPos;
+	record.RollRdPtrBack(cbFmla+2);
+	record << cbFmla;
+	record.skipNunBytes(cbFmla);
+}
+
 
 } // namespace XLS
 

@@ -49,31 +49,32 @@ public:
 	static const ElementType type = typeFeat11WSSListInfo;
 
 	virtual void load(CFRecord& record);
+	virtual void save(CFRecord& record);
 
-	_UINT32			LCID;
-	_UINT32			cDec;
+	_UINT32			LCID = 0;
+	_UINT32			cDec = 0;
 
-	bool			fPercent;
-	bool			fDecSet;
-	bool			fDateOnly;
-	unsigned char	fReadingOrder;
-	bool			fRichText;
-	bool			fUnkRTFormatting;
-	bool			fAlertUnkRTFormatting;
-	bool			fReadOnly;
-	bool			fRequired;
-	bool			fMinSet;
-	bool			fMaxSet;
-	bool			fDefaultSet;
-	bool			fDefaultDateToday;
-	bool			fLoadFormula;
-	bool			fAllowFillIn;
+	bool			fPercent = false;
+	bool			fDecSet = false;
+	bool			fDateOnly = false;
+	unsigned char	fReadingOrder = 0;
+	bool			fRichText = false;
+	bool			fUnkRTFormatting = false;
+	bool			fAlertUnkRTFormatting = false;
+	bool			fReadOnly = false;
+	bool			fRequired = false;
+	bool			fMinSet = false;
+	bool			fMaxSet = false;
+	bool			fDefaultSet = false;
+	bool			fDefaultDateToday = false;
+	bool			fLoadFormula = false;
+	bool			fAllowFillIn = false;
 
-	unsigned char		bDefaultType;
+	unsigned char		bDefaultType = 0;
 	BiffStructurePtr	rgbDV;
 	XLUnicodeString		strFormula;
 //------------------------------------------------------
-	short lfdt;
+	short lfdt = 0x00000005;
 };
 
 } // namespace XLS

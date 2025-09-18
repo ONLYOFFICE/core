@@ -176,11 +176,17 @@ void Feat11FieldDataItem::save(CFRecord& record)
 	if(fLoadTotalStr)
 		record << strTotal;
 	if(lt == 1)
+	{
+		wssInfo.lfdt = lfdt;
 		record << wssInfo;
+	}
 	if(lt == 3)
 		record << qsif;
 	if(bDiskHdrCache)
+	{
+		dskHdrCache.fSaveStyleName = fSaveStyleName;
 		record << dskHdrCache;
+	}
 }
 
 

@@ -936,17 +936,21 @@ namespace PPTX
 
 				pWriter->WriteString2(8, additional_data);
 
-				pWriter->WriteString2(9, id);
-				pWriter->WriteString2(10, created);
-				pWriter->WriteString2(11, authorId);
-				pWriter->WriteString2(12, status);
-				pWriter->WriteString2(13, startDate);
-				pWriter->WriteString2(14, dueDate);
-				pWriter->WriteString2(15, assignedTo);
-				pWriter->WriteString2(16, title);
-				pWriter->WriteUInt2(17, complete);
-
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+		
+			pWriter->StartRecord(100);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
+					pWriter->WriteString2(0, id);
+					pWriter->WriteString2(1, created);
+					pWriter->WriteString2(2, authorId);
+					pWriter->WriteString2(3, status);
+					pWriter->WriteString2(4, startDate);
+					pWriter->WriteString2(5, dueDate);
+					pWriter->WriteString2(6, assignedTo);
+					pWriter->WriteString2(7, title);
+					pWriter->WriteUInt2(8, complete);
+				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
+			pWriter->EndRecord();
 
 			pWriter->StartRecord(0);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
@@ -1005,33 +1009,6 @@ namespace PPTX
 				case 8:
 					additional_data = pReader->GetString2();
 					break;
-				case 9:
-					id = pReader->GetString2();
-					break;
-				case 10:
-					created = pReader->GetString2();
-					break;
-				case 11:
-					authorId = pReader->GetString2();
-					break;
-				case 12:
-					status = pReader->GetString2();
-					break;
-				case 13:
-					startDate = pReader->GetString2();
-					break;
-				case 14:
-					dueDate = pReader->GetString2();
-					break;
-				case 15:
-					assignedTo = pReader->GetString2();
-					break;
-				case 16:
-					title = pReader->GetString2();
-					break;
-				case 17:
-					complete = pReader->GetLong();
-					break;
 				default:
 					break;
 				}
@@ -1042,6 +1019,53 @@ namespace PPTX
 				BYTE _at = pReader->GetUChar();
 				switch (_at)
 				{
+				case 100:
+				{
+					LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
+
+					pReader->Skip(1); // start attributes
+
+					while (true)
+					{
+						BYTE _at = pReader->GetUChar_TypeNode();
+						if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+							break;
+
+						switch (_at)
+						{
+						case 0:
+							id = pReader->GetString2();
+							break;
+						case 1:
+							created = pReader->GetString2();
+							break;
+						case 2:
+							authorId = pReader->GetString2();
+							break;
+						case 3:
+							status = pReader->GetString2();
+							break;
+						case 4:
+							startDate = pReader->GetString2();
+							break;
+						case 5:
+							dueDate = pReader->GetString2();
+							break;
+						case 6:
+							assignedTo = pReader->GetString2();
+							break;
+						case 7:
+							title = pReader->GetString2();
+							break;
+						case 8:
+							complete = pReader->GetLong();
+							break;
+						default:
+							break;
+						}
+					}
+					pReader->Seek(_end_rec2);
+				}break;
 				case 0:
 				{
 					LONG _end_rec2 = pReader->GetPos() + pReader->GetRecordSize() + 4;
@@ -1060,7 +1084,6 @@ namespace PPTX
 						default: break;
 						}
 					}
-
 					pReader->Seek(_end_rec2);
 				}break;
 				case 1:

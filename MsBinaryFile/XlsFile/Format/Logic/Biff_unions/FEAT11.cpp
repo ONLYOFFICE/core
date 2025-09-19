@@ -166,7 +166,25 @@ const bool FEAT11::saveContent(BinProcessor& proc)
 		for(auto j : i.m_arList12)
 			proc.mandatory(*j);
 		if(i.m_AutoFilter12 != nullptr)
+		{
 			proc.mandatory(*i.m_AutoFilter12);
+			auto castedPtr = static_cast<AutoFilter12*>(i.m_AutoFilter12.get());
+			if(castedPtr->cCriteria > 0 && castedPtr->ft == 0)
+			{
+				for(auto j : castedPtr->arAF12Criteries)
+				{
+					CFRecord binDataRec(rt_ContinueFrt12, proc.getGlobalWorkbookInfo());
+					j->save(binDataRec);
+					ContinueFrt12 tempRecord;
+					tempRecord.frtHeader.grbitFrt.fFrtRef = castedPtr->frtRefHeader.grbitFrt.fFrtRef;
+					tempRecord.frtHeader.ref8 = castedPtr->frtRefHeader.ref8;
+					tempRecord.rgb.resize(binDataRec.getRdPtr());
+					auto copyData = binDataRec.getCurStaticData<char>() - binDataRec.getRdPtr();
+					memcpy(tempRecord.rgb.data(), copyData, binDataRec.getRdPtr());
+					proc.mandatory(tempRecord);
+				}
+			}
+		}
 		for(auto j : i.m_arList12_2)
 			if(j != nullptr)
 				proc.mandatory(*j);

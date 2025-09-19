@@ -49,12 +49,13 @@ public:
 	BaseObjectPtr clone();
 	
 	void readFields(CFRecord& record);
+	void writeFields(CFRecord& record);
 
 	static const ElementType type = typeList12;
 
 	FrtHeader	frtHeader;
-	_UINT16		lsd;
-	_UINT32		idList;
+	_UINT16		lsd = 0;
+	_UINT32		idList = 1;
 
 	BiffStructurePtr rgbList12;
 };

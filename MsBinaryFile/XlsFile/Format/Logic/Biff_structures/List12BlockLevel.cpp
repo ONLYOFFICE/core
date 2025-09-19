@@ -108,6 +108,50 @@ void List12BlockLevel::load(CFRecord& record)
 	if (istnAgg != -1)
 		record >> stAgg;
 }
+auto saveDXFN(CFRecord& record, const size_t cbPos, DXFN12List & dxfnList)
+{
+	_INT32 listSize = 0;
+	auto dxfnStart = record.getRdPtr();
+	dxfnList.save(record);
+	listSize = record.getRdPtr() - dxfnStart;
+	record.RollRdPtrBack(record.getRdPtr() - cbPos);
+	record << listSize;
+	record.skipNunBytes(dxfnStart - record.getRdPtr() + listSize);
+}
+void List12BlockLevel::save(CFRecord& record)
+{
+	auto headerSizePos = record.getRdPtr();
+	record << cbdxfHeader << istnHeader;
+	auto dataSizePos = record.getRdPtr();
+	record << cbdxfData << istnData;
+	auto aggPos = record.getRdPtr();
+	record << cbdxfAgg << istnAgg;
+	auto BorderPos = record.getRdPtr();
+	record << cbdxfBorder;
+	auto HeaderBorderPos = record.getRdPtr();
+	record << cbdxfHeaderBorder;
+	auto aggBorderPos = record.getRdPtr();
+	record << cbdxfAggBorder;
+
+	if(dxfHeader.bExist)
+		saveDXFN(record, headerSizePos, dxfHeader);
+	if(dxfData.bExist)
+		saveDXFN(record, dataSizePos, dxfData);
+	if(dxfAgg.bExist)
+		saveDXFN(record, aggPos, dxfAgg);
+	if(dxfBorder.bExist)
+		saveDXFN(record, BorderPos, dxfBorder);
+	if(dxfHeaderBorder.bExist)
+		saveDXFN(record, HeaderBorderPos, dxfHeaderBorder);
+	if(dxfAggBorder.bExist)
+		saveDXFN(record, aggBorderPos, dxfAggBorder);
+	if(istnHeader != -1)
+		record << stHeader;
+	if(istnData != -1)
+		record << stData;
+	if(istnAgg != -1)
+		record << stAgg;
+}
 
 
 } // namespace XLS

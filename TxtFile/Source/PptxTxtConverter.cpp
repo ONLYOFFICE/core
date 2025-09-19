@@ -116,8 +116,9 @@ std::wstring CPptxTxtConverter::CPptxTxtConverterImpl::GetTextFromShape(const PP
 	std::wstring text;
 	text.reserve(knStringReserve);
 
-	for (const auto& paragraph : oShape.txBody->Paragrs)
-		text += paragraph.GetText(true);
+	if (oShape.txBody.IsInit())
+		for (const auto& paragraph : oShape.txBody->Paragrs)
+			text += paragraph.GetText(true);
 
 	return text; // RVO
 }

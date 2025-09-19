@@ -22,19 +22,32 @@ ENumPos GetNumPos(int nValue)
 	}
 }
 
-ENumPos GetNumPos(HWP_STRING sValue)
+ENumPos GetNumPos(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(TOP_LEFT, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(TOP_CENTER, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(TOP_RIGHT, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM_LEFT, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM_CENTER, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM_RIGHT, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(TOP_OUTER, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM_OUTER, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(TOP_INNER, sValue, ENumPos);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM_INNER, sValue, ENumPos);
-	ELSE_STRING_IN_ENUM(NONE, ENumPos);
+	if (sValue.empty() || GetValueName(EValue::None, eType) == sValue)
+		return ENumPos::NONE;
+	if (GetValueName(EValue::TopLeft, eType) == sValue)
+		return ENumPos::TOP_LEFT;
+	if (GetValueName(EValue::TopCenter,eType) == sValue)
+		return ENumPos::TOP_CENTER;
+	if (GetValueName(EValue::TopRight, eType) == sValue)
+		return ENumPos::TOP_RIGHT;
+	if (GetValueName(EValue::BottomLeft, eType) == sValue)
+		return ENumPos::BOTTOM_LEFT;
+	if (GetValueName(EValue::BottomCenter, eType) == sValue)
+		return ENumPos::BOTTOM_CENTER;
+	if (GetValueName(EValue::BottomRight, eType) == sValue)
+		return ENumPos::BOTTOM_RIGHT;
+	if (GetValueName(EValue::TopOuter, eType) == sValue)
+		return ENumPos::TOP_OUTER;
+	if (GetValueName(EValue::BottomOuter, eType) == sValue)
+		return ENumPos::BOTTOM_OUTER;
+	if (GetValueName(EValue::TopInner, eType) == sValue)
+		return ENumPos::TOP_INNER;
+	if (GetValueName(EValue::BottomInner, eType) == sValue)
+		return ENumPos::BOTTOM_INNER;
+
+	return ENumPos::NONE;
 }
 
 CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID)
@@ -62,7 +75,7 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if (GetAttributeName(EAttribute::Pos, eType) == sAttributeName)
-			m_ePos = GetNumPos(oReader.GetText());
+			m_ePos = GetNumPos(oReader.GetTextA(), eType);
 		else if (GetAttributeName(EAttribute::FormatType, eType) == sAttributeName)
 			m_eNumShape = GetNumberShape2(oReader.GetInt());
 		else if (GetAttributeName(EAttribute::SideChar, eType) == sAttributeName)

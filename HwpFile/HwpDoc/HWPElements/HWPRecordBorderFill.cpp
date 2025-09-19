@@ -65,7 +65,7 @@ void TBorder::Read(CXMLReader& oReader, EHanType eType)
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
-			m_eStyle = GetLineStyle2(oReader.GetText());
+			m_eStyle = GetLineStyle2(oReader.GetTextA(), eType);
 		else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
 			m_nColor = oReader.GetInt();
 		else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)

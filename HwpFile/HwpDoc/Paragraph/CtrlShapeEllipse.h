@@ -13,7 +13,7 @@ enum class EArcType
 };
 
 EArcType GetArcType(int nValue);
-EArcType GetArcType(HWP_STRING sValue);
+EArcType GetArcType(const std::string &sValue, EHanType eType);
 
 class CCtrlShapeEllipse : public CCtrlGeneralShape
 {

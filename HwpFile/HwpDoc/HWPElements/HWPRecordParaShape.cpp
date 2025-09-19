@@ -15,12 +15,18 @@ EHeadingType GetHeadingType(int nValue)
 	}
 }
 
-EHeadingType GetHeadingType(HWP_STRING sValue)
+EHeadingType GetHeadingType(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(OUTLINE, sValue, EHeadingType);
-	ELSE_IF_STRING_IN_ENUM(NUMBER, sValue, EHeadingType);
-	ELSE_IF_STRING_IN_ENUM(BULLET, sValue, EHeadingType);
-	ELSE_STRING_IN_ENUM(NONE, EHeadingType);
+	if (sValue.empty() || GetValueName(EValue::None, eType) == sValue)
+		return EHeadingType::NONE;
+	if (GetValueName(EValue::Outline, eType) == sValue)
+		return EHeadingType::OUTLINE;
+	if (GetValueName(EValue::Number, eType) == sValue)
+		return EHeadingType::NUMBER;
+	if (GetValueName(EValue::Bullet, eType) == sValue)
+		return EHeadingType::BULLET;
+
+	return EHeadingType::NONE;
 }
 
 EHorizontalAlign GetHorizontalAlign(int nValue)
@@ -36,14 +42,22 @@ EHorizontalAlign GetHorizontalAlign(int nValue)
 	}
 }
 
-EHorizontalAlign GetHorizontalAlign(HWP_STRING sValue)
+EHorizontalAlign GetHorizontalAlign(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(RIGHT, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(CENTER, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(DISTRIBUTE_SPACE, sValue, EHorizontalAlign);
-	ELSE_IF_STRING_IN_ENUM(JUSTIFY, sValue, EHorizontalAlign);
-	ELSE_STRING_IN_ENUM(LEFT, EHorizontalAlign);
+	if (sValue.empty() || GetValueName(EValue::Left, eType) == sValue)
+		return EHorizontalAlign::LEFT;
+	if (GetValueName(EValue::Center, eType) == sValue)
+		return EHorizontalAlign::CENTER;
+	if (GetValueName(EValue::Right, eType) == sValue)
+		return EHorizontalAlign::RIGHT;
+	if (GetValueName(EValue::Distribute, eType) == sValue)
+		return EHorizontalAlign::DISTRIBUTE;
+	if (GetValueName(EValue::DistributeSpace, eType) == sValue)
+		return EHorizontalAlign::DISTRIBUTE_SPACE;
+	if (GetValueName(EValue::Justify, eType) == sValue)
+		return EHorizontalAlign::JUSTIFY;
+
+	return EHorizontalAlign::LEFT;
 }
 
 EVerticalAlign GetVerticalAlign(int nValue)
@@ -57,12 +71,18 @@ EVerticalAlign GetVerticalAlign(int nValue)
 	}
 }
 
-EVerticalAlign GetVerticalAlign(HWP_STRING sValue)
+EVerticalAlign GetVerticalAlign(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(CENTER, sValue, EVerticalAlign);
-	ELSE_IF_STRING_IN_ENUM(BOTTOM, sValue, EVerticalAlign);
-	ELSE_IF_STRING_IN_ENUM(BASELINE, sValue, EVerticalAlign);
-	ELSE_STRING_IN_ENUM(TOP, EVerticalAlign);
+	if (sValue.empty() || GetValueName(EValue::Top, eType) == sValue)
+		return EVerticalAlign::TOP;
+	if (GetValueName(EValue::Center, eType) == sValue)
+		return EVerticalAlign::CENTER;
+	if (GetValueName(EValue::Bottom, eType) == sValue)
+		return EVerticalAlign::BOTTOM;
+	if (GetValueName(EValue::Baseline, eType) == sValue)
+		return EVerticalAlign::BASELINE;
+
+	return EVerticalAlign::TOP;
 }
 
 CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
@@ -141,7 +161,7 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
       m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false)
 {
 	//В HWPX  в данной ноде данный пишутся по типу данный в нодах
-	//В HWPML в данной ноде данные пишуься по типк данные в аргументах
+	//В HWPML в данной ноде данные пишутся по типу данные в аргументах
 	
 	if (EHanType::HWPX == eType)
 	{
@@ -167,11 +187,11 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oRea
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("Align" == sAttributeName)
-			m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetText());
+			m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetTextA(), eType);
 		else if ("VerAlign" == sAttributeName)
-			m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetText());
+			m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetTextA(), eType);
 		else if ("HeadingType" == sAttributeName)
-			m_eHeadingType = ::HWP::GetHeadingType(oReader.GetText());
+			m_eHeadingType = ::HWP::GetHeadingType(oReader.GetTextA(), eType);
 		else if ("Heading" == sAttributeName)
 			m_shHeadingIdRef = oReader.GetInt();
 		else if ("Level" == sAttributeName)
@@ -293,9 +313,9 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("horizontal" == sAttributeName)
-					m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetText());
+					m_eAlign = ::HWP::GetHorizontalAlign(oReader.GetTextA(), EHanType::HWPX);
 				else if ("vertical" == sAttributeName)
-					m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetText());
+					m_eVertAlign = ::HWP::GetVerticalAlign(oReader.GetTextA(), EHanType::HWPX);
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
@@ -304,7 +324,7 @@ void CHWPRecordParaShape::RecursiveParaShape(CXMLReader& oReader)
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if ("type" == sAttributeName)
-					m_eHeadingType = ::HWP::GetHeadingType(oReader.GetText());
+					m_eHeadingType = ::HWP::GetHeadingType(oReader.GetTextA(), EHanType::HWPX);
 				else if ("idRef" == sAttributeName)
 					m_shHeadingIdRef = oReader.GetInt();
 				else if ("level" == sAttributeName)

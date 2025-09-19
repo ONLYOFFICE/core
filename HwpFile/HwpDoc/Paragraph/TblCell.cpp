@@ -79,7 +79,7 @@ void CTblCell::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 			ReadCellMargin(oReader, EHanType::HWPX);
 		else if ("hp:subList" == sNodeName)
 		{
-			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttribute("vertAlign"));
+			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttributeA("vertAlign"), EHanType::HWPX);
 
 			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
 				ReadCell(oReader, nVersion, EHanType::HWPX);
@@ -118,7 +118,7 @@ void CTblCell::ReadFromHWPML(CXMLReader &oReader)
 			ReadCellMargin(oReader, EHanType::HWPML);
 		else if ("PARALIST" == sNodeName)
 		{
-			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttribute("VertAlign"));
+			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttributeA("VertAlign"), EHanType::HWPML);
 
 			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "P")
 				ReadCell(oReader, 0, EHanType::HWPML);

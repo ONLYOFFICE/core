@@ -133,7 +133,7 @@ enum class ENode
 };
 
 #define MAX_TYPES 2
-#define MAX_NODES 120
+#define MAX_NODES 117
 
 static constexpr const char* NODE_NAMES[MAX_TYPES][MAX_NODES] = 
 {
@@ -589,7 +589,7 @@ enum class EAttribute
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 180
+#define MAX_ATTRIBUTES 176
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -1055,10 +1055,44 @@ enum class EValue
 	Outside,
 	Paper,
 	Column,
-	Absolute
+	Absolute,
+	Solid,
+	Dash,
+	Dot,                   //80
+	DashDot,
+	DashDotDot,
+	LongDash,
+	Circle,
+	DoubleSlim,
+	Thick,
+	SlimThick,
+	ThickSlim,
+	SlimThickSlim,
+	Diamond,               //90
+	Box,
+	Discrete,
+	Outline,
+	Number,
+	Bullet,
+	Distribute,
+	DistributeSpace,
+	Justify,
+	Baseline,
+	Pie,                   //100
+	Chord,
+	TopLeft,
+	TopCenter,
+	TopRight,
+	BottomLeft,
+	BottomCenter,
+	BottomRight,
+	TopOuter,
+	BottomOuter,
+	TopInner,              //110
+	BottomInner
 };
 
-#define MAX_VALUES 80
+#define MAX_VALUES 111
 
 static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] = 
 {
@@ -1140,7 +1174,41 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"OUTSIDE",
 		"PAPER",
 		"COLUMN",
-		"ABSOLUTE"
+		"ABSOLUTE",
+		"SOLID",
+		"DASH",
+		"DOT",
+		"DASH_DOT",
+		"DASH_DOT_DOT",
+		"LONG_DASH",
+		"CIRCLE",
+		"DOUBLE_SLIM",
+		"THICK",
+		"SLIM_THICK",
+		"THICK_SLIM",
+		"SLIM_THICK_SLIM",
+		"DIAMOND",
+		"BOX",
+		"DISCRETE",
+		"OUTLINE",
+		"NUMBER",
+		"BULLET",
+		"DISTRIBUTE",
+		"DISTRIBUTE_SPACE",
+		"JUSTIFY",
+		"BASELINE",
+		"PIE",
+		"CHORD",
+		"TOP_LEFT",
+		"TOP_CENTER",
+		"TOP_RIGHT",
+		"BOTTOM_LEFT",
+		"BOTTOM_CENTER",
+		"BOTTOM_RIGHT",
+		"TOP_OUTER",
+		"BOTTOM_OUTER",
+		"TOP_INNER",
+		"BOTTOM_INNER"
 	},
 //HWPML
 	{
@@ -1220,7 +1288,41 @@ static constexpr const char* VALUE_NAMES[MAX_TYPES][MAX_VALUES] =
 		"Outside",
 		"Paper",
 		"Column",
-		"Absolute"
+		"Absolute",
+		"Solid",
+		"Dash",
+		"Dot",
+		"DashDot",
+		"DashDotDot",
+		"LongDash",
+		"Circle",
+		"DoubleSlim",
+		"Thick",
+		"SlimThick",
+		"ThickSlim",
+		"SlimThickSlim",
+		"Diamond",
+		"Box",
+		"Discrete",
+		"Outline",
+		"Number",
+		"Bullet",
+		"Distribute",
+		"DistributeSpace",
+		"Justify",
+		"Baseline",
+		"Pie",
+		"Chord",
+		"TopLeft",
+		"TopCenter",
+		"TopRight",
+		"BottomLeft",
+		"BottomCenter",
+		"BottomRight",
+		"TopOuter",
+		"BottomOuter",
+		"TopInner",
+		"BottomInner"
 	}
 };
 
@@ -1233,7 +1335,6 @@ inline const char* GetValueName(EValue eValue, EHanType eType)
 		default: return "";
 	}
 }
-
 
 #define CHECK_IF_ATTRIBUTE(type) if (GetAttributeName(EAttribute::type, eType) == sAttributeName)
 #define CHECK_ELSE_IF_ATTRIBUTE(type) else CHECK_IF_ATTRIBUTE(type)

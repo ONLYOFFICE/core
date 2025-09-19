@@ -96,7 +96,7 @@ namespace HWP
 		}
 	}
 
-	EWidthRelTo GetWidthRelTo(HWP_STRING sValue)
+	EWidthRelTo GetWidthRelTo(const std::string& sValue, EHanType eType)
 	{
 		if (sValue.empty() || GetValueName(EValue::Para, eType) == sValue)
 			return EWidthRelTo::PARA;
@@ -173,12 +173,16 @@ namespace HWP
 		}
 	}
 
-	ETextWrap GetTextWrap(HWP_STRING sValue)
+	ETextWrap GetTextWrap(const std::string& sValue, EHanType eType)
 	{
-		IF_STRING_IN_ENUM(TOP_AND_BOTTOM, sValue, ETextWrap);
-		ELSE_IF_STRING_IN_ENUM(BEHIND_TEXT, sValue, ETextWrap);
-		ELSE_IF_STRING_IN_ENUM(IN_FRONT_OF_TEXT, sValue, ETextWrap);
-		ELSE_STRING_IN_ENUM(SQUARE, ETextWrap);
+		if (sValue.empty() || GetValueName(EValue::Square, eType) == sValue)
+			return ETextWrap::SQUARE;
+		if (GetValueName(EValue::TopAndBottom, eType) == sValue)
+			return ETextWrap::TOP_AND_BOTTOM;
+		if (GetValueName(EValue::InFrontOfText, eType) == sValue)
+			return ETextWrap::IN_FRONT_OF_TEXT;
+		
+		return ETextWrap::SQUARE;
 	}
 
 	CCtrlCommon::CCtrlCommon()
@@ -335,18 +339,7 @@ namespace HWP
 					m_chTextFlow = 3;
 			}
 			else if (GetAttributeName(EAttribute::TextWrap, eType) == sAttributeName)
-			{
-				sType = oReader.GetTextA();
-
-				if (GetValueName(EValue::Square, eType) == sType)
-					m_eTextWrap = ETextWrap::SQUARE;
-				else if (GetValueName(EValue::TopAndBottom, eType)== sType)
-					m_eTextWrap = ETextWrap::TOP_AND_BOTTOM;
-				else if (GetValueName(EValue::BehindText, eType) == sType)
-					m_eTextWrap = ETextWrap::BEHIND_TEXT;
-				else if (GetValueName(EValue::InFrontOfText, eType)== sType)
-					m_eTextWrap = ETextWrap::IN_FRONT_OF_TEXT;
-			}
+				m_eTextWrap = ::HWP::GetTextWrap(oReader.GetTextA(), eType);
 			else if (GetAttributeName(EAttribute::ZOrder, eType) == sAttributeName)
 				m_nZOrder = oReader.GetInt();
 			else if (GetAttributeName(EAttribute::NumberingType, eType) == sAttributeName)
@@ -398,11 +391,11 @@ namespace HWP
 				if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 					m_nWidth = oReader.GetInt();
 				else if (GetAttributeName(EAttribute::WidthRelTo, eType) == sAttributeName)
-					m_eWidthRelTo = ::HWP::GetWidthRelTo(oReader.GetText());
+					m_eWidthRelTo = ::HWP::GetWidthRelTo(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::Height, eType) == sAttributeName)
 					m_nHeight = oReader.GetInt();
 				else if (GetAttributeName(EAttribute::HeightRelTo, eType) == sAttributeName)
-					m_eHeightRelTo = ::HWP::GetHeightRelTo(oReader.GetText());
+					m_eHeightRelTo = ::HWP::GetHeightRelTo(oReader.GetTextA(), eType);
 			}
 			END_READ_ATTRIBUTES(oReader)
 		}
@@ -417,15 +410,15 @@ namespace HWP
 				else if (GetAttributeName(EAttribute::AllowOverlap, eType) == sAttributeName)
 					m_bAllowOverlap = oReader.GetBool();
 				else if (GetAttributeName(EAttribute::VertRelTo, eType) == sAttributeName)
-					m_eVertRelTo = GetVRelTo(oReader.GetText());
+					m_eVertRelTo = GetVRelTo(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::HorzRelTo, eType) == sAttributeName)
-					m_eHorzRelTo = GetHRelTo(oReader.GetText());
+					m_eHorzRelTo = GetHRelTo(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::FlowWithText, eType) == sAttributeName)
 					m_bFlowWithText = oReader.GetBool();
 				else if (GetAttributeName(EAttribute::VertAlign, eType) == sAttributeName)
-					m_eVertAlign = GetVertAlign(oReader.GetText());
+					m_eVertAlign = GetVertAlign(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::HorzAlign, eType) == sAttributeName)
-					m_eHorzAlign = GetHorzAlign(oReader.GetText());
+					m_eHorzAlign = GetHorzAlign(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::VertOffset, eType) == sAttributeName)
 					m_nVertOffset = oReader.GetInt();
 				else if (GetAttributeName(EAttribute::HorzOffset, eType) == sAttributeName)

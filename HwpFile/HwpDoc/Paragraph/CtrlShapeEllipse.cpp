@@ -12,11 +12,16 @@ EArcType GetArcType(int nValue)
 	}
 }
 
-EArcType GetArcType(HWP_STRING sValue)
+EArcType GetArcType(const std::string& sValue, EHanType eType)
 {
-	IF_STRING_IN_ENUM(PIE, sValue, EArcType);
-	ELSE_IF_STRING_IN_ENUM(CHORD, sValue, EArcType);
-	ELSE_STRING_IN_ENUM(NORMAL, EArcType);
+	if (sValue.empty() || GetValueName(EValue::Normal, eType) == sValue)
+		return EArcType::NORMAL;
+	if (GetValueName(EValue::Pie, eType) == sValue)
+		return EArcType::PIE;
+	if (GetValueName(EValue::Chord, eType) == sValue)
+		return EArcType::CHORD;
+
+	return EArcType::NORMAL;
 }
 
 CCtrlShapeEllipse::CCtrlShapeEllipse()
@@ -53,7 +58,7 @@ void CCtrlShapeEllipse::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 		else if ("hasArcPr" == sAttributeName)
 			m_bHasArcProperty = oReader.GetBool();
 		else if ("arcType" == sAttributeName)
-			m_eArcType = GetArcType(oReader.GetText());
+			m_eArcType = GetArcType(oReader.GetTextA(), EHanType::HWPX);
 	}
 	END_READ_ATTRIBUTES(oReader)
 
@@ -151,7 +156,7 @@ void CCtrlShapeEllipse::ReadFromHWPML(CXMLReader &oReader)
 		else if ("HasArcProperty" == sAttributeName)
 			m_bHasArcProperty = oReader.GetBool();
 		else if ("ArcType" == sAttributeName)
-			m_eArcType = GetArcType(oReader.GetText());
+			m_eArcType = GetArcType(oReader.GetTextA(), EHanType::HWPML);
 		else if ("CenterX" == sAttributeName)
 			m_nCenterX = oReader.GetInt();
 		else if ("CenterY" == sAttributeName)

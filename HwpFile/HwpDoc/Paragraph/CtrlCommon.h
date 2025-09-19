@@ -49,7 +49,7 @@ enum class EVertAlign
 };
 
 EVertAlign GetVertAlign(int nValue);
-EVertAlign GetVertAlign(HWP_STRING sValue);
+EVertAlign GetVertAlign(const std::string& sValue, EHanType eType);
 
 enum class EHorzAlign
 {

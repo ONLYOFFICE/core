@@ -71,7 +71,7 @@ CCtrlColumnDef::CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, i
 			START_READ_ATTRIBUTES(oReader)
 			{
 				if (GetAttributeName(EAttribute::Type, eType) == sAttributeName)
-					m_eColLineStyle = GetLineStyle2(oReader.GetText());
+					m_eColLineStyle = GetLineStyle2(oReader.GetTextA(), eType);
 				else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 					m_chColLineWidth = (HWP_BYTE)ConvertWidthToHWP(oReader.GetTextA());
 				else if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)

@@ -77,7 +77,7 @@ void CCtrlShapeArc::ReadFromHWPML(CXMLReader &oReader)
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if ("Type" == sAttributeName)
-			m_eType = GetArcType(oReader.GetText());
+			m_eType = GetArcType(oReader.GetTextA(), EHanType::HWPML);
 		else if ("CenterX" == sAttributeName)
 			m_nCenterX = oReader.GetInt();
 		else if ("CenterY" == sAttributeName)

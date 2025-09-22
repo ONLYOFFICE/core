@@ -80,7 +80,7 @@ class CCryptoBase {
         override generateKey(algorithm: GenerateKeyAlgorithm, extractable: boolean, keyUsages: GenerateKeyUsages) {
             return this.subtle.generateKey(algorithm, extractable, keyUsages);
         };
-        getAesCryptoKeyFromMasterPassword(masterPassword: string, salt) {
+        async getAesCryptoKeyFromMasterPassword(masterPassword: string, salt: string) {
             const encoder = new TextEncoder();
             const pwKey = await crypto.subtle.importKey(
                 'raw',
@@ -92,7 +92,7 @@ class CCryptoBase {
             const aesKey = await crypto.subtle.deriveKey(
                 {
                     name: 'PBKDF2',
-                    salt: salt,
+                    salt: encoder.encode(salt),
                     iterations: pbkdf2Parameters.iterations,
                     hash: pbkdf2Parameters.hash
                 },
@@ -109,14 +109,13 @@ class CCryptoBase {
         decryptWithMasterPassword(masterPassword: string, salt, data) {
 
         }
+        async generateCipherKeys() {
+            return await this.generateKey({ name: "X25519" }, true, ["deriveKey"]);
+        }
     }
 
-    const initCrypto = () => {
+    const getCrypto = () => {
     return new CWebCrypto();
 }
 
-    const generateSalt = () => {
-
-    }
-
-export default initCrypto;
+export default getCrypto;

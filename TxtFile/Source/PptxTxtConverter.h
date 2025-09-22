@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <xstring>
+#include <string>
 
 class CPptxTxtConverter
 {

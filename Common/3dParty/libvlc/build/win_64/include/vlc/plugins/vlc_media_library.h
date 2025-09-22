@@ -2,7 +2,7 @@
  * vlc_media_library.h: SQL-based media library
  *****************************************************************************
  * Copyright (C) 2008-2010 the VideoLAN Team and AUTHORS
- * $Id: a35d9729ca3705ec792b7be9e1819919f6e601f6 $
+ * $Id$
  *
  * Authors: Antoine Lejeune <phytos@videolan.org>
  *          Jean-Philippe André <jpeg@videolan.org>
@@ -116,7 +116,7 @@ typedef enum
 typedef enum {
     ML_TYPE_INT,        /**< Object is an int */
     ML_TYPE_PSZ,        /**< A string char* */
-    ML_TYPE_TIME,       /**< A timestamp mtime_t */
+    ML_TYPE_TIME,       /**< A timestamp vlc_tick_t */
     ML_TYPE_MEDIA,      /**< A pointer to a media ml_media_t* */
 } ml_result_type_e;
 

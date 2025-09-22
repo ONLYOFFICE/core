@@ -152,7 +152,11 @@
  * epoch). Note that date and time intervals can be manipulated using regular
  * arithmetic operators, and that no special functions are required.
  */
-typedef int64_t mtime_t;
+typedef int64_t vlc_tick_t;
+typedef vlc_tick_t mtime_t; /* deprecated, use vlc_tick_t */
+
+#define VLC_TICK_INVALID  VLC_TS_INVALID
+#define VLC_TICK_0        VLC_TS_0
 
 /**
  * The vlc_fourcc_t type.
@@ -942,6 +946,11 @@ static inline void SetQWLE (void *p, uint64_t qw)
 #   ifndef O_NONBLOCK
 #       define O_NONBLOCK 0
 #   endif
+
+/* the mingw32 swab() and win32 _swab() prototypes expect a char* instead of a
+   const void* */
+#  define swab(a,b,c)  swab((char*) (a), (char*) (b), (c))
+
 
 #   include <tchar.h>
 #endif /* _WIN32 */

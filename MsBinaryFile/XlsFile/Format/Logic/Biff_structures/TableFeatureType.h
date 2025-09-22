@@ -78,7 +78,7 @@ public:
 	bool	fGoodRupBld = false;
 	bool	fPublished = false;
 	
-	unsigned char	verXL;
+	unsigned char	verXL = 0xC;
 	_UINT32			lPosStmCache = 0;
 	_UINT32			cbStmCache = 0;
 	_UINT32			cchStmCache = 0;

@@ -57,6 +57,7 @@
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMTS.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/CONDFMT12.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/OBJECTS.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/FEAT11.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/CondFmt12.h"
 
 namespace OOX
@@ -366,7 +367,7 @@ namespace OOX
 			}
 
 		}
-		XLS::BaseObjectPtr CWorksheet::toXLS() const
+		XLS::BaseObjectPtr CWorksheet::toXLS()
 		{
 			auto worksheetPtr = new XLS::WorksheetSubstream(0);
 			auto sheetPtr = XLS::BaseObjectPtr(worksheetPtr);
@@ -429,6 +430,23 @@ namespace OOX
 				if(worksheetPtr->m_OBJECTS == nullptr)
 					worksheetPtr->m_OBJECTS = XLS::BaseObjectPtr(new XLS::OBJECTS(false));
 				worksheetPtr->m_arNote = m_pComments->toXLS(worksheetPtr->m_OBJECTS);
+			}
+			if(m_oTableParts.IsInit())
+			{
+				auto container = GetContainer();
+				auto feat11 = new XLS::FEAT11;
+				worksheetPtr->m_arFEAT11.push_back(XLS::BaseObjectPtr(feat11));
+				for(auto file : container)
+				{
+					if(file->type() == OOX::SpreadsheetBin::FileTypes::TableBin || file->type() == OOX::Spreadsheet::FileTypes::Table)
+					{
+						XLS::FEAT11::_data featData;
+						feat11->m_arFEAT.push_back(featData);
+						auto tempTable = static_cast<CTableFile*>(file.GetPointer());
+						featData.m_Feature = tempTable->m_oTable->toXLS();
+
+					}
+				}
 			}
 			return sheetPtr;
 		}

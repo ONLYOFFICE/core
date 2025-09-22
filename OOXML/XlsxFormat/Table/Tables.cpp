@@ -66,6 +66,7 @@
 
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Feature11.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -471,6 +472,15 @@ namespace Spreadsheet
         }
         return objectPtr;
     }
+	XLS::BiffStructurePtr CTableColumn::toXLS()
+	{
+		auto ptr = new XLS::Feat11FieldDataItem(0, 0, 0);
+		if(m_oId.IsInit())
+			ptr->idField = m_oId->GetValue();
+		if(m_oName.IsInit())
+			ptr->strFieldName = m_oName.get();
+		return XLS::BiffStructurePtr(ptr);
+	}
     void CTableColumn::ReadAttributes(XLS::BaseObjectPtr& obj)
     {
         auto ptr = static_cast<XLSB::BeginListCol*>(obj.get());
@@ -896,6 +906,28 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
         if(m_oExtLst.IsInit())
             ptr->m_FRTTABLE = m_oExtLst->toBinTable();
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CTable::toXLS()
+	{
+		auto ptr = new XLS::Feature11;
+		if(m_oRef.IsInit())
+		{
+			auto tempref = new XLS::Ref8U;
+			tempref->fromString(m_oRef->GetValue());
+			ptr->refs2.push_back(XLS::BiffStructurePtr(tempref));
+		}
+		if(m_oName.IsInit())
+			ptr->rgbFeat.rgbName = m_oName.get();
+		if(m_oId.IsInit())
+		{
+			ptr->rgbFeat.idList = m_oId->GetValue();
+		}
+		if(m_oTableColumns.is_init())
+		{
+			for(auto i : m_oTableColumns->m_arrItems)
+				ptr->rgbFeat.arFieldData.push_back(i->toXLS());
+		}
+		return XLS::BaseObjectPtr(ptr);
 	}
 	void CTable::ReadAttributes(XmlUtils::CXmlLiteReader& oReader)
 	{

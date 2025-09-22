@@ -1207,6 +1207,10 @@ namespace NExtractTools
 				}
 			}
 		}
+		else if (AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT == nFormatTo)
+		{
+			pptx_dir2txt(sFrom, sTo, params, convertParams);
+		}
 		else
 			nRes = AVS_FILEUTILS_ERROR_CONVERT_PARAMS;
 		return nRes;

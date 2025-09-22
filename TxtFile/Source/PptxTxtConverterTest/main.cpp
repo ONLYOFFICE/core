@@ -1,4 +1,4 @@
-﻿/*
+/*
  * (c) Copyright Ascensio System SIA 2010-2023
  *
  * This program is a free software product. You can redistribute it and/or
@@ -29,60 +29,48 @@
  * terms at http://creativecommons.org/licenses/by-sa/4.0/legalcode
  *
  */
-#pragma once
 
-#include <string>
-#include <stdlib.h>
-#include <string.h>
+#define MAYBE_UNUSED(x) (void)(x)
 
-#define VALUE_TO_STRING(x) #x
-#define VALUE2STR(x) VALUE_TO_STRING(x)
+#include "../PptxTxtConverter.h"
 
-#define _T(x)       __T(x)
-#define __T(x)      L##x
+#include "../../../DesktopEditor/common/Directory.h"
+#include "../../../OfficeUtils/src/OfficeUtils.h"
 
-#if defined(_WIN32) || defined (_WIN64)
-#include <TCHAR.H>
-// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
+#include <iostream>
 
-#ifndef FILE_SEPARATOR
-#define FILE_SEPARATOR
-#define FILE_SEPARATOR_CHAR '\\'
-#define FILE_SEPARATOR_WCHAR L'\\'
-#define FILE_SEPARATOR_STR L"\\"
-#endif
-#else
-#include "stdint.h"
+int main(int argc, char* argv[])
+{
+	MAYBE_UNUSED(argc); MAYBE_UNUSED(argv);
 
-// linux-stype separator for paths i.e. '/home/documents/file.ext'
-#ifndef FILE_SEPARATOR
-#define FILE_SEPARATOR
-#define FILE_SEPARATOR_CHAR '/'
-#define FILE_SEPARATOR_WCHAR L'/'
-#define FILE_SEPARATOR_STR L"/"
-#endif
-#endif
+	std::wstring temp_dir = NSFile::GetProcessDirectory() + L"/temp";
+	std::wstring output_dir = NSFile::GetProcessDirectory() + L"/output";
 
-#ifndef AVSINLINE
-#if defined(_MSC_VER)
-#define AVSINLINE __forceinline
-#else
-#define AVSINLINE inline
-#endif
-#endif
+	if (!NSDirectory::Exists(temp_dir))
+		NSDirectory::CreateDirectory(temp_dir);
 
-#if defined(_WIN32) || defined (_WIN64)
-typedef __int16				_INT16;
-typedef __int32				_INT32;
-typedef __int64				_INT64;
-typedef unsigned __int16	_UINT16;
-typedef unsigned __int32	_UINT32;
-typedef unsigned __int64	_UINT64;
-#else
-typedef int16_t             _INT16;
-typedef int32_t             _INT32;
-typedef int64_t             _INT64;
-typedef uint16_t            _UINT16;
-typedef uint32_t            _UINT32;
-typedef uint64_t            _UINT64;
-#endif
+	if (!NSDirectory::Exists(output_dir))
+		NSDirectory::CreateDirectory(output_dir);
+
+	std::vector<std::wstring> source_files = NSDirectory::GetFiles(L"");
+	//source_files.push_back(L"");
+
+	COfficeUtils utils;
+	for (const auto& souce_file : source_files)
+	{
+		std::cout << U_TO_UTF8(souce_file) << std::endl;
+		std::wstring curr_tmp_dir = NSDirectory::CreateDirectoryWithUniqueName(temp_dir);
+		utils.ExtractToDirectory(souce_file, curr_tmp_dir, NULL, false);
+
+		std::wstring ext = NSFile::GetFileExtention(souce_file);
+		std::wstring filename_with_ext = NSFile::GetFileName(souce_file);
+		std::wstring filename = filename_with_ext.substr(0, filename_with_ext.size() - 1 - ext.size());
+		std::wstring txt_file = output_dir + L"/" + filename + L".txt";
+
+		CPptxTxtConverter pptx_txt_converter;
+		pptx_txt_converter.Convert(curr_tmp_dir, txt_file);
+
+		NSDirectory::DeleteDirectory(curr_tmp_dir);
+	}
+	return 0;
+}

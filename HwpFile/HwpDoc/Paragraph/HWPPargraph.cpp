@@ -26,17 +26,17 @@
 namespace HWP
 {
 CHWPPargraph::CHWPPargraph()
-	: m_chBreakType(0), m_pLineSegs(nullptr), m_shParaShapeID(0), m_shParaStyleID(0)
+	: m_shParaShapeID(0), m_shParaStyleID(0), m_chBreakType(0), m_pLineSegs(nullptr)
 {}
 
 CHWPPargraph::CHWPPargraph(CXMLReader& oReader, int nVersion, EHanType eType)
-	: m_chBreakType(0), m_pLineSegs(nullptr), m_shParaShapeID(0), m_shParaStyleID(0)
+	: m_shParaShapeID(0), m_shParaStyleID(0), m_chBreakType(0), m_pLineSegs(nullptr)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
 		if (GetAttributeName(EAttribute::ParaShape, eType) == sAttributeName)
 			m_shParaShapeID = oReader.GetInt();
-		else if (GetAttributeName(EAttribute::Style, eType) == sAttributeName)
+		else if (GetAttributeName(EAttribute::StyleId, eType) == sAttributeName)
 			m_shParaStyleID = oReader.GetInt();
 		else if (GetAttributeName(EAttribute::PageBreak, eType) == sAttributeName)
 		{

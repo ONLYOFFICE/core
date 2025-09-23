@@ -72,7 +72,7 @@ CShadow::CShadow(CXMLReader& oReader, EHanType eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
-		if (GetAttributeName(EAttribute::Style, eType) == sAttributeName)
+		if (GetAttributeName(EAttribute::StyleId, eType) == sAttributeName)
 			m_nStyle = oReader.GetInt();
 		else if (GetAttributeName(EAttribute::Alpha, eType) == sAttributeName)
 			m_nTransparency = oReader.GetInt();

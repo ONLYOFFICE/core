@@ -30,6 +30,27 @@ struct TContentType
 	HWP_STRING m_wsType;
 };
 
+struct TLineData
+{
+	ELineStyle2 m_eStyle;
+	int m_nColor;
+	int m_nThick;
+	HWP_BYTE m_nCompoundLineType;
+
+	ELineArrowStyle m_eHeadStyle;
+	ELineArrowSize  m_eHeadSize;
+	ELineArrowStyle m_eTailStyle;
+	ELineArrowSize  m_eTailSize;
+
+	TLineData(ELineStyle2 eStyle, int nColor,
+	          int nThick, HWP_BYTE nCompoundLineType,
+	          ELineArrowStyle eHeadStyle, ELineArrowSize eHeadSize,
+	          ELineArrowStyle eTailStyle, ELineArrowSize eTailSize);
+
+	TLineData(ELineStyle2 eStyle, int nColor,
+	          int nThick, HWP_BYTE nCompoundLineType);
+};
+
 enum class ECellCreator
 {
 	FILE,
@@ -108,7 +129,7 @@ class CConverter2OOXML
 	void WriteText(const CParaText* pParaText, const VECTOR<TRangeTag>& arRangeTags, short shParaShapeID, short shParaStyleID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);
 	void WriteText(const HWP_STRING& wsText, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState, const CRunnerStyle& oExternalStyle = CRunnerStyle());
 	void WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralShape, NSStringUtils::CStringBuilder& oBuilder);
-	void WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder);
+	void WriteLineSettings(const TLineData& oLineData, NSStringUtils::CStringBuilder& oBuilder);
 	void WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStringUtils::CStringBuilder& oBuilder);
 
 	void WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState);

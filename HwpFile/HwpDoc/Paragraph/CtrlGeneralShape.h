@@ -76,6 +76,11 @@ public:
 	int GetLineColor() const;
 	int GetLineThick() const;
 
+	ELineArrowStyle GetLineHeadStyle() const;
+	ELineArrowSize  GetLineHeadSize () const;
+	ELineArrowStyle GetLineTailStyle() const;
+	ELineArrowSize  GetLineTailSize () const;
+
 	static CCtrlGeneralShape* Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseListHeaderApend(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	static int ParseCtrl(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);

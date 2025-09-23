@@ -2,6 +2,7 @@
 #define NODENAMES_H
 
 #include "../HanType.h"
+#include <string>
 
 namespace HWP
 {
@@ -398,7 +399,7 @@ inline const char* GetNodeName(ENode eNode, EHanType eType)
 	}
 }
 
-inline bool Equals(ENode eNode, EHanType eType, std::string sNodeName)
+inline bool Equals(ENode eNode, EHanType eType, const std::string& sNodeName)
 {
 	switch (eType)
 	{
@@ -411,7 +412,7 @@ inline bool Equals(ENode eNode, EHanType eType, std::string sNodeName)
 enum class EAttribute
 {
 	ParaShape,
-	Style,
+	StyleId,
 	CharShape,
 	Href,
 	SubPath,
@@ -584,12 +585,13 @@ enum class EAttribute
 	FontType,
 	TextShape,
 	Spacing,
+	Style,
 
 	PageBreak,
 	ColumnBreak,
 };
 
-#define MAX_ATTRIBUTES 176
+#define MAX_ATTRIBUTES 177
 
 //TODO:: добавить все аргументы
 static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] = 
@@ -770,6 +772,7 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"fontType",
 		"textShape",
 		"spacing",
+		"style",
 
 		"pageBreak",
 		"columnBreak",
@@ -950,6 +953,7 @@ static constexpr const char* ATTRUBUTE_NAMES[MAX_TYPES][MAX_ATTRIBUTES] =
 		"FontType",
 		"TextShape",
 		"Spacing",
+		"Style",
 
 		"PageBreak",
 		"ColumnBreak"
@@ -966,7 +970,7 @@ inline const char* GetAttributeName(EAttribute eNode, EHanType eType)
 	}
 }
 
-inline bool Equals(EAttribute eAttribute, EHanType eType, std::string sAttributeName)
+inline bool Equals(EAttribute eAttribute, EHanType eType, const std::string& sAttributeName)
 {
 	switch (eType)
 	{

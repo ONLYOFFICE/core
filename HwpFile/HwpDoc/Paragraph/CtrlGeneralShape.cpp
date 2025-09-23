@@ -91,8 +91,24 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 	bool bHeadFill = false, bTailFill = false;
 
 	const std::string sNodeName{oReader.GetName()};
+	const std::string sChildNodeName{oReader.GetName()};
 
-	if (GetNodeName(ENode::LineShape, eType) == sNodeName)
+	//TODO:: выглядит не очень. Нужно вернуться и подумать как лучше иначе сделать
+	if (EHanType::HWPML == eType && "DRAWINGOBJECT" == sChildNodeName)
+	{
+		WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
+		{
+			if ("SHAPECOMPONENT" == sNodeName)
+				CCtrlObjElement::ParseHWPMLElement(oReader);
+			else
+				ParseChildren(oReader, nVersion, EHanType::HWPML);
+		}
+		END_WHILE
+
+		return;
+	}
+
+	if (GetNodeName(ENode::LineShape, eType) == sChildNodeName)
 	{
 		std::string sHeadStyle, sTailStyle;
 
@@ -122,9 +138,9 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 		m_eLineHead = ::HWP::GetLineArrowStyle(sHeadStyle, eType, bHeadFill);
 		m_eLineTail = ::HWP::GetLineArrowStyle(sTailStyle, eType, bTailFill);
 	}
-	else if (GetNodeName(ENode::FillBrush, eType) == sNodeName)
+	else if (GetNodeName(ENode::FillBrush, eType) == sChildNodeName)
 		m_pFill = new CFill(oReader, eType);
-	else if (GetNodeName(ENode::DrawText, eType) == sNodeName)
+	else if (GetNodeName(ENode::DrawText, eType) == sChildNodeName)
 	{
 		m_nMaxTxtWidth = oReader.GetAttributeInt(GetAttributeName(EAttribute::LastWidth, eType));
 
@@ -210,6 +226,26 @@ int CCtrlGeneralShape::GetLineColor() const
 int CCtrlGeneralShape::GetLineThick() const
 {
 	return m_nLineThick;
+}
+
+ELineArrowStyle CCtrlGeneralShape::GetLineHeadStyle() const
+{
+	return m_eLineHead;
+}
+
+ELineArrowSize CCtrlGeneralShape::GetLineHeadSize() const
+{
+	return m_eLineHeadSz;
+}
+
+ELineArrowStyle CCtrlGeneralShape::GetLineTailStyle() const
+{
+	return m_eLineTail;
+}
+
+ELineArrowSize CCtrlGeneralShape::GetLineTailSize() const
+{
+	return m_eLineTailSz;
 }
 
 CCtrlGeneralShape* CCtrlGeneralShape::Parse(CCtrlGeneralShape& oObj, int nSize, CHWPStream& oBuffer, int nOff, int nVersion)

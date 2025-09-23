@@ -1903,25 +1903,63 @@ void CConverter2OOXML::WriteLineSettings(const CCtrlGeneralShape* pCtrlGeneralSh
 	if (nullptr == pCtrlGeneralShape)
 		return;
 
-	WriteLineSettings(pCtrlGeneralShape->GetLineStyle(), pCtrlGeneralShape->GetLineColor(), pCtrlGeneralShape->GetLineThick(), 1, oBuilder);
+	WriteLineSettings({pCtrlGeneralShape->GetLineStyle(), pCtrlGeneralShape->GetLineColor(),
+	                   pCtrlGeneralShape->GetLineThick(), 1,
+	                   pCtrlGeneralShape->GetLineHeadStyle(), pCtrlGeneralShape->GetLineHeadSize(),
+	                   pCtrlGeneralShape->GetLineTailStyle(), pCtrlGeneralShape->GetLineTailSize()}, oBuilder);
+
 }
 
-void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int nThick, HWP_BYTE nCompoundLineType, NSStringUtils::CStringBuilder& oBuilder)
+void WriteLineArrowStyles(ELineArrowStyle eArrowStyle, ELineArrowSize eArrowSize, NSStringUtils::CStringBuilder& oBuilder)
 {
-	if (ELineStyle2::NONE == eLineStyle)
+	switch (eArrowStyle)
+	{
+		case ELineArrowStyle::ARROW: oBuilder.WriteString(L" type=\"triangle\""); break;
+		case ELineArrowStyle::SPEAR: oBuilder.WriteString(L" type=\"arrow\""); break;
+		case ELineArrowStyle::CONCAVE_ARROW: oBuilder.WriteString(L" type=\"stealth\""); break;
+		case ELineArrowStyle::DIAMOND:
+		case ELineArrowStyle::EMPTY_DIAMOND:
+		case ELineArrowStyle::BOX:
+		case ELineArrowStyle::EMPTY_BOX: oBuilder.WriteString(L" type=\"diamond\""); break;
+		case ELineArrowStyle::CIRCLE:
+		case ELineArrowStyle::EMPTY_CIRCLE: oBuilder.WriteString(L" type=\"oval\""); break;
+		case ELineArrowStyle::NORMAL:
+			break;
+	}
+
+	switch (eArrowSize)
+	{
+		case ELineArrowSize::SMALL_SMALL: oBuilder.WriteString(L" w=\"sm\" len=\"sm\""); break;
+		case ELineArrowSize::SMALL_MEDIUM: oBuilder.WriteString(L" w=\"sm\" len=\"med\""); break;
+		case ELineArrowSize::SMALL_LARGE: oBuilder.WriteString(L" w=\"sm\" len=\"lg\""); break;
+		case ELineArrowSize::MEDIUM_SMALL: oBuilder.WriteString(L" w=\"med\" len=\"sm\""); break;
+		case ELineArrowSize::MEDIUM_MEDIUM: oBuilder.WriteString(L" w=\"med\" len=\"med\""); break;
+		case ELineArrowSize::MEDIUM_LARGE: oBuilder.WriteString(L" w=\"med\" len=\"lg\""); break;
+		case ELineArrowSize::LARGE_SMALL: oBuilder.WriteString(L" w=\"lg\" len=\"sm\""); break;
+		case ELineArrowSize::LARGE_MEDIUM: oBuilder.WriteString(L" w=\"lg\" len=\"med\""); break;
+		case ELineArrowSize::LARGE_LARGE: oBuilder.WriteString(L" w=\"lg\" len=\"lg\""); break;
+			break;
+	}
+}
+
+void CConverter2OOXML::WriteLineSettings(const TLineData& oLineData, NSStringUtils::CStringBuilder& oBuilder)
+{
+	if (ELineStyle2::NONE == oLineData.m_eStyle)
 	{
 		oBuilder.WriteString(L"<a:ln><a:noFill/></a:ln>");
 		return;
 	}
 
-	if (0 == nThick)
+	int nThick{oLineData.m_nThick};
+
+	if (0 == oLineData.m_nThick)
 		nThick = 100;
 
 	oBuilder.WriteString(L"<a:ln");
 
 	oBuilder.WriteString(L" w=\"" + std::to_wstring(Transform::HWPUINT2OOXML(nThick)) + L"\" cap=\"sq\"");
 
-	switch (eLineStyle)
+	switch (oLineData.m_eStyle)
 	{
 		case ELineStyle2::DOUBLE_SLIM:
 		{
@@ -1949,9 +1987,9 @@ void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int
 
 	oBuilder.WriteString(L">");
 
-	oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(nColor) + L"\"/></a:solidFill>");
+	oBuilder.WriteString(L"<a:solidFill><a:srgbClr val=\"" + Transform::IntColorToHEX(oLineData.m_nColor) + L"\"/></a:solidFill>");
 
-	switch (eLineStyle)
+	switch (oLineData.m_eStyle)
 	{
 		case ELineStyle2::DASH:
 		{
@@ -1987,7 +2025,21 @@ void CConverter2OOXML::WriteLineSettings(ELineStyle2 eLineStyle, int nColor, int
 			break;
 	}
 
-	switch (nCompoundLineType)
+	if (ELineArrowStyle::NORMAL != oLineData.m_eHeadStyle)
+	{
+		oBuilder.WriteString(L"<a:headEnd");
+		WriteLineArrowStyles(oLineData.m_eHeadStyle, oLineData.m_eHeadSize, oBuilder);
+		oBuilder.WriteString(L"/>");
+	}
+
+	if (ELineArrowStyle::NORMAL != oLineData.m_eTailStyle)
+	{
+		oBuilder.WriteString(L"<a:tailEnd ");
+		WriteLineArrowStyles(oLineData.m_eTailStyle, oLineData.m_eTailSize, oBuilder);
+		oBuilder.WriteString(L"/>");
+	}
+
+	switch (oLineData.m_nCompoundLineType)
 	{
 		case 0x00:
 		{
@@ -2010,10 +2062,13 @@ void CConverter2OOXML::WriteBorderSettings(const CCtrlShapePic* pCtrlPic, NSStri
 		return;
 
 	if (EHanType::HWP == m_pContext->GetType())
-		WriteLineSettings(pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(), pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType(), oBuilder);
+		WriteLineSettings({pCtrlPic->GetBorderLineStyle(), pCtrlPic->GetBorderColor(),
+		                   pCtrlPic->GetBorderThick(), pCtrlPic->GetBorderCompoundLineType()},
+		                   oBuilder);
 	else if (EHanType::HWPX == m_pContext->GetType() ||
 	         EHanType::HWPML == m_pContext->GetType())
-		WriteLineSettings(pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(), pCtrlPic->GetLineThick(), 1, oBuilder);
+		WriteLineSettings({pCtrlPic->GetLineStyle(), pCtrlPic->GetLineColor(),
+		                   pCtrlPic->GetLineThick(), 1}, oBuilder);
 }
 
 void CConverter2OOXML::WriteAutoNumber(const CCtrlAutoNumber* pAutoNumber, short shParaShapeID, short shParaStyleID, short shCharShapeID, NSStringUtils::CStringBuilder& oBuilder, TConversionState& oState)
@@ -2190,4 +2245,23 @@ HWP_STRING CConverter2OOXML::GetTempDirectory() const
 {
 	return m_sTempDirectory;
 }
+
+TLineData::TLineData(ELineStyle2 eStyle, int nColor,
+                     int nThick, HWP_BYTE nCompoundLineType,
+                     ELineArrowStyle eHeadStyle, ELineArrowSize eHeadSize,
+                     ELineArrowStyle eTailStyle, ELineArrowSize eTailSize)
+	:m_eStyle(eStyle), m_nColor(nColor),
+      m_nThick(nThick), m_nCompoundLineType(nCompoundLineType),
+	  m_eHeadStyle(eHeadStyle), m_eHeadSize(eHeadSize),
+	  m_eTailStyle(eTailStyle), m_eTailSize(eTailSize)
+{}
+
+TLineData::TLineData(ELineStyle2 eStyle, int nColor,
+                     int nThick, HWP_BYTE nCompoundLineType)
+    :m_eStyle(eStyle), m_nColor(nColor),
+      m_nThick(nThick), m_nCompoundLineType(nCompoundLineType),
+	  m_eHeadStyle(ELineArrowStyle::NORMAL), m_eHeadSize(ELineArrowSize::SMALL_SMALL),
+	  m_eTailStyle(ELineArrowStyle::NORMAL), m_eTailSize(ELineArrowSize::SMALL_SMALL)
+{}
+
 }

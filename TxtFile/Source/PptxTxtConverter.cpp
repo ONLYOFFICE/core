@@ -1,18 +1,18 @@
 #include "PptxTxtConverter.h"
 
-#include "../../../OOXML/PPTXFormat/FileTypes.h"
-#include "../../../OOXML/PPTXFormat/Folder.h"
-#include "../../../OOXML/PPTXFormat/Slide.h"
-#include "../../../OOXML/PPTXFormat/Presentation.h"
-#include "../../../OOXML/PPTXFormat/Logic/Shape.h"
-#include "../../../OOXML/PPTXFormat/Logic/Csld.h"
-#include "../../../OOXML/PPTXFormat/Logic/SpTree.h"
-#include "../../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
+#include "../../OOXML/PPTXFormat/FileTypes.h"
+#include "../../OOXML/PPTXFormat/Folder.h"
+#include "../../OOXML/PPTXFormat/Slide.h"
+#include "../../OOXML/PPTXFormat/Presentation.h"
+#include "../../OOXML/PPTXFormat/Logic/Shape.h"
+#include "../../OOXML/PPTXFormat/Logic/Csld.h"
+#include "../../OOXML/PPTXFormat/Logic/SpTree.h"
+#include "../../OOXML/PPTXFormat/Logic/SpTreeElem.h"
 
-#include "../../../OOXML/DocxFormat/WritingElement.h"
+#include "../../OOXML/DocxFormat/WritingElement.h"
 
-#include "../../../Common/OfficeFileErrorDescription.h"
-#include "../../../DesktopEditor/common/File.h"
+#include "../../Common/OfficeFileErrorDescription.h"
+#include "../../DesktopEditor/common/File.h"
 
 class CPptxTxtConverter::CPptxTxtConverterImpl
 {

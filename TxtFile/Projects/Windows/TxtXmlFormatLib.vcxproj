@@ -148,6 +148,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\ConvertDocx2Txt.cpp" />
     <ClCompile Include="..\..\Source\ConvertTxt2Docx.cpp" />
+    <ClCompile Include="..\..\Source\PptxTxtConverter.cpp" />
     <ClCompile Include="..\..\Source\TxtFormat\File.cpp" />
     <ClCompile Include="..\..\Source\TxtFormat\TxtFile.cpp" />
     <ClCompile Include="..\..\Source\TxtRenderer.cpp" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Source\ConvertDocx2Txt.h" />
     <ClInclude Include="..\..\Source\ConvertTxt2Docx.h" />
+    <ClInclude Include="..\..\Source\PptxTxtConverter.h" />
     <ClInclude Include="..\..\Source\TxtFormat\File.h" />
     <ClInclude Include="..\..\Source\TxtFormat\TxtFile.h" />
     <ClInclude Include="..\..\Source\TxtRenderer.h" />

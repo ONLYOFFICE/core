@@ -7,6 +7,7 @@
     <ClCompile Include="..\..\Source\TxtXmlFile.cpp" />
     <ClCompile Include="..\..\Source\ConvertDocx2Txt.cpp" />
     <ClCompile Include="..\..\Source\TxtRenderer.cpp" />
+    <ClCompile Include="..\..\Source\PptxTxtConverter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\ConvertDocx2Txt.h" />
@@ -15,5 +16,6 @@
     <ClInclude Include="..\..\Source\TxtFormat\TxtFile.h" />
     <ClInclude Include="..\..\Source\TxtXmlFile.h" />
     <ClInclude Include="..\..\Source\TxtRenderer.h" />
+    <ClInclude Include="..\..\Source\PptxTxtConverter.h" />
   </ItemGroup>
 </Project>

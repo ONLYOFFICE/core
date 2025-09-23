@@ -54,11 +54,11 @@ public:
 
 	_UINT32	lt = 0;		// SourceType
 	_UINT32	idList = 0;
-	_UINT32	crwHeader = 0;
+	_UINT32	crwHeader = 1;
 	_UINT32	crwTotals = 0;
 	_UINT32	idFieldNext = 0;
 	_UINT32	cbFSData = 64;
-	_UINT16 rupBuild = 0;
+	_UINT16 rupBuild = 0x5F0C;
 
 	bool	fAutoFilter = false;
 	bool	fPersistAutoFilter = false;
@@ -75,10 +75,10 @@ public:
 	bool	fLoadPldwIdChanged = false;
 	bool	fLoadEntryId = false;
 	bool	fLoadPllstclInvalid = false;
-	bool	fGoodRupBld = false;
+	bool	fGoodRupBld = true;
 	bool	fPublished = false;
 	
-	unsigned char	verXL = 0xC;
+	unsigned char	verXL = 0xF;
 	_UINT32			lPosStmCache = 0;
 	_UINT32			cbStmCache = 0;
 	_UINT32			cchStmCache = 0;

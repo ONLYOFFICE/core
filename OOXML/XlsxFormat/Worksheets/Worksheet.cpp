@@ -441,10 +441,10 @@ namespace OOX
 					if(file->type() == OOX::SpreadsheetBin::FileTypes::TableBin || file->type() == OOX::Spreadsheet::FileTypes::Table)
 					{
 						XLS::FEAT11::_data featData;
-						feat11->m_arFEAT.push_back(featData);
 						auto tempTable = static_cast<CTableFile*>(file.GetPointer());
 						featData.m_Feature = tempTable->m_oTable->toXLS();
 
+						feat11->m_arFEAT.push_back(featData);
 					}
 				}
 			}

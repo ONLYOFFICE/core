@@ -54,7 +54,7 @@ public:
 
 	FrtHeader	frt;
 	_UINT16		isf = 0x0005;
-	_UINT32		idListNext = 1;
+	_UINT32		idListNext = 0;
 
 };
 

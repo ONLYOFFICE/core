@@ -103,18 +103,18 @@ void Feature11::writeFields(CFRecord& record)
 	record.reserveNunBytes(5);
 	cref2 = refs2.size();
 	record << cref2;
-	auto cbFeatDataPos = record.getRdPtr();
+	//auto cbFeatDataPos = record.getRdPtr();
 	record.reserveNunBytes(4); //cbFeatData
 	record.reserveNunBytes(2);
 	for(auto i : refs2)
 		i->save(record);
-	auto beginRgb = record.getRdPtr();
+	//auto beginRgb = record.getRdPtr();
 	rgbFeat.save(record);
-	auto endrgb = record.getRdPtr();
-	cbFeatData = endrgb - beginRgb;
-	record.RollRdPtrBack(endrgb - cbFeatDataPos);
-	record << cbFeatData;
-	record.skipNunBytes(endrgb - record.getRdPtr());
+	//auto endrgb = record.getRdPtr();
+	//cbFeatData = endrgb - beginRgb;
+	//record.RollRdPtrBack(endrgb - cbFeatDataPos);
+	//record << cbFeatData;
+	//record.skipNunBytes(endrgb - record.getRdPtr());
 
 }
 

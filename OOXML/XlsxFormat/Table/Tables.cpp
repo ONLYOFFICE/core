@@ -915,6 +915,21 @@ xmlns:xr3=\"http://schemas.microsoft.com/office/spreadsheetml/2016/revision3\"")
 			auto tempref = new XLS::Ref8U;
 			tempref->fromString(m_oRef->GetValue());
 			ptr->refs2.push_back(XLS::BiffStructurePtr(tempref));
+			ptr->frtRefHeaderU.ref8 = *tempref;
+		}
+		if(m_oHeaderRowCount.IsInit() && m_oHeaderRowCount.get() == 0)
+		{
+			ptr->rgbFeat.crwHeader = 0;
+		}
+		if(m_oTotalsRowShown.IsInit() && m_oTotalsRowShown.get())
+		{
+			ptr->rgbFeat.crwTotals = 1;
+		}
+		if(m_oAutoFilter.IsInit())
+		{
+			ptr->rgbFeat.fPersistAutoFilter = true;
+			ptr->rgbFeat.fAutoFilter = true;
+			ptr->rgbFeat.fApplyAutoFilter  = true;
 		}
 		if(m_oName.IsInit())
 			ptr->rgbFeat.rgbName = m_oName.get();

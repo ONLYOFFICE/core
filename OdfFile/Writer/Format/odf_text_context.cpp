@@ -56,17 +56,20 @@ namespace odf_writer
 
 odf_text_context::odf_text_context(odf_conversion_context *odf_context, odf_style_context_ptr styles_context)
 {
-	odf_context_				= odf_context;
-	styles_context_				= styles_context;
-	
-	single_paragraph_			= false;
-	paragraph_properties_		= NULL;
-	text_properties_			= NULL;
+	odf_context_ = odf_context;
+	styles_context_ = styles_context;
 
-	current_outline_			= -1;
-	in_field_					= false;	
-	keep_next_paragraph_		= false;	
-	list_state_.started_list	= false;
+	single_paragraph_ = false;
+	paragraph_properties_ = NULL;
+	text_properties_ = NULL;
+
+	current_outline_ = -1;
+	in_field_ = false;
+	keep_next_paragraph_ = false;
+	list_state_.started_list = false;
+
+	is_hyperlink_ = false;
+	level_hyperlink_ = 0;
 }
 odf_text_context::~odf_text_context()
 {
@@ -381,6 +384,10 @@ void odf_text_context::end_element()
 	{
 		int t = 0;
 	}
+}
+int odf_text_context::get_last_level()
+{
+	return (int)current_level_.size();
 }
 void odf_text_context::start_span(bool styled)
 {

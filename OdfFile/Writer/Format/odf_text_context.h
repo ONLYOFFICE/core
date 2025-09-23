@@ -80,8 +80,8 @@ class odf_text_context: boost::noncopyable
 public:
 	odf_text_context	(odf_conversion_context *odf_context, odf_style_context_ptr styles_context);
     ~odf_text_context	();
-public:
- 	odf_style_context_ptr	get_styles_context();//для embedded
+
+	odf_style_context_ptr	get_styles_context();//для embedded
 	void					set_styles_context(odf_style_context_ptr styles_context);//для embedded
 		
 	void clear_params();
@@ -110,6 +110,7 @@ public:
 
 	void start_element		(office_element_ptr & elm, office_element_ptr style_elm = office_element_ptr(),std::wstring style_name = L"");
     void end_element		();
+	int get_last_level		();
 
 	void add_element_in_span_or_par(office_element_ptr & elm);
  	
@@ -149,6 +150,9 @@ public:
 //------------------------------------------------------------------------------------
 	int		current_outline_;
 	bool	in_field_;
+
+	bool is_hyperlink_;
+	int level_hyperlink_;
 
 	std::vector<odf_element_state>	current_level_;			//постоянно меняющийся список уровней наследования
 	std::vector<odf_element_state>	text_elements_list_;	//параграфы, списки , ... 

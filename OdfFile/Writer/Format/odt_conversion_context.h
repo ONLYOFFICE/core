@@ -274,8 +274,6 @@ private:
 
 	bool table_row_header_state_ = false;
 
-	bool is_hyperlink_;
-
 	struct _drop_cap_state
 	{
 		void clear()

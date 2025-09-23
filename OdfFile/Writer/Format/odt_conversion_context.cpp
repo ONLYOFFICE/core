@@ -78,8 +78,6 @@ odt_conversion_context::odt_conversion_context(package::odf_document * outputDoc
 	:	odf_conversion_context (TextDocument, outputDocument),
 		comment_context_(this), notes_context_(this), main_text_context_(NULL), table_context_(this), controls_context_(this)
 {
-
-	is_hyperlink_ = false;
 	is_header_ = false;
 	is_footer_ = false;
 	is_background_ = false;
@@ -620,20 +618,26 @@ void odt_conversion_context::start_hyperlink(const std::wstring& link, const std
 		hyperlink->common_xlink_attlist_.type_	= xlink_type::Simple;
 		
 		text_context()->start_element(hyperlink_elm);
+		text_context()->level_hyperlink_ = text_context()->get_last_level();
 
-		is_hyperlink_ = true;
+		text_context()->is_hyperlink_ = true;
 	}
 }
 void odt_conversion_context::end_hyperlink()
 {
-	if (!is_hyperlink_) return;
+	if (!text_context()->is_hyperlink_) return;
 
-	if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+	//if (false == text_context()->current_level_.empty() && dynamic_cast<text_span*>(text_context()->current_level_.back().elm.get()))	//CARA SETTING WARNET.docx
+	//	text_context()->end_element();
+
+	while (text_context()->get_last_level() > text_context()->level_hyperlink_)
+	{
 		text_context()->end_element();
+	}
+	text_context()->level_hyperlink_ = 0;
+	text_context()->end_element(); //hyperlink_element
 
-	text_context()->end_element();
-
-	is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
+	text_context()->is_hyperlink_ = false; //метка .. для гиперлинков в объектах - там не будет span
 }
 void odt_conversion_context::start_drop_down()
 {

@@ -43,6 +43,7 @@
 #include "lib/xpdf/Parser.h"
 #include "lib/xpdf/Outline.h"
 #include "lib/xpdf/Link.h"
+#include "lib/xpdf/Stream.h"
 
 #include "SrcWriter/Catalog.h"
 #include "SrcWriter/EncryptDictionary.h"
@@ -3529,19 +3530,14 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	int nOriginIndex = m_nEditPage;
+	PdfWriter::CPage* pWPage = NULL;
 	if (m_nMode == Mode::WriteNew)
-	{
-		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
-		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
-		PdfWriter::CFakePage* pFakePage = NULL;
-		if (pObj)
-			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
-		if (pFakePage)
-			nOriginIndex = pFakePage->GetOriginIndex();
-	}
+		pWPage = pDoc->GetPage(m_nEditPage);
+	if (!pWPage)
+		return;
+
 	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
+	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
 	if (nPageIndex < 0 || !pPDFDocument)
 		return;
 	Page* pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
@@ -3558,7 +3554,50 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		arrQuads[i * 4 + 3] = cropBox->y2 - dQ;
 	}
 
-	Redact(arrQuads);
+#ifndef BUILDING_WASM_MODULE
+	//globalParams->setDrawFormFields(gFalse);
+	//globalParams->setDrawAnnotations(gFalse);
+
+	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+	oRedactOut.NewPDF(pPDFDocument->getXRef());
+	oRedactOut.SetRedact(arrQuads);
+
+	PDFRectangle* box = pPage->getMediaBox();
+	// TODO есть проблема с ресурсами - здесть только исходные ресурсы, без новых дописанных
+	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+
+	PdfWriter::CArrayObject* pContents = (PdfWriter::CArrayObject*)pWPage->Get("Contents");
+	Object oContents;
+	oContents.initArray(NULL);
+	for (int i = 0; i < pContents->GetCount(); ++i)
+	{
+		PdfWriter::CObjectBase* pObj = pContents->Get(i);
+		PdfWriter::CDictObject* pDict = NULL;
+		if (pObj->GetType() == PdfWriter::object_type_DICT)
+			pDict = (PdfWriter::CDictObject*)pObj;
+		if (!pDict)
+			continue;
+		PdfWriter::CStream* pStream = pDict->GetStream();
+		unsigned int nSize = pStream->Size();
+		BYTE* pData = new BYTE[nSize];
+		pStream->Read(pData, &nSize);
+
+		Object obj, oContent;
+		obj.initNull();
+		Stream* pContentStream = new MemStream((char*)pData, 0, nSize, &obj, gTrue);
+		oContent.initStream(pContentStream);
+		oContents.arrayAdd(&oContent);
+	}
+	gfx->display(&oContents);
+	oContents.free();
+
+	RELEASEOBJECT(gfx);
+
+	//pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
+
+	//globalParams->setDrawFormFields(gTrue);
+	//globalParams->setDrawAnnotations(gTrue);
+#endif
 
 	int nFlags = pCommand->GetFlag();
 	if (nFlags & (1 << 0))
@@ -3612,36 +3651,4 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		RELEASEOBJECT(pFakePage);
 		*/
 	}
-}
-void CPdfEditor::Redact(const std::vector<double>& arrQuadPoints)
-{
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	int nOriginIndex = m_nEditPage;
-	if (m_nMode == Mode::WriteNew)
-	{
-		PdfWriter::CPageTree* pPageTree = pDoc->GetPageTree();
-		PdfWriter::CObjectBase* pObj = pPageTree->GetObj(m_nEditPage);
-		PdfWriter::CFakePage* pFakePage = NULL;
-		if (pObj)
-			pFakePage = dynamic_cast<PdfWriter::CFakePage*>(pObj);
-		if (pFakePage)
-			nOriginIndex = pFakePage->GetOriginIndex();
-	}
-	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(nOriginIndex, &pPDFDocument);
-	if (nPageIndex < 0 || !pPDFDocument)
-		return;
-
-#ifndef BUILDING_WASM_MODULE
-	globalParams->setDrawFormFields(gFalse);
-	globalParams->setDrawAnnotations(gFalse);
-
-	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
-	oRedactOut.NewPDF(pPDFDocument->getXRef());
-	oRedactOut.SetRedact(arrQuadPoints);
-	pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
-
-	globalParams->setDrawFormFields(gTrue);
-	globalParams->setDrawAnnotations(gTrue);
-#endif
 }

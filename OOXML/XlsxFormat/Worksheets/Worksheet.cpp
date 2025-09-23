@@ -443,6 +443,10 @@ namespace OOX
 						XLS::FEAT11::_data featData;
 						auto tempTable = static_cast<CTableFile*>(file.GetPointer());
 						featData.m_Feature = tempTable->m_oTable->toXLS();
+						if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
+						{
+							featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
+						}
 
 						feat11->m_arFEAT.push_back(featData);
 					}

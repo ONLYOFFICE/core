@@ -67,6 +67,9 @@
 #include "../../Binary/XlsbFormat/FileTypes_SpreadsheetBin.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/Feature11.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/List12.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_structures/List12TableStyleClientInfo.h"
+
 namespace OOX
 {
 namespace Spreadsheet
@@ -179,6 +182,24 @@ namespace Spreadsheet
 		else
 			ptr->fRowStripes = false;
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CTableStyleInfo::toXLS()
+	{
+		auto ptr1 = new XLS::List12;
+		auto ptr = new XLS::List12TableStyleClientInfo;
+		ptr1->rgbList12 = XLS::BiffStructurePtr(ptr);
+		ptr1->lsd = 1;
+		if(m_oShowFirstColumn.IsInit())
+			ptr->fFirstColumn = m_oShowFirstColumn->GetValue();
+		if(m_oShowLastColumn.IsInit())
+			ptr->fLastColumn = m_oShowLastColumn->GetValue();
+		if(m_oShowColumnStripes.IsInit())
+			ptr->fColumnStripes = m_oShowColumnStripes->GetValue();
+		if(m_oShowRowStripes.IsInit())
+			ptr->fRowStripes = m_oShowRowStripes->GetValue();
+		if(m_oName.IsInit())
+			ptr->stListStyleName = m_oName.get();
+		return XLS::BaseObjectPtr(ptr1);
 	}
     void CTableStyleInfo::ReadAttributes(XLS::BaseObjectPtr& obj)
     {

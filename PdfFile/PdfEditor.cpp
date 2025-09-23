@@ -302,7 +302,7 @@ PdfWriter::CExtGrState* CreateExtGState(Object* oState)
 	PdfWriter::CExtGrState* pState = new PdfWriter::CExtGrState(NULL);
 	return pState;
 }
-PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0)
+PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pDoc, XRef* xref, CObjectsManager* pManager, int nStartRefID, int nAddObjToXRef = 0, bool bUndecodedStream = true)
 {
 	PdfWriter::CObjectBase* pBase = NULL;
 	Object oTemp;
@@ -365,7 +365,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		for (int nIndex = 0; nIndex < obj->arrayGetLength(); ++nIndex)
 		{
 			obj->arrayGetNF(nIndex, &oTemp);
-			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
 			pArray->Add(pBase);
 			oTemp.free();
 		}
@@ -413,7 +413,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		{
 			char* chKey = obj->dictGetKey(nIndex);
 			obj->dictGetValNF(nIndex, &oTemp);
-			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID);
+			pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, 0, bUndecodedStream);
 			pDict->Add(chKey, pBase);
 			oTemp.free();
 		}
@@ -431,7 +431,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 		}
 
 		obj->fetch(xref, &oTemp);
-		pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, nObjNum);
+		pBase = DictToCDictObject2(&oTemp, pDoc, xref, pManager, nStartRefID, nObjNum, bUndecodedStream);
 		oTemp.free();
 		break;
 	}
@@ -475,7 +475,7 @@ PdfWriter::CObjectBase* DictToCDictObject2(Object* obj, PdfWriter::CDocument* pD
 
 		PdfWriter::CStream* pStream = new PdfWriter::CMemoryStream(nLength);
 		pDict->SetStream(pStream);
-		Stream* pOStream = obj->getStream()->getUndecodedStream();
+		Stream* pOStream = bUndecodedStream ? obj->getStream()->getUndecodedStream() : obj->getStream();
 		pOStream->reset();
 		int nChar = pOStream->getChar();
 		while (nChar != EOF)
@@ -1776,33 +1776,17 @@ bool CPdfEditor::EditPage(int _nPageIndex, bool bSet, bool bActualPos)
 				bRotate = true;
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			}
+			else if (strcmp("Contents", chKey) == 0)
+			{
+				pageObj.dictGetValNF(nIndex, &oTemp);
+				PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID, 0, false);
+				pPage->Add(chKey, pBase);
+				continue;
+			}
 			else
 				pageObj.dictGetValNF(nIndex, &oTemp);
 			PdfWriter::CObjectBase* pBase = DictToCDictObject2(&oTemp, pDoc, xref, &m_mObjManager, nStartRefID);
 			pPage->Add(chKey, pBase);
-			if (strcmp("Contents", chKey) == 0)
-			{
-				if (pBase->GetType() == PdfWriter::object_type_ARRAY)
-				{
-					PdfWriter::CArrayObject* pArr = (PdfWriter::CArrayObject*)pBase;
-					for (int j = 0; j < pArr->GetCount(); ++j)
-					{
-						pBase = pArr->Get(j);
-						if (pBase->GetType() == PdfWriter::object_type_DICT)
-						{
-							PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pBase;
-							if (pDict->Get("Filter"))
-								pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
-						}
-					}
-				}
-				else if (pBase->GetType() == PdfWriter::object_type_DICT)
-				{
-					PdfWriter::CDictObject* pDict = (PdfWriter::CDictObject*)pBase;
-					if (pDict->Get("Filter"))
-						pDict->SetFilter(STREAM_FILTER_ALREADY_DECODE);
-				}
-			}
 			oTemp.free();
 		}
 		if (!bResources || !bMediaBox || !bCropBox || !bRotate)
@@ -3562,10 +3546,6 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	oRedactOut.NewPDF(pPDFDocument->getXRef());
 	oRedactOut.SetRedact(arrQuads);
 
-	PDFRectangle* box = pPage->getMediaBox();
-	// TODO есть проблема с ресурсами - здесть только исходные ресурсы, без новых дописанных
-	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
-
 	PdfWriter::CArrayObject* pContents = (PdfWriter::CArrayObject*)pWPage->Get("Contents");
 	Object oContents;
 	oContents.initArray(NULL);
@@ -3580,6 +3560,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		PdfWriter::CStream* pStream = pDict->GetStream();
 		unsigned int nSize = pStream->Size();
 		BYTE* pData = new BYTE[nSize];
+		pStream->Seek(0, PdfWriter::EWhenceMode::SeekSet);
 		pStream->Read(pData, &nSize);
 
 		Object obj, oContent;
@@ -3588,6 +3569,10 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		oContent.initStream(pContentStream);
 		oContents.arrayAdd(&oContent);
 	}
+
+	PDFRectangle* box = pPage->getMediaBox();
+	// TODO есть проблема с ресурсами - здесть только исходные ресурсы, без новых дописанных
+	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
 	gfx->display(&oContents);
 	oContents.free();
 

@@ -655,6 +655,8 @@ namespace PdfWriter
 			pAnnot = new CCaretAnnotation(m_pXref);
 		else if (m_nType == 12)
 			pAnnot = new CStampAnnotation(m_pXref);
+		else if (m_nType == 25)
+			pAnnot = new CRedactAnnotation(m_pXref);
 
 		if (pAnnot)
 			m_pXref->Add(pAnnot);

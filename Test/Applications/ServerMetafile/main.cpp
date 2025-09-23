@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
 		oPdfWriter.SetTempDirectory(sTempDir);
 
 		CConvertFromBinParams oBufferParams;
+		oBufferParams.m_sMediaDirectory = sMediaDirectory;
+		oBufferParams.m_sInternalMediaDirectory = sMediaDirectory;
 		oBufferParams.m_sThemesDirectory = sThemesDirectory;
 
 		if (!sPassword.empty())
@@ -137,7 +139,7 @@ int main(int argc, char *argv[])
 			if (NSFile::CFileBinary::ReadAllBytes(sMetaFile, &pFileContent, dwFileSize))
 			{
 				lBufferLen = NSBase64::Base64DecodeGetRequiredLength(dwFileSize);
-				BYTE* pBuffer = new BYTE[lBufferLen];
+				pBuffer = new BYTE[lBufferLen];
 				NSBase64::Base64Decode((const char*)pFileContent, dwFileSize, pBuffer, &lBufferLen);
 			}
 

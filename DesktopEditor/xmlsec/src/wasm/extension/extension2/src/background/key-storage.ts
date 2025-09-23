@@ -1,10 +1,25 @@
 import browser from "webextension-polyfill";
 import getCrypto from "../common/crypto.ts";
-function ab2str(buf) {
-    return String.fromCharCode.apply(null, new Uint8Array(buf));
+function ab2str(buf: ArrayBuffer) {
+    return String.fromCharCode.apply(null, Array.from(new Uint8Array(buf)));
+}
+function ab2base64(buf: ArrayBuffer) {
+    const str = ab2str(buf);
+    return btoa(str);
+}
+function base642ui(base64: string) {
+    const str = atob(base64);
+    return str2ui(str);
+}
+function str2ui(str: string) {
+    const encoder = new TextEncoder();
+    return encoder.encode(str);
 }
 class Key {
-
+    guid: string
+    constructor(params) {
+        this.params = params;
+    }
     async toJSON() {
         return {};
     }
@@ -12,6 +27,9 @@ class Key {
     }
 }
 
+class SymmetricKey extends Key {
+
+}
 class PublicKey extends Key {
     type = "public";
     override async toJSON() {
@@ -24,29 +42,94 @@ class PublicKey extends Key {
     }
 
 }
+const exportKeyFormats = {
+    pkcs8: "pkcs8",
+    spki: "spki",
+    raw: "raw"
+} as const;
+const algorithmTypes = {
+    GCM: "AES-GCM"
+} as const;
+class AesGcmParams{
+    name = algorithmTypes.GCM;
+    iv: ArrayBuffer;
+    additionalData?: ArrayBuffer;
+    tagLength?: number;
+    constructor(iv?: ArrayBuffer, additionalData?: ArrayBuffer, tagLength?: number) {
+        this.iv = iv || new Uint8Array(12);
+        this.additionalData = additionalData;
+        this.tagLength = tagLength;
+    }
+    toJSON() {
+        return {
+            name: this.name,
+            iv: ab2base64(this.iv),
+            additionalData: this.additionalData && ab2base64(this.additionalData),
+            tagLength: this.tagLength
+        }
+    };
+    fromJSON(json: {}) {
+        this.iv = base642ui(json.iv);
+        this.additionalData = json.add
+    };
+}
+
+type JSONPrivateKey = {
+    format: typeof exportKeyFormats.pkcs8;
+    key: string;
+    salt: string;
+    wrapParams:
+};
 class PrivateKey extends Key {
     type = "private";
-    key: CryptoKey;
-    override async toJSON(aesKey) {
+    salt: string;
+    key: string;
+    override async toJSON(masterPassword: string): Promise<JSONPrivateKey> {
         const crypto = getCrypto();
         const iv = crypto.getRandomValues(12);
-        const salt = crypto.generateSalt();
-        const wrapKey = await crypto.wrapKey("pkcs8", this.key, aesKey, {name: "AES-GCM", iv});
-        const strWrapKey = ab2str(wrapKey);
-        const base64WrapKey = btoa(strWrapKey);
+        const aesParams = new AesGcmParams(iv);
+        const wrapKey = await crypto.wrapKey(exportKeyFormats.pkcs8, this.key, masterPassword, this.salt, aesParams);
+        const base64WrapKey = ab2base64(wrapKey);
+        const keyParams = this.params.toJSON();
+        const wrapParams = aesParams.toJSON();
         return {
-          format: "pkcs8",
-          salt: salt,
+          format: exportKeyFormats.pkcs8,
             key: base64WrapKey,
-            keyWrappingAlgo: {
-
-            }
+            salt: btoa(this.salt),
+            keyParams,
+            wrapParams: aesParams.toJSON()
         };
     }
-    override async fromJSON(_json: {}, aesKey) {
+    override async fromJSON(json:  JSONPrivateKey, masterPassword) {
+        this.salt = atob(json.salt);
+        const keyParams = json.keyParams;
+        this.params = keyParams;
+        const crypto = getCrypto();
+        const strWrapKey = json.key;
+        const wrapKey = base642ui(strWrapKey);
+        const wrapParams = new AesGcmParams();
+        wrapParams.fromJSON(json.wrapParams);
 
+        const cryptoKey = crypto.unwrapKey(exportKeyFormats.pkcs8, wrapKey, masterPassword, this.salt, wrapParams, keyParams);
+        this.key = cryptoKey;
     }
 
+}
+
+class KeyPair {
+    privateKey: PrivateKey;
+    publicKey: PublicKey;
+    date: Date
+    async toJSON(masterPassword: string) {
+        return {
+            publicKey: this.publicKey.toJSON(),
+            privateKey: this.privateKey.toJSON(masterPassword),
+            date: this.date.toISOString()
+        }
+    }
+    async fromJSON(masterPassword: string) {
+
+    }
 }
 
 

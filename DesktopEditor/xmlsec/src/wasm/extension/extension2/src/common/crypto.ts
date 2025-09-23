@@ -58,7 +58,8 @@ class CCryptoBase {
         }
     }
     class CWebCrypto extends CCryptoBase {
-        subtle = window.crypto.subtle;
+        crypto = window.crypto;
+        subtle = this.crypto.subtle;
         constructor() {
             super();
         }
@@ -80,6 +81,9 @@ class CCryptoBase {
         override generateKey(algorithm: GenerateKeyAlgorithm, extractable: boolean, keyUsages: GenerateKeyUsages) {
             return this.subtle.generateKey(algorithm, extractable, keyUsages);
         };
+        getRandomValues(length: number) {
+            return this.crypto.getRandomValues(new Uint8Array(length));
+        }
         async getAesCryptoKeyFromMasterPassword(masterPassword: string, salt: string) {
             const encoder = new TextEncoder();
             const pwKey = await crypto.subtle.importKey(

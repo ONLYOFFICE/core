@@ -115,7 +115,7 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 		START_READ_ATTRIBUTES(oReader)
 		{
 			if (GetAttributeName(EAttribute::Color, eType) == sAttributeName)
-				m_nLineColor = oReader.GetInt();
+				m_nLineColor = oReader.GetColor();
 			else if (GetAttributeName(EAttribute::Width, eType) == sAttributeName)
 				m_nLineThick = oReader.GetInt();
 			else if (GetAttributeName(EAttribute::Style, eType) == sAttributeName)
@@ -173,7 +173,12 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 void CCtrlGeneralShape::InitData()
 {
 	m_eLineStyle = ELineStyle2::NONE;
+	m_nLineColor = 0x00000000;
+	m_nFillType = 0;
 	m_pFill = nullptr;
+
+	m_eLineHead = ELineArrowStyle::NORMAL;
+	m_eLineTail = ELineArrowStyle::NORMAL;
 }
 
 void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader, int nVersion)

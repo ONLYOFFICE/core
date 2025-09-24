@@ -45,7 +45,7 @@ namespace HWP
 			const int tempLen = 7;
 			wchar_t arTemp[tempLen];
 
-			swprintf(arTemp, tempLen, L"%02X%02X%02X", m_uchBlue, m_uchGreen, m_uchRed);
+			swprintf(arTemp, tempLen, L"%02X%02X%02X", m_uchRed, m_uchGreen, m_uchBlue);
 
 			return std::wstring(arTemp);
 		}

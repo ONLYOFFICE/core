@@ -43,16 +43,9 @@ int StringToInt(const std::string& sValue, const int& _default)
 
 	if (sValue.cend() == itPos)
 		return _default;
-	
-	bool bNegative = false;
 
-	while ('-' == *itPos || '+' == *itPos)
-	{
-		if ('-' == *itPos)
-			bNegative = !bNegative;
-		
+	while (!std::isdigit(*itPos) && sValue.cend() != itPos)
 		++itPos;
-	}
 
 	if (sValue.cend() == itPos)
 		return _default;
@@ -65,7 +58,7 @@ int StringToInt(const std::string& sValue, const int& _default)
 		++itPos;
 	}
 
-	return bNegative ? -nResult : nResult;
+	return ((nResult & 0xFF) << 16) | (((nResult >> 8)  & 0xFF) << 8) | ((nResult >> 16) & 0xFF);
 }
 
 int CXMLReader::GetColor(const int& nDefault)

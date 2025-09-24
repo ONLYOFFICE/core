@@ -164,6 +164,7 @@ public:
 		int					prevNumID = -1;
 	}list_state_;
 	bool					single_paragraph_;
+	odf_conversion_context	*odf_context_;
 private:
 	bool					keep_next_paragraph_;
 
@@ -173,7 +174,6 @@ private:
 	text_format_properties		*text_properties_;		//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту
 
 	odf_style_context_ptr styles_context_;
-	odf_conversion_context	*odf_context_;
 
 	std::wstring			parent_span_style_;
 	std::wstring			parent_paragraph_style_;

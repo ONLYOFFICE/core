@@ -12,8 +12,8 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer
 	: CCtrlCommon(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlCommon(sCtrlID, oReader, nVersion, eType)
+CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlCommon(sCtrlID, oReader, eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -73,11 +73,11 @@ CCtrlTable::CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVers
 		else if (GetNodeName(ENode::Row, eType) == sNodeName)
 		{
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::Cell, eType))
-				m_arCells.push_back(new CTblCell(oReader, nVersion, eType));
+				m_arCells.push_back(new CTblCell(oReader, eType));
 			END_WHILE
 		}
 		else
-			CCtrlCommon::ParseChildren(oReader, nVersion, eType);
+			CCtrlCommon::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 }

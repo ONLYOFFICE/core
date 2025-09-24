@@ -6,8 +6,8 @@ CCellParagraph::CCellParagraph()
 	: CHWPPargraph()
 {}
 
-CCellParagraph::CCellParagraph(CXMLReader& oReader, int nVersion, EHanType eType)
-    : CHWPPargraph(oReader, nVersion, eType)
+CCellParagraph::CCellParagraph(CXMLReader& oReader, EHanType eType)
+    : CHWPPargraph(oReader, eType)
 {}
 
 EParagraphType CCellParagraph::GetType() const

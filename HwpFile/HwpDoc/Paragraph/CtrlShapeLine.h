@@ -13,14 +13,14 @@ class CCtrlShapeLine : public CCtrlGeneralShape
 	int m_nEndY;
 	short m_shAttr;
 
-	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPX(CXMLReader& oReader);
 	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeLine();
 	CCtrlShapeLine(const HWP_STRING& sCtrlID);
 	CCtrlShapeLine(const CCtrlGeneralShape& oShape);
 	CCtrlShapeLine(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlShapeLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

@@ -293,10 +293,10 @@ namespace HWP
 		oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 	}
 
-	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+	CCtrlCommon::CCtrlCommon(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	    : CCtrl(sCtrlID), m_bTreatAsChar(false), m_eVertRelTo(EVRelTo::PARA), m_eHorzRelTo(EHRelTo::PARA),
-	      m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_arOutMargin{0, 0, 0, 0},
-	      m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP), m_nZOrder(0)
+	      m_nVertOffset(0), m_nHorzOffset(0), m_nWidth(0), m_nHeight(0), m_nZOrder(0),
+	      m_arOutMargin{0, 0, 0, 0}, m_arInMargin{0, 0, 0, 0}, m_eTextVerAlign(EVertAlign::TOP)
 	{
 		if (EHanType::HWPX == eType)
 			ReadAttributes(oReader, eType);
@@ -369,7 +369,7 @@ namespace HWP
 		m_eTextVerAlign = eVertAlign;
 	}
 
-	void CCtrlCommon::ParseChildren(CXMLReader& oReader, int nVersion, EHanType eType)
+	void CCtrlCommon::ParseChildren(CXMLReader& oReader, EHanType eType)
 	{
 		const std::string sNodeName{oReader.GetName()};
 
@@ -378,7 +378,7 @@ namespace HWP
 			ReadAttributes(oReader, eType);
 
 			WHILE_READ_NEXT_NODE(oReader)
-				ParseChildren(oReader, nVersion, EHanType::HWPML);
+				ParseChildren(oReader, EHanType::HWPML);
 			END_WHILE
 
 			return;
@@ -491,7 +491,7 @@ namespace HWP
 			{
 				WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, SubList, "hp:subList")
 					WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Paragraph, "hp:p")
-						m_arCaption.push_back(new CCapParagraph(oReader, nVersion));
+						m_arCaption.push_back(new CCapParagraph(oReader, EHanType::HWPX));
 					END_WHILE
 				END_WHILE
 			}

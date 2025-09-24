@@ -5,7 +5,7 @@ namespace HWP
 CPageBorderFill::CPageBorderFill()
 {}
 
-CPageBorderFill::CPageBorderFill(CXMLReader& oReader, int nVersion)
+CPageBorderFill::CPageBorderFill(CXMLReader& oReader)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{

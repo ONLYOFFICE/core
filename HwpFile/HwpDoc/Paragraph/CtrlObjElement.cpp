@@ -73,8 +73,8 @@ TMatrix ReadMatrix(CXMLReader& oReader, EHanType eType)
 	return oMatrix;
 }
 
-CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlCommon(sCtrlID, oReader, nVersion, eType), m_nCurWidth(0), m_nCurHeight(0)
+CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlCommon(sCtrlID, oReader, eType), m_nCurWidth(0), m_nCurHeight(0)
 {
 	if (EHanType::HWPX == eType)
 		m_shNGrp = oReader.GetAttributeInt("groupLevel");
@@ -110,7 +110,7 @@ void CCtrlObjElement::ParseRenderingInfo(CXMLReader &oReader, EHanType eType)
 	END_WHILE
 }
 
-void CCtrlObjElement::ParseHWPXChildren(CXMLReader& oReader, int nVersion)
+void CCtrlObjElement::ParseHWPXChildren(CXMLReader& oReader)
 {
 	const std::string sNodeName{oReader.GetName()};
 
@@ -164,7 +164,7 @@ void CCtrlObjElement::ParseHWPXChildren(CXMLReader& oReader, int nVersion)
 	else if ("hp:renderingInfo" == sNodeName)
 		ParseRenderingInfo(oReader, EHanType::HWPX);
 	else
-		CCtrlCommon::ParseChildren(oReader, nVersion, EHanType::HWPX);
+		CCtrlCommon::ParseChildren(oReader, EHanType::HWPX);
 }
 
 void CCtrlObjElement::ParseHWPMLElement(CXMLReader &oReader)

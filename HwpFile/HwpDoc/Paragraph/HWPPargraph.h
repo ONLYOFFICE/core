@@ -27,10 +27,10 @@ class CHWPPargraph : public IRef
 
 	VECTOR<CCtrl*> m_arP; //HWPTAG_PARA_TEXT
 
-	bool ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int nVersion, EHanType eType);
+	bool ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, EHanType eType);
 public:
 	CHWPPargraph();
-	CHWPPargraph(CXMLReader& oReader, int nVersion, EHanType eType);
+	CHWPPargraph(CXMLReader& oReader, EHanType eType);
 	virtual ~CHWPPargraph();
 
 	virtual EParagraphType GetType() const;

@@ -25,17 +25,18 @@ CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, int nSiz
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlShapeConnectLine::CCtrlShapeConnectLine(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	switch(eType)
 	{
-		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
-		case EHanType::HWPML: ReadFromHWPML(oReader          ); return;
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
+		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
 	}
 }
 
-void CCtrlShapeConnectLine::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CCtrlShapeConnectLine::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_eType = GetConnectLineType(oReader.GetAttributeInt("type"));
 
@@ -72,7 +73,7 @@ void CCtrlShapeConnectLine::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }
@@ -104,7 +105,7 @@ void CCtrlShapeConnectLine::ReadFromHWPML(CXMLReader &oReader)
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE(oReader)
-		CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

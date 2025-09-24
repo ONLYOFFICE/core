@@ -24,7 +24,7 @@ class CCtrlColumnDef : public CCtrl
 public:
 	CCtrlColumnDef(const HWP_STRING& sCtrlID);
 	CCtrlColumnDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlColumnDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

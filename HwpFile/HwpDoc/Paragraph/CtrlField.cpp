@@ -43,7 +43,7 @@ void CCtrlField::ReadType(CXMLReader &oReader, EHanType eType)
 		m_eType = EFieldType::Bookmark;
 }
 
-CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+CCtrlField::CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID), m_eType(EFieldType::Unknown)
 {
 	const std::string sNodeName{oReader.GetName()};

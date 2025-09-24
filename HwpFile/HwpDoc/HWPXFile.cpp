@@ -40,15 +40,10 @@ bool CHWPXFile::Open()
 	if (m_oFileHeader.VersionEmpty() && !Detect())
 		return false;
 
-	m_nVersion = std::stoi(m_oFileHeader.GetVersion());
-
-	if (!GetDocInfo(m_nVersion))
-		return false;
-
 	std::vector<std::wstring> arPathToSections{GetPathsToSections()};
 
 	for (const std::wstring& wsPath : arPathToSections)
-		ReadSection(wsPath, m_nVersion);
+		ReadSection(wsPath);
 
 	return true;
 }
@@ -168,7 +163,7 @@ bool CHWPXFile::GetDocInfo(int nVersion)
 	return false;
 }
 
-bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
+bool CHWPXFile::ReadSection(const HWP_STRING& sName)
 {
 	CXMLReader oReader;
 
@@ -176,7 +171,7 @@ bool CHWPXFile::ReadSection(const HWP_STRING& sName, int nVersion)
 		return false;
 
 	CHWPSection* pSection = new CHWPSection();
-	const bool bResult = pSection->Parse(oReader, nVersion, EHanType::HWPX);
+	const bool bResult = pSection->Parse(oReader, EHanType::HWPX);
 
 	if (bResult)
 		m_arSections.push_back(pSection);

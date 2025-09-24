@@ -47,9 +47,9 @@ public:
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
 	CCtrlObjElement(const CCtrlObjElement& oObjElement);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
-	void ParseHWPXChildren(CXMLReader& oReader, int nVersion);
+	void ParseHWPXChildren(CXMLReader& oReader);
 	void ParseHWPMLElement(CXMLReader& oReader);
 
 	int GetCurWidth() const;

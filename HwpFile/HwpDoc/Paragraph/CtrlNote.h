@@ -3,7 +3,6 @@
 
 #include "HWPPargraph.h"
 #include "Ctrl.h"
-#include <list>
 
 namespace HWP
 {
@@ -14,7 +13,7 @@ public:
 	CCtrlNote();
 	CCtrlNote(const HWP_STRING& sCtrlID);
 	CCtrlNote(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlNote(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlNote(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

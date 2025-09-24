@@ -15,14 +15,14 @@ class CCtrlShapeOle : public CCtrlGeneralShape
 	int m_nBorderThick;
 	int m_nBorderAttr;
 
-	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPX(CXMLReader& oReader);
 	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeOle();
 	CCtrlShapeOle(const HWP_STRING& sCtrlID);
 	CCtrlShapeOle(const CCtrlGeneralShape& oShape);
 	CCtrlShapeOle(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlShapeOle(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

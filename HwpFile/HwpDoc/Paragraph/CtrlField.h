@@ -33,7 +33,7 @@ class CCtrlField : public CCtrl
 public:
 	CCtrlField(const HWP_STRING& sCtrlID);
 	CCtrlField(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlField(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

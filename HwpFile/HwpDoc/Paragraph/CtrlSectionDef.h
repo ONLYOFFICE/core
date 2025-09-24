@@ -45,7 +45,7 @@ class CCtrlSectionDef : public CCtrl
 public:
 	CCtrlSectionDef(const HWP_STRING& sCtrlID);
 	CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion);
+	CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader);
 	~CCtrlSectionDef();
 
 	ECtrlObjectType GetCtrlType() const override;

@@ -13,7 +13,6 @@ class CHWPXFile
 	HWP_STRING m_sFileName;
 	CZipFolderMemory *m_pZipFolder;
 	CHwpFileHeader m_oFileHeader;
-	int m_nVersion;
 	CHWPDocInfo m_oDocInfo;
 	VECTOR<CHWPSection*> m_arSections;
 public:
@@ -31,7 +30,7 @@ private:
 	VECTOR<HWP_STRING> GetPathsToSections() const;
 	bool GetFileHeader();
 	bool GetDocInfo(int nVersion);
-	bool ReadSection(const HWP_STRING& sName, int nVersion);
+	bool ReadSection(const HWP_STRING& sName);
 	bool GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader);
 };
 }

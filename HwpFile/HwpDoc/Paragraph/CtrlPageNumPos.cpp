@@ -69,7 +69,7 @@ CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	oBuffer.ReadString(m_sConstantDash, 2, EStringCharacter::UTF16);
 }
 
-CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+CCtrlPageNumPos::CCtrlPageNumPos(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID)
 {
 	START_READ_ATTRIBUTES(oReader)

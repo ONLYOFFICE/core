@@ -17,17 +17,18 @@ CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlShapeRect::CCtrlShapeRect(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	switch(eType)
 	{
-		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
 		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
 	}
 }
 
-void CCtrlShapeRect::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CCtrlShapeRect::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_chCurv = (HWP_BYTE)oReader.GetAttributeInt("ratio");
 
@@ -54,7 +55,7 @@ void CCtrlShapeRect::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 		else if ("hc:pt3" == sNodeName)
 			READ_POINT(3)
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }
@@ -85,7 +86,7 @@ void CCtrlShapeRect::ReadFromHWPML(CXMLReader &oReader)
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE(oReader)
-		CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

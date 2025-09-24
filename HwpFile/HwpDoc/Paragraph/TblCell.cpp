@@ -27,16 +27,17 @@ CTblCell::CTblCell(int nSize, CHWPStream& oBuffer, int nOff, int nVersion)
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CTblCell::CTblCell(CXMLReader& oReader, int nVersion, EHanType eType)
+CTblCell::CTblCell(CXMLReader& oReader, EHanType eType)
 {
 	switch (eType)
 	{
-		case EHanType::HWPX: ReadFromHWPX(oReader, nVersion); return;
+		case EHanType::HWPX: ReadFromHWPX(oReader); return;
 		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
 	}
 }
 
-void CTblCell::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CTblCell::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_shBorderFill = oReader.GetAttributeInt("borderFillIDRef");
 
@@ -82,7 +83,7 @@ void CTblCell::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttributeA("vertAlign"), EHanType::HWPX);
 
 			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
-				ReadCell(oReader, nVersion, EHanType::HWPX);
+				ReadCell(oReader, EHanType::HWPX);
 			END_WHILE
 		}
 	}
@@ -121,7 +122,7 @@ void CTblCell::ReadFromHWPML(CXMLReader &oReader)
 			m_eVertAlign = ::HWP::GetVertAlign(oReader.GetAttributeA("VertAlign"), EHanType::HWPML);
 
 			WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "P")
-				ReadCell(oReader, 0, EHanType::HWPML);
+				ReadCell(oReader, EHanType::HWPML);
 			END_WHILE
 		}
 	}
@@ -144,9 +145,9 @@ void CTblCell::ReadCellMargin(CXMLReader &oReader, EHanType eType)
 	END_READ_ATTRIBUTES(oReader)
 }
 
-void HWP::CTblCell::ReadCell(CXMLReader &oReader, int nVersion, EHanType eType)
+void HWP::CTblCell::ReadCell(CXMLReader &oReader, EHanType eType)
 {
-	CCellParagraph *pCellParagraphs = new CCellParagraph(oReader, nVersion, eType);
+	CCellParagraph *pCellParagraphs = new CCellParagraph(oReader, eType);
 
 	if (nullptr == pCellParagraphs)
 		return;

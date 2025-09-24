@@ -35,14 +35,14 @@ class CCtrlShapeEllipse : public CCtrlGeneralShape
 	int m_nEndX2;
 	int m_nEndY2;
 
-	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPX(CXMLReader& oReader);
 	void ReadFromHWPML(CXMLReader& oReader);
 public:
 	CCtrlShapeEllipse();
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID);
 	CCtrlShapeEllipse(const CCtrlGeneralShape& oShape);
 	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	EShapeType GetShapeType() const override;
 

@@ -39,17 +39,18 @@ CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlShapeEllipse::CCtrlShapeEllipse(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	switch(eType)
 	{
-		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
 		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
 	}
 }
 
-void CCtrlShapeEllipse::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CCtrlShapeEllipse::ReadFromHWPX(CXMLReader &oReader)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -142,7 +143,7 @@ void CCtrlShapeEllipse::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 			END_READ_ATTRIBUTES(oReader)
 		}
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }
@@ -189,7 +190,7 @@ void CCtrlShapeEllipse::ReadFromHWPML(CXMLReader &oReader)
 	END_READ_ATTRIBUTES(oReader)
 
 	WHILE_READ_NEXT_NODE(oReader)
-		CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPML);
+		CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPML);
 	END_WHILE
 }
 

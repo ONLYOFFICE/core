@@ -64,8 +64,8 @@ CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	InitData();
 }
 
-CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlObjElement(sCtrlID, oReader, nVersion, eType)
+CCtrlGeneralShape::CCtrlGeneralShape(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlObjElement(sCtrlID, oReader, eType)
 {
 	InitData();
 }
@@ -86,7 +86,7 @@ EShapeType CCtrlGeneralShape::GetShapeType() const
 	return EShapeType::GeneralShape;
 }
 
-void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanType eType)
+void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, EHanType eType)
 {
 	bool bHeadFill = false, bTailFill = false;
 
@@ -101,7 +101,7 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 			if ("SHAPECOMPONENT" == sNodeName)
 				CCtrlObjElement::ParseHWPMLElement(oReader);
 			else
-				ParseChildren(oReader, nVersion, EHanType::HWPML);
+				ParseChildren(oReader, EHanType::HWPML);
 		}
 		END_WHILE
 
@@ -162,12 +162,12 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, int nVersion, EHanTyp
 				END_READ_ATTRIBUTES(oReader)
 			}
 			else if (EHanType::HWPX == eType && "hp:subList" == sNodeChildName)
-				ReadSubList(oReader, nVersion);
+				ReadSubList(oReader);
 		}
 		END_WHILE
 	}
 	else
-		CCtrlObjElement::ParseChildren(oReader, nVersion, eType);
+		CCtrlObjElement::ParseChildren(oReader, eType);
 }
 
 void CCtrlGeneralShape::InitData()
@@ -181,7 +181,7 @@ void CCtrlGeneralShape::InitData()
 	m_eLineTail = ELineArrowStyle::NORMAL;
 }
 
-void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader, int nVersion)
+void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader)
 {
 	m_eTextVerAlign = GetVertAlign(oReader.GetAttributeInt("vertAlign"));
 
@@ -189,7 +189,7 @@ void CCtrlGeneralShape::ReadSubList(CXMLReader& oReader, int nVersion)
 
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "hp:p")
 	{
-		CHWPPargraph* pParagraph = new CHWPPargraph(oReader, nVersion, EHanType::HWPX);
+		CHWPPargraph* pParagraph = new CHWPPargraph(oReader, EHanType::HWPX);
 
 		if (nullptr == pParagraph)
 			continue;

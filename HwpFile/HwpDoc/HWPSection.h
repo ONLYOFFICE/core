@@ -16,9 +16,8 @@ public:
 	CHWPSection();
 	~CHWPSection();
 	
-	bool Parse(CXMLReader& oReader, int nVersion, EHanType eType);
+	bool Parse(CXMLReader& oReader, EHanType eType);
 	bool Parse(CHWPStream& oBuffer, int nVersion);
-	bool ParseHWPML(CXMLReader &oReader, int nVersion);
 	int ParseRecurse(CHWPPargraph* oCurrPara, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseCtrlRecurse(CCtrl* oCurrCtrl, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);
 	int ParseContainerRecurse(CCtrlContainer* oContainer, int nRunLevel, CHWPStream& oBuffer, int nOff, int nVersion);

@@ -52,29 +52,29 @@ bool CCtrl::Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl)
 	       pFirstCtrl->m_bFullFilled == pSecondCtrl->m_bFullFilled;
 }
 
-CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, int nVersion, EHanType eType)
+CCtrl* CCtrl::GetCtrl(CXMLReader& oReader, EHanType eType)
 {
 	const std::string sNodeName{oReader.GetName()};
 
 	if (GetNodeName(ENode::ColumnDef, eType) == sNodeName)
-		return new CCtrlColumnDef(L"dloc", oReader, nVersion, eType);
+		return new CCtrlColumnDef(L"dloc", oReader, eType);
 	else if (GetNodeName(ENode::Header, eType) == sNodeName)
-		return new CCtrlHeadFoot(L"daeh", oReader, nVersion, eType);
+		return new CCtrlHeadFoot(L"daeh", oReader, eType);
 	else if (GetNodeName(ENode::Footer, eType) == sNodeName)
-		return new CCtrlHeadFoot(L"toof", oReader, nVersion, eType);
+		return new CCtrlHeadFoot(L"toof", oReader, eType);
 	else if (GetNodeName(ENode::FootNote, eType) == sNodeName)
-		return new CCtrlNote(L"  nf", oReader, nVersion, eType);
+		return new CCtrlNote(L"  nf", oReader, eType);
 	else if (GetNodeName(ENode::EndNote, eType) == sNodeName)
-		return new CCtrlNote(L"  ne", oReader, nVersion, eType);
+		return new CCtrlNote(L"  ne", oReader, eType);
 	else if (GetNodeName(ENode::AutoNum, eType) == sNodeName)
-		return new CCtrlAutoNumber(L"onta", oReader, nVersion, eType);
+		return new CCtrlAutoNumber(L"onta", oReader, eType);
 	else if (GetNodeName(ENode::NewNum, eType) == sNodeName)
-		return new CCtrlNewNumber(L"onwn", oReader, nVersion, eType);
+		return new CCtrlNewNumber(L"onwn", oReader, eType);
 	else if (GetNodeName(ENode::PageNum, eType) == sNodeName)
-		return new CCtrlPageNumPos(L"pngp", oReader, nVersion, eType);
+		return new CCtrlPageNumPos(L"pngp", oReader, eType);
 	else if (GetNodeName(ENode::FieldBegin, eType) == sNodeName ||
 	         GetNodeName(ENode::FieldEnd,   eType) == sNodeName)
-		return new CCtrlField(L"", oReader, nVersion, eType);
+		return new CCtrlField(L"", oReader, eType);
 
 	return nullptr;
 }

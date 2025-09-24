@@ -14,7 +14,7 @@ public:
 	CCtrlContainer(const HWP_STRING& sCtrlID);
 	CCtrlContainer(const CCtrlGeneralShape& oShape);
 	CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	~CCtrlContainer();
 

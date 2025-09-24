@@ -40,7 +40,7 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, int nSize, CHWPStrea
 	m_bFullFilled = true;
 }
 
-CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion)
+CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader)
 	: CCtrl(sCtrlID), m_pPage(nullptr)
 {
 	std::string sType;
@@ -165,9 +165,9 @@ CCtrlSectionDef::CCtrlSectionDef(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 			m_pPage = new CPage(oReader);
 		else if ("hp:footNotePr" == sNodeName ||
 		         "hp:endNotePr"  == sNodeName)
-			m_arNoteShapes.push_back(new CNoteShape(oReader, nVersion));
+			m_arNoteShapes.push_back(new CNoteShape(oReader));
 		else if ("hp:pageBorderFill" == sNodeName)
-			m_arBorderFills.push_back(new CPageBorderFill(oReader, nVersion));
+			m_arBorderFills.push_back(new CPageBorderFill(oReader));
 		else if ("hp:masterPage" == sNodeName)
 		{
 			//TODO:: добавить реализацию

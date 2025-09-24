@@ -19,17 +19,18 @@ CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, int nSize, CHWPS
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlShapeTextArt::CCtrlShapeTextArt(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	switch(eType)
 	{
-		case EHanType::HWPX:  ReadFromHWPX (oReader, nVersion); return;
+		case EHanType::HWPX:  ReadFromHWPX (oReader); return;
 		case EHanType::HWPML: ReadFromHWPML(oReader); return;
+		default: break;
 	}
 }
 
-void CCtrlShapeTextArt::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CCtrlShapeTextArt::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_sText = oReader.GetAttribute("text");
 
@@ -60,7 +61,7 @@ void CCtrlShapeTextArt::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 		else if ("hp:outline" == sNodeName)
 			ReadOutlineData(oReader, EHanType::HWPX);
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, EHanType::HWPX);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }
@@ -97,7 +98,7 @@ void CCtrlShapeTextArt::ReadFromHWPML(CXMLReader &oReader)
 		else if ("OUTLINEDATA" == sNodeName)
 			ReadOutlineData(oReader, EHanType::HWPML);
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, 0, EHanType::HWPX);
+			CCtrlGeneralShape::ParseChildren(oReader, EHanType::HWPX);
 	}
 	END_WHILE
 }

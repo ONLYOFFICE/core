@@ -27,31 +27,31 @@ CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, int nSize, CHWPStream&
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-    : CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlContainer::CCtrlContainer(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+    : CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 	{
 		if (GetNodeName(ENode::Container, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlContainer(L"noc$", oReader, eType));
 		else if (GetNodeName(ENode::Line, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeLine(L"nil$", oReader, eType));
 		else if (GetNodeName(ENode::Rectangle, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeRect(L"cer$", oReader, eType));
 		else if (GetNodeName(ENode::Ellipse, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeEllipse(L"lle$", oReader, eType));
 		else if (GetNodeName(ENode::Arc, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeArc(L"cra$", oReader, eType));
 		else if (GetNodeName(ENode::Polygon, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapePolygon(L"lop$", oReader, eType));
 		else if (GetNodeName(ENode::Curve, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeCurve(L"ruc$", oReader, eType));
 		else if (GetNodeName(ENode::ConnectLine, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, eType));
 		else if (GetNodeName(ENode::Picture, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapePic(L"cip$", oReader, eType));
 		else if (GetNodeName(ENode::Ole, eType) == sNodeName)
-			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion, eType));
+			m_arShapes.push_back(new CCtrlShapeOle(L"elo$", oReader, eType));
 	}
 	END_WHILE
 

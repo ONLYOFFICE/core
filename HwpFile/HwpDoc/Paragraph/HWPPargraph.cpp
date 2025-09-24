@@ -29,7 +29,7 @@ CHWPPargraph::CHWPPargraph()
 	: m_shParaShapeID(0), m_shParaStyleID(0), m_chBreakType(0), m_pLineSegs(nullptr)
 {}
 
-CHWPPargraph::CHWPPargraph(CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPPargraph::CHWPPargraph(CXMLReader& oReader, EHanType eType)
 	: m_shParaShapeID(0), m_shParaStyleID(0), m_chBreakType(0), m_pLineSegs(nullptr)
 {
 	START_READ_ATTRIBUTES(oReader)
@@ -64,14 +64,14 @@ CHWPPargraph::CHWPPargraph(CXMLReader& oReader, int nVersion, EHanType eType)
 			nCharShapeID = oReader.GetAttributeInt(GetAttributeName(EAttribute::CharShape, eType));
 
 			WHILE_READ_NEXT_NODE_WITH_DEPTH(oReader, Child)
-				ParseHWPParagraph(oReader, nCharShapeID, nVersion, eType);
+				ParseHWPParagraph(oReader, nCharShapeID, eType);
 			END_WHILE
 		}
 		else if (GetNodeName(ENode::LinesegArray, eType) == sNodeName)
 		{
 			WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, GetNodeName(ENode::Lineseg, eType))
 			{
-				m_pLineSegs = new CLineSeg(oReader, nVersion);
+				m_pLineSegs = new CLineSeg(oReader);
 				break;
 			}
 			END_WHILE
@@ -89,14 +89,14 @@ CHWPPargraph::~CHWPPargraph()
 		delete m_pLineSegs;
 }
 
-bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int nVersion, EHanType eType)
+bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, EHanType eType)
 {
 	const size_t unCurrentParaCount = m_arP.size();
 
 	const std::string sNodeName{oReader.GetName()};
 
 	if (GetNodeName(ENode::SectionDef, eType) == sNodeName)
-		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader, nVersion));
+		m_arP.push_back(new CCtrlSectionDef(L"dces", oReader));
 	else if (GetNodeName(ENode::Char, eType) == sNodeName)
 	{
 		if (oReader.IsEmptyNode())
@@ -137,45 +137,45 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 		}
 	}
 	else if (GetNodeName(ENode::Table, eType) == sNodeName)
-		m_arP.push_back(new CCtrlTable(L" lbt", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlTable(L" lbt", oReader, eType));
 	else if (GetNodeName(ENode::Picture, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapePic(L"cip$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapePic(L"cip$", oReader, eType));
 	else if (GetNodeName(ENode::Container, eType) == sNodeName)
-		m_arP.push_back(new CCtrlContainer(L"noc$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlContainer(L"noc$", oReader, eType));
 	else if (GetNodeName(ENode::Ole, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeOle(L"elo$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeOle(L"elo$", oReader, eType));
 	else if (GetNodeName(ENode::Equation, eType) == sNodeName)
-		m_arP.push_back(new CCtrlEqEdit(L"deqe", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlEqEdit(L"deqe", oReader, eType));
 	else if (GetNodeName(ENode::Line, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeLine(L"nil$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeLine(L"nil$", oReader, eType));
 	else if (GetNodeName(ENode::Rectangle, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeRect(L"cer$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeRect(L"cer$", oReader, eType));
 	else if (GetNodeName(ENode::Ellipse, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeEllipse(L"lle$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeEllipse(L"lle$", oReader, eType));
 	else if (GetNodeName(ENode::Arc, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeArc(L"cra$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeArc(L"cra$", oReader, eType));
 	else if (GetNodeName(ENode::Polygon, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapePolygon(L"lop$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapePolygon(L"lop$", oReader, eType));
 	else if (GetNodeName(ENode::Curve, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeCurve(L"ruc$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeCurve(L"ruc$", oReader, eType));
 	else if (GetNodeName(ENode::ConnectLine, eType) == sNodeName)
-		m_arP.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, nVersion, eType));
+		m_arP.push_back(new CCtrlShapeConnectLine(L"loc$", oReader, eType));
 	else if (GetNodeName(ENode::TextArt, eType) == sNodeName)
-			m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oReader, nVersion, eType));
+			m_arP.push_back(new CCtrlShapeTextArt(L"tat$", oReader, eType));
 	else if (EHanType::HWPX == eType)
 	{
 		
 		if (GetNodeName(ENode::Video, eType) == sNodeName)
-			m_arP.push_back(new CCtrlShapeVideo(L"div$", oReader, nVersion, eType));
+			m_arP.push_back(new CCtrlShapeVideo(L"div$", oReader, eType));
 		else if ("hp:ctrl" == sNodeName)
 		{
 			WHILE_READ_NEXT_NODE(oReader)
-				AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPX));
+				AddCtrl(CCtrl::GetCtrl(oReader, EHanType::HWPX));
 			END_WHILE
 		}
 	}
 	else if (EHanType::HWPML == eType)
-		AddCtrl(CCtrl::GetCtrl(oReader, nVersion, EHanType::HWPML));
+		AddCtrl(CCtrl::GetCtrl(oReader, EHanType::HWPML));
 
 	if (unCurrentParaCount != m_arP.size())
 		return true;
@@ -189,7 +189,7 @@ bool CHWPPargraph::ParseHWPParagraph(CXMLReader& oReader, int nCharShapeID, int 
 				continue;
 
 			WHILE_READ_NEXT_NODE(oReader)
-				if (ParseHWPParagraph(oReader, nCharShapeID, nVersion, eType))
+				if (ParseHWPParagraph(oReader, nCharShapeID, eType))
 					return true;
 			END_WHILE
 		}

@@ -9,7 +9,7 @@ class CCellParagraph : public CHWPPargraph
 {
 public:
 	CCellParagraph();
-	CCellParagraph(CXMLReader& oReader, int nVersion, EHanType eType);
+	CCellParagraph(CXMLReader& oReader, EHanType eType);
 
 	EParagraphType GetType() const override;
 };

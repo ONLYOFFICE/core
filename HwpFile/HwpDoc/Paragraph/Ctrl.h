@@ -48,7 +48,7 @@ public:
 	void SetFullFilled();
 
 	static bool Equals(CCtrl* pFirstCtrl, CCtrl* pSecondCtrl);
-	static CCtrl* GetCtrl(CXMLReader& oReader, int nVersion, EHanType eType);
+	static CCtrl* GetCtrl(CXMLReader& oReader, EHanType eType);
 };
 }
 

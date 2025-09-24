@@ -32,7 +32,7 @@ class CCtrlTable : public CCtrlCommon
 public:
 	CCtrlTable(const HWP_STRING& sCtrlID);
 	CCtrlTable(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlTable(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 	~CCtrlTable();
 
 	ECtrlObjectType GetCtrlType() const override;

@@ -75,7 +75,7 @@ void CHWPMLFile::ReadHead(CXMLReader &oReader)
 void CHWPMLFile::ReadBody(CXMLReader &oReader)
 {
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "SECTION")
-		ReadSection(oReader, 0);
+		ReadSection(oReader);
 	END_WHILE
 }
 
@@ -93,11 +93,11 @@ void CHWPMLFile::ReadTail(CXMLReader &oReader)
 	END_WHILE
 }
 
-void CHWPMLFile::ReadSection(CXMLReader &oReader, int nVersion)
+void CHWPMLFile::ReadSection(CXMLReader &oReader)
 {
 	CHWPSection* pSection = new CHWPSection();
 
-	if (pSection->Parse(oReader, nVersion, EHanType::HWPML))
+	if (pSection->Parse(oReader, EHanType::HWPML))
 		m_arSections.push_back(pSection);
 	else
 		delete pSection;

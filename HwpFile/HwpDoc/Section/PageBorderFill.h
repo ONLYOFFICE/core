@@ -19,7 +19,7 @@ class CPageBorderFill
 	short m_shBorderFill;
 public:
 	CPageBorderFill();
-	CPageBorderFill(CXMLReader& oReader, int nVersion);
+	CPageBorderFill(CXMLReader& oReader);
 
 	static CPageBorderFill* Parse(int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 };

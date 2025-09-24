@@ -19,7 +19,7 @@ class CHWPMLFile
 	void ReadBody(CXMLReader& oReader);
 	void ReadTail(CXMLReader& oReader);
 	
-	void ReadSection(CXMLReader& oReader, int nVersion);
+	void ReadSection(CXMLReader& oReader);
 	void ReadBinData(CXMLReader& oReader);
 public:
 	CHWPMLFile(const HWP_STRING& wsFilePath);

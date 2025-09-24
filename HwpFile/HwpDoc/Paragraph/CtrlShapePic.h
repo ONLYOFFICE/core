@@ -130,7 +130,7 @@ class CCtrlShapePic : public CCtrlGeneralShape
 	int m_nIniPicHeight;
 	HWP_BYTE m_chPicAlpha;
 
-	void ReadFromHWPX(CXMLReader& oReader, int nVersion);
+	void ReadFromHWPX(CXMLReader& oReader);
 	void ReadFromHWPML(CXMLReader& oReader);
 
 	void ReadImageClip(CXMLReader& oReader, EHanType eType);
@@ -141,7 +141,7 @@ public:
 	CCtrlShapePic(const HWP_STRING& sCtrlID);
 	CCtrlShapePic(const CCtrlGeneralShape& oShape);
 	CCtrlShapePic(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlShapePic(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 	~CCtrlShapePic();
 
 	EShapeType GetShapeType() const override;

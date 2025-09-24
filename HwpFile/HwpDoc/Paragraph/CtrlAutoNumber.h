@@ -31,7 +31,7 @@ class CCtrlAutoNumber : public CCtrl
 public:
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID);
 	CCtrlAutoNumber(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType);
+	CCtrlAutoNumber(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
 	ECtrlObjectType GetCtrlType() const override;
 

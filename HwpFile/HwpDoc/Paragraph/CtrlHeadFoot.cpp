@@ -24,21 +24,22 @@ CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, int nSize, CHWPStream& o
 	oBuffer.ReadInt(m_nSerialInSec);
 }
 
-CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
+CCtrlHeadFoot::CCtrlHeadFoot(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
 	: CCtrl(sCtrlID)
 {
 	m_bIsHeader = L"daeh" == sCtrlID;
 
 	switch (eType)
 	{
-		case EHanType::HWPX: ReadFromHWPX(oReader, nVersion); break;
+		case EHanType::HWPX: ReadFromHWPX(oReader); break;
 		case EHanType::HWPML:ReadFromHWPML(oReader); break;
+		default: break;
 	}
 
 	m_bFullFilled = true;
 }
 
-void CCtrlHeadFoot::ReadFromHWPX(CXMLReader &oReader, int nVersion)
+void CCtrlHeadFoot::ReadFromHWPX(CXMLReader &oReader)
 {
 	m_eWhichPage = GetPageRange(oReader.GetAttributeInt("applyPageType"));
 
@@ -58,7 +59,7 @@ void CCtrlHeadFoot::ReadFromHWPX(CXMLReader &oReader, int nVersion)
 		END_READ_ATTRIBUTES(oReader)
 
 		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "hp:p")
-			m_arParas.push_back(new CHWPPargraph(oReader, nVersion, EHanType::HWPX));
+			m_arParas.push_back(new CHWPPargraph(oReader, EHanType::HWPX));
 		END_WHILE
 	}
 	END_WHILE
@@ -89,7 +90,7 @@ void CCtrlHeadFoot::ReadFromHWPML(CXMLReader &oReader)
 
 	WHILE_READ_NEXT_NODE_WITH_ONE_NAME(oReader, "PARALIST")
 		WHILE_READ_NEXT_NODE_WITH_DEPTH_ONE_NAME(oReader, Child, "P")
-			m_arParas.push_back(new CHWPPargraph(oReader, 0, EHanType::HWPML));
+			m_arParas.push_back(new CHWPPargraph(oReader, EHanType::HWPML));
 		END_WHILE
 	END_WHILE
 }

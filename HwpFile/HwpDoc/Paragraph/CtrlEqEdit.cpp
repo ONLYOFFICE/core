@@ -19,8 +19,8 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuff
 	: CCtrlGeneralShape(sCtrlID, nSize, oBuffer, nOff, nVersion)
 {}
 
-CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVersion, EHanType eType)
-	: CCtrlGeneralShape(sCtrlID, oReader, nVersion, eType)
+CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType)
+	: CCtrlGeneralShape(sCtrlID, oReader, eType)
 {
 	START_READ_ATTRIBUTES(oReader)
 	{
@@ -49,6 +49,8 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 				}
 				case EHanType::HWPML:
 					m_nAttr = oReader.GetBool();
+				default:
+					break;
 			}
 		}
 		else if (EHanType::HWPX == eType && "font" == sAttributeName)
@@ -61,7 +63,7 @@ CCtrlEqEdit::CCtrlEqEdit(const HWP_STRING& sCtrlID, CXMLReader& oReader, int nVe
 		if (GetNodeName(ENode::Script, eType) == oReader.GetName())
 			m_sEqn = oReader.GetText();
 		else
-			CCtrlGeneralShape::ParseChildren(oReader, nVersion, eType);
+			CCtrlGeneralShape::ParseChildren(oReader, eType);
 	}
 	END_WHILE
 

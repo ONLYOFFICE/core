@@ -3513,13 +3513,6 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 }
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
-	PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
-	PdfWriter::CPage* pWPage = NULL;
-	if (m_nMode == Mode::WriteNew)
-		pWPage = pDoc->GetPage(m_nEditPage);
-	if (!pWPage)
-		return;
-
 	PDFDoc* pPDFDocument = NULL;
 	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
 	if (nPageIndex < 0 || !pPDFDocument)
@@ -3529,6 +3522,7 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 
 	CRedact* pCommand = (CRedact*)_pCommand;
 	std::vector<double> arrQuads = pCommand->GetQuadPoints();
+	std::vector<std::wstring> arrID = pCommand->GetID();
 	for (int i = 0; i < arrQuads.size() / 4; ++i)
 	{
 		arrQuads[i * 4 + 0] += cropBox->x1;
@@ -3536,52 +3530,22 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 		arrQuads[i * 4 + 1] = cropBox->y2 - arrQuads[i * 4 + 3];
 		arrQuads[i * 4 + 2] += cropBox->x1;
 		arrQuads[i * 4 + 3] = cropBox->y2 - dQ;
+
+		m_mRedact[arrID[i]] = { arrQuads[i * 4 + 0], arrQuads[i * 4 + 1], arrQuads[i * 4 + 2], arrQuads[i * 4 + 3] };
 	}
 
 #ifndef BUILDING_WASM_MODULE
-	//globalParams->setDrawFormFields(gFalse);
-	//globalParams->setDrawAnnotations(gFalse);
-
 	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
 	oRedactOut.NewPDF(pPDFDocument->getXRef());
 	oRedactOut.SetRedact(arrQuads);
 
-	PdfWriter::CArrayObject* pContents = (PdfWriter::CArrayObject*)pWPage->Get("Contents");
 	Object oContents;
-	oContents.initArray(NULL);
-	for (int i = 0; i < pContents->GetCount(); ++i)
-	{
-		PdfWriter::CObjectBase* pObj = pContents->Get(i);
-		PdfWriter::CDictObject* pDict = NULL;
-		if (pObj->GetType() == PdfWriter::object_type_DICT)
-			pDict = (PdfWriter::CDictObject*)pObj;
-		if (!pDict)
-			continue;
-		PdfWriter::CStream* pStream = pDict->GetStream();
-		unsigned int nSize = pStream->Size();
-		BYTE* pData = new BYTE[nSize];
-		pStream->Seek(0, PdfWriter::EWhenceMode::SeekSet);
-		pStream->Read(pData, &nSize);
-
-		Object obj, oContent;
-		obj.initNull();
-		Stream* pContentStream = new MemStream((char*)pData, 0, nSize, &obj, gTrue);
-		oContent.initStream(pContentStream);
-		oContents.arrayAdd(&oContent);
-	}
-
+	pPage->getContents(&oContents);
 	PDFRectangle* box = pPage->getMediaBox();
-	// TODO есть проблема с ресурсами - здесть только исходные ресурсы, без новых дописанных
 	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
 	gfx->display(&oContents);
 	oContents.free();
-
 	RELEASEOBJECT(gfx);
-
-	//pPDFDocument->displayPage(&oRedactOut, nPageIndex, 72.0, 72.0, 0, gTrue, gFalse, gFalse);
-
-	//globalParams->setDrawFormFields(gTrue);
-	//globalParams->setDrawAnnotations(gTrue);
 #endif
 
 	int nFlags = pCommand->GetFlag();

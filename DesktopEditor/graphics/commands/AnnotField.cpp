@@ -1227,6 +1227,7 @@ CRedact::CRedact() : IAdvancedCommand(AdvancedCommandType::Redact) {}
 CRedact::~CRedact() {}
 int CRedact::GetFlag() const { return m_nFlag; }
 const std::vector<double>& CRedact::GetQuadPoints() { return m_arrQuadPoints; }
+const std::vector<std::wstring>& CRedact::GetID() { return m_arrID; }
 BYTE* CRedact::GetRender(LONG& nLen)
 {
 	nLen = m_nRenderLen;
@@ -1235,12 +1236,15 @@ BYTE* CRedact::GetRender(LONG& nLen)
 bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
 	int n = pReader->ReadInt();
-	m_arrQuadPoints.reserve(n);
+	m_arrQuadPoints.reserve(n * 4);
 	for (int i = 0; i < n; ++i)
 	{
 		for (int j = 0; j < 4; ++j)
 			m_arrQuadPoints.push_back(pReader->ReadDouble());
 	}
+	m_arrID.reserve(n);
+	for (int i = 0; i < n; ++i)
+		m_arrID.push_back(pReader->ReadString());
 
 	m_nFlag = pReader->ReadInt();
 	if (m_nFlag & (1 << 0))

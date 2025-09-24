@@ -256,6 +256,7 @@ void CPdfReader::Clear()
 void CPdfReader::CleanUp()
 {
 	while(UnmergePages());
+	while(UndoRedact());
 	m_eError = errNone;
 }
 

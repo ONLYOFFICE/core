@@ -114,6 +114,7 @@ private:
 	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
 	std::map<std::wstring, std::wstring> m_mFonts;
+	std::map<std::wstring, std::vector<double> > m_mRedact;
 	CObjectsManager m_mObjManager;
 
 	CPdfReader* m_pReader;

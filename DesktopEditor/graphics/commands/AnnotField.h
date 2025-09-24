@@ -634,20 +634,27 @@ private:
 class GRAPHICS_DECL CRedact : public IAdvancedCommand
 {
 public:
+	struct SRedact
+	{
+		std::wstring sID;
+		std::vector<double> arrQuadPoints;
+		int nFlag;
+		LONG nRenderLen;
+		BYTE* pRender;
+	};
+
 	CRedact();
 	virtual ~CRedact();
 
 	int GetFlag() const;
 	const std::vector<double>& GetQuadPoints();
+	const std::vector<std::wstring>& GetID();
 	BYTE* GetRender(LONG& nLen);
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 
 private:
-	int    m_nFlag;
-	LONG   m_nRenderLen;
-	BYTE*  m_pRender;
-	std::vector<double> m_arrQuadPoints;
+	std::vector<SRedact*> m_arrRedact;
 };
 
 #endif // _BUILD_ANNOTFIELD_H_

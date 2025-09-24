@@ -46,8 +46,16 @@ namespace NSOnlineOfficeBinToPdf
 			RELEASEOBJECT(command);
 		return command;
 	}
+	template<typename T>
+	inline IAdvancedCommand* Read_Command_Len(CBufferReader* pReader, IMetafileToRenderter* pCorrector, int nLen)
+	{
+		T* command = new T();
+		if (!command->Read(pReader, pCorrector, nLen))
+			RELEASEOBJECT(command);
+		return command;
+	}
 
-	IAdvancedCommand* CBufferReader::Read(int type, IMetafileToRenderter* pCorrector)
+	IAdvancedCommand* CBufferReader::Read(int type, IMetafileToRenderter* pCorrector, int nLen)
 	{
 		switch (type)
 		{
@@ -58,7 +66,7 @@ namespace NSOnlineOfficeBinToPdf
 		case ctFormField:        return Read_Command<CFormFieldInfo>   (this, pCorrector);
 		case ctAnnotFieldDelete: return Read_Command<CAnnotFieldDelete>(this, pCorrector);
 		case ctWidgetsInfo:      return Read_Command<CWidgetsInfo>     (this, pCorrector);
-		case ctShapeStart:       return Read_Command<CShapeStart>      (this, pCorrector);
+		case ctShapeStart:       return Read_Command_Len<CShapeStart>  (this, pCorrector, nLen);
 		case ctShapeEnd:         return new CEmptyComand(IAdvancedCommand::AdvancedCommandType::ShapeEnd);
 		case ctPageClear:        return new CEmptyComand(IAdvancedCommand::AdvancedCommandType::PageClear);
 		case ctPageRotate:       return Read_Command<CPageRotate>      (this, pCorrector);

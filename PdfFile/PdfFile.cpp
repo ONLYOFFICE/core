@@ -1330,6 +1330,7 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 		CShapeStart* pCommand = (CShapeStart*)command;
 		if (m_pInternal->pEditor)
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
+		// TODO Здесь необходимо наложить на рендер области редактов
 		return S_OK;
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:

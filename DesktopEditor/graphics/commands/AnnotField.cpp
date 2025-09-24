@@ -1224,34 +1224,34 @@ bool CWidgetsInfo::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafil
 }
 
 CRedact::CRedact() : IAdvancedCommand(AdvancedCommandType::Redact) {}
-CRedact::~CRedact() {}
-int CRedact::GetFlag() const { return m_nFlag; }
-const std::vector<double>& CRedact::GetQuadPoints() { return m_arrQuadPoints; }
-const std::vector<std::wstring>& CRedact::GetID() { return m_arrID; }
-BYTE* CRedact::GetRender(LONG& nLen)
+CRedact::~CRedact()
 {
-	nLen = m_nRenderLen;
-	return m_pRender;
+	for (int i = 0; i < m_arrRedact.size(); ++i)
+		RELEASEOBJECT(m_arrRedact[i]);
 }
+const std::vector<CRedact::SRedact*>& CRedact::GetRedact() { return m_arrRedact; }
 bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector)
 {
 	int n = pReader->ReadInt();
-	m_arrQuadPoints.reserve(n * 4);
+	m_arrRedact.reserve(n);
 	for (int i = 0; i < n; ++i)
 	{
-		for (int j = 0; j < 4; ++j)
-			m_arrQuadPoints.push_back(pReader->ReadDouble());
-	}
-	m_arrID.reserve(n);
-	for (int i = 0; i < n; ++i)
-		m_arrID.push_back(pReader->ReadString());
-
-	m_nFlag = pReader->ReadInt();
-	if (m_nFlag & (1 << 0))
-	{
-		m_nRenderLen = pReader->ReadInt() - 4;
-		m_pRender = pReader->GetCurrentBuffer();
-		pReader->Skip(m_nRenderLen);
+		SRedact* pRedact = new SRedact();
+		pRedact->sID = pReader->ReadString();
+		int m = pReader->ReadInt();
+		pRedact->arrQuadPoints.reserve(m * 4);
+		for (int j = 0; j < m; ++j)
+		{
+			for (int k = 0; k < 4; ++k)
+				pRedact->arrQuadPoints.push_back(pReader->ReadDouble());
+		}
+		pRedact->nFlag = pReader->ReadInt();
+		if (pRedact->nFlag & (1 << 0))
+		{
+			pRedact->nRenderLen = pReader->ReadInt() - 4;
+			pRedact->pRender = pReader->GetCurrentBuffer();
+			pReader->Skip(pRedact->nRenderLen);
+		}
 	}
 
 	return true;

@@ -646,10 +646,7 @@ public:
 	CRedact();
 	virtual ~CRedact();
 
-	int GetFlag() const;
-	const std::vector<double>& GetQuadPoints();
-	const std::vector<std::wstring>& GetID();
-	BYTE* GetRender(LONG& nLen);
+	const std::vector<SRedact*>& GetRedact();
 
 	bool Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRenderter* pCorrector);
 

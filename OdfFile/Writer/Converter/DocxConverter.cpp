@@ -1047,18 +1047,34 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
 				if (pBr)
 				{
-					if( !odt_context->pendingBreakType ) // for bug when we have text and after conversion we have early break column (check bug 73365)
+					int type = pBr->m_oType.m_eValue != 0 ? pBr->m_oType.GetValue() : 2;
+
+					// check bug 55175
+					bool beforeAnyText = true; // check, maybe text was there already before break?
+					for (size_t j = 0; j < i; ++j)
 					{
-						odt_context->pendingBreakType = true;
-						odt_context->m_pendingBreakType = pBr->m_oType.GetValue();
+						if (oox_run->m_arrItems[j]->getType() == OOX::et_w_t)
+						{
+							beforeAnyText = false;
+							break;
+						}
 					}
 
-					// int type = pBr->m_oType.GetValue();
-					
-					// bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
+					if (beforeAnyText) // if there was no text, insert break
+					{
+						bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
 
-					// if (need_restart_para)
-					// 	odt_context->add_paragraph_break(type);
+						if (need_restart_para)
+							odt_context->add_paragraph_break(type);
+					}
+					else
+					{
+						if( !odt_context->pendingBreakType ) // for bug when we have text and after conversion we have early break column (check bug 73365)
+						{
+							odt_context->pendingBreakType = true;
+							odt_context->m_pendingBreakType = type;
+						}
+					}
 				}
 			}break;
 			case OOX::et_w_t:

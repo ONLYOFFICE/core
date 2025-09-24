@@ -1,5 +1,6 @@
 import browser, {Storage} from "webextension-polyfill";
 import StorageChange = Storage.StorageChange;
+import getCrypto from "../common/crypto.ts";
 
 export const initCheckOpenedPopup = () => {
     browser.runtime.onConnect.addListener((port) => {
@@ -45,3 +46,8 @@ export const openPopup = async () => {
         });
     });
 };
+
+export const getGUID = () => {
+    const crypto = getCrypto();
+    return `{${crypto.randomUUID()}}`;
+}

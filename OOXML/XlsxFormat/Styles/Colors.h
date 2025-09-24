@@ -56,7 +56,6 @@ namespace OOX
 			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const;
 
-			void initXLSColors();
 		private:
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
 

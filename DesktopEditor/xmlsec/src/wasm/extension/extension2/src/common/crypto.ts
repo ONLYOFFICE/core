@@ -5,6 +5,8 @@ import type {
     GenerateKeyAlgorithm, GenerateKeyUsages,
     SignAlgorithm
 } from "./crypto-types.ts";
+import {Key, KeyPair, type SymmetricKey} from "./keys/keys.ts";
+import type {KeyParams} from "./keys/key-types.ts";
 const pbkdf2Parameters = {
   iterations: 150000,
   hash: "SHA-256",
@@ -12,50 +14,14 @@ const pbkdf2Parameters = {
 const aesGCMParameters = {
     keyLength: 256
 };
-class CCryptoBase {
-        sign(_algorithm: SignAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        digest(_algorithm: DigestAlgorithm, _data: CryptoData): Promise<ArrayBuffer> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        verify(_algorithm: SignAlgorithm, _key: CryptoKey, _signature: CryptoData, _data: CryptoData): Promise<boolean> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        decrypt(_algorithm: EncryptAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        encrypt(_algorithm: EncryptAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        generateKey(_algorithm: GenerateKeyAlgorithm, _extractable: boolean, _keyUsages: GenerateKeyUsages): Promise<CryptoKey | CryptoKeyPair> {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        };
-        async generateCipherKeys() {
-            return await this.generateKey({ name: "X25519" }, true, ["deriveKey"]);
-        }
-        async encryptData(publicKey: CryptoKey, privateKey: CryptoKey, data: CryptoData) {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        }
-        async decryptData(publicKey: CryptoKey, privateKey: CryptoKey, data: CryptoData) {
-            return new Promise(function (_resolve, reject) {
-                reject("Override the method in the subclass");
-            });
-        }
+abstract class CCryptoBase {
+    abstract sign(_algorithm: SignAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer>;
+    abstract digest(_algorithm: DigestAlgorithm, _data: CryptoData): Promise<ArrayBuffer>;
+    abstract verify(_algorithm: SignAlgorithm, _key: CryptoKey, _signature: CryptoData, _data: CryptoData): Promise<boolean>;
+    abstract decrypt<T extends KeyParams>(_key: Key<T>, _data: CryptoData): Promise<ArrayBuffer>;
+    abstract encrypt(_algorithm: EncryptAlgorithm, _key: CryptoKey, _data: CryptoData): Promise<ArrayBuffer>;
+    abstract generateKey(_algorithm: GenerateKeyAlgorithm, _keyUsages: GenerateKeyUsages): Promise<SymmetricKey | KeyPair>
+
     }
     class CWebCrypto extends CCryptoBase {
         crypto = window.crypto;

@@ -905,6 +905,7 @@ namespace OOX
 			virtual void fromXML(XmlUtils::CXmlLiteReader& oReader);
             void fromBin(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr toBin();
+			XLS::BaseObjectPtr toXLS();
 			virtual EElementType getType () const
 			{
 				return et_x_PivotTableDefinition;
@@ -912,6 +913,7 @@ namespace OOX
 			void ReadAttributes(XmlUtils::CXmlLiteReader& oReader);
             void ReadAttributes(XLS::BaseObjectPtr& obj);
 			XLS::BaseObjectPtr writeAttributes();
+			XLS::BaseObjectPtr writeAttributesXLS();
 	//----------
             nullable<CColumnRowFields>          m_oColFields;
             nullable<CColumnRowItems>           m_oColItems;

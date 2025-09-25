@@ -34,6 +34,7 @@
 #include "Worksheet.h"
 
 #include "../Comments/Comments.h"
+#include "../Pivot/PivotTable.h"
 #include "../Comments/ThreadedComments.h"
 
 #include "../../DocxFormat/External/HyperLink.h"
@@ -433,25 +434,34 @@ namespace OOX
 			}
 			if(m_oTableParts.IsInit())
 			{
-				auto container = GetContainer();
 				auto feat11 = new XLS::FEAT11;
 				worksheetPtr->m_arFEAT11.push_back(XLS::BaseObjectPtr(feat11));
-				for(auto file : container)
+			}
+			auto container = GetContainer();
+			for(auto file : container)
+			{
+				if((file->type() == OOX::SpreadsheetBin::FileTypes::TableBin || file->type() == OOX::Spreadsheet::FileTypes::Table) && !worksheetPtr->m_arFEAT11.empty())
 				{
-					if(file->type() == OOX::SpreadsheetBin::FileTypes::TableBin || file->type() == OOX::Spreadsheet::FileTypes::Table)
+					auto feat11 = static_cast< XLS::FEAT11*>(worksheetPtr->m_arFEAT11.back().get());
+					XLS::FEAT11::_data featData;
+					auto tempTable = static_cast<CTableFile*>(file.GetPointer());
+					featData.m_Feature = tempTable->m_oTable->toXLS();
+					if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
 					{
-						XLS::FEAT11::_data featData;
-						auto tempTable = static_cast<CTableFile*>(file.GetPointer());
-						featData.m_Feature = tempTable->m_oTable->toXLS();
-						if(tempTable->m_oTable->m_oTableStyleInfo.IsInit())
-						{
-							featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
-						}
-
-						feat11->m_arFEAT.push_back(featData);
+						featData.m_arList12.push_back(tempTable->m_oTable->m_oTableStyleInfo->toXLS());
 					}
+
+					feat11->m_arFEAT.push_back(featData);
+				}
+				else if(file->type() == OOX::SpreadsheetBin::FileTypes::PivotTableBin)
+				{
+					auto tempPivot = static_cast<CPivotTableFile*>(file.GetPointer());
+					if(tempPivot->m_oPivotTableDefinition.IsInit())
+						worksheetPtr->m_arPIVOTVIEW.push_back(tempPivot->m_oPivotTableDefinition->toXLS());
 				}
 			}
+
+
 			return sheetPtr;
 		}
         void CWorksheet::WriteBin(XLS::StreamCacheWriterPtr& writer) const

@@ -148,6 +148,9 @@
 #include "boost/date_time/gregorian/gregorian.hpp"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheReader.h"
 #include "../../../MsBinaryFile/XlsFile/Format/Binary/CFStreamCacheWriter.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTVIEW.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_unions/PIVOTCORE.h"
+#include "../../../MsBinaryFile/XlsFile/Format/Logic/Biff_records/SxView.h"
 namespace OOX
 {
 namespace Spreadsheet
@@ -516,6 +519,15 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 
 		return objectPtr;
 	}
+	XLS::BaseObjectPtr CPivotTableDefinition::toXLS()
+	{
+		auto ptr1 = new XLS::PIVOTVIEW;
+		auto ptr = new XLS::PIVOTCORE;
+		ptr1->m_PIVOTCORE = XLS::BaseObjectPtr(ptr);
+
+		ptr->m_SxView = writeAttributesXLS();
+		return XLS::BaseObjectPtr(ptr1);
+	}
 	XLS::BaseObjectPtr CPivotTableDefinition::writeAttributes()
 	{
 		auto ptr(new XLSB::BeginSXView);
@@ -672,6 +684,28 @@ xmlns:xr16=\"http://schemas.microsoft.com/office/spreadsheetml/2017/revision16\"
 		ptr->sxaxis4Data = 2;
 
 		return objectPtr;
+	}
+	XLS::BaseObjectPtr CPivotTableDefinition::writeAttributesXLS()
+	{
+		auto ptr = new XLS::SxView;
+		if(m_oLocation.IsInit())
+		{
+			if(m_oLocation->m_oRef.IsInit())
+				ptr->ref = m_oLocation->m_oRef.get();
+			if(m_oLocation->m_oFirstHeaderRow.IsInit())
+				ptr->rwFirstHead = m_oLocation->m_oFirstHeaderRow->GetValue();
+			if(m_oLocation->m_oFirstDataRow.IsInit())
+				ptr->rwFirstData = m_oLocation->m_oFirstDataRow->GetValue();
+			if(m_oLocation->m_oFirstDataCol.IsInit())
+				ptr->colFirstData = m_oLocation->m_oFirstDataCol->GetValue();
+		}
+		if(m_oCacheId.IsInit())
+			ptr->iCache = m_oCacheId->GetValue();
+		if(m_oDataPosition.IsInit())
+			ptr->ipos4Data = m_oDataPosition->GetValue();
+		if(m_oPivotFields.IsInit())
+			ptr->cDim = m_oPivotFields->m_arrItems.size();
+		return XLS::BaseObjectPtr(ptr);
 	}
     void CPivotTableDefinition::fromBin(XLS::BaseObjectPtr& obj)
     {

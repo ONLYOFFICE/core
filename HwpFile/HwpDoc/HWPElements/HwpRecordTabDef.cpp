@@ -71,7 +71,7 @@ CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLeve
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
+CHwpRecordTabDef::CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_TAB_DEF, 0, 0), m_pParent(&oDocInfo), m_nAttr(0)
 {
 	START_READ_ATTRIBUTES(oReader)

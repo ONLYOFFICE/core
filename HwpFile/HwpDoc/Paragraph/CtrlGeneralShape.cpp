@@ -90,7 +90,6 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, EHanType eType)
 {
 	bool bHeadFill = false, bTailFill = false;
 
-	const std::string sNodeName{oReader.GetName()};
 	const std::string sChildNodeName{oReader.GetName()};
 
 	//TODO:: выглядит не очень. Нужно вернуться и подумать как лучше иначе сделать
@@ -99,7 +98,7 @@ void CCtrlGeneralShape::ParseChildren(CXMLReader& oReader, EHanType eType)
 		WHILE_READ_NEXT_NODE_WITH_NAME(oReader)
 		{
 			if ("SHAPECOMPONENT" == sNodeName)
-				CCtrlObjElement::ParseHWPMLElement(oReader);
+				CCtrlObjElement::ParseChildren(oReader, EHanType::HWPML);
 			else
 				ParseChildren(oReader, EHanType::HWPML);
 		}

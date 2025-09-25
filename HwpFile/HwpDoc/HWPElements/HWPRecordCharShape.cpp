@@ -206,7 +206,7 @@ CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 	oBuffer.RemoveLastSavedPos();
 }
 
-CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPRecordCharShape::CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_HWP_CHAR_SHAPE, 0, 0), m_pParent(&oDocInfo),
       m_nHeight(1000), m_bItalic(false), m_bBold(false), m_eUnderline(EUnderline::NONE),
       m_eUnderLineShape(ELineStyle1::SOLID), m_eOutline(ELineStyle3::NONE), m_eShadow(EShadow::NONE), m_bEmboss(false), m_bEngrave(false),

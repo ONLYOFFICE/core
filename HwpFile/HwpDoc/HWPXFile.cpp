@@ -34,15 +34,10 @@ bool CHWPXFile::Detect()
 
 bool CHWPXFile::Open()
 {
-	if (!NSFile::CFileBinary::Exists(m_sFileName))
+	if (!NSFile::CFileBinary::Exists(m_sFileName) || !Detect() || !ReadDocInfo())
 		return false;
 
-	if (m_oFileHeader.VersionEmpty() && !Detect())
-		return false;
-
-	std::vector<std::wstring> arPathToSections{GetPathsToSections()};
-
-	for (const std::wstring& wsPath : arPathToSections)
+	for (const std::wstring& wsPath : GetPathsToSections())
 		ReadSection(wsPath);
 
 	return true;
@@ -143,21 +138,21 @@ bool CHWPXFile::GetChildStream(const HWP_STRING& sFileName, CHWPStream& oBuffer)
 	return true;
 }
 
-bool CHWPXFile::GetDocInfo(int nVersion)
+bool CHWPXFile::ReadDocInfo()
 {
 	CXMLReader oContentReader;
 
 	if (!GetDocument(L"Contents/content.hpf", oContentReader))
 		return false;
 
-	if (m_oDocInfo.ReadContentHpf(oContentReader, nVersion))
+	if (m_oDocInfo.ReadContentHpf(oContentReader))
 	{
 		CXMLReader oHeaderReader;
 
 		if (!GetDocument(L"Contents/header.xml", oHeaderReader))
 			return false;
 
-		return m_oDocInfo.Parse(oHeaderReader, nVersion);
+		return m_oDocInfo.ParseHWPX(oHeaderReader);
 	}
 
 	return false;

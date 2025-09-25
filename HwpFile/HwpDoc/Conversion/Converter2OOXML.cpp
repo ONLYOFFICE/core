@@ -1018,8 +1018,8 @@ void CConverter2OOXML::WriteGeometryShape(const CCtrlGeneralShape* pGeneralShape
 
 	OpenParagraph(shParaShapeID, shParaStyleID, oBuilder, oState);
 
-	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetWidth());
-	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetHeight());
+	const int nWidth =  Transform::HWPUINT2OOXML(pGeneralShape->GetFinalWidth());
+	const int nHeight = Transform::HWPUINT2OOXML(pGeneralShape->GetFinalHeight());
 
 	const std::wstring wsWidth  = std::to_wstring(nWidth);
 	const std::wstring wsHeight = std::to_wstring(nHeight);
@@ -1654,14 +1654,8 @@ void CConverter2OOXML::WriteShapeExtent(const CCtrlObjElement* pCtrlShape, NSStr
 	if (nullptr == pCtrlShape)
 		return;
 
-	int nFinalWidth  = std::abs(pCtrlShape->GetCurWidth());
-	int nFinalHeight = std::abs(pCtrlShape->GetCurHeight());
-
-	if (0 == nFinalWidth)
-		nFinalWidth = pCtrlShape->GetWidth();
-
-	if (0 == nFinalHeight)
-		nFinalHeight = pCtrlShape->GetHeight();
+	const int nFinalWidth  = std::abs(pCtrlShape->GetFinalWidth());
+	const int nFinalHeight = std::abs(pCtrlShape->GetFinalHeight());
 
 	if (nullptr != pWidth)
 		*pWidth = Transform::HWPUINT2OOXML(nFinalWidth);

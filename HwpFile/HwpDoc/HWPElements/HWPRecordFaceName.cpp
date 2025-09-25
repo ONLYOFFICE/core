@@ -54,7 +54,7 @@ CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, int nTagNum, int n
 		oBuffer.ReadString(m_sBasicFaceName, EStringCharacter::UTF16);
 }
 
-CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPRecordFaceName::CHWPRecordFaceName(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_FACE_NAME, 0, 0), m_pParent(&oDocInfo)
 {
 	m_sFaceName = oReader.GetAttribute(GetAttributeName(EAttribute::FaceName, eType));

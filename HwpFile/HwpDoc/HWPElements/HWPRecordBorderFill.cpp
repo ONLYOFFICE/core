@@ -377,7 +377,7 @@ CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, i
 	m_pFill = new CFill(oBuffer, 0, 0); // TODO:: перейти от использования off и size
 }
 
-CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPRecordBorderFill::CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BORDER_FILL, 0, 0), m_pFill(nullptr)
 {
 	START_READ_ATTRIBUTES(oReader)

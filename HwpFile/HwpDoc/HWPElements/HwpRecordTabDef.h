@@ -36,7 +36,7 @@ class CHwpRecordTabDef : public CHWPRecord
 public:
 	CHwpRecordTabDef(int nTagNum, int nLevel, int nSize);
 	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
+	CHwpRecordTabDef(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	int GetCount() const;
 	const TTab* GetTab(unsigned int unIndex) const;

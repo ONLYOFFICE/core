@@ -74,7 +74,7 @@ CHWPRecordBinData::CHWPRecordBinData(CHWPDocInfo& oDocInfo, int nTagNum, int nLe
 	oBuffer.Skip(nSize - oBuffer.GetDistanceToLastPos(true));
 }
 
-CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPRecordBinData::CHWPRecordBinData(CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_BIN_DATA, 0, 0)
 {
 	HWP_STRING sSubPath;

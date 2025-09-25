@@ -42,6 +42,9 @@ class CCtrlObjElement : public CCtrlCommon
 
 	void ParseRotationInfo(CXMLReader& oReader, EHanType eType);
 	void ParseRenderingInfo(CXMLReader& oReader, EHanType eType);
+
+	void ParseHWPXChildren(CXMLReader& oReader);
+	void ParseHWPMLElement(CXMLReader& oReader);
 public:
 	CCtrlObjElement();
 	CCtrlObjElement(const HWP_STRING& sCtrlID);
@@ -49,8 +52,7 @@ public:
 	CCtrlObjElement(const HWP_STRING& sCtrlID, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
 	CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader, EHanType eType);
 
-	void ParseHWPXChildren(CXMLReader& oReader);
-	void ParseHWPMLElement(CXMLReader& oReader);
+	void ParseChildren(CXMLReader& oReader, EHanType eType);
 
 	int GetCurWidth() const;
 	int GetCurHeight() const;

@@ -29,7 +29,7 @@ public:
 private:
 	VECTOR<HWP_STRING> GetPathsToSections() const;
 	bool GetFileHeader();
-	bool GetDocInfo(int nVersion);
+	bool ReadDocInfo();
 	bool ReadSection(const HWP_STRING& sName);
 	bool GetDocument(const HWP_STRING& sEntryName, CXMLReader& oReader);
 };

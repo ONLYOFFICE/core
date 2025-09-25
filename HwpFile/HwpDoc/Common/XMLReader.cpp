@@ -44,7 +44,7 @@ int StringToInt(const std::string& sValue, const int& _default)
 	if (sValue.cend() == itPos)
 		return _default;
 
-	while (!std::isdigit(*itPos) && sValue.cend() != itPos)
+	while (sValue.cend() != itPos && !std::isdigit(*itPos))
 		++itPos;
 
 	if (sValue.cend() == itPos)

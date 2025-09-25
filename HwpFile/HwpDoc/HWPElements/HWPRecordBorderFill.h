@@ -136,7 +136,7 @@ class CHWPRecordBorderFill : public CHWPRecord
 public:
 	CHWPRecordBorderFill(int nTagNum, int nLevel, int nSize);
 	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
+	CHWPRecordBorderFill(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 	~CHWPRecordBorderFill();
 
 	TBorder GetLeftBorder() const;

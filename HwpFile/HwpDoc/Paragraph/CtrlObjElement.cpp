@@ -80,6 +80,16 @@ CCtrlObjElement::CCtrlObjElement(const HWP_STRING& sCtrlID, CXMLReader& oReader,
 		m_shNGrp = oReader.GetAttributeInt("groupLevel");
 }
 
+void CCtrlObjElement::ParseChildren(CXMLReader& oReader, EHanType eType)
+{
+	switch (eType)
+	{
+		case EHanType::HWPML: ParseHWPMLElement(oReader); return;
+		case EHanType::HWPX:  ParseHWPXChildren(oReader); return;
+		default: break;
+	}
+}
+
 void CCtrlObjElement::ParseRotationInfo(CXMLReader &oReader, EHanType eType)
 {
 	START_READ_ATTRIBUTES(oReader)
@@ -227,7 +237,10 @@ int CCtrlObjElement::GetFinalWidth() const
 	if (0 != m_nCurWidth)
 		return m_nCurWidth;
 
-	return CCtrlCommon::GetWidth();
+	if (0 != CCtrlCommon::GetWidth())
+		return CCtrlCommon::GetWidth();
+
+	return m_nOrgWidth;
 }
 
 int CCtrlObjElement::GetFinalHeight() const
@@ -235,7 +248,10 @@ int CCtrlObjElement::GetFinalHeight() const
 	if (0 != m_nCurHeight)
 		return m_nCurHeight;
 
-	return CCtrlCommon::GetHeight();
+	if (0 != CCtrlCommon::GetHeight())
+		return CCtrlCommon::GetHeight();
+
+	return m_nOrgHeight;
 }
 
 short CCtrlObjElement::GetGroupLevel() const

@@ -69,7 +69,7 @@ const CHWPDocInfo* CHWPMLFile::GetDocInfo() const
 
 void CHWPMLFile::ReadHead(CXMLReader &oReader)
 {
-	m_oDocInfo.Parse(oReader);
+	m_oDocInfo.ParseHWPML(oReader);
 }
 
 void CHWPMLFile::ReadBody(CXMLReader &oReader)

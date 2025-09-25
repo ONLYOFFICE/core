@@ -91,7 +91,7 @@ class CHWPRecordCharShape : public CHWPRecord
 	void ReadContainerData(CXMLReader& oReader, short arValues[], int nDefaultValue = 0);
 public:
 	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
+	CHWPRecordCharShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	bool Bold() const;
 	bool Italic() const;

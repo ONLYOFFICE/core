@@ -153,12 +153,12 @@ CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, int nTagNum, int
 		oBuffer.Skip(8);
 }
 
-CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType)
+CHWPRecordParaShape::CHWPRecordParaShape(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType)
 	: CHWPRecord(EHWPTag::HWPTAG_PARA_SHAPE, 0, 0), m_pParent(&oDocInfo),
       m_eAlign(EHorizontalAlign::JUSTIFY), m_bWidowOrphan(false), m_bKeepWithNext(false),
       m_bPageBreakBefore(false), m_eVertAlign(EVerticalAlign::BASELINE), m_eHeadingType(EHeadingType::NONE),
-      m_nIndent(0), m_nMarginLeft(0), m_nMarginRight(0), m_nMarginPrev(0), m_nMarginNext(0),
-      m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false)
+      m_bConnect(false), m_bIgnoreMargin(false), m_bParaTailShape(false), m_nIndent(0), m_nMarginLeft(0),
+      m_nMarginRight(0), m_nMarginPrev(0), m_nMarginNext(0)
 {
 	//В HWPX  в данной ноде данный пишутся по типу данный в нодах
 	//В HWPML в данной ноде данные пишутся по типу данные в аргументах

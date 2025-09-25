@@ -49,9 +49,9 @@ public:
 	~CHWPDocInfo();
 
 	bool Parse(CHWPStream& oBuffer, int nVersion);
-	bool Parse(CXMLReader& oReader, int nVersion);
-	bool Parse(CXMLReader& oReader);
-	bool ReadContentHpf(CXMLReader& oReader, int nVersion);
+	bool ParseHWPX(CXMLReader& oReader);
+	bool ParseHWPML(CXMLReader& oReader);
+	bool ReadContentHpf(CXMLReader& oReader);
 
 	const CHWPRecord* GetRecord(int nIndex) const;
 	const CHWPRecord* GetFaceName(int nIndex) const;
@@ -69,8 +69,8 @@ public:
 	EHanType GetHanType() const;
 	ECompatDoc GetCompatibleDoc() const;
 private:
-	bool ReadRefList(CXMLReader& oReader, int nVersion);
-	bool ReadRefListElement(CXMLReader& oReader, int nVersion, EHanType eType);
+	bool ReadRefList(CXMLReader& oReader);
+	bool ReadRefListElement(CXMLReader& oReader, EHanType eType);
 };
 }
 

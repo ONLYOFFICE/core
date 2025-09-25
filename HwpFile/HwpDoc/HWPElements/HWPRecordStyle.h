@@ -22,7 +22,7 @@ class CHWPRecordStyle : public CHWPRecord
 public:
 	CHWPRecordStyle(int nTagNum, int nLevel, int nSize);
 	CHWPRecordStyle(CHWPDocInfo& oDocInfo, int nTagNum, int nLevel, int nSize, CHWPStream& oBuffer, int nOff, int nVersion);
-	CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, int nVersion, EHanType eType);
+	CHWPRecordStyle(CHWPDocInfo& oDocInfo, CXMLReader& oReader, EHanType eType);
 
 	HWP_STRING GetName() const;
 	HWP_STRING GetEngName() const;

@@ -1595,6 +1595,11 @@ struct CTransform
         dx  = dX;
         dy  = dY;
     }
+	void Transform(double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
+	{
+		*pdDeviceX = dUserX * m11 + dUserY * m21 + dx;
+		*pdDeviceY = dUserX * m12 + dUserY * m22 + dy;
+	}
 
     double m11;
     double m12;

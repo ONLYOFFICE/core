@@ -101,6 +101,7 @@ public:
 	void EndMarkedContent();
 	bool IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bItalic, std::wstring& wsFontPath);
 	void Redact(IAdvancedCommand* pCommand);
+	std::vector<double> WriteRedact(const std::vector<std::wstring>& arrID);
 
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength);
 	void AfterSplitPages();
@@ -110,11 +111,20 @@ private:
 	void GetPageTree(XRef* xref, Object* pPagesRefObj, PdfWriter::CPageTree* pPageParent = NULL);
 	bool SplitPages(const int* arrPageIndex, unsigned int unLength, PDFDoc* _pDoc, int nStartRefID);
 
+	struct CRedactData
+	{
+		std::wstring sID;
+		std::vector<double> arrQuads;
+		LONG nLenRender;
+		BYTE* pRender;
+		bool bDraw = false;
+	};
+
 	std::wstring m_wsSrcFile;
 	std::wstring m_wsDstFile;
 	std::wstring m_wsPassword;
+	std::vector<CRedactData> m_arrRedact;
 	std::map<std::wstring, std::wstring> m_mFonts;
-	std::map<std::wstring, std::vector<double> > m_mRedact;
 	CObjectsManager m_mObjManager;
 
 	CPdfReader* m_pReader;

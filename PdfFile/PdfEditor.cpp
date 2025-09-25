@@ -3514,11 +3514,26 @@ bool CPdfEditor::IsBase14(const std::wstring& wsFontName, bool& bBold, bool& bIt
 void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 {
 	PDFDoc* pPDFDocument = NULL;
-	int nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
-	if (nPageIndex < 0 || !pPDFDocument)
-		return;
-	Page* pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
-	PDFRectangle* cropBox = pPage->getCropBox();
+	PDFRectangle* cropBox = NULL;
+	int nPageIndex = -1;
+	Page* pPage = NULL;
+	bool bEditPage = IsEditPage();
+	if (bEditPage)
+	{
+		nPageIndex = m_pReader->GetPageIndex(m_nEditPage, &pPDFDocument);
+		if (nPageIndex < 0 || !pPDFDocument)
+			return;
+		pPage = pPDFDocument->getCatalog()->getPage(nPageIndex);
+		cropBox = pPage->getCropBox();
+	}
+	else
+	{
+		cropBox = new PDFRectangle();
+		PdfWriter::CDocument* pDoc = m_pWriter->GetDocument();
+		PdfWriter::CPage* pWPage = pDoc->GetCurPage();
+		cropBox->x2 = pWPage->GetWidth();
+		cropBox->y2 = pWPage->GetHeight();
+	}
 
 	std::vector<double> arrAllQuads;
 	CRedact* pCommand = (CRedact*)_pCommand;
@@ -3526,88 +3541,120 @@ void CPdfEditor::Redact(IAdvancedCommand* _pCommand)
 	for (CRedact::SRedact* pRedact : arrRedacts)
 	{
 		int nRect = pRedact->arrQuadPoints.size() / 4;
-		m_mRedact[pRedact->sID].reserve(nRect);
+		m_arrRedact.push_back(CRedactData());
+		m_arrRedact.back().sID = pRedact->sID;
+		m_arrRedact.back().arrQuads.reserve(nRect);
 		for (int i = 0; i < nRect; ++i)
 		{
 			std::vector<double> arrQuads = { pRedact->arrQuadPoints[i * 4 + 0], pRedact->arrQuadPoints[i * 4 + 1], pRedact->arrQuadPoints[i * 4 + 2], pRedact->arrQuadPoints[i * 4 + 3] };
+			m_arrRedact.back().arrQuads.insert(m_arrRedact.back().arrQuads.end(), arrQuads.begin(), arrQuads.end());
+
 			arrQuads[i * 4 + 0] += cropBox->x1;
 			double dQ = arrQuads[i * 4 + 1];
 			arrQuads[i * 4 + 1] = cropBox->y2 - arrQuads[i * 4 + 3];
 			arrQuads[i * 4 + 2] += cropBox->x1;
 			arrQuads[i * 4 + 3] = cropBox->y2 - dQ;
-
-			m_mRedact[pRedact->sID].insert(m_mRedact[pRedact->sID].end(), arrQuads.begin(), arrQuads.end());
 			arrAllQuads.insert(arrAllQuads.end(), arrQuads.begin(), arrQuads.end());
 		}
-	}
-
-#ifndef BUILDING_WASM_MODULE
-	PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
-	oRedactOut.NewPDF(pPDFDocument->getXRef());
-	oRedactOut.SetRedact(arrAllQuads);
-
-	Object oContents;
-	pPage->getContents(&oContents);
-	PDFRectangle* box = pPage->getMediaBox();
-	Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
-	gfx->display(&oContents);
-	oContents.free();
-	RELEASEOBJECT(gfx);
-#endif
-
-	for (CRedact::SRedact* pRedact : arrRedacts)
-	{
 		int nFlags = pRedact->nFlag;
 		if (nFlags & (1 << 0))
 		{
-			m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
-			LONG nLenRender = pRedact->nRenderLen;
-			BYTE* pRender = pRedact->pRender;
-
-			BYTE* pMemory = pRender;
-			int ret = *((int*)pMemory);
-			pMemory += 4;
-			double R = ret / 100000.0;
-			ret = *((int*)pMemory);
-			pMemory += 4;
-			double G = ret / 100000.0;
-			ret = *((int*)pMemory);
-			double B = ret / 100000.0;
-			LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
-
-			for (int i = 0; i < pRedact->arrQuadPoints.size() / 4; ++i)
-			{
-				m_pWriter->PathCommandEnd();
-				m_pWriter->put_BrushColor1(lColor);
-				m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 0]), PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 1]));
-				m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 0]), PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 3]));
-				m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 2]), PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 3]));
-				m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 2]), PdfReader::PDFCoordsToMM(pRedact->arrQuadPoints[i * 4 + 1]));
-				m_pWriter->PathCommandClose();
-				m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
-				m_pWriter->PathCommandEnd();
-			}
-
-			/*
-			PdfWriter::CPage* pCurPage = m_pWriter->GetPage();
-			pDoc->FixEditPage(pCurPage);
-			PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
-			m_pWriter->SetPage(pFakePage);
-			pDoc->SetCurPage(pFakePage);
-
-			// TODO Нужно нивелировать текущую матрицу до единичной, а потом сместить ещё на CropBox
-
-			pFakePage->SetStream(pCurPage->GetStream());
-			pFakePage->Add("Resources", pCurPage->Get("Resources"));
-
-			IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pWriter->GetRenderer());
-			NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
-			RELEASEOBJECT(pCorrector);
-
-			m_pWriter->SetPage(pCurPage);
-			pDoc->SetCurPage(pCurPage);
-			RELEASEOBJECT(pFakePage);
-			*/
+			m_arrRedact.back().pRender = pRedact->pRender;
+			m_arrRedact.back().nLenRender = pRedact->nRenderLen;
 		}
 	}
+
+	if (bEditPage)
+	{
+#ifndef BUILDING_WASM_MODULE
+		PdfWriter::RedactOutputDev oRedactOut(m_pWriter);
+		oRedactOut.NewPDF(pPDFDocument->getXRef());
+		oRedactOut.SetRedact(arrAllQuads);
+
+		Object oContents;
+		pPage->getContents(&oContents);
+		PDFRectangle* box = pPage->getMediaBox();
+		Gfx* gfx = new Gfx(pPDFDocument, &oRedactOut, nPageIndex, pPage->getResourceDict(), 72.0, 72.0, box, NULL, 0);
+		gfx->display(&oContents);
+		oContents.free();
+		RELEASEOBJECT(gfx);
+#endif
+	}
+	else
+	{
+		RELEASEOBJECT(cropBox);
+	}
+}
+std::vector<double> CPdfEditor::WriteRedact(const std::vector<std::wstring>& arrID)
+{
+	std::wstring sID;
+	if (!arrID.empty())
+		sID = arrID[0];
+	std::vector<double> arrRes;
+	for (int i = 0; i < m_arrRedact.size(); ++i)
+	{
+		if (m_arrRedact[i].sID == sID)
+		{
+			for (int j = i; j < m_arrRedact.size(); ++j)
+				arrRes.insert(arrRes.end(), m_arrRedact[j].arrQuads.begin(), m_arrRedact[j].arrQuads.end());
+			return arrRes;
+		}
+		CRedactData oRedact = m_arrRedact[i];
+		if (oRedact.bDraw || !oRedact.pRender)
+			continue;
+
+		m_pWriter->SetTransform(1, 0, 0, 1, 0, 0);
+		LONG nLenRender = oRedact.nLenRender;
+		BYTE* pRender = oRedact.pRender;
+
+		BYTE* pMemory = pRender;
+		int ret = *((int*)pMemory);
+		pMemory += 4;
+		double R = ret / 100000.0;
+		ret = *((int*)pMemory);
+		pMemory += 4;
+		double G = ret / 100000.0;
+		ret = *((int*)pMemory);
+		double B = ret / 100000.0;
+		LONG lColor = (LONG)(((LONG)(R * 255)) | ((LONG)(G * 255) << 8) | ((LONG)(B * 255) << 16) | ((LONG)255 << 24));
+
+		for (int i = 0; i < oRedact.arrQuads.size() / 4; ++i)
+		{
+			m_pWriter->PathCommandEnd();
+			m_pWriter->put_BrushColor1(lColor);
+			m_pWriter->PathCommandMoveTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 1]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 0]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 3]));
+			m_pWriter->PathCommandLineTo(PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 2]), PdfReader::PDFCoordsToMM(oRedact.arrQuads[i * 4 + 1]));
+			m_pWriter->PathCommandClose();
+			m_pWriter->DrawPath(NULL, L"", c_nWindingFillMode);
+			m_pWriter->PathCommandEnd();
+		}
+
+		// TODO рендер редакта должен быть пересечён со всеми последующими редактами
+		// TODO на самом деле должен быть рендер команд редакта
+		/*
+		PdfWriter::CPage* pCurPage = m_pWriter->GetPage();
+		pDoc->FixEditPage(pCurPage);
+		PdfWriter::CPage* pFakePage = new PdfWriter::CPage(pDoc);
+		m_pWriter->SetPage(pFakePage);
+		pDoc->SetCurPage(pFakePage);
+
+		// TODO Нужно нивелировать текущую матрицу до единичной, а потом сместить ещё на CropBox
+
+		pFakePage->SetStream(pCurPage->GetStream());
+		pFakePage->Add("Resources", pCurPage->Get("Resources"));
+
+		IMetafileToRenderter* pCorrector = new IMetafileToRenderter(m_pWriter->GetRenderer());
+		NSOnlineOfficeBinToPdf::ConvertBufferToRenderer(pRender, nLenRender, pCorrector);
+		RELEASEOBJECT(pCorrector);
+
+		m_pWriter->SetPage(pCurPage);
+		pDoc->SetCurPage(pCurPage);
+		RELEASEOBJECT(pFakePage);
+		*/
+
+		m_arrRedact[i].bDraw = true;
+	}
+	return arrRes;
 }

@@ -39,6 +39,8 @@
 #include "../lib/pathkit/include/core/SkPath.h"
 #include "../lib/pathkit/include/pathops/SkPathOps.h"
 
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
+
 namespace PdfWriter
 {
 void Transform(double* pMatrix, double dUserX, double dUserY, double* pdDeviceX, double* pdDeviceY)
@@ -446,10 +448,10 @@ void RedactOutputDev::drawChar(GfxState *pGState, double dX, double dY, double d
 	double dDiff = dX + dDx / 2.0;
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
+		double xMin = m_arrQuadPoints[i * 4 + 0];
+		double yMin = m_arrQuadPoints[i * 4 + 1];
+		double xMax = m_arrQuadPoints[i * 4 + 2];
+		double yMax = m_arrQuadPoints[i * 4 + 3];
 
 		if (xMin < dDiff && dDiff < xMax && yMin < dY && dY < yMax)
 			return;
@@ -604,10 +606,10 @@ void RedactOutputDev::drawForm(GfxState *pGState, Ref id, const char* name)
 
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
+		double xMin = m_arrQuadPoints[i * 4 + 0];
+		double yMin = m_arrQuadPoints[i * 4 + 1];
+		double xMax = m_arrQuadPoints[i * 4 + 2];
+		double yMax = m_arrQuadPoints[i * 4 + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
@@ -688,10 +690,10 @@ void RedactOutputDev::drawImage(GfxState *pGState, Ref id, const char* name)
 
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		double xMin = m_arrQuadPoints[i + 0];
-		double yMin = m_arrQuadPoints[i + 1];
-		double xMax = m_arrQuadPoints[i + 2];
-		double yMax = m_arrQuadPoints[i + 3];
+		double xMin = m_arrQuadPoints[i * 4 + 0];
+		double yMin = m_arrQuadPoints[i * 4 + 1];
+		double xMax = m_arrQuadPoints[i * 4 + 2];
+		double yMax = m_arrQuadPoints[i * 4 + 3];
 
 		if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
 			return;
@@ -807,15 +809,14 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	CMatrix oMatrix(m_arrMatrix[0], m_arrMatrix[1], m_arrMatrix[2], m_arrMatrix[3], m_arrMatrix[4], m_arrMatrix[5]);
 	CMatrix oInverse = oMatrix.Inverse();
 
-	/*
 	Aggplus::CGraphicsPath oPath, oPathRedact, oPathResult;
-	for (int i = 0; i < m_arrQuadPoints.size(); i += 8)
+	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
 		oPathRedact.StartFigure();
-		oPathRedact.MoveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 4], m_arrQuadPoints[i + 5]);
-		oPathRedact.LineTo(m_arrQuadPoints[i + 6], m_arrQuadPoints[i + 7]);
+		oPathRedact.MoveTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]);
+		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]);
+		oPathRedact.LineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]);
 		oPathRedact.CloseFigure();
 	}
 
@@ -860,25 +861,25 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 			oPath.CloseFigure();
 	}
 
-	size_t length1 = oPath.GetPointCount(), compound1 = oPath.GetCloseCount();
-	std::vector<Aggplus::PointD> points1 = oPath.GetPoints(0, length1 + compound1);
-	std::cout << "Path1:" <<std::endl;
-	for (int i = 0; i < points1.size(); ++i)
-	{
-		std::cout << "( " << points1[i].X << ", " << points1[i].Y << " ); ";
-	}
-	std::cout <<std::endl;
+	//size_t length1 = oPath.GetPointCount(), compound1 = oPath.GetCloseCount();
+	//std::vector<Aggplus::PointD> points1 = oPath.GetPoints(0, length1 + compound1);
+	//std::cout << "Path1:" <<std::endl;
+	//for (int i = 0; i < points1.size(); ++i)
+	//{
+	//	std::cout << "( " << points1[i].X << ", " << points1[i].Y << " ); ";
+	//}
+	//std::cout <<std::endl;
 
 	oPathResult = Aggplus::CalcBooleanOperation(oPath, oPathRedact, Aggplus::BooleanOpType::Subtraction);
 
 	size_t length = oPathResult.GetPointCount(), compound = oPathResult.GetCloseCount();
 	std::vector<Aggplus::PointD> points = oPathResult.GetPoints(0, length + compound);
-	std::cout << "PathRES:" <<std::endl;
-	for (int i = 0; i < points.size(); ++i)
-	{
-		std::cout << "( " << points[i].X << ", " << points[i].Y << " ); ";
-	}
-	std::cout <<std::endl;
+	//std::cout << "PathRES:" <<std::endl;
+	//for (int i = 0; i < points.size(); ++i)
+	//{
+	//	std::cout << "( " << points[i].X << ", " << points[i].Y << " ); ";
+	//}
+	//std::cout <<std::endl;
 
 	m_pRenderer->m_oPath.Clear();
 
@@ -916,7 +917,6 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 	}
 
 	return;
-	*/
 
 	std::vector<CSegment> arrForStroke;
 	pk::SkPath skPath, skPathRedact, skPathRes;
@@ -924,18 +924,18 @@ void RedactOutputDev::DoPathRedact(GfxState* pGState, GfxPath* pPath, double* pC
 		skPath.setFillType(pk::SkPathFillType::kEvenOdd);
 	for (int i = 0; i < m_arrQuadPoints.size(); i += 4)
 	{
-		skPathRedact.moveTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]);
-		skPathRedact.lineTo(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]);
-		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]);
-		skPathRedact.lineTo(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]);
+		skPathRedact.moveTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]);
+		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]);
+		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]);
+		skPathRedact.lineTo(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]);
 		skPathRedact.close();
 
 		if (bStroke)
 		{
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 3]), CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1])));
-			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i + 2], m_arrQuadPoints[i + 1]), CPoint(m_arrQuadPoints[i + 0], m_arrQuadPoints[i + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1]), CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 3]), CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 3]), CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1])));
+			arrForStroke.push_back(CSegment(CPoint(m_arrQuadPoints[i * 4 + 2], m_arrQuadPoints[i * 4 + 1]), CPoint(m_arrQuadPoints[i * 4 + 0], m_arrQuadPoints[i * 4 + 1])));
 		}
 	}
 

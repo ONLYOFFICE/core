@@ -1252,6 +1252,7 @@ bool CRedact::Read(NSOnlineOfficeBinToPdf::CBufferReader* pReader, IMetafileToRe
 			pRedact->pRender = pReader->GetCurrentBuffer();
 			pReader->Skip(pRedact->nRenderLen);
 		}
+		m_arrRedact.push_back(pRedact);
 	}
 
 	return true;

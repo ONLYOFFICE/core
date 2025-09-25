@@ -1079,6 +1079,23 @@ HRESULT CPdfWriter::DrawImage(IGrObject* pImage, const double& dX, const double&
 	if (!IsPageValid() || !pImage)
 		return S_OK;
 
+	if (!m_arrRedact.empty())
+	{
+		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+				return S_OK;
+		}
+	}
+
 	if (!DrawImage((Aggplus::CImage*)pImage, dX, dY, dW, dH, 255))
 		return S_FALSE;
 
@@ -1090,6 +1107,23 @@ HRESULT CPdfWriter::DrawImageFromFile(NSFonts::IApplicationFonts* pAppFonts, con
 
 	if (!IsPageValid())
 		return S_OK;
+
+	if (!m_arrRedact.empty())
+	{
+		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+				return S_OK;
+		}
+	}
 
 	if (m_pDocument->HasImage(wsImagePathSrc, nAlpha))
 	{
@@ -2616,6 +2650,30 @@ HRESULT CPdfWriter::AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, 
 {
 	return m_pDocument->AddMetaData(sMetaName, pMetaData, nMetaLength) ? S_OK : S_FALSE;
 }
+HRESULT CPdfWriter::AddRedact(const std::vector<double>& arrRedact)
+{
+	m_arrRedact.clear();
+	m_arrRedact = arrRedact;
+
+	PdfWriter::CArrayObject* pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("CropBox");
+	if (!pPageBox)
+		pPageBox = (PdfWriter::CArrayObject*)m_pPage->Get("MediaBox");
+	PdfWriter::CObjectBase* pD = pPageBox->Get(3);
+	double dPageH = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+	pD = pPageBox->Get(0);
+	double dPageX = pD->GetType() == PdfWriter::object_type_NUMBER ? ((PdfWriter::CNumberObject*)pD)->Get() : ((PdfWriter::CRealObject*)pD)->Get();
+
+	for (int i = 0; i < m_arrRedact.size(); i += 4)
+	{
+		m_arrRedact[i * 4 + 0] += dPageX;
+		double dQ = m_arrRedact[i * 4 + 1];
+		m_arrRedact[i * 4 + 1] = dPageH - m_arrRedact[i * 4 + 3];
+		m_arrRedact[i * 4 + 2] += dPageX;
+		m_arrRedact[i * 4 + 3] = dPageH - dQ;
+	}
+
+	return S_OK;
+}
 void CreateOutlines(PdfWriter::CDocument* m_pDocument, const std::vector<CHeadings::CHeading*>& arrHeadings, PdfWriter::COutline* pParent)
 {
 	for (int i = 0; i < arrHeadings.size(); ++i)
@@ -2650,6 +2708,23 @@ HRESULT CPdfWriter::DrawImage1bpp(NSImages::CPixJbig2* pImageBuffer, const unsig
 	if (!IsPageValid() || !pImageBuffer)
 		return S_OK;
 
+	if (!m_arrRedact.empty())
+	{
+		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+				return S_OK;
+		}
+	}
+
 	m_pPage->GrSave();
 	UpdateTransform();
 	
@@ -2683,6 +2758,23 @@ HRESULT CPdfWriter::DrawImageWith1bppMask(IGrObject* pImage, NSImages::CPixJbig2
 
 	if (!IsPageValid() || !pMaskBuffer || !pImage)
 		return S_OK;
+
+	if (!m_arrRedact.empty())
+	{
+		double dXmin = MM_2_PT(dX), dYmin = MM_2_PT(m_dPageHeight - dY - dH), dXmax = MM_2_PT(dX + dW), dYmax = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXmin, dYmin, &dXmin, &dYmin);
+		m_oTransform.Transform(dXmax, dYmax, &dXmax, &dYmax);
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (!(dXmax < xMin || dXmin > xMax || dYmax < yMin || dYmin > yMax))
+				return S_OK;
+		}
+	}
 
 	PdfWriter::CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
 	if (!pPdfImage)
@@ -3245,6 +3337,24 @@ bool CPdfWriter::DrawText(unsigned char* pCodes, const unsigned int& unLen, cons
 	if (!pCodes || !unLen)
 		return false;
 
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
+
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 
@@ -3267,6 +3377,23 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 {
 	if (m_bSplit)
 		return false;
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
 	// TODO pdf позволяет создание своего шрифта, но не следует это использовать для воссоздания шрифта запрещенного для редактирования или встраивания
 	Aggplus::CGraphicsPathSimpleConverter simplifier;
 	simplifier.SetRenderer(m_pRenderer);
@@ -3282,6 +3409,24 @@ bool CPdfWriter::DrawTextToRenderer(const unsigned int* unGid, const unsigned in
 }
 bool CPdfWriter::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
+	if (!m_arrRedact.empty())
+	{
+		double dXc = MM_2_PT(dX), dYc = MM_2_PT(m_dPageHeight - dY);
+		m_oTransform.Transform(dXc, dYc, &dXc, &dYc);
+		// TODO должна быть проверка центрального положения, а не точки начала
+		// TODO Сюда приходит много символов за раз, и нужно отрисовать только те, что вне областей редакта
+		for (int i = 0; i < m_arrRedact.size(); i += 4)
+		{
+			double xMin = m_arrRedact[i + 0];
+			double yMin = m_arrRedact[i + 1];
+			double xMax = m_arrRedact[i + 2];
+			double yMax = m_arrRedact[i + 3];
+
+			if (xMin < dXc && dXc < xMax && yMin < dYc && dYc < yMax)
+				return true;
+		}
+	}
+
 	unsigned char* pCodes = EncodeString(pUnicodes, unLen, pGids);
 	if (!pCodes)
 		return false;

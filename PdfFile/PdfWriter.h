@@ -199,6 +199,7 @@ public:
 	HRESULT AddFormField (NSFonts::IApplicationFonts* pAppFonts, CFormFieldInfo* pFieldInfo, const std::wstring& wsTempDirectory);
 	HRESULT AddAnnotField(NSFonts::IApplicationFonts* pAppFonts, CAnnotFieldInfo* pFieldInfo);
 	HRESULT AddMetaData(const std::wstring& sMetaName, BYTE* pMetaData, DWORD nMetaLength);
+	HRESULT AddRedact(const std::vector<double>& arrRedact);
 	HRESULT get_ClipMode(LONG* lMode);
 	HRESULT put_ClipMode(const LONG& lMode);
 	//----------------------------------------------------------------------------------------
@@ -286,6 +287,7 @@ private:
 	std::vector<TDestinationInfo>m_vDestinations;
 	unsigned int                 m_unFieldsCounter;
 	CMultiLineTextManager        m_oLinesManager;
+	std::vector<double>          m_arrRedact;
 
 	bool                         m_bValid;
 	bool                         m_bSplit;

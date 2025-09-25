@@ -1328,10 +1328,14 @@ HRESULT CPdfFile::AdvancedCommand(IAdvancedCommand* command)
 	case IAdvancedCommand::AdvancedCommandType::ShapeStart:
 	{
 		CShapeStart* pCommand = (CShapeStart*)command;
+		std::vector<double> arrRedact;
 		if (m_pInternal->pEditor)
+		{
 			m_pInternal->pEditor->AddShapeXML(pCommand->GetShapeXML());
+			arrRedact = m_pInternal->pEditor->WriteRedact(pCommand->GetRedactID());
+		}
 		// TODO Здесь необходимо наложить на рендер области редактов
-		return S_OK;
+		return m_pInternal->pWriter->AddRedact(arrRedact);
 	}
 	case IAdvancedCommand::AdvancedCommandType::ShapeEnd:
 	{

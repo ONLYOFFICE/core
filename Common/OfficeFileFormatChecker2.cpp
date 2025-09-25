@@ -549,6 +549,15 @@ bool COfficeFileFormatChecker::isPptFormatFile(POLE::Storage *storage)
 	return true;
 }
 
+bool COfficeFileFormatChecker::isCompoundFile(POLE::Storage* storage)
+{
+	if (storage == NULL) return false;
+
+	if (storage->GetAllStreams(L"/").size() == 1) return true;
+
+	return false;
+}
+
 std::wstring COfficeFileFormatChecker::getDocumentID(const std::wstring &_fileName)
 {
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -744,6 +753,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring &_fileName)
 		else if (isVbaProjectFile(&storage))
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_VBAPROJECT;
+			return true;
+		}
+		else if (isCompoundFile(&storage))
+		{
+			nFileType = AVS_OFFICESTUDIO_FILE_OTHER_COMPOUND;
 			return true;
 		}
 		else if (isHwpFile(&storage))

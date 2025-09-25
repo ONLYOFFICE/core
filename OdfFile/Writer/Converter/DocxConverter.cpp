@@ -1047,18 +1047,34 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 				OOX::Logic::CBr* pBr= dynamic_cast<OOX::Logic::CBr*>(oox_run->m_arrItems[i]);
 				if (pBr)
 				{
-					if( !odt_context->pendingBreakType ) // for bug when we have text and after conversion we have early break column (check bug 73365)
+					int type = pBr->m_oType.m_eValue != 0 ? pBr->m_oType.GetValue() : 2;
+
+					// check bug 55175
+					bool beforeAnyText = true; // check, maybe text was there already before break?
+					for (size_t j = 0; j < i; ++j)
 					{
-						odt_context->pendingBreakType = true;
-						odt_context->m_pendingBreakType = pBr->m_oType.GetValue();
+						if (oox_run->m_arrItems[j]->getType() == OOX::et_w_t)
+						{
+							beforeAnyText = false;
+							break;
+						}
 					}
 
-					// int type = pBr->m_oType.GetValue();
-					
-					// bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
+					if (beforeAnyText) // if there was no text, insert break
+					{
+						bool need_restart_para = odt_context->text_context()->set_type_break(type, pBr->m_oClear.GetValue());
 
-					// if (need_restart_para)
-					// 	odt_context->add_paragraph_break(type);
+						if (need_restart_para)
+							odt_context->add_paragraph_break(type);
+					}
+					else
+					{
+						if( !odt_context->pendingBreakType ) // for bug when we have text and after conversion we have early break column (check bug 73365)
+						{
+							odt_context->pendingBreakType = true;
+							odt_context->m_pendingBreakType = type;
+						}
+					}
 				}
 			}break;
 			case OOX::et_w_t:
@@ -2110,11 +2126,10 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 		//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;	
 	}
 
-	if (continuous == false || oox_section_pr->m_oTitlePg.IsInit() || bAlways)
+	OOX::Logic::CSectionProperty* sect = last_section_properties ? last_section_properties : oox_section_pr;
+	if (/*continuous == false || */oox_section_pr->m_oTitlePg.IsInit() || bAlways || sect->m_arrHeaderReference.empty() || sect->m_arrFooterReference.empty())
 	{
-		OOX::Logic::CSectionProperty* s = last_section_properties ? last_section_properties : oox_section_pr;
-
-		bool present_title_page = s->m_oTitlePg.IsInit() ? true : false;
+		bool present_title_page = sect->m_oTitlePg.IsInit() ? true : false;
 		bool present_odd_even_pages = odt_context->page_layout_context()->even_and_left_headers_;
 
 		bool add_title_header = false, add_title_footer = false;
@@ -2123,11 +2138,11 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 
 		std::vector<int> types;
 
-		for (size_t i = 0; i < s->m_arrHeaderReference.size(); i++)
+		for (size_t i = 0; i < sect->m_arrHeaderReference.size(); i++)
 		{
-			if (false == s->m_arrHeaderReference[i].IsInit()) continue;
+			if (false == sect->m_arrHeaderReference[i].IsInit()) continue;
 
-			int type = s->m_arrHeaderReference[i]->m_oType.IsInit() ? s->m_arrHeaderReference[i]->m_oType->GetValue() : 0;
+			int type = sect->m_arrHeaderReference[i]->m_oType.IsInit() ? sect->m_arrHeaderReference[i]->m_oType->GetValue() : 0;
 
 			if (type == 2 && !present_title_page)		continue;
 			if (type == 1 && !present_odd_even_pages)	continue;
@@ -2138,9 +2153,9 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 
 			if (odt_context->start_header(type))
 			{
-				if (s->m_arrHeaderReference[i]->m_oId.IsInit())
+				if (sect->m_arrHeaderReference[i]->m_oId.IsInit())
 				{
-					convert_hdr_ftr(s->m_arrHeaderReference[i]->m_oId->GetValue());
+					convert_hdr_ftr(sect->m_arrHeaderReference[i]->m_oId->GetValue());
 					if (docx_document)
 					{
 						convert(docx_document->m_oMain.document->m_oBackground.GetPointer(), 2);
@@ -2154,11 +2169,11 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 		if (!add_odd_even_pages_header && present_odd_even_pages)							odt_context->add_empty_header(1);
 		if (!add_default_header && (present_odd_even_pages || present_title_page))	odt_context->add_empty_header(0);
 
-		for (size_t i = 0; i < s->m_arrFooterReference.size(); i++)
+		for (size_t i = 0; i < sect->m_arrFooterReference.size(); i++)
 		{
-			if (false == s->m_arrFooterReference[i].IsInit()) continue;
+			if (false == sect->m_arrFooterReference[i].IsInit()) continue;
 
-			int type = s->m_arrFooterReference[i]->m_oType.IsInit() ? s->m_arrFooterReference[i]->m_oType->GetValue() : 0;
+			int type = sect->m_arrFooterReference[i]->m_oType.IsInit() ? sect->m_arrFooterReference[i]->m_oType->GetValue() : 0;
 
 			if (type == 2 && !present_title_page)		continue;
 			if (type == 1 && !present_odd_even_pages)	continue;
@@ -2169,9 +2184,9 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty* oox_section_pr, bool b
 
 			if (odt_context->start_footer(type))
 			{
-				if (s->m_arrFooterReference[i]->m_oId.IsInit())
+				if (sect->m_arrFooterReference[i]->m_oId.IsInit())
 				{
-					convert_hdr_ftr(s->m_arrFooterReference[i]->m_oId->GetValue());
+					convert_hdr_ftr(sect->m_arrFooterReference[i]->m_oId->GetValue());
 					if (docx_document)
 					{
 						convert(docx_document->m_oMain.document->m_oBackground.GetPointer(), 3);

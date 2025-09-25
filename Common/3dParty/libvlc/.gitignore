@@ -1,2 +1,4 @@
 vlc
+vlc.*
 src
+!build

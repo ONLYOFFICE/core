@@ -167,7 +167,10 @@ public:
 	AdvancedCommandType GetCommandType() { return m_nCommandType; }
 };
 
-namespace Aggplus { class CImage; }
+namespace Aggplus {
+	class CImage;
+	class CGraphicsPath;
+}
 
 // IRenderer
 class IRenderer : public IGrObject
@@ -297,6 +300,8 @@ public:
 
 	virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) = 0;
 	virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) = 0;
+
+	virtual HRESULT AddPath(const Aggplus::CGraphicsPath& path) = 0;
 
 	//-------- Функции для вывода изображений ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)		= 0;

@@ -153,6 +153,7 @@ namespace NSOnlineOfficeBinToPdf
 		ctPathCommandGetCurrentPoint	= 101,
 		ctPathCommandText				= 102,
 		ctPathCommandTextEx			    = 103,
+		ctPathCommandOffset				= 104,
 
 		// image
 		ctDrawImage					    = 110,

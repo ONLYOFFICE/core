@@ -36,6 +36,7 @@
 #include "../fontengine/FontManager.h"
 #include "../raster/BgraFrame.h"
 #include "../common/StringExt.h"
+#include "../GraphicsPath.h"
 
 // этот класс нужно переписать. должно работать как и в js
 // а не просто на каждом символе переключаться, если нужно
@@ -352,6 +353,10 @@ namespace NSOnlineOfficeBinToPdf
 		bool bIsEnableBrushRect = false;
 
 		CBufferReader oReader(pBuffer, lBufferLen);
+		Aggplus::CGraphicsPath path;
+		Aggplus::CGraphicsPath clipPath;
+		bool isClip = false;
+		bool isClose = false;
 		while (oReader.Check())
 		{
 			eCommand = (CommandType)(oReader.ReadByte());
@@ -611,6 +616,7 @@ namespace NSOnlineOfficeBinToPdf
 
 				pRenderer->BeginCommand(c_nPathType);
 				pRenderer->PathCommandStart();
+				path.StartFigure();
 
 				bIsPathOpened = true;
 				break;
@@ -619,14 +625,14 @@ namespace NSOnlineOfficeBinToPdf
 			{
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
-				pRenderer->PathCommandMoveTo(m1, m2);
+				path.MoveTo(m1, m2);
 				break;
 			}
 			case ctPathCommandLineTo:
 			{
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
-				pRenderer->PathCommandLineTo(m1, m2);
+				path.LineTo(m1, m2);
 				break;
 			}
 			case ctPathCommandCurveTo:
@@ -637,12 +643,13 @@ namespace NSOnlineOfficeBinToPdf
 				double m4 = oReader.ReadDouble();
 				double m5 = oReader.ReadDouble();
 				double m6 = oReader.ReadDouble();
-				pRenderer->PathCommandCurveTo(m1, m2, m3, m4, m5, m6);
+				path.CurveTo(m1, m2, m3, m4, m5, m6);
 				break;
 			}
 			case ctPathCommandClose:
 			{
-				pRenderer->PathCommandClose();
+				path.CloseFigure();
+				isClose = true;
 				break;
 			}
 			case ctPathCommandEnd:
@@ -655,9 +662,32 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				break;
 			}
+			case ctPathCommandOffset:
+			{
+				double m1 = oReader.ReadDouble();
+				double m2 = oReader.ReadDouble();
+				isClip = true;
+				clipPath = path.Trsanslate(m1, m2);
+			}
 			case ctDrawPath:
 			{
+				if (isClip)
+				{
+					path = Aggplus::CalcBooleanOperation(path, clipPath, Aggplus::Intersection);
+					clipPath.Reset();
+					isClip = false;
+				}
+
+				pRenderer->AddPath(path);
+
+				if (isClose)
+				{
+					pRenderer->PathCommandClose();
+					isClose = false;
+				}
+
 				pRenderer->DrawPath(oReader.ReadInt());
+				path.Reset();
 				break;
 			}
 			case ctDrawImageFromFile:

@@ -84,6 +84,7 @@ namespace Aggplus
 		void GetBoundsAccurate(double& left, double& top, double& width, double& height) const;
 
 		Status Transform(const CMatrix* matrix);
+		CGraphicsPath Trsanslate(const double& offsetX, const double& offsetY);
 		virtual bool _MoveTo(double x, double y);
 		virtual bool _LineTo(double x, double y);
 		virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);

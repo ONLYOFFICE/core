@@ -462,6 +462,33 @@ namespace Aggplus
 		return Ok;
 	}
 
+	CGraphicsPath CGraphicsPath::Trsanslate(const double& offsetX, const double& offsetY)
+	{
+		CGraphicsPath result;
+		result.StartFigure();
+
+		unsigned length = GetPointCount();
+		std::vector<Aggplus::PointD> points = GetPoints(0, length);
+
+		for (unsigned i = 0; i < length; i++)
+		{
+			if (IsCurvePoint(i))
+			{
+				result.CurveTo(points[i].X + offsetX, points[i].Y + offsetY,
+							   points[i + 1].X + offsetX, points[i + 1].Y + offsetY,
+							   points[i + 2].X + offsetX, points[i + 2].Y + offsetY);
+				i += 2;
+			}
+			else if (IsMovePoint(i))
+				result.MoveTo(points[i].X + offsetX, points[i].Y + offsetY);
+			else if (IsLinePoint(i))
+				result.LineTo(points[i].X + offsetX, points[i].Y + offsetY);
+		}
+		result.CloseFigure();
+
+		return result;
+	}
+
 	bool CGraphicsPath::_MoveTo(double x, double y)
 	{
 		if (NULL != m_internal->m_pTransform)

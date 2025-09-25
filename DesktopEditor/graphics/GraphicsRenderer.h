@@ -239,6 +239,8 @@ public:
     virtual HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h);
     virtual HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
+	virtual HRESULT AddPath(const Aggplus::CGraphicsPath& path);
+
 //-------- Функции для вывода изображений ---------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
 	virtual HRESULT DrawImageFromFile(const std::wstring& sFile, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255);

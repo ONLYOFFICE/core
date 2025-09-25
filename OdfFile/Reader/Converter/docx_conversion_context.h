@@ -866,6 +866,7 @@ public:
     void pop_text_properties	();
    
 	odf_reader::style_text_properties_ptr current_text_properties();
+	odf_reader::style_paragraph_properties_ptr current_paragraph_properties();
 
     void set_page_break_after(int val);
     int get_page_break_after();

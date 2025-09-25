@@ -664,9 +664,20 @@ namespace NSOnlineOfficeBinToPdf
 			}
 			case ctPathCommandOffset:
 			{
+				isClip = true;
+
 				double m1 = oReader.ReadDouble();
 				double m2 = oReader.ReadDouble();
-				isClip = true;
+
+				Aggplus::RectF rect;
+				bool rectable;
+				pRenderer->get_BrushRect(rect, rectable);
+				if (rectable)
+				{
+					rect.Offset(m1, m2);
+					pRenderer->BrushRect(true, rect.X, rect.Y, rect.Width, rect.Height);
+				}
+
 				clipPath = path.Trsanslate(m1, m2);
 			}
 			case ctDrawPath:

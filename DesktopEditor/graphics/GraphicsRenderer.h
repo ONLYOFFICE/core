@@ -190,6 +190,7 @@ public:
 	virtual HRESULT get_BrushTransform(Aggplus::CMatrix& oMatrix);
 	virtual HRESULT put_BrushTransform(const Aggplus::CMatrix& oMatrix);
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
+	virtual HRESULT get_BrushRect(Aggplus::RectF& rect, bool& rectable) const;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 

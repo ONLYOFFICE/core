@@ -212,6 +212,19 @@ public:
 		void Offset(const PointF_T<T>& point) { Offset(point.X, point.Y); }
 		void Offset(T dx, T dy) { X += dx; Y += dy; }
 
+		RectF_T& operator=(const RectF_T& other)
+		{
+			if (this == &other)
+				return *this;
+
+			X = other.X;
+			Y = other.Y;
+			Width = other.Width;
+			Height = other.Height;
+
+			return *this;
+		};
+
 public:
 		T X, Y, Width, Height;
 };

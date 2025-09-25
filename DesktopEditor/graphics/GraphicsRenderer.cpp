@@ -622,6 +622,12 @@ HRESULT CGraphicsRenderer::BrushRect(const INT& val, const double& left, const d
 	m_oBrush.Rect.Height = (float)height;
 	return S_OK;
 }
+HRESULT CGraphicsRenderer::get_BrushRect(Aggplus::RectF& rect, bool& rectable) const
+{
+	rectable = m_oBrush.Rectable;
+	rect = m_oBrush.Rect;
+	return S_OK;
+}
 HRESULT CGraphicsRenderer::BrushBounds(const double& left, const double& top, const double& width, const double& height)
 {
 	m_oBrush.Bounds.left	= left;
